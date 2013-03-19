@@ -1,0 +1,6 @@
+enum LibraryType {
+	
+	SWF;
+	XFL;
+	
+}

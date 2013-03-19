@@ -1,0 +1,38 @@
+package ::PACKAGE_NAME::;
+
+
+import format.swf.symbol.Symbol;
+import format.SWF;
+import nme.display.SimpleButton;
+import nme.Assets;
+
+
+class ::CLASS_NAME:: extends SimpleButton {
+	
+	
+	public function new () {
+		
+		super ();
+		
+		if (!SWF.instances.exists ("::SWF_ID::")) {
+			
+			SWF.instances.set ("::SWF_ID::", new SWF (Assets.getBytes ("::SWF_ID::")));
+			
+		}
+		
+		var swf = SWF.instances.get ("::SWF_ID::");
+		
+		switch (swf.getSymbol (::SYMBOL_ID::)) {
+			
+			case buttonSymbol (data):
+				
+				data.apply (this);
+			
+			default:
+			
+		}
+		
+	}
+	
+	
+}

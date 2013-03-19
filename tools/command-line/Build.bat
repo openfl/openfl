@@ -1,0 +1,1 @@
+haxe CommandLine.hxml
