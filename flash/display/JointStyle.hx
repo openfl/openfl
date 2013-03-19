@@ -32,6 +32,4 @@ package flash.display;
 }
 
 
-#else
-typedef JointStyle = nme.display.JointStyle;
 #end

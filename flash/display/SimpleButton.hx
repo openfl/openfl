@@ -112,6 +112,4 @@ extern class SimpleButton extends InteractiveObject {
 }
 
 
-#else
-typedef SimpleButton = nme.display.SimpleButton;
 #end

@@ -918,6 +918,4 @@ extern class TextField extends flash.display.InteractiveObject {
 }
 
 
-#else
-typedef TextField = nme.text.TextField;
 #end

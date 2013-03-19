@@ -1456,6 +1456,4 @@ extern class Keyboard {
 }
 
 
-#else
-typedef Keyboard = nme.ui.Keyboard;
 #end

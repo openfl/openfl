@@ -37,6 +37,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsSolidFill = nme.display.GraphicsSolidFill;
 #end

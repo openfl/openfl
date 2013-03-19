@@ -37,6 +37,4 @@ package flash.text;
 }
 
 
-#else
-typedef FontStyle = nme.text.FontStyle;
 #end

@@ -174,6 +174,4 @@ package flash.filters;
 }
 
 
-#else
-typedef DropShadowFilter = nme.filters.DropShadowFilter;
 #end

@@ -812,8 +812,8 @@ class RunScript {
 					
 					if (!FileSystem.exists (nmeDirectory + "/project")) {
 						
-						Sys.println ("This command must be run from a development checkout of NME");
-						return;
+						//Sys.println ("This command must be run from a development checkout of NME");
+						//return;
 						
 					}
 					

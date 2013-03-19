@@ -30,6 +30,4 @@ package flash.text;
 }
 
 
-#else
-typedef AntiAliasType = nme.text.AntiAliasType;
 #end

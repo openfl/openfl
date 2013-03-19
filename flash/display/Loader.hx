@@ -703,6 +703,4 @@ extern class Loader extends DisplayObjectContainer {
 }
 
 
-#else
-typedef Loader = nme.display.Loader;
 #end

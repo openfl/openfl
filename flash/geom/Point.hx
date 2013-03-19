@@ -161,6 +161,4 @@ extern class Point {
 }
 
 
-#else
-typedef Point = nme.geom.Point;
 #end

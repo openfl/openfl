@@ -92,6 +92,4 @@ package flash.sensors;
 }
 
 
-#else
-typedef Accelerometer = nme.sensors.Accelerometer;
 #end

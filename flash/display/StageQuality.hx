@@ -35,6 +35,4 @@ package flash.display;
 }
 
 
-#else
-typedef StageQuality = nme.display.StageQuality;
 #end

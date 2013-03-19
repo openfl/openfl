@@ -228,6 +228,4 @@ extern class TextFormat {
 }
 
 
-#else
-typedef TextFormat = nme.text.TextFormat;
 #end

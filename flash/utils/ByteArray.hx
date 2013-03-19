@@ -542,6 +542,4 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 }
 
 
-#else
-typedef ByteArray = nme.utils.ByteArray;
 #end

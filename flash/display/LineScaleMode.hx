@@ -45,6 +45,4 @@ package flash.display;
 }
 
 
-#else
-typedef LineScaleMode = nme.display.LineScaleMode;
 #end

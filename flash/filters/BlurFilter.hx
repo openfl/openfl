@@ -124,6 +124,4 @@ package flash.filters;
 }
 
 
-#else
-typedef BlurFilter = nme.filters.BlurFilter;
 #end

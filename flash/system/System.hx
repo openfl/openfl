@@ -199,6 +199,4 @@ extern class System {
 }
 
 
-#else
-typedef System = nme.system.System;
 #end

@@ -659,6 +659,4 @@ extern class SharedObject extends flash.events.EventDispatcher {
 }
 
 
-#else
-typedef SharedObject = nme.net.SharedObject;
 #end

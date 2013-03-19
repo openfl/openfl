@@ -254,6 +254,4 @@ extern class URLLoader extends flash.events.EventDispatcher {
 }
 
 
-#else
-typedef URLLoader = nme.net.URLLoader;
 #end

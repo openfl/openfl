@@ -14,6 +14,4 @@ extern class Error #if !flash_strict implements Dynamic #end {
 }
 
 
-#else
-typedef Error = nme.errors.Error;
 #end

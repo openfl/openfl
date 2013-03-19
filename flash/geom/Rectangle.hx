@@ -339,6 +339,4 @@ extern class Rectangle {
 }
 
 
-#else
-typedef Rectangle = nme.geom.Rectangle;
 #end

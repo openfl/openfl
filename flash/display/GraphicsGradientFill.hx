@@ -15,6 +15,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsGradientFill = nme.display.GraphicsGradientFill;
 #end

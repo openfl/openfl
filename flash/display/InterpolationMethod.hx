@@ -41,6 +41,4 @@ package flash.display;
 }
 
 
-#else
-typedef InterpolationMethod = nme.display.InterpolationMethod;
 #end

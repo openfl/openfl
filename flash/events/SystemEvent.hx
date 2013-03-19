@@ -12,6 +12,4 @@ extern class SystemEvent extends Event {
 }
 
 
-#elseif (cpp || neko)
-typedef SystemEvent = nme.events.SystemEvent;
 #end

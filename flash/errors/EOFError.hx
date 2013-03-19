@@ -19,6 +19,4 @@ extern class EOFError/* extends IOError*/ {
 }
 
 
-#else
-typedef EOFError = nme.errors.EOFError;
 #end

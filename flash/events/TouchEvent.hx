@@ -247,6 +247,4 @@ package flash.events;
 }
 
 
-#else
-typedef TouchEvent = nme.events.TouchEvent;
 #end

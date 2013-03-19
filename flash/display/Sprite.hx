@@ -188,6 +188,4 @@ extern class Sprite extends DisplayObjectContainer {
 }
 
 
-#else
-typedef Sprite = nme.display.Sprite;
 #end

@@ -43,6 +43,4 @@ package flash.display;
 }
 
 
-#else
-typedef TriangleCulling = nme.display.TriangleCulling;
 #end

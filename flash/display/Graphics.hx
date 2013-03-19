@@ -706,6 +706,4 @@ package flash.display;
 }
 
 
-#else
-typedef Graphics = nme.display.Graphics;
 #end

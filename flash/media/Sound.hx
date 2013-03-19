@@ -359,6 +359,4 @@ extern class Sound extends flash.events.EventDispatcher {
 }
 
 
-#else
-typedef Sound = nme.media.Sound;
 #end

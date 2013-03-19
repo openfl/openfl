@@ -22,6 +22,4 @@ extern class SharedObjectFlushStatus {
 }
 
 
-#else
-typedef SharedObjectFlushStatus = nme.net.SharedObjectFlushStatus;
 #end

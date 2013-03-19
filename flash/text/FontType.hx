@@ -48,6 +48,4 @@ package flash.text;
 }
 
 
-#else
-typedef FontType = nme.text.FontType;
 #end

@@ -20,6 +20,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsPathCommand = nme.display.GraphicsPathCommand;
 #end

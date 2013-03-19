@@ -36,6 +36,4 @@ package flash.text;
 }
 
 
-#else
-typedef TextFieldAutoSize = nme.text.TextFieldAutoSize;
 #end

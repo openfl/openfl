@@ -76,6 +76,4 @@ extern class Bitmap extends DisplayObject {
 }
 
 
-#else
-typedef Bitmap = nme.display.Bitmap;
 #end

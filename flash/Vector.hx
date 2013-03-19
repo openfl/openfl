@@ -36,6 +36,4 @@ package flash;
 }
 
 
-#else
-typedef Vector<T> = nme.Vector<T>;
 #end

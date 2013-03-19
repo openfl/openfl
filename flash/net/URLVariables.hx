@@ -45,6 +45,4 @@ extern class URLVariables implements Dynamic {
 }
 
 
-#else
-typedef URLVariables = nme.net.URLVariables;
 #end

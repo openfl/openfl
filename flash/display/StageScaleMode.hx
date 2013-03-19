@@ -14,6 +14,4 @@ package flash.display;
 }
 
 
-#else
-typedef StageScaleMode = nme.display.StageScaleMode;
 #end

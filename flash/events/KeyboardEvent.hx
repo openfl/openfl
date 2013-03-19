@@ -142,6 +142,4 @@ extern class KeyboardEvent extends Event {
 }
 
 
-#else
-typedef KeyboardEvent = nme.events.KeyboardEvent;
 #end

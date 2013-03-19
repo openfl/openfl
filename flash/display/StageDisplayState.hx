@@ -17,6 +17,4 @@ package flash.display;
 }
 
 
-#else
-typedef StageDisplayState = nme.display.StageDisplayState;
 #end

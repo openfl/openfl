@@ -105,6 +105,4 @@ extern class Timer extends flash.events.EventDispatcher {
 }
 
 
-#else
-typedef Timer = nme.utils.Timer;
 #end

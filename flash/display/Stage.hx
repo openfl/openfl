@@ -779,6 +779,4 @@ extern class Stage extends DisplayObjectContainer {
 }
 
 
-#else
-typedef Stage = nme.display.Stage;
 #end

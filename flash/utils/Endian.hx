@@ -22,6 +22,4 @@ package flash.utils;
 }
 
 
-#else
-typedef Endian = nme.utils.Endian;
 #end

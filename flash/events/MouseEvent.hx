@@ -251,6 +251,4 @@ extern class MouseEvent extends Event {
 }
 
 
-#else
-typedef MouseEvent = nme.events.MouseEvent;
 #end

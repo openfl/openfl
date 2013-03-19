@@ -360,6 +360,4 @@ extern class Capabilities {
 }
 
 
-#else
-typedef Capabilities = nme.system.Capabilities;
 #end

@@ -66,6 +66,4 @@ extern class ProgressEvent extends Event {
 }
 
 
-#else
-typedef ProgressEvent = nme.events.ProgressEvent;
 #end

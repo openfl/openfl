@@ -46,6 +46,4 @@ extern class URLRequestMethod {
 }
 
 
-#else
-typedef URLRequestMethod = nme.net.URLRequestMethod;
 #end

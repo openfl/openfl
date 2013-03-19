@@ -57,6 +57,4 @@ package flash.media;
 }
 
 
-#else
-typedef SoundChannel = nme.media.SoundChannel;
 #end

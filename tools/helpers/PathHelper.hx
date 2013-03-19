@@ -119,6 +119,8 @@ class PathHelper {
 		
 		for (templatePath in templatePaths) {
 			
+			//Sys.println ("
+			
 			var targetPath = combine (templatePath, path);
 			
 			if (FileSystem.exists (targetPath)) {

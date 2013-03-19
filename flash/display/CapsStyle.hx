@@ -31,6 +31,4 @@ package flash.display;
 }
 
 
-#else
-typedef CapsStyle = nme.display.CapsStyle;
 #end

@@ -63,6 +63,4 @@ extern class Font {
 }
 
 
-#else
-typedef Font = nme.text.Font;
 #end

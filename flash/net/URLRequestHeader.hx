@@ -97,6 +97,4 @@ package flash.net;
 }
 
 
-#else
-typedef URLRequestHeader = nme.net.URLRequestHeader;
 #end

@@ -996,7 +996,7 @@ class CommandLineTools {
 		
 		var arguments = Sys.args ();
 		
-		nme = PathHelper.getHaxelib (new Haxelib ("nme"));
+		nme = PathHelper.getHaxelib (new Haxelib ("pazu"));
 		
 		var lastCharacter = nme.substr ( -1, 1);
 		

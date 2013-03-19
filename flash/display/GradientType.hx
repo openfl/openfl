@@ -22,6 +22,4 @@ package flash.display;
 }
 
 
-#else
-typedef GradientType = nme.display.GradientType;
 #end

@@ -233,6 +233,4 @@ extern class ExternalInterface {
 }
 
 
-#else
-typedef ExternalInterface = nme.external.ExternalInterface;
 #end

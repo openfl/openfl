@@ -77,6 +77,4 @@ package flash.events;
 }
 
 
-#else
-typedef AccelerometerEvent = nme.events.AccelerometerEvent;
 #end

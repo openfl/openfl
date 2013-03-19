@@ -55,6 +55,4 @@ package flash.media;
 }
 
 
-#else
-typedef SoundTransform = nme.media.SoundTransform;
 #end

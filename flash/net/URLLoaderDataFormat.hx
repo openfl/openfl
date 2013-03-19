@@ -25,6 +25,4 @@ package flash.net;
 }
 
 
-#else
-typedef URLLoaderDataFormat = nme.net.URLLoaderDataFormat;
 #end

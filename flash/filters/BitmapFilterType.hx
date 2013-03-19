@@ -25,6 +25,4 @@ package flash.filters;
 }
 
 
-#else
-typedef BitmapFilterType = nme.filters.BitmapFilterType;
 #end

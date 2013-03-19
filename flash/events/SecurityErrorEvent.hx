@@ -55,6 +55,4 @@ extern class SecurityErrorEvent extends ErrorEvent {
 }
 
 
-#else
-typedef SecurityErrorEvent = nme.events.SecurityErrorEvent;
 #end

@@ -6,6 +6,4 @@ package flash.errors;
 }
 
 
-#else
-typedef SecurityError = nme.errors.SecurityError;
 #end

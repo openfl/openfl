@@ -18,6 +18,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsPathWinding = nme.display.GraphicsPathWinding;
 #end

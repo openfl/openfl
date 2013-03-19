@@ -154,6 +154,4 @@ extern class SoundLoaderContext {
 }
 
 
-#else
-typedef SoundLoaderContext = nme.media.SoundLoaderContext;
 #end

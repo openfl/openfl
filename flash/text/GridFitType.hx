@@ -9,6 +9,4 @@ package flash.text;
 }
 
 
-#else
-typedef GridFitType = nme.text.GridFitType;
 #end

@@ -11,6 +11,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsBitmapFill = nme.display.GraphicsBitmapFill;
 #end

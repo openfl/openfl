@@ -21,8 +21,4 @@ extern class JoystickEvent extends Event
 }
 
 
-#elseif (cpp || neko)
-
-typedef JoystickEvent = native.events.JoystickEvent;
-
 #end

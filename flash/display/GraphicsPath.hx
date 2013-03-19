@@ -104,6 +104,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsPath = nme.display.GraphicsPath;
 #end

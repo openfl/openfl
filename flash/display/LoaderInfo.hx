@@ -455,6 +455,4 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 }
 
 
-#else
-typedef LoaderInfo = nme.display.LoaderInfo;
 #end

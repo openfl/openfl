@@ -160,6 +160,4 @@ extern class ColorTransform {
 }
 
 
-#else
-typedef ColorTransform = nme.geom.ColorTransform;
 #end

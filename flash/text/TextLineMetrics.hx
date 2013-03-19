@@ -72,6 +72,4 @@ extern class TextLineMetrics {
 }
 
 
-#else
-typedef TextLineMetrics = nme.text.TextLineMetrics;
 #end

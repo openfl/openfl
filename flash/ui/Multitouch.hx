@@ -103,6 +103,4 @@ package flash.ui;
 }
 
 
-#else
-typedef Multitouch = nme.ui.Multitouch;
 #end

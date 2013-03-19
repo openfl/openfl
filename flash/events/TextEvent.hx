@@ -62,6 +62,4 @@ extern class TextEvent extends Event {
 }
 
 
-#else
-typedef TextEvent = nme.events.TextEvent;
 #end

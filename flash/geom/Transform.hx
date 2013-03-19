@@ -156,6 +156,4 @@ extern class Transform {
 }
 
 
-#else
-typedef Transform = nme.geom.Transform;
 #end

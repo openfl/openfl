@@ -47,6 +47,4 @@ extern class BitmapDataChannel {
 }
 
 
-#else
-typedef BitmapDataChannel = nme.display.BitmapDataChannel;
 #end

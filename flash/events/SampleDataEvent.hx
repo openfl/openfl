@@ -10,6 +10,4 @@ extern class SampleDataEvent extends Event {
 }
 
 
-#else
-typedef SampleDataEvent = nme.events.SampleDataEvent;
 #end

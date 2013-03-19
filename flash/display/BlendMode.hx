@@ -192,6 +192,4 @@ package flash.display;
 }
 
 
-#else
-typedef BlendMode = nme.display.BlendMode;
 #end

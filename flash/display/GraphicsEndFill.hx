@@ -19,6 +19,4 @@ extern class GraphicsEndFill implements IGraphicsData/*  implements IGraphicsFil
 }
 
 
-#else
-typedef GraphicsEndFill = nme.display.GraphicsEndFill;
 #end

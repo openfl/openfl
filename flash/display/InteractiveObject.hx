@@ -1241,6 +1241,4 @@ extern class InteractiveObject extends DisplayObject {
 }
 
 
-#else
-typedef InteractiveObject = nme.display.InteractiveObject;
 #end

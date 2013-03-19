@@ -620,6 +620,4 @@ extern class Event {
 }
 
 
-#else
-typedef Event = nme.events.Event;
 #end

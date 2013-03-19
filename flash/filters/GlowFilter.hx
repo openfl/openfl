@@ -157,6 +157,4 @@ package flash.filters;
 }
 
 
-#else
-typedef GlowFilter = nme.filters.GlowFilter;
 #end

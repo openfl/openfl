@@ -6,6 +6,4 @@ extern interface IBitmapDrawable {
 }
 
 
-#else
-typedef IBitmapDrawable = nme.display.IBitmapDrawable;
 #end

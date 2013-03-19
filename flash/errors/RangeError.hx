@@ -6,6 +6,4 @@ package flash.errors;
 }
 
 
-#else
-typedef RangeError = nme.errors.RangeError;
 #end

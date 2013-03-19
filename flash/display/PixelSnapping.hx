@@ -35,6 +35,4 @@ package flash.display;
 }
 
 
-#else
-typedef PixelSnapping = nme.display.PixelSnapping;
 #end

@@ -955,6 +955,4 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 }
 
 
-#else
-typedef DisplayObject = nme.display.DisplayObject;
 #end

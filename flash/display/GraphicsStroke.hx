@@ -208,6 +208,4 @@ package flash.display;
 }
 
 
-#else
-typedef GraphicsStroke = nme.display.GraphicsStroke;
 #end

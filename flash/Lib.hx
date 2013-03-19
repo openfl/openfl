@@ -72,6 +72,4 @@ class Lib {
 }
 
 
-#else
-typedef Lib = nme.Lib;
 #end

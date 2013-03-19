@@ -50,6 +50,4 @@ package flash.display;
 }
 
 
-#else
-typedef StageAlign = nme.display.StageAlign;
 #end

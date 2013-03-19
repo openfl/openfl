@@ -352,6 +352,4 @@ extern class DisplayObjectContainer extends InteractiveObject {
 }
 
 
-#else
-typedef DisplayObjectContainer = nme.display.DisplayObjectContainer;
 #end

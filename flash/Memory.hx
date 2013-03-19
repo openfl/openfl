@@ -85,6 +85,4 @@ extern class Memory {
 }
 
 
-#else
-typedef Memory = nme.Memory;
 #end

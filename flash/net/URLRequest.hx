@@ -289,6 +289,4 @@ package flash.net;
 }
 
 
-#else
-typedef URLRequest = nme.net.URLRequest;
 #end

@@ -20,6 +20,4 @@ package flash.text;
 }
 
 
-#else
-typedef TextFieldType = nme.text.TextFieldType;
 #end

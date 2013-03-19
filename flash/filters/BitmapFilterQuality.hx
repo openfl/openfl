@@ -25,6 +25,4 @@ extern class BitmapFilterQuality {
 }
 
 
-#else
-typedef BitmapFilterQuality = nme.filters.BitmapFilterQuality;
 #end

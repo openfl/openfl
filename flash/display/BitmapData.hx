@@ -982,6 +982,4 @@ extern class BitmapData implements IBitmapDrawable {
 }
 
 
-#else
-typedef BitmapData = nme.display.BitmapData;
 #end

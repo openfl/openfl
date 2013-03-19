@@ -31,6 +31,4 @@ extern class Shape extends DisplayObject {
 }
 
 
-#else
-typedef Shape = nme.display.Shape;
 #end

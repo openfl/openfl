@@ -34,6 +34,4 @@ package flash.text;
 }
 
 
-#else
-typedef TextFormatAlign = nme.text.TextFormatAlign;
 #end

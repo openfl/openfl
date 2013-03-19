@@ -6,6 +6,4 @@ package flash.errors;
 }
 
 
-#else
-typedef TypeError = nme.errors.TypeError;
 #end

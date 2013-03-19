@@ -14,6 +14,4 @@ package flash.media;
 }
 
 
-#else
-typedef ID3Info = nme.media.ID3Info;
 #end

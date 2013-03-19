@@ -51,6 +51,4 @@ extern class IOErrorEvent extends ErrorEvent {
 }
 
 
-#else
-typedef IOErrorEvent = nme.events.IOErrorEvent;
 #end

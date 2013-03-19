@@ -243,6 +243,4 @@ extern class EventDispatcher implements IEventDispatcher {
 }
 
 
-#else
-typedef EventDispatcher = nme.events.EventDispatcher;
 #end

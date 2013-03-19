@@ -11,6 +11,4 @@ extern interface IEventDispatcher {
 }
 
 
-#else
-typedef IEventDispatcher = nme.events.IEventDispatcher;
 #end

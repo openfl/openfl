@@ -27,6 +27,4 @@ package flash.utils;
 }
 
 
-#else
-typedef CompressionAlgorithm = nme.utils.CompressionAlgorithm;
 #end

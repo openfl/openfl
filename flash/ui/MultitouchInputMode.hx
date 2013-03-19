@@ -27,6 +27,4 @@ package flash.ui;
 }
 
 
-#else
-typedef MultitouchInputMode = nme.ui.MultitouchInputMode;
 #end

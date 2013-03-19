@@ -13,6 +13,4 @@ package flash.events;
 }
 
 
-#else
-typedef EventPhase = nme.events.EventPhase;
 #end

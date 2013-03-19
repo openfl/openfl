@@ -29,6 +29,4 @@ package flash.display;
 }
 
 
-#else
-typedef SpreadMethod = nme.display.SpreadMethod;
 #end

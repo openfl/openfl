@@ -302,6 +302,4 @@ extern class Matrix {
 }
 
 
-#else
-typedef Matrix = nme.geom.Matrix;
 #end

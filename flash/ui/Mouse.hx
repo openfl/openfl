@@ -89,6 +89,4 @@ extern class Mouse {
 }
 
 
-#else
-typedef Mouse = nme.ui.Mouse;
 #end

@@ -6,6 +6,4 @@ extern interface IGraphicsData {
 }
 
 
-#else
-typedef IGraphicsData = nme.display.IGraphicsData;
 #end

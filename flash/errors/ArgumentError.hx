@@ -6,6 +6,4 @@ package flash.errors;
 }
 
 
-#else
-typedef ArgumentError = nme.errors.ArgumentError;
 #end

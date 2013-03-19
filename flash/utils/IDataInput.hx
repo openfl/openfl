@@ -23,6 +23,4 @@ extern interface IDataInput {
 }
 
 
-#else
-typedef IDataInput = nme.utils.IDataInput;
 #end

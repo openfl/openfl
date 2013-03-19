@@ -35,6 +35,4 @@ extern class IllegalOperationError extends Error {
 }
 
 
-#else
-typedef IllegalOperationError = nme.errors.IllegalOperationError;
 #end

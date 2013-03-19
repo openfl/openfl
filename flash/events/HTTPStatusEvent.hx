@@ -101,6 +101,4 @@ extern class HTTPStatusEvent extends Event {
 }
 
 
-#else
-typedef HTTPStatusEvent = nme.events.HTTPStatusEvent;
 #end

@@ -116,6 +116,4 @@ extern class FocusEvent extends Event {
 }
 
 
-#else
-typedef FocusEvent = nme.events.FocusEvent;
 #end

@@ -220,6 +220,4 @@ extern class MovieClip extends Sprite #if !flash_strict  implements Dynamic #end
 }
 
 
-#else
-typedef MovieClip = nme.display.MovieClip;
 #end

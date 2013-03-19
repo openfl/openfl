@@ -51,6 +51,4 @@ extern class TimerEvent extends Event {
 }
 
 
-#else
-typedef TimerEvent = nme.events.TimerEvent;
 #end
