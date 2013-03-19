@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application xmlns="http://ns.adobe.com/air/application/3.3">
+    <id>::APP_PACKAGE::</id>
+    <versionNumber>::APP_VERSION::</versionNumber>
+    <filename>::APP_FILE::</filename>
+    <name>::APP_TITLE::</name>
+    <description>::APP_DESCRIPTION::</description>
+    <!-- <copyright>????</copyright> -->
+    <initialWindow>
+        <title>::APP_TITLE::</title>
+        <content>::APP_FILE::.swf</content>
+        <systemChrome>standard</systemChrome>
+        <transparent>false</transparent>
+        <visible>true</visible>
+        <minimizable>true</minimizable>
+        <maximizable>false</maximizable>
+        <resizable>::WIN_RESIZABLE::</resizable>
+        <!-- <width>::WIN_WIDTH::</width>
+        <height>::WIN_HEIGHT::</height>
+        <minSize>320 240</minSize>
+        <maxSize>1280 960</maxSize> -->
+    </initialWindow> 
+    <installFolder>::APP_COMPANY::/::APP_TITLE::</installFolder>
+    <programMenuFolder>::APP_TITLE::</programMenuFolder>
+    <!-- <icon>
+        <image16x16>icon_16.png</image16x16>
+        <image32x32>icon_32.png</image32x32>
+        <image48x48>icon_48.png</image48x48>
+        <image128x128>icon_128.png</image128x128> 
+    </icon> -->
+    <customUpdateUI>false</customUpdateUI>
+    <allowBrowserInvocation>false</allowBrowserInvocation>
+    <!-- <fileTypes>
+        <fileType>
+            <name>adobe.VideoFile</name>
+            <extension>avf</extension>
+            <description>Adobe Video File</description>
+            <contentType>application/vnd.adobe.video-file</contentType>
+            <icon>
+                <image16x16>icons/avfIcon_16.png</image16x16>
+                <image32x32>icons/avfIcon_32.png</image32x32>
+                <image48x48>icons/avfIcon_48.png</image48x48>
+                <image128x128>icons/avfIcon_128.png</image128x128>
+            </icon>
+        </fileType>
+    </fileTypes> -->
+	<android> 
+	    <manifestAdditions> 
+	        <![CDATA[ 
+	            <manifest> 
+					<uses-permission android:name="android.permission.WAKE_LOCK" />
+					<uses-permission android:name="android.permission.INTERNET" />
+					<uses-permission android:name="android.permission.VIBRATE" />
+					<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	            </manifest> 
+	        ]]> 
+	    </manifestAdditions> 
+	</android>
+</application>

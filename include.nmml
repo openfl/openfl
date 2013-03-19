@@ -4,6 +4,7 @@
 	<haxelib name="nme" unless="flash || display || html5" />
 	<haxelib name="pazu-html5" if="html5" />
 	
+	<template path="tools/command-line" />
 	<template path="templates" />
 	
 </extension>
