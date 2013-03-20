@@ -1,5 +1,5 @@
-import nme.display.Sprite;
-import nme.events.Event;
+import flash.display.Sprite;
+import flash.events.Event;
 
 
 class NMEPreloader extends Sprite
@@ -65,7 +65,7 @@ class NMEPreloader extends Sprite
 			
 		} else {
 			
-			return nme.Lib.current.stage.stageHeight;
+			return flash.Lib.current.stage.stageHeight;
 			
 		}
 	}
@@ -81,7 +81,7 @@ class NMEPreloader extends Sprite
 			
 		} else {
 			
-			return nme.Lib.current.stage.stageWidth;
+			return flash.Lib.current.stage.stageWidth;
 			
 		}
 	}
