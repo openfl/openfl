@@ -2,10 +2,11 @@ package pazu;
 #if !macro
 
 
-import format.display.MovieClip;
+//import format.display.MovieClip;
 import haxe.Unserializer;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
+import flash.display.MovieClip;
 import flash.media.Sound;
 import flash.net.URLRequest;
 import flash.text.Font;
