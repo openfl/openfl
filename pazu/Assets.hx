@@ -591,9 +591,10 @@ class Assets {
 				
 				if (preload != null) {
 					
-					_nmeTextureBuffer.width = Std.int (preload.rect.width);
-					_nmeTextureBuffer.height = Std.int (preload.rect.height);
-					setPixels(preload.rect, preload.getPixels(preload.rect));
+					_nmeTextureBuffer.width = Std.int (preload.width);
+					_nmeTextureBuffer.height = Std.int (preload.height);
+					rect = new flash.geom.Rectangle (0, 0, preload.width, preload.height);
+					setPixels(rect, preload.getPixels(rect));
 					nmeBuildLease();
 					
 				} else {

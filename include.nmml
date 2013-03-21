@@ -2,7 +2,7 @@
 <extension>
 	
 	<haxelib name="nme" unless="flash || display || html5" />
-	<haxelib name="pazu-html5" if="html5" />
+	<haxelib name="pazu-html5" if="html5" unless="display" />
 	
 	<template path="tools/command-line" />
 	<template path="templates" />
