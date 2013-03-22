@@ -1,5 +1,8 @@
 package pazu;
 #if !macro
+#if nme
+typedef Assets = nme.Assets;
+#else
 
 
 //import format.display.MovieClip;
@@ -817,4 +820,5 @@ class Assets {
 }
 
 
+#end
 #end
