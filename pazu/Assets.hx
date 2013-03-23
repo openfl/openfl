@@ -1,8 +1,6 @@
 package pazu;
 #if !macro
-#if nme
-typedef Assets = nme.Assets;
-#else
+#if !nme
 
 
 //import format.display.MovieClip;
@@ -566,6 +564,12 @@ enum LibraryType {
 
 
 #else
+import nme.Assets;
+typedef Assets = nme.Assets;
+typedef AssetType = nme.AssetType;
+typedef LibraryType = nme.LibraryType;
+#end
+#else
 
 
 import haxe.io.Bytes;
@@ -820,5 +824,4 @@ class Assets {
 }
 
 
-#end
 #end
