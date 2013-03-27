@@ -1,6 +1,5 @@
 package pazu;
 #if !macro
-#if !nme
 
 
 //import format.display.MovieClip;
@@ -564,12 +563,6 @@ enum LibraryType {
 
 
 #else
-import nme.Assets;
-typedef Assets = nme.Assets;
-typedef AssetType = nme.AssetType;
-typedef LibraryType = nme.LibraryType;
-#end
-#else
 
 
 import haxe.io.Bytes;
@@ -715,77 +708,66 @@ class Assets {
 	
 	macro public static function embedFont ():Array<Field> {
 		
-		#if html5
-		
 		var fields = null;
 		
-		//var classType = Context.getLocalClass().get();
-		//var metaData = classType.meta.get();
-		//var position = Context.currentPos();
-		//var fields = Context.getBuildFields();
-		//
-		//var path = "";
-		//var glyphs = "32-255";
-		//
-		//for (meta in metaData) {
-			//
-			//if (meta.name == ":font") {
-				//
-				//if (meta.params.length > 0) {
-					//
-					//switch (meta.params[0].expr) {
-						//
-						//case EConst(CString(filePath)):
-							//
-							//var path = Context.resolvePath (filePath);
-							//
-						//default:
-						//
-					//}
-					//
-				//}
-				//
-			//}
-			//
-		//}
-		//
-		//if (path != null && path != "") {
-			//
-			//
-			//var bytes = File.getBytes (path);
-							//var resourceName = "NME_" + metaName + "_" + (classType.pack.length > 0 ? classType.pack.join ("_") + "_" : "") + classType.name;
-							//
-							//Context.addResource (resourceName, bytes);
-							//
-							//var fieldValue = { pos: position, expr: EConst(CString(resourceName)) };
-							//fields.push ({ kind: FVar(macro :String, fieldValue), name: "resourceName", access: [ APrivate, AStatic ], pos: position });
-							//
-							//return fields;
-							//
-							//var sourcePath = font.sourcePath;
-		//
-		//if (!FileSystem.exists (FileSystem.fullPath (sourcePath) + ".hash")) {
-			//
-			//ProcessHelper.runCommand (Path.directory (sourcePath), "neko", [ PathHelper.findTemplate (project.templatePaths, "html5/hxswfml.n"), "ttf2hash", Path.withoutDirectory (sourcePath), "-glyphs", font.glyphs ]);
-			//
-		//}
-		//
-		//return "-resource " + FileSystem.fullPath (sourcePath) + ".hash@NME_" + font.flatName;
-		//
-			//
-		//}
+		var classType = Context.getLocalClass().get();
+		var metaData = classType.meta.get();
+		var position = Context.currentPos();
+		var fields = Context.getBuildFields();
 		
-		#else
+		var path = "";
+		var glyphs = "32-255";
 		
-		var fields = embedData (":font");
-		
-		if (fields != null) {
+		for (meta in metaData) {
 			
-			
+			if (meta.name == ":font") {
+				
+				if (meta.params.length > 0) {
+					
+					switch (meta.params[0].expr) {
+						
+						case EConst(CString(filePath)):
+							
+							path = Context.resolvePath (filePath);
+							
+						default:
+						
+					}
+					
+				}
+				
+			}
 			
 		}
 		
-		#end
+		if (path != null && path != "") {
+			
+			#if html5
+			Sys.command ("haxelib", [ "run", "pazu", "generate", "-font-hash", sys.FileSystem.fullPath(path) ]);
+			path += ".hash";
+			#end
+			
+			var bytes = File.getBytes (path);
+			var resourceName = "NME_font_" + (classType.pack.length > 0 ? classType.pack.join ("_") + "_" : "") + classType.name;
+			
+			Context.addResource (resourceName, bytes);
+			
+			var fieldValue = { pos: position, expr: EConst(CString(resourceName)) };
+			fields.push ({ kind: FVar(macro :String, fieldValue), name: "resourceName", access: [ APublic, AStatic ], pos: position });
+			
+			//var constructor = macro { 
+				//
+				//super();
+				//
+				//fontName = resourceName;
+				//
+			//};
+			//
+			//fields.push ({ name: "new", access: [ APublic ], kind: FFun({ args: [], expr: constructor, params: [], ret: null }), pos: Context.currentPos() });
+			
+			return fields;
+			
+		}
 		
 		return fields;
 		
@@ -798,7 +780,7 @@ class Assets {
 		
 		if (fields != null) {
 			
-			#if (!neko && !html5) // CFFILoader.h(248) : NOT Implemented:api_buffer_data
+			#if (!html5) // CFFILoader.h(248) : NOT Implemented:api_buffer_data
 			
 			var constructor = macro { 
 				
