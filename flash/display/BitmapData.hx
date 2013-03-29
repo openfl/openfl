@@ -782,7 +782,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                       values. The alpha channel value is not affected if
 	 *                       this value is set to <code>true</code>.
 	 */
-	//function perlinNoise(baseX : Float, baseY : Float, numOctaves : UInt, randomSeed : Int, stitch : Bool, fractalNoise : Bool, channelOptions : UInt = 7, grayScale : Bool = false, ?offsets : Array<flash.geom.Point>) : Void;
+	function perlinNoise(baseX : Float, baseY : Float, numOctaves : UInt, randomSeed : Int, stitch : Bool, fractalNoise : Bool, channelOptions : UInt = 7, grayScale : Bool = false, ?offsets : Array<flash.geom.Point>) : Void;
 
 	/**
 	 * Performs a pixel dissolve either from a source image to a destination
