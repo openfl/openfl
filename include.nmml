@@ -3,8 +3,8 @@
 	
 	<haxelib name="pazu-native" if="native" unless="display" />
 	<haxelib name="pazu-html5" if="html5" unless="display" />
+	<haxelib name="pazu-tools" unless="display" />
 	
-	<template path="tools/command-line" />
 	<template path="templates" />
 	
 </extension>
