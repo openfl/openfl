@@ -734,7 +734,7 @@ class RunScript {
 	
 	public static function main () {
 		
-		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("pazu"));
+		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("pazu-native"));
 		
 		if (new EReg ("window", "i").match (Sys.systemName ())) {
 			
