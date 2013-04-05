@@ -95,27 +95,23 @@ class RunScript {
 					if (isWindows) {
 						
 						buildLibrary ("windows", flags, defines, path);
-						buildLibrary ("android", flags, defines, path);
-						buildLibrary ("blackberry", flags, defines, path);
-						buildLibrary ("webos", flags, defines, path);
 						
 					} else if (isLinux) {
 						
 						buildLibrary ("linux", flags, defines, path);
 						//buildLibrary ("linux", flags, defines.concat ([ "rpi" ]));
-						buildLibrary ("android", flags, defines, path);
-						buildLibrary ("blackberry", flags, defines, path);
-						buildLibrary ("webos", flags, defines, path);
 						
 					} else if (isMac) {
 						
 						buildLibrary ("mac", flags, defines, path);
 						buildLibrary ("ios", flags, defines, path);
-						buildLibrary ("android", flags, defines, path);
-						buildLibrary ("blackberry", flags, defines, path);
-						buildLibrary ("webos", flags, defines, path);
 						
 					}
+					
+					buildLibrary ("android", flags, defines, path);
+					buildLibrary ("blackberry", flags, defines, path);
+					buildLibrary ("emscripten", flags, defines, path);
+					buildLibrary ("webos", flags, defines, path);
 					
 					buildDocumentation ();
 					
@@ -210,6 +206,20 @@ class RunScript {
 					
 					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dblackberry", "-Dfulldebug" ].concat (defines));
 					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dblackberry", "-Dsimulator", "-Dfulldebug" ].concat (defines));
+					
+				}
+			
+			case "emscripten":
+				
+				if (!flags.exists ("debug")) {
+					
+					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Demscripten" ].concat (defines));
+					
+				}
+				
+				if (!flags.exists ("release")) {
+					
+					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Demscripten", "-Dfulldebug" ].concat (defines));
 					
 				}
 			
