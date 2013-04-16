@@ -766,8 +766,7 @@ class RunScript {
 			
 		}
 		
-		var args:Array <String> = Sys.args ();
-		
+		var args = Sys.args ();
 		var command = args[0];
 		
 		if (command == "rebuild" || command == "release") {
@@ -894,15 +893,52 @@ class RunScript {
 			
 		} else {
 			
-			//if (FileSystem.exists (nmeDirectory + "/command-line.n")) {
-				//
-				//args.unshift ("command-line.n");
-				//
-			//} else {
-				//
-				//args.unshift (PathHelper.getHaxelib (new Haxelib ("nmedev")) + "/command-line.n");
-				//
-			//}
+			var rebuild = false;
+			var clean = false;
+			var debug = false;
+			
+			for (arg in args) {
+				
+				if (arg == "-rebuild") {
+					
+					rebuild = true;
+					
+				} else if (arg == "-clean") {
+					
+					clean = true;
+					
+				} else if (arg == "-d" || arg == "-debug") {
+					
+					debug = true;
+					
+				}
+				
+			}
+			
+			if (rebuild) {
+				
+				var targets = [ "tools", args[1] ];
+				var flags = new Map <String, String> ();
+				
+				if (clean) {
+					
+					targets.unshift ("clean");
+					
+				}
+				
+				if (debug) {
+					
+					flags.set ("debug", "");
+					
+				} else {
+					
+					flags.set ("release", "");
+					
+				}
+				
+				build ("", targets, flags);
+				
+			}
 			
 			var workingDirectory = args.pop ();
 			var args = [ "run", "pazu-tools"].concat (args);
