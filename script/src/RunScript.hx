@@ -337,25 +337,29 @@ class RunScript {
 				
 				//mkdir (nmeDirectory + "/ndll/Windows");
 				
-				if (Sys.environment ().exists ("VS110COMNTOOLS") && Sys.environment ().exists ("VS100COMNTOOLS")) {
+				if (!flags.exists ("winrt")) {
 					
-					Sys.putEnv ("HXCPP_MSVC", Sys.getEnv ("VS100COMNTOOLS"));
+					if (Sys.environment ().exists ("VS110COMNTOOLS") && Sys.environment ().exists ("VS100COMNTOOLS")) {
+						
+						Sys.putEnv ("HXCPP_MSVC", Sys.getEnv ("VS100COMNTOOLS"));
+						
+					}
+					
+					if (!flags.exists ("debug")) {
+						
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
+						
+					}
+					
+					if (!flags.exists ("release")) {
+						
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
+						
+					}
 					
 				}
 				
-				if (!flags.exists ("debug")) {
-					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
-					
-				}
-				
-				if (!flags.exists ("release")) {
-					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
-					
-				}
-				
-				if (Sys.environment ().exists ("VS110COMNTOOLS")) {
+				if (Sys.environment ().exists ("VS110COMNTOOLS") && !flags.exists ("win32")) {
 					
 					Sys.putEnv ("HXCPP_MSVC", Sys.getEnv ("VS110COMNTOOLS"));
 					
@@ -917,8 +921,15 @@ class RunScript {
 			
 			if (rebuild) {
 				
-				var targets = [ "tools", args[1] ];
+				var target = args[1];
+				var targets = [ "tools", target ];
 				var flags = new Map <String, String> ();
+				
+				if (target == "windows") {
+					
+					flags.set ("win32", "");
+					
+				}
 				
 				if (clean) {
 					
