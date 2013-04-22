@@ -960,7 +960,7 @@ class RunScript {
 			}
 			
 			var workingDirectory = args.pop ();
-			var args = [ "run", "pazu-tools", "-DPAZU_COMPATIBILITY" ].concat (args);
+			var args = [ "run", "pazu-tools", "-Dpazu" ].concat (args);
 			
 			Sys.exit (runCommand (workingDirectory, "haxelib", args));
 			
