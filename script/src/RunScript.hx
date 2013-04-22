@@ -7,6 +7,7 @@ import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
 import helpers.PathHelper;
+import helpers.PlatformHelper;
 
 
 class RunScript {
@@ -922,6 +923,13 @@ class RunScript {
 			if (rebuild) {
 				
 				var target = args[1];
+				
+				if (target == "cpp" || target == "neko") {
+					
+					target = Std.string (PlatformHelper.hostPlatform).toLowerCase ();
+					
+				}
+				
 				var targets = [ "tools", target ];
 				var flags = new Map <String, String> ();
 				
@@ -952,7 +960,7 @@ class RunScript {
 			}
 			
 			var workingDirectory = args.pop ();
-			var args = [ "run", "pazu-tools"].concat (args);
+			var args = [ "run", "pazu-tools", "-DPAZU_COMPATIBILITY" ].concat (args);
 			
 			Sys.exit (runCommand (workingDirectory, "haxelib", args));
 			
