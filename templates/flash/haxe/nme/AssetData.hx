@@ -18,9 +18,9 @@ class AssetData {
 		
 		if (!initialized) {
 			
-			::if (assets != null)::::foreach assets::className.set ("::id::", nme.NME_::flatName::);
+			::if (assets != null)::::foreach assets::::if (embed)::className.set ("::id::", nme.NME_::flatName::);
 			type.set ("::id::", Reflect.field (AssetType, "::type::".toUpperCase ()));
-			::end::::end::
+			::end::::end::::end::
 			::if (libraries != null)::::foreach libraries::library.set ("::name::", Reflect.field (LibraryType, "::type::".toUpperCase ()));
 			::end::::end::
 			initialized = true;
@@ -33,5 +33,5 @@ class AssetData {
 }
 
 
-::foreach assets::::if (type == "image")::class NME_::flatName:: extends flash.display.BitmapData { public function new () { super (0, 0); } }::else::class NME_::flatName:: extends ::flashClass:: { }::end::
+::foreach assets::::if (embed)::::if (type == "image")::class NME_::flatName:: extends flash.display.BitmapData { public function new () { super (0, 0); } }::else::class NME_::flatName:: extends ::flashClass:: { }::end::::end::
 ::end::

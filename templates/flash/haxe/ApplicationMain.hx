@@ -1,10 +1,10 @@
 #if (!macro || !haxe3)
-#if nme
+#if (nme || pazu)
 
 import ::APP_MAIN_PACKAGE::::APP_MAIN_CLASS::;
 import flash.display.DisplayObject;
-import nme.Assets;
-import nme.events.Event;
+import pazu.Assets;
+import flash.events.Event;
 
 class ApplicationMain {
 
@@ -13,22 +13,22 @@ class ApplicationMain {
 	public static function main() {
 		var call_real = true;
 		
-		nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
+		//nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
 		
 		::if (PRELOADER_NAME!="")::
-		var loaded:Int = nme.Lib.current.loaderInfo.bytesLoaded;
-		var total:Int = nme.Lib.current.loaderInfo.bytesTotal;
+		var loaded:Int = flash.Lib.current.loaderInfo.bytesLoaded;
+		var total:Int = flash.Lib.current.loaderInfo.bytesTotal;
 		
-		nme.Lib.current.stage.align = nme.display.StageAlign.TOP_LEFT;
-		nme.Lib.current.stage.scaleMode = nme.display.StageScaleMode.NO_SCALE;
+		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
+		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
 		
 		if (loaded < total || true) /* Always wait for event */ {
 			call_real = false;
 			mPreloader = new ::PRELOADER_NAME::();
-			nme.Lib.current.addChild(mPreloader);
+			flash.Lib.current.addChild(mPreloader);
 			mPreloader.onInit();
 			mPreloader.onUpdate(loaded,total);
-			nme.Lib.current.addEventListener(nme.events.Event.ENTER_FRAME, onEnter);
+			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, onEnter);
 		}
 		::end::
 		
@@ -53,6 +53,7 @@ class ApplicationMain {
 
 	private static function begin() {
 		var hasMain = false;
+		
 		for (methodName in Type.getClassFields(::APP_MAIN::))
 		{
 			if (methodName == "main")
@@ -61,27 +62,27 @@ class ApplicationMain {
 				break;
 			}
 		}
-
+		
 		if (hasMain)
 		{
-			Reflect.callMethod (::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
+			Reflect.callMethod(::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
 		}
 		else
 		{
-			var instance = Type.createInstance(::APP_MAIN::, []);
-			if (Std.is(instance, nme.display.DisplayObject)) {
-				nme.Lib.current.addChild(cast instance);
+			var instance = Type.createInstance(DocumentClass, []);
+			if (Std.is(instance, flash.display.DisplayObject)) {
+				flash.Lib.current.addChild(cast instance);
 			}
 		}
 	}
 
 	static function onEnter(_) {
-		var loaded = nme.Lib.current.loaderInfo.bytesLoaded;
-		var total = nme.Lib.current.loaderInfo.bytesTotal;
+		var loaded = flash.Lib.current.loaderInfo.bytesLoaded;
+		var total = flash.Lib.current.loaderInfo.bytesTotal;
 		mPreloader.onUpdate(loaded,total);
 		
 		if (loaded >= total) {
-			nme.Lib.current.removeEventListener(nme.events.Event.ENTER_FRAME, onEnter);
+			flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, onEnter);
 			mPreloader.addEventListener (Event.COMPLETE, preloader_onComplete);
 			mPreloader.onLoaded();
 		}
@@ -89,7 +90,7 @@ class ApplicationMain {
 
 	private static function preloader_onComplete(event:Event):Void {
 		mPreloader.removeEventListener (Event.COMPLETE, preloader_onComplete);
-		nme.Lib.current.removeChild(mPreloader);
+		flash.Lib.current.removeChild(mPreloader);
 		mPreloader = null;
 		begin();
 	}
