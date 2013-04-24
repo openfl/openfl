@@ -536,7 +536,7 @@ extern class Stage extends DisplayObjectContainer {
 	 * focus or invoking the <code>requestSoftKeyboard()</code> method.</p>
 	 */
 	@:require(flash11) var softKeyboardRect(default,null) : flash.geom.Rectangle;
-	//@:require(flash11) var stage3Ds(default,null) : flash.Vector<Stage3D>;
+	@:require(flash11) var stage3Ds(default,null) : flash.Vector<Stage3D>;
 
 	/**
 	 * Specifies whether or not objects display a glowing border when they have
