@@ -2,6 +2,7 @@ import haxe.io.Eof;
 import haxe.Http;
 import haxe.io.Path;
 import neko.Lib;
+import project.Architecture;
 import project.Haxelib;
 import sys.io.File;
 import sys.io.Process;
@@ -254,13 +255,13 @@ class RunScript {
 						
 						if (!flags.exists ("debug")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64" ].concat (defines), false);
+							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64" ].concat (defines));
 							
 						}
 						
 						if (!flags.exists ("release")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines), false);
+							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
 							
 						}
 						
@@ -272,13 +273,13 @@ class RunScript {
 						
 						if (!flags.exists ("debug")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines), false);
+							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
 							
 						}
 						
 						if (!flags.exists ("release")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines), false);
+							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
 							
 						}
 						
@@ -290,13 +291,13 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Drpi" ].concat (defines), false);
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Drpi" ].concat (defines));
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Drpi", "-Dfulldebug" ].concat (defines), false);
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Drpi", "-Dfulldebug" ].concat (defines));
 						
 					}
 					
@@ -898,29 +899,27 @@ class RunScript {
 			
 		} else {
 			
-			var rebuild = false;
-			var clean = false;
-			var debug = false;
+			var flags = new Map <String, String> ();
 			
 			for (arg in args) {
 				
-				if (arg == "-rebuild") {
+				switch (arg.substr (1)) {
 					
-					rebuild = true;
+					case "rebuild", "clean", "32", "64":
+						
+						flags.set (arg.substr (1), "");
 					
-				} else if (arg == "-clean") {
+					case "d", "debug":
+						
+						flags.set ("debug", "");
 					
-					clean = true;
-					
-				} else if (arg == "-d" || arg == "-debug") {
-					
-					debug = true;
+					default:
 					
 				}
 				
 			}
 			
-			if (rebuild) {
+			if (flags.exists ("rebuild")) {
 				
 				var target = args[1];
 				
@@ -930,32 +929,35 @@ class RunScript {
 					
 				}
 				
-				var targets = [ "tools", target ];
-				var flags = new Map <String, String> ();
-				
 				if (target == "windows") {
 					
 					flags.set ("win32", "");
 					
+				} else if (target == "linux") {
+					
+					if (!flags.exists ("64") && !flags.exists ("32")) {
+						
+						if (PlatformHelper.hostArchitecture == Architecture.X64) {
+							
+							flags.set ("64", "");
+							
+						} else {
+							
+							flags.set ("32", "");
+							
+						}
+						
+					}
+					
 				}
 				
-				if (clean) {
-					
-					targets.unshift ("clean");
-					
-				}
-				
-				if (debug) {
-					
-					flags.set ("debug", "");
-					
-				} else {
+				if (!flags.exists ("debug")) {
 					
 					flags.set ("release", "");
 					
 				}
 				
-				build ("", targets, flags);
+				build ("", [ "tools", target ], flags);
 				
 			}
 			
