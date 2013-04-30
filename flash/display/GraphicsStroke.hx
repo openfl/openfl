@@ -33,7 +33,7 @@ package flash.display;
 	 * Specifies the instance containing data for filling a stroke. An
 	 * IGraphicsFill instance can represent a series of fill commands.
 	 */
-	//var fill : IGraphicsFill;
+	var fill : IGraphicsFill;
 
 	/**
 	 * Specifies the type of joint appearance used at angles. Valid values are:
@@ -204,7 +204,7 @@ package flash.display;
 	 *                     <code>miterLimit</code> parameter to limit the length
 	 *                     of the miter.</p>
 	 */
-	function new(thickness : Float = 0./*NaN*/, pixelHinting : Bool = false, ?scaleMode : LineScaleMode, ?caps : CapsStyle, ?joints : JointStyle, miterLimit : Float = 3/*, ?fill : IGraphicsFill*/) : Void;
+	function new(thickness : Float = 0./*NaN*/, pixelHinting : Bool = false, ?scaleMode : LineScaleMode, ?caps : CapsStyle, ?joints : JointStyle, miterLimit : Float = 3, ?fill : IGraphicsFill) : Void;
 }
 
 

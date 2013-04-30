@@ -324,7 +324,7 @@ extern class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the <code>contentLoaderInfo</code>
 	 *                      object when a loaded object is removed.
 	 */
-	function load(request : flash.net.URLRequest) : Void;
+	function load(request : flash.net.URLRequest, context : flash.system.LoaderContext = null) : Void;
 
 	/**
 	 * Loads from binary data stored in a ByteArray object.
@@ -392,7 +392,7 @@ extern class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the <code>contentLoaderInfo</code>
 	 *                      object when a loaded object is removed.
 	 */
-	function loadBytes(bytes : flash.utils.ByteArray) : Void;
+	function loadBytes(bytes : flash.utils.ByteArray, context : flash.system.LoaderContext = null) : Void;
 
 	/**
 	 * Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an
