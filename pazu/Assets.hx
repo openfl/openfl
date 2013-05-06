@@ -584,7 +584,7 @@ class Assets {
 			
 			var constructor = macro { 
 				
-				super(0, 0);
+				super(width, height, transparent, fillRGBA);
 				
 				#if html5
 				

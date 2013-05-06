@@ -921,11 +921,25 @@ class RunScript {
 			
 			if (flags.exists ("rebuild")) {
 				
-				var target = args[1];
+				var target = "";
 				
-				if (target == "cpp" || target == "neko") {
+				for (i in 1...args.length) {
 					
-					target = Std.string (PlatformHelper.hostPlatform).toLowerCase ();
+					switch (args[i]) {
+						
+						case "cpp", "neko":
+							
+							target = Std.string (PlatformHelper.hostPlatform).toLowerCase ();
+							continue;
+							
+						case "windows", "mac", "linux", "emscripten", "ios", "android", "blackberry", "webos":
+							
+							target = args[i];
+							continue;
+							
+						default:
+						
+					}
 					
 				}
 				
@@ -950,7 +964,7 @@ class RunScript {
 					}
 					
 				}
-				
+								
 				if (!flags.exists ("debug")) {
 					
 					flags.set ("release", "");
