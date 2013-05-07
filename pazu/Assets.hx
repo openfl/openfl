@@ -12,7 +12,7 @@ import flash.net.URLRequest;
 import flash.text.Font;
 import flash.utils.ByteArray;
 
-#if (nme_install_tool && !display)
+#if (tools && !display)
 import nme.AssetData;
 #end
 
@@ -62,7 +62,7 @@ class Assets {
 		
 		if (!initialized) {
 			
-			#if (nme_install_tool && !display)
+			#if (tools && !display)
 			
 			AssetData.initialize();
 			
@@ -86,7 +86,7 @@ class Assets {
 		
 		initialize();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		if (AssetData.type.exists(id) && AssetData.type.get(id) == IMAGE) {
 			
@@ -198,7 +198,7 @@ class Assets {
 		
 		initialize();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		if (AssetData.type.exists(id)) {
 			
@@ -255,7 +255,7 @@ class Assets {
 		
 		initialize();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		if (AssetData.type.exists(id) && AssetData.type.get(id) == FONT) {
 			
@@ -292,7 +292,7 @@ class Assets {
 		
 		initialize();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		var libraryName = id.substr(0, id.indexOf(":"));
 		var symbolName = id.substr(id.indexOf(":") + 1);
@@ -364,7 +364,7 @@ class Assets {
 		
 		initialize();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		if (AssetData.type.exists(id)) {
 			
@@ -473,7 +473,7 @@ class Assets {
 		
 		var ids = [];
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		for (key in AssetData.type.keys ()) {
 			
@@ -492,7 +492,7 @@ class Assets {
 		
 		initialize ();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		return AssetData.library;
 		
@@ -509,7 +509,7 @@ class Assets {
 		
 		initialize ();
 		
-		#if ((nme_install_tool && !display) && !flash)
+		#if ((tools && !display) && !flash)
 		
 		return AssetData.path;
 		
@@ -526,7 +526,7 @@ class Assets {
 		
 		initialize ();
 		
-		#if (nme_install_tool && !display)
+		#if (tools && !display)
 		
 		return AssetData.type;
 		
