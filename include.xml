@@ -3,7 +3,10 @@
 	
 	<haxelib name="pazu-native" if="native" unless="display" />
 	<haxelib name="pazu-html5" if="html5" unless="display" />
-	<haxelib name="pazu-tools" unless="display" />
+	
+	<include haxelib="pazu-native" if="display native" />
+	<include haxelib="pazu-html5" if="display html5" />
+	<include haxelib="pazu-tools" />
 	
 	<template path="templates" />
 	
