@@ -1,5 +1,5 @@
-package flash.events;
-#if (flash || display)
+package pazu.events;
+#if (display)
 
 
 extern class SystemEvent extends Event {
