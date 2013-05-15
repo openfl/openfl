@@ -616,8 +616,8 @@ class Assets {
 				
 				#else
 				
-				var byteArray = flash.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
-				nmeLoadFromBytes(byteArray);
+				var byteArray = flash.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
+				__loadFromBytes (byteArray);
 				
 				#end
 				
@@ -692,7 +692,7 @@ class Assets {
 				
 				super();
 				
-				nmeFromBytes (haxe.Resource.getBytes(resourceName));
+				__fromBytes (haxe.Resource.getBytes (resourceName));
 				
 			};
 			
