@@ -692,7 +692,11 @@ class Assets {
 				
 				super();
 				
+				#if html5
+				nmeFromBytes (haxe.Resource.getBytes (resourceName));
+				#else
 				__fromBytes (haxe.Resource.getBytes (resourceName));
+				#end
 				
 			};
 			
