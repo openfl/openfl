@@ -964,7 +964,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * @throws TypeError     The sourceBitmapData, sourceRect destPoint or
 	 *                       operation are null.
 	 */
-	//function threshold(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, operation : String, threshold : Int, color : UInt = 0, mask : UInt = 0xFFFFFFFF, copySource : Bool = false) : UInt;
+	function threshold(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, operation : String, threshold : Int, color : UInt = 0, mask : UInt = 0xFFFFFFFF, copySource : Bool = false) : UInt;
 
 	/**
 	 * Unlocks an image so that any objects that reference the BitmapData object,
