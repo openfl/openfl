@@ -83,7 +83,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *   <li><code>new MovieClip()</code></li>
 	 * </ul>
 	 */
-	function new() : Void;
+	private function new() : Void;
 
 	/**
 	 * Adds a child DisplayObject instance to this DisplayObjectContainer
