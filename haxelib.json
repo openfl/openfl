@@ -7,11 +7,5 @@
 	"version": "1.0.0-rc.1",
 	"releasenote": "Initial release",
 	"contributors": [ "singmajesty" ],
-	"dependencies": {
-		"openfl-tools": "",
-		"openfl-native": "",
-		"openfl-html5": "",
-		"openfl-samples": "",
-		"openfl-compatibility": ""
-	}
+	"dependencies": {}
 }
