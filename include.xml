@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
-	<haxelib name="pazu-native" if="native" unless="display" />
-	<haxelib name="pazu-html5" if="html5" unless="display" />
+	<haxelib name="openfl-native" if="native" unless="display" />
+	<haxelib name="openfl-html5" if="html5" unless="display" />
 	
-	<include haxelib="pazu-native" if="display native" />
-	<include haxelib="pazu-html5" if="display html5" />
-	<include haxelib="pazu-tools" />
+	<include haxelib="openfl-native" if="display native" />
+	<include haxelib="openfl-html5" if="display html5" />
+	<include haxelib="openfl-tools" />
 	
 	<template path="templates" />
 	

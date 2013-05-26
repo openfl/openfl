@@ -1,4 +1,4 @@
-package pazu.events;
+package openfl.events;
 #if (display)
 
 

@@ -18,8 +18,8 @@ class RunScript {
 	private static var isMac:Bool;
 	private static var isWindows:Bool;
 	private static var nmeDirectory:String;
-	private static var pazuDirectory:String;
-	private static var pazuNativeDirectory:String;
+	private static var openFLDirectory:String;
+	private static var openFLNativeDirectory:String;
 	private static var nmeFilters:Array <String> = [ "obj", ".git", ".gitignore", ".svn", ".DS_Store", "all_objs", "Export", "tools", "project" ];
 	
 	
@@ -67,7 +67,7 @@ class RunScript {
 			
 			if (target == "tools") {
 				
-				runCommand (PathHelper.getHaxelib (new Haxelib("pazu-tools")), "haxe", [ "build.hxml" ]);
+				runCommand (PathHelper.getHaxelib (new Haxelib("openfl-tools")), "haxe", [ "build.hxml" ]);
 				
 			} else if (target == "clean") {
 				
@@ -510,10 +510,10 @@ class RunScript {
 		var nmeVersion = getVersion ();
 		var result = nmeVersion + "-r0";
 		
-		if (FileSystem.exists (pazuNativeDirectory + "/.git")) {
+		if (FileSystem.exists (openFLNativeDirectory + "/.git")) {
 			
 			var cacheCwd = Sys.getCwd ();
-			Sys.setCwd (pazuNativeDirectory);
+			Sys.setCwd (openFLNativeDirectory);
 			
 			var proc = new Process ("git", [ "describe", "--tags" ]);
 			
@@ -527,10 +527,10 @@ class RunScript {
 			proc.close();
 			Sys.setCwd (cacheCwd);
 			
-		} else if (FileSystem.exists (pazuNativeDirectory + "/.svn")) {
+		} else if (FileSystem.exists (openFLNativeDirectory + "/.svn")) {
 			
 			var cacheCwd = Sys.getCwd ();
-			Sys.setCwd (pazuNativeDirectory);
+			Sys.setCwd (openFLNativeDirectory);
 			
 			var proc = new Process ("svn", [ "info" ]);
 			
@@ -564,10 +564,10 @@ class RunScript {
 	}
 	
 	
-	private static function getVersion (library:String = "pazu-native", haxelibFormat:Bool = false):String {
-		var libraryPath = pazuNativeDirectory;
+	private static function getVersion (library:String = "openfl-native", haxelibFormat:Bool = false):String {
+		var libraryPath = openFLNativeDirectory;
 		
-		if (library != "pazu-native") {
+		if (library != "openfl-native") {
 			
 			libraryPath = PathHelper.getHaxelib (new Haxelib(library));
 			
@@ -783,8 +783,8 @@ class RunScript {
 	public static function main () {
 		
 		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("nme"));
-		pazuDirectory = PathHelper.getHaxelib (new Haxelib ("pazu"));
-		pazuNativeDirectory = PathHelper.getHaxelib (new Haxelib ("pazu-native"));
+		openFLDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"));
+		openFLNativeDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-native"));
 		
 		if (new EReg ("window", "i").match (Sys.systemName ())) {
 			
@@ -1010,7 +1010,7 @@ class RunScript {
 			}
 			
 			var workingDirectory = args.pop ();
-			var args = [ "run", "pazu-tools", "-Dpazu" ].concat (args);
+			var args = [ "run", "openfl-tools", "-Dopenfl" ].concat (args);
 			
 			Sys.exit (runCommand (workingDirectory, "haxelib", args));
 			
@@ -1095,35 +1095,35 @@ class RunScript {
 					
 					if (isWindows) {
 						
-						runCommand (pazuDirectory, "script\\upload-build.bat", [ user, password, "Windows/nme.ndll" ]);
-						runCommand (pazuDirectory, "script\\upload-build.bat", [ user, password, "Windows/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "Windows/nme.ndll" ]);
+						runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "Windows/nme-debug.ndll" ]);
 						
 						if (Sys.environment ().exists ("VS110COMNTOOLS")) {
 							
 							//runCommand (nmeDirectory, "tools\\run-script\\upload-build.bat", [ user, password, "WinRTx64/nme.ndll" ]);
 							//runCommand (nmeDirectory, "tools\\run-script\\upload-build.bat", [ user, password, "WinRTx64/nme-debug.ndll" ]);
-							runCommand (pazuDirectory, "script\\upload-build.bat", [ user, password, "WinRTx86/nme.ndll" ]);
-							runCommand (pazuDirectory, "script\\upload-build.bat", [ user, password, "WinRTx86/nme-debug.ndll" ]);
+							runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "WinRTx86/nme.ndll" ]);
+							runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "WinRTx86/nme-debug.ndll" ]);
 							
 						}
 						
 					} else if (isLinux) {
 						
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "Linux/nme.ndll" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "Linux/nme-debug.ndll" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "Linux64/nme.ndll" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "Linux64/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux/nme.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux64/nme.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux64/nme-debug.ndll" ]);
 						
 					} else if (isMac) {
 						
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "Mac/nme.ndll" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "Mac/nme-debug.ndll" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphoneos.a" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphoneos-v7.a" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphonesim.a" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphoneos.a" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphoneos-v7.a" ]);
-						runCommand (pazuDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphonesim.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Mac/nme.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Mac/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphoneos.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphoneos-v7.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphonesim.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphoneos.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphoneos-v7.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphonesim.a" ]);
 						
 					}
 				
@@ -1131,56 +1131,56 @@ class RunScript {
 					
 					if (!isWindows) {
 						
-						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme.ndll", pazuNativeDirectory + "/ndll/Windows/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme-debug.ndll", pazuNativeDirectory + "/ndll/Windows/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme.ndll", openFLNativeDirectory + "/ndll/Windows/nme.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme-debug.ndll", openFLNativeDirectory + "/ndll/Windows/nme-debug.ndll");
 						//downloadFile ("http://www.nme.io/builds/ndll/WinRTx64/nme.ndll", nmeDirectory + "/ndll/WinRTx64/nme.ndll");
 						//downloadFile ("http://www.nme.io/builds/ndll/WinRTx64/nme-debug.ndll", nmeDirectory + "/ndll/WinRTx64/nme-debug.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme.ndll", pazuNativeDirectory + "/ndll/WinRTx86/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme-debug.ndll", pazuNativeDirectory + "/ndll/WinRTx86/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme.ndll", openFLNativeDirectory + "/ndll/WinRTx86/nme.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme-debug.ndll", openFLNativeDirectory + "/ndll/WinRTx86/nme-debug.ndll");
 						
 					}
 					
 					if (!isLinux) {
 						
-						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme.ndll", pazuNativeDirectory + "/ndll/Linux/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme-debug.ndll", pazuNativeDirectory + "/ndll/Linux/nme-debug.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme.ndll", pazuNativeDirectory + "/ndll/Linux64/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme-debug.ndll", pazuNativeDirectory + "/ndll/Linux64/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme.ndll", openFLNativeDirectory + "/ndll/Linux/nme.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme-debug.ndll", openFLNativeDirectory + "/ndll/Linux/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme.ndll", openFLNativeDirectory + "/ndll/Linux64/nme.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme-debug.ndll", openFLNativeDirectory + "/ndll/Linux64/nme-debug.ndll");
 						
 					}
 					
 					if (!isMac) {
 						
-						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme.ndll", pazuNativeDirectory + "/ndll/Mac/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme-debug.ndll", pazuNativeDirectory + "/ndll/Mac/nme-debug.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos.a", pazuNativeDirectory + "/ndll/iPhone/libnme.iphoneos.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos-v7.a", pazuNativeDirectory + "/ndll/iPhone/libnme.iphoneos-v7.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphonesim.a", pazuNativeDirectory + "/ndll/iPhone/libnme.iphonesim.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos.a", pazuNativeDirectory + "/ndll/iPhone/libnme-debug.iphoneos.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos-v7.a", pazuNativeDirectory + "/ndll/iPhone/libnme-debug.iphoneos-v7.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphonesim.a", pazuNativeDirectory + "/ndll/iPhone/libnme-debug.iphonesim.a");
+						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme.ndll", openFLNativeDirectory + "/ndll/Mac/nme.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme-debug.ndll", openFLNativeDirectory + "/ndll/Mac/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos.a", openFLNativeDirectory + "/ndll/iPhone/libnme.iphoneos.a");
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos-v7.a", openFLNativeDirectory + "/ndll/iPhone/libnme.iphoneos-v7.a");
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphonesim.a", openFLNativeDirectory + "/ndll/iPhone/libnme.iphonesim.a");
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos.a", openFLNativeDirectory + "/ndll/iPhone/libnme-debug.iphoneos.a");
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos-v7.a", openFLNativeDirectory + "/ndll/iPhone/libnme-debug.iphoneos-v7.a");
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphonesim.a", openFLNativeDirectory + "/ndll/iPhone/libnme-debug.iphonesim.a");
 						
 					}
 					
 				case "zip":
 					
-					var tempPath = "../pazu-native-release-zip";
+					var tempPath = "../openfl-native-release-zip";
 					var targetPath = "";
 					
-					targetPath = "../pazu-native-" + getRevision () + ".zip";
+					targetPath = "../openfl-native-" + getRevision () + ".zip";
 					
-					recursiveCopy (pazuNativeDirectory, pazuNativeDirectory + tempPath + "/pazu-native", nmeFilters);
+					recursiveCopy (openFLNativeDirectory, openFLNativeDirectory + tempPath + "/openfl-native", nmeFilters);
 					
-					if (FileSystem.exists (pazuNativeDirectory + targetPath)) {
+					if (FileSystem.exists (openFLNativeDirectory + targetPath)) {
 						
-						FileSystem.deleteFile (pazuNativeDirectory + targetPath);
+						FileSystem.deleteFile (openFLNativeDirectory + targetPath);
 						
 					}
 					
 					if (!isWindows) {
 						
-						runCommand (pazuNativeDirectory + tempPath, "zip", [ "-r", targetPath, "*" ]);
-						removeDirectory (pazuNativeDirectory + tempPath);
+						runCommand (openFLNativeDirectory + tempPath, "zip", [ "-r", targetPath, "*" ]);
+						removeDirectory (openFLNativeDirectory + tempPath);
 						
 					}
 				
@@ -1278,11 +1278,11 @@ class RunScript {
 		
 		if (FileSystem.exists (nmeDirectory + "ndll/" + path)) {
 			
-			File.copy (nmeDirectory + "ndll/" + path, pazuNativeDirectory + "ndll/" + path);
+			File.copy (nmeDirectory + "ndll/" + path, openFLNativeDirectory + "ndll/" + path);
 			
-		} else if (FileSystem.exists (pazuNativeDirectory + "ndll/" + path)) {
+		} else if (FileSystem.exists (openFLNativeDirectory + "ndll/" + path)) {
 			
-			FileSystem.deleteFile (pazuNativeDirectory + "ndll/" + path);
+			FileSystem.deleteFile (openFLNativeDirectory + "ndll/" + path);
 			
 		}
 		

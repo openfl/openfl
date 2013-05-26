@@ -1,7 +1,7 @@
 package nme;
 
 
-import pazu.Assets;
+import openfl.Assets;
 
 
 class AssetData {

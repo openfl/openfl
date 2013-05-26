@@ -1,4 +1,4 @@
-package pazu.display;
+package openfl.display;
 
 
 import flash.events.Event;

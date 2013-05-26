@@ -1,4 +1,4 @@
-package pazu.utils;
+package openfl.utils;
 #if display
 
 

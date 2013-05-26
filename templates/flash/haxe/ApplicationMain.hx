@@ -1,9 +1,9 @@
 #if (!macro || !haxe3)
-#if (nme || pazu)
+#if (nme || openfl)
 
 import ::APP_MAIN_PACKAGE::::APP_MAIN_CLASS::;
 import flash.display.DisplayObject;
-import pazu.Assets;
+import openfl.Assets;
 import flash.events.Event;
 
 class ApplicationMain {

@@ -1,8 +1,8 @@
-package pazu.gl;
+package openfl.gl;
 #if display
 
 
-extern class GLFramebuffer extends GLObject {
+extern class GLBuffer extends GLObject {
 	
 	function new(inVersion:Int, inId:Dynamic):Void;
 	

@@ -1,4 +1,4 @@
 -main RunScript
 -neko ../run.n
--lib pazu-tools
+-lib openfl-tools
 -cp src

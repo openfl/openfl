@@ -1,4 +1,4 @@
-package pazu;
+package openfl;
 #if !macro
 
 
@@ -171,13 +171,13 @@ class Assets {
 				
 			} else {
 				
-				trace("[pazu.Assets] There is no asset library named \"" + libraryName + "\"");
+				trace("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 				
 			}
 			
 		} else {
 			
-			trace("[pazu.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
+			trace("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
 			
 		}
 		
@@ -234,7 +234,7 @@ class Assets {
 			
 		} else {
 			
-			trace("[pazu.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
+			trace("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
 			
 		}
 		
@@ -271,7 +271,7 @@ class Assets {
 			
 		} else {
 			
-			trace("[pazu.Assets] There is no Font asset with an ID of \"" + id + "\"");
+			trace("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
 			
 		}
 		
@@ -343,7 +343,7 @@ class Assets {
 			
 		} else {
 			
-			trace("[pazu.Assets] There is no asset library named \"" + libraryName + "\"");
+			trace("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
@@ -390,7 +390,7 @@ class Assets {
 			
 		}
 		
-		trace("[pazu.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+		trace("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
 		
 		#end
 		
@@ -747,7 +747,7 @@ class Assets {
 		if (path != null && path != "") {
 			
 			#if html5
-			Sys.command ("haxelib", [ "run", "pazu", "generate", "-font-hash", sys.FileSystem.fullPath(path) ]);
+			Sys.command ("haxelib", [ "run", "openfl", "generate", "-font-hash", sys.FileSystem.fullPath(path) ]);
 			path += ".hash";
 			#end
 			

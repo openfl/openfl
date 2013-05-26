@@ -1,4 +1,4 @@
-package pazu.gl;
+package openfl.gl;
 #if display
 
 
