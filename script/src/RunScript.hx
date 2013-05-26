@@ -1,6 +1,7 @@
 import haxe.io.Eof;
 import haxe.Http;
 import haxe.io.Path;
+import haxe.Json;
 import neko.Lib;
 import project.Architecture;
 import project.Haxelib;
@@ -565,6 +566,7 @@ class RunScript {
 	
 	
 	private static function getVersion (library:String = "openfl-native", haxelibFormat:Bool = false):String {
+		
 		var libraryPath = openFLNativeDirectory;
 		
 		if (library != "openfl-native") {
@@ -573,17 +575,28 @@ class RunScript {
 			
 		}
 		
-		for (element in Xml.parse (File.getContent (libraryPath + "/haxelib.xml")).firstElement ().elements ()) {
+		if (FileSystem.exists (libraryPath + "/haxelib.json")) {
 			
-			if (element.nodeName == "version") {
+			var json = Json.parse (File.getContent (libraryPath + "/haxelib.json"));
+			var result:String = json.version;
+			result = result.substring (0, result.indexOf ("-"));
+			return StringTools.replace (result, ".", ",");
+			
+		} else if (FileSystem.exists (libraryPath + "/haxelib.xml")) {
+			
+			for (element in Xml.parse (File.getContent (libraryPath + "/haxelib.xml")).firstElement ().elements ()) {
 				
-				if (haxelibFormat) {
+				if (element.nodeName == "version") {
 					
-					return StringTools.replace (element.get ("name"), ".", ",");
-					
-				} else {
-					
-					return element.get ("name");
+					if (haxelibFormat) {
+						
+						return StringTools.replace (element.get ("name"), ".", ",");
+						
+					} else {
+						
+						return element.get ("name");
+						
+					}
 					
 				}
 				
