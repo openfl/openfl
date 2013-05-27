@@ -125,7 +125,9 @@ extern class Transform {
 	 * <p>Based on the field of view and aspect ratio(dimensions) of the stage,
 	 * a default PerspectiveProjection object is assigned to the root object.</p>
 	 */
-	//@:require(flash10) var perspectiveProjection : PerspectiveProjection;
+	#if !display
+	@:require(flash10) var perspectiveProjection : PerspectiveProjection;
+	#end
 
 	/**
 	 * A Rectangle object that defines the bounding rectangle of the display

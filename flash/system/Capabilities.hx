@@ -24,6 +24,8 @@ package flash.system;
  * <p>All properties of the Capabilities class are read-only.</p>
  */
 extern class Capabilities {
+	
+	#if !display
 	static var _internal(default,null) : Int;
 
 	/**
@@ -152,7 +154,8 @@ extern class Capabilities {
 	 * in Acrobat 9.0 or higher(<code>true</code>) or not(<code>false</code>).
 	 */
 	@:require(flash10) static var isEmbeddedInAcrobat(default,null) : Bool;
-
+	#end
+	
 	/**
 	 * Specifies the language code of the system on which the content is running.
 	 * The language is specified as a lowercase two-letter language code from ISO
@@ -176,7 +179,8 @@ extern class Capabilities {
 	 * <p>The server string is <code>L</code>.</p>
 	 */
 	static var language(default,null) : String;
-
+	
+	#if !display
 	/**
 	 * Specifies whether read access to the user's hard disk has been
 	 * administratively prohibited(<code>true</code>) or allowed
@@ -244,7 +248,7 @@ extern class Capabilities {
 	 * information, see the Capabilities class description.</p>
 	 */
 	static var os(default,null) : String;
-
+	
 	/**
 	 * Specifies the pixel aspect ratio of the screen. The server string is
 	 * <code>AR</code>.
@@ -278,7 +282,8 @@ extern class Capabilities {
 	 * <code>COL</code>.
 	 */
 	static var screenColor(default,null) : String;
-
+	#end
+	
 	/**
 	 * Specifies the dots-per-inch(dpi) resolution of the screen, in pixels. The
 	 * server string is <code>DP</code>.
@@ -303,7 +308,8 @@ extern class Capabilities {
 	 * application started. Also, the value only specifies the primary screen.
 	 */
 	static var screenResolutionY(default,null) : Float;
-
+	
+	#if !display
 	/**
 	 * A URL-encoded string that specifies values for each Capabilities property.
 	 *
@@ -332,7 +338,7 @@ extern class Capabilities {
 	 * Specifies the type of touchscreen supported, if any. Values are defined in
 	 * the flash.system.TouchscreenType class.
 	 */
-	//@:require(flash10_1) static var touchscreenType(default,null) : TouchscreenType;
+	@:require(flash10_1) static var touchscreenType(default,null) : TouchscreenType;
 
 	/**
 	 * Specifies the Flash Player or Adobe<sup>®</sup> AIR<sup>®</sup> platform
@@ -357,6 +363,8 @@ extern class Capabilities {
 	 */
 	static var version(default,null) : String;
 	@:require(flash11) static function hasMultiChannelAudio(type : String) : Bool;
+	#end
+	
 }
 
 

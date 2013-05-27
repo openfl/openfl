@@ -60,14 +60,17 @@ extern class KeyboardEvent extends Event {
 	 * (<code>KeyLocation.STANDARD</code>) versus the numeric keypad
 	 * (<code>KeyLocation.NUM_PAD</code>).
 	 */
-	//var keyLocation : flash.ui.KeyLocation;
+	#if !display
+	var keyLocation : flash.ui.KeyLocation;
+	#end
 
 	/**
 	 * Indicates whether the Shift key modifier is active(<code>true</code>) or
 	 * inactive(<code>false</code>).
 	 */
 	var shiftKey : Bool;
-
+	
+	#if (!display && flash)
 	/**
 	 * Creates an Event object that contains specific information about keyboard
 	 * events. Event objects are passed as parameters to event listeners.
@@ -95,8 +98,10 @@ extern class KeyboardEvent extends Event {
 	 * @param shiftKeyValue    Indicates whether the Shift key modifier is
 	 *                         activated.
 	 */
-	//function new(type : String, bubbles : Bool = true, cancelable : Bool = false, charCodeValue : Int = 0, keyCodeValue : Int = 0, keyLocationValue : flash.ui.KeyLocation = 0, ctrlKeyValue : Bool = false, altKeyValue : Bool = false, shiftKeyValue : Bool = false) : Void;
-
+	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, charCodeValue : Int = 0, keyCodeValue : Int = 0, keyLocationValue : flash.ui.KeyLocation = 0, ctrlKeyValue : Bool = false, altKeyValue : Bool = false, shiftKeyValue : Bool = false) : Void;
+	
+	#else
+	
 	/**
 	 * Creates an Event object that contains specific information about keyboard
 	 * events. Event objects are passed as parameters to event listeners.
@@ -116,6 +121,7 @@ extern class KeyboardEvent extends Event {
 	 * @param keyCodeValue  The key code value of the key pressed or released.
 	 */
 	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, charCodeValue : Int = 0, keyCodeValue : Int = 0) : Void;
+	#end
 
 	/**
 	 * Indicates that the display should be rendered after processing of this

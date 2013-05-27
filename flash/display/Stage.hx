@@ -186,9 +186,10 @@ extern class Stage extends DisplayObjectContainer {
 	 *   <li><code>"off"</code>: Never perform color correction.</li>
 	 * </ul>
 	 */
-	//@:require(flash10) var colorCorrection : ColorCorrection;
-	
-	@:require(flash11_4) var contentsScaleFactor(default,null) : Float;
+	#if !display
+	@:require(flash10) var colorCorrection : ColorCorrection;
+	@:require(flash11_4) var contentsScaleFactor(default, null) : Float;
+	#end
 
 	/**
 	 * Specifies whether the Flash runtime is running on an operating system that
@@ -206,8 +207,10 @@ extern class Stage extends DisplayObjectContainer {
 	 *   <li><code>"defaultOff"</code>: Never performs color correction.</li>
 	 * </ul>
 	 */
-	//@:require(flash10) var colorCorrectionSupport(default,null) : ColorCorrectionSupport;
-	@:require(flash11) var displayContextInfo(default,null) : String;
+	#if !display
+	@:require(flash10) var colorCorrectionSupport(default,null) : ColorCorrectionSupport;
+	@:require(flash11) var displayContextInfo(default, null) : String;
+	#end
 
 	/**
 	 * A value from the StageDisplayState class that specifies which display
@@ -535,8 +538,10 @@ extern class Stage extends DisplayObjectContainer {
 	 * when the keyboard opens in response to an InteractiveObject receiving
 	 * focus or invoking the <code>requestSoftKeyboard()</code> method.</p>
 	 */
-	@:require(flash11) var softKeyboardRect(default,null) : flash.geom.Rectangle;
-	//@:require(flash11) var stage3Ds(default,null) : flash.Vector<Stage3D>;
+	@:require(flash11) var softKeyboardRect(default, null) : flash.geom.Rectangle;
+	#if !display
+	@:require(flash11) var stage3Ds(default,null) : flash.Vector<Stage3D>;
+	#end
 
 	/**
 	 * Specifies whether or not objects display a glowing border when they have
@@ -627,7 +632,9 @@ extern class Stage extends DisplayObjectContainer {
 	 *
 	 * <p><b>Note:</b> AIR for TV devices support only one StageVideo object.</p>
 	 */
-	//@:require(flash10_2) var stageVideos(default,null) : flash.Vector<flash.media.StageVideo>;
+	#if !display
+	@:require(flash10_2) var stageVideos(default, null) : flash.Vector<flash.media.StageVideo>;
+	#end
 
 	/**
 	 * Specifies the current width, in pixels, of the Stage.

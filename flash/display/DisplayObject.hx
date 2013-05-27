@@ -144,7 +144,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * the value of <code>accessibilityProperties</code> is prepopulated with any
 	 * information you entered in the Accessibility panel for that object.</p>
 	 */
-	//var accessibilityProperties : flash.accessibility.AccessibilityProperties;
+	#if !display
+	var accessibilityProperties : flash.accessibility.AccessibilityProperties;
+	#end
 
 	/**
 	 * Indicates the alpha transparency value of the object specified. Valid
@@ -229,7 +231,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 *                       <code>ShaderInput.input</code> property for more
 	 *                       information.
 	 */
-	//@:require(flash10) var blendShader(null,default) : Shader;
+	#if !display
+	@:require(flash10) var blendShader(null, default) : Shader;
+	#end
 
 	/**
 	 * If set to <code>true</code>, NME will use the software renderer to cache
@@ -548,7 +552,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * represent counterclockwise rotation. Values outside this range are added
 	 * to or subtracted from 360 to obtain a value within the range.
 	 */
-	//@:require(flash10) var rotationX : Float;
+	#if !display
+	@:require(flash10) var rotationX : Float;
+	#end
 
 	/**
 	 * Indicates the y-axis rotation of the DisplayObject instance, in degrees,
@@ -557,7 +563,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * represent counterclockwise rotation. Values outside this range are added
 	 * to or subtracted from 360 to obtain a value within the range.
 	 */
-	//@:require(flash10) var rotationY : Float;
+	#if !display
+	@:require(flash10) var rotationY : Float;
+	#end
 
 	/**
 	 * Indicates the z-axis rotation of the DisplayObject instance, in degrees,
@@ -566,7 +574,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * represent counterclockwise rotation. Values outside this range are added
 	 * to or subtracted from 360 to obtain a value within the range.
 	 */
-	//@:require(flash10) var rotationZ : Float;
+	#if !display
+	@:require(flash10) var rotationZ : Float;
+	#end
 
 	/**
 	 * The current scaling grid that is in effect. If set to <code>null</code>,
@@ -649,7 +659,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * <code>y</code> and <code>z</code> property values, which are defined in
 	 * whole pixels. </p>
 	 */
-	//@:require(flash10) var scaleZ : Float;
+	#if !display
+	@:require(flash10) var scaleZ : Float;
+	#end
 
 	/**
 	 * The scroll rectangle bounds of the display object. The display object is
@@ -789,7 +801,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * <p><code>(x~~cameraFocalLength/cameraRelativeZPosition,
 	 * y~~cameraFocalLength/cameraRelativeZPosition)</code></p>
 	 */
-	//@:require(flash10) var z : Float;
+	#if !display
+	@:require(flash10) var z : Float;
+	#end
 
 	/**
 	 * Returns a rectangle that defines the area of the display object relative
@@ -874,7 +888,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * @return A Vector3D object with coordinates relative to the
 	 *         three-dimensional display object.
 	 */
-	//@:require(flash10) function globalToLocal3D(point : flash.geom.Point) : flash.geom.Vector3D;
+	#if !display
+	@:require(flash10) function globalToLocal3D(point : flash.geom.Point) : flash.geom.Vector3D;
+	#end
 
 	/**
 	 * Evaluates the bounding box of the display object to see if it overlaps or
@@ -926,7 +942,9 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * @return A two-dimensional point representing a three-dimensional point in
 	 *         two-dimensional space.
 	 */
-	//@:require(flash10) function local3DToGlobal(point3d : flash.geom.Vector3D) : flash.geom.Point;
+	#if !display
+	@:require(flash10) function local3DToGlobal(point3d : flash.geom.Vector3D) : flash.geom.Point;
+	#end
 
 	/**
 	 * Converts the <code>point</code> object from the display object's(local)

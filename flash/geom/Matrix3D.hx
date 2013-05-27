@@ -93,7 +93,9 @@ package flash.geom;
 	@:require(flash11) function copyRowFrom(row : Int, vector3D : Vector3D) : Void;
 	@:require(flash11) function copyRowTo(row : Int, vector3D : Vector3D) : Void;
 	@:require(flash11) function copyToMatrix3D(dest : Matrix3D) : Void;
-	//function decompose(?orientationStyle : Orientation3D) : flash.Vector<Vector3D>;
+	#if !display
+	function decompose(?orientationStyle : Orientation3D) : flash.Vector<Vector3D>;
+	#end
 	function deltaTransformVector(v : Vector3D) : Vector3D;
 
 	/**
@@ -124,7 +126,9 @@ package flash.geom;
 	function prependRotation(degrees : Float, axis : Vector3D, ?pivotPoint : Vector3D) : Void;
 	function prependScale(xScale : Float, yScale : Float, zScale : Float) : Void;
 	function prependTranslation(x : Float, y : Float, z : Float) : Void;
-	//function recompose(components : flash.Vector<Vector3D>, ?orientationStyle : Orientation3D) : Bool;
+	#if !display
+	function recompose(components : flash.Vector<Vector3D>, ?orientationStyle : Orientation3D) : Bool;
+	#end
 	function transformVector(v : Vector3D) : Vector3D;
 	function transformVectors(vin : flash.Vector<Float>, vout : flash.Vector<Float>) : Void;
 	function transpose() : Void;

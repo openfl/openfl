@@ -25,7 +25,9 @@ extern class Keyboard {
 	/**
 	 * Select the audio mode
 	 */
-	//@:require(flash10_2) static var AUDIO : Int;
+	#if !display
+	@:require(flash10_2) static var AUDIO : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the B key(66).
@@ -35,7 +37,9 @@ extern class Keyboard {
 	/**
 	 * Return to previous page in application
 	 */
-	//@:require(flash10_2) static var BACK : Int;
+	#if !display
+	@:require(flash10_2) static var BACK : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the ` key(192).
@@ -55,7 +59,9 @@ extern class Keyboard {
 	/**
 	 * Blue function key button
 	 */
-	//@:require(flash10_2) static var BLUE : Int;
+	#if !display
+	@:require(flash10_2) static var BLUE : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the C key(67).
@@ -70,12 +76,16 @@ extern class Keyboard {
 	/**
 	 * Channel down
 	 */
-	//@:require(flash10_2) static var CHANNEL_DOWN : Int;
+	#if !display
+	@:require(flash10_2) static var CHANNEL_DOWN : Int;
+	#end
 
 	/**
 	 * Channel up
 	 */
-	//@:require(flash10_2) static var CHANNEL_UP : Int;
+	#if !display
+	@:require(flash10_2) static var CHANNEL_UP : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the , key(188).
@@ -96,7 +106,9 @@ extern class Keyboard {
 	/**
 	 * An array containing all the defined key name constants.
 	 */
-	//@:require(flash10_1) static var CharCodeStrings : Array<Dynamic>;
+	#if !display
+	@:require(flash10_1) static var CharCodeStrings : Array<Dynamic>;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the D key(68).
@@ -116,7 +128,9 @@ extern class Keyboard {
 	/**
 	 * Engage DVR application mode
 	 */
-	//@:require(flash10_2) static var DVR : Int;
+	#if !display
+	@:require(flash10_2) static var DVR : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the E key(69).
@@ -146,7 +160,9 @@ extern class Keyboard {
 	/**
 	 * Exits current application mode
 	 */
-	//@:require(flash10_2) static var EXIT : Int;
+	#if !display
+	@:require(flash10_2) static var EXIT : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the F key(70).
@@ -231,7 +247,9 @@ extern class Keyboard {
 	/**
 	 * Engage fast-forward transport mode
 	 */
-	//@:require(flash10_2) static var FAST_FORWARD : Int;
+	#if !display
+	@:require(flash10_2) static var FAST_FORWARD : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the G key(71).
@@ -241,12 +259,16 @@ extern class Keyboard {
 	/**
 	 * Green function key button
 	 */
-	//@:require(flash10_2) static var GREEN : Int;
+	#if !display
+	@:require(flash10_2) static var GREEN : Int;
+	#end
 
 	/**
 	 * Engage program guide
 	 */
-	//@:require(flash10_2) static var GUIDE : Int;
+	#if !display
+	@:require(flash10_2) static var GUIDE : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the H key(72).
@@ -256,7 +278,9 @@ extern class Keyboard {
 	/**
 	 * Engage help application or context-sensitive help
 	 */
-	//@:require(flash10_2) static var HELP : Int;
+	#if !display
+	@:require(flash10_2) static var HELP : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the Home key(36).
@@ -271,12 +295,16 @@ extern class Keyboard {
 	/**
 	 * Info button
 	 */
-	//@:require(flash10_2) static var INFO : Int;
+	#if !display
+	@:require(flash10_2) static var INFO : Int;
+	#end
 
 	/**
 	 * Cycle input
 	 */
-	//@:require(flash10_2) static var INPUT : Int;
+	#if !display
+	@:require(flash10_2) static var INPUT : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the Insert key(45).
@@ -292,366 +320,368 @@ extern class Keyboard {
 	 * Constant associated with the key code value for the K key(75).
 	 */
 	@:require(flash10_1) static var K : Int;
-
+	
+	#if !display
 	/**
 	 * The Begin key
 	 */
-	//@:require(flash10_1) static var KEYNAME_BEGIN : String;
+	@:require(flash10_1) static var KEYNAME_BEGIN : String;
 
 	/**
 	 * The Break key
 	 */
-	//@:require(flash10_1) static var KEYNAME_BREAK : String;
+	@:require(flash10_1) static var KEYNAME_BREAK : String;
 
 	/**
 	 * The Clear Display key
 	 */
-	//@:require(flash10_1) static var KEYNAME_CLEARDISPLAY : String;
+	@:require(flash10_1) static var KEYNAME_CLEARDISPLAY : String;
 
 	/**
 	 * The Clear Line key
 	 */
-	//@:require(flash10_1) static var KEYNAME_CLEARLINE : String;
+	@:require(flash10_1) static var KEYNAME_CLEARLINE : String;
 
 	/**
 	 * The Delete key
 	 */
-	//@:require(flash10_1) static var KEYNAME_DELETE : String;
+	@:require(flash10_1) static var KEYNAME_DELETE : String;
 
 	/**
 	 * The Delete Character key
 	 */
-	//@:require(flash10_1) static var KEYNAME_DELETECHAR : String;
+	@:require(flash10_1) static var KEYNAME_DELETECHAR : String;
 
 	/**
 	 * The Delete Line key
 	 */
-	//@:require(flash10_1) static var KEYNAME_DELETELINE : String;
+	@:require(flash10_1) static var KEYNAME_DELETELINE : String;
 
 	/**
 	 * The down arrow
 	 */
-	//@:require(flash10_1) static var KEYNAME_DOWNARROW : String;
+	@:require(flash10_1) static var KEYNAME_DOWNARROW : String;
 
 	/**
 	 * The End key
 	 */
-	//@:require(flash10_1) static var KEYNAME_END : String;
+	@:require(flash10_1) static var KEYNAME_END : String;
 
 	/**
 	 * The Execute key
 	 */
-	//@:require(flash10_1) static var KEYNAME_EXECUTE : String;
+	@:require(flash10_1) static var KEYNAME_EXECUTE : String;
 
 	/**
 	 * The F1 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F1 : String;
+	@:require(flash10_1) static var KEYNAME_F1 : String;
 
 	/**
 	 * The F10 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F10 : String;
+	@:require(flash10_1) static var KEYNAME_F10 : String;
 
 	/**
 	 * The F11 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F11 : String;
+	@:require(flash10_1) static var KEYNAME_F11 : String;
 
 	/**
 	 * The F12 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F12 : String;
+	@:require(flash10_1) static var KEYNAME_F12 : String;
 
 	/**
 	 * The F13 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F13 : String;
+	@:require(flash10_1) static var KEYNAME_F13 : String;
 
 	/**
 	 * The F14 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F14 : String;
+	@:require(flash10_1) static var KEYNAME_F14 : String;
 
 	/**
 	 * The F15 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F15 : String;
+	@:require(flash10_1) static var KEYNAME_F15 : String;
 
 	/**
 	 * The F16 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F16 : String;
+	@:require(flash10_1) static var KEYNAME_F16 : String;
 
 	/**
 	 * The F17 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F17 : String;
+	@:require(flash10_1) static var KEYNAME_F17 : String;
 
 	/**
 	 * The F18 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F18 : String;
+	@:require(flash10_1) static var KEYNAME_F18 : String;
 
 	/**
 	 * The F19 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F19 : String;
+	@:require(flash10_1) static var KEYNAME_F19 : String;
 
 	/**
 	 * The F2 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F2 : String;
+	@:require(flash10_1) static var KEYNAME_F2 : String;
 
 	/**
 	 * The F20 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F20 : String;
+	@:require(flash10_1) static var KEYNAME_F20 : String;
 
 	/**
 	 * The F21 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F21 : String;
+	@:require(flash10_1) static var KEYNAME_F21 : String;
 
 	/**
 	 * The F22 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F22 : String;
+	@:require(flash10_1) static var KEYNAME_F22 : String;
 
 	/**
 	 * The F23 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F23 : String;
+	@:require(flash10_1) static var KEYNAME_F23 : String;
 
 	/**
 	 * The F24 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F24 : String;
+	@:require(flash10_1) static var KEYNAME_F24 : String;
 
 	/**
 	 * The F25 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F25 : String;
+	@:require(flash10_1) static var KEYNAME_F25 : String;
 
 	/**
 	 * The F26 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F26 : String;
+	@:require(flash10_1) static var KEYNAME_F26 : String;
 
 	/**
 	 * The F27 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F27 : String;
+	@:require(flash10_1) static var KEYNAME_F27 : String;
 
 	/**
 	 * The F28 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F28 : String;
+	@:require(flash10_1) static var KEYNAME_F28 : String;
 
 	/**
 	 * The F29 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F29 : String;
+	@:require(flash10_1) static var KEYNAME_F29 : String;
 
 	/**
 	 * The F3 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F3 : String;
+	@:require(flash10_1) static var KEYNAME_F3 : String;
 
 	/**
 	 * The F30 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F30 : String;
+	@:require(flash10_1) static var KEYNAME_F30 : String;
 
 	/**
 	 * The F31 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F31 : String;
+	@:require(flash10_1) static var KEYNAME_F31 : String;
 
 	/**
 	 * The F32 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F32 : String;
+	@:require(flash10_1) static var KEYNAME_F32 : String;
 
 	/**
 	 * The F33 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F33 : String;
+	@:require(flash10_1) static var KEYNAME_F33 : String;
 
 	/**
 	 * The F34 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F34 : String;
+	@:require(flash10_1) static var KEYNAME_F34 : String;
 
 	/**
 	 * The F35 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F35 : String;
+	@:require(flash10_1) static var KEYNAME_F35 : String;
 
 	/**
 	 * The F4 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F4 : String;
+	@:require(flash10_1) static var KEYNAME_F4 : String;
 
 	/**
 	 * The F5 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F5 : String;
+	@:require(flash10_1) static var KEYNAME_F5 : String;
 
 	/**
 	 * The F6 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F6 : String;
+	@:require(flash10_1) static var KEYNAME_F6 : String;
 
 	/**
 	 * The F7 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F7 : String;
+	@:require(flash10_1) static var KEYNAME_F7 : String;
 
 	/**
 	 * The F8 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F8 : String;
+	@:require(flash10_1) static var KEYNAME_F8 : String;
 
 	/**
 	 * The F9 key
 	 */
-	//@:require(flash10_1) static var KEYNAME_F9 : String;
+	@:require(flash10_1) static var KEYNAME_F9 : String;
 
 	/**
 	 * The Find key
 	 */
-	//@:require(flash10_1) static var KEYNAME_FIND : String;
+	@:require(flash10_1) static var KEYNAME_FIND : String;
 
 	/**
 	 * The Help key
 	 */
-	//@:require(flash10_1) static var KEYNAME_HELP : String;
+	@:require(flash10_1) static var KEYNAME_HELP : String;
 
 	/**
 	 * The Home key
 	 */
-	//@:require(flash10_1) static var KEYNAME_HOME : String;
+	@:require(flash10_1) static var KEYNAME_HOME : String;
 
 	/**
 	 * The Insert key
 	 */
-	//@:require(flash10_1) static var KEYNAME_INSERT : String;
+	@:require(flash10_1) static var KEYNAME_INSERT : String;
 
 	/**
 	 * The Insert Character key
 	 */
-	//@:require(flash10_1) static var KEYNAME_INSERTCHAR : String;
+	@:require(flash10_1) static var KEYNAME_INSERTCHAR : String;
 
 	/**
 	 * The Insert Line key
 	 */
-	//@:require(flash10_1) static var KEYNAME_INSERTLINE : String;
+	@:require(flash10_1) static var KEYNAME_INSERTLINE : String;
 
 	/**
 	 * The left arrow
 	 */
-	//@:require(flash10_1) static var KEYNAME_LEFTARROW : String;
+	@:require(flash10_1) static var KEYNAME_LEFTARROW : String;
 
 	/**
 	 * The Menu key
 	 */
-	//@:require(flash10_1) static var KEYNAME_MENU : String;
+	@:require(flash10_1) static var KEYNAME_MENU : String;
 
 	/**
 	 * The Mode Switch key
 	 */
-	//@:require(flash10_1) static var KEYNAME_MODESWITCH : String;
+	@:require(flash10_1) static var KEYNAME_MODESWITCH : String;
 
 	/**
 	 * The Next key
 	 */
-	//@:require(flash10_1) static var KEYNAME_NEXT : String;
+	@:require(flash10_1) static var KEYNAME_NEXT : String;
 
 	/**
 	 * The Page Down key
 	 */
-	//@:require(flash10_1) static var KEYNAME_PAGEDOWN : String;
+	@:require(flash10_1) static var KEYNAME_PAGEDOWN : String;
 
 	/**
 	 * The Page Up key
 	 */
-	//@:require(flash10_1) static var KEYNAME_PAGEUP : String;
+	@:require(flash10_1) static var KEYNAME_PAGEUP : String;
 
 	/**
 	 * The Pause key
 	 */
-	//@:require(flash10_1) static var KEYNAME_PAUSE : String;
+	@:require(flash10_1) static var KEYNAME_PAUSE : String;
 
 	/**
 	 * The Previous key
 	 */
-	//@:require(flash10_1) static var KEYNAME_PREV : String;
+	@:require(flash10_1) static var KEYNAME_PREV : String;
 
 	/**
 	 * The Print key
 	 */
-	//@:require(flash10_1) static var KEYNAME_PRINT : String;
+	@:require(flash10_1) static var KEYNAME_PRINT : String;
 
 	/**
 	 * The Print Screen
 	 */
-	//@:require(flash10_1) static var KEYNAME_PRINTSCREEN : String;
+	@:require(flash10_1) static var KEYNAME_PRINTSCREEN : String;
 
 	/**
 	 * The Redo key
 	 */
-	//@:require(flash10_1) static var KEYNAME_REDO : String;
+	@:require(flash10_1) static var KEYNAME_REDO : String;
 
 	/**
 	 * The Reset key
 	 */
-	//@:require(flash10_1) static var KEYNAME_RESET : String;
+	@:require(flash10_1) static var KEYNAME_RESET : String;
 
 	/**
 	 * The right arrow
 	 */
-	//@:require(flash10_1) static var KEYNAME_RIGHTARROW : String;
+	@:require(flash10_1) static var KEYNAME_RIGHTARROW : String;
 
 	/**
 	 * The Scroll Lock key
 	 */
-	//@:require(flash10_1) static var KEYNAME_SCROLLLOCK : String;
+	@:require(flash10_1) static var KEYNAME_SCROLLLOCK : String;
 
 	/**
 	 * The Select key
 	 */
-	//@:require(flash10_1) static var KEYNAME_SELECT : String;
+	@:require(flash10_1) static var KEYNAME_SELECT : String;
 
 	/**
 	 * The Stop key
 	 */
-	//@:require(flash10_1) static var KEYNAME_STOP : String;
+	@:require(flash10_1) static var KEYNAME_STOP : String;
 
 	/**
 	 * The System Request key
 	 */
-	//@:require(flash10_1) static var KEYNAME_SYSREQ : String;
+	@:require(flash10_1) static var KEYNAME_SYSREQ : String;
 
 	/**
 	 * The System key
 	 */
-	//@:require(flash10_1) static var KEYNAME_SYSTEM : String;
+	@:require(flash10_1) static var KEYNAME_SYSTEM : String;
 
 	/**
 	 * The Undo key
 	 */
-	//@:require(flash10_1) static var KEYNAME_UNDO : String;
+	@:require(flash10_1) static var KEYNAME_UNDO : String;
 
 	/**
 	 * The up arrow
 	 */
-	//@:require(flash10_1) static var KEYNAME_UPARROW : String;
+	@:require(flash10_1) static var KEYNAME_UPARROW : String;
 
 	/**
 	 * The User key
 	 */
-	//@:require(flash10_1) static var KEYNAME_USER : String;
+	@:require(flash10_1) static var KEYNAME_USER : String;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the L key(76).
@@ -661,7 +691,9 @@ extern class Keyboard {
 	/**
 	 * Watch last channel or show watched
 	 */
-	//@:require(flash10_2) static var LAST : Int;
+	#if !display
+	@:require(flash10_2) static var LAST : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the Left Arrow key(37).
@@ -676,7 +708,9 @@ extern class Keyboard {
 	/**
 	 * Return to live [position in broadcast]
 	 */
-	//@:require(flash10_2) static var LIVE : Int;
+	#if !display
+	@:require(flash10_2) static var LIVE : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the M key(77).
@@ -686,12 +720,16 @@ extern class Keyboard {
 	/**
 	 * Engage "Master Shell" e.g. TiVo or other vendor button
 	 */
-	//@:require(flash10_2) static var MASTER_SHELL : Int;
+	#if !display
+	@:require(flash10_2) static var MASTER_SHELL : Int;
+	#end
 
 	/**
 	 * Engage menu
 	 */
-	//@:require(flash10_2) static var MENU : Int;
+	#if !display
+	@:require(flash10_2) static var MENU : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the - key(189).
@@ -706,7 +744,9 @@ extern class Keyboard {
 	/**
 	 * Skip to next track or chapter
 	 */
-	//@:require(flash10_2) static var NEXT : Int;
+	#if !display
+	@:require(flash10_2) static var NEXT : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the 0 key(48).
@@ -883,22 +923,26 @@ extern class Keyboard {
 	/**
 	 * Engage pause transport mode
 	 */
-	//@:require(flash10_2) static var PAUSE : Int;
+	#if !display
+	@:require(flash10_2) static var PAUSE : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the . key(190).
 	 */
 	@:require(flash10_1) static var PERIOD : Int;
 
+	#if !display
 	/**
 	 * Engage play transport mode
 	 */
-	//@:require(flash10_2) static var PLAY : Int;
+	@:require(flash10_2) static var PLAY : Int;
 
 	/**
 	 * Skip to previous track or chapter
 	 */
-	//@:require(flash10_2) static var PREVIOUS : Int;
+	@:require(flash10_2) static var PREVIOUS : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the Q key(81).
@@ -915,20 +959,22 @@ extern class Keyboard {
 	 */
 	@:require(flash10_1) static var R : Int;
 
+	#if !display
 	/**
 	 * Record item or engage record transport mode
 	 */
-	//@:require(flash10_2) static var RECORD : Int;
+	@:require(flash10_2) static var RECORD : Int;
 
 	/**
 	 * Red function key button
 	 */
-	//@:require(flash10_2) static var RED : Int;
+	@:require(flash10_2) static var RED : Int;
 
 	/**
 	 * Engage rewind transport mode
 	 */
-	//@:require(flash10_2) static var REWIND : Int;
+	@:require(flash10_2) static var REWIND : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the Right Arrow key(39).
@@ -948,7 +994,9 @@ extern class Keyboard {
 	/**
 	 * Search button
 	 */
-	//@:require(flash10_2) static var SEARCH : Int;
+	#if !display
+	@:require(flash10_2) static var SEARCH : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the ; key(186).
@@ -965,15 +1013,17 @@ extern class Keyboard {
 	 */
 	static var SHIFT : Int;
 
+	#if !display
 	/**
 	 * Quick skip backward(usually 7-10 seconds)
 	 */
-	//@:require(flash10_2) static var SKIP_BACKWARD : Int;
+	@:require(flash10_2) static var SKIP_BACKWARD : Int;
 
 	/**
 	 * Quick skip ahead(usually 30 seconds)
 	 */
-	//@:require(flash10_2) static var SKIP_FORWARD : Int;
+	@:require(flash10_2) static var SKIP_FORWARD : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the / key(191).
@@ -984,376 +1034,378 @@ extern class Keyboard {
 	 * Constant associated with the key code value for the Spacebar(32).
 	 */
 	static var SPACE : Int;
-
+	
+	#if !display
 	/**
 	 * Engage stop transport mode
 	 */
-	//@:require(flash10_2) static var STOP : Int;
+	@:require(flash10_2) static var STOP : Int;
 
 	/**
 	 * The OS X Unicode Begin constant
 	 */
-	//@:require(flash10_1) static var STRING_BEGIN : String;
+	@:require(flash10_1) static var STRING_BEGIN : String;
 
 	/**
 	 * The OS X Unicode Break constant
 	 */
-	//@:require(flash10_1) static var STRING_BREAK : String;
+	@:require(flash10_1) static var STRING_BREAK : String;
 
 	/**
 	 * The OS X Unicode Clear Display constant
 	 */
-	//@:require(flash10_1) static var STRING_CLEARDISPLAY : String;
+	@:require(flash10_1) static var STRING_CLEARDISPLAY : String;
 
 	/**
 	 * The OS X Unicode Clear Line constant
 	 */
-	//@:require(flash10_1) static var STRING_CLEARLINE : String;
+	@:require(flash10_1) static var STRING_CLEARLINE : String;
 
 	/**
 	 * The OS X Unicode Delete constant
 	 */
-	//@:require(flash10_1) static var STRING_DELETE : String;
+	@:require(flash10_1) static var STRING_DELETE : String;
 
 	/**
 	 * The OS X Unicode Delete Character constant
 	 */
-	//@:require(flash10_1) static var STRING_DELETECHAR : String;
+	@:require(flash10_1) static var STRING_DELETECHAR : String;
 
 	/**
 	 * The OS X Unicode Delete Line constant
 	 */
-	//@:require(flash10_1) static var STRING_DELETELINE : String;
+	@:require(flash10_1) static var STRING_DELETELINE : String;
 
 	/**
 	 * The OS X Unicode down arrow constant
 	 */
-	//@:require(flash10_1) static var STRING_DOWNARROW : String;
+	@:require(flash10_1) static var STRING_DOWNARROW : String;
 
 	/**
 	 * The OS X Unicode End constant
 	 */
-	//@:require(flash10_1) static var STRING_END : String;
+	@:require(flash10_1) static var STRING_END : String;
 
 	/**
 	 * The OS X Unicode Execute constant
 	 */
-	//@:require(flash10_1) static var STRING_EXECUTE : String;
+	@:require(flash10_1) static var STRING_EXECUTE : String;
 
 	/**
 	 * The OS X Unicode F1 constant
 	 */
-	//@:require(flash10_1) static var STRING_F1 : String;
+	@:require(flash10_1) static var STRING_F1 : String;
 
 	/**
 	 * The OS X Unicode F10 constant
 	 */
-	//@:require(flash10_1) static var STRING_F10 : String;
+	@:require(flash10_1) static var STRING_F10 : String;
 
 	/**
 	 * The OS X Unicode F11 constant
 	 */
-	//@:require(flash10_1) static var STRING_F11 : String;
+	@:require(flash10_1) static var STRING_F11 : String;
 
 	/**
 	 * The OS X Unicode F12 constant
 	 */
-	//@:require(flash10_1) static var STRING_F12 : String;
+	@:require(flash10_1) static var STRING_F12 : String;
 
 	/**
 	 * The OS X Unicode F13 constant
 	 */
-	//@:require(flash10_1) static var STRING_F13 : String;
+	@:require(flash10_1) static var STRING_F13 : String;
 
 	/**
 	 * The OS X Unicode F14 constant
 	 */
-	//@:require(flash10_1) static var STRING_F14 : String;
+	@:require(flash10_1) static var STRING_F14 : String;
 
 	/**
 	 * The OS X Unicode F15 constant
 	 */
-	//@:require(flash10_1) static var STRING_F15 : String;
+	@:require(flash10_1) static var STRING_F15 : String;
 
 	/**
 	 * The OS X Unicode F16 constant
 	 */
-	//@:require(flash10_1) static var STRING_F16 : String;
+	@:require(flash10_1) static var STRING_F16 : String;
 
 	/**
 	 * The OS X Unicode F17 constant
 	 */
-	//@:require(flash10_1) static var STRING_F17 : String;
+	@:require(flash10_1) static var STRING_F17 : String;
 
 	/**
 	 * The OS X Unicode F18 constant
 	 */
-	//@:require(flash10_1) static var STRING_F18 : String;
+	@:require(flash10_1) static var STRING_F18 : String;
 
 	/**
 	 * The OS X Unicode F19 constant
 	 */
-	//@:require(flash10_1) static var STRING_F19 : String;
+	@:require(flash10_1) static var STRING_F19 : String;
 
 	/**
 	 * The OS X Unicode F2 constant
 	 */
-	//@:require(flash10_1) static var STRING_F2 : String;
+	@:require(flash10_1) static var STRING_F2 : String;
 
 	/**
 	 * The OS X Unicode F20 constant
 	 */
-	//@:require(flash10_1) static var STRING_F20 : String;
+	@:require(flash10_1) static var STRING_F20 : String;
 
 	/**
 	 * The OS X Unicode F21 constant
 	 */
-	//@:require(flash10_1) static var STRING_F21 : String;
+	@:require(flash10_1) static var STRING_F21 : String;
 
 	/**
 	 * The OS X Unicode F22 constant
 	 */
-	//@:require(flash10_1) static var STRING_F22 : String;
+	@:require(flash10_1) static var STRING_F22 : String;
 
 	/**
 	 * The OS X Unicode F23 constant
 	 */
-	//@:require(flash10_1) static var STRING_F23 : String;
+	@:require(flash10_1) static var STRING_F23 : String;
 
 	/**
 	 * The OS X Unicode F24 constant
 	 */
-	//@:require(flash10_1) static var STRING_F24 : String;
+	@:require(flash10_1) static var STRING_F24 : String;
 
 	/**
 	 * The OS X Unicode F25 constant
 	 */
-	//@:require(flash10_1) static var STRING_F25 : String;
+	@:require(flash10_1) static var STRING_F25 : String;
 
 	/**
 	 * The OS X Unicode F26 constant
 	 */
-	//@:require(flash10_1) static var STRING_F26 : String;
+	@:require(flash10_1) static var STRING_F26 : String;
 
 	/**
 	 * The OS X Unicode F27 constant
 	 */
-	//@:require(flash10_1) static var STRING_F27 : String;
+	@:require(flash10_1) static var STRING_F27 : String;
 
 	/**
 	 * The OS X Unicode F28 constant
 	 */
-	//@:require(flash10_1) static var STRING_F28 : String;
+	@:require(flash10_1) static var STRING_F28 : String;
 
 	/**
 	 * The OS X Unicode F29 constant
 	 */
-	//@:require(flash10_1) static var STRING_F29 : String;
+	@:require(flash10_1) static var STRING_F29 : String;
 
 	/**
 	 * The OS X Unicode F3 constant
 	 */
-	//@:require(flash10_1) static var STRING_F3 : String;
+	@:require(flash10_1) static var STRING_F3 : String;
 
 	/**
 	 * The OS X Unicode F30 constant
 	 */
-	//@:require(flash10_1) static var STRING_F30 : String;
+	@:require(flash10_1) static var STRING_F30 : String;
 
 	/**
 	 * The OS X Unicode F31 constant
 	 */
-	//@:require(flash10_1) static var STRING_F31 : String;
+	@:require(flash10_1) static var STRING_F31 : String;
 
 	/**
 	 * The OS X Unicode F32 constant
 	 */
-	//@:require(flash10_1) static var STRING_F32 : String;
+	@:require(flash10_1) static var STRING_F32 : String;
 
 	/**
 	 * The OS X Unicode F33 constant
 	 */
-	//@:require(flash10_1) static var STRING_F33 : String;
+	@:require(flash10_1) static var STRING_F33 : String;
 
 	/**
 	 * The OS X Unicode F34 constant
 	 */
-	//@:require(flash10_1) static var STRING_F34 : String;
+	@:require(flash10_1) static var STRING_F34 : String;
 
 	/**
 	 * The OS X Unicode F35 constant
 	 */
-	//@:require(flash10_1) static var STRING_F35 : String;
+	@:require(flash10_1) static var STRING_F35 : String;
 
 	/**
 	 * The OS X Unicode F4 constant
 	 */
-	//@:require(flash10_1) static var STRING_F4 : String;
+	@:require(flash10_1) static var STRING_F4 : String;
 
 	/**
 	 * The OS X Unicode F5 constant
 	 */
-	//@:require(flash10_1) static var STRING_F5 : String;
+	@:require(flash10_1) static var STRING_F5 : String;
 
 	/**
 	 * The OS X Unicode F6 constant
 	 */
-	//@:require(flash10_1) static var STRING_F6 : String;
+	@:require(flash10_1) static var STRING_F6 : String;
 
 	/**
 	 * The OS X Unicode F7 constant
 	 */
-	//@:require(flash10_1) static var STRING_F7 : String;
+	@:require(flash10_1) static var STRING_F7 : String;
 
 	/**
 	 * The OS X Unicode F8 constant
 	 */
-	//@:require(flash10_1) static var STRING_F8 : String;
+	@:require(flash10_1) static var STRING_F8 : String;
 
 	/**
 	 * The OS X Unicode F9 constant
 	 */
-	//@:require(flash10_1) static var STRING_F9 : String;
+	@:require(flash10_1) static var STRING_F9 : String;
 
 	/**
 	 * The OS X Unicode Find constant
 	 */
-	//@:require(flash10_1) static var STRING_FIND : String;
+	@:require(flash10_1) static var STRING_FIND : String;
 
 	/**
 	 * The OS X Unicode Help constant
 	 */
-	//@:require(flash10_1) static var STRING_HELP : String;
+	@:require(flash10_1) static var STRING_HELP : String;
 
 	/**
 	 * The OS X Unicode Home constant
 	 */
-	//@:require(flash10_1) static var STRING_HOME : String;
+	@:require(flash10_1) static var STRING_HOME : String;
 
 	/**
 	 * The OS X Unicode Insert constant
 	 */
-	//@:require(flash10_1) static var STRING_INSERT : String;
+	@:require(flash10_1) static var STRING_INSERT : String;
 
 	/**
 	 * The OS X Unicode Insert Character constant
 	 */
-	//@:require(flash10_1) static var STRING_INSERTCHAR : String;
+	@:require(flash10_1) static var STRING_INSERTCHAR : String;
 
 	/**
 	 * The OS X Unicode Insert Line constant
 	 */
-	//@:require(flash10_1) static var STRING_INSERTLINE : String;
+	@:require(flash10_1) static var STRING_INSERTLINE : String;
 
 	/**
 	 * The OS X Unicode left arrow constant
 	 */
-	//@:require(flash10_1) static var STRING_LEFTARROW : String;
+	@:require(flash10_1) static var STRING_LEFTARROW : String;
 
 	/**
 	 * The OS X Unicode Menu constant
 	 */
-	//@:require(flash10_1) static var STRING_MENU : String;
+	@:require(flash10_1) static var STRING_MENU : String;
 
 	/**
 	 * The OS X Unicode Mode Switch constant
 	 */
-	//@:require(flash10_1) static var STRING_MODESWITCH : String;
+	@:require(flash10_1) static var STRING_MODESWITCH : String;
 
 	/**
 	 * The OS X Unicode Next constant
 	 */
-	//@:require(flash10_1) static var STRING_NEXT : String;
+	@:require(flash10_1) static var STRING_NEXT : String;
 
 	/**
 	 * The OS X Unicode Page Down constant
 	 */
-	//@:require(flash10_1) static var STRING_PAGEDOWN : String;
+	@:require(flash10_1) static var STRING_PAGEDOWN : String;
 
 	/**
 	 * The OS X Unicode Page Up constant
 	 */
-	//@:require(flash10_1) static var STRING_PAGEUP : String;
+	@:require(flash10_1) static var STRING_PAGEUP : String;
 
 	/**
 	 * The OS X Unicode Pause constant
 	 */
-	//@:require(flash10_1) static var STRING_PAUSE : String;
+	@:require(flash10_1) static var STRING_PAUSE : String;
 
 	/**
 	 * The OS X Unicode Previous constant
 	 */
-	//@:require(flash10_1) static var STRING_PREV : String;
+	@:require(flash10_1) static var STRING_PREV : String;
 
 	/**
 	 * The OS X Unicode Print constant
 	 */
-	//@:require(flash10_1) static var STRING_PRINT : String;
+	@:require(flash10_1) static var STRING_PRINT : String;
 
 	/**
 	 * The OS X Unicode Print Screen constant
 	 */
-	//@:require(flash10_1) static var STRING_PRINTSCREEN : String;
+	@:require(flash10_1) static var STRING_PRINTSCREEN : String;
 
 	/**
 	 * The OS X Unicode Redo constant
 	 */
-	//@:require(flash10_1) static var STRING_REDO : String;
+	@:require(flash10_1) static var STRING_REDO : String;
 
 	/**
 	 * The OS X Unicode Reset constant
 	 */
-	//@:require(flash10_1) static var STRING_RESET : String;
+	@:require(flash10_1) static var STRING_RESET : String;
 
 	/**
 	 * The OS X Unicode right arrow constant
 	 */
-	//@:require(flash10_1) static var STRING_RIGHTARROW : String;
+	@:require(flash10_1) static var STRING_RIGHTARROW : String;
 
 	/**
 	 * The OS X Unicode Scroll Lock constant
 	 */
-	//@:require(flash10_1) static var STRING_SCROLLLOCK : String;
+	@:require(flash10_1) static var STRING_SCROLLLOCK : String;
 
 	/**
 	 * The OS X Unicode Select constant
 	 */
-	//@:require(flash10_1) static var STRING_SELECT : String;
+	@:require(flash10_1) static var STRING_SELECT : String;
 
 	/**
 	 * The OS X Unicode Stop constant
 	 */
-	//@:require(flash10_1) static var STRING_STOP : String;
+	@:require(flash10_1) static var STRING_STOP : String;
 
 	/**
 	 * The OS X Unicode System Request constant
 	 */
-	//@:require(flash10_1) static var STRING_SYSREQ : String;
+	@:require(flash10_1) static var STRING_SYSREQ : String;
 
 	/**
 	 * The OS X Unicode System constant
 	 */
-	//@:require(flash10_1) static var STRING_SYSTEM : String;
+	@:require(flash10_1) static var STRING_SYSTEM : String;
 
 	/**
 	 * The OS X Unicode Undo constant
 	 */
-	//@:require(flash10_1) static var STRING_UNDO : String;
+	@:require(flash10_1) static var STRING_UNDO : String;
 
 	/**
 	 * The OS X Unicode up arrow constant
 	 */
-	//@:require(flash10_1) static var STRING_UPARROW : String;
+	@:require(flash10_1) static var STRING_UPARROW : String;
 
 	/**
 	 * The OS X Unicode User constant
 	 */
-	//@:require(flash10_1) static var STRING_USER : String;
+	@:require(flash10_1) static var STRING_USER : String;
 
 	/**
 	 * Toggle subtitles
 	 */
-	//@:require(flash10_2) static var SUBTITLE : Int;
+	@:require(flash10_2) static var SUBTITLE : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the T key(84).
@@ -1383,7 +1435,9 @@ extern class Keyboard {
 	/**
 	 * Engage video-on-demand
 	 */
-	//@:require(flash10_2) static var VOD : Int;
+	#if !display
+	@:require(flash10_2) static var VOD : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the W key(87).
@@ -1403,31 +1457,34 @@ extern class Keyboard {
 	/**
 	 * Yellow function key button
 	 */
-	//@:require(flash10_2) static var YELLOW : Int;
+	#if !display
+	@:require(flash10_2) static var YELLOW : Int;
+	#end
 
 	/**
 	 * Constant associated with the key code value for the Z key(90).
 	 */
 	@:require(flash10_1) static var Z : Int;
 
+	#if !display
 	/**
 	 * Specifies whether the Caps Lock key is activated(<code>true</code>) or
 	 * not(<code>false</code>).
 	 */
-	//static var capsLock(default,null) : Bool;
+	static var capsLock(default,null) : Bool;
 
 	/**
 	 * Indicates whether the computer or device provides a virtual keyboard. If
 	 * the current environment provides a virtual keyboard, this value is
 	 * <code>true</code>.
 	 */
-	//@:require(flash10_1) static var hasVirtualKeyboard(default,null) : Bool;
+	@:require(flash10_1) static var hasVirtualKeyboard(default,null) : Bool;
 
 	/**
 	 * Specifies whether the Num Lock key is activated(<code>true</code>) or not
 	 * (<code>false</code>).
 	 */
-	//static var numLock(default,null) : Bool;
+	static var numLock(default,null) : Bool;
 
 	/**
 	 * Indicates the type of physical keyboard provided by the computer or
@@ -1440,7 +1497,7 @@ extern class Keyboard {
 	 * and a 12-button keypad, this property only reports the presence of the
 	 * alphanumeric keyboard.</p>
 	 */
-	//@:require(flash10_1) static var physicalKeyboardType(default,null) : KeyboardType;
+	@:require(flash10_1) static var physicalKeyboardType(default,null) : KeyboardType;
 
 	/**
 	 * Specifies whether the last key pressed is accessible by other SWF files.
@@ -1452,7 +1509,9 @@ extern class Keyboard {
 	 *         accessed. If access is not permitted, this method returns
 	 *         <code>false</code>.
 	 */
-	//static function isAccessible() : Bool;
+	static function isAccessible() : Bool;
+	#end
+	
 }
 
 

@@ -71,7 +71,9 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	/**
 	 * Returns a TextSnapshot object for this DisplayObjectContainer instance.
 	 */
-	//var textSnapshot(default,null) : flash.text.TextSnapshot;
+	#if !display
+	var textSnapshot(default, null) : flash.text.TextSnapshot;
+	#end
 
 	/**
 	 * Calling the <code>new DisplayObjectContainer()</code> constructor throws
@@ -295,7 +297,9 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *                       call the <code>Security.allowDomain()</code> method.
 	 */
 	function removeChildAt(index : Int) : DisplayObject;
-	//@:require(flash11) function removeChildren(beginIndex : Int = 0, endIndex : Int = 2147483647) : Void;
+	#if !display
+	@:require(flash11) function removeChildren(beginIndex : Int = 0, endIndex : Int = 2147483647) : Void;
+	#end
 
 	/**
 	 * Changes the position of an existing child in the display object container.

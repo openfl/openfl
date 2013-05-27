@@ -268,7 +268,9 @@ extern class BitmapData implements IBitmapDrawable {
 	 */
 	function copyPixels(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, ?alphaBitmapData : BitmapData, ?alphaPoint : flash.geom.Point, mergeAlpha : Bool = false) : Void;
 	
-	//@:require(flash11_4) function copyPixelsToByteArray(rect : flash.geom.Rectangle, data : flash.utils.ByteArray) : Void;
+	#if !display
+	@:require(flash11_4) function copyPixelsToByteArray(rect : flash.geom.Rectangle, data : flash.utils.ByteArray) : Void;
+	#end
 	
 	/**
 	 * Frees memory that is used to store the BitmapData object.
@@ -546,7 +548,9 @@ extern class BitmapData implements IBitmapDrawable {
 	 * 
 	 * @param hRect The area of the BitmapData object to use.
 	 */
-	//@:require(flash10) function histogram(?hRect : flash.geom.Rectangle) : flash.Vector<flash.Vector<Float>>;
+	#if !display
+	@:require(flash10) function histogram(?hRect : flash.geom.Rectangle) : flash.Vector<flash.Vector<Float>>;
+	#end
 
 	/**
 	 * Performs pixel-level hit detection between one bitmap image and a point,
@@ -587,8 +591,10 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                       Point, Rectangle, Bitmap, or BitmapData object.
 	 * @throws TypeError     The firstPoint is null.
 	 */
-	//function hitTest(firstPoint : flash.geom.Point, firstAlphaThreshold : UInt, secondObject : flash.utils.Object, ?secondBitmapDataPoint : flash.geom.Point, secondAlphaThreshold : UInt = 1) : Bool;
-
+	#if !display
+	function hitTest(firstPoint : flash.geom.Point, firstAlphaThreshold : UInt, secondObject : flash.utils.Object, ?secondBitmapDataPoint : flash.geom.Point, secondAlphaThreshold : UInt = 1) : Bool;
+	#end
+	
 	/**
 	 * Locks an image so that any objects that reference the BitmapData object,
 	 * such as Bitmap objects, are not updated when this BitmapData object
@@ -638,8 +644,10 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                         alpha transparency value.
 	 * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
 	 */
-	//function merge(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, redMultiplier : UInt, greenMultiplier : UInt, blueMultiplier : UInt, alphaMultiplier : UInt) : Void;
-
+	#if !display
+	function merge(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, redMultiplier : UInt, greenMultiplier : UInt, blueMultiplier : UInt, alphaMultiplier : UInt) : Void;
+	#end
+	
 	/**
 	 * Fills an image with pixels representing random noise.
 	 * 
@@ -714,8 +722,10 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                         upper-left corner of the source rectangle.
 	 * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
 	 */
-	//function paletteMap(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, ?redArray : Array<Int>, ?greenArray : Array<Int>, ?blueArray : Array<Int>, ?alphaArray : Array<Int>) : Void;
-
+	#if !display
+	function paletteMap(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, ?redArray : Array<Int>, ?greenArray : Array<Int>, ?blueArray : Array<Int>, ?alphaArray : Array<Int>) : Void;
+	#end
+	
 	/**
 	 * Generates a Perlin noise image.
 	 *
@@ -819,8 +829,10 @@ extern class BitmapData implements IBitmapDrawable {
 	 * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
 	 * @throws TypeError The numPixels value is negative
 	 */
-	//function pixelDissolve(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, randomSeed : Int = 0, numPixels : Int = 0, fillColor : UInt = 0) : Int;
-
+	#if !display
+	function pixelDissolve(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, randomSeed : Int = 0, numPixels : Int = 0, fillColor : UInt = 0) : Int;
+	#end
+	
 	/**
 	 * Scrolls an image by a certain(<i>x</i>, <i>y</i>) pixel amount. Edge
 	 * regions outside the scrolling area are left unchanged.

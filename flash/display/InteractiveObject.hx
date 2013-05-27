@@ -1047,7 +1047,9 @@ extern class InteractiveObject extends DisplayObject {
 	 * The current accessibility implementation(AccessibilityImplementation) for
 	 * this InteractiveObject instance.
 	 */
-	//var accessibilityImplementation : flash.accessibility.AccessibilityImplementation;
+	#if !display
+	var accessibilityImplementation : flash.accessibility.AccessibilityImplementation;
+	#end
 
 	/**
 	 * Specifies the context menu associated with this object.
@@ -1065,7 +1067,9 @@ extern class InteractiveObject extends DisplayObject {
 	 * <code>clear</code>, <code>copy</code>, <code>cut</code>,
 	 * <code>paste</code>, or <code>selectAll</code> events.</p>
 	 */
-	//var contextMenu : flash.ui.ContextMenu;
+	#if !display
+	var contextMenu : flash.ui.ContextMenu;
+	#end
 
 	/**
 	 * Specifies whether the object receives <code>doubleClick</code> events. The

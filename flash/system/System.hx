@@ -16,7 +16,8 @@ package flash.system;
  */
 extern class System {
 	static var deviceID(default, null):String;
-
+	
+	#if !display
 	/**
 	 * The amount of memory(in bytes) that is allocated to Adobe<sup>®</sup>
 	 * Flash<sup>®</sup> Player or Adobe<sup>®</sup> AIR<sup>®</sup> and that
@@ -24,13 +25,13 @@ extern class System {
 	 * (<code>System.totalMemory</code>) fluctuates as garbage collection takes
 	 * place. Use this property to monitor garbage collection.
 	 */
-	//@:require(flash10_1) static var freeMemory(default,null) : Float;
+	@:require(flash10_1) static var freeMemory(default,null) : Float;
 
 	/**
 	 * The currently installed system IME. To register for imeComposition events,
 	 * call <code>addEventListener()</code> on this instance.
 	 */
-	//static var ime(default,null) : IME;
+	static var ime(default,null) : IME;
 
 	/**
 	 * The entire amount of memory(in bytes) used by an application. This is the
@@ -42,9 +43,10 @@ extern class System {
 	 * <p>For Flash Player, this includes the memory used by the container
 	 * application, such as the web browser.</p>
 	 */
-	//@:require(flash10_1) static var privateMemory(default,null) : Float;
-	//@:require(flash11) static var processCPUUsage(default,null) : Float;
-
+	@:require(flash10_1) static var privateMemory(default,null) : Float;
+	@:require(flash11) static var processCPUUsage(default,null) : Float;
+	#end
+	
 	/**
 	 * The amount of memory(in bytes) currently in use that has been directly
 	 * allocated by Flash Player or AIR.
@@ -61,7 +63,8 @@ extern class System {
 	 * allows larger values.</p>
 	 */
 	static var totalMemory(default, null):Int;
-
+	
+	#if !display
 	/**
 	 * The amount of memory(in bytes) currently in use that has been directly
 	 * allocated by Flash Player or AIR.
@@ -75,7 +78,7 @@ extern class System {
 	 * The <code>System.privateMemory</code> property reflects <i>all</i> memory
 	 * used by an application.</p>
 	 */
-	//@:require(flash10_1) static var totalMemoryNumber(default,null) : Float;
+	@:require(flash10_1) static var totalMemoryNumber(default,null) : Float;
 
 	/**
 	 * A Boolean value that determines which code page to use to interpret
@@ -122,8 +125,8 @@ extern class System {
 	 * the application(Flash Player 6 and later, or AIR) interprets the text as
 	 * Unicode.</p>
 	 */
-	//static var useCodePage : Bool;
-	//static var vmVersion(default,null) : String;
+	static var useCodePage : Bool;
+	static var vmVersion(default,null) : String;
 
 	/**
 	 * Makes the specified XML object immediately available for garbage
@@ -133,8 +136,9 @@ extern class System {
 	 * @param node XML reference that should be made available for garbage
 	 *             collection.
 	 */
-	//@:require(flash10_1) static function disposeXML(node : flash.xml.XML) : Void;
-
+	@:require(flash10_1) static function disposeXML(node : flash.xml.XML) : Void;
+	#end
+	
 	/**
 	 * Closes Flash Player.
 	 *
@@ -158,7 +162,8 @@ extern class System {
 	 * 
 	 */
 	static function gc() : Void;
-
+	
+	#if !display
 	/**
 	 * Pauses Flash Player or the AIR Debug Launcher(ADL). After calling this
 	 * method, nothing in the application continues except the delivery of Socket
@@ -168,8 +173,8 @@ extern class System {
 	 * (ADL) only.</i></p>
 	 * 
 	 */
-	//static function pause() : Void;
-	//@:require(flash11) static function pauseForGCIfCollectionImminent(imminence : Float = 0.75) : Void;
+	static function pause() : Void;
+	@:require(flash11) static function pauseForGCIfCollectionImminent(imminence : Float = 0.75) : Void;
 
 	/**
 	 * Resumes the application after calling <code>System.pause()</code>.
@@ -178,7 +183,7 @@ extern class System {
 	 * (ADL) only.</i></p>
 	 * 
 	 */
-	//static function resume() : Void;
+	static function resume() : Void;
 
 	/**
 	 * Replaces the contents of the Clipboard with a specified text string. This
@@ -195,7 +200,9 @@ extern class System {
 	 * @param string A plain-text string of characters to put on the system
 	 *               Clipboard, replacing its current contents(if any).
 	 */
-	//static function setClipboard(string : String) : Void;
+	static function setClipboard(string : String) : Void;
+	#end
+	
 }
 
 

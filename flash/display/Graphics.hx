@@ -191,7 +191,9 @@ package flash.display;
 	 *                       <code>ShaderInput.input</code> property for more
 	 *                       information.
 	 */
-	//@:require(flash10) function beginShaderFill(shader : Shader, ?matrix : flash.geom.Matrix) : Void;
+	#if !display
+	@:require(flash10) function beginShaderFill(shader : Shader, ?matrix : flash.geom.Matrix) : Void;
+	#end
 
 	/**
 	 * Clears the graphics that were drawn to this Graphics object, and resets
@@ -207,9 +209,11 @@ package flash.display;
 	 * @param sourceGraphics The Graphics object from which to copy the drawing
 	 *                       commands.
 	 */
-	//@:require(flash10) function copyFrom(sourceGraphics : Graphics) : Void;
-	//@:require(flash11) function cubicCurveTo(controlX1 : Float, controlY1 : Float, controlX2 : Float, controlY2 : Float, anchorX : Float, anchorY : Float) : Void;
-
+	#if !display
+	@:require(flash10) function copyFrom(sourceGraphics : Graphics) : Void;
+	@:require(flash11) function cubicCurveTo(controlX1 : Float, controlY1 : Float, controlX2 : Float, controlY2 : Float, anchorX : Float, anchorY : Float) : Void;
+	#end
+	
 	/**
 	 * Draws a curve using the current line style from the current drawing
 	 * position to(anchorX, anchorY) and using the control point that
@@ -531,7 +535,9 @@ package flash.display;
 	 *               otherwise manipulate the bitmap before applying it to the
 	 *               line style.
 	 */
-	//@:require(flash10) function lineShaderStyle(shader : Shader, ?matrix : flash.geom.Matrix) : Void;
+	#if !display
+	@:require(flash10) function lineShaderStyle(shader : Shader, ?matrix : flash.geom.Matrix) : Void;
+	#end
 
 	/**
 	 * Specifies a line style used for subsequent calls to Graphics methods such

@@ -514,7 +514,9 @@ extern class TextField extends flash.display.InteractiveObject {
 	 * formatting, save the value in a variable before removing the style
 	 * sheet.</p>
 	 */
-	//var styleSheet : StyleSheet;
+	#if !display
+	var styleSheet : StyleSheet;
+	#end
 
 	/**
 	 * A string that is the current text in the text field. Lines are separated
@@ -550,7 +552,9 @@ extern class TextField extends flash.display.InteractiveObject {
 	 * Desktop, the normal mode implies that the text is in scrollable as well as
 	 * selection mode.
 	 */
-	//@:require(flash11) var textInteractionMode(default,null) : TextInteractionMode;
+	#if !display
+	@:require(flash11) var textInteractionMode(default,null) : TextInteractionMode;
+	#end
 
 	/**
 	 * The width of the text in pixels.

@@ -292,7 +292,9 @@ extern class SharedObject extends flash.events.EventDispatcher {
 	 *               valid and connected and that the remote shared object was
 	 *               successfully created on the server.
 	 */
-	//function connect(myConnection : NetConnection, ?params : String) : Void;
+	#if !display
+	function connect(myConnection : NetConnection, ?params : String) : Void;
+	#end
 
 	/**
 	 * Immediately writes a locally persistent shared object to a local file. If
@@ -358,7 +360,9 @@ extern class SharedObject extends flash.events.EventDispatcher {
 	 * message, create a callback function attached to the shared object.
 	 * 
 	 */
-	//function send(?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : Void;
+	#if !display
+	function send(?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : Void;
+	#end
 
 	/**
 	 * Indicates to the server that the value of a property in the shared object

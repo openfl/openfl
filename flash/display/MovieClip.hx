@@ -67,13 +67,17 @@ extern class MovieClip extends Sprite #if !flash_strict  implements Dynamic #end
 	 * MovieClip instance does not use scenes, the array includes all frame
 	 * labels from the entire MovieClip instance.
 	 */
-	//var currentLabels(default,null) : Array<FrameLabel>;
+	#if !display
+	var currentLabels(default,null) : Array<FrameLabel>;
+	#end
 
 	/**
 	 * The current scene in which the playhead is located in the timeline of the
 	 * MovieClip instance.
 	 */
-	//var currentScene(default,null) : Scene;
+	#if !display
+	var currentScene(default,null) : Scene;
+	#end
 
 	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
@@ -111,7 +115,9 @@ extern class MovieClip extends Sprite #if !flash_strict  implements Dynamic #end
 	 * An array of Scene objects, each listing the name, the number of frames,
 	 * and the frame labels for a scene in the MovieClip instance.
 	 */
-	//var scenes(default,null) : Array<Scene>;
+	#if !display
+	var scenes(default,null) : Array<Scene>;
+	#end
 
 	/**
 	 * The total number of frames in the MovieClip instance.

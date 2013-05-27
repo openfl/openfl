@@ -72,7 +72,9 @@ extern class TextFormat {
 	 * color black(0x000000).
 	 */
 	var color : Null<Int>;
-	//var display : TextFormatDisplay;
+	#if !display
+	var display : TextFormatDisplay;
+	#end
 
 	/**
 	 * The name of the font for text in this text format, as a string. The

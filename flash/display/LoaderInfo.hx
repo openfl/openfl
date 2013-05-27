@@ -118,7 +118,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 *               requested information.
 	 * @throws Error If the file is not a SWF file.
 	 */
-	//var actionScriptVersion(default,null) : ActionScriptVersion;
+	#if !display
+	var actionScriptVersion(default, null) : ActionScriptVersion;
+	#end
 
 	/**
 	 * When an external SWF file is loaded, all ActionScript 3.0 definitions
