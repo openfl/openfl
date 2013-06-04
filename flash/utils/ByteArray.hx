@@ -39,7 +39,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * read methods each time you access a ByteArray object to ensure that you
 	 * are reading valid data.</p>
 	 */
-	var bytesAvailable(default,null) : Int;
+	var bytesAvailable(default,null) : UInt;
 
 	/**
 	 * Changes or reads the byte order for the data; either
@@ -63,7 +63,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * ActionScript 1.0 format should be used when writing to, or reading from, a
 	 * ByteArray instance. The value is a constant from the ObjectEncoding class.
 	 */
-	var objectEncoding : Int;
+	var objectEncoding : UInt;
 
 	/**
 	 * Moves, or returns the current position, in bytes, of the file pointer into
@@ -237,7 +237,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * @throws RangeError The value of the supplied offset and length, combined,
 	 *                    is greater than the maximum for a uint.
 	 */
-	function readBytes(bytes : ByteArray, offset : Int = 0, length : Int = 0) : Void;
+	function readBytes(bytes : ByteArray, offset : UInt = 0, length : UInt = 0) : Void;
 
 	/**
 	 * Reads an IEEE 754 double-precision(64-bit) floating-point number from the
@@ -292,7 +292,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * @return UTF-8 encoded string.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	function readMultiByte(length : Int, charSet : String) : String;
+	function readMultiByte(length : UInt, charSet : String) : String;
 
 	/**
 	 * Reads an object from the byte array, encoded in AMF serialized format.
@@ -329,7 +329,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * @return A string composed of the UTF-8 bytes of the specified length.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	function readUTFBytes(length : Int) : String;
+	function readUTFBytes(length : UInt) : String;
 
 	/**
 	 * Reads an unsigned byte from the byte stream.
@@ -339,7 +339,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * @return A 32-bit unsigned integer between 0 and 255.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	function readUnsignedByte() : Int;
+	function readUnsignedByte() : UInt;
 
 	/**
 	 * Reads an unsigned 32-bit integer from the byte stream.
@@ -349,7 +349,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * @return A 32-bit unsigned integer between 0 and 4294967295.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	function readUnsignedInt() : Int;
+	function readUnsignedInt() : UInt;
 
 	/**
 	 * Reads an unsigned 16-bit integer from the byte stream.
@@ -359,7 +359,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * @return A 16-bit unsigned integer between 0 and 65535.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	function readUnsignedShort() : Int;
+	function readUnsignedShort() : UInt;
 
 	/**
 	 * Converts the byte array to a string. If the data in the array begins with
