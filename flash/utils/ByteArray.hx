@@ -56,7 +56,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * <p>If the length is set to a value that is smaller than the current
 	 * length, the byte array is truncated.</p>
 	 */
-	var length : Int;
+	var length : UInt;
 
 	/**
 	 * Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
