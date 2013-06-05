@@ -16,10 +16,12 @@ import flash.utils.ByteArray;
 import nme.AssetData;
 #end
 
-#if (js && swfdev)
+#if swf
+#if js
 import format.swf.lite.SWFLite;
-#elseif swf
+#else
 import format.SWF;
+#end
 #end
 
 #if xfl
@@ -52,8 +54,7 @@ class Assets {
 	public static var path(get, null):Map<String, String>;
 	public static var type(get, null):Map<String, AssetType>;
 	
-	#if (swf && !js) private static var cachedSWFLibraries = new Map<String, SWF>(); #end
-	#if (swfdev && js) private static var cachedSWFLibraries = new Map<String, SWFLite>(); #end
+	#if swf private static var cachedSWFLibraries = new Map<String, #if js SWFLite #else SWF #end>(); #end
 	#if xfl private static var cachedXFLLibraries = new Map<String, XFL>(); #end
 	private static var initialized = false;
 	
@@ -127,7 +128,7 @@ class Assets {
 			
 			if (AssetData.library.exists(libraryName)) {
 				
-				#if ((swf && !js) || (swfdev && js))
+				#if swf
 				
 				if (AssetData.library.get(libraryName) == SWF) {
 					
@@ -299,7 +300,7 @@ class Assets {
 		
 		if (AssetData.library.exists(libraryName)) {
 			
-			#if ((swf && !js) || (swfdev && js))
+			#if swf
 			
 			if (AssetData.library.get(libraryName) == SWF) {
 				
