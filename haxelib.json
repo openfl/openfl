@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "OpenFL is an powerful framework for cross-platform development",
-	"version": "1.0.0-rc.2",
+	"version": "1.0.0-rc.3",
 	"releasenote": "Initial release",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
