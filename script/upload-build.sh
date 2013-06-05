@@ -7,6 +7,6 @@ ftp -n -v nme.io << EOT
 binary
 user $USER $PASSWD
 prompt
-put ndll/$3 ndll/$3
+put $3ndll/$4 ndll/$4
 bye
 EOT

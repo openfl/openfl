@@ -1108,35 +1108,35 @@ class RunScript {
 					
 					if (isWindows) {
 						
-						runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "Windows/nme.ndll" ]);
-						runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "Windows/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, openFLNativeDirectory, "Windows/nme.ndll" ]);
+						runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, openFLNativeDirectory, "Windows/nme-debug.ndll" ]);
 						
 						if (Sys.environment ().exists ("VS110COMNTOOLS")) {
 							
-							//runCommand (nmeDirectory, "tools\\run-script\\upload-build.bat", [ user, password, "WinRTx64/nme.ndll" ]);
-							//runCommand (nmeDirectory, "tools\\run-script\\upload-build.bat", [ user, password, "WinRTx64/nme-debug.ndll" ]);
-							runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "WinRTx86/nme.ndll" ]);
-							runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, "WinRTx86/nme-debug.ndll" ]);
+							//runCommand (nmeDirectory, "tools\\run-script\\upload-build.bat", [ user, password, openFLNativeDirectory, "WinRTx64/nme.ndll" ]);
+							//runCommand (nmeDirectory, "tools\\run-script\\upload-build.bat", [ user, password, openFLNativeDirectory, "WinRTx64/nme-debug.ndll" ]);
+							runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, openFLNativeDirectory, "WinRTx86/nme.ndll" ]);
+							runCommand (openFLDirectory, "script\\upload-build.bat", [ user, password, openFLNativeDirectory, "WinRTx86/nme-debug.ndll" ]);
 							
 						}
 						
 					} else if (isLinux) {
 						
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux/nme.ndll" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux/nme-debug.ndll" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux64/nme.ndll" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Linux64/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "Linux/nme.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "Linux/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "Linux64/nme.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "Linux64/nme-debug.ndll" ]);
 						
 					} else if (isMac) {
 						
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Mac/nme.ndll" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "Mac/nme-debug.ndll" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphoneos.a" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphoneos-v7.a" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme.iphonesim.a" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphoneos.a" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphoneos-v7.a" ]);
-						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, "iPhone/libnme-debug.iphonesim.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "Mac/nme.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "Mac/nme-debug.ndll" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "iPhone/libnme.iphoneos.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "iPhone/libnme.iphoneos-v7.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "iPhone/libnme.iphonesim.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "iPhone/libnme-debug.iphoneos.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "iPhone/libnme-debug.iphoneos-v7.a" ]);
+						runCommand (openFLDirectory, "script/upload-build.sh", [ user, password, openFLNativeDirectory, "iPhone/libnme-debug.iphonesim.a" ]);
 						
 					}
 				

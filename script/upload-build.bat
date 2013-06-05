@@ -8,7 +8,7 @@ echo %1>> %SCRIPT_FILE%
 echo %2>> %SCRIPT_FILE%
 echo binary>> %SCRIPT_FILE%
 echo hash>> %SCRIPT_FILE%
-echo put ndll\%3 ndll/%3>> %SCRIPT_FILE%
+echo put %3ndll\%4 ndll/%4>> %SCRIPT_FILE%
 echo bye>> %SCRIPT_FILE%
 
 @echo on
