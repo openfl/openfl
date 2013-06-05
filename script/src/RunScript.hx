@@ -758,7 +758,7 @@ class RunScript {
 		
 		var oldPath:String = "";
 		
-		if (path != "") {
+		if (path != null && path != "") {
 			
 			//trace ("cd " + path);
 			
@@ -795,9 +795,9 @@ class RunScript {
 	
 	public static function main () {
 		
-		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("nme"));
-		openFLDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"));
-		openFLNativeDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-native"));
+		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("nme"), true);
+		openFLDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"), true);
+		openFLNativeDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-native"), true);
 		
 		if (new EReg ("window", "i").match (Sys.systemName ())) {
 			
