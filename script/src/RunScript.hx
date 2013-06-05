@@ -795,7 +795,7 @@ class RunScript {
 	
 	public static function main () {
 		
-		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("nme"), true);
+		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("nme"), false);
 		openFLDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"), true);
 		openFLNativeDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-native"), true);
 		
