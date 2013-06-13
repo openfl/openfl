@@ -144,7 +144,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * @throws SecurityError This security sandbox of the caller is not allowed
 	 *                       to access this ApplicationDomain.
 	 */
-	//var applicationDomain(default,null) : flash.system.ApplicationDomain;
+	#if !display
+	var applicationDomain(default, null) : flash.system.ApplicationDomain;
+	#end
 
 	/**
 	 * The bytes associated with a LoaderInfo object.
@@ -198,9 +200,10 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * @throws Error Thrown if the file is not downloaded sufficiently to
 	 *               retrieve the requested information.
 	 */
+	#if !display
 	var childAllowsParent(default, null) : Bool;
-	
 	@:require(flash11_4) var childSandboxBridge : Dynamic;
+	#end
 
 	/**
 	 * The loaded object associated with this LoaderInfo object.
@@ -294,7 +297,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * <p>For application content in AIR, the value of this property is always
 	 * <code>false</code>.</p>
 	 */
-	@:require(flash10_1) var isURLInaccessible(default,null) : Bool;
+	#if !display
+	@:require(flash10_1) var isURLInaccessible(default, null) : Bool;
+	#end
 
 	/**
 	 * The Loader object associated with this LoaderInfo object. If this
@@ -364,7 +369,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 */
 	var parentAllowsChild(default, null) : Bool;
 	
+	#if !display
 	@:require(flash11_4) var parentSandboxBridge : Dynamic;
+	#end
 
 	/**
 	 * Expresses the domain relationship between the loader and the content:
@@ -394,7 +401,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 *               requested information.
 	 * @throws Error If the file is not a SWF file.
 	 */
-	var swfVersion(default,null) : Int;
+	#if !display
+	var swfVersion(default, null) : Int;
+	#end
 
 	/**
 	 * An object that dispatches an <code>uncaughtError</code> event when an
@@ -411,7 +420,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * <code>uncaughtErrorEvents</code> property is available after the
 	 * <code>applicationComplete</code> event is dispatched.</p>
 	 */
-	//@:require(flash10_1) var uncaughtErrorEvents(default,null) : flash.events.UncaughtErrorEvents;
+	#if !display
+	@:require(flash10_1) var uncaughtErrorEvents(default, null) : flash.events.UncaughtErrorEvents;
+	#end
 
 	/**
 	 * The URL of the media being loaded.
@@ -453,7 +464,9 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * @throws SecurityError The caller is not running in the local trusted
 	 *                       sandbox.
 	 */
+	#if !display
 	static function getLoaderInfoByDefinition(object : Dynamic) : LoaderInfo;
+	#end
 }
 
 
