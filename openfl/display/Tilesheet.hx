@@ -366,18 +366,18 @@ class Tilesheet
 					var t3 = tileData[index + transformIndex + 3];
 					var ox = tilePoint.x * tw;
 					var oy = tilePoint.y * th;
-					var ox_ = ox * t0 + oy * t1;
-					oy = ox * t2 + oy * t3;
+					var ox_ = ox * t0 + oy * t2;
+					oy = ox * t1 + oy * t3;
 					x -= ox_;
 					y -= oy;
 					vertices[offset8] = x;
 					vertices[offset8 + 1] = y;
 					vertices[offset8 + 2] = x + tw * t0;
-					vertices[offset8 + 3] = y + tw * t2;
-					vertices[offset8 + 4] = x + th * t1;
+					vertices[offset8 + 3] = y + tw * t1;
+					vertices[offset8 + 4] = x + th * t2;
 					vertices[offset8 + 5] = y + th * t3;
-					vertices[offset8 + 6] = x + tw * t0 + th * t1;
-					vertices[offset8 + 7] = y + tw * t2 + th * t3;
+					vertices[offset8 + 6] = x + tw * t0 + th * t2;
+					vertices[offset8 + 7] = y + tw * t1 + th * t3;
 				}
 				else
 				{
@@ -391,8 +391,8 @@ class Tilesheet
 						var aky = (1 - tilePoint.y) * tileHeight;
 						var ca = Math.cos(rotation);
 						var sa = Math.sin(rotation);
-						var xc = kx * ca, xs = kx * sa, yc = ky * ca, ys = ky * sa;
-						var axc = akx * ca, axs = akx * sa, ayc = aky * ca, ays = aky * sa;
+						var xc = kx * sa, xs = kx * ca, yc = ky * sa, ys = ky * ca;
+						var axc = akx * sa, axs = akx * ca, ayc = aky * sa, ays = aky * ca;
 						vertices[offset8] = x - (xc + ys);
 						vertices[offset8 + 1] = y - (-xs + yc);
 						vertices[offset8 + 2] = x + axc - ys;
