@@ -144,9 +144,7 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * @throws SecurityError This security sandbox of the caller is not allowed
 	 *                       to access this ApplicationDomain.
 	 */
-	#if !display
 	var applicationDomain(default, null) : flash.system.ApplicationDomain;
-	#end
 
 	/**
 	 * The bytes associated with a LoaderInfo object.
