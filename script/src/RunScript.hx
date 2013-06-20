@@ -975,7 +975,7 @@ class RunScript {
 						// the parens in the arg will trigger shell exceptions
 						// so this wraps the arg to ensure the macro is passed
 						// to the compiler
-						if (arg.substr(2).indexOf("macro") == 0) {
+						if (arg.indexOf("--macro") == 0) {
 							args[i] = '"' + arg +  '"';
 						}
 				}
