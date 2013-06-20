@@ -956,7 +956,8 @@ class RunScript {
 			
 			var flags = new Map <String, String> ();
 			
-			for (arg in args) {
+			for (i in 0...args.length) {
+				var arg = args[i];
 				
 				switch (arg.substr (1)) {
 					
@@ -970,6 +971,13 @@ class RunScript {
 					
 					default:
 					
+						// matches --macro arg that are not wrapped in quotes
+						// the parens in the arg will trigger shell exceptions
+						// so this wraps the arg to ensure the macro is passed
+						// to the compiler
+						if (arg.indexOf("--macro") == 0) {
+							args[i] = '"' + arg +  '"';
+						}
 				}
 				
 			}
