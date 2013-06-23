@@ -962,6 +962,18 @@ class RunScript {
 			
 		} else {
 			
+			if (command == "setup") {
+				
+				var toolsDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-tools"));
+				
+				if (toolsDirectory == null || toolsDirectory == "" || toolsDirectory.indexOf ("is not installed") > -1) {
+					
+					Sys.command ("haxelib install openfl-tools");
+					
+				}
+				
+			}
+			
 			var flags = new Map <String, String> ();
 			
 			for (i in 0...args.length) {
