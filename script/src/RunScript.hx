@@ -8,6 +8,7 @@ import project.Haxelib;
 import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
+import helpers.FileHelper;
 import helpers.PathHelper;
 import helpers.PlatformHelper;
 
@@ -68,7 +69,14 @@ class RunScript {
 			
 			if (target == "tools") {
 				
-				runCommand (PathHelper.getHaxelib (new Haxelib("openfl-tools")), "haxe", [ "build.hxml" ]);
+				var toolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools"));
+				
+				runCommand (toolsDirectory, "haxe", [ "build.hxml" ]);
+				
+				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Windows/nme.ndll", toolsDirectory + "/ndll/Windows/nme.ndll");
+				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Mac/nme.ndll", toolsDirectory + "/ndll/Mac/nme.ndll");
+				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Linux/nme.ndll", toolsDirectory + "/ndll/Linux/nme.ndll");
+				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Linux64/nme.ndll", toolsDirectory + "/ndll/Linux64/nme.ndll");
 				
 			} else if (target == "clean") {
 				
