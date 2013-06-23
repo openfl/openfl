@@ -73,10 +73,10 @@ class RunScript {
 				
 				runCommand (toolsDirectory, "haxe", [ "build.hxml" ]);
 				
-				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Windows/nme.ndll", toolsDirectory + "/ndll/Windows/nme.ndll");
-				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Mac/nme.ndll", toolsDirectory + "/ndll/Mac/nme.ndll");
-				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Linux/nme.ndll", toolsDirectory + "/ndll/Linux/nme.ndll");
-				FileHelper.copyIfNewer (openFLNativeDirectory + "/ndll/Linux64/nme.ndll", toolsDirectory + "/ndll/Linux64/nme.ndll");
+				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Windows/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Windows/nme.ndll"));
+				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Mac/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Mac/nme.ndll"));
+				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Linux/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Linux/nme.ndll"));
+				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Linux64/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Linux64/nme.ndll"));
 				
 			} else if (target == "clean") {
 				
