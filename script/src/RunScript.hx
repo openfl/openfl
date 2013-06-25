@@ -813,7 +813,7 @@ class RunScript {
 		
 		nmeDirectory = PathHelper.getHaxelib (new Haxelib ("nme"), false);
 		openFLDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"), true);
-		openFLNativeDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-native"), true);
+		openFLNativeDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-native"), false);
 		
 		if (new EReg ("window", "i").match (Sys.systemName ())) {
 			
