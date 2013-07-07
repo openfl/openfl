@@ -415,9 +415,9 @@ class Assets {
 			return null;
 			
 		} else {
-
+			
 			return bytes.readUTFBytes(bytes.length);
-	
+			
 		}
 		
 	}

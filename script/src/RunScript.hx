@@ -1327,6 +1327,7 @@ class RunScript {
 		
 		if (FileSystem.exists (nmeDirectory + "ndll/" + path)) {
 			
+			mkdir (PathHelper.combine (openFLNativeDirectory, "ndll/" + path));
 			File.copy (nmeDirectory + "ndll/" + path, openFLNativeDirectory + "ndll/" + path);
 			
 		} else if (FileSystem.exists (openFLNativeDirectory + "ndll/" + path)) {
