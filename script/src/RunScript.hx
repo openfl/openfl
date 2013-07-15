@@ -35,7 +35,7 @@ class RunScript {
 		
 		if (targets == null) {
 			
-			targets = [ "tools" ];
+			targets = [];
 			
 			if (isWindows) {
 				
@@ -1054,7 +1054,7 @@ class RunScript {
 					
 				}
 				
-				build ("", [ "tools", target ], flags);
+				build ("", [ target, "tools" ], flags);
 				
 			}
 			
