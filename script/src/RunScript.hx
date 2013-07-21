@@ -342,14 +342,14 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG" ].concat (defines));
 					synchronizeNDLL ("Mac/nme.ndll");
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("Mac/nme-debug.ndll");
 					
 				}
@@ -1327,7 +1327,7 @@ class RunScript {
 		
 		if (FileSystem.exists (nmeDirectory + "ndll/" + path)) {
 			
-			mkdir (PathHelper.combine (openFLNativeDirectory, "ndll/" + path));
+			mkdir (Path.directory (PathHelper.combine (openFLNativeDirectory, "ndll/" + path)));
 			File.copy (nmeDirectory + "ndll/" + path, openFLNativeDirectory + "ndll/" + path);
 			
 		} else if (FileSystem.exists (openFLNativeDirectory + "ndll/" + path)) {
