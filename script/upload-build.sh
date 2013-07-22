@@ -3,7 +3,7 @@
 USER=$1
 PASSWD=$2
 
-ftp -n -v nme.io << EOT
+ftp -n -v openfl.org << EOT
 binary
 user $USER $PASSWD
 prompt

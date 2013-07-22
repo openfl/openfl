@@ -283,6 +283,7 @@ class Assets {
 	}
 	
 	
+	#if !display
 	/**
 	 * Gets an instance of a library MovieClip
 	 * @usage		var movieClip = Assets.getMovieClip("library:BouncingBall");
@@ -353,6 +354,7 @@ class Assets {
 		return null;
 		
 	}
+	#end
 	
 	
 	/**
