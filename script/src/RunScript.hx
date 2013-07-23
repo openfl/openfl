@@ -75,6 +75,7 @@ class RunScript {
 				
 				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Windows/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Windows/nme.ndll"));
 				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Mac/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Mac/nme.ndll"));
+				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Mac64/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Mac64/nme.ndll"));
 				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Linux/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Linux/nme.ndll"));
 				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Linux64/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Linux64/nme.ndll"));
 				
@@ -340,17 +341,39 @@ class RunScript {
 				
 				//mkdir (nmeDirectory + "/ndll/Mac");
 				
-				if (!flags.exists ("debug")) {
+				if (!flags.exists ("64")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG" ].concat (defines));
-					synchronizeNDLL ("Mac/nme.ndll");
+					if (!flags.exists ("debug")) {
+						
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG" ].concat (defines));
+						synchronizeNDLL ("Mac/nme.ndll");
+						
+					}
+					
+					if (!flags.exists ("release")) {
+						
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-Dfulldebug" ].concat (defines));
+						synchronizeNDLL ("Mac/nme-debug.ndll");
+						
+					}
 					
 				}
 				
-				if (!flags.exists ("release")) {
+				if (!flags.exists ("32")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-Dfulldebug" ].concat (defines));
-					synchronizeNDLL ("Mac/nme-debug.ndll");
+					if (!flags.exists ("debug")) {
+						
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-DHXCPP_M64" ].concat (defines));
+						synchronizeNDLL ("Mac64/nme.ndll");
+						
+					}
+					
+					if (!flags.exists ("release")) {
+						
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
+						synchronizeNDLL ("Mac64/nme-debug.ndll");
+						
+					}
 					
 				}
 			
