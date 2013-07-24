@@ -17,9 +17,8 @@ import nme.AssetData;
 #end
 
 #if swf
-#if js
 import format.swf.lite.SWFLite;
-#else
+#if !js
 import format.SWF;
 #end
 #end
@@ -54,7 +53,8 @@ class Assets {
 	public static var path(get, null):Map<String, String>;
 	public static var type(get, null):Map<String, AssetType>;
 	
-	#if swf private static var cachedSWFLibraries = new Map<String, #if js SWFLite #else SWF #end>(); #end
+	#if (swf && !js) private static var cachedSWFLibraries = new Map<String, SWF>(); #end
+	#if swf private static var cachedSWFLiteLibraries = new Map<String, SWFLite>(); #end
 	#if xfl private static var cachedXFLLibraries = new Map<String, XFL>(); #end
 	private static var initialized = false;
 	
@@ -129,45 +129,27 @@ class Assets {
 			if (AssetData.library.exists(libraryName)) {
 				
 				#if swf
-				
+				#if !js
 				if (AssetData.library.get(libraryName) == SWF) {
 					
-					if (!cachedSWFLibraries.exists(libraryName)) {
-						
-						#if js
-						
-						var unserializer = new Unserializer(getText("libraries/" + libraryName + ".dat"));
-						unserializer.setResolver(cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
-						cachedSWFLibraries.set(libraryName, unserializer.unserialize());
-						
-						#else
-						
-						cachedSWFLibraries.set(libraryName, new SWF(getBytes("libraries/" + libraryName + ".swf")));
-						
-						#end
-						
-					}
-					
-					return cachedSWFLibraries.get(libraryName).getBitmapData(symbolName);
+					return getSWFLibrary (libraryName).getBitmapData (symbolName);
 					
 				}
+				#end
 				
+				if (AssetData.library.get(libraryName) == SWF_LITE) {
+					
+					return getSWFLiteLibrary (libraryName).getBitmapData (symbolName);
+					
+				}
 				#end
 				
 				#if xfl
-				
 				if (AssetData.library.get(libraryName) == XFL) {
 					
-					if (!cachedXFLLibraries.exists(libraryName)) {
-						
-						cachedXFLLibraries.set(libraryName, Unserializer.run(getText("libraries/" + libraryName + "/" + libraryName + ".dat")));
-						
-					}
-					
-					return cachedXFLLibraries.get(libraryName).getBitmapData(symbolName);
+					return getXFLLibrary (libraryName).getBitmapData (symbolName);
 					
 				}
-				
 				#end
 				
 			} else {
@@ -283,7 +265,7 @@ class Assets {
 	}
 	
 	
-	#if !display
+	#if swf
 	/**
 	 * Gets an instance of a library MovieClip
 	 * @usage		var movieClip = Assets.getMovieClip("library:BouncingBall");
@@ -302,45 +284,27 @@ class Assets {
 		if (AssetData.library.exists(libraryName)) {
 			
 			#if swf
-			
+			#if !js
 			if (AssetData.library.get(libraryName) == SWF) {
 				
-				if (!cachedSWFLibraries.exists(libraryName)) {
-					
-					#if js
-					
-					var unserializer = new Unserializer(getText("libraries/" + libraryName + ".dat"));
-					unserializer.setResolver(cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
-					cachedSWFLibraries.set(libraryName, unserializer.unserialize());
-					
-					#else
-					
-					cachedSWFLibraries.set(libraryName, new SWF(getBytes("libraries/" + libraryName + ".swf")));
-					
-					#end
-					
-				}
-				
-				return cachedSWFLibraries.get(libraryName).createMovieClip(symbolName);
+				return getSWFLibrary (libraryName).createMovieClip (symbolName);
 				
 			}
+			#end
 			
+			if (AssetData.library.get(libraryName) == SWF_LITE) {
+				
+				return getSWFLiteLibrary (libraryName).createMovieClip (symbolName);
+				
+			}
 			#end
 			
 			#if xfl
-			
 			if (AssetData.library.get(libraryName) == XFL) {
 				
-				if (!cachedXFLLibraries.exists(libraryName)) {
-					
-					cachedXFLLibraries.set(libraryName, Unserializer.run(getText("libraries/" + libraryName + "/" + libraryName + ".dat")));
-					
-				}
-				
-				return cachedXFLLibraries.get(libraryName).createMovieClip(symbolName);
+				return getXFLLibrary (libraryName).createMovieClip (symbolName);
 				
 			}
-			
 			#end
 			
 		} else {
@@ -402,6 +366,38 @@ class Assets {
 	}
 	
 	
+	#if swf
+	#if !js
+	private static function getSWFLibrary (libraryName:String):SWF {
+		
+		if (!cachedSWFLibraries.exists (libraryName)) {
+			
+			cachedSWFLibraries.set (libraryName, new SWF (getBytes("libraries/" + libraryName + ".swf")));
+			
+		}
+		
+		return cachedSWFLibraries.get (libraryName);
+		
+	}
+	#end
+	
+	
+	private static function getSWFLiteLibrary (libraryName:String):SWFLite {
+		
+		if (!cachedSWFLiteLibraries.exists(libraryName)) {
+			
+			var unserializer = new Unserializer (getText ("libraries/" + libraryName + ".dat"));
+			unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
+			cachedSWFLiteLibraries.set (libraryName, unserializer.unserialize());
+			
+		}
+		
+		return cachedSWFLiteLibraries.get (libraryName);
+		
+	}
+	#end
+	
+	
 	/**
 	 * Gets an instance of an embedded text asset
 	 * @usage		var text = Assets.getText("text.txt");
@@ -425,6 +421,21 @@ class Assets {
 	}
 	
 	
+	#if xfl
+	private static function getXFLLibrary (libraryName:String):XFL {
+		
+		if (!cachedXFLLibraries.exists (libraryName)) {
+				
+			cachedXFLLibraries.set (libraryName, Unserializer.run (getText ("libraries/" + libraryName + "/" + libraryName + ".dat")));
+			
+		}
+		
+		return cachedXFLLibraries.get (libraryName);
+		
+	}
+	#end
+	
+	
 	//public static function loadBitmapData(id:String, handler:BitmapData -> Void, useCache:Bool = true):BitmapData
 	//{
 		//return null;
@@ -443,24 +454,31 @@ class Assets {
 	//}
 	
 	
-	#if js
-	
-	private static function resolveClass(name:String):Class <Dynamic> {
+	private static function resolveClass (name:String):Class <Dynamic> {
 		
-		name = StringTools.replace(name, "native.", "browser.");
+		name = StringTools.replace(name, "native.", "flash.");
+		name = StringTools.replace(name, "browser.", "flash.");
 		return Type.resolveClass(name);
 		
 	}
 	
 	
-	private static function resolveEnum(name:String):Enum <Dynamic> {
+	private static function resolveEnum (name:String):Enum <Dynamic> {
 		
-		name = StringTools.replace(name, "native.", "browser.");
+		name = StringTools.replace(name, "native.", "flash.");
+		name = StringTools.replace(name, "browser.", "flash.");
+		#if flash
+		var value = Type.resolveEnum(name);
+		if (value != null) {
+			return value;
+		} else {
+			return cast Type.resolveClass (name);
+		}
+		#else
 		return Type.resolveEnum(name);
+		#end
 		
 	}
-	
-	#end
 	
 	
 	
@@ -560,6 +578,7 @@ enum AssetType {
 enum LibraryType {
 	
 	SWF;
+	SWF_LITE;
 	XFL;
 	
 }
