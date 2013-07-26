@@ -345,14 +345,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
 						synchronizeNDLL ("Mac/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("Mac/nme-debug.ndll");
 						
 					}
