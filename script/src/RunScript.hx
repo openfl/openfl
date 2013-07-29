@@ -148,15 +148,16 @@ class RunScript {
 	
 	static private function buildDocumentation ():Void {
 		
-		if (isWindows) {
-			
-			//runCommand (nmeDirectory + "/tools/documentation", "haxe", [ "compile-win.hxml" ]);
-			
-		} else {
-			
-			//runCommand (nmeDirectory + "/tools/documentation", "haxe", [ "compile.hxml" ]);
-			
-		}
+		var scriptPath = PathHelper.combine (openFLDirectory, "script");
+		var documentationPath = PathHelper.combine (openFLDirectory, "documentation");
+		
+		PathHelper.mkdir (documentationPath);
+		
+		runCommand (scriptPath, "haxe", [ "documentation.hxml" ]);
+		
+		FileHelper.copyFile (PathHelper.combine (openFLDirectory, "haxedoc.xml"), documentationPath + "/openfl.xml");
+		
+		runCommand (documentationPath, "haxedoc", [ "openfl.xml", "-f", "openfl", "-f", "flash" ]);
 		
 	}
 	

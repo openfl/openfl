@@ -2,6 +2,9 @@ package openfl.events;
 #if (display)
 
 
+import flash.events.Event;
+
+
 extern class JoystickEvent extends Event
 {	
 	static var AXIS_MOVE:String;

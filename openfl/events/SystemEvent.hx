@@ -2,6 +2,9 @@ package openfl.events;
 #if (display)
 
 
+import flash.events.Event;
+
+
 extern class SystemEvent extends Event {
 
 	var data(default, null) : Int;

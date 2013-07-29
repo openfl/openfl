@@ -2,6 +2,7 @@ package openfl.display;
 #if display
 
 
+import flash.display.DisplayObject;
 import flash.geom.Rectangle;
 
 

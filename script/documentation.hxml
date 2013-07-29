@@ -1,0 +1,8 @@
+-xml ../haxedoc.xml
+-cpp obj/docs
+-cp src
+-D display
+ImportAll
+-lib openfl
+--remap flash:flash
+--no-output
