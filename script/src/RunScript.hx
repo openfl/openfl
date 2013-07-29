@@ -346,14 +346,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
 						synchronizeNDLL ("Mac/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("Mac/nme-debug.ndll");
 						
 					}
@@ -364,14 +364,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-DHXCPP_M64" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64" ].concat (defines));
 						synchronizeNDLL ("Mac64/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_CLANG", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("Mac64/nme-debug.ndll");
 						
 					}
