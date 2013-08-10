@@ -69,7 +69,7 @@ class RunScript {
 			
 			if (target == "tools") {
 				
-				var toolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools"));
+				var toolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools"), true);
 				
 				runCommand (toolsDirectory, "haxe", [ "build.hxml" ]);
 				
@@ -104,7 +104,7 @@ class RunScript {
 				
 				if (target == "all") {
 					
-					runCommand (PathHelper.getHaxelib (new Haxelib ("nmedev")), "haxe", [ "build.hxml" ]);
+					//runCommand (PathHelper.getHaxelib (new Haxelib ("nmedev")), "haxe", [ "build.hxml" ]);
 					
 					if (isWindows) {
 						
