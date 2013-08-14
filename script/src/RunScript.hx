@@ -73,11 +73,24 @@ class RunScript {
 				
 				runCommand (toolsDirectory, "haxe", [ "build.hxml" ]);
 				
-				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Windows/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Windows/nme.ndll"));
-				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Mac/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Mac/nme.ndll"));
-				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Mac64/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Mac64/nme.ndll"));
-				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Linux/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Linux/nme.ndll"));
-				FileHelper.copyIfNewer (PathHelper.combine (openFLNativeDirectory, "ndll/Linux64/nme.ndll"), PathHelper.combine (toolsDirectory, "ndll/Linux64/nme.ndll"));
+				var platforms = [ "Windows", "Mac", "Mac64", "Linux", "Linux64" ];
+				
+				for (platform in platforms) {
+					
+					var source = PathHelper.combine (openFLNativeDirectory, "ndll/" + platform + "/nme.ndll");
+					var target = PathHelper.combine (toolsDirectory, "ndll/" + platform + "/nme.ndll");
+					
+					if (!FileSystem.exists (source)) {
+						
+						Sys.println ("Warning: Source path \"" + source + "\" does not exist");
+						
+					} else {
+						
+						FileHelper.copyIfNewer (source, target);
+						
+					}
+					
+				}
 				
 			} else if (target == "clean") {
 				
@@ -999,18 +1012,19 @@ class RunScript {
 			}
 			
 			var flags = new Map <String, String> ();
+			var defines = new Array <String> ();
 			
 			for (i in 0...args.length) {
 				
 				var arg = args[i];
 				
-				switch (arg.substr (1)) {
+				switch (arg) {
 					
-					case "rebuild", "clean", "32", "64":
+					case "-rebuild", "-clean", "-32", "-64":
 						
 						flags.set (arg.substr (1), "");
 					
-					case "d", "debug":
+					case "-d", "-debug":
 						
 						flags.set ("debug", "");
 					
@@ -1019,6 +1033,12 @@ class RunScript {
 						if (arg.indexOf ("--macro") == 0) {
 							
 							args[i] = '"' + arg +  '"';
+							
+						}
+						
+						if (arg.indexOf ("-D") == 0) {
+							
+							defines.push (arg);
 							
 						}
 					
@@ -1071,14 +1091,14 @@ class RunScript {
 					}
 					
 				}
-								
+				
 				if (!flags.exists ("debug")) {
 					
 					flags.set ("release", "");
 					
 				}
 				
-				build ("", [ target, "tools" ], flags);
+				build ("", [ target, "tools" ], flags, defines);
 				
 			}
 			
