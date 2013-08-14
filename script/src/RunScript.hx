@@ -816,7 +816,16 @@ class RunScript {
 			//trace ("cd " + path);
 			
 			oldPath = Sys.getCwd ();
-			Sys.setCwd (path);
+			
+			try {
+				
+				Sys.setCwd (path);
+				
+			} catch (e:Dynamic) {
+				
+				error ("Cannot set current working directory to \"" + path + "\"");
+				
+			}
 			
 		}
 		
@@ -959,7 +968,7 @@ class RunScript {
 						
 					} else {
 						
-						path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib (path)), "project");
+						path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib (path), true), "project");
 						
 					}
 					
