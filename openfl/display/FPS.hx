@@ -7,27 +7,31 @@ import flash.text.TextFormat;
 import haxe.Timer;
 
 
-class FPS extends TextField
-{
-	
-	private var times:Array<Float>;
+class FPS extends TextField {
 	
 	
-	public function new(inX:Float = 10.0, inY:Float = 10.0, inCol:Int = 0x000000)
-	{	
-		super();
+	private var cacheCount:Int;
+	private var times:Array <Float>;
+	
+	
+	public function new (x:Float = 10, y:Float = 10, color:Int = 0x000000) {
 		
-		x = inX;
-		y = inY;
+		super ();
+		
+		this.x = x;
+		this.y = y;
+		
 		selectable = false;
-		
-		defaultTextFormat = new TextFormat("_sans", 12, inCol);
-		
+		defaultTextFormat = new TextFormat ("_sans", 12, color);
 		text = "FPS: ";
 		
+		cacheCount = 0;
 		times = [];
-		addEventListener(Event.ENTER_FRAME, onEnter);
+		
+		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 	}
+	
 	
 	
 	
@@ -35,18 +39,29 @@ class FPS extends TextField
 	
 	
 	
-	private function onEnter(_)
-	{	
-		var now = Timer.stamp();
-		times.push(now);
+	
+	private function this_onEnterFrame (event:Event):Void {
 		
-		while (times[0] < now - 1)
-			times.shift();
+		var currentTime = Timer.stamp ();
+		times.push (currentTime);
 		
-		if (visible)
-		{	
-			text = "FPS: " + times.length;	
+		while (times[0] < currentTime - 1) {
+			
+			times.shift ();
+			
 		}
+		
+		var currentCount = times.length;
+		
+		if (currentCount != cacheCount && visible) {
+			
+			text = "FPS: " + Math.round ((currentCount + cacheCount) / 2);
+			
+		}
+		
+		cacheCount = currentCount;
+		
 	}
+	
 	
 }
