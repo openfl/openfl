@@ -180,7 +180,9 @@ extern class BitmapData implements IBitmapDrawable {
 	 *         objects are not equal, the method returns the number -4.
 	 * @throws TypeError The otherBitmapData is null.
 	 */
+	#if !display
 	function compare(otherBitmapData : BitmapData) : flash.utils.Object;
+	#end
 
 	/**
 	 * Transfers data from one channel of another BitmapData object or the
