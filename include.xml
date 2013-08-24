@@ -9,6 +9,7 @@
 		<include haxelib="openfl-native" if="ios" unless="custom-ios-backend" />
 		<include haxelib="openfl-native" if="linux" unless="custom-linux-backend" />
 		<include haxelib="openfl-native" if="mac" unless="custom-mac-backend" />
+		<include haxelib="openfl-native" if="webos" unless="custom-webos-backend" />
 		<include haxelib="openfl-native" if="windows" unless="custom-windows-backend" />
 		
 		<include haxelib="openfl-html5" if="html5" unless="custom-html5-backend" />
@@ -23,6 +24,7 @@
 		<haxelib name="openfl-native" if="ios" unless="custom-ios-backend" />
 		<haxelib name="openfl-native" if="linux" unless="custom-linux-backend" />
 		<haxelib name="openfl-native" if="mac" unless="custom-mac-backend" />
+		<haxelib name="openfl-native" if="webos" unless="custom-webos-backend" />
 		<haxelib name="openfl-native" if="windows" unless="custom-windows-backend" />
 		
 		<haxelib name="openfl-html5" if="html5" unless="custom-html5-backend" />
