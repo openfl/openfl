@@ -122,6 +122,30 @@ extern class Tilesheet {
 	 */
 	function drawTiles(graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0):Void;
 	
+	/**
+	 * Retrieve the center point of a tile in normalized tile space
+	 * For instance, a center point at the perfect center of a tile is x:0.5 y:0.5
+	 * @param	index		The tile index
+	 * @return 	The center point
+	 */
+	function getTileCenter(index:Int):Point;
+	
+	/**
+	 * Retrieve the tile dimensions relative to the tilesheet texture size
+	 * The returned rectangle is in pixel space, not UV space
+	 * @param	index		The tile index
+	 * @return A rectangle
+	 */
+	function getTileRect(index:Int):Rectangle;
+	
+	/**
+	 * Retrieve the tile UV coordinates
+	 * The returned rectangle is normalized UV space, not pixels.
+	 * @param	index		The tile index
+	 * @return A rectangle
+	 */
+	function getTileUVs(index:Int):Rectangle;
+	
 }
 
 
@@ -185,7 +209,6 @@ class Tilesheet
 		_uvs = new Vector<Float>();
 		
 	}
-	
 	
 	public function addTileRect(rectangle:Rectangle, centerPoint:Point = null):Int
 	{
@@ -488,6 +511,18 @@ class Tilesheet
 		}
 		
 		graphics.endFill();
+	}
+	
+	public inline function getTileCenter(index:Int):Point {
+		return tilePoints[index];
+	}
+	
+	public inline function getTileRect(index:Int):Rectangle {
+		return tiles[index];
+	}
+	
+	public inline function getTileUVs(index:Int):Rectangle {
+		return tileUVs[index];
 	}
 	
 }
