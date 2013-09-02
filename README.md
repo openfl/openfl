@@ -1,6 +1,6 @@
 openfl
 ============
-[![Build Status](https://travis-ci.org/openfl/openfl-tools.png)](https://travis-ci.org/openfl/openfl-tools)
+[![Build Status](https://travis-ci.org/openfl/openfl.png)](https://travis-ci.org/openfl/openfl)
 
 
 Introduction
