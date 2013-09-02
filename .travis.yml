@@ -9,8 +9,8 @@ before_install:
   - haxelib setup ~/haxelib
   - haxelib install openfl-tools
   - haxelib install munit
-  - haxelib git http://github.com/openfl/openfl-validation
+  - git clone https://github.com/openfl/openfl-validation ~/openfl-validation
   - haxelib dev openfl $(pwd)
 
 script:
-  - haxelib run openfl build ~/haxelib/openfl-validation/git/ flash
+  - haxelib run openfl build ~/openfl-validation flash
