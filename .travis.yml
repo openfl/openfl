@@ -8,6 +8,7 @@ before_install:
   - mkdir ~/haxelib
   - haxelib setup ~/haxelib
   - haxelib install openfl-tools
+  - haxelib install format
   - haxelib install munit
   - git clone https://github.com/openfl/openfl-validation ~/openfl-validation
   - haxelib dev openfl $(pwd)
