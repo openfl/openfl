@@ -11,6 +11,9 @@ class ApplicationMain {
 	static var mPreloader:::PRELOADER_NAME::;
 
 	public static function main() {
+		
+		::if (APP_INIT != null)::::APP_INIT::::end::
+		
 		var call_real = true;
 		
 		//nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
