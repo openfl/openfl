@@ -70,8 +70,21 @@ class RunScript {
 			if (target == "tools") {
 				
 				var toolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools"), true);
+				var extendedToolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools-extended"), false);
 				
-				runCommand (toolsDirectory, "haxe", [ "build.hxml" ]);
+				if (extendedToolsDirectory != null && extendedToolsDirectory != "") {
+					
+					var buildScript = File.getContent (PathHelper.combine (extendedToolsDirectory, "build.hxml"));
+					buildScript = StringTools.replace (buildScript, "\r\n", "\n");
+					buildScript = StringTools.replace (buildScript, "\n", " ");
+					
+					runCommand (toolsDirectory, "haxe", buildScript.split (" "));
+					
+				} else {
+					
+					runCommand (toolsDirectory, "haxe", [ "build.hxml" ]);
+					
+				}
 				
 				var platforms = [ "Windows", "Mac", "Mac64", "Linux", "Linux64" ];
 				
