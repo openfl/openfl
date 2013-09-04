@@ -53,7 +53,7 @@ class Assets {
 			#if (tools && !display)
 			
 			AssetData.initialize();
-			assetProviders.unshift (new DefaultAssetProvider ());
+			assetProviders.push (new DefaultAssetProvider ());
 			
 			#end
 			
@@ -79,7 +79,7 @@ class Assets {
 		
 		for (provider in assetProviders) {
 			
-			if (provider.exists (id, IMAGE)) {
+			if (provider.hasAsset (id, IMAGE)) {
 				
 				return provider.getBitmapData (id, useCache);
 				
@@ -110,7 +110,7 @@ class Assets {
 		
 		for (provider in assetProviders) {
 			
-			if (provider.exists (id, BINARY)) {
+			if (provider.hasAsset (id, BINARY)) {
 				
 				return provider.getBytes (id);
 				
@@ -141,7 +141,7 @@ class Assets {
 		
 		for (provider in assetProviders) {
 			
-			if (provider.exists (id, FONT)) {
+			if (provider.hasAsset (id, FONT)) {
 				
 				return provider.getFont (id);
 				
@@ -172,7 +172,7 @@ class Assets {
 		
 		for (provider in assetProviders) {
 			
-			if (provider.exists (id, MOVIE_CLIP)) {
+			if (provider.hasAsset (id, MOVIE_CLIP)) {
 				
 				return provider.getMovieClip (id);
 				
@@ -203,7 +203,7 @@ class Assets {
 		
 		for (provider in assetProviders) {
 			
-			if (provider.exists (id, SOUND)) {
+			if (provider.hasAsset (id, SOUND)) {
 				
 				return provider.getSound (id);
 				
@@ -253,12 +253,75 @@ class Assets {
 	//{	
 		//return null;
 	//}
+	
+	
+	public static function loadLibrary (name:String, callback:Dynamic):Void {
+		
+		initialize();
+		
+		#if (tools && !display)
+		
+		if (Assets.library.exists (name)) {
+			
+			var type = Std.string (Assets.library.get (name));
+			
+			for (provider in assetProviders) {
+				
+				if (provider.hasLibrary (name, type)) {
+					
+					provider.loadLibrary (name, type, callback);
+					return;
+					
+				}
+				
+			}
+			
+		}
+		
+		trace("[openfl.Assets] There is no asset library named \"" + name + "\"");
+		
+		#end
+		
+	}
+	
+	
 	//
 	//
 	//public static function loadText(id:String, handler:String -> Void):String
 	//{
 		//return null;
 	//}
+	
+	
+	
+	public static function unloadLibrary (name:String):Void {
+		
+		initialize();
+		
+		#if (tools && !display)
+		
+		if (Assets.library.exists (name)) {
+			
+			var type = Std.string (Assets.library.get (name));
+			
+			for (provider in assetProviders) {
+				
+				if (provider.hasLibrary (name, type)) {
+					
+					provider.unloadLibrary (name, type);
+					return;
+					
+				}
+				
+			}
+			
+		}
+		
+		trace("[openfl.Assets] There is no asset library named \"" + name + "\"");
+		
+		#end
+		
+	}
 	
 	
 	
@@ -343,18 +406,6 @@ class Assets {
 }
 
 
-interface IAssetProvider {
-	
-	function exists (id:String, type:AssetType):Bool;
-	function getBitmapData (id:String, useCache:Bool):BitmapData;
-	function getBytes (id:String):ByteArray;
-	function getFont (id:String):Font;
-	function getMovieClip (id:String):MovieClip;
-	function getSound (id:String):Sound;
-	
-}
-
-
 #if (tools && !display)
 class DefaultAssetProvider implements IAssetProvider {
 	
@@ -362,25 +413,6 @@ class DefaultAssetProvider implements IAssetProvider {
 	public function new () {
 		
 		
-		
-	}
-	
-	
-	public function exists (id:String, type:AssetType):Bool {
-		
-		var assetType = AssetData.type.get(id);
-		
-		if (AssetData.type.exists(id)) {
-			
-			if (type == BINARY || assetType == type || type == SOUND && (assetType == MUSIC || assetType == SOUND)) {
-				
-				return true;
-				
-			}
-			
-		}
-		
-		return false;
 		
 	}
 	
@@ -496,6 +528,46 @@ class DefaultAssetProvider implements IAssetProvider {
 	}
 	
 	
+	public function hasAsset (id:String, type:AssetType):Bool {
+		
+		var assetType = AssetData.type.get(id);
+		
+		if (AssetData.type.exists(id)) {
+			
+			if (type == BINARY || assetType == type || type == SOUND && (assetType == MUSIC || assetType == SOUND)) {
+				
+				return true;
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	public function hasLibrary (name:String, type:String):Bool {
+		
+		return false;
+		
+	}
+	
+	
+	public function loadLibrary (name:String, type:String, callback:Dynamic):Void {
+		
+		callback ();
+		
+	}
+	
+	
+	public function unloadLibrary (name:String, type:String):Void {
+		
+		
+		
+	}
+	
+	
 }
 #end
 
@@ -509,6 +581,21 @@ enum AssetType {
 	SOUND;
 	TEXT;
 	MOVIE_CLIP;
+	
+}
+
+
+interface IAssetProvider {
+	
+	function getBitmapData (id:String, useCache:Bool):BitmapData;
+	function getBytes (id:String):ByteArray;
+	function getFont (id:String):Font;
+	function getMovieClip (id:String):MovieClip;
+	function getSound (id:String):Sound;
+	function hasAsset (id:String, type:AssetType):Bool;
+	function hasLibrary (name:String, type:String):Bool;
+	function loadLibrary (name:String, type:String, callback:Dynamic):Void;
+	function unloadLibrary (name:String, type:String):Void;
 	
 }
 
