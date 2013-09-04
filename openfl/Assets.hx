@@ -16,17 +16,6 @@ import flash.utils.ByteArray;
 import nme.AssetData;
 #end
 
-#if swf
-import format.swf.lite.SWFLite;
-#if !js
-import format.SWF;
-#end
-#end
-
-#if xfl
-import format.XFL;
-#end
-
 
 /**
  * <p>The Assets class provides a cross-platform interface to access 
@@ -47,15 +36,13 @@ import format.XFL;
 class Assets {
 	
 	
+	public static var assetProviders:Array<IAssetProvider> = [];
 	public static var cachedBitmapData = new Map<String, BitmapData>();
 	public static var id(get, null):Array<String>;
 	public static var library(get, null):Map<String, LibraryType>;
 	public static var path(get, null):Map<String, String>;
 	public static var type(get, null):Map<String, AssetType>;
 	
-	#if (swf && !js) private static var cachedSWFLibraries = new Map<String, SWF>(); #end
-	#if swf private static var cachedSWFLiteLibraries = new Map<String, SWFLite>(); #end
-	#if xfl private static var cachedXFLLibraries = new Map<String, XFL>(); #end
 	private static var initialized = false;
 	
 	
@@ -66,6 +53,7 @@ class Assets {
 			#if (tools && !display)
 			
 			AssetData.initialize();
+			assetProviders.unshift (new DefaultAssetProvider ());
 			
 			#end
 			
@@ -89,80 +77,17 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (AssetData.type.exists(id) && AssetData.type.get(id) == IMAGE) {
+		for (provider in assetProviders) {
 			
-			if (useCache && cachedBitmapData.exists(id)) {
+			if (provider.exists (id, IMAGE)) {
 				
-				return cachedBitmapData.get(id);
-				
-			} else {
-				
-				#if flash
-				
-				var data = cast(Type.createInstance(AssetData.className.get(id), []), BitmapData);
-				
-				#elseif js
-				
-				var data = cast(ApplicationMain.loaders.get(AssetData.path.get(id)).contentLoaderInfo.content, Bitmap).bitmapData;
-				
-				#else
-				
-				var data = BitmapData.load(AssetData.path.get(id));
-				
-				#end
-				
-				if (useCache) {
-					
-					cachedBitmapData.set(id, data);
-					
-				}
-				
-				return data;
+				return provider.getBitmapData (id, useCache);
 				
 			}
-			
-		}  else if (id.indexOf(":") > -1) {
-			
-			var libraryName = id.substr(0, id.indexOf(":"));
-			var symbolName = id.substr(id.indexOf(":") + 1);
-			
-			if (AssetData.library.exists(libraryName)) {
-				
-				#if swf
-				#if !js
-				if (AssetData.library.get(libraryName) == SWF) {
-					
-					return getSWFLibrary (libraryName).getBitmapData (symbolName);
-					
-				}
-				#end
-				
-				if (AssetData.library.get(libraryName) == SWF_LITE) {
-					
-					return getSWFLiteLibrary (libraryName).getBitmapData (symbolName);
-					
-				}
-				#end
-				
-				#if xfl
-				if (AssetData.library.get(libraryName) == XFL) {
-					
-					return getXFLLibrary (libraryName).getBitmapData (symbolName);
-					
-				}
-				#end
-				
-			} else {
-				
-				trace("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-				
-			}
-			
-		} else {
-			
-			trace("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
 			
 		}
+		
+		trace("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
 		
 		#end
 		
@@ -183,43 +108,17 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (AssetData.type.exists(id)) {
+		for (provider in assetProviders) {
 			
-			#if flash
-			
-			return Type.createInstance(AssetData.className.get(id), []);
-			
-			#elseif js
-
-			var bytes:ByteArray = null;
-			var data = ApplicationMain.urlLoaders.get(AssetData.path.get(id)).data;
-			if (Std.is(data, String)) {
-				var bytes = new ByteArray();
-				bytes.writeUTFBytes(data);
-			} else if (Std.is(data, ByteArray)) {
-				bytes = cast data;
-			} else {
-				bytes = null;
+			if (provider.exists (id, BINARY)) {
+				
+				return provider.getBytes (id);
+				
 			}
-
-			if (bytes != null) {
-				bytes.position = 0;
-				return bytes;
-			} else {
-				return null;
-			}
-			
-			#else
-			
-			return ByteArray.readFile(AssetData.path.get(id));
-			
-			#end
-			
-		} else {
-			
-			trace("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
 			
 		}
+		
+		trace("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
 		
 		#end
 		
@@ -240,23 +139,17 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (AssetData.type.exists(id) && AssetData.type.get(id) == FONT) {
+		for (provider in assetProviders) {
 			
-			#if (flash || js)
-			
-			return cast(Type.createInstance(AssetData.className.get(id), []), Font);
-			
-			#else
-			
-			return new Font(AssetData.path.get(id));
-			
-			#end
-			
-		} else {
-			
-			trace("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
+			if (provider.exists (id, FONT)) {
+				
+				return provider.getFont (id);
+				
+			}
 			
 		}
+		
+		trace("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
 		
 		#end
 		
@@ -265,7 +158,6 @@ class Assets {
 	}
 	
 	
-	#if swf
 	/**
 	 * Gets an instance of a library MovieClip
 	 * @usage		var movieClip = Assets.getMovieClip("library:BouncingBall");
@@ -278,47 +170,23 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		var libraryName = id.substr(0, id.indexOf(":"));
-		var symbolName = id.substr(id.indexOf(":") + 1);
-		
-		if (AssetData.library.exists(libraryName)) {
+		for (provider in assetProviders) {
 			
-			#if swf
-			#if !js
-			if (AssetData.library.get(libraryName) == SWF) {
+			if (provider.exists (id, MOVIE_CLIP)) {
 				
-				return getSWFLibrary (libraryName).createMovieClip (symbolName);
+				return provider.getMovieClip (id);
 				
 			}
-			#end
-			
-			if (AssetData.library.get(libraryName) == SWF_LITE) {
-				
-				return getSWFLiteLibrary (libraryName).createMovieClip (symbolName);
-				
-			}
-			#end
-			
-			#if xfl
-			if (AssetData.library.get(libraryName) == XFL) {
-				
-				return getXFLLibrary (libraryName).createMovieClip (symbolName);
-				
-			}
-			#end
-			
-		} else {
-			
-			trace("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
+		
+		trace("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
 		
 		#end
 		
 		return null;
 		
 	}
-	#end
 	
 	
 	/**
@@ -333,25 +201,11 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (AssetData.type.exists(id)) {
+		for (provider in assetProviders) {
 			
-			var type = AssetData.type.get(id);
-			
-			if (type == SOUND || type == MUSIC) {
+			if (provider.exists (id, SOUND)) {
 				
-				#if flash
-				
-				return cast(Type.createInstance(AssetData.className.get(id), []), Sound);
-				
-				#elseif js
-				
-				return new Sound(new URLRequest(AssetData.path.get(id)));
-				
-				#else
-				
-				return new Sound(new URLRequest(AssetData.path.get(id)), null, type == MUSIC);
-				
-				#end
+				return provider.getSound (id);
 				
 			}
 			
@@ -364,38 +218,6 @@ class Assets {
 		return null;
 		
 	}
-	
-	
-	#if swf
-	#if !js
-	private static function getSWFLibrary (libraryName:String):SWF {
-		
-		if (!cachedSWFLibraries.exists (libraryName)) {
-			
-			cachedSWFLibraries.set (libraryName, new SWF (getBytes("libraries/" + libraryName + ".swf")));
-			
-		}
-		
-		return cachedSWFLibraries.get (libraryName);
-		
-	}
-	#end
-	
-	
-	private static function getSWFLiteLibrary (libraryName:String):SWFLite {
-		
-		if (!cachedSWFLiteLibraries.exists(libraryName)) {
-			
-			var unserializer = new Unserializer (getText ("libraries/" + libraryName + ".dat"));
-			unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
-			cachedSWFLiteLibraries.set (libraryName, unserializer.unserialize());
-			
-		}
-		
-		return cachedSWFLiteLibraries.get (libraryName);
-		
-	}
-	#end
 	
 	
 	/**
@@ -421,21 +243,6 @@ class Assets {
 	}
 	
 	
-	#if xfl
-	private static function getXFLLibrary (libraryName:String):XFL {
-		
-		if (!cachedXFLLibraries.exists (libraryName)) {
-				
-			cachedXFLLibraries.set (libraryName, Unserializer.run (getText ("libraries/" + libraryName + "/" + libraryName + ".dat")));
-			
-		}
-		
-		return cachedXFLLibraries.get (libraryName);
-		
-	}
-	#end
-	
-	
 	//public static function loadBitmapData(id:String, handler:BitmapData -> Void, useCache:Bool = true):BitmapData
 	//{
 		//return null;
@@ -452,33 +259,6 @@ class Assets {
 	//{
 		//return null;
 	//}
-	
-	
-	private static function resolveClass (name:String):Class <Dynamic> {
-		
-		name = StringTools.replace(name, "native.", "flash.");
-		name = StringTools.replace(name, "browser.", "flash.");
-		return Type.resolveClass(name);
-		
-	}
-	
-	
-	private static function resolveEnum (name:String):Enum <Dynamic> {
-		
-		name = StringTools.replace(name, "native.", "flash.");
-		name = StringTools.replace(name, "browser.", "flash.");
-		#if flash
-		var value = Type.resolveEnum(name);
-		if (value != null) {
-			return value;
-		} else {
-			return cast Type.resolveClass (name);
-		}
-		#else
-		return Type.resolveEnum(name);
-		#end
-		
-	}
 	
 	
 	
@@ -563,6 +343,163 @@ class Assets {
 }
 
 
+interface IAssetProvider {
+	
+	function exists (id:String, type:AssetType):Bool;
+	function getBitmapData (id:String, useCache:Bool):BitmapData;
+	function getBytes (id:String):ByteArray;
+	function getFont (id:String):Font;
+	function getMovieClip (id:String):MovieClip;
+	function getSound (id:String):Sound;
+	
+}
+
+
+#if (tools && !display)
+class DefaultAssetProvider implements IAssetProvider {
+	
+	
+	public function new () {
+		
+		
+		
+	}
+	
+	
+	public function exists (id:String, type:AssetType):Bool {
+		
+		var assetType = AssetData.type.get(id);
+		
+		if (AssetData.type.exists(id)) {
+			
+			if (type == BINARY || assetType == type || type == SOUND && (assetType == MUSIC || assetType == SOUND)) {
+				
+				return true;
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	public function getBitmapData (id:String, useCache:Bool):BitmapData {
+		
+		if (useCache && Assets.cachedBitmapData.exists(id)) {
+			
+			return Assets.cachedBitmapData.get(id);
+			
+		} else {
+			
+			#if flash
+			
+			var data = cast(Type.createInstance(AssetData.className.get(id), []), BitmapData);
+			
+			#elseif js
+			
+			var data = cast(ApplicationMain.loaders.get(AssetData.path.get(id)).contentLoaderInfo.content, Bitmap).bitmapData;
+			
+			#else
+			
+			var data = BitmapData.load(AssetData.path.get(id));
+			
+			#end
+			
+			if (useCache) {
+				
+				Assets.cachedBitmapData.set(id, data);
+				
+			}
+			
+			return data;
+			
+		}
+		
+	}
+	
+	
+	public function getBytes (id:String):ByteArray {
+		
+		#if flash
+		
+		return Type.createInstance(AssetData.className.get(id), []);
+		
+		#elseif js
+
+		var bytes:ByteArray = null;
+		var data = ApplicationMain.urlLoaders.get(AssetData.path.get(id)).data;
+		if (Std.is(data, String)) {
+			var bytes = new ByteArray();
+			bytes.writeUTFBytes(data);
+		} else if (Std.is(data, ByteArray)) {
+			bytes = cast data;
+		} else {
+			bytes = null;
+		}
+
+		if (bytes != null) {
+			bytes.position = 0;
+			return bytes;
+		} else {
+			return null;
+		}
+		
+		#else
+		
+		return ByteArray.readFile(AssetData.path.get(id));
+		
+		#end
+		
+	}
+	
+	
+	public function getFont (id:String):Font {
+		
+		#if (flash || js)
+		
+		return cast(Type.createInstance(AssetData.className.get(id), []), Font);
+		
+		#else
+		
+		return new Font(AssetData.path.get(id));
+		
+		#end
+		
+	}
+	
+	
+	public function getMovieClip (id:String):MovieClip {
+		
+		return null;
+		
+	}
+	
+	
+	public function getSound (id:String):Sound {
+		
+		#if flash
+		
+		return cast(Type.createInstance(AssetData.className.get(id), []), Sound);
+		
+		#elseif js
+		
+		return new Sound(new URLRequest(AssetData.path.get(id)));
+		
+		#else
+		
+		return new Sound(new URLRequest(AssetData.path.get(id)), null, AssetData.type.get(id) == MUSIC);
+		
+		#end
+		
+	}
+	
+	
+}
+#end
+
+
 enum AssetType {
 	
 	BINARY;
@@ -571,6 +508,7 @@ enum AssetType {
 	MUSIC;
 	SOUND;
 	TEXT;
+	MOVIE_CLIP;
 	
 }
 
