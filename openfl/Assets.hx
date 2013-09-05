@@ -563,7 +563,7 @@ enum AssetType {
 }
 
 
-#if (tools && (openfl_ver < "1.1.0") && !display)
+#if (tools && (tools < "1.1.0") && !display)
 
 
 enum LibraryType {
@@ -587,8 +587,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 		nme.AssetData.initialize ();
 		
 		#end
-		
-		trace ("SLDFKJLSDFKJ");
 		
 	}
 	
