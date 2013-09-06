@@ -37,6 +37,35 @@ import haxe.Unserializer;
 	private static var initialized = false;
 	
 	
+	public static function exists (id:String, type:AssetType = null):Bool {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		if (type == null) {
+			
+			type = BINARY;
+			
+		}
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			return library.exists (symbolName, type);
+			
+		}
+		
+		#end
+		
+		return false;
+		
+	}
+	
+	
 	/**
 	 * Gets an instance of an embedded bitmap
 	 * @usage		var bitmap = new Bitmap(Assets.getBitmapData("image.jpg"));
