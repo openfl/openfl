@@ -337,9 +337,19 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		//return ByteArray.readFile (AssetData.path.get(id));
+		var data = getText ("libraries/" + name + ".dat");
 		
-		trace ("[openfl.Assets] There is no asset library named \"" + name + "\"");
+		if (data != null && data != "") {
+			
+			var library:AssetLibrary = Unserializer.run (data);
+			libraries.set (name, library);
+			handler (library);
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + name + "\"");
+			
+		}
 		
 		#end
 		
