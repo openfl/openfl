@@ -133,6 +133,7 @@ package flash.display;
  */
 extern class DisplayObject extends flash.events.EventDispatcher  implements IBitmapDrawable {
 
+	#if !display
 	/**
 	 * The current accessibility options for this display object. If you modify
 	 * the <code>accessibilityProperties</code> property or any of the fields
@@ -144,7 +145,6 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 * the value of <code>accessibilityProperties</code> is prepopulated with any
 	 * information you entered in the Accessibility panel for that object.</p>
 	 */
-	#if !display
 	var accessibilityProperties : flash.accessibility.AccessibilityProperties;
 	#end
 
