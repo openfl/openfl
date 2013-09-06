@@ -28,7 +28,7 @@ import haxe.Unserializer;
  * and specifying a custom preloader using <window preloader="" />
  * in the project file.</p>
  */
-class Assets {
+@:access(openfl.AssetLibrary) class Assets {
 	
 	
 	public static var cache = new AssetCache ();
@@ -343,7 +343,7 @@ class Assets {
 			
 			var library:AssetLibrary = Unserializer.run (data);
 			libraries.set (name, library);
-			handler (library);
+			library.load (handler);
 			
 		} else {
 			
@@ -470,6 +470,13 @@ class AssetLibrary {
 	public function getSound (id:String):Sound {
 		
 		return null;
+		
+	}
+	
+	
+	private function load (handler:AssetLibrary -> Void):Void {
+		
+		handler (this);
 		
 	}
 	
