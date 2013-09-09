@@ -426,7 +426,7 @@ class RunScript {
 				
 				//mkdir (nmeDirectory + "/ndll/Windows");
 				
-				if (!flags.exists ("winrt")) {
+				//if (!flags.exists ("winrt")) {
 					
 					if (Sys.environment ().exists ("VS110COMNTOOLS") && Sys.environment ().exists ("VS100COMNTOOLS")) {
 						
@@ -448,9 +448,9 @@ class RunScript {
 						
 					}
 					
-				}
+				//}
 				
-				if (Sys.environment ().exists ("VS110COMNTOOLS") && !flags.exists ("win32")) {
+				/*if (Sys.environment ().exists ("VS110COMNTOOLS") && !flags.exists ("win32")) {
 					
 					Sys.putEnv ("HXCPP_MSVC", Sys.getEnv ("VS110COMNTOOLS"));
 					
@@ -480,7 +480,7 @@ class RunScript {
 						
 					}
 					
-				}
+				}*/
 			
 		}
 		
