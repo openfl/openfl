@@ -1,3 +1,6 @@
+package;
+
+
 import haxe.io.Eof;
 import haxe.Http;
 import haxe.io.Path;
@@ -30,6 +33,15 @@ class RunScript {
 		if (path == "") {
 			
 			path = nmeDirectory + "/project";
+			
+		}
+		
+		var buildFile = "Build.xml";
+		
+		if (FileSystem.exists (path) && !FileSystem.isDirectory (path)) {
+			
+			buildFile = Path.withoutDirectory (path);
+			path = Path.directory (path);
 			
 		}
 		
@@ -134,24 +146,24 @@ class RunScript {
 					
 					if (isWindows) {
 						
-						buildLibrary ("windows", flags, defines, path);
+						buildLibrary ("windows", flags, defines, path, buildFile);
 						
 					} else if (isLinux) {
 						
-						buildLibrary ("linux", flags, defines, path);
+						buildLibrary ("linux", flags, defines, path, buildFile);
 						//buildLibrary ("linux", flags, defines.concat ([ "rpi" ]));
 						
 					} else if (isMac) {
 						
-						buildLibrary ("mac", flags, defines, path);
-						buildLibrary ("ios", flags, defines, path);
+						buildLibrary ("mac", flags, defines, path, buildFile);
+						buildLibrary ("ios", flags, defines, path, buildFile);
 						
 					}
 					
-					buildLibrary ("android", flags, defines, path);
-					buildLibrary ("blackberry", flags, defines, path);
-					buildLibrary ("emscripten", flags, defines, path);
-					buildLibrary ("webos", flags, defines, path);
+					buildLibrary ("android", flags, defines, path, buildFile);
+					buildLibrary ("blackberry", flags, defines, path, buildFile);
+					buildLibrary ("emscripten", flags, defines, path, buildFile);
+					buildLibrary ("webos", flags, defines, path, buildFile);
 					
 					buildDocumentation ();
 					
@@ -161,7 +173,7 @@ class RunScript {
 					
 				} else {
 					
-					buildLibrary (target, flags, defines, path);
+					buildLibrary (target, flags, defines, path, buildFile);
 					
 				}
 				
@@ -188,7 +200,7 @@ class RunScript {
 	}
 	
 	
-	static private function buildLibrary (target:String, flags:Map <String, String> = null, defines:Array<String> = null, path:String = ""):Void {
+	static private function buildLibrary (target:String, flags:Map <String, String> = null, defines:Array<String> = null, path:String = "", buildFile:String = ""):Void {
 		
 		if (flags == null) {
 			
@@ -208,6 +220,12 @@ class RunScript {
 			
 		}
 		
+		if (buildFile == "") {
+			
+			buildFile = "Build.xml";
+			
+		}
+		
 		// The -Ddebug directive creates a debug build of the library, but the -Dfulldebug directive
 		// will create a debug library using the ".debug" suffix on the file name, so both the release
 		// and debug libraries can exist in the same directory
@@ -220,18 +238,18 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dandroid" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid" ].concat (defines));
 					synchronizeNDLL ("Android/libnme.so");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dandroid", "-DHXCPP_ARMV7", "-DHXCPP_ARM7" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid", "-DHXCPP_ARMV7", "-DHXCPP_ARM7" ].concat (defines));
 					synchronizeNDLL ("Android/libnme-7.so");
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dandroid", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("Android/libnme-debug.so");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dandroid", "-DHXCPP_ARMV7", "-DHXCPP_ARM7", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid", "-DHXCPP_ARMV7", "-DHXCPP_ARM7", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("Android/libnme-debug-7.so");
 					
 				}
@@ -242,18 +260,18 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dblackberry" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dblackberry" ].concat (defines));
 					synchronizeNDLL ("BlackBerry/nme.so");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dblackberry", "-Dsimulator" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dblackberry", "-Dsimulator" ].concat (defines));
 					synchronizeNDLL ("BlackBerry/nme-x86.so");
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dblackberry", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dblackberry", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("BlackBerry/nme-debug.so");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dblackberry", "-Dsimulator", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dblackberry", "-Dsimulator", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("BlackBerry/nme-debug-x86.so");
 					
 				}
@@ -262,14 +280,14 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Demscripten" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Demscripten" ].concat (defines));
 					synchronizeNDLL ("Emscripten/nme.a");
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Demscripten", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Demscripten", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("Emscripten/nme-debug.a");
 					
 				}
@@ -280,22 +298,22 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Diphoneos" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Diphoneos" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme.iphoneos.a");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Diphoneos", "-DHXCPP_ARMV7" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Diphoneos", "-DHXCPP_ARMV7" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme.iphoneos-v7.a");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Diphonesim" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Diphonesim" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme.iphonesim.a");
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Diphoneos", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Diphoneos", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme-debug.iphoneos.a");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Diphoneos", "-DHXCPP_ARMV7", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Diphoneos", "-DHXCPP_ARMV7", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme-debug.iphoneos-v7.a");
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Diphonesim", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Diphonesim", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme-debug.iphonesim.a");
 					
 				}
@@ -310,14 +328,14 @@ class RunScript {
 						
 						if (!flags.exists ("debug")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64" ].concat (defines));
+							runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-DHXCPP_M64" ].concat (defines));
 							synchronizeNDLL ("Linux64/nme.ndll");
 							
 						}
 						
 						if (!flags.exists ("release")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
+							runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
 							synchronizeNDLL ("Linux64/nme-debug.ndll");
 							
 						}
@@ -330,14 +348,14 @@ class RunScript {
 						
 						if (!flags.exists ("debug")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
+							runCommand (path, "haxelib", [ "run", "hxcpp", buildFile ].concat (defines));
 							synchronizeNDLL ("Linux/nme.ndll");
 							
 						}
 						
 						if (!flags.exists ("release")) {
 							
-							runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
+							runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dfulldebug" ].concat (defines));
 							synchronizeNDLL ("Linux/nme-debug.ndll");
 							
 						}
@@ -350,14 +368,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Drpi" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Drpi" ].concat (defines));
 						synchronizeNDLL ("RPi/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Drpi", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Drpi", "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("RPi/nme-debug.ndll");
 						
 					}
@@ -372,14 +390,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile ].concat (defines));
 						synchronizeNDLL ("Mac/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("Mac/nme-debug.ndll");
 						
 					}
@@ -390,14 +408,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-DHXCPP_M64" ].concat (defines));
 						synchronizeNDLL ("Mac64/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-DHXCPP_M64", "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("Mac64/nme-debug.ndll");
 						
 					}
@@ -410,14 +428,14 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dwebos" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dwebos" ].concat (defines));
 					synchronizeNDLL ("webOS/nme.so");
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dwebos", "-Dfulldebug" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dwebos", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("webOS/nme-debug.ndll");
 					
 				}
@@ -436,14 +454,14 @@ class RunScript {
 					
 					if (!flags.exists ("debug")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile ].concat (defines));
 						synchronizeNDLL ("Windows/nme.ndll");
 						
 					}
 					
 					if (!flags.exists ("release")) {
 						
-						runCommand (path, "haxelib", [ "run", "hxcpp", "Build.xml", "-Dfulldebug" ].concat (defines));
+						runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dfulldebug" ].concat (defines));
 						synchronizeNDLL ("Windows/nme-debug.ndll");
 						
 					}
@@ -981,7 +999,15 @@ class RunScript {
 						
 					} else {
 						
-						path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib (path), true), "project");
+						if (path == "hxcpp") {
+							
+							path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib (path), true), "runtime/BuildLibs.xml");
+							
+						} else {
+							
+							path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib (path), true), "project");
+							
+						}
 						
 					}
 					
