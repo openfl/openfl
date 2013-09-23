@@ -341,6 +341,35 @@ import haxe.Unserializer;
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void):Void {
 		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, IMAGE)) {
+				
+				library.loadBitmapData (symbolName, handler);
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
 		handler (null);
 		
 	}
@@ -348,12 +377,70 @@ import haxe.Unserializer;
 	
 	public static function loadBytes (id:String, handler:ByteArray -> Void):Void {
 		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, BINARY)) {
+				
+				library.loadBytes (symbolName, handler);
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
 		handler (null);
 		
 	}
 	
 	
 	public static function loadFont (id:String, handler:Font -> Void):Void {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, FONT)) {
+				
+				library.loadFont (symbolName, handler);
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
 		
 		handler (null);
 		
@@ -387,6 +474,35 @@ import haxe.Unserializer;
 	
 	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, MOVIE_CLIP)) {
+				
+				library.loadMovieClip (symbolName, handler);
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
 		handler (null);
 		
 	}
@@ -394,6 +510,34 @@ import haxe.Unserializer;
 	
 	public static function loadSound (id:String, handler:Sound -> Void):Void {
 		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, SOUND)) {
+				
+				library.loadSound (symbolName, handler);
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
 		
 		handler (null);
 		
@@ -402,7 +546,31 @@ import haxe.Unserializer;
 	
 	public static function loadText (id:String, handler:String -> Void):Void {
 		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var callback = function (bytes:ByteArray):Void {
+			
+			if (bytes == null) {
+				
+				handler (null);
+				
+			} else {
+				
+				handler (bytes.readUTFBytes (bytes.length));
+				
+			}
+			
+		}
+		
+		loadBytes (id, callback);
+		
+		#else
+		
 		handler (null);
+		
+		#end
 		
 	}
 	
@@ -545,13 +713,6 @@ class AssetLibrary {
 	}
 	
 	
-	public function loadText (id:String, handler:String -> Void):Void {
-		
-		handler (null);
-		
-	}
-	
-	
 }
 
 
@@ -607,193 +768,6 @@ enum AssetType {
 	TEXT;
 	
 }
-
-
-#if (tools && (tools < "1.1.0") && !display)
-
-
-enum LibraryType {
-	
-	SWF;
-	SWF_LITE;
-	XFL;
-	
-}
-
-
-class DefaultAssetLibrary extends AssetLibrary {
-	
-	
-	public function new () {
-		
-		super ();
-		
-		#if (tools && !display)
-		
-		nme.AssetData.initialize ();
-		
-		#end
-		
-	}
-	
-	
-	public override function exists (id:String, type:AssetType):Bool {
-		
-		#if (tools && !display)
-		
-		var assetType = nme.AssetData.type.get (id);
-		
-		if (assetType != null) {
-			
-			if (type == BINARY || assetType == type || type == SOUND && (assetType == MUSIC || assetType == SOUND)) {
-				
-				return true;
-				
-			}
-			
-		}
-		
-		#end
-		
-		return false;
-		
-	}
-	
-	
-	public override function getBitmapData (id:String):BitmapData {
-		
-		#if (tools && !display)
-		
-		#if flash
-		
-		return cast (Type.createInstance (nme.AssetData.className.get (id), []), BitmapData);
-		
-		#elseif js
-		
-		return cast (ApplicationMain.loaders.get (nme.AssetData.path.get (id)).contentLoaderInfo.content, Bitmap).bitmapData;
-		
-		#else
-		
-		return BitmapData.load (nme.AssetData.path.get (id));
-		
-		#end
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	
-	public override function getBytes (id:String):ByteArray {
-		
-		#if (tools && !display)
-		
-		#if flash
-		
-		return Type.createInstance (nme.AssetData.className.get (id), []);
-		
-		#elseif js
-
-		var bytes:ByteArray = null;
-		var data = ApplicationMain.urlLoaders.get (nme.AssetData.path.get (id)).data;
-		
-		if (Std.is (data, String)) {
-			
-			bytes = new ByteArray ();
-			bytes.writeUTFBytes (data);
-			
-		} else if (Std.is (data, ByteArray)) {
-			
-			bytes = cast data;
-			
-		} else {
-			
-			bytes = null;
-			
-		}
-
-		if (bytes != null) {
-			
-			bytes.position = 0;
-			return bytes;
-			
-		} else {
-			
-			return null;
-		}
-		
-		#else
-		
-		return ByteArray.readFile (nme.AssetData.path.get (id));
-		
-		#end
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	
-	public override function getFont (id:String):Font {
-		
-		#if (tools && !display)
-		
-		#if (flash || js)
-		
-		return cast (Type.createInstance (nme.AssetData.className.get (id), []), Font);
-		
-		#else
-		
-		return new Font (nme.AssetData.path.get (id));
-		
-		#end
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	
-	public override function getSound (id:String):Sound {
-		
-		#if (tools && !display)
-		
-		#if flash
-		
-		return cast (Type.createInstance (nme.AssetData.className.get (id), []), Sound);
-		
-		#elseif js
-		
-		return new Sound (new URLRequest (nme.AssetData.path.get (id)));
-		
-		#else
-		
-		return new Sound (new URLRequest (nme.AssetData.path.get (id)), null, nme.AssetData.type.get (id) == MUSIC);
-		
-		#end
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	
-}
-
-
-#end
 
 
 #else
