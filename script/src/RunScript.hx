@@ -241,7 +241,7 @@ class RunScript {
 					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid" ].concat (defines));
 					synchronizeNDLL ("Android/libnme.so");
 					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid", "-DHXCPP_ARMV7", "-DHXCPP_ARM7" ].concat (defines));
-					synchronizeNDLL ("Android/libnme-7.so");
+					synchronizeNDLL ("Android/libnme-v7.so");
 					
 				}
 				
@@ -250,7 +250,7 @@ class RunScript {
 					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("Android/libnme-debug.so");
 					runCommand (path, "haxelib", [ "run", "hxcpp", buildFile, "-Dandroid", "-DHXCPP_ARMV7", "-DHXCPP_ARM7", "-Dfulldebug" ].concat (defines));
-					synchronizeNDLL ("Android/libnme-debug-7.so");
+					synchronizeNDLL ("Android/libnme-debug-v7.so");
 					
 				}
 			
