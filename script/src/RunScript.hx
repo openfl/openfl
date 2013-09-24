@@ -1151,7 +1151,17 @@ class RunScript {
 			}
 			
 			var workingDirectory = args.pop ();
-			var args = [ "run", "openfl-tools", "-Dopenfl" ].concat (args);
+			var define = "-Dopenfl";
+			
+			var version = getVersion ();
+			
+			if (version != null && version != "") {
+				
+				define += "=" + version.substr (0, 3);
+				
+			}
+			
+			var args = [ "run", "openfl-tools", define ].concat (args);
 			
 			Sys.exit (runCommand (workingDirectory, "haxelib", args));
 			
