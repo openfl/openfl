@@ -457,7 +457,10 @@ import haxe.Unserializer;
 		
 		if (data != null && data != "") {
 			
-			var library:AssetLibrary = Unserializer.run (data);
+			var unserializer = new Unserializer (data);
+			unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
+			
+			var library:AssetLibrary = unserializer.unserialize ();
 			libraries.set (name, library);
 			library.load (handler);
 			
@@ -584,6 +587,32 @@ import haxe.Unserializer;
 		}
 		
 		libraries.set (name, library);
+		
+	}
+	
+	
+	private static function resolveClass (name:String):Class <Dynamic> {
+		
+		return Type.resolveClass (name);
+		
+	}
+	
+	
+	private static function resolveEnum (name:String):Enum <Dynamic> {
+		
+		var value = Type.resolveEnum (name);
+		
+		#if flash
+		
+		if (value == null) {
+			
+			return cast Type.resolveClass (name);
+			
+		}
+		
+		#end
+		
+		return value;
 		
 	}
 	
