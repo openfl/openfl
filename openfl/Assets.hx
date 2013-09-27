@@ -709,35 +709,35 @@ class AssetLibrary {
 	
 	public function loadBitmapData (id:String, handler:BitmapData -> Void):Void {
 		
-		handler (null);
+		handler (getBitmapData (id));
 		
 	}
 	
 	
 	public function loadBytes (id:String, handler:ByteArray -> Void):Void {
 		
-		handler (null);
+		handler (getBytes (id));
 		
 	}
 	
 	
 	public function loadFont (id:String, handler:Font -> Void):Void {
 		
-		handler (null);
+		handler (getFont (id));
 		
 	}
 	
 	
 	public function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
-		handler (null);
+		handler (getMovieClip (id));
 		
 	}
 	
 	
 	public function loadSound (id:String, handler:Sound -> Void):Void {
 		
-		handler (null);
+		handler (getSound (id));
 		
 	}
 	
