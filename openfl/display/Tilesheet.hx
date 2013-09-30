@@ -35,7 +35,7 @@ import flash.Vector;
  * var tilesheet = new Tilesheet(bitmapData);
  * 
  * var tile = tilesheet.addTileRect(new Rectangle(0, 0, 100, 100));
- * tilesheet.drawTiles(this, [ tile, 100, 100 ]);
+ * tilesheet.drawTiles(this, [ 100, 100, tile ]);
  * 
  */
 extern class Tilesheet {
