@@ -259,6 +259,47 @@ import haxe.Unserializer;
 	
 	
 	/**
+	 * Gets the file path (if available) for an asset
+	 * @usage		var path = Assets.getPath("image.jpg");
+	 * @param	id		The ID or asset path for the asset
+	 * @return		The path to the asset (or null)
+	 */
+	public static function getPath (id:String):String {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, null)) {
+				
+				return library.getPath (symbolName);
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
+		return null;
+		
+	}
+	
+	
+	/**
 	 * Gets an instance of an embedded sound
 	 * @usage		var sound = Assets.getSound("sound.wav");
 	 * @param	id		The ID or asset path for the sound
@@ -687,6 +728,13 @@ class AssetLibrary {
 	
 	
 	public function getMovieClip (id:String):MovieClip {
+		
+		return null;
+		
+	}
+	
+	
+	public function getPath (id:String):String {
 		
 		return null;
 		
