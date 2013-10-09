@@ -1,37 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
+	<include haxelib="openfl-tools" />
+	<template path="templates" />
+	
+	<set name="android-backend" value="openfl-native" unless="android-backend" />
+	<set name="blackberry-backend" value="openfl-native" unless="blackberry-backend" />
+	<set name="emscripten-backend" value="openfl-native" unless="emscripten-backend" />
+	<set name="ios-backend" value="openfl-native" unless="ios-backend" />
+	<set name="linux-backend" value="openfl-native" unless="linux-backend" />
+	<set name="mac-backend" value="openfl-native" unless="mac-backend" />
+	<set name="webos-backend" value="openfl-native" unless="webos-backend" />
+	<set name="windows-backend" value="openfl-native" unless="windows-backend" />
+	<set name="html5-backend" value="openfl-html5" unless="html5-backend" />
+	
 	<section if="display">
 		
-		<include haxelib="openfl-native" if="android" unless="custom-android-backend" />
-		<include haxelib="openfl-native" if="blackberry" unless="custom-blackberry-backend" />
-		<include haxelib="openfl-native" if="emscripten" unless="custom-emscripten-backend" />
-		<include haxelib="openfl-native" if="ios" unless="custom-ios-backend" />
-		<include haxelib="openfl-native" if="linux" unless="custom-linux-backend" />
-		<include haxelib="openfl-native" if="mac" unless="custom-mac-backend" />
-		<include haxelib="openfl-native" if="webos" unless="custom-webos-backend" />
-		<include haxelib="openfl-native" if="windows" unless="custom-windows-backend" />
-		
-		<include haxelib="openfl-html5" if="html5" unless="custom-html5-backend" />
+		<include haxelib="${android-backend}" if="android" />
+		<include haxelib="${blackberry-backend}" if="blackberry" />
+		<include haxelib="${emscripten-backend}" if="emscripten" />
+		<include haxelib="${ios-backend}" if="ios" />
+		<include haxelib="${linux-backend}" if="linux" />
+		<include haxelib="${mac-backend}" if="mac" />
+		<include haxelib="${webos-backend}" if="webos" />
+		<include haxelib="${windows-backend}" if="windows" />
+		<include haxelib="${html5-backend}" if="html5" />
 		
 	</section>
 	
 	<section unless="display">
 		
-		<haxelib name="openfl-native" if="android" unless="custom-android-backend" />
-		<haxelib name="openfl-native" if="blackberry" unless="custom-blackberry-backend" />
-		<haxelib name="openfl-native" if="emscripten" unless="custom-emscripten-backend" />
-		<haxelib name="openfl-native" if="ios" unless="custom-ios-backend" />
-		<haxelib name="openfl-native" if="linux" unless="custom-linux-backend" />
-		<haxelib name="openfl-native" if="mac" unless="custom-mac-backend" />
-		<haxelib name="openfl-native" if="webos" unless="custom-webos-backend" />
-		<haxelib name="openfl-native" if="windows" unless="custom-windows-backend" />
-		
-		<haxelib name="openfl-html5" if="html5" unless="custom-html5-backend" />
+		<haxelib name="${android-backend}" if="android" />
+		<haxelib name="${blackberry-backend}" if="blackberry" />
+		<haxelib name="${emscripten-backend}" if="emscripten" />
+		<haxelib name="${ios-backend}" if="ios" />
+		<haxelib name="${linux-backend}" if="linux" />
+		<haxelib name="${mac-backend}" if="mac" />
+		<haxelib name="${webos-backend}" if="webos" />
+		<haxelib name="${windows-backend}" if="windows" />
+		<haxelib name="${html5-backend}" if="html5" />
 		
 	</section>
-	
-	<include haxelib="openfl-tools" />
-	<template path="templates" />
 	
 </extension>
