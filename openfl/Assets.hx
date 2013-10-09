@@ -79,7 +79,7 @@ import haxe.Unserializer;
 		
 		#if (tools && !display)
 		
-		if (useCache && cache.bitmapData.exists (id)) {
+		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
 			
 			return cache.bitmapData.get (id);
 			
@@ -95,7 +95,7 @@ import haxe.Unserializer;
 				
 				var bitmapData = library.getBitmapData (symbolName);
 				
-				if (useCache) {
+				if (useCache && cache.enabled) {
 					
 					cache.bitmapData.set (id, bitmapData);
 					
@@ -797,6 +797,7 @@ class AssetCache {
 	
 	
 	public var bitmapData:Map<String, BitmapData>;
+	public var enabled:Bool;
 	
 	
 	public function new () {
