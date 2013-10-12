@@ -169,11 +169,17 @@ import haxe.Unserializer;
 	 * @param	id		The ID or asset path for the font
 	 * @return		A new Font object
 	 */
-	public static function getFont (id:String):Font {
+	public static function getFont (id:String, useCache:Bool = true):Font {
 		
 		initialize ();
 		
 		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.font.exists (id)) {
+			
+			return cache.font.get (id);
+			
+		}
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
@@ -183,7 +189,15 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, FONT)) {
 				
-				return library.getFont (symbolName);
+				var font = library.getFont (symbolName);
+				
+				if (useCache && cache.enabled) {
+					
+					cache.font.set (id, font);
+					
+				}
+				
+				return font;
 				
 			} else {
 				
@@ -305,11 +319,17 @@ import haxe.Unserializer;
 	 * @param	id		The ID or asset path for the sound
 	 * @return		A new Sound object
 	 */
-	public static function getSound (id:String):Sound {
+	public static function getSound (id:String, useCache:Bool = true):Sound {
 		
 		initialize ();
 		
 		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			return cache.sound.get (id);
+			
+		}
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
@@ -319,7 +339,15 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, SOUND)) {
 				
-				return library.getSound (symbolName);
+				var sound = library.getSound (symbolName);
+				
+				if (useCache && cache.enabled) {
+					
+					cache.sound.set (id, sound);
+					
+				}
+				
+				return sound;
 				
 			} else {
 				
@@ -380,11 +408,17 @@ import haxe.Unserializer;
 	}
 	
 	
-	public static function loadBitmapData (id:String, handler:BitmapData -> Void):Void {
+	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
 		initialize ();
 		
 		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+			
+			handler (cache.bitmapData.get (id));
+			
+		}
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
@@ -394,7 +428,21 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, IMAGE)) {
 				
-				library.loadBitmapData (symbolName, handler);
+				if (useCache && cache.enabled) {
+					
+					library.loadBitmapData (symbolName, function (bitmapData:BitmapData):Void {
+						
+						cache.bitmapData.set (id, bitmapData);
+						handler (bitmapData);
+						
+					});
+					
+				} else {
+					
+					library.loadBitmapData (symbolName, handler);
+					
+				}
+				
 				return;
 				
 			} else {
@@ -452,11 +500,17 @@ import haxe.Unserializer;
 	}
 	
 	
-	public static function loadFont (id:String, handler:Font -> Void):Void {
+	public static function loadFont (id:String, handler:Font -> Void, useCache:Bool = true):Void {
 		
 		initialize ();
 		
 		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.font.exists (id)) {
+			
+			handler (cache.font.get (id));
+			
+		}
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
@@ -466,7 +520,21 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, FONT)) {
 				
-				library.loadFont (symbolName, handler);
+				if (useCache && cache.enabled) {
+					
+					library.loadFont (symbolName, function (font:Font):Void {
+						
+						cache.font.set (id, font);
+						handler (font);
+						
+					});
+					
+				} else {
+					
+					library.loadFont (symbolName, handler);
+					
+				}
+				
 				return;
 				
 			} else {
@@ -552,11 +620,17 @@ import haxe.Unserializer;
 	}
 	
 	
-	public static function loadSound (id:String, handler:Sound -> Void):Void {
+	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
 		initialize ();
 		
 		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			handler (cache.sound.get (id));
+			
+		}
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
@@ -566,7 +640,21 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, SOUND)) {
 				
-				library.loadSound (symbolName, handler);
+				if (useCache && cache.enabled) {
+					
+					library.loadSound (symbolName, function (sound:Sound):Void {
+						
+						cache.sound.set (id, sound);
+						handler (sound);
+						
+					});
+					
+				} else {
+					
+					library.loadSound (symbolName, handler);
+					
+				}
+				
 				return;
 				
 			} else {
@@ -798,11 +886,15 @@ class AssetCache {
 	
 	public var bitmapData:Map<String, BitmapData>;
 	public var enabled:Bool;
+	public var font:Map<String, Font>;
+	public var sound:Map<String, Sound>;
 	
 	
 	public function new () {
 		
-		bitmapData = new Map<String, BitmapData>();
+		bitmapData = new Map<String, BitmapData> ();
+		font = new Map<String, Font> ();
+		sound = new Map<String, Sound> ();
 		
 	}
 	
@@ -810,6 +902,8 @@ class AssetCache {
 	public function clear ():Void {
 		
 		bitmapData = new Map<String, BitmapData> ();
+		font = new Map<String, Font> ();
+		sound = new Map<String, Sound> ();
 		
 	}
 	
