@@ -81,7 +81,13 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
 			
-			return cache.bitmapData.get (id);
+			var bitmapData = cache.bitmapData.get (id);
+			
+			if (isValidBitmapData (bitmapData)) {
+				
+				return bitmapData;
+				
+			}
 			
 		}
 		
@@ -408,6 +414,31 @@ import haxe.Unserializer;
 	}
 	
 	
+	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
+		
+		#if (cpp || neko)
+		
+		return (bitmapData.__handle != null);
+		
+		#elseif flash
+		
+		try {
+			
+			bitmapData.width;
+			
+		} catch (e:Dynamic) {
+			
+			return false;
+			
+		}
+		
+		#end
+		
+		return true;
+		
+	}
+	
+	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
 		initialize ();
@@ -416,7 +447,14 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
 			
-			handler (cache.bitmapData.get (id));
+			var bitmapData = cache.bitmapData.get (id);
+			
+			if (isValidBitmapData (bitmapData)) {
+				
+				handler (bitmapData);
+				return;
+				
+			}
 			
 		}
 		
@@ -509,6 +547,7 @@ import haxe.Unserializer;
 		if (useCache && cache.enabled && cache.font.exists (id)) {
 			
 			handler (cache.font.get (id));
+			return;
 			
 		}
 		
@@ -629,6 +668,7 @@ import haxe.Unserializer;
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
 			handler (cache.sound.get (id));
+			return;
 			
 		}
 		
