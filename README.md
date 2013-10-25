@@ -21,12 +21,14 @@ Libraries
 OpenFL consists of multiple complementary libraries:
 
  * [openfl](https://github.com/openfl/openfl)
- * [openfl-tools](https://github.com/openfl/openfl-tools)
  * [openfl-native](https://github.com/openfl/openfl-native)
- * [openfl-html5](https://github.com/openfl/openfl-html5)
  * [openfl-samples](https://github.com/openfl/openfl-samples)
- * [openfl-compatibility](https://github.com/openfl/openfl-compatibility)
- * [openfl-validation](https://github.com/openfl/openfl-validation)
+ * [openfl-html5-dom](https://github.com/openfl/openfl-html5)
+
+...and depends on:
+
+ * [hxtools](https://github.com/openfl/hxtools)
+ * [hxlibc](https://github.com/openfl/hxlibc)
 
 
 Development Build
