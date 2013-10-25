@@ -7,14 +7,15 @@ before_install:
   - sudo apt-get install haxe -y --force-yes
   - mkdir ~/haxelib
   - haxelib setup ~/haxelib
-  - haxelib git openfl-tools https://github.com/openfl/openfl-tools
-  - haxelib install openfl-native
+  - haxelib git hxtools https://github.com/openfl/hxtools
+  - haxelib git openfl-native https://github.com/openfl/openfl-native
+  - haxelib git openfl-native-dev https://github.com/openfl/openfl-native-dev
   - haxelib install format
   - haxelib install svg
   - haxelib install munit
   - git clone https://github.com/openfl/openfl-validation ~/openfl-validation
   - haxelib dev openfl $(pwd)
-  - haxelib run openfl rebuild tools
+  - haxelib run openfl rebuild linux,tools
   - haxelib remove openfl-native
 
 script:
