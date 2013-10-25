@@ -32,7 +32,7 @@ class RunScript {
 		
 		if (path == "") {
 			
-			path = nmeDirectory + "/project";
+			path = openFLNativeDirectory + "/project";
 			
 		}
 		
@@ -81,8 +81,8 @@ class RunScript {
 			
 			if (target == "tools") {
 				
-				var toolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools"), true);
-				var extendedToolsDirectory = PathHelper.getHaxelib (new Haxelib("openfl-tools-extended"), false);
+				var toolsDirectory = PathHelper.getHaxelib (new Haxelib("hxtools"), true);
+				var extendedToolsDirectory = PathHelper.getHaxelib (new Haxelib("hxtools-extended"), false);
 				
 				if (extendedToolsDirectory != null && extendedToolsDirectory != "") {
 					
@@ -216,7 +216,7 @@ class RunScript {
 		
 		if (path == "") {
 			
-			path = nmeDirectory + "/project";
+			path = openFLNativeDirectory + "/project";
 			
 		}
 		
@@ -967,14 +967,14 @@ class RunScript {
 					
 				} else {
 					
-					if (!FileSystem.exists (nmeDirectory + "/project")) {
+					if (!FileSystem.exists (openFLNativeDirectory + "/project")) {
 						
 						//Sys.println ("This command must be run from a development checkout of NME");
 						//return;
 						
 					}
 					
-					path = nmeDirectory + "/project";
+					path = openFLNativeDirectory + "/project";
 					
 				}
 				
@@ -1031,7 +1031,7 @@ class RunScript {
 				
 				case "rebuild":
 					
-					if (path != nmeDirectory + "/project" && !flags.exists ("debug")) {
+					if (path != openFLNativeDirectory + "/project" && !flags.exists ("debug")) {
 						
 						flags.set ("release", "");
 						
@@ -1049,11 +1049,11 @@ class RunScript {
 			
 			if (command == "setup") {
 				
-				var toolsDirectory = PathHelper.getHaxelib (new Haxelib ("openfl-tools"));
+				var toolsDirectory = PathHelper.getHaxelib (new Haxelib ("hxtools"));
 				
 				if (toolsDirectory == null || toolsDirectory == "" || toolsDirectory.indexOf ("is not installed") > -1) {
 					
-					Sys.command ("haxelib install openfl-tools");
+					Sys.command ("haxelib install hxtools");
 					
 				}
 				
@@ -1161,7 +1161,7 @@ class RunScript {
 				
 			}
 			
-			var args = [ "run", "openfl-tools", define ].concat (args);
+			var args = [ "run", "hxtools", define ].concat (args);
 			
 			Sys.exit (runCommand (workingDirectory, "haxelib", args));
 			
@@ -1427,7 +1427,7 @@ class RunScript {
 	
 	private static function synchronizeNDLL (path:String):Void {
 		
-		if (FileSystem.exists (nmeDirectory + "ndll/" + path)) {
+		/*if (FileSystem.exists (nmeDirectory + "ndll/" + path)) {
 			
 			mkdir (Path.directory (PathHelper.combine (openFLNativeDirectory, "ndll/" + path)));
 			File.copy (nmeDirectory + "ndll/" + path, openFLNativeDirectory + "ndll/" + path);
@@ -1436,7 +1436,7 @@ class RunScript {
 			
 			FileSystem.deleteFile (openFLNativeDirectory + "ndll/" + path);
 			
-		}
+		}*/
 		
 	}
 	
