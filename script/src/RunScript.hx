@@ -298,8 +298,8 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					//runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphoneos" ].concat (defines));
-					//synchronizeNDLL ("iPhone/libnme.iphoneos.a");
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphoneos" ].concat (defines));
+					synchronizeNDLL ("iPhone/libnme.iphoneos.a");
 					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphoneos", "-DHXCPP_ARMV7" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme.iphoneos-v7.a");
 					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphonesim" ].concat (defines));
@@ -309,8 +309,8 @@ class RunScript {
 				
 				if (!flags.exists ("release")) {
 					
-					//runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphoneos", "-Dfulldebug" ].concat (defines));
-					//synchronizeNDLL ("iPhone/libnme-debug.iphoneos.a");
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphoneos", "-Dfulldebug" ].concat (defines));
+					synchronizeNDLL ("iPhone/libnme-debug.iphoneos.a");
 					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphoneos", "-DHXCPP_ARMV7", "-Dfulldebug" ].concat (defines));
 					synchronizeNDLL ("iPhone/libnme-debug.iphoneos-v7.a");
 					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Diphonesim", "-Dfulldebug" ].concat (defines));
