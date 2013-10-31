@@ -32,7 +32,7 @@ class RunScript {
 		
 		if (path == "") {
 			
-			path = openFLNativeDirectory + "/project";
+			path = PathHelper.combine (openFLNativeDirectory, "project");
 			
 		}
 		
@@ -216,7 +216,7 @@ class RunScript {
 		
 		if (path == "") {
 			
-			path = openFLNativeDirectory + "/project";
+			path = PathHelper.combine (openFLNativeDirectory, "project");
 			
 		}
 		
@@ -587,7 +587,7 @@ class RunScript {
 		var nmeVersion = getVersion ();
 		var result = nmeVersion + "-r0";
 		
-		if (FileSystem.exists (openFLNativeDirectory + "/.git")) {
+		if (FileSystem.exists (PathHelper.combine (openFLNativeDirectory, ".git"))) {
 			
 			var cacheCwd = Sys.getCwd ();
 			Sys.setCwd (openFLNativeDirectory);
@@ -604,7 +604,7 @@ class RunScript {
 			proc.close();
 			Sys.setCwd (cacheCwd);
 			
-		} else if (FileSystem.exists (openFLNativeDirectory + "/.svn")) {
+		} else if (FileSystem.exists (PathHelper.combine (openFLNativeDirectory, ".svn"))) {
 			
 			var cacheCwd = Sys.getCwd ();
 			Sys.setCwd (openFLNativeDirectory);
@@ -967,14 +967,14 @@ class RunScript {
 					
 				} else {
 					
-					if (!FileSystem.exists (openFLNativeDirectory + "/project")) {
+					if (!FileSystem.exists (PathHelper.combine (openFLNativeDirectory, "project"))) {
 						
 						//Sys.println ("This command must be run from a development checkout of NME");
 						//return;
 						
 					}
 					
-					path = openFLNativeDirectory + "/project";
+					path = PathHelper.combine (openFLNativeDirectory, "project");
 					
 				}
 				
@@ -1023,7 +1023,7 @@ class RunScript {
 				
 				case "rebuild":
 					
-					if (path != openFLNativeDirectory + "/project" && !flags.exists ("debug")) {
+					if (path != PathHelper.combine (openFLNativeDirectory, "project") && !flags.exists ("debug")) {
 						
 						flags.set ("release", "");
 						
@@ -1274,34 +1274,34 @@ class RunScript {
 					
 					if (!isWindows) {
 						
-						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme.ndll", openFLNativeDirectory + "/ndll/Windows/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme-debug.ndll", openFLNativeDirectory + "/ndll/Windows/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Windows/nme.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/Windows/nme-debug.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Windows/nme-debug.ndll"));
 						//downloadFile ("http://www.nme.io/builds/ndll/WinRTx64/nme.ndll", nmeDirectory + "/ndll/WinRTx64/nme.ndll");
 						//downloadFile ("http://www.nme.io/builds/ndll/WinRTx64/nme-debug.ndll", nmeDirectory + "/ndll/WinRTx64/nme-debug.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme.ndll", openFLNativeDirectory + "/ndll/WinRTx86/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme-debug.ndll", openFLNativeDirectory + "/ndll/WinRTx86/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/WinRTx86/nme.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/WinRTx86/nme-debug.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/WinRTx86/nme-debug.ndll"));
 						
 					}
 					
 					if (!isLinux) {
 						
-						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme.ndll", openFLNativeDirectory + "/ndll/Linux/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme-debug.ndll", openFLNativeDirectory + "/ndll/Linux/nme-debug.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme.ndll", openFLNativeDirectory + "/ndll/Linux64/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme-debug.ndll", openFLNativeDirectory + "/ndll/Linux64/nme-debug.ndll");
+						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Linux/nme.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/Linux/nme-debug.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Linux/nme-debug.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Linux64/nme.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/Linux64/nme-debug.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Linux64/nme-debug.ndll"));
 						
 					}
 					
 					if (!isMac) {
 						
-						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme.ndll", openFLNativeDirectory + "/ndll/Mac/nme.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme-debug.ndll", openFLNativeDirectory + "/ndll/Mac/nme-debug.ndll");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos.a", openFLNativeDirectory + "/ndll/iPhone/libnme.iphoneos.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos-v7.a", openFLNativeDirectory + "/ndll/iPhone/libnme.iphoneos-v7.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphonesim.a", openFLNativeDirectory + "/ndll/iPhone/libnme.iphonesim.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos.a", openFLNativeDirectory + "/ndll/iPhone/libnme-debug.iphoneos.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos-v7.a", openFLNativeDirectory + "/ndll/iPhone/libnme-debug.iphoneos-v7.a");
-						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphonesim.a", openFLNativeDirectory + "/ndll/iPhone/libnme-debug.iphonesim.a");
+						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Mac/nme.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/Mac/nme-debug.ndll", PathHelper.combine (openFLNativeDirectory, "ndll/Mac/nme-debug.ndll"));
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos.a", PathHelper.combine (openFLNativeDirectory, "ndll/iPhone/libnme.iphoneos.a"));
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphoneos-v7.a", PathHelper.combine (openFLNativeDirectory, "ndll/iPhone/libnme.iphoneos-v7.a"));
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme.iphonesim.a", PathHelper.combine (openFLNativeDirectory, "ndll/iPhone/libnme.iphonesim.a"));
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos.a", PathHelper.combine (openFLNativeDirectory, "ndll/iPhone/libnme-debug.iphoneos.a"));
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphoneos-v7.a", PathHelper.combine (openFLNativeDirectory, "ndll/iPhone/libnme-debug.iphoneos-v7.a"));
+						downloadFile ("http://www.nme.io/builds/ndll/iPhone/libnme-debug.iphonesim.a", PathHelper.combine (openFLNativeDirectory, "ndll/iPhone/libnme-debug.iphonesim.a"));
 						
 					}
 					
