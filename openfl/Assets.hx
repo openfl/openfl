@@ -1104,11 +1104,11 @@ class Assets {
 				
 				if (preload != null) {
 					
-					_nmeTextureBuffer.width = Std.int (preload.width);
-					_nmeTextureBuffer.height = Std.int (preload.height);
+					___textureBuffer.width = Std.int (preload.width);
+					___textureBuffer.height = Std.int (preload.height);
 					rect = new flash.geom.Rectangle (0, 0, preload.width, preload.height);
 					setPixels(rect, preload.getPixels(rect));
-					nmeBuildLease();
+					__buildLease();
 					
 				} else {
 					
@@ -1116,11 +1116,11 @@ class Assets {
 					
 					if (onload != null && !Std.is (onload, Bool)) {
 						
-						nmeLoadFromBytes(byteArray, null, onload);
+						__loadFromBytes(byteArray, null, onload);
 						
 					} else {
 						
-						nmeLoadFromBytes(byteArray);
+						__loadFromBytes(byteArray);
 						
 					}
 					
