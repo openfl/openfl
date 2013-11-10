@@ -500,6 +500,20 @@ class RunScript {
 					
 				}*/
 			
+			case "wiiu":
+				
+				if (!flags.exists ("debug")) {
+					
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dtoolchain=wiiu", "-I" + PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) + "/toolchain" ].concat (defines));
+					
+				}
+				
+				if (!flags.exists ("release")) {
+					
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dfulldebug", "-Dtoolchain=wiiu", "-I" + PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) + "/toolchain" ].concat (defines));
+					
+				}
+			
 		}
 		
 	}
