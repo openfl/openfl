@@ -120,18 +120,22 @@ class RunScript {
 			} else if (target == "clean") {
 				
 				var directories = [ PathHelper.combine (path, "obj") ];
+				var files = [ PathHelper.combine (path, "all_objs"), PathHelper.combine (path, "vc100.pdb"), PathHelper.combine (path, "vc110.pdb") ];
 				
 				if (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) != "") {
 					
-					directories.push (PathHelper.combine (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")), "obj"));
+					directories.push (PathHelper.combine (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")), "project/obj"));
+					directories.push (PathHelper.combine (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")), "project/all_objs"));
 					
 				}
 				
-				var files = [ PathHelper.combine (path, "all_objs"), PathHelper.combine (path, "vc100.pdb"), PathHelper.combine (path, "vc110.pdb") ];
-				
 				for (directory in directories) {
 					
-					removeDirectory (directory);
+					if (FileSystem.exists (directory)) {
+						
+						removeDirectory (directory);
+						
+					}
 					
 				}
 				
