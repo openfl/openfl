@@ -120,6 +120,13 @@ class RunScript {
 			} else if (target == "clean") {
 				
 				var directories = [ PathHelper.combine (path, "obj") ];
+				
+				if (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) != "") {
+					
+					directories.push (PathHelper.combine (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")), "obj"));
+					
+				}
+				
 				var files = [ PathHelper.combine (path, "all_objs"), PathHelper.combine (path, "vc100.pdb"), PathHelper.combine (path, "vc110.pdb") ];
 				
 				for (directory in directories) {
@@ -217,6 +224,12 @@ class RunScript {
 		if (path == "") {
 			
 			path = PathHelper.combine (openFLNativeDirectory, "project");
+			
+		}
+		
+		if (target == "wiiu") {
+			
+			path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu"), true), "project");
 			
 		}
 		
@@ -504,13 +517,13 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dtoolchain=wiiu", "-I" + PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) + "/toolchain" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dtoolchain=wiiu", "-I../toolchain" ].concat (defines));
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dfulldebug", "-Dtoolchain=wiiu", "-I" + PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) + "/toolchain" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dfulldebug", "-Dtoolchain=wiiu", "-I../toolchain" ].concat (defines));
 					
 				}
 			
