@@ -131,11 +131,7 @@ class RunScript {
 				
 				for (directory in directories) {
 					
-					if (FileSystem.exists (directory)) {
-						
-						removeDirectory (directory);
-						
-					}
+					removeDirectory (directory);
 					
 				}
 				
@@ -231,7 +227,7 @@ class RunScript {
 			
 		}
 		
-		if (target == "wiiu") {
+		if (target == "wiiu" && path == PathHelper.combine (openFLNativeDirectory, "project")) {
 			
 			path = PathHelper.combine (PathHelper.getHaxelib (new Haxelib ("openfl-wiiu"), true), "project");
 			
@@ -521,13 +517,13 @@ class RunScript {
 				
 				if (!flags.exists ("debug")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dtoolchain=wiiu", "-I../toolchain" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dtoolchain=wiiu", "-I" + PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) + "/toolchain" ].concat (defines));
 					
 				}
 				
 				if (!flags.exists ("release")) {
 					
-					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dfulldebug", "-Dtoolchain=wiiu", "-I../toolchain" ].concat (defines));
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dnintendo", "-Dwiiu", "-Dfulldebug", "-Dtoolchain=wiiu", "-I" + PathHelper.getHaxelib (new Haxelib ("openfl-wiiu")) + "/toolchain" ].concat (defines));
 					
 				}
 			
@@ -844,7 +840,7 @@ class RunScript {
 	
 	private static function removeDirectory (directory:String):Void {
 		
-		if (FileSystem.exists (directory)) {
+		if (FileSystem.exists (directory) && FileSystem.isDirectory (directory)) {
 			
 			for (file in FileSystem.readDirectory (directory)) {
 				
