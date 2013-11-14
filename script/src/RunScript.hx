@@ -435,6 +435,20 @@ class RunScript {
 					
 				}
 			
+			case "tizen":
+				
+				if (!flags.exists ("debug")) {
+					
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dtizen" ].concat (defines));
+					
+				}
+				
+				if (!flags.exists ("release")) {
+					
+					runCommand (path, "haxelib", [ "run", "hxlibc", buildFile, "-Dtizen", "-Dfulldebug" ].concat (defines));
+					
+				}
+			
 			case "webos":
 				
 				//mkdir (nmeDirectory + "/ndll/webOS");
@@ -1126,7 +1140,7 @@ class RunScript {
 							target = Std.string (PlatformHelper.hostPlatform).toLowerCase ();
 							continue;
 							
-						case "windows", "mac", "linux", "emscripten", "ios", "android", "blackberry", "webos":
+						case "windows", "mac", "linux", "emscripten", "ios", "android", "blackberry", "tizen", "webos":
 							
 							target = args[i];
 							continue;
