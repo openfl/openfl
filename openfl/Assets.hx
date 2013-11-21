@@ -1017,7 +1017,7 @@ class AssetCache {
 	
 	
 	public var bitmapData:Map<String, BitmapData>;
-	public var enabled:Bool;
+	public var enabled:Bool = true;
 	public var font:Map<String, Font>;
 	public var sound:Map<String, Sound>;
 	
