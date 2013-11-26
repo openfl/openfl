@@ -10,7 +10,7 @@ before_install:
   - mkdir ~/haxelib
   - haxelib setup ~/haxelib
   - haxelib git hxlibc https://github.com/openfl/hxlibc
-  - haxelib git hxtools https://github.com/openfl/hxtools
+  - haxelib git lime-tools https://github.com/openfl/lime-tools
   - haxelib git openfl-native https://github.com/openfl/openfl-native
   - haxelib git lime https://github.com/openfl/lime
   - haxelib git lime-build https://github.com/openfl/lime-build
