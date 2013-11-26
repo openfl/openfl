@@ -27,7 +27,8 @@ OpenFL consists of multiple complementary libraries:
 
 ...and depends on:
 
- * [hxtools](https://github.com/openfl/hxtools)
+ * [lime](https://github.com/openfl/lime)
+ * [lime-tools](https://github.com/openfl/lime-tools)
  * [hxlibc](https://github.com/openfl/hxlibc)
 
 
