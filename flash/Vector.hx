@@ -10,7 +10,7 @@ package flash;
 	var length : Int;
 	var fixed : Bool;
 
-	function new( ?length : UInt, ?fixed : Bool ) : Void;
+	function new( ?length : Int, ?fixed : Bool ) : Void;
 	function concat( ?a : Vector<T> ) : Vector<T>;
 	function join( sep : String ) : String;
 	function pop() : Null<T>;
