@@ -12,7 +12,8 @@ before_install:
   - haxelib git hxlibc https://github.com/openfl/hxlibc
   - haxelib git hxtools https://github.com/openfl/hxtools
   - haxelib git openfl-native https://github.com/openfl/openfl-native
-  - haxelib git openfl-native-dev https://github.com/openfl/openfl-native-dev
+  - haxelib git lime https://github.com/openfl/lime
+  - haxelib git lime-build https://github.com/openfl/lime-build
   - haxelib install format
   - haxelib install svg
   - haxelib install munit
@@ -20,6 +21,7 @@ before_install:
   - haxelib dev openfl $(pwd)
   - haxelib run openfl rebuild linux,tools
   - haxelib remove openfl-native
+  - haxelib remove lime
 
 script:
   - haxelib run openfl build ~/openfl-validation flash
