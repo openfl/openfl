@@ -311,6 +311,69 @@ import haxe.Unserializer;
 	
 	
 	/**
+	 * Gets an instance of an embedded streaming sound
+	 * @usage		var sound = Assets.getMusic("sound.ogg");
+	 * @param	id		The ID or asset path for the music track
+	 * @return		A new Sound object
+	 */
+	public static function getMusic (id:String, useCache:Bool = true):Sound {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			return cache.sound.get (id);
+			
+		}
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, MUSIC)) {
+				
+				if (library.isLocal (symbolName, MUSIC)) {
+					
+					var sound = library.getMusic (symbolName);
+					
+					if (useCache && cache.enabled) {
+						
+						cache.sound.set (id, sound);
+						
+					}
+					
+					return sound;
+					
+				} else {
+					
+					trace ("[openfl.Assets] Sound asset \"" + id + "\" exists, but only asynchronously");
+					
+				}
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
+		return null;
+		
+	}
+	
+	
+	/**
 	 * Gets the file path (if available) for an asset
 	 * @usage		var path = Assets.getPath("image.jpg");
 	 * @param	id		The ID or asset path for the asset
@@ -708,6 +771,63 @@ import haxe.Unserializer;
 	}
 	
 	
+	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			handler (cache.sound.get (id));
+			return;
+			
+		}
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, MUSIC)) {
+				
+				if (useCache && cache.enabled) {
+					
+					library.loadMusic (symbolName, function (sound:Sound):Void {
+						
+						cache.sound.set (id, sound);
+						handler (sound);
+						
+					});
+					
+				} else {
+					
+					library.loadMusic (symbolName, handler);
+					
+				}
+				
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
+		handler (null);
+		
+	}
+	
+	
 	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
 		initialize ();
@@ -947,6 +1067,13 @@ class AssetLibrary {
 	}
 	
 	
+	public function getMusic (id:String):Sound {
+		
+		return getSound (id);
+		
+	}
+	
+	
 	public function getPath (id:String):String {
 		
 		return null;
@@ -999,6 +1126,13 @@ class AssetLibrary {
 	public function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
 		handler (getMovieClip (id));
+		
+	}
+	
+	
+	public function loadMusic (id:String, handler:Sound -> Void):Void {
+		
+		handler (getMusic (id));
 		
 	}
 	
