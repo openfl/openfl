@@ -45,6 +45,15 @@
 		
 	</section>
 	
+	<section if="setup">
+		
+		<haxelib name="openfl-native" />
+		<haxelib name="openfl-html5-dom" />
+		<haxelib name="openfl-samples" />
+		<haxelib name="hxlibc" />
+		
+	</section>
+	
 	<sample path="${haxelib:openfl-samples}" />
 	
 </extension>
