@@ -45,4 +45,6 @@
 		
 	</section>
 	
+	<sample path="${haxelib:openfl-samples}" />
+	
 </extension>
