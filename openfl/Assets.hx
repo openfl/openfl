@@ -428,7 +428,13 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
-			return cache.sound.get (id);
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				return sound;
+				
+			}
 			
 		}
 		
@@ -583,6 +589,21 @@ import haxe.Unserializer;
 		#end
 		
 		return true;
+		
+	}
+	
+	
+	private static function isValidSound (sound:Sound):Bool {
+		
+		#if (cpp || neko)
+		
+		return (sound.__handle != null && sound.__handle != 0);
+		
+		#else
+		
+		return true;
+		
+		#end
 		
 	}
 	
@@ -872,8 +893,14 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
-			handler (cache.sound.get (id));
-			return;
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				handler (sound);
+				return;
+				
+			}
 			
 		}
 		
