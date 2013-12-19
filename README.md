@@ -25,7 +25,7 @@ OpenFL consists of multiple complementary libraries:
  * [openfl-samples](https://github.com/openfl/openfl-samples)
  * [openfl-html5-dom](https://github.com/openfl/openfl-html5)
 
-...and depends on:
+...and relies upon:
 
  * [lime](https://github.com/openfl/lime)
  * [lime-tools](https://github.com/openfl/lime-tools)
