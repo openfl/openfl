@@ -19,9 +19,8 @@ before_install:
   - haxelib install munit
   - git clone https://github.com/openfl/openfl-validation ~/openfl-validation
   - haxelib dev openfl $(pwd)
-  - haxelib run openfl rebuild linux,tools
+  - haxelib run lime rebuild linux,tools
   - haxelib remove openfl-native
-  - haxelib remove lime
 
 script:
-  - haxelib run openfl build ~/openfl-validation flash
+  - haxelib run lime build ~/openfl-validation flash
