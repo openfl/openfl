@@ -324,7 +324,13 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
-			return cache.sound.get (id);
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				return sound;
+				
+			}
 			
 		}
 		
@@ -800,8 +806,14 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
-			handler (cache.sound.get (id));
-			return;
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				handler (sound);
+				return;
+				
+			}
 			
 		}
 		
