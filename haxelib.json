@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "OpenFL is a powerful framework for cross-platform development",
-	"version": "1.2.1",
-	"releasenote": "Update for Lime",
+	"version": "1.2.2",
+	"releasenote": "Minor fixes",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
