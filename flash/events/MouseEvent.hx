@@ -297,6 +297,3 @@ extern class MouseEvent extends Event {
 	 */
 	static var ROLL_OVER : String;
 }
-
-
-#end
