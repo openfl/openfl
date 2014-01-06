@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
-	<include haxelib="openfl-tools" />
+	<include haxelib="lime-tools" />
 	<template path="templates" />
 	
 	<set name="android-backend" value="openfl-native" unless="android-backend" />
@@ -10,9 +10,10 @@
 	<set name="ios-backend" value="openfl-native" unless="ios-backend" />
 	<set name="linux-backend" value="openfl-native" unless="linux-backend" />
 	<set name="mac-backend" value="openfl-native" unless="mac-backend" />
+	<set name="tizen-backend" value="openfl-native" unless="tizen-backend" />
 	<set name="webos-backend" value="openfl-native" unless="webos-backend" />
 	<set name="windows-backend" value="openfl-native" unless="windows-backend" />
-	<set name="html5-backend" value="openfl-html5" unless="html5-backend" />
+	<set name="html5-backend" value="openfl-html5-dom" unless="html5-backend" />
 	
 	<section if="display">
 		
@@ -22,6 +23,7 @@
 		<include haxelib="${ios-backend}" if="ios" />
 		<include haxelib="${linux-backend}" if="linux" />
 		<include haxelib="${mac-backend}" if="mac" />
+		<include haxelib="${tizen-backend}" if="tizen" />
 		<include haxelib="${webos-backend}" if="webos" />
 		<include haxelib="${windows-backend}" if="windows" />
 		<include haxelib="${html5-backend}" if="html5" />
@@ -36,10 +38,22 @@
 		<haxelib name="${ios-backend}" if="ios" />
 		<haxelib name="${linux-backend}" if="linux" />
 		<haxelib name="${mac-backend}" if="mac" />
+		<haxelib name="${tizen-backend}" if="tizen" />
 		<haxelib name="${webos-backend}" if="webos" />
 		<haxelib name="${windows-backend}" if="windows" />
 		<haxelib name="${html5-backend}" if="html5" />
 		
 	</section>
+	
+	<section if="setup">
+		
+		<haxelib name="openfl-native" />
+		<haxelib name="openfl-html5-dom" />
+		<haxelib name="openfl-samples" />
+		<haxelib name="hxlibc" />
+		
+	</section>
+	
+	<sample path="${haxelib:openfl-samples}" if="create"/>
 	
 </extension>

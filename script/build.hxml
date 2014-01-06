@@ -1,4 +1,4 @@
 -main RunScript
 -neko ../run.n
--lib openfl-tools
+-lib lime-tools
 -cp src

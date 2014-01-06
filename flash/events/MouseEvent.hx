@@ -232,6 +232,54 @@ extern class MouseEvent extends Event {
 	 * <p>This event has the following properties:</p>
 	 */
 	static var MOUSE_WHEEL : String;
+	
+	/**
+	 * Defines the value of the <code>type</code> property of a
+	 * <code>middleClick</code> event object.
+	 *
+	 * <p>This event has the following properties:</p>
+	 */
+	static var MIDDLE_CLICK : String;
+	
+	/**
+	 * Defines the value of the <code>type</code> property of a
+	 * <code>middleMouseDown</code> event object.
+	 *
+	 * <p>This event has the following properties:</p>
+	 */
+	static var MIDDLE_MOUSE_DOWN : String;
+	
+	/**
+	 * Defines the value of the <code>type</code> property of a
+	 * <code>middleMouseUp</code> event object.
+	 *
+	 * <p>This event has the following properties:</p>
+	 */
+	static var MIDDLE_MOUSE_UP : String;
+	
+	/**
+	 * Defines the value of the <code>type</code> property of a
+	 * <code>rightClick</code> event object.
+	 *
+	 * <p>This event has the following properties:</p>
+	 */
+	static var RIGHT_CLICK : String;
+	
+	/**
+	 * Defines the value of the <code>type</code> property of a
+	 * <code>rightMouseDown</code> event object.
+	 *
+	 * <p>This event has the following properties:</p>
+	 */
+	static var RIGHT_MOUSE_DOWN : String;
+	
+	/**
+	 * Defines the value of the <code>type</code> property of a
+	 * <code>rightMouseUp</code> event object.
+	 *
+	 * <p>This event has the following properties:</p>
+	 */
+	static var RIGHT_MOUSE_UP : String;
 
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -249,6 +297,3 @@ extern class MouseEvent extends Event {
 	 */
 	static var ROLL_OVER : String;
 }
-
-
-#end

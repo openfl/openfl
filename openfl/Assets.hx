@@ -99,15 +99,23 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, IMAGE)) {
 				
-				var bitmapData = library.getBitmapData (symbolName);
-				
-				if (useCache && cache.enabled) {
+				if (library.isLocal (symbolName, IMAGE)) {
 					
-					cache.bitmapData.set (id, bitmapData);
+					var bitmapData = library.getBitmapData (symbolName);
+					
+					if (useCache && cache.enabled) {
+						
+						cache.bitmapData.set (id, bitmapData);
+						
+					}
+					
+					return bitmapData;
+					
+				} else {
+					
+					trace ("[openfl.Assets] BitmapData asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
-				
-				return bitmapData;
 				
 			} else {
 				
@@ -148,7 +156,15 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, BINARY)) {
 				
-				return library.getBytes (symbolName);
+				if (library.isLocal (symbolName, BINARY)) {
+					
+					return library.getBytes (symbolName);
+					
+				} else {
+					
+					trace ("[openfl.Assets] String or ByteArray asset \"" + id + "\" exists, but only asynchronously");
+					
+				}
 				
 			} else {
 				
@@ -195,15 +211,23 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, FONT)) {
 				
-				var font = library.getFont (symbolName);
-				
-				if (useCache && cache.enabled) {
+				if (library.isLocal (symbolName, FONT)) {
 					
-					cache.font.set (id, font);
+					var font = library.getFont (symbolName);
+					
+					if (useCache && cache.enabled) {
+						
+						cache.font.set (id, font);
+						
+					}
+					
+					return font;
+					
+				} else {
+					
+					trace ("[openfl.Assets] Font asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
-				
-				return font;
 				
 			} else {
 				
@@ -257,11 +281,88 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, MOVIE_CLIP)) {
 				
-				return library.getMovieClip (symbolName);
+				if (library.isLocal (symbolName, MOVIE_CLIP)) {
+					
+					return library.getMovieClip (symbolName);
+					
+				} else {
+					
+					trace ("[openfl.Assets] MovieClip asset \"" + id + "\" exists, but only asynchronously");
+					
+				}
 				
 			} else {
 				
 				trace ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
+		return null;
+		
+	}
+	
+	
+	/**
+	 * Gets an instance of an embedded streaming sound
+	 * @usage		var sound = Assets.getMusic("sound.ogg");
+	 * @param	id		The ID or asset path for the music track
+	 * @return		A new Sound object
+	 */
+	public static function getMusic (id:String, useCache:Bool = true):Sound {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				return sound;
+				
+			}
+			
+		}
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, MUSIC)) {
+				
+				if (library.isLocal (symbolName, MUSIC)) {
+					
+					var sound = library.getMusic (symbolName);
+					
+					if (useCache && cache.enabled) {
+						
+						cache.sound.set (id, sound);
+						
+					}
+					
+					return sound;
+					
+				} else {
+					
+					trace ("[openfl.Assets] Sound asset \"" + id + "\" exists, but only asynchronously");
+					
+				}
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
 				
 			}
 			
@@ -333,7 +434,13 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
-			return cache.sound.get (id);
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				return sound;
+				
+			}
 			
 		}
 		
@@ -345,15 +452,23 @@ import haxe.Unserializer;
 			
 			if (library.exists (symbolName, SOUND)) {
 				
-				var sound = library.getSound (symbolName);
-				
-				if (useCache && cache.enabled) {
+				if (library.isLocal (symbolName, SOUND)) {
 					
-					cache.sound.set (id, sound);
+					var sound = library.getSound (symbolName);
+					
+					if (useCache && cache.enabled) {
+						
+						cache.sound.set (id, sound);
+						
+					}
+					
+					return sound;
+					
+				} else {
+					
+					trace ("[openfl.Assets] Sound asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
-				
-				return sound;
 				
 			} else {
 				
@@ -414,6 +529,51 @@ import haxe.Unserializer;
 	}
 	
 	
+	public static function isLocal (id:String, type:AssetType = null, useCache:Bool = true):Bool {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled) {
+			
+			if (type == AssetType.IMAGE || type == null) {
+				
+				if (cache.bitmapData.exists (id)) return true;
+				
+			}
+			
+			if (type == AssetType.FONT || type == null) {
+				
+				if (cache.font.exists (id)) return true;
+				
+			}
+			
+			if (type == AssetType.SOUND || type == AssetType.MUSIC || type == null) {
+				
+				if (cache.sound.exists (id)) return true;
+				
+			}
+			
+		}
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			return library.isLocal (symbolName, type);
+			
+		}
+		
+		#end
+		
+		return false;
+		
+	}
+	
+	
 	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
 		
 		#if (cpp || neko)
@@ -435,6 +595,21 @@ import haxe.Unserializer;
 		#end
 		
 		return true;
+		
+	}
+	
+	
+	private static function isValidSound (sound:Sound):Bool {
+		
+		#if (cpp || neko)
+		
+		return (sound.__handle != null && sound.__handle != 0);
+		
+		#else
+		
+		return true;
+		
+		#end
 		
 	}
 	
@@ -623,6 +798,69 @@ import haxe.Unserializer;
 	}
 	
 	
+	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
+		
+		initialize ();
+		
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				handler (sound);
+				return;
+				
+			}
+			
+		}
+		
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
+			
+			if (library.exists (symbolName, MUSIC)) {
+				
+				if (useCache && cache.enabled) {
+					
+					library.loadMusic (symbolName, function (sound:Sound):Void {
+						
+						cache.sound.set (id, sound);
+						handler (sound);
+						
+					});
+					
+				} else {
+					
+					library.loadMusic (symbolName, handler);
+					
+				}
+				
+				return;
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+				
+			}
+			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
+		}
+		
+		#end
+		
+		handler (null);
+		
+	}
+	
+	
 	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
 		initialize ();
@@ -667,8 +905,14 @@ import haxe.Unserializer;
 		
 		if (useCache && cache.enabled && cache.sound.exists (id)) {
 			
-			handler (cache.sound.get (id));
-			return;
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				handler (sound);
+				return;
+				
+			}
 			
 		}
 		
@@ -862,6 +1106,13 @@ class AssetLibrary {
 	}
 	
 	
+	public function getMusic (id:String):Sound {
+		
+		return getSound (id);
+		
+	}
+	
+	
 	public function getPath (id:String):String {
 		
 		return null;
@@ -872,6 +1123,13 @@ class AssetLibrary {
 	public function getSound (id:String):Sound {
 		
 		return null;
+		
+	}
+	
+	
+	public function isLocal (id:String, type:AssetType):Bool {
+		
+		return true;
 		
 	}
 	
@@ -911,6 +1169,13 @@ class AssetLibrary {
 	}
 	
 	
+	public function loadMusic (id:String, handler:Sound -> Void):Void {
+		
+		handler (getMusic (id));
+		
+	}
+	
+	
 	public function loadSound (id:String, handler:Sound -> Void):Void {
 		
 		handler (getSound (id));
@@ -925,7 +1190,7 @@ class AssetCache {
 	
 	
 	public var bitmapData:Map<String, BitmapData>;
-	public var enabled:Bool;
+	public var enabled:Bool = true;
 	public var font:Map<String, Font>;
 	public var sound:Map<String, Sound>;
 	
@@ -1012,11 +1277,11 @@ class Assets {
 				
 				if (preload != null) {
 					
-					_nmeTextureBuffer.width = Std.int (preload.width);
-					_nmeTextureBuffer.height = Std.int (preload.height);
+					___textureBuffer.width = Std.int (preload.width);
+					___textureBuffer.height = Std.int (preload.height);
 					rect = new flash.geom.Rectangle (0, 0, preload.width, preload.height);
 					setPixels(rect, preload.getPixels(rect));
-					nmeBuildLease();
+					__buildLease();
 					
 				} else {
 					
@@ -1024,11 +1289,11 @@ class Assets {
 					
 					if (onload != null && !Std.is (onload, Bool)) {
 						
-						nmeLoadFromBytes(byteArray, null, onload);
+						__loadFromBytes(byteArray, null, onload);
 						
 					} else {
 						
-						nmeLoadFromBytes(byteArray);
+						__loadFromBytes(byteArray);
 						
 					}
 					
@@ -1078,7 +1343,7 @@ class Assets {
 							
 							var path = Context.resolvePath (filePath);
 							var bytes = File.getBytes (path);
-							var resourceName = "NME_" + metaName + "_" + (classType.pack.length > 0 ? classType.pack.join ("_") + "_" : "") + classType.name;
+							var resourceName = "__ASSET__" + metaName + "_" + (classType.pack.length > 0 ? classType.pack.join ("_") + "_" : "") + classType.name;
 							
 							Context.addResource (resourceName, bytes);
 							
