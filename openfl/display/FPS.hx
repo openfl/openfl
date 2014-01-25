@@ -12,6 +12,7 @@ class FPS extends TextField {
 	
 	private var cacheCount:Int;
 	private var times:Array <Float>;
+	private var curFPS:Float = 0;
 	
 	
 	public function new (x:Float = 10, y:Float = 10, color:Int = 0x000000) {
@@ -52,10 +53,11 @@ class FPS extends TextField {
 		}
 		
 		var currentCount = times.length;
+		curFPS = Math.round ((currentCount + cacheCount) / 2);
 		
 		if (currentCount != cacheCount && visible) {
 			
-			text = "FPS: " + Math.round ((currentCount + cacheCount) / 2);
+			text = "FPS: " + curFPS;
 			
 		}
 		
