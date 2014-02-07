@@ -119,8 +119,9 @@ extern class Tilesheet {
 	 * @param	tileData		An array of all position, ID and optional values for use in drawing
 	 * @param	smooth		(Optional) Whether tiles should be smoothed while drawing(Default: false)
 	 * @param	flags		(Optional) Flags to enable scale, rotation, RGB and/or alpha when drawing(Default: 0)
+	 * @param count		(Optional) Specify the number of elements to draw from the tileData array (Default: -1, all)
 	 */
-	function drawTiles(graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0):Void;
+	function drawTiles(graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void;
 	
 	/**
 	 * Retrieve the center point of a tile in normalized tile space
@@ -297,7 +298,7 @@ class Tilesheet
 	 * @param	smooth		(Optional) Whether drawn tiles should be smoothed(Default: false)
 	 * @param	flags		(Optional) Flags to enable scale, rotation, RGB and/or alpha when drawing(Default: 0)
 	 */
-	public function drawTiles(graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0):Void
+	public function drawTiles(graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void
 	{
 		var useScale = (flags & TILE_SCALE) > 0;
 		var useRotation = (flags & TILE_ROTATION) > 0;
@@ -320,7 +321,14 @@ class Tilesheet
 			if (useRGB) { rgbIndex = numValues; numValues += 3; }
 			if (useAlpha) { alphaIndex = numValues; numValues ++; }
 			
-			var totalCount = tileData.length;
+			var totalCount = count;
+			
+			if (count < 0) {
+				
+				totalCount = tileData.length;
+				
+			}
+			
 			var itemCount = Std.int(totalCount / numValues);
 			
 			var ids = adjustIDs(_ids, itemCount);
