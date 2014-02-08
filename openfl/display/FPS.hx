@@ -10,9 +10,10 @@ import haxe.Timer;
 class FPS extends TextField {
 	
 	
+	public var currentFPS (get, null):Float;
+	
 	private var cacheCount:Int;
 	private var times:Array <Float>;
-	private var curFPS:Float = 0;
 	
 	
 	public function new (x:Float = 10, y:Float = 10, color:Int = 0x000000) {
@@ -22,6 +23,7 @@ class FPS extends TextField {
 		this.x = x;
 		this.y = y;
 		
+		currentFPS = 0;
 		selectable = false;
 		defaultTextFormat = new TextFormat ("_sans", 12, color);
 		text = "FPS: ";
@@ -53,11 +55,11 @@ class FPS extends TextField {
 		}
 		
 		var currentCount = times.length;
-		curFPS = Math.round ((currentCount + cacheCount) / 2);
+		currentFPS = Math.round ((currentCount + cacheCount) / 2);
 		
 		if (currentCount != cacheCount && visible) {
 			
-			text = "FPS: " + curFPS;
+			text = "FPS: " + currentFPS;
 			
 		}
 		
