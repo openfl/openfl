@@ -11,6 +11,7 @@ class FPS extends TextField {
 	
 	
 	public var currentFPS (get, null):Float;
+	private inline function get_currentFPS():Float { return currentFPS; }
 	
 	private var cacheCount:Int;
 	private var times:Array <Float>;
@@ -43,7 +44,7 @@ class FPS extends TextField {
 	
 	
 	
-	private function this_onEnterFrame (event:Event):Void {
+	private function this_onEnterFrame (_):Void {
 		
 		var currentTime = Timer.stamp ();
 		times.push (currentTime);
