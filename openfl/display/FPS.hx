@@ -22,7 +22,7 @@ class FPS extends TextField {
 		this.y = y;
 		
 		selectable = false;
-		defaultTextFormat = new TextFormat ("_sans", 12, color);
+		defaultTextFormat = new TextFormat ("_serif", 12, color);
 		text = "FPS: ";
 		
 		cacheCount = 0;
