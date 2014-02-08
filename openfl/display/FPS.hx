@@ -10,7 +10,7 @@ import haxe.Timer;
 class FPS extends TextField {
 	
 	
-	public var currentFPS (get, null):Float;
+	public var currentFPS (default, null):Float;
 	
 	private var cacheCount:Int;
 	private var times:Array <Float>;
