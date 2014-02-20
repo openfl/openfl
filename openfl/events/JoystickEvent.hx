@@ -12,6 +12,8 @@ extern class JoystickEvent extends Event
 	static var BUTTON_DOWN:String;
 	static var BUTTON_UP:String;
 	static var HAT_MOVE:String;
+	static var DEVICE_ADDED:String;
+	static var DEVICE_REMOVED:String;
 	
 	var axis:Array<Float>;
 	var device:Int;
