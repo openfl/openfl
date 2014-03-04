@@ -74,7 +74,7 @@ package flash.filters;
 	 * The color of the glow. Valid values are in the hexadecimal format
 	 * 0x<i>RRGGBB</i>. The default value is 0xFF0000.
 	 */
-	var color : Int;
+	var color : UInt;
 
 	/**
 	 * Specifies whether the glow is an inner glow. The value <code>true</code>
@@ -153,7 +153,7 @@ package flash.filters;
 	 *                 transparent and reveals the background color of the
 	 *                 document.
 	 */
-	function new(color : Int = 16711680, alpha : Float = 1, blurX : Float = 6, blurY : Float = 6, strength : Float = 2, quality : Int = 1, inner : Bool = false, knockout : Bool = false) : Void;
+	function new(color : UInt = 16711680, alpha : Float = 1, blurX : Float = 6, blurY : Float = 6, strength : Float = 2, quality : Int = 1, inner : Bool = false, knockout : Bool = false) : Void;
 }
 
 

@@ -69,7 +69,7 @@ extern class Sound extends flash.events.EventDispatcher {
 	 * Returns the currently available number of bytes in this sound object. This
 	 * property is usually useful only for externally loaded files.
 	 */
-	var bytesLoaded(default,null) : Int;
+	var bytesLoaded(default,null) : UInt;
 
 	/**
 	 * Returns the total number of bytes in this sound object.
@@ -334,8 +334,8 @@ extern class Sound extends flash.events.EventDispatcher {
 	 *                       Developer's Guide</i>.
 	 */
 	function load(stream : flash.net.URLRequest, ?context : SoundLoaderContext) : Void;
-	@:require(flash11) function loadCompressedDataFromByteArray(bytes : flash.utils.ByteArray, bytesLength : Int) : Void;
-	@:require(flash11) function loadPCMFromByteArray(bytes : flash.utils.ByteArray, samples : Int, ?format : String, stereo : Bool = true, sampleRate : Float = 44100) : Void;
+	@:require(flash11) function loadCompressedDataFromByteArray(bytes : flash.utils.ByteArray, bytesLength : UInt) : Void;
+	@:require(flash11) function loadPCMFromByteArray(bytes : flash.utils.ByteArray, samples : UInt, ?format : String, stereo : Bool = true, sampleRate : Float = 44100) : Void;
 
 	/**
 	 * Generates a new SoundChannel object to play back the sound. This method

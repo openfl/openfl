@@ -62,7 +62,7 @@ extern class System {
 	 * property is set to 0. The <code>System.totalMemoryNumber</code> property
 	 * allows larger values.</p>
 	 */
-	static var totalMemory(default, null):Int;
+	static var totalMemory(default, null):UInt;
 	
 	#if !display
 	/**
@@ -150,7 +150,7 @@ extern class System {
 	 * @param code A value to pass to the operating system. Typically, if the
 	 *             process exits normally, the value is 0.
 	 */
-	static function exit(code : Int) : Void;
+	static function exit(code : UInt) : Void;
 
 	/**
 	 * Forces the garbage collection process.

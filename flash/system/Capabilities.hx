@@ -26,7 +26,7 @@ package flash.system;
 extern class Capabilities {
 	
 	#if !display
-	static var _internal(default,null) : Int;
+	static var _internal(default,null) : UInt;
 
 	/**
 	 * Specifies whether access to the user's camera and microphone has been

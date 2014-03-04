@@ -14,94 +14,94 @@ extern class Keyboard {
 	/**
 	 * Constant associated with the key code value for the A key(65).
 	 */
-	@:require(flash10_1) static var A : Int;
+	@:require(flash10_1) static var A : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Alternate(Option) key
 	 * (18).
 	 */
-	@:require(flash10_1) static var ALTERNATE : Int;
+	@:require(flash10_1) static var ALTERNATE : UInt;
 
 	/**
 	 * Select the audio mode
 	 */
 	#if !display
-	@:require(flash10_2) static var AUDIO : Int;
+	@:require(flash10_2) static var AUDIO : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the B key(66).
 	 */
-	@:require(flash10_1) static var B : Int;
+	@:require(flash10_1) static var B : UInt;
 
 	/**
 	 * Return to previous page in application
 	 */
 	#if !display
-	@:require(flash10_2) static var BACK : Int;
+	@:require(flash10_2) static var BACK : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the ` key(192).
 	 */
-	@:require(flash10_1) static var BACKQUOTE : Int;
+	@:require(flash10_1) static var BACKQUOTE : UInt;
 
 	/**
 	 * Constant associated with the key code value for the \ key(220).
 	 */
-	@:require(flash10_1) static var BACKSLASH : Int;
+	@:require(flash10_1) static var BACKSLASH : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Backspace key(8).
 	 */
-	static var BACKSPACE : Int;
+	static var BACKSPACE : UInt;
 
 	/**
 	 * Blue function key button
 	 */
 	#if !display
-	@:require(flash10_2) static var BLUE : Int;
+	@:require(flash10_2) static var BLUE : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the C key(67).
 	 */
-	@:require(flash10_1) static var C : Int;
+	@:require(flash10_1) static var C : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Caps Lock key(20).
 	 */
-	static var CAPS_LOCK : Int;
+	static var CAPS_LOCK : UInt;
 
 	/**
 	 * Channel down
 	 */
 	#if !display
-	@:require(flash10_2) static var CHANNEL_DOWN : Int;
+	@:require(flash10_2) static var CHANNEL_DOWN : UInt;
 	#end
 
 	/**
 	 * Channel up
 	 */
 	#if !display
-	@:require(flash10_2) static var CHANNEL_UP : Int;
+	@:require(flash10_2) static var CHANNEL_UP : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the , key(188).
 	 */
-	@:require(flash10_1) static var COMMA : Int;
+	@:require(flash10_1) static var COMMA : UInt;
 
 	/**
 	 * Constant associated with the Mac command key(15). This constant is
 	 * currently only used for setting menu key equivalents.
 	 */
-	@:require(flash10_1) static var COMMAND : Int;
+	@:require(flash10_1) static var COMMAND : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Control key(17).
 	 */
-	static var CONTROL : Int;
+	static var CONTROL : UInt;
 
 	/**
 	 * An array containing all the defined key name constants.
@@ -113,213 +113,213 @@ extern class Keyboard {
 	/**
 	 * Constant associated with the key code value for the D key(68).
 	 */
-	@:require(flash10_1) static var D : Int;
+	@:require(flash10_1) static var D : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Delete key(46).
 	 */
-	static var DELETE : Int;
+	static var DELETE : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Down Arrow key(40).
 	 */
-	static var DOWN : Int;
+	static var DOWN : UInt;
 
 	/**
 	 * Engage DVR application mode
 	 */
 	#if !display
-	@:require(flash10_2) static var DVR : Int;
+	@:require(flash10_2) static var DVR : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the E key(69).
 	 */
-	@:require(flash10_1) static var E : Int;
+	@:require(flash10_1) static var E : UInt;
 
 	/**
 	 * Constant associated with the key code value for the End key(35).
 	 */
-	static var END : Int;
+	static var END : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Enter key(13).
 	 */
-	static var ENTER : Int;
+	static var ENTER : UInt;
 
 	/**
 	 * Constant associated with the key code value for the = key(187).
 	 */
-	@:require(flash10_1) static var EQUAL : Int;
+	@:require(flash10_1) static var EQUAL : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Escape key(27).
 	 */
-	static var ESCAPE : Int;
+	static var ESCAPE : UInt;
 
 	/**
 	 * Exits current application mode
 	 */
 	#if !display
-	@:require(flash10_2) static var EXIT : Int;
+	@:require(flash10_2) static var EXIT : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the F key(70).
 	 */
-	@:require(flash10_1) static var F : Int;
+	@:require(flash10_1) static var F : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F1 key(112).
 	 */
-	static var F1 : Int;
+	static var F1 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F10 key(121).
 	 */
-	static var F10 : Int;
+	static var F10 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F11 key(122).
 	 */
-	static var F11 : Int;
+	static var F11 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F12 key(123).
 	 */
-	static var F12 : Int;
+	static var F12 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F13 key(124).
 	 */
-	static var F13 : Int;
+	static var F13 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F14 key(125).
 	 */
-	static var F14 : Int;
+	static var F14 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F15 key(126).
 	 */
-	static var F15 : Int;
+	static var F15 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F2 key(113).
 	 */
-	static var F2 : Int;
+	static var F2 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F3 key(114).
 	 */
-	static var F3 : Int;
+	static var F3 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F4 key(115).
 	 */
-	static var F4 : Int;
+	static var F4 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F5 key(116).
 	 */
-	static var F5 : Int;
+	static var F5 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F6 key(117).
 	 */
-	static var F6 : Int;
+	static var F6 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F7 key(118).
 	 */
-	static var F7 : Int;
+	static var F7 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F8 key(119).
 	 */
-	static var F8 : Int;
+	static var F8 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the F9 key(120).
 	 */
-	static var F9 : Int;
+	static var F9 : UInt;
 
 	/**
 	 * Engage fast-forward transport mode
 	 */
 	#if !display
-	@:require(flash10_2) static var FAST_FORWARD : Int;
+	@:require(flash10_2) static var FAST_FORWARD : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the G key(71).
 	 */
-	@:require(flash10_1) static var G : Int;
+	@:require(flash10_1) static var G : UInt;
 
 	/**
 	 * Green function key button
 	 */
 	#if !display
-	@:require(flash10_2) static var GREEN : Int;
+	@:require(flash10_2) static var GREEN : UInt;
 	#end
 
 	/**
 	 * Engage program guide
 	 */
 	#if !display
-	@:require(flash10_2) static var GUIDE : Int;
+	@:require(flash10_2) static var GUIDE : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the H key(72).
 	 */
-	@:require(flash10_1) static var H : Int;
+	@:require(flash10_1) static var H : UInt;
 
 	/**
 	 * Engage help application or context-sensitive help
 	 */
 	#if !display
-	@:require(flash10_2) static var HELP : Int;
+	@:require(flash10_2) static var HELP : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the Home key(36).
 	 */
-	static var HOME : Int;
+	static var HOME : UInt;
 
 	/**
 	 * Constant associated with the key code value for the I key(73).
 	 */
-	@:require(flash10_1) static var I : Int;
+	@:require(flash10_1) static var I : UInt;
 
 	/**
 	 * Info button
 	 */
 	#if !display
-	@:require(flash10_2) static var INFO : Int;
+	@:require(flash10_2) static var INFO : UInt;
 	#end
 
 	/**
 	 * Cycle input
 	 */
 	#if !display
-	@:require(flash10_2) static var INPUT : Int;
+	@:require(flash10_2) static var INPUT : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the Insert key(45).
 	 */
-	static var INSERT : Int;
+	static var INSERT : UInt;
 
 	/**
 	 * Constant associated with the key code value for the J key(74).
 	 */
-	@:require(flash10_1) static var J : Int;
+	@:require(flash10_1) static var J : UInt;
 
 	/**
 	 * Constant associated with the key code value for the K key(75).
 	 */
-	@:require(flash10_1) static var K : Int;
+	@:require(flash10_1) static var K : UInt;
 	
 	#if !display
 	/**
@@ -686,360 +686,360 @@ extern class Keyboard {
 	/**
 	 * Constant associated with the key code value for the L key(76).
 	 */
-	@:require(flash10_1) static var L : Int;
+	@:require(flash10_1) static var L : UInt;
 
 	/**
 	 * Watch last channel or show watched
 	 */
 	#if !display
-	@:require(flash10_2) static var LAST : Int;
+	@:require(flash10_2) static var LAST : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the Left Arrow key(37).
 	 */
-	static var LEFT : Int;
+	static var LEFT : UInt;
 
 	/**
 	 * Constant associated with the key code value for the [ key(219).
 	 */
-	@:require(flash10_1) static var LEFTBRACKET : Int;
+	@:require(flash10_1) static var LEFTBRACKET : UInt;
 
 	/**
 	 * Return to live [position in broadcast]
 	 */
 	#if !display
-	@:require(flash10_2) static var LIVE : Int;
+	@:require(flash10_2) static var LIVE : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the M key(77).
 	 */
-	@:require(flash10_1) static var M : Int;
+	@:require(flash10_1) static var M : UInt;
 
 	/**
 	 * Engage "Master Shell" e.g. TiVo or other vendor button
 	 */
 	#if !display
-	@:require(flash10_2) static var MASTER_SHELL : Int;
+	@:require(flash10_2) static var MASTER_SHELL : UInt;
 	#end
 
 	/**
 	 * Engage menu
 	 */
 	#if !display
-	@:require(flash10_2) static var MENU : Int;
+	@:require(flash10_2) static var MENU : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the - key(189).
 	 */
-	@:require(flash10_1) static var MINUS : Int;
+	@:require(flash10_1) static var MINUS : UInt;
 
 	/**
 	 * Constant associated with the key code value for the N key(78).
 	 */
-	@:require(flash10_1) static var N : Int;
+	@:require(flash10_1) static var N : UInt;
 
 	/**
 	 * Skip to next track or chapter
 	 */
 	#if !display
-	@:require(flash10_2) static var NEXT : Int;
+	@:require(flash10_2) static var NEXT : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the 0 key(48).
 	 */
-	@:require(flash10_1) static var NUMBER_0 : Int;
+	@:require(flash10_1) static var NUMBER_0 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 1 key(49).
 	 */
-	@:require(flash10_1) static var NUMBER_1 : Int;
+	@:require(flash10_1) static var NUMBER_1 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 2 key(50).
 	 */
-	@:require(flash10_1) static var NUMBER_2 : Int;
+	@:require(flash10_1) static var NUMBER_2 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 3 key(51).
 	 */
-	@:require(flash10_1) static var NUMBER_3 : Int;
+	@:require(flash10_1) static var NUMBER_3 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 4 key(52).
 	 */
-	@:require(flash10_1) static var NUMBER_4 : Int;
+	@:require(flash10_1) static var NUMBER_4 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 5 key(53).
 	 */
-	@:require(flash10_1) static var NUMBER_5 : Int;
+	@:require(flash10_1) static var NUMBER_5 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 6 key(54).
 	 */
-	@:require(flash10_1) static var NUMBER_6 : Int;
+	@:require(flash10_1) static var NUMBER_6 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 7 key(55).
 	 */
-	@:require(flash10_1) static var NUMBER_7 : Int;
+	@:require(flash10_1) static var NUMBER_7 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 8 key(56).
 	 */
-	@:require(flash10_1) static var NUMBER_8 : Int;
+	@:require(flash10_1) static var NUMBER_8 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the 9 key(57).
 	 */
-	@:require(flash10_1) static var NUMBER_9 : Int;
+	@:require(flash10_1) static var NUMBER_9 : UInt;
 
 	/**
 	 * Constant associated with the pseudo-key code for the the number pad(21).
 	 * Use to set numpad modifier on key equivalents
 	 */
-	@:require(flash10_1) static var NUMPAD : Int;
+	@:require(flash10_1) static var NUMPAD : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 0 key on the
 	 * number pad(96).
 	 */
-	static var NUMPAD_0 : Int;
+	static var NUMPAD_0 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 1 key on the
 	 * number pad(97).
 	 */
-	static var NUMPAD_1 : Int;
+	static var NUMPAD_1 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 2 key on the
 	 * number pad(98).
 	 */
-	static var NUMPAD_2 : Int;
+	static var NUMPAD_2 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 3 key on the
 	 * number pad(99).
 	 */
-	static var NUMPAD_3 : Int;
+	static var NUMPAD_3 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 4 key on the
 	 * number pad(100).
 	 */
-	static var NUMPAD_4 : Int;
+	static var NUMPAD_4 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 5 key on the
 	 * number pad(101).
 	 */
-	static var NUMPAD_5 : Int;
+	static var NUMPAD_5 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 6 key on the
 	 * number pad(102).
 	 */
-	static var NUMPAD_6 : Int;
+	static var NUMPAD_6 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 7 key on the
 	 * number pad(103).
 	 */
-	static var NUMPAD_7 : Int;
+	static var NUMPAD_7 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 8 key on the
 	 * number pad(104).
 	 */
-	static var NUMPAD_8 : Int;
+	static var NUMPAD_8 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the number 9 key on the
 	 * number pad(105).
 	 */
-	static var NUMPAD_9 : Int;
+	static var NUMPAD_9 : UInt;
 
 	/**
 	 * Constant associated with the key code value for the addition key on the
 	 * number pad(107).
 	 */
-	static var NUMPAD_ADD : Int;
+	static var NUMPAD_ADD : UInt;
 
 	/**
 	 * Constant associated with the key code value for the decimal key on the
 	 * number pad(110).
 	 */
-	static var NUMPAD_DECIMAL : Int;
+	static var NUMPAD_DECIMAL : UInt;
 
 	/**
 	 * Constant associated with the key code value for the division key on the
 	 * number pad(111).
 	 */
-	static var NUMPAD_DIVIDE : Int;
+	static var NUMPAD_DIVIDE : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Enter key on the
 	 * number pad(108).
 	 */
-	static var NUMPAD_ENTER : Int;
+	static var NUMPAD_ENTER : UInt;
 
 	/**
 	 * Constant associated with the key code value for the multiplication key on
 	 * the number pad(106).
 	 */
-	static var NUMPAD_MULTIPLY : Int;
+	static var NUMPAD_MULTIPLY : UInt;
 
 	/**
 	 * Constant associated with the key code value for the subtraction key on the
 	 * number pad(109).
 	 */
-	static var NUMPAD_SUBTRACT : Int;
+	static var NUMPAD_SUBTRACT : UInt;
 
 	/**
 	 * Constant associated with the key code value for the O key(79).
 	 */
-	@:require(flash10_1) static var O : Int;
+	@:require(flash10_1) static var O : UInt;
 
 	/**
 	 * Constant associated with the key code value for the P key(80).
 	 */
-	@:require(flash10_1) static var P : Int;
+	@:require(flash10_1) static var P : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Page Down key(34).
 	 */
-	static var PAGE_DOWN : Int;
+	static var PAGE_DOWN : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Page Up key(33).
 	 */
-	static var PAGE_UP : Int;
+	static var PAGE_UP : UInt;
 
 	/**
 	 * Engage pause transport mode
 	 */
 	#if !display
-	@:require(flash10_2) static var PAUSE : Int;
+	@:require(flash10_2) static var PAUSE : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the . key(190).
 	 */
-	@:require(flash10_1) static var PERIOD : Int;
+	@:require(flash10_1) static var PERIOD : UInt;
 
 	#if !display
 	/**
 	 * Engage play transport mode
 	 */
-	@:require(flash10_2) static var PLAY : Int;
+	@:require(flash10_2) static var PLAY : UInt;
 
 	/**
 	 * Skip to previous track or chapter
 	 */
-	@:require(flash10_2) static var PREVIOUS : Int;
+	@:require(flash10_2) static var PREVIOUS : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the Q key(81).
 	 */
-	@:require(flash10_1) static var Q : Int;
+	@:require(flash10_1) static var Q : UInt;
 
 	/**
 	 * Constant associated with the key code value for the ' key(222).
 	 */
-	@:require(flash10_1) static var QUOTE : Int;
+	@:require(flash10_1) static var QUOTE : UInt;
 
 	/**
 	 * Constant associated with the key code value for the R key(82).
 	 */
-	@:require(flash10_1) static var R : Int;
+	@:require(flash10_1) static var R : UInt;
 
 	#if !display
 	/**
 	 * Record item or engage record transport mode
 	 */
-	@:require(flash10_2) static var RECORD : Int;
+	@:require(flash10_2) static var RECORD : UInt;
 
 	/**
 	 * Red function key button
 	 */
-	@:require(flash10_2) static var RED : Int;
+	@:require(flash10_2) static var RED : UInt;
 
 	/**
 	 * Engage rewind transport mode
 	 */
-	@:require(flash10_2) static var REWIND : Int;
+	@:require(flash10_2) static var REWIND : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the Right Arrow key(39).
 	 */
-	static var RIGHT : Int;
+	static var RIGHT : UInt;
 
 	/**
 	 * Constant associated with the key code value for the ] key(221).
 	 */
-	@:require(flash10_1) static var RIGHTBRACKET : Int;
+	@:require(flash10_1) static var RIGHTBRACKET : UInt;
 
 	/**
 	 * Constant associated with the key code value for the S key(83).
 	 */
-	@:require(flash10_1) static var S : Int;
+	@:require(flash10_1) static var S : UInt;
 
 	/**
 	 * Search button
 	 */
 	#if !display
-	@:require(flash10_2) static var SEARCH : Int;
+	@:require(flash10_2) static var SEARCH : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the ; key(186).
 	 */
-	@:require(flash10_1) static var SEMICOLON : Int;
+	@:require(flash10_1) static var SEMICOLON : UInt;
 
 	/**
 	 * Engage setup application or menu
 	 */
-	@:require(flash10_2) static var SETUP : Int;
+	@:require(flash10_2) static var SETUP : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Shift key(16).
 	 */
-	static var SHIFT : Int;
+	static var SHIFT : UInt;
 
 	#if !display
 	/**
 	 * Quick skip backward(usually 7-10 seconds)
 	 */
-	@:require(flash10_2) static var SKIP_BACKWARD : Int;
+	@:require(flash10_2) static var SKIP_BACKWARD : UInt;
 
 	/**
 	 * Quick skip ahead(usually 30 seconds)
 	 */
-	@:require(flash10_2) static var SKIP_FORWARD : Int;
+	@:require(flash10_2) static var SKIP_FORWARD : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the / key(191).
 	 */
-	@:require(flash10_1) static var SLASH : Int;
+	@:require(flash10_1) static var SLASH : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Spacebar(32).
 	 */
-	static var SPACE : Int;
+	static var SPACE : UInt;
 	
 	#if !display
 	/**
 	 * Engage stop transport mode
 	 */
-	@:require(flash10_2) static var STOP : Int;
+	@:require(flash10_2) static var STOP : UInt;
 
 	/**
 	 * The OS X Unicode Begin constant
@@ -1404,67 +1404,67 @@ extern class Keyboard {
 	/**
 	 * Toggle subtitles
 	 */
-	@:require(flash10_2) static var SUBTITLE : Int;
+	@:require(flash10_2) static var SUBTITLE : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the T key(84).
 	 */
-	@:require(flash10_1) static var T : Int;
+	@:require(flash10_1) static var T : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Tab key(9).
 	 */
-	static var TAB : Int;
+	static var TAB : UInt;
 
 	/**
 	 * Constant associated with the key code value for the U key(85).
 	 */
-	@:require(flash10_1) static var U : Int;
+	@:require(flash10_1) static var U : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Up Arrow key(38).
 	 */
-	static var UP : Int;
+	static var UP : UInt;
 
 	/**
 	 * Constant associated with the key code value for the V key(86).
 	 */
-	@:require(flash10_1) static var V : Int;
+	@:require(flash10_1) static var V : UInt;
 
 	/**
 	 * Engage video-on-demand
 	 */
 	#if !display
-	@:require(flash10_2) static var VOD : Int;
+	@:require(flash10_2) static var VOD : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the W key(87).
 	 */
-	@:require(flash10_1) static var W : Int;
+	@:require(flash10_1) static var W : UInt;
 
 	/**
 	 * Constant associated with the key code value for the X key(88).
 	 */
-	@:require(flash10_1) static var X : Int;
+	@:require(flash10_1) static var X : UInt;
 
 	/**
 	 * Constant associated with the key code value for the Y key(89).
 	 */
-	@:require(flash10_1) static var Y : Int;
+	@:require(flash10_1) static var Y : UInt;
 
 	/**
 	 * Yellow function key button
 	 */
 	#if !display
-	@:require(flash10_2) static var YELLOW : Int;
+	@:require(flash10_2) static var YELLOW : UInt;
 	#end
 
 	/**
 	 * Constant associated with the key code value for the Z key(90).
 	 */
-	@:require(flash10_1) static var Z : Int;
+	@:require(flash10_1) static var Z : UInt;
 
 	#if !display
 	/**

@@ -10,7 +10,7 @@ extern class Error #if !flash_strict implements Dynamic #end {
 	function getStackTrace() : String;
 	static var length : Int;
 	static function getErrorMessage(index : Int) : String;
-	static function throwError(type : Class<Dynamic>, index : Int, ?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : Dynamic;
+	static function throwError(type : Class<Dynamic>, index : UInt, ?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : Dynamic;
 }
 
 

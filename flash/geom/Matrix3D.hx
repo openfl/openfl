@@ -85,13 +85,13 @@ package flash.geom;
 	 * @return A Matrix object.
 	 */
 	function clone() : Matrix3D;
-	@:require(flash11) function copyColumnFrom(column : Int, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyColumnTo(column : Int, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyColumnFrom(column : UInt, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyColumnTo(column : UInt, vector3D : Vector3D) : Void;
 	@:require(flash11) function copyFrom(sourceMatrix3D : Matrix3D) : Void;
-	@:require(flash11) function copyRawDataFrom(vector : flash.Vector<Float>, index : Int = 0, transpose : Bool = false) : Void;
-	@:require(flash11) function copyRawDataTo(vector : flash.Vector<Float>, index : Int = 0, transpose : Bool = false) : Void;
-	@:require(flash11) function copyRowFrom(row : Int, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyRowTo(row : Int, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyRawDataFrom(vector : flash.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
+	@:require(flash11) function copyRawDataTo(vector : flash.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
+	@:require(flash11) function copyRowFrom(row : UInt, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyRowTo(row : UInt, vector3D : Vector3D) : Void;
 	@:require(flash11) function copyToMatrix3D(dest : Matrix3D) : Void;
 	#if !display
 	function decompose(?orientationStyle : Orientation3D) : flash.Vector<Vector3D>;

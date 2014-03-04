@@ -78,7 +78,7 @@ package flash.filters;
 	 * The color of the shadow. Valid values are in hexadecimal format
 	 * <i>0xRRGGBB</i>. The default value is 0x000000.
 	 */
-	var color : Int;
+	var color : UInt;
 
 	/**
 	 * The offset distance for the shadow, in pixels. The default value is 4.0
@@ -170,7 +170,7 @@ package flash.filters;
 	 *                   of <code>true</code> indicates that the object itself is
 	 *                   not drawn; only the shadow is visible.
 	 */
-	function new(distance : Float = 4, angle : Float = 45, color : Int = 0, alpha : Float = 1, blurX : Float = 4, blurY : Float = 4, strength : Float = 1, quality : Int = 1, inner : Bool = false, knockout : Bool = false, hideObject : Bool = false) : Void;
+	function new(distance : Float = 4, angle : Float = 45, color : UInt = 0, alpha : Float = 1, blurX : Float = 4, blurY : Float = 4, strength : Float = 1, quality : Int = 1, inner : Bool = false, knockout : Bool = false, hideObject : Bool = false) : Void;
 }
 
 

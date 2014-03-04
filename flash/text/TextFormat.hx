@@ -71,7 +71,7 @@ extern class TextFormat {
 	 * default value is <code>null</code>, which means that Flash Player uses the
 	 * color black(0x000000).
 	 */
-	var color : Null<Int>;
+	var color : Null<UInt>;
 	#if !display
 	var display : TextFormatDisplay;
 	#end
@@ -150,7 +150,7 @@ extern class TextFormat {
 	 * stop is specified in pixels. If custom tab stops are not specified
 	 * (<code>null</code>), the default tab stop is 4(average character width).
 	 */
-	var tabStops : Array<Int>;
+	var tabStops : Array<UInt>;
 
 	/**
 	 * Indicates the target window where the hyperlink is displayed. If the
@@ -226,7 +226,7 @@ extern class TextFormat {
 	 * @param leading     A number that indicates the amount of leading vertical
 	 *                    space between lines.
 	 */
-	function new(?font : String, ?size : Float, ?color : Int, ?bold : Bool, ?italic : Bool, ?underline : Bool, ?url : String, ?target : String, ?align : TextFormatAlign, ?leftMargin : Float, ?rightMargin : Float, ?indent : Float, ?leading : Float) : Void;
+	function new(?font : String, ?size : Float, ?color : UInt, ?bold : Bool, ?italic : Bool, ?underline : Bool, ?url : String, ?target : String, ?align : TextFormatAlign, ?leftMargin : Float, ?rightMargin : Float, ?indent : Float, ?leading : Float) : Void;
 }
 
 

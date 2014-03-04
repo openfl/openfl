@@ -23,7 +23,7 @@ package flash.display;
 	 * The color of the fill. Valid values are in the hexadecimal format
 	 * 0xRRGGBB. The default value is 0xFF0000(or the uint 0).
 	 */
-	var color : Int;
+	var color : UInt;
 
 	/**
 	 * Creates a new GraphicsSolidFill object.
@@ -33,7 +33,7 @@ package flash.display;
 	 * @param alpha The alpha transparency value. Valid values are 0(fully
 	 *              transparent) to 1(fully opaque).
 	 */
-	function new(color : Int = 0, alpha : Float = 1) : Void;
+	function new(color : UInt = 0, alpha : Float = 1) : Void;
 }
 
 

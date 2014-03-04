@@ -80,7 +80,7 @@ extern class URLLoader extends flash.events.EventDispatcher {
 	 * Indicates the number of bytes that have been loaded thus far during the
 	 * load operation.
 	 */
-	var bytesLoaded : Int;
+	var bytesLoaded : UInt;
 
 	/**
 	 * Indicates the total number of bytes in the downloaded data. This property
@@ -88,7 +88,7 @@ extern class URLLoader extends flash.events.EventDispatcher {
 	 * the operation is complete. Also, a missing Content-Length header will
 	 * result in bytesTotal being indeterminate.
 	 */
-	var bytesTotal : Int;
+	var bytesTotal : UInt;
 
 	/**
 	 * The data received from the load operation. This property is populated only

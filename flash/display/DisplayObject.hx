@@ -489,7 +489,7 @@ extern class DisplayObject extends flash.events.EventDispatcher  implements IBit
 	 *
 	 * <p>The opaque background region does not respond to mouse events.</p>
 	 */
-	var opaqueBackground : Null<Int>;
+	var opaqueBackground : Null<UInt>;
 
 	/**
 	 * Indicates the DisplayObjectContainer object that contains this display

@@ -228,7 +228,7 @@ extern class SharedObject extends flash.events.EventDispatcher {
 	 *                        determined by the associated NetConnection
 	 *                        instance.
 	 */
-	var objectEncoding : Int;
+	var objectEncoding : UInt;
 
 	/**
 	 * The current size of the shared object, in bytes.
@@ -239,7 +239,7 @@ extern class SharedObject extends flash.events.EventDispatcher {
 	 * processing time, so you may want to avoid using this method unless you
 	 * have a specific need for it.</p>
 	 */
-	var size(default,null) : Int;
+	var size(default,null) : UInt;
 	function new() : Void;
 
 	/**
@@ -441,7 +441,7 @@ extern class SharedObject extends flash.events.EventDispatcher {
 	 * <code>objectEncoding</code> property of the local shared object
 	 * instead.</p>
 	 */
-	static var defaultObjectEncoding : Int;
+	static var defaultObjectEncoding : UInt;
 	static function deleteAll(url : String) : Int;
 	static function getDiskUsage(url : String) : Int;
 

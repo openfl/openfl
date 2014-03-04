@@ -72,7 +72,7 @@ package flash.display;
 	 * @param color The color of the fill(0xRRGGBB).
 	 * @param alpha The alpha value of the fill(0.0 to 1.0).
 	 */
-	function beginFill(color : Int, alpha : Float = 1) : Void;
+	function beginFill(color : UInt, alpha : Float = 1) : Void;
 
 	/**
 	 * Specifies a gradient fill used by subsequent calls to other Graphics
@@ -139,7 +139,7 @@ package flash.display;
 	 *                            a <code>focalPointRatio</code> set to 0.75:
 	 * @throws ArgumentError If the <code>type</code> parameter is not valid.
 	 */
-	function beginGradientFill(type : GradientType, colors : Array<Int>, alphas : Array<Dynamic>, ratios : Array<Dynamic>, ?matrix : flash.geom.Matrix, ?spreadMethod : SpreadMethod, ?interpolationMethod : InterpolationMethod, focalPointRatio : Float = 0) : Void;
+	function beginGradientFill(type : GradientType, colors : Array<UInt>, alphas : Array<Dynamic>, ratios : Array<Dynamic>, ?matrix : flash.geom.Matrix, ?spreadMethod : SpreadMethod, ?interpolationMethod : InterpolationMethod, focalPointRatio : Float = 0) : Void;
 
 	/**
 	 * Specifies a shader fill used by subsequent calls to other Graphics methods
@@ -506,7 +506,7 @@ package flash.display;
 	 *                            image shows a gradient with a
 	 *                            <code>focalPointRatio</code> of -0.75:
 	 */
-	function lineGradientStyle(type : GradientType, colors : Array<Int>, alphas : Array<Dynamic>, ratios : Array<Dynamic>, ?matrix : flash.geom.Matrix, ?spreadMethod : SpreadMethod, ?interpolationMethod : InterpolationMethod, focalPointRatio : Float = 0) : Void;
+	function lineGradientStyle(type : GradientType, colors : Array<UInt>, alphas : Array<Dynamic>, ratios : Array<Dynamic>, ?matrix : flash.geom.Matrix, ?spreadMethod : SpreadMethod, ?interpolationMethod : InterpolationMethod, focalPointRatio : Float = 0) : Void;
 
 	/**
 	 * Specifies a shader to use for the line stroke when drawing lines.
@@ -678,7 +678,7 @@ package flash.display;
 	 *                     has a specific maximum angle for which the miter is
 	 *                     cut off. The following table lists some examples:</p>
 	 */
-	function lineStyle(?thickness : Float, color : Int = 0, alpha : Float = 1, pixelHinting : Bool = false, ?scaleMode : LineScaleMode, ?caps : CapsStyle, ?joints : JointStyle, miterLimit : Float = 3) : Void;
+	function lineStyle(?thickness : Float, color : UInt = 0, alpha : Float = 1, pixelHinting : Bool = false, ?scaleMode : LineScaleMode, ?caps : CapsStyle, ?joints : JointStyle, miterLimit : Float = 3) : Void;
 
 	/**
 	 * Draws a line using the current line style from the current drawing

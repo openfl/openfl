@@ -861,7 +861,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * @param y     The <i>y</i> position of the pixel whose value changes.
 	 * @param color The resulting RGB color for the pixel.
 	 */
-	function setPixel(x : Int, y : Int, color : Int) : Void;
+	function setPixel(x : Int, y : Int, color : UInt) : Void;
 
 	/**
 	 * Sets the color and alpha transparency values of a single pixel of a
@@ -894,7 +894,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 *              opaque(not transparent), the alpha transparency portion of
 	 *              this color value is ignored.
 	 */
-	function setPixel32(x : Int, y : Int, color : Int) : Void;
+	function setPixel32(x : Int, y : Int, color : UInt) : Void;
 
 	/**
 	 * Converts a byte array into a rectangular region of pixel data. For each
@@ -978,7 +978,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * @throws TypeError     The sourceBitmapData, sourceRect destPoint or
 	 *                       operation are null.
 	 */
-	function threshold(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, operation : String, threshold : Int, color : UInt = 0, mask : UInt = 0xFFFFFFFF, copySource : Bool = false) : UInt;
+	function threshold(sourceBitmapData : BitmapData, sourceRect : flash.geom.Rectangle, destPoint : flash.geom.Point, operation : String, threshold : UInt, color : UInt = 0, mask : UInt = 0xFFFFFFFF, copySource : Bool = false) : UInt;
 
 	/**
 	 * Unlocks an image so that any objects that reference the BitmapData object,

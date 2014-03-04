@@ -141,7 +141,7 @@ extern class Stage extends DisplayObjectContainer {
 
 	/**
 	 */
-	@:require(flash10_2) var color : Int;
+	@:require(flash10_2) var color : UInt;
 
 	/**
 	 * Controls Flash runtime color correction for displays. Color correction
@@ -339,7 +339,8 @@ extern class Stage extends DisplayObjectContainer {
 	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
 	 */
 	var frameRate : Float;
-
+	
+	#if !display
 	/**
 	 * Returns the height of the monitor that will be used when going to full
 	 * screen size, if that state is entered immediately. If the user has
@@ -357,7 +358,7 @@ extern class Stage extends DisplayObjectContainer {
 	 * <code>StageAlign.TOP_LEFT</code> and <code>Stage.scaleMode</code> is set
 	 * to <code>StageScaleMode.NO_SCALE</code>.</p>
 	 */
-	var fullScreenHeight(default,null) : Int;
+	var fullScreenHeight(default,null) :UInt;
 
 	/**
 	 * Sets the Flash runtime to scale a specific region of the stage to
@@ -405,7 +406,8 @@ extern class Stage extends DisplayObjectContainer {
 	 * <code>StageAlign.TOP_LEFT</code> and <code>Stage.scaleMode</code> is set
 	 * to <code>StageScaleMode.NO_SCALE</code>.</p>
 	 */
-	var fullScreenWidth(default,null) : Int;
+	var fullScreenWidth(default,null) : UInt;
+	#end
 
 	/**
 	 * A value from the StageQuality class that specifies which rendering quality

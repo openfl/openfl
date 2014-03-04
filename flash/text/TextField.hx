@@ -166,7 +166,7 @@ extern class TextField extends flash.display.InteractiveObject {
 	 * text field has the <code>background</code> property set to
 	 * <code>true</code>.
 	 */
-	var backgroundColor : Int;
+	var backgroundColor : UInt;
 
 	/**
 	 * Specifies whether the text field has a border. If <code>true</code>, the
@@ -183,7 +183,7 @@ extern class TextField extends flash.display.InteractiveObject {
 	 * if there currently is no border, but the color is visible only if the text
 	 * field has the <code>border</code> property set to <code>true</code>.
 	 */
-	var borderColor : Int;
+	var borderColor : UInt;
 
 	/**
 	 * An integer(1-based index) that indicates the bottommost line that is
@@ -537,7 +537,7 @@ extern class TextField extends flash.display.InteractiveObject {
 	 * 
 	 * @default 0(0x000000)
 	 */
-	var textColor : Int;
+	var textColor : UInt;
 
 	/**
 	 * The height of the text in pixels.

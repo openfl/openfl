@@ -168,7 +168,7 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * The number of bytes that are loaded for the media. When this number equals
 	 * the value of <code>bytesTotal</code>, all of the bytes are loaded.
 	 */
-	var bytesLoaded(default,null) : Int;
+	var bytesLoaded(default,null) : UInt;
 
 	/**
 	 * The number of compressed bytes in the entire media file.
@@ -179,7 +179,7 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * <code>bytesTotal</code> reflects the actual number of bytes to be
 	 * downloaded.</p>
 	 */
-	var bytesTotal(default,null) : Int;
+	var bytesTotal(default,null) : UInt;
 
 	/**
 	 * Expresses the trust relationship from content(child) to the Loader
@@ -400,7 +400,7 @@ extern class LoaderInfo extends flash.events.EventDispatcher {
 	 * @throws Error If the file is not a SWF file.
 	 */
 	#if !display
-	var swfVersion(default, null) : Int;
+	var swfVersion(default, null) : UInt;
 	#end
 
 	/**

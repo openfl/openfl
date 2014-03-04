@@ -145,11 +145,11 @@ extern class Matrix {
 	 * @param m The matrix to be concatenated to the source matrix.
 	 */
 	function concat(m : Matrix) : Void;
-	@:require(flash11) function copyColumnFrom(column : Int, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyColumnTo(column : Int, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyColumnFrom(column : UInt, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyColumnTo(column : UInt, vector3D : Vector3D) : Void;
 	@:require(flash11) function copyFrom(sourceMatrix : Matrix) : Void;
-	@:require(flash11) function copyRowFrom(row : Int, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyRowTo(row : Int, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyRowFrom(row : UInt, vector3D : Vector3D) : Void;
+	@:require(flash11) function copyRowTo(row : UInt, vector3D : Vector3D) : Void;
 
 	/**
 	 * Includes parameters for scaling, rotation, and translation. When applied

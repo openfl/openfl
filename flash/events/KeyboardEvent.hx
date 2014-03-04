@@ -33,7 +33,7 @@ extern class KeyboardEvent extends Event {
 	 * <p><b>Note: </b>When an input method editor(IME) is running,
 	 * <code>charCode</code> does not report accurate character codes.</p>
 	 */
-	var charCode : Int;
+	var charCode : UInt;
 
 	/**
 	 * On Windows and Linux, indicates whether the Ctrl key is active
@@ -48,7 +48,7 @@ extern class KeyboardEvent extends Event {
 	 * <p><b>Note: </b>When an input method editor(IME) is running,
 	 * <code>keyCode</code> does not report accurate key codes.</p>
 	 */
-	var keyCode : Int;
+	var keyCode : UInt;
 
 	/**
 	 * Indicates the location of the key on the keyboard. This is useful for
@@ -98,7 +98,7 @@ extern class KeyboardEvent extends Event {
 	 * @param shiftKeyValue    Indicates whether the Shift key modifier is
 	 *                         activated.
 	 */
-	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, charCodeValue : Int = 0, keyCodeValue : Int = 0, keyLocationValue : flash.ui.KeyLocation = 0, ctrlKeyValue : Bool = false, altKeyValue : Bool = false, shiftKeyValue : Bool = false) : Void;
+	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, charCodeValue : UInt = 0, keyCodeValue :UInt = 0, keyLocationValue : flash.ui.KeyLocation = 0, ctrlKeyValue : Bool = false, altKeyValue : Bool = false, shiftKeyValue : Bool = false) : Void;
 	
 	#else
 	

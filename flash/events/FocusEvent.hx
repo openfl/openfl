@@ -34,7 +34,7 @@ extern class FocusEvent extends Event {
 	 * The key code value of the key pressed to trigger a
 	 * <code>keyFocusChange</code> event.
 	 */
-	var keyCode : Int;
+	var keyCode : UInt;
 
 	/**
 	 * A reference to the complementary InteractiveObject instance that is
@@ -80,7 +80,7 @@ extern class FocusEvent extends Event {
 	 * @param keyCode       Indicates the code of the key pressed to trigger a
 	 *                      <code>keyFocusChange</code> event.
 	 */
-	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, ?relatedObject : flash.display.InteractiveObject, shiftKey : Bool = false, keyCode : Int = 0) : Void;
+	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, ?relatedObject : flash.display.InteractiveObject, shiftKey : Bool = false, keyCode : UInt = 0) : Void;
 
 	/**
 	 * Defines the value of the <code>type</code> property of a
