@@ -1336,13 +1336,27 @@ class Assets {
 				
 				if (preload != null) {
 					
-					__sourceImage = preload.__sourceImage;
+					__sourceImage = preload;
 					width = __sourceImage.width;
 					height = __sourceImage.height;
 					
 				} else {
 					
-					__loadFromBase64 (haxe.Resource.getString(resourceName), resourceType);
+					__loadFromBase64 (haxe.Resource.getString(resourceName), resourceType, function (b) {
+						
+						if (preload == null) {
+							
+							preload = b.__sourceImage;
+							
+						}
+						
+						if (onload != null) {
+							
+							onload (b);
+							
+						}
+						
+					});
 					
 				}
 				
@@ -1361,10 +1375,12 @@ class Assets {
 			var args = [ { name: "width", opt: false, type: macro :Int, value: null }, { name: "height", opt: false, type: macro :Int, value: null }, { name: "transparent", opt: true, type: macro :Bool, value: macro true }, { name: "fillRGBA", opt: true, type: macro :Int, value: macro 0xFFFFFFFF } ];
 			
 			#if html5
-			#if openfl_html5_dom
 			args.push ({ name: "onload", opt: true, type: macro :Dynamic, value: null });
-			#end
+			#if openfl_html5_dom
 			fields.push ({ kind: FVar(macro :flash.display.BitmapData, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
+			#else
+			fields.push ({ kind: FVar(macro :js.html.Image, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
+			#end
 			#end
 			
 			fields.push ({ name: "new", access: [ APublic ], kind: FFun({ args: args, expr: constructor, params: [], ret: null }), pos: Context.currentPos() });
