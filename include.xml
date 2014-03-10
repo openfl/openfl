@@ -13,7 +13,7 @@
 	<set name="tizen-backend" value="openfl-native" unless="tizen-backend" />
 	<set name="webos-backend" value="openfl-native" unless="webos-backend" />
 	<set name="windows-backend" value="openfl-native" unless="windows-backend" />
-	<set name="html5-backend" value="openfl-html5-dom" unless="html5-backend" />
+	<set name="html5-backend" value="openfl-html5" unless="html5-backend" />
 	
 	<section if="display">
 		

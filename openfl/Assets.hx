@@ -1250,6 +1250,7 @@ enum AssetType {
 #else
 
 
+import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -1261,17 +1262,47 @@ import sys.io.File;
 class Assets {
 	
 	
+	private static var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	private static var base64Encoder:BaseCode;
+	
+	
+	private static function base64Encode (bytes:Bytes):String {
+		
+		var extension = switch (bytes.length % 3) {
+			
+			case 1: "==";
+			case 2: "=";
+			default: "";
+			
+		}
+		
+		if (base64Encoder == null) {
+			
+			base64Encoder = new BaseCode (Bytes.ofString (base64Chars));
+			
+		}
+		
+		return base64Encoder.encodeBytes (bytes).toString () + extension;
+		
+	}
+	
+	
 	macro public static function embedBitmap ():Array<Field> {
 		
+		#if (html5 && !openfl_html5_dom)
+		var fields = embedData (":bitmap", true);
+		#else
 		var fields = embedData (":bitmap");
+		#end
 		
 		if (fields != null) {
 			
 			var constructor = macro { 
 				
-				super(width, height, transparent, fillRGBA);
-				
 				#if html5
+				#if openfl_html5_dom
+				
+				super (width, height, transparent, fillRGBA);
 				
 				var currentType = Type.getClass (this);
 				
@@ -1301,6 +1332,25 @@ class Assets {
 				
 				#else
 				
+				super (0, 0, transparent, fillRGBA);
+				
+				if (preload != null) {
+					
+					__sourceImage = preload.__sourceImage;
+					width = __sourceImage.width;
+					height = __sourceImage.height;
+					
+				} else {
+					
+					__loadFromBase64 (haxe.Resource.getString(resourceName), resourceType);
+					
+				}
+				
+				#end
+				#else
+				
+				super (width, height, transparent, fillRGBA);
+				
 				var byteArray = flash.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
 				__loadFromBytes (byteArray);
 				
@@ -1311,7 +1361,9 @@ class Assets {
 			var args = [ { name: "width", opt: false, type: macro :Int, value: null }, { name: "height", opt: false, type: macro :Int, value: null }, { name: "transparent", opt: true, type: macro :Bool, value: macro true }, { name: "fillRGBA", opt: true, type: macro :Int, value: macro 0xFFFFFFFF } ];
 			
 			#if html5
+			#if openfl_html5_dom
 			args.push ({ name: "onload", opt: true, type: macro :Dynamic, value: null });
+			#end
 			fields.push ({ kind: FVar(macro :flash.display.BitmapData, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
 			#end
 			
@@ -1324,7 +1376,7 @@ class Assets {
 	}
 	
 	
-	private static function embedData (metaName:String):Array<Field> {
+	private static function embedData (metaName:String, encode:Bool = false):Array<Field> {
 		
 		var classType = Context.getLocalClass().get();
 		var metaData = classType.meta.get();
@@ -1345,7 +1397,31 @@ class Assets {
 							var bytes = File.getBytes (path);
 							var resourceName = "__ASSET__" + metaName + "_" + (classType.pack.length > 0 ? classType.pack.join ("_") + "_" : "") + classType.name;
 							
-							Context.addResource (resourceName, bytes);
+							if (encode) {
+								
+								var resourceType = "image/png";
+								
+								if (bytes.get (0) == 0xFF && bytes.get (1) == 0xD8) {
+									
+									resourceType = "image/jpg";
+									
+								} else if (bytes.get (0) == 0x47 && bytes.get (1) == 0x49 && bytes.get (2) == 0x46) {
+									
+									resourceType = "image/gif";
+									
+								}
+								
+								var fieldValue = { pos: position, expr: EConst(CString(resourceType)) };
+								fields.push ({ kind: FVar(macro :String, fieldValue), name: "resourceType", access: [ APrivate, AStatic ], pos: position });
+								
+								var base64 = base64Encode (bytes);
+								Context.addResource (resourceName, Bytes.ofString (base64));
+								
+							} else {
+								
+								Context.addResource (resourceName, bytes);
+								
+							}
 							
 							var fieldValue = { pos: position, expr: EConst(CString(resourceName)) };
 							fields.push ({ kind: FVar(macro :String, fieldValue), name: "resourceName", access: [ APrivate, AStatic ], pos: position });
