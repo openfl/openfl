@@ -28,7 +28,9 @@ import haxe.Unserializer;
  * and specifying a custom preloader using <window preloader="" />
  * in the project file.</p>
  */
-@:access(openfl.AssetLibrary) class Assets {
+@:access(openfl.AssetLibrary)
+@:access(flash.display.BitmapData)
+class Assets {
 	
 	
 	public static var cache = new AssetCache ();
@@ -591,6 +593,10 @@ import haxe.Unserializer;
 			return false;
 			
 		}
+		
+		#elseif openfl_html5
+		
+		return (bitmapData.__sourceImage != null || bitmapData.__sourceCanvas != null);
 		
 		#end
 		
