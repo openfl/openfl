@@ -497,19 +497,51 @@ class Assets {
 	 * @param	id		The ID or asset path for the file
 	 * @return		A new String object
 	 */
+	/**
+	 * Gets an instance of an embedded binary asset
+	 * @usage		var bytes = Assets.getBytes("file.zip");
+	 * @param	id		The ID or asset path for the file
+	 * @return		A new ByteArray object
+	 */
 	public static function getText (id:String):String {
 		
-		var bytes = getBytes (id);
+		initialize ();
 		
-		if (bytes == null) {
+		#if (tools && !display)
+		
+		var libraryName = id.substring (0, id.indexOf(":"));
+		var symbolName = id.substr (id.indexOf(":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
 			
-			return null;
+			if (library.exists (symbolName, TEXT)) {
+				
+				if (library.isLocal (symbolName, TEXT)) {
+					
+					return library.getText (symbolName);
+					
+				} else {
+					
+					trace ("[openfl.Assets] String asset \"" + id + "\" exists, but only asynchronously");
+					
+				}
+				
+			} else {
+				
+				trace ("[openfl.Assets] There is no String asset with an ID of \"" + id + "\"");
+				
+			}
 			
 		} else {
 			
-			return bytes.readUTFBytes (bytes.length);
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
+		
+		#end
+		
+		return null;
 		
 	}
 	
@@ -972,27 +1004,32 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		var callback = function (bytes:ByteArray):Void {
+		var libraryName = id.substring (0, id.indexOf (":"));
+		var symbolName = id.substr (id.indexOf (":") + 1);
+		var library = getLibrary (libraryName);
+		
+		if (library != null) {
 			
-			if (bytes == null) {
+			if (library.exists (symbolName, TEXT)) {
 				
-				handler (null);
+				library.loadText (symbolName, handler);
+				return;
 				
 			} else {
 				
-				handler (bytes.readUTFBytes (bytes.length));
+				trace ("[openfl.Assets] There is no String asset with an ID of \"" + id + "\"");
 				
 			}
 			
+		} else {
+			
+			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			
 		}
 		
-		loadBytes (id, callback);
-		
-		#else
+		#end
 		
 		handler (null);
-		
-		#end
 		
 	}
 	
@@ -1133,6 +1170,31 @@ class AssetLibrary {
 	}
 	
 	
+	public function getText (id:String):String {
+		
+		#if (tools && !display)
+		
+		var bytes = getBytes (id);
+		
+		if (bytes == null) {
+			
+			return null;
+			
+		} else {
+			
+			return bytes.readUTFBytes (bytes.length);
+			
+		}
+		
+		#else
+		
+		return null;
+		
+		#end
+		
+	}
+	
+	
 	public function isLocal (id:String, type:AssetType):Bool {
 		
 		return true;
@@ -1185,6 +1247,35 @@ class AssetLibrary {
 	public function loadSound (id:String, handler:Sound -> Void):Void {
 		
 		handler (getSound (id));
+		
+	}
+	
+	
+	public function loadText (id:String, handler:String -> Void):Void {
+		
+		#if (tools && !display)
+		
+		var callback = function (bytes:ByteArray):Void {
+			
+			if (bytes == null) {
+				
+				handler (null);
+				
+			} else {
+				
+				handler (bytes.readUTFBytes (bytes.length));
+				
+			}
+			
+		}
+		
+		loadBytes (id, callback);
+		
+		#else
+		
+		handler (null);
+		
+		#end
 		
 	}
 	
