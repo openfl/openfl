@@ -149,7 +149,7 @@ class ApplicationMain {
 	}
 	
 	
-	private static function loaderInfo_onInit (event:ProgressEvent):Void {
+	private static function loaderInfo_onInit (event:Event):Void {
 		
 		update ();
 		
