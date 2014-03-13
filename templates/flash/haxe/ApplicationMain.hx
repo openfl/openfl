@@ -1,150 +1,275 @@
 #if (!macro || !haxe3)
 #if (nme || openfl)
 
-import ::APP_MAIN_PACKAGE::::APP_MAIN_CLASS::;
+
 import flash.display.DisplayObject;
-import openfl.Assets;
+import flash.display.LoaderInfo;
+import flash.display.StageAlign;
+import flash.display.StageScaleMode;
 import flash.events.Event;
+import flash.events.ProgressEvent;
+import flash.Lib;
+import openfl.Assets;
 
-class ApplicationMain {
-
-	static var mPreloader:::PRELOADER_NAME::;
-
-	public static function main() {
-		
-		::if (APP_INIT != null)::::APP_INIT::::end::
-		
-		var call_real = true;
-		
-		//nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
-		
-		::if (PRELOADER_NAME!="")::
-		var loaded:Int = flash.Lib.current.loaderInfo.bytesLoaded;
-		var total:Int = flash.Lib.current.loaderInfo.bytesTotal;
-		
-		flash.Lib.current.stage.align = flash.display.StageAlign.TOP_LEFT;
-		flash.Lib.current.stage.scaleMode = flash.display.StageScaleMode.NO_SCALE;
-		
-		if (loaded < total || true) /* Always wait for event */ {
-			call_real = false;
-			mPreloader = new ::PRELOADER_NAME::();
-			flash.Lib.current.addChild(mPreloader);
-			mPreloader.onInit();
-			mPreloader.onUpdate(loaded,total);
-			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, onEnter);
-		}
-		::end::
-		
-		if (call_real)
-			begin();
-	}
-
-	private static function begin() {
-		var hasMain = false;
-		
-		for (methodName in Type.getClassFields(::APP_MAIN::))
-		{
-			if (methodName == "main")
-			{
-				hasMain = true;
-				break;
-			}
-		}
-		
-		if (hasMain)
-		{
-			Reflect.callMethod(::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
-		}
-		else
-		{
-			var instance = Type.createInstance(DocumentClass, []);
-			if (Std.is(instance, flash.display.DisplayObject)) {
-				flash.Lib.current.addChild(cast instance);
-			}
-		}
-	}
-
-	static function onEnter(_) {
-		var loaded = flash.Lib.current.loaderInfo.bytesLoaded;
-		var total = flash.Lib.current.loaderInfo.bytesTotal;
-		mPreloader.onUpdate(loaded,total);
-		
-		if (loaded >= total) {
-			flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, onEnter);
-			mPreloader.addEventListener (Event.COMPLETE, preloader_onComplete);
-			mPreloader.onLoaded();
-		}
-	}
-
-	private static function preloader_onComplete(event:Event):Void {
-		mPreloader.removeEventListener (Event.COMPLETE, preloader_onComplete);
-		flash.Lib.current.removeChild(mPreloader);
-		mPreloader = null;
-		begin();
-	}
-}
-
-#else
-
-import ::APP_MAIN_PACKAGE::::APP_MAIN_CLASS::;
 
 class ApplicationMain {
 	
-	public static function main() {
+	
+	private static var loaderInfo:LoaderInfo;
+	private static var preloader:::PRELOADER_NAME::;
+	
+	
+	public static function main () {
+		
+		::if (APP_INIT != null)::::APP_INIT::::end::
+		
+		//nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
+		
+		loaderInfo = flash.Lib.current.loaderInfo;
+		
+		loaderInfo.addEventListener (Event.COMPLETE, loaderInfo_onComplete);
+		loaderInfo.addEventListener (Event.INIT, loaderInfo_onInit);
+		loaderInfo.addEventListener (ProgressEvent.PROGRESS, loaderInfo_onProgress);
+		//loaderInfo.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
+		//loaderInfo.addEventListener (HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
+		
+		::if (PRELOADER_NAME != "")::
+		
+		Lib.current.stage.align = StageAlign.TOP_LEFT;
+		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
+		
+		if (loaderInfo.bytesLoaded < loaderInfo.bytesTotal) {
+			
+			preloader = new ::PRELOADER_NAME:: ();
+			Lib.current.addChild (preloader);
+			
+			preloader.onInit ();
+			preloader.onUpdate (loaderInfo.bytesLoaded, loaderInfo.bytesTotal);
+			
+			Lib.current.addEventListener (Event.ENTER_FRAME, current_onEnter);
+			
+		} else {
+			
+			start ();
+			
+		}
+		
+		::else::
+		
+		start ();
+		
+		::end::
+		
+	}
+	
+	
+	private static function start ():Void {
+		
+		var hasMain = false;
+		var mainClass = Type.resolveClass ("::APP_MAIN_PACKAGE::::APP_MAIN_CLASS::");
+		
+		for (methodName in Type.getClassFields (mainClass)) {
+			
+			if (methodName == "main") {
+				
+				hasMain = true;
+				break;
+				
+			}
+			
+		}
+		
+		if (hasMain) {
+			
+			Reflect.callMethod (mainClass, Reflect.field (mainClass, "main"), []);
+			
+		} else {
+			
+			var instance = Type.createInstance (DocumentClass, []);
+			
+			if (Std.is (instance, DisplayObject)) {
+				
+				Lib.current.addChild (cast instance);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private static function update ():Void {
+		
+		if (preloader != null) {
+			
+			preloader.onUpdate (loaderInfo.bytesLoaded, loaderInfo.bytesTotal);
+			
+		}
+		
+		if (loaderInfo.bytesLoaded >= loaderInfo.bytesTotal) {
+			
+			loaderInfo.removeEventListener (Event.COMPLETE, loaderInfo_onComplete);
+			loaderInfo.removeEventListener (Event.INIT, loaderInfo_onInit);
+			loaderInfo.removeEventListener (ProgressEvent.PROGRESS, loaderInfo_onProgress);
+			
+		}
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private static function current_onEnter (event:Event):Void {
+		
+		Lib.current.removeEventListener (Event.ENTER_FRAME, current_onEnter);
+		
+		if (preloader != null) {
+			
+			preloader.addEventListener (Event.COMPLETE, preloader_onComplete);
+			preloader.onLoaded();
+			
+		} else {
+			
+			start ();
+			
+		}
+		
+	}
+	
+	
+	private static function loaderInfo_onComplete (event:Event):Void {
+		
+		update ();
+		
+	}
+	
+	
+	private static function loaderInfo_onInit (event:ProgressEvent):Void {
+		
+		update ();
+		
+	}
+	
+	
+	private static function loaderInfo_onProgress (event:ProgressEvent):Void {
+		
+		update ();
+		
+	}
+	
+
+	private static function preloader_onComplete (event:Event):Void {
+		
+		preloader.removeEventListener (Event.COMPLETE, preloader_onComplete);
+		Lib.current.removeChild (preloader);
+		preloader = null;
+		
+		start ();
+	}
+	
+	
+}
+
+
+#else
+
+
+import ::APP_MAIN_PACKAGE::::APP_MAIN_CLASS::;
+import flash.display.DisplayObject;
+import flash.Lib;
+
+
+class ApplicationMain {
+	
+	
+	public static function main () {
 		
 		var hasMain = false;
 		
-		for (methodName in Type.getClassFields(::APP_MAIN::))
-		{
-			if (methodName == "main")
-			{
+		for (methodName in Type.getClassFields (::APP_MAIN::)) {
+			
+			if (methodName == "main") {
+				
 				hasMain = true;
 				break;
+				
 			}
+			
 		}
 		
-		if (hasMain)
-		{
-			Reflect.callMethod(::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
-		}
-		else
-		{
-			var instance = Type.createInstance(DocumentClass, []);
-			if (Std.is(instance, flash.display.DisplayObject)) {
-				flash.Lib.current.addChild(cast instance);
+		if (hasMain) {
+			
+			Reflect.callMethod (::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
+			
+		} else {
+			
+			var instance = Type.createInstance (DocumentClass, []);
+			
+			if (Std.is (instance, DisplayObject)) {
+				
+				Lib.current.addChild (cast instance);
+				
 			}
+			
 		}
+		
 	}
+	
+	
 }
+
 
 #end
 
+
 #if haxe3 @:build(DocumentClass.build()) #end
-class DocumentClass extends ::APP_MAIN:: { }
+@:keep class DocumentClass extends ::APP_MAIN:: { }
+
 
 #else
+
 
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
+
 class DocumentClass {
 	
+	
 	macro public static function build ():Array<Field> {
-		var classType = Context.getLocalClass().get();
+		
+		var classType = Context.getLocalClass ().get ();
 		var searchTypes = classType;
+		
 		while (searchTypes.superClass != null) {
+			
 			if (searchTypes.pack.length == 2 && searchTypes.pack[1] == "display" && searchTypes.name == "DisplayObject") {
-				var fields = Context.getBuildFields();
+				
+				var fields = Context.getBuildFields ();
 				var method = macro {
 					return flash.Lib.current.stage;
 				}
+				
 				fields.push ({ name: "get_stage", access: [ APrivate ], meta: [ { name: ":getter", params: [ macro stage ], pos: Context.currentPos() } ], kind: FFun({ args: [], expr: method, params: [], ret: macro :flash.display.Stage }), pos: Context.currentPos() });
 				return fields;
+				
 			}
-			searchTypes = searchTypes.superClass.t.get();
+			
+			searchTypes = searchTypes.superClass.t.get ();
+			
 		}
+		
 		return null;
+		
 	}
 	
+	
 }
+
+
 #end
