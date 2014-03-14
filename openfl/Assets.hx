@@ -497,12 +497,6 @@ class Assets {
 	 * @param	id		The ID or asset path for the file
 	 * @return		A new String object
 	 */
-	/**
-	 * Gets an instance of an embedded binary asset
-	 * @usage		var bytes = Assets.getBytes("file.zip");
-	 * @param	id		The ID or asset path for the file
-	 * @return		A new ByteArray object
-	 */
 	public static function getText (id:String):String {
 		
 		initialize ();
