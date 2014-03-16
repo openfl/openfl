@@ -25,11 +25,11 @@ class ApplicationMain {
 		
 		//nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
 		
-		loaderInfo = flash.Lib.current.loaderInfo;
+		loaderInfo = flash.Lib.current.stage.loaderInfo;
 		
-		loaderInfo.addEventListener (Event.COMPLETE, loaderInfo_onComplete);
-		loaderInfo.addEventListener (Event.INIT, loaderInfo_onInit);
-		loaderInfo.addEventListener (ProgressEvent.PROGRESS, loaderInfo_onProgress);
+		loaderInfo.addEventListener (Event.COMPLETE, this_onUpdate);
+		loaderInfo.addEventListener (Event.INIT, this_onUpdate);
+		loaderInfo.addEventListener (ProgressEvent.PROGRESS, this_onUpdate);
 		//loaderInfo.addEventListener (IOErrorEvent.IO_ERROR, ioErrorHandler);
 		//loaderInfo.addEventListener (HTTPStatusEvent.HTTP_STATUS, httpStatusHandler);
 		
@@ -38,7 +38,7 @@ class ApplicationMain {
 		Lib.current.stage.align = StageAlign.TOP_LEFT;
 		Lib.current.stage.scaleMode = StageScaleMode.NO_SCALE;
 		
-		if (loaderInfo.bytesLoaded < loaderInfo.bytesTotal) {
+		if (loaderInfo.bytesLoaded < loaderInfo.bytesTotal || loaderInfo.bytesLoaded <= 0) {
 			
 			preloader = new ::PRELOADER_NAME:: ();
 			Lib.current.addChild (preloader);
@@ -46,7 +46,7 @@ class ApplicationMain {
 			preloader.onInit ();
 			preloader.onUpdate (loaderInfo.bytesLoaded, loaderInfo.bytesTotal);
 			
-			Lib.current.addEventListener (Event.ENTER_FRAME, current_onEnter);
+			Lib.current.addEventListener (Event.ENTER_FRAME, this_onUpdate);
 			
 		} else {
 			
@@ -106,11 +106,23 @@ class ApplicationMain {
 			
 		}
 		
-		if (loaderInfo.bytesLoaded >= loaderInfo.bytesTotal) {
+		if (loaderInfo.bytesLoaded >= loaderInfo.bytesTotal && loaderInfo.bytesLoaded > 0) {
 			
-			loaderInfo.removeEventListener (Event.COMPLETE, loaderInfo_onComplete);
-			loaderInfo.removeEventListener (Event.INIT, loaderInfo_onInit);
-			loaderInfo.removeEventListener (ProgressEvent.PROGRESS, loaderInfo_onProgress);
+			Lib.current.removeEventListener (Event.ENTER_FRAME, this_onUpdate);
+			loaderInfo.removeEventListener (Event.COMPLETE, this_onUpdate);
+			loaderInfo.removeEventListener (Event.INIT, this_onUpdate);
+			loaderInfo.removeEventListener (ProgressEvent.PROGRESS, this_onUpdate);
+			
+			if (preloader != null) {
+				
+				preloader.addEventListener (Event.COMPLETE, preloader_onComplete);
+				preloader.onLoaded();
+				
+			} else {
+				
+				start ();
+				
+			}
 			
 		}
 		
@@ -124,45 +136,6 @@ class ApplicationMain {
 	
 	
 	
-	private static function current_onEnter (event:Event):Void {
-		
-		Lib.current.removeEventListener (Event.ENTER_FRAME, current_onEnter);
-		
-		if (preloader != null) {
-			
-			preloader.addEventListener (Event.COMPLETE, preloader_onComplete);
-			preloader.onLoaded();
-			
-		} else {
-			
-			start ();
-			
-		}
-		
-	}
-	
-	
-	private static function loaderInfo_onComplete (event:Event):Void {
-		
-		update ();
-		
-	}
-	
-	
-	private static function loaderInfo_onInit (event:Event):Void {
-		
-		update ();
-		
-	}
-	
-	
-	private static function loaderInfo_onProgress (event:ProgressEvent):Void {
-		
-		update ();
-		
-	}
-	
-
 	private static function preloader_onComplete (event:Event):Void {
 		
 		preloader.removeEventListener (Event.COMPLETE, preloader_onComplete);
@@ -170,6 +143,13 @@ class ApplicationMain {
 		preloader = null;
 		
 		start ();
+	}
+	
+	
+	private static function this_onUpdate (event:Event):Void {
+		
+		update ();
+		
 	}
 	
 	
