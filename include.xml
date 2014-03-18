@@ -15,11 +15,14 @@
 	<set name="windows-backend" value="openfl-native" unless="windows-backend" />
 	<set name="html5-backend" value="openfl-html5" unless="html5-backend" />
 	
+	<set name="firefoxos-backend" value="${html5-backend}" unless="firefoxos-backend" />
+	
 	<section if="display">
 		
 		<include haxelib="${android-backend}" if="android" />
 		<include haxelib="${blackberry-backend}" if="blackberry" />
 		<include haxelib="${emscripten-backend}" if="emscripten" />
+		<include haxelib="${firefoxos-backend}" if="firefoxos" />
 		<include haxelib="${ios-backend}" if="ios" />
 		<include haxelib="${linux-backend}" if="linux" />
 		<include haxelib="${mac-backend}" if="mac" />
@@ -35,6 +38,7 @@
 		<haxelib name="${android-backend}" if="android" />
 		<haxelib name="${blackberry-backend}" if="blackberry" />
 		<haxelib name="${emscripten-backend}" if="emscripten" />
+		<haxelib name="${firefoxos-backend}" if="firefoxos" />
 		<haxelib name="${ios-backend}" if="ios" />
 		<haxelib name="${linux-backend}" if="linux" />
 		<haxelib name="${mac-backend}" if="mac" />
@@ -48,7 +52,7 @@
 	<section if="setup">
 		
 		<haxelib name="openfl-native" />
-		<haxelib name="openfl-html5-dom" />
+		<haxelib name="openfl-html5" />
 		<haxelib name="openfl-samples" />
 		<haxelib name="hxlibc" />
 		
