@@ -604,6 +604,7 @@ class Assets {
 	
 	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
 		
+		#if (tools && !display)
 		#if (cpp || neko)
 		
 		return (bitmapData.__handle != null);
@@ -625,6 +626,7 @@ class Assets {
 		return (bitmapData.__sourceImage != null || bitmapData.__sourceCanvas != null);
 		
 		#end
+		#end
 		
 		return true;
 		
@@ -633,15 +635,15 @@ class Assets {
 	
 	private static function isValidSound (sound:Sound):Bool {
 		
+		#if (tools && !display)
 		#if (cpp || neko)
 		
 		return (sound.__handle != null && sound.__handle != 0);
 		
-		#else
+		#end
+		#end
 		
 		return true;
-		
-		#end
 		
 	}
 	
