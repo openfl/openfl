@@ -8,7 +8,7 @@ before_install:
   - sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev -y
   - mkdir ~/haxelib
   - haxelib setup ~/haxelib
-  - haxelib git hxlibc https://github.com/openfl/hxlibc
+  - haxelib git hxcpp https://github.com/haxefoundation/hxcpp
   - haxelib git lime-tools https://github.com/openfl/lime-tools
   - haxelib git openfl-native https://github.com/openfl/openfl-native
   - haxelib git lime https://github.com/openfl/lime
