@@ -104,7 +104,6 @@ class Assets {
 				if (library.isLocal (symbolName, IMAGE)) {
 					
 					var bitmapData = library.getBitmapData (symbolName);
-					bitmapData.multiplyAlpha ();
 					
 					if (useCache && cache.enabled) {
 						
