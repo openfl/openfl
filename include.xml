@@ -51,10 +51,10 @@
 	
 	<section if="setup">
 		
+		<haxelib name="lime-tools" />
 		<haxelib name="openfl-native" />
 		<haxelib name="openfl-html5" />
 		<haxelib name="openfl-samples" />
-		<haxelib name="hxlibc" />
 		
 	</section>
 	
