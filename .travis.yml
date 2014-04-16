@@ -8,11 +8,17 @@ before_install:
   - sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev -y
   - mkdir ~/haxelib
   - haxelib setup ~/haxelib
-  - haxelib git hxcpp https://github.com/haxefoundation/hxcpp
-  - haxelib git lime-tools https://github.com/openfl/lime-tools
-  - haxelib git openfl-native https://github.com/openfl/openfl-native
-  - haxelib git lime https://github.com/openfl/lime
-  - haxelib git lime-build https://github.com/openfl/lime-build
+  - git clone https://github.com/openfl/openfl ~/openfl --depth 1
+  - haxelib dev openfl ~/openfl
+  - git clone https://github.com/openfl/lime ~/lime --depth 1
+  - haxelib dev lime ~/lime
+  - git clone https://github.com/openfl/lime-tools ~/lime-tools --depth 1
+  - haxelib dev lime-tools ~/lime-tools
+  - git clone https://github.com/haxenme/nme ~/nme --depth 1
+  - haxelib dev nme ~/nme
+  - git clone https://github.com/haxenme/nme-dev ~/nme-dev --depth 1
+  - haxelib dev nme-dev ~/nme-dev
+  - haxelib install hxcpp
   - haxelib install format
   - haxelib install svg
   - haxelib install munit
