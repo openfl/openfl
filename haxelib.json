@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "OpenFL is a powerful framework for cross-platform development",
-	"version": "1.3.0",
-	"releasenote": "New HTML5 backend, Firefox OS support",
+	"version": "1.4.0",
+	"releasenote": "Updated native backend, better HTML5 library",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
