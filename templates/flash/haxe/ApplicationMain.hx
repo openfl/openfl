@@ -168,9 +168,11 @@ class ApplicationMain {
 		
 		preloader.removeEventListener (Event.COMPLETE, preloader_onComplete);
 		Lib.current.removeChild (preloader);
+		Lib.current.stage.focus = null;
 		preloader = null;
 		
 		start ();
+		
 	}
 	
 	
