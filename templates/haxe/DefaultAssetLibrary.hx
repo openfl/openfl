@@ -37,7 +37,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#if flash
 		
 		::if (assets != null)::::foreach assets::::if (embed)::className.set ("::id::", __ASSET__::flatName::);::else::path.set ("::id::", "::resourceName::");::end::
-		type.set ("::id::", Reflect.field (AssetType, "::type::".toUpperCase ()));
+		//type.set ("::id::", Reflect.field (AssetType, "::type::".toUpperCase ()));
+		type.set ("::id::", AssetType.$$upper(::type::));
 		::end::::end::
 		
 		#elseif html5
