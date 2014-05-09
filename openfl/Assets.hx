@@ -1562,7 +1562,7 @@ class Assets {
 				
 				super();
 				
-				#if html5
+				#if openfl_html5_dom
 				nmeFromBytes (haxe.Resource.getBytes (resourceName));
 				#else
 				__fromBytes (haxe.Resource.getBytes (resourceName));
