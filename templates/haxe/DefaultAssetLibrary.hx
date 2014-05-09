@@ -126,34 +126,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 	}
 
-	private static function resolveClass (name:String):Class <Dynamic> {
-		
-		name = "openfl." + name;
-
-		return Type.resolveClass (name);
-		
-	}
-	
-	
-	private static function resolveEnum (name:String):Enum <Dynamic> {
-		
-		name = "openfl." + name;
-
-		var value = Type.resolveEnum (name);
-		
-		#if flash
-		
-		if (value == null) {
-			
-			return cast Type.resolveClass (name);
-			
-		}
-		
-		#end
-		
-		return value;
-		
-	}
 	
 	#if html5
 	private function addEmbed(id:String, kind:String, value:Dynamic):Void {
@@ -662,6 +634,46 @@ class DefaultAssetLibrary extends AssetLibrary {
 		loadBytes (id, callback);
 		
 		#end
+		
+	}
+
+
+	private static function resolveClass (name:String):Class <Dynamic> {
+		
+		var value = Type.resolveClass (name);
+
+		if (value == null) {
+			
+			value = Type.resolveClass ("openfl." + name);
+			
+		}
+
+		return value;
+
+	}
+	
+	
+	private static function resolveEnum (name:String):Enum <Dynamic> {
+		
+		var value = Type.resolveEnum (name);
+
+		if (value == null) {
+			
+			value = Type.resolveClass ("openfl." + name);
+			
+		}
+		
+		#if flash
+		
+		if (value == null) {
+			
+			return cast Type.resolveClass (name);
+			
+		}
+		
+		#end
+		
+		return value;
 		
 	}
 	
