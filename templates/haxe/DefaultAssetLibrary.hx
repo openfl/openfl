@@ -86,7 +86,13 @@ class DefaultAssetLibrary extends AssetLibrary {
 						
 						if (data != null && data.length > 0) {
 							
-							var manifest:Array<AssetData> = Unserializer.run (data);
+							var unserializer = new Unserializer (data);
+							
+							unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
+							
+
+							var manifest:Array<AssetData> = unserializer.unserialize();
+
 							
 							for (asset in manifest) {
 								
@@ -104,13 +110,13 @@ class DefaultAssetLibrary extends AssetLibrary {
 				
 				} else {
 				
-					trace ("Warning: Could not load asset manifest");
+					trace ("Warning: Could not load asset manifest (bytes was null)");
 				
 				}
 			
 			} catch (e:Dynamic) {
 			
-				trace ("Warning: Could not load asset manifest");
+				trace ('Warning: Could not load asset manifest (${e})');
 			
 			}
 		
@@ -119,7 +125,35 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#end
 		
 	}
+
+	private static function resolveClass (name:String):Class <Dynamic> {
+		
+		name = "openfl." + name;
+
+		return Type.resolveClass (name);
+		
+	}
 	
+	
+	private static function resolveEnum (name:String):Enum <Dynamic> {
+		
+		name = "openfl." + name;
+
+		var value = Type.resolveEnum (name);
+		
+		#if flash
+		
+		if (value == null) {
+			
+			return cast Type.resolveClass (name);
+			
+		}
+		
+		#end
+		
+		return value;
+		
+	}
 	
 	#if html5
 	private function addEmbed(id:String, kind:String, value:Dynamic):Void {
