@@ -86,20 +86,14 @@ class DefaultAssetLibrary extends AssetLibrary {
 						
 						if (data != null && data.length > 0) {
 							
-							var unserializer = new Unserializer (data);
-							
-							unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
-							
+							var manifest:Array<Dynamic> = Unserializer.run(data);
 
-							var manifest:Array<AssetData> = unserializer.unserialize();
-
-							
 							for (asset in manifest) {
-								
+
 								if (!className.exists(asset.id)) {
 									
 									path.set (asset.id, asset.path);
-									type.set (asset.id, asset.type);
+									type.set (asset.id, Type.createEnum(AssetType, asset.type));
 									
 								}
 							}
