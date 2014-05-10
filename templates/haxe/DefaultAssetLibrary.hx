@@ -64,6 +64,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#end
 		
 		if (loadManifest) {
+			
 			try {
 				
 				#if blackberry
@@ -86,34 +87,35 @@ class DefaultAssetLibrary extends AssetLibrary {
 						
 						if (data != null && data.length > 0) {
 							
-							var manifest:Array<Dynamic> = Unserializer.run(data);
+							var manifest:Array<Dynamic> = Unserializer.run (data);
 
 							for (asset in manifest) {
-
-								if (!className.exists(asset.id)) {
+								
+								if (!className.exists (asset.id)) {
 									
 									path.set (asset.id, asset.path);
-									type.set (asset.id, Type.createEnum(AssetType, asset.type));
+									type.set (asset.id, Type.createEnum (AssetType, asset.type));
 									
 								}
+								
 							}
-						
+							
 						}
-					
+						
 					}
-				
+					
 				} else {
-				
+					
 					trace ("Warning: Could not load asset manifest (bytes was null)");
-				
+					
 				}
 			
 			} catch (e:Dynamic) {
-			
+				
 				trace ('Warning: Could not load asset manifest (${e})');
-			
+				
 			}
-		
+			
 		}
 		
 		#end
@@ -628,46 +630,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 		loadBytes (id, callback);
 		
 		#end
-		
-	}
-
-
-	private static function resolveClass (name:String):Class <Dynamic> {
-		
-		var value = Type.resolveClass (name);
-
-		if (value == null) {
-			
-			value = Type.resolveClass ("openfl." + name);
-			
-		}
-
-		return value;
-
-	}
-	
-	
-	private static function resolveEnum (name:String):Enum <Dynamic> {
-		
-		var value = Type.resolveEnum (name);
-
-		if (value == null) {
-			
-			value = Type.resolveClass ("openfl." + name);
-			
-		}
-		
-		#if flash
-		
-		if (value == null) {
-			
-			return cast Type.resolveClass (name);
-			
-		}
-		
-		#end
-		
-		return value;
 		
 	}
 	
