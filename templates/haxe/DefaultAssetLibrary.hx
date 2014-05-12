@@ -37,14 +37,16 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#if flash
 		
 		::if (assets != null)::::foreach assets::::if (embed)::className.set ("::id::", __ASSET__::flatName::);::else::path.set ("::id::", "::resourceName::");::end::
-		type.set ("::id::", Reflect.field (AssetType, "::type::".toUpperCase ()));
+		type.set ("::id::", AssetType.$$upper(::type::));
 		::end::::end::
 		
 		#elseif html5
 		
-		::if (assets != null)::::foreach assets::::if (embed)::::if (type == "font")::addEmbed("::id::", "::type::", __ASSET__::flatName::);
-		::else::addExternal("::id::", "::type::", "::resourceName::");
-		::end::::end::::end::::end::
+		::if (assets != null)::var id;
+		::foreach assets::::if (embed)::id = "::id::";
+		::if (type == "font")::className.set (id, __ASSET__::flatName::);::else::path.set (id, ::if (resourceName == id)::id::else::"::resourceName::"::end::);::end::
+		type.set (id, AssetType.$$upper(::type::));
+		::end::::end::::end::
 		
 		#else
 		
@@ -53,7 +55,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		var loadManifest = false;
 		::if (assets != null)::::foreach assets::::if (embed)::
 		className.set ("::id::", __ASSET__::flatName::);
-		type.set ("::id::", Reflect.field (AssetType, "::type::".toUpperCase ()));
+		type.set ("::id::", AssetType.$$upper(::type::));
 		::else::loadManifest = true;
 		::end::::end::::end::
 		
@@ -121,20 +123,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#end
 		
 	}
-
-	
-	#if html5
-	private function addEmbed(id:String, kind:String, value:Dynamic):Void {
-		className.set(id, value);
-		type.set(id, Reflect.field(AssetType, kind.toUpperCase()));
-	}
-	
-	
-	private function addExternal(id:String, kind:String, value:String):Void {
-		path.set(id, value);
-		type.set(id, Reflect.field(AssetType, kind.toUpperCase()));
-	}
-	#end
 	
 	
 	public override function exists (id:String, type:AssetType):Bool {
