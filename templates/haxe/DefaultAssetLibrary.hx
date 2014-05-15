@@ -4,10 +4,12 @@ package;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.MovieClip;
+import flash.events.Event;
 import flash.text.Font;
 import flash.media.Sound;
 import flash.net.URLRequest;
 import flash.utils.ByteArray;
+import haxe.Timer;
 import haxe.Unserializer;
 import openfl.Assets;
 
@@ -15,6 +17,10 @@ import openfl.Assets;
 import flash.display.Loader;
 import flash.events.Event;
 import flash.net.URLLoader;
+#end
+
+#if sys
+import sys.FileSystem;
 #end
 
 #if ios
@@ -26,9 +32,13 @@ import openfl.utils.SystemPath;
 class DefaultAssetLibrary extends AssetLibrary {
 	
 	
-	public static var className (default, null) = new Map <String, Dynamic> ();
-	public static var path (default, null) = new Map <String, String> ();
-	public static var type (default, null) = new Map <String, AssetType> ();
+	public var className (default, null) = new Map <String, Dynamic> ();
+	public var path (default, null) = new Map <String, String> ();
+	public var type (default, null) = new Map <String, AssetType> ();
+	
+	private var lastModified:Float;
+	private var timer:Timer;
+	
 	
 	public function new () {
 		
@@ -52,74 +62,47 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#if (windows || mac || linux)
 		
-		var loadManifest = false;
+		var useManifest = false;
 		::if (assets != null)::::foreach assets::::if (embed)::
 		className.set ("::id::", __ASSET__::flatName::);
 		type.set ("::id::", AssetType.$$upper(::type::));
-		::else::loadManifest = true;
+		::else::useManifest = true;
 		::end::::end::::end::
 		
-		#else
-		
-		var loadManifest = true;
-		
-		#end
-		
-		if (loadManifest) {
+		if (useManifest) {
 			
-			try {
+			loadManifest ();
+			
+			if (Sys.args ().indexOf ("-livereload") > -1) {
 				
-				#if blackberry
-				var bytes = ByteArray.readFile ("app/native/manifest");
-				#elseif tizen
-				var bytes = ByteArray.readFile ("../res/manifest");
-				#elseif emscripten
-				var bytes = ByteArray.readFile ("assets/manifest");
-				#else
-				var bytes = ByteArray.readFile ("manifest");
-				#end
+				var path = FileSystem.fullPath ("manifest");
+				lastModified = FileSystem.stat (path).mtime.getTime ();
 				
-				if (bytes != null) {
+				timer = new Timer (2000);
+				timer.run = function () {
 					
-					bytes.position = 0;
+					var modified = FileSystem.stat (path).mtime.getTime ();
 					
-					if (bytes.length > 0) {
+					if (modified > lastModified) {
 						
-						var data = bytes.readUTFBytes (bytes.length);
+						lastModified = modified;
+						loadManifest ();
 						
-						if (data != null && data.length > 0) {
-							
-							var manifest:Array<Dynamic> = Unserializer.run (data);
-
-							for (asset in manifest) {
-								
-								if (!className.exists (asset.id)) {
-									
-									path.set (asset.id, asset.path);
-									type.set (asset.id, Type.createEnum (AssetType, asset.type));
-									
-								}
-								
-							}
-							
-						}
+						dispatchEvent (new Event (Event.CHANGE));
 						
 					}
 					
-				} else {
-					
-					trace ("Warning: Could not load asset manifest (bytes was null)");
-					
 				}
-			
-			} catch (e:Dynamic) {
-				
-				trace ('Warning: Could not load asset manifest (${e})');
 				
 			}
 			
 		}
 		
+		#else
+		
+		loadManifest ();
+		
+		#end
 		#end
 		
 	}
@@ -127,7 +110,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	public override function exists (id:String, type:AssetType):Bool {
 		
-		var assetType = DefaultAssetLibrary.type.get (id);
+		var assetType = this.type.get (id);
 		
 		#if pixi
 		
@@ -517,6 +500,62 @@ class DefaultAssetLibrary extends AssetLibrary {
 		handler (getFont (id));
 		
 		#end
+		
+	}
+	
+	
+	private function loadManifest ():Void {
+		
+		try {
+			
+			#if blackberry
+			var bytes = ByteArray.readFile ("app/native/manifest");
+			#elseif tizen
+			var bytes = ByteArray.readFile ("../res/manifest");
+			#elseif emscripten
+			var bytes = ByteArray.readFile ("assets/manifest");
+			#else
+			var bytes = ByteArray.readFile ("manifest");
+			#end
+			
+			if (bytes != null) {
+				
+				bytes.position = 0;
+				
+				if (bytes.length > 0) {
+					
+					var data = bytes.readUTFBytes (bytes.length);
+					
+					if (data != null && data.length > 0) {
+						
+						var manifest:Array<Dynamic> = Unserializer.run (data);
+
+						for (asset in manifest) {
+							
+							if (!className.exists (asset.id)) {
+								
+								path.set (asset.id, asset.path);
+								type.set (asset.id, Type.createEnum (AssetType, asset.type));
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			} else {
+				
+				trace ("Warning: Could not load asset manifest (bytes was null)");
+				
+			}
+		
+		} catch (e:Dynamic) {
+			
+			trace ('Warning: Could not load asset manifest (${e})');
+			
+		}
 		
 	}
 	

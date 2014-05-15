@@ -5,6 +5,8 @@ package openfl;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.MovieClip;
+import flash.events.Event;
+import flash.events.EventDispatcher;
 import flash.media.Sound;
 import flash.net.URLRequest;
 import flash.text.Font;
@@ -36,7 +38,26 @@ class Assets {
 	public static var cache = new AssetCache ();
 	public static var libraries (default, null) = new Map <String, AssetLibrary> ();
 	
+	private static var dispatcher = new EventDispatcher ();
 	private static var initialized = false;
+	
+	
+	public static function addEventListener (type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
+		
+		initialize ();
+		
+		dispatcher.addEventListener (type, listener, useCapture, priority, useWeakReference);
+		
+	}
+	
+	
+	public static function dispatchEvent (event:Event):Bool {
+		
+		initialize ();
+		
+		return dispatcher.dispatchEvent (event);
+		
+	}
 	
 	
 	public static function exists (id:String, type:AssetType = null):Bool {
@@ -540,6 +561,15 @@ class Assets {
 	}
 	
 	
+	public static function hasEventListener (type:String):Bool {
+		
+		initialize ();
+		
+		return dispatcher.hasEventListener (type);
+		
+	}
+	
+	
 	private static function initialize ():Void {
 		
 		if (!initialized) {
@@ -819,6 +849,7 @@ class Assets {
 			
 			var library:AssetLibrary = unserializer.unserialize ();
 			libraries.set (name, library);
+			library.addEventListener (Event.CHANGE, library_onChange);
 			library.load (handler);
 			
 		} else {
@@ -1038,7 +1069,22 @@ class Assets {
 			
 		}
 		
+		if (library != null) {
+			
+			library.addEventListener (Event.CHANGE, library_onChange);
+			
+		}
+		
 		libraries.set (name, library);
+		
+	}
+	
+	
+	public static function removeEventListener (type:String, listener:Dynamic, capture:Bool = false):Void {
+		
+		initialize ();
+		
+		dispatcher.removeEventListener (type, listener, capture);
 		
 	}
 	
@@ -1075,18 +1121,12 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		var keys = cache.bitmapData.keys ();
+		var library = libraries.get (name);
 		
-		for (key in keys) {
+		if (library != null) {
 			
-			var libraryName = key.substring (0, key.indexOf (":"));
-			var symbolName = key.substr (key.indexOf (":") + 1);
-			
-			if (libraryName == name) {
-				
-				cache.bitmapData.remove (key);
-				
-			}
+			cache.clear (name + ":");
+			library.removeEventListener (Event.CHANGE, library_onChange);
 			
 		}
 		
@@ -1097,15 +1137,32 @@ class Assets {
 	}
 	
 	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private static function library_onChange (event:Event):Void {
+		
+		var library = cast (event.currentTarget, AssetLibrary);
+		cache.clear ();
+		
+		dispatchEvent (new Event (Event.CHANGE));
+		
+	}
+	
+	
 }
 
 
-class AssetLibrary {
+class AssetLibrary extends EventDispatcher {
 	
 	
 	public function new () {
 		
-		
+		super ();
 		
 	}
 	
@@ -1297,11 +1354,53 @@ class AssetCache {
 	}
 	
 	
-	public function clear ():Void {
+	public function clear (prefix:String = null):Void {
 		
-		bitmapData = new Map<String, BitmapData> ();
-		font = new Map<String, Font> ();
-		sound = new Map<String, Sound> ();
+		if (prefix == null) {
+			
+			bitmapData = new Map<String, BitmapData> ();
+			font = new Map<String, Font> ();
+			sound = new Map<String, Sound> ();
+			
+		} else {
+			
+			var keys = bitmapData.keys ();
+			
+			for (key in keys) {
+				
+				if (StringTools.startsWith (key, prefix)) {
+					
+					bitmapData.remove (key);
+					
+				}
+				
+			}
+			
+			var keys = font.keys ();
+			
+			for (key in keys) {
+				
+				if (StringTools.startsWith (key, prefix)) {
+					
+					font.remove (key);
+					
+				}
+				
+			}
+			
+			var keys = sound.keys ();
+			
+			for (key in keys) {
+				
+				if (StringTools.startsWith (key, prefix)) {
+					
+					sound.remove (key);
+					
+				}
+				
+			}
+			
+		}
 		
 	}
 	
