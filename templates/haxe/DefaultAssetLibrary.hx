@@ -504,6 +504,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
+	#if (!flash && !html5)
 	private function loadManifest ():Void {
 		
 		try {
@@ -558,6 +559,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		}
 		
 	}
+	#end
 	
 	
 	public override function loadMusic (id:String, handler:Sound -> Void):Void {
