@@ -29,3 +29,6 @@ before_install:
 
 script:
   - haxelib run lime build ~/openfl-validation flash
+
+notifications:
+  slack: openfl:ba3HbgtZflW8TNcJEQ1B4tAY
