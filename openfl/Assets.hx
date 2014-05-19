@@ -678,6 +678,27 @@ class Assets {
 	}
 	
 	
+	public static function list (type:AssetType = null):Array<String> {
+		
+		var items = [];
+		
+		for (library in libraries) {
+			
+			var libraryItems = library.list (type);
+			
+			if (libraryItems != null) {
+				
+				items = items.concat (libraryItems);
+				
+			}
+			
+		}
+		
+		return items;
+		
+	}
+	
+	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
 		initialize ();
@@ -1251,6 +1272,13 @@ class AssetLibrary extends EventDispatcher {
 	public function isLocal (id:String, type:AssetType):Bool {
 		
 		return true;
+		
+	}
+	
+	
+	public function list (type:AssetType):Array<String> {
+		
+		return null;
 		
 	}
 	
