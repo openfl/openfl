@@ -680,6 +680,8 @@ class Assets {
 	
 	public static function list (type:AssetType = null):Array<String> {
 		
+		initialize ();
+		
 		var items = [];
 		
 		for (library in libraries) {
