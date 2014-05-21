@@ -2,7 +2,7 @@ package openfl.events;
 #if (display)
 
 
-import flash.events.Event;
+import openfl.events.Event;
 
 
 extern class JoystickEvent extends Event

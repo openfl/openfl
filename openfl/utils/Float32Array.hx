@@ -1,6 +1,6 @@
 package openfl.utils;
 #if display
-import flash.geom.Matrix3D;
+import openfl.geom.Matrix3D;
 
 
 extern class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {

@@ -2,7 +2,7 @@ package openfl.utils;
 #if display
 
 
-typedef ArrayBuffer = flash.utils.ByteArray;
+typedef ArrayBuffer = openfl.utils.ByteArray;
 
 
 #end

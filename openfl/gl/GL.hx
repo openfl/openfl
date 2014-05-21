@@ -2,9 +2,9 @@ package openfl.gl;
 #if display
 
 
-import flash.display.BitmapData;
-import flash.utils.ByteArray;
-import flash.geom.Matrix3D;
+import openfl.display.BitmapData;
+import openfl.utils.ByteArray;
+import openfl.geom.Matrix3D;
 import openfl.utils.ArrayBuffer;
 import openfl.utils.ArrayBufferView;
 import openfl.utils.Float32Array;

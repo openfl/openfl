@@ -1,10 +1,10 @@
 package openfl.display;
 
 
-import flash.events.Event;
-import flash.text.TextField;
-import flash.text.TextFormat;
 import haxe.Timer;
+import openfl.events.Event;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
 
 
 class FPS extends TextField {

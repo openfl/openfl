@@ -2,8 +2,8 @@ package openfl.display;
 #if display
 
 
-import flash.display.DisplayObject;
-import flash.geom.Rectangle;
+import openfl.display.DisplayObject;
+import openfl.geom.Rectangle;
 
 
 extern class DirectRenderer extends DisplayObject {

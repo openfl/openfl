@@ -1,0 +1,10 @@
+package openfl;
+
+
+class LibTest {
+	
+	
+	
+	
+	
+}

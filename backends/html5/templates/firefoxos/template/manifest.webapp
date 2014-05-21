@@ -1,0 +1,16 @@
+{
+  "version": "::META_VERSION::",
+  "name": "::META_TITLE::",
+  "description": "::META_DESCRIPTION::",
+  "launch_path": "/index.html",
+  "icons": {
+    "30": "/icon-30.png",
+    "60": "/icon-60.png",
+    "128": "/icon-128.png"
+  },
+  "developer": {
+    "name": "::META_COMPANY::",
+    "url": "::META_COMPANY_URL::"
+  },
+  "orientation": ::if (WIN_ORIENTATION == "landscape")::"landscape"::else::"portrait"::end::
+}

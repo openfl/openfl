@@ -2,16 +2,16 @@ package openfl;
 #if !macro
 
 
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.MovieClip;
-import flash.events.Event;
-import flash.events.EventDispatcher;
-import flash.media.Sound;
-import flash.net.URLRequest;
-import flash.text.Font;
-import flash.utils.ByteArray;
 import haxe.Unserializer;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.MovieClip;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
+import openfl.media.Sound;
+import openfl.net.URLRequest;
+import openfl.text.Font;
+import openfl.utils.ByteArray;
 
 
 /**
@@ -31,7 +31,7 @@ import haxe.Unserializer;
  * in the project file.</p>
  */
 @:access(openfl.AssetLibrary)
-@:access(flash.display.BitmapData)
+@:access(openfl.display.BitmapData)
 class Assets {
 	
 	
@@ -1532,13 +1532,13 @@ class Assets {
 					
 					___textureBuffer.width = Std.int (preload.width);
 					___textureBuffer.height = Std.int (preload.height);
-					rect = new flash.geom.Rectangle (0, 0, preload.width, preload.height);
+					rect = new openfl.geom.Rectangle (0, 0, preload.width, preload.height);
 					setPixels(rect, preload.getPixels(rect));
 					__buildLease();
 					
 				} else {
 					
-					var byteArray = flash.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
+					var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
 					
 					if (onload != null && !Std.is (onload, Bool)) {
 						
@@ -1587,7 +1587,7 @@ class Assets {
 				
 				super (width, height, transparent, fillRGBA);
 				
-				var byteArray = flash.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
+				var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
 				__loadFromBytes (byteArray);
 				
 				#end
@@ -1599,7 +1599,7 @@ class Assets {
 			#if html5
 			args.push ({ name: "onload", opt: true, type: macro :Dynamic, value: null });
 			#if openfl_html5_dom
-			fields.push ({ kind: FVar(macro :flash.display.BitmapData, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
+			fields.push ({ kind: FVar(macro :openfl.display.BitmapData, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
 			#else
 			fields.push ({ kind: FVar(macro :js.html.Image, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
 			#end
@@ -1789,12 +1789,12 @@ class Assets {
 				
 				super();
 				
-				var byteArray = flash.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
+				var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
 				loadCompressedDataFromByteArray(byteArray, byteArray.length, forcePlayAsMusic);
 				
 			};
 			
-			var args = [ { name: "stream", opt: true, type: macro :flash.net.URLRequest, value: null }, { name: "context", opt: true, type: macro :flash.media.SoundLoaderContext, value: null }, { name: "forcePlayAsMusic", opt: true, type: macro :Bool, value: macro false } ];
+			var args = [ { name: "stream", opt: true, type: macro :openfl.net.URLRequest, value: null }, { name: "context", opt: true, type: macro :openfl.media.SoundLoaderContext, value: null }, { name: "forcePlayAsMusic", opt: true, type: macro :Bool, value: macro false } ];
 			fields.push ({ name: "new", access: [ APublic ], kind: FFun({ args: args, expr: constructor, params: [], ret: null }), pos: Context.currentPos() });
 			
 			#end

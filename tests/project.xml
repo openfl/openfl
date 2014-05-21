@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Validation" package="org.openfl.validation" version="1.0.0" company="OpenFL" />
+	<app file="TestMain" main="TestMain" path="build" />
+	
+	<source path="test" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="munit" />
+	<haxelib name="mlib" />
+	<haxelib name="hamcrest" />
+	<haxelib name="format" />
+	
+	<!-- <template path="src/index.html" rename="index.html" if="html5" />
+	-->
+</project>
