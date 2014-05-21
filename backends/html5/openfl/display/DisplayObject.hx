@@ -14,6 +14,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
+import openfl.Lib;
 
 
 @:access(openfl.events.Event)
@@ -35,7 +36,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var mouseX (get, null):Float;
 	public var mouseY (get, null):Float;
 	public var name (get, set):String;
+	public var opaqueBackground:Null <Int>;
 	public var parent (default, null):DisplayObjectContainer;
+	public var root (get, null):DisplayObject;
 	public var rotation (get, set):Float;
 	public var scale9Grid:Rectangle;
 	public var scaleX (get, set):Float;
@@ -656,14 +659,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	private function get_mouseX ():Float {
 		
-		return globalToLocal (new Point (stage.__mouseX, 0)).x;
+		if (stage != null) {
+			
+			return globalToLocal (new Point (stage.__mouseX, 0)).x;
+			
+		}
+		
+		return 0;
 		
 	}
 	
 	
 	private function get_mouseY ():Float {
 		
-		return globalToLocal (new Point (0, stage.__mouseY)).y;
+		if (stage != null) {
+			
+			return globalToLocal (new Point (0, stage.__mouseY)).y;
+			
+		}
+		
+		return 0;
 		
 	}
 	
@@ -678,6 +693,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	private function set_name (value:String):String {
 		
 		return __name = value;
+		
+	}
+	
+	
+	private function get_root ():DisplayObject {
+		
+		if (stage != null) {
+			
+			return Lib.current;
+			
+		}
+		
+		return null;
 		
 	}
 	

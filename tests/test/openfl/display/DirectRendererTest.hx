@@ -7,16 +7,29 @@ import massive.munit.Assert;
 class DirectRendererTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var directRenderer = new DirectRenderer ();
+		var exists = directRenderer;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function render () {
+	@Test public function render () {
 		
+		// TODO: Confirm functionality
 		
+		var directRenderer = new DirectRenderer ();
+		var func = function (_) {};
+		directRenderer.render = func;
+		var exists = directRenderer.render;
+		
+		Assert.isNotNull (exists);
+		Assert.areEqual (func, directRenderer.render);
 		
 	}
 	

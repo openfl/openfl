@@ -6,218 +6,301 @@ import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.Lib;
 
 
 class DisplayObjectTest {
 	
 	
-	/*@Ignore @Test*/ public function accessibilityProperties () {
+	@Test public function alpha () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.alpha;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function alpha () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function blendMode () {
+	@Test public function blendMode () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.blendMode;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function blendShader () {
-		
-		
+		//Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function cacheAsBitmap () {
+	@Test public function cacheAsBitmap () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.cacheAsBitmap;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function filters () {
-		
-		
+		//Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function height () {
+	@Test public function filters () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.filters;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function loaderInfo () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function mask () {
+	@Test public function height () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.height;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function mouseX () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function mouseY () {
+	@Test public function loaderInfo () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.loaderInfo;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function name () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function opaqueBackground () {
+	@Test public function mask () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.mask;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function parent () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function root () {
+	@Test public function mouseX () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.mouseX;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function rotation () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function rotationX () {
+	@Test public function mouseY () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.mouseY;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function rotationY () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function rotationZ () {
+	@Test public function name () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.name;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function scale9Grid () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function scaleX () {
+	@Test public function opaqueBackground () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.opaqueBackground;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function scaleY () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function scaleZ () {
+	@Test public function parent () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var sprite2 = new Sprite ();
+		sprite2.addChild (sprite);
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function scrollRect () {
+		var exists = sprite.parent;
 		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function stage () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function transform () {
+	@Test public function root () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.root;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function visible () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function width () {
+	@Test public function rotation () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.mouseChildren;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function x () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function y () {
+	@Test public function scale9Grid () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.scale9Grid;
+		
+		Assert.isNull (exists);
+		
+	}
+	
+	
+	@Test public function scaleX () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.scaleX;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function scaleY () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.scaleY;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function scrollRect () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		sprite.scrollRect = new Rectangle (0, 0, 100, 100);
+		var exists = sprite.scrollRect;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function stage () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.stage;
+		
+		Assert.isNull (exists);
+		
+	}
+	
+	
+	@Test public function transform () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.transform;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function visible () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.visible;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function width () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.width;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function x () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.x;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function y () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.y;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -229,58 +312,74 @@ class DisplayObjectTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function getBounds () {
+	@Test public function getBounds () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.getBounds;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function getRect () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function globalToLocal () {
+	@Test public function getRect () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.getRect;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function globalToLocal3D () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hitTestObject () {
+	@Test public function globalToLocal () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.globalToLocal;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function hitTestPoint () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function local3DToGlobal () {
+	@Test public function hitTestObject () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.hitTestObject;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function localToGlobal () {
+	@Test public function hitTestPoint () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.hitTestPoint;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function localToGlobal () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.localToGlobal;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	

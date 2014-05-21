@@ -14,9 +14,14 @@ import openfl.Lib;
 class DisplayObjectContainerTest {
 	
 	
-	/*@Ignore @Test*/ public function mouseChildren () {
+	@Test public function mouseChildren () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.mouseChildren;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -50,25 +55,16 @@ class DisplayObjectContainerTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function tabChildren () {
+	@Test public function tabChildren () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.tabChildren;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function textSnapshot () {
-		
-		
+		//Assert.isNotNull (exists);
 		
 	}
-	
-	
-	/*@Ignore @Test*/ /*public function new_ () {
-		
-		
-		
-	}*/
 	
 	
 	@Test public function addChild () {
@@ -132,9 +128,14 @@ class DisplayObjectContainerTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function areInaccessibleObjectsUnderPoint () {
+	@Test public function areInaccessibleObjectsUnderPoint () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.areInaccessibleObjectsUnderPoint;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	

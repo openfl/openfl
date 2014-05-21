@@ -104,6 +104,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	public function areInaccessibleObjectsUnderPoint (point:Point):Bool {
+		
+		return false;
+		
+	}
+	
+	
 	public function contains (child:DisplayObject):Bool {
 		
 		#if (haxe_ver > 3.100)

@@ -5,7 +5,7 @@ import flash.display.DisplayObject;
 import flash.geom.Rectangle;
 
 
-class DirectRenderer extends DisplayObject {
+class DirectRenderer extends Sprite {
 	
 	
 	public function new (type:String = "DirectRenderer"):Void {
@@ -15,7 +15,7 @@ class DirectRenderer extends DisplayObject {
 	}
 	
 	
-	dynamic function render (rect:Rectangle):Void {
+	public dynamic function render (rect:Rectangle):Void {
 		
 		
 		

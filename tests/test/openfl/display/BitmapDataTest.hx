@@ -326,12 +326,16 @@ class BitmapDataTest {
 	
 	@Test public function encode () {
 		
+		#if !flash // Linux Flash Player does not support this feature
+		
 		// TODO: Confirm functionality
 		
 		var bitmapData = new BitmapData (100, 100);
 		var exists = bitmapData.encode;
 		
 		Assert.isNotNull (exists);
+		
+		#end
 		
 	}
 	
