@@ -31,6 +31,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var parent (get, null):DisplayObjectContainer;
 	public var pedanticBitmapCaching (get, set):Bool;
 	public var pixelSnapping (get, set):PixelSnapping;
+	public var root (get, null):DisplayObject;
 	public var rotation (get, set):Float;
 	public var scale9Grid (get, set):Rectangle;
 	public var scaleX (get, set):Float;
@@ -636,6 +637,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 	private function get_parent ():DisplayObjectContainer { return __parent; }
+	
+	
+	private function get_root ():DisplayObject {
+		
+		if (stage != null) {
+			
+			return Lib.current;
+			
+		}
+		
+		return null;
+		
+	}
 	
 	
 	private function get_rotation ():Float { return lime_display_object_get_rotation (__handle); }

@@ -1,17 +1,22 @@
 package openfl.display;
 
 
+import openfl.display.IGraphicsData;
+import openfl.display.IGraphicsFill;
 import openfl.geom.Matrix;
 import openfl.Lib;
 
 
-class GraphicsBitmapFill extends IGraphicsData {
+class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
 	
 	
 	public var bitmapData:BitmapData;
 	public var matrix:Matrix;
 	public var repeat:Bool;
 	public var smooth:Bool;
+	
+	public var __graphicsDataType (default,null):GraphicsDataType;
+	public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	public function new (bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
@@ -21,12 +26,10 @@ class GraphicsBitmapFill extends IGraphicsData {
 		this.repeat = repeat;
 		this.smooth = smooth;
 		
-		super (lime_graphics_solid_fill_create (0, 1));
+		this.__graphicsDataType = BITMAP;
+		this.__graphicsFillType = BITMAP_FILL;
 		
 	}
-	
-	
-	private static var lime_graphics_solid_fill_create = Lib.load ("lime", "lime_graphics_solid_fill_create", 2);
 	
 	
 }

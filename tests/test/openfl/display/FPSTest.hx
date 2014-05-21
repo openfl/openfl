@@ -7,9 +7,13 @@ import massive.munit.Assert;
 class FPSTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var fps = new FPS ();
+		
+		Assert.isNotNull (fps);
 		
 	}
 	

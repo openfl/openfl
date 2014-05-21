@@ -14,5 +14,6 @@ interface IGraphicsData {
 	SOLID;
 	GRADIENT;
 	PATH;
+	BITMAP;
 	
 }

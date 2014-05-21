@@ -2,43 +2,71 @@
 package openfl.display;
 
 
+import massive.munit.Assert;
+import openfl.display.BitmapData;
 import openfl.display.GraphicsBitmapFill;
+import openfl.geom.Matrix;
 
 
 class GraphicsBitmapFillTest {
 	
 	
-	/*@Ignore @Test*/ public function bitmapData () {
+	@Test public function bitmapData () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapFill = new GraphicsBitmapFill (new BitmapData (100, 100));
+		var exists = bitmapFill.bitmapData;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function matrix () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function repeat () {
+	@Test public function matrix () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapFill = new GraphicsBitmapFill (null, new Matrix ());
+		var exists = bitmapFill.matrix;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function smooth () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function repeat () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapFill = new GraphicsBitmapFill ();
+		var exists = bitmapFill.repeat;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function smooth () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapFill = new GraphicsBitmapFill ();
+		var exists = bitmapFill.smooth;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function new_ () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapFill = new GraphicsBitmapFill ();
+		var exists = bitmapFill;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
