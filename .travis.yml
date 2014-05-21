@@ -7,6 +7,8 @@ before_install:
   - "export AUDIODEV=null"
   - sudo add-apt-repository ppa:eyecreate/haxe -y
   - sudo apt-get update
+
+install:
   - sudo apt-get install haxe -y --force-yes
   - sudo apt-get install g++-multilib gcc-multilib
   - sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev -y
@@ -25,10 +27,14 @@ before_install:
   - haxelib install munit
   - haxelib dev openfl $(pwd)
   - haxelib run lime rebuild linux,tools -release
+
+before_script:
+  - mkdir ffox_profile
+  - echo "user_pref(\"dom.allow_scripts_to_close_windows\", true);" >> ffox_profile/prefs.js
   - cd tests
 
 script:
-  - haxelib run munit test
+  - haxelib run munit test -browser "firefox -profile "ffox_profile"" -kill-browser
   - haxelib run lime test linux
 
 notifications:
