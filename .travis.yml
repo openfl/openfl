@@ -28,13 +28,14 @@ install:
   - haxelib install mlib
   - git clone https://github.com/mikedotalmond/MassiveUnit ~/munit --depth 1
   - haxelib dev munit ~/munit
-  - ~/munit/build.sh
   - haxelib dev openfl $(pwd)
+  - cd ~/munit/tool
+  - haxe build.hxml
   - haxelib run lime rebuild linux -release -64
   - haxelib run lime rebuild tools
 
 before_script:
-  - cd tests
+  - cd $TRAVIS_BUILD_DIR/tests
 
 script:
   - haxelib run munit test -as3 -norun
