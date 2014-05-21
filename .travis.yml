@@ -18,15 +18,14 @@ before_install:
   - haxelib dev lime-tools ~/lime-tools
   - git clone https://github.com/haxenme/nme ~/nme --depth 1
   - haxelib dev nme ~/nme
-  - git clone https://github.com/haxenme/nme-dev ~/nme-dev --depth 1
-  - haxelib dev nme-dev ~/nme-dev
+  - haxelib install nme-dev
   - haxelib install hxcpp
   - haxelib install format
   - haxelib install svg
   - haxelib install munit
   - haxelib dev openfl $(pwd)
   - haxelib run lime rebuild linux,tools -release
-  - cd ~/openfl-validation
+  - cd tests
 
 script:
   - haxelib run munit test
