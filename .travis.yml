@@ -26,9 +26,6 @@ install:
   - haxelib install format
   - haxelib install svg
   - haxelib install mlib
-  - haxelib install mcover
-  - haxelib install mtask
-  - haxelib install hamcrest
   - git clone https://github.com/mikedotalmond/MassiveUnit ~/munit --depth 1
   - haxelib dev munit ~/munit
   - ~/munit/build.sh
