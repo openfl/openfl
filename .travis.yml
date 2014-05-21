@@ -1,7 +1,4 @@
-language: node_js
-
-node_js:
-  - "0.10"
+language: c++
 
 before_install:
   - "export DISPLAY=:99.0"
@@ -28,18 +25,18 @@ install:
   - haxelib install hxcpp
   - haxelib install format
   - haxelib install svg
-  - haxelib install munit
+  - git clone https://github.com/mikedotalmond/MassiveUnit ~/munit --depth 1
+  - haxelib dev munit ~/munit
   - haxelib dev openfl $(pwd)
   - haxelib run lime rebuild linux -release -64
   - haxelib run lime rebuild tools
 
 before_script:
-  - mkdir firefox_profile
-  - echo "user_pref(\"dom.allow_scripts_to_close_windows\", true);" >> firefox_profile/prefs.js
   - cd tests
 
 script:
-  - haxelib run munit test -browser "firefox -profile "firefox_profile"" -kill-browser
+  - haxelib run munit test -as3 -norun
+  - haxelib run munit test -browser phantomjs
   - haxelib run lime test linux
 
 notifications:
