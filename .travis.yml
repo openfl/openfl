@@ -27,6 +27,7 @@ install:
   - haxelib install svg
   - haxelib install mlib
   - haxelib install mcover
+  - haxelib install hamcrest
   - git clone https://github.com/mikedotalmond/MassiveUnit ~/munit --depth 1
   - haxelib dev munit ~/munit/src
   - haxelib dev openfl $(pwd)
