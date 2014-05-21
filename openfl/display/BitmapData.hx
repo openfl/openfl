@@ -346,7 +346,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * @param quality The encoding quality, when encoding with the JPG format.
 	 * @return  A ByteArray in the specified encoding format
 	 */
-	@:require(flash11_3) function encode(rect : openfl.geom.Rectangle, compressor : openfl.utils.Object, ?byteArray : openfl.utils.ByteArray) : openfl.utils.ByteArray;
+	function encode(rect : openfl.geom.Rectangle, compressor : openfl.utils.Object, ?byteArray : openfl.utils.ByteArray) : openfl.utils.ByteArray;
 	
 	/**
 	 * Fills a rectangular area of pixels with a specified ARGB color.

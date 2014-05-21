@@ -37,7 +37,7 @@ package openfl.events;
  * the type parameter set to the specific touch event you want to detect.</p>
  * 
  */
-@:require(flash10_1) extern class TouchEvent extends Event {
+extern class TouchEvent extends Event {
 
 	/**
 	 * Indicates whether the Alt key is active(<code>true</code>) or inactive

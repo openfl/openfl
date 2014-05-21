@@ -36,7 +36,7 @@ extern class ErrorEvent extends TextEvent {
 	 * custom ErrorEvent object, this number is the value from the
 	 * <code>id</code> parameter supplied in the constructor.
 	 */
-	@:require(flash10_1) var errorID(default,null) : Int;
+	var errorID(default,null) : Int;
 
 	/**
 	 * Creates an Event object that contains information about error events.

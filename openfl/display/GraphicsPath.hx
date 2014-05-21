@@ -53,8 +53,7 @@ package openfl.display;
 	 *                GraphicsPathWinding class.
 	 */
 	function new(?commands : openfl.Vector<Int>, ?data : openfl.Vector<Float>, ?winding : GraphicsPathWinding) : Void;
-	//@:require(flash11) function cubicCurveTo(controlX1 : Float, controlY1 : Float, controlX2 : Float, controlY2 : Float, anchorX : Float, anchorY : Float) : Void;
-
+	
 	/**
 	 * Adds a new "curveTo" command to the <code>commands</code> vector and new
 	 * coordinates to the <code>data</code> vector.

@@ -10,7 +10,7 @@ package openfl;
 #if display
 
 
-@:require(flash10) extern class Vector<T> implements ArrayAccess<T> {
+extern class Vector<T> implements ArrayAccess<T> {
 
 	var length : Int;
 	var fixed : Bool;

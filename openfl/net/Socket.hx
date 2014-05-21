@@ -12,11 +12,11 @@ package openfl.net;
 
 extern class Socket extends openfl.events.EventDispatcher implements openfl.utils.IDataOutput implements openfl.utils.IDataInput {
 	var bytesAvailable(default,null) : UInt;
-	@:require(flash11) var bytesPending(default,null) : UInt;
+	var bytesPending(default,null) : UInt;
 	var connected(default,null) : Bool;
 	var endian : openfl.utils.Endian;
 	var objectEncoding : UInt;
-	@:require(flash10) var timeout : UInt;
+	var timeout : UInt;
 	function new(?host : String, port : Int = 0) : Void;
 	function close() : Void;
 	function connect(host : String, port : Int) : Void;

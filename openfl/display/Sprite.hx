@@ -171,7 +171,7 @@ extern class Sprite extends DisplayObjectContainer {
 	 *                     parent that specify a constraint rectangle for the
 	 *                     Sprite.
 	 */
-	@:require(flash10_1) function startTouchDrag(touchPointID : Int, lockCenter : Bool = false, ?bounds : openfl.geom.Rectangle) : Void;
+	function startTouchDrag(touchPointID : Int, lockCenter : Bool = false, ?bounds : openfl.geom.Rectangle) : Void;
 
 	/**
 	 * Ends the <code>startDrag()</code> method. A sprite that was made draggable
@@ -192,7 +192,7 @@ extern class Sprite extends DisplayObjectContainer {
 	 * @param touchPointID The integer assigned to the touch point in the
 	 *                     <code>startTouchDrag</code> method.
 	 */
-	@:require(flash10_1) function stopTouchDrag(touchPointID : Int) : Void;
+	function stopTouchDrag(touchPointID : Int) : Void;
 }
 
 

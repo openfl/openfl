@@ -59,7 +59,7 @@ extern class MovieClip extends Sprite {
 	 * If the current frame has no label, <code>currentLabel</code> is
 	 * <code>null</code>.
 	 */
-	@:require(flash10) var currentFrameLabel(default,null) : String;
+	var currentFrameLabel(default,null) : String;
 
 	/**
 	 * The current label in which the playhead is located in the timeline of the
@@ -100,7 +100,7 @@ extern class MovieClip extends Sprite {
 	 * <i>all</i> scenes in the movie clip.</p>
 	 */
 	var framesLoaded(default,null) : Int;
-	@:require(flash11) var isPlaying(default,null) : Bool;
+	var isPlaying(default,null) : Bool;
 
 	/**
 	 * The total number of frames in the MovieClip instance.

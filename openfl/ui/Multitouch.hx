@@ -48,7 +48,7 @@ package openfl.ui;
  * <p><b>Note:</b> The Multitouch feature is not supported for SWF files
  * embedded in HTML running on Mac OS.</p>
  */
-@:require(flash10_1) extern class Multitouch {
+extern class Multitouch {
 
 	/**
 	 * Identifies the multi-touch mode for touch and gesture event handling. Use

@@ -98,7 +98,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * frees up the memory used by the ByteArray instance.
 	 * 
 	 */
-	@:require(flash10) function clear() : Void;
+	function clear() : Void;
 
 	/**
 	 * Compresses the byte array. The entire byte array is compressed. For
@@ -181,7 +181,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 * the deflate format to decompress the compressed data.</p>
 	 * 
 	 */
-	@:require(flash10) function deflate() : Void;
+	function deflate() : Void;
 
 	/**
 	 * Decompresses the byte array using the deflate compression algorithm. The
@@ -206,7 +206,7 @@ extern class ByteArray /*implements IDataOutput,*/ implements IDataInput  implem
 	 *                 compressed with the same compression algorithm used to
 	 *                 compress.
 	 */
-	@:require(flash10) function inflate() : Void;
+	function inflate() : Void;
 
 	/**
 	 * Reads a Boolean value from the byte stream. A single byte is read, and

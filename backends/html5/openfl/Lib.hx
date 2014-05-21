@@ -14,6 +14,7 @@ import openfl.net.URLRequest;
 	
 	public static var current (default, null):MovieClip;
 	
+	private static var __sentWarnings = new Map<String, Bool> ();
 	private static var __startTime:Float = Timer.stamp ();
 	
 	
@@ -100,6 +101,19 @@ import openfl.net.URLRequest;
 		}
 		
 		Browser.window.open (request.url, target);
+		
+	}
+	
+	
+	public static function notImplemented (api:String):Void {
+		
+		if (!__sentWarnings.exists (api)) {
+			
+			__sentWarnings.set (api, true);
+			
+			trace ("Warning: " + api + " has not implemented");
+			
+		}
 		
 	}
 	

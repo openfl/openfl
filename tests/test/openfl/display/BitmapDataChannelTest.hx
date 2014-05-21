@@ -8,9 +8,13 @@ import openfl.display.BitmapDataChannel;
 class BitmapDataChannelTest {
 	
 	
-	/*@Ignore @Test*/ public function test () {
+	@Test public function test () {
 		
-		
+		switch (BitmapDataChannel.ALPHA) {
+			
+			case BitmapDataChannel.ALPHA, BitmapDataChannel.BLUE, BitmapDataChannel.GREEN, BitmapDataChannel.RED:
+			
+		}
 		
 	}
 	

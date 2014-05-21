@@ -8,7 +8,7 @@
 -D web
 -cp ../backends/flash
 -cp test
--swf-version 11
+-swf-version 11.3
 -swf build/as3_test.swf
 
 # Trick munit into building our app

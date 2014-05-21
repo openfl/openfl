@@ -473,7 +473,7 @@ extern class Loader extends DisplayObjectContainer {
 	 *           file might persist in memory after running the
 	 *           <code>unloadAndStop()</code> command.
 	 */
-	@:require(flash10) function unloadAndStop(gc : Bool = true) : Void;
+	function unloadAndStop(gc : Bool = true) : Void;
 	
 }
 

@@ -35,13 +35,13 @@ extern class HTTPStatusEvent extends Event {
 	 * The response headers that the response returned, as an array of
 	 * URLRequestHeader objects.
 	 */
-	@:require(flash10_1) var responseHeaders : Array<Dynamic>;
+	var responseHeaders : Array<Dynamic>;
 
 	/**
 	 * The URL that the response was returned from. In the case of redirects,
 	 * this will be different from the request URL.
 	 */
-	@:require(flash10_1) var responseURL : String;
+	var responseURL : String;
 
 	/**
 	 * The HTTP status code returned by the server. For example, a value of 404
@@ -97,7 +97,7 @@ extern class HTTPStatusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	@:require(flash10_1) static var HTTP_RESPONSE_STATUS : String;
+	static var HTTP_RESPONSE_STATUS : String;
 
 	/**
 	 * The <code>HTTPStatusEvent.HTTP_STATUS</code> constant defines the value of

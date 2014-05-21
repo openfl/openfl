@@ -1117,7 +1117,7 @@ extern class InteractiveObject extends DisplayObject {
 	 * <p><b>Note:</b> This property is not supported in AIR applications on
 	 * iOS.</p>
 	 */
-	@:require(flash11) var needsSoftKeyboard : Bool;
+	var needsSoftKeyboard : Bool;
 
 	/**
 	 * Defines the area that should remain on-screen when a soft keyboard is
@@ -1137,7 +1137,7 @@ extern class InteractiveObject extends DisplayObject {
 	 * <code>softKeyboardInputAreaOfInterest</code> is not respected in landscape
 	 * orientations.</p>
 	 */
-	@:require(flash11) var softKeyboardInputAreaOfInterest : openfl.geom.Rectangle;
+	var softKeyboardInputAreaOfInterest : openfl.geom.Rectangle;
 
 	/**
 	 * Specifies whether this object is in the tab order. If this object is in
@@ -1221,7 +1221,7 @@ extern class InteractiveObject extends DisplayObject {
 	 *         was granted; <code>false</code> means that the soft keyboard was
 	 *         not raised.
 	 */
-	@:require(flash11) function requestSoftKeyboard() : Bool;
+	function requestSoftKeyboard() : Bool;
 }
 
 

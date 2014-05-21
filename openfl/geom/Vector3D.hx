@@ -10,7 +10,7 @@ package openfl.geom;
 #if display
 
 
-@:require(flash10) extern class Vector3D {
+extern class Vector3D {
 	var length(default,null) : Float;
 	var lengthSquared(default,null) : Float;
 	var w : Float;
@@ -20,7 +20,7 @@ package openfl.geom;
 	function new(x : Float = 0, y : Float = 0, z : Float = 0, w : Float = 0) : Void;
 	function add(a : Vector3D) : Vector3D;
 	function clone() : Vector3D;
-	@:require(flash11) function copyFrom(sourceVector3D : Vector3D) : Void;
+	function copyFrom(sourceVector3D : Vector3D) : Void;
 	function crossProduct(a : Vector3D) : Vector3D;
 	function decrementBy(a : Vector3D) : Void;
 	function dotProduct(a : Vector3D) : Float;
@@ -31,7 +31,7 @@ package openfl.geom;
 	function normalize() : Float;
 	function project() : Void;
 	function scaleBy(s : Float) : Void;
-	@:require(flash11) function setTo(xa : Float, ya : Float, za : Float) : Void;
+	function setTo(xa : Float, ya : Float, za : Float) : Void;
 	function subtract(a : Vector3D) : Vector3D;
 	function toString() : String;
 	static var X_AXIS : Vector3D;

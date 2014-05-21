@@ -65,7 +65,7 @@ package openfl.geom;
  * <p>Use the <code>new Matrix()</code> constructor to create a Matrix object
  * before you can call the methods of the Matrix object.</p>
  */
-@:require(flash10) extern class Matrix3D {
+extern class Matrix3D {
 	var determinant(default,null) : Float;
 	var position : Vector3D;
 	var rawData : openfl.Vector<Float>;
@@ -93,14 +93,14 @@ package openfl.geom;
 	 * @return A Matrix object.
 	 */
 	function clone() : Matrix3D;
-	@:require(flash11) function copyColumnFrom(column : UInt, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyColumnTo(column : UInt, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyFrom(sourceMatrix3D : Matrix3D) : Void;
-	@:require(flash11) function copyRawDataFrom(vector : openfl.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
-	@:require(flash11) function copyRawDataTo(vector : openfl.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
-	@:require(flash11) function copyRowFrom(row : UInt, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyRowTo(row : UInt, vector3D : Vector3D) : Void;
-	@:require(flash11) function copyToMatrix3D(dest : Matrix3D) : Void;
+	function copyColumnFrom(column : UInt, vector3D : Vector3D) : Void;
+	function copyColumnTo(column : UInt, vector3D : Vector3D) : Void;
+	function copyFrom(sourceMatrix3D : Matrix3D) : Void;
+	function copyRawDataFrom(vector : openfl.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
+	function copyRawDataTo(vector : openfl.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
+	function copyRowFrom(row : UInt, vector3D : Vector3D) : Void;
+	function copyRowTo(row : UInt, vector3D : Vector3D) : Void;
+	function copyToMatrix3D(dest : Matrix3D) : Void;
 	function deltaTransformVector(v : Vector3D) : Vector3D;
 
 	/**

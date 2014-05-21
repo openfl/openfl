@@ -168,7 +168,7 @@ extern class Sound extends openfl.events.EventDispatcher {
 	 * <p>For application content in AIR, the value of this property is always
 	 * <code>false</code>.</p>
 	 */
-	@:require(flash10_1) var isURLInaccessible(default,null) : Bool;
+	var isURLInaccessible(default,null) : Bool;
 
 	/**
 	 * The length of the current sound in milliseconds.
@@ -236,32 +236,6 @@ extern class Sound extends openfl.events.EventDispatcher {
 	 *                 open.
 	 */
 	function close() : Void;
-
-	/**
-	 * Extracts raw sound data from a Sound object.
-	 *
-	 * <p>This method is designed to be used when you are working with
-	 * dynamically generated audio, using a function you assign to the
-	 * <code>sampleData</code> event for a different Sound object. That is, you
-	 * can use this method to extract sound data from a Sound object. Then you
-	 * can write the data to the byte array that another Sound object is using to
-	 * stream dynamic audio.</p>
-	 *
-	 * <p>The audio data is placed in the target byte array starting from the
-	 * current position of the byte array. The audio data is always exposed as
-	 * 44100 Hz Stereo. The sample type is a 32-bit floating-point value, which
-	 * can be converted to a Number using <code>ByteArray.readFloat()</code>.
-	 * </p>
-	 * 
-	 * @param target A ByteArray object in which the extracted sound samples are
-	 *               placed.
-	 * @param length The number of sound samples to extract. A sample contains
-	 *               both the left and right channels  -  that is, two 32-bit
-	 *               floating-point values.
-	 * @return The number of samples written to the ByteArray specified in the
-	 *         <code>target</code> parameter.
-	 */
-	@:require(flash10) function extract(target : openfl.utils.ByteArray, length : Float, startPosition : Float = -1) : Float;
 
 	/**
 	 * Initiates loading of an external MP3 file from the specified URL. If you
@@ -342,8 +316,8 @@ extern class Sound extends openfl.events.EventDispatcher {
 	 *                       Developer's Guide</i>.
 	 */
 	function load(stream : openfl.net.URLRequest, ?context : SoundLoaderContext) : Void;
-	@:require(flash11) function loadCompressedDataFromByteArray(bytes : openfl.utils.ByteArray, bytesLength : UInt) : Void;
-	@:require(flash11) function loadPCMFromByteArray(bytes : openfl.utils.ByteArray, samples : UInt, ?format : String, stereo : Bool = true, sampleRate : Float = 44100) : Void;
+	function loadCompressedDataFromByteArray(bytes : openfl.utils.ByteArray, bytesLength : UInt) : Void;
+	function loadPCMFromByteArray(bytes : openfl.utils.ByteArray, samples : UInt, ?format : String, stereo : Bool = true, sampleRate : Float = 44100) : Void;
 
 	/**
 	 * Generates a new SoundChannel object to play back the sound. This method

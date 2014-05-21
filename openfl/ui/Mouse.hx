@@ -38,7 +38,7 @@ extern class Mouse {
 	 *                       string specified using the
 	 *                       <code>Mouse.registerCursor()</code> method.
 	 */
-	@:require(flash10) static var cursor : Dynamic;
+	static var cursor : Dynamic;
 
 	/**
 	 * Indicates whether the computer or device displays a persistent cursor.
@@ -51,12 +51,12 @@ extern class Mouse {
 	 * differently depending on the physical characteristics of the pointing
 	 * device.</p>
 	 */
-	@:require(flash10_1) static var supportsCursor(default,null) : Bool;
+	static var supportsCursor(default,null) : Bool;
 
 	/**
 	 * Indicates whether the current configuration supports native cursors.
 	 */
-	//@:require(flash11) static var supportsNativeCursor(default,null) : Bool;
+	//static var supportsNativeCursor(default,null) : Bool;
 
 	/**
 	 * Hides the pointer. The pointer is visible by default.
@@ -76,7 +76,7 @@ extern class Mouse {
 	 * @param cursor The properties for the native cursor, such as icon bitmap,
 	 *               specified as a MouseCursorData instance.
 	 */
-	//@:require(flash10_2) static function registerCursor(name : String, cursor : MouseCursorData) : Void;
+	//static function registerCursor(name : String, cursor : MouseCursorData) : Void;
 
 	/**
 	 * Displays the pointer. The pointer is visible by default.
@@ -93,7 +93,7 @@ extern class Mouse {
 	 * 
 	 * @param name The name referring to the native cursor instance.
 	 */
-	//@:require(flash11) static function unregisterCursor(name : String) : Void;
+	//static function unregisterCursor(name : String) : Void;
 }
 
 

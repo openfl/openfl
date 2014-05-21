@@ -36,7 +36,7 @@ extern class FocusEvent extends Event {
 	 * <code>LoaderContext.checkPolicyFile</code> property when loading the
 	 * image.
 	 */
-	@:require(flash10) var isRelatedObjectInaccessible : Bool;
+	var isRelatedObjectInaccessible : Bool;
 
 	/**
 	 * The key code value of the key pressed to trigger a

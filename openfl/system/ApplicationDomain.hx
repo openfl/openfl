@@ -11,7 +11,7 @@ package openfl.system;
 
 
 @:final extern class ApplicationDomain {
-	@:require(flash10) var domainMemory : openfl.utils.ByteArray;
+	var domainMemory : openfl.utils.ByteArray;
 	var parentDomain(default,null) : ApplicationDomain;
 	function new(?parentDomain : ApplicationDomain) : Void;
 	function getDefinition(name : String) : openfl.utils.Object;

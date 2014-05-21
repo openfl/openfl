@@ -316,7 +316,7 @@ extern class Event {
 	 * Engine(FTE), will dispatch these events in response to user actions such
 	 * as keyboard shortcuts and context menus.</p>
 	 */
-	@:require(flash10) static var CLEAR : String;
+	static var CLEAR : String;
 
 	/**
 	 * The <code>Event.CLOSE</code> constant defines the value of the
@@ -341,7 +341,7 @@ extern class Event {
 	 * <p>This event has the following properties:</p>
 	 */
 	static var CONNECT : String;
-	@:require(flash11) static var CONTEXT3D_CREATE : String;
+	static var CONTEXT3D_CREATE : String;
 
 	/**
 	 * Defines the value of the <code>type</code> property of a <code>copy</code>
@@ -362,7 +362,7 @@ extern class Event {
 	 * Engine(FTE), will dispatch these events in response to user actions such
 	 * as keyboard shortcuts and context menus.</p>
 	 */
-	@:require(flash10) static var COPY : String;
+	static var COPY : String;
 
 	/**
 	 * Defines the value of the <code>type</code> property of a <code>cut</code>
@@ -383,7 +383,7 @@ extern class Event {
 	 * Engine(FTE), will dispatch these events in response to user actions such
 	 * as keyboard shortcuts and context menus.</p>
 	 */
-	@:require(flash10) static var CUT : String;
+	static var CUT : String;
 
 	/**
 	 * The <code>Event.DEACTIVATE</code> constant defines the value of the
@@ -422,7 +422,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	@:require(flash10) static var EXIT_FRAME : String;
+	static var EXIT_FRAME : String;
 
 	/**
 	 * The <code>Event.FRAME_CONSTRUCTED</code> constant defines the value of the
@@ -435,7 +435,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	@:require(flash10) static var FRAME_CONSTRUCTED : String;
+	static var FRAME_CONSTRUCTED : String;
 
 	/**
 	 * The <code>Event.FULL_SCREEN</code> constant defines the value of the
@@ -496,7 +496,7 @@ extern class Event {
 	 * Engine(FTE), will dispatch these events in response to user actions such
 	 * as keyboard shortcuts and context menus.</p>
 	 */
-	@:require(flash10) static var PASTE : String;
+	static var PASTE : String;
 
 	/**
 	 * The <code>Event.REMOVED</code> constant defines the value of the
@@ -570,7 +570,7 @@ extern class Event {
 	 * Engine(FTE), will dispatch these events in response to user actions such
 	 * as keyboard shortcuts and context menus.</p>
 	 */
-	@:require(flash10) static var SELECT_ALL : String;
+	static var SELECT_ALL : String;
 
 	/**
 	 * The <code>Event.SOUND_COMPLETE</code> constant defines the value of the
@@ -613,7 +613,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	@:require(flash11) static var TEXT_INTERACTION_MODE_CHANGE : String;
+	static var TEXT_INTERACTION_MODE_CHANGE : String;
 
 	/**
 	 * The <code>Event.UNLOAD</code> constant defines the value of the

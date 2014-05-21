@@ -73,7 +73,7 @@ extern class Point {
 	 * @return The new Point object.
 	 */
 	function clone() : Point;
-	@:require(flash11) function copyFrom(sourcePoint : Point) : Void;
+	function copyFrom(sourcePoint : Point) : Void;
 
 	/**
 	 * Determines whether two points are equal. Two points are equal if they have
@@ -107,7 +107,7 @@ extern class Point {
 	 * @param dy The amount by which to offset the vertical coordinate, <i>y</i>.
 	 */
 	function offset(dx : Float, dy : Float) : Void;
-	@:require(flash11) function setTo(xa : Float, ya : Float) : Void;
+	function setTo(xa : Float, ya : Float) : Void;
 
 	/**
 	 * Subtracts the coordinates of another point from the coordinates of this

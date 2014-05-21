@@ -696,7 +696,7 @@ extern class DisplayObject extends openfl.events.EventDispatcher implements IBit
 	 * y~~cameraFocalLength/cameraRelativeZPosition)</code></p>
 	 */
 	//#if !display
-	//@:require(flash10) var z : Float;
+	//var z : Float;
 	//#end
 
 	/**

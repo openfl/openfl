@@ -208,7 +208,7 @@ extern class Rectangle {
 	 *         <code>false</code>.
 	 */
 	function containsRect(rect : Rectangle) : Bool;
-	@:require(flash11) function copyFrom(sourceRect : Rectangle) : Void;
+	function copyFrom(sourceRect : Rectangle) : Void;
 
 	/**
 	 * Determines whether the object specified in the <code>toCompare</code>
@@ -320,7 +320,7 @@ extern class Rectangle {
 	 * 
 	 */
 	function setEmpty() : Void;
-	@:require(flash11) function setTo(xa : Float, ya : Float, widtha : Float, heighta : Float) : Void;
+	function setTo(xa : Float, ya : Float, widtha : Float, heighta : Float) : Void;
 
 	/**
 	 * Builds and returns a string that lists the horizontal and vertical

@@ -268,22 +268,6 @@ class BitmapDataTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyPixelsToByteArray () {
-		
-		#if flash
-		
-		/*var bitmapData = new BitmapData (100, 100);
-		var bytes = new ByteArray ();
-		
-		bitmapData.copyPixelsToByteArray (new Rectangle (0, 0, 20, 20), bytes);
-		
-		Assert.areEqual (20 * 20 * 4, bytes.length);*/
-		
-		#end
-		
-	}
-	
-	
 	@Test public function dispose () {
 		
 		var bitmapData = new BitmapData (100, 100);
@@ -340,65 +324,110 @@ class BitmapDataTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function encode () {
+	@Test public function encode () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.encode;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function fillRect () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function floodFill () {
+	@Test public function fillRect () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.fillRect;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function generateFilterRect () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getColorBoundsRect () {
+	@Test public function floodFill () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.floodFill;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function getPixel () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getPixel32 () {
+	@Test public function generateFilterRect () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.generateFilterRect;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function getPixels () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getVector () {
+	@Test public function getColorBoundsRect () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.getColorBoundsRect;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function getPixel () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.getPixel;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function getPixel32 () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.getPixel32;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function getPixels () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.getPixels;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function getVector () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.getVector;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -410,107 +439,122 @@ class BitmapDataTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function histogram () {
+	@Test public function lock () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.lock;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function hitTest () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function lock () {
+	@Test public function noise () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.noise;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function merge () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function noise () {
+	@Test public function perlinNoise () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.perlinNoise;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function paletteMap () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function perlinNoise () {
+	@Test public function scroll () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.scroll;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function pixelDissolve () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function scroll () {
+	@Test public function setPixel () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.setPixel;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function setPixel () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function setPixel32 () {
+	@Test public function setPixel32 () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.setPixel32;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function setPixels () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function setVector () {
+	@Test public function setPixels () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.setPixels;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function threshold () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function unlock () {
+	@Test public function setVector () {
 		
+		// TODO: Confirm functionality
 		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.setVector;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function threshold () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.threshold;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function unlock () {
+		
+		// TODO: Confirm functionality
+		
+		var bitmapData = new BitmapData (100, 100);
+		var exists = bitmapData.unlock;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	

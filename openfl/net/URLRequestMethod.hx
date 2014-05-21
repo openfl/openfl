@@ -20,7 +20,7 @@ extern class URLRequestMethod {
 	/**
 	 * Specifies that the URLRequest object is a <code>DELETE</code>.
 	 */
-	@:require(flash10_1) static var DELETE : String;
+	static var DELETE : String;
 
 	/**
 	 * Specifies that the URLRequest object is a <code>GET</code>.
@@ -30,12 +30,12 @@ extern class URLRequestMethod {
 	/**
 	 * Specifies that the URLRequest object is a <code>HEAD</code>.
 	 */
-	@:require(flash10_1) static var HEAD : String;
+	static var HEAD : String;
 
 	/**
 	 * Specifies that the URLRequest object is <code>OPTIONS</code>.
 	 */
-	@:require(flash10_1) static var OPTIONS : String;
+	static var OPTIONS : String;
 
 	/**
 	 * Specifies that the URLRequest object is a <code>POST</code>.
@@ -50,7 +50,7 @@ extern class URLRequestMethod {
 	/**
 	 * Specifies that the URLRequest object is a <code>PUT</code>.
 	 */
-	@:require(flash10_1) static var PUT : String;
+	static var PUT : String;
 }
 
 

@@ -122,7 +122,7 @@ extern class Transform {
 	 * value(not <code>null</code>), the <code>matrix</code> property is
 	 * <code>null</code>.</p>
 	 */
-	@:require(flash10) var matrix3D : Matrix3D;
+	var matrix3D : Matrix3D;
 
 	/**
 	 * A Rectangle object that defines the bounding rectangle of the display
@@ -149,7 +149,7 @@ extern class Transform {
 	 *         <code>relativeTo</code> display object to the current display
 	 *         object space.
 	 */
-	@:require(flash10) function getRelativeMatrix3D(relativeTo : openfl.display.DisplayObject) : Matrix3D;
+	function getRelativeMatrix3D(relativeTo : openfl.display.DisplayObject) : Matrix3D;
 }
 
 

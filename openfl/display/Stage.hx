@@ -145,11 +145,11 @@ extern class Stage extends DisplayObjectContainer {
 	/**
 	 * Specifies whether this stage allows the use of the full screen mode
 	 */
-	@:require(flash11) var allowsFullScreen(default,null) : Bool;
+	var allowsFullScreen(default,null) : Bool;
 
 	/**
 	 */
-	@:require(flash10_2) var color : UInt;
+	var color : UInt;
 
 	/**
 	 * A value from the StageDisplayState class that specifies which display
@@ -410,7 +410,7 @@ extern class Stage extends DisplayObjectContainer {
 	 * when the keyboard opens in response to an InteractiveObject receiving
 	 * focus or invoking the <code>requestSoftKeyboard()</code> method.</p>
 	 */
-	@:require(flash11) var softKeyboardRect(default, null) : openfl.geom.Rectangle;
+	var softKeyboardRect(default, null) : openfl.geom.Rectangle;
 
 	/**
 	 * Specifies whether or not objects display a glowing border when they have
@@ -582,7 +582,7 @@ extern class Stage extends DisplayObjectContainer {
 	 * <code>DisplayObject</code>, the <code>wmodeGPU</code> value at is the
 	 * correct value.</p>
 	 */
-	@:require(flash10_1) var wmodeGPU(default,null) : Bool;
+	var wmodeGPU(default,null) : Bool;
 
 	/**
 	 * Calling the <code>invalidate()</code> method signals Flash runtimes to

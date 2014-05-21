@@ -342,6 +342,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function encode (rect:Rectangle, compressor:Dynamic, byteArray:ByteArray = null):ByteArray {
+		
+		openfl.Lib.notImplemented ("BitmapData.encode");
+		return null;
+		
+	}
+	
+	
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
 		rect = __clipRect (rect);
@@ -520,6 +528,20 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle {
+		
+		return sourceRect.clone ();
+		
+	}
+	
+	
+	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
+		
+		return rect.clone ();
+		
+	}
+	
+	
 	public function getPixel (x:Int, y:Int):Int {
 		
 		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
@@ -591,9 +613,19 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function getVector (rect:Rectangle):Vector<UInt> {
+		
+		openfl.Lib.notImplemented ("BitmapData.getVector");
+		return [];
+		
+	}
+	
+	
 	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Dynamic, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
 		
 		if (!__valid) return false;
+		
+		openfl.Lib.notImplemented ("BitmapData.hitTest");
 		
 		/*var type = Type.getClassName (Type.getClass (secondObject));
 		firstAlphaThreshold = firstAlphaThreshold & 0xFFFFFFFF;
@@ -698,6 +730,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__valid) return;
 		
+		openfl.Lib.notImplemented ("BitmapData.noise");
+		
 		/*var generator = new MinstdGenerator (randomSeed);
 		var ctx:CanvasRenderingContext2D = ___textureBuffer.getContext ('2d');
 		
@@ -740,6 +774,27 @@ class BitmapData implements IBitmapDrawable {
 			ctx.putImageData (imageData, 0, 0);
 			
 		}*/
+		
+	}
+	
+	
+	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
+		
+		openfl.Lib.notImplemented ("BitmapData.perlinNoise");
+		
+	}
+	
+	
+	public function scroll (x:Int, y:Int):Void {
+		
+		openfl.Lib.notImplemented ("BitmapData.scroll");
+		
+	}
+	
+	
+	public function setVector (rect:Rectangle, pixels:Vector<UInt>):Void {
+		
+		openfl.Lib.notImplemented ("BitmapData.setVector");
 		
 	}
 	
@@ -841,7 +896,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
-		trace ("BitmapData.threshold not implemented");
+		openfl.Lib.notImplemented ("BitmapData.threshold");
 		return 0;
 		
 	}

@@ -59,7 +59,7 @@ package openfl.sensors;
  *               </ul>
  *               </p>
  */
-@:require(flash10_1) extern class Accelerometer extends openfl.events.EventDispatcher {
+extern class Accelerometer extends openfl.events.EventDispatcher {
 
 	/**
 	 * Specifies whether the user has denied access to the accelerometer

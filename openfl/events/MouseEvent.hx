@@ -67,7 +67,7 @@ extern class MouseEvent extends Event {
 	 * <code>LoaderContext.checkPolicyFile</code> property when loading the
 	 * image.
 	 */
-	@:require(flash10) var isRelatedObjectInaccessible : Bool;
+	var isRelatedObjectInaccessible : Bool;
 
 	/**
 	 * The horizontal coordinate at which the event occurred relative to the

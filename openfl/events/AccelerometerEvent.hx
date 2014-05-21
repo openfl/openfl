@@ -16,7 +16,7 @@ package openfl.events;
  * on the device.
  * 
  */
-@:require(flash10_1) extern class AccelerometerEvent extends Event {
+extern class AccelerometerEvent extends Event {
 
 	/**
 	 * Acceleration along the x-axis, measured in Gs.(1 G is roughly 9.8

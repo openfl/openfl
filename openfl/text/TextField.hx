@@ -892,7 +892,7 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 * @throws ArgumentError The <code>fontStyle</code> specified is not a member
 	 *                       of <code>openfl.text.FontStyle</code>.
 	 */
-	@:require(flash10) static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
+	static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
 }
 
 
