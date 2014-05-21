@@ -52,4 +52,38 @@ class Lib {
 }
 
 
+#elseif macro
+
+
+import haxe.macro.Compiler;
+import haxe.macro.Context;
+import sys.FileSystem;
+
+
+class Lib {
+	
+	
+	public static function includeBackend (type:String) {
+		
+		Compiler.define ("openfl");
+		Compiler.define ("openfl_" + type);
+		
+		var paths = Context.getClassPath();
+		
+		for (path in paths) {
+			
+			if (FileSystem.exists (path + "/backends/" + type)) {
+				
+				Compiler.addClassPath (path + "/backends/" + type);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+}
+
+
 #end
