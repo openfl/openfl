@@ -7,7 +7,14 @@ import openfl.Lib;
 class GraphicsSolidFill extends IGraphicsData {
 	
 	
+	public var alpha:Float;
+	public var color:UInt;
+	
+	
 	public function new (color:Int = 0, alpha:Float = 1.0) {
+		
+		this.color = color;
+		this.alpha = alpha;
 		
 		super (lime_graphics_solid_fill_create (color, alpha));
 		

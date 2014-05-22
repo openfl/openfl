@@ -2,28 +2,43 @@ package openfl.display;
 
 
 import openfl.display.GraphicsSolidFill;
+import massive.munit.Assert;
 
 
 class GraphicsSolidFillTest {
 	
 	
-	/*@Ignore @Test*/ public function alpha () {
+	@Test public function alpha () {
 		
+		// TODO: Confirm functionality
 		
+		var solidFill = new GraphicsSolidFill ();
+		var exists = solidFill.alpha;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function color () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function color () {
 		
+		// TODO: Confirm functionality
 		
+		var solidFill = new GraphicsSolidFill ();
+		var exists = solidFill.color;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function new_ () {
+		
+		// TODO: Confirm functionality
+		
+		var solidFill = new GraphicsSolidFill ();
+		
+		Assert.isNotNull (solidFill);
 		
 	}
 	
