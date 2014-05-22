@@ -9,9 +9,18 @@ class GraphicsPath extends IGraphicsData {
 	
 	public var commands (get, set):Array<Int>;
 	public var data (get, set):Array<Float>;
+	public var winding:GraphicsPathWinding;
 	
 	
-	public function new (commands:Array<Int> = null, data:Array<Float> = null, winding:String = GraphicsPathWinding.EVEN_ODD) {
+	public function new (commands:Array<Int> = null, data:Array<Float> = null, winding:GraphicsPathWinding = null) {
+		
+		if (winding == null) {
+			
+			winding = GraphicsPathWinding.EVEN_ODD;
+			
+		}
+		
+		this.winding = winding;
 		
 		super (lime_graphics_path_create (commands, data, winding == GraphicsPathWinding.EVEN_ODD));
 		

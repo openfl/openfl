@@ -91,4 +91,28 @@ class GraphicsPathTest {
 	}
 	
 	
+	@Test public function wideLineTo () {
+		
+		// TODO: Confirm functionality
+		
+		var graphicsPath = new GraphicsPath ();
+		var exists = graphicsPath.wideLineTo;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function wideMoveTo () {
+		
+		// TODO: Confirm functionality
+		
+		var graphicsPath = new GraphicsPath ();
+		var exists = graphicsPath.wideMoveTo;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
 }

@@ -72,8 +72,30 @@ class GraphicsPath implements IGraphicsData implements IGraphicsPath {
 	}
 	
 	
-	//function wideLineTo(x : Float, y : Float) : Void;
-	//function wideMoveTo(x : Float, y : Float) : Void;
+	public function wideLineTo (x:Float, y:Float):Void {
+		
+		if (this.commands != null && this.data != null) {
+			
+			this.commands.push (GraphicsPathCommand.LINE_TO);
+			this.data.push (x);
+			this.data.push (y);
+			
+		}
+		
+	}
+	
+	
+	public function wideMoveTo (x:Float, y:Float):Void {
+		
+		if (this.commands != null && this.data != null) {
+			
+			this.commands.push (GraphicsPathCommand.MOVE_TO);
+			this.data.push (x);
+			this.data.push (y);
+			
+		}
+		
+	}
 	
 	
 }

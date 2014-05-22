@@ -134,7 +134,7 @@ class Graphics {
 	}
 	
 	
-	public function drawPath (commands:Array<Int>, data:Array<Float>, winding:String = GraphicsPathWinding.EVEN_ODD):Void {
+	public function drawPath (commands:Array<Int>, data:Array<Float>, winding:GraphicsPathWinding = null):Void {
 		
 		lime_gfx_draw_path (__handle, commands, data, winding == GraphicsPathWinding.EVEN_ODD);
 		
