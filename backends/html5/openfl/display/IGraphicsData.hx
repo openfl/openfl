@@ -15,5 +15,6 @@ interface IGraphicsData {
 	GRADIENT;
 	PATH;
 	BITMAP;
+	END;
 	
 }

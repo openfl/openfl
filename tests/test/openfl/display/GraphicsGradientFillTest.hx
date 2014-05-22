@@ -1,72 +1,121 @@
-
 package openfl.display;
 
 
 import openfl.display.GraphicsGradientFill;
+import openfl.geom.Matrix;
+import massive.munit.Assert;
 
 
 class GraphicsGradientFillTest {
 	
 	
-	/*@Ignore @Test*/ public function alphas () {
+	@Test public function alphas () {
 		
+		// TODO: Confirm functionality
 		
+		var gradientFill = new GraphicsGradientFill ();
+		gradientFill.alphas = [];
+		var exists = gradientFill.alphas;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function colors () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function focalPointRatio () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function interpolationMethodf () {
+	@Test public function colors () {
 		
+		// TODO: Confirm functionality
 		
+		var gradientFill = new GraphicsGradientFill ();
+		gradientFill.colors = [];
+		var exists = gradientFill.colors;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function matrix () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function ratios () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function spreadMethod () {
+	@Test public function focalPointRatio () {
 		
+		// TODO: Confirm functionality
 		
+		var gradientFill = new GraphicsGradientFill ();
+		var exists = gradientFill.focalPointRatio;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function type () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function interpolationMethod () {
 		
+		// TODO: Confirm functionality
 		
+		var gradientFill = new GraphicsGradientFill ();
+		var exists = gradientFill.interpolationMethod;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function matrix () {
+		
+		// TODO: Confirm functionality
+		
+		var gradientFill = new GraphicsGradientFill ();
+		gradientFill.matrix = new Matrix ();
+		var exists = gradientFill.matrix;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function ratios () {
+		
+		// TODO: Confirm functionality
+		
+		var gradientFill = new GraphicsGradientFill ();
+		gradientFill.ratios = [];
+		var exists = gradientFill.ratios;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function spreadMethod () {
+		
+		// TODO: Confirm functionality
+		
+		var gradientFill = new GraphicsGradientFill ();
+		var exists = gradientFill.spreadMethod;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function type () {
+		
+		// TODO: Confirm functionality
+		
+		var gradientFill = new GraphicsGradientFill ();
+		var exists = gradientFill.type;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function new_ () {
+		
+		// TODO: Confirm functionality
+		
+		var gradientFill = new GraphicsGradientFill ();
+		
+		Assert.isNotNull (gradientFill);
 		
 	}
 	

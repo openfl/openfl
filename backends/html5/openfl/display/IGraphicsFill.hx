@@ -13,5 +13,6 @@ interface IGraphicsFill {
 	SOLID_FILL;
 	GRADIENT_FILL;
 	BITMAP_FILL;
+	END_FILL;
 	
 }

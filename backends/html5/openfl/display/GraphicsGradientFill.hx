@@ -24,6 +24,24 @@ class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill {
 	
 	public function new (type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Float> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0) {
 		
+		if (type == null) {
+			
+			type = GradientType.LINEAR;
+			
+		}
+		
+		if (spreadMethod == null) {
+			
+			spreadMethod = SpreadMethod.PAD;
+			
+		}
+		
+		if (interpolationMethod == null) {
+			
+			interpolationMethod = InterpolationMethod.RGB;
+			
+		}
+		
 		this.type = type;
 		this.colors = colors;
 		this.alphas = alphas;
