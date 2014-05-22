@@ -583,69 +583,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	
-	private override function get_height ():Float {
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		return bounds.height * scaleY;
-		
-	}
-	
-	
-	private override function set_height (value:Float):Float {
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		if (value != bounds.height) {
-			
-			scaleY = value / bounds.height;
-			
-		} else {
-			
-			scaleY = 1;
-			
-		}
-		
-		return value;
-		
-	}
-	
-	
 	private function get_numChildren ():Int {
 		
 		return __children.length;
-		
-	}
-	
-	
-	private override function get_width ():Float {
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		return bounds.width * scaleX;
-		
-	}
-	
-	
-	private override function set_width (value:Float):Float {
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		if (value != bounds.width) {
-			
-			scaleX = value / bounds.width;
-			
-		} else {
-			
-			scaleX = 1;
-			
-		}
-		
-		return value;
 		
 	}
 	

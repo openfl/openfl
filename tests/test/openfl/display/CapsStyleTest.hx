@@ -1,4 +1,3 @@
-
 package openfl.display;
 
 

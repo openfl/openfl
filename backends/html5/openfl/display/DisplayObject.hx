@@ -628,14 +628,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	private function get_height ():Float {
 		
-		return 0;
+		var bounds = new Rectangle ();
+		__getLocalBounds (bounds);
+		
+		return bounds.height * scaleY;
 		
 	}
 	
 	
 	private function set_height (value:Float):Float {
 		
-		return 0;
+		var bounds = new Rectangle ();
+		__getLocalBounds (bounds);
+		
+		if (value != bounds.height) {
+			
+			scaleY = value / bounds.height;
+			
+		} else {
+			
+			scaleY = 1;
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -829,14 +845,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	private function get_width ():Float {
 		
-		return 0;
+		var bounds = new Rectangle ();
+		__getLocalBounds (bounds);
+		
+		return bounds.width * scaleX;
 		
 	}
 	
 	
 	private function set_width (value:Float):Float {
 		
-		return 0;
+		var bounds = new Rectangle ();
+		__getLocalBounds (bounds);
+		
+		if (value != bounds.width) {
+			
+			scaleX = value / bounds.width;
+			
+		} else {
+			
+			scaleX = 1;
+			
+		}
+		
+		return value;
 		
 	}
 	
