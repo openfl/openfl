@@ -4,7 +4,7 @@ package openfl.display;
 import openfl.Lib;
 
 
-class GraphicsEndFill extends IGraphicsData {
+class GraphicsEndFill extends IGraphicsData implements IGraphicsFill {
 	
 	
 	public function new () {

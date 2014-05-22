@@ -5,7 +5,7 @@ import openfl.geom.Matrix;
 import openfl.Lib;
 
 
-class GraphicsGradientFill extends IGraphicsData {
+class GraphicsGradientFill extends IGraphicsData implements IGraphicsFill {
 	
 	public var alphas:Array<Float>;
 	public var colors:Array<Int>;

@@ -4,7 +4,7 @@ package openfl.display;
 import openfl.Lib;
 
 
-class GraphicsSolidFill extends IGraphicsData {
+class GraphicsSolidFill extends IGraphicsData implements IGraphicsFill {
 	
 	
 	public var alpha:Float;

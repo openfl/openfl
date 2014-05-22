@@ -2,63 +2,104 @@ package openfl.display;
 
 
 import openfl.display.GraphicsStroke;
+import massive.munit.Assert;
 
 
 class GraphicsStrokeTest {
 	
 	
-	/*@Ignore @Test*/ public function caps () {
+	@Test public function caps () {
 		
+		// TODO: Confirm functionality
 		
+		var stroke = new GraphicsStroke ();
+		var exists = stroke.caps;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function fill () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function joints () {
+	@Test public function fill () {
 		
+		// TODO: Confirm functionality
 		
+		var stroke = new GraphicsStroke ();
+		stroke.fill = new GraphicsSolidFill ();
+		var exists = stroke.fill;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function joints () {
+		
+		// TODO: Confirm functionality
+		
+		var stroke = new GraphicsStroke ();
+		var exists = stroke.joints;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	/*@Ignore @Test*/ public function miterLimit () {
 		
+		// TODO: Confirm functionality
 		
+		var stroke = new GraphicsStroke ();
+		var exists = stroke.miterLimit;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	/*@Ignore @Test*/ public function pixelHinting () {
 		
+		// TODO: Confirm functionality
 		
+		var stroke = new GraphicsStroke ();
+		var exists = stroke.pixelHinting;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	/*@Ignore @Test*/ public function scaleMode () {
 		
+		// TODO: Confirm functionality
 		
+		var stroke = new GraphicsStroke ();
+		var exists = stroke.scaleMode;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function thickness () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function thickness () {
 		
+		// TODO: Confirm functionality
 		
+		var stroke = new GraphicsStroke ();
+		var exists = stroke.thickness;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function new_ () {
+		
+		// TODO: Confirm functionality
+		
+		var stroke = new GraphicsStroke ();
+		
+		Assert.isNotNull (stroke);
 		
 	}
 	

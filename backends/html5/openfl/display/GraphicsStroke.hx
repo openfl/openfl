@@ -20,9 +20,9 @@ class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 	
 	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3, fill:IGraphicsFill = null) {
 		
-		this.caps = caps != null ? caps : null;
+		this.caps = caps != null ? caps : CapsStyle.NONE;
 		this.fill = fill;
-		this.joints = joints != null ? joints : null;
+		this.joints = joints != null ? joints : JointStyle.ROUND;
 		this.miterLimit = miterLimit;
 		this.pixelHinting = pixelHinting;
 		this.scaleMode = scaleMode != null ? scaleMode : null;
