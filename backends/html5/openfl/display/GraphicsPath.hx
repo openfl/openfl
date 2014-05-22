@@ -17,6 +17,12 @@ class GraphicsPath implements IGraphicsData implements IGraphicsPath {
 	
 	public function new (commands:Vector<Int> = null, data:Vector<Float> = null, winding:GraphicsPathWinding = null) {
 		
+		if (winding == null) {
+			
+			winding = GraphicsPathWinding.EVEN_ODD;
+			
+		}
+		
 		this.commands = commands;
 		this.data = data;
 		this.winding = winding;

@@ -2,77 +2,91 @@ package openfl.display;
 
 
 import openfl.display.GraphicsPath;
+import massive.munit.Assert;
 
 
 class GraphicsPathTest {
 	
 	
-	/*@Ignore @Test*/ public function commands () {
+	@Test public function commands () {
 		
+		// TODO: Confirm functionality
 		
+		var graphicsPath = new GraphicsPath ([]);
+		var exists = graphicsPath.commands;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function data () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function winding () {
+	@Test public function data () {
 		
+		// TODO: Confirm functionality
 		
+		var graphicsPath = new GraphicsPath (null, []);
+		var exists = graphicsPath.data;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function new_ () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function cubicCurveTo () {
+	@Test public function winding () {
 		
+		// TODO: Confirm functionality
 		
+		var graphicsPath = new GraphicsPath ();
+		var exists = graphicsPath.winding;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function curveTo () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function lineTo () {
+	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var graphicsPath = new GraphicsPath ();
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function moveTo () {
-		
-		
+		Assert.isNotNull (graphicsPath);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function wideLineTo () {
+	@Test public function curveTo () {
 		
+		// TODO: Confirm functionality
 		
+		var graphicsPath = new GraphicsPath ();
+		var exists = graphicsPath.curveTo;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function wideMoveTo () {
+	@Test public function lineTo () {
 		
+		// TODO: Confirm functionality
 		
+		var graphicsPath = new GraphicsPath ();
+		var exists = graphicsPath.lineTo;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function moveTo () {
+		
+		// TODO: Confirm functionality
+		
+		var graphicsPath = new GraphicsPath ();
+		var exists = graphicsPath.moveTo;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
