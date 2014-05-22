@@ -67,7 +67,7 @@ class Graphics {
 	
 	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
 		
-		// TODO
+		openfl.Lib.notImplemented ("Graphics.beginGradientFill");
 		
 	}
 	
@@ -141,7 +141,14 @@ class Graphics {
 	
 	public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
 		
-		// TODO
+		openfl.Lib.notImplemented ("Graphics.drawGraphicsData");
+		
+	}
+	
+	
+	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = null):Void {
+		
+		openfl.Lib.notImplemented ("Graphics.drawPath");
 		
 	}
 	
@@ -162,14 +169,14 @@ class Graphics {
 	
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void {
 		
-		// TODO
+		openfl.Lib.notImplemented ("Graphics.drawRoundRect");
 		
 	}
 	
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		// TODO
+		openfl.Lib.notImplemented ("Graphics.drawRoundRectComplex");
 		
 	}
 	
@@ -192,7 +199,7 @@ class Graphics {
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling):Void {
 		
-		// TODO
+		openfl.Lib.notImplemented ("Graphics.drawTriangles");
 		
 	}
 	
@@ -204,9 +211,16 @@ class Graphics {
 	}
 	
 	
+	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
+		
+		openfl.Lib.notImplemented ("Graphics.lineBitmapStyle");
+		
+	}
+	
+	
 	public function lineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
 		
-		// TODO
+		openfl.Lib.notImplemented ("Graphics.lineGradientStyle");
 		
 	}
 	

@@ -117,7 +117,8 @@ class TextField extends InteractiveObject {
 	
 	public function getCharBoundaries (a:Int):Rectangle {
 		
-		// TODO
+		openfl.Lib.notImplemented ("TextField.getCharBoundaries");
+		
 		return null;
 		
 	}
@@ -125,12 +126,16 @@ class TextField extends InteractiveObject {
 	
 	public function getCharIndexAtPoint (x:Float, y:Float):Int {
 		
+		openfl.Lib.notImplemented ("TextField.getCharIndexAtPoint");
+		
 		return 0;
 		
 	}
 	
 	
 	public function getLineIndexAtPoint (x:Float, y:Float):Int {
+		
+		openfl.Lib.notImplemented ("TextField.getLineIndexAtPoint");
 		
 		return 0;
 		
@@ -146,7 +151,7 @@ class TextField extends InteractiveObject {
 	
 	public function setSelection (beginIndex:Int, endIndex:Int) {
 		
-		// TODO:
+		openfl.Lib.notImplemented ("TextField.setSelection");
 		
 	}
 	

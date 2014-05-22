@@ -963,7 +963,7 @@ class GL {
 	
 	public static function getShaderPrecisionFormat (shadertype:Int, precisiontype:Int):ShaderPrecisionFormat {
 		
-		// TODO
+		openfl.Lib.notImplemented ("GL.getShaderPrecisionFormat");
 		
 		return null;
 		//return __context.getShader

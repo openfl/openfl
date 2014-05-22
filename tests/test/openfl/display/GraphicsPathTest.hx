@@ -1,8 +1,8 @@
 package openfl.display;
 
 
-import openfl.display.GraphicsPath;
 import massive.munit.Assert;
+import openfl.display.GraphicsPath;
 
 
 class GraphicsPathTest {

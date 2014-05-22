@@ -1,9 +1,9 @@
 package openfl.display;
 
 
+import massive.munit.Assert;
 import openfl.display.GraphicsGradientFill;
 import openfl.geom.Matrix;
-import massive.munit.Assert;
 
 
 class GraphicsGradientFillTest {

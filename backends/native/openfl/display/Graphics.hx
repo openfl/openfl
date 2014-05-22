@@ -134,6 +134,13 @@ class Graphics {
 	}
 	
 	
+	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
+		
+		openfl.Lib.notImplemented ("Graphics.drawRoundRectComplex");
+		
+	}
+	
+	
 	public function drawPath (commands:Array<Int>, data:Array<Float>, winding:GraphicsPathWinding = null):Void {
 		
 		lime_gfx_draw_path (__handle, commands, data, winding == GraphicsPathWinding.EVEN_ODD);

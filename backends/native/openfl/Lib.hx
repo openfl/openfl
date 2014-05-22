@@ -44,6 +44,7 @@ class Lib {
 	@:noCompletion private static var __loadedNekoAPI:Bool;
 	@:noCompletion private static var __mainFrame:Dynamic = null;
 	@:noCompletion private static var __moduleNames:Map<String, String> = null;
+	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	@:noCompletion private static var __stage:Stage = null;
 	
 	
@@ -265,6 +266,19 @@ class Lib {
 		if (debug) {
 			
 			Sys.println (message);
+			
+		}
+		
+	}
+	
+	
+	public static function notImplemented (api:String):Void {
+		
+		if (!__sentWarnings.exists (api)) {
+			
+			__sentWarnings.set (api, true);
+			
+			trace ("Warning: " + api + " has not implemented");
 			
 		}
 		

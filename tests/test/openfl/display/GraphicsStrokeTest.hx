@@ -1,8 +1,8 @@
 package openfl.display;
 
 
-import openfl.display.GraphicsStroke;
 import massive.munit.Assert;
+import openfl.display.GraphicsStroke;
 
 
 class GraphicsStrokeTest {

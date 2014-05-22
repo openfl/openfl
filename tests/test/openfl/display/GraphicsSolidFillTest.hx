@@ -1,8 +1,8 @@
 package openfl.display;
 
 
-import openfl.display.GraphicsSolidFill;
 import massive.munit.Assert;
+import openfl.display.GraphicsSolidFill;
 
 
 class GraphicsSolidFillTest {

@@ -12,149 +12,261 @@ import openfl.geom.Matrix;
 class GraphicsTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function beginBitmapFill () {
-		
-		
+		Assert.isNotNull (graphics);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function beginFill () {
+	@Test public function beginBitmapFill () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.beginBitmapFill;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function beginGradientFill () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function clear () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function curveTo () {
+	@Test public function beginFill () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.beginFill;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function drawCircle () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function drawEllipse () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function drawGraphicsData () {
+	@Test public function beginGradientFill () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.beginGradientFill;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function drawPath () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function drawRect () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function drawRoundRect () {
+	@Test public function clear () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.clear;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function drawRoundRectComplex () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function drawTriangles () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function endFill () {
+	@Test public function curveTo () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.curveTo;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function lineBitmapStyle () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function lineGradientStyle () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function lineShaderStyle () {
+	@Test public function drawCircle () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawCircle;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function lineStyle () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function lineTo () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function moveTo () {
+	@Test public function drawEllipse () {
 		
+		// TODO: Confirm functionality
 		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawEllipse;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function drawGraphicsData () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawGraphicsData;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function drawPath () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawPath;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function drawRect () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawRect;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function drawRoundRect () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawRoundRect;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function drawRoundRectComplex () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawRoundRectComplex;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function drawTriangles () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.drawTriangles;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function endFill () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.endFill;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function lineBitmapStyle () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.lineBitmapStyle;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function lineGradientStyle () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.lineGradientStyle;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function lineStyle () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.lineStyle;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function lineTo () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.lineTo;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function moveTo () {
+		
+		// TODO: Confirm functionality
+		
+		var shape = new Shape ();
+		var graphics = shape.graphics;
+		var exists = graphics.moveTo;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
