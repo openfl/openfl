@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import openfl.media.SoundTransform;
 import openfl.Lib;
 
 
@@ -11,8 +12,12 @@ class SimpleButton extends InteractiveObject {
 	public var enabled (get, set):Bool;
 	public var hitTestState (default, set):DisplayObject;
 	public var overState (default, set):DisplayObject;
+	public var soundTransform (get, set):SoundTransform;
+	public var trackAsMenu:Bool;
 	public var upState (default, set):DisplayObject;
 	public var useHandCursor (get, set):Bool;
+	
+	private var __soundTransform:SoundTransform;
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -74,6 +79,27 @@ class SimpleButton extends InteractiveObject {
 		
 		overState = value;
 		lime_simple_button_set_state (__handle, 2, value == null ? null : value.__handle);
+		return value;
+		
+	}
+	
+	
+	private function get_soundTransform ():SoundTransform {
+		
+		if (__soundTransform == null) {
+			
+			__soundTransform = new SoundTransform ();
+			
+		}
+		
+		return __soundTransform.clone ();
+		
+	}
+	
+	
+	private function set_soundTransform (value:SoundTransform):SoundTransform {
+		
+		__soundTransform = value.clone ();
 		return value;
 		
 	}

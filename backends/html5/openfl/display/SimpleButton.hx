@@ -14,33 +14,38 @@ class SimpleButton extends DisplayObjectContainer {
 	public var enabled:Bool;
 	public var hitTestState (default, set):DisplayObject;
 	public var overState (default, set):DisplayObject;
-	public var soundTransform:SoundTransform;
+	public var soundTransform (get, set):SoundTransform;
 	public var trackAsMenu:Bool;
 	public var upState (default, set):DisplayObject;
 	public var useHandCursor:Bool;
 	
-	private var currentState (default, set):DisplayObject;
+	private var __currentState (default, set):DisplayObject;
+	private var __soundTransform:SoundTransform;
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
 		
 		super ();
 		
+		enabled = true;
+		trackAsMenu = false;
+		useHandCursor = true;
+		
 		this.upState = (upState != null) ? upState : __generateDefaultState();
 		this.overState = (overState != null) ? overState : __generateDefaultState();
 		this.downState = (downState != null) ? downState : __generateDefaultState();
 		this.hitTestState = (hitTestState != null) ? hitTestState : __generateDefaultState();
 		
-		currentState = this.upState;
+		__currentState = this.upState;
 		
 	}
 	
 	
 	private function switchState (state:DisplayObject):Void {
 		
-		if (this.currentState != null && this.currentState.stage != null) {
+		if (__currentState != null && __currentState.stage != null) {
 			
-			removeChild (this.currentState);
+			removeChild (__currentState);
 			addChild (state);
 			
 		} else {
@@ -66,19 +71,9 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	
 	
-	private function set_currentState (state:DisplayObject):DisplayObject {
-		
-		if (currentState == state) return state;
-		switchState (state);
-		
-		return currentState = state;
-		
-	}
-	
-	
 	private function set_downState (downState:DisplayObject):DisplayObject {
 		
-		if (this.downState != null && currentState == this.downState) currentState = downState;
+		if (this.downState != null && __currentState == this.downState) __currentState = downState;
 		return this.downState = downState;
 		
 	}
@@ -89,10 +84,10 @@ class SimpleButton extends DisplayObjectContainer {
 		if (hitTestState != this.hitTestState) {
 			
 			// Events bubble up to this instance.
-			addEventListener (MouseEvent.MOUSE_OVER, function(_) { if (overState != currentState) currentState = overState; });
-			addEventListener (MouseEvent.MOUSE_OUT, function(_) {  if (upState != currentState) currentState = upState; });
-			addEventListener (MouseEvent.MOUSE_DOWN, function(_) { currentState = downState; });
-			addEventListener (MouseEvent.MOUSE_UP, function(_) { currentState = overState; });
+			addEventListener (MouseEvent.MOUSE_OVER, function(_) { if (overState != __currentState) __currentState = overState; });
+			addEventListener (MouseEvent.MOUSE_OUT, function(_) {  if (upState != __currentState) __currentState = upState; });
+			addEventListener (MouseEvent.MOUSE_DOWN, function(_) { __currentState = downState; });
+			addEventListener (MouseEvent.MOUSE_UP, function(_) { __currentState = overState; });
 			
 			hitTestState.alpha = 0.0;
 			addChild (hitTestState);
@@ -106,16 +101,47 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	private function set_overState (overState:DisplayObject):DisplayObject {
 		
-		if (this.overState != null && currentState == this.overState) currentState = overState;
+		if (this.overState != null && __currentState == this.overState) __currentState = overState;
 		return this.overState = overState;
+		
+	}
+	
+	
+	private function get_soundTransform ():SoundTransform {
+		
+		if (__soundTransform == null) {
+			
+			__soundTransform = new SoundTransform ();
+			
+		}
+		
+		return new SoundTransform (__soundTransform.volume, __soundTransform.pan);
+		
+	}
+	
+	
+	private function set_soundTransform (value:SoundTransform):SoundTransform {
+		
+		__soundTransform = new SoundTransform (value.volume, value.pan);
+		return value;
 		
 	}
 	
 	
 	private function set_upState (upState:DisplayObject):DisplayObject {
 		
-		if (this.upState != null && currentState == this.upState) currentState = upState;
+		if (this.upState != null && __currentState == this.upState) __currentState = upState;
 		return this.upState = upState;
+		
+	}
+	
+	
+	private function set___currentState (state:DisplayObject):DisplayObject {
+		
+		if (__currentState == state) return state;
+		switchState (state);
+		
+		return __currentState = state;
 		
 	}
 	

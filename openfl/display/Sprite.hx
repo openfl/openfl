@@ -58,44 +58,10 @@ extern class Sprite extends DisplayObjectContainer {
 	var buttonMode : Bool;
 
 	/**
-	 * Specifies the display object over which the sprite is being dragged, or on
-	 * which the sprite was dropped.
-	 */
-	var dropTarget(default,null) : DisplayObject;
-
-	/**
 	 * Specifies the Graphics object that belongs to this sprite where vector
 	 * drawing commands can occur.
 	 */
 	var graphics(default,null) : Graphics;
-
-	/**
-	 * Designates another sprite to serve as the hit area for a sprite. If the
-	 * <code>hitArea</code> property does not exist or the value is
-	 * <code>null</code> or <code>undefined</code>, the sprite itself is used as
-	 * the hit area. The value of the <code>hitArea</code> property can be a
-	 * reference to a Sprite object.
-	 *
-	 * <p>You can change the <code>hitArea</code> property at any time; the
-	 * modified sprite immediately uses the new hit area behavior. The sprite
-	 * designated as the hit area does not need to be visible; its graphical
-	 * shape, although not visible, is still detected as the hit area.</p>
-	 *
-	 * <p><b>Note:</b> You must set to <code>false</code> the
-	 * <code>mouseEnabled</code> property of the sprite designated as the hit
-	 * area. Otherwise, your sprite button might not work because the sprite
-	 * designated as the hit area receives the user input events instead of your
-	 * sprite button.</p>
-	 */
-	var hitArea : Sprite;
-
-	/**
-	 * Controls sound within this sprite.
-	 *
-	 * <p><b>Note:</b> This property does not affect HTML content in an
-	 * HTMLControl object(in Adobe AIR).</p>
-	 */
-	var soundTransform : openfl.media.SoundTransform;
 
 	/**
 	 * A Boolean value that indicates whether the pointing hand(hand cursor)
@@ -150,30 +116,6 @@ extern class Sprite extends DisplayObjectContainer {
 	function startDrag(lockCenter : Bool = false, ?bounds : openfl.geom.Rectangle) : Void;
 
 	/**
-	 * Lets the user drag the specified sprite on a touch-enabled device. The
-	 * sprite remains draggable until explicitly stopped through a call to the
-	 * <code>Sprite.stopTouchDrag()</code> method, or until another sprite is
-	 * made draggable. Only one sprite is draggable at a time.
-	 *
-	 * <p>Three-dimensional display objects follow the pointer and
-	 * <code>Sprite.startTouchDrag()</code> moves the object within the
-	 * three-dimensional plane defined by the display object. Or, if the display
-	 * object is a two-dimensional object and the child of a three-dimensional
-	 * object, the two-dimensional object moves within the three dimensional
-	 * plane defined by the three-dimensional parent object.</p>
-	 * 
-	 * @param touchPointID An integer to assign to the touch point.
-	 * @param lockCenter   Specifies whether the draggable sprite is locked to
-	 *                     the center of the pointer position
-	 *                    (<code>true</code>), or locked to the point where the
-	 *                     user first clicked the sprite(<code>false</code>).
-	 * @param bounds       Value relative to the coordinates of the Sprite's
-	 *                     parent that specify a constraint rectangle for the
-	 *                     Sprite.
-	 */
-	function startTouchDrag(touchPointID : Int, lockCenter : Bool = false, ?bounds : openfl.geom.Rectangle) : Void;
-
-	/**
 	 * Ends the <code>startDrag()</code> method. A sprite that was made draggable
 	 * with the <code>startDrag()</code> method remains draggable until a
 	 * <code>stopDrag()</code> method is added, or until another sprite becomes
@@ -181,18 +123,6 @@ extern class Sprite extends DisplayObjectContainer {
 	 * 
 	 */
 	function stopDrag() : Void;
-
-	/**
-	 * Ends the <code>startTouchDrag()</code> method, for use with touch-enabled
-	 * devices. A sprite that was made draggable with the
-	 * <code>startTouchDrag()</code> method remains draggable until a
-	 * <code>stopTouchDrag()</code> method is added, or until another sprite
-	 * becomes draggable. Only one sprite is draggable at a time.
-	 * 
-	 * @param touchPointID The integer assigned to the touch point in the
-	 *                     <code>startTouchDrag</code> method.
-	 */
-	function stopTouchDrag(touchPointID : Int) : Void;
 }
 
 

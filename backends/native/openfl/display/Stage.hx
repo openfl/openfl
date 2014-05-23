@@ -36,6 +36,7 @@ class Stage extends DisplayObjectContainer {
 	public static var OrientationFaceUp = 5;
 	public static var OrientationFaceDown = 6;
 	
+	public var allowsFullScreen:Bool;
 	public var autos3d (get, set):Bool;
 	public var active (default, null):Bool;
 	public var align (get, set):StageAlign;
@@ -95,6 +96,7 @@ class Stage extends DisplayObjectContainer {
 		__mouseOverObjects = [];
 		__focusOverObjects = [];
 		active = true;
+		allowsFullScreen = true;
 		pauseWhenDeactivated = true;
 		
 		#if android

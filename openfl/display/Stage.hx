@@ -393,26 +393,6 @@ extern class Stage extends DisplayObjectContainer {
 	var showDefaultContextMenu : Bool;
 
 	/**
-	 * The area of the stage that is currently covered by the software keyboard.
-	 *
-	 * <p>The area has a size of zero(0,0,0,0) when the soft keyboard is not
-	 * visible.</p>
-	 *
-	 * <p>When the keyboard opens, the <code>softKeyboardRect</code> is set at
-	 * the time the softKeyboardActivate event is dispatched. If the keyboard
-	 * changes size while open, the runtime updates the
-	 * <code>softKeyboardRect</code> property and dispatches an additional
-	 * softKeyboardActivate event.</p>
-	 *
-	 * <p><b>Note:</b> On Android, the area covered by the keyboard is estimated
-	 * when the operating system does not provide the information necessary to
-	 * determine the exact area. This problem occurs in fullscreen mode and also
-	 * when the keyboard opens in response to an InteractiveObject receiving
-	 * focus or invoking the <code>requestSoftKeyboard()</code> method.</p>
-	 */
-	var softKeyboardRect(default, null) : openfl.geom.Rectangle;
-
-	/**
 	 * Specifies whether or not objects display a glowing border when they have
 	 * focus.
 	 * 
@@ -516,75 +496,6 @@ extern class Stage extends DisplayObjectContainer {
 	var stageWidth : Int;
 
 	/**
-	 * Indicates whether GPU compositing is available and in use. The
-	 * <code>wmodeGPU</code> value is <code>true</code> <i>only</i> when all
-	 * three of the following conditions exist:
-	 *
-	 * <p>
-	 * <ul>
-	 *   <li>GPU compositing has been requested.</li>
-	 *   <li>GPU compositing is available.</li>
-	 *   <li>GPU compositing is in use.</li>
-	 * </ul>
-	 * </p>
-	 *
-	 * <p>Specifically, the <code>wmodeGPU</code> property indicates one of the
-	 * following:</p>
-	 *
-	 * <p>
-	 * <ol>
-	 *   <li>GPU compositing has not been requested or is unavailable. In this
-	 * case, the <code>wmodeGPU</code> property value is <code>false</code>.</li>
-	 *   <li>GPU compositing has been requested(if applicable and available),
-	 * but the environment is operating in "fallback mode"(not optimal
-	 * rendering) due to limitations of the content. In this case, the
-	 * <code>wmodeGPU</code> property value is <code>true</code>.</li>
-	 *   <li>GPU compositing has been requested(if applicable and available),
-	 * and the environment is operating in the best mode. In this case, the
-	 * <code>wmodeGPU</code> property value is also <code>true</code>.</li>
-	 * </ol>
-	 * </p>
-	 *
-	 * <p>In other words, the <code>wmodeGPU</code> property identifies the
-	 * capability and state of the rendering environment. For runtimes that do
-	 * not support GPU compositing, such as AIR 1.5.2, the value is always
-	 * <code>false</code>, because(as stated above) the value is
-	 * <code>true</code> only when GPU compositing has been requested, is
-	 * available, and is in use.</p>
-	 *
-	 * <p>The <code>wmodeGPU</code> property is useful to determine, at runtime,
-	 * whether or not GPU compositing is in use. The value of
-	 * <code>wmodeGPU</code> indicates if your content is going to be scaled by
-	 * hardware, or not, so you can present graphics at the correct size. You can
-	 * also determine if you're rendering in a fast path or not, so that you can
-	 * adjust your content complexity accordingly.</p>
-	 *
-	 * <p>For Flash Player in a browser, GPU compositing can be requested by the
-	 * value of <code>gpu</code> for the <code>wmode</code> HTML parameter in the
-	 * page hosting the SWF file. For other configurations, GPU compositing can
-	 * be requested in the header of a SWF file(set using SWF authoring
-	 * tools).</p>
-	 *
-	 * <p>However, the <code>wmodeGPU</code> property does not identify the
-	 * current rendering performance. Even if GPU compositing is "in use" the
-	 * rendering process might not be operating in the best mode. To adjust your
-	 * content for optimal rendering, use a Flash runtime debugger version, and
-	 * set the <code>DisplayGPUBlendsetting</code> in your mm.cfg file.</p>
-	 *
-	 * <p><b>Note:</b> This property is always <code>false</code> when referenced
-	 * from ActionScript that runs before the runtime performs its first
-	 * rendering pass. For example, if you examine <code>wmodeGPU</code> from a
-	 * script in Frame 1 of Adobe Flash Professional, and your SWF file is the
-	 * first SWF file loaded in a new instance of the runtime, then the
-	 * <code>wmodeGPU</code> value is <code>false</code>. To get an accurate
-	 * value, wait until at least one rendering pass has occurred. If you write
-	 * an event listener for the <code>exitFrame</code> event of any
-	 * <code>DisplayObject</code>, the <code>wmodeGPU</code> value at is the
-	 * correct value.</p>
-	 */
-	var wmodeGPU(default,null) : Bool;
-
-	/**
 	 * Calling the <code>invalidate()</code> method signals Flash runtimes to
 	 * alert display objects on the next opportunity it has to render the display
 	 * list(for example, when the playhead advances to a new frame). After you
@@ -607,18 +518,6 @@ extern class Stage extends DisplayObjectContainer {
 	 * 
 	 */
 	function invalidate() : Void;
-
-	/**
-	 * Determines whether the <code>Stage.focus</code> property returns
-	 * <code>null</code> for security reasons. In other words,
-	 * <code>isFocusInaccessible</code> returns <code>true</code> if the object
-	 * that has focus belongs to a security sandbox to which the SWF file does
-	 * not have access.
-	 * 
-	 * @return <code>true</code> if the object that has focus belongs to a
-	 *         security sandbox to which the SWF file does not have access.
-	 */
-	function isFocusInaccessible() : Bool;
 }
 
 

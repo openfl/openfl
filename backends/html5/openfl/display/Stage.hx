@@ -25,6 +25,7 @@ class Stage extends Sprite {
 	
 	
 	public var align:StageAlign;
+	public var allowsFullScreen:Bool;
 	public var color (get, set):Int;
 	public var displayState(default, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
@@ -210,7 +211,14 @@ class Stage extends Sprite {
 		
 		this.stage = this;
 		
+		align = StageAlign.TOP_LEFT;
+		allowsFullScreen = false;
+		displayState = StageDisplayState.NORMAL;
+		frameRate = 60;
 		quality = StageQuality.HIGH;
+		scaleMode = StageScaleMode.NO_SCALE;
+		stageFocusRect = true;
+		
 		__clearBeforeRender = true;
 		__stack = [];
 		
