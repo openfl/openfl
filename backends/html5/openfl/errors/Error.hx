@@ -18,6 +18,7 @@ class Error {
 		
 		this.message = message;
 		this.errorID = id;
+		name = "Error";
 		
 	}
 	

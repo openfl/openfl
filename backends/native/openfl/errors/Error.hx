@@ -1,25 +1,30 @@
 package openfl.errors;
 
 
+import haxe.CallStack;
+
+
 class Error {
 	
 	
 	public var errorID:Int;
-	public var message:Dynamic;
-	public var name:Dynamic;
+	public var message:String;
+	public var name:String;
 	
 	
-	public function new (message:Dynamic = null, id:Dynamic = 0) {
+	public function new (message:String = "", id:Int = 0) {
 		
 		this.message = message;
 		errorID = id;
+		name = "Error";
 		
 	}
 	
 	
-	private function getStackTrace ():String {
+	public function getStackTrace ():String {
 		
-		return "";
+		var stack = CallStack.exceptionStack ();
+		return CallStack.toString (stack);
 		
 	}
 	

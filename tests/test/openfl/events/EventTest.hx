@@ -10,42 +10,72 @@ class EventTest {
 	
 	@Test public function bubbles () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.bubbles;
+		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
 	@Test public function cancelable () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.cancelable;
+		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
 	@Test public function currentTarget () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.currentTarget;
+		
+		Assert.isNull (exists);
 		
 	}
 	
 	
 	@Test public function eventPhase () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.eventPhase;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function target () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.target;
+		
+		Assert.isNull (exists);
 		
 	}
 	
 	
 	@Test public function type () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.type;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -123,42 +153,48 @@ class EventTest {
 	
 	@Test public function clone () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.clone;
 		
-	}
-	
-	
-	@Test public function formatToString () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function isDefaultPrevented () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.isDefaultPrevented;
 		
-	}
-	
-	
-	@Test public function preventDefault () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function stopImmediatePropagation () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.stopImmediatePropagation;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function stopPropagation () {
 		
+		// TODO: Confirm functionality
 		
+		var event = new Event (Event.ACTIVATE);
+		var exists = event.stopPropagation;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	

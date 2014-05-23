@@ -1,6 +1,9 @@
 package openfl.events;
 
 
+import massive.munit.Assert;
+
+
 class TimerEventTest {
 	
 	

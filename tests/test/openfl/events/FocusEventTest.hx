@@ -9,30 +9,32 @@ import openfl.events.FocusEvent;
 class FocusEventTest {
 	
 	
-	@Test public function isRelatedObjectInaccessible () {
-		
-		
-		
-	}
-	
-	
 	@Test public function keyCode () {
 		
+		var focusEvent = new FocusEvent (FocusEvent.FOCUS_IN);
+		var exists = focusEvent.keyCode;
 		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function relatedObject () {
 		
+		var focusEvent = new FocusEvent (FocusEvent.FOCUS_IN);
+		var exists = focusEvent.relatedObject;
 		
+		Assert.isNull (exists);
 		
 	}
 	
 	
 	@Test public function shiftKey () {
 		
+		var focusEvent = new FocusEvent (FocusEvent.FOCUS_IN);
+		var exists = focusEvent.shiftKey;
 		
+		Assert.isNotNull (exists);
 		
 	}
 	

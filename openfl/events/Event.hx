@@ -156,23 +156,6 @@ extern class Event {
 	function clone() : Event;
 
 	/**
-	 * A utility function for implementing the <code>toString()</code> method in
-	 * custom ActionScript 3.0 Event classes. Overriding the
-	 * <code>toString()</code> method is recommended, but not required. <pre
-	 * xml:space="preserve"> class PingEvent extends Event { var URL:String;
-	 * public override function toString():String { return
-	 * formatToString("PingEvent", "type", "bubbles", "cancelable", "eventPhase",
-	 * "URL"); } } </pre>
-	 * 
-	 * @param className The name of your custom Event class. In the previous
-	 *                  example, the <code>className</code> parameter is
-	 *                  <code>PingEvent</code>.
-	 * @return The name of your custom Event class and the String value of your
-	 *         <code>...arguments</code> parameter.
-	 */
-	function formatToString(className : String, ?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : String;
-
-	/**
 	 * Checks whether the <code>preventDefault()</code> method has been called on
 	 * the event. If the <code>preventDefault()</code> method has been called,
 	 * returns <code>true</code>; otherwise, returns <code>false</code>.
@@ -181,32 +164,6 @@ extern class Event {
 	 *         <code>true</code>; otherwise, returns <code>false</code>.
 	 */
 	function isDefaultPrevented() : Bool;
-
-	/**
-	 * Cancels an event's default behavior if that behavior can be canceled.
-	 *
-	 * <p>Many events have associated behaviors that are carried out by default.
-	 * For example, if a user types a character into a text field, the default
-	 * behavior is that the character is displayed in the text field. Because the
-	 * <code>TextEvent.TEXT_INPUT</code> event's default behavior can be
-	 * canceled, you can use the <code>preventDefault()</code> method to prevent
-	 * the character from appearing. </p>
-	 *
-	 * <p>An example of a behavior that is not cancelable is the default behavior
-	 * associated with the <code>Event.REMOVED</code> event, which is generated
-	 * whenever Flash Player is about to remove a display object from the display
-	 * list. The default behavior(removing the element) cannot be canceled, so
-	 * the <code>preventDefault()</code> method has no effect on this default
-	 * behavior. </p>
-	 *
-	 * <p>You can use the <code>Event.cancelable</code> property to check whether
-	 * you can prevent the default behavior associated with a particular event.
-	 * If the value of <code>Event.cancelable</code> is <code>true</code>, then
-	 * <code>preventDefault()</code> can be used to cancel the event; otherwise,
-	 * <code>preventDefault()</code> has no effect.</p>
-	 * 
-	 */
-	function preventDefault() : Void;
 
 	/**
 	 * Prevents processing of any event listeners in the current node and any
