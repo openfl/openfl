@@ -7,21 +7,21 @@ import massive.munit.Assert;
 class TilesheetTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function addTileRect () {
+	@Test public function addTileRect () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function drawTiles () {
+	@Test public function drawTiles () {
 		
 		
 		

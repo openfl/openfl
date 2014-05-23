@@ -4,49 +4,49 @@ package openfl.text;
 class FontTest {
 	
 	
-	/*@Ignore @Test*/ public function fontName () {
+	@Test public function fontName () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function fontStyle () {
+	@Test public function fontStyle () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function fontType () {
+	@Test public function fontType () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasGlyphs () {
+	@Test public function hasGlyphs () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function enumerateFonts () {
+	@Test public function enumerateFonts () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function registerFont () {
+	@Test public function registerFont () {
 		
 		
 		

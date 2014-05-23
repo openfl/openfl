@@ -4,21 +4,21 @@ package openfl.net;
 class URLVariablesTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function decode () {
+	@Test public function decode () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		

@@ -4,7 +4,7 @@ package openfl.text;
 class TextFieldAutoSizeTest {
 	
 	
-	/*@Ignore @Test*/ public function test () {
+	@Test public function test () {
 		
 		
 		

@@ -4,35 +4,35 @@ package openfl.ui;
 class MultitouchTest {
 	
 	
-	/*@Ignore @Test*/ public function inputMode () {
+	@Test public function inputMode () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function maxTouchPoints () {
+	@Test public function maxTouchPoints () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supportedGestures () {
+	@Test public function supportedGestures () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supportsGestureEvents () {
+	@Test public function supportsGestureEvents () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supportsTouchEvents () {
+	@Test public function supportsTouchEvents () {
 		
 		
 		

@@ -7,14 +7,14 @@ import openfl.display.Shape;
 class ShapeTest {
 	
 	
-	/*@Ignore @Test*/ public function graphics () {
+	@Test public function graphics () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

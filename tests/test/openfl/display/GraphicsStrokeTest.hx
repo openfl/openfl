@@ -45,7 +45,7 @@ class GraphicsStrokeTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function miterLimit () {
+	@Test public function miterLimit () {
 		
 		// TODO: Confirm functionality
 		
@@ -57,7 +57,7 @@ class GraphicsStrokeTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function pixelHinting () {
+	@Test public function pixelHinting () {
 		
 		// TODO: Confirm functionality
 		
@@ -69,7 +69,7 @@ class GraphicsStrokeTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function scaleMode () {
+	@Test public function scaleMode () {
 		
 		// TODO: Confirm functionality
 		

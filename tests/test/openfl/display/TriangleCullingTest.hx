@@ -4,7 +4,7 @@ package openfl.display;
 class TriangleCullingTest {
 	
 	
-	/*@Ignore @Test*/ public function test () {
+	@Test public function test () {
 		
 		
 		

@@ -4,7 +4,7 @@ package openfl.events;
 class EventPhaseTest {
 	
 	
-	/*@Ignore @Test*/ public function test () {
+	@Test public function test () {
 		
 		
 		

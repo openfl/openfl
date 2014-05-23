@@ -7,140 +7,140 @@ import openfl.display.MovieClip;
 class MovieClipTest {
 	
 	
-	/*@Ignore @Test*/ public function currentFrame () {
+	@Test public function currentFrame () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function currentFrameLabel () {
+	@Test public function currentFrameLabel () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function currentLabel () {
+	@Test public function currentLabel () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function currentLabels () {
+	@Test public function currentLabels () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function currentScene () {
+	@Test public function currentScene () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function enabled () {
+	@Test public function enabled () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function framesLoaded () {
+	@Test public function framesLoaded () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isPlaying () {
+	@Test public function isPlaying () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function totalFrames () {
+	@Test public function totalFrames () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function trackAsMenu () {
+	@Test public function trackAsMenu () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function addFrameScript () {
+	@Test public function addFrameScript () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function gotoAndPlay () {
+	@Test public function gotoAndPlay () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function gotoAndStop () {
+	@Test public function gotoAndStop () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function nextFrame () {
+	@Test public function nextFrame () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function nextScene () {
+	@Test public function nextScene () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function play () {
+	@Test public function play () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function prevFrame () {
+	@Test public function prevFrame () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function prevScene () {
+	@Test public function prevScene () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stop () {
+	@Test public function stop () {
 		
 		
 		

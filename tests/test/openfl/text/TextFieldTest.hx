@@ -8,7 +8,7 @@ import openfl.display.BitmapData;
 class TextFieldTest {
 	
 	
-	/*@Ignore @Test*/ public function alwaysShowSelection () {
+	@Test public function alwaysShowSelection () {
 		
 		
 		
@@ -154,63 +154,63 @@ class TextFieldTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function caretIndex () {
+	@Test public function caretIndex () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function condenseWhite () {
+	@Test public function condenseWhite () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function defaultTextFormat () {
+	@Test public function defaultTextFormat () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function displayAsPassword () {
+	@Test public function displayAsPassword () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function embedFonts () {
+	@Test public function embedFonts () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function gridFitType () {
+	@Test public function gridFitType () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function htmlText () {
+	@Test public function htmlText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function length () {
+	@Test public function length () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function maxChars () {
+	@Test public function maxChars () {
 		
 		
 		
@@ -244,14 +244,14 @@ class TextFieldTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function mouseWheelEnabled () {
+	@Test public function mouseWheelEnabled () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function multiline () {
+	@Test public function multiline () {
 		
 		
 		
@@ -276,7 +276,7 @@ class TextFieldTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function restrict () {
+	@Test public function restrict () {
 		
 		
 		
@@ -309,280 +309,280 @@ class TextFieldTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function selectable () {
+	@Test public function selectable () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function selectedText () {
+	@Test public function selectedText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function selectionBeginIndex () {
+	@Test public function selectionBeginIndex () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function selectionEndIndex () {
+	@Test public function selectionEndIndex () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function sharpness () {
+	@Test public function sharpness () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function styleSheet () {
+	@Test public function styleSheet () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function text () {
+	@Test public function text () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function textColor () {
+	@Test public function textColor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function textHeight () {
+	@Test public function textHeight () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function textInteractionMode () {
+	@Test public function textInteractionMode () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function textWidth () {
+	@Test public function textWidth () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function thickness () {
+	@Test public function thickness () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function type () {
+	@Test public function type () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function useRichTextClipboard () {
+	@Test public function useRichTextClipboard () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function wordWrap () {
+	@Test public function wordWrap () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function appendText () {
+	@Test public function appendText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyRichText () {
+	@Test public function copyRichText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getCharBoundaries () {
+	@Test public function getCharBoundaries () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getCharIndexAtPoint () {
+	@Test public function getCharIndexAtPoint () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getFirstCharInParagraph () {
+	@Test public function getFirstCharInParagraph () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getImageReference () {
+	@Test public function getImageReference () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLineIndexAtPoint () {
+	@Test public function getLineIndexAtPoint () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLineIndexOfChar () {
+	@Test public function getLineIndexOfChar () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLineLength () {
+	@Test public function getLineLength () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLineMetrics () {
+	@Test public function getLineMetrics () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLineOffset () {
+	@Test public function getLineOffset () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLineText () {
+	@Test public function getLineText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getParagraphLength () {
+	@Test public function getParagraphLength () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getRawText () {
+	@Test public function getRawText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getTextFormat () {
+	@Test public function getTextFormat () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getTextRuns () {
+	@Test public function getTextRuns () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getXMLText () {
+	@Test public function getXMLText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function insertXMLText () {
+	@Test public function insertXMLText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function pasteRichText () {
+	@Test public function pasteRichText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function replaceSelectedText () {
+	@Test public function replaceSelectedText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function replaceText () {
+	@Test public function replaceText () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function setSelection () {
+	@Test public function setSelection () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function setTextFormat () {
+	@Test public function setTextFormat () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isFontCompatible () {
+	@Test public function isFontCompatible () {
 		
 		
 		

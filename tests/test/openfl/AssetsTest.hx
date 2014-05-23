@@ -7,35 +7,35 @@ import massive.munit.Assert;
 class AssetsTest {
 	
 	
-	/*@Ignore @Test*/ public function cachedBitmapData () {
+	@Test public function cachedBitmapData () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function id () {
+	@Test public function id () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function library () {
+	@Test public function library () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function path () {
+	@Test public function path () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function type () {
+	@Test public function type () {
 		
 		
 		
@@ -43,42 +43,42 @@ class AssetsTest {
 	
 	
 	
-	/*@Ignore @Test*/ public function getBitmapData () {
+	@Test public function getBitmapData () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getBytes () {
+	@Test public function getBytes () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getFont () {
+	@Test public function getFont () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getMovieClip () {
+	@Test public function getMovieClip () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getSound () {
+	@Test public function getSound () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getText () {
+	@Test public function getText () {
 		
 		
 		

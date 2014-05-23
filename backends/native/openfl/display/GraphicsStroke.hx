@@ -23,7 +23,7 @@ class GraphicsStroke extends IGraphicsData {
 		this.joints = joints != null ? joints : JointStyle.ROUND;
 		this.miterLimit = miterLimit;
 		this.pixelHinting = pixelHinting;
-		this.scaleMode = scaleMode != null ? scaleMode : null;
+		this.scaleMode = scaleMode != null ? scaleMode : LineScaleMode.NORMAL;
 		this.thickness = thickness;
 		
 		super (lime_graphics_stroke_create (thickness, pixelHinting, scaleMode == null ? 0 : Type.enumIndex (scaleMode), caps == null ? 0 : Type.enumIndex (caps), joints == null ? 0 : Type.enumIndex (joints), miterLimit, fill == null ? null : fill.__handle));

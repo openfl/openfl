@@ -4,133 +4,133 @@ package openfl.text;
 class TextFormatTest {
 	
 	
-	/*@Ignore @Test*/ public function align () {
+	@Test public function align () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function blockIndent () {
+	@Test public function blockIndent () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function bold () {
+	@Test public function bold () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function bullet () {
+	@Test public function bullet () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function color () {
+	@Test public function color () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function font () {
+	@Test public function font () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function indent () {
+	@Test public function indent () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function italic () {
+	@Test public function italic () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function kerning () {
+	@Test public function kerning () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function leading () {
+	@Test public function leading () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function leftMargin () {
+	@Test public function leftMargin () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function letterSpacing () {
+	@Test public function letterSpacing () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function rightMargin () {
+	@Test public function rightMargin () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function size () {
+	@Test public function size () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function tabStops () {
+	@Test public function tabStops () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function target () {
+	@Test public function target () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function underline () {
+	@Test public function underline () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function url () {
+	@Test public function url () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

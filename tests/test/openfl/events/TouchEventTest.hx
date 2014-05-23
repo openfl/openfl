@@ -4,112 +4,112 @@ package openfl.events;
 class TouchEventTest {
 	
 	
-	/*@Ignore @Test*/ public function altKey () {
+	@Test public function altKey () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function ctrlKey () {
+	@Test public function ctrlKey () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isPrimaryTouchPoint () {
+	@Test public function isPrimaryTouchPoint () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isRelatedObjectInaccessible () {
+	@Test public function isRelatedObjectInaccessible () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function localX () {
+	@Test public function localX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function localY () {
+	@Test public function localY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function pressure () {
+	@Test public function pressure () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function relatedObject () {
+	@Test public function relatedObject () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function shiftKey () {
+	@Test public function shiftKey () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function sizeX () {
+	@Test public function sizeX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function sizeY () {
+	@Test public function sizeY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageX () {
+	@Test public function stageX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageY () {
+	@Test public function stageY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function touchPointID () {
+	@Test public function touchPointID () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function updateAfterEvent () {
+	@Test public function updateAfterEvent () {
 		
 		
 		

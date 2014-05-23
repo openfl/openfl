@@ -4,91 +4,91 @@ package openfl.events;
 class MouseEventTest {
 	
 	
-	/*@Ignore @Test*/ public function altKey () {
+	@Test public function altKey () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function buttonDown () {
+	@Test public function buttonDown () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function ctrlKey () {
+	@Test public function ctrlKey () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function delta () {
+	@Test public function delta () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isRelatedObjectInaccessible () {
+	@Test public function isRelatedObjectInaccessible () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function localX () {
+	@Test public function localX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function localY () {
+	@Test public function localY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function relatedObject () {
+	@Test public function relatedObject () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function shiftKey () {
+	@Test public function shiftKey () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageX () {
+	@Test public function stageX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageY () {
+	@Test public function stageY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function updateAfterEvent () {
+	@Test public function updateAfterEvent () {
 		
 		
 		

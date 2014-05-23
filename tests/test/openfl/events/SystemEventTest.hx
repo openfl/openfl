@@ -7,14 +7,14 @@ import massive.munit.Assert;
 class SystemEventTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function data () {
+	@Test public function data () {
 		
 		
 		

@@ -7,63 +7,63 @@ import massive.munit.Assert;
 class GLObjectTest {
 	
 	
-	/*@Ignore @Test*/ public function id () {
+	@Test public function id () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function invalidated () {
+	@Test public function invalidated () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function valid () {
+	@Test public function valid () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getType () {
+	@Test public function getType () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function invalidate () {
+	@Test public function invalidate () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		
 	}*/
 	
 	
-	/*@Ignore @Test*/ public function isValid () {
+	@Test public function isValid () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isInvalid () {
+	@Test public function isInvalid () {
 		
 		
 		

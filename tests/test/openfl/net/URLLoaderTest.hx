@@ -4,49 +4,49 @@ package openfl.net;
 class URLLoaderTest {
 	
 	
-	/*@Ignore @Test*/ public function bytesLoaded () {
+	@Test public function bytesLoaded () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function bytesTotal () {
+	@Test public function bytesTotal () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function data () {
+	@Test public function data () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function dataFormat () {
+	@Test public function dataFormat () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function close () {
+	@Test public function close () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function load () {
+	@Test public function load () {
 		
 		
 		

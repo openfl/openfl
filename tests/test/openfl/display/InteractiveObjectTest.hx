@@ -1,85 +1,69 @@
 package openfl.display;
 
 
+import massive.munit.Assert;
 import openfl.display.InteractiveObject;
+import openfl.geom.Rectangle;
 
 
 class InteractiveObjectTest {
 	
 	
-	/*@Ignore @Test*/ public function accessibilityImplementation () {
+	@Test public function doubleClickEnabled () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.doubleClickEnabled;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function contextMenu () {
-		
-		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function doubleClickEnabled () {
+	@Test public function mouseEnabled () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.mouseEnabled;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function focusRect () {
-		
-		
+		Assert.isTrue (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function mouseEnabled () {
+	@Test public function needsSoftKeyboard () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.needsSoftKeyboard;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function needsSoftKeyboard () {
-		
-		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function softKeyboardInputAreaOfInterest () {
+	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function tabEnabled () {
-		
-		
+		Assert.isNotNull (sprite);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function tabIndex () {
+	@Test public function requestSoftKeyboard () {
 		
+		// TODO: Confirm functionality
 		
+		var sprite = new Sprite ();
+		var exists = sprite.requestSoftKeyboard;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function new_ () {
-		
-		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function requestSoftKeyboard () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	

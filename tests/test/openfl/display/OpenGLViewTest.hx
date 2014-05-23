@@ -7,14 +7,14 @@ import massive.munit.Assert;
 class OpenGLViewTest {
 	
 	
-	/*@Ignore @Test*/ public function isSupported () {
+	@Test public function isSupported () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

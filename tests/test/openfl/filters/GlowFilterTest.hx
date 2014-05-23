@@ -4,63 +4,63 @@ package openfl.filters;
 class GlowFilterTest {
 	
 	
-	/*@Ignore @Test*/ public function alpha () {
+	@Test public function alpha () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function blurX () {
+	@Test public function blurX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function blurY () {
+	@Test public function blurY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function color () {
+	@Test public function color () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function inner () {
+	@Test public function inner () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function knockout () {
+	@Test public function knockout () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function quality () {
+	@Test public function quality () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function strength () {
+	@Test public function strength () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

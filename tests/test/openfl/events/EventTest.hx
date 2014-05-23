@@ -8,42 +8,42 @@ import openfl.display.Sprite;
 class EventTest {
 	
 	
-	/*@Ignore @Test*/ public function bubbles () {
+	@Test public function bubbles () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function cancelable () {
+	@Test public function cancelable () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function currentTarget () {
+	@Test public function currentTarget () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function eventPhase () {
+	@Test public function eventPhase () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function target () {
+	@Test public function target () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function type () {
+	@Test public function type () {
 		
 		
 		
@@ -121,49 +121,49 @@ class EventTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function clone () {
+	@Test public function clone () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function formatToString () {
+	@Test public function formatToString () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isDefaultPrevented () {
+	@Test public function isDefaultPrevented () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function preventDefault () {
+	@Test public function preventDefault () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stopImmediatePropagation () {
+	@Test public function stopImmediatePropagation () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stopPropagation () {
+	@Test public function stopPropagation () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		

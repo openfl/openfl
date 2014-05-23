@@ -4,210 +4,210 @@ package openfl.geom;
 class Matrix3DTest {
 	
 	
-	/*@Ignore @Test*/ public function determinant () {
+	@Test public function determinant () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function position () {
+	@Test public function position () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function rawData () {
+	@Test public function rawData () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function appendRotation () {
+	@Test public function appendRotation () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function appendScale () {
+	@Test public function appendScale () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function appendTranslation () {
+	@Test public function appendTranslation () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function clone () {
+	@Test public function clone () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyColumnFrom () {
+	@Test public function copyColumnFrom () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyColumnTo () {
+	@Test public function copyColumnTo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyFrom () {
+	@Test public function copyFrom () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyRawDataFrom () {
+	@Test public function copyRawDataFrom () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyRawDataTo () {
+	@Test public function copyRawDataTo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyRowFrom () {
+	@Test public function copyRowFrom () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyRowTo () {
+	@Test public function copyRowTo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyToMatrix3D () {
+	@Test public function copyToMatrix3D () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function deltaTransformVector () {
+	@Test public function deltaTransformVector () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function identity () {
+	@Test public function identity () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function interpolateTo () {
+	@Test public function interpolateTo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function invert () {
+	@Test public function invert () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function pointAt () {
+	@Test public function pointAt () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function prepend () {
+	@Test public function prepend () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function prependRotation () {
+	@Test public function prependRotation () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function prependScale () {
+	@Test public function prependScale () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function prependTranslation () {
+	@Test public function prependTranslation () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function recompose () {
+	@Test public function recompose () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function transformVector () {
+	@Test public function transformVector () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function transformVectors () {
+	@Test public function transformVectors () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function transpose () {
+	@Test public function transpose () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function interpolate () {
+	@Test public function interpolate () {
 		
 		
 		

@@ -354,7 +354,7 @@ class VectorTest {
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		
@@ -441,7 +441,7 @@ class VectorTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function convert () {
+	@Test public function convert () {
 		
 		
 		

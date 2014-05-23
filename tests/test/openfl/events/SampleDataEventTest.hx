@@ -4,21 +4,21 @@ package openfl.events;
 class SampleDataEventTest {
 	
 	
-	/*@Ignore @Test*/ public function data () {
+	@Test public function data () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function position () {
+	@Test public function position () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

@@ -5,161 +5,161 @@ package openfl.display;
 class StageTest {
 	
 	
-	/*@Ignore @Test*/ public function align () {
+	@Test public function align () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function allowsFullScreen () {
+	@Test public function allowsFullScreen () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function color () {
+	@Test public function color () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function contentsScaleFactor () {
+	@Test public function contentsScaleFactor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function displayContextInfo () {
+	@Test public function displayContextInfo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function displayState () {
+	@Test public function displayState () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function focus () {
+	@Test public function focus () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function frameRate () {
+	@Test public function frameRate () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function fullScreenHeight () {
+	@Test public function fullScreenHeight () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function fullScreenSourceRect () {
+	@Test public function fullScreenSourceRect () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function fullScreenWidth () {
+	@Test public function fullScreenWidth () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function quality () {
+	@Test public function quality () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function scaleMode () {
+	@Test public function scaleMode () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function showDefaultContextMenu () {
+	@Test public function showDefaultContextMenu () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function softKeyboardRect () {
+	@Test public function softKeyboardRect () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stage3Ds () {
+	@Test public function stage3Ds () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageFocusRect () {
+	@Test public function stageFocusRect () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageHeight () {
+	@Test public function stageHeight () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageVideos () {
+	@Test public function stageVideos () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stageWidth () {
+	@Test public function stageWidth () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function wmodeGPU () {
+	@Test public function wmodeGPU () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function invalidate () {
+	@Test public function invalidate () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isFocusInaccessible () {
+	@Test public function isFocusInaccessible () {
 		
 		
 		

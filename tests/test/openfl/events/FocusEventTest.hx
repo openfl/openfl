@@ -9,28 +9,28 @@ import openfl.events.FocusEvent;
 class FocusEventTest {
 	
 	
-	/*@Ignore @Test*/ public function isRelatedObjectInaccessible () {
+	@Test public function isRelatedObjectInaccessible () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function keyCode () {
+	@Test public function keyCode () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function relatedObject () {
+	@Test public function relatedObject () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function shiftKey () {
+	@Test public function shiftKey () {
 		
 		
 		

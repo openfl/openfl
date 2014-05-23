@@ -4,49 +4,49 @@ package openfl.ui;
 class MouseTest {
 	
 	
-	/*@Ignore @Test*/ public function cursor () {
+	@Test public function cursor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supportsCursor () {
+	@Test public function supportsCursor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supportsNativeCursor () {
+	@Test public function supportsNativeCursor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hide () {
+	@Test public function hide () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function registerCursor () {
+	@Test public function registerCursor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function show () {
+	@Test public function show () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function unregisterCursor () {
+	@Test public function unregisterCursor () {
 		
 		
 		

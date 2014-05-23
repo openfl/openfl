@@ -7,21 +7,21 @@ import massive.munit.Assert;
 class GLProgramTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function attach () {
+	@Test public function attach () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getShaders () {
+	@Test public function getShaders () {
 		
 		
 		

@@ -305,7 +305,7 @@ class RectangleTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyFrom () {
+	@Test public function copyFrom () {
 		
 		
 		
@@ -460,26 +460,26 @@ class RectangleTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function setTo () {
+	@Test public function setTo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		
 	}*/
 	
 	
-	/*@Ignore @Test*/ public function union () {
+	@Test public function union () {
 		
 		Assert.isTrue (new Rectangle ().union (new Rectangle ()).isEmpty ());
 		Assert.isTrue (new Rectangle ().union (new Rectangle (0, 0, 100, 100)).equals (new Rectangle (0, 0, 100, 100)));
 		Assert.isTrue (new Rectangle (-100, -100, 100, 100).union (new Rectangle (-20, -20, 100, 100)).equals (new Rectangle (-100, -100, 180, 180)));
-		Assert.isTrue (new Rectangle (-100, -100, 10, 10).union (new Rectangle (100, 100, 10, 10)).equals (new Rectangle (-100, -100, 110, 110)));
+		Assert.isTrue (new Rectangle (-100, -100, 10, 10).union (new Rectangle (100, 100, 10, 10)).equals (new Rectangle (-100, -100, 210, 210)));
 		
 	}
 	

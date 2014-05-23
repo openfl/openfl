@@ -85,7 +85,7 @@ class PointTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function copyFrom () {
+	@Test public function copyFrom () {
 		
 		
 		
@@ -145,7 +145,7 @@ class PointTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function setTo () {
+	@Test public function setTo () {
 		
 		
 		
@@ -170,7 +170,7 @@ class PointTest {
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		

@@ -4,7 +4,7 @@ package openfl.errors;
 class IllegalOperationErrorTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

@@ -7,7 +7,7 @@ import massive.munit.Assert;
 class Int16ArrayTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

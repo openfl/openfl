@@ -4,49 +4,49 @@ package openfl.system;
 class ApplicationDomainTest {
 	
 	
-	/*@Ignore @Test*/ public function domainMemory () {
+	@Test public function domainMemory () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function parentDomain () {
+	@Test public function parentDomain () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getDefinition () {
+	@Test public function getDefinition () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getQualifiedDefinitionNames () {
+	@Test public function getQualifiedDefinitionNames () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasDefinition () {
+	@Test public function hasDefinition () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function currentDomain () {
+	@Test public function currentDomain () {
 		
 		
 		

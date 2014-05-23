@@ -4,77 +4,77 @@ package openfl.display;
 class SpriteTest {
 	
 	
-	/*@Ignore @Test*/ public function buttonMode () {
+	@Test public function buttonMode () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function dropTarget () {
+	@Test public function dropTarget () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function graphics () {
+	@Test public function graphics () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hitArea () {
+	@Test public function hitArea () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function soundTransform () {
+	@Test public function soundTransform () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function useHandCursor () {
+	@Test public function useHandCursor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function startDrag () {
+	@Test public function startDrag () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function startTouchDrag () {
+	@Test public function startTouchDrag () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stopDrag () {
+	@Test public function stopDrag () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stopTouchDrag () {
+	@Test public function stopTouchDrag () {
 		
 		
 		

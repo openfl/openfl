@@ -4,56 +4,56 @@ package openfl.utils;
 class TimerTest {
 	
 	
-	/*@Ignore @Test*/ public function currentCount () {
+	@Test public function currentCount () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function delay () {
+	@Test public function delay () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function repeatCount () {
+	@Test public function repeatCount () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function running () {
+	@Test public function running () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function reset () {
+	@Test public function reset () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function start () {
+	@Test public function start () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function stop () {
+	@Test public function stop () {
 		
 		
 		

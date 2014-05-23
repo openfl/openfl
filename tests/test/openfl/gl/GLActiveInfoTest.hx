@@ -7,21 +7,21 @@ import massive.munit.Assert;
 class GLActiveInfoTest {
 	
 	
-	/*@Ignore @Test*/ public function size () {
+	@Test public function size () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function type () {
+	@Test public function type () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function name () {
+	@Test public function name () {
 		
 		
 		

@@ -1,12 +1,17 @@
 package openfl.display;
 
 
+import flash.geom.Rectangle;
+
+
 class InteractiveObject extends DisplayObject {
 	
 	
 	public var doubleClickEnabled:Bool;
 	public var focusRect:Dynamic;
 	public var mouseEnabled:Bool;
+	public var needsSoftKeyboard:Bool;
+	public var softKeyboardInputAreaOfInterest:Rectangle;
 	public var tabEnabled:Bool;
 	public var tabIndex:Int;
 	
@@ -15,7 +20,20 @@ class InteractiveObject extends DisplayObject {
 		
 		super ();
 		
+		doubleClickEnabled = false;
 		mouseEnabled = true;
+		needsSoftKeyboard = false;
+		tabEnabled = true;
+		tabIndex = -1;
+		
+	}
+	
+	
+	public function requestSoftKeyboard ():Bool {
+		
+		openfl.Lib.notImplemented ("InteractiveObject.requestSoftKeyboard");
+		
+		return false;
 		
 	}
 	

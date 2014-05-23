@@ -1068,16 +1068,6 @@ extern class InteractiveObject extends DisplayObject {
 	var doubleClickEnabled : Bool;
 
 	/**
-	 * Specifies whether this object displays a focus rectangle. It can take one
-	 * of three values: <code>true</code>, <code>false</code>, or
-	 * <code>null</code>. Values of <code>true</code> and <code>false</code> work
-	 * as expected, specifying whether or not the focus rectangle appears. A
-	 * value of <code>null</code> indicates that this object obeys the
-	 * <code>stageFocusRect</code> property of the Stage.
-	 */
-	var focusRect : Dynamic;
-
-	/**
 	 * Specifies whether this object receives mouse, or other user input,
 	 * messages. The default value is <code>true</code>, which means that by
 	 * default any InteractiveObject instance that is on the display list
@@ -1118,78 +1108,6 @@ extern class InteractiveObject extends DisplayObject {
 	 * iOS.</p>
 	 */
 	var needsSoftKeyboard : Bool;
-
-	/**
-	 * Defines the area that should remain on-screen when a soft keyboard is
-	 * displayed.
-	 *
-	 * <p>If the <code>needsSoftKeyboard</code> property of this
-	 * InteractiveObject is <code>true</code>, then the runtime adjusts the
-	 * display as needed to keep the object in view while the user types.
-	 * Ordinarily, the runtime uses the object bounds obtained from the
-	 * <code>DisplayObject.getBounds()</code> method. You can specify a different
-	 * area using this <code>softKeyboardInputAreaOfInterest</code> property.</p>
-	 *
-	 * <p>Specify the <code>softKeyboardInputAreaOfInterest</code> in stage
-	 * coordinates.</p>
-	 *
-	 * <p><b>Note:</b> On Android, the
-	 * <code>softKeyboardInputAreaOfInterest</code> is not respected in landscape
-	 * orientations.</p>
-	 */
-	var softKeyboardInputAreaOfInterest : openfl.geom.Rectangle;
-
-	/**
-	 * Specifies whether this object is in the tab order. If this object is in
-	 * the tab order, the value is <code>true</code>; otherwise, the value is
-	 * <code>false</code>. By default, the value is <code>false</code>, except
-	 * for the following:
-	 * <ul>
-	 *   <li>For a SimpleButton object, the value is <code>true</code>.</li>
-	 *   <li>For a TextField object with <code>type = "input"</code>, the value
-	 * is <code>true</code>.</li>
-	 *   <li>For a Sprite object or MovieClip object with <code>buttonMode =
-	 * true</code>, the value is <code>true</code>.</li>
-	 * </ul>
-	 */
-	var tabEnabled : Bool;
-
-	/**
-	 * Specifies the tab ordering of objects in a SWF file. The
-	 * <code>tabIndex</code> property is -1 by default, meaning no tab index is
-	 * set for the object.
-	 *
-	 * <p>If any currently displayed object in the SWF file contains a
-	 * <code>tabIndex</code> property, automatic tab ordering is disabled, and
-	 * the tab ordering is calculated from the <code>tabIndex</code> properties
-	 * of objects in the SWF file. The custom tab ordering includes only objects
-	 * that have <code>tabIndex</code> properties.</p>
-	 *
-	 * <p>The <code>tabIndex</code> property can be a non-negative integer. The
-	 * objects are ordered according to their <code>tabIndex</code> properties,
-	 * in ascending order. An object with a <code>tabIndex</code> value of 1
-	 * precedes an object with a <code>tabIndex</code> value of 2. Do not use the
-	 * same <code>tabIndex</code> value for multiple objects.</p>
-	 *
-	 * <p>The custom tab ordering that the <code>tabIndex</code> property defines
-	 * is <i>flat</i>. This means that no attention is paid to the hierarchical
-	 * relationships of objects in the SWF file. All objects in the SWF file with
-	 * <code>tabIndex</code> properties are placed in the tab order, and the tab
-	 * order is determined by the order of the <code>tabIndex</code> values. </p>
-	 *
-	 * <p><b>Note:</b> To set the tab order for TLFTextField instances, cast the
-	 * display object child of the TLFTextField as an InteractiveObject, then set
-	 * the <code>tabIndex</code> property. For example: <pre
-	 * xml:space="preserve">
-	 * InteractiveObject(tlfInstance.getChildAt(1)).tabIndex = 3; </pre> To
-	 * reverse the tab order from the default setting for three instances of a
-	 * TLFTextField object(<code>tlfInstance1</code>, <code>tlfInstance2</code>
-	 * and <code>tlfInstance3</code>), use: <pre xml:space="preserve">
-	 * InteractiveObject(tlfInstance1.getChildAt(1)).tabIndex = 3;
-	 * InteractiveObject(tlfInstance2.getChildAt(1)).tabIndex = 2;
-	 * InteractiveObject(tlfInstance3.getChildAt(1)).tabIndex = 1; </pre> </p>
-	 */
-	var tabIndex : Int;
 
 	/**
 	 * Calling the <code>new InteractiveObject()</code> constructor throws an

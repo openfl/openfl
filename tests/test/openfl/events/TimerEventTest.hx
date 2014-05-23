@@ -4,14 +4,14 @@ package openfl.events;
 class TimerEventTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function updateAfterEvent () {
+	@Test public function updateAfterEvent () {
 		
 		
 		

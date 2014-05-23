@@ -178,7 +178,7 @@ class EventDispatcherTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function removeEventListener () {
+	@Test public function removeEventListener () {
 		
 		var dispatcher = new EventDispatcher ();
 		var listener = function (_) {};
@@ -190,14 +190,14 @@ class EventDispatcherTest {
 	}
 	
 	
-	/*@Ignore @Test*/ /*public function toString () {
+	/*public function toString () {
 		
 		
 		
 	}*/
 	
 	
-	/*@Ignore @Test*/ public function willTrigger () {
+	@Test public function willTrigger () {
 		
 		
 		

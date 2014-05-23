@@ -4,28 +4,28 @@ package openfl.filters;
 class BlurFilterTest {
 	
 	
-	/*@Ignore @Test*/ public function blurX () {
+	@Test public function blurX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function blurY () {
+	@Test public function blurY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function quality () {
+	@Test public function quality () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

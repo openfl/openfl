@@ -4,28 +4,28 @@ package openfl.events;
 class HTTPStatusEventTest {
 	
 	
-	/*@Ignore @Test*/ public function responseHeaders () {
+	@Test public function responseHeaders () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function responseURL () {
+	@Test public function responseURL () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function status () {
+	@Test public function status () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

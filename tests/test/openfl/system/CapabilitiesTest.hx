@@ -4,231 +4,231 @@ package openfl.system;
 class CapabilitiesTest {
 	
 	
-	/*@Ignore @Test*/ public function avHardwareDisable () {
+	@Test public function avHardwareDisable () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function cpuArchitecture () {
+	@Test public function cpuArchitecture () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasAccessibility () {
+	@Test public function hasAccessibility () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasAudio () {
+	@Test public function hasAudio () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasAudioEncoder () {
+	@Test public function hasAudioEncoder () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasEmbeddedVideo () {
+	@Test public function hasEmbeddedVideo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasIME () {
+	@Test public function hasIME () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasMP3 () {
+	@Test public function hasMP3 () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasPrinting () {
+	@Test public function hasPrinting () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasScreenBroadcast () {
+	@Test public function hasScreenBroadcast () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasScreenPlayback () {
+	@Test public function hasScreenPlayback () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasStreamingAudio () {
+	@Test public function hasStreamingAudio () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasStreamingVideo () {
+	@Test public function hasStreamingVideo () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasTLS () {
+	@Test public function hasTLS () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasVideoEncoder () {
+	@Test public function hasVideoEncoder () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isDebugger () {
+	@Test public function isDebugger () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function isEmbeddedInAcrobat () {
+	@Test public function isEmbeddedInAcrobat () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function language () {
+	@Test public function language () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function localFileReadDisable () {
+	@Test public function localFileReadDisable () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function manufacturer () {
+	@Test public function manufacturer () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function maxLevelIDC () {
+	@Test public function maxLevelIDC () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function os () {
+	@Test public function os () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function pixelAspectRatio () {
+	@Test public function pixelAspectRatio () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function playerType () {
+	@Test public function playerType () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function screenColor () {
+	@Test public function screenColor () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function screenDPI () {
+	@Test public function screenDPI () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function screenResolutionX () {
+	@Test public function screenResolutionX () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function screenResolutionY () {
+	@Test public function screenResolutionY () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function serverString () {
+	@Test public function serverString () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supports32BitProcesses () {
+	@Test public function supports32BitProcesses () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function supports64BitProcesses () {
+	@Test public function supports64BitProcesses () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function version () {
+	@Test public function version () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function hasMultiChannelAudio () {
+	@Test public function hasMultiChannelAudio () {
 		
 		
 		

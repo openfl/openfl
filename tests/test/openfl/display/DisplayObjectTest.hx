@@ -305,7 +305,7 @@ class DisplayObjectTest {
 	}
 	
 	
-	/*@Ignore @Test*/ public function z () {
+	@Test public function z () {
 		
 		
 		

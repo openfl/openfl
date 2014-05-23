@@ -25,7 +25,7 @@ class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 		this.joints = joints != null ? joints : JointStyle.ROUND;
 		this.miterLimit = miterLimit;
 		this.pixelHinting = pixelHinting;
-		this.scaleMode = scaleMode != null ? scaleMode : null;
+		this.scaleMode = scaleMode != null ? scaleMode : LineScaleMode.NORMAL;
 		this.thickness = thickness;
 		this.__graphicsDataType = STROKE;
 		

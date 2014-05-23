@@ -4,14 +4,14 @@ package openfl.events;
 class TextEventTest {
 	
 	
-	/*@Ignore @Test*/ public function text () {
+	@Test public function text () {
 		
 		
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

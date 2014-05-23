@@ -4,7 +4,7 @@ package openfl.events;
 class IOErrorEventTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

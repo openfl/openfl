@@ -7,7 +7,7 @@ import massive.munit.Assert;
 class GLTextureTest {
 	
 	
-	/*@Ignore @Test*/ public function new_ () {
+	@Test public function new_ () {
 		
 		
 		

@@ -1,176 +1,221 @@
 package openfl.display;
 
 
+import massive.munit.Assert;
 import openfl.display.LoaderInfo;
 
 
 class LoaderInfoTest {
 	
 	
-	/*@Ignore @Test*/ public function actionScriptVersion () {
+	@Test public function applicationDomain () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.applicationDomain;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function applicationDomain () {
-		
-		
+		//Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function bytes () {
+	@Test public function bytes () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.bytes;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function bytesLoaded () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function bytesTotal () {
+	@Test public function bytesLoaded () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.bytesLoaded;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function childAllowsParent () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function childSandboxBridge () {
+	@Test public function bytesTotal () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.bytesTotal;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function content () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function contentType () {
+	@Test public function content () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.content;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function frameRate () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function height () {
+	@Test public function contentType () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.contentType;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function isURLInaccessible () {
-		
-		
+		Assert.isNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function loader () {
+	@Test public function frameRate () {
 		
+		#if !flash // throws error until certain types of content are loaded
 		
+		// TODO: Confirm functionality
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function loaderURL () {
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.frameRate;
 		
+		//Assert.isNotNull (exists);
 		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function parameters () {
-		
-		
+		#end
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function parentAllowsChild () {
+	@Test public function height () {
 		
+		#if !flash // throws error until certain types of content are loaded
 		
+		// TODO: Confirm functionality
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function parentSandboxBridge () {
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.height;
 		
+		//Assert.isNotNull (exists);
 		
-		
-	}
-	
-	
-	/*@Ignore @Test*/ public function sameDomain () {
-		
-		
+		#end
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function sharedEvents () {
+	@Test public function loader () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.loader;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function swfVersion () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function uncaughtErrorEvents () {
+	@Test public function loaderURL () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.loaderURL;
 		
-	}
-	
-	
-	/*@Ignore @Test*/ public function url () {
-		
-		
+		//Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function width () {
+	@Test public function parameters () {
 		
+		// TODO: Confirm functionality
 		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.parameters;
+		
+		//Assert.isNotNull (exists);
 		
 	}
 	
 	
-	/*@Ignore @Test*/ public function getLoaderInfoByDefinition () {
+	@Test public function parentAllowsChild () {
 		
+		#if !flash // throws error until certain types of content are loaded
 		
+		// TODO: Confirm functionality
+		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.parentAllowsChild;
+		
+		//Assert.isNotNull (exists);
+		
+		#end
+		
+	}
+	
+	
+	@Test public function sameDomain () {
+		
+		#if !flash // throws error until certain types of content are loaded
+		
+		// TODO: Confirm functionality
+		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.sameDomain;
+		
+		//Assert.isNotNull (exists);
+		
+		#end
+		
+	}
+	
+	
+	@Test public function sharedEvents () {
+		
+		// TODO: Confirm functionality
+		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.sharedEvents;
+		
+		//Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function url () {
+		
+		// TODO: Confirm functionality
+		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.url;
+		
+		Assert.isNull (exists);
+		
+	}
+	
+	
+	@Test public function width () {
+		
+		#if !flash // throws error until certain types of content are loaded
+		
+		// TODO: Confirm functionality
+		
+		var loader = new Loader ();
+		var exists = loader.contentLoaderInfo.width;
+		
+		//Assert.isNotNull (exists);
+		
+		#end
 		
 	}
 	
