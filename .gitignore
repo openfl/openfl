@@ -10,3 +10,6 @@ out
 target
 tests/build
 tests/report
+documentation/*.xml
+documentation/pages
+haxedoc.xml
