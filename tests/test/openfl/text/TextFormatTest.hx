@@ -1,6 +1,9 @@
 package openfl.text;
 
 
+import massive.munit.Assert;
+
+
 class TextFormatTest {
 	
 	

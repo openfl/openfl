@@ -56,20 +56,6 @@ extern class MouseEvent extends Event {
 	var delta : Int;
 
 	/**
-	 * If <code>true</code>, the <code>relatedObject</code> property is set to
-	 * <code>null</code> for reasons related to security sandboxes. If the
-	 * nominal value of <code>relatedObject</code> is a reference to a
-	 * DisplayObject in another sandbox, <code>relatedObject</code> is set to
-	 * <code>null</code> unless there is permission in both directions across
-	 * this sandbox boundary. Permission is established by calling
-	 * <code>Security.allowDomain()</code> from a SWF file, or by providing a
-	 * policy file from the server of an image file, and setting the
-	 * <code>LoaderContext.checkPolicyFile</code> property when loading the
-	 * image.
-	 */
-	var isRelatedObjectInaccessible : Bool;
-
-	/**
 	 * The horizontal coordinate at which the event occurred relative to the
 	 * containing sprite.
 	 */

@@ -98,7 +98,40 @@ class Matrix3D {
 		return new Matrix3D (this.rawData.copy ());
 		
 	}
-
+	
+	
+	public function copyColumnFrom (column:Int, vector3D:Vector3D):Void {
+		
+		if (column > 3) {
+			
+			throw "Column " + column + " out of bounds (3)";
+			
+		}
+		
+		rawData[0 + column] = vector3D.x;
+		rawData[4 + column] = vector3D.y;
+		rawData[8 + column] = vector3D.z;
+		rawData[12 + column] = vector3D.w;
+		
+	}
+	
+	
+	public function copyColumnTo (column:Int, vector3D:Vector3D):Void {
+		
+		if (column > 3) {
+			
+			throw "Column " + column + " out of bounds (3)";
+			
+		}
+		
+		vector3D.x = rawData[0 + column];
+		vector3D.y = rawData[4 + column];
+		vector3D.z = rawData[8 + column];
+		vector3D.w = rawData[12 + column];
+		
+	}
+	
+	
 	public function copyFrom (other:Matrix3D):Void {
 		
 		for (i in 0...16) {
@@ -106,6 +139,52 @@ class Matrix3D {
 		}
 
 	}
+	
+	
+	public function copyRowFrom (row:Int, vector3D:Vector3D):Void {
+		
+		if (row > 3) {
+			
+			throw "Row " + row + " out of bounds (3)";
+			
+		}
+		
+		var i = 4 * row;
+		rawData[i] = vector3D.x;
+		rawData[i + 1] = vector3D.y;
+		rawData[i + 2] = vector3D.z;
+		rawData[i + 3] = vector3D.w;
+		
+	}
+	
+	
+	public function copyRowTo (row:Int, vector3D:Vector3D):Void {
+		
+		if (row > 3) {
+			
+			throw "Row " + row + " out of bounds (3)";
+			
+		}
+		
+		var i = 4 * row;
+		vector3D.x = rawData[i];
+		vector3D.y = rawData[i + 1];
+		vector3D.z = rawData[i + 2];
+		vector3D.w = rawData[i + 3];
+		
+	}
+	
+	
+	public function copyToMatrix3D (other:Matrix3D):Void {
+		
+		for (i in 0...16) {
+			
+			other.rawData[i] = rawData[i];
+			
+		}
+		
+	}
+	
 	
 	public static function create2D (x:Float, y:Float, scale:Float = 1, rotation:Float = 0) {
 		
@@ -283,7 +362,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public static function interpolate (thisMat:Matrix3D, toMat:Matrix3D, percent:Float):Matrix3D {
+	public static function interpolate (thisMat:Matrix3D, toMat:Matrix3D, percent:Float):Matrix3D {
 		
 		var m = new Matrix3D ();
 		
@@ -347,41 +426,53 @@ class Matrix3D {
 	}
 	
 	
-	/*public function pointAt(pos:Vector3D, ?at:Vector3D, ?up:Vector3D):Void {
-		if (at == null) at = new Vector3D(0,0,-1);
-		if (up == null) up = new Vector3D(0,-1,0);
+	public function pointAt (pos:Vector3D, at:Vector3D = null, up:Vector3D = null):Void {
 		
-		//pos.x*=-1;
-		//pos.y*=-1;
-		//pos.z*=-1;
-		//at.x*=-1;
-		//at.y*=-1;
-		//at.z*=-1;
-		//up.x*=-1;
-		//up.y*=-1;
-		//up.z*=-1;
-		
-		var dir:Vector3D = at.subtract(pos);
-		var vup:Vector3D = up.clone();
-		var right:Vector3D;
-
-		dir.normalize();
-		vup.normalize();
-		
-		var dir2 = dir.clone();
-		dir2.scaleBy(vup.dotProduct(dir));
-		
-		vup = vup.subtract(dir2);
-		
-		if (vup.length > 0){
-			vup.normalize();
-		} else {
-			vup = dir.x != 0 ? new Vector3D(-dir.y,dir.x,0) : new Vector3D(1,0,0);
+		if (at == null) {
+			
+			at = new Vector3D (0, 0, -1);
+			
 		}
-
-		right = vup.crossProduct(dir);
-		right.normalize();
-
+		
+		if (up == null) {
+			
+			up = new Vector3D (0, -1, 0);
+			
+		}
+		
+		var dir = at.subtract(pos);
+		var vup = up.clone();
+		var right:Vector3D;
+		
+		dir.normalize ();
+		vup.normalize ();
+		
+		var dir2 = dir.clone ();
+		dir2.scaleBy (vup.dotProduct (dir));
+		
+		vup = vup.subtract (dir2);
+		
+		if (vup.length > 0) {
+			
+			vup.normalize ();
+			
+		} else {
+			
+			if (dir.x != 0) {
+				
+				vup = new Vector3D (-dir.y, dir.x, 0);
+				
+			} else {
+				
+				vup = new Vector3D (1, 0, 0);
+				
+			}
+			
+		}
+		
+		right = vup.crossProduct (dir);
+		right.normalize ();
+		
 		rawData[0] = right.x;
 		rawData[4] = right.y;
 		rawData[8] = right.z;
@@ -398,7 +489,8 @@ class Matrix3D {
 		rawData[7] = pos.y;
 		rawData[11] = pos.z;
 		rawData[15] = 1.0;
-	}*/
+		
+	}
 	
 	
 	inline public function prepend (rhs:Matrix3D):Void {

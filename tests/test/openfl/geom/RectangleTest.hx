@@ -307,7 +307,12 @@ class RectangleTest {
 	
 	@Test public function copyFrom () {
 		
+		// TODO: Confirm functionality
 		
+		var rectangle = new Rectangle ();
+		var exists = rectangle.copyFrom;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -462,7 +467,12 @@ class RectangleTest {
 	
 	@Test public function setTo () {
 		
+		// TODO: Confirm functionality
 		
+		var rectangle = new Rectangle ();
+		var exists = rectangle.setTo;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	

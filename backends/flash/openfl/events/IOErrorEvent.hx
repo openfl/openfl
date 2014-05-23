@@ -1,4 +1,4 @@
 package openfl.events;
 
 
-typedef IOErrorEvent = flash.errors.IOErrorEvent;
+typedef IOErrorEvent = flash.events.IOErrorEvent;

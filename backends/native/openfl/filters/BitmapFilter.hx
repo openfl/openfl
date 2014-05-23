@@ -7,7 +7,7 @@ class BitmapFilter {
 	private var type:String;
 	
 	
-	public function new (type:String) {
+	public function new (type:String = "") {
 		
 		this.type = type;
 		

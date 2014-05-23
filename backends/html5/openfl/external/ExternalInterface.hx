@@ -10,6 +10,7 @@ class ExternalInterface {
 	
 	public static var available = true;
 	public static var marshallExceptions = false;
+	public static var objectID:String;
 	
 	
 	public static function addCallback (functionName:String, closure:Dynamic):Void {

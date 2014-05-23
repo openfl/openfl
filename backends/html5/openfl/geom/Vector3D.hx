@@ -153,6 +153,15 @@ class Vector3D {
 	}
 	
 	
+	inline public function setTo (xa:Float, ya:Float, za:Float):Void {
+		
+		x = xa;
+		y = ya;
+		z = za;
+		
+	}
+	
+	
 	inline public function subtract (a:Vector3D):Vector3D {
 		
 		return new Vector3D (x - a.x, y - a.y, z - a.z);

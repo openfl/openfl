@@ -85,13 +85,6 @@ extern class KeyboardEvent extends Event {
 	function new(type : String, bubbles : Bool = true, cancelable : Bool = false, charCodeValue : Int = 0, keyCodeValue : Int = 0) : Void;
 
 	/**
-	 * Indicates that the display should be rendered after processing of this
-	 * event completes, if the display list has been modified
-	 * 
-	 */
-	function updateAfterEvent() : Void;
-
-	/**
 	 * The <code>KeyboardEvent.KEY_DOWN</code> constant defines the value of the
 	 * <code>type</code> property of a <code>keyDown</code> event object.
 	 *

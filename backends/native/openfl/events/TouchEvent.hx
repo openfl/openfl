@@ -18,6 +18,7 @@ class TouchEvent extends MouseEvent {
 	public static var TOUCH_TAP:String = "touchTap";
 	
 	public var isPrimaryTouchPoint:Bool;
+	public var pressure:Float;
 	public var sizeX:Float;
 	public var sizeY:Float;
 	public var touchPointID:Int;
@@ -27,6 +28,7 @@ class TouchEvent extends MouseEvent {
 		
 		super (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
 		
+		pressure = 1;
 		touchPointID = 0;
 		isPrimaryTouchPoint = true;
 		this.sizeX = sizeX;

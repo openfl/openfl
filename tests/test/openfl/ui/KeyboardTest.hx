@@ -1,6 +1,9 @@
 package openfl.ui;
 
 
+import massive.munit.Assert;
+
+
 class KeyboardTest {
 	
 	

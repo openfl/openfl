@@ -55,6 +55,61 @@ class Matrix {
 	}
 	
 	
+	public function copyColumnFrom (column:Int, vector3D:Vector3D):Void {
+		
+		if (column > 2) {
+			
+			throw "Column " + column + " out of bounds (2)";
+			
+		} else if (column == 0) {
+			
+			a = vector3D.x;
+			c = vector3D.y;
+			
+		}else if (column == 1) {
+			
+			b = vector3D.x;
+			d = vector3D.y;
+			
+		}else {
+			
+			tx = vector3D.x;
+			ty = vector3D.y;
+			
+		}
+		
+	}
+	
+	
+	public function copyColumnTo (column:Int, vector3D:Vector3D):Void {
+		
+		if (column > 2) {
+			
+			throw "Column " + column + " out of bounds (2)";
+			
+		} else if (column == 0) {
+			
+			vector3D.x = a;
+			vector3D.y = c;
+			vector3D.z = 0;
+			
+		} else if (column == 1) {
+			
+			vector3D.x = b;
+			vector3D.y = d;
+			vector3D.z = 0;
+			
+		} else {
+			
+			vector3D.x = tx;
+			vector3D.y = ty;
+			vector3D.z = 1;
+			
+		}
+		
+	}
+	
+	
 	public function copyFrom (sourceMatrix:Matrix):Void {
 		
 		a = sourceMatrix.a;
@@ -63,6 +118,59 @@ class Matrix {
 		d = sourceMatrix.d;
 		tx = sourceMatrix.tx;
 		ty = sourceMatrix.ty;
+		
+	}
+	
+	
+	public function copyRowFrom (row:Int, vector3D:Vector3D):Void {
+		
+		if (row > 2) {
+			
+			throw "Row " + row + " out of bounds (2)";
+			
+		} else if (row == 0) {
+			
+			a = vector3D.x;
+			c = vector3D.y;
+			
+		} else if (row == 1) {
+			
+			b = vector3D.x;
+			d = vector3D.y;
+			
+		} else {
+			
+			tx = vector3D.x;
+			ty = vector3D.y;
+			
+		}
+		
+	}
+	
+	
+	public function copyRowTo (row:Int, vector3D:Vector3D):Void {
+		
+		if (row > 2) {
+			
+			throw "Row " + row + " out of bounds (2)";
+			
+		} else if (row == 0) {
+			
+			vector3D.x = a;
+			vector3D.y = b;
+			vector3D.z = tx;
+			
+		} else if (row == 1) {
+			
+			vector3D.x = c;
+			vector3D.y = d;
+			vector3D.z = ty;
+			
+		}else {
+			
+			vector3D.setTo (0, 0, 1);
+			
+		}
 		
 	}
 	
@@ -110,6 +218,13 @@ class Matrix {
 	public function equals (matrix):Bool {
 		
 		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
+		
+	}
+	
+	
+	public function deltaTransformPoint (point:Point):Point {
+		
+		return new Point (point.x * a + point.y * c, point.x * b + point.y * d);
 		
 	}
 	

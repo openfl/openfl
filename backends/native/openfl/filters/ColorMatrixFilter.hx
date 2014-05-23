@@ -7,9 +7,15 @@ class ColorMatrixFilter extends BitmapFilter {
 	public var matrix:Array<Float>;
 	
 	
-	public function new (matrix:Array<Float>) {
+	public function new (matrix:Array<Float> = null) {
 		
 		super ("ColorMatrixFilter");
+		
+		if (matrix == null) {
+			
+			matrix = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
+			
+		}
 	  
 		this.matrix = matrix;
 		

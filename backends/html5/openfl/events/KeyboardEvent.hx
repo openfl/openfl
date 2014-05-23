@@ -29,8 +29,9 @@ class KeyboardEvent extends Event {
 		keyLocation = keyLocationValue != null ? keyLocationValue : KeyLocation.STANDARD;
 		ctrlKey = ctrlKeyValue;
 		altKey = altKeyValue;
-		commandKey = commandKeyValue;
+		shiftKey = shiftKeyValue;
 		controlKey = controlKeyValue;
+		commandKey = commandKeyValue;
 		
 	}
 	

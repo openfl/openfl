@@ -96,8 +96,6 @@ extern class Matrix3D {
 	function copyColumnFrom(column : UInt, vector3D : Vector3D) : Void;
 	function copyColumnTo(column : UInt, vector3D : Vector3D) : Void;
 	function copyFrom(sourceMatrix3D : Matrix3D) : Void;
-	function copyRawDataFrom(vector : openfl.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
-	function copyRawDataTo(vector : openfl.Vector<Float>, index : UInt = 0, transpose : Bool = false) : Void;
 	function copyRowFrom(row : UInt, vector3D : Vector3D) : Void;
 	function copyRowTo(row : UInt, vector3D : Vector3D) : Void;
 	function copyToMatrix3D(dest : Matrix3D) : Void;

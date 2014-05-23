@@ -1,6 +1,9 @@
 package openfl.geom;
 
 
+import massive.munit.Assert;
+
+
 class ColorTransform {
 	
 	

@@ -147,7 +147,12 @@ class PointTest {
 	
 	@Test public function setTo () {
 		
+		// TODO: Confirm functionality
 		
+		var point = new Point ();
+		var exists = point.setTo;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	

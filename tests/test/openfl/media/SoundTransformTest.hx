@@ -1,6 +1,9 @@
 package openfl.media;
 
 
+import massive.munit.Assert;
+
+
 class SoundTransformTest {
 	
 	

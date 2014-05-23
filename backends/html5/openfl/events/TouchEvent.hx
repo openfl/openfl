@@ -25,14 +25,17 @@ class TouchEvent extends Event {
 	public var isPrimaryTouchPoint:Bool;
 	public var localX:Float;
 	public var localY:Float;
+	public var pressure:Float;
 	public var relatedObject:InteractiveObject;
 	public var shiftKey:Bool;
+	public var sizeX:Float;
+	public var sizeY:Float;
 	public var stageX:Float;
 	public var stageY:Float;
 	public var touchPointID:Int;
 	
 	
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 1, sizeY:Float = 1, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
 		
 		super (type, bubbles, cancelable);
 		
@@ -44,11 +47,21 @@ class TouchEvent extends Event {
 		this.delta = delta;
 		this.localX = localX;
 		this.localY = localY;
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
 		this.buttonDown = buttonDown;
 		this.commandKey = commandKey;
 		
+		pressure = 1;
 		touchPointID = 0;
 		isPrimaryTouchPoint = true;
+		
+	}
+	
+	
+	public function updateAfterEvent ():Void {
+		
+		
 		
 	}
 	
