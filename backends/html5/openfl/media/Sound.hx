@@ -6,6 +6,7 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
+import openfl.utils.ByteArray;
 
 
 @:autoBuild(openfl.Assets.embedSound())
@@ -16,7 +17,7 @@ class Sound extends EventDispatcher {
 	
 	public var bytesLoaded (default, null):Int;
 	public var bytesTotal (default, null):Int;
-	public var id3 (default, null):ID3Info;
+	public var id3 (get, null):ID3Info;
 	public var isBuffering (default, null):Bool;
 	public var length (default, null):Float;
 	public var url (default, null):String;
@@ -77,6 +78,20 @@ class Sound extends EventDispatcher {
 	}
 	
 	
+	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int):Void {
+		
+		openfl.Lib.notImplemented ("Sound.loadCompressedDataFromByteArray");
+		
+	}
+	
+	
+	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void {
+		
+		openfl.Lib.notImplemented ("Sound.loadPCMFromByteArray");
+		
+	}
+	
+	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
 		if (sndTransform == null) {
@@ -99,6 +114,20 @@ class Sound extends EventDispatcher {
 			SoundJS.alternateExtensions = [ "ogg", "mp3", "wav" ];
 			
 		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_id3 ():ID3Info {
+		
+		return new ID3Info ();
 		
 	}
 	

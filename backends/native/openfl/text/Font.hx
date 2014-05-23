@@ -53,10 +53,10 @@ class Font {
 				
 			} else {
 				
-				var className = Type.getClassName (Type.getClass (this));
-				fontName = className.split (".").pop ();
-				fontStyle = FontStyle.REGULAR;
-				fontType = FontType.EMBEDDED;
+				//var className = Type.getClassName (Type.getClass (this));
+				//fontName = className.split (".").pop ();
+				//fontStyle = FontStyle.REGULAR;
+				//fontType = FontType.EMBEDDED;
 				
 			}
 			

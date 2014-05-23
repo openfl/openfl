@@ -52,6 +52,15 @@ class Vector3D {
 	}
 	
 	
+	inline public function copyFrom (sourceVector3D:Vector3D):Void {
+		
+		x = sourceVector3D.x;
+		y = sourceVector3D.y;
+		z = sourceVector3D.z;
+		
+	}
+	
+	
 	inline public function crossProduct (a:Vector3D):Vector3D {
 		
 		return new Vector3D (y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);

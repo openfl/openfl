@@ -1,117 +1,41 @@
 package openfl.system;
 
 
+import massive.munit.Assert;
+
+
 class SystemTest {
-	
-	
-	@Test public function freeMemory () {
-		
-		
-		
-	}
-	
-	
-	@Test public function ime () {
-		
-		
-		
-	}
-	
-	
-	@Test public function privateMemory () {
-		
-		
-		
-	}
-	
-	
-	@Test public function processCPUUsage () {
-		
-		
-		
-	}
-	
-	
-	@Test public function deviceID () {
-		
-		
-		
-	}
 	
 	
 	@Test public function totalMemory () {
 		
+		// TODO: Confirm functionality
 		
+		var exists = System.totalMemory;
 		
-	}
-	
-	
-	@Test public function totalMemoryNumber () {
-		
-		
-		
-	}
-	
-	
-	@Test public function useCodePage () {
-		
-		
-		
-	}
-	
-	
-	@Test public function vmVersion () {
-		
-		
-		
-	}
-	
-	
-	@Test public function disposeXML () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function exit () {
 		
+		// TODO: Confirm functionality
 		
+		var exists = System.exit;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function gc () {
 		
+		// TODO: Confirm functionality
 		
+		var exists = System.gc;
 		
-	}
-	
-	
-	@Test public function pause () {
-		
-		
-		
-	}
-	
-	
-	@Test public function pauseForGCIfCollectionImminent () {
-		
-		
-		
-	}
-	
-	
-	@Test public function resume () {
-		
-		
-		
-	}
-	
-	
-	@Test public function setClipboard () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	

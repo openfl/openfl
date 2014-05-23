@@ -92,16 +92,6 @@ package openfl.text;
 extern class TextField extends openfl.display.InteractiveObject {
 
 	/**
-	 * When set to <code>true</code> and the text field is not in focus, Flash
-	 * Player highlights the selection in the text field in gray. When set to
-	 * <code>false</code> and the text field is not in focus, Flash Player does
-	 * not highlight the selection in the text field.
-	 * 
-	 * @default false
-	 */
-	var alwaysShowSelection : Bool;
-
-	/**
 	 * The type of anti-aliasing used for this text field. Use
 	 * <code>openfl.text.AntiAliasType</code> constants for this property. You can
 	 * control this setting only if the font is embedded(with the
@@ -205,34 +195,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	var bottomScrollV(default,null) : Int;
 
 	/**
-	 * The index of the insertion point(caret) position. If no insertion point
-	 * is displayed, the value is the position the insertion point would be if
-	 * you restored focus to the field(typically where the insertion point last
-	 * was, or 0 if the field has not had focus).
-	 *
-	 * <p>Selection span indexes are zero-based(for example, the first position
-	 * is 0, the second position is 1, and so on).</p>
-	 */
-	var caretIndex(default,null) : Int;
-
-	/**
-	 * A Boolean value that specifies whether extra white space(spaces, line
-	 * breaks, and so on) in a text field with HTML text is removed. The default
-	 * value is <code>false</code>. The <code>condenseWhite</code> property only
-	 * affects text set with the <code>htmlText</code> property, not the
-	 * <code>text</code> property. If you set text with the <code>text</code>
-	 * property, <code>condenseWhite</code> is ignored.
-	 *
-	 * <p>If <code>condenseWhite</code> is set to <code>true</code>, use standard
-	 * HTML commands such as <code><BR></code> and <code><P></code> to place line
-	 * breaks in the text field.</p>
-	 *
-	 * <p>Set the <code>condenseWhite</code> property before setting the
-	 * <code>htmlText</code> property.</p>
-	 */
-	var condenseWhite : Bool;
-
-	/**
 	 * Specifies the format applied to newly inserted text, such as text entered
 	 * by a user or text inserted with the <code>replaceSelectedText()</code>
 	 * method.
@@ -317,12 +279,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	var htmlText : String;
 
 	/**
-	 * The number of characters in a text field. A character such as tab
-	 * (<code>\t</code>) counts as one character.
-	 */
-	var length(default,null) : Int;
-
-	/**
 	 * The maximum number of characters that the text field can contain, as
 	 * entered by a user. A script can insert more text than
 	 * <code>maxChars</code> allows; the <code>maxChars</code> property indicates
@@ -344,15 +300,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	var maxScrollV(default,null) : Int;
 
 	/**
-	 * A Boolean value that indicates whether Flash Player automatically scrolls
-	 * multiline text fields when the user clicks a text field and rolls the
-	 * mouse wheel. By default, this value is <code>true</code>. This property is
-	 * useful if you want to prevent mouse wheel scrolling of text fields, or
-	 * implement your own text field scrolling.
-	 */
-	var mouseWheelEnabled : Bool;
-
-	/**
 	 * Indicates whether field is a multiline text field. If the value is
 	 * <code>true</code>, the text field is multiline; if the value is
 	 * <code>false</code>, the text field is a single-line text field. In a field
@@ -372,54 +319,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 * lines increases when text wraps.
 	 */
 	var numLines(default,null) : Int;
-
-	/**
-	 * Indicates the set of characters that a user can enter into the text field.
-	 * If the value of the <code>restrict</code> property is <code>null</code>,
-	 * you can enter any character. If the value of the <code>restrict</code>
-	 * property is an empty string, you cannot enter any character. If the value
-	 * of the <code>restrict</code> property is a string of characters, you can
-	 * enter only characters in the string into the text field. The string is
-	 * scanned from left to right. You can specify a range by using the hyphen
-	 * (-) character. Only user interaction is restricted; a script can put any
-	 * text into the text field. <ph outputclass="flashonly">This property does
-	 * not synchronize with the Embed font options in the Property inspector.
-	 *
-	 * <p>If the string begins with a caret(^) character, all characters are
-	 * initially accepted and succeeding characters in the string are excluded
-	 * from the set of accepted characters. If the string does not begin with a
-	 * caret(^) character, no characters are initially accepted and succeeding
-	 * characters in the string are included in the set of accepted
-	 * characters.</p>
-	 *
-	 * <p>The following example allows only uppercase characters, spaces, and
-	 * numbers to be entered into a text field:</p>
-	 * <pre xml:space="preserve"> my_txt.restrict = "A-Z 0-9"; </pre>
-	 *
-	 * <p>The following example includes all characters, but excludes lowercase
-	 * letters:</p>
-	 * <pre xml:space="preserve"> my_txt.restrict = "^a-z"; </pre>
-	 *
-	 * <p>You can use a backslash to enter a ^ or - verbatim. The accepted
-	 * backslash sequences are \-, \^ or \\. The backslash must be an actual
-	 * character in the string, so when specified in ActionScript, a double
-	 * backslash must be used. For example, the following code includes only the
-	 * dash(-) and caret(^):</p>
-	 * <pre xml:space="preserve"> my_txt.restrict = "\\-\\^"; </pre>
-	 *
-	 * <p>The ^ can be used anywhere in the string to toggle between including
-	 * characters and excluding characters. The following code includes only
-	 * uppercase letters, but excludes the uppercase letter Q:</p>
-	 * <pre xml:space="preserve"> my_txt.restrict = "A-Z^Q"; </pre>
-	 *
-	 * <p>You can use the <code>\u</code> escape sequence to construct
-	 * <code>restrict</code> strings. The following code includes only the
-	 * characters from ASCII 32(space) to ASCII 126(tilde).</p>
-	 * <pre xml:space="preserve"> my_txt.restrict = "\u0020-\u007E"; </pre>
-	 * 
-	 * @default null
-	 */
-	var restrict : String;
 
 	/**
 	 * The current horizontal scrolling position. If the <code>scrollH</code>
@@ -474,23 +373,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 * @default true
 	 */
 	var selectable : Bool;
-	var selectedText(default,null) : String;
-
-	/**
-	 * The zero-based character index value of the first character in the current
-	 * selection. For example, the first character is 0, the second character is
-	 * 1, and so on. If no text is selected, this property is the value of
-	 * <code>caretIndex</code>.
-	 */
-	var selectionBeginIndex(default,null) : Int;
-
-	/**
-	 * The zero-based character index value of the last character in the current
-	 * selection. For example, the first character is 0, the second character is
-	 * 1, and so on. If no text is selected, this property is the value of
-	 * <code>caretIndex</code>.
-	 */
-	var selectionEndIndex(default,null) : Int;
 
 	/**
 	 * The sharpness of the glyph edges in this text field. This property applies
@@ -536,20 +418,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	var textWidth(default,null) : Float;
 
 	/**
-	 * The thickness of the glyph edges in this text field. This property applies
-	 * only when <code>openfl.text.AntiAliasType</code> is set to
-	 * <code>openfl.text.AntiAliasType.ADVANCED</code>.
-	 *
-	 * <p>The range for <code>thickness</code> is a number from -200 to 200. If
-	 * you attempt to set <code>thickness</code> to a value outside that range,
-	 * the property is set to the nearest value in the range(either -200 or
-	 * 200).</p>
-	 * 
-	 * @default 0
-	 */
-	var thickness : Float;
-
-	/**
 	 * The type of the text field. Either one of the following TextFieldType
 	 * constants: <code>TextFieldType.DYNAMIC</code>, which specifies a dynamic
 	 * text field, which a user cannot edit, or <code>TextFieldType.INPUT</code>,
@@ -560,16 +428,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 *                       openfl.text.TextFieldType.
 	 */
 	var type : TextFieldType;
-
-	/**
-	 * Specifies whether to copy and paste the text formatting along with the
-	 * text. When set to <code>true</code>, Flash Player copies and pastes
-	 * formatting(such as alignment, bold, and italics) when you copy and paste
-	 * between text fields. Both the origin and destination text fields for the
-	 * copy and paste procedure must have <code>useRichTextClipboard</code> set
-	 * to <code>true</code>. The default value is <code>false</code>.
-	 */
-	var useRichTextClipboard : Bool;
 
 	/**
 	 * A Boolean value that indicates whether the text field has word wrap. If
@@ -599,98 +457,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 * @param newText The string to append to the existing text.
 	 */
 	function appendText(newText : String) : Void;
-	function copyRichText() : String;
-
-	/**
-	 * Returns a rectangle that is the bounding box of the character.
-	 * 
-	 * @param charIndex The zero-based index value for the character(for
-	 *                  example, the first position is 0, the second position is
-	 *                  1, and so on).
-	 * @return A rectangle with <code>x</code> and <code>y</code> minimum and
-	 *         maximum values defining the bounding box of the character.
-	 */
-	function getCharBoundaries(charIndex : Int) : openfl.geom.Rectangle;
-
-	/**
-	 * Returns the zero-based index value of the character at the point specified
-	 * by the <code>x</code> and <code>y</code> parameters.
-	 * 
-	 * @param x The <i>x</i> coordinate of the character.
-	 * @param y The <i>y</i> coordinate of the character.
-	 * @return The zero-based index value of the character(for example, the
-	 *         first position is 0, the second position is 1, and so on). Returns
-	 *         -1 if the point is not over any character.
-	 */
-	function getCharIndexAtPoint(x : Float, y : Float) : Int;
-
-	/**
-	 * Given a character index, returns the index of the first character in the
-	 * same paragraph.
-	 * 
-	 * @param charIndex The zero-based index value of the character(for example,
-	 *                  the first character is 0, the second character is 1, and
-	 *                  so on).
-	 * @return The zero-based index value of the first character in the same
-	 *         paragraph.
-	 * @throws RangeError The character index specified is out of range.
-	 */
-	function getFirstCharInParagraph(charIndex : Int) : Int;
-
-	/**
-	 * Returns a DisplayObject reference for the given <code>id</code>, for an
-	 * image or SWF file that has been added to an HTML-formatted text field by
-	 * using an <code><img></code> tag. The <code><img></code> tag is in the
-	 * following format:
-	 *
-	 * <p><pre xml:space="preserve"><code> <img src = 'filename.jpg' id =
-	 * 'instanceName' ></code></pre></p>
-	 * 
-	 * @param id The <code>id</code> to match(in the <code>id</code> attribute
-	 *           of the <code><img></code> tag).
-	 * @return The display object corresponding to the image or SWF file with the
-	 *         matching <code>id</code> attribute in the <code><img></code> tag
-	 *         of the text field. For media loaded from an external source, this
-	 *         object is a Loader object, and, once loaded, the media object is a
-	 *         child of that Loader object. For media embedded in the SWF file,
-	 *         it is the loaded object. If no <code><img></code> tag with the
-	 *         matching <code>id</code> exists, the method returns
-	 *         <code>null</code>.
-	 */
-	function getImageReference(id : String) : openfl.display.DisplayObject;
-
-	/**
-	 * Returns the zero-based index value of the line at the point specified by
-	 * the <code>x</code> and <code>y</code> parameters.
-	 * 
-	 * @param x The <i>x</i> coordinate of the line.
-	 * @param y The <i>y</i> coordinate of the line.
-	 * @return The zero-based index value of the line(for example, the first
-	 *         line is 0, the second line is 1, and so on). Returns -1 if the
-	 *         point is not over any line.
-	 */
-	function getLineIndexAtPoint(x : Float, y : Float) : Int;
-
-	/**
-	 * Returns the zero-based index value of the line containing the character
-	 * specified by the <code>charIndex</code> parameter.
-	 * 
-	 * @param charIndex The zero-based index value of the character(for example,
-	 *                  the first character is 0, the second character is 1, and
-	 *                  so on).
-	 * @return The zero-based index value of the line.
-	 * @throws RangeError The character index specified is out of range.
-	 */
-	function getLineIndexOfChar(charIndex : Int) : Int;
-
-	/**
-	 * Returns the number of characters in a specific text line.
-	 * 
-	 * @param lineIndex The line number for which you want the length.
-	 * @return The number of characters in the line.
-	 * @throws RangeError The line number specified is out of range.
-	 */
-	function getLineLength(lineIndex : Int) : Int;
 
 	/**
 	 * Returns metrics information about a given text line.
@@ -724,21 +490,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	function getLineText(lineIndex : Int) : String;
 
 	/**
-	 * Given a character index, returns the length of the paragraph containing
-	 * the given character. The length is relative to the first character in the
-	 * paragraph(as returned by <code>getFirstCharInParagraph()</code>), not to
-	 * the character index passed in.
-	 * 
-	 * @param charIndex The zero-based index value of the character(for example,
-	 *                  the first character is 0, the second character is 1, and
-	 *                  so on).
-	 * @return Returns the number of characters in the paragraph.
-	 * @throws RangeError The character index specified is out of range.
-	 */
-	function getParagraphLength(charIndex : Int) : Int;
-	function getRawText() : String;
-
-	/**
 	 * Returns a TextFormat object that contains formatting information for the
 	 * range of text that the <code>beginIndex</code> and <code>endIndex</code>
 	 * parameters specify. Only properties that are common to the entire text
@@ -757,49 +508,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 *                    specified is out of range.
 	 */
 	function getTextFormat(beginIndex : Int = -1, endIndex : Int = -1) : TextFormat;
-	function getTextRuns(beginIndex : Int = 0, endIndex : Int = 2147483647) : Array<Dynamic>;
-	function getXMLText(beginIndex : Int = 0, endIndex : Int = 2147483647) : String;
-	function insertXMLText(beginIndex : Int, endIndex : Int, richText : String, pasting : Bool = false) : Void;
-	function pasteRichText(richText : String) : Bool;
-
-	/**
-	 * Replaces the current selection with the contents of the <code>value</code>
-	 * parameter. The text is inserted at the position of the current selection,
-	 * using the current default character format and default paragraph format.
-	 * The text is not treated as HTML.
-	 *
-	 * <p>You can use the <code>replaceSelectedText()</code> method to insert and
-	 * delete text without disrupting the character and paragraph formatting of
-	 * the rest of the text.</p>
-	 *
-	 * <p><b>Note:</b> This method does not work if a style sheet is applied to
-	 * the text field.</p>
-	 * 
-	 * @param value The string to replace the currently selected text.
-	 * @throws Error This method cannot be used on a text field with a style
-	 *               sheet.
-	 */
-	function replaceSelectedText(value : String) : Void;
-
-	/**
-	 * Replaces the range of characters that the <code>beginIndex</code> and
-	 * <code>endIndex</code> parameters specify with the contents of the
-	 * <code>newText</code> parameter. As designed, the text from
-	 * <code>beginIndex</code> to <code>endIndex-1</code> is replaced.
-	 *
-	 * <p><b>Note:</b> This method does not work if a style sheet is applied to
-	 * the text field.</p>
-	 * 
-	 * @param beginIndex The zero-based index value for the start position of the
-	 *                   replacement range.
-	 * @param endIndex   The zero-based index position of the first character
-	 *                   after the desired text span.
-	 * @param newText    The text to use to replace the specified range of
-	 *                   characters.
-	 * @throws Error This method cannot be used on a text field with a style
-	 *               sheet.
-	 */
-	function replaceText(beginIndex : Int, endIndex : Int, newText : String) : Void;
 
 	/**
 	 * Sets as selected the text designated by the index values of the first and
@@ -862,37 +570,6 @@ extern class TextField extends openfl.display.InteractiveObject {
 	 *                    specified is out of range.
 	 */
 	function setTextFormat(format : TextFormat, beginIndex : Int = -1, endIndex : Int = -1) : Void;
-
-	/**
-	 * Returns true if an embedded font is available with the specified
-	 * <code>fontName</code> and <code>fontStyle</code> where
-	 * <code>Font.fontType</code> is <code>openfl.text.FontType.EMBEDDED</code>.
-	 * Starting with Flash Player 10, two kinds of embedded fonts can appear in a
-	 * SWF file. Normal embedded fonts are only used with TextField objects. CFF
-	 * embedded fonts are only used with the openfl.text.engine classes. The two
-	 * types are distinguished by the <code>fontType</code> property of the
-	 * <code>Font</code> class, as returned by the <code>enumerateFonts()</code>
-	 * function.
-	 *
-	 * <p>TextField cannot use a font of type <code>EMBEDDED_CFF</code>. If
-	 * <code>embedFonts</code> is set to <code>true</code> and the only font
-	 * available at run time with the specified name and style is of type
-	 * <code>EMBEDDED_CFF</code>, Flash Player fails to render the text, as if no
-	 * embedded font were available with the specified name and style.</p>
-	 *
-	 * <p>If both <code>EMBEDDED</code> and <code>EMBEDDED_CFF</code> fonts are
-	 * available with the same name and style, the <code>EMBEDDED</code> font is
-	 * selected and text renders with the <code>EMBEDDED</code> font.</p>
-	 * 
-	 * @param fontName  The name of the embedded font to check.
-	 * @param fontStyle Specifies the font style to check. Use
-	 *                  <code>openfl.text.FontStyle</code>
-	 * @return <code>true</code> if a compatible embedded font is available,
-	 *         otherwise <code>false</code>.
-	 * @throws ArgumentError The <code>fontStyle</code> specified is not a member
-	 *                       of <code>openfl.text.FontStyle</code>.
-	 */
-	static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
 }
 
 

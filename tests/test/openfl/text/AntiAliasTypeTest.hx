@@ -9,7 +9,11 @@ class AntiAliasTypeTest {
 	
 	@Test public function test () {
 		
-		
+		switch (AntiAliasType.ADVANCED) {
+			
+			case AntiAliasType.ADVANCED, AntiAliasType.NORMAL:
+			
+		}
 		
 	}
 	

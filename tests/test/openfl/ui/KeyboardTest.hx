@@ -9,42 +9,9 @@ class KeyboardTest {
 	
 	@Test public function test () {
 		
+		var exists = Keyboard.A;
 		
-		
-	}
-	
-	
-	@Test public function capsLock () {
-		
-		
-		
-	}
-	
-	
-	@Test public function hasVirtualKeyboard () {
-		
-		
-		
-	}
-	
-	
-	@Test public function numLock () {
-		
-		
-		
-	}
-	
-	
-	@Test public function physicalKeyboardType () {
-		
-		
-		
-	}
-	
-	
-	@Test public function isAccessible () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	

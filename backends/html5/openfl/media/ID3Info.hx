@@ -1,7 +1,8 @@
 package openfl.media;
 
 
-extern class ID3Info {
+class ID3Info {
+	
 	
 	public var album:String;
 	public var artist:String;
@@ -11,6 +12,12 @@ extern class ID3Info {
 	public var track:String;
 	public var year:String;
 	
-	public function new ():Void;
+	
+	public function new ():Void {
+		
+		
+		
+	}
+	
 	
 }

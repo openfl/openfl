@@ -8,13 +8,6 @@ import openfl.display.BitmapData;
 class TextFieldTest {
 	
 	
-	@Test public function alwaysShowSelection () {
-		
-		
-		
-	}
-	
-	
 	@Test public function autoSize () {
 		
 		var textField = new TextField ();
@@ -154,65 +147,74 @@ class TextFieldTest {
 	}
 	
 	
-	@Test public function caretIndex () {
-		
-		
-		
-	}
-	
-	
-	@Test public function condenseWhite () {
-		
-		
-		
-	}
-	
-	
 	@Test public function defaultTextFormat () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.defaultTextFormat;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function displayAsPassword () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.displayAsPassword;
+		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
 	@Test public function embedFonts () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.embedFonts;
+		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
 	@Test public function gridFitType () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.gridFitType;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function htmlText () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.htmlText;
 		
-	}
-	
-	
-	@Test public function length () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function maxChars () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.maxChars;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
@@ -244,16 +246,14 @@ class TextFieldTest {
 	}
 	
 	
-	@Test public function mouseWheelEnabled () {
-		
-		
-		
-	}
-	
-	
 	@Test public function multiline () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.multiline;
+		
+		Assert.isFalse (exists);
 		
 	}
 	
@@ -272,13 +272,6 @@ class TextFieldTest {
 		textField.text = "";
 		
 		Assert.areEqual (1, textField.numLines);
-		
-	}
-	
-	
-	@Test public function restrict () {
-		
-		
 		
 	}
 	
@@ -311,280 +304,190 @@ class TextFieldTest {
 	
 	@Test public function selectable () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.selectable;
 		
-	}
-	
-	
-	@Test public function selectedText () {
-		
-		
-		
-	}
-	
-	
-	@Test public function selectionBeginIndex () {
-		
-		
-		
-	}
-	
-	
-	@Test public function selectionEndIndex () {
-		
-		
+		Assert.isTrue (exists);
 		
 	}
 	
 	
 	@Test public function sharpness () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.sharpness;
 		
-	}
-	
-	
-	@Test public function styleSheet () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function text () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.text;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function textColor () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.textColor;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function textHeight () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.textHeight;
 		
-	}
-	
-	
-	@Test public function textInteractionMode () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function textWidth () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.textWidth;
 		
-	}
-	
-	
-	@Test public function thickness () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function type () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.type;
 		
-	}
-	
-	
-	@Test public function useRichTextClipboard () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function wordWrap () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.wordWrap;
+		
+		Assert.isFalse (exists);
 		
 	}
 	
 	
 	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		Assert.isNotNull (textField);
 		
 	}
 	
 	
 	@Test public function appendText () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.appendText;
 		
-	}
-	
-	
-	@Test public function copyRichText () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getCharBoundaries () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getCharIndexAtPoint () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getFirstCharInParagraph () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getImageReference () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getLineIndexAtPoint () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getLineIndexOfChar () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getLineLength () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function getLineMetrics () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.getLineMetrics;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function getLineOffset () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.getLineOffset;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function getLineText () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.getLineText;
 		
-	}
-	
-	
-	@Test public function getParagraphLength () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getRawText () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function getTextFormat () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.getTextFormat;
 		
-	}
-	
-	
-	@Test public function getTextRuns () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getXMLText () {
-		
-		
-		
-	}
-	
-	
-	@Test public function insertXMLText () {
-		
-		
-		
-	}
-	
-	
-	@Test public function pasteRichText () {
-		
-		
-		
-	}
-	
-	
-	@Test public function replaceSelectedText () {
-		
-		
-		
-	}
-	
-	
-	@Test public function replaceText () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function setSelection () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.setSelection;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function setTextFormat () {
 		
+		// TODO: Confirm functionality
 		
+		var textField = new TextField ();
+		var exists = textField.setTextFormat;
 		
-	}
-	
-	
-	@Test public function isFontCompatible () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	

@@ -270,7 +270,7 @@ class Sound extends EventDispatcher {
 		
 		if (__handle == null || __loading) {
 			
-			return null;
+			return new ID3Info ();
 			
 		}
 		

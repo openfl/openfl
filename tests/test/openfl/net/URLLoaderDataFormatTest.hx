@@ -9,7 +9,11 @@ class URLLoaderDataFormatTest {
 	
 	@Test public function test () {
 		
-		
+		switch (URLLoaderDataFormat.BINARY) {
+			
+			case URLLoaderDataFormat.BINARY, URLLoaderDataFormat.TEXT, URLLoaderDataFormat.VARIABLES:
+			
+		}
 		
 	}
 	

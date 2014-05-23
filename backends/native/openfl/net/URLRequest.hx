@@ -108,6 +108,9 @@ class URLRequest {
 			
 		}
 		
+		//headers = requestHeaders.copy ();
+		//headers.push (new URLRequestHeader ("Content-Type", contentType != null ? contentType : "application/x-www-form-urlencoded"));
+		
 	}
 	
 	

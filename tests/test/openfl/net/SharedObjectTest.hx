@@ -7,128 +7,83 @@ import massive.munit.Assert;
 class SharedObjectTest {
 	
 	
-	@Test public function client () {
-		
-		
-		
-	}
-	
-	
 	@Test public function data () {
 		
+		// TODO: Confirm functionality
 		
+		var sharedObject = SharedObject.getLocal ("test");
+		var exists = sharedObject.data;
 		
-	}
-	
-	
-	@Test public function fps () {
-		
-		
-		
-	}
-	
-	
-	@Test public function objectEncoding () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function size () {
 		
+		// TODO: Confirm functionality
 		
+		var sharedObject = SharedObject.getLocal ("test");
+		var exists = sharedObject.size;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function new_ () {
 		
+		// TODO: Confirm functionality
 		
+		var sharedObject = SharedObject.getLocal ("test");
+		Assert.isNotNull (sharedObject);
 		
 	}
 	
 	
 	@Test public function clear () {
 		
+		// TODO: Confirm functionality
 		
+		var sharedObject = SharedObject.getLocal ("test");
+		var exists = sharedObject.clear;
 		
-	}
-	
-	
-	@Test public function close () {
-		
-		
-		
-	}
-	
-	
-	@Test public function connect () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function flush () {
 		
+		// TODO: Confirm functionality
 		
+		var sharedObject = SharedObject.getLocal ("test");
+		var exists = sharedObject.flush;
 		
-	}
-	
-	
-	@Test public function send () {
-		
-		
-		
-	}
-	
-	
-	@Test public function setDirty () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function setProperty () {
 		
+		// TODO: Confirm functionality
 		
+		var sharedObject = SharedObject.getLocal ("test");
+		var exists = sharedObject.setProperty;
 		
-	}
-	
-	
-	@Test public function defaultObjectEncoding () {
-		
-		
-		
-	}
-	
-	
-	@Test public function deleteAll () {
-		
-		
-		
-	}
-	
-	
-	@Test public function getDiskUsage () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function getLocal () {
 		
+		// TODO: Confirm functionality
 		
+		var exists = SharedObject.getLocal;
 		
-	}
-	
-	
-	@Test public function getRemote () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	

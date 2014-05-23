@@ -23,7 +23,6 @@ package openfl.system;
  * create new instances of the System class.</p>
  */
 extern class System {
-	static var deviceID(default, null):String;
 	
 	/**
 	 * The amount of memory(in bytes) currently in use that has been directly

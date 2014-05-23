@@ -8,7 +8,7 @@ class URLRequestHeader {
 	public var value:String;
 	
 	
-	public function new (name:String = null, value:String = null) {
+	public function new (name:String = "", value:String = "") {
 		
 		this.name = name;
 		this.value = value;

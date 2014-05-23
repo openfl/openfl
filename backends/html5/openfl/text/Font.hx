@@ -16,6 +16,13 @@ class Font {
 	}
 	
 	
+	public static function enumerateFonts (enumerateDeviceFonts:Bool = false):Array<Font> {
+		
+		return [];
+		
+	}
+	
+	
 	public static function registerFont (font:Class<Dynamic>) {
 		
 		/*var instance = cast (Type.createInstance (font, []), Font);

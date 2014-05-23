@@ -17,6 +17,7 @@ class SharedObject extends EventDispatcher {
 	
 	
 	public var data (default, null):Dynamic;
+	public var size (get_size, null):Int;
 	
 	private var localPath:String;
 	private var name:String;
@@ -227,6 +228,20 @@ class SharedObject extends EventDispatcher {
 			Reflect.setField (data, propertyName, value);
 			
 		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_size ():Int {
+		
+		return 0;
 		
 	}
 	

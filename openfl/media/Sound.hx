@@ -137,40 +137,6 @@ extern class Sound extends openfl.events.EventDispatcher {
 	var isBuffering(default,null) : Bool;
 
 	/**
-	 * Indicates if the <code>Sound.url</code> property has been truncated. When
-	 * the <code>isURLInaccessible</code> value is <code>true</code> the
-	 * <code>Sound.url</code> value is only the domain of the final URL from
-	 * which the sound loaded. For example, the property is truncated if the
-	 * sound is loaded from <code>http://www.adobe.com/assets/hello.mp3</code>,
-	 * and the <code>Sound.url</code> property has the value
-	 * <code>http://www.adobe.com</code>. The <code>isURLInaccessible</code>
-	 * value is <code>true</code> only when all of the following are also true:
-	 * <ul>
-	 *   <li>An HTTP redirect occurred while loading the sound file.</li>
-	 *   <li>The SWF file calling <code>Sound.load()</code> is from a different
-	 * domain than the sound file's final URL.</li>
-	 *   <li>The SWF file calling <code>Sound.load()</code> does not have
-	 * permission to access the sound file. Permission is granted to access the
-	 * sound file the same way permission is granted for the
-	 * <code>Sound.id3</code> property: establish a policy file and use the
-	 * <code>SoundLoaderContext.checkPolicyFile</code> property.</li>
-	 * </ul>
-	 *
-	 * <p><b>Note:</b> The <code>isURLInaccessible</code> property was added for
-	 * Flash Player 10.1 and AIR 2.0. However, this property is made available to
-	 * SWF files of all versions when the Flash runtime supports it. So, using
-	 * some authoring tools in "strict mode" causes a compilation error. To work
-	 * around the error use the indirect syntax
-	 * <code>mySound["isURLInaccessible"]</code>, or disable strict mode. If you
-	 * are using Flash Professional CS5 or Flex SDK 4.1, you can use and compile
-	 * this API for runtimes released before Flash Player 10.1 and AIR 2.</p>
-	 *
-	 * <p>For application content in AIR, the value of this property is always
-	 * <code>false</code>.</p>
-	 */
-	var isURLInaccessible(default,null) : Bool;
-
-	/**
 	 * The length of the current sound in milliseconds.
 	 */
 	var length(default,null) : Float;

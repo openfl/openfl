@@ -19,7 +19,7 @@ class Multitouch {
 	public static function __init__ () {
 		
 		maxTouchPoints = 2;
-		supportedGestures = [];
+		supportedGestures = null;
 		supportsGestureEvents = false;
 		
 	}
@@ -55,7 +55,13 @@ class Multitouch {
 	
 	private static function get_supportsTouchEvents ():Bool {
 		
-		return untyped __js__("('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch");
+		if (untyped __js__ ("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)")) {
+			
+			return true;
+			
+		}
+		
+		return false;
 		
 	}
 	

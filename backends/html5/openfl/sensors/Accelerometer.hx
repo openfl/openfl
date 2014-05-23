@@ -27,6 +27,7 @@ class Accelerometer extends EventDispatcher {
 		super ();
 		
 		_interval = 0;
+		muted = false;
 		setRequestedUpdateInterval (defaultInterval);
 		
 	}
@@ -74,7 +75,8 @@ class Accelerometer extends EventDispatcher {
 	private function update ():Void {
 		
 		var event = new AccelerometerEvent (AccelerometerEvent.UPDATE);
-		var data = Stage.__acceleration;
+		//var data = Stage.__acceleration;
+		var data = { x: 0, y: 1, z: 0 };
 		
 		event.timestamp = Timer.stamp ();
 		event.accelerationX = data.x;
@@ -95,8 +97,9 @@ class Accelerometer extends EventDispatcher {
 	
 	private static function get_isSupported ():Bool { 
 		
-		var supported = Reflect.hasField (Browser.window, "on" + Lib.HTML_ACCELEROMETER_EVENT_TYPE);
-		return supported;
+		//var supported = Reflect.hasField (Browser.window, "on" + Lib.HTML_ACCELEROMETER_EVENT_TYPE);
+		//return supported;
+		return false;
 		
 	}
 	

@@ -11,7 +11,6 @@ package openfl.system;
 
 
 @:final extern class ApplicationDomain {
-	var domainMemory : openfl.utils.ByteArray;
 	var parentDomain(default,null) : ApplicationDomain;
 	function new(?parentDomain : ApplicationDomain) : Void;
 	function getDefinition(name : String) : openfl.utils.Object;

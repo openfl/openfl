@@ -83,15 +83,20 @@ class TextField extends InteractiveObject {
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
+		displayAsPassword = false;
+		embedFonts = false;
 		selectable = true;
 		borderColor = 0x000000;
 		border = false;
 		backgroundColor = 0xffffff;
 		background = false;
 		gridFitType = GridFitType.PIXEL;
+		maxChars = 0;
+		multiline = false;
 		sharpness = 0;
 		scrollH = 0;
 		scrollV = 1;
+		wordWrap = false;
 		
 		if (__defaultTextFormat == null) {
 			
@@ -138,6 +143,33 @@ class TextField extends InteractiveObject {
 		openfl.Lib.notImplemented ("TextField.getLineIndexAtPoint");
 		
 		return 0;
+		
+	}
+	
+	
+	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
+		
+		openfl.Lib.notImplemented ("TextField.getLineMetrics");
+		
+		return null;
+		
+	}
+	
+	
+	public function getLineOffset (lineIndex:Int):Int {
+		
+		openfl.Lib.notImplemented ("TextField.getLineOffset");
+		
+		return 0;
+		
+	}
+	
+	
+	public function getLineText (lineIndex:Int):String {
+		
+		openfl.Lib.notImplemented ("TextField.getLineText");
+		
+		return "";
 		
 	}
 	

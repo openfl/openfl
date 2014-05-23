@@ -151,16 +151,6 @@ package openfl.net;
 extern class SharedObject extends openfl.events.EventDispatcher {
 
 	/**
-	 * Indicates the object on which callback methods are invoked. The default
-	 * object is <code>this</code>. You can set the client property to another
-	 * object, and callback methods will be invoked on that other object.
-	 * 
-	 * @throws TypeError The <code>client</code> property must be set to a
-	 *                   non-null object.
-	 */
-	var client : Dynamic;
-
-	/**
 	 * The collection of attributes assigned to the <code>data</code> property of
 	 * the object; these attributes can be shared and stored. Each attribute can
 	 * be an object of any ActionScript or JavaScript type  -  Array, Number,
@@ -174,69 +164,6 @@ extern class SharedObject extends openfl.events.EventDispatcher {
 	 * new value. </p>
 	 */
 	var data(default,null) : Dynamic;
-
-	/**
-	 * Specifies the number of times per second that a client's changes to a
-	 * shared object are sent to the server.
-	 *
-	 * <p>Use this method when you want to control the amount of traffic between
-	 * the client and the server. For example, if the connection between the
-	 * client and server is relatively slow, you may want to set <code>fps</code>
-	 * to a relatively low value. Conversely, if the client is connected to a
-	 * multiuser application in which timing is important, you may want to set
-	 * <code>fps</code> to a relatively high value.</p>
-	 *
-	 * <p>Setting <code>fps</code> will trigger a <code>sync</code> event and
-	 * update all changes to the server. If you only want to update the server
-	 * manually, set <code>fps</code> to 0.</p>
-	 *
-	 * <p>Changes are not sent to the server until the <code>sync</code> event
-	 * has been dispatched. That is, if the response time from the server is
-	 * slow, updates may be sent to the server less frequently than the value
-	 * specified in this property. </p>
-	 */
-	var fps(null,default) : Float;
-
-	/**
-	 * The object encoding(AMF version) for this shared object. When a local
-	 * shared object is written to disk, the <code>objectEncoding</code> property
-	 * indicates which Action Message Format version should be used: the
-	 * ActionScript 3.0 format(AMF3) or the ActionScript 1.0 or 2.0 format
-	 * (AMF0).
-	 *
-	 * <p>Object encoding is handled differently depending if the shared object
-	 * is local or remote.</p>
-	 *
-	 * <ul>
-	 *   <li><b>Local shared objects</b>. You can get or set the value of the
-	 * <code>objectEncoding</code> property for local shared objects. The value
-	 * of <code>objectEncoding</code> affects what formatting is used for
-	 * <i>writing</i> this local shared object. If this local shared object must
-	 * be readable by ActionScript 2.0 or 1.0 SWF files, set
-	 * <code>objectEncoding</code> to <code>ObjectEncoding.AMF0</code>. Even if
-	 * object encoding is set to write AMF3, Flash Player can still read AMF0
-	 * local shared objects. That is, if you use the default value of this
-	 * property, <code>ObjectEncoding.AMF3</code>, your SWF file can still read
-	 * shared objects created by ActionScript 2.0 or 1.0 SWF files. </li>
-	 *   <li><b>Remote shared objects</b>. When connected to the server, a remote
-	 * shared object inherits its <code>objectEncoding</code> setting from the
-	 * associated NetConnection instance(the instance used to connect to the
-	 * remote shared object). When not connected to the server, a remote shared
-	 * object inherits the <code>defaultObjectEncoding</code> setting from the
-	 * associated NetConnection instance. Because the value of a remote shared
-	 * object's <code>objectEncoding</code> property is determined by the
-	 * NetConnection instance, this property is read-only for remote shared
-	 * objects. </li>
-	 * </ul>
-	 * 
-	 * @throws ReferenceError You attempted to set the value of the
-	 *                        <code>objectEncoding</code> property on a remote
-	 *                        shared object. This property is read-only for
-	 *                        remote shared objects because its value is
-	 *                        determined by the associated NetConnection
-	 *                        instance.
-	 */
-	var objectEncoding : UInt;
 
 	/**
 	 * The current size of the shared object, in bytes.
@@ -263,16 +190,6 @@ extern class SharedObject extends openfl.events.EventDispatcher {
 	 * 
 	 */
 	function clear() : Void;
-
-	/**
-	 * Closes the connection between a remote shared object and the server. If a
-	 * remote shared object is locally persistent, the user can make changes to
-	 * the local copy of the object after this method is called. Any changes made
-	 * to the local object are sent to the server the next time the user connects
-	 * to the remote shared object.
-	 * 
-	 */
-	function close() : Void;
 
 	/**
 	 * Immediately writes a locally persistent shared object to a local file. If
@@ -333,26 +250,6 @@ extern class SharedObject extends openfl.events.EventDispatcher {
 	function flush(minDiskSpace : Int = 0) : String;
 
 	/**
-	 * Indicates to the server that the value of a property in the shared object
-	 * has changed. This method marks properties as <i>dirty</i>, which means
-	 * changed.
-	 *
-	 * <p> Call the <code>SharedObject.setProperty()</code> to create properties
-	 * for a shared object. </p>
-	 *
-	 * <p> The <code>SharedObject.setProperty()</code> method implements
-	 * <code>setDirty()</code>. In most cases, such as when the value of a
-	 * property is a primitive type like String or Number, you can call
-	 * <code>setProperty()</code> instead of calling <code>setDirty()</code>.
-	 * However, when the value of a property is an object that contains its own
-	 * properties, call <code>setDirty()</code> to indicate when a value within
-	 * the object has changed. </p>
-	 * 
-	 * @param propertyName The name of the property that has changed.
-	 */
-	function setDirty(propertyName : String) : Void;
-
-	/**
 	 * Updates the value of a property in a shared object and indicates to the
 	 * server that the value of the property has changed. The
 	 * <code>setProperty()</code> method explicitly marks properties as changed,
@@ -379,39 +276,6 @@ extern class SharedObject extends openfl.events.EventDispatcher {
 	 *                     <code>null</code> to delete the property.
 	 */
 	function setProperty(propertyName : String, ?value : openfl.utils.Object) : Void;
-
-	/**
-	 * The default object encoding(AMF version) for all local shared objects
-	 * created in the SWF file. When local shared objects are written to disk,
-	 * the <code>SharedObject.defaultObjectEncoding</code> property indicates
-	 * which Action Message Format version should be used: the ActionScript 3.0
-	 * format(AMF3) or the ActionScript 1.0 or 2.0 format(AMF0).
-	 *
-	 * <p>For more information about object encoding, including the difference
-	 * between encoding in local and remote shared objects, see the description
-	 * of the <code>objectEncoding</code> property.</p>
-	 *
-	 * <p>The default value of <code>SharedObject.defaultObjectEncoding</code> is
-	 * set to use the ActionScript 3.0 format, AMF3. If you need to write local
-	 * shared objects that ActionScript 2.0 or 1.0 SWF files can read, set
-	 * <code>SharedObject.defaultObjectEncoding</code> to use the ActionScript
-	 * 1.0 or ActionScript 2.0 format,
-	 * <code>openfl.net.ObjectEncoding.AMF0</code>, at the beginning of your
-	 * script, before you create any local shared objects. All local shared
-	 * objects created thereafter will use AMF0 encoding and can interact with
-	 * older content. You cannot change the <code>objectEncoding</code> value of
-	 * existing local shared objects by setting
-	 * <code>SharedObject.defaultObjectEncoding</code> after the local shared
-	 * objects have been created.</p>
-	 *
-	 * <p>To set the object encoding on a per-object basis, rather than for all
-	 * shared objects created by the SWF file, set the
-	 * <code>objectEncoding</code> property of the local shared object
-	 * instead.</p>
-	 */
-	static var defaultObjectEncoding : UInt;
-	static function deleteAll(url : String) : Int;
-	static function getDiskUsage(url : String) : Int;
 
 	/**
 	 * Returns a reference to a locally persistent shared object that is only
@@ -564,70 +428,6 @@ extern class SharedObject extends openfl.events.EventDispatcher {
 	 *               scope="external">http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html</a>.
 	 */
 	static function getLocal(name : String, ?localPath : String, secure : Bool = false) : SharedObject;
-
-	/**
-	 * Returns a reference to a shared object on Flash Media Server that multiple
-	 * clients can access. If the remote shared object does not already exist,
-	 * this method creates one.
-	 *
-	 * <p> To create a remote shared object, call <code>getRemote()</code> the
-	 * call <code>connect()</code> to connect the remote shared object to the
-	 * server, as in the following:</p>
-	 *
-	 * <p> To confirm that the local and remote copies of the shared object are
-	 * synchronized, listen for and handle the <code>sync</code> event. All
-	 * clients that want to share this object must pass the same values for the
-	 * <code>name</code> and <code>remotePath</code> parameters. </p>
-	 *
-	 * <p>To create a shared object that is available only to the current client,
-	 * use <code>SharedObject.getLocal()</code>. </p>
-	 * 
-	 * @param name        The name of the remote shared object. The name can
-	 *                    include forward slashes(/); for example,
-	 *                    work/addresses is a legal name. Spaces are not allowed
-	 *                    in a shared object name, nor are the following
-	 *                    characters: <pre xml:space="preserve"> ~ % & \ ; : " '
-	 *                    , > ? ? #</pre>
-	 * @param remotePath  The URI of the server on which the shared object will
-	 *                    be stored. This URI must be identical to the URI of the
-	 *                    NetConnection object passed to the
-	 *                    <code>connect()</code> method.
-	 * @param persistence Specifies whether the attributes of the shared object's
-	 *                    data property are persistent locally, remotely, or
-	 *                    both. This parameter can also specify where the shared
-	 *                    object will be stored locally. Acceptable values are as
-	 *                    follows:
-	 *                    <ul>
-	 *                      <li>A value of <code>false</code> specifies that the
-	 *                    shared object is not persistent on the client or
-	 *                    server.</li>
-	 *                      <li>A value of <code>true</code> specifies that the
-	 *                    shared object is persistent only on the server.</li>
-	 *                      <li>A full or partial local path to the shared object
-	 *                    indicates that the shared object is persistent on the
-	 *                    client and the server. On the client, it is stored in
-	 *                    the specified path; on the server, it is stored in a
-	 *                    subdirectory within the application directory.</li>
-	 *                    </ul>
-	 *
-	 *                    <p><b>Note:</b> If the user has chosen to never allow
-	 *                    local storage for this domain, the object will not be
-	 *                    saved locally, even if a local path is specified for
-	 *                    persistence. For more information, see the class
-	 *                    description.</p>
-	 * @param secure      Determines whether access to this shared object is
-	 *                    restricted to SWF files that are delivered over an
-	 *                    HTTPS connection. For more information, see the
-	 *                    description of the <code>secure</code> parameter in the
-	 *                    <code>getLocal</code> method entry.
-	 * @return A reference to an object that can be shared across multiple
-	 *         clients.
-	 * @throws Error Flash Player can't create or find the shared object. This
-	 *               might occur if nonexistent paths were specified for the
-	 *               <code>remotePath</code> and <code>persistence</code>
-	 *               parameters.
-	 */
-	static function getRemote(name : String, ?remotePath : String, persistence : Dynamic = false, secure : Bool = false) : SharedObject;
 }
 
 

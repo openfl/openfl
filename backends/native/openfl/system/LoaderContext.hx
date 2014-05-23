@@ -15,16 +15,10 @@ class LoaderContext {
 		
 		this.checkPolicyFile = checkPolicyFile;
 		this.securityDomain = securityDomain;
-		
-		if (applicationDomain != null) {
+		this.applicationDomain = applicationDomain;
 			
-			this.applicationDomain = applicationDomain;
-			
-		} else {
-			
-			this.applicationDomain = ApplicationDomain.currentDomain;
-			
-		}
+		allowCodeImport = true;
+		allowLoadBytesCodeExecution = true;
 		
 	}
 	

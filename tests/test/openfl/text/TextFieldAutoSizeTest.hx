@@ -9,7 +9,11 @@ class TextFieldAutoSizeTest {
 	
 	@Test public function test () {
 		
-		
+		switch (TextFieldAutoSize.CENTER) {
+			
+			case TextFieldAutoSize.CENTER, TextFieldAutoSize.LEFT, TextFieldAutoSize.NONE, TextFieldAutoSize.RIGHT:
+			
+		}
 		
 	}
 	

@@ -3,7 +3,8 @@ package openfl.text;
 
 enum FontType {
 	
-	EMBEDDED;
 	DEVICE;
+	EMBEDDED;
+	EMBEDDED_CFF;
 	
 }

@@ -15,9 +15,6 @@ extern class LoaderContext {
 	var allowLoadBytesCodeExecution : Bool;
 	var applicationDomain : ApplicationDomain;
 	var checkPolicyFile : Bool;
-	var imageDecodingPolicy : ImageDecodingPolicy;
-	var parameters : Dynamic;
-	var requestedContentParent : openfl.display.DisplayObjectContainer;
 	var securityDomain : SecurityDomain;
 	function new(checkPolicyFile : Bool = false, ?applicationDomain : ApplicationDomain, ?securityDomain : SecurityDomain) : Void;
 }

@@ -7,51 +7,24 @@ import massive.munit.Assert;
 class MouseTest {
 	
 	
-	@Test public function cursor () {
-		
-		
-		
-	}
-	
-	
-	@Test public function supportsCursor () {
-		
-		
-		
-	}
-	
-	
-	@Test public function supportsNativeCursor () {
-		
-		
-		
-	}
-	
-	
 	@Test public function hide () {
 		
+		// TODO: Confirm functionality
 		
+		var exists = Mouse.hide;
 		
-	}
-	
-	
-	@Test public function registerCursor () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	
 	
 	@Test public function show () {
 		
+		// TODO: Confirm functionality
 		
+		var exists = Mouse.show;
 		
-	}
-	
-	
-	@Test public function unregisterCursor () {
-		
-		
+		Assert.isNotNull (exists);
 		
 	}
 	

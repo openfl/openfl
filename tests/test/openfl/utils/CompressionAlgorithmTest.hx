@@ -9,7 +9,11 @@ class CompressionAlgorithmTest {
 	
 	@Test public function test () {
 		
-		
+		switch (CompressionAlgorithm.DEFLATE) {
+			
+			case CompressionAlgorithm.DEFLATE, CompressionAlgorithm.ZLIB, CompressionAlgorithm.LZMA, CompressionAlgorithm.GZIP:
+			
+		}
 		
 	}
 	

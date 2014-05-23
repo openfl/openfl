@@ -39,16 +39,6 @@ extern class Font {
 	function new() : Void;
 
 	/**
-	 * Specifies whether a provided string can be displayed using the currently
-	 * assigned font.
-	 * 
-	 * @param str The string to test against the current font.
-	 * @return A value of <code>true</code> if the specified string can be fully
-	 *         displayed using this font.
-	 */
-	function hasGlyphs(str : String) : Bool;
-
-	/**
 	 * Specifies whether to provide a list of the currently available embedded
 	 * fonts.
 	 * 
