@@ -100,7 +100,6 @@ extern class MovieClip extends Sprite {
 	 * <i>all</i> scenes in the movie clip.</p>
 	 */
 	var framesLoaded(default,null) : Int;
-	var isPlaying(default,null) : Bool;
 
 	/**
 	 * The total number of frames in the MovieClip instance.
@@ -112,25 +111,11 @@ extern class MovieClip extends Sprite {
 	var totalFrames(default,null) : Int;
 
 	/**
-	 * Indicates whether other display objects that are SimpleButton or MovieClip
-	 * objects can receive mouse release events or other user input release
-	 * events. The <code>trackAsMenu</code> property lets you create menus. You
-	 * can set the <code>trackAsMenu</code> property on any SimpleButton or
-	 * MovieClip object. The default value of the <code>trackAsMenu</code>
-	 * property is <code>false</code>.
-	 *
-	 * <p>You can change the <code>trackAsMenu</code> property at any time; the
-	 * modified movie clip immediately uses the new behavior.</p>
-	 */
-	var trackAsMenu : Bool;
-
-	/**
 	 * Creates a new MovieClip instance. After creating the MovieClip, call the
 	 * <code>addChild()</code> or <code>addChildAt()</code> method of a display
 	 * object container that is onstage.
 	 */
 	function new() : Void;
-	function addFrameScript(?p1 : Dynamic, ?p2 : Dynamic, ?p3 : Dynamic, ?p4 : Dynamic, ?p5 : Dynamic) : Void;
 
 	/**
 	 * Starts playing the SWF file at the specified frame. This happens after all

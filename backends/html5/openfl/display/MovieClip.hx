@@ -24,7 +24,9 @@ class MovieClip extends Sprite {
 		super ();
 		
 		__currentFrame = 0;
+		__currentLabels = [];
 		__totalFrames = 0;
+		enabled = true;
 		
 		loaderInfo = LoaderInfo.create (null);
 		
