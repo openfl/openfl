@@ -21,9 +21,9 @@ OpenFL officially supports the following platforms:
  * Android
  * BlackBerry
  * Tizen
- * Flash 
-
-There are also complementary projects that target HTML5 canvas, including [openfl-html5-dom](https://github.com/openfl/openfl-html5-dom) and [openfl-bitfive](https://github.com/YellowAfterlife/openfl-bitfive), but we would love to see continued innovation in this space, such as an expanded version of pixi.js, or seamless StageXL support, since Haxe compiles directly to clean JavaScript.
+ * Firefox OS
+ * HTML5
+ * Flash
 
 Libraries
 =========
@@ -38,7 +38,7 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
 
 OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
 
-In order to support SWF assets, you can use the OpenFL [SWF](http://www.openfl.org/marketplace/premium/swf-free) library, but many developers use image assets or libraries for spritesheet/tilesheet assets instead, as they can perform faster on mobile.
+In order to support SWF assets, you can use the OpenFL [SWF](http://github.com/openfl/swf) library, but many developers use image assets or libraries for spritesheet/tilesheet assets instead, as they can perform faster on mobile.
 
 Code Editors
 ============
@@ -76,20 +76,19 @@ Core Components
 ===============
 
  * [openfl](https://github.com/openfl/openfl)
- * [openfl-native](https://github.com/openfl/openfl-native)
  * [lime](https://github.com/openfl/lime)
  * [lime-tools](https://github.com/openfl/lime-tools)
- * [hxlibc](https://github.com/openfl/hxlibc)
+ * [hxcpp](https://github.com/HaxeFoundation/hxcpp)
 
 OpenFL relies upon [Lime](https://github.com/openfl/lime), a foundation for easy, cross-platform development. Lime includes both the native code that powers most the OpenFL targets, as well as the command-line tools that knit all the pieces together.
 
 When you target the Flash target, or when you receive code completion, the [openfl](https://github.com/openfl/openfl) library provides inline documentation and definitions for the supported Flash API. This also includes some unique OpenFL features, such as "openfl.Assets" which far simplifies asset access over the flash.display.Loader/flash.net.URLLoader system.
 
-When you target a native platform, these classes are overridden with those from [openfl-native](https://github.com/openfl/openfl-native), which includes the native implementation of these features. These classes will be compiled to C++ at runtime, but these primarily act as a wrapper for the handwritten C++ code that makes up the Lime native backend.
+When you target a native platform, these classes are overridden with those from the OpenFL native backend, which includes the native implementation of these features. These classes will be compiled to C++ at runtime, but these primarily act as a wrapper for the handwritten C++ code that makes up the Lime native backend.
 
-When targeting HTML5, the classes are overridden instead with those from [openfl-html5-dom](https://github.com/openfl/openfl-html5-dom) or another HTML5 backend (the OpenFL backends are replaceable). This would include the Flash API implementation for use with canvas or another browser-based API.
+When targeting HTML5, the classes are overridden instead with those from the OpenFL HTML5 backend, or another HTML5 backend (the OpenFL backends are replaceable). This would include the Flash API implementation for use with canvas or another browser-based API.
 
-[hxlibc](https://github.com/openfl/hxlibc) is used automatically by the Lime tools to manage the C++ compilation process for each platform, and to provide the Haxe standard library for C++ support.
+[hxcpp](https://github.com/HaxeFoundation/hxcpp) is used automatically by the Lime tools to manage the C++ compilation process for each platform, and to provide the Haxe standard library for C++ support.
 
 License
 =======
@@ -99,7 +98,7 @@ OpenFL is free, open-source software under the [MIT license](LICENSE.md).
 Installing OpenFL
 =================
 
-To begin using OpenFL, you need to first install Haxe 3.0 for [Windows](http://haxe.org/file/haxe-3.0.0-win.exe), [Mac](http://haxe.org/file/haxe-3.0.0-osx-installer.dmg) or [Linux](http://www.openfl.org/download_file/view/726/12426/).
+To begin using OpenFL, you need to first install Haxe 3.1 for [Windows](http://haxe.org/file/haxe-3.1.3-win.exe), [Mac](http://haxe.org/file/haxe-3.1.3-osx-installer.dmg) or [Linux](http://www.openfl.org/builds/haxe/haxe-3.1.3-linux-installer.tar.gz).
 
 Once Haxe has been installed, you can install a release version of [Lime](https://github.com/openfl/lime) from a terminal or command-prompt with these commands:
 
@@ -143,8 +142,9 @@ There are many targets you can try:
     lime test blackberry -simulator
     lime test tizen
     lime test tizen -simulator
-    lime test flash
+    lime test firefoxos
     lime test html5
+    lime test flash
     
 Not all targets are available from all host platforms. For example, Apple does not provide tools for building iOS projects, unless you are running OS X.
 
@@ -159,7 +159,7 @@ You can learn about more Lime commands using:
 Development Builds
 ==================
 
-If you would like to use development builds of OpenFL, first determine which component (or components) of OpenFL you will need. It is usually wise to keep with release builds for as many components as you can, for example, if you want to improve native platform support, you may decide to use "lime" and "openfl-native" from the source, but you can keep "lime-tools" and other elements stable. Each project includes documentation for how to use it from the source.
+If you would like to use development builds of OpenFL, first determine which component (or components) of OpenFL you will need. It is usually wise to keep with release builds for as many components as you can, for example, if you want to improve native platform support, you may decide to use "lime" and "openfl" from the source, but you can keep "lime-tools" and other elements stable. Each project includes documentation for how to use it from the source.
 
 For the "openfl" library, you can use a development build like this:
 
