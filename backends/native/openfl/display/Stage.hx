@@ -148,18 +148,18 @@ class Stage extends DisplayObjectContainer {
 		lime_stage_resize_window (__handle, width, height);
 		
 	}
-
-
+	
+	
 	public function setResolution (width:Int, height:Int):Void {
 		lime_stage_set_resolution(__handle, width, height);
 	}
-
-
+	
+	
 	public function setScreenMode (mode:flash.system.ScreenMode):Void {
 		lime_stage_set_screenmode(__handle, mode.width, mode.height, mode.refreshRate, 0);
 	}
-
-
+	
+	
 	public function setFullscreen (full:Bool):Void {
 		lime_stage_set_fullscreen(__handle, full);
 	}

@@ -78,6 +78,8 @@
 		
 		<haxelib name="lime-tools" />
 		<haxelib name="openfl-samples" />
+		<haxelib name="swf" />
+		<haxelib name="actuate" />
 		
 	</section>
 	
