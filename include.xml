@@ -23,20 +23,20 @@
 	
 	<section if="display">
 		
-		<include haxelib="${flash-backend}" if="flash-backend" />
+		<include haxelib="${flash-backend}" if="flash flash-backend" />
 		
-		<include haxelib="${android-backend}" if="android-backend" />
-		<include haxelib="${blackberry-backend}" if="blackberry-backend" />
-		<include haxelib="${emscripten-backend}" if="emscripten-backend" />
-		<include haxelib="${ios-backend}" if="ios-backend" />
-		<include haxelib="${linux-backend}" if="linux-backend" />
-		<include haxelib="${mac-backend}" if="mac-backend" />
-		<include haxelib="${tizen-backend}" if="tizen-backend" />
-		<include haxelib="${webos-backend}" if="webos-backend" />
-		<include haxelib="${windows-backend}" if="windows-backend" />
+		<include haxelib="${android-backend}" if="android android-backend" />
+		<include haxelib="${blackberry-backend}" if="blackberry blackberry-backend" />
+		<include haxelib="${emscripten-backend}" if="emscripten emscripten-backend" />
+		<include haxelib="${ios-backend}" if="ios ios-backend" />
+		<include haxelib="${linux-backend}" if="linux linux-backend" />
+		<include haxelib="${mac-backend}" if="mac mac-backend" />
+		<include haxelib="${tizen-backend}" if="tizen tizen-backend" />
+		<include haxelib="${webos-backend}" if="webos webos-backend" />
+		<include haxelib="${windows-backend}" if="windows windows-backend" />
 		
-		<include haxelib="${html5-backend}" if="html5-backend" />
-		<include haxelib="${firefoxos-backend}" if="firefoxos-backend" />
+		<include haxelib="${html5-backend}" if="html5 html5-backend" />
+		<include haxelib="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
 		
 	</section>
 	
@@ -57,20 +57,20 @@
 		<source path="backends/html5" if="html5" unless="html5-backend" />
 		<source path="backends/html5" if="firefoxos" unless="firefoxos-backend" />
 		
-		<haxelib name="${flash-backend}" if="flash-backend" />
+		<haxelib name="${flash-backend}" if="flash flash-backend" />
 		
-		<haxelib name="${android-backend}" if="android-backend" />
-		<haxelib name="${blackberry-backend}" if="blackberry-backend" />
-		<haxelib name="${emscripten-backend}" if="emscripten-backend" />
-		<haxelib name="${ios-backend}" if="ios-backend" />
-		<haxelib name="${linux-backend}" if="linux-backend" />
-		<haxelib name="${mac-backend}" if="mac-backend" />
-		<haxelib name="${tizen-backend}" if="tizen-backend" />
-		<haxelib name="${webos-backend}" if="webos-backend" />
-		<haxelib name="${windows-backend}" if="windows-backend" />
+		<haxelib name="${android-backend}" if="android android-backend" />
+		<haxelib name="${blackberry-backend}" if="blackberry blackberry-backend" />
+		<haxelib name="${emscripten-backend}" if="emscripten emscripten-backend" />
+		<haxelib name="${ios-backend}" if="ios ios-backend" />
+		<haxelib name="${linux-backend}" if="linux linux-backend" />
+		<haxelib name="${mac-backend}" if="mac mac-backend" />
+		<haxelib name="${tizen-backend}" if="tizen tizen-backend" />
+		<haxelib name="${webos-backend}" if="webos webos-backend" />
+		<haxelib name="${windows-backend}" if="windows windows-backend" />
 		
-		<haxelib name="${html5-backend}" if="html5-backend" />
-		<haxelib name="${firefoxos-backend}" if="firefoxos-backend" />
+		<haxelib name="${html5-backend}" if="html5 html5-backend" />
+		<haxelib name="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
 		
 	</section>
 	
