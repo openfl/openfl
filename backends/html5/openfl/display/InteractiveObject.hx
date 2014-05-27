@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-import flash.geom.Rectangle;
+import openfl.geom.Rectangle;
 
 
 class InteractiveObject extends DisplayObject {

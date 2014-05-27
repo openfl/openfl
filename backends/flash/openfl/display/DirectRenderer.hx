@@ -1,8 +1,8 @@
 package openfl.display;
 
 
-import flash.display.DisplayObject;
-import flash.geom.Rectangle;
+import openfl.display.DisplayObject;
+import openfl.geom.Rectangle;
 
 
 class DirectRenderer extends Sprite {

@@ -2,14 +2,14 @@
 #if (nme || openfl)
 
 
-import flash.display.DisplayObject;
-import flash.display.LoaderInfo;
-import flash.display.StageAlign;
-import flash.display.StageScaleMode;
-import flash.events.Event;
-import flash.events.ProgressEvent;
-import flash.Lib;
+import openfl.display.DisplayObject;
+import openfl.display.LoaderInfo;
+import openfl.display.StageAlign;
+import openfl.display.StageScaleMode;
+import openfl.events.Event;
+import openfl.events.ProgressEvent;
 import openfl.Assets;
+import openfl.Lib;
 
 
 class ApplicationMain {
@@ -26,7 +26,7 @@ class ApplicationMain {
 		
 		//nme.Lib.setPackage("::APP_COMPANY::", "::APP_FILE::", "::APP_PACKAGE::", "::APP_VERSION::");
 		
-		loaderInfo = flash.Lib.current.loaderInfo;
+		loaderInfo = openfl.Lib.current.loaderInfo;
 		
 		loaderInfo.addEventListener (Event.COMPLETE, loaderInfo_onComplete);
 		loaderInfo.addEventListener (Event.INIT, loaderInfo_onInit);

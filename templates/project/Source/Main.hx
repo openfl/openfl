@@ -1,7 +1,7 @@
 package;
 
 
-import flash.display.Sprite;
+import openfl.display.Sprite;
 
 
 class Main extends Sprite {
