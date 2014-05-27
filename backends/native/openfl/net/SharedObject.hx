@@ -212,7 +212,25 @@ class SharedObject extends EventDispatcher {
 		
 		if (name != null) {
 			
-			return Type.resolveClass (StringTools.replace (StringTools.replace (name, "neash.", "native."), "native.", "flash."));
+			if (StringTools.startsWith (name, "neash.")) {
+				
+				StringTools.replace (name, "neash.", "openfl.");
+				
+			}
+			
+			if (StringTools.startsWith (name, "native.")) {
+				
+				StringTools.replace (name, "native.", "openfl.");
+				
+			}
+			
+			if (StringTools.startsWith (name, "flash.")) {
+				
+				StringTools.replace (name, "flash.", "openfl.");
+				
+			}
+			
+			return Type.resolveClass (name);
 			
 		}
 		
