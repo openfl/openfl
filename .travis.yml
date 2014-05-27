@@ -44,7 +44,7 @@ script:
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
   - haxelib run lime test linux
-  - cd documentation
+  - cd $TRAVIS_BUILD_DIR/documentation
   - haxe build.hxml
 
 notifications:
