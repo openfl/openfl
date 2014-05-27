@@ -128,4 +128,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . -in openfl
+-cmd haxelib run dox -i . -r /documentation/api -in openfl -o pages
