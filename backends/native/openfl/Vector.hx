@@ -744,7 +744,7 @@ class VectorDataIterator<T> {
 #else
 
 
-#if (haxe_ver > 3.100)
+#if (haxe_ver > 3.101)
 using cpp.NativeArray;
 #end
 
