@@ -25,6 +25,7 @@ install:
   - haxelib install hxcpp
   - haxelib install format
   - haxelib install svg
+  - haxelib install dox
   - haxelib install mlib
   - haxelib install mcover
   - haxelib install hamcrest
@@ -43,6 +44,8 @@ script:
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
   - haxelib run lime test linux
+  - cd documentation
+  - haxe build.hxml
 
 notifications:
   slack: openfl:ba3HbgtZflW8TNcJEQ1B4tAY
