@@ -872,7 +872,7 @@ class Assets {
 			
 			var library:AssetLibrary = unserializer.unserialize ();
 			libraries.set (name, library);
-			library.addEventListener (Event.CHANGE, library_onChange);
+			library.eventCallback = library_onEvent;
 			library.load (handler);
 			
 		} else {
@@ -1094,7 +1094,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			library.addEventListener (Event.CHANGE, library_onChange);
+			library.eventCallback = library_onEvent;
 			
 		}
 		
@@ -1149,7 +1149,7 @@ class Assets {
 		if (library != null) {
 			
 			cache.clear (name + ":");
-			library.removeEventListener (Event.CHANGE, library_onChange);
+			library.eventCallback = null;
 			
 		}
 		
@@ -1167,12 +1167,14 @@ class Assets {
 	
 	
 	
-	private static function library_onChange (event:Event):Void {
+	private static function library_onEvent (library:AssetLibrary, type:String):Void {
 		
-		var library = cast (event.currentTarget, AssetLibrary);
-		cache.clear ();
-		
-		dispatchEvent (new Event (Event.CHANGE));
+		if (type == "change") {
+			
+			cache.clear ();
+			dispatchEvent (new Event (Event.CHANGE));
+			
+		}
 		
 	}
 	
@@ -1180,12 +1182,15 @@ class Assets {
 }
 
 
-class AssetLibrary extends EventDispatcher {
+class AssetLibrary {
+	
+	
+	public var eventCallback:Dynamic;
 	
 	
 	public function new () {
 		
-		super ();
+		
 		
 	}
 	

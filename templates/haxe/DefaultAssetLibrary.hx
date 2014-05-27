@@ -88,7 +88,11 @@ class DefaultAssetLibrary extends AssetLibrary {
 						lastModified = modified;
 						loadManifest ();
 						
-						dispatchEvent (new Event (Event.CHANGE));
+						if (eventCallback != null) {
+							
+							eventCallback (this, "change");
+							
+						}
 						
 					}
 					
