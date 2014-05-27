@@ -5,7 +5,6 @@
 -D display
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -28,7 +27,6 @@ ImportAll
 -D windows
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -40,7 +38,6 @@ ImportAll
 -D mac
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -52,7 +49,6 @@ ImportAll
 -D linux
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -64,7 +60,6 @@ ImportAll
 -D ios
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -76,7 +71,6 @@ ImportAll
 -D android
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -88,7 +82,6 @@ ImportAll
 -D blackberry
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -100,7 +93,6 @@ ImportAll
 -D tizen
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -112,7 +104,6 @@ ImportAll
 -D firefoxos
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
@@ -123,9 +114,8 @@ ImportAll
 -D html5
 ImportAll
 -lib openfl
---remap flash:openfl
 --no-output
 
 --next
 
--cmd haxelib run dox -i . -in openfl
+-cmd haxelib run dox -i . -r /documentation/api -t templates -in openfl
