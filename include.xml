@@ -6,71 +6,42 @@
 	<include haxelib="lime-tools" />
 	<template path="templates" />
 	
-	<include path="backends/flash/include.xml" if="flash" unless="flash-backend" />
+	<unset name="custom-backend" />
 	
-	<include path="backends/native/include.xml" if="android" unless="android-backend" />
-	<include path="backends/native/include.xml" if="blackberry" unless="blackberry-backend" />
-	<include path="backends/native/include.xml" if="emscripten" unless="emscripten-backend" />
-	<include path="backends/native/include.xml" if="ios" unless="ios-backend" />
-	<include path="backends/native/include.xml" if="linux" unless="linux-backend" />
-	<include path="backends/native/include.xml" if="mac" unless="mac-backend" />
-	<include path="backends/native/include.xml" if="tizen" unless="tizen-backend" />
-	<include path="backends/native/include.xml" if="webos" unless="webos-backend" />
-	<include path="backends/native/include.xml" if="windows" unless="windows-backend" />
+	<section unless="no-custom-backend">
+		
+		<set name="custom-backend" value="${flash-backend}" if="flash flash-backend" />
+		<set name="custom-backend" value="${android-backend}" if="android android-backend" />
+		<set name="custom-backend" value="${blackberry-backend}" if="blackberry blackberry-backend" />
+		<set name="custom-backend" value="${emscripten-backend}" if="emscripten emscripten-backend" />
+		<set name="custom-backend" value="${ios-backend}" if="ios ios-backend" />
+		<set name="custom-backend" value="${linux-backend}" if="linux linux-backend" />
+		<set name="custom-backend" value="${mac-backend}" if="mac mac-backend" />
+		<set name="custom-backend" value="${tizen-backend}" if="tizen tizen-backend" />
+		<set name="custom-backend" value="${webos-backend}" if="webos webos-backend" />
+		<set name="custom-backend" value="${windows-backend}" if="windows windows-backend" />
+		<set name="custom-backend" value="${html5-backend}" if="html5 html5-backend" />
+		<set name="custom-backend" value="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
+		
+	</section>
 	
-	<include path="backends/html5/include.xml" if="html5" unless="html5-backend" />
-	<include path="backends/html5/include.xml" if="firefoxos" unless="firefoxos-backend" />
+	<include path="backends/flash/include.xml" if="flash" unless="custom-backend" />
+	<include path="backends/native/include.xml" if="native" unless="custom-backend" />
+	<include path="backends/html5/include.xml" if="html5" unless="custom-backend" />
 	
 	<section if="display">
 		
-		<include haxelib="${flash-backend}" if="flash flash-backend" />
-		
-		<include haxelib="${android-backend}" if="android android-backend" />
-		<include haxelib="${blackberry-backend}" if="blackberry blackberry-backend" />
-		<include haxelib="${emscripten-backend}" if="emscripten emscripten-backend" />
-		<include haxelib="${ios-backend}" if="ios ios-backend" />
-		<include haxelib="${linux-backend}" if="linux linux-backend" />
-		<include haxelib="${mac-backend}" if="mac mac-backend" />
-		<include haxelib="${tizen-backend}" if="tizen tizen-backend" />
-		<include haxelib="${webos-backend}" if="webos webos-backend" />
-		<include haxelib="${windows-backend}" if="windows windows-backend" />
-		
-		<include haxelib="${html5-backend}" if="html5 html5-backend" />
-		<include haxelib="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
+		<include haxelib="${custom-backend}" if="custom-backend" />
 		
 	</section>
 	
 	<section unless="display">
 		
-		<source path="backends/flash" if="flash" unless="flash-backend" />
+		<source path="backends/flash" if="flash" unless="custom-backend" />
+		<source path="backends/native" if="native" unless="custom-backend" />
+		<source path="backends/html5" if="html5" unless="custom-backend" />
 		
-		<source path="backends/native" if="android" unless="android-backend" />
-		<source path="backends/native" if="blackberry" unless="blackberry-backend" />
-		<source path="backends/native" if="emscripten" unless="emscripten-backend" />
-		<source path="backends/native" if="ios" unless="ios-backend" />
-		<source path="backends/native" if="linux" unless="linux-backend" />
-		<source path="backends/native" if="mac" unless="mac-backend" />
-		<source path="backends/native" if="tizen" unless="tizen-backend" />
-		<source path="backends/native" if="webos" unless="webos-backend" />
-		<source path="backends/native" if="windows" unless="windows-backend" />
-		
-		<source path="backends/html5" if="html5" unless="html5-backend" />
-		<source path="backends/html5" if="firefoxos" unless="firefoxos-backend" />
-		
-		<haxelib name="${flash-backend}" if="flash flash-backend" />
-		
-		<haxelib name="${android-backend}" if="android android-backend" />
-		<haxelib name="${blackberry-backend}" if="blackberry blackberry-backend" />
-		<haxelib name="${emscripten-backend}" if="emscripten emscripten-backend" />
-		<haxelib name="${ios-backend}" if="ios ios-backend" />
-		<haxelib name="${linux-backend}" if="linux linux-backend" />
-		<haxelib name="${mac-backend}" if="mac mac-backend" />
-		<haxelib name="${tizen-backend}" if="tizen tizen-backend" />
-		<haxelib name="${webos-backend}" if="webos webos-backend" />
-		<haxelib name="${windows-backend}" if="windows windows-backend" />
-		
-		<haxelib name="${html5-backend}" if="html5 html5-backend" />
-		<haxelib name="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
+		<haxelib name="${custom-backend}" if="custom-backend" />
 		
 	</section>
 	
