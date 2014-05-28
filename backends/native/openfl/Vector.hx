@@ -870,22 +870,22 @@ using cpp.NativeArray;
 	
 	@:arrayAccess public inline function get (index:Int):Null<T> {
 		
-		#if (haxe_ver > 3.100)
-		return this.unsafeGet (index);
-		#else
+		//#if (haxe_ver > 3.100)
+		//return this.unsafeGet (index);
+		//#else
 		return this[index];
-		#end
+		//#end
 		
 	}
 	
 	
 	@:arrayAccess public inline function set (index:Int, value:T):T {
 		
-		#if (haxe_ver > 3.100)
-		return this.unsafeSet (index, value);
-		#else
+		//#if (haxe_ver > 3.100)
+		//return this.unsafeSet (index, value);
+		//#else
 		return this[index] = value;
-		#end
+		//#end
 		
 	}
 	

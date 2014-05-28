@@ -290,6 +290,8 @@ abstract Vector<T>(VectorData<T>) {
 	
 	@:arrayAccess public inline function arrayWrite (key:Int, value:T):T {
 		
+		if (key >= this.length && !this.fixed) this.length = key + 1;
+		
 		return this.data[key] = value;
 		
 	}

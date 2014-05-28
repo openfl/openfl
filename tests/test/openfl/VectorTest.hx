@@ -448,4 +448,21 @@ class VectorTest {
 	}
 	
 	
+	@Test public function arrayAccess () {
+		
+		var vector = new Vector<Int> ();
+		
+		Assert.areEqual (0, vector.length);
+		
+		// Flash allows array access to one greater 
+		// than the length, if not fixed
+		
+		vector[0] = 100;
+		
+		Assert.areEqual (1, vector.length);
+		Assert.areEqual (100, vector[0]);
+		
+	}
+	
+	
 }
