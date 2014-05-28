@@ -3,8 +3,18 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+#if (haxe_ver >= 3.100)
 import haxe.zip.Compress;
 import haxe.zip.Uncompress;
+#else
+#if neko
+import neko.zip.Compress;
+import neko.zip.Uncompress;
+#else
+import cpp.zip.Compress;
+import cpp.zip.Uncompress;
+#end
+#end
 import openfl.errors.EOFError;
 import openfl.utils.CompressionAlgorithm;
 import openfl.utils.IMemoryRange;
