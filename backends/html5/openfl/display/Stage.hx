@@ -259,7 +259,7 @@ class Stage extends Sprite {
 		
 		var keyEvents = [ "keydown", "keyup" ];
 		var touchEvents = [ "touchstart", "touchmove", "touchend" ];
-		var mouseEvents = [ "mousedown", "mousemove", "mouseup", "click", "dblclick", "mousewheel" ];
+		var mouseEvents = [ "mousedown", "mousemove", "mouseup", /*"click",*/ "dblclick", "mousewheel" ];
 		var focusEvents = [ "focus", "blur" ];
 		
 		var element = __canvas != null ? __canvas : __div;
@@ -839,7 +839,7 @@ class Stage extends Sprite {
 			case "mousedown": MouseEvent.MOUSE_DOWN;
 			case "mouseup": MouseEvent.MOUSE_UP;
 			case "mousemove": MouseEvent.MOUSE_MOVE;
-			case "click": MouseEvent.CLICK;
+			//case "click": MouseEvent.CLICK;
 			case "dblclick": MouseEvent.DOUBLE_CLICK;
 			case "mousewheel": MouseEvent.MOUSE_WHEEL;
 			default: null;
@@ -852,10 +852,22 @@ class Stage extends Sprite {
 			__setCursor (untyped (target).buttonMode ? "pointer" : "default");
 			__fireEvent (MouseEvent.__create (type, event, target.globalToLocal (new Point (mouseX, mouseY)), cast target), __stack);
 			
+			if (type == MouseEvent.MOUSE_UP) {
+				
+				__fireEvent (MouseEvent.__create (MouseEvent.CLICK, event, target.globalToLocal (new Point (mouseX, mouseY)), cast target), __stack);
+				
+			}
+			
 		} else {
 			
 			__setCursor (buttonMode ? "pointer" : "default");
 			__fireEvent (MouseEvent.__create (type, event, new Point (mouseX, mouseY), this), [ this ]);
+			
+			if (type == MouseEvent.MOUSE_UP) {
+				
+				__fireEvent (MouseEvent.__create (MouseEvent.CLICK, event, new Point (mouseX, mouseY), this), [ this ]);
+				
+			}
 			
 		}
 		
