@@ -73,7 +73,7 @@ class ByteArray implements ArrayAccess<Int> {
 	public inline function readByte ():Int {
 		
 		var data:Dynamic = data;
-		return data.getUint8 (this.position++);
+		return data.getInt8 (this.position++);
 		
 	}
 	
@@ -388,7 +388,7 @@ class ByteArray implements ArrayAccess<Int> {
    
    	public function __get (pos:Int):Int {
    		
-   		return data.getUint8 (pos);
+   		return data.getInt8 (pos);
    		
    	}
 	

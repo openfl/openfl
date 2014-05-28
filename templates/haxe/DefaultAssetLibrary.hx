@@ -545,7 +545,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 					if (data != null && data.length > 0) {
 						
 						var manifest:Array<Dynamic> = Unserializer.run (data);
-
+						
 						for (asset in manifest) {
 							
 							if (!className.exists (asset.id)) {

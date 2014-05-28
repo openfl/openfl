@@ -10,7 +10,7 @@ import openfl.utils.CompressionAlgorithm;
 class ByteArrayTest {
 
 	
-	/*@Test public function testWritePos () {
+	@Test public function testWritePos () {
 		
 		var ba:ByteArray = new ByteArray();
 		
@@ -21,20 +21,39 @@ class ByteArrayTest {
 		ba.writeByte(0xFF);
 		Assert.areEqual(1, ba.length);
 		Assert.areEqual(1, ba.position);
+		
+		#if js // array access might not be possible :(
+		ba.position = 0;
+		Assert.areEqual(0xFF, ba.readUnsignedByte ());
+		#else
 		Assert.areEqual(0xFF, ba[0]);
-
+		#end
+		
 		ba.position = 0;
 		Assert.areEqual(0, ba.position);
 		ba.writeByte(0x7F);
 		Assert.areEqual(1, ba.length);
 		Assert.areEqual(1, ba.position);
+		
+		#if js
+		ba.position = 0;
+		Assert.areEqual(0x7F, ba.readUnsignedByte ());
+		#else
 		Assert.areEqual(0x7F, ba[0]);
+		#end
 		
 		ba.writeShort(0x1234);
 		Assert.areEqual(3, ba.length);
 		Assert.areEqual(3, ba.position);
+		
+		#if js
+		ba.position = 1;
+		Assert.areEqual(0x34, ba.readUnsignedByte ());
+		Assert.areEqual(0x12, ba.readUnsignedByte ());
+		#else
 		Assert.areEqual(0x34, ba[1]);
 		Assert.areEqual(0x12, ba[2]);
+		#end
 		
 		ba.clear();
 		Assert.areEqual(0, ba.length);
@@ -225,7 +244,7 @@ class ByteArrayTest {
 
 		Assert.areEqual( 0xFFCC99AA, data.readInt() );
 		
-	}*/
+	}
 	
 	
 	/* Note: cannot find a test for this
@@ -253,7 +272,7 @@ class ByteArrayTest {
 	}*/
 	
 	
-	/*@Test public function testReadWriteShort () {
+	@Test public function testReadWriteShort () {
 		
 		var data = new ByteArray();
 		data.writeShort( 5 );
@@ -308,7 +327,7 @@ class ByteArrayTest {
 		data.writeUTF("\xE9");
 
 		data.position = 0;
-		#if flash
+		#if (flash || js)
 		Assert.areEqual(2, data.readUnsignedShort() );
 		#else
 		Assert.areEqual(1, data.readUnsignedShort() );
@@ -328,7 +347,7 @@ class ByteArrayTest {
 		
 		// Flash is adding a byte for a null terminator
 		
-		#if flash
+		#if (flash || js)
 		Assert.areEqual(14, data.length);
 		#else
 		Assert.areEqual(13, data.length);
@@ -435,7 +454,7 @@ class ByteArrayTest {
 		Assert.areEqual(108, data.readUnsignedByte());
 		Assert.areEqual(111, data.readUnsignedByte());
 		
-	}*/
+	}
 	
 	
 }

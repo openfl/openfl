@@ -111,7 +111,7 @@ import openfl.net.URLRequest;
 			
 			__sentWarnings.set (api, true);
 			
-			trace ("Warning: " + api + " has not implemented");
+			trace ("Warning: " + api + " is not implemented");
 			
 		}
 		

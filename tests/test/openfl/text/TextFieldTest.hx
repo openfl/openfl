@@ -94,7 +94,7 @@ class TextFieldTest {
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		#if (!cpp && !neko)
+		#if (!cpp && !neko && !js)
 		// Looks correct, anti-aliasing is slightly different ATM
 		Assert.areEqual (StringTools.hex (0xFF000000, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
 		#end
@@ -121,7 +121,7 @@ class TextFieldTest {
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
-		#if (!cpp && !neko)
+		#if (!cpp && !neko && !js)
 		// Looks correct, anti-aliasing is slightly different ATM
 		Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
 		#end
