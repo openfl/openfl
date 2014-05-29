@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "OpenFL is a powerful framework for cross-platform development",
-	"version": "2.0.0-beta.2",
-	"releasenote": "Patches for FirefoxOS, custom backends, Flash SWF",
+	"version": "2.0.0",
+	"releasenote": "Stable release",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
