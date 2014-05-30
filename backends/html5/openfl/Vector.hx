@@ -190,7 +190,11 @@ abstract Vector<T>(VectorData<T>) {
 	
 	public function sort (f:T -> T -> Int):Void {
 		
+		#if (haxe_ver > 3.100)
 		var array = this.data.toArray ();
+		#else
+		var array:Array<T> = cast this.data;
+		#end
 		array.sort (f);
 		this.data = haxe.ds.Vector.fromArrayCopy (array);
 		
