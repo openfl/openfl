@@ -611,23 +611,31 @@ class TextField extends InteractiveObject {
 		__context.textBaseline = "top";
 		__context.fillStyle = "#" + StringTools.hex (format.color, 6);
 		
-		switch (format.align) {
+		var lines = text.split("\n");
+		var yOffset:Float = 0;
+		
+		for (line in lines) {
 			
-			case TextFormatAlign.CENTER:
+			switch (format.align) {
 				
-				__context.textAlign = "center";
-				__context.fillText (text, __width / 2, 2, __width - 4);
+				case TextFormatAlign.CENTER:
+					
+					__context.textAlign = "center";
+					__context.fillText (line, __width / 2, 2 + yOffset, __width - 4);
+					
+				case TextFormatAlign.RIGHT:
+					
+					__context.textAlign = "end";
+					__context.fillText (line, __width - 2, 2 + yOffset, __width - 4);
+					
+				default:
+					
+					__context.textAlign = "start";
+					__context.fillText (line, 2 + offsetX, 2 + yOffset, __width - 4);
+					
+			}
 			
-			case TextFormatAlign.RIGHT:
-				
-				__context.textAlign = "end";
-				__context.fillText (text, __width - 2, 2, __width - 4);
-			
-			default:
-				
-				__context.textAlign = "start";
-				__context.fillText (text, 2 + offsetX, 2, __width - 4);
-			
+			yOffset += this.textHeight;
 		}
 		
 	}
