@@ -181,7 +181,7 @@ class Graphics {
 	}
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0):Void {
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
 		
 		// Checking each tile for extents did not include rotation or scale, and could overflow the maximum canvas
 		// size of some mobile browsers. Always use the full stage size for drawTiles instead?
@@ -189,7 +189,7 @@ class Graphics {
 		__inflateBounds (0, 0);
 		__inflateBounds (Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
-		__commands.push (DrawTiles (sheet, tileData, smooth, flags));
+		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
 		
 		__dirty = true;
 		__visible = true;
@@ -585,7 +585,7 @@ class Graphics {
 								
 							}
 						
-						case DrawTiles (sheet, tileData, smooth, flags):
+						case DrawTiles (sheet, tileData, smooth, flags, count):
 							
 							__closePath (false);
 							
@@ -612,6 +612,7 @@ class Graphics {
 							if (useAlpha) { alphaIndex = numValues; numValues ++; }
 							
 							var totalCount = tileData.length;
+							if (count >= 0 && totalCount > count) totalCount = count;
 							var itemCount = Std.int (totalCount / numValues);
 							var index = 0;
 							
@@ -832,7 +833,7 @@ enum DrawCommand {
 	DrawCircle (x:Float, y:Float, radius:Float);
 	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
-	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int);
+	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
 	LineTo (x:Float, y:Float);
