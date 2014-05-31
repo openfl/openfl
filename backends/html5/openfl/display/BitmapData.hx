@@ -778,6 +778,40 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function paletteMap (sourceBitmapData:BitmapData, sourceRect:flash.geom.Rectangle, destPoint:flash.geom.Point, ?redArray:Array<Int>, ?greenArray:Array<Int>, ?blueArray:Array<Int>, ?alphaArray:Array<Int>):Void {
+		var memory = new ByteArray ();
+		var sw:Int = Std.int(sourceRect.width);
+		var sh:Int = Std.int(sourceRect.height);
+		memory.length = ((sw * sh) * 4);
+		memory = getPixels(sourceRect);
+		memory.position = 0;
+		Memory.select (memory);
+		
+		var position:Int, pixelValue:Int, r:Int, g:Int, b:Int, color:Int;
+		
+		for (i in 0...(sh*sw)) {
+			position = i * 4;
+			pixelValue = cast Memory.getI32(position);
+			
+			r = (pixelValue >> 8) & 0xFF;
+			g = (pixelValue >> 16) & 0xFF;
+			b = (pixelValue >> 24) & 0xFF;
+			
+			color = __flipPixel((0xff << 24) |
+				redArray[r] | 
+				greenArray[g] | 
+				blueArray[b]);
+			
+			Memory.setI32(position, color);
+		}
+		
+		memory.position = 0;
+		var destRect = new Rectangle(destPoint.x, destPoint.y, sw, sh);
+		setPixels(destRect, memory);
+		Memory.select (null);
+	}
+	
+	
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
 		openfl.Lib.notImplemented ("BitmapData.perlinNoise");
@@ -894,10 +928,153 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
+	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
-		openfl.Lib.notImplemented ("BitmapData.threshold");
-		return 0;
+		if (sourceBitmapData == this && sourceRect.equals(rect) && destPoint.x == 0 && destPoint.y == 0) {
+			
+			var hits = 0;
+			
+			threshold = __flipPixel (threshold);
+			color = __flipPixel (color);
+			
+			var memory = new ByteArray ();
+			memory.length  = width * height * 4;
+			memory = getPixels (rect);
+			memory.position = 0;
+			Memory.select (memory);
+			
+			var thresholdMask:Int = cast threshold & mask;
+
+			var width_yy:Int, position:Int, pixelMask:Int, pixelValue, i, test;
+			
+			for (yy in 0...height) {
+				
+				width_yy = width * yy;
+				
+				for (xx in 0...width) {
+					
+					position = (width_yy + xx) * 4;
+					pixelValue = Memory.getI32 (position);
+					pixelMask = cast pixelValue & mask;
+					
+					i = __ucompare (pixelMask, thresholdMask);
+					test = false;
+					
+					if (operation == "==") { test = (i == 0); }
+					else if (operation == "<") { test = (i == -1);}
+					else if (operation == ">") { test = (i == 1); }
+					else if (operation == "!=") { test = (i != 0); }
+					else if (operation == "<=") { test = (i == 0 || i == -1); }
+					else if (operation == ">=") { test = (i == 0 || i == 1); }
+					
+					if (test) {
+						
+						Memory.setI32 (position, color);
+						hits++;
+						
+					}
+					
+				}
+				
+			}
+			
+			memory.position = 0;
+			setPixels (rect, memory);
+			Memory.select (null);
+			return hits;
+			
+		} else {
+			
+			var sx = Std.int (sourceRect.x);
+			var sy = Std.int (sourceRect.y);
+			var sw = Std.int (sourceBitmapData.width);
+			var sh = Std.int (sourceBitmapData.height);
+			
+			var dx = Std.int (destPoint.x);
+			var dy = Std.int (destPoint.y);
+			
+			var bw:Int = width - sw - dx;
+			var bh:Int = height - sh - dy;
+			
+			var dw:Int = (bw < 0) ? sw + (width - sw - dx) : sw;
+			var dh:Int = (bw < 0) ? sh + (height - sh - dy) : sh;
+			
+			var hits = 0;
+			
+			threshold = __flipPixel (threshold);
+			color = __flipPixel (color);
+			
+			var canvasMemory = (sw * sh) * 4;
+			var sourceMemory = 0;
+			
+			if (copySource) {
+				
+				sourceMemory = (sw * sh) * 4;
+				
+			}
+			
+			var totalMemory = (canvasMemory + sourceMemory);
+			var memory = new ByteArray();
+			memory.length = totalMemory;
+			memory.position = 0;
+			var bitmapData = sourceBitmapData.clone ();
+			var pixels = bitmapData.getPixels (sourceRect);
+			memory.writeBytes (pixels);
+			memory.position = canvasMemory;
+			
+			if (copySource) {
+				
+				memory.writeBytes (pixels);
+				
+			}
+			
+			memory.position = 0;
+			Memory.select (memory);
+			
+			var thresholdMask:Int = cast threshold & mask;
+			
+			var position:Int, pixelMask:Int, pixelValue, i, test;
+			
+			for (yy in 0...dh) {
+				
+				for (xx in 0...dw) {
+					
+					position = ((xx + sx) + (yy + sy) * sw) * 4;
+					pixelValue = Memory.getI32 (position);
+					pixelMask = cast pixelValue & mask;
+					
+					i = __ucompare (pixelMask, thresholdMask);
+					test = false;
+					
+					if (operation == "==") { test = (i == 0); }
+					else if (operation == "<") { test = (i == -1);}
+					else if (operation == ">") { test = (i == 1); }
+					else if (operation == "!=") { test = (i != 0); }
+					else if (operation == "<=") { test = (i == 0 || i == -1); }
+					else if (operation == ">=") { test = (i == 0 || i == 1); }
+					
+					if (test) {
+						
+						Memory.setI32 (position, color);
+						hits++;
+						
+					} else if (copySource) {
+						
+						Memory.setI32 (position, Memory.getI32 (canvasMemory + position));
+						
+					}
+					
+				}
+				
+			}
+			
+			memory.position = 0;	
+			bitmapData.setPixels (sourceRect, memory);
+			copyPixels (bitmapData, bitmapData.rect, destPoint);
+			Memory.select (null);
+			return hits;
+			
+		}
 		
 	}
 	
@@ -1042,6 +1219,13 @@ class BitmapData implements IBitmapDrawable {
 		
 		__sourceContext.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + (a / 255) + ')';
 		__sourceContext.fillRect (rect.x, rect.y, rect.width, rect.height);
+		
+	}
+	
+	
+	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
+		
+		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
 		
 	}
 	
@@ -1222,6 +1406,60 @@ class BitmapData implements IBitmapDrawable {
 			__sourceContext.putImageData (__sourceImageData, 0, 0);
 			__sourceImageData = null;
 			__sourceImageDataChanged = false;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion static public function __ucompare (n1:Int, n2:Int) : Int {
+		
+		var tmp1 : Int;
+		var tmp2 : Int;
+		
+		tmp1 = (n1 >> 24) & 0x000000FF;
+		tmp2 = (n2 >> 24) & 0x000000FF;
+		
+		if (tmp1 != tmp2) {
+			
+			return (tmp1 > tmp2 ? 1 : -1);
+			
+		} else {
+			
+			tmp1 = (n1 >> 16) & 0x000000FF;
+			tmp2 = (n2 >> 16) & 0x000000FF;
+			
+			if (tmp1 != tmp2) {
+				
+				return (tmp1 > tmp2 ? 1 : -1);
+				
+			} else {
+				
+				tmp1 = (n1 >> 8) & 0x000000FF;
+				tmp2 = (n2 >> 8) & 0x000000FF;
+				
+				if (tmp1 != tmp2) {
+					
+					return (tmp1 > tmp2 ? 1 : -1);
+					
+				} else {
+					
+					tmp1 = n1 & 0x000000FF;
+					tmp2 = n2 & 0x000000FF;
+					
+					if (tmp1 != tmp2) {
+						
+						return (tmp1 > tmp2 ? 1 : -1);
+						
+					} else {
+						
+						return 0;
+						
+					}
+					
+				}
+				
+			}
 			
 		}
 		
