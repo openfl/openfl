@@ -86,7 +86,7 @@ class ByteArray implements ArrayAccess<Int> {
 			
 		}
 		
-		if (length == 0) length = this.length;
+		if (length == 0) length = this.bytesAvailable;
 		
 		bytes.ensureWrite (offset + length);
 		
@@ -138,6 +138,13 @@ class ByteArray implements ArrayAccess<Int> {
 		var int = data.getInt32 (this.position, littleEndian);
 		this.position += 4;
 		return int;
+		
+	}
+	
+	
+	public inline function readMultiByte (length:Int, charSet:String):String {
+		
+		return readUTFBytes (length);
 		
 	}
 	
