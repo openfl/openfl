@@ -284,13 +284,15 @@ class Graphics {
 			
 			if (__hasFill) {
 				
+				__context.translate( -__bounds.x, -__bounds.y);
+				
 				// Apply pending fill matrix if present:
 				if (__pendingMatrix != null) {
 					
+					var __inverseMatrix:Matrix = __pendingMatrix.invert();
+					
 					__context.transform(__pendingMatrix.a, __pendingMatrix.b, __pendingMatrix.c, __pendingMatrix.d, __pendingMatrix.tx, __pendingMatrix.ty);
 					__context.fill ();
-					
-					var __inverseMatrix:Matrix = __pendingMatrix.invert();
 					__context.transform(__inverseMatrix.a, __inverseMatrix.b, __inverseMatrix.c, __inverseMatrix.d, __inverseMatrix.tx, __inverseMatrix.ty);
 					
 				} else {
@@ -299,6 +301,7 @@ class Graphics {
 					
 				}
 				
+				__context.translate( __bounds.x, __bounds.y);
 			}
 			
 			__context.closePath ();
