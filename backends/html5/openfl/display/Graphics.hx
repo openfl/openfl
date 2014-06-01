@@ -286,7 +286,6 @@ class Graphics {
 				
 				__context.translate( -__bounds.x, -__bounds.y);
 				
-				// Apply pending fill matrix if present:
 				if (__pendingMatrix != null) {
 					
 					var __inverseMatrix:Matrix = __pendingMatrix.invert();
@@ -302,6 +301,7 @@ class Graphics {
 				}
 				
 				__context.translate( __bounds.x, __bounds.y);
+				
 			}
 			
 			__context.closePath ();
