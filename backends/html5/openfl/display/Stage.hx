@@ -472,7 +472,7 @@ class Stage extends Sprite {
 	
 	private function __resize ():Void {
 		
-		if (__element != null && __div == null) {
+		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
 			
 			if (__fullscreen) {
 				
