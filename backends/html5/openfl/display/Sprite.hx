@@ -36,14 +36,22 @@ class Sprite extends DisplayObjectContainer {
 	
 	public function startDrag (lockCenter:Bool = false, bounds:Rectangle = null):Void {
 		
-		openfl.Lib.notImplemented ("Sprite.startDrag");
+		if (stage != null) {
+			
+			stage.__startDrag (this, lockCenter, bounds);
+			
+		}
 		
 	}
 	
 	
 	public function stopDrag ():Void {
 		
-		openfl.Lib.notImplemented ("Sprite.stopDrag");
+		if (stage != null) {
+			
+			stage.__stopDrag (this);
+			
+		}
 		
 	}
 	

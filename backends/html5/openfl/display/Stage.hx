@@ -61,6 +61,10 @@ class Stage extends Sprite {
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	
+	@:noCompletion private var __dragBounds:Rectangle;
+	@:noCompletion private var __dragObject:Sprite;
+	@:noCompletion private var __dragOffsetX:Float;
+	@:noCompletion private var __dragOffsetY:Float;
 	
 	
 	public function new (width:Int, height:Int, element:HtmlElement = null, color:Null<Int> = null) {
@@ -733,6 +737,12 @@ class Stage extends Sprite {
 			
 		}
 		
+		if (type == TouchEvent.TOUCH_MOVE && __dragObject != null) {
+			
+			__drag (point);
+			
+		}
+		
 		/*case "touchstart":
 				
 				var evt:js.html.TouchEvent = cast evt;
@@ -871,6 +881,12 @@ class Stage extends Sprite {
 			
 		}
 		
+		if (__dragObject != null) {
+			
+			__drag (new Point (mouseX, mouseY));
+			
+		}
+		
 		/*case "mousemove":
 				
 				__onMouse (cast evt, MouseEvent.MOUSE_MOVE);
@@ -991,7 +1007,87 @@ class Stage extends Sprite {
 		__broadcast (event, true);
 		
 	}
+
+	@:noCompletion private function __drag (mouse:Point):Void {
+		
+		var parent = __dragObject.parent;
+		if (parent != null) {
+			
+			mouse = parent.globalToLocal (mouse);
+			
+		}
+		
+		var x = mouse.x + __dragOffsetX;
+		var y = mouse.y + __dragOffsetY;
+		
+		if (__dragBounds != null) {
+			
+			if (x < __dragBounds.x) {
+				
+				x = __dragBounds.x;
+				
+			} else if (x > __dragBounds.right) {
+				
+				x = __dragBounds.right;
+				
+			}
+			
+			if (y < __dragBounds.y) {
+				
+				y = __dragBounds.y;
+				
+			} else if (y > __dragBounds.bottom) {
+				
+				y = __dragBounds.bottom;
+				
+			}
+			
+		}
+		
+		__dragObject.x = x;
+		__dragObject.y = y;
+		
+	}
 	
+	@:noCompletion public function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
+		
+		__dragBounds = (bounds == null) ? null : bounds.clone ();
+		__dragObject = sprite;
+		
+		if (__dragObject != null) {
+			
+			if (lockCenter) {
+				
+				__dragOffsetX = -__dragObject.width / 2;
+				__dragOffsetY = -__dragObject.height / 2;
+				
+			} else {
+				
+				var mouse = new Point (mouseX, mouseY);
+				var parent = __dragObject.parent;
+				
+				if (parent != null) {
+					
+					mouse = parent.globalToLocal (mouse);
+					
+				}
+				
+				__dragOffsetX = __dragObject.x - mouse.x;
+				__dragOffsetY = __dragObject.y - mouse.y;
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function __stopDrag (sprite:Sprite):Void {
+		
+		__dragBounds = null;
+		__dragObject = null;
+		
+	}
 	
 	
 	
