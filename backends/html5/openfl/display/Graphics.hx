@@ -36,6 +36,9 @@ class Graphics {
 	private var __positionY:Float;
 	private var __visible:Bool;
 	private var __pendingMatrix:Matrix;
+	private var __inversePendingMatrix:Matrix;
+	private var __pattern:CanvasPattern;
+	private var __setFill:Bool;
 	
 	
 	public function new () {
@@ -278,6 +281,30 @@ class Graphics {
 	}
 	
 	
+	private function __beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
+		
+		if (__setFill || bitmapFill == null) return;
+		
+		if (__pattern == null) {
+			
+			if (bitmapFill.__sourceImage != null) {
+				
+				__pattern = __context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
+				
+			} else {
+				
+				__pattern = __context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
+				
+			}
+			
+		}
+		
+		__context.fillStyle = __pattern;
+		__setFill = true;
+		
+	}
+	
+	
 	private function __closePath (closeFill:Bool):Void {
 		
 		if (__inPath) {
@@ -288,11 +315,9 @@ class Graphics {
 				
 				if (__pendingMatrix != null) {
 					
-					var __inverseMatrix:Matrix = __pendingMatrix.invert();
-					
-					__context.transform(__pendingMatrix.a, __pendingMatrix.b, __pendingMatrix.c, __pendingMatrix.d, __pendingMatrix.tx, __pendingMatrix.ty);
+					__context.transform (__pendingMatrix.a, __pendingMatrix.b, __pendingMatrix.c, __pendingMatrix.d, __pendingMatrix.tx, __pendingMatrix.ty);
 					__context.fill ();
-					__context.transform(__inverseMatrix.a, __inverseMatrix.b, __inverseMatrix.c, __inverseMatrix.d, __inverseMatrix.tx, __inverseMatrix.ty);
+					__context.transform (__inversePendingMatrix.a, __inversePendingMatrix.b, __inversePendingMatrix.c, __inversePendingMatrix.d, __inversePendingMatrix.tx, __inversePendingMatrix.ty);
 					
 				} else {
 					
@@ -321,6 +346,7 @@ class Graphics {
 			__hasFill = false;
 			__hasStroke = false;
 			__pendingMatrix = null;
+			__inversePendingMatrix = null;
 			
 		}
 		
@@ -420,8 +446,6 @@ class Graphics {
 				
 				var bitmapFill:BitmapData = null;
 				var bitmapRepeat = false;
-				var pattern:CanvasPattern = null;
-				var setFill = false;
 				
 				for (command in __commands) {
 					
@@ -435,34 +459,28 @@ class Graphics {
 								
 								bitmapFill = bitmap;
 								bitmapRepeat = repeat;
-								pattern = null;
-								setFill = false;
+								__pattern = null;
+								__setFill = false;
 								
 								bitmap.__syncImageData ();
 								
 							}
 							
-							if (!setFill && bitmapFill != null) {
+							__beginPatternFill(bitmapFill, bitmapRepeat);
+							
+							if (matrix != null) {
 								
-								if (pattern == null) {
-									
-									if (bitmapFill.__sourceImage != null) {
-										
-										pattern = __context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
-										
-									} else {
-										
-										pattern = __context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
-										
-									}
-									
-								}
+								__pendingMatrix = matrix;
+								__inversePendingMatrix = matrix.clone();
+								__inversePendingMatrix.invert();
 								
-								__context.fillStyle = pattern;
-								setFill = true;
+							} else {
+								
+								__pendingMatrix = null;
+								__inversePendingMatrix = null;
+								
 							}
 							
-							__pendingMatrix = matrix;
 							__hasFill = true;
 						
 						case BeginFill (rgb, alpha):
@@ -484,7 +502,7 @@ class Graphics {
 							}
 							
 							bitmapFill = null;
-							setFill = true;
+							__setFill = true;
 							__hasFill = true;
 						
 						case CurveTo (cx, cy, x, y):
