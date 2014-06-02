@@ -23,6 +23,7 @@ class URLRequest {
 	public var method:String;
 	public var requestHeaders:Array<URLRequestHeader>;
 	public var url:String;
+	public var userAgent:String;
 	public var verbose:Bool;
 	
 	@:noCompletion public var __bytes:ByteArray;

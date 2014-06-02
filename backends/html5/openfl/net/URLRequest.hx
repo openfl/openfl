@@ -12,6 +12,7 @@ class URLRequest {
 	public var method:String;
 	public var requestHeaders:Array<URLRequestHeader>;
 	public var url:String;
+	public var userAgent:String;
 	
 	
 	public function new (inURL:String = null) {
