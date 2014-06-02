@@ -190,6 +190,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (setTransform && __worldTransformChanged) {
 			
+			if (renderSession.isWebkitDOM) {
+				// In Chrome, exponential notation is not supported for -webkit-transform
+				
+				__worldTransform.a = Math.round (__worldTransform.a * 1000) / 1000;
+				__worldTransform.b = Math.round (__worldTransform.b * 1000) / 1000;
+				__worldTransform.c = Math.round (__worldTransform.c * 1000) / 1000;
+				__worldTransform.d = Math.round (__worldTransform.d * 1000) / 1000;
+				__worldTransform.tx = Math.round (__worldTransform.tx * 10) / 10;
+				__worldTransform.ty = Math.round (__worldTransform.ty * 10) / 10;
+			}
+			
 			__style.setProperty (renderSession.transformProperty, __worldTransform.to3DString (renderSession.roundPixels), null);
 			
 		}

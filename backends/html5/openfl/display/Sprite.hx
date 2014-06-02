@@ -205,6 +205,16 @@ class Sprite extends DisplayObjectContainer {
 					transform.translate (__graphics.__bounds.x, __graphics.__bounds.y);
 					transform = transform.mult (__worldTransform);
 					
+					if (renderSession.isWebkitDOM) {
+						// In Chrome, exponential notation is not supported for -webkit-transform
+					
+						transform.a = Math.round (transform.a * 1000) / 1000;
+						transform.b = Math.round (transform.b * 1000) / 1000;
+						transform.c = Math.round (transform.c * 1000) / 1000;
+						transform.d = Math.round (transform.d * 1000) / 1000;
+						transform.tx = Math.round (transform.tx * 10) / 10;
+						transform.ty = Math.round (transform.ty * 10) / 10;
+					}
 					__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
 					
 				}
