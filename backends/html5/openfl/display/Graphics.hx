@@ -33,13 +33,13 @@ class Graphics {
 	private var __hasFill:Bool;
 	private var __hasStroke:Bool;
 	private var __inPath:Bool;
-	private var __positionX:Float;
-	private var __positionY:Float;
-	private var __visible:Bool;
-	private var __pendingMatrix:Matrix;
 	private var __inversePendingMatrix:Matrix;
 	private var __pattern:CanvasPattern;
+	private var __pendingMatrix:Matrix;
+	private var __positionX:Float;
+	private var __positionY:Float;
 	private var __setFill:Bool;
+	private var __visible:Bool;
 	
 	
 	public function new () {
@@ -595,7 +595,6 @@ class Graphics {
 									}
 									
 								}
-								
 								
 							}
 							
