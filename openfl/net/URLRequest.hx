@@ -243,6 +243,11 @@ package openfl.net;
 	 * rtmp://[2001:db8:ccc3:ffff:0:444d:555e:666f]:1935/test </pre>
 	 */
 	var url : String;
+	
+    /**
+     * Specifies the user-agent string to be used in the HTTP request.
+     */
+    var userAgent : String;
 
 	/**
 	 * Creates a URLRequest object. If <code>System.useCodePage</code> is

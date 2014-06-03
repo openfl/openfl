@@ -69,6 +69,17 @@ class URLRequestTest {
 		Assert.isNull (exists);
 		
 	}
+
+    @Test public function userAgent () {
+		
+		// TODO: Confirm functionality
+		
+		var urlRequest = new URLRequest ();
+		var exists = urlRequest.userAgent;
+		
+		Assert.isNull (exists);
+		
+	}
 	
 	
 	@Test public function new_ () {
