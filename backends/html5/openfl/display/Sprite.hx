@@ -12,6 +12,7 @@ import openfl.geom.Rectangle;
 
 
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Stage)
 class Sprite extends DisplayObjectContainer {
 	
 	

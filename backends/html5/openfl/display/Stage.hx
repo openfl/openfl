@@ -21,7 +21,6 @@ import openfl.ui.KeyLocation;
 
 
 @:access(openfl.events.Event)
-@:access(openfl.display.Sprite)
 class Stage extends Sprite {
 	
 	
