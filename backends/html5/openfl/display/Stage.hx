@@ -46,6 +46,10 @@ class Stage extends Sprite {
 	private var __cursorHidden:Bool;
 	private var __dirty:Bool;
 	private var __div:DivElement;
+	private var __dragBounds:Rectangle;
+	private var __dragObject:Sprite;
+	private var __dragOffsetX:Float;
+	private var __dragOffsetY:Float;
 	private var __element:HtmlElement;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
@@ -235,6 +239,48 @@ class Stage extends Sprite {
 	public override function localToGlobal (pos:Point):Point {
 		
 		return pos;
+		
+	}
+	
+	
+	private function __drag (mouse:Point):Void {
+		
+		var parent = __dragObject.parent;
+		if (parent != null) {
+			
+			mouse = parent.globalToLocal (mouse);
+			
+		}
+		
+		var x = mouse.x + __dragOffsetX;
+		var y = mouse.y + __dragOffsetY;
+		
+		if (__dragBounds != null) {
+			
+			if (x < __dragBounds.x) {
+				
+				x = __dragBounds.x;
+				
+			} else if (x > __dragBounds.right) {
+				
+				x = __dragBounds.right;
+				
+			}
+			
+			if (y < __dragBounds.y) {
+				
+				y = __dragBounds.y;
+				
+			} else if (y > __dragBounds.bottom) {
+				
+				y = __dragBounds.bottom;
+				
+			}
+			
+		}
+		
+		__dragObject.x = x;
+		__dragObject.y = y;
 		
 	}
 	
@@ -697,6 +743,47 @@ class Stage extends Sprite {
 	}
 	
 	
+	private function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
+		
+		__dragBounds = (bounds == null) ? null : bounds.clone ();
+		__dragObject = sprite;
+		
+		if (__dragObject != null) {
+			
+			if (lockCenter) {
+				
+				__dragOffsetX = -__dragObject.width / 2;
+				__dragOffsetY = -__dragObject.height / 2;
+				
+			} else {
+				
+				var mouse = new Point (mouseX, mouseY);
+				var parent = __dragObject.parent;
+				
+				if (parent != null) {
+					
+					mouse = parent.globalToLocal (mouse);
+					
+				}
+				
+				__dragOffsetX = __dragObject.x - mouse.x;
+				__dragOffsetY = __dragObject.y - mouse.y;
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private function __stopDrag (sprite:Sprite):Void {
+		
+		__dragBounds = null;
+		__dragObject = null;
+		
+	}
+	
+	
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		if (transformOnly) {
@@ -882,6 +969,12 @@ class Stage extends Sprite {
 			
 		}
 		
+		if (type == TouchEvent.TOUCH_MOVE && __dragObject != null) {
+			
+			__drag (point);
+			
+		}
+		
 		/*case "touchstart":
 				
 				var evt:js.html.TouchEvent = cast evt;
@@ -1017,6 +1110,12 @@ class Stage extends Sprite {
 				__fireEvent (MouseEvent.__create (MouseEvent.CLICK, event, new Point (mouseX, mouseY), this), [ this ]);
 				
 			}
+			
+		}
+		
+		if (__dragObject != null) {
+			
+			__drag (new Point (mouseX, mouseY));
 			
 		}
 		
