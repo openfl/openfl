@@ -46,7 +46,6 @@ class Lib {
 		flash.Lib.current = current;
         return current;
     }
-	
 
     public static function notImplemented (api:String):Void {
 		
@@ -59,6 +58,4 @@ class Lib {
 		}
 		
 	}
-	
-
 }
