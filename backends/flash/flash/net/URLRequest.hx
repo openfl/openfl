@@ -10,20 +10,22 @@ package flash.net;
     public var url : String;
     public var _userAgent : String;
     public var userAgent (get,set): String;
+
     inline public function get_userAgent (): String { 
         var userAgent = null;
         try { 
             userAgent = untyped this["userAgent"];
         } catch (e:Dynamic) { 
-			trace ("Warning: URLRequest.userAgent has not been implemented");
+			openfl.Lib.notImplemented ("URLRequest.userAgent");
         }
         return userAgent;
     }
+
     inline public function set_userAgent (userAgent : String): String {
         try { 
             untyped this["userAgent"] = userAgent;
         } catch (e:Dynamic) { 
-			trace ("Warning: URLRequest.userAgent has not been implemented");
+			openfl.Lib.notImplemented ("URLRequest.userAgent");
         }
         return userAgent;
     }
