@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import js.html.webgl.GL;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.DivElement;
@@ -36,9 +37,9 @@ class Stage extends Sprite {
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
 	
-	//private var __canvas:CanvasElement;
 	private var __clearBeforeRender:Bool;
 	private var __color:Int;
+	private var __colorSplit:Array<Float>;
 	private var __colorString:String;
 	private var __context:CanvasRenderingContext2D;
 	private var __cursor:String;
@@ -48,6 +49,10 @@ class Stage extends Sprite {
 	private var __element:HtmlElement;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
+	private var __gl:GL;
+	private var __glContextID:Int;
+	private var __glContextLost:Bool;
+	private var __glOptions:Dynamic;
 	private var __invalidated:Bool;
 	private var __mouseX:Float = 0;
 	private var __mouseY:Float = 0;
@@ -60,7 +65,6 @@ class Stage extends Sprite {
 	#end
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
-	
 	
 	
 	public function new (width:Int, height:Int, element:HtmlElement = null, color:Null<Int> = null) {
@@ -87,66 +91,15 @@ class Stage extends Sprite {
 		
 		#if !dom
 		
-		if (Std.is (__element, CanvasElement)) {
+		if (!__initializeGL ()) {
 			
-			__canvas = cast __element;
-			
-		} else {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
+			__initializeCanvas ();
 			
 		}
-		
-		if (__transparent) {
-			
-			__context = cast __canvas.getContext ("2d");
-			
-		} else {
-			
-			__canvas.setAttribute ("moz-opaque", "true");
-			__context = untyped __js__ ('this.__canvas.getContext ("2d", { alpha: false })');
-			
-		}
-		
-		//untyped (__context).mozImageSmoothingEnabled = false;
-		//untyped (__context).webkitImageSmoothingEnabled = false;
-		//__context.imageSmoothingEnabled = false;
-		
-		var style = __canvas.style;
-		style.setProperty ("-webkit-transform", "translateZ(0)", null);
-		style.setProperty ("transform", "translateZ(0)", null);
 		
 		#else
 		
-		__div = cast Browser.document.createElement ("div");
-		
-		var style = __div.style;
-		
-		if (!__transparent) {
-			
-			style.backgroundColor = __colorString;
-			
-		}
-		
-		style.setProperty ("-webkit-transform", "translate3D(0,0,0)", null);
-		style.setProperty ("transform", "translate3D(0,0,0)", null);
-		//style.setProperty ("-webkit-transform-style", "preserve-3d", null);
-		//style.setProperty ("transform-style", "preserve-3d", null);
-		style.position = "relative";
-		style.overflow = "hidden";
-		style.setProperty ("-webkit-user-select", "none", null);
-		style.setProperty ("-moz-user-select", "none", null);
-		style.setProperty ("-ms-user-select", "none", null);
-		style.setProperty ("-o-user-select", "none", null);
-		
-		// Disable image drag on Firefox
-		Browser.document.addEventListener ("dragstart", function (e) {
-			if (e.target.nodeName.toLowerCase() == "img") {
-				e.preventDefault();
-				return false;
-			}
-			return true;
-		}, false);
+		__initializeDOM ();
 		
 		#end
 		
@@ -221,34 +174,6 @@ class Stage extends Sprite {
 		
 		__clearBeforeRender = true;
 		__stack = [];
-		
-		__renderSession = new RenderSession ();
-		__renderSession.context = __context;
-		__renderSession.roundPixels = true;
-		
-		if (__div != null) {
-			
-			__renderSession.element = __div;
-			var prefix = untyped __js__ ("(function () {
-			  var styles = window.getComputedStyle(document.documentElement, ''),
-			    pre = (Array.prototype.slice
-			      .call(styles)
-			      .join('') 
-			      .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
-			    )[1],
-			    dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
-			  return {
-			    dom: dom,
-			    lowercase: pre,
-			    css: '-' + pre + '-',
-			    js: pre[0].toUpperCase() + pre.substr(1)
-			  };
-			})")();
-			__renderSession.vendorPrefix = prefix.lowercase;
-			__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
-			__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
-			
-		}
 		
 		#if stats
 		__stats = untyped __js__("new Stats ()");
@@ -382,6 +307,189 @@ class Stage extends Sprite {
 	}
 	
 	
+	private function __initializeCanvas ():Void {
+		
+		if (Std.is (__element, CanvasElement)) {
+			
+			__canvas = cast __element;
+			
+		} else {
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			
+		}
+		
+		if (__transparent) {
+			
+			__context = cast __canvas.getContext ("2d");
+			
+		} else {
+			
+			__canvas.setAttribute ("moz-opaque", "true");
+			__context = untyped __js__ ('this.__canvas.getContext ("2d", { alpha: false })');
+			
+		}
+		
+		//untyped (__context).mozImageSmoothingEnabled = false;
+		//untyped (__context).webkitImageSmoothingEnabled = false;
+		//__context.imageSmoothingEnabled = false;
+		
+		var style = __canvas.style;
+		style.setProperty ("-webkit-transform", "translateZ(0)", null);
+		style.setProperty ("transform", "translateZ(0)", null);
+		
+		__renderSession = new RenderSession ();
+		__renderSession.context = __context;
+		__renderSession.roundPixels = true;
+		
+	}
+	
+	
+	private function __initializeDOM ():Void {
+		
+		__div = cast Browser.document.createElement ("div");
+		
+		var style = __div.style;
+		
+		if (!__transparent) {
+			
+			style.backgroundColor = __colorString;
+			
+		}
+		
+		style.setProperty ("-webkit-transform", "translate3D(0,0,0)", null);
+		style.setProperty ("transform", "translate3D(0,0,0)", null);
+		//style.setProperty ("-webkit-transform-style", "preserve-3d", null);
+		//style.setProperty ("transform-style", "preserve-3d", null);
+		style.position = "relative";
+		style.overflow = "hidden";
+		style.setProperty ("-webkit-user-select", "none", null);
+		style.setProperty ("-moz-user-select", "none", null);
+		style.setProperty ("-ms-user-select", "none", null);
+		style.setProperty ("-o-user-select", "none", null);
+		
+		// Disable image drag on Firefox
+		Browser.document.addEventListener ("dragstart", function (e) {
+			if (e.target.nodeName.toLowerCase() == "img") {
+				e.preventDefault();
+				return false;
+			}
+			return true;
+		}, false);
+		
+		__renderSession = new RenderSession ();
+		__renderSession.element = __div;
+		__renderSession.roundPixels = true;
+		
+		var prefix = untyped __js__ ("(function () {
+		  var styles = window.getComputedStyle(document.documentElement, ''),
+			pre = (Array.prototype.slice
+			  .call(styles)
+			  .join('') 
+			  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+			)[1],
+			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+		  return {
+			dom: dom,
+			lowercase: pre,
+			css: '-' + pre + '-',
+			js: pre[0].toUpperCase() + pre.substr(1)
+		  };
+		})")();
+		
+		__renderSession.vendorPrefix = prefix.lowercase;
+		__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
+		__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
+		
+	}
+	
+	
+	private function __initializeGL ():Bool {
+		
+		#if webgl
+		
+		if (Std.is (__element, CanvasElement)) {
+			
+			__canvas = cast __element;
+			
+		} else {
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			
+		}
+		
+		var options = {
+			
+			alpha: __transparent,
+			antialias: false,
+			premultipliedAlpha: __transparent,
+			stencil: true
+			
+		}
+		
+		try {
+			
+			__gl = untyped __js__ ('this.__canvas.getContext ("experimental-webgl", options)');
+			
+		} catch (e:Dynamic) {
+			
+			try {
+				
+				__gl = untyped __js__ ('this.__canvas.getContext ("webgl", options)');
+				
+			} catch (e:Dynamic) {
+				
+				return false;
+				
+			}
+			
+		}
+		
+		#if debug
+		__gl = untyped WebGLDebugUtils.makeDebugContext (__gl);
+		#end
+		
+		openfl.gl.GL.__context = __gl;
+		
+		__glContextID = 0;
+		__glOptions = options;
+		
+		__renderSession = new RenderSession ();
+		__renderSession.gl = __gl;
+		//__renderSession.drawCount = 0;
+		
+		//__defaultShader = new WebGLShader (__gl);
+		
+		//__gl.useProgram (__defaultShader.program);
+		
+		//__gl.disable (GL.DEPTH_TEST);
+		//__gl.disable (GL.CULL_FACE);
+		
+		//__gl.enable (GL.BLEND);
+		__gl.colorMask (true, true, true, __transparent);
+		
+		var style = __canvas.style;
+		style.setProperty ("-webkit-transform", "translateZ(0)", null);
+		style.setProperty ("transform", "translateZ(0)", null);
+		
+		__canvas.addEventListener ("webglcontextlost", canvas_onContextLost, false);
+		__canvas.addEventListener ("webglcontextrestored", canvas_onContextRestored, false);
+		
+		__renderSession = new RenderSession ();
+		__renderSession.gl = __gl;
+		__renderSession.roundPixels = true;
+		
+		return true;
+		
+		#else
+		
+		return false;
+		
+		#end
+		
+	}
+	
+	
 	private function __render ():Void {
 		
 		#if stats
@@ -418,21 +526,48 @@ class Stage extends Sprite {
 				
 			}
 			
-			__context.setTransform (1, 0, 0, 1, 0, 0);
-			__context.globalAlpha = 1;
-			
-			if (!__transparent && __clearBeforeRender) {
+			if (__gl != null) {
 				
-				__context.fillStyle = __colorString;
-				__context.fillRect (0, 0, stageWidth, stageHeight);
+				if (!__glContextLost) {
+					
+					__gl.viewport (0, 0, stageWidth, stageHeight);
+					__gl.bindFramebuffer (GL.FRAMEBUFFER, null);
+					
+					if (__transparent) {
+						
+						__gl.clearColor (0, 0, 0 ,0);
+						
+					} else {
+						
+						__gl.clearColor (__colorSplit[0], __colorSplit[1], __colorSplit[2], 1);
+						
+					}
+					
+					__gl.clear (GL.COLOR_BUFFER_BIT);
+					
+					__renderGL (__renderSession);
+					
+				}
 				
-			} else if (__transparent && __clearBeforeRender) {
+			} else {
 				
-				__context.clearRect (0, 0, stageWidth, stageHeight);
+				__context.setTransform (1, 0, 0, 1, 0, 0);
+				__context.globalAlpha = 1;
+				
+				if (!__transparent && __clearBeforeRender) {
+					
+					__context.fillStyle = __colorString;
+					__context.fillRect (0, 0, stageWidth, stageHeight);
+					
+				} else if (__transparent && __clearBeforeRender) {
+					
+					__context.clearRect (0, 0, stageWidth, stageHeight);
+					
+				}
+				
+				__renderCanvas (__renderSession);
 				
 			}
-			
-			__renderCanvas (__renderSession);
 			
 		} else {
 			
@@ -643,6 +778,20 @@ class Stage extends Sprite {
 	// Event Handlers
 	
 	
+	
+	
+	private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
+		
+		__glContextLost = true;
+		
+	}
+	
+	
+	private function canvas_onContextRestored (event:js.html.webgl.ContextEvent):Void {
+		
+		__glContextLost = false;
+		
+	}
 	
 	
 	private function element_onFocus (event:js.html.Event):Void {
@@ -1009,9 +1158,11 @@ class Stage extends Sprite {
 	
 	private function set_color (value:Int):Int {
 		
-		//this.backgroundColorSplit = PIXI.hex2rgb(this.backgroundColor);
-		//var hex = this.backgroundColor.toString (16);
-		//hex = '000000'.substr(0, 6 - hex.length) + hex;
+		var r = (value & 0xFF0000) >>> 16;
+		var g = (value & 0x00FF00) >>> 8;
+		var b = (value & 0x0000FF);
+		
+		__colorSplit = [ r / 0xFF, g / 0xFF, b / 0xFF ];
 		__colorString = "#" + StringTools.hex (value, 6);
 		
 		return __color = value;
@@ -1096,6 +1247,7 @@ class RenderSession {
 	
 	public var context:CanvasRenderingContext2D;
 	public var element:Element;
+	public var gl:GL;
 	//public var mask:Bool;
 	public var maskManager:MaskManager;
 	//public var scaleMode:ScaleMode;

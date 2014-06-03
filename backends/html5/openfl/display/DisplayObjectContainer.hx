@@ -499,6 +499,21 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	public override function __renderGL (renderSession:RenderSession):Void {
+		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		for (child in __children) {
+			
+			child.__renderGL (renderSession);
+			
+		}
+		
+		__removedChildren = [];
+		
+	}
+	
+	
 	public override function __renderMask (renderSession:RenderSession):Void {
 		
 		var bounds = new Rectangle ();
