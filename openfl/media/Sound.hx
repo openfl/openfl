@@ -133,7 +133,7 @@ extern class Sound extends openfl.events.EventDispatcher {
 	var id3(default,null) : ID3Info;
 
 	/**
-	 * Returns the buffering state of external MP3 files. If the value is
+	 * Returns the buffering state of external sound files. If the value is
 	 * <code>true</code>, any playback is currently suspended while the object
 	 * waits for more data.
 	 */
