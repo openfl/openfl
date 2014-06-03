@@ -5,6 +5,7 @@ import js.html.CanvasElement;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
+import openfl.geom.Point;
 import openfl.display.Stage;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
@@ -32,8 +33,12 @@ class Graphics {
 	private var __hasFill:Bool;
 	private var __hasStroke:Bool;
 	private var __inPath:Bool;
+	private var __inversePendingMatrix:Matrix;
+	private var __pattern:CanvasPattern;
+	private var __pendingMatrix:Matrix;
 	private var __positionX:Float;
 	private var __positionY:Float;
+	private var __setFill:Bool;
 	private var __visible:Bool;
 	
 	
@@ -277,13 +282,51 @@ class Graphics {
 	}
 	
 	
+	private function __beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
+		
+		if (__setFill || bitmapFill == null) return;
+		
+		if (__pattern == null) {
+			
+			if (bitmapFill.__sourceImage != null) {
+				
+				__pattern = __context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
+				
+			} else {
+				
+				__pattern = __context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
+				
+			}
+			
+		}
+		
+		__context.fillStyle = __pattern;
+		__setFill = true;
+		
+	}
+	
+	
 	private function __closePath (closeFill:Bool):Void {
 		
 		if (__inPath) {
 			
 			if (__hasFill) {
 				
-				__context.fill ();
+				__context.translate( -__bounds.x, -__bounds.y);
+				
+				if (__pendingMatrix != null) {
+					
+					__context.transform (__pendingMatrix.a, __pendingMatrix.b, __pendingMatrix.c, __pendingMatrix.d, __pendingMatrix.tx, __pendingMatrix.ty);
+					__context.fill ();
+					__context.transform (__inversePendingMatrix.a, __inversePendingMatrix.b, __inversePendingMatrix.c, __inversePendingMatrix.d, __inversePendingMatrix.tx, __inversePendingMatrix.ty);
+					
+				} else {
+					
+					__context.fill ();
+					
+				}
+				
+				__context.translate( __bounds.x, __bounds.y);
 				
 			}
 			
@@ -303,6 +346,8 @@ class Graphics {
 			
 			__hasFill = false;
 			__hasStroke = false;
+			__pendingMatrix = null;
+			__inversePendingMatrix = null;
 			
 		}
 		
@@ -401,10 +446,7 @@ class Graphics {
 				var offsetY = __bounds.y;
 				
 				var bitmapFill:BitmapData = null;
-				var bitmapMatrix:Matrix = null;
 				var bitmapRepeat = false;
-				var pattern:CanvasPattern = null;
-				var setFill = false;
 				
 				for (command in __commands) {
 					
@@ -418,14 +460,26 @@ class Graphics {
 								
 								bitmapFill = bitmap;
 								bitmapRepeat = repeat;
-								pattern = null;
-								setFill = false;
+								__pattern = null;
+								__setFill = false;
 								
 								bitmap.__syncImageData ();
 								
 							}
 							
-							bitmapMatrix = matrix;
+							if (matrix != null) {
+								
+								__pendingMatrix = matrix;
+								__inversePendingMatrix = matrix.clone();
+								__inversePendingMatrix.invert();
+								
+							} else {
+								
+								__pendingMatrix = null;
+								__inversePendingMatrix = null;
+								
+							}
+							
 							__hasFill = true;
 						
 						case BeginFill (rgb, alpha):
@@ -447,11 +501,12 @@ class Graphics {
 							}
 							
 							bitmapFill = null;
-							setFill = true;
+							__setFill = true;
 							__hasFill = true;
 						
 						case CurveTo (cx, cy, x, y):
 							
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 							__positionX = x;
@@ -459,54 +514,12 @@ class Graphics {
 						
 						case DrawCircle (x, y, radius):
 							
-							if (!setFill && bitmapFill != null) {
-								
-								if (pattern == null) {
-									
-									if (bitmapFill.__sourceImage != null) {
-										
-										pattern = __context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
-										
-									} else {
-										
-										pattern = __context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
-										
-									}
-									
-								}
-								
-								__context.fillStyle = pattern;
-								setFill = true;
-
-							}
-							
-							__closePath (false);
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
+							__context.moveTo (x - offsetX + radius, y - offsetY);
 							__context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
-							__closePath (false);
 						
 						case DrawEllipse (x, y, width, height):
-							
-							if (!setFill && bitmapFill != null) {
-								
-								if (pattern == null) {
-									
-									if (bitmapFill.__sourceImage != null) {
-										
-										pattern = __context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
-										
-									} else {
-										
-										pattern = __context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
-										
-									}
-									
-								}
-								
-								__context.fillStyle = pattern;
-								setFill = true;
-								
-							}
 							
 							x -= offsetX;
 							y -= offsetY;
@@ -519,69 +532,77 @@ class Graphics {
 								xm = x + width / 2,       // x-middle
 								ym = y + height / 2;       // y-middle
 							
-							__closePath (false);
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.moveTo(x, ym);
 							__context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
 							__context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
 							__context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
 							__context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-							__closePath (false);
 						
 						case DrawRect (x, y, width, height):
 							
-							if (bitmapFill != null && width <= bitmapFill.width && height <= bitmapFill.height) {
+							var optimizationUsed = false;
+							
+							if (bitmapFill != null) {
 								
-								__closePath (false);
+								var st:Float = 0;
+								var sr:Float = 0;
+								var sb:Float = 0;
+								var sl:Float = 0;
 								
-								var dx = x;
-								var dy = y;
+								var canOptimizeMatrix = true;
 								
-								if (bitmapMatrix != null) {
+								if (__pendingMatrix != null) {
 									
-									dx -= bitmapMatrix.tx;
-									dy -= bitmapMatrix.ty;
-									
-								}
-								
-								if (bitmapFill.__sourceImage != null) {
-									
-									__context.drawImage (bitmapFill.__sourceImage, dx, dy, width, height, x, y, width, height);
-									
-								} else {
-									
-									__context.drawImage (bitmapFill.__sourceCanvas, dx, dy, width, height, x, y, width, height);
-									
-								}
-								
-							} else {
-								
-								__closePath (false);
-								__beginPath ();
-								
-								if (!setFill && bitmapFill != null) {
-									
-									if (pattern == null) {
+									if (__pendingMatrix.b != 0 || __pendingMatrix.c != 0) {
 										
-										if (bitmapFill.__sourceImage != null) {
-											
-											pattern = __context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
-											
-										} else {
-											
-											pattern = __context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
-											
-										}
+										canOptimizeMatrix = false;
+										
+									} else {
+										
+										var stl = __inversePendingMatrix.transformPoint(new Point(x, y));
+										var sbr = __inversePendingMatrix.transformPoint(new Point(x + width, y + height));
+										
+										st = stl.y;
+										sl = stl.x;
+										sb = sbr.y;
+										sr = sbr.x;
 										
 									}
 									
-									__context.fillStyle = pattern;
-									setFill = true;
+								} else {
+									
+									st = y;
+									sl = x;
+									sb = y + height;
+									sr = x + width;
 									
 								}
 								
+								if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
+									
+									optimizationUsed = true;
+									
+									if (bitmapFill.__sourceImage != null) {
+										
+										__context.drawImage (bitmapFill.__sourceImage, sl, st, sr - sl, sb - st, x, y, width, height);
+										
+									} else {
+										
+										__context.drawImage (bitmapFill.__sourceCanvas, sl, st, sr - sl, sb - st, x, y, width, height);
+										
+									}
+									
+								}
+								
+							}
+							
+							if (!optimizationUsed) {
+								
+								__beginPatternFill(bitmapFill, bitmapRepeat);
+								__beginPath ();
 								__context.rect (x - offsetX, y - offsetY, width, height);
-								__closePath (false);
 								
 							}
 						
@@ -721,6 +742,7 @@ class Graphics {
 						
 						case LineTo (x, y):
 							
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.lineTo (x - offsetX, y - offsetY);
 							__positionX = x;
