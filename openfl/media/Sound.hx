@@ -12,9 +12,12 @@ package openfl.media;
 
 /**
  * The Sound class lets you work with sound in an application. The Sound class
- * lets you create a Sound object, load and play an external MP3 file into
- * that object, close the sound stream, and access data about the sound, such
+ * lets you create a Sound object, load and play an external MP3, OGG or WAV file
+ * into that object, close the sound stream, and access data about the sound, such
  * as information about the number of bytes in the stream and ID3 metadata.
+ * Please note that native targets handle OGG and WAV formats only, and do not
+ * support files in MP3 format. The HTML5 target handles either OGG, WAV, or MP3
+ * files depending on the browser used. Flash target handles MP3 and WAV formats. 
  * More detailed control of the sound is performed through the sound source
  *  -  the SoundChannel or Microphone object for the sound  -  and through the
  * properties in the SoundTransform class that control the output of the sound
@@ -204,7 +207,7 @@ extern class Sound extends openfl.events.EventDispatcher {
 	function close() : Void;
 
 	/**
-	 * Initiates loading of an external MP3 file from the specified URL. If you
+	 * Initiates loading of an external sound file from the specified URL. If you
 	 * provide a valid URLRequest object to the Sound constructor, the
 	 * constructor calls <code>Sound.load()</code> for you. You only need to call
 	 * <code>Sound.load()</code> yourself if you don't pass a valid URLRequest
@@ -260,7 +263,7 @@ extern class Sound extends openfl.events.EventDispatcher {
 	 * href="http://www.adobe.com/go/devnet_security_en"
 	 * scope="external">Security</a>.</p>
 	 * 
-	 * @param stream  A URL that points to an external MP3 file.
+	 * @param stream  A URL that points to an external sound file.
 	 * @param context An optional SoundLoader context object, which can define
 	 *                the buffer time(the minimum number of milliseconds of MP3
 	 *                data to hold in the Sound object's buffer) and can specify
