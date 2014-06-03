@@ -5,6 +5,7 @@ import js.html.CanvasElement;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
+import openfl.geom.Point;
 import openfl.display.Stage;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
@@ -466,8 +467,6 @@ class Graphics {
 								
 							}
 							
-							__beginPatternFill(bitmapFill, bitmapRepeat);
-							
 							if (matrix != null) {
 								
 								__pendingMatrix = matrix;
@@ -507,6 +506,7 @@ class Graphics {
 						
 						case CurveTo (cx, cy, x, y):
 							
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 							__positionX = x;
@@ -514,6 +514,7 @@ class Graphics {
 						
 						case DrawCircle (x, y, radius):
 							
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.moveTo (x - offsetX + radius, y - offsetY);
 							__context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
@@ -531,6 +532,7 @@ class Graphics {
 								xm = x + width / 2,       // x-middle
 								ym = y + height / 2;       // y-middle
 							
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.moveTo(x, ym);
 							__context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
@@ -540,8 +542,70 @@ class Graphics {
 						
 						case DrawRect (x, y, width, height):
 							
-							__beginPath ();
-							__context.rect (x - offsetX, y - offsetY, width, height);
+							var optimizationUsed = false;
+							
+							if (bitmapFill != null) {
+								
+								var st:Float = 0;
+								var sr:Float = 0;
+								var sb:Float = 0;
+								var sl:Float = 0;
+								
+								var canOptimizeMatrix = true;
+								
+								if (__pendingMatrix != null) {
+									
+									if (__pendingMatrix.b != 0 || __pendingMatrix.c != 0) {
+										
+										canOptimizeMatrix = false;
+										
+									} else {
+										
+										var stl = __inversePendingMatrix.transformPoint(new Point(x, y));
+										var sbr = __inversePendingMatrix.transformPoint(new Point(x + width, y + height));
+										
+										st = stl.y;
+										sl = stl.x;
+										sb = sbr.y;
+										sr = sbr.x;
+										
+									}
+									
+								} else {
+									
+									st = y;
+									sl = x;
+									sb = y + height;
+									sr = x + width;
+									
+								}
+								
+								if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
+									
+									optimizationUsed = true;
+									
+									if (bitmapFill.__sourceImage != null) {
+										
+										__context.drawImage (bitmapFill.__sourceImage, sl, st, sr - sl, sb - st, x, y, width, height);
+										
+									} else {
+										
+										__context.drawImage (bitmapFill.__sourceCanvas, sl, st, sr - sl, sb - st, x, y, width, height);
+										
+									}
+									
+								}
+								
+								
+							}
+							
+							if (!optimizationUsed) {
+								
+								__beginPatternFill(bitmapFill, bitmapRepeat);
+								__beginPath ();
+								__context.rect (x - offsetX, y - offsetY, width, height);
+								
+							}
 							
 						case DrawTiles (sheet, tileData, smooth, flags):
 							
@@ -678,6 +742,7 @@ class Graphics {
 						
 						case LineTo (x, y):
 							
+							__beginPatternFill(bitmapFill, bitmapRepeat);
 							__beginPath ();
 							__context.lineTo (x - offsetX, y - offsetY);
 							__positionX = x;
