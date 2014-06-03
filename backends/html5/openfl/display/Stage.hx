@@ -21,6 +21,7 @@ import openfl.ui.KeyLocation;
 
 
 @:access(openfl.events.Event)
+@:access(openfl.display.Sprite)
 class Stage extends Sprite {
 	
 	
@@ -45,6 +46,10 @@ class Stage extends Sprite {
 	private var __cursorHidden:Bool;
 	private var __dirty:Bool;
 	private var __div:DivElement;
+	private var __dragBounds:Rectangle;
+	private var __dragObject:Sprite;
+	private var __dragOffsetX:Float;
+	private var __dragOffsetY:Float;
 	private var __element:HtmlElement;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
@@ -60,11 +65,6 @@ class Stage extends Sprite {
 	#end
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
-	
-	@:noCompletion private var __dragBounds:Rectangle;
-	@:noCompletion private var __dragObject:Sprite;
-	@:noCompletion private var __dragOffsetX:Float;
-	@:noCompletion private var __dragOffsetY:Float;
 	
 	
 	public function new (width:Int, height:Int, element:HtmlElement = null, color:Null<Int> = null) {
@@ -318,6 +318,48 @@ class Stage extends Sprite {
 	}
 	
 	
+	private function __drag (mouse:Point):Void {
+		
+		var parent = __dragObject.parent;
+		if (parent != null) {
+			
+			mouse = parent.globalToLocal (mouse);
+			
+		}
+		
+		var x = mouse.x + __dragOffsetX;
+		var y = mouse.y + __dragOffsetY;
+		
+		if (__dragBounds != null) {
+			
+			if (x < __dragBounds.x) {
+				
+				x = __dragBounds.x;
+				
+			} else if (x > __dragBounds.right) {
+				
+				x = __dragBounds.right;
+				
+			}
+			
+			if (y < __dragBounds.y) {
+				
+				y = __dragBounds.y;
+				
+			} else if (y > __dragBounds.bottom) {
+				
+				y = __dragBounds.bottom;
+				
+			}
+			
+		}
+		
+		__dragObject.x = x;
+		__dragObject.y = y;
+		
+	}
+	
+	
 	private function __fireEvent (event:Event, stack:Array<DisplayObject>):Void {
 		
 		var length = stack.length;
@@ -562,6 +604,47 @@ class Stage extends Sprite {
 			element.style.cursor = value ? "none" : __cursor;
 			
 		}
+		
+	}
+	
+	
+	private function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
+		
+		__dragBounds = (bounds == null) ? null : bounds.clone ();
+		__dragObject = sprite;
+		
+		if (__dragObject != null) {
+			
+			if (lockCenter) {
+				
+				__dragOffsetX = -__dragObject.width / 2;
+				__dragOffsetY = -__dragObject.height / 2;
+				
+			} else {
+				
+				var mouse = new Point (mouseX, mouseY);
+				var parent = __dragObject.parent;
+				
+				if (parent != null) {
+					
+					mouse = parent.globalToLocal (mouse);
+					
+				}
+				
+				__dragOffsetX = __dragObject.x - mouse.x;
+				__dragOffsetY = __dragObject.y - mouse.y;
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private function __stopDrag (sprite:Sprite):Void {
+		
+		__dragBounds = null;
+		__dragObject = null;
 		
 	}
 	
@@ -1007,87 +1090,7 @@ class Stage extends Sprite {
 		__broadcast (event, true);
 		
 	}
-
-	@:noCompletion private function __drag (mouse:Point):Void {
-		
-		var parent = __dragObject.parent;
-		if (parent != null) {
-			
-			mouse = parent.globalToLocal (mouse);
-			
-		}
-		
-		var x = mouse.x + __dragOffsetX;
-		var y = mouse.y + __dragOffsetY;
-		
-		if (__dragBounds != null) {
-			
-			if (x < __dragBounds.x) {
-				
-				x = __dragBounds.x;
-				
-			} else if (x > __dragBounds.right) {
-				
-				x = __dragBounds.right;
-				
-			}
-			
-			if (y < __dragBounds.y) {
-				
-				y = __dragBounds.y;
-				
-			} else if (y > __dragBounds.bottom) {
-				
-				y = __dragBounds.bottom;
-				
-			}
-			
-		}
-		
-		__dragObject.x = x;
-		__dragObject.y = y;
-		
-	}
 	
-	@:noCompletion public function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
-		
-		__dragBounds = (bounds == null) ? null : bounds.clone ();
-		__dragObject = sprite;
-		
-		if (__dragObject != null) {
-			
-			if (lockCenter) {
-				
-				__dragOffsetX = -__dragObject.width / 2;
-				__dragOffsetY = -__dragObject.height / 2;
-				
-			} else {
-				
-				var mouse = new Point (mouseX, mouseY);
-				var parent = __dragObject.parent;
-				
-				if (parent != null) {
-					
-					mouse = parent.globalToLocal (mouse);
-					
-				}
-				
-				__dragOffsetX = __dragObject.x - mouse.x;
-				__dragOffsetY = __dragObject.y - mouse.y;
-				
-			}
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion public function __stopDrag (sprite:Sprite):Void {
-		
-		__dragBounds = null;
-		__dragObject = null;
-		
-	}
 	
 	
 	
