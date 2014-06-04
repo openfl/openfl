@@ -621,6 +621,18 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function histogram (hRect:Rectangle = null) {
+		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
+		var pixels = getPixels(rect);
+		var result = [for (i in 0...4) [for (j in 0...256) 0]];
+		
+		for (i in 0...pixels.length) {
+			++result[i % 4][pixels.readUnsignedByte()];
+		}
+		return result;
+	}
+	
+	
 	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Dynamic, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
 		
 		if (!__valid) return false;
