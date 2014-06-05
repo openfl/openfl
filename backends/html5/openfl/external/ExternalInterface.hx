@@ -28,6 +28,11 @@ class ExternalInterface {
 		
 		var callResponse:Dynamic = null;
 		
+		var thisArg = functionName.split('.').slice(0, -1).join('.');
+		if (thisArg.length > 0) {
+			functionName += '.bind(${thisArg})';
+		}
+		
 		if (p1 == null) {
 			
 			callResponse = js.Lib.eval (functionName) ();
