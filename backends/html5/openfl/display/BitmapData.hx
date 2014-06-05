@@ -613,11 +613,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getVector (rect:Rectangle):Vector<UInt> {
-		
-		openfl.Lib.notImplemented ("BitmapData.getVector");
-		return [];
-		
+	public function getVector (rect:Rectangle) {
+		var pixels = getPixels(rect);
+		var result = new Vector<UInt>();
+		for (i in 0...Std.int(pixels.length / 4)) {
+			result.push(pixels.readUnsignedInt());
+		}
+		return result;
 	}
 	
 	
@@ -838,10 +840,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function setVector (rect:Rectangle, pixels:Vector<UInt>):Void {
-		
-		openfl.Lib.notImplemented ("BitmapData.setVector");
-		
+	public function setVector (rect:Rectangle, inputVector:Vector<UInt>) {
+		var byteArray = new ByteArray();
+		byteArray.length = inputVector.length * 4;
+		for (color in inputVector) {
+			byteArray.writeUnsignedInt(color);
+		}
+		byteArray.position = 0;
+		setPixels(rect, byteArray);
 	}
 	
 	
