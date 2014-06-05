@@ -613,11 +613,25 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getVector (rect:Rectangle):Vector<UInt> {
+	public function getVector (rect:Rectangle) {
+		var pixels = getPixels(rect);
+		var result = new Vector<UInt>();
+		for (i in 0...Std.int(pixels.length / 4)) {
+			result.push(pixels.readUnsignedInt());
+		}
+		return result;
+	}
+	
+	
+	public function histogram (hRect:Rectangle = null) {
+		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
+		var pixels = getPixels(rect);
+		var result = [for (i in 0...4) [for (j in 0...256) 0]];
 		
-		openfl.Lib.notImplemented ("BitmapData.getVector");
-		return [];
-		
+		for (i in 0...pixels.length) {
+			++result[i % 4][pixels.readUnsignedByte()];
+		}
+		return result;
 	}
 	
 	
@@ -826,10 +840,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function setVector (rect:Rectangle, pixels:Vector<UInt>):Void {
-		
-		openfl.Lib.notImplemented ("BitmapData.setVector");
-		
+	public function setVector (rect:Rectangle, inputVector:Vector<UInt>) {
+		var byteArray = new ByteArray();
+		byteArray.length = inputVector.length * 4;
+		for (color in inputVector) {
+			byteArray.writeUnsignedInt(color);
+		}
+		byteArray.position = 0;
+		setPixels(rect, byteArray);
 	}
 	
 	
