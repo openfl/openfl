@@ -663,12 +663,29 @@ class Stage extends DisplayObjectContainer {
 					
 				}
 				
+				var cachedAxisData:String = '';
+				if (__joyAxisData.exists(event.id)) cachedAxisData = __joyAxisData.get(event.id).toString();
 				data[event.code] = value;
+				if (__joyAxisData.exists(event.id)) {
 				
-				joystickEvent = new JoystickEvent (type, false, false, event.id, 0, data[0], data[1], data[2]);
-				joystickEvent.axis = data.copy ();
+					__joyAxisData.set (event.id, data);
 				
-				__joyAxisData.set (event.id, data);
+					if (__joyAxisData.get(event.id).toString() == cachedAxisData) { //check if anything has changed from previous registered state. If not, dismiss the event
+						
+						return;
+					
+					} else {
+						
+						joystickEvent = new JoystickEvent (type, false, false, event.id, 0, data[0], data[1], data[2]);
+						joystickEvent.axis = data.copy ();
+							
+					}
+				} else {
+					
+					__joyAxisData.set (event.id, data);
+					joystickEvent = new JoystickEvent (type, false, false, event.id, 0, data[0], data[1], data[2]);
+					joystickEvent.axis = data.copy ();
+				}
 				
 			case JoystickEvent.BALL_MOVE:
 				
