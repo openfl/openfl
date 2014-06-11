@@ -1,6 +1,7 @@
 package;
 
 
+@:access(openfl.display.Stage)
 class OpenFLApplication extends lime.app.Application {
 	
 	
@@ -28,8 +29,7 @@ class OpenFLApplication extends lime.app.Application {
 	
 	public override function render ():Void {
 		
-		lime.graphics.opengl.GL.clearColor (1, 0, 0, 1);
-		lime.graphics.opengl.GL.clear (lime.graphics.opengl.GL.COLOR_BUFFER_BIT);
+		stage.__render ();
 		
 	}
 	
