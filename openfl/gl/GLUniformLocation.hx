@@ -1,8 +1,4 @@
 package openfl.gl;
-#if display
 
 
-typedef GLUniformLocation = Dynamic;
-
-
-#end
+typedef GLUniformLocation = js.html.webgl.UniformLocation;

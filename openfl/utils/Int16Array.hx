@@ -1,12 +1,4 @@
 package openfl.utils;
-#if display
 
 
-class Int16Array extends ArrayBufferView implements ArrayAccess<Int> {
-	
-	
-	
-}
-
-
-#end
+typedef Int16Array = js.html.Int16Array;

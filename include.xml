@@ -3,6 +3,8 @@
 	
 	<haxedef name="native" if="cpp || neko" />
 	
+	<haxelib name="lime" />
+	
 	<include haxelib="lime-tools" />
 	<template path="templates" />
 	
@@ -25,10 +27,6 @@
 		
 	</section>
 	
-	<include path="backends/flash/include.xml" if="flash" unless="custom-backend" />
-	<include path="backends/native/include.xml" if="native" unless="custom-backend" />
-	<include path="backends/html5/include.xml" if="html5" unless="custom-backend" />
-	
 	<section if="display">
 		
 		<include haxelib="${custom-backend}" if="custom-backend" />
@@ -37,9 +35,18 @@
 	
 	<section unless="display">
 		
-		<source path="backends/flash" if="flash" unless="custom-backend" />
-		<source path="backends/native" if="native" unless="custom-backend" />
-		<source path="backends/html5" if="html5" unless="custom-backend" />
+		<section if="html5" unless="custom-backend">
+			
+			<set name="openfl-html5" />
+			<haxedef name="openfl-html5" />
+			
+			<haxeflag name="--remap" value="flash:openfl" />
+			
+			<dependency path="dependencies/webgl-debug.js" if="debug" />
+			<dependency path="dependencies/stats.min.js" if="stats" />
+			<dependency path="dependencies/soundjs.min.js" />
+			
+		</section>
 		
 		<haxelib name="${custom-backend}" if="custom-backend" />
 		

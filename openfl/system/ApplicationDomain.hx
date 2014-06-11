@@ -1,22 +1,41 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.system;
-#if display
 
 
-@:final extern class ApplicationDomain {
-	var parentDomain(default,null) : ApplicationDomain;
-	function new(?parentDomain : ApplicationDomain) : Void;
-	function getDefinition(name : String) : openfl.utils.Object;
-	function hasDefinition(name : String) : Bool;
-	static var currentDomain(default,null) : ApplicationDomain;
+class ApplicationDomain {
+	
+	
+	public static var currentDomain (default, null) = new ApplicationDomain (null);
+	
+	public var parentDomain (default, null):ApplicationDomain;
+	
+	
+	public function new (parentDomain:ApplicationDomain = null) {
+		
+		if (parentDomain != null) {
+			
+			this.parentDomain = parentDomain;
+			
+		} else {
+			
+			this.parentDomain = currentDomain;
+			
+		}
+		
+	}
+	
+	
+	public function getDefinition (name:String):Dynamic {
+		
+		return Type.resolveClass (name);
+		
+	}
+	
+	
+	public function hasDefinition (name:String):Bool {
+		
+		return (Type.resolveClass (name) != null);
+		
+	}
+	
+	
 }
-
-
-#end

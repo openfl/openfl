@@ -1,17 +1,43 @@
 package openfl.display;
-#if display
 
 
 import openfl.display.DisplayObject;
-import openfl.geom.Rectangle;
 
 
-extern class DirectRenderer extends DisplayObject {
+class DirectRenderer extends DisplayObject {
+	
+	
+	public var render (get_render, set_render):Dynamic;
 
-	function new(inType:String = "DirectRenderer"):Void;
-	dynamic function render(inRect:Rectangle):Void;
+	private var __render:Dynamic;
+	
+	
+	public function new (type:String = "DirectRenderer") {
+		
+		super ();
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private function get_render ():Dynamic {
+		
+		return __render;
+		
+	}
+	
+	
+	private function set_render (value:Dynamic):Dynamic {
+		
+		return __render = value;
+		
+	}
+	
 	
 }
-
-
-#end

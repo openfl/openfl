@@ -1,12 +1,4 @@
 package openfl.utils;
-#if display
 
 
-extern class ArrayBufferView {
-	
-	
-	
-}
-
-
-#end
+typedef ArrayBufferView = js.html.ArrayBufferView;

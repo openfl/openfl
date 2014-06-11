@@ -1,22 +1,48 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.errors;
-#if display
 
 
-extern class Error #if (flash && !flash_strict) implements Dynamic #end {
-	var errorID(default,null) : Int;
-	var message : Dynamic;
-	var name : Dynamic;
-	function new(?message : Dynamic, id : Dynamic = 0) : Void;
-	function getStackTrace() : String;
+import haxe.CallStack;
+
+
+class Error {
+	
+	
+	private static inline var DEFAULT_TO_STRING = "Error";
+	
+	public var errorID:Int;
+	public var message:String;
+	public var name:String;
+	
+	
+	public function new (message:String = "", id:Int = 0) {
+		
+		this.message = message;
+		this.errorID = id;
+		name = "Error";
+		
+	}
+	
+	
+	public function getStackTrace ():String {
+		
+		return CallStack.toString (CallStack.exceptionStack ());
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		if (message != null) {
+			
+			return message;
+			
+		} else {
+			
+			return DEFAULT_TO_STRING;
+			
+		}
+		
+	}
+	
+	
 }
-
-
-#end

@@ -1,14 +1,4 @@
 package openfl.gl;
-#if display
 
 
-typedef GLActiveInfo = {
-	
-    size : Int,
-    type : Int,
-    name : String,
-	
-};
-
-
-#end
+typedef GLActiveInfo = js.html.webgl.ActiveInfo;

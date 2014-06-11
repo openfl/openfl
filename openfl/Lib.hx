@@ -1,89 +1,139 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl;
-#if display
 
 
-class Lib {
-
-	public static var current : openfl.display.MovieClip;
-
-	public inline static function getTimer() : Int {
-		return 0;
-	}
-
-	public static function eval( path : String ) : Dynamic {
-		return null;
-	}
-
-	public static function getURL( url : openfl.net.URLRequest, ?target : String ) {
-		
-	}
-
-	public static function fscommand( cmd : String, ?param : String ) {
-		
-	}
-
-	public static function trace( arg : Dynamic ) {
-		haxe.Log.trace (arg);
-	}
-
-	public static function attach( name : String ) : openfl.display.MovieClip {
-		return null;
-	}
-
-	public inline static function as<T>( v : Dynamic, c : Class<T> ) : Null<T> {
-		return cast v;
-	}
-	
-	public static function redirectTraces() {
-		
-	}
-
-	static function traceToConsole(v : Dynamic, ?inf : haxe.PosInfos ) {
-		
-	}
-}
+import haxe.Timer;
+import js.html.HtmlElement;
+import js.Browser;
+import openfl.display.MovieClip;
+import openfl.display.Stage;
+import openfl.net.URLRequest;
 
 
-#elseif macro
-
-
-import haxe.macro.Compiler;
-import haxe.macro.Context;
-import sys.FileSystem;
-
-
-class Lib {
+@:access(openfl.display.Stage) class Lib {
 	
 	
-	public static function includeBackend (type:String) {
+	public static var current (default, null):MovieClip = new MovieClip ();
+	
+	private static var __sentWarnings = new Map<String, Bool> ();
+	private static var __startTime:Float = Timer.stamp ();
+	
+	
+	public static function as<T> (v:Dynamic, c:Class<T>):Null<T> {
 		
-		Compiler.define ("openfl");
-		Compiler.define ("openfl_" + type);
+		return Std.is (v, c) ? v : null;
 		
-		var paths = Context.getClassPath();
+	}
+	
+	
+	public static function attach (name:String):MovieClip {
 		
-		for (path in paths) {
+		return new MovieClip ();
+		
+	}
+	
+	
+	public static function create (element:HtmlElement, width:Null<Int> = null, height:Null<Int> = null, backgroundColor:Null<Int>):Void {
+		
+		if (width == null) {
 			
-			if (FileSystem.exists (path + "/backends/" + type)) {
-				
-				Compiler.addClassPath (path + "/backends/" + type);
-				
+			width = 0;
+			
+		}
+		
+		if (height == null) {
+			
+			height = 0;
+			
+		}
+		
+		untyped __js__ ("
+			var lastTime = 0;
+			var vendors = ['ms', 'moz', 'webkit', 'o'];
+			for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+				window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+				window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+										   || window[vendors[x]+'CancelRequestAnimationFrame'];
 			}
+			
+			if (!window.requestAnimationFrame)
+				window.requestAnimationFrame = function(callback, element) {
+					var currTime = new Date().getTime();
+					var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+					var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+					  timeToCall);
+					lastTime = currTime + timeToCall;
+					return id;
+				};
+			
+			if (!window.cancelAnimationFrame)
+				window.cancelAnimationFrame = function(id) {
+					clearTimeout(id);
+				};
+			
+			window.requestAnimFrame = window.requestAnimationFrame;
+		");
+		
+		var stage = new Stage (width, height, element, backgroundColor);
+		
+		if (current == null) {
+			
+			current = new MovieClip ();
+			stage.addChild (current);
 			
 		}
 		
 	}
 	
 	
+	public static function getTimer ():Int {
+		
+		return Std.int ((Timer.stamp () - __startTime) * 1000);
+		
+	}
+	
+	
+	public static function getURL (request:URLRequest, target:String = null) {
+		
+		if (target == null) {
+			
+			target = "_blank";
+			
+		}
+		
+		Browser.window.open (request.url, target);
+		
+	}
+	
+	
+	public static function notImplemented (api:String):Void {
+		
+		if (!__sentWarnings.exists (api)) {
+			
+			__sentWarnings.set (api, true);
+			
+			trace ("Warning: " + api + " is not implemented");
+			
+		}
+		
+	}
+	
+	
+	public static function preventDefaultTouchMove ():Void {
+		
+		Browser.document.addEventListener ("touchmove", function (evt:js.html.Event):Void {
+			
+			evt.preventDefault ();
+			
+		}, false);
+		
+	}
+	
+	
+	public static function trace (arg:Dynamic):Void {
+		
+		haxe.Log.trace (arg);
+		
+	}
+	
+	
 }
-
-
-#end

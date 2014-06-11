@@ -1,12 +1,4 @@
 package openfl.gl;
-#if display
 
 
-extern class GLBuffer extends GLObject {
-	
-	function new(inVersion:Int, inId:Dynamic):Void;
-	
-}
-
-
-#end
+typedef GLBuffer = js.html.webgl.Buffer;

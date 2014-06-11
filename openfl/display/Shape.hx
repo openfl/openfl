@@ -1,42 +1,192 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.display;
-#if display
 
 
-/**
- * This class is used to create lightweight shapes using the ActionScript
- * drawing application program interface(API). The Shape class includes a
- * <code>graphics</code> property, which lets you access methods from the
- * Graphics class.
- *
- * <p>The Sprite class also includes a <code>graphics</code>property, and it
- * includes other features not available to the Shape class. For example, a
- * Sprite object is a display object container, whereas a Shape object is not
- * (and cannot contain child display objects). For this reason, Shape objects
- * consume less memory than Sprite objects that contain the same graphics.
- * However, a Sprite object supports user input events, while a Shape object
- * does not.</p>
- */
-extern class Shape extends DisplayObject {
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.CSSStyleDeclaration;
+import js.Browser;
+import openfl.display.Stage;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
-	/**
-	 * Specifies the Graphics object belonging to this Shape object, where vector
-	 * drawing commands can occur.
-	 */
-	var graphics(default,null) : Graphics;
 
-	/**
-	 * Creates a new Shape object.
-	 */
-	function new() : Void;
+@:access(openfl.display.Graphics)
+class Shape extends DisplayObject {
+	
+	
+	public var graphics (get, null):Graphics;
+	
+	private var __canvas:CanvasElement;
+	private var __canvasContext:CanvasRenderingContext2D;
+	private var __graphics:Graphics;
+	
+	
+	public function new () {
+		
+		super ();
+		
+	}
+	
+	
+	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		if (__graphics != null) {
+			
+			__graphics.__getBounds (rect, __worldTransform);
+			
+		}
+		
+	}
+	
+	
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+		
+		if (visible && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __worldTransform)) {
+			
+			if (!interactiveOnly) {
+				
+				stack.push (this);
+				
+			}
+			
+			return true;
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	public override function __renderCanvas (renderSession:RenderSession):Void {
+		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		if (__graphics != null) {
+			
+			__graphics.__render ();
+			
+			if (__graphics.__canvas != null) {
+				
+				var context = renderSession.context;
+				
+				context.globalAlpha = __worldAlpha;
+				var transform = __worldTransform;
+				
+				if (renderSession.roundPixels) {
+					
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+					
+				} else {
+					
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					
+				}
+				
+				if (scrollRect == null) {
+					
+					context.drawImage (__graphics.__canvas, __graphics.__bounds.x, __graphics.__bounds.y);
+					
+				} else {
+					
+					context.drawImage (__graphics.__canvas, scrollRect.x - __graphics.__bounds.x, scrollRect.y - __graphics.__bounds.y, scrollRect.width, scrollRect.height, __graphics.__bounds.x + scrollRect.x, __graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	public override function __renderDOM (renderSession:RenderSession):Void {
+		
+		if (stage != null && __worldVisible && __renderable && __graphics != null) {
+		
+			if (__graphics.__dirty || __worldAlphaChanged || (__canvas == null && __graphics.__canvas != null)) {
+				
+				__graphics.__render ();
+				
+				if (__graphics.__canvas != null) {
+					
+					if (__canvas == null) {
+						
+						__canvas = cast Browser.document.createElement ("canvas");	
+						__canvasContext = __canvas.getContext ("2d");
+						__initializeElement (__canvas, renderSession);
+						
+					}
+					
+					__canvas.width = __graphics.__canvas.width;
+					__canvas.height = __graphics.__canvas.height;
+					
+					__canvasContext.globalAlpha = __worldAlpha;
+					__canvasContext.drawImage (__graphics.__canvas, 0, 0);
+					
+				} else {
+					
+					if (__canvas != null) {
+						
+						renderSession.element.removeChild (__canvas);
+						__canvas = null;
+						__style = null;
+						
+					}
+					
+				}
+				
+			}
+			
+			if (__canvas != null) {
+				
+				if (__worldTransformChanged) {
+					
+					var transform = new Matrix ();
+					transform.translate (__graphics.__bounds.x, __graphics.__bounds.y);
+					transform = transform.mult (__worldTransform);
+					
+					__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
+					
+				}
+				
+				__applyStyle (renderSession, false, false, true);
+				
+			}
+				
+		} else {
+			
+			if (__canvas != null) {
+				
+				renderSession.element.removeChild (__canvas);
+				__canvas = null;
+				__style = null;
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_graphics ():Graphics {
+		
+		if (__graphics == null) {
+			
+			__graphics = new Graphics ();
+			
+		}
+		
+		return __graphics;
+		
+	}
+	
+	
 }
-
-
-#end

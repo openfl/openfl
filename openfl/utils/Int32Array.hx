@@ -1,12 +1,4 @@
 package openfl.utils;
-#if display
 
 
-class Int32Array extends ArrayBufferView implements ArrayAccess<Int> {
-	
-	
-	
-}
-
-
-#end
+typedef Int32Array = js.html.Int32Array;

@@ -1,21 +1,41 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.events;
-#if display
 
 
-extern class SampleDataEvent extends Event {
-	var data : openfl.utils.ByteArray;
-	var position : Float;
-	function new(type : String, bubbles : Bool = false, cancelable : Bool = false, theposition : Float = 0, ?thedata : openfl.utils.ByteArray) : Void;
-	static var SAMPLE_DATA : String;
+import openfl.utils.ByteArray;
+
+
+class SampleDataEvent extends Event {
+	
+	
+	public static var SAMPLE_DATA:String = "sampleData";
+	
+	public var data:ByteArray;
+	public var position:Float;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false) {
+		
+		super (type, bubbles, cancelable);
+		
+		//data = new ByteArray ();
+		//data.littleEndian = true;
+		position = 0.0;
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		return new SampleDataEvent (type, bubbles, cancelable);
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return "[SampleDataEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		
+	}
+	
+	
 }
-
-
-#end

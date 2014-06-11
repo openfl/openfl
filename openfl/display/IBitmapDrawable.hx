@@ -1,17 +1,16 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.display;
-#if display
 
 
-extern interface IBitmapDrawable {
+import openfl.display.Stage;
+import openfl.geom.Matrix;
+
+
+interface IBitmapDrawable {
+	
+	var __worldTransform:Matrix;
+	
+	function __renderCanvas (renderSession:RenderSession):Void;
+	function __renderMask (renderSession:RenderSession):Void;
+	function __updateChildren (transformOnly:Bool):Void;
+	
 }
-
-
-#end

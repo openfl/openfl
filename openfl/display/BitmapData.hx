@@ -1,780 +1,1555 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.display;
-#if display
 
 
-/**
- * The BitmapData class lets you work with the data(pixels) of a Bitmap
- * object. You can use the methods of the BitmapData class to create
- * arbitrarily sized transparent or opaque bitmap images and manipulate them
- * in various ways at runtime. You can also access the BitmapData for a bitmap
- * image that you load with the <code>openfl.Assets</code> or 
- * <code>openfl.display.Loader</code> classes.
- *
- * <p>This class lets you separate bitmap rendering operations from the
- * internal display updating routines of OpenFL. By manipulating a
- * BitmapData object directly, you can create complex images without incurring
- * the per-frame overhead of constantly redrawing the content from vector
- * data.</p>
- *
- * <p>The methods of the BitmapData class support effects that are not
- * available through the filters available to non-bitmap display objects.</p>
- *
- * <p>A BitmapData object contains an array of pixel data. This data can
- * represent either a fully opaque bitmap or a transparent bitmap that
- * contains alpha channel data. Either type of BitmapData object is stored as
- * a buffer of 32-bit integers. Each 32-bit integer determines the properties
- * of a single pixel in the bitmap.</p>
- *
- * <p>Each 32-bit integer is a combination of four 8-bit channel values(from
- * 0 to 255) that describe the alpha transparency and the red, green, and blue
- * (ARGB) values of the pixel.(For ARGB values, the most significant byte
- * represents the alpha channel value, followed by red, green, and blue.)</p>
- *
- * <p>The four channels(alpha, red, green, and blue) are represented as
- * numbers when you use them with the <code>BitmapData.copyChannel()</code>
- * method or the <code>DisplacementMapFilter.componentX</code> and
- * <code>DisplacementMapFilter.componentY</code> properties, and these numbers
- * are represented by the following constants in the BitmapDataChannel
- * class:</p>
- *
- * <ul>
- *   <li><code>BitmapDataChannel.ALPHA</code></li>
- *   <li><code>BitmapDataChannel.RED</code></li>
- *   <li><code>BitmapDataChannel.GREEN</code></li>
- *   <li><code>BitmapDataChannel.BLUE</code></li>
- * </ul>
- *
- * <p>You can attach BitmapData objects to a Bitmap object by using the
- * <code>bitmapData</code> property of the Bitmap object.</p>
- *
- * <p>You can use a BitmapData object to fill a Graphics object by using the
- * <code>Graphics.beginBitmapFill()</code> method.</p>
- * 
- * <p>You can also use a BitmapData object to perform batch tile rendering
- * using the <code>openfl.display.Tilesheet</code> class.</p>
- *
- * <p>In Flash Player 10, the maximum size for a BitmapData object
- * is 8,191 pixels in width or height, and the total number of pixels cannot
- * exceed 16,777,215 pixels.(So, if a BitmapData object is 8,191 pixels wide,
- * it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation 
- * is 2,880 pixels in height and 2,880 in width.</p>
- */
-extern class BitmapData implements IBitmapDrawable {
+import haxe.crypto.BaseCode;
+import haxe.io.Bytes;
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.Image;
+import js.html.ImageData;
+import js.html.Uint8ClampedArray;
+import js.Browser;
+import openfl.display.Stage;
+import openfl.errors.IOError;
+import openfl.filters.BitmapFilter;
+import openfl.geom.ColorTransform;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.gl.GLTexture;
+import openfl.utils.ByteArray;
+
+
+@:autoBuild(openfl.Assets.embedBitmap())
+class BitmapData implements IBitmapDrawable {
 	
-	/**
-	 * The height of the bitmap image in pixels.
-	 */
-	var height(default, null):Int;
 	
-	/**
-	 * The rectangle that defines the size and location of the bitmap image. The
-	 * top and left of the rectangle are 0; the width and height are equal to the
-	 * width and height in pixels of the BitmapData object.
-	 */
-	var rect(default, null):openfl.geom.Rectangle;
+	private static var __base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	private static var __base64Encoder:BaseCode;
 	
-	/**
-	 * Defines whether the bitmap image supports per-pixel transparency. You can
-	 * set this value only when you construct a BitmapData object by passing in
-	 * <code>true</code> for the <code>transparent</code> parameter of the
-	 * constructor. Then, after you create a BitmapData object, you can check
-	 * whether it supports per-pixel transparency by determining if the value of
-	 * the <code>transparent</code> property is <code>true</code>.
-	 */
-	var transparent(default, null):Bool;
+	public var height (default, null):Int;
+	public var rect (default, null):Rectangle;
+	public var transparent (default, null):Bool;
+	public var width (default, null):Int;
+
+	public var __glTexture:GLTexture;
+	public var __worldTransform:Matrix;
 	
-	/**
-	 * The width of the bitmap image in pixels.
-	 */
-	var width(default, null):Int;
+	private var __loading:Bool;
+	private var __sourceCanvas:CanvasElement;
+	private var __sourceContext:CanvasRenderingContext2D;
+	private var __sourceImage:Image;
+	private var __sourceImageData:ImageData;
+	private var __sourceImageDataChanged:Bool;
+	private var __valid:Bool;
 	
-	/**
-	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
-	 * the <code>fillColor</code> parameter, every pixel in the bitmap is set to that color. 
-	 * 
-	 * By default, the bitmap is created as transparent, unless you pass the value <code>false</code>
-	 * for the transparent parameter. After you create an opaque bitmap, you cannot change it 
-	 * to a transparent bitmap. Every pixel in an opaque bitmap uses only 24 bits of color channel 
-	 * information. If you define the bitmap as transparent, every pixel uses 32 bits of color 
-	 * channel information, including an alpha transparency channel.
-	 * 
-	 * @param	width		The width of the bitmap image in pixels. 
-	 * @param	height		The height of the bitmap image in pixels. 
-	 * @param	transparent		Specifies whether the bitmap image supports per-pixel transparency. The default value is <code>true</code>(transparent). To create a fully transparent bitmap, set the value of the <code>transparent</code> parameter to <code>true</code> and the value of the <code>fillColor</code> parameter to 0x00000000(or to 0). Setting the <code>transparent</code> property to <code>false</code> can result in minor improvements in rendering performance.
-	 * @param	fillColor		A 32-bit ARGB color value that you use to fill the bitmap image area. The default value is 0xFFFFFFFF(solid white).
-	 */
-	function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF):Void;
 	
-	/**
-	 * Takes a source image and a filter object and generates the filtered image. 
-	 * 
-	 * This method relies on the behavior of built-in filter objects, which determine the 
-	 * destination rectangle that is affected by an input source rectangle.
-	 * 
-	 * After a filter is applied, the resulting image can be larger than the input image. 
-	 * For example, if you use a BlurFilter class to blur a source rectangle of(50,50,100,100) 
-	 * and a destination point of(10,10), the area that changes in the destination image is 
-	 * larger than(10,10,60,60) because of the blurring. This happens internally during the 
-	 * applyFilter() call.
-	 * 
-	 * If the <code>sourceRect</code> parameter of the sourceBitmapData parameter is an 
-	 * interior region, such as(50,50,100,100) in a 200 x 200 image, the filter uses the source 
-	 * pixels outside the <code>sourceRect</code> parameter to generate the destination rectangle.
-	 * 
-	 * If the BitmapData object and the object specified as the <code>sourceBitmapData</code> 
-	 * parameter are the same object, the application uses a temporary copy of the object to 
-	 * perform the filter. For best performance, avoid this situation.
-	 * 
-	 * @param	sourceBitmapData		The input bitmap image to use. The source image can be a different BitmapData object or it can refer to the current BitmapData instance.
-	 * @param	sourceRect		A rectangle that defines the area of the source image to use as input.
-	 * @param	destPoint		The point within the destination image(the current BitmapData instance) that corresponds to the upper-left corner of the source rectangle. 
-	 * @param	filter		The filter object that you use to perform the filtering operation. 
-	 */
-	function applyFilter(sourceBitmapData:BitmapData, sourceRect:openfl.geom.Rectangle, destPoint:openfl.geom.Point, filter:openfl.filters.BitmapFilter):Void;
+	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
+		
+		this.transparent = transparent;
+		
+		if (width > 0 && height > 0) {
+			
+			this.width = width;
+			this.height = height;
+			rect = new Rectangle (0, 0, width, height);
+			
+			__createCanvas (width, height);
+			
+			if (!transparent) {
+				
+				fillColor = (0xFF << 24) | (fillColor & 0xFFFFFF);
+				
+			}
+			
+			__fillRect (new Rectangle (0, 0, width, height), fillColor);
+			
+		}
+		
+	}
 	
-	/**
-	 * Returns a new BitmapData object that is a clone of the original instance with an exact copy of the contained bitmap. 
-	 * @return		A new BitmapData object that is identical to the original.
-	 */
-	function clone():BitmapData;
 	
-	/**
-	 * Adjusts the color values in a specified area of a bitmap image by using a <code>ColorTransform</code>
-	 * object. If the rectangle matches the boundaries of the bitmap image, this method transforms the color 
-	 * values of the entire image. 
-	 * @param	rect		A Rectangle object that defines the area of the image in which the ColorTransform object is applied.
-	 * @param	colorTransform		A ColorTransform object that describes the color transformation values to apply.
-	 */
-	function colorTransform(rect:openfl.geom.Rectangle, colorTransform:openfl.geom.ColorTransform):Void;
+	public function applyFilter (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void {
+		
+		if (!__valid || sourceBitmapData == null || !sourceBitmapData.__valid) return;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		sourceBitmapData.__convertToCanvas ();
+		sourceBitmapData.__createImageData ();
+		
+		filter.__applyFilter (__sourceImageData, sourceBitmapData.__sourceImageData, sourceRect, destPoint);
+		
+		__sourceImageDataChanged = true;
+		
+	}
 	
-
-	/**
-	 * Transfers data from one channel of another BitmapData object or the
-	 * current BitmapData object into a channel of the current BitmapData object.
-	 * All of the data in the other channels in the destination BitmapData object
-	 * are preserved.
-	 *
-	 * <p>The source channel value and destination channel value can be one of
-	 * following values: </p>
-	 *
-	 * <ul>
-	 *   <li><code>BitmapDataChannel.RED</code></li>
-	 *   <li><code>BitmapDataChannel.GREEN</code></li>
-	 *   <li><code>BitmapDataChannel.BLUE</code></li>
-	 *   <li><code>BitmapDataChannel.ALPHA</code></li>
-	 * </ul>
-	 * 
-	 * @param sourceBitmapData The input bitmap image to use. The source image
-	 *                         can be a different BitmapData object or it can
-	 *                         refer to the current BitmapData object.
-	 * @param sourceRect       The source Rectangle object. To copy only channel
-	 *                         data from a smaller area within the bitmap,
-	 *                         specify a source rectangle that is smaller than
-	 *                         the overall size of the BitmapData object.
-	 * @param destPoint        The destination Point object that represents the
-	 *                         upper-left corner of the rectangular area where
-	 *                         the new channel data is placed. To copy only
-	 *                         channel data from one area to a different area in
-	 *                         the destination image, specify a point other than
-	 *                        (0,0).
-	 * @param sourceChannel    The source channel. Use a value from the
-	 *                         BitmapDataChannel class
-	 *                        (<code>BitmapDataChannel.RED</code>,
-	 *                         <code>BitmapDataChannel.BLUE</code>,
-	 *                         <code>BitmapDataChannel.GREEN</code>,
-	 *                         <code>BitmapDataChannel.ALPHA</code>).
-	 * @param destChannel      The destination channel. Use a value from the
-	 *                         BitmapDataChannel class
-	 *                        (<code>BitmapDataChannel.RED</code>,
-	 *                         <code>BitmapDataChannel.BLUE</code>,
-	 *                         <code>BitmapDataChannel.GREEN</code>,
-	 *                         <code>BitmapDataChannel.ALPHA</code>).
-	 * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
-	 */
-	function copyChannel(sourceBitmapData : BitmapData, sourceRect : openfl.geom.Rectangle, destPoint : openfl.geom.Point, sourceChannel : UInt, destChannel : UInt) : Void;
-
-	/**
-	 * Provides a fast routine to perform pixel manipulation between images with
-	 * no stretching, rotation, or color effects. This method copies a
-	 * rectangular area of a source image to a rectangular area of the same size
-	 * at the destination point of the destination BitmapData object.
-	 *
-	 * <p>If you include the <code>alphaBitmap</code> and <code>alphaPoint</code>
-	 * parameters, you can use a secondary image as an alpha source for the
-	 * source image. If the source image has alpha data, both sets of alpha data
-	 * are used to composite pixels from the source image to the destination
-	 * image. The <code>alphaPoint</code> parameter is the point in the alpha
-	 * image that corresponds to the upper-left corner of the source rectangle.
-	 * Any pixels outside the intersection of the source image and alpha image
-	 * are not copied to the destination image.</p>
-	 *
-	 * <p>The <code>mergeAlpha</code> property controls whether or not the alpha
-	 * channel is used when a transparent image is copied onto another
-	 * transparent image. To copy pixels with the alpha channel data, set the
-	 * <code>mergeAlpha</code> property to <code>true</code>. By default, the
-	 * <code>mergeAlpha</code> property is <code>false</code>.</p>
-	 * 
-	 * @param sourceBitmapData The input bitmap image from which to copy pixels.
-	 *                         The source image can be a different BitmapData
-	 *                         instance, or it can refer to the current
-	 *                         BitmapData instance.
-	 * @param sourceRect       A rectangle that defines the area of the source
-	 *                         image to use as input.
-	 * @param destPoint        The destination point that represents the
-	 *                         upper-left corner of the rectangular area where
-	 *                         the new pixels are placed.
-	 * @param alphaBitmapData  A secondary, alpha BitmapData object source.
-	 * @param alphaPoint       The point in the alpha BitmapData object source
-	 *                         that corresponds to the upper-left corner of the
-	 *                         <code>sourceRect</code> parameter.
-	 * @param mergeAlpha       To use the alpha channel, set the value to
-	 *                         <code>true</code>. To copy pixels with no alpha
-	 *                         channel, set the value to <code>false</code>.
-	 * @throws TypeError The sourceBitmapData, sourceRect, destPoint are null.
-	 */
-	function copyPixels(sourceBitmapData : BitmapData, sourceRect : openfl.geom.Rectangle, destPoint : openfl.geom.Point, ?alphaBitmapData : BitmapData, ?alphaPoint : openfl.geom.Point, mergeAlpha : Bool = false) : Void;
 	
-	/**
-	 * Frees memory that is used to store the BitmapData object.
-	 *
-	 * <p>When the <code>dispose()</code> method is called on an image, the width
-	 * and height of the image are set to 0. All subsequent calls to methods or
-	 * properties of this BitmapData instance fail, and an exception is thrown.
-	 * </p>
-	 *
-	 * <p><code>BitmapData.dispose()</code> releases the memory occupied by the
-	 * actual bitmap data, immediately(a bitmap can consume up to 64 MB of
-	 * memory). After using <code>BitmapData.dispose()</code>, the BitmapData
-	 * object is no longer usable and an exception may be thrown if
-	 * you call functions on the BitmapData object. However,
-	 * <code>BitmapData.dispose()</code> does not garbage collect the BitmapData
-	 * object(approximately 128 bytes); the memory occupied by the actual
-	 * BitmapData object is released at the time the BitmapData object is
-	 * collected by the garbage collector.</p>
-	 * 
-	 */
-	function dispose() : Void;
-
-	/**
-	 * Draws the <code>source</code> display object onto the bitmap image, using
-	 * the NME software renderer. You can specify <code>matrix</code>,
-	 * <code>colorTransform</code>, <code>blendMode</code>, and a destination
-	 * <code>clipRect</code> parameter to control how the rendering performs.
-	 * Optionally, you can specify whether the bitmap should be smoothed when
-	 * scaled(this works only if the source object is a BitmapData object).
-	 *
-	 * <p>The source display object does not use any of its applied
-	 * transformations for this call. It is treated as it exists in the library
-	 * or file, with no matrix transform, no color transform, and no blend mode.
-	 * To draw a display object(such as a movie clip) by using its own transform
-	 * properties, you can copy its <code>transform</code> property object to the
-	 * <code>transform</code> property of the Bitmap object that uses the
-	 * BitmapData object.</p>
-	 * 
-	 * @param source         The display object or BitmapData object to draw to
-	 *                       the BitmapData object.(The DisplayObject and
-	 *                       BitmapData classes implement the IBitmapDrawable
-	 *                       interface.)
-	 * @param matrix         A Matrix object used to scale, rotate, or translate
-	 *                       the coordinates of the bitmap. If you do not want to
-	 *                       apply a matrix transformation to the image, set this
-	 *                       parameter to an identity matrix, created with the
-	 *                       default <code>new Matrix()</code> constructor, or
-	 *                       pass a <code>null</code> value.
-	 * @param colorTransform A ColorTransform object that you use to adjust the
-	 *                       color values of the bitmap. If no object is
-	 *                       supplied, the bitmap image's colors are not
-	 *                       transformed. If you must pass this parameter but you
-	 *                       do not want to transform the image, set this
-	 *                       parameter to a ColorTransform object created with
-	 *                       the default <code>new ColorTransform()</code>
-	 *                       constructor.
-	 * @param blendMode      A string value, from the openfl.display.BlendMode
-	 *                       class, specifying the blend mode to be applied to
-	 *                       the resulting bitmap.
-	 * @param clipRect       A Rectangle object that defines the area of the
-	 *                       source object to draw. If you do not supply this
-	 *                       value, no clipping occurs and the entire source
-	 *                       object is drawn.
-	 * @param smoothing      A Boolean value that determines whether a BitmapData
-	 *                       object is smoothed when scaled or rotated, due to a
-	 *                       scaling or rotation in the <code>matrix</code>
-	 *                       parameter. The <code>smoothing</code> parameter only
-	 *                       applies if the <code>source</code> parameter is a
-	 *                       BitmapData object. With <code>smoothing</code> set
-	 *                       to <code>false</code>, the rotated or scaled
-	 *                       BitmapData image can appear pixelated or jagged. For
-	 *                       example, the following two images use the same
-	 *                       BitmapData object for the <code>source</code>
-	 *                       parameter, but the <code>smoothing</code> parameter
-	 *                       is set to <code>true</code> on the left and
-	 *                       <code>false</code> on the right:
-	 *
-	 *                       <p>Drawing a bitmap with <code>smoothing</code> set
-	 *                       to <code>true</code> takes longer than doing so with
-	 *                       <code>smoothing</code> set to
-	 *                       <code>false</code>.</p>
-	 * @throws ArgumentError The <code>source</code> parameter is not a
-	 *                       BitmapData or DisplayObject object.
-	 * @throws ArgumentError The source is null or not a valid IBitmapDrawable
-	 *                       object.
-	 * @throws SecurityError The <code>source</code> object and(in the case of a
-	 *                       Sprite or MovieClip object) all of its child objects
-	 *                       do not come from the same domain as the caller, or
-	 *                       are not in a content that is accessible to the
-	 *                       caller by having called the
-	 *                       <code>Security.allowDomain()</code> method. This
-	 *                       restriction does not apply to AIR content in the
-	 *                       application security sandbox.
-	 */
-	function draw(source : IBitmapDrawable, ?matrix : openfl.geom.Matrix, ?colorTransform : openfl.geom.ColorTransform, ?blendMode : BlendMode, ?clipRect : openfl.geom.Rectangle, smoothing : Bool = false) : Void;
+	public function clone ():BitmapData {
+		
+		__syncImageData ();
+		
+		if (!__valid) {
+			
+			return new BitmapData (width, height, transparent);
+			
+		} else if (__sourceImage != null) {
+			
+			return BitmapData.fromImage (__sourceImage, transparent);
+			
+		} else {
+			
+			return BitmapData.fromCanvas (__sourceCanvas, transparent);
+			
+		}
+		
+	}
 	
-	/**
-	 * Encodes the current image as a JPG or PNG format ByteArray.
-	 * 
-	 * This method is not available to the HTML5 and Flash targets.
-	 * 
-	 * @param format  The encoding format, either "png" or "jpg".
-	 * @param quality The encoding quality, when encoding with the JPG format.
-	 * @return  A ByteArray in the specified encoding format
-	 */
-	function encode(rect : openfl.geom.Rectangle, compressor : openfl.utils.Object, ?byteArray : openfl.utils.ByteArray) : openfl.utils.ByteArray;
 	
-	/**
-	 * Fills a rectangular area of pixels with a specified ARGB color.
-	 * 
-	 * @param rect  The rectangular area to fill.
-	 * @param color The ARGB color value that fills the area. ARGB colors are
-	 *              often specified in hexadecimal format; for example,
-	 *              0xFF336699.
-	 * @throws TypeError The rect is null.
-	 */
-	function fillRect(rect : openfl.geom.Rectangle, color : UInt) : Void;
-
-	/**
-	 * Performs a flood fill operation on an image starting at an(<i>x</i>,
-	 * <i>y</i>) coordinate and filling with a certain color. The
-	 * <code>floodFill()</code> method is similar to the paint bucket tool in
-	 * various paint programs. The color is an ARGB color that contains alpha
-	 * information and color information.
-	 * 
-	 * @param x     The <i>x</i> coordinate of the image.
-	 * @param y     The <i>y</i> coordinate of the image.
-	 * @param color The ARGB color to use as a fill.
-	 */
-	function floodFill(x : Int, y : Int, color : UInt) : Void;
-
-	/**
-	 * Determines the destination rectangle that the <code>applyFilter()</code>
-	 * method call affects, given a BitmapData object, a source rectangle, and a
-	 * filter object.
-	 *
-	 * <p>For example, a blur filter normally affects an area larger than the
-	 * size of the original image. A 100 x 200 pixel image that is being filtered
-	 * by a default BlurFilter instance, where <code>blurX = blurY = 4</code>
-	 * generates a destination rectangle of <code>(-2,-2,104,204)</code>. The
-	 * <code>generateFilterRect()</code> method lets you find out the size of
-	 * this destination rectangle in advance so that you can size the destination
-	 * image appropriately before you perform a filter operation.</p>
-	 *
-	 * <p>Some filters clip their destination rectangle based on the source image
-	 * size. For example, an inner <code>DropShadow</code> does not generate a
-	 * larger result than its source image. In this API, the BitmapData object is
-	 * used as the source bounds and not the source <code>rect</code>
-	 * parameter.</p>
-	 * 
-	 * @param sourceRect A rectangle defining the area of the source image to use
-	 *                   as input.
-	 * @param filter     A filter object that you use to calculate the
-	 *                   destination rectangle.
-	 * @return A destination rectangle computed by using an image, the
-	 *         <code>sourceRect</code> parameter, and a filter.
-	 * @throws TypeError The sourceRect or filter are null.
-	 */
-	function generateFilterRect(sourceRect : openfl.geom.Rectangle, filter : openfl.filters.BitmapFilter) : openfl.geom.Rectangle;
-
-	/**
-	 * Determines a rectangular region that either fully encloses all pixels of a
-	 * specified color within the bitmap image(if the <code>findColor</code>
-	 * parameter is set to <code>true</code>) or fully encloses all pixels that
-	 * do not include the specified color(if the <code>findColor</code>
-	 * parameter is set to <code>false</code>).
-	 *
-	 * <p>For example, if you have a source image and you want to determine the
-	 * rectangle of the image that contains a nonzero alpha channel, pass
-	 * <code>{mask: 0xFF000000, color: 0x00000000}</code> as parameters. If the
-	 * <code>findColor</code> parameter is set to <code>true</code>, the entire
-	 * image is searched for the bounds of pixels for which <code>(value & mask)
-	 * == color</code>(where <code>value</code> is the color value of the
-	 * pixel). If the <code>findColor</code> parameter is set to
-	 * <code>false</code>, the entire image is searched for the bounds of pixels
-	 * for which <code>(value & mask) != color</code>(where <code>value</code>
-	 * is the color value of the pixel). To determine white space around an
-	 * image, pass <code>{mask: 0xFFFFFFFF, color: 0xFFFFFFFF}</code> to find the
-	 * bounds of nonwhite pixels.</p>
-	 * 
-	 * @param mask      A hexadecimal value, specifying the bits of the ARGB
-	 *                  color to consider. The color value is combined with this
-	 *                  hexadecimal value, by using the <code>&</code>(bitwise
-	 *                  AND) operator.
-	 * @param color     A hexadecimal value, specifying the ARGB color to match
-	 *                 (if <code>findColor</code> is set to <code>true</code>)
-	 *                  or <i>not</i> to match(if <code>findColor</code> is set
-	 *                  to <code>false</code>).
-	 * @param findColor If the value is set to <code>true</code>, returns the
-	 *                  bounds of a color value in an image. If the value is set
-	 *                  to <code>false</code>, returns the bounds of where this
-	 *                  color doesn't exist in an image.
-	 * @return The region of the image that is the specified color.
-	 */
-	function getColorBoundsRect(mask : UInt, color : UInt, findColor : Bool = true) : openfl.geom.Rectangle;
-
-	/**
-	 * Returns an integer that represents an RGB pixel value from a BitmapData
-	 * object at a specific point(<i>x</i>, <i>y</i>). The
-	 * <code>getPixel()</code> method returns an unmultiplied pixel value. No
-	 * alpha information is returned.
-	 *
-	 * <p>All pixels in a BitmapData object are stored as premultiplied color
-	 * values. A premultiplied image pixel has the red, green, and blue color
-	 * channel values already multiplied by the alpha data. For example, if the
-	 * alpha value is 0, the values for the RGB channels are also 0, independent
-	 * of their unmultiplied values. This loss of data can cause some problems
-	 * when you perform operations. All BitmapData methods take and return
-	 * unmultiplied values. The internal pixel representation is converted from
-	 * premultiplied to unmultiplied before it is returned as a value. During a
-	 * set operation, the pixel value is premultiplied before the raw image pixel
-	 * is set.</p>
-	 * 
-	 * @param x The <i>x</i> position of the pixel.
-	 * @param y The <i>y</i> position of the pixel.
-	 * @return A number that represents an RGB pixel value. If the(<i>x</i>,
-	 *         <i>y</i>) coordinates are outside the bounds of the image, the
-	 *         method returns 0.
-	 */
-	function getPixel(x : Int, y : Int) : UInt;
-
-	/**
-	 * Returns an ARGB color value that contains alpha channel data and RGB data.
-	 * This method is similar to the <code>getPixel()</code> method, which
-	 * returns an RGB color without alpha channel data.
-	 *
-	 * <p>All pixels in a BitmapData object are stored as premultiplied color
-	 * values. A premultiplied image pixel has the red, green, and blue color
-	 * channel values already multiplied by the alpha data. For example, if the
-	 * alpha value is 0, the values for the RGB channels are also 0, independent
-	 * of their unmultiplied values. This loss of data can cause some problems
-	 * when you perform operations. All BitmapData methods take and return
-	 * unmultiplied values. The internal pixel representation is converted from
-	 * premultiplied to unmultiplied before it is returned as a value. During a
-	 * set operation, the pixel value is premultiplied before the raw image pixel
-	 * is set.</p>
-	 * 
-	 * @param x The <i>x</i> position of the pixel.
-	 * @param y The <i>y</i> position of the pixel.
-	 * @return A number representing an ARGB pixel value. If the(<i>x</i>,
-	 *         <i>y</i>) coordinates are outside the bounds of the image, 0 is
-	 *         returned.
-	 */
-	function getPixel32(x : Int, y : Int) : UInt;
-
-	/**
-	 * Generates a byte array from a rectangular region of pixel data. Writes an
-	 * unsigned integer(a 32-bit unmultiplied pixel value) for each pixel into
-	 * the byte array.
-	 * 
-	 * @param rect A rectangular area in the current BitmapData object.
-	 * @return A ByteArray representing the pixels in the given Rectangle.
-	 * @throws TypeError The rect is null.
-	 */
-	function getPixels(rect : openfl.geom.Rectangle) : openfl.utils.ByteArray;
-
-	/**
-	 * Generates a vector array from a rectangular region of pixel data. Returns
-	 * a Vector object of unsigned integers(a 32-bit unmultiplied pixel value)
-	 * for the specified rectangle.
-	 * 
-	 * @param rect A rectangular area in the current BitmapData object.
-	 * @return A Vector representing the given Rectangle.
-	 * @throws TypeError The rect is null.
-	 */
-	function getVector(rect : openfl.geom.Rectangle) : openfl.Vector<UInt>;
+	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void {
+		
+		// TODO, could we handle this with 'destination-atop' or 'source-atop' composition modes instead?
+		
+		rect = __clipRect (rect);
+		if (!__valid || rect == null) return;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var data = __sourceImageData.data;
+		var stride = width * 4;
+		var offset:Int;
+		
+		for (row in Std.int (rect.y)...Std.int (rect.height)) {
+			
+			for (column in Std.int (rect.x)...Std.int (rect.width)) {
+				
+				offset = (row * stride) + (column * 4);
+				
+				data[offset] = Std.int ((data[offset] * colorTransform.redMultiplier) + colorTransform.redOffset);
+				data[offset + 1] = Std.int ((data[offset + 1] * colorTransform.greenMultiplier) + colorTransform.greenOffset);
+				data[offset + 2] = Std.int ((data[offset + 2] * colorTransform.blueMultiplier) + colorTransform.blueOffset);
+				data[offset + 3] = Std.int ((data[offset + 3] * colorTransform.alphaMultiplier) + colorTransform.alphaOffset);
+				
+			}
+			
+		}
+		
+		__sourceImageDataChanged = true;
+		
+	}
 	
-	/**
-	 * Locks an image so that any objects that reference the BitmapData object,
-	 * such as Bitmap objects, are not updated when this BitmapData object
-	 * changes. To improve performance, use this method along with the
-	 * <code>unlock()</code> method before and after numerous calls to the
-	 * <code>setPixel()</code> or <code>setPixel32()</code> method.
-	 * 
-	 */
-	function lock() : Void;
 	
-	/**
-	 * Fills an image with pixels representing random noise.
-	 * 
-	 * @param randomSeed     The random seed number to use. If you keep all other
-	 *                       parameters the same, you can generate different
-	 *                       pseudo-random results by varying the random seed
-	 *                       value. The noise function is a mapping function, not
-	 *                       a true random-number generation function, so it
-	 *                       creates the same results each time from the same
-	 *                       random seed.
-	 * @param low            The lowest value to generate for each channel(0 to
-	 *                       255).
-	 * @param high           The highest value to generate for each channel(0 to
-	 *                       255).
-	 * @param channelOptions A number that can be a combination of any of the
-	 *                       four color channel values
-	 *                      (<code>BitmapDataChannel.RED</code>,
-	 *                       <code>BitmapDataChannel.BLUE</code>,
-	 *                       <code>BitmapDataChannel.GREEN</code>, and
-	 *                       <code>BitmapDataChannel.ALPHA</code>). You can use
-	 *                       the logical OR operator(<code>|</code>) to combine
-	 *                       channel values.
-	 * @param grayScale      A Boolean value. If the value is <code>true</code>,
-	 *                       a grayscale image is created by setting all of the
-	 *                       color channels to the same value. The alpha channel
-	 *                       selection is not affected by setting this parameter
-	 *                       to <code>true</code>.
-	 */
-	function noise(randomSeed : Int, low : UInt = 0, high : UInt = 255, channelOptions : UInt = 7, grayScale : Bool = false) : Void;
+	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:Int, destChannel:Int):Void {
+		
+		sourceRect = __clipRect (sourceRect);
+		if (!__valid || sourceRect == null) return;
+		
+		if (destChannel == BitmapDataChannel.ALPHA && !transparent) return;
+		if (sourceRect.width <= 0 || sourceRect.height <= 0) return;
+		if (sourceRect.x + sourceRect.width > sourceBitmapData.width) sourceRect.width = sourceBitmapData.width - sourceRect.x;
+		if (sourceRect.y + sourceRect.height > sourceBitmapData.height) sourceRect.height = sourceBitmapData.height - sourceRect.y;
+		
+		var destIdx = -1;
+		
+		if (destChannel == BitmapDataChannel.ALPHA) { 
+			
+			destIdx = 3;
+			
+		} else if (destChannel == BitmapDataChannel.BLUE) {
+			
+			destIdx = 2;
+			
+		} else if (destChannel == BitmapDataChannel.GREEN) {
+			
+			destIdx = 1;
+			
+		} else if (destChannel == BitmapDataChannel.RED) {
+			
+			destIdx = 0;
+			
+		} else {
+			
+			throw "Invalid destination BitmapDataChannel passed to BitmapData::copyChannel.";
+			
+		}
+		
+		var srcIdx = -1;
+		
+		if (sourceChannel == BitmapDataChannel.ALPHA) {
+			
+			srcIdx = 3;
+			
+		} else if (sourceChannel == BitmapDataChannel.BLUE) {
+			
+			srcIdx = 2;
+			
+		} else if (sourceChannel == BitmapDataChannel.GREEN) {
+			
+			srcIdx = 1;
+			
+		} else if (sourceChannel == BitmapDataChannel.RED) {
+			
+			srcIdx = 0;
+			
+		} else {
+			
+			throw "Invalid source BitmapDataChannel passed to BitmapData::copyChannel.";
+			
+		}
+		
+		sourceBitmapData.__convertToCanvas ();
+		sourceBitmapData.__createImageData ();
+		
+		var srcData = sourceBitmapData.__sourceImageData.data;
+		var srcStride = Std.int (sourceBitmapData.width * 4);
+		var srcPosition = Std.int ((sourceRect.x * 4) + (srcStride * sourceRect.y) + srcIdx);
+		var srcRowOffset = srcStride - Std.int (4 * sourceRect.width);
+		var srcRowEnd = Std.int (4 * (sourceRect.x + sourceRect.width));
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var destData = __sourceImageData.data;
+		var destStride = Std.int (width * 4);
+		var destPosition = Std.int ((destPoint.x * 4) + (destStride * destPoint.y) + destIdx);
+		var destRowOffset = destStride - Std.int (4 * sourceRect.width);
+		var destRowEnd = Std.int (4 * (destPoint.x + sourceRect.width));
+		
+		var length = Std.int (sourceRect.width * sourceRect.height);
+		
+		for (i in 0...length) {
+			
+			destData[destPosition] = srcData[srcPosition];
+			
+			srcPosition += 4;
+			destPosition += 4;
+			
+			if ((srcPosition % srcStride) > srcRowEnd) {
+				
+				srcPosition += srcRowOffset;
+				
+			}
+			
+			if ((destPosition % destStride) > destRowEnd) {
+				
+				destPosition += destRowOffset;
+				
+			}
+			
+		}
+		
+		__sourceImageDataChanged = true;
+		
+	}
 	
-	/**
-	 * Generates a Perlin noise image.
-	 *
-	 * <p>The Perlin noise generation algorithm interpolates and combines
-	 * individual random noise functions(called octaves) into a single function
-	 * that generates more natural-seeming random noise. Like musical octaves,
-	 * each octave function is twice the frequency of the one before it. Perlin
-	 * noise has been described as a "fractal sum of noise" because it combines
-	 * multiple sets of noise data with different levels of detail.</p>
-	 *
-	 * <p>You can use Perlin noise functions to simulate natural phenomena and
-	 * landscapes, such as wood grain, clouds, and mountain ranges. In most
-	 * cases, the output of a Perlin noise function is not displayed directly but
-	 * is used to enhance other images and give them pseudo-random
-	 * variations.</p>
-	 *
-	 * <p>Simple digital random noise functions often produce images with harsh,
-	 * contrasting points. This kind of harsh contrast is not often found in
-	 * nature. The Perlin noise algorithm blends multiple noise functions that
-	 * operate at different levels of detail. This algorithm results in smaller
-	 * variations among neighboring pixel values.</p>
-	 * 
-	 * @param baseX          Frequency to use in the <i>x</i> direction. For
-	 *                       example, to generate a noise that is sized for a 64
-	 *                       x 128 image, pass 64 for the <code>baseX</code>
-	 *                       value.
-	 * @param baseY          Frequency to use in the <i>y</i> direction. For
-	 *                       example, to generate a noise that is sized for a 64
-	 *                       x 128 image, pass 128 for the <code>baseY</code>
-	 *                       value.
-	 * @param numOctaves     Number of octaves or individual noise functions to
-	 *                       combine to create this noise. Larger numbers of
-	 *                       octaves create images with greater detail. Larger
-	 *                       numbers of octaves also require more processing
-	 *                       time.
-	 * @param randomSeed     The random seed number to use. If you keep all other
-	 *                       parameters the same, you can generate different
-	 *                       pseudo-random results by varying the random seed
-	 *                       value. The Perlin noise function is a mapping
-	 *                       function, not a true random-number generation
-	 *                       function, so it creates the same results each time
-	 *                       from the same random seed.
-	 * @param stitch         A Boolean value. If the value is <code>true</code>,
-	 *                       the method attempts to smooth the transition edges
-	 *                       of the image to create seamless textures for tiling
-	 *                       as a bitmap fill.
-	 * @param fractalNoise   A Boolean value. If the value is <code>true</code>,
-	 *                       the method generates fractal noise; otherwise, it
-	 *                       generates turbulence. An image with turbulence has
-	 *                       visible discontinuities in the gradient that can
-	 *                       make it better approximate sharper visual effects
-	 *                       like flames and ocean waves.
-	 * @param channelOptions A number that can be a combination of any of the
-	 *                       four color channel values
-	 *                      (<code>BitmapDataChannel.RED</code>,
-	 *                       <code>BitmapDataChannel.BLUE</code>,
-	 *                       <code>BitmapDataChannel.GREEN</code>, and
-	 *                       <code>BitmapDataChannel.ALPHA</code>). You can use
-	 *                       the logical OR operator(<code>|</code>) to combine
-	 *                       channel values.
-	 * @param grayScale      A Boolean value. If the value is <code>true</code>,
-	 *                       a grayscale image is created by setting each of the
-	 *                       red, green, and blue color channels to identical
-	 *                       values. The alpha channel value is not affected if
-	 *                       this value is set to <code>true</code>.
-	 */
-	function perlinNoise(baseX : Float, baseY : Float, numOctaves : UInt, randomSeed : Int, stitch : Bool, fractalNoise : Bool, channelOptions : UInt = 7, grayScale : Bool = false, ?offsets : Array<openfl.geom.Point>) : Void;
 	
-	/**
-	 * Scrolls an image by a certain(<i>x</i>, <i>y</i>) pixel amount. Edge
-	 * regions outside the scrolling area are left unchanged.
-	 * 
-	 * @param x The amount by which to scroll horizontally.
-	 * @param y The amount by which to scroll vertically.
-	 */
-	function scroll(x : Int, y : Int) : Void;
+	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void {
+		
+		if (!__valid || sourceBitmapData == null) return;
+		
+		if (sourceRect.x + sourceRect.width > sourceBitmapData.width) sourceRect.width = sourceBitmapData.width - sourceRect.x;
+		if (sourceRect.y + sourceRect.height > sourceBitmapData.height) sourceRect.height = sourceBitmapData.height - sourceRect.y;
+		if (sourceRect.width <= 0 || sourceRect.height <= 0) return;
+		
+		if (alphaBitmapData != null && alphaBitmapData.transparent) {
+			
+			if (alphaPoint == null) alphaPoint = new Point ();
+			
+			var tempData = clone ();
+			tempData.copyChannel (alphaBitmapData, new Rectangle (alphaPoint.x, alphaPoint.y, sourceRect.width, sourceRect.height), new Point (sourceRect.x, sourceRect.y), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
+			sourceBitmapData = tempData;
+			
+		}
+		
+		__syncImageData ();
+		
+		if (!mergeAlpha) {
+			
+			if (transparent && sourceBitmapData.transparent) {
+				
+				__sourceContext.clearRect (destPoint.x, destPoint.y, sourceRect.width, sourceRect.height);
+				
+			}
+			
+		}
+		
+		sourceBitmapData.__syncImageData ();
+		
+		if (sourceBitmapData.__sourceImage != null) {
+			
+			__sourceContext.drawImage (sourceBitmapData.__sourceImage, Std.int (sourceRect.x), Std.int (sourceRect.y), Std.int (sourceRect.width), Std.int (sourceRect.height), Std.int (destPoint.x), Std.int (destPoint.y), Std.int (sourceRect.width), Std.int (sourceRect.height));
+			
+		} else if (sourceBitmapData.__sourceCanvas != null) {
+			
+			__sourceContext.drawImage (sourceBitmapData.__sourceCanvas, Std.int (sourceRect.x), Std.int (sourceRect.y), Std.int (sourceRect.width), Std.int (sourceRect.height), Std.int (destPoint.x), Std.int (destPoint.y), Std.int (sourceRect.width), Std.int (sourceRect.height));
+			
+		}
+		
+	}
+	
+	
+	public function dispose ():Void {
+		
+		__sourceImage = null;
+		__sourceCanvas = null;
+		__sourceContext = null;
+		width = 0;
+		height = 0;
+		rect = null;
+		__valid = false;
+		
+	}
+	
+	
+	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
+		
+		if (!__valid) return;
+		
+		__convertToCanvas ();
+		__syncImageData ();
+		
+		var renderSession = new RenderSession ();
+		renderSession.context = __sourceContext;
+		renderSession.roundPixels = true;
+		
+		if (!smoothing) {
+			
+			untyped (__sourceContext).mozImageSmoothingEnabled = false;
+			untyped (__sourceContext).webkitImageSmoothingEnabled = false;
+			__sourceContext.imageSmoothingEnabled = false;
+			
+		}
+		
+		var matrixCache = source.__worldTransform;
+		source.__worldTransform = matrix != null ? matrix : new Matrix ();
+		source.__updateChildren (false);
+		source.__renderCanvas (renderSession);
+		source.__worldTransform = matrixCache;
+		source.__updateChildren (true);
+		
+		if (!smoothing) {
+			
+			untyped (__sourceContext).mozImageSmoothingEnabled = true;
+			untyped (__sourceContext).webkitImageSmoothingEnabled = true;
+			__sourceContext.imageSmoothingEnabled = true;
+			
+		}
+		
+		__sourceContext.setTransform (1, 0, 0, 1, 0, 0);
+		
+	}
+	
+	
+	public function encode (rect:Rectangle, compressor:Dynamic, byteArray:ByteArray = null):ByteArray {
+		
+		openfl.Lib.notImplemented ("BitmapData.encode");
+		return null;
+		
+	}
+	
+	
+	public function fillRect (rect:Rectangle, color:Int):Void {
+		
+		rect = __clipRect (rect);
+		if (!__valid || rect == null) return;
+		
+		__convertToCanvas ();
+		__syncImageData ();
+		
+		if (rect.x == 0 && rect.y == 0 && rect.width == width && rect.height == height) {
+			
+			if (transparent && ((color & 0xFF000000) == 0)) {
+				
+				__sourceCanvas.width = width;
+				return;
+				
+			}
+			
+		}
+		
+		__fillRect (rect, color);
+		
+	}
+	
+	
+	public function floodFill (x:Int, y:Int, color:Int):Void {
+		
+		if (!__valid) return;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var data = __sourceImageData.data;
+		
+		var offset = ((y * (width * 4)) + (x * 4));
+		var hitColorR = data[offset + 0];
+		var hitColorG = data[offset + 1];
+		var hitColorB = data[offset + 2];
+		var hitColorA = transparent ? data[offset + 3] : 0xFF;
+		
+		var r = (color & 0xFF0000) >>> 16;
+		var g = (color & 0x00FF00) >>> 8;
+		var b = (color & 0x0000FF);
+		var a = transparent ? (color & 0xFF000000) >>> 24 : 0xFF;
+		
+		if (hitColorR == r && hitColorG == g && hitColorB == b && hitColorA == a) return;
+		
+		var dx = [ 0, -1, 1, 0 ];
+		var dy = [ -1, 0, 0, 1 ];
+		
+		var queue = new Array<Int> ();
+		queue.push (x);
+		queue.push (y);
+		
+		while (queue.length > 0) {
+			
+			var curPointY = queue.pop ();
+			var curPointX = queue.pop ();
+			
+			for (i in 0...4) {
+				
+				var nextPointX = curPointX + dx[i];
+				var nextPointY = curPointY + dy[i];
+				
+				if (nextPointX < 0 || nextPointY < 0 || nextPointX >= width || nextPointY >= height) {
+					
+					continue;
+					
+				}
+				
+				var nextPointOffset = (nextPointY * width + nextPointX) * 4;
+				
+				if (data[nextPointOffset + 0] == hitColorR && data[nextPointOffset + 1] == hitColorG && data[nextPointOffset + 2] == hitColorB && data[nextPointOffset + 3] == hitColorA) {
+					
+					data[nextPointOffset + 0] = r;
+					data[nextPointOffset + 1] = g;
+					data[nextPointOffset + 2] = b;
+					data[nextPointOffset + 3] = a;
+				    
+					queue.push(nextPointX);
+					queue.push(nextPointY);
+					
+				}
+				
+			}
+			
+		}
+		
+		__sourceImageDataChanged = true;
+		
+	}
+	
+	
+	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, true);
+		bitmapData.__loadFromBase64 (base64, type, onload);
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, true);
+		bitmapData.__loadFromBytes (bytes, rawAlpha, onload);
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromFile (path:String, onload:BitmapData -> Void = null, onfail:Void -> Void = null):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, true);
+		bitmapData.__sourceImage = new Image ();	
+		bitmapData.__sourceImage.onload = function (_) {
+			
+			bitmapData.width = bitmapData.__sourceImage.width;
+			bitmapData.height = bitmapData.__sourceImage.height;
+			bitmapData.rect = new Rectangle (0, 0, bitmapData.__sourceImage.width, bitmapData.__sourceImage.height);
+			bitmapData.__valid = true;
+			
+			if (onload != null) {
+				
+				onload (bitmapData);
+				
+			}
+			
+		}
+		
+		bitmapData.__sourceImage.onerror = function (_) {
+			
+			bitmapData.__valid = false;
+			if (onfail != null) {
+				
+				onfail();
+				
+			}
+		}
+		
+		bitmapData.__sourceImage.src = path;
+		
+		// Another IE9 bug: loading 20+ images fails unless this line is added.
+		// (issue #1019768)
+		if (bitmapData.__sourceImage.complete) { }
+		
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, transparent);
+		bitmapData.__sourceImage = image;
+		bitmapData.width = image.width;
+		bitmapData.height = image.height;
+		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
+		bitmapData.__valid = true;
+		
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, transparent);
+		bitmapData.width = canvas.width;
+		bitmapData.height = canvas.height;
+		bitmapData.rect = new Rectangle (0, 0, canvas.width, canvas.height);
+		bitmapData.__createCanvas (canvas.width, canvas.height);
+		bitmapData.__sourceContext.drawImage (canvas, 0, 0);
+		
+		return bitmapData;
+		
+	}
+	
+	
+	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle {
+		
+		return sourceRect.clone ();
+		
+	}
+	
+	
+	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
+		
+		return rect.clone ();
+		
+	}
+	
+	
+	public function getPixel (x:Int, y:Int):Int {
+		
+		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var offset = (4 * y * width + x * 4);
+		return (__sourceImageData.data[offset] << 16) | (__sourceImageData.data[offset + 1] << 8) | (__sourceImageData.data[offset + 2]);
+		
+	}
+	
+	
+	public function getPixel32 (x:Int, y:Int) {
+		
+		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		return __getInt32 ((4 * y * width + x * 4), __sourceImageData.data);
+		
+	}
+	
+	
+	public function getPixels (rect:Rectangle):ByteArray {
+		
+		if (!__valid) return null;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var byteArray = new ByteArray ();
+		
+		if (rect == null || rect.equals (this.rect)) {
+			
+			byteArray.length = __sourceImageData.data.length;
+			byteArray.byteView.set (__sourceImageData.data);
+			
+		} else {
+			
+			var srcData = __sourceImageData.data;
+			var srcStride = Std.int (width * 4);
+			var srcPosition = Std.int ((rect.x * 4) + (srcStride * rect.y));
+			var srcRowOffset = srcStride - Std.int (4 * rect.width);
+			var srcRowEnd = Std.int (4 * (rect.x + rect.width));
+			
+			var length = Std.int (4 * rect.width * rect.height);
+			byteArray.length = length;
+			
+			for (i in 0...length) {
+				
+				byteArray.__set (i, srcData[srcPosition++]);
+				
+				if ((srcPosition % srcStride) > srcRowEnd) {
+					
+					srcPosition += srcRowOffset;
+					
+				}
+				
+			}
+			
+		}
+		
+		byteArray.position = 0;
+		
+		return byteArray;
+		
+	}
+	
+	
+	public function getVector (rect:Rectangle) {
+		var pixels = getPixels(rect);
+		var result = new Vector<UInt>();
+		for (i in 0...Std.int(pixels.length / 4)) {
+			result.push(pixels.readUnsignedInt());
+		}
+		return result;
+	}
+	
+	
+	public function histogram (hRect:Rectangle = null) {
+		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
+		var pixels = getPixels(rect);
+		var result = [for (i in 0...4) [for (j in 0...256) 0]];
+		
+		for (i in 0...pixels.length) {
+			++result[i % 4][pixels.readUnsignedByte()];
+		}
+		return result;
+	}
+	
+	
+	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Dynamic, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
+		
+		if (!__valid) return false;
+		
+		openfl.Lib.notImplemented ("BitmapData.hitTest");
+		
+		/*var type = Type.getClassName (Type.getClass (secondObject));
+		firstAlphaThreshold = firstAlphaThreshold & 0xFFFFFFFF;
+		
+		var me = this;
+		var doHitTest = function (imageData:ImageData) {
+			
+			// TODO: Use standard Haxe Type and Reflect classes?
+			if (secondObject.__proto__ == null || secondObject.__proto__.__class__ == null || secondObject.__proto__.__class__.__name__ == null) return false;
+			
+			switch (secondObject.__proto__.__class__.__name__[2]) {
+				
+				case "Rectangle":
+					
+					var rect:Rectangle = cast secondObject;
+					rect.x -= firstPoint.x;
+					rect.y -= firstPoint.y;
+					
+					rect = me.__clipRect (me.rect);
+					if (me.rect == null) return false;
+					
+					var boundingBox = new Rectangle (0, 0, me.width, me.height);
+					if (!rect.intersects(boundingBox)) return false;
+					
+					var diff = rect.intersection(boundingBox);
+					var offset = 4 * (Math.round (diff.x) + (Math.round (diff.y) * imageData.width)) + 3;
+					var pos = offset;
+					var boundR = Math.round (4 * (diff.x + diff.width));
+					
+					while (pos < offset + Math.round (4 * (diff.width + imageData.width * diff.height))) {
+						
+						if ((pos % (imageData.width * 4)) > boundR - 1) {
+							
+							pos += imageData.width * 4 - boundR;
+							
+						}
+						
+						if (imageData.data[pos] - firstAlphaThreshold >= 0) return true;
+						pos += 4;
+						
+					}
+					
+					return false;
+				
+				case "Point":
+					
+					var point : Point = cast secondObject;
+					var x = point.x - firstPoint.x;
+					var y = point.y - firstPoint.y;
+					
+					if (x < 0 || y < 0 || x >= me.width || y >= me.height) return false;
+					if (imageData.data[Math.round (4 * (y * me.width + x)) + 3] - firstAlphaThreshold > 0) return true;
+					
+					return false;
+				
+				case "Bitmap":
+					
+					throw "bitmapData.hitTest with a second object of type Bitmap is currently not supported for HTML5";
+					return false;
+				
+				case "BitmapData":
+					
+					throw "bitmapData.hitTest with a second object of type BitmapData is currently not supported for HTML5";
+					return false;
+				
+				default:
+					
+					throw "BitmapData::hitTest secondObject argument must be either a Rectangle, a Point, a Bitmap or a BitmapData object.";
+					return false;
+				
+			}
+			
+		}
+		
+		if (!__locked) {
+			
+			__buildLease ();
+			var ctx:CanvasRenderingContext2D = ___textureBuffer.getContext ('2d');
+			var imageData = ctx.getImageData (0, 0, width, height);
+			
+			return doHitTest (imageData);
+			
+		} else {
+			
+			return doHitTest (__imageData);
+			
+		}*/
+		
+		return false;
+		
+	}
+	
+	
+	public function lock ():Void {
+		
+		
+		
+	}
+	
+	
+	public function noise (randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false):Void {
+		
+		if (!__valid) return;
+		
+		openfl.Lib.notImplemented ("BitmapData.noise");
+		
+		/*var generator = new MinstdGenerator (randomSeed);
+		var ctx:CanvasRenderingContext2D = ___textureBuffer.getContext ('2d');
+		
+		var imageData = null;
+		
+		if (__locked) {
+			
+			imageData = __imageData;
+			
+		} else {
+			
+			imageData = ctx.createImageData (___textureBuffer.width, ___textureBuffer.height);
+			
+		}
+		
+		for (i in 0...(___textureBuffer.width * ___textureBuffer.height)) {
+			
+			if (grayScale) {
+				
+				imageData.data[i * 4] = imageData.data[i * 4 + 1] = imageData.data[i * 4 + 2] = low + generator.nextValue () % (high - low + 1);
+				
+			} else {
+				
+				imageData.data[i * 4] = if (channelOptions & BitmapDataChannel.RED == 0) 0 else low + generator.nextValue () % (high - low + 1);
+				imageData.data[i * 4 + 1] = if (channelOptions & BitmapDataChannel.GREEN == 0) 0 else low + generator.nextValue () % (high - low + 1);
+				imageData.data[i * 4 + 2] = if (channelOptions & BitmapDataChannel.BLUE == 0) 0 else low + generator.nextValue () % (high - low + 1);
+				
+			}
+			
+			imageData.data[i * 4 + 3] = if (channelOptions & BitmapDataChannel.ALPHA == 0) 255 else low + generator.nextValue () % (high - low + 1);
+			
+		}
+		
+		if (__locked) {
+			
+			__imageDataChanged = true;
+			
+		} else {
+			
+			ctx.putImageData (imageData, 0, 0);
+			
+		}*/
+		
+	}
+	
+	
+	public function paletteMap (sourceBitmapData:BitmapData, sourceRect:flash.geom.Rectangle, destPoint:flash.geom.Point, ?redArray:Array<Int>, ?greenArray:Array<Int>, ?blueArray:Array<Int>, ?alphaArray:Array<Int>):Void {
+		var memory = new ByteArray ();
+		var sw:Int = Std.int(sourceRect.width);
+		var sh:Int = Std.int(sourceRect.height);
+		memory.length = ((sw * sh) * 4);
+		memory = getPixels(sourceRect);
+		memory.position = 0;
+		Memory.select (memory);
+		
+		var position:Int, pixelValue:Int, r:Int, g:Int, b:Int, color:Int;
+		
+		for (i in 0...(sh*sw)) {
+			position = i * 4;
+			pixelValue = cast Memory.getI32(position);
+			
+			r = (pixelValue >> 8) & 0xFF;
+			g = (pixelValue >> 16) & 0xFF;
+			b = (pixelValue >> 24) & 0xFF;
+			
+			color = __flipPixel((0xff << 24) |
+				redArray[r] | 
+				greenArray[g] | 
+				blueArray[b]);
+			
+			Memory.setI32(position, color);
+		}
+		
+		memory.position = 0;
+		var destRect = new Rectangle(destPoint.x, destPoint.y, sw, sh);
+		setPixels(destRect, memory);
+		Memory.select (null);
+	}
+	
+	
+	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
+		
+		openfl.Lib.notImplemented ("BitmapData.perlinNoise");
+		
+	}
+	
+	
+	public function scroll (x:Int, y:Int):Void {
+		
+		openfl.Lib.notImplemented ("BitmapData.scroll");
+		
+	}
+	
+	
+	public function setVector (rect:Rectangle, inputVector:Vector<UInt>) {
+		var byteArray = new ByteArray();
+		byteArray.length = inputVector.length * 4;
+		for (color in inputVector) {
+			byteArray.writeUnsignedInt(color);
+		}
+		byteArray.position = 0;
+		setPixels(rect, byteArray);
+	}
+	
+	
+	public function setPixel (x:Int, y:Int, color:Int):Void {
+		
+		if (!__valid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var offset = (4 * y * width + x * 4);
+		
+		__sourceImageData.data[offset] = (color & 0xFF0000) >>> 16;
+		__sourceImageData.data[offset + 1] = (color & 0x00FF00) >>> 8;
+		__sourceImageData.data[offset + 2] = (color & 0x0000FF);
+		if (transparent) __sourceImageData.data[offset + 3] = (0xFF);
+		
+		__sourceImageDataChanged = true;
+		
+	}
+	
+	
+	public function setPixel32 (x:Int, y:Int, color:Int):Void {
+		
+		if (!__valid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
+		
+		__convertToCanvas ();
+		__createImageData ();
+		
+		var offset = (4 * y * width + x * 4);
+		
+		__sourceImageData.data[offset] = (color & 0x00FF0000) >>> 16;
+		__sourceImageData.data[offset + 1] = (color & 0x0000FF00) >>> 8;
+		__sourceImageData.data[offset + 2] = (color & 0x000000FF);
+		
+		if (transparent) {
+			
+			__sourceImageData.data[offset + 3] = (color & 0xFF000000) >>> 24;
+			
+		} else {
+			
+			__sourceImageData.data[offset + 3] = (0xFF);
+			
+		}
+		
+		__sourceImageDataChanged = true;
+		
+	}
+	
+	
+	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
+		
+		rect = __clipRect (rect);
+		if (!__valid || rect == null) return;
+		
+		__convertToCanvas ();
+		
+		var len = Math.round (4 * rect.width * rect.height);
+		
+		if (rect.x == 0 && rect.y == 0 && rect.width == width && rect.height == height) {
+			
+			if (__sourceImageData == null) {
+				
+				__sourceImageData = __sourceContext.createImageData (width, height);
+				
+			}
+			
+			__sourceImageData.data.set (byteArray.byteView);
+			
+		} else {
+			
+			__createImageData ();
+			
+			var offset = Math.round (4 * width * rect.y + rect.x * 4);
+			var pos = offset;
+			var boundR = Math.round (4 * (rect.x + rect.width));
+			var data = __sourceImageData.data;
+			
+			for (i in 0...len) {
+				
+				if (((pos) % (width * 4)) > boundR - 1) {
+					
+					pos += width * 4 - boundR;
+					
+				}
+				
+				data[pos] = byteArray.readByte ();
+				pos++;
+				
+			}
+			
+		}
+		
+		__sourceImageDataChanged = true;
+		
+	}
+	
+	
+	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
+		
+		if (sourceBitmapData == this && sourceRect.equals(rect) && destPoint.x == 0 && destPoint.y == 0) {
+			
+			var hits = 0;
+			
+			threshold = __flipPixel (threshold);
+			color = __flipPixel (color);
+			
+			var memory = new ByteArray ();
+			memory.length  = width * height * 4;
+			memory = getPixels (rect);
+			memory.position = 0;
+			Memory.select (memory);
+			
+			var thresholdMask:Int = cast threshold & mask;
 
-	/**
-	 * Sets a single pixel of a BitmapData object. The current alpha channel
-	 * value of the image pixel is preserved during this operation. The value of
-	 * the RGB color parameter is treated as an unmultiplied color value.
-	 *
-	 * <p><b>Note:</b> To increase performance, when you use the
-	 * <code>setPixel()</code> or <code>setPixel32()</code> method repeatedly,
-	 * call the <code>lock()</code> method before you call the
-	 * <code>setPixel()</code> or <code>setPixel32()</code> method, and then call
-	 * the <code>unlock()</code> method when you have made all pixel changes.
-	 * This process prevents objects that reference this BitmapData instance from
-	 * updating until you finish making the pixel changes.</p>
-	 * 
-	 * @param x     The <i>x</i> position of the pixel whose value changes.
-	 * @param y     The <i>y</i> position of the pixel whose value changes.
-	 * @param color The resulting RGB color for the pixel.
-	 */
-	function setPixel(x : Int, y : Int, color : UInt) : Void;
-
-	/**
-	 * Sets the color and alpha transparency values of a single pixel of a
-	 * BitmapData object. This method is similar to the <code>setPixel()</code>
-	 * method; the main difference is that the <code>setPixel32()</code> method
-	 * takes an ARGB color value that contains alpha channel information.
-	 *
-	 * <p>All pixels in a BitmapData object are stored as premultiplied color
-	 * values. A premultiplied image pixel has the red, green, and blue color
-	 * channel values already multiplied by the alpha data. For example, if the
-	 * alpha value is 0, the values for the RGB channels are also 0, independent
-	 * of their unmultiplied values. This loss of data can cause some problems
-	 * when you perform operations. All BitmapData methods take and return
-	 * unmultiplied values. The internal pixel representation is converted from
-	 * premultiplied to unmultiplied before it is returned as a value. During a
-	 * set operation, the pixel value is premultiplied before the raw image pixel
-	 * is set.</p>
-	 *
-	 * <p><b>Note:</b> To increase performance, when you use the
-	 * <code>setPixel()</code> or <code>setPixel32()</code> method repeatedly,
-	 * call the <code>lock()</code> method before you call the
-	 * <code>setPixel()</code> or <code>setPixel32()</code> method, and then call
-	 * the <code>unlock()</code> method when you have made all pixel changes.
-	 * This process prevents objects that reference this BitmapData instance from
-	 * updating until you finish making the pixel changes.</p>
-	 * 
-	 * @param x     The <i>x</i> position of the pixel whose value changes.
-	 * @param y     The <i>y</i> position of the pixel whose value changes.
-	 * @param color The resulting ARGB color for the pixel. If the bitmap is
-	 *              opaque(not transparent), the alpha transparency portion of
-	 *              this color value is ignored.
-	 */
-	function setPixel32(x : Int, y : Int, color : UInt) : Void;
-
-	/**
-	 * Converts a byte array into a rectangular region of pixel data. For each
-	 * pixel, the <code>ByteArray.readUnsignedInt()</code> method is called and
-	 * the return value is written into the pixel. If the byte array ends before
-	 * the full rectangle is written, the function returns. The data in the byte
-	 * array is expected to be 32-bit ARGB pixel values. No seeking is performed
-	 * on the byte array before or after the pixels are read.
-	 * 
-	 * @param rect           Specifies the rectangular region of the BitmapData
-	 *                       object.
-	 * @param inputByteArray A ByteArray object that consists of 32-bit
-	 *                       unmultiplied pixel values to be used in the
-	 *                       rectangular region.
-	 * @throws EOFError  The <code>inputByteArray</code> object does not include
-	 *                   enough data to fill the area of the <code>rect</code>
-	 *                   rectangle. The method fills as many pixels as possible
-	 *                   before throwing the exception.
-	 * @throws TypeError The rect or inputByteArray are null.
-	 */
-	function setPixels(rect : openfl.geom.Rectangle, inputByteArray : openfl.utils.ByteArray) : Void;
-
-	/**
-	 * Converts a Vector into a rectangular region of pixel data. For each pixel,
-	 * a Vector element is read and written into the BitmapData pixel. The data
-	 * in the Vector is expected to be 32-bit ARGB pixel values.
-	 * 
-	 * @param rect Specifies the rectangular region of the BitmapData object.
-	 * @throws RangeError The vector array is not large enough to read all the
-	 *                    pixel data.
-	 */
-	function setVector(rect : openfl.geom.Rectangle, inputVector : openfl.Vector<UInt>) : Void;
-
-	/**
-	 * Tests pixel values in an image against a specified threshold and sets
-	 * pixels that pass the test to new color values. Using the
-	 * <code>threshold()</code> method, you can isolate and replace color ranges
-	 * in an image and perform other logical operations on image pixels.
-	 *
-	 * <p>The <code>threshold()</code> method's test logic is as follows:</p>
-	 *
-	 * <ol>
-	 *   <li>If <code>((pixelValue & mask) operation(threshold & mask))</code>,
-	 * then set the pixel to <code>color</code>;</li>
-	 *   <li>Otherwise, if <code>copySource == true</code>, then set the pixel to
-	 * corresponding pixel value from <code>sourceBitmap</code>.</li>
-	 * </ol>
-	 *
-	 * <p>The <code>operation</code> parameter specifies the comparison operator
-	 * to use for the threshold test. For example, by using "==" as the
-	 * <code>operation</code> parameter, you can isolate a specific color value
-	 * in an image. Or by using <code>{operation: "<", mask: 0xFF000000,
-	 * threshold: 0x7F000000, color: 0x00000000}</code>, you can set all
-	 * destination pixels to be fully transparent when the source image pixel's
-	 * alpha is less than 0x7F. You can use this technique for animated
-	 * transitions and other effects.</p>
-	 * 
-	 * @param sourceBitmapData The input bitmap image to use. The source image
-	 *                         can be a different BitmapData object or it can
-	 *                         refer to the current BitmapData instance.
-	 * @param sourceRect       A rectangle that defines the area of the source
-	 *                         image to use as input.
-	 * @param destPoint        The point within the destination image(the
-	 *                         current BitmapData instance) that corresponds to
-	 *                         the upper-left corner of the source rectangle.
-	 * @param operation        One of the following comparison operators, passed
-	 *                         as a String: "<", "<=", ">", ">=", "==", "!="
-	 * @param threshold        The value that each pixel is tested against to see
-	 *                         if it meets or exceeds the threshhold.
-	 * @param color            The color value that a pixel is set to if the
-	 *                         threshold test succeeds. The default value is
-	 *                         0x00000000.
-	 * @param mask             The mask to use to isolate a color component.
-	 * @param copySource       If the value is <code>true</code>, pixel values
-	 *                         from the source image are copied to the
-	 *                         destination when the threshold test fails. If the
-	 *                         value is <code>false</code>, the source image is
-	 *                         not copied when the threshold test fails.
-	 * @return The number of pixels that were changed.
-	 * @throws ArgumentError The operation string is not a valid operation
-	 * @throws TypeError     The sourceBitmapData, sourceRect destPoint or
-	 *                       operation are null.
-	 */
-	function threshold(sourceBitmapData : BitmapData, sourceRect : openfl.geom.Rectangle, destPoint : openfl.geom.Point, operation : String, threshold : UInt, color : UInt = 0, mask : UInt = 0xFFFFFFFF, copySource : Bool = false) : UInt;
-
-	/**
-	 * Unlocks an image so that any objects that reference the BitmapData object,
-	 * such as Bitmap objects, are updated when this BitmapData object changes.
-	 * To improve performance, use this method along with the <code>lock()</code>
-	 * method before and after numerous calls to the <code>setPixel()</code> or
-	 * <code>setPixel32()</code> method.
-	 * 
-	 * @param changeRect The area of the BitmapData object that has changed. If
-	 *                   you do not specify a value for this parameter, the
-	 *                   entire area of the BitmapData object is considered
-	 *                   changed.
-	 */
-	function unlock(?changeRect : openfl.geom.Rectangle) : Void;
+			var width_yy:Int, position:Int, pixelMask:Int, pixelValue, i, test;
+			
+			for (yy in 0...height) {
+				
+				width_yy = width * yy;
+				
+				for (xx in 0...width) {
+					
+					position = (width_yy + xx) * 4;
+					pixelValue = Memory.getI32 (position);
+					pixelMask = cast pixelValue & mask;
+					
+					i = __ucompare (pixelMask, thresholdMask);
+					test = false;
+					
+					if (operation == "==") { test = (i == 0); }
+					else if (operation == "<") { test = (i == -1);}
+					else if (operation == ">") { test = (i == 1); }
+					else if (operation == "!=") { test = (i != 0); }
+					else if (operation == "<=") { test = (i == 0 || i == -1); }
+					else if (operation == ">=") { test = (i == 0 || i == 1); }
+					
+					if (test) {
+						
+						Memory.setI32 (position, color);
+						hits++;
+						
+					}
+					
+				}
+				
+			}
+			
+			memory.position = 0;
+			setPixels (rect, memory);
+			Memory.select (null);
+			return hits;
+			
+		} else {
+			
+			var sx = Std.int (sourceRect.x);
+			var sy = Std.int (sourceRect.y);
+			var sw = Std.int (sourceBitmapData.width);
+			var sh = Std.int (sourceBitmapData.height);
+			
+			var dx = Std.int (destPoint.x);
+			var dy = Std.int (destPoint.y);
+			
+			var bw:Int = width - sw - dx;
+			var bh:Int = height - sh - dy;
+			
+			var dw:Int = (bw < 0) ? sw + (width - sw - dx) : sw;
+			var dh:Int = (bw < 0) ? sh + (height - sh - dy) : sh;
+			
+			var hits = 0;
+			
+			threshold = __flipPixel (threshold);
+			color = __flipPixel (color);
+			
+			var canvasMemory = (sw * sh) * 4;
+			var sourceMemory = 0;
+			
+			if (copySource) {
+				
+				sourceMemory = (sw * sh) * 4;
+				
+			}
+			
+			var totalMemory = (canvasMemory + sourceMemory);
+			var memory = new ByteArray();
+			memory.length = totalMemory;
+			memory.position = 0;
+			var bitmapData = sourceBitmapData.clone ();
+			var pixels = bitmapData.getPixels (sourceRect);
+			memory.writeBytes (pixels);
+			memory.position = canvasMemory;
+			
+			if (copySource) {
+				
+				memory.writeBytes (pixels);
+				
+			}
+			
+			memory.position = 0;
+			Memory.select (memory);
+			
+			var thresholdMask:Int = cast threshold & mask;
+			
+			var position:Int, pixelMask:Int, pixelValue, i, test;
+			
+			for (yy in 0...dh) {
+				
+				for (xx in 0...dw) {
+					
+					position = ((xx + sx) + (yy + sy) * sw) * 4;
+					pixelValue = Memory.getI32 (position);
+					pixelMask = cast pixelValue & mask;
+					
+					i = __ucompare (pixelMask, thresholdMask);
+					test = false;
+					
+					if (operation == "==") { test = (i == 0); }
+					else if (operation == "<") { test = (i == -1);}
+					else if (operation == ">") { test = (i == 1); }
+					else if (operation == "!=") { test = (i != 0); }
+					else if (operation == "<=") { test = (i == 0 || i == -1); }
+					else if (operation == ">=") { test = (i == 0 || i == 1); }
+					
+					if (test) {
+						
+						Memory.setI32 (position, color);
+						hits++;
+						
+					} else if (copySource) {
+						
+						Memory.setI32 (position, Memory.getI32 (canvasMemory + position));
+						
+					}
+					
+				}
+				
+			}
+			
+			memory.position = 0;	
+			bitmapData.setPixels (sourceRect, memory);
+			copyPixels (bitmapData, bitmapData.rect, destPoint);
+			Memory.select (null);
+			return hits;
+			
+		}
+		
+	}
+	
+	
+	public function unlock (changeRect:Rectangle = null):Void {
+		
+		
+		
+	}
+	
+	
+	private static function __base64Encode (bytes:ByteArray):String {
+		
+		var extension = switch (bytes.length % 3) {
+			
+			case 1: "==";
+			case 2: "=";
+			default: "";
+			
+		}
+		
+		if (__base64Encoder == null) {
+			
+			__base64Encoder = new BaseCode (Bytes.ofString (__base64Chars));
+			
+		}
+		
+		return __base64Encoder.encodeBytes (Bytes.ofData (cast bytes.byteView)).toString () + extension;
+		
+	}
+	
+	
+	private function __clipRect (r:Rectangle):Rectangle {
+		
+		if (r == null) return null;
+		
+		if (r.x < 0) {
+			
+			r.width -= -r.x;
+			r.x = 0;
+			
+			if (r.x + r.width <= 0) return null;
+			
+		}
+		
+		if (r.y < 0) {
+			
+			r.height -= -r.y;
+			r.y = 0;
+			
+			if (r.y + r.height <= 0) return null;
+			
+		}
+		
+		if (r.x + r.width >= this.width) {
+			
+			r.width -= r.x + r.width - this.width;
+			
+			if (r.width <= 0) return null;
+			
+		}
+		
+		if (r.y + r.height >= this.height) {
+			
+			r.height -= r.y + r.height - this.height;
+			
+			if (r.height <= 0) return null;
+			
+		}
+		
+		return r;
+		
+	}
+	
+	
+	private function __convertToCanvas ():Void {
+		
+		if (__loading) return;
+		
+		if (__sourceImage != null) {
+			
+			if (__sourceCanvas == null) {
+				
+				__createCanvas (__sourceImage.width, __sourceImage.height);
+				__sourceContext.drawImage (__sourceImage, 0, 0);
+				
+			}
+			
+			__sourceImage = null;
+			
+		}
+		
+	}
+	
+	
+	private function __createCanvas (width:Int, height:Int):Void {
+		
+		if (__sourceCanvas == null) {
+			
+			__sourceCanvas = cast Browser.document.createElement ("canvas");		
+			__sourceCanvas.width = width;
+			__sourceCanvas.height = height;
+			
+			if (!transparent) {
+				
+				if (!transparent) __sourceCanvas.setAttribute ("moz-opaque", "true");
+				__sourceContext = untyped __js__ ('this.__sourceCanvas.getContext ("2d", { alpha: false })');
+				
+			} else {
+				
+				__sourceContext = __sourceCanvas.getContext ("2d");
+				
+			}
+			
+			untyped (__sourceContext).mozImageSmoothingEnabled = false;
+			untyped (__sourceContext).webkitImageSmoothingEnabled = false;
+			__sourceContext.imageSmoothingEnabled = false;
+			__valid = true;
+			
+		}
+		
+	}
+	
+	
+	private function __createImageData ():Void {
+		
+		if (__sourceImageData == null) {
+			
+			__sourceImageData = __sourceContext.getImageData (0, 0, width, height);
+			
+		}
+		
+	}
+	
+	
+	private function __fillRect (rect:Rectangle, color:Int) {
+		
+		var a = (transparent) ? ((color & 0xFF000000) >>> 24) : 0xFF;
+		var r = (color & 0x00FF0000) >>> 16;
+		var g = (color & 0x0000FF00) >>> 8;
+		var b = (color & 0x000000FF);
+		
+		__sourceContext.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + (a / 255) + ')';
+		__sourceContext.fillRect (rect.x, rect.y, rect.width, rect.height);
+		
+	}
+	
+	
+	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
+		
+		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
+		
+	}
+	
+	
+	private function __getInt32 (offset:Int, data:Uint8ClampedArray) {
+		
+		return (transparent ? data[offset + 3] : 0xFF) << 24 | data[offset] << 16 | data[offset + 1] << 8 | data[offset + 2]; 
+		
+	}
+	
+	
+	private static function __isJPG (bytes:ByteArray) {
+		
+		bytes.position = 0;
+		return bytes.readByte () == 0xFF && bytes.readByte () == 0xD8;
+		
+	}
+	
+	
+	private static function __isPNG (bytes:ByteArray) {
+		
+		bytes.position = 0;
+		return (bytes.readByte () == 0x89 && bytes.readByte () == 0x50 && bytes.readByte () == 0x4E && bytes.readByte () == 0x47 && bytes.readByte () == 0x0D && bytes.readByte () == 0x0A && bytes.readByte () == 0x1A && bytes.readByte () == 0x0A);
+		
+	}
+	
+	private static function __isGIF (bytes:ByteArray) {
+		
+		bytes.position = 0;
+		
+		if (bytes.readByte () == 0x47 && bytes.readByte () == 0x49 && bytes.readByte () == 0x46 && bytes.readByte () == 38) {
+			
+			var b = bytes.readByte ();
+			return ((b == 7 || b == 9) && bytes.readByte () == 0x61);
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	private inline function __loadFromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
+		
+		__sourceImage = cast Browser.document.createElement ("img");
+		
+		var image_onLoaded = function (event) {
+			
+			if (__sourceImage == null) {
+				
+				__sourceImage = event.target;
+				
+			}
+			
+			width = __sourceImage.width;
+			height = __sourceImage.height;
+			rect = new Rectangle (0, 0, width, height);
+			
+			__valid = true;
+			
+			if (onload != null) {
+				
+				onload (this);
+				
+			}
+			
+		}
+		
+		__sourceImage.addEventListener ("load", image_onLoaded, false);
+		__sourceImage.src = "data:" + type + ";base64," + base64;
+		
+	}
+	
+	
+	private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
+		
+		var type = "";
+		
+		if (__isPNG (bytes)) {
+			
+			type = "image/png";
+			
+		} else if (__isJPG (bytes)) {
+			
+			type = "image/jpeg";
+			
+		} else if (__isGIF (bytes)) {
+			
+			type = "image/gif";
+			
+		} else {
+			
+			throw new IOError ("BitmapData tried to read a PNG/JPG ByteArray, but found an invalid header.");
+			
+		}
+		
+		if (rawAlpha != null) {
+			
+			__loadFromBase64 (__base64Encode (bytes), type, function (_) {
+				
+				__convertToCanvas ();
+				__createImageData ();
+				
+				var data = __sourceImageData.data;
+				
+				for (i in 0...rawAlpha.length) {
+					
+					data[i * 4 + 3] = rawAlpha.readUnsignedByte ();
+					
+				}
+				
+				__sourceImageDataChanged = true;
+				
+				if (onload != null) {
+					
+					onload (this);
+					
+				}
+				
+			});
+			
+		} else {
+			
+			__loadFromBase64 (__base64Encode (bytes), type, onload);
+			
+		}
+		
+	}
+	
+	
+	public function __renderCanvas (renderSession:RenderSession):Void {
+		
+		if (!__valid) return;
+		
+		__syncImageData ();
+		
+		var context = renderSession.context;
+		
+		if (__worldTransform == null) __worldTransform = new Matrix ();
+		
+		context.globalAlpha = 1;
+		var transform = __worldTransform;
+		
+		if (renderSession.roundPixels) {
+			
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+			
+		} else {
+			
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+			
+		}
+		
+		if (__sourceImage != null) {
+			
+			context.drawImage (__sourceImage, 0, 0);
+			
+		} else {
+			
+			context.drawImage (__sourceCanvas, 0, 0);
+			
+		}
+		
+	}
+	
+	
+	public function __renderMask (renderSession:RenderSession):Void {
+		
+		
+		
+	}
+	
+	
+	private function __syncImageData ():Void {
+		
+		if (__sourceImageDataChanged) {
+			
+			__sourceContext.putImageData (__sourceImageData, 0, 0);
+			__sourceImageData = null;
+			__sourceImageDataChanged = false;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion static public function __ucompare (n1:Int, n2:Int) : Int {
+		
+		var tmp1 : Int;
+		var tmp2 : Int;
+		
+		tmp1 = (n1 >> 24) & 0x000000FF;
+		tmp2 = (n2 >> 24) & 0x000000FF;
+		
+		if (tmp1 != tmp2) {
+			
+			return (tmp1 > tmp2 ? 1 : -1);
+			
+		} else {
+			
+			tmp1 = (n1 >> 16) & 0x000000FF;
+			tmp2 = (n2 >> 16) & 0x000000FF;
+			
+			if (tmp1 != tmp2) {
+				
+				return (tmp1 > tmp2 ? 1 : -1);
+				
+			} else {
+				
+				tmp1 = (n1 >> 8) & 0x000000FF;
+				tmp2 = (n2 >> 8) & 0x000000FF;
+				
+				if (tmp1 != tmp2) {
+					
+					return (tmp1 > tmp2 ? 1 : -1);
+					
+				} else {
+					
+					tmp1 = n1 & 0x000000FF;
+					tmp2 = n2 & 0x000000FF;
+					
+					if (tmp1 != tmp2) {
+						
+						return (tmp1 > tmp2 ? 1 : -1);
+						
+					} else {
+						
+						return 0;
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	public function __updateChildren (transformOnly:Bool):Void {
+		
+		
+		
+	}
+	
+	
 }
 
 
-#end
+//private class MinstdGenerator {
+	
+	/** A MINSTD pseudo-random number generator.
+	 *
+	 * This generates a pseudo-random number sequence equivalent to std::minstd_rand0 from the C++ standard library, which
+	 * is the generator that Flash uses to generate noise for BitmapData.noise().
+	 *
+	 * MINSTD was originally suggested in "A pseudo-random number generator for the System/360", P.A. Lewis, A.S. Goodman,
+	 * J.M. Miller, IBM Systems Journal, Vol. 8, No. 2, 1969, pp. 136-146 */
+	
+	/*private static inline var a = 16807;
+	private static inline var m = (1 << 31) - 1;
+
+	private var value:Int;
+	
+
+	public function new (seed:Int) {
+		
+		if (seed == 0) {
+			
+			this.value = 1;
+			
+		} else {
+			
+			this.value = seed;
+			
+		}
+		
+	}
+	
+	
+	public function nextValue():Int {
+		
+		var lo = a * (value & 0xffff);
+		var hi = a * (value >>> 16);
+		lo += (hi & 0x7fff) << 16;
+		
+		if (lo < 0 || lo > m) {
+			
+			lo &= m;
+			++lo;
+			
+		}
+		
+		lo += hi >>> 15;
+		
+		if (lo < 0 || lo > m) {
+			
+			lo &= m;
+			++lo;
+			
+		}
+		
+		return value = lo;
+		
+	}
+	
+	
+}*/
