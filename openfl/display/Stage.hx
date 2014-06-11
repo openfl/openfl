@@ -146,8 +146,6 @@ class Stage extends Sprite {
 		
 		__resize ();
 		Browser.window.addEventListener ("resize", window_onResize);
-		Browser.window.addEventListener ("focus", window_onFocus);
-		Browser.window.addEventListener ("blur", window_onBlur);
 		
 		if (element != null) {
 			
@@ -374,15 +372,6 @@ class Stage extends Sprite {
 		style.setProperty ("-moz-user-select", "none", null);
 		style.setProperty ("-ms-user-select", "none", null);
 		style.setProperty ("-o-user-select", "none", null);
-		
-		// Disable image drag on Firefox
-		Browser.document.addEventListener ("dragstart", function (e) {
-			if (e.target.nodeName.toLowerCase() == "img") {
-				e.preventDefault();
-				return false;
-			}
-			return true;
-		}, false);
 		
 		__renderSession = new RenderSession ();
 		__renderSession.element = __div;
@@ -834,6 +823,22 @@ class Stage extends Sprite {
 	
 	private function application_onWindow (event:lime.ui.WindowEvent):Void {
 		
+		switch (event.type) {
+			
+			case WINDOW_ACTIVATE:
+				
+				var event = new Event (Event.ACTIVATE);
+				__broadcast (event, true);
+			
+			case WINDOW_DEACTIVATE:
+				
+				var event = new Event (Event.ACTIVATE);
+				__broadcast (event, true);
+			
+			default:
+			
+		}
+		
 		//var focusEvent = new FocusEvent (FocusEvent.FOCUS_IN, true, false, this, false, 0);
 		//focusEvent.target = this;
 		//__fireEvent (focusEvent, [ this ]);
@@ -1176,20 +1181,6 @@ class Stage extends Sprite {
 		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
-		
-	}
-	
-	private function window_onFocus (event:js.html.Event):Void {
-		
-		var event = new Event (Event.ACTIVATE);
-		__broadcast (event, true);
-		
-	}
-	
-	private function window_onBlur (event:js.html.Event):Void {
-		
-		var event = new Event (Event.DEACTIVATE);
-		__broadcast (event, true);
 		
 	}
 	
