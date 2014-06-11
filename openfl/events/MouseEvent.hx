@@ -60,7 +60,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	public static function __create (type:String, event:js.html.MouseEvent, local:Point, target:InteractiveObject):MouseEvent {
+	public static function __create (type:String, event:lime.ui.MouseEvent, local:Point, target:InteractiveObject):MouseEvent {
 		
 		var delta = 2;
 		
@@ -93,7 +93,7 @@ class MouseEvent extends Event {
 			
 		}
 		
-		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, event.ctrlKey, event.altKey, event.shiftKey, __buttonDown, delta);
+		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, __buttonDown, delta);
 		pseudoEvent.stageX = Lib.current.stage.mouseX;
 		pseudoEvent.stageY = Lib.current.stage.mouseY;
 		pseudoEvent.target = target;

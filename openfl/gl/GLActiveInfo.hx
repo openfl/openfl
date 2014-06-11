@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLActiveInfo = js.html.webgl.ActiveInfo;
+typedef GLActiveInfo = lime.graphics.opengl.GLActiveInfo;

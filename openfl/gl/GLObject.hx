@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLObject = Dynamic;
+typedef GLObject = lime.graphics.opengl.GLObject;

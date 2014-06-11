@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLUniformLocation = js.html.webgl.UniformLocation;
+typedef GLUniformLocation = lime.graphics.opengl.GLUniformLocation;

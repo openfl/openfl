@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLTexture = js.html.webgl.Texture;
+typedef GLTexture = lime.graphics.opengl.GLTexture;

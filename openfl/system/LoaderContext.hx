@@ -1,23 +1,26 @@
-/*
- 
- This class provides code completion and inline documentation, but it does 
- not contain runtime support. It should be overridden by a compatible
- implementation in an OpenFL backend, depending upon the target platform.
- 
-*/
-
 package openfl.system;
-#if display
 
 
-extern class LoaderContext {
-	var allowCodeImport : Bool;
-	var allowLoadBytesCodeExecution : Bool;
-	var applicationDomain : ApplicationDomain;
-	var checkPolicyFile : Bool;
-	var securityDomain : SecurityDomain;
-	function new(checkPolicyFile : Bool = false, ?applicationDomain : ApplicationDomain, ?securityDomain : SecurityDomain) : Void;
+class LoaderContext {
+	
+	
+	public var allowCodeImport:Bool;
+	public var allowLoadBytesCodeExecution:Bool;
+	public var applicationDomain:ApplicationDomain;
+	public var checkPolicyFile:Bool;
+	public var securityDomain:SecurityDomain;
+	
+	
+	public function new (checkPolicyFile:Bool = false, applicationDomain:ApplicationDomain = null, securityDomain:SecurityDomain = null):Void {
+		
+		this.checkPolicyFile = checkPolicyFile;
+		this.securityDomain = securityDomain;
+		this.applicationDomain = applicationDomain;
+		
+		allowCodeImport = true;
+		allowLoadBytesCodeExecution = true;
+		
+	}
+	
+	
 }
-
-
-#end

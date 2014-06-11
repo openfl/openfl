@@ -10,6 +10,7 @@ import openfl.gl.GL;
 import openfl.Lib;
 
 
+@:access(lime.graphics.opengl.GL)
 class OpenGLView extends DirectRenderer {
 	
 	
@@ -29,23 +30,23 @@ class OpenGLView extends DirectRenderer {
 		
 		#if dom
 		
-		__canvas = cast Browser.document.createElement ("canvas");
-		__canvas.width = Lib.current.stage.stageWidth;
-		__canvas.height = Lib.current.stage.stageHeight;
+		//__canvas = cast Browser.document.createElement ("canvas");
+		//__canvas.width = Lib.current.stage.stageWidth;
+		//__canvas.height = Lib.current.stage.stageHeight;
 		
-		__context = cast __canvas.getContext ("webgl");
+		//__context = cast __canvas.getContext ("webgl");
 		
-		if (__context == null) {
+		//if (__context == null) {
 			
-			__context = cast __canvas.getContext ("experimental-webgl");
+			//__context = cast __canvas.getContext ("experimental-webgl");
 			
-		}
+		//}
 		
 		#if debug
-		__context = untyped WebGLDebugUtils.makeDebugContext (__context);
+		//__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 		#end
 		
-		GL.__context = __context;
+		//GL.__context = __context;
 		
 		#end
 		
@@ -81,7 +82,7 @@ class OpenGLView extends DirectRenderer {
 			
 			if (__context != null) {
 				
-				GL.__context = __context;
+				//GL.__context = __context;
 				
 				var rect = null;
 				
@@ -164,7 +165,7 @@ class OpenGLView extends DirectRenderer {
 		
 		#else
 		
-		return (GL.__context != null);
+		return (GL.context != null);
 		
 		#end
 		

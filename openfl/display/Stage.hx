@@ -180,46 +180,6 @@ class Stage extends Sprite {
 		__clearBeforeRender = true;
 		__stack = [];
 		
-		#if stats
-		__stats = untyped __js__("new Stats ()");
-		__stats.domElement.style.position = "absolute";
-		__stats.domElement.style.top = "0px";
-		Browser.document.body.appendChild (__stats.domElement);
-		#end
-		
-		var keyEvents = [ "keydown", "keyup" ];
-		var touchEvents = [ "touchstart", "touchmove", "touchend" ];
-		var mouseEvents = [ "mousedown", "mousemove", "mouseup", /*"click",*/ "dblclick", "mousewheel" ];
-		var focusEvents = [ "focus", "blur" ];
-		
-		var element = __canvas != null ? __canvas : __div;
-		
-		for (type in keyEvents) {
-			
-			Browser.window.addEventListener (type, window_onKey, false);
-			
-		}
-		
-		for (type in touchEvents) {
-			
-			element.addEventListener (type, element_onTouch, true);
-			
-		}
-		
-		for (type in mouseEvents) {
-			
-			element.addEventListener (type, element_onMouse, true);
-			
-		}
-		
-		for (type in focusEvents) {
-			
-			element.addEventListener (type, element_onFocus, true);
-			
-		}
-		
-		Browser.window.requestAnimationFrame (cast __render);
-		
 	}
 	
 	
@@ -539,10 +499,6 @@ class Stage extends Sprite {
 	
 	private function __render ():Void {
 		
-		#if stats
-		__stats.begin ();
-		#end
-		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
 		
 		if (__invalidated) {
@@ -642,12 +598,6 @@ class Stage extends Sprite {
 			PIXI.Texture.frameUpdates.length = 0;
 			
 		}*/
-		
-		#if stats
-		__stats.end ();
-		#end
-		
-		Browser.window.requestAnimationFrame (cast __render);
 		
 	}
 	
@@ -882,7 +832,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function element_onFocus (event:js.html.Event):Void {
+	private function application_onWindow (event:lime.ui.WindowEvent):Void {
 		
 		//var focusEvent = new FocusEvent (FocusEvent.FOCUS_IN, true, false, this, false, 0);
 		//focusEvent.target = this;
@@ -891,9 +841,9 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function element_onTouch (event:js.html.TouchEvent):Void {
+	private function application_onTouch (event:lime.ui.TouchEvent):Void {
 		
-		event.preventDefault ();
+		/*event.preventDefault ();
 		
 		var rect;
 		
@@ -909,6 +859,8 @@ class Stage extends Sprite {
 		
 		var touch = event.changedTouches[0];
 		var point = new Point ((touch.pageX - rect.left) * (stageWidth / rect.width), (touch.pageY - rect.top) * (stageHeight / rect.height));
+		*/
+		var point = new Point (event.x, event.y);
 		
 		__mouseX = point.x;
 		__mouseY = point.y;
@@ -920,17 +872,17 @@ class Stage extends Sprite {
 		
 		switch (event.type) {
 			
-			case "touchstart":
+			case TOUCH_START:
 				
 				type = TouchEvent.TOUCH_BEGIN;
 				mouseType = MouseEvent.MOUSE_DOWN;
 			
-			case "touchmove":
+			case TOUCH_MOVE:
 				
 				type = TouchEvent.TOUCH_MOVE;
 				mouseType = MouseEvent.MOUSE_MOVE;
 			
-			case "touchend":
+			case TOUCH_END:
 				
 				type = TouchEvent.TOUCH_END;
 				mouseType = MouseEvent.MOUSE_UP;
@@ -944,8 +896,8 @@ class Stage extends Sprite {
 			var target = __stack[__stack.length - 1];
 			var localPoint = target.globalToLocal (point);
 			
-			var touchEvent = TouchEvent.__create (type, event, touch, localPoint, cast target);
-			touchEvent.touchPointID = touch.identifier;
+			var touchEvent = TouchEvent.__create (type, event, null/*touch*/, localPoint, cast target);
+			touchEvent.touchPointID = event.id;
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
@@ -957,8 +909,8 @@ class Stage extends Sprite {
 			
 		} else {
 			
-			var touchEvent = TouchEvent.__create (type, event, touch, point, this);
-			touchEvent.touchPointID = touch.identifier;
+			var touchEvent = TouchEvent.__create (type, event, null/*touch*/, point, this);
+			touchEvent.touchPointID = event.id;
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
@@ -1055,9 +1007,9 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function element_onMouse (event:js.html.MouseEvent):Void {
+	private function application_onMouse (event:lime.ui.MouseEvent):Void {
 		
-		var rect;
+		/*var rect;
 		
 		if (__canvas != null) {
 			
@@ -1073,18 +1025,21 @@ class Stage extends Sprite {
 			//__mouseY = (event.clientY - rect.top) * (__div.style.height / rect.height);
 			__mouseY = (event.clientY - rect.top);
 			
-		}
+		}*/
+		
+		__mouseX = event.x;
+		__mouseY = event.y;
 		
 		__stack = [];
 		
 		var type = switch (event.type) {
 			
-			case "mousedown": MouseEvent.MOUSE_DOWN;
-			case "mouseup": MouseEvent.MOUSE_UP;
-			case "mousemove": MouseEvent.MOUSE_MOVE;
+			case MOUSE_DOWN: MouseEvent.MOUSE_DOWN;
+			case MOUSE_UP: MouseEvent.MOUSE_UP;
+			case MOUSE_MOVE: MouseEvent.MOUSE_MOVE;
 			//case "click": MouseEvent.CLICK;
-			case "dblclick": MouseEvent.DOUBLE_CLICK;
-			case "mousewheel": MouseEvent.MOUSE_WHEEL;
+			//case "dblclick": MouseEvent.DOUBLE_CLICK;
+			case MOUSE_WHEEL: MouseEvent.MOUSE_WHEEL;
 			default: null;
 			
 		}
@@ -1183,17 +1138,14 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function window_onKey (event:js.html.KeyboardEvent):Void {
+	private function application_onKey (event:lime.ui.KeyEvent):Void {
 		
-		var keyCode = (event.keyCode != null ? event.keyCode : event.which);
-		keyCode = Keyboard.__convertMozillaCode (keyCode);
-		
-		var location = untyped (event).location != null ? untyped (event).location : event.keyLocation;
+		var keyCode =  Keyboard.__convertMozillaCode (event.key);
 		
 		#if (haxe_ver > 3.100)
-		var keyLocation = cast (location, KeyLocation);
+		var keyLocation = cast (event.location, KeyLocation);
 		#else
-		var keyLocation = Type.createEnumIndex (KeyLocation, location);
+		var keyLocation = Type.createEnumIndex (KeyLocation, event.location);
 		#end
 		
 		var stack = new Array <DisplayObject> ();
@@ -1211,7 +1163,7 @@ class Stage extends Sprite {
 		if (stack.length > 0) {
 			
 			stack.reverse ();
-			__fireEvent (new KeyboardEvent (event.type == "keydown" ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP, true, false, event.charCode, keyCode, keyLocation, event.ctrlKey, event.altKey, event.shiftKey), stack);
+			__fireEvent (new KeyboardEvent (event.type == KEY_DOWN ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP, true, false, event.code, keyCode, keyLocation, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey), stack);
 			
 		}
 		

@@ -53,7 +53,7 @@ class ApplicationMain {
 			
 		}
 		
-		var app = new OpenFLApplication ();
+		var app = new openfl.display.Application ();
 		
 		var config:lime.app.Config = {
 			
@@ -75,6 +75,8 @@ class ApplicationMain {
 		}
 		
 		app.create (config);
+		
+		openfl.Lib.current.addChild (new ::APP_MAIN:: ());
 		
 		var result = app.exec ();
 		

@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLBuffer = js.html.webgl.Buffer;
+typedef GLBuffer = lime.graphics.opengl.GLBuffer;

@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLContextAttributes = js.html.webgl.ContextAttributes;
+typedef GLContextAttributes = lime.graphics.opengl.GLContextAttributes;
