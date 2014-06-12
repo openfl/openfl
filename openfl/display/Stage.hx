@@ -2,13 +2,15 @@ package openfl.display;
 
 
 import haxe.EnumFlags;
-import js.html.webgl.GL;
 import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
 import js.html.DivElement;
 import js.html.Element;
 import js.html.HtmlElement;
 import js.Browser;
+import lime.graphics.canvas.CanvasRenderContext;
+import lime.graphics.dom.DOMRenderContext;
+import lime.graphics.opengl.GLRenderContext;
+import lime.graphics.RenderContext;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -42,7 +44,6 @@ class Stage extends Sprite {
 	private var __color:Int;
 	private var __colorSplit:Array<Float>;
 	private var __colorString:String;
-	private var __context:CanvasRenderingContext2D;
 	private var __cursor:String;
 	private var __cursorHidden:Bool;
 	private var __dirty:Bool;
@@ -54,7 +55,6 @@ class Stage extends Sprite {
 	private var __element:HtmlElement;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
-	private var __gl:GL;
 	private var __glContextID:Int;
 	private var __glContextLost:Bool;
 	private var __glOptions:Dynamic;
@@ -94,76 +94,31 @@ class Stage extends Sprite {
 		__mouseX = 0;
 		__mouseY = 0;
 		
-		#if !dom
+		__renderSession = new RenderSession ();
+		__renderSession.roundPixels = true;
 		
-		if (!__initializeGL ()) {
-			
-			__initializeCanvas ();
-			
-		}
+		var prefix = untyped __js__ ("(function () {
+		  var styles = window.getComputedStyle(document.documentElement, ''),
+			pre = (Array.prototype.slice
+			  .call(styles)
+			  .join('') 
+			  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+			)[1],
+			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+		  return {
+			dom: dom,
+			lowercase: pre,
+			css: '-' + pre + '-',
+			js: pre[0].toUpperCase() + pre.substr(1)
+		  };
+		})")();
 		
-		#else
-		
-		__initializeDOM ();
-		
-		#end
-		
-		__originalWidth = width;
-		__originalHeight = height;
-		
-		if (width == 0 && height == 0) {
-			
-			if (element != null) {
-				
-				width = element.clientWidth;
-				height = element.clientHeight;
-				
-			} else {
-				
-				width = Browser.window.innerWidth;
-				height = Browser.window.innerHeight;
-				
-			}
-			
-			__fullscreen = true;
-			
-		}
+		__renderSession.vendorPrefix = prefix.lowercase;
+		__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
+		__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
 		
 		stageWidth = width;
 		stageHeight = height;
-		
-		if (__canvas != null) {
-			
-			__canvas.width = width;
-			__canvas.height = height;
-			
-		} else {
-			
-			__div.style.width = width + "px";
-			__div.style.height = height + "px";
-			
-		}
-		
-		__resize ();
-		Browser.window.addEventListener ("resize", window_onResize);
-		
-		if (element != null) {
-			
-			if (__canvas != null) {
-				
-				if (element != cast __canvas) {
-					
-					element.appendChild (__canvas);
-					
-				}
-				
-			} else {
-				
-				element.appendChild (__div);
-				
-			}
-			
-		}
 		
 		this.stage = this;
 		
@@ -312,181 +267,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __initializeCanvas ():Void {
-		
-		if (Std.is (__element, CanvasElement)) {
-			
-			__canvas = cast __element;
-			
-		} else {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
-			
-		}
-		
-		if (__transparent) {
-			
-			__context = cast __canvas.getContext ("2d");
-			
-		} else {
-			
-			__canvas.setAttribute ("moz-opaque", "true");
-			__context = untyped __js__ ('this.__canvas.getContext ("2d", { alpha: false })');
-			
-		}
-		
-		//untyped (__context).mozImageSmoothingEnabled = false;
-		//untyped (__context).webkitImageSmoothingEnabled = false;
-		//__context.imageSmoothingEnabled = false;
-		
-		var style = __canvas.style;
-		style.setProperty ("-webkit-transform", "translateZ(0)", null);
-		style.setProperty ("transform", "translateZ(0)", null);
-		
-		__renderSession = new RenderSession ();
-		__renderSession.context = __context;
-		__renderSession.roundPixels = true;
-		
-	}
-	
-	
-	private function __initializeDOM ():Void {
-		
-		__div = cast Browser.document.createElement ("div");
-		
-		var style = __div.style;
-		
-		if (!__transparent) {
-			
-			style.backgroundColor = __colorString;
-			
-		}
-		
-		style.setProperty ("-webkit-transform", "translate3D(0,0,0)", null);
-		style.setProperty ("transform", "translate3D(0,0,0)", null);
-		//style.setProperty ("-webkit-transform-style", "preserve-3d", null);
-		//style.setProperty ("transform-style", "preserve-3d", null);
-		style.position = "relative";
-		style.overflow = "hidden";
-		style.setProperty ("-webkit-user-select", "none", null);
-		style.setProperty ("-moz-user-select", "none", null);
-		style.setProperty ("-ms-user-select", "none", null);
-		style.setProperty ("-o-user-select", "none", null);
-		
-		__renderSession = new RenderSession ();
-		__renderSession.element = __div;
-		__renderSession.roundPixels = true;
-		
-		var prefix = untyped __js__ ("(function () {
-		  var styles = window.getComputedStyle(document.documentElement, ''),
-			pre = (Array.prototype.slice
-			  .call(styles)
-			  .join('') 
-			  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
-			)[1],
-			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
-		  return {
-			dom: dom,
-			lowercase: pre,
-			css: '-' + pre + '-',
-			js: pre[0].toUpperCase() + pre.substr(1)
-		  };
-		})")();
-		
-		__renderSession.vendorPrefix = prefix.lowercase;
-		__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
-		__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
-		
-	}
-	
-	
-	private function __initializeGL ():Bool {
-		
-		#if webgl
-		
-		if (Std.is (__element, CanvasElement)) {
-			
-			__canvas = cast __element;
-			
-		} else {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
-			
-		}
-		
-		var options = {
-			
-			alpha: __transparent,
-			antialias: false,
-			premultipliedAlpha: __transparent,
-			stencil: true
-			
-		}
-		
-		try {
-			
-			__gl = untyped __js__ ('this.__canvas.getContext ("experimental-webgl", options)');
-			
-		} catch (e:Dynamic) {
-			
-			try {
-				
-				__gl = untyped __js__ ('this.__canvas.getContext ("webgl", options)');
-				
-			} catch (e:Dynamic) {
-				
-				return false;
-				
-			}
-			
-		}
-		
-		#if debug
-		__gl = untyped WebGLDebugUtils.makeDebugContext (__gl);
-		#end
-		
-		openfl.gl.GL.__context = __gl;
-		
-		__glContextID = 0;
-		__glOptions = options;
-		
-		__renderSession = new RenderSession ();
-		__renderSession.gl = __gl;
-		//__renderSession.drawCount = 0;
-		
-		//__defaultShader = new WebGLShader (__gl);
-		
-		//__gl.useProgram (__defaultShader.program);
-		
-		//__gl.disable (GL.DEPTH_TEST);
-		//__gl.disable (GL.CULL_FACE);
-		
-		//__gl.enable (GL.BLEND);
-		__gl.colorMask (true, true, true, __transparent);
-		
-		var style = __canvas.style;
-		style.setProperty ("-webkit-transform", "translateZ(0)", null);
-		style.setProperty ("transform", "translateZ(0)", null);
-		
-		__canvas.addEventListener ("webglcontextlost", canvas_onContextLost, false);
-		__canvas.addEventListener ("webglcontextrestored", canvas_onContextRestored, false);
-		
-		__renderSession = new RenderSession ();
-		__renderSession.gl = __gl;
-		__renderSession.roundPixels = true;
-		
-		return true;
-		
-		#else
-		
-		return false;
-		
-		#end
-		
-	}
-	
-	
-	private function __render ():Void {
+	private function __render (context:RenderContext):Void {
 		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
 		
@@ -500,93 +281,60 @@ class Stage extends Sprite {
 		__renderable = true;
 		__update (false, true);
 		
-		if (__canvas != null) {
+		switch (context) {
 			
-			if (!__fullscreen || __element != cast __canvas) {
-				
-				if (stageWidth != __canvas.width || stageHeight != __canvas.height) {
-					
-					__canvas.width = stageWidth;
-					__canvas.height = stageHeight;
-					
-				}
-				
-			} else {
-				
-				stageWidth = __canvas.width;
-				stageHeight = __canvas.height;
-				
-			}
-			
-			if (__gl != null) {
+			case OPENGL (gl):
 				
 				if (!__glContextLost) {
 					
-					__gl.viewport (0, 0, stageWidth, stageHeight);
-					__gl.bindFramebuffer (GL.FRAMEBUFFER, null);
+					gl.viewport (0, 0, stageWidth, stageHeight);
+					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 					
 					if (__transparent) {
 						
-						__gl.clearColor (0, 0, 0 ,0);
+						gl.clearColor (1, 0, 0 ,0);
 						
 					} else {
 						
-						__gl.clearColor (__colorSplit[0], __colorSplit[1], __colorSplit[2], 1);
+						gl.clearColor (__colorSplit[0], __colorSplit[1], __colorSplit[2], 1);
 						
 					}
 					
-					__gl.clear (GL.COLOR_BUFFER_BIT);
+					gl.clear (gl.COLOR_BUFFER_BIT);
 					
+					__renderSession.gl = gl;
 					__renderGL (__renderSession);
 					
 				}
+			
+			case CANVAS (context):
 				
-			} else {
-				
-				__context.setTransform (1, 0, 0, 1, 0, 0);
-				__context.globalAlpha = 1;
+				context.setTransform (1, 0, 0, 1, 0, 0);
+				context.globalAlpha = 1;
 				
 				if (!__transparent && __clearBeforeRender) {
 					
-					__context.fillStyle = __colorString;
-					__context.fillRect (0, 0, stageWidth, stageHeight);
+					context.fillStyle = __colorString;
+					context.fillRect (0, 0, stageWidth, stageHeight);
 					
 				} else if (__transparent && __clearBeforeRender) {
 					
-					__context.clearRect (0, 0, stageWidth, stageHeight);
+					context.clearRect (0, 0, stageWidth, stageHeight);
 					
 				}
 				
+				__renderSession.context = context;
 				__renderCanvas (__renderSession);
+			
+			case DOM (element):
 				
-			}
+				__renderSession.z = 1;
+				__renderSession.element = element;
+				__renderDOM (__renderSession);
 			
-		} else {
-			
-			__renderSession.z = 1;
-			__renderDOM (__renderSession);
+			default:
 			
 		}
-		
-		/*// run interaction!
-		if(stage.interactive) {
-			
-			//need to add some events!
-			if(!stage._interactiveEventsAdded) {
-				
-				stage._interactiveEventsAdded = true;
-				stage.interactionManager.setTarget(this);
-				
-			}
-			
-		}
-
-		// remove frame updates..
-		if(PIXI.Texture.frameUpdates.length > 0) {
-			
-			PIXI.Texture.frameUpdates.length = 0;
-			
-		}*/
 		
 	}
 	
@@ -659,8 +407,8 @@ class Stage extends Sprite {
 			
 			if (!__cursorHidden) {
 				
-				var element = __canvas != null ? __canvas : __div;
-				element.style.cursor = cursor;
+				//var element = __canvas != null ? __canvas : __div;
+				//element.style.cursor = cursor;
 				
 			}
 			
@@ -675,8 +423,8 @@ class Stage extends Sprite {
 			
 			__cursorHidden = value;
 			
-			var element = __canvas != null ? __canvas : __div;
-			element.style.cursor = value ? "none" : __cursor;
+			//var element = __canvas != null ? __canvas : __div;
+			//element.style.cursor = value ? "none" : __cursor;
 			
 		}
 		
@@ -1288,9 +1036,9 @@ class Stage extends Sprite {
 class RenderSession {
 	
 	
-	public var context:CanvasRenderingContext2D;
-	public var element:Element;
-	public var gl:GL;
+	public var context:CanvasRenderContext;
+	public var element:DOMRenderContext;
+	public var gl:GLRenderContext;
 	//public var mask:Bool;
 	public var maskManager:MaskManager;
 	//public var scaleMode:ScaleMode;

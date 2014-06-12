@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import lime.graphics.RenderContext;
 import lime.ui.KeyEvent;
 import lime.ui.MouseEvent;
 import lime.ui.TouchEvent;
@@ -102,9 +103,9 @@ class Application extends lime.app.Application {
 	}
 	
 	
-	public override function render ():Void {
+	public override function render (context:RenderContext):Void {
 		
-		stage.__render ();
+		stage.__render (context);
 		
 	}
 	
