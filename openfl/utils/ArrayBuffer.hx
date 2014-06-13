@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef ArrayBuffer = js.html.ArrayBuffer;
+typedef ArrayBuffer = lime.utils.ArrayBuffer;

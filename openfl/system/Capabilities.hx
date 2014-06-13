@@ -1,9 +1,12 @@
 package openfl.system;
 
 
+import openfl.Lib;
+
+#if js
 import js.html.Element;
 import js.Browser;
-import openfl.Lib;
+#end
 
 
 class Capabilities {

@@ -22,7 +22,7 @@ class FocusEvent extends Event {
 		super (type, bubbles, cancelable);
 		
 		this.keyCode = keyCode;
-		this.shiftKey = (shiftKey == null ? false : shiftKey);
+		this.shiftKey = shiftKey;
 		this.relatedObject = relatedObject;
 		
 	}

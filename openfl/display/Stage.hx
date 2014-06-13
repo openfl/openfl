@@ -2,11 +2,6 @@ package openfl.display;
 
 
 import haxe.EnumFlags;
-import js.html.CanvasElement;
-import js.html.DivElement;
-import js.html.Element;
-import js.html.HtmlElement;
-import js.Browser;
 import lime.graphics.canvas.CanvasRenderContext;
 import lime.graphics.dom.DOMRenderContext;
 import lime.graphics.opengl.GLRenderContext;
@@ -22,6 +17,14 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+
+#if js
+import js.html.CanvasElement;
+import js.html.DivElement;
+import js.html.Element;
+import js.html.HtmlElement;
+import js.Browser;
+#end
 
 
 @:access(openfl.events.Event)
@@ -47,12 +50,10 @@ class Stage extends Sprite {
 	private var __cursor:String;
 	private var __cursorHidden:Bool;
 	private var __dirty:Bool;
-	private var __div:DivElement;
 	private var __dragBounds:Rectangle;
 	private var __dragObject:Sprite;
 	private var __dragOffsetX:Float;
 	private var __dragOffsetY:Float;
-	private var __element:HtmlElement;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
 	private var __glContextID:Int;
@@ -65,18 +66,21 @@ class Stage extends Sprite {
 	private var __originalHeight:Int;
 	private var __renderSession:RenderSession;
 	private var __stack:Array<DisplayObject>;
-	#if stats
-	private var __stats:Dynamic;
-	#end
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	
+	#if js
+	//private var __div:DivElement;
+	//private var __element:HtmlElement;
+	#if stats
+	private var __stats:Dynamic;
+	#end
+	#end
 	
-	public function new (width:Int, height:Int, element:HtmlElement = null, color:Null<Int> = null) {
+	
+	public function new (width:Int, height:Int, color:Null<Int> = null) {
 		
 		super ();
-		
-		this.__element = element;
 		
 		if (color == null) {
 			
@@ -97,6 +101,7 @@ class Stage extends Sprite {
 		__renderSession = new RenderSession ();
 		__renderSession.roundPixels = true;
 		
+		#if js
 		var prefix = untyped __js__ ("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),
 			pre = (Array.prototype.slice
@@ -116,6 +121,7 @@ class Stage extends Sprite {
 		__renderSession.vendorPrefix = prefix.lowercase;
 		__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
 		__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
+		#end
 		
 		stageWidth = width;
 		stageHeight = height;
@@ -341,6 +347,7 @@ class Stage extends Sprite {
 	
 	private function __resize ():Void {
 		
+		/*
 		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
 			
 			if (__fullscreen) {
@@ -394,7 +401,7 @@ class Stage extends Sprite {
 				
 			}
 			
-		}
+		}*/
 		
 	}
 	
@@ -555,6 +562,7 @@ class Stage extends Sprite {
 	
 	
 	
+	#if js
 	private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
 		
 		__glContextLost = true;
@@ -567,6 +575,7 @@ class Stage extends Sprite {
 		__glContextLost = false;
 		
 	}
+	#end
 	
 	
 	private function application_onWindow (event:lime.ui.WindowEvent):Void {
@@ -923,6 +932,7 @@ class Stage extends Sprite {
 	}
 	
 	
+	#if js
 	private function window_onResize (event:js.html.Event):Void {
 		
 		__resize ();
@@ -931,6 +941,7 @@ class Stage extends Sprite {
 		__broadcast (event, false);
 		
 	}
+	#end
 	
 	
 	
@@ -1002,7 +1013,8 @@ class Stage extends Sprite {
 
 
 	function set_displayState (value:StageDisplayState):StageDisplayState {
-		switch(value) {
+		
+		/*switch(value) {
 			case NORMAL:
 				var fs_exit_function = untyped __js__("function() {
 			    if (document.exitFullscreen) {
@@ -1026,7 +1038,7 @@ class Stage extends Sprite {
 				fsfunction(__element);
 			default:
 		}
-		displayState = value;
+		displayState = value;*/
 		return value;
 	}
 	

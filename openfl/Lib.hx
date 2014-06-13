@@ -2,11 +2,14 @@ package openfl;
 
 
 import haxe.Timer;
-import js.html.HtmlElement;
-import js.Browser;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
+
+#if js
+import js.html.HtmlElement;
+import js.Browser;
+#end
 
 
 @:access(openfl.display.Stage) class Lib {
@@ -47,7 +50,9 @@ import openfl.net.URLRequest;
 			
 		}
 		
+		#if js
 		Browser.window.open (request.url, target);
+		#end
 		
 	}
 	
@@ -67,11 +72,13 @@ import openfl.net.URLRequest;
 	
 	public static function preventDefaultTouchMove ():Void {
 		
+		#if js
 		Browser.document.addEventListener ("touchmove", function (evt:js.html.Event):Void {
 			
 			evt.preventDefault ();
 			
 		}, false);
+		#end
 		
 	}
 	

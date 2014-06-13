@@ -1,10 +1,6 @@
 package openfl.net;
 
 
-import js.html.EventTarget;
-import js.html.XMLHttpRequest;
-import js.Browser;
-import js.Lib;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
@@ -13,6 +9,13 @@ import openfl.events.ProgressEvent;
 import openfl.errors.IOError;
 import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
+
+#if js
+import js.html.EventTarget;
+import js.html.XMLHttpRequest;
+import js.Browser;
+import js.Lib;
+#end
 
 
 class URLLoader extends EventDispatcher {
@@ -57,11 +60,14 @@ class URLLoader extends EventDispatcher {
 	
 	public function load (request:URLRequest):Void {
 		
+		#if js
 		requestUrl (request.url, request.method, request.data, request.formatRequestHeaders ());
+		#end
 		
 	}
 	
 	
+	#if js
 	private function registerEvents (subject:EventTarget):Void {
 		
 		var self = this;
@@ -223,6 +229,7 @@ class URLLoader extends EventDispatcher {
 		};
 		
 	}
+	#end
 	
 	
 	
@@ -234,6 +241,7 @@ class URLLoader extends EventDispatcher {
 	
 	private function onData (_):Void {
 		
+		#if js
 		var content:Dynamic = getData ();
 		
 		switch (dataFormat) {
@@ -242,6 +250,7 @@ class URLLoader extends EventDispatcher {
 			default: this.data = Std.string (content);
 			
 		}
+		#end
 		
 		var evt = new Event (Event.COMPLETE);
 		evt.currentTarget = this;
@@ -308,6 +317,7 @@ class URLLoader extends EventDispatcher {
 	
 	private function set_dataFormat (inputVal:URLLoaderDataFormat):URLLoaderDataFormat {
 		
+		#if js
 		// prevent inadvertently using typed arrays when they are unsupported
 		// @todo move these sorts of tests somewhere common in the vein of Modernizr
 		
@@ -322,6 +332,9 @@ class URLLoader extends EventDispatcher {
 		}
 		
 		return dataFormat;
+		#else
+		return inputVal;
+		#end
 		
 	}
 	

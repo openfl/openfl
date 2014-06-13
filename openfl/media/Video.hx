@@ -1,14 +1,17 @@
 package openfl.media;
 
 
-import js.html.MediaElement;
-import js.Browser;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
+
+#if js
+import js.html.MediaElement;
+import js.Browser;
+#end
 
 
 @:access(openfl.net.NetStream)

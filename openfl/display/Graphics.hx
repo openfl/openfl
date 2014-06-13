@@ -1,15 +1,18 @@
 package openfl.display;
 
 
-import js.html.CanvasElement;
-import js.html.CanvasPattern;
-import js.html.CanvasRenderingContext2D;
-import js.Browser;
 import openfl.geom.Point;
 import openfl.display.Stage;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if js
+import js.html.CanvasElement;
+import js.html.CanvasPattern;
+import js.html.CanvasRenderingContext2D;
+import js.Browser;
+#end
 
 
 @:access(openfl.display.BitmapData)
@@ -25,21 +28,24 @@ class Graphics {
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
 	private var __bounds:Rectangle;
-	private var __canvas:CanvasElement;
 	private var __commands:Array<DrawCommand>;
-	private var __context:CanvasRenderingContext2D;
 	private var __dirty:Bool;
 	private var __halfStrokeWidth:Float;
 	private var __hasFill:Bool;
 	private var __hasStroke:Bool;
 	private var __inPath:Bool;
 	private var __inversePendingMatrix:Matrix;
-	private var __pattern:CanvasPattern;
 	private var __pendingMatrix:Matrix;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __setFill:Bool;
 	private var __visible:Bool;
+	
+	#if js
+	private var __canvas:CanvasElement;
+	private var __context:CanvasRenderingContext2D;
+	private var __pattern:CanvasPattern;
+	#end
 	
 	
 	public function new () {
@@ -272,18 +278,21 @@ class Graphics {
 	
 	private function __beginPath ():Void {
 		
+		#if js
 		if (!__inPath) {
 			
 			__context.beginPath ();
 			__inPath = true;
 			
 		}
+		#end
 		
 	}
 	
 	
 	private function __beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
 		
+		#if js
 		if (__setFill || bitmapFill == null) return;
 		
 		if (__pattern == null) {
@@ -302,12 +311,14 @@ class Graphics {
 		
 		__context.fillStyle = __pattern;
 		__setFill = true;
+		#end
 		
 	}
 	
 	
 	private function __closePath (closeFill:Bool):Void {
 		
+		#if js
 		if (__inPath) {
 			
 			if (__hasFill) {
@@ -350,6 +361,7 @@ class Graphics {
 			__inversePendingMatrix = null;
 			
 		}
+		#end
 		
 	}
 	
@@ -414,6 +426,7 @@ class Graphics {
 	
 	private function __render ():Void {
 		
+		#if js
 		if (__dirty) {
 			
 			__hasFill = false;
@@ -765,6 +778,7 @@ class Graphics {
 			__closePath(false);
 
 		}
+		#end
 		
 	}
 	

@@ -16,6 +16,7 @@ import openfl.events.IOErrorEvent;
 import openfl.utils.IDataInput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
+import openfl.Lib;
 
 
 class Socket extends EventDispatcher /*implements IDataInput implements IDataOutput*/ {
@@ -73,6 +74,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 	}
 	
 	public function connect( ?host: String = null, ?port: Int = 0) {
+		#if js
 		if( _socket != null )
 			close();
 
@@ -99,7 +101,8 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		_socket.onerror = onErrorHandler;
 		_socket.binaryType = "arraybuffer";
 
-		flash.Lib.current.addEventListener( Event.ENTER_FRAME, onFrame );
+		Lib.current.addEventListener( Event.ENTER_FRAME, onFrame );
+		#end
 	}
 
 	private function onOpenHandler (_):Void {
@@ -149,7 +152,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		}catch( e : Dynamic ){
 		}
 		_socket = null;
-		flash.Lib.current.removeEventListener( Event.ENTER_FRAME, onFrame );
+		Lib.current.removeEventListener( Event.ENTER_FRAME, onFrame );
 	}
 
 	public function close(): Void {
@@ -172,7 +175,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 			throw new IOError("Operation attempted on invalid socket.");
 		return _input.readByte(); 
 	}
-	public function readBytes(bytes: flash.utils.ByteArray, offset: Int = 0, length: Int = 0): Void {
+	public function readBytes(bytes: ByteArray, offset: Int = 0, length: Int = 0): Void {
 		if ( _socket == null ) 
 			throw new IOError("Operation attempted on invalid socket.");
 		_input.readBytes(bytes,offset,length);

@@ -1,13 +1,16 @@
 package openfl.display;
 
 
-import js.html.webgl.RenderingContext;
-import js.html.CanvasElement;
-import js.Browser;
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
 import openfl.gl.GL;
 import openfl.Lib;
+
+#if js
+import js.html.webgl.RenderingContext;
+import js.html.CanvasElement;
+import js.Browser;
+#end
 
 
 @:access(lime.graphics.opengl.GL)
@@ -20,35 +23,17 @@ class OpenGLView extends DirectRenderer {
 	public static var isSupported (get_isSupported, null):Bool;
 	
 	private var __added:Bool;
+	private var __initialized:Bool;
+	
+	#if js
 	private var __canvas:CanvasElement;
 	private var __context:RenderingContext;
+	#end
 	
 	
 	public function new () {
 		
 		super ("OpenGLView");
-		
-		#if dom
-		
-		//__canvas = cast Browser.document.createElement ("canvas");
-		//__canvas.width = Lib.current.stage.stageWidth;
-		//__canvas.height = Lib.current.stage.stageHeight;
-		
-		//__context = cast __canvas.getContext ("webgl");
-		
-		//if (__context == null) {
-			
-			//__context = cast __canvas.getContext ("experimental-webgl");
-			
-		//}
-		
-		#if debug
-		//__context = untyped WebGLDebugUtils.makeDebugContext (__context);
-		#end
-		
-		//GL.__context = __context;
-		
-		#end
 		
 	}
 	
@@ -69,9 +54,33 @@ class OpenGLView extends DirectRenderer {
 	
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if js
 		if (stage != null && __worldVisible && __renderable) {
 			
 			if (!__added) {
+				
+				if (!__initialized) {
+					
+					__canvas = cast Browser.document.createElement ("canvas");
+					__canvas.width = Lib.current.stage.stageWidth;
+					__canvas.height = Lib.current.stage.stageHeight;
+					
+					__context = cast __canvas.getContext ("webgl");
+					
+					if (__context == null) {
+						
+						__context = cast __canvas.getContext ("experimental-webgl");
+						
+					}
+					
+					#if debug
+					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
+					#end
+					
+					//GL.__context = __context;
+					__initialized = true;
+					
+				}
 				
 				renderSession.element.appendChild (__canvas);
 				__added = true;
@@ -112,6 +121,7 @@ class OpenGLView extends DirectRenderer {
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -147,6 +157,8 @@ class OpenGLView extends DirectRenderer {
 	
 	private static function get_isSupported ():Bool {
 		
+		#if js
+		
 		if (untyped (!window.WebGLRenderingContext)) {
 			
 			return false;
@@ -166,6 +178,8 @@ class OpenGLView extends DirectRenderer {
 		#else
 		
 		return (GL.context != null);
+		
+		#end
 		
 		#end
 		

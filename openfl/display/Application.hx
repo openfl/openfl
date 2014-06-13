@@ -26,7 +26,7 @@ class Application extends lime.app.Application {
 		
 		super.create (config);
 		
-		stage = new openfl.display.Stage (config.width, config.height, config.element, config.background);
+		stage = new openfl.display.Stage (config.width, config.height, config.background);
 		
 		stage.addChild (openfl.Lib.current);
 		

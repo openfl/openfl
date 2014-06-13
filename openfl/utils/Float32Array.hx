@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef Float32Array = js.html.Float32Array;
+typedef Float32Array = lime.utils.Float32Array;

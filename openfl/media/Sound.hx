@@ -23,8 +23,11 @@ class Sound extends EventDispatcher {
 	public var url (default, null):String;
 	
 	private var __buffer:Bool;
-	private var __sound:SoundJSInstance;
 	private var __soundID:String;
+	
+	#if js
+	private var __sound:SoundJSInstance;
+	#end
 	
 	
 	public function new (stream:URLRequest = null, context:SoundLoaderContext = null) {
@@ -49,17 +52,20 @@ class Sound extends EventDispatcher {
 	
 	public function close ():Void {
 		
+		#if js
 		if (__registeredSounds.exists (__soundID)) {
 			
 			SoundJS.removeSound (__soundID);
 			
 		}
+		#end
 		
 	}
 	
 	
 	public function load (stream:URLRequest, context:SoundLoaderContext = null):Void {
 		
+		#if js
 		url = stream.url;
 		__soundID = Path.withoutExtension (stream.url);
 		
@@ -74,6 +80,7 @@ class Sound extends EventDispatcher {
 			dispatchEvent (new Event (Event.COMPLETE));
 			
 		}
+		#end
 		
 	}
 	
@@ -100,20 +107,26 @@ class Sound extends EventDispatcher {
 			
 		}
 		
+		#if js
 		var instance = SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops, sndTransform.volume, sndTransform.pan);
 		
 		return new SoundChannel (instance);
+		#else
+		return null;
+		#end
 		
 	}
 	
 	
 	private static function __init__ ():Void {
 		
+		#if js
 		if (untyped window.createjs != null) {
 			
 			SoundJS.alternateExtensions = [ "ogg", "mp3", "wav" ];
 			
 		}
+		#end
 		
 	}
 	
@@ -139,6 +152,7 @@ class Sound extends EventDispatcher {
 	
 	
 	
+	#if js
 	private function SoundJS_onFileLoad (event:Dynamic):Void {
 		
 		if (event.id == __soundID) {
@@ -149,11 +163,13 @@ class Sound extends EventDispatcher {
 		}
 		
 	}
+	#end
 	
 	
 }
 
 
+#if js
 @:native("createjs.Sound") extern class SoundJS {
 	
 	public static function addEventListener(type:String, listener:Dynamic, ?useCapture:Bool):Dynamic;
@@ -256,3 +272,4 @@ class Sound extends EventDispatcher {
 	public function toString():String;
 	
 }
+#end

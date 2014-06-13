@@ -2,12 +2,15 @@ package openfl.net;
 
 
 import haxe.Timer;
-import js.html.VideoElement;
-import js.Browser;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundTransform;
+
+#if js
+import js.html.VideoElement;
+import js.Browser;
+#end
 
 
 class NetStream extends EventDispatcher {

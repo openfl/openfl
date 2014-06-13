@@ -1,9 +1,12 @@
 package openfl.display;
 
 
-import js.html.Element;
 import openfl.display.Sprite;
 import openfl.display.Stage;
+
+#if js
+import js.html.Element;
+#end
 
 
 class DOMSprite extends Sprite {

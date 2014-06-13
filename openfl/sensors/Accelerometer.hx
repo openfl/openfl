@@ -2,11 +2,14 @@ package openfl.sensors;
 
 
 import haxe.Timer;
-import js.Browser;
 import openfl.display.Stage;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
+
+#if js
+import js.Browser;
+#end
 
 
 class Accelerometer extends EventDispatcher {

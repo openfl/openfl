@@ -637,7 +637,8 @@ class Assets {
 		#if (tools && !display)
 		#if (cpp || neko)
 		
-		return (bitmapData.__handle != null);
+		return true;
+		//return (bitmapData.__handle != null);
 		
 		#elseif flash
 		
@@ -668,7 +669,8 @@ class Assets {
 		#if (tools && !display)
 		#if (cpp || neko)
 		
-		return (sound.__handle != null && sound.__handle != 0);
+		return true;
+		//return (sound.__handle != null && sound.__handle != 0);
 		
 		#end
 		#end

@@ -1,15 +1,18 @@
 package openfl.display;
 
 
+import openfl.display.Stage;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+
+#if js
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.html.ImageElement;
 import js.Browser;
-import openfl.display.Stage;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
+#end
 
 
 @:access(openfl.display.BitmapData)
@@ -20,9 +23,15 @@ class Bitmap extends DisplayObjectContainer {
 	public var pixelSnapping:PixelSnapping;
 	public var smoothing:Bool;
 	
+	#if js
 	private var __canvas:CanvasElement;
 	private var __canvasContext:CanvasRenderingContext2D;
 	private var __image:ImageElement;
+	#else
+	private var __canvas:Dynamic;
+	private var __canvasContext:Dynamic;
+	private var __image:Dynamic;
+	#end
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
@@ -81,6 +90,7 @@ class Bitmap extends DisplayObjectContainer {
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		#if js
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		var context = renderSession.context;
@@ -157,12 +167,14 @@ class Bitmap extends DisplayObjectContainer {
 			}
 			
 		}
+		#end
 		
 	}
 	
 	
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if js
 		if (stage != null && __worldVisible && __renderable && bitmapData != null && bitmapData.__valid) {
 			
 			if (bitmapData.__sourceImage != null) {
@@ -194,12 +206,14 @@ class Bitmap extends DisplayObjectContainer {
 			}
 			
 		}
+		#end
 		
 	}
 	
 	
 	private function __renderDOMCanvas (renderSession:RenderSession):Void {
 		
+		#if js
 		if (__image != null) {
 			
 			renderSession.element.removeChild (__image);
@@ -233,12 +247,14 @@ class Bitmap extends DisplayObjectContainer {
 		__canvasContext.drawImage (bitmapData.__sourceCanvas, 0, 0);
 		
 		__applyStyle (renderSession, true, false, true);
+		#end
 		
 	}
 	
 	
 	private function __renderDOMImage (renderSession:RenderSession):Void {
 		
+		#if js
 		if (__canvas != null) {
 			
 			renderSession.element.removeChild (__canvas);
@@ -255,6 +271,7 @@ class Bitmap extends DisplayObjectContainer {
 		}
 		
 		__applyStyle (renderSession, true, true, true);
+		#end
 		
 	}
 	

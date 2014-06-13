@@ -3,12 +3,6 @@ package openfl.display;
 
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.Image;
-import js.html.ImageData;
-import js.html.Uint8ClampedArray;
-import js.Browser;
 import openfl.display.Stage;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
@@ -18,6 +12,15 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.gl.GLTexture;
 import openfl.utils.ByteArray;
+
+#if js
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.Image;
+import js.html.ImageData;
+import js.html.Uint8ClampedArray;
+import js.Browser;
+#end
 
 
 @:autoBuild(openfl.Assets.embedBitmap())
@@ -36,12 +39,15 @@ class BitmapData implements IBitmapDrawable {
 	public var __worldTransform:Matrix;
 	
 	private var __loading:Bool;
+	private var __valid:Bool;
+	
+	#if js
 	private var __sourceCanvas:CanvasElement;
 	private var __sourceContext:CanvasRenderingContext2D;
 	private var __sourceImage:Image;
 	private var __sourceImageData:ImageData;
 	private var __sourceImageDataChanged:Bool;
-	private var __valid:Bool;
+	#end
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -54,7 +60,9 @@ class BitmapData implements IBitmapDrawable {
 			this.height = height;
 			rect = new Rectangle (0, 0, width, height);
 			
+			#if js
 			__createCanvas (width, height);
+			#end
 			
 			if (!transparent) {
 				
@@ -71,6 +79,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function applyFilter (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void {
 		
+		#if js
 		if (!__valid || sourceBitmapData == null || !sourceBitmapData.__valid) return;
 		
 		__convertToCanvas ();
@@ -82,12 +91,14 @@ class BitmapData implements IBitmapDrawable {
 		filter.__applyFilter (__sourceImageData, sourceBitmapData.__sourceImageData, sourceRect, destPoint);
 		
 		__sourceImageDataChanged = true;
+		#end
 		
 	}
 	
 	
 	public function clone ():BitmapData {
 		
+		#if js
 		__syncImageData ();
 		
 		if (!__valid) {
@@ -103,6 +114,9 @@ class BitmapData implements IBitmapDrawable {
 			return BitmapData.fromCanvas (__sourceCanvas, transparent);
 			
 		}
+		#else
+		return null;
+		#end
 		
 	}
 	
@@ -111,6 +125,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		// TODO, could we handle this with 'destination-atop' or 'source-atop' composition modes instead?
 		
+		#if js
 		rect = __clipRect (rect);
 		if (!__valid || rect == null) return;
 		
@@ -137,12 +152,14 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__sourceImageDataChanged = true;
+		#end
 		
 	}
 	
 	
 	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:Int, destChannel:Int):Void {
 		
+		#if js
 		sourceRect = __clipRect (sourceRect);
 		if (!__valid || sourceRect == null) return;
 		
@@ -241,12 +258,14 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__sourceImageDataChanged = true;
+		#end
 		
 	}
 	
 	
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void {
 		
+		#if js
 		if (!__valid || sourceBitmapData == null) return;
 		
 		if (sourceRect.x + sourceRect.width > sourceBitmapData.width) sourceRect.width = sourceBitmapData.width - sourceRect.x;
@@ -286,15 +305,19 @@ class BitmapData implements IBitmapDrawable {
 			__sourceContext.drawImage (sourceBitmapData.__sourceCanvas, Std.int (sourceRect.x), Std.int (sourceRect.y), Std.int (sourceRect.width), Std.int (sourceRect.height), Std.int (destPoint.x), Std.int (destPoint.y), Std.int (sourceRect.width), Std.int (sourceRect.height));
 			
 		}
+		#end
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
+		#if js
 		__sourceImage = null;
 		__sourceCanvas = null;
 		__sourceContext = null;
+		#end
+		
 		width = 0;
 		height = 0;
 		rect = null;
@@ -305,6 +328,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
+		#if js
 		if (!__valid) return;
 		
 		__convertToCanvas ();
@@ -338,6 +362,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__sourceContext.setTransform (1, 0, 0, 1, 0, 0);
+		#end
 		
 	}
 	
@@ -352,6 +377,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
+		#if js
 		rect = __clipRect (rect);
 		if (!__valid || rect == null) return;
 		
@@ -370,12 +396,14 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__fillRect (rect, color);
+		#end
 		
 	}
 	
 	
 	public function floodFill (x:Int, y:Int, color:Int):Void {
 		
+		#if js
 		if (!__valid) return;
 		
 		__convertToCanvas ();
@@ -438,6 +466,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__sourceImageDataChanged = true;
+		#end
 		
 	}
 	
@@ -463,6 +492,8 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onfail:Void -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
+		
+		#if js
 		bitmapData.__sourceImage = new Image ();	
 		bitmapData.__sourceImage.onload = function (_) {
 			
@@ -494,12 +525,14 @@ class BitmapData implements IBitmapDrawable {
 		// Another IE9 bug: loading 20+ images fails unless this line is added.
 		// (issue #1019768)
 		if (bitmapData.__sourceImage.complete) { }
+		#end
 		
 		return bitmapData;
 		
 	}
 	
 	
+	#if js
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
@@ -508,7 +541,6 @@ class BitmapData implements IBitmapDrawable {
 		bitmapData.height = image.height;
 		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
 		bitmapData.__valid = true;
-		
 		return bitmapData;
 		
 	}
@@ -522,10 +554,10 @@ class BitmapData implements IBitmapDrawable {
 		bitmapData.rect = new Rectangle (0, 0, canvas.width, canvas.height);
 		bitmapData.__createCanvas (canvas.width, canvas.height);
 		bitmapData.__sourceContext.drawImage (canvas, 0, 0);
-		
 		return bitmapData;
 		
 	}
+	#end
 	
 	
 	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle {
@@ -544,6 +576,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getPixel (x:Int, y:Int):Int {
 		
+		#if js
 		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
 		
 		__convertToCanvas ();
@@ -551,24 +584,36 @@ class BitmapData implements IBitmapDrawable {
 		
 		var offset = (4 * y * width + x * 4);
 		return (__sourceImageData.data[offset] << 16) | (__sourceImageData.data[offset + 1] << 8) | (__sourceImageData.data[offset + 2]);
+		#else
+		
+		return 0;
+		
+		#end
 		
 	}
 	
 	
-	public function getPixel32 (x:Int, y:Int) {
+	public function getPixel32 (x:Int, y:Int):Int {
 		
+		#if js
 		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
 		
 		__convertToCanvas ();
 		__createImageData ();
 		
 		return __getInt32 ((4 * y * width + x * 4), __sourceImageData.data);
+		#else
+		
+		return 0;
+		
+		#end
 		
 	}
 	
 	
 	public function getPixels (rect:Rectangle):ByteArray {
 		
+		#if js
 		if (!__valid) return null;
 		
 		__convertToCanvas ();
@@ -610,28 +655,45 @@ class BitmapData implements IBitmapDrawable {
 		
 		return byteArray;
 		
+		#else
+		
+		return new ByteArray ();
+		
+		#end
+		
 	}
 	
 	
 	public function getVector (rect:Rectangle) {
-		var pixels = getPixels(rect);
-		var result = new Vector<UInt>();
-		for (i in 0...Std.int(pixels.length / 4)) {
-			result.push(pixels.readUnsignedInt());
+		
+		var pixels = getPixels (rect);
+		var result = new Vector<UInt> ();
+		
+		for (i in 0...Std.int (pixels.length / 4)) {
+			
+			result.push (pixels.readUnsignedInt ());
+			
 		}
+		
 		return result;
+		
 	}
 	
 	
 	public function histogram (hRect:Rectangle = null) {
-		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
-		var pixels = getPixels(rect);
+		
+		var rect = hRect != null ? hRect : new Rectangle (0, 0, width, height);
+		var pixels = getPixels (rect);
 		var result = [for (i in 0...4) [for (j in 0...256) 0]];
 		
 		for (i in 0...pixels.length) {
-			++result[i % 4][pixels.readUnsignedByte()];
+			
+			++result[i % 4][pixels.readUnsignedByte ()];
+			
 		}
+		
 		return result;
+		
 	}
 	
 	
@@ -792,37 +854,44 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function paletteMap (sourceBitmapData:BitmapData, sourceRect:flash.geom.Rectangle, destPoint:flash.geom.Point, ?redArray:Array<Int>, ?greenArray:Array<Int>, ?blueArray:Array<Int>, ?alphaArray:Array<Int>):Void {
+	public function paletteMap (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, ?redArray:Array<Int>, ?greenArray:Array<Int>, ?blueArray:Array<Int>, ?alphaArray:Array<Int>):Void {
+		
+		#if js
 		var memory = new ByteArray ();
-		var sw:Int = Std.int(sourceRect.width);
-		var sh:Int = Std.int(sourceRect.height);
+		var sw:Int = Std.int (sourceRect.width);
+		var sh:Int = Std.int (sourceRect.height);
+		
 		memory.length = ((sw * sh) * 4);
-		memory = getPixels(sourceRect);
+		memory = getPixels (sourceRect);
 		memory.position = 0;
 		Memory.select (memory);
 		
 		var position:Int, pixelValue:Int, r:Int, g:Int, b:Int, color:Int;
 		
-		for (i in 0...(sh*sw)) {
+		for (i in 0...(sh * sw)) {
+			
 			position = i * 4;
-			pixelValue = cast Memory.getI32(position);
+			pixelValue = cast Memory.getI32 (position);
 			
 			r = (pixelValue >> 8) & 0xFF;
 			g = (pixelValue >> 16) & 0xFF;
 			b = (pixelValue >> 24) & 0xFF;
 			
-			color = __flipPixel((0xff << 24) |
+			color = __flipPixel ((0xff << 24) |
 				redArray[r] | 
 				greenArray[g] | 
 				blueArray[b]);
 			
-			Memory.setI32(position, color);
+			Memory.setI32 (position, color);
+			
 		}
 		
 		memory.position = 0;
-		var destRect = new Rectangle(destPoint.x, destPoint.y, sw, sh);
-		setPixels(destRect, memory);
+		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
+		setPixels (destRect, memory);
 		Memory.select (null);
+		#end
+		
 	}
 	
 	
@@ -840,19 +909,9 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function setVector (rect:Rectangle, inputVector:Vector<UInt>) {
-		var byteArray = new ByteArray();
-		byteArray.length = inputVector.length * 4;
-		for (color in inputVector) {
-			byteArray.writeUnsignedInt(color);
-		}
-		byteArray.position = 0;
-		setPixels(rect, byteArray);
-	}
-	
-	
 	public function setPixel (x:Int, y:Int, color:Int):Void {
 		
+		#if js
 		if (!__valid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
 		
 		__convertToCanvas ();
@@ -866,12 +925,14 @@ class BitmapData implements IBitmapDrawable {
 		if (transparent) __sourceImageData.data[offset + 3] = (0xFF);
 		
 		__sourceImageDataChanged = true;
+		#end
 		
 	}
 	
 	
 	public function setPixel32 (x:Int, y:Int, color:Int):Void {
 		
+		#if js
 		if (!__valid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
 		
 		__convertToCanvas ();
@@ -894,12 +955,14 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__sourceImageDataChanged = true;
+		#end
 		
 	}
 	
 	
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
+		#if js
 		rect = __clipRect (rect);
 		if (!__valid || rect == null) return;
 		
@@ -942,12 +1005,33 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__sourceImageDataChanged = true;
+		#end
+		
+	}
+	
+	
+	public function setVector (rect:Rectangle, inputVector:Vector<UInt>) {
+		
+		#if js
+		var byteArray = new ByteArray ();
+		byteArray.length = inputVector.length * 4;
+		
+		for (color in inputVector) {
+			
+			byteArray.writeUnsignedInt (color);
+			
+		}
+		
+		byteArray.position = 0;
+		setPixels (rect, byteArray);
+		#end
 		
 	}
 	
 	
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
+		#if js
 		if (sourceBitmapData == this && sourceRect.equals(rect) && destPoint.x == 0 && destPoint.y == 0) {
 			
 			var hits = 0;
@@ -1093,6 +1177,9 @@ class BitmapData implements IBitmapDrawable {
 			return hits;
 			
 		}
+		#else
+		return 0;
+		#end
 		
 	}
 	
@@ -1106,6 +1193,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private static function __base64Encode (bytes:ByteArray):String {
 		
+		#if js
 		var extension = switch (bytes.length % 3) {
 			
 			case 1: "==";
@@ -1121,6 +1209,9 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		return __base64Encoder.encodeBytes (Bytes.ofData (cast bytes.byteView)).toString () + extension;
+		#else
+		return "";
+		#end
 		
 	}
 	
@@ -1168,6 +1259,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	#if js
 	private function __convertToCanvas ():Void {
 		
 		if (__loading) return;
@@ -1226,10 +1318,12 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 	}
+	#end
 	
 	
 	private function __fillRect (rect:Rectangle, color:Int) {
 		
+		#if js
 		var a = (transparent) ? ((color & 0xFF000000) >>> 24) : 0xFF;
 		var r = (color & 0x00FF0000) >>> 16;
 		var g = (color & 0x0000FF00) >>> 8;
@@ -1237,6 +1331,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		__sourceContext.fillStyle = 'rgba(' + r + ', ' + g + ', ' + b + ', ' + (a / 255) + ')';
 		__sourceContext.fillRect (rect.x, rect.y, rect.width, rect.height);
+		#end
 		
 	}
 	
@@ -1248,11 +1343,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	#if js
 	private function __getInt32 (offset:Int, data:Uint8ClampedArray) {
 		
 		return (transparent ? data[offset + 3] : 0xFF) << 24 | data[offset] << 16 | data[offset + 1] << 8 | data[offset + 2]; 
 		
 	}
+	#end
 	
 	
 	private static function __isJPG (bytes:ByteArray) {
@@ -1288,6 +1385,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private inline function __loadFromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
 		
+		#if js
 		__sourceImage = cast Browser.document.createElement ("img");
 		
 		var image_onLoaded = function (event) {
@@ -1314,12 +1412,14 @@ class BitmapData implements IBitmapDrawable {
 		
 		__sourceImage.addEventListener ("load", image_onLoaded, false);
 		__sourceImage.src = "data:" + type + ";base64," + base64;
+		#end
 		
 	}
 	
 	
 	private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
 		
+		#if js
 		var type = "";
 		
 		if (__isPNG (bytes)) {
@@ -1370,12 +1470,14 @@ class BitmapData implements IBitmapDrawable {
 			__loadFromBase64 (__base64Encode (bytes), type, onload);
 			
 		}
+		#end
 		
 	}
 	
 	
 	public function __renderCanvas (renderSession:RenderSession):Void {
 		
+		#if js
 		if (!__valid) return;
 		
 		__syncImageData ();
@@ -1406,6 +1508,7 @@ class BitmapData implements IBitmapDrawable {
 			context.drawImage (__sourceCanvas, 0, 0);
 			
 		}
+		#end
 		
 	}
 	
@@ -1417,6 +1520,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	#if js
 	private function __syncImageData ():Void {
 		
 		if (__sourceImageDataChanged) {
@@ -1428,6 +1532,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 	}
+	#end
 	
 	
 	@:noCompletion static public function __ucompare (n1:Int, n2:Int) : Int {

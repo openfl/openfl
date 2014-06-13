@@ -3,7 +3,10 @@ package openfl.ui;
 
 import openfl.ui.MultitouchInputMode;
 import openfl.Lib;
+
+#if js
 import js.Browser;
+#end
 
 
 class Multitouch {
@@ -55,11 +58,13 @@ class Multitouch {
 	
 	private static function get_supportsTouchEvents ():Bool {
 		
+		#if js
 		if (untyped __js__ ("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)")) {
 			
 			return true;
 			
 		}
+		#end
 		
 		return false;
 		

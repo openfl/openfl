@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef ArrayBufferView = js.html.ArrayBufferView;
+typedef ArrayBufferView = lime.utils.ArrayBufferView;

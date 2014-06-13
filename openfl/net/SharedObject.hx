@@ -4,12 +4,15 @@ package openfl.net;
 import haxe.io.Bytes;
 import haxe.Serializer;
 import haxe.Unserializer;
-import js.html.Storage;
-import js.Browser;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.net.SharedObjectFlushStatus;
 import openfl.Lib;
+
+#if js
+import js.html.Storage;
+import js.Browser;
+#end
 
 
 class SharedObject extends EventDispatcher {

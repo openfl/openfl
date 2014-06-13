@@ -1,9 +1,12 @@
 package openfl.filters;
 
 
-import js.html.ImageData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if js
+import js.html.ImageData;
+#end
 
 
 
@@ -35,6 +38,7 @@ class ColorMatrixFilter extends BitmapFilter {
 	}
 	
 	
+	#if js
 	public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		var source = sourceData.data;
@@ -70,6 +74,7 @@ class ColorMatrixFilter extends BitmapFilter {
 		}
 		
 	}
+	#end
 	
 	
 }

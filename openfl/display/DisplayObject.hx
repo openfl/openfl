@@ -1,8 +1,6 @@
 package openfl.display;
 
 
-import js.html.CSSStyleDeclaration;
-import js.html.Element;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
 import openfl.events.Event;
@@ -15,6 +13,11 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Lib;
+
+#if js
+import js.html.CSSStyleDeclaration;
+import js.html.Element;
+#end
 
 
 @:access(openfl.events.Event)
@@ -69,7 +72,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	private var __scaleX:Float;
 	private var __scaleY:Float;
 	private var __scrollRect:Rectangle;
-	private var __style:CSSStyleDeclaration;
 	private var __transform:Transform;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;
@@ -84,6 +86,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	private var __worldZ:Int;
 	private var __x:Float;
 	private var __y:Float;
+	
+	#if js
+	private var __style:CSSStyleDeclaration;
+	#end
 	
 	
 	private function new () {
@@ -189,6 +195,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	private function __applyStyle (renderSession:RenderSession, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void {
 		
+		#if js
 		if (setTransform && __worldTransformChanged) {
 			
 			__style.setProperty (renderSession.transformProperty, __worldTransform.to3DString (renderSession.roundPixels), null);
@@ -230,6 +237,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -323,6 +331,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
+	#if js
 	private function __initializeElement (element:Element, renderSession:RenderSession):Void {
 		
 		__style = element.style;
@@ -340,6 +349,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		__worldZ = -1;
 		
 	}
+	#end
 	
 	
 	public function __renderCanvas (renderSession:RenderSession):Void {

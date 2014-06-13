@@ -1,14 +1,17 @@
 package openfl.display;
 
 
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.Browser;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+
+#if js
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.CSSStyleDeclaration;
+import js.Browser;
+#end
 
 
 @:access(openfl.display.Graphics)
@@ -20,9 +23,12 @@ class Sprite extends DisplayObjectContainer {
 	public var graphics (get, null):Graphics;
 	public var useHandCursor:Bool;
 	
+	private var __graphics:Graphics;
+	
+	#if js
 	private var __canvas:CanvasElement;
 	private var __canvasContext:CanvasRenderingContext2D;
-	private var __graphics:Graphics;
+	#end
 	
 	
 	public function new () {
@@ -105,6 +111,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		#if js
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		if (__graphics != null) {
@@ -155,12 +162,14 @@ class Sprite extends DisplayObjectContainer {
 		}
 		
 		super.__renderCanvas (renderSession);
+		#end
 		
 	}
 	
 	
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if js
 		if (stage != null && __worldVisible && __renderable && __graphics != null) {
 			
 			if (__graphics.__dirty || __worldAlphaChanged || (__canvas == null && __graphics.__canvas != null)) {
@@ -226,6 +235,7 @@ class Sprite extends DisplayObjectContainer {
 		}
 		
 		super.__renderDOM (renderSession);
+		#end
 		
 	}
 	

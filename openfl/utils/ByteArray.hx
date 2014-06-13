@@ -1,14 +1,22 @@
 package openfl.utils;
 
 
+typedef ByteArray = lime.utils.ByteArray;
+
+/*
+
+
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.io.BytesData;
 import haxe.io.Input;
-import js.html.DataView;
-import js.html.Uint8Array;
 import openfl.errors.IOError;
 import openfl.utils.ArrayBuffer;
+
+#if js
+import js.html.DataView;
+import js.html.Uint8Array;
+#end
 
 #if format
 import format.tools.Inflate;
@@ -514,3 +522,4 @@ class ByteArray implements ArrayAccess<Int> {
 	
 	
 }
+*/

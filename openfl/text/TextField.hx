@@ -2,12 +2,6 @@ package openfl.text;
 
 
 import haxe.xml.Fast;
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-import js.html.DivElement;
-import js.html.Element;
-import js.Browser;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -16,6 +10,15 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextFormatAlign;
+
+#if js
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.CSSStyleDeclaration;
+import js.html.DivElement;
+import js.html.Element;
+import js.Browser;
+#end
 
 
 @:access(openfl.display.Graphics)

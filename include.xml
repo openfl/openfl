@@ -46,6 +46,24 @@
 			
 		</section>
 		
+		<section if="native" unless="custom-backend">
+			
+			<set name="openfl-native" />
+			<haxedef name="openfl-native" />
+			
+			<set name="openfl" />
+			
+			<haxeflag name="--remap" value="flash:openfl" />
+			
+		</section>
+		
+		<section if="flash" unless="custom-backend">
+			
+			<set name="openfl-flash" />
+			<haxedef name="openfl-flash" />
+			
+		</section>
+		
 		<haxelib name="${custom-backend}" if="custom-backend" />
 		
 	</section>

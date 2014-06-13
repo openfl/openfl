@@ -1,4 +1,4 @@
 package openfl.utils;
 
 
-typedef Int32Array = js.html.Int32Array;
+typedef Int32Array = lime.utils.Int32Array;
