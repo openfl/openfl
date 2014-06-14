@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 enum CompressionAlgorithm {
@@ -9,3 +9,8 @@ enum CompressionAlgorithm {
 	GZIP;
 	
 }
+
+
+#else
+typedef CompressionAlgorithm = flash.utils.CompressionAlgorithm;
+#end

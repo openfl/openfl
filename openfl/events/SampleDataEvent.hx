@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.utils.ByteArray;
@@ -39,3 +39,8 @@ class SampleDataEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef SampleDataEvent = flash.events.SampleDataEvent;
+#end

@@ -1,4 +1,4 @@
-package openfl.errors;
+package openfl.errors; #if !flash
 
 
 class EOFError extends Error {
@@ -12,3 +12,8 @@ class EOFError extends Error {
 	
 	
 }
+
+
+#else
+typedef EOFError = flash.errors.EOFError;
+#end

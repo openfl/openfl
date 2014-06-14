@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 import openfl.geom.Point;
@@ -456,3 +456,8 @@ class Matrix {
 	
 	
 }
+
+
+#else
+typedef Matrix = flash.geom.Matrix;
+#end

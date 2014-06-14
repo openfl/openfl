@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 import openfl.Vector;
@@ -670,3 +670,8 @@ class Matrix3D {
 	
 	
 }
+
+
+#else
+typedef Matrix3D = flash.geom.Matrix3D;
+#end

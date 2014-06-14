@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 import openfl.events.EventDispatcher;
@@ -127,3 +127,8 @@ class Timer extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef Timer = flash.utils.Timer;
+#end

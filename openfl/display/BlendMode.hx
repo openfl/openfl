@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum BlendMode {
@@ -19,3 +19,8 @@ enum BlendMode {
 	SUBTRACT;
 	
 }
+
+
+#else
+typedef BlendMode = flash.display.BlendMode;
+#end

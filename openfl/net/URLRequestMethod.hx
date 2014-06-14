@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 class URLRequestMethod {
@@ -11,3 +11,8 @@ class URLRequestMethod {
 	public static var PUT:String = "PUT";
 	
 }
+
+
+#else
+typedef URLRequestMethod = flash.net.URLRequestMethod;
+#end

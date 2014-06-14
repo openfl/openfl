@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -606,3 +606,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 }
+
+
+#else
+typedef DisplayObjectContainer = flash.display.DisplayObjectContainer;
+#end

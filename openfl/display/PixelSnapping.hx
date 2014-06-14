@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum PixelSnapping {
@@ -8,3 +8,8 @@ enum PixelSnapping {
 	ALWAYS;
 	
 }
+
+
+#else
+typedef PixelSnapping = flash.display.PixelSnapping;
+#end

@@ -1,4 +1,4 @@
-package openfl.ui;
+package openfl.ui; #if !flash
 
 
 import openfl.ui.MultitouchInputMode;
@@ -72,3 +72,8 @@ class Multitouch {
 	
 	
 }
+
+
+#else
+typedef Multitouch = flash.ui.Multitouch;
+#end

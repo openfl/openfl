@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 class GraphicsPathCommand {
@@ -12,3 +12,8 @@ class GraphicsPathCommand {
 	public static inline var CUBIC_CURVE_TO = 6;
 	
 }
+
+
+#else
+typedef GraphicsPathCommand = flash.display.GraphicsPathCommand;
+#end

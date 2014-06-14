@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 enum TextFormatAlign {
@@ -9,3 +9,8 @@ enum TextFormatAlign {
 	CENTER;
 	
 }
+
+
+#else
+typedef TextFormatAlign = flash.text.TextFormatAlign;
+#end

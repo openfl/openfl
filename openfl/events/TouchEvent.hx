@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.display.InteractiveObject;
@@ -84,3 +84,8 @@ class TouchEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef TouchEvent = flash.events.TouchEvent;
+#end

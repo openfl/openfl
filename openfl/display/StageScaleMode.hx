@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum StageScaleMode {
@@ -9,3 +9,8 @@ enum StageScaleMode {
 	EXACT_FIT;
 	
 }
+
+
+#else
+typedef StageScaleMode = flash.display.StageScaleMode;
+#end

@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 class Dictionary implements ArrayAccess<Dynamic> {
@@ -12,3 +12,8 @@ class Dictionary implements ArrayAccess<Dynamic> {
 	
 	
 }
+
+
+#else
+typedef Dictionary = flash.utils.Dictionary;
+#end

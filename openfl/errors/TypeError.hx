@@ -1,4 +1,4 @@
-package openfl.errors;
+package openfl.errors; #if !flash
 
 
 class TypeError extends Error {
@@ -12,3 +12,8 @@ class TypeError extends Error {
 	
 	
 }
+
+
+#else
+typedef TypeError = flash.errors.TypeError;
+#end

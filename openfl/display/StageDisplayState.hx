@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum StageDisplayState {
@@ -8,3 +8,8 @@ enum StageDisplayState {
 	FULL_SCREEN_INTERACTIVE;
 	
 }
+
+
+#else
+typedef StageDisplayState = flash.display.StageDisplayState;
+#end

@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 class MovieClip extends Sprite {
@@ -91,3 +91,8 @@ class MovieClip extends Sprite {
 	
 	
 }
+
+
+#else
+typedef MovieClip = flash.display.MovieClip;
+#end

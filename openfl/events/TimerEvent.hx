@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.events.Event;
@@ -26,3 +26,8 @@ class TimerEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef TimerEvent = flash.events.TimerEvent;
+#end

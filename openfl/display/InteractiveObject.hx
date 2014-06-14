@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.geom.Rectangle;
@@ -52,3 +52,8 @@ class InteractiveObject extends DisplayObject {
 	
 	
 }
+
+
+#else
+typedef InteractiveObject = flash.display.InteractiveObject;
+#end

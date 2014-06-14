@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 class System {
@@ -66,3 +66,8 @@ class System {
 	
 	
 }
+
+
+#else
+typedef System = flash.system.System;
+#end

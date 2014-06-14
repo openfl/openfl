@@ -1,4 +1,4 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 class SoundTransform {
@@ -25,3 +25,8 @@ class SoundTransform {
 	
 	
 }
+
+
+#else
+typedef SoundTransform = flash.media.SoundTransform;
+#end

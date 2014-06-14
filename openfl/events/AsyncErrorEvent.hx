@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import haxe.io.Error;
@@ -23,3 +23,8 @@ class AsyncErrorEvent extends ErrorEvent {
 	
 	
 }
+
+
+#else
+typedef AsyncErrorEvent = flash.events.AsyncErrorEvent;
+#end

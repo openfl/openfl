@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum InterpolationMethod {
@@ -7,3 +7,8 @@ enum InterpolationMethod {
 	LINEAR_RGB;
 	
 }
+
+
+#else
+typedef InterpolationMethod = flash.display.InterpolationMethod;
+#end

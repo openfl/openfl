@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 import openfl.utils.UInt;
@@ -26,3 +26,8 @@ interface IDataInput {
 	function readUnsignedShort ():Int;
 	
 }
+
+
+#else
+typedef IDataInput = flash.utils.IDataInput;
+#end

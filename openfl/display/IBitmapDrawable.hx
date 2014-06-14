@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -14,3 +14,8 @@ interface IBitmapDrawable {
 	function __updateChildren (transformOnly:Bool):Void;
 	
 }
+
+
+#else
+typedef IBitmapDrawable = flash.display.IBitmapDrawable;
+#end

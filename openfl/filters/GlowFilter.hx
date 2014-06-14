@@ -1,4 +1,4 @@
-package openfl.filters;
+package openfl.filters; #if !flash
 
 
 class GlowFilter extends BitmapFilter {
@@ -38,3 +38,8 @@ class GlowFilter extends BitmapFilter {
 	
 	
 }
+
+
+#else
+typedef GlowFilter = flash.filters.GlowFilter;
+#end

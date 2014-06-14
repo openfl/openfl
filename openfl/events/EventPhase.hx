@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 #if (haxe_ver > 3.100)
@@ -21,4 +21,9 @@ enum EventPhase {
 	
 }
 
+#end
+
+
+#else
+typedef EventPhase = flash.events.EventPhase;
 #end

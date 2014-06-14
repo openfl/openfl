@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum TriangleCulling {
@@ -8,3 +8,8 @@ enum TriangleCulling {
 	POSITIVE;
 	
 }
+
+
+#else
+typedef TriangleCulling = flash.display.TriangleCulling;
+#end

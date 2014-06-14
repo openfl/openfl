@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 #if (haxe_ver > 3.100)
@@ -21,4 +21,9 @@ enum JointStyle {
 	
 }
 
+#end
+
+
+#else
+typedef JointStyle = flash.display.JointStyle;
 #end

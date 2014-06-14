@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 class URLRequestHeader {
@@ -17,3 +17,8 @@ class URLRequestHeader {
 	
 	
 }
+
+
+#else
+typedef URLRequestHeader = flash.net.URLRequestHeader;
+#end

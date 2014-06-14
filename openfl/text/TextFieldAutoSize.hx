@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 enum TextFieldAutoSize {
@@ -9,3 +9,8 @@ enum TextFieldAutoSize {
 	RIGHT;
 	
 }
+
+
+#else
+typedef TextFieldAutoSize = flash.text.TextFieldAutoSize;
+#end

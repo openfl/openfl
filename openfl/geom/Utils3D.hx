@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 import openfl.Vector;
@@ -33,3 +33,8 @@ class Utils3D {
 	
 	
 }
+
+
+#else
+typedef Utils3D = flash.geom.Utils3D;
+#end

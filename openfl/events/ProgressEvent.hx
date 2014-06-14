@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 class ProgressEvent extends Event {
@@ -22,3 +22,8 @@ class ProgressEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef ProgressEvent = flash.events.ProgressEvent;
+#end

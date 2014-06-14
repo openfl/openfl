@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.geom.Point;
@@ -876,3 +876,8 @@ enum DrawCommand {
 	MoveTo (x:Float, y:Float);
 	
 }
+
+
+#else
+typedef Graphics = flash.display.Graphics;
+#end

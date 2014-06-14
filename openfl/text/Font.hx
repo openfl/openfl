@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 class Font {
@@ -297,3 +297,8 @@ typedef GlyphData = {
 	var data:Array<Float>;
 	
 }*/
+
+
+#else
+typedef Font = flash.text.Font;
+#end

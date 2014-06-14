@@ -1,4 +1,4 @@
-package openfl.ui;
+package openfl.ui; #if !flash
 
 
 #if (haxe_ver > 3.100)
@@ -23,4 +23,9 @@ package openfl.ui;
 	
 }
 
+#end
+
+
+#else
+typedef KeyLocation = flash.ui.KeyLocation;
 #end

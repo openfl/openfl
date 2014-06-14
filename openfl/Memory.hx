@@ -1,4 +1,4 @@
-package openfl;
+package openfl; #if flash
 
 
 import haxe.io.BytesData;
@@ -155,3 +155,8 @@ class Memory {
 	
 	
 }
+
+
+#else
+typedef Memory = flash.Memory;
+#end

@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 class TextEvent extends Event {
@@ -20,3 +20,8 @@ class TextEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef TextEvent = flash.events.TextEvent;
+#end

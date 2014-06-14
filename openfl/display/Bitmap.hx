@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -467,3 +467,8 @@ class Bitmap extends DisplayObjectContainer {
 	
 	
 }
+
+
+#else
+typedef Bitmap = flash.display.Bitmap;
+#end

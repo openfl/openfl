@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 enum URLLoaderDataFormat {
@@ -8,3 +8,8 @@ enum URLLoaderDataFormat {
 	VARIABLES;
 	
 }
+
+
+#else
+typedef URLLoaderDataFormat = flash.net.URLLoaderDataFormat;
+#end

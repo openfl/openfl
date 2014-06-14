@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 interface IExternalizable {
@@ -7,3 +7,8 @@ interface IExternalizable {
 	function writeExternal (output:IDataOutput):Void;
 	
 }
+
+
+#else
+typedef IExternalizable = flash.utils.IExternalizable;
+#end

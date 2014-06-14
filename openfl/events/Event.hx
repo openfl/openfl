@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.display.InteractiveObject;
@@ -96,3 +96,8 @@ class Event {
 	
 	
 }
+
+
+#else
+typedef Event = flash.events.Event;
+#end

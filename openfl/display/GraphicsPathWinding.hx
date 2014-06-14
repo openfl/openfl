@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 @:fakeEnum(String) enum GraphicsPathWinding {
@@ -7,3 +7,8 @@ package openfl.display;
 	NON_ZERO;
 	
 }
+
+
+#else
+typedef GraphicsPathWinding = flash.display.GraphicsPathWinding;
+#end

@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 class URLVariables implements Dynamic {
@@ -63,3 +63,8 @@ class URLVariables implements Dynamic {
 	
 	
 }
+
+
+#else
+typedef URLVariables = flash.net.URLVariables;
+#end

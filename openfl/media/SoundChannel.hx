@@ -1,4 +1,4 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 import openfl.events.Event;
@@ -118,3 +118,8 @@ class SoundChannel extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef SoundChannel = flash.media.SoundChannel;
+#end

@@ -1,10 +1,10 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import haxe.EnumFlags;
-import lime.graphics.canvas.CanvasRenderContext;
-import lime.graphics.dom.DOMRenderContext;
-import lime.graphics.opengl.GLRenderContext;
+import lime.graphics.CanvasRenderContext;
+import lime.graphics.DOMRenderContext;
+import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
 import openfl.events.Event;
 import openfl.events.EventPhase;
@@ -1195,3 +1195,8 @@ enum RenderCommandType {
 	LINES;
 	
 }
+
+
+#else
+typedef Stage = flash.display.Stage;
+#end

@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.events.EventDispatcher;
@@ -37,3 +37,7 @@ class FrameLabel extends EventDispatcher {
 	
 }
 
+
+#else
+typedef FrameLabel = flash.display.FrameLabel;
+#end

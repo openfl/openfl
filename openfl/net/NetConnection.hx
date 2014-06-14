@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 import openfl.events.EventDispatcher;
@@ -32,3 +32,8 @@ class NetConnection extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef NetConnection = flash.net.NetConnection;
+#end

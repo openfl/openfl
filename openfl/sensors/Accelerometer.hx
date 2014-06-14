@@ -1,4 +1,4 @@
-package openfl.sensors;
+package openfl.sensors; #if !flash
 
 
 import haxe.Timer;
@@ -117,3 +117,8 @@ class Accelerometer extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef Accelerometer = flash.sensors.Accelerometer;
+#end

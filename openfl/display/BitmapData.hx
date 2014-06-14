@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import haxe.crypto.BaseCode;
@@ -1658,3 +1658,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	
 }*/
+
+
+#else
+typedef BitmapData = flash.display.BitmapData;
+#end

@@ -1,4 +1,4 @@
-package openfl.ui;
+package openfl.ui; #if !flash
 
 
 class Keyboard {
@@ -327,3 +327,8 @@ class Keyboard {
 	
 	
 }
+
+
+#else
+typedef Keyboard = flash.ui.Keyboard;
+#end

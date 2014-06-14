@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 #if (haxe_ver > 3.100)
@@ -23,4 +23,9 @@ enum StageQuality {
 	
 }
 
+#end
+
+
+#else
+typedef StageQuality = flash.display.StageQuality;
 #end

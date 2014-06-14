@@ -1,4 +1,4 @@
-package openfl.filters;
+package openfl.filters; #if !flash
 
 
 import openfl.geom.Point;
@@ -78,3 +78,8 @@ class ColorMatrixFilter extends BitmapFilter {
 	
 	
 }
+
+
+#else
+typedef ColorMatrixFilter = flash.filters.ColorMatrixFilter;
+#end

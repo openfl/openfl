@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.IGraphicsData;
@@ -33,3 +33,8 @@ class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
 	
 	
 }
+
+
+#else
+typedef GraphicsBitmapFill = flash.display.GraphicsBitmapFill;
+#end

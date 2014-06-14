@@ -1,4 +1,4 @@
-package openfl.filters;
+package openfl.filters; #if !flash
 
 
 class BitmapFilterType {
@@ -8,3 +8,8 @@ class BitmapFilterType {
 	public static var OUTER = "outer";
 	
 }
+
+
+#else
+typedef BitmapFilterType = flash.filters.BitmapFilterType;
+#end

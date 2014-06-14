@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 class TextFormat {
@@ -89,3 +89,8 @@ class TextFormat {
 	
 	
 }
+
+
+#else
+typedef TextFormat = flash.text.TextFormat;
+#end

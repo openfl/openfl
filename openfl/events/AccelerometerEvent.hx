@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.events.Event;
@@ -42,3 +42,8 @@ class AccelerometerEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef AccelerometerEvent = flash.events.AccelerometerEvent;
+#end

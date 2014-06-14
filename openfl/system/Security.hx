@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 class Security {
@@ -25,3 +25,8 @@ class Security {
 	
 	
 }
+
+
+#else
+typedef Security = flash.system.Security;
+#end

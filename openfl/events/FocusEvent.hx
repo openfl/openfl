@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.display.InteractiveObject;
@@ -40,3 +40,8 @@ class FocusEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef FocusEvent = flash.events.FocusEvent;
+#end

@@ -1,4 +1,4 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 class ID3Info {
@@ -21,3 +21,8 @@ class ID3Info {
 	
 	
 }
+
+
+#else
+typedef ID3Info = flash.media.ID3Info;
+#end

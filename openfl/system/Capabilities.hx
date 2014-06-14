@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 import openfl.Lib;
@@ -67,3 +67,8 @@ class Capabilities {
 	
 	
 }
+
+
+#else
+typedef Capabilities = flash.system.Capabilities;
+#end

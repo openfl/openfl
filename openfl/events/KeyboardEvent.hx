@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.ui.KeyLocation;
@@ -37,3 +37,8 @@ class KeyboardEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef KeyboardEvent = flash.events.KeyboardEvent;
+#end

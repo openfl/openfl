@@ -38,6 +38,7 @@ class OpenGLView extends DirectRenderer {
 	}
 	
 	
+	#if !flash
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__added) {
@@ -50,8 +51,10 @@ class OpenGLView extends DirectRenderer {
 		}
 		
 	}
+	#end
 	
 	
+	#if !flash
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if js
@@ -124,8 +127,10 @@ class OpenGLView extends DirectRenderer {
 		#end
 		
 	}
+	#end
 	
 	
+	#if !flash
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (stage != null && __renderable) {
@@ -147,6 +152,7 @@ class OpenGLView extends DirectRenderer {
 		}
 		
 	}
+	#end
 	
 	
 	
@@ -157,7 +163,11 @@ class OpenGLView extends DirectRenderer {
 	
 	private static function get_isSupported ():Bool {
 		
-		#if js
+		#if flash
+		
+		return false;
+		
+		#elseif js
 		
 		if (untyped (!window.WebGLRenderingContext)) {
 			
@@ -166,7 +176,6 @@ class OpenGLView extends DirectRenderer {
 		}
 		
 		#if dom
-		
 		var view = new OpenGLView ();
 		
 		if (view.__context == null) {
@@ -174,11 +183,8 @@ class OpenGLView extends DirectRenderer {
 			return false;
 			
 		}
-		
 		#else
-		
 		return (GL.context != null);
-		
 		#end
 		
 		#end

@@ -1,4 +1,4 @@
-package openfl.external;
+package openfl.external; #if !flash
 
 
 import openfl.Lib;
@@ -65,3 +65,8 @@ class ExternalInterface {
 	
 	
 }
+
+
+#else
+typedef ExternalInterface = flash.external.ExternalInterface;
+#end

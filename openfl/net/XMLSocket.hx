@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 import openfl.events.DataEvent;
@@ -107,3 +107,8 @@ class XMLSocket extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef XMLSocket = flash.net.XMLSocket;
+#end

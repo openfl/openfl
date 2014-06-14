@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -276,3 +276,8 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 }
+
+
+#else
+typedef Sprite = flash.display.Sprite;
+#end

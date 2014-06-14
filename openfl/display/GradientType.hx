@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum GradientType {
@@ -7,3 +7,8 @@ enum GradientType {
 	LINEAR;
 	
 }
+
+
+#else
+typedef GradientType = flash.display.GradientType;
+#end

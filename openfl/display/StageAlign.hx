@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum StageAlign {
@@ -13,3 +13,8 @@ enum StageAlign {
 	BOTTOM;
 	
 }
+
+
+#else
+typedef StageAlign = flash.display.StageAlign;
+#end

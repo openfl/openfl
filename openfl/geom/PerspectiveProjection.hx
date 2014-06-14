@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 class PerspectiveProjection {
@@ -56,3 +56,8 @@ class PerspectiveProjection {
 	
 	
 }
+
+
+#else
+typedef PerspectiveProjection = flash.geom.PerspectiveProjection;
+#end

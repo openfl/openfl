@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 class Endian {
@@ -9,3 +9,8 @@ class Endian {
 	
 	
 }
+
+
+#else
+typedef Endian = flash.utils.Endian;
+#end

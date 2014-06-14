@@ -1,4 +1,4 @@
-package openfl.utils;
+package openfl.utils; #if !flash
 
 
 interface IDataOutput {
@@ -20,3 +20,8 @@ interface IDataOutput {
 	function writeUnsignedInt (value:Int):Void;
 	
 }
+
+
+#else
+typedef IDataOutput = flash.utils.IDataOutput;
+#end

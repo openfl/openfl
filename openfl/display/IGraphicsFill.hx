@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 interface IGraphicsFill {
@@ -16,3 +16,8 @@ interface IGraphicsFill {
 	END_FILL;
 	
 }
+
+
+#else
+typedef IGraphicsFill = flash.display.IGraphicsFill;
+#end

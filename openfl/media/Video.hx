@@ -1,4 +1,4 @@
-package openfl.media;
+package openfl.media; #if !flash
 
 
 import openfl.display.DisplayObject;
@@ -241,3 +241,8 @@ class Video extends DisplayObject {
 	
 	
 }
+
+
+#else
+typedef Video = flash.media.Video;
+#end

@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 class LoaderContext {
@@ -24,3 +24,8 @@ class LoaderContext {
 	
 	
 }
+
+
+#else
+typedef LoaderContext = flash.system.LoaderContext;
+#end

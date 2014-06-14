@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 enum TextFieldType {
@@ -7,3 +7,8 @@ enum TextFieldType {
 	INPUT;
 	
 }
+
+
+#else
+typedef TextFieldType = flash.text.TextFieldType;
+#end

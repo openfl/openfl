@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 @:fakeEnum(String) enum SharedObjectFlushStatus {
@@ -7,3 +7,8 @@ package openfl.net;
 	PENDING;
 	
 }
+
+
+#else
+typedef SharedObjectFlushStatus = flash.net.SharedObjectFlushStatus;
+#end

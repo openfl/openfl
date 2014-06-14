@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 class ColorTransform {
@@ -69,3 +69,8 @@ class ColorTransform {
 	
 	
 }
+
+
+#else
+typedef ColorTransform = flash.geom.ColorTransform;
+#end

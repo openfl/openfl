@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 class Vector3D {
@@ -228,3 +228,8 @@ class Vector3D {
 	
 	
 }
+
+
+#else
+typedef Vector3D = flash.geom.Vector3D;
+#end

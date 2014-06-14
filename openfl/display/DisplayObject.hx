@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -922,3 +922,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 }
+
+
+#else
+typedef DisplayObject = flash.display.DisplayObject;
+#end

@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.display.InteractiveObject;
@@ -111,3 +111,8 @@ class MouseEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef MouseEvent = flash.events.MouseEvent;
+#end

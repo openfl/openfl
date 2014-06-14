@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 #if (haxe_ver > 3.100)
@@ -19,4 +19,9 @@ enum AntiAliasType {
 	
 }
 
+#end
+
+
+#else
+typedef AntiAliasType = flash.text.AntiAliasType;
 #end

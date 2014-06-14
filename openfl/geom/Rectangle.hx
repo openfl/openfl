@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 class Rectangle {
@@ -303,3 +303,8 @@ class Rectangle {
 	
 	
 }
+
+
+#else
+typedef Rectangle = flash.geom.Rectangle;
+#end

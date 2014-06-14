@@ -1,4 +1,4 @@
-package openfl.geom;
+package openfl.geom; #if !flash
 
 
 class Point {
@@ -115,3 +115,8 @@ class Point {
 	
 	
 }
+
+
+#else
+typedef Point = flash.geom.Point;
+#end

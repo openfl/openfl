@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 import openfl.display.InteractiveObject;
@@ -25,3 +25,8 @@ class ContextMenuEvent extends Event {
 	
 	
 }
+
+
+#else
+typedef ContextMenuEvent = flash.events.ContextMenuEvent;
+#end

@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 class SecurityErrorEvent extends ErrorEvent {
@@ -17,3 +17,8 @@ class SecurityErrorEvent extends ErrorEvent {
 	
 	
 }
+
+
+#else
+typedef SecurityErrorEvent = flash.events.SecurityErrorEvent;
+#end

@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !flash
 
 
 import haxe.Timer;
@@ -284,3 +284,8 @@ class NetStream extends EventDispatcher {
 	
 	
 }
+
+
+#else
+typedef NetStream = flash.net.NetStream;
+#end

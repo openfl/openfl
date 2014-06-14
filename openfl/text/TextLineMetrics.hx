@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 class TextLineMetrics {
@@ -25,3 +25,8 @@ class TextLineMetrics {
 	
 	
 }
+
+
+#else
+typedef TextLineMetrics = flash.text.TextLineMetrics;
+#end

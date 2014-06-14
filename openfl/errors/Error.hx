@@ -1,4 +1,4 @@
-package openfl.errors;
+package openfl.errors; #if !flash
 
 
 import haxe.CallStack;
@@ -46,3 +46,8 @@ class Error {
 	
 	
 }
+
+
+#else
+typedef Error = flash.errors.Error;
+#end

@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 interface IGraphicsData {
@@ -18,3 +18,8 @@ interface IGraphicsData {
 	END;
 	
 }
+
+
+#else
+typedef IGraphicsData = flash.display.IGraphicsData;
+#end

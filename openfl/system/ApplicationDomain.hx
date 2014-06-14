@@ -1,4 +1,4 @@
-package openfl.system;
+package openfl.system; #if !flash
 
 
 class ApplicationDomain {
@@ -39,3 +39,8 @@ class ApplicationDomain {
 	
 	
 }
+
+
+#else
+typedef ApplicationDomain = flash.system.ApplicationDomain;
+#end

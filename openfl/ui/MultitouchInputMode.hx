@@ -1,4 +1,4 @@
-package openfl.ui;
+package openfl.ui; #if !flash
 
 
 enum MultitouchInputMode {
@@ -8,3 +8,8 @@ enum MultitouchInputMode {
 	GESTURE;
 	
 }
+
+
+#else
+typedef MultitouchInputMode = flash.ui.MultitouchInputMode;
+#end

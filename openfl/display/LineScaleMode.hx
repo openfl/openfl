@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum LineScaleMode {
@@ -9,3 +9,8 @@ enum LineScaleMode {
 	VERTICAL;
 	
 }
+
+
+#else
+typedef LineScaleMode = flash.display.LineScaleMode;
+#end

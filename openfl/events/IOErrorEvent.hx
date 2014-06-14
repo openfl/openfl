@@ -1,4 +1,4 @@
-package openfl.events;
+package openfl.events; #if !flash
 
 
 class IOErrorEvent extends ErrorEvent {
@@ -29,3 +29,8 @@ class IOErrorEvent extends ErrorEvent {
 	
 	
 }
+
+
+#else
+typedef IOErrorEvent = flash.events.IOErrorEvent;
+#end

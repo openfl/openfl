@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 import haxe.xml.Fast;
@@ -1048,3 +1048,8 @@ class TextFormatRange {
 	
 	
 }
+
+
+#else
+typedef TextField = flash.text.TextField;
+#end

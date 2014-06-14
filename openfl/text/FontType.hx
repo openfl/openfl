@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 enum FontType {
@@ -8,3 +8,8 @@ enum FontType {
 	EMBEDDED_CFF;
 	
 }
+
+
+#else
+typedef FontType = flash.text.FontType;
+#end

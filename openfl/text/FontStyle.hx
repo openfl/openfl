@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if !flash
 
 
 enum FontStyle {
@@ -9,3 +9,8 @@ enum FontStyle {
 	BOLD;
 	
 }
+
+
+#else
+typedef FontStyle = flash.text.FontStyle;
+#end

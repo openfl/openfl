@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 class BitmapDataChannel {
@@ -9,3 +9,8 @@ class BitmapDataChannel {
    public static inline var RED = 1;
    
 }
+
+
+#else
+typedef BitmapDataChannel = flash.display.BitmapDataChannel;
+#end

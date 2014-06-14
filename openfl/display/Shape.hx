@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl.display.Stage;
@@ -200,3 +200,8 @@ class Shape extends DisplayObject {
 	
 	
 }
+
+
+#else
+typedef Shape = flash.display.Shape;
+#end

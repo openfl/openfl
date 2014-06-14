@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 enum SpreadMethod {
@@ -8,3 +8,8 @@ enum SpreadMethod {
 	PAD;
 	
 }
+
+
+#else
+typedef SpreadMethod = flash.display.SpreadMethod;
+#end
