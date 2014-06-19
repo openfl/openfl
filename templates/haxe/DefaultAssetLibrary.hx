@@ -773,11 +773,10 @@ class DefaultAssetLibrary extends AssetLibrary {
 }
 
 
-#if pixi
-#elseif flash
+#if flash
 
-//::foreach assets::::if (embed)::::if (type == "image")::@:keep class __ASSET__::flatName:: extends openfl.display.BitmapData { public function new () { super (0, 0, true, 0); } }::else::@:keep class __ASSET__::flatName:: extends ::flashClass:: { }::end::::end::
-//::end::
+::foreach assets::::if (embed)::::if (type == "image")::@:keep class __ASSET__::flatName:: extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }::else::@:keep class __ASSET__::flatName:: extends ::flashClass:: { }::end::::end::
+::end::
 
 #elseif html5
 
@@ -786,12 +785,12 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 #elseif (windows || mac || linux)
 
-//::if (assets != null)::
+::if (assets != null)::
 //::foreach assets::::if (embed)::::if (type == "image")::@:bitmap("::sourcePath::") class __ASSET__::flatName:: extends openfl.display.BitmapData {}
 //::elseif (type == "sound")::@:sound("::sourcePath::") class __ASSET__::flatName:: extends openfl.media.Sound {}
 //::elseif (type == "music")::@:sound("::sourcePath::") class __ASSET__::flatName:: extends openfl.media.Sound {}
 //::elseif (type == "font")::@:font("::sourcePath::") class __ASSET__::flatName:: extends openfl.text.Font {}
-//::else::@:file("::sourcePath::") class __ASSET__::flatName:: extends openfl.utils.ByteArray {}
-//::end::::end::::end::::end::
+//::else::@:file("::sourcePath::") class __ASSET__::flatName:: extends lime.utils.ByteArray {}
+::end::::end::::end::::end::
 
 #end
