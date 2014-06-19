@@ -112,8 +112,9 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
-	public override function exists (id:String, type:AssetType):Bool {
+	public override function exists (id:String, type:String):Bool {
 		
+		var requestedType = cast (type, AssetType);
 		var assetType = this.type.get (id);
 		
 		#if pixi
@@ -132,7 +133,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		if (assetType != null) {
 			
-			if (assetType == type || ((type == SOUND || type == MUSIC) && (assetType == MUSIC || assetType == SOUND))) {
+			if (assetType == requestedType || ((requestedType == SOUND || requestedType == MUSIC) && (assetType == MUSIC || assetType == SOUND))) {
 				
 				return true;
 				
@@ -140,7 +141,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 			
 			#if flash
 			
-			if ((assetType == BINARY || assetType == TEXT) && type == BINARY) {
+			if ((assetType == BINARY || assetType == TEXT) && requestedType == BINARY) {
 				
 				return true;
 				
@@ -152,7 +153,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 			
 			#else
 			
-			if (type == BINARY || type == null) {
+			if (requestedType == BINARY || requestedType == null) {
 				
 				return true;
 				
@@ -389,11 +390,13 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
-	public override function isLocal (id:String, type:AssetType):Bool {
+	public override function isLocal (id:String, type:String):Bool {
+		
+		var requestedType = cast (type, AssetType);
 		
 		#if flash
 		
-		if (type != AssetType.MUSIC && type != AssetType.SOUND) {
+		if (requestedType != AssetType.MUSIC && requestedType != AssetType.SOUND) {
 			
 			return className.exists (id);
 			
@@ -406,13 +409,14 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
-	public override function list (type:AssetType):Array<String> {
+	public override function list (type:String):Array<String> {
 		
+		var requestedType = cast (type, AssetType);
 		var items = [];
 		
 		for (id in this.type.keys ()) {
 			
-			if (type == null || exists (id, type)) {
+			if (requestedType == null || exists (id, type)) {
 				
 				items.push (id);
 				

@@ -227,6 +227,10 @@ class Matrix3D {
 			- (x0 + x1) * sx, - (y0 + y1) * sy, - (zNear + zFar) * sz,  1,
 		]);
 		
+		
+		var projectionMatrix = new Float32Array (cast [ 2 / width, 0, 0, 0, 0, 2 / height, 0, 0, 0, 0, -0.0001, 0, -1, -1, -1, 1 ]);
+				
+		
 	}
 	
 	

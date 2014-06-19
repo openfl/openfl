@@ -60,27 +60,27 @@ class MouseEvent extends Event {
 	}
 	
 	
-	public static function __create (type:String, event:lime.ui.MouseEvent, local:Point, target:InteractiveObject):MouseEvent {
+	public static function __create (type:String, /*event:lime.ui.MouseEvent,*/ local:Point, target:InteractiveObject):MouseEvent {
 		
 		var delta = 2;
 		
-		if (type == MouseEvent.MOUSE_WHEEL) {
+		/*if (type == MouseEvent.MOUSE_WHEEL) {
 			
 			var mouseEvent:Dynamic = event;
-			if (mouseEvent.wheelDelta) { /* IE/Opera. */
+			if (mouseEvent.wheelDelta) { // IE/Opera.
 				#if (!haxe_210 && !haxe3)
 				if (js.Lib.isOpera)
 					delta = Std.int (mouseEvent.wheelDelta / 40);
 				else
 				#end
 					delta = Std.int (mouseEvent.wheelDelta / 120);
-			} else if (mouseEvent.detail) { /** Mozilla case. */
+			} else if (mouseEvent.detail) { // Mozilla case.
 				
 				Std.int (-mouseEvent.detail);
 				
 			}
 			
-		}
+		}*/
 		
 		// source: http://unixpapa.com/js/mouse.html
 		if (type == MouseEvent.MOUSE_DOWN) {

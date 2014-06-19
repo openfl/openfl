@@ -78,7 +78,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			return library.exists (symbolName, type);
+			return library.exists (symbolName, cast type);
 			
 		}
 		
@@ -120,9 +120,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, IMAGE)) {
+			if (library.exists (symbolName, cast AssetType.IMAGE)) {
 				
-				if (library.isLocal (symbolName, IMAGE)) {
+				if (library.isLocal (symbolName, cast AssetType.IMAGE)) {
 					
 					var bitmapData = library.getBitmapData (symbolName);
 					
@@ -177,9 +177,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, BINARY)) {
+			if (library.exists (symbolName, cast AssetType.BINARY)) {
 				
-				if (library.isLocal (symbolName, BINARY)) {
+				if (library.isLocal (symbolName, cast AssetType.BINARY)) {
 					
 					return library.getBytes (symbolName);
 					
@@ -232,9 +232,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, FONT)) {
+			if (library.exists (symbolName, cast AssetType.FONT)) {
 				
-				if (library.isLocal (symbolName, FONT)) {
+				if (library.isLocal (symbolName, cast AssetType.FONT)) {
 					
 					var font = library.getFont (symbolName);
 					
@@ -302,9 +302,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, MOVIE_CLIP)) {
+			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
 				
-				if (library.isLocal (symbolName, MOVIE_CLIP)) {
+				if (library.isLocal (symbolName, cast AssetType.MOVIE_CLIP)) {
 					
 					return library.getMovieClip (symbolName);
 					
@@ -363,9 +363,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, MUSIC)) {
+			if (library.exists (symbolName, cast AssetType.MUSIC)) {
 				
-				if (library.isLocal (symbolName, MUSIC)) {
+				if (library.isLocal (symbolName, cast AssetType.MUSIC)) {
 					
 					var sound = library.getMusic (symbolName);
 					
@@ -473,9 +473,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, SOUND)) {
+			if (library.exists (symbolName, cast AssetType.SOUND)) {
 				
-				if (library.isLocal (symbolName, SOUND)) {
+				if (library.isLocal (symbolName, cast AssetType.SOUND)) {
 					
 					var sound = library.getSound (symbolName);
 					
@@ -530,9 +530,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, TEXT)) {
+			if (library.exists (symbolName, cast AssetType.TEXT)) {
 				
-				if (library.isLocal (symbolName, TEXT)) {
+				if (library.isLocal (symbolName, cast AssetType.TEXT)) {
 					
 					return library.getText (symbolName);
 					
@@ -621,7 +621,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			return library.isLocal (symbolName, type);
+			return library.isLocal (symbolName, cast type);
 			
 		}
 		
@@ -688,7 +688,7 @@ class Assets {
 		
 		for (library in libraries) {
 			
-			var libraryItems = library.list (type);
+			var libraryItems = library.list (cast type);
 			
 			if (libraryItems != null) {
 				
@@ -728,7 +728,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, IMAGE)) {
+			if (library.exists (symbolName, cast AssetType.IMAGE)) {
 				
 				if (useCache && cache.enabled) {
 					
@@ -778,7 +778,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, BINARY)) {
+			if (library.exists (symbolName, cast AssetType.BINARY)) {
 				
 				library.loadBytes (symbolName, handler);
 				return;
@@ -821,7 +821,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, FONT)) {
+			if (library.exists (symbolName, cast AssetType.FONT)) {
 				
 				if (useCache && cache.enabled) {
 					
@@ -859,7 +859,7 @@ class Assets {
 	}
 	
 	
-	public static function loadLibrary (name:String, handler:AssetLibrary -> Void):Void {
+	public static function loadLibrary (name:String, handler:lime.Assets.AssetLibrary -> Void):Void {
 		
 		initialize();
 		
@@ -913,7 +913,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, MUSIC)) {
+			if (library.exists (symbolName, cast AssetType.MUSIC)) {
 				
 				if (useCache && cache.enabled) {
 					
@@ -963,7 +963,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, MOVIE_CLIP)) {
+			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
 				
 				library.loadMovieClip (symbolName, handler);
 				return;
@@ -1012,7 +1012,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, SOUND)) {
+			if (library.exists (symbolName, cast AssetType.SOUND)) {
 				
 				if (useCache && cache.enabled) {
 					
@@ -1062,7 +1062,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, TEXT)) {
+			if (library.exists (symbolName, cast AssetType.TEXT)) {
 				
 				library.loadText (symbolName, handler);
 				return;
@@ -1184,34 +1184,17 @@ class Assets {
 }
 
 
-class AssetLibrary {
-	
-	
-	public var eventCallback:Dynamic;
+class AssetLibrary extends lime.Assets.AssetLibrary {
 	
 	
 	public function new () {
 		
-		
-		
-	}
-	
-	
-	public function exists (id:String, type:AssetType):Bool {
-		
-		return false;
+		super ();
 		
 	}
 	
 	
 	public function getBitmapData (id:String):BitmapData {
-		
-		return null;
-		
-	}
-	
-	
-	public function getBytes (id:String):ByteArray {
 		
 		return null;
 		
@@ -1239,13 +1222,6 @@ class AssetLibrary {
 	}
 	
 	
-	public function getPath (id:String):String {
-		
-		return null;
-		
-	}
-	
-	
 	public function getSound (id:String):Sound {
 		
 		return null;
@@ -1253,62 +1229,9 @@ class AssetLibrary {
 	}
 	
 	
-	public function getText (id:String):String {
-		
-		#if (tools && !display)
-		
-		var bytes = getBytes (id);
-		
-		if (bytes == null) {
-			
-			return null;
-			
-		} else {
-			
-			return bytes.readUTFBytes (bytes.length);
-			
-		}
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	
-	public function isLocal (id:String, type:AssetType):Bool {
-		
-		return true;
-		
-	}
-	
-	
-	public function list (type:AssetType):Array<String> {
-		
-		return null;
-		
-	}
-	
-	
-	private function load (handler:AssetLibrary -> Void):Void {
-		
-		handler (this);
-		
-	}
-	
-	
 	public function loadBitmapData (id:String, handler:BitmapData -> Void):Void {
 		
 		handler (getBitmapData (id));
-		
-	}
-	
-	
-	public function loadBytes (id:String, handler:ByteArray -> Void):Void {
-		
-		handler (getBytes (id));
 		
 	}
 	
@@ -1337,35 +1260,6 @@ class AssetLibrary {
 	public function loadSound (id:String, handler:Sound -> Void):Void {
 		
 		handler (getSound (id));
-		
-	}
-	
-	
-	public function loadText (id:String, handler:String -> Void):Void {
-		
-		#if (tools && !display)
-		
-		var callback = function (bytes:ByteArray):Void {
-			
-			if (bytes == null) {
-				
-				handler (null);
-				
-			} else {
-				
-				handler (bytes.readUTFBytes (bytes.length));
-				
-			}
-			
-		}
-		
-		loadBytes (id, callback);
-		
-		#else
-		
-		handler (null);
-		
-		#end
 		
 	}
 	
@@ -1445,33 +1339,16 @@ class AssetCache {
 }
 
 
-class AssetData {
+@:enum abstract AssetType(String) {
 	
-	
-	public var id:String;
-	public var path:String;
-	public var type:AssetType;
-	
-	public function new () {
-		
-		
-		
-	}
-	
-	
-}
-
-
-enum AssetType {
-	
-	BINARY;
-	FONT;
-	IMAGE;
-	MOVIE_CLIP;
-	MUSIC;
-	SOUND;
-	TEMPLATE;
-	TEXT;
+	var BINARY = "binary";
+	var FONT = "font";
+	var IMAGE = "image";
+	var MOVIE_CLIP = "movieClip";
+	var MUSIC = "music";
+	var SOUND = "sound";
+	var TEMPLATE = "template";
+	var TEXT = "text";
 	
 }
 
