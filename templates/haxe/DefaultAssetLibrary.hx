@@ -3,6 +3,7 @@ package;
 
 import haxe.Timer;
 import haxe.Unserializer;
+import lime.graphics.ImageData;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
@@ -268,6 +269,59 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
+	public override function getImageData (id:String):ImageData {
+		
+		#if flash
+		
+		var bitmapData = cast (Type.createInstance (className.get (id), []), BitmapData);
+		return new ImageData (bitmapData, bitmapData.width, bitmapData.height);
+		
+		#elseif js
+		
+		var image = Preloader.images.get (path.get (id));
+		return new ImageData (image, image.width, image.height);
+		
+		#else
+		
+		// TODO: Implement in native backend
+		
+		var bytes = getBytes (id);
+		var byteInput = new haxe.io.BytesInput (bytes, 0, bytes.length);
+		var png = new format.png.Reader (byteInput).read ();
+		var data = format.png.Tools.extract32 (png);
+		var header = format.png.Tools.getHeader (png);
+		
+		var imageWidth = header.width;
+		var imageHeight = header.height;
+		var imageData = new UInt8Array (ByteArray.fromBytes (data));
+		
+		var imageLength = imageWidth * imageHeight;
+		var b, g, r, a;
+		
+		for (i in 0...imageLength) {
+			
+			b = imageData[i * 4];
+			g = imageData[i * 4 + 1];
+			r = imageData[i * 4 + 2];
+			a = imageData[i * 4 + 3];
+			
+			imageData[i * 4] = r;
+			imageData[i * 4 + 1] = g;
+			imageData[i * 4 + 2] = b;
+			imageData[i * 4 + 3] = a;
+			
+		}
+		
+		return new ImageData (imageData, imageWidth, imageHeight);
+		
+		//if (className.exists(id)) return cast (Type.createInstance (className.get (id), []), BitmapData);
+		//else return BitmapData.load (path.get (id));
+		
+		#end
+		
+	}
+	
+	
 	public override function getMusic (id:String):Sound {
 		
 		#if pixi
@@ -522,6 +576,36 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#else
 		
 		handler (getFont (id));
+		
+		#end
+		
+	}
+	
+	
+	public override function loadImageData (id:String, handler:ImageData -> Void):Void {
+		
+		#if flash
+		
+		if (path.exists (id)) {
+			
+			var loader = new Loader ();
+			loader.contentLoaderInfo.addEventListener (Event.COMPLETE, function (event:Event) {
+				
+				var bitmapData = cast (event.currentTarget.content, Bitmap).bitmapData;
+				handler (new ImageData (bitmapData, bitmapData.width, bitmapData.height));
+				
+			});
+			loader.load (new URLRequest (path.get (id)));
+			
+		} else {
+			
+			handler (getImageData (id));
+			
+		}
+		
+		#else
+		
+		handler (getImageData (id));
 		
 		#end
 		

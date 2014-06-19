@@ -30,21 +30,18 @@ import openfl.utils.ByteArray;
  * and specifying a custom preloader using <window preloader="" />
  * in the project file.</p>
  */
+@:access(lime.Assets)
 @:access(openfl.AssetLibrary)
 @:access(openfl.display.BitmapData)
 class Assets {
 	
 	
 	public static var cache = new AssetCache ();
-	public static var libraries (default, null) = new Map <String, AssetLibrary> ();
 	
 	private static var dispatcher = new EventDispatcher ();
-	private static var initialized = false;
 	
 	
 	public static function addEventListener (type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
-		
-		initialize ();
 		
 		dispatcher.addEventListener (type, listener, useCapture, priority, useWeakReference);
 		
@@ -53,8 +50,6 @@ class Assets {
 	
 	public static function dispatchEvent (event:Event):Bool {
 		
-		initialize ();
-		
 		return dispatcher.dispatchEvent (event);
 		
 	}
@@ -62,29 +57,7 @@ class Assets {
 	
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
-		initialize ();
-		
-		#if (tools && !display)
-		
-		if (type == null) {
-			
-			type = BINARY;
-			
-		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			return library.exists (symbolName, cast type);
-			
-		}
-		
-		#end
-		
-		return false;
+		return lime.Assets.exists (id, cast type);
 		
 	}
 	
@@ -98,61 +71,19 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		initialize ();
+		var imageData = lime.Assets.getImageData (id, useCache);
 		
-		#if (tools && !display)
-		
-		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+		if (imageData != null) {
 			
-			var bitmapData = cache.bitmapData.get (id);
-			
-			if (isValidBitmapData (bitmapData)) {
-				
-				return bitmapData;
-				
-			}
+			#if js
+			return new BitmapData ();
+			#elseif flash
+			return imageData.data;
+			#else
+			return new BitmapData ();
+			#end
 			
 		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.IMAGE)) {
-				
-				if (library.isLocal (symbolName, cast AssetType.IMAGE)) {
-					
-					var bitmapData = library.getBitmapData (symbolName);
-					
-					if (useCache && cache.enabled) {
-						
-						cache.bitmapData.set (id, bitmapData);
-						
-					}
-					
-					return bitmapData;
-					
-				} else {
-					
-					trace ("[openfl.Assets] BitmapData asset \"" + id + "\" exists, but only asynchronously");
-					
-				}
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
 		
 		return null;
 		
@@ -167,43 +98,7 @@ class Assets {
 	 */
 	public static function getBytes (id:String):ByteArray {
 		
-		initialize ();
-		
-		#if (tools && !display)
-		
-		var libraryName = id.substring (0, id.indexOf(":"));
-		var symbolName = id.substr (id.indexOf(":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.BINARY)) {
-				
-				if (library.isLocal (symbolName, cast AssetType.BINARY)) {
-					
-					return library.getBytes (symbolName);
-					
-				} else {
-					
-					trace ("[openfl.Assets] String or ByteArray asset \"" + id + "\" exists, but only asynchronously");
-					
-				}
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		return null;
+		return lime.Assets.getBytes (id);
 		
 	}
 	
@@ -215,8 +110,6 @@ class Assets {
 	 * @return		A new Font object
 	 */
 	public static function getFont (id:String, useCache:Bool = true):Font {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -279,7 +172,9 @@ class Assets {
 			
 		}
 		
-		return libraries.get (name);
+		// TODO
+		
+		return cast lime.Assets.libraries.get (name);
 		
 	}
 	
@@ -291,8 +186,6 @@ class Assets {
 	 * @return		A new Sound object
 	 */
 	public static function getMovieClip (id:String):MovieClip {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -340,8 +233,6 @@ class Assets {
 	 * @return		A new Sound object
 	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -410,35 +301,7 @@ class Assets {
 	 */
 	public static function getPath (id:String):String {
 		
-		initialize ();
-		
-		#if (tools && !display)
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, null)) {
-				
-				return library.getPath (symbolName);
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		return null;
+		return lime.Assets.getPath (id);
 		
 	}
 	
@@ -450,8 +313,6 @@ class Assets {
 	 * @return		A new Sound object
 	 */
 	public static function getSound (id:String, useCache:Bool = true):Sound {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -520,76 +381,19 @@ class Assets {
 	 */
 	public static function getText (id:String):String {
 		
-		initialize ();
-		
-		#if (tools && !display)
-		
-		var libraryName = id.substring (0, id.indexOf(":"));
-		var symbolName = id.substr (id.indexOf(":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.TEXT)) {
-				
-				if (library.isLocal (symbolName, cast AssetType.TEXT)) {
-					
-					return library.getText (symbolName);
-					
-				} else {
-					
-					trace ("[openfl.Assets] String asset \"" + id + "\" exists, but only asynchronously");
-					
-				}
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no String asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		return null;
+		return lime.Assets.getText (id);
 		
 	}
 	
 	
 	public static function hasEventListener (type:String):Bool {
 		
-		initialize ();
-		
 		return dispatcher.hasEventListener (type);
 		
 	}
 	
 	
-	private static function initialize ():Void {
-		
-		if (!initialized) {
-			
-			#if (tools && !display)
-			
-			registerLibrary ("default", new DefaultAssetLibrary ());
-			
-			#end
-			
-			initialized = true;
-			
-		}
-		
-	}
-	
-	
 	public static function isLocal (id:String, type:AssetType = null, useCache:Bool = true):Bool {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -682,93 +486,35 @@ class Assets {
 	
 	public static function list (type:AssetType = null):Array<String> {
 		
-		initialize ();
-		
-		var items = [];
-		
-		for (library in libraries) {
-			
-			var libraryItems = library.list (cast type);
-			
-			if (libraryItems != null) {
-				
-				items = items.concat (libraryItems);
-				
-			}
-			
-		}
-		
-		return items;
+		return lime.Assets.list (cast type);
 		
 	}
 	
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
-		initialize ();
-		
-		#if (tools && !display)
-		
-		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+		lime.Assets.loadImageData (id, function (imageData) {
 			
-			var bitmapData = cache.bitmapData.get (id);
+			var imageData = lime.Assets.getImageData (id, useCache);
 			
-			if (isValidBitmapData (bitmapData)) {
+			if (imageData != null) {
 				
-				handler (bitmapData);
-				return;
-				
-			}
-			
-		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.IMAGE)) {
-				
-				if (useCache && cache.enabled) {
-					
-					library.loadBitmapData (symbolName, function (bitmapData:BitmapData):Void {
-						
-						cache.bitmapData.set (id, bitmapData);
-						handler (bitmapData);
-						
-					});
-					
-				} else {
-					
-					library.loadBitmapData (symbolName, handler);
-					
-				}
-				
-				return;
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
+				#if js
+				handler (new BitmapData ());
+				#elseif flash
+				handler (imageData.data);
+				#else
+				handler (new BitmapData ());
+				#end
 				
 			}
 			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		handler (null);
+		}, useCache);
 		
 	}
 	
 	
 	public static function loadBytes (id:String, handler:ByteArray -> Void):Void {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -803,8 +549,6 @@ class Assets {
 	
 	
 	public static function loadFont (id:String, handler:Font -> Void, useCache:Bool = true):Void {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -861,36 +605,12 @@ class Assets {
 	
 	public static function loadLibrary (name:String, handler:lime.Assets.AssetLibrary -> Void):Void {
 		
-		initialize();
-		
-		#if (tools && !display)
-		
-		var data = getText ("libraries/" + name + ".dat");
-		
-		if (data != null && data != "") {
-			
-			var unserializer = new Unserializer (data);
-			unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
-			
-			var library:AssetLibrary = unserializer.unserialize ();
-			libraries.set (name, library);
-			library.eventCallback = library_onEvent;
-			library.load (handler);
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + name + "\"");
-			
-		}
-		
-		#end
+		lime.Assets.loadLibrary (name, handler);
 		
 	}
 	
 	
 	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -953,8 +673,6 @@ class Assets {
 	
 	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
-		initialize ();
-		
 		#if (tools && !display)
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
@@ -988,8 +706,6 @@ class Assets {
 	
 	
 	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
-		
-		initialize ();
 		
 		#if (tools && !display)
 		
@@ -1052,62 +768,19 @@ class Assets {
 	
 	public static function loadText (id:String, handler:String -> Void):Void {
 		
-		initialize ();
-		
-		#if (tools && !display)
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.TEXT)) {
-				
-				library.loadText (symbolName, handler);
-				return;
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no String asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		handler (null);
+		lime.Assets.loadText (id, handler);
 		
 	}
 	
 	
 	public static function registerLibrary (name:String, library:AssetLibrary):Void {
 		
-		if (libraries.exists (name)) {
-			
-			unloadLibrary (name);
-			
-		}
-		
-		if (library != null) {
-			
-			library.eventCallback = library_onEvent;
-			
-		}
-		
-		libraries.set (name, library);
+		lime.Assets.registerLibrary (name, library);
 		
 	}
 	
 	
 	public static function removeEventListener (type:String, listener:Dynamic, capture:Bool = false):Void {
-		
-		initialize ();
 		
 		dispatcher.removeEventListener (type, listener, capture);
 		
@@ -1142,22 +815,7 @@ class Assets {
 	
 	public static function unloadLibrary (name:String):Void {
 		
-		initialize();
-		
-		#if (tools && !display)
-		
-		var library = libraries.get (name);
-		
-		if (library != null) {
-			
-			cache.clear (name + ":");
-			library.eventCallback = null;
-			
-		}
-		
-		libraries.remove (name);
-		
-		#end
+		lime.Assets.unloadLibrary (name);
 		
 	}
 	
