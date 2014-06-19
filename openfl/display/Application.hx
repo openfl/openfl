@@ -30,10 +30,10 @@ class Application extends lime.app.Application {
 	
 	public override function create (config:lime.app.Config):Void {
 		
-		super.create (config);
-		
 		stage = new Stage (config.width, config.height, config.background);
 		stage.addChild (Lib.current);
+		
+		super.create (config);
 		
 	}
 	

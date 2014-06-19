@@ -76,7 +76,7 @@ class Assets {
 		if (imageData != null) {
 			
 			#if js
-			return new BitmapData ();
+			return BitmapData.fromImage (imageData.data);
 			#elseif flash
 			return imageData.data;
 			#else
@@ -500,11 +500,11 @@ class Assets {
 			if (imageData != null) {
 				
 				#if js
-				handler (new BitmapData ());
+				handler (BitmapData.fromImage (imageData.data));
 				#elseif flash
 				handler (imageData.data);
 				#else
-				handler (new BitmapData ());
+				handler (new BitmapData (0, 0));
 				#end
 				
 			}
@@ -852,13 +852,6 @@ class AssetLibrary extends lime.Assets.AssetLibrary {
 	}
 	
 	
-	public function getBitmapData (id:String):BitmapData {
-		
-		return null;
-		
-	}
-	
-	
 	public function getFont (id:String):Font {
 		
 		return null;
@@ -883,13 +876,6 @@ class AssetLibrary extends lime.Assets.AssetLibrary {
 	public function getSound (id:String):Sound {
 		
 		return null;
-		
-	}
-	
-	
-	public function loadBitmapData (id:String, handler:BitmapData -> Void):Void {
-		
-		handler (getBitmapData (id));
 		
 	}
 	
