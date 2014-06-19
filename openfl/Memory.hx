@@ -1,4 +1,4 @@
-package openfl; #if flash
+package openfl; #if !flash
 
 
 import haxe.io.BytesData;

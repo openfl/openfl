@@ -6,9 +6,11 @@ import openfl.display.Stage;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TouchEvent;
+import openfl.geom.Point;
 import openfl.Lib;
 
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
 class Application extends lime.app.Application {
 	
@@ -40,7 +42,7 @@ class Application extends lime.app.Application {
 		
 		var stack = new Array <DisplayObject> ();
 		
-		if (__focus == null) {
+		if (stage.__focus == null) {
 			
 			stage.__getInteractive (stack);
 			
@@ -115,12 +117,12 @@ class Application extends lime.app.Application {
 			
 		} else {
 			
-			stage.__setCursor (buttonMode ? "pointer" : "default");
-			stage.__fireEvent (MouseEvent.__create (type, /*event,*/ new Point (x, y), this), [ this ]);
+			stage.__setCursor (stage.buttonMode ? "pointer" : "default");
+			stage.__fireEvent (MouseEvent.__create (type, /*event,*/ new Point (x, y), stage), [ stage ]);
 			
 			if (type == MouseEvent.MOUSE_UP) {
 				
-				stage.__fireEvent (MouseEvent.__create (MouseEvent.CLICK, /*event,*/ new Point (x, y), this), [ this ]);
+				stage.__fireEvent (MouseEvent.__create (MouseEvent.CLICK, /*event,*/ new Point (x, y), stage), [ stage ]);
 				
 			}
 			
@@ -184,9 +186,9 @@ class Application extends lime.app.Application {
 		
 		var mouseType = switch (type) {
 			
-			case TOUCH_START: MouseEvent.MOUSE_DOWN;
-			case TOUCH_MOVE: MouseEvent.MOUSE_MOVE;
-			case TOUCH_END: MouseEvent.MOUSE_UP;
+			case TouchEvent.TOUCH_BEGIN: MouseEvent.MOUSE_DOWN;
+			case TouchEvent.TOUCH_MOVE: MouseEvent.MOUSE_MOVE;
+			case TouchEvent.TOUCH_END: MouseEvent.MOUSE_UP;
 			default: null;
 			
 		}
@@ -209,20 +211,20 @@ class Application extends lime.app.Application {
 			
 		} else {
 			
-			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, point, this);
+			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, point, stage);
 			touchEvent.touchPointID = id;
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			var mouseEvent = MouseEvent.__create (mouseType, /*cast event,*/ point, this);
+			var mouseEvent = MouseEvent.__create (mouseType, /*cast event,*/ point, stage);
 			mouseEvent.buttonDown = (type != TouchEvent.TOUCH_END);
 			
-			stage.__fireEvent (touchEvent, [ this ]);
-			stage.__fireEvent (mouseEvent, [ this ]);
+			stage.__fireEvent (touchEvent, [ stage ]);
+			stage.__fireEvent (mouseEvent, [ stage ]);
 			
 		}
 		
-		if (type == TouchEvent.TOUCH_MOVE && __dragObject != null) {
+		if (type == TouchEvent.TOUCH_MOVE && stage.__dragObject != null) {
 			
 			stage.__drag (point);
 			
@@ -247,14 +249,14 @@ class Application extends lime.app.Application {
 	
 	public override function onTouchStart (x:Float, y:Float, id:Int):Void {
 		
-		onTouch (TouchEvent.TOUCH_START, x, y, id);
+		onTouch (TouchEvent.TOUCH_BEGIN, x, y, id);
 		
 	}
 	
 	
 	public override function onWindowActivate ():Void {
 		
-		var event = new Event (Event.ACTIVATE);
+		var event = new openfl.events.Event (openfl.events.Event.ACTIVATE);
 		stage.__broadcast (event, true);
 		
 	}
@@ -262,7 +264,7 @@ class Application extends lime.app.Application {
 	
 	public override function onWindowDeactivate ():Void {
 		
-		var event = new Event (Event.DEACTIVATE);
+		var event = new openfl.events.Event (openfl.events.Event.DEACTIVATE);
 		stage.__broadcast (event, true);
 		
 	}
