@@ -13,6 +13,7 @@ import openfl.text.Font;
 import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+import openfl.utils.UInt8Array;
 import openfl.Assets;
 
 #if (flash || js)
@@ -642,7 +643,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 							if (!className.exists (asset.id)) {
 								
 								path.set (asset.id, asset.path);
-								type.set (asset.id, Type.createEnum (AssetType, asset.type));
+								type.set (asset.id, cast (asset.type, AssetType));
 								
 							}
 							
