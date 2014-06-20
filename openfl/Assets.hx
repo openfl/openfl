@@ -71,14 +71,14 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		var imageData = lime.Assets.getImageData (id, useCache);
+		var image = lime.Assets.getImage (id, useCache);
 		
-		if (imageData != null) {
+		if (image != null) {
 			
 			#if js
-			return BitmapData.fromImage (imageData.data);
+			return BitmapData.fromImage (image.data);
 			#elseif flash
-			return imageData.data;
+			return image.data;
 			#else
 			return new BitmapData (0, 0);
 			#end
@@ -493,16 +493,16 @@ class Assets {
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
-		lime.Assets.loadImageData (id, function (imageData) {
+		lime.Assets.loadImage (id, function (image) {
 			
-			var imageData = lime.Assets.getImageData (id, useCache);
+			var image = lime.Assets.getImage (id, useCache);
 			
-			if (imageData != null) {
+			if (image != null) {
 				
 				#if js
-				handler (BitmapData.fromImage (imageData.data));
+				handler (BitmapData.fromImage (image.data));
 				#elseif flash
-				handler (imageData.data);
+				handler (image.data);
 				#else
 				handler (new BitmapData (0, 0));
 				#end
