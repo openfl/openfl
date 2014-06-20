@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLRenderbuffer = lime.graphics.opengl.GLRenderbuffer;
+typedef GLRenderbuffer = lime.graphics.GLRenderbuffer;

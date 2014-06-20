@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLTexture = lime.graphics.opengl.GLTexture;
+typedef GLTexture = lime.graphics.GLTexture;

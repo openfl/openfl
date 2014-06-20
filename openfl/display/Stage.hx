@@ -6,6 +6,7 @@ import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
+import openfl.display.renderer.OpenGLRenderer;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -293,7 +294,14 @@ class Stage extends Sprite {
 				
 				if (!__glContextLost) {
 					
-					gl.viewport (0, 0, stageWidth, stageHeight);
+					OpenGLRenderer.background = color;
+					OpenGLRenderer.width = stageWidth;
+					OpenGLRenderer.height = stageHeight;
+					OpenGLRenderer.gl = gl;
+					
+					OpenGLRenderer.begin ();
+					
+					/*gl.viewport (0, 0, stageWidth, stageHeight);
 					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 					
 					if (__transparent) {
@@ -306,10 +314,12 @@ class Stage extends Sprite {
 						
 					}
 					
-					gl.clear (gl.COLOR_BUFFER_BIT);
+					gl.clear (gl.COLOR_BUFFER_BIT);*/
 					
 					__renderSession.gl = gl;
 					__renderGL (__renderSession);
+					
+					OpenGLRenderer.finish ();
 					
 				}
 			

@@ -33,6 +33,9 @@ class Bitmap extends DisplayObjectContainer {
 	private var __image:Dynamic;
 	#end
 	
+	private var vertexBuffer:lime.graphics.GLBuffer;
+	private var texCoordBuffer:lime.graphics.GLBuffer;
+	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
 		
@@ -278,7 +281,7 @@ class Bitmap extends DisplayObjectContainer {
 	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (__commands == null) {
+		/*if (__commands == null) {
 			
 			__commands = new RenderCommands ();
 			
@@ -289,7 +292,84 @@ class Bitmap extends DisplayObjectContainer {
 			element.textureOffset = 2;
 			element.stride = 4;
 			
+		}*/
+		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		var gl = renderSession.gl;
+		
+		if (vertexBuffer == null) {
+			
+			var vertices = [
+				
+				bitmapData.width, bitmapData.height, 0,
+				0, bitmapData.height, 0,
+				bitmapData.width, 0, 0,
+				0, 0, 0
+				
+			];
+			
+			vertexBuffer = gl.createBuffer ();
+			gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
+			gl.bufferData (gl.ARRAY_BUFFER, new lime.utils.Float32Array (cast vertices), gl.STATIC_DRAW);
+			gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			
+			var texCoords = [
+				
+				1, 0, 
+				0, 0, 
+				1, 1, 
+				0, 1, 
+				
+			];
+			
+			texCoordBuffer = gl.createBuffer ();
+			gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);	
+			gl.bufferData (gl.ARRAY_BUFFER, new lime.utils.Float32Array (cast texCoords), gl.STATIC_DRAW);
+			gl.bindBuffer (gl.ARRAY_BUFFER, null);
+		
 		}
+		
+		var texture = bitmapData.getTexture (gl);
+		
+		var projectionMatrix = new lime.utils.Float32Array ([ 2 / flash.Lib.current.stage.stageWidth, 0, 0, 0, 0, 2 / flash.Lib.current.stage.stageHeight, 0, 0, 0, 0, -0.0001, 0, -1, -1, 1, 1 ]);
+		
+		var rotation = 0;
+		var scale = 1;
+		var theta = rotation * Math.PI / 180;
+		var c = Math.cos (theta);
+		var s = Math.sin (theta);
+		
+		var modelViewMatrix = new lime.utils.Float32Array ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, __worldTransform.tx, __worldTransform.ty, 0, 1 ]);
+		
+		gl.activeTexture (gl.TEXTURE0);
+		gl.bindTexture (gl.TEXTURE_2D, texture);
+		
+		#if desktop
+		gl.enable (gl.TEXTURE_2D);
+		#end
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
+		gl.vertexAttribPointer (openfl.display.renderer.OpenGLRenderer.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);
+		gl.vertexAttribPointer (openfl.display.renderer.OpenGLRenderer.texCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+		
+		gl.uniformMatrix4fv (openfl.display.renderer.OpenGLRenderer.projectionMatrixUniform, false, projectionMatrix);
+		gl.uniformMatrix4fv (openfl.display.renderer.OpenGLRenderer.modelViewMatrixUniform, false, modelViewMatrix);
+		gl.uniform1i (openfl.display.renderer.OpenGLRenderer.imageUniform, 0);
+		
+		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, null);
+		gl.bindTexture (gl.TEXTURE_2D, null);
+		
+		#if desktop
+		gl.disable (gl.TEXTURE_2D);
+		#end
+		
+		
+		
+		
 		
 		/*
 		var element = __commands.elements[0];

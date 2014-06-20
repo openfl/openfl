@@ -13,7 +13,7 @@ import js.Browser;
 #end
 
 
-@:access(lime.graphics.opengl.GL)
+@:access(lime.graphics.GL)
 class OpenGLView extends DirectRenderer {
 	
 	

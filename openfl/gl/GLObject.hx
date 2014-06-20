@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLObject = lime.graphics.opengl.GLObject;
+typedef GLObject = lime.graphics.GLObject;

@@ -75,12 +75,10 @@ class Assets {
 		
 		if (image != null) {
 			
-			#if js
-			return BitmapData.fromImage (image.data);
-			#elseif flash
+			#if flash
 			return image.data;
 			#else
-			return new BitmapData (0, 0);
+			return BitmapData.fromImage (image);
 			#end
 			
 		}
@@ -499,12 +497,10 @@ class Assets {
 			
 			if (image != null) {
 				
-				#if js
-				handler (BitmapData.fromImage (image.data));
-				#elseif flash
+				#if flash
 				handler (image.data);
 				#else
-				handler (new BitmapData (0, 0));
+				handler (BitmapData.fromImage (image));
 				#end
 				
 			}

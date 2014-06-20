@@ -3,6 +3,8 @@ package openfl.display; #if !flash
 
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
+import lime.graphics.GLRenderContext;
+import lime.graphics.GLTexture;
 import openfl.display.Stage;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
@@ -10,8 +12,8 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.gl.GLTexture;
 import openfl.utils.ByteArray;
+import lime.utils.UInt8Array;
 
 #if js
 import js.html.CanvasElement;
@@ -34,12 +36,14 @@ class BitmapData implements IBitmapDrawable {
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
-
-	public var __glTexture:GLTexture;
+	
 	public var __worldTransform:Matrix;
 	
 	private var __loading:Bool;
+	private var __texture:GLTexture;
 	private var __valid:Bool;
+	
+	private var __sourceBytes:UInt8Array;
 	
 	#if js
 	private var __sourceCanvas:CanvasElement;
@@ -107,7 +111,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else if (__sourceImage != null) {
 			
-			return BitmapData.fromImage (__sourceImage, transparent);
+			return BitmapData.fromImage (new lime.graphics.Image (__sourceImage, width, height), transparent);
 			
 		} else {
 			
@@ -532,11 +536,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	#if js
-	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
+	public static function fromImage (image:lime.graphics.Image, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__sourceImage = image;
+		#if js
+		bitmapData.__sourceImage = image.data;
+		#else
+		bitmapData.__sourceBytes = image.bytes;
+		#end
 		bitmapData.width = image.width;
 		bitmapData.height = image.height;
 		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
@@ -546,6 +553,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	#if js
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
@@ -660,6 +668,38 @@ class BitmapData implements IBitmapDrawable {
 		return new ByteArray ();
 		
 		#end
+		
+	}
+	
+	
+	public function getTexture (gl:GLRenderContext):GLTexture {
+		
+		if (__texture == null) {
+			
+			__texture = gl.createTexture ();
+			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			#if js
+			if (__sourceCanvas != null) {
+				
+				gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __sourceCanvas);
+				
+			} else {
+				
+				gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __sourceImage);
+				
+			}
+			#else
+			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __sourceBytes);
+			#end
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.bindTexture (gl.TEXTURE_2D, null);
+			
+		}
+		
+		return __texture;
 		
 	}
 	
