@@ -42,6 +42,7 @@ class ApplicationMain {
 		config = {
 			
 			antialiasing: Std.int (::WIN_ANTIALIASING::),
+			background: Std.int (::WIN_BACKGROUND::),
 			borderless: ::WIN_BORDERLESS::,
 			depthBuffer: ::WIN_DEPTH_BUFFER::,
 			fps: Std.int (::WIN_FPS::),
