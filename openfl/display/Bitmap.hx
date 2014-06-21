@@ -350,13 +350,13 @@ class Bitmap extends DisplayObjectContainer {
 		#end
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-		gl.vertexAttribPointer (openfl.display.renderer.OpenGLRenderer.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribPointer (renderSession.glContext.currentProgram.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
 		gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);
-		gl.vertexAttribPointer (openfl.display.renderer.OpenGLRenderer.texCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+		gl.vertexAttribPointer (renderSession.glContext.currentProgram.textureAttribute, 2, gl.FLOAT, false, 0, 0);
 		
-		gl.uniformMatrix4fv (openfl.display.renderer.OpenGLRenderer.projectionMatrixUniform, false, projectionMatrix);
-		gl.uniformMatrix4fv (openfl.display.renderer.OpenGLRenderer.modelViewMatrixUniform, false, modelViewMatrix);
-		gl.uniform1i (openfl.display.renderer.OpenGLRenderer.imageUniform, 0);
+		renderSession.glContext.currentProgram.setProjectionMatrix (projectionMatrix);
+		renderSession.glContext.currentProgram.setModelViewMatrix (modelViewMatrix);
+		gl.uniform1i (renderSession.glContext.currentProgram.getTextureSlot (), 0);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		

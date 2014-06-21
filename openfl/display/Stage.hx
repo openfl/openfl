@@ -6,7 +6,7 @@ import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
-import openfl.display.renderer.OpenGLRenderer;
+import openfl._internal.OpenGLContext;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -57,6 +57,7 @@ class Stage extends Sprite {
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
+	private var __glContext:OpenGLContext;
 	private var __glContextID:Int;
 	private var __glContextLost:Bool;
 	private var __glOptions:Dynamic;
@@ -292,14 +293,17 @@ class Stage extends Sprite {
 			
 			case OPENGL (gl):
 				
+				if (__glContext == null) {
+					
+					__glContext = new OpenGLContext (gl);
+					
+				}
+				
 				if (!__glContextLost) {
 					
-					OpenGLRenderer.background = color;
-					OpenGLRenderer.width = stageWidth;
-					OpenGLRenderer.height = stageHeight;
-					OpenGLRenderer.gl = gl;
-					
-					OpenGLRenderer.begin ();
+					__glContext.clear (color);
+					__glContext.setWindowSize (stageWidth, stageHeight);
+					__glContext.beginRender (null, false);
 					
 					/*gl.viewport (0, 0, stageWidth, stageHeight);
 					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
@@ -317,9 +321,10 @@ class Stage extends Sprite {
 					gl.clear (gl.COLOR_BUFFER_BIT);*/
 					
 					__renderSession.gl = gl;
+					__renderSession.glContext = __glContext;
 					__renderGL (__renderSession);
 					
-					OpenGLRenderer.finish ();
+					__glContext.endRender ();
 					
 				}
 			
@@ -707,6 +712,7 @@ class RenderSession {
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
+	public var glContext:OpenGLContext;
 	//public var mask:Bool;
 	public var maskManager:MaskManager;
 	//public var scaleMode:ScaleMode;
