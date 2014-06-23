@@ -174,7 +174,39 @@ class Graphics {
 	
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawRoundRect");
+		//openfl.Lib.notImplemented ("Graphics.drawRoundRect");
+
+		if (width <= 0 || height <= 0) return;
+
+		if (ry==-1) ry=rx;
+
+		if (ry > height / 2) ry = height / 2;
+		if (rx > width / 2) ry = width / 2;
+
+		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
+		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+		
+		var x0=x;
+		var x1=x+rx;
+		var x2=x+width-rx;
+		var x3=x+width;
+		
+		var y0=y;
+		var y1=y+ry;
+		var y2=y+height-ry;
+		var y3=y+height;
+		
+		__commands.push (MoveTo (x0, y1));
+		__commands.push (CurveTo (x0, y0, x1, y0));
+		__commands.push (LineTo (x2, y0));
+		__commands.push (CurveTo (x3, y0, x3, y1));
+		__commands.push (LineTo (x3, y2));
+		__commands.push (CurveTo (x3, y3, x2, y3));
+		__commands.push (LineTo (x1, y3));
+		__commands.push (CurveTo (x0, y3, x0, y2));
+		__commands.push (LineTo (x0, y1));
+
+		__dirty = true;
 		
 	}
 	
