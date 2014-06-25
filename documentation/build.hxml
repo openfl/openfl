@@ -118,4 +118,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . -r /documentation/api -t templates -in openfl
+-cmd haxelib run dox -i . -t templates -in openfl
