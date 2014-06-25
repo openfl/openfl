@@ -195,7 +195,7 @@ class Stage extends Sprite {
 		
 		for (type in keyEvents) {
 			
-			Browser.window.addEventListener (type, window_onKey, false);
+			element.addEventListener (type, window_onKey, false);
 			
 		}
 		
@@ -375,6 +375,8 @@ class Stage extends Sprite {
 			__context = untyped __js__ ('this.__canvas.getContext ("2d", { alpha: false })');
 			
 		}
+
+		untyped __js__ ('this.__canvas.tabIndex=1');
 		
 		//untyped (__context).mozImageSmoothingEnabled = false;
 		//untyped (__context).webkitImageSmoothingEnabled = false;
@@ -1186,7 +1188,10 @@ class Stage extends Sprite {
 		
 		var keyCode = (event.keyCode != null ? event.keyCode : event.which);
 		keyCode = Keyboard.__convertMozillaCode (keyCode);
-		
+
+		var charCode = (event.charCode != 0 ? event.charCode : event.which);
+		charCode = Keyboard.__getCharCode(keyCode, event.shiftKey);
+
 		var location = untyped (event).location != null ? untyped (event).location : event.keyLocation;
 		
 		#if (haxe_ver > 3.100)
@@ -1210,9 +1215,11 @@ class Stage extends Sprite {
 		if (stack.length > 0) {
 			
 			stack.reverse ();
-			__fireEvent (new KeyboardEvent (event.type == "keydown" ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP, true, false, event.charCode, keyCode, keyLocation, event.ctrlKey, event.altKey, event.shiftKey), stack);
+			__fireEvent (new KeyboardEvent (event.type == "keydown" ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP, true, false, charCode, keyCode, keyLocation, event.ctrlKey, event.altKey, event.shiftKey), stack);
 			
 		}
+
+		event.preventDefault();
 		
 	}
 	
