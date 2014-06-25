@@ -5,7 +5,7 @@
 	
 	<haxelib name="lime" />
 	
-	<include haxelib="lime-tools" />
+	<include haxelib="aether" />
 	<template path="templates" />
 	
 	<unset name="custom-backend" />
@@ -70,7 +70,7 @@
 	
 	<section if="setup">
 		
-		<haxelib name="lime-tools" />
+		<haxelib name="aether" />
 		<haxelib name="openfl-samples" />
 		<haxelib name="swf" />
 		<haxelib name="actuate" />
