@@ -75,6 +75,7 @@ import openfl.filters.GlowFilterTest;
 import openfl.geom.ColorTransformTest;
 import openfl.geom.Matrix3DTest;
 import openfl.geom.MatrixTest;
+import openfl.geom.Orientation3DTest;
 import openfl.geom.PointTest;
 import openfl.geom.RectangleTest;
 import openfl.geom.TransformTest;
@@ -225,6 +226,7 @@ class TestSuite extends massive.munit.TestSuite
 		add(openfl.geom.ColorTransformTest);
 		add(openfl.geom.Matrix3DTest);
 		add(openfl.geom.MatrixTest);
+		add(openfl.geom.Orientation3DTest);
 		add(openfl.geom.PointTest);
 		add(openfl.geom.RectangleTest);
 		add(openfl.geom.TransformTest);
