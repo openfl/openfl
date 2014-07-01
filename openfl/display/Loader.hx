@@ -46,6 +46,12 @@ class Loader extends Sprite {
 			
 		}
 		
+		if (extension.indexOf ('?') != -1) {
+			
+			extension = extension.split ('?')[0];
+			
+		}
+		
 		var transparent = true;
 		
 		untyped { contentLoaderInfo.url = request.url; }
