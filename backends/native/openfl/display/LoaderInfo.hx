@@ -74,8 +74,6 @@ class LoaderInfo extends URLLoader {
 		if (extension.indexOf('?') != -1) 
 			extension = extension.split('?')[0];
 		
-		trace(extension);
-		
 		contentType = switch (extension) {
 			
 			case "swf": "application/x-shockwave-flash";
