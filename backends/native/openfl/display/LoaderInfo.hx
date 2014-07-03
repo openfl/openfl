@@ -71,6 +71,9 @@ class LoaderInfo extends URLLoader {
 		var dot = __pendingURL.lastIndexOf (".");
 		var extension = dot > 0 ? __pendingURL.substr (dot + 1).toLowerCase () : "";
 		
+		if (extension.indexOf('?') != -1) 
+			extension = extension.split('?')[0];
+		
 		contentType = switch (extension) {
 			
 			case "swf": "application/x-shockwave-flash";
