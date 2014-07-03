@@ -61,7 +61,7 @@ OpenFL is powered by [Lime](https://github.com/openfl/lime), which includes powe
 
 Although we believe the Flash API is perfect for 2D development, there is some debate over the Stage3D (released in Flash Player 11), particularly regarding AGAL shaders. We have asked leading Flash developers, whether they would prefer an analog for Stage3D, or if they would prefer an OpenGL-based approach instead, and the answer has overwhelmingly been to support OpenGL-style APIs instead.
 
-In addition to the standard Flash display list APIs, OpenFL includes batch tile rendering and "OpenGLView" for cross-platform OpenGL rendering for native and HTML5 targets. This does not have the limitions of Stage3D, and can be placed above, below or mixed with other DisplayObjects, and uses standard GLSL shaders, and follows the WebGL API.
+In addition to the standard Flash display list APIs, OpenFL includes batch tile rendering and "OpenGLView" for cross-platform OpenGL rendering for native and HTML5 targets. This does not have the limitations of Stage3D, and can be placed above, below or mixed with other DisplayObjects, and uses standard GLSL shaders, and follows the WebGL API.
 
 Native Extensions
 =================
