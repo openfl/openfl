@@ -1,14 +1,16 @@
 package openfl.geom;
 
-
+import openfl.geom.Orientation3D;
+import openfl.geom.Vector3D;
+import openfl.errors.Error;
 import openfl.Vector;
 
 
 class Matrix3D {
 	
 	
-	public var determinant (get, null):Float;
-	public var position (get, set):Vector3D;
+	public var determinant (get_determinant, null):Float;
+	public var position (get_position, set_position):Vector3D;
 	public var rawData:Vector<Float>;
 	
 	
@@ -20,14 +22,14 @@ class Matrix3D {
 			
 		} else {
 			
-			rawData = [1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0];
+			rawData = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ];
 			
 		}
 		
 	}
 	
 	
-	public function append (lhs:Matrix3D):Void {
+	inline public function append (lhs:Matrix3D):Void {
 		
 		var m111:Float = this.rawData[0], m121:Float = this.rawData[4], m131:Float = this.rawData[8], m141:Float = this.rawData[12],
 			m112:Float = this.rawData[1], m122:Float = this.rawData[5], m132:Float = this.rawData[9], m142:Float = this.rawData[13],
@@ -61,7 +63,7 @@ class Matrix3D {
 	}
 	
 	
-	public function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
+	inline public function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
 		var m = getAxisRotation (axis.x, axis.y, axis.z, degrees);
 		
@@ -77,14 +79,14 @@ class Matrix3D {
 	}
 	
 	
-	public function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
+	inline public function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
-		this.append (new Matrix3D ( [ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ] ));
+		this.append (new Matrix3D ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ]));
 		
 	}
 	
 	
-	public function appendTranslation (x:Float, y:Float, z:Float):Void {
+	inline public function appendTranslation (x:Float, y:Float, z:Float):Void {
 		
 		rawData[12] += x;
 		rawData[13] += y;
@@ -93,7 +95,7 @@ class Matrix3D {
 	}
 	
 	
-	public function clone ():Matrix3D {
+	inline public function clone ():Matrix3D {
 		
 		return new Matrix3D (this.rawData.copy ());
 		
@@ -102,141 +104,233 @@ class Matrix3D {
 	
 	public function copyColumnFrom (column:Int, vector3D:Vector3D):Void {
 		
-		if (column > 3) {
-			
-			throw "Column " + column + " out of bounds (3)";
-			
-		}
+		switch( column ) {
 		
-		rawData[0 + column] = vector3D.x;
-		rawData[4 + column] = vector3D.y;
-		rawData[8 + column] = vector3D.z;
-		rawData[12 + column] = vector3D.w;
+			case 0:
+				rawData[ 0 ] = vector3D.x;
+				rawData[ 1 ] = vector3D.y;
+				rawData[ 2 ] = vector3D.z;
+				rawData[ 3 ] = vector3D.w;
+			case 1:
+				rawData[ 4 ] = vector3D.x;
+				rawData[ 5 ] = vector3D.y;
+				rawData[ 6 ] = vector3D.z;
+				rawData[ 7 ] = vector3D.w;
+			case 2:
+				rawData[ 8 ] = vector3D.x;
+				rawData[ 9 ] = vector3D.y;
+				rawData[ 10 ] = vector3D.z;
+				rawData[ 11 ] = vector3D.w;
+			case 3:
+				rawData[ 12 ] = vector3D.x;
+				rawData[ 13 ] = vector3D.y;
+				rawData[ 14 ] = vector3D.z;
+				rawData[ 15 ] = vector3D.w;
+			default:
+				throw new Error( "Error, Column " + column + " out of bounds [0, ..., 3]");
+		}
 		
 	}
 	
 	
 	public function copyColumnTo (column:Int, vector3D:Vector3D):Void {
-		
-		if (column > 3) {
-			
-			throw "Column " + column + " out of bounds (3)";
-			
+
+		switch( column )
+		{
+			case 0:
+				vector3D.x = rawData[ 0 ];
+				vector3D.y = rawData[ 1 ];
+				vector3D.z = rawData[ 2 ];
+				vector3D.w = rawData[ 3 ];
+			case 1:
+				vector3D.x = rawData[ 4 ];
+				vector3D.y = rawData[ 5 ];
+				vector3D.z = rawData[ 6 ];
+				vector3D.w = rawData[ 7 ];
+			case 2:
+				vector3D.x = rawData[ 8 ];
+				vector3D.y = rawData[ 9 ];
+				vector3D.z = rawData[ 10 ];
+				vector3D.w = rawData[ 11 ];
+			case 3:
+				vector3D.x = rawData[ 12 ];
+				vector3D.y = rawData[ 13 ];
+				vector3D.z = rawData[ 14 ];
+				vector3D.w = rawData[ 15 ];
+			default:
+				throw new Error( "Error, Column " + column + " out of bounds [0, ..., 3]");
 		}
 		
-		vector3D.x = rawData[0 + column];
-		vector3D.y = rawData[4 + column];
-		vector3D.z = rawData[8 + column];
-		vector3D.w = rawData[12 + column];
-		
 	}
-	
-	
+
+
 	public function copyFrom (other:Matrix3D):Void {
+
+		rawData = other.rawData.copy();
+
+	}
+
+	public function copyRawDataFrom( vector:Vector<Float>, index:UInt = 0, transpose:Bool = false ) {
 		
-		for (i in 0...16) {
+		if ( transpose )
+			this.transpose();
+	  
+		var l : UInt = vector.length - index;
+		for ( c in 0...l )
+			rawData[c] = vector[c+index];
+	  
+		if ( transpose )
+			this.transpose();
+
+	}
+
+
+	public function copyRawDataTo( vector:Vector<Float>, index:UInt = 0, transpose:Bool = false ) {
+
+		if ( transpose )
+		   this.transpose();
+
+		var l : UInt = rawData.length;
+		for ( c in 0...l )
+			vector[c + index ] = rawData[c];
+		
+		if ( transpose )
+			this.transpose();
+
+	}
+
+
+	public function copyRowFrom( row:UInt, vector3D:Vector3D ) {
+
+		switch( row ) {
+
+			case 0:
+				rawData[ 0 ] = vector3D.x;
+				rawData[ 4 ] = vector3D.y;
+				rawData[ 8 ] = vector3D.z;
+				rawData[ 12 ] = vector3D.w;
 			
-			rawData[i] = other.rawData[i];
+			case 1:
+				rawData[ 1 ] = vector3D.x;
+				rawData[ 5 ] = vector3D.y;
+				rawData[ 9 ] = vector3D.z;
+				rawData[ 13 ] = vector3D.w;
 			
+			case 2:
+				rawData[ 2 ] = vector3D.x;
+				rawData[ 6 ] = vector3D.y;
+				rawData[ 10 ] = vector3D.z;
+				rawData[ 14 ] = vector3D.w;
+			
+			case 3:
+				rawData[ 3 ] = vector3D.x;
+				rawData[ 7 ] = vector3D.y;
+				rawData[ 11 ] = vector3D.z;
+				rawData[ 15 ] = vector3D.w;
+			
+			default:
+				throw new Error( "Error, Row " + row + " out of bounds [0, ..., 3]");
 		}
 		
 	}
 	
 	
-	public function copyRowFrom (row:Int, vector3D:Vector3D):Void {
-		
-		if (row > 3) {
-			
-			throw "Row " + row + " out of bounds (3)";
-			
-		}
-		
-		var i = 4 * row;
-		rawData[i] = vector3D.x;
-		rawData[i + 1] = vector3D.y;
-		rawData[i + 2] = vector3D.z;
-		rawData[i + 3] = vector3D.w;
-		
-	}
-	
-	
-	public function copyRowTo (row:Int, vector3D:Vector3D):Void {
-		
-		if (row > 3) {
-			
-			throw "Row " + row + " out of bounds (3)";
-			
-		}
-		
-		var i = 4 * row;
-		vector3D.x = rawData[i];
-		vector3D.y = rawData[i + 1];
-		vector3D.z = rawData[i + 2];
-		vector3D.w = rawData[i + 3];
-		
-	}
-	
-	
-	public function copyToMatrix3D (other:Matrix3D):Void {
-		
-		for (i in 0...16) {
-			
-			other.rawData[i] = rawData[i];
-			
-		}
-		
-	}
-	
-	
-	public static function create2D (x:Float, y:Float, scale:Float = 1, rotation:Float = 0):Matrix3D {
+	public static function create2D (x:Float, y:Float, scale:Float = 1, rotation:Float = 0) {
 		
 		var theta = rotation * Math.PI / 180.0;
 		var c = Math.cos (theta);
 		var s = Math.sin (theta);
 		
 		return new Matrix3D ([
-			c * scale, -s * scale, 0, 0,
-			s * scale, c * scale, 0, 0,
-			0, 0, 1, 0,
-			x, y, 0, 1
+			c*scale,  -s*scale, 0,  0,
+			s*scale,  c*scale, 0,  0,
+			0,        0,        1,  0,
+			x,        y,        0,  1
 		]);
 		
 	}
-	
-	
-	public static function createABCD (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Matrix3D {
+   
+   
+	public static function createABCD (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float) {
 		
 		return new Matrix3D ([
 			a, b, 0, 0,
 			c, d, 0, 0,
 			0, 0, 1, 0,
-			tx, ty, 0, 1
+			tx,ty,0, 1
 		]);
 		
 	}
 	
 	
-	public static function createOrtho (x0:Float, x1:Float,  y0:Float, y1:Float, zNear:Float, zFar:Float):Matrix3D {
+	public static function createOrtho (x0:Float, x1:Float,  y0:Float, y1:Float, zNear:Float, zFar:Float) {
 		
 		var sx = 1.0 / (x1 - x0);
 		var sy = 1.0 / (y1 - y0);
 		var sz = 1.0 / (zFar - zNear);
 		
 		return new Matrix3D ([
-			2.0 * sx, 0, 0, 0,
-			0, 2.0 * sy, 0, 0,
-			0, 0, -2.0 * sz, 0,
-			-(x0 + x1) * sx, -(y0 + y1) * sy, -(zNear + zFar) * sz, 1
+			2.0 * sx,     0,          0,                 0,
+			0,            2.0 * sy,   0,                 0,
+			0,            0,          -2.0 * sz,         0,
+			- (x0 + x1) * sx, - (y0 + y1) * sy, - (zNear + zFar) * sz,  1,
 		]);
 		
 	}
 	
 	
-	public function decompose ():Vector<Vector3D> {
+	public function copyRowTo (row:Int, vector3D:Vector3D):Void {
+
+		switch( row ) {
 		
-		var vec = new Vector<Vector3D> ();
-		var m = this.clone ();
-		var mr = m.rawData;
+			case 0:
+				vector3D.x = rawData[ 0 ];
+				vector3D.y = rawData[ 4 ];
+				vector3D.z = rawData[ 8 ];
+				vector3D.w = rawData[ 12 ];
+			
+			case 1:
+				vector3D.x = rawData[ 1 ];
+				vector3D.y = rawData[ 5 ];
+				vector3D.z = rawData[ 9 ];
+				vector3D.w = rawData[ 13 ];
+			
+			case 2:
+				vector3D.x = rawData[ 2 ];
+				vector3D.y = rawData[ 6 ];
+				vector3D.z = rawData[ 10 ];
+				vector3D.w = rawData[ 14 ];
+			
+			case 3:
+				vector3D.x = rawData[ 3 ];
+				vector3D.y = rawData[ 7 ];
+				vector3D.z = rawData[ 11 ];
+				vector3D.w = rawData[ 15 ];
+			
+			default:
+				throw new Error( "Error, Row " + row + " out of bounds [0, ..., 3]");
+		}
+		
+	}
+
+
+	public function copyToMatrix3D (other:Matrix3D):Void {
+
+		other.rawData = rawData.copy();
+
+	}
+
+	/**
+	 * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
+	 */
+	public function decompose(?orientationStyle:Orientation3D):Vector<Vector3D> {
+
+		if (orientationStyle==null)
+			orientationStyle = Orientation3D.EULER_ANGLES;
+		
+		var vec = new Vector<Vector3D>();
+		var m = clone();
+		var mr = m.rawData.copy();
 		
 		var pos = new Vector3D (mr[12], mr[13], mr[14]);
 		mr[12] = 0;
@@ -245,9 +339,9 @@ class Matrix3D {
 		
 		var scale = new Vector3D ();
 		
-		scale.x = Math.sqrt (mr[0] * mr[0] + mr[1] * mr[1] + mr[2] * mr[2]);
-		scale.y = Math.sqrt (mr[4] * mr[4] + mr[5] * mr[5] + mr[6] * mr[6]);
-		scale.z = Math.sqrt (mr[8] * mr[8] + mr[9] * mr[9] + mr[10] * mr[10]);
+		scale.x = Math.sqrt(mr[0] * mr[0] + mr[1] * mr[1] + mr[2] * mr[2]);
+		scale.y = Math.sqrt(mr[4] * mr[4] + mr[5] * mr[5] + mr[6] * mr[6]);
+		scale.z = Math.sqrt(mr[8] * mr[8] + mr[9] * mr[9] + mr[10] * mr[10]);
 		
 		if (mr[0] * (mr[5] * mr[10] - mr[6] * mr[9]) - mr[1] * (mr[4] * mr[10] - mr[6] * mr[8]) + mr[2] * (mr[4] * mr[9] - mr[5] * mr[8]) < 0) {
 			
@@ -255,105 +349,94 @@ class Matrix3D {
 			
 		}
 		
-		mr[0] /= scale.x; 
-		mr[1] /= scale.x; 
-		mr[2] /= scale.x; 
-		mr[4] /= scale.y; 
-		mr[5] /= scale.y; 
-		mr[6] /= scale.y; 
-		mr[8] /= scale.z; 
-		mr[9] /= scale.z; 
+		mr[0] /= scale.x;
+		mr[1] /= scale.x;
+		mr[2] /= scale.x;
+		mr[4] /= scale.y;
+		mr[5] /= scale.y;
+		mr[6] /= scale.y;
+		mr[8] /= scale.z;
+		mr[9] /= scale.z;
 		mr[10] /= scale.z;
 		
 		var rot = new Vector3D ();
-		rot.y = Math.asin (-mr[2]);
-		var C = Math.cos (rot.y);
+		switch (orientationStyle) {
+			
+			case Orientation3D.AXIS_ANGLE:
+				rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
+
+				var len = Math.sqrt((mr[6] - mr[9]) * (mr[6] - mr[9]) + (mr[8] - mr[2]) * (mr[8] - mr[2]) + (mr[1] - mr[4]) * (mr[1] - mr[4]));
+				rot.x = (mr[6] - mr[9]) / len;
+				rot.y = (mr[8] - mr[2]) / len;
+				rot.z = (mr[1] - mr[4]) / len;
+			
+			case Orientation3D.QUATERNION:
+				var tr = mr[0] + mr[5] + mr[10];
+
+				if (tr > 0) {
+					rot.w = Math.sqrt(1 + tr) / 2;
+
+					rot.x = (mr[6] - mr[9]) / (4 * rot.w);
+					rot.y = (mr[8] - mr[2]) / (4 * rot.w);
+					rot.z = (mr[1] - mr[4]) / (4 * rot.w);
+				} else if ((mr[0] > mr[5]) && (mr[0] > mr[10])) {
+					rot.x = Math.sqrt(1 + mr[0] - mr[5] - mr[10]) / 2;
+
+					rot.w = (mr[6] - mr[9]) / (4 * rot.x);
+					rot.y = (mr[1] + mr[4]) / (4 * rot.x);
+					rot.z = (mr[8] + mr[2]) / (4 * rot.x);
+				} else if (mr[5] > mr[10]) {
+					rot.y = Math.sqrt(1 + mr[5] - mr[0] - mr[10]) / 2;
+
+					rot.x = (mr[1] + mr[4]) / (4 * rot.y);
+					rot.w = (mr[8] - mr[2]) / (4 * rot.y);
+					rot.z = (mr[6] + mr[9]) / (4 * rot.y);
+				} else {
+					rot.z = Math.sqrt(1 + mr[10] - mr[0] - mr[5]) / 2;
+
+					rot.x = (mr[8] + mr[2]) / (4 * rot.z);
+					rot.y = (mr[6] + mr[9]) / (4 * rot.z);
+					rot.w = (mr[1] - mr[4]) / (4 * rot.z);
+				}
+			
+			case Orientation3D.EULER_ANGLES:
+				rot.y = Math.asin(-mr[2]);
+
+				if (mr[2] != 1 && mr[2] != -1) {
+					rot.x = Math.atan2(mr[6], mr[10]);
+					rot.z = Math.atan2(mr[1], mr[0]);
+				} else {
+					rot.z = 0;
+					rot.x = Math.atan2(mr[4], mr[5]);
+				}
+		}
 		
-		if (C > 0) {
-			
-			rot.x = Math.atan2 (mr[6], mr[10]);
-			rot.z = Math.atan2 (mr[1], mr[0]);
-			
-		} else {
-			
-			rot.z = 0;
-			rot.x = Math.atan2 (mr[4], mr[5]);
-			
-		} 
-		
-		vec.push (pos);
-		vec.push (rot);
-		vec.push (scale);
+		vec.push(pos);
+		vec.push(rot);
+		vec.push(scale);
 		
 		return vec;
-		
+
 	}
-	
-	
-	public function deltaTransformVector (v:Vector3D):Vector3D {
-		
+
+
+	public function deltaTransformVector( v:Vector3D ):Vector3D {
+
 		var x:Float = v.x, y:Float = v.y, z:Float = v.z;
-		
+
 		return new Vector3D (
-			(x * rawData[0] + y * rawData[1] + z * rawData[2] + rawData[3]),
-			(x * rawData[4] + y * rawData[5] + z * rawData[6] + rawData[7]),
-			(x * rawData[8] + y * rawData[9] + z * rawData[10] + rawData[11]),
-		0);
-		
+			(x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[3]),
+			(x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[7]),
+			(x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[11]),
+			0);
+
 	}
+
+
+	public function identity() {
+
+		rawData = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ];
 	
-	
-	static public function getAxisRotation (x:Float, y:Float, z:Float, degrees:Float):Matrix3D {
-		
-		var m = new Matrix3D ();
-		
-		var a1 = new Vector3D (x, y, z);
-		var rad = -degrees * (Math.PI / 180);
-		var c:Float = Math.cos (rad);
-		var s:Float = Math.sin (rad);
-		var t:Float = 1.0 - c;
-		
-		m.rawData[0] = c + a1.x * a1.x * t;
-		m.rawData[5] = c + a1.y * a1.y * t;
-		m.rawData[10] = c + a1.z * a1.z * t;
-		
-		var tmp1 = a1.x * a1.y * t;
-		var tmp2 = a1.z * s;
-		m.rawData[4] = tmp1 + tmp2;
-		m.rawData[1] = tmp1 - tmp2;
-		tmp1 = a1.x * a1.z * t;
-		tmp2 = a1.y * s;
-		m.rawData[8] = tmp1 - tmp2;
-		m.rawData[2] = tmp1 + tmp2;
-		tmp1 = a1.y * a1.z * t;
-		tmp2 = a1.x*s;
-		m.rawData[9] = tmp1 + tmp2;
-		m.rawData[6] = tmp1 - tmp2;
-		
-		return m;
-		
-	}
-	
-	
-	public function identity ():Void {
-		
-		rawData[0] = 1;
-		rawData[1] = 0;
-		rawData[2] = 0;
-		rawData[3] = 0;
-		rawData[4] = 0;
-		rawData[5] = 1;
-		rawData[6] = 0;
-		rawData[7] = 0;
-		rawData[8] = 0;
-		rawData[9] = 0;
-		rawData[10] = 1;
-		rawData[11] = 0;
-		rawData[12] = 0;
-		rawData[13] = 0;
-		rawData[14] = 0;
-		rawData[15] = 1;
-		
 	}
 	
 	
@@ -372,7 +455,7 @@ class Matrix3D {
 	}
 	
 	
-	public function interpolateTo (toMat:Matrix3D, percent:Float):Void {
+	inline public function interpolateTo (toMat:Matrix3D, percent:Float):Void {
 		
 		for (i in 0...16) {
 			
@@ -383,14 +466,15 @@ class Matrix3D {
 	}
 	
 	
-	public function invert ():Bool {
+	inline public function invert ():Bool {
 		
 		var d = determinant;
 		var invertable = Math.abs (d) > 0.00000000001;
 		
 		if (invertable) {
 			
-			d = -1 / d;
+			d = 1 / d;
+			
 			var m11:Float = rawData[0]; var m21:Float = rawData[4]; var m31:Float = rawData[8]; var m41:Float = rawData[12];
 			var m12:Float = rawData[1]; var m22:Float = rawData[5]; var m32:Float = rawData[9]; var m42:Float = rawData[13];
 			var m13:Float = rawData[2]; var m23:Float = rawData[6]; var m33:Float = rawData[10]; var m43:Float = rawData[14];
@@ -487,7 +571,7 @@ class Matrix3D {
 	}
 	
 	
-	public function prepend (rhs:Matrix3D):Void {
+	inline public function prepend (rhs:Matrix3D):Void {
 		
 		var m111:Float = rhs.rawData[0], m121:Float = rhs.rawData[4], m131:Float = rhs.rawData[8], m141:Float = rhs.rawData[12],
 			m112:Float = rhs.rawData[1], m122:Float = rhs.rawData[5], m132:Float = rhs.rawData[9], m142:Float = rhs.rawData[13],
@@ -521,7 +605,7 @@ class Matrix3D {
 	}
 	
 	
-	public function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
+	inline public function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
 		var m = getAxisRotation (axis.x, axis.y, axis.z, degrees);
 		
@@ -537,14 +621,14 @@ class Matrix3D {
 	}
 	
 	
-	public function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
+	inline public function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
-		this.prepend (new Matrix3D ( [ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ] ));
+		this.prepend (new Matrix3D ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
 		
 	}
 	
 	
-	public function prependTranslation (x:Float, y:Float, z:Float):Void {
+	inline public function prependTranslation (x:Float, y:Float, z:Float):Void {
 		
 		var m = new Matrix3D ();
 		m.position = new Vector3D (x, y, z);
@@ -553,30 +637,91 @@ class Matrix3D {
 	}
 	
 	
-	public function recompose (components:Vector<Vector3D>):Bool {
+	public function recompose (components:Vector<Vector3D>, ?orientationStyle:Orientation3D ):Bool {
 		
-		if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0) return false;
+		if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0)
+			return false;
+	  
+		if (orientationStyle == null)
+			orientationStyle = Orientation3D.EULER_ANGLES;
+
+		identity();
+
+		var scale = [];
+		scale[0] = scale[1] = scale[2] = components[2].x;
+		scale[4] = scale[5] = scale[6] = components[2].y;
+		scale[8] = scale[9] = scale[10] = components[2].z;
+
+		switch (orientationStyle) {
+
+			case Orientation3D.EULER_ANGLES:
+				var cx = Math.cos(components[1].x);
+				var cy = Math.cos(components[1].y);
+				var cz = Math.cos(components[1].z);
+				var sx = Math.sin(components[1].x);
+				var sy = Math.sin(components[1].y);
+				var sz = Math.sin(components[1].z);
+				
+				rawData[0]=cy*cz*scale[0];
+				rawData[1]=cy*sz*scale[1];
+				rawData[2]=- sy*scale[2];
+				rawData[3]=0;
+				rawData[4] = (sx*sy*cz-cx*sz)*scale[4];
+				rawData[5] = (sx*sy*sz+cx*cz)*scale[5];
+				rawData[6]=sx*cy*scale[6];
+				rawData[7]=0;
+				rawData[8] = (cx*sy*cz+sx*sz)*scale[8];
+				rawData[9] = (cx*sy*sz-sx*cz)*scale[9];
+				rawData[10]=cx*cy*scale[10];
+				rawData[11]=0;
+				rawData[12]=components[0].x;
+				rawData[13]=components[0].y;
+				rawData[14]=components[0].z;
+				rawData[15]=1;
+
+			default:
+
+				var x = components[1].x;
+				var y = components[1].y;
+				var z = components[1].z;
+				var w = components[1].w;
+				if (Type.enumEq(orientationStyle, Orientation3D.AXIS_ANGLE)) {
+					x *= Math.sin(w/2);
+					y *= Math.sin(w/2);
+					z *= Math.sin(w/2);
+					w = Math.cos(w/2);
+				}
+				
+				rawData[0] = (1-2*y*y-2*z*z)*scale[0];
+				rawData[1] = (2*x*y+2*w*z)*scale[1];
+				rawData[2] = (2*x*z-2*w*y)*scale[2];
+				rawData[3] = 0;
+				rawData[4] = (2*x*y-2*w*z)*scale[4];
+				rawData[5] = (1-2*x*x-2*z*z)*scale[5];
+				rawData[6] = (2*y*z+2*w*x)*scale[6];
+				rawData[7] = 0;
+				rawData[8] = (2*x*z+2*w*y)*scale[8];
+				rawData[9] = (2*y*z-2*w*x)*scale[9];
+				rawData[10] = (1-2*x*x-2*y*y)*scale[10];
+				rawData[11] = 0;
+				rawData[12] = components[0].x;
+				rawData[13] = components[0].y;
+				rawData[14] = components[0].z;
+				rawData[15] = 1;
+		}
 		
-		this.identity ();
-		this.appendScale (components[2].x, components[2].y, components[2].z);
-		
-		var angle:Float;
-		angle = -components[1].x;
-		this.append (new Matrix3D ([1, 0, 0, 0, 0, Math.cos(angle), -Math.sin(angle), 0, 0, Math.sin(angle), Math.cos(angle), 0, 0, 0, 0 , 0]));
-		angle = -components[1].y;
-		this.append (new Matrix3D ([Math.cos(angle), 0, Math.sin(angle), 0, 0, 1, 0, 0, -Math.sin(angle), 0, Math.cos(angle), 0, 0, 0, 0, 0]));
-		angle = -components[1].z;
-		this.append (new Matrix3D ([Math.cos(angle), -Math.sin(angle), 0, 0, Math.sin(angle), Math.cos(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]));
-		
-		this.position = components[0];
-		this.rawData[15] = 1;
-		
-		return true;
-		
+		if (components[2].x == 0)
+			rawData[0] = 1e-15;
+		if (components[2].y == 0)
+			rawData[5] = 1e-15;
+		if (components[2].z == 0)
+			rawData[10] = 1e-15;
+					
+		return !(components[2].x == 0 || components[2].y == 0 || components[2].y == 0);
 	}
 	
 	
-	public function transformVector (v:Vector3D):Vector3D {
+	inline public function transformVector (v:Vector3D):Vector3D {
 		
 		var x:Float = v.x, y:Float = v.y, z:Float = v.z;
 		
@@ -584,7 +729,7 @@ class Matrix3D {
 			(x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12]),
 			(x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13]),
 			(x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14]),
-		1);
+			(x * rawData[3] + y * rawData[7] + z * rawData[11] + rawData[15]));
 		
 	}
 	
@@ -592,16 +737,15 @@ class Matrix3D {
 	public function transformVectors (vin:Vector<Float>, vout:Vector<Float>):Void {
 		
 		var i = 0;
-		var x:Float, y:Float, z:Float;
 		
 		while (i + 3 <= vin.length) {
 			
-			x = vin[i];
-			y = vin[i + 1];
-			z = vin[i + 2];
+			var x:Float = vin[i], y:Float = vin[i + 1], z:Float = vin[i + 2];
+			
 			vout[i] = x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12];
 			vout[i + 1] = x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13];
 			vout[i + 2] = x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14];
+			
 			i += 3;
 			
 		}
@@ -609,7 +753,7 @@ class Matrix3D {
 	}
 	
 	
-	public function transpose ():Void {
+	inline public function transpose ():Void {
 		
 		var oRawData = rawData.copy ();
 		rawData[1] = oRawData[4];
@@ -626,6 +770,37 @@ class Matrix3D {
 		rawData[14] = oRawData[11];
 		
 	}
+
+	private static function getAxisRotation( x:Float, y:Float, z:Float, degrees:Float ):Matrix3D {
+
+		var m = new Matrix3D();
+
+		var a1 = new Vector3D(x, y, z);
+		var rad = -degrees * (Math.PI / 180);
+		var c = Math.cos(rad);
+		var s = Math.sin(rad);
+		var t = 1.0 - c;
+
+		m.rawData[0] = c + a1.x * a1.x * t;
+		m.rawData[5] = c + a1.y * a1.y * t;
+		m.rawData[10] = c + a1.z * a1.z * t;
+
+		var tmp1 = a1.x * a1.y * t;
+		var tmp2 = a1.z * s;
+		m.rawData[4] = tmp1 + tmp2;
+		m.rawData[1] = tmp1 - tmp2;
+		tmp1 = a1.x * a1.z * t;
+		tmp2 = a1.y * s;
+		m.rawData[8] = tmp1 - tmp2;
+		m.rawData[2] = tmp1 + tmp2;
+		tmp1 = a1.y * a1.z * t;
+		tmp2 = a1.x*s;
+		m.rawData[9] = tmp1 + tmp2;
+		m.rawData[6] = tmp1 - tmp2;
+
+		return m;
+
+	}
 	
 	
 	
@@ -635,31 +810,31 @@ class Matrix3D {
 	
 	
 	
-	private function get_determinant ():Float {
-		
-		return	-1 * ((rawData[0] * rawData[5] - rawData[4] * rawData[1]) * (rawData[10] * rawData[15] - rawData[14] * rawData[11])
+	inline public function get_determinant ():Float {
+
+		return 1 * ((rawData[0] * rawData[5] - rawData[4] * rawData[1]) * (rawData[10] * rawData[15] - rawData[14] * rawData[11]) 
 			- (rawData[0] * rawData[9] - rawData[8] * rawData[1]) * (rawData[6] * rawData[15] - rawData[14] * rawData[7])
 			+ (rawData[0] * rawData[13] - rawData[12] * rawData[1]) * (rawData[6] * rawData[11] - rawData[10] * rawData[7])
 			+ (rawData[4] * rawData[9] - rawData[8] * rawData[5]) * (rawData[2] * rawData[15] - rawData[14] * rawData[3])
 			- (rawData[4] * rawData[13] - rawData[12] * rawData[5]) * (rawData[2] * rawData[11] - rawData[10] * rawData[3])
 			+ (rawData[8] * rawData[13] - rawData[12] * rawData[9]) * (rawData[2] * rawData[7] - rawData[6] * rawData[3]));
-		
+	
 	}
 	
 	
-	private function get_position ():Vector3D {
+	inline public function get_position ():Vector3D {
 		
 		return new Vector3D (rawData[12], rawData[13], rawData[14]);
 		
 	}
 	
 	
-	public function set_position (value:Vector3D):Vector3D {
+	inline public function set_position (val:Vector3D):Vector3D {
 		
-		rawData[12] = value.x;
-		rawData[13] = value.y;
-		rawData[14] = value.z;
-		return value;
+		rawData[12] = val.x;
+		rawData[13] = val.y;
+		rawData[14] = val.z;
+		return val;
 		
 	}
 	
