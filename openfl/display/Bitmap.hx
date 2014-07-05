@@ -328,6 +328,12 @@ class Bitmap extends DisplayObjectContainer {
 		//var modelViewMatrix = new lime.utils.Float32Array ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, __worldTransform.tx, __worldTransform.ty, 0, 1 ]);
 		
 		var modelViewMatrix = new lime.geom.Matrix4 ();
+		modelViewMatrix[0] = __worldTransform.a;
+		modelViewMatrix[1] = __worldTransform.b;
+		modelViewMatrix[4] = __worldTransform.c;
+		modelViewMatrix[5] = __worldTransform.d;
+		modelViewMatrix[12] = __worldTransform.tx;
+		modelViewMatrix[13] = __worldTransform.ty;
 		
 		gl.activeTexture (gl.TEXTURE0);
 		gl.bindTexture (gl.TEXTURE_2D, texture);
