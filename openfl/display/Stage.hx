@@ -2,11 +2,12 @@ package openfl.display; #if !flash
 
 
 import haxe.EnumFlags;
+import lime.geom.Matrix4;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
-import openfl._internal.OpenGLContext;
+import lime.utils.GLUtils;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -57,10 +58,10 @@ class Stage extends Sprite {
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
-	private var __glContext:OpenGLContext;
-	private var __glContextID:Int;
-	private var __glContextLost:Bool;
-	private var __glOptions:Dynamic;
+	private var __glProgram:ShaderProgram;
+	//private var __glContextID:Int;
+	//private var __glContextLost:Bool;
+	//private var __glOptions:Dynamic;
 	private var __invalidated:Bool;
 	private var __mouseX:Float = 0;
 	private var __mouseY:Float = 0;
@@ -293,17 +294,18 @@ class Stage extends Sprite {
 			
 			case OPENGL (gl):
 				
-				if (__glContext == null) {
+				if (__glProgram == null) {
 					
-					__glContext = new OpenGLContext (gl);
+					__glProgram = new ShaderProgram ();
+					__glProgram.compile ();
 					
 				}
 				
-				if (!__glContextLost) {
+				//if (!__glContextLost) {
 					
-					__glContext.clear (color);
-					__glContext.setWindowSize (stageWidth, stageHeight);
-					__glContext.beginRender (null, false);
+					//__glContext.clear (color);
+					//__glContext.setWindowSize (stageWidth, stageHeight);
+					//__glContext.beginRender (null, false);
 					
 					/*gl.viewport (0, 0, stageWidth, stageHeight);
 					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
@@ -320,13 +322,33 @@ class Stage extends Sprite {
 					
 					gl.clear (gl.COLOR_BUFFER_BIT);*/
 					
+					if (__transparent) {
+						
+						gl.clearColor (1, 0, 0 ,0);
+						
+					} else {
+						
+						gl.clearColor (__colorSplit[0], __colorSplit[1], __colorSplit[2], 1);
+						
+					}
+					
+					gl.clear (gl.COLOR_BUFFER_BIT);
+					gl.useProgram (__glProgram.program);
+					
+					gl.enableVertexAttribArray (__glProgram.vertexAttribute);
+					gl.enableVertexAttribArray (__glProgram.textureAttribute);
+					
+					//var matrix = Matrix4.createOrtho (0, window.width, window.height, 0, -1000, 1000);
+					var matrix = Matrix4.createOrtho (0, stageWidth, stageHeight, 0, -1000, 1000);
+					gl.uniformMatrix4fv (__glProgram.projectionMatrixUniform, false, matrix);
+					
 					__renderSession.gl = gl;
-					__renderSession.glContext = __glContext;
+					__renderSession.glProgram = __glProgram;
 					__renderGL (__renderSession);
 					
-					__glContext.endRender ();
+					//__glContext.endRender ();
 					
-				}
+				//}
 			
 			case CANVAS (context):
 				
@@ -580,14 +602,14 @@ class Stage extends Sprite {
 	#if js
 	private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
 		
-		__glContextLost = true;
+		//__glContextLost = true;
 		
 	}
 	
 	
 	private function canvas_onContextRestored (event:js.html.webgl.ContextEvent):Void {
 		
-		__glContextLost = false;
+		//__glContextLost = false;
 		
 	}
 	#end
@@ -712,7 +734,7 @@ class RenderSession {
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
-	public var glContext:OpenGLContext;
+	public var glProgram:ShaderProgram;
 	//public var mask:Bool;
 	public var maskManager:MaskManager;
 	//public var scaleMode:ScaleMode;
@@ -793,68 +815,76 @@ class MaskManager {
 }
 
 
-class RenderCommands {
+class ShaderProgram {
 	
 	
-	public var data:Array<Float>;
-	public var elements:Array<RenderElement>;
+	public var fragmentSource:String;
+	public var imageUniform:lime.graphics.GLUniformLocation;
+	public var program:lime.graphics.GLProgram;
+	public var projectionMatrixUniform:lime.graphics.GLUniformLocation;
+	public var vertexAttribute:Int;
+	public var vertexSource:String;
+	public var textureAttribute:Int;
+	public var valid:Bool;
+	public var viewMatrixUniform:lime.graphics.GLUniformLocation;
 	
 	
-	public function new () {
+	public function new (vertexSource:String = null, fragmentSource:String = null) {
 		
-		data = new Array ();
-		elements = new Array ();
+		if (vertexSource == null) {
+			
+			this.vertexSource = 
+				
+				"attribute vec4 aVertexPosition;
+				attribute vec2 aTexCoord;
+				varying vec2 vTexCoord;
+				
+				uniform mat4 uProjectionMatrix;
+				uniform mat4 uModelViewMatrix;
+				
+				void main ()
+				{
+					vTexCoord = aTexCoord;
+					gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+				}";
+			
+		}
+		
+		if (fragmentSource == null) {
+			
+			this.fragmentSource = 
+				
+				#if !desktop
+				"precision mediump float;" +
+				#end
+				"varying vec2 vTexCoord;
+				uniform sampler2D uImage0;
+				
+				void main ()
+				{
+					gl_FragColor = texture2D (uImage0, vTexCoord);
+				}";
+			
+		}
 		
 	}
 	
 	
-}
-
-
-class RenderElement {
-	
-	
-	public var color:Int;
-	public var count:Int;
-	public var flags:EnumFlags<Dynamic>;
-	public var stride:Int;
-	public var surface:HardwareSurface;
-	public var type:RenderCommandType;
-	public var textureOffset:Int;
-	public var vertexOffset:Int;
-	
-	
-	public function new () {
+	public function compile ():Void {
 		
+		program = GLUtils.createProgram (vertexSource, fragmentSource);
 		
+		vertexAttribute = lime.graphics.GL.getAttribLocation (program, "aVertexPosition");
+		textureAttribute = lime.graphics.GL.getAttribLocation (program, "aTexCoord");
+		
+		viewMatrixUniform = lime.graphics.GL.getUniformLocation (program, "uModelViewMatrix");
+		projectionMatrixUniform = lime.graphics.GL.getUniformLocation (program, "uProjectionMatrix");
+		imageUniform = lime.graphics.GL.getUniformLocation (program, "uImage0");
+		
+		valid = true;
 		
 	}
 	
-	
-}
-
-
-class HardwareSurface {
-	
-	
-	public function new () {
-		
-		
-		
-	}
-	
-	
-}
-
-
-enum RenderCommandType {
-	
-	TRIANGLE_FAN;
-	TRIANGLE_STRIP;
-	TRIANGLES;
-	LINE_STRIP;
-	POINTS;
-	LINES;
 	
 }
 

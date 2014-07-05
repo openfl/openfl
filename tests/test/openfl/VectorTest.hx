@@ -407,15 +407,11 @@ class VectorTest {
 		
 		var vector = new Vector<Int> (20);
 		
-		trace (vector);
-		
 		for (i in 0...10) {
 			
 			vector[i] = vector[i + 10] = i;
 			
 		}
-		
-		trace (vector);
 		
 		Assert.areEqual (19, vector.lastIndexOf (9));
 		Assert.areEqual (12, vector.lastIndexOf (2));

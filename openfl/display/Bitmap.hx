@@ -281,19 +281,6 @@ class Bitmap extends DisplayObjectContainer {
 	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
-		/*if (__commands == null) {
-			
-			__commands = new RenderCommands ();
-			
-			var element = new RenderElement ();
-			element.count = 0;
-			//element.type = RenderType.TRIANGLES;
-			element.vertexOffset = 0;
-			element.textureOffset = 2;
-			element.stride = 4;
-			
-		}*/
-		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
@@ -316,10 +303,10 @@ class Bitmap extends DisplayObjectContainer {
 			
 			var texCoords = [
 				
-				1, 0, 
-				0, 0, 
 				1, 1, 
 				0, 1, 
+				1, 0, 
+				0, 0, 
 				
 			];
 			
@@ -332,15 +319,15 @@ class Bitmap extends DisplayObjectContainer {
 		
 		var texture = bitmapData.getTexture (gl);
 		
-		var projectionMatrix = new lime.utils.Float32Array ([ 2 / flash.Lib.current.stage.stageWidth, 0, 0, 0, 0, 2 / flash.Lib.current.stage.stageHeight, 0, 0, 0, 0, -0.0001, 0, -1, -1, 1, 1 ]);
-		
 		var rotation = 0;
 		var scale = 1;
 		var theta = rotation * Math.PI / 180;
 		var c = Math.cos (theta);
 		var s = Math.sin (theta);
 		
-		var modelViewMatrix = new lime.utils.Float32Array ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, __worldTransform.tx, __worldTransform.ty, 0, 1 ]);
+		//var modelViewMatrix = new lime.utils.Float32Array ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, __worldTransform.tx, __worldTransform.ty, 0, 1 ]);
+		
+		var modelViewMatrix = new lime.geom.Matrix4 ();
 		
 		gl.activeTexture (gl.TEXTURE0);
 		gl.bindTexture (gl.TEXTURE_2D, texture);
@@ -349,14 +336,13 @@ class Bitmap extends DisplayObjectContainer {
 		gl.enable (gl.TEXTURE_2D);
 		#end
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-		gl.vertexAttribPointer (renderSession.glContext.currentProgram.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);
-		gl.vertexAttribPointer (renderSession.glContext.currentProgram.textureAttribute, 2, gl.FLOAT, false, 0, 0);
+		gl.uniformMatrix4fv (renderSession.glProgram.viewMatrixUniform, false, modelViewMatrix);
+		gl.uniform1i (renderSession.glProgram.imageUniform, 0);
 		
-		renderSession.glContext.currentProgram.setProjectionMatrix (projectionMatrix);
-		renderSession.glContext.currentProgram.setModelViewMatrix (modelViewMatrix);
-		gl.uniform1i (renderSession.glContext.currentProgram.getTextureSlot (), 0);
+		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
+		gl.vertexAttribPointer (renderSession.glProgram.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);
+		gl.vertexAttribPointer (renderSession.glProgram.textureAttribute, 2, gl.FLOAT, false, 0, 0);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
@@ -367,102 +353,6 @@ class Bitmap extends DisplayObjectContainer {
 		gl.disable (gl.TEXTURE_2D);
 		#end
 		
-		
-		
-		
-		
-		/*
-		var element = __commands.elements[0];
-		element.surface = bitmapData.getSurface ();
-		
-		UserPoint corners[4];
-      UserPoint tex[4];
-      for(int i=0;i<4;i++)
-      {
-         corners[i] =  UserPoint(inX + ((i&1)?inSrc.w:0), inY + ((i>1)?inSrc.h:0) ); 
-         tex[i] = mBitmapTexture->PixelToTex(UserPoint(inSrc.x + ((i&1)?inSrc.w:0), inSrc.y + ((i>1)?inSrc.h:0) )); 
-      }
-      *p++ = corners[0];
-      *p++ = tex[0];
-      *p++ = corners[1];
-      *p++ = tex[1];
-      *p++ = corners[2];
-      *p++ = tex[2];
-
-      *p++ = corners[1];
-      *p++ = tex[1];
-      *p++ = corners[2];
-      *p++ = tex[2];
-      *p++ = corners[3];
-      *p++ = tex[3];
-		
-		
-		
-		mBitmapBuffer.mArray.resize(0);
-      mBitmapBuffer.mRendersWithoutVbo = -999;
-      DrawElement &e = mBitmapBuffer.mElements[0];
-      e.mCount = 0;
-
-      e.mColour = inTint;
-      if (e.mSurface)
-         e.mSurface->DecRef();
-
-      e.mSurface = inSurface;
-
-      e.mSurface->IncRef();
-      e.mFlags = (e.mFlags & ~(DRAW_BMP_REPEAT|DRAW_BMP_SMOOTH) );
-      if (inRepeat)
-         e.mFlags |= DRAW_BMP_REPEAT;
-      if (inSmooth)
-         e.mFlags |= DRAW_BMP_SMOOTH;
-
-      mBitmapTexture = inSurface-> GetTexture(this);
-	  
-	  
-	  
-	  DrawElement &e = mBitmapBuffer.mElements[0];
-      mBitmapBuffer.mArray.resize( (e.mCount+6) * e.mStride );
-      UserPoint *p = (UserPoint *)&mBitmapBuffer.mArray[e.mCount*e.mStride];
-      e.mCount+=6;
-      
-      UserPoint corners[4];
-      UserPoint tex[4];
-      for(int i=0;i<4;i++)
-      {
-         corners[i] =  UserPoint(inX + ((i&1)?inSrc.w:0), inY + ((i>1)?inSrc.h:0) ); 
-         tex[i] = mBitmapTexture->PixelToTex(UserPoint(inSrc.x + ((i&1)?inSrc.w:0), inSrc.y + ((i>1)?inSrc.h:0) )); 
-      }
-      *p++ = corners[0];
-      *p++ = tex[0];
-      *p++ = corners[1];
-      *p++ = tex[1];
-      *p++ = corners[2];
-      *p++ = tex[2];
-
-      *p++ = corners[1];
-      *p++ = tex[1];
-      *p++ = corners[2];
-      *p++ = tex[2];
-      *p++ = corners[3];
-      *p++ = tex[3];
-	  
-	  
-	  DrawElement &e = mBitmapBuffer.mElements[0];
-
-      if (e.mCount)
-      {
-         RenderData(mBitmapBuffer,0,mBitmapTrans);
-         e.mCount = 0;
-      }
-
-      if (e.mSurface)
-      {
-         e.mSurface->DecRef();
-         e.mSurface = 0;
-      }
-      mBitmapBuffer.mArray.resize(0);
-      mBitmapTexture = 0;
-		*/
 	}
 	
 	
