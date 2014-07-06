@@ -62,10 +62,7 @@ class TextField extends InteractiveObject {
 	@:isVar public var type (default, set):TextFieldType;
 	@:isVar public var wordWrap (get, set):Bool;
 	
-	private var __canvas:CanvasElement;
-	private var __context:CanvasRenderingContext2D;
 	private var __dirty:Bool;
-	private var __div:DivElement;
 	private var __height:Float;
 	private var __isHTML:Bool;
 	private var __measuredHeight:Int;
@@ -74,6 +71,12 @@ class TextField extends InteractiveObject {
 	private var __text:String;
 	private var __textFormat:TextFormat;
 	private var __width:Float;
+	
+	#if js
+	private var __canvas:CanvasElement;
+	private var __context:CanvasRenderingContext2D;
+	private var __div:DivElement;
+	#end
 	
 	
 	public function new () {
@@ -276,6 +279,8 @@ class TextField extends InteractiveObject {
 	
 	private function __measureText ():Array<Float> {
 		
+		#if js
+		
 		if (__ranges == null) {
 			
 			__context.font = __getFont (__textFormat);
@@ -296,10 +301,18 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#else
+		
+		return null;
+		
+		#end
+		
 	}
 	
 	
 	private function __measureTextWithDOM ():Void {
+	 	
+	 	#if js
 	 	
 		var div:Element = __div;
 		
@@ -332,10 +345,14 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#end
+		
 	}
 	
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
+		
+		#if js
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -495,10 +512,14 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#end
+		
 	}
 	
 	
 	public override function __renderDOM (renderSession:RenderSession):Void {
+		
+		#if js
 		
 		if (stage != null && __worldVisible && __renderable) {
 			
@@ -605,10 +626,14 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#end
+		
 	}
 	
 	
 	private function __renderText (text:String, format:TextFormat, offsetX:Float):Void {
+		
+		#if js
 		
 		__context.font = __getFont (format);
 		__context.textBaseline = "top";
@@ -640,6 +665,8 @@ class TextField extends InteractiveObject {
 			
 			yOffset += this.textHeight;
 		}
+		
+		#end
 		
 	}
 	
@@ -756,6 +783,8 @@ class TextField extends InteractiveObject {
 	
 	private function set_htmlText (value:String):String {
 		
+		#if js
+		
 		if (!__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = true;
@@ -842,6 +871,8 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#end
+		
 		return __text = value;
 		
 	}
@@ -923,6 +954,8 @@ class TextField extends InteractiveObject {
 	
 	public function get_textWidth ():Float {
 		
+		#if js
+		
 		if (__canvas != null) {
 			
 			var sizes = __measureText ();
@@ -947,10 +980,18 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#else
+		
+		return 0;
+		
+		#end
+		
 	}
 	
 	
 	public function get_textHeight ():Float {
+		
+		#if js
 		
 		if (__canvas != null) {
 			
@@ -969,6 +1010,12 @@ class TextField extends InteractiveObject {
 			return __measuredHeight + __textFormat.size * 0.185;
 			
 		}
+		
+		#else
+		
+		return 0;
+		
+		#end
 		
 	}
 	

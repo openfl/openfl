@@ -208,7 +208,7 @@ class Graphics {
 	}
 	
 	
-	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling):Void {
+	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
 		
 		openfl.Lib.notImplemented ("Graphics.drawTriangles");
 		

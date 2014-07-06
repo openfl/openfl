@@ -319,14 +319,6 @@ class Bitmap extends DisplayObjectContainer {
 		
 		var texture = bitmapData.getTexture (gl);
 		
-		var rotation = 0;
-		var scale = 1;
-		var theta = rotation * Math.PI / 180;
-		var c = Math.cos (theta);
-		var s = Math.sin (theta);
-		
-		//var modelViewMatrix = new lime.utils.Float32Array ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, __worldTransform.tx, __worldTransform.ty, 0, 1 ]);
-		
 		var modelViewMatrix = new lime.geom.Matrix4 ();
 		modelViewMatrix[0] = __worldTransform.a;
 		modelViewMatrix[1] = __worldTransform.b;

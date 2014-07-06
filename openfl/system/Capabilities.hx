@@ -30,6 +30,8 @@ class Capabilities {
 	private static function get_pixelAspectRatio ():Float { return 1; }
 	private static function get_screenDPI ():Float {
 		
+		#if js
+		
 		if (screenDPI > 0) return screenDPI;
 		
 		//little trick of measuring the width of a 1 inch div
@@ -46,19 +48,41 @@ class Capabilities {
 		
 		return screenDPI;
 		
+		#else
+		
+		return 0;
+		
+		#end
+		
 	}
 	
 	
 	private static function get_screenResolutionX ():Float { 
 		
+		#if js
+		
 		return Browser.window.screen.width;
+		
+		#else
+		
+		return 0;
+		
+		#end
 		
 	}
 	
 	
 	private static function get_screenResolutionY ():Float {
 		
+		#if js
+		
 		return Browser.window.screen.height;
+		
+		#else
+		
+		return 0;
+		
+		#end
 		
 	}
 	
