@@ -5,7 +5,10 @@ import haxe.EnumFlags;
 import lime.geom.Matrix4;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
+import lime.graphics.GL;
+import lime.graphics.GLProgram;
 import lime.graphics.GLRenderContext;
+import lime.graphics.GLUniformLocation;
 import lime.graphics.RenderContext;
 import lime.utils.GLUtils;
 import openfl.events.Event;
@@ -824,10 +827,11 @@ class MaskManager {
 class ShaderProgram {
 	
 	
+	public var alphaUniform:GLUniformLocation;
 	public var fragmentSource:String;
-	public var imageUniform:lime.graphics.GLUniformLocation;
-	public var matrixUniform:lime.graphics.GLUniformLocation;
-	public var program:lime.graphics.GLProgram;
+	public var imageUniform:GLUniformLocation;
+	public var matrixUniform:GLUniformLocation;
+	public var program:GLProgram;
 	public var vertexAttribute:Int;
 	public var vertexSource:String;
 	public var textureAttribute:Int;
@@ -862,10 +866,11 @@ class ShaderProgram {
 				#end
 				"varying vec2 vTexCoord;
 				uniform sampler2D uImage0;
+				uniform float uAlpha;
 				
 				void main ()
 				{
-					gl_FragColor = texture2D (uImage0, vTexCoord);
+					gl_FragColor = uAlpha * texture2D (uImage0, vTexCoord);
 				}";
 			
 		}
@@ -877,11 +882,12 @@ class ShaderProgram {
 		
 		program = GLUtils.createProgram (vertexSource, fragmentSource);
 		
-		vertexAttribute = lime.graphics.GL.getAttribLocation (program, "aVertex");
-		textureAttribute = lime.graphics.GL.getAttribLocation (program, "aTexCoord");
+		textureAttribute = GL.getAttribLocation (program, "aTexCoord");
+		vertexAttribute = GL.getAttribLocation (program, "aVertex");
 		
-		matrixUniform = lime.graphics.GL.getUniformLocation (program, "uMatrix");
-		imageUniform = lime.graphics.GL.getUniformLocation (program, "uImage0");
+		alphaUniform = GL.getUniformLocation (program, "uAlpha");
+		imageUniform = GL.getUniformLocation (program, "uImage0");
+		matrixUniform = GL.getUniformLocation (program, "uMatrix");
 		
 		valid = true;
 		

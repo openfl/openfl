@@ -309,6 +309,7 @@ class Bitmap extends DisplayObjectContainer {
 		gl.enable (gl.TEXTURE_2D);
 		#end
 		
+		gl.uniform1f (renderSession.glProgram.alphaUniform, __worldAlpha);
 		gl.uniformMatrix4fv (renderSession.glProgram.matrixUniform, false, __glMatrix);
 		gl.uniform1i (renderSession.glProgram.imageUniform, 0);
 		
