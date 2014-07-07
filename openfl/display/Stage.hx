@@ -296,6 +296,8 @@ class Stage extends Sprite {
 				
 				if (__glProgram == null) {
 					
+					__renderSession.projectionMatrix = Matrix4.createOrtho (0, stageWidth, stageHeight, 0, -1000, 1000);
+					
 					__glProgram = new ShaderProgram ();
 					__glProgram.compile ();
 					
@@ -304,14 +306,13 @@ class Stage extends Sprite {
 					gl.enableVertexAttribArray (__glProgram.vertexAttribute);
 					gl.enableVertexAttribArray (__glProgram.textureAttribute);
 					
-					//var matrix = Matrix4.createOrtho (0, window.width, window.height, 0, -1000, 1000);
-					var matrix = Matrix4.createOrtho (0, stageWidth, stageHeight, 0, -1000, 1000);
-					gl.uniformMatrix4fv (__glProgram.projectionMatrixUniform, false, matrix);
-					
 					//gl.viewport (0, 0, stageWidth, stageHeight);
 					
 					gl.enable (gl.BLEND);
 					gl.blendFunc (gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+					
+					__renderSession.gl = gl;
+					__renderSession.glProgram = __glProgram;
 					
 				}
 				
@@ -348,8 +349,6 @@ class Stage extends Sprite {
 					
 					gl.clear (gl.COLOR_BUFFER_BIT);
 					
-					__renderSession.gl = gl;
-					__renderSession.glProgram = __glProgram;
 					__renderGL (__renderSession);
 					
 					//__glContext.endRender ();
@@ -743,6 +742,7 @@ class RenderSession {
 	public var glProgram:ShaderProgram;
 	//public var mask:Bool;
 	public var maskManager:MaskManager;
+	public var projectionMatrix:lime.geom.Matrix4;
 	//public var scaleMode:ScaleMode;
 	public var roundPixels:Bool;
 	public var transformProperty:String;
@@ -826,13 +826,12 @@ class ShaderProgram {
 	
 	public var fragmentSource:String;
 	public var imageUniform:lime.graphics.GLUniformLocation;
+	public var matrixUniform:lime.graphics.GLUniformLocation;
 	public var program:lime.graphics.GLProgram;
-	public var projectionMatrixUniform:lime.graphics.GLUniformLocation;
 	public var vertexAttribute:Int;
 	public var vertexSource:String;
 	public var textureAttribute:Int;
 	public var valid:Bool;
-	public var viewMatrixUniform:lime.graphics.GLUniformLocation;
 	
 	
 	public function new (vertexSource:String = null, fragmentSource:String = null) {
@@ -841,17 +840,15 @@ class ShaderProgram {
 			
 			this.vertexSource = 
 				
-				"attribute vec4 aVertexPosition;
+				"attribute vec4 aVertex;
 				attribute vec2 aTexCoord;
 				varying vec2 vTexCoord;
-				
-				uniform mat4 uProjectionMatrix;
-				uniform mat4 uModelViewMatrix;
+				uniform mat4 uMatrix;
 				
 				void main ()
 				{
 					vTexCoord = aTexCoord;
-					gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+					gl_Position = uMatrix * aVertex;
 				}";
 			
 		}
@@ -880,11 +877,10 @@ class ShaderProgram {
 		
 		program = GLUtils.createProgram (vertexSource, fragmentSource);
 		
-		vertexAttribute = lime.graphics.GL.getAttribLocation (program, "aVertexPosition");
+		vertexAttribute = lime.graphics.GL.getAttribLocation (program, "aVertex");
 		textureAttribute = lime.graphics.GL.getAttribLocation (program, "aTexCoord");
 		
-		viewMatrixUniform = lime.graphics.GL.getUniformLocation (program, "uModelViewMatrix");
-		projectionMatrixUniform = lime.graphics.GL.getUniformLocation (program, "uProjectionMatrix");
+		matrixUniform = lime.graphics.GL.getUniformLocation (program, "uMatrix");
 		imageUniform = lime.graphics.GL.getUniformLocation (program, "uImage0");
 		
 		valid = true;

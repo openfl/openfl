@@ -32,6 +32,7 @@ class Bitmap extends DisplayObjectContainer {
 	private var __canvasContext:Dynamic;
 	private var __image:Dynamic;
 	#end
+	private var __glMatrix:lime.geom.Matrix4;
 	
 	private var vertexBuffer:lime.graphics.GLBuffer;
 	private var texCoordBuffer:lime.graphics.GLBuffer;
@@ -314,18 +315,22 @@ class Bitmap extends DisplayObjectContainer {
 			gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);	
 			gl.bufferData (gl.ARRAY_BUFFER, new lime.utils.Float32Array (cast texCoords), gl.STATIC_DRAW);
 			gl.bindBuffer (gl.ARRAY_BUFFER, null);
-		
+			
+			__glMatrix = new lime.geom.Matrix4 ();
+			
 		}
 		
 		var texture = bitmapData.getTexture (gl);
 		
-		var modelViewMatrix = new lime.geom.Matrix4 ();
-		modelViewMatrix[0] = __worldTransform.a;
-		modelViewMatrix[1] = __worldTransform.b;
-		modelViewMatrix[4] = __worldTransform.c;
-		modelViewMatrix[5] = __worldTransform.d;
-		modelViewMatrix[12] = __worldTransform.tx;
-		modelViewMatrix[13] = __worldTransform.ty;
+		//__glMatrix = new lime.geom.Matrix4 ();
+		__glMatrix.identity ();
+		__glMatrix[0] = __worldTransform.a;
+		__glMatrix[1] = __worldTransform.b;
+		__glMatrix[4] = __worldTransform.c;
+		__glMatrix[5] = __worldTransform.d;
+		__glMatrix[12] = __worldTransform.tx;
+		__glMatrix[13] = __worldTransform.ty;
+		__glMatrix.append (renderSession.projectionMatrix);
 		
 		gl.activeTexture (gl.TEXTURE0);
 		gl.bindTexture (gl.TEXTURE_2D, texture);
@@ -334,7 +339,7 @@ class Bitmap extends DisplayObjectContainer {
 		gl.enable (gl.TEXTURE_2D);
 		#end
 		
-		gl.uniformMatrix4fv (renderSession.glProgram.viewMatrixUniform, false, modelViewMatrix);
+		gl.uniformMatrix4fv (renderSession.glProgram.matrixUniform, false, __glMatrix);
 		gl.uniform1i (renderSession.glProgram.imageUniform, 0);
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
