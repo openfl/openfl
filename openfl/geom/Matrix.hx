@@ -275,8 +275,16 @@ class Matrix {
 	
 	public inline function mult (m:Matrix) {
 		
-		var result = clone ();
-		result.concat (m);
+		var result = new Matrix ();
+
+		result.a = a * m.a + b * m.c;
+		result.b = a * m.b + b * m.d;
+		result.c = c * m.a + d * m.c;
+		result.d = c * m.b + d * m.d;
+
+		result.tx = tx * m.a + ty * m.c + m.tx;
+		result.ty = tx * m.b + ty * m.d + m.ty;
+
 		return result;
 		
 	}

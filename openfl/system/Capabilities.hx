@@ -87,7 +87,19 @@ class Capabilities {
 	}
 	
 	
-	private static function get_language ():String { return untyped navigator.language; }
+	private static function get_language ():String {
+		
+		#if js
+		
+		return untyped navigator.language;
+		
+		#else
+		
+		return "en-US";
+		
+		#end
+	
+	}
 	
 	
 }

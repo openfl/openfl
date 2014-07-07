@@ -105,6 +105,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
+		__rotationCache = 0;
+		__rotationSine = 0;
+		__rotationCosine = 1;
 		
 		#if dom
 		__worldVisible = true;

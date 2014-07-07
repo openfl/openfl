@@ -299,6 +299,20 @@ class Stage extends Sprite {
 					__glProgram = new ShaderProgram ();
 					__glProgram.compile ();
 					
+					gl.useProgram (__glProgram.program);
+					
+					gl.enableVertexAttribArray (__glProgram.vertexAttribute);
+					gl.enableVertexAttribArray (__glProgram.textureAttribute);
+					
+					//var matrix = Matrix4.createOrtho (0, window.width, window.height, 0, -1000, 1000);
+					var matrix = Matrix4.createOrtho (0, stageWidth, stageHeight, 0, -1000, 1000);
+					gl.uniformMatrix4fv (__glProgram.projectionMatrixUniform, false, matrix);
+					
+					//gl.viewport (0, 0, stageWidth, stageHeight);
+					
+					gl.enable (gl.BLEND);
+					gl.blendFunc (gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+					
 				}
 				
 				//if (!__glContextLost) {
@@ -333,14 +347,6 @@ class Stage extends Sprite {
 					}
 					
 					gl.clear (gl.COLOR_BUFFER_BIT);
-					gl.useProgram (__glProgram.program);
-					
-					gl.enableVertexAttribArray (__glProgram.vertexAttribute);
-					gl.enableVertexAttribArray (__glProgram.textureAttribute);
-					
-					//var matrix = Matrix4.createOrtho (0, window.width, window.height, 0, -1000, 1000);
-					var matrix = Matrix4.createOrtho (0, stageWidth, stageHeight, 0, -1000, 1000);
-					gl.uniformMatrix4fv (__glProgram.projectionMatrixUniform, false, matrix);
 					
 					__renderSession.gl = gl;
 					__renderSession.glProgram = __glProgram;
