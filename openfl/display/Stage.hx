@@ -865,7 +865,7 @@ class ShaderProgram {
 				
 				void main ()
 				{
-					gl_FragColor = 0.1 * texture2D (uImage0, vTexCoord);
+					gl_FragColor = texture2D (uImage0, vTexCoord);
 				}";
 			
 		}
