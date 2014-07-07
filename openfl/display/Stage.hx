@@ -309,7 +309,7 @@ class Stage extends Sprite {
 					//gl.viewport (0, 0, stageWidth, stageHeight);
 					
 					gl.enable (gl.BLEND);
-					gl.blendFunc (gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+					gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 					
 					__renderSession.gl = gl;
 					__renderSession.glProgram = __glProgram;
@@ -865,7 +865,7 @@ class ShaderProgram {
 				
 				void main ()
 				{
-					gl_FragColor = texture2D (uImage0, vTexCoord);
+					gl_FragColor = 0.1 * texture2D (uImage0, vTexCoord);
 				}";
 			
 		}
