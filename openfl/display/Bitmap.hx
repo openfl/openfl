@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import lime.geom.Matrix4;
 import lime.utils.Float32Array;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
@@ -51,6 +52,8 @@ class Bitmap extends DisplayObjectContainer {
 			this.pixelSnapping = PixelSnapping.AUTO;
 			
 		}
+		
+		__glMatrix = new Matrix4 ();
 		
 	}
 	
@@ -286,27 +289,8 @@ class Bitmap extends DisplayObjectContainer {
 		
 		var gl = renderSession.gl;
 		
-		if (__buffer == null) {
-			
-			var data = [
-				
-				bitmapData.width, bitmapData.height, 0, 1, 1, 
-				0, bitmapData.height, 0, 0, 1, 
-				bitmapData.width, 0, 0, 1, 0, 
-				0, 0, 0, 0, 0
-				
-			];
-			
-			__buffer = gl.createBuffer ();
-			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (data), gl.STATIC_DRAW);
-			gl.bindBuffer (gl.ARRAY_BUFFER, null);
-			
-			__glMatrix = new lime.geom.Matrix4 ();
-			
-		}
-		
 		var texture = bitmapData.getTexture (gl);
+		var buffer = bitmapData.getBuffer (gl);
 		
 		//__glMatrix = new lime.geom.Matrix4 ();
 		__glMatrix.identity ();
@@ -328,7 +312,7 @@ class Bitmap extends DisplayObjectContainer {
 		gl.uniformMatrix4fv (renderSession.glProgram.matrixUniform, false, __glMatrix);
 		gl.uniform1i (renderSession.glProgram.imageUniform, 0);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+		gl.bindBuffer (gl.ARRAY_BUFFER, buffer);
 		gl.vertexAttribPointer (renderSession.glProgram.vertexAttribute, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (renderSession.glProgram.textureAttribute, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		

@@ -3,8 +3,11 @@ package openfl.display; #if !flash
 
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
+import lime.graphics.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
+import lime.utils.Float32Array;
+import lime.utils.UInt8Array;
 import openfl.display.Stage;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
@@ -13,7 +16,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import lime.utils.UInt8Array;
 
 #if js
 import js.html.CanvasElement;
@@ -39,6 +41,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public var __worldTransform:Matrix;
 	
+	private var __buffer:GLBuffer;
 	private var __loading:Bool;
 	private var __texture:GLTexture;
 	private var __valid:Bool;
@@ -571,6 +574,31 @@ class BitmapData implements IBitmapDrawable {
 	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle {
 		
 		return sourceRect.clone ();
+		
+	}
+	
+	
+	public function getBuffer (gl:GLRenderContext):GLBuffer {
+		
+		if (__buffer == null) {
+			
+			var data = [
+				
+				width, height, 0, 1, 1, 
+				0, height, 0, 0, 1, 
+				width, 0, 0, 1, 0, 
+				0, 0, 0, 0, 0
+				
+			];
+			
+			__buffer = gl.createBuffer ();
+			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (cast data), gl.STATIC_DRAW);
+			gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			
+		}
+		
+		return __buffer;
 		
 	}
 	

@@ -306,7 +306,7 @@ class Stage extends Sprite {
 					gl.enableVertexAttribArray (__glProgram.vertexAttribute);
 					gl.enableVertexAttribArray (__glProgram.textureAttribute);
 					
-					//gl.viewport (0, 0, stageWidth, stageHeight);
+					gl.viewport (0, 0, stageWidth, stageHeight);
 					
 					gl.enable (gl.BLEND);
 					gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
