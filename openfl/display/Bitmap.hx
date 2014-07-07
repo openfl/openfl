@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import lime.utils.Float32Array;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -34,8 +35,7 @@ class Bitmap extends DisplayObjectContainer {
 	#end
 	private var __glMatrix:lime.geom.Matrix4;
 	
-	private var vertexBuffer:lime.graphics.GLBuffer;
-	private var texCoordBuffer:lime.graphics.GLBuffer;
+	private var __buffer:lime.graphics.GLBuffer;
 	
 	
 	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false) {
@@ -286,34 +286,20 @@ class Bitmap extends DisplayObjectContainer {
 		
 		var gl = renderSession.gl;
 		
-		if (vertexBuffer == null) {
+		if (__buffer == null) {
 			
-			var vertices = [
+			var data = [
 				
-				bitmapData.width, bitmapData.height, 0,
-				0, bitmapData.height, 0,
-				bitmapData.width, 0, 0,
-				0, 0, 0
-				
-			];
-			
-			vertexBuffer = gl.createBuffer ();
-			gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-			gl.bufferData (gl.ARRAY_BUFFER, new lime.utils.Float32Array (cast vertices), gl.STATIC_DRAW);
-			gl.bindBuffer (gl.ARRAY_BUFFER, null);
-			
-			var texCoords = [
-				
-				1, 1, 
-				0, 1, 
-				1, 0, 
-				0, 0, 
+				bitmapData.width, bitmapData.height, 0, 1, 1, 
+				0, bitmapData.height, 0, 0, 1, 
+				bitmapData.width, 0, 0, 1, 0, 
+				0, 0, 0, 0, 0
 				
 			];
 			
-			texCoordBuffer = gl.createBuffer ();
-			gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);	
-			gl.bufferData (gl.ARRAY_BUFFER, new lime.utils.Float32Array (cast texCoords), gl.STATIC_DRAW);
+			__buffer = gl.createBuffer ();
+			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (data), gl.STATIC_DRAW);
 			gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
 			__glMatrix = new lime.geom.Matrix4 ();
@@ -342,10 +328,9 @@ class Bitmap extends DisplayObjectContainer {
 		gl.uniformMatrix4fv (renderSession.glProgram.matrixUniform, false, __glMatrix);
 		gl.uniform1i (renderSession.glProgram.imageUniform, 0);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-		gl.vertexAttribPointer (renderSession.glProgram.vertexAttribute, 3, gl.FLOAT, false, 0, 0);
-		gl.bindBuffer (gl.ARRAY_BUFFER, texCoordBuffer);
-		gl.vertexAttribPointer (renderSession.glProgram.textureAttribute, 2, gl.FLOAT, false, 0, 0);
+		gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+		gl.vertexAttribPointer (renderSession.glProgram.vertexAttribute, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (renderSession.glProgram.textureAttribute, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
