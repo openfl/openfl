@@ -789,6 +789,8 @@ class Graphics {
 		
 		if (__dirty) {
 			
+			var gl = renderSession.gl;
+			
 			if (!__visible || __commands.length == 0 || __bounds == null || __bounds.width == 0 || __bounds.height == 0) {
 				
 				if (__buffer != null) {
@@ -801,7 +803,6 @@ class Graphics {
 				
 			} else {
 				
-				var gl = renderSession.gl;
 				var data = new Float32Array ([]);
 				
 				__elements = [];
@@ -840,7 +841,7 @@ class Graphics {
 				
 			}
 			
-			dirty = false;
+			__dirty = false;
 			
 		}
 		
