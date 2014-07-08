@@ -543,9 +543,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		#if js
-		bitmapData.__sourceImage = image.data;
+		bitmapData.__sourceImage = image.src;
 		#else
-		bitmapData.__sourceBytes = image.bytes;
+		image.premultiplyAlpha ();
+		bitmapData.__sourceBytes = image.data;
 		#end
 		bitmapData.width = image.width;
 		bitmapData.height = image.height;

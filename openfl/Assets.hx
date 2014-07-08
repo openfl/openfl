@@ -71,12 +71,12 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		var image = lime.Assets.getImage (id, lime.Assets.PREMULTIPLIED, useCache);
+		var image = lime.Assets.getImage (id, useCache);
 		
 		if (image != null) {
 			
 			#if flash
-			return image.data;
+			return image.src;
 			#else
 			return BitmapData.fromImage (image);
 			#end
@@ -491,12 +491,12 @@ class Assets {
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
-		lime.Assets.loadImage (id, lime.Assets.PREMULTIPLIED, function (image) {
+		lime.Assets.loadImage (id, function (image) {
 			
 			if (image != null) {
 				
 				#if flash
-				handler (image.data);
+				handler (image.src);
 				#else
 				handler (BitmapData.fromImage (image));
 				#end
