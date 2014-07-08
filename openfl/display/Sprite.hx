@@ -116,7 +116,7 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics != null) {
 			
-			__graphics.__render ();
+			__graphics.__render (renderSession);
 			
 			if (__graphics.__canvas != null) {
 				
@@ -174,7 +174,7 @@ class Sprite extends DisplayObjectContainer {
 			
 			if (__graphics.__dirty || __worldAlphaChanged || (__canvas == null && __graphics.__canvas != null)) {
 				
-				__graphics.__render ();
+				__graphics.__render (renderSession);
 				
 				if (__graphics.__canvas != null) {
 					
@@ -236,6 +236,26 @@ class Sprite extends DisplayObjectContainer {
 		
 		super.__renderDOM (renderSession);
 		#end
+		
+	}
+	
+	
+	public override function __renderGL (renderSession:RenderSession):Void {
+		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		if (__graphics != null) {
+			
+			__graphics.__render (renderSession);
+			
+			/*if (__graphics.__canvas != null) {
+				
+				
+			}*/
+			
+		}
+		
+		super.__renderGL (renderSession);
 		
 	}
 	

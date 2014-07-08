@@ -56,7 +56,9 @@ class Tilesheet {
 	
 	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
 		
+		#if !flash
 		graphics.drawTiles (this, tileData, smooth, flags, count);
+		#end
 		
 	}
 	

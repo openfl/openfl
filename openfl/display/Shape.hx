@@ -71,7 +71,7 @@ class Shape extends DisplayObject {
 		
 		if (__graphics != null) {
 			
-			__graphics.__render ();
+			__graphics.__render (renderSession);
 			
 			if (__graphics.__canvas != null) {
 				
@@ -115,7 +115,7 @@ class Shape extends DisplayObject {
 		
 			if (__graphics.__dirty || __worldAlphaChanged || (__canvas == null && __graphics.__canvas != null)) {
 				
-				__graphics.__render ();
+				__graphics.__render (renderSession);
 				
 				if (__graphics.__canvas != null) {
 					

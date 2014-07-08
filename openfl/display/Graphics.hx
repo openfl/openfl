@@ -1,6 +1,8 @@
 package openfl.display; #if !flash
 
 
+import lime.graphics.GLBuffer;
+import lime.utils.Float32Array;
 import openfl.geom.Point;
 import openfl.display.Stage;
 import openfl.display.Tilesheet;
@@ -46,6 +48,9 @@ class Graphics {
 	private var __context:CanvasRenderingContext2D;
 	private var __pattern:CanvasPattern;
 	#end
+	
+	private var __buffer:GLBuffer;
+	private var __elements:Array<GLRenderCommand>;
 	
 	
 	public function new () {
@@ -424,9 +429,10 @@ class Graphics {
 	}
 	
 	
-	private function __render ():Void {
-		
+	private function __render (renderSession:RenderSession):Void {
+			
 		#if js
+		
 		if (__dirty) {
 			
 			__hasFill = false;
@@ -723,7 +729,7 @@ class Graphics {
 						case EndFill:
 							
 							__closePath(true);
-
+						
 						case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
 							
 							__closePath(false);
@@ -778,6 +784,66 @@ class Graphics {
 			__closePath(false);
 
 		}
+		
+		#else
+		
+		if (__dirty) {
+			
+			if (!__visible || __commands.length == 0 || __bounds == null || __bounds.width == 0 || __bounds.height == 0) {
+				
+				if (__buffer != null) {
+					
+					gl.deleteBuffer (__buffer);
+					
+				}
+				
+				__elements = null;
+				
+			} else {
+				
+				var gl = renderSession.gl;
+				var data = new Float32Array ([]);
+				
+				__elements = [];
+				
+				for (command in __commands) {
+					
+					switch (command) {
+						
+						case DrawRect (x, y, width, height):
+							
+							/*var data = [
+								
+								width, height, 0,
+								x, height, 0,
+								width, y, 0,
+								x, y, 0,
+								
+							];
+							
+							__elements.push (new GLRenderCommand (GLRenderCommandType.TRIANGLE_STRIP))
+							*/
+							
+							//__context.rect (x - offsetX, y - offsetY, width, height);
+						
+						default:
+						
+					}
+					
+				}
+				
+				if (__buffer == null) {
+					
+					__buffer = gl.createBuffer ();
+					
+				}
+				
+			}
+			
+			dirty = false;
+			
+		}
+		
 		#end
 		
 	}
@@ -874,6 +940,30 @@ enum DrawCommand {
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
 	LineTo (x:Float, y:Float);
 	MoveTo (x:Float, y:Float);
+	
+}
+
+
+class GLRenderCommand {
+	
+	
+	public var type:GLRenderCommandType;
+	
+	
+	public function new (type:GLRenderCommandType) {
+		
+		this.type = type;
+		
+	}
+	
+	
+}
+
+
+enum GLRenderCommandType {
+	
+	TRIANGLE_STRIP;
+	TRIANGLES;
 	
 }
 
