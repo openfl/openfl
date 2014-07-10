@@ -117,7 +117,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	public override function exists (id:String, type:String):Bool {
 		
-		var requestedType = cast (type, AssetType);
+		var requestedType = type != null ? cast (type, AssetType) : null;
 		var assetType = this.type.get (id);
 		
 		#if pixi
@@ -417,7 +417,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	public override function isLocal (id:String, type:String):Bool {
 		
-		var requestedType = cast (type, AssetType);
+		var requestedType = type != null ? cast (type, AssetType) : null;
 		
 		#if flash
 		
@@ -436,7 +436,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	public override function list (type:String):Array<String> {
 		
-		var requestedType = cast (type, AssetType);
+		var requestedType = type != null ? cast (type, AssetType) : null;
 		var items = [];
 		
 		for (id in this.type.keys ()) {
