@@ -53,10 +53,11 @@ class DefaultAssetLibrary extends AssetLibrary {
 		#elseif html5
 		
 		::if (assets != null)::var id;
-		::foreach assets::::if (embed)::id = "::id::";
-		::if (type == "font")::className.set (id, __ASSET__::flatName::);::else::path.set (id, ::if (resourceName == id)::id::else::"::resourceName::"::end::);::end::
+		::foreach assets::id = "::id::";
+		::if (embed)::::if (type == "font")::className.set (id, __ASSET__::flatName::);::else::path.set (id, ::if (resourceName == id)::id::else::"::resourceName::"::end::);::end::
+		::else::path.set (id, ::if (resourceName == id)::id::else::"::resourceName::"::end::);::end::
 		type.set (id, AssetType.$$upper(::type::));
-		::end::::end::::end::
+		::end::::end::
 		
 		#else
 		
