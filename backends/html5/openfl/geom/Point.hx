@@ -100,6 +100,11 @@ class Point {
 	}
 	
 	
+	public function toString ():String {
+
+		return "(" + x + ", " + y + ")";
+
+	}
 	
 	
 	// Getters & Setters
