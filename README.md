@@ -98,7 +98,7 @@ OpenFL is free, open-source software under the [MIT license](LICENSE.md).
 Installing OpenFL
 =================
 
-To begin using OpenFL, you need to first install Haxe 3.1 for [Windows](http://haxe.org/file/haxe-3.1.3-win.exe), [Mac](http://haxe.org/file/haxe-3.1.3-osx-installer.dmg) or [Linux](http://www.openfl.org/builds/haxe/haxe-3.1.3-linux-installer.tar.gz).
+To begin using OpenFL, you need to first install Haxe 3.1 for [Windows](http://haxe.org/file/haxe-3.1.3-win.exe), [Mac](http://haxe.org/download/file/3.1.3/haxe-3.1.3-osx-installer.pkg) or [Linux](http://www.openfl.org/builds/haxe/haxe-3.1.3-linux-installer.tar.gz).
 
 Once Haxe has been installed, you can install a release version of [Lime](https://github.com/openfl/lime) from a terminal or command-prompt with these commands:
 
