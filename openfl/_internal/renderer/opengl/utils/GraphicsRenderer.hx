@@ -51,8 +51,20 @@ class  GraphicsRenderer {
 			
 			for (i in 0...totalSegs + 1) {
 				
-				verts = verts.concat ([ x, y, r, g, b, alpha ]);
-				verts = verts.concat ([ x + Math.sin (seg * i) * width, y + Math.cos (seg * i) * height, r, g, b, alpha ]);
+				verts.push (x);
+				verts.push (y);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
+				verts.push (x + Math.sin (seg * i) * width);
+				verts.push (y + Math.cos (seg * i) * height);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
 				indices.push (vecPos++);
 				indices.push (vecPos++);
 				
@@ -113,7 +125,14 @@ class  GraphicsRenderer {
 			
 		}
 		
-		points = points.concat ([ minX, minY, maxX, minY, maxX, maxY, minX, maxY ]);
+		points.push (minX);
+		points.push (minY);
+		points.push (maxX);
+		points.push (minY);
+		points.push (maxX);
+		points.push (maxY);
+		points.push (minX);
+		points.push (maxY);
 		
 		var length = Std.int (points.length / 2);
 		
@@ -156,8 +175,10 @@ class  GraphicsRenderer {
 			var midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) * 0.5;
 			var midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) * 0.5;
 			
-			points = [ midPointX, midPointY ].concat (points);
-			points = points.concat ([ midPointX, midPointY ]);
+			points.unshift (midPointY);
+			points.unshift (midPointX);
+			points.push (midPointX);
+			points.push (midPointY);
 			
 		}
 		
@@ -196,8 +217,19 @@ class  GraphicsRenderer {
 		perpx *= width;
 		perpy *= width;
 		
-		verts = verts.concat ([ p1x - perpx , p1y - perpy, r, g, b, alpha ]);
-		verts = verts.concat ([ p1x + perpx , p1y + perpy, r, g, b, alpha ]);
+		verts.push (p1x - perpx);
+		verts.push (p1y - perpy);
+		verts.push (r);
+		verts.push (g);
+		verts.push (b);
+		verts.push (alpha);
+		
+		verts.push (p1x + perpx);
+		verts.push (p1y + perpy);
+		verts.push (r);
+		verts.push (g);
+		verts.push (b);
+		verts.push (alpha);
 		
 		for (i in 1...(length - 1)) {
 			
@@ -238,8 +270,21 @@ class  GraphicsRenderer {
 			if (Math.abs (denom) < 0.1) {
 				
 				denom += 10.1;
-				verts = verts.concat ([ p2x - perpx , p2y - perpy, r, g, b, alpha ]);
-				verts = verts.concat ([ p2x + perpx , p2y + perpy, r, g, b, alpha ]);
+				
+				verts.push (p2x - perpx);
+				verts.push (p2y - perpy);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
+				verts.push (p2x + perpx);
+				verts.push (p2y + perpy);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
 				continue;
 				
 			}
@@ -260,16 +305,44 @@ class  GraphicsRenderer {
 				perp3x *= width;
 				perp3y *= width;
 				
-				verts = verts.concat ([ p2x - perp3x, p2y -perp3y, r, g, b, alpha ]);
-				verts = verts.concat ([ p2x + perp3x, p2y +perp3y, r, g, b, alpha ]);
-				verts = verts.concat ([ p2x - perp3x, p2y -perp3y, r, g, b, alpha ]);
+				verts.push (p2x - perp3x);
+				verts.push (p2y -perp3y);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
+				verts.push (p2x + perp3x);
+				verts.push (p2y + perp3y);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
+				verts.push (p2x - perp3x);
+				verts.push (p2y -perp3y);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
 				
 				indexCount++;
 				
 			} else {
 				
-				verts = verts.concat ([ px , py, r, g, b, alpha ]);
-				verts = verts.concat ([ p2x - (px - p2x), p2y - (py - p2y), r, g, b, alpha ]);
+				verts.push (px);
+				verts.push (py);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
+				
+				verts.push (p2x - (px - p2x));
+				verts.push (p2y - (py - p2y));
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
 				
 			}
 			
@@ -288,14 +361,25 @@ class  GraphicsRenderer {
 		perpx *= width;
 		perpy *= width;
 		
-		verts = verts.concat ([ p2x - perpx , p2y - perpy, r, g, b, alpha ]);
-		verts = verts.concat ([ p2x + perpx , p2y + perpy, r, g, b, alpha ]);
+		verts.push (p2x - perpx);
+		verts.push (p2y - perpy);
+		verts.push (r);
+		verts.push (g);
+		verts.push (b);
+		verts.push (alpha);
+		
+		verts.push (p2x + perpx);
+		verts.push (p2y + perpy);
+		verts.push (r);
+		verts.push (g);
+		verts.push (b);
+		verts.push (alpha);
 		
 		indices.push (indexStart);
 		
 		for (i in 0...indexCount) {
 			
-			indices.push(indexStart++);
+			indices.push (indexStart++);
 			
 		}
 		
@@ -336,7 +420,12 @@ class  GraphicsRenderer {
 		
 		for (i in 0...length) {
 			
-			verts = verts.concat ([ points[i * 2], points[i * 2 + 1], r, g, b, alpha ]);
+			verts.push (points[i * 2]);
+			verts.push (points[i * 2 + 1]);
+			verts.push (r);
+			verts.push (g);
+			verts.push (b);
+			verts.push (alpha);
 			
 		}
 		
@@ -364,12 +453,40 @@ class  GraphicsRenderer {
 			
 			var vertPos = Std.int (verts.length / 6);
 			
-			verts = verts.concat ([ x, y, r, g, b, alpha ]);
-			verts = verts.concat ([ x + width, y, r, g, b, alpha ]);
-			verts = verts.concat ([ x , y + height, r, g, b, alpha ]);
-			verts = verts.concat ([ x + width, y + height, r, g, b, alpha ]);
+			verts.push (x);
+			verts.push (y);
+			verts.push (r);
+			verts.push (g);
+			verts.push (b);
+			verts.push (alpha);
 			
-			indices = indices.concat ([ vertPos, vertPos, vertPos + 1, vertPos + 2, vertPos + 3, vertPos + 3 ]);
+			verts.push (x + width);
+			verts.push (y);
+			verts.push (r);
+			verts.push (g);
+			verts.push (b);
+			verts.push (alpha);
+			
+			verts.push (x);
+			verts.push (y + height);
+			verts.push (r);
+			verts.push (g);
+			verts.push (b);
+			verts.push (alpha);
+			
+			verts.push (x + width);
+			verts.push (y + height);
+			verts.push (r);
+			verts.push (g);
+			verts.push (b);
+			verts.push (alpha);
+			
+			indices.push (vertPos);
+			indices.push (vertPos);
+			indices.push (vertPos + 1);
+			indices.push (vertPos + 2);
+			indices.push (vertPos + 3);
+			indices.push (vertPos + 3);
 			
 		}
 		
@@ -397,6 +514,7 @@ class  GraphicsRenderer {
 		var recPoints:Array<Float> = [];
 		recPoints.push (x);
 		recPoints.push (y + radius);
+		
 		recPoints = recPoints.concat (quadraticBezierCurve (x, y + height - radius, x, y + height, x + radius, y + height));
 		recPoints = recPoints.concat (quadraticBezierCurve (x + width - radius, y + height, x + width, y + height, x + width, y + height - radius));
 		recPoints = recPoints.concat (quadraticBezierCurve (x + width, y + radius, x + width, y, x + width - radius, y));
@@ -432,7 +550,12 @@ class  GraphicsRenderer {
 			var i = 0;
 			while (i++ < recPoints.length) {
 				
-				verts = verts.concat ([ recPoints[i], recPoints[++i], r, g, b, alpha ]);
+				verts.push (recPoints[i]);
+				verts.push (recPoints[++i]);
+				verts.push (r);
+				verts.push (g);
+				verts.push (b);
+				verts.push (alpha);
 				
 			}
 			
