@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
@@ -427,13 +428,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			//renderSession.maskManager.pushRect (scrollRect, __worldTransform);
 			
 		}
 		
 		if (__mask != null) {
 			
-			renderSession.maskManager.pushMask (__mask);
+			//renderSession.maskManager.pushMask (__mask);
 			
 		}
 		
@@ -447,13 +448,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__mask != null) {
 			
-			renderSession.maskManager.popMask ();
+			//renderSession.maskManager.popMask ();
 			
 		}
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			//renderSession.maskManager.popMask ();
 			
 		}
 		

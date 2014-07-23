@@ -35,7 +35,7 @@ class MaskManager {
 	}
 	
 	
-	public function popMask (maskData:Dynamic, renderSession:Dynamic):Void {
+	public function popMask (maskData:Dynamic, renderSession:RenderSession):Void {
 		
 		var gl = this.gl;
 		renderSession.stencilManager.popStencil (maskData, maskData._webGL[GLRenderer.glContextId].data[0], renderSession);
@@ -43,7 +43,7 @@ class MaskManager {
 	}
 	
 	
-	public function pushMask (maskData:Dynamic, renderSession:Dynamic):Void {
+	public function pushMask (maskData:Dynamic, renderSession:RenderSession):Void {
 		
 		var gl = renderSession.gl;
 		
@@ -67,3 +67,62 @@ class MaskManager {
 	
 	
 }
+
+
+/*class MaskManager {
+	
+	
+	private var renderSession:RenderSession;
+	
+	
+	public function new (renderSession:RenderSession) {
+		
+		this.renderSession = renderSession;
+		
+	}
+	
+	
+	public function pushMask (mask:IBitmapDrawable):Void {
+		
+		var context = renderSession.context;
+		
+		context.save ();
+		
+		//var cacheAlpha = mask.__worldAlpha;
+		var transform = mask.__worldTransform;
+		if (transform == null) transform = new Matrix ();
+		
+		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+		
+		context.beginPath ();
+		mask.__renderMask (renderSession);
+		
+		context.clip ();
+		
+		//mask.worldAlpha = cacheAlpha;
+		
+	}
+	
+	
+	public function pushRect (rect:Rectangle, transform:Matrix):Void {
+		
+		var context = renderSession.context;
+		context.save ();
+		
+		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+		
+		context.beginPath ();
+		context.rect (rect.x, rect.y, rect.width, rect.height);
+		context.clip ();
+		
+	}
+	
+	
+	public function popMask ():Void {
+		
+		renderSession.context.restore ();
+		
+	}
+	
+	
+}*/

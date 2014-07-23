@@ -8,7 +8,7 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl.display.Stage;
+import openfl._internal.renderer.RenderSession;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
@@ -42,11 +42,11 @@ class BitmapData implements IBitmapDrawable {
 	public var __worldTransform:Matrix;
 	
 	private var __buffer:GLBuffer;
+	private var __isValid:Bool;
 	private var __loading:Bool;
-	private var __texture:GLTexture;
-	private var __valid:Bool;
-	
 	private var __sourceBytes:UInt8Array;
+	private var __texture:GLTexture;
+	private var __uvData:TextureUvs;
 	
 	#if js
 	private var __sourceCanvas:CanvasElement;
@@ -55,8 +55,6 @@ class BitmapData implements IBitmapDrawable {
 	private var __sourceImageData:ImageData;
 	private var __sourceImageDataChanged:Bool;
 	#end
-	
-	private var __uvData:TextureUvs;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -91,7 +89,7 @@ class BitmapData implements IBitmapDrawable {
 	public function applyFilter (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void {
 		
 		#if js
-		if (!__valid || sourceBitmapData == null || !sourceBitmapData.__valid) return;
+		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid) return;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -112,7 +110,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		__syncImageData ();
 		
-		if (!__valid) {
+		if (!__isValid) {
 			
 			return new BitmapData (width, height, transparent);
 			
@@ -138,7 +136,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if js
 		rect = __clipRect (rect);
-		if (!__valid || rect == null) return;
+		if (!__isValid || rect == null) return;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -172,7 +170,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if js
 		sourceRect = __clipRect (sourceRect);
-		if (!__valid || sourceRect == null) return;
+		if (!__isValid || sourceRect == null) return;
 		
 		if (destChannel == BitmapDataChannel.ALPHA && !transparent) return;
 		if (sourceRect.width <= 0 || sourceRect.height <= 0) return;
@@ -277,7 +275,7 @@ class BitmapData implements IBitmapDrawable {
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void {
 		
 		#if js
-		if (!__valid || sourceBitmapData == null) return;
+		if (!__isValid || sourceBitmapData == null) return;
 		
 		if (sourceRect.x + sourceRect.width > sourceBitmapData.width) sourceRect.width = sourceBitmapData.width - sourceRect.x;
 		if (sourceRect.y + sourceRect.height > sourceBitmapData.height) sourceRect.height = sourceBitmapData.height - sourceRect.y;
@@ -332,7 +330,7 @@ class BitmapData implements IBitmapDrawable {
 		width = 0;
 		height = 0;
 		rect = null;
-		__valid = false;
+		__isValid = false;
 		
 	}
 	
@@ -340,7 +338,7 @@ class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		#if js
-		if (!__valid) return;
+		if (!__isValid) return;
 		
 		__convertToCanvas ();
 		__syncImageData ();
@@ -390,7 +388,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if js
 		rect = __clipRect (rect);
-		if (!__valid || rect == null) return;
+		if (!__isValid || rect == null) return;
 		
 		__convertToCanvas ();
 		__syncImageData ();
@@ -415,7 +413,7 @@ class BitmapData implements IBitmapDrawable {
 	public function floodFill (x:Int, y:Int, color:Int):Void {
 		
 		#if js
-		if (!__valid) return;
+		if (!__isValid) return;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -511,7 +509,7 @@ class BitmapData implements IBitmapDrawable {
 			bitmapData.width = bitmapData.__sourceImage.width;
 			bitmapData.height = bitmapData.__sourceImage.height;
 			bitmapData.rect = new Rectangle (0, 0, bitmapData.__sourceImage.width, bitmapData.__sourceImage.height);
-			bitmapData.__valid = true;
+			bitmapData.__isValid = true;
 			
 			if (onload != null) {
 				
@@ -523,7 +521,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		bitmapData.__sourceImage.onerror = function (_) {
 			
-			bitmapData.__valid = false;
+			bitmapData.__isValid = false;
 			if (onfail != null) {
 				
 				onfail();
@@ -555,7 +553,7 @@ class BitmapData implements IBitmapDrawable {
 		bitmapData.width = image.width;
 		bitmapData.height = image.height;
 		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
-		bitmapData.__valid = true;
+		bitmapData.__isValid = true;
 		return bitmapData;
 		
 	}
@@ -618,7 +616,7 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixel (x:Int, y:Int):Int {
 		
 		#if js
-		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
+		if (!__isValid || x < 0 || y < 0 || x >= width || y >= height) return 0;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -637,7 +635,7 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixel32 (x:Int, y:Int):Int {
 		
 		#if js
-		if (!__valid || x < 0 || y < 0 || x >= width || y >= height) return 0;
+		if (!__isValid || x < 0 || y < 0 || x >= width || y >= height) return 0;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -655,7 +653,7 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixels (rect:Rectangle):ByteArray {
 		
 		#if js
-		if (!__valid) return null;
+		if (!__isValid) return null;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -773,7 +771,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Dynamic, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
 		
-		if (!__valid) return false;
+		if (!__isValid) return false;
 		
 		openfl.Lib.notImplemented ("BitmapData.hitTest");
 		
@@ -878,7 +876,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function noise (randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false):Void {
 		
-		if (!__valid) return;
+		if (!__isValid) return;
 		
 		openfl.Lib.notImplemented ("BitmapData.noise");
 		
@@ -986,7 +984,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixel (x:Int, y:Int, color:Int):Void {
 		
 		#if js
-		if (!__valid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
+		if (!__isValid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -1007,7 +1005,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixel32 (x:Int, y:Int, color:Int):Void {
 		
 		#if js
-		if (!__valid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
+		if (!__isValid || x < 0 || y < 0 || x >= this.width || y >= this.height) return;
 		
 		__convertToCanvas ();
 		__createImageData ();
@@ -1038,7 +1036,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if js
 		rect = __clipRect (rect);
-		if (!__valid || rect == null) return;
+		if (!__isValid || rect == null) return;
 		
 		__convertToCanvas ();
 		
@@ -1376,7 +1374,7 @@ class BitmapData implements IBitmapDrawable {
 			untyped (__sourceContext).mozImageSmoothingEnabled = false;
 			untyped (__sourceContext).webkitImageSmoothingEnabled = false;
 			__sourceContext.imageSmoothingEnabled = false;
-			__valid = true;
+			__isValid = true;
 			
 		}
 		
@@ -1490,7 +1488,7 @@ class BitmapData implements IBitmapDrawable {
 			height = __sourceImage.height;
 			rect = new Rectangle (0, 0, width, height);
 			
-			__valid = true;
+			__isValid = true;
 			
 			if (onload != null) {
 				
@@ -1568,7 +1566,7 @@ class BitmapData implements IBitmapDrawable {
 	public function __renderCanvas (renderSession:RenderSession):Void {
 		
 		#if js
-		if (!__valid) return;
+		if (!__isValid) return;
 		
 		__syncImageData ();
 		

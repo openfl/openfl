@@ -3,7 +3,9 @@ package openfl._internal.renderer.opengl.utils ;
 
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
+import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.RenderSession;
 
 
 class StencilManager {
@@ -28,19 +30,18 @@ class StencilManager {
 	}
 	
 	
-	public function bindGraphics (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:Dynamic):Void
-	{
+	public function bindGraphics (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+		
 		_currentGraphics = graphics;
 		
 		var gl = this.gl;
 		
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
-		var shader;
 		
 		if (webGLData.mode == 1) {
 			
-			shader = renderSession.shaderManager.complexPrimitiveShader;
+			var shader = renderSession.shaderManager.complexPrimitiveShader;
 			renderSession.shaderManager.setShader (shader);
 			
 			gl.uniformMatrix3fv (shader.translationMatrix, false, graphics.worldTransform.toArray (true));
@@ -61,7 +62,7 @@ class StencilManager {
 			
 		} else {
 			
-			shader = renderSession.shaderManager.primitiveShader;
+			var shader = renderSession.shaderManager.primitiveShader;
 			renderSession.shaderManager.setShader (shader);
 			
 			gl.uniformMatrix3fv (shader.translationMatrix, false, graphics.worldTransform.toArray (true));
@@ -93,7 +94,7 @@ class StencilManager {
 	}
 	
 	
-	public function popStencil (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:Dynamic):Void {
+	public function popStencil (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
 		var gl = this.gl;
 		this.stencilStack.pop ();
@@ -180,7 +181,7 @@ class StencilManager {
 	}
 	
 	
-	public function pushStencil (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:Dynamic):Void {
+	public function pushStencil (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
 		var gl = this.gl;
 		bindGraphics (graphics, webGLData, renderSession);

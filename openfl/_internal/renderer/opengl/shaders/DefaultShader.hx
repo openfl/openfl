@@ -30,12 +30,8 @@ class DefaultShader extends AbstractShader {
 		'}'
 	];
 	
-	public var aTextureCoord:Int;
-	public var aVertexPosition:Int;
-	public var colorAttribute:Int;
 	public var dimensions:GLUniformLocation;
 	public var offsetVector:GLUniformLocation;
-	public var projectionVector:GLUniformLocation;
 	public var textureCount:Int;
 	public var uSampler:GLUniformLocation;
 	
@@ -123,11 +119,11 @@ class DefaultShader extends AbstractShader {
 			
 			var data = uniform.textureData;
 			
-			var magFilter = (data.magFilter != null) ? data.magFilter : gl.LINEAR;
-			var minFilter = (data.minFilter != null) ? data.minFilter : gl.LINEAR;
-			var wrapS = (data.wrapS != null) ? data.wrapS : gl.CLAMP_TO_EDGE;
-			var wrapT = (data.wrapT != null) ? data.wrapT : gl.CLAMP_TO_EDGE;
-			var format = (data.luminance != null) ? gl.LUMINANCE : gl.RGBA;
+			var magFilter = (data.magFilter != #if cpp 0 #else null #end) ? data.magFilter : gl.LINEAR;
+			var minFilter = (data.minFilter != #if cpp 0 #else null #end) ? data.minFilter : gl.LINEAR;
+			var wrapS = (data.wrapS != #if cpp 0 #else null #end) ? data.wrapS : gl.CLAMP_TO_EDGE;
+			var wrapT = (data.wrapT != #if cpp 0 #else null #end) ? data.wrapT : gl.CLAMP_TO_EDGE;
+			var format = (data.luminance != #if cpp 0 #else null #end) ? gl.LUMINANCE : gl.RGBA;
 			
 			if (data.repeat) {
 				
@@ -136,13 +132,13 @@ class DefaultShader extends AbstractShader {
 				
 			}
 			
-			gl.pixelStorei (gl.UNPACK_FLIP_Y_WEBGL, data.flip != null ? data.flip : 0);
+			gl.pixelStorei (gl.UNPACK_FLIP_Y_WEBGL, #if cpp data.flip #else data.flip != null ? data.flip : 0 #end);
 			
-			if (data.width != null) {
+			if (data.width != #if cpp 0 #else null #end) {
 				
-				var width = (data.width != null) ? data.width : 512;
-				var height = (data.height != null) ? data.height : 2;
-				var border = (data.border != null) ? data.border : 0;
+				var width = (data.width != #if cpp 0 #else null #end) ? data.width : 512;
+				var height = (data.height != #if cpp 0 #else null #end) ? data.height : 2;
+				var border = (data.border != #if cpp 0 #else null #end) ? data.border : 0;
 				
 				gl.texImage2D (gl.TEXTURE_2D, 0, format, width, height, border, format, gl.UNSIGNED_BYTE, null);
 				

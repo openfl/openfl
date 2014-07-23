@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
 import openfl.events.Event;

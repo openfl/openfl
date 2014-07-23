@@ -10,11 +10,7 @@ class StripShader extends AbstractShader {
 	
 	
 	public var alpha:GLUniformLocation;
-	public var aTextureCoord:Int;
-	public var aVertexPosition:Int;
-	public var colorAttribute:Int;
 	public var offsetVector:GLUniformLocation;
-	public var projectionVector:GLUniformLocation;
 	public var translationMatrix:GLUniformLocation;
 	public var uSampler:GLUniformLocation;
 	

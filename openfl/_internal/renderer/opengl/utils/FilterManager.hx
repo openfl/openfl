@@ -8,6 +8,7 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.shaders.DefaultShader;
+import openfl._internal.renderer.RenderSession;
 import openfl.geom.Rectangle;
 
 
@@ -24,7 +25,7 @@ class FilterManager {
 	public var indexBuffer:GLBuffer;
 	public var offsetX:Float;
 	public var offsetY:Float;
-	public var renderSession:Dynamic;
+	public var renderSession:RenderSession;
 	public var texturePool:Array<FilterTexture>;
 	public var transparent:Bool;
 	public var uvArray:Float32Array;
@@ -97,15 +98,15 @@ class FilterManager {
 	}
 	
 	
-	public function begin (renderSession:Dynamic, buffer:GLFramebuffer = null):Void {
+	public function begin (renderSession:RenderSession, buffer:GLFramebuffer = null):Void {
 		
 		this.renderSession = renderSession;
 		defaultShader = renderSession.shaderManager.defaultShader;
 		
 		var projection = renderSession.projection;
 		
-		width = projection.x * 2;
-		height = -projection.y * 2;
+		width = Std.int (projection.x * 2);
+		height = Std.int (-projection.y * 2);
 		this.buffer = buffer;
 		
 	}

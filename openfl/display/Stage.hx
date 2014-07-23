@@ -12,6 +12,7 @@ import lime.graphics.GLUniformLocation;
 import lime.graphics.RenderContext;
 import lime.utils.GLUtils;
 import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.RenderSession;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -62,7 +63,6 @@ class Stage extends Sprite {
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
-	private var __glProgram:ShaderProgram;
 	private var __glRenderer:GLRenderer;
 	//private var __glContextID:Int;
 	//private var __glContextLost:Bool;
@@ -681,169 +681,6 @@ class Stage extends Sprite {
 		displayState = value;*/
 		return value;
 	}
-	
-}
-
-
-class RenderSession {
-	
-	
-	public var context:CanvasRenderContext;
-	public var element:DOMRenderContext;
-	public var gl:GLRenderContext;
-	public var glProgram:ShaderProgram;
-	//public var mask:Bool;
-	public var maskManager:MaskManager;
-	public var projectionMatrix:lime.geom.Matrix4;
-	//public var scaleMode:ScaleMode;
-	public var roundPixels:Bool;
-	public var transformProperty:String;
-	public var transformOriginProperty:String;
-	public var vendorPrefix:String;
-	public var z:Int;
-	//public var smoothProperty:Null<Bool> = null;
-	
-	public var spriteBatch:Dynamic;
-	
-	
-	public function new () {
-		
-		maskManager = new MaskManager (this);
-		
-	}
-	
-	
-}
-
-
-class MaskManager {
-	
-	
-	private var renderSession:RenderSession;
-	
-	
-	public function new (renderSession:RenderSession) {
-		
-		this.renderSession = renderSession;
-		
-	}
-	
-	
-	public function pushMask (mask:IBitmapDrawable):Void {
-		
-		var context = renderSession.context;
-		
-		context.save ();
-		
-		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__worldTransform;
-		if (transform == null) transform = new Matrix ();
-		
-		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
-		
-		context.beginPath ();
-		mask.__renderMask (renderSession);
-		
-		context.clip ();
-		
-		//mask.worldAlpha = cacheAlpha;
-		
-	}
-	
-	
-	public function pushRect (rect:Rectangle, transform:Matrix):Void {
-		
-		var context = renderSession.context;
-		context.save ();
-		
-		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
-		
-		context.beginPath ();
-		context.rect (rect.x, rect.y, rect.width, rect.height);
-		context.clip ();
-		
-	}
-	
-	
-	public function popMask ():Void {
-		
-		renderSession.context.restore ();
-		
-	}
-	
-	
-}
-
-
-class ShaderProgram {
-	
-	
-	public var alphaUniform:GLUniformLocation;
-	public var fragmentSource:String;
-	public var imageUniform:GLUniformLocation;
-	public var matrixUniform:GLUniformLocation;
-	public var program:GLProgram;
-	public var vertexAttribute:Int;
-	public var vertexSource:String;
-	public var textureAttribute:Int;
-	public var valid:Bool;
-	
-	
-	public function new (vertexSource:String = null, fragmentSource:String = null) {
-		
-		if (vertexSource == null) {
-			
-			this.vertexSource = 
-				
-				"attribute vec4 aVertex;
-				attribute vec2 aTexCoord;
-				varying vec2 vTexCoord;
-				uniform mat4 uMatrix;
-				
-				void main ()
-				{
-					vTexCoord = aTexCoord;
-					gl_Position = uMatrix * aVertex;
-				}";
-			
-		}
-		
-		if (fragmentSource == null) {
-			
-			this.fragmentSource = 
-				
-				#if !desktop
-				"precision mediump float;" +
-				#end
-				"varying vec2 vTexCoord;
-				uniform sampler2D uImage0;
-				uniform float uAlpha;
-				
-				void main ()
-				{
-					gl_FragColor = uAlpha * texture2D (uImage0, vTexCoord);
-				}";
-			
-		}
-		
-	}
-	
-	
-	public function compile ():Void {
-		
-		program = GLUtils.createProgram (vertexSource, fragmentSource);
-		
-		textureAttribute = GL.getAttribLocation (program, "aTexCoord");
-		vertexAttribute = GL.getAttribLocation (program, "aVertex");
-		
-		alphaUniform = GL.getUniformLocation (program, "uAlpha");
-		imageUniform = GL.getUniformLocation (program, "uImage0");
-		matrixUniform = GL.getUniformLocation (program, "uMatrix");
-		
-		valid = true;
-		
-	}
-	
 	
 }
 

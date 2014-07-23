@@ -1,11 +1,11 @@
 package openfl.text; #if !flash
 
 
+import openfl._internal.renderer.RenderSession;
 import haxe.xml.Fast;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
-import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;

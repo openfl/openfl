@@ -1,10 +1,10 @@
 package openfl.display; #if !flash
 
 
+import openfl._internal.renderer.RenderSession;
 import lime.graphics.GLBuffer;
 import lime.utils.Float32Array;
 import openfl.geom.Point;
-import openfl.display.Stage;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;

@@ -5,6 +5,7 @@ import lime.graphics.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
+import openfl._internal.renderer.RenderSession;
 import openfl.geom.Point;
 
 
@@ -609,7 +610,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function renderGraphics (graphics:Dynamic, renderSession:Dynamic):Void {
+	public static function renderGraphics (graphics:Dynamic, renderSession:RenderSession):Void {
 		
 		var gl:GLRenderContext = renderSession.gl;
 		var projection = renderSession.projection;

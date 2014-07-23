@@ -6,6 +6,7 @@ import lime.graphics.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.MaskManager;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
@@ -35,7 +36,7 @@ class GLRenderer {
 	public var options:Dynamic;
 	public var preserveDrawingBuffer:Bool;
 	public var projection:Point;
-	public var renderSession:Dynamic;
+	public var renderSession:RenderSession;
 	public var shaderManager:ShaderManager;
 	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
@@ -104,7 +105,7 @@ class GLRenderer {
 		stencilManager = new StencilManager (gl);
 		blendModeManager = new BlendModeManager (gl);
 		
-		renderSession = {};
+		renderSession = new RenderSession ();
 		renderSession.gl = this.gl;
 		renderSession.drawCount = 0;
 		renderSession.shaderManager = this.shaderManager;

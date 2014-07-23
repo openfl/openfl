@@ -1,7 +1,7 @@
 package openfl.display; #if !flash
 
 
-import openfl.display.Stage;
+import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 

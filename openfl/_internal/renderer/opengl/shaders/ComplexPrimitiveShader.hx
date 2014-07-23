@@ -10,11 +10,8 @@ class ComplexPrimitiveShader extends AbstractShader {
 	
 	
 	public var alpha:GLUniformLocation;
-	public var aVertexPosition:Int;
 	public var color:GLUniformLocation;
-	public var colorAttribute:Int;
 	public var offsetVector:GLUniformLocation;
-	public var projectionVector:GLUniformLocation;
 	public var tintColor:GLUniformLocation;
 	public var translationMatrix:GLUniformLocation;
 	

@@ -12,12 +12,8 @@ class FastShader extends AbstractShader {
 	public var aPositionCoord:Int;
 	public var aRotation:Int;
 	public var aScale:Int;
-	public var aTextureCoord:Int;
-	public var aVertexPosition:Int;
-	public var colorAttribute:Int;
 	public var dimensions:GLUniformLocation;
 	public var offsetVector:GLUniformLocation;
-	public var projectionVector:GLUniformLocation;
 	public var textureCount:Int;
 	public var uMatrix:GLUniformLocation;
 	public var uSampler:GLUniformLocation;

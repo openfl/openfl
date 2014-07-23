@@ -3,7 +3,7 @@ package openfl.display; #if !flash
 
 import lime.geom.Matrix4;
 import lime.utils.Float32Array;
-import openfl.display.Stage;
+import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -102,7 +102,7 @@ class Bitmap extends DisplayObjectContainer {
 		
 		var context = renderSession.context;
 		
-		if (bitmapData != null && bitmapData.__valid) {
+		if (bitmapData != null && bitmapData.__isValid) {
 			
 			if (__mask != null) {
 				
@@ -182,7 +182,7 @@ class Bitmap extends DisplayObjectContainer {
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if js
-		if (stage != null && __worldVisible && __renderable && bitmapData != null && bitmapData.__valid) {
+		if (stage != null && __worldVisible && __renderable && bitmapData != null && bitmapData.__isValid) {
 			
 			if (bitmapData.__sourceImage != null) {
 				
