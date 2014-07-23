@@ -8,7 +8,6 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.opengl.utils.Texture;
 import openfl.display.Stage;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
@@ -57,7 +56,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __sourceImageDataChanged:Bool;
 	#end
 	
-	public var texture:Texture;
+	private var __uvData:TextureUvs;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -83,6 +82,8 @@ class BitmapData implements IBitmapDrawable {
 			__fillRect (new Rectangle (0, 0, width, height), fillColor);
 			
 		}
+		
+		__createUVs ();
 		
 	}
 	
@@ -555,10 +556,6 @@ class BitmapData implements IBitmapDrawable {
 		bitmapData.height = image.height;
 		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
 		bitmapData.__valid = true;
-		#if js
-		bitmapData.__convertToCanvas ();
-		bitmapData.texture = Texture.fromCanvas (bitmapData.__sourceCanvas, 0);
-		#end
 		return bitmapData;
 		
 	}
@@ -1398,6 +1395,22 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
+	private function __createUVs ():Void {
+		
+		if (__uvData == null) __uvData = new TextureUvs();
+		
+		__uvData.x0 = 0;
+		__uvData.y0 = 0;
+		__uvData.x1 = 1;
+		__uvData.y1 = 0;
+		__uvData.x2 = 1;
+		__uvData.y2 = 1;
+		__uvData.x3 = 0;
+		__uvData.y3 = 1;
+		
+	}
+	
+	
 	private function __fillRect (rect:Rectangle, color:Int) {
 		
 		#if js
@@ -1735,6 +1748,27 @@ class BitmapData implements IBitmapDrawable {
 	
 	
 }*/
+
+
+class TextureUvs {
+	
+	
+	public var x0:Float = 0;
+	public var x1:Float = 0;
+	public var x2:Float = 0;
+	public var x3:Float = 0;
+	public var y0:Float = 0;
+	public var y1:Float = 0;
+	public var y2:Float = 0;
+	public var y3:Float = 0;
+	
+	
+	public function new () {
+		
+	}
+	
+	
+}
 
 
 #else

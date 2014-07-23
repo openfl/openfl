@@ -6,7 +6,6 @@ import lime.graphics.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.MaskManager;
-import openfl._internal.renderer.opengl.utils.Texture;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.errors.Error;
@@ -154,7 +153,7 @@ class GLRenderer {
 	}
 	
 	
-	private static function destroyTexture (texture:BaseTexture):Void {
+	/*private static function destroyTexture (texture:BaseTexture):Void {
 		
 		var i = texture._glTextures.length - 1;
 		
@@ -175,7 +174,7 @@ class GLRenderer {
 		
 		texture._glTextures = [];
 		
-	}
+	}*/
 	
 	
 	private function handleContextLost (event:Dynamic):Void {
@@ -224,12 +223,12 @@ class GLRenderer {
 		
 		gl.viewport (0, 0, width, height);
 		
-		for (key in Texture.TextureCache.keys ()) {
+		/*for (key in Texture.TextureCache.keys ()) {
 			
 			var texture = Texture.TextureCache.get (key).baseTexture;
 			texture._glTextures = [];
 			
-		}
+		}*/
 		
 		contextLost = false;
 		
@@ -240,7 +239,7 @@ class GLRenderer {
 		
 		if (contextLost) return;
 		
-		updateTextures ();
+		//updateTextures ();
 		
 		var gl = this.gl;
 		gl.viewport (0, 0, width, height);
@@ -294,7 +293,7 @@ class GLRenderer {
 	}
 	
 	
-	private static function updateTextureFrame (texture:Texture):Void {
+	/*private static function updateTextureFrame (texture:Texture):Void {
 		
 		texture._updateWebGLuvs ();
 		
@@ -319,7 +318,7 @@ class GLRenderer {
 		Texture.texturesToDestroy = [];
 		Texture.frameUpdates = [];
 		
-	}
+	}*/
 	
 	
 }

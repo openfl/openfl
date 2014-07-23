@@ -6,10 +6,11 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
-import openfl._internal.renderer.opengl.utils.Texture;
 import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 
 
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 
 
@@ -17,7 +18,7 @@ class SpriteBatch {
 	
 	
 	public var blendModes:Array<Dynamic>;
-	public var currentBaseTexture:Dynamic;
+	public var currentBaseTexture:BitmapData;
 	public var currentBatchSize:Int;
 	public var currentBlendMode:Int;
 	public var dirty:Bool;
@@ -29,7 +30,7 @@ class SpriteBatch {
 	public var renderSession:Dynamic;
 	public var shader:Dynamic;
 	public var size:Int;
-	public var textures:Array<Dynamic>;
+	public var textures:Array<BitmapData>;
 	public var vertexBuffer:GLBuffer;
 	public var vertices:Float32Array;
 	public var vertSize:Int;
@@ -185,16 +186,16 @@ class SpriteBatch {
 	
 	public function render (sprite:Bitmap):Void {
 		
-		var texture = sprite.bitmapData.texture;
+		var texture = sprite.bitmapData;
 		
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentBaseTexture = texture.baseTexture;
+			currentBaseTexture = texture;
 			
 		}
 		
-		var uvs = texture._uvs;
+		var uvs = texture.__uvData;
 		if (uvs == null) return;
 		
 		var alpha = sprite.__worldAlpha;
@@ -210,7 +211,7 @@ class SpriteBatch {
 		
 		var w0, w1, h0, h1;
 		
-		if (texture.trim != null) {
+		/*if (texture.trim != null) {
 			
 			var trim = texture.trim;
 			
@@ -226,7 +227,12 @@ class SpriteBatch {
 			h0 = texture.frame.height * (1 - aY);
 			h1 = texture.frame.height * -aY;
 			
-		}
+		}*/
+		
+		w0 = (texture.width) * (1 - aX);
+		w1 = (texture.width) * -aX;
+		h0 = texture.height * (1 - aY);
+		h1 = texture.height * -aY;
 		
 		var index = currentBatchSize * 4 * vertSize;
 		var worldTransform = sprite.__worldTransform;
@@ -265,7 +271,7 @@ class SpriteBatch {
 		vertices[index++] = alpha;
 		vertices[index++] = tint;
 		
-		textures[currentBatchSize] = sprite.bitmapData.texture.baseTexture;
+		textures[currentBatchSize] = /*sprite.bitmapData.texture.baseTexture*/sprite.bitmapData;
 		blendModes[currentBatchSize] = sprite.blendMode;
 		
 		currentBatchSize++;
@@ -273,21 +279,21 @@ class SpriteBatch {
 	}
 	
 	
-	private function renderBatch (texture:BaseTexture, size:Int, startIndex:Int):Void {
+	private function renderBatch (texture:BitmapData, size:Int, startIndex:Int):Void {
 		
 		if (size == 0)return;
 		
 		var gl = this.gl;
 		
-		var tex:GLTexture = texture._glTextures[GLRenderer.glContextId];
-		if (tex == null) tex = Texture.createWebGLTexture (texture, gl);
+		var tex:GLTexture = /*texture._glTextures[GLRenderer.glContextId];*/ texture.getTexture (gl);
+		//if (tex == null) tex = Texture.createWebGLTexture (texture, gl);
 		gl.bindTexture (gl.TEXTURE_2D, tex);
 		
-		if (texture._dirty[GLRenderer.glContextId]) {
+		/*if (texture._dirty[GLRenderer.glContextId]) {
 			
 			Texture.updateWebGLTexture (currentBaseTexture, gl);
 			
-		}
+		}*/
 		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
 		
@@ -303,21 +309,21 @@ class SpriteBatch {
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentBaseTexture = texture.baseTexture;
+			currentBaseTexture = texture;
 			
 		}
 		
 		if (tilingSprite._uvs == null) tilingSprite._uvs = new TextureUvs ();
 		var uvs = tilingSprite._uvs;
 		
-		tilingSprite.tilePosition.x %= texture.baseTexture.width * tilingSprite.tileScaleOffset.x;
-		tilingSprite.tilePosition.y %= texture.baseTexture.height * tilingSprite.tileScaleOffset.y;
+		tilingSprite.tilePosition.x %= texture.width * tilingSprite.tileScaleOffset.x;
+		tilingSprite.tilePosition.y %= texture.height * tilingSprite.tileScaleOffset.y;
 		
-		var offsetX =  tilingSprite.tilePosition.x / (texture.baseTexture.width * tilingSprite.tileScaleOffset.x);
-		var offsetY =  tilingSprite.tilePosition.y / (texture.baseTexture.height * tilingSprite.tileScaleOffset.y);
+		var offsetX =  tilingSprite.tilePosition.x / (texture.width * tilingSprite.tileScaleOffset.x);
+		var offsetY =  tilingSprite.tilePosition.y / (texture.height * tilingSprite.tileScaleOffset.y);
 		
-		var scaleX =  (tilingSprite.width / texture.baseTexture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
-		var scaleY =  (tilingSprite.height / texture.baseTexture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
+		var scaleX =  (tilingSprite.width / texture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
+		var scaleY =  (tilingSprite.height / texture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
 		
 		uvs.x0 = 0 - offsetX;
 		uvs.y0 = 0 - offsetY;
@@ -386,7 +392,7 @@ class SpriteBatch {
 		vertices[index++] = alpha;
 		vertices[index++] = tint;
 		
-		textures[currentBatchSize] = texture.baseTexture;
+		textures[currentBatchSize] = texture;
 		blendModes[currentBatchSize] = tilingSprite.blendMode;
 		currentBatchSize++;
 		

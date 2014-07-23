@@ -4,7 +4,6 @@ package openfl._internal.renderer.opengl.shaders;
 import lime.graphics.GLProgram;
 import lime.graphics.GLRenderContext;
 import lime.graphics.GLUniformLocation;
-import openfl._internal.renderer.opengl.utils.Texture;
 
 
 class DefaultShader extends AbstractShader {
@@ -281,8 +280,9 @@ class DefaultShader extends AbstractShader {
 				if (uniform._init) {
 					
 					gl.activeTexture (Reflect.field (gl, 'TEXTURE' + textureCount));
-					var tex = uniform.value.baseTexture._glTextures[GLRenderer.glContextId];
-					if (tex == null) tex = Texture.createWebGLTexture (cast uniform.value.baseTexture, gl);
+					var tex = uniform.value.getTexture ();
+					//var tex = uniform.value.baseTexture._glTextures[GLRenderer.glContextId];
+					//if (tex == null) tex = Texture.createWebGLTexture (cast uniform.value.baseTexture, gl);
 					gl.bindTexture (gl.TEXTURE_2D, tex);
 					gl.uniform1i (uniform.uniformLocation, textureCount);
 					textureCount++;
