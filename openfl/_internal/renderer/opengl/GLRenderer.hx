@@ -345,11 +345,3 @@ class GLRenderer {
 	var LUMINOSITY = 16;
 	
 }
-
-@:enum abstract ScaleMode(Int) {
-	
-	var DEFAULT = 0;
-	var LINEAR = 0;
-	var NEAREST = 1;
-	
-}
