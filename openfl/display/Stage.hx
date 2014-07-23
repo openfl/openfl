@@ -11,6 +11,7 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLUniformLocation;
 import lime.graphics.RenderContext;
 import lime.utils.GLUtils;
+import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -62,6 +63,7 @@ class Stage extends Sprite {
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
 	private var __glProgram:ShaderProgram;
+	private var __glRenderer:GLRenderer;
 	//private var __glContextID:Int;
 	//private var __glContextLost:Bool;
 	//private var __glOptions:Dynamic;
@@ -297,66 +299,13 @@ class Stage extends Sprite {
 			
 			case OPENGL (gl):
 				
-				if (__glProgram == null) {
+				if (__glRenderer == null) {
 					
-					__renderSession.projectionMatrix = Matrix4.createOrtho (0, stageWidth, stageHeight, 0, -1000, 1000);
-					
-					__glProgram = new ShaderProgram ();
-					__glProgram.compile ();
-					
-					gl.useProgram (__glProgram.program);
-					
-					gl.enableVertexAttribArray (__glProgram.vertexAttribute);
-					gl.enableVertexAttribArray (__glProgram.textureAttribute);
-					
-					gl.viewport (0, 0, stageWidth, stageHeight);
-					
-					gl.enable (gl.BLEND);
-					gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-					
-					__renderSession.gl = gl;
-					__renderSession.glProgram = __glProgram;
+					__glRenderer = new GLRenderer (stageWidth, stageHeight, gl);
 					
 				}
 				
-				//if (!__glContextLost) {
-					
-					//__glContext.clear (color);
-					//__glContext.setWindowSize (stageWidth, stageHeight);
-					//__glContext.beginRender (null, false);
-					
-					/*gl.viewport (0, 0, stageWidth, stageHeight);
-					gl.bindFramebuffer (gl.FRAMEBUFFER, null);
-					
-					if (__transparent) {
-						
-						gl.clearColor (1, 0, 0 ,0);
-						
-					} else {
-						
-						gl.clearColor (__colorSplit[0], __colorSplit[1], __colorSplit[2], 1);
-						
-					}
-					
-					gl.clear (gl.COLOR_BUFFER_BIT);*/
-					
-					if (__transparent) {
-						
-						gl.clearColor (1, 0, 0 ,0);
-						
-					} else {
-						
-						gl.clearColor (__colorSplit[0], __colorSplit[1], __colorSplit[2], 1);
-						
-					}
-					
-					gl.clear (gl.COLOR_BUFFER_BIT);
-					
-					__renderGL (__renderSession);
-					
-					//__glContext.endRender ();
-					
-				//}
+				__glRenderer.render (this);
 			
 			case CANVAS (context):
 				
@@ -753,6 +702,8 @@ class RenderSession {
 	public var vendorPrefix:String;
 	public var z:Int;
 	//public var smoothProperty:Null<Bool> = null;
+	
+	public var spriteBatch:Dynamic;
 	
 	
 	public function new () {

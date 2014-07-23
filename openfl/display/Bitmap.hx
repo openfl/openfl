@@ -285,7 +285,7 @@ class Bitmap extends DisplayObjectContainer {
 	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		/*if (!__renderable || __worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
 		
@@ -324,7 +324,61 @@ class Bitmap extends DisplayObjectContainer {
 		
 		#if desktop
 		gl.disable (gl.TEXTURE_2D);
-		#end
+		#end*/
+		
+		// if the sprite is not visible or the alpha is 0 then no need to render this element
+    if(!this.visible || this.alpha <= 0)return;
+    
+    var i,j;
+
+    // do a quick check to see if this element has a mask or a filter.
+    /*if(this._mask || this._filters)
+    {
+        var spriteBatch =  renderSession.spriteBatch;
+
+        // push filter first as we need to ensure the stencil buffer is correct for any masking
+        if(this._filters)
+        {
+            spriteBatch.flush();
+            renderSession.filterManager.pushFilter(this._filterBlock);
+        }
+
+        if(this._mask)
+        {
+            spriteBatch.stop();
+            renderSession.maskManager.pushMask(this.mask, renderSession);
+            spriteBatch.start();
+        }
+
+        // add this sprite to the batch
+        spriteBatch.render(this);
+
+        // now loop through the children and make sure they get rendered
+        for(i=0,j=this.children.length; i<j; i++)
+        {
+            this.children[i]._renderWebGL(renderSession);
+        }
+
+        // time to stop the sprite batch as either a mask element or a filter draw will happen next
+        spriteBatch.stop();
+
+        if(this._mask)renderSession.maskManager.popMask(this._mask, renderSession);
+        if(this._filters)renderSession.filterManager.popFilter();
+        
+        spriteBatch.start();
+    }
+    else
+    {*/
+        renderSession.spriteBatch.render(this);
+
+        // simple render children!
+        //for(i=0,j=this.children.length; i<j; i++)
+        //{
+            //this.children[i]._renderWebGL(renderSession);
+        //}
+    //}
+
+   
 		
 	}
 	

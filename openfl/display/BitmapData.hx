@@ -8,6 +8,7 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.opengl.utils.Texture;
 import openfl.display.Stage;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
@@ -55,6 +56,8 @@ class BitmapData implements IBitmapDrawable {
 	private var __sourceImageData:ImageData;
 	private var __sourceImageDataChanged:Bool;
 	#end
+	
+	public var texture:Texture;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -552,6 +555,10 @@ class BitmapData implements IBitmapDrawable {
 		bitmapData.height = image.height;
 		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
 		bitmapData.__valid = true;
+		#if js
+		bitmapData.__convertToCanvas ();
+		bitmapData.texture = Texture.fromCanvas (bitmapData.__sourceCanvas, 0);
+		#end
 		return bitmapData;
 		
 	}
