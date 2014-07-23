@@ -2,19 +2,20 @@ package openfl._internal.renderer.opengl.utils;
 
 
 import lime.graphics.GLRenderContext;
+import openfl.display.BlendMode;
 
 
 class BlendModeManager {
 	
 	
-	public var currentBlendMode:Int;
+	public var currentBlendMode:BlendMode;
 	public var gl:GLRenderContext;
 	
 	
 	public function new (gl:GLRenderContext) {
 		
 		this.gl = gl;
-		currentBlendMode = 99999;
+		currentBlendMode = null;
 		
 	}
 	
@@ -26,10 +27,10 @@ class BlendModeManager {
 	}
 	
 	
-	public function setBlendMode (blendMode:Null<Int>):Bool {
+	public function setBlendMode (blendMode:BlendMode):Bool {
 		
-		if (blendMode == null) blendMode = 0;
-		if (this.currentBlendMode == blendMode) {
+		if (blendMode == null) blendMode = BlendMode.NORMAL;
+		if (currentBlendMode == blendMode) {
 			
 			return false;
 			

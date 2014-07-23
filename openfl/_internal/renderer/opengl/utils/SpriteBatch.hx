@@ -8,6 +8,7 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 
 
 @:access(openfl.display.BitmapData)
@@ -17,10 +18,10 @@ import openfl.display.BitmapData;
 class SpriteBatch {
 	
 	
-	public var blendModes:Array<Dynamic>;
+	public var blendModes:Array<BlendMode>;
 	public var currentBaseTexture:BitmapData;
 	public var currentBatchSize:Int;
-	public var currentBlendMode:Int;
+	public var currentBlendMode:BlendMode;
 	public var dirty:Bool;
 	public var drawing:Bool;
 	public var gl:GLRenderContext;
@@ -412,7 +413,7 @@ class SpriteBatch {
 		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
 		gl.bufferData (gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
 		
-		currentBlendMode = 99999;
+		currentBlendMode = null;
 		
 	}
 	

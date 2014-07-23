@@ -6,6 +6,7 @@ import lime.graphics.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.MaskManager;
+import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.errors.Error;
@@ -19,7 +20,7 @@ import openfl.geom.Point;
 class GLRenderer {
 	
 	
-	public static var blendModesWebGL = null;
+	public static var blendModesWebGL:Map <BlendMode, Array<Int>> = null;
 	public static var glContextId:Int = 0;
 	public static var glContexts = [];
 	
@@ -67,24 +68,23 @@ class GLRenderer {
 		
 		if (blendModesWebGL == null) {
 			
-			blendModesWebGL = [];
-			blendModesWebGL[cast BlendMode.NORMAL] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.ADD] = [ gl.SRC_ALPHA, gl.DST_ALPHA ];
-			blendModesWebGL[cast BlendMode.MULTIPLY] = [ gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.SCREEN] = [ gl.SRC_ALPHA, gl.ONE ];
-			blendModesWebGL[cast BlendMode.OVERLAY] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.DARKEN] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.LIGHTEN] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.COLOR_DODGE] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.COLOR_BURN] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.HARD_LIGHT] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.SOFT_LIGHT] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.DIFFERENCE] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.EXCLUSION] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.HUE] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.SATURATION] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.COLOR] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
-			blendModesWebGL[cast BlendMode.LUMINOSITY] = [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ];
+			blendModesWebGL = new Map ();
+			
+			blendModesWebGL.set (BlendMode.NORMAL, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.ADD, [ gl.SRC_ALPHA, gl.DST_ALPHA ]);
+			blendModesWebGL.set (BlendMode.MULTIPLY, [ gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.SCREEN, [ gl.SRC_ALPHA, gl.ONE ]);
+			
+			blendModesWebGL.set (BlendMode.ALPHA, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.DARKEN, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.DIFFERENCE, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.ERASE, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.HARDLIGHT, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.INVERT, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.LAYER, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.LIGHTEN, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.OVERLAY, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
+			blendModesWebGL.set (BlendMode.SUBTRACT, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
 			
 		}
 		
@@ -266,7 +266,7 @@ class GLRenderer {
 		renderSession.blendModeManager.setBlendMode (BlendMode.NORMAL);
 		
 		renderSession.drawCount = 0;
-		renderSession.currentBlendMode = 9999;
+		renderSession.currentBlendMode = null;
 		
 		renderSession.projection = projection;
 		renderSession.offset = offset;
@@ -320,28 +320,5 @@ class GLRenderer {
 		
 	}*/
 	
-	
-}
-
-
-@:enum abstract BlendMode(Int) {
-	
-	var NORMAL = 0;
-	var ADD = 1;
-	var MULTIPLY = 2;
-	var SCREEN = 3;
-	var OVERLAY = 4;
-	var DARKEN = 5;
-	var LIGHTEN = 6;
-	var COLOR_DODGE = 7;
-	var COLOR_BURN = 8;
-	var HARD_LIGHT = 9;
-	var SOFT_LIGHT = 10;
-	var DIFFERENCE = 11;
-	var EXCLUSION = 12;
-	var HUE = 13;
-	var SATURATION = 14;
-	var COLOR = 15;
-	var LUMINOSITY = 16;
 	
 }
