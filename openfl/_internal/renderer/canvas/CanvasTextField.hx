@@ -3,6 +3,14 @@ package openfl._internal.renderer.canvas;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
+
+#if js
+import js.html.CanvasRenderingContext2D;
+import js.Browser;
+#end
 
 @:access(openfl.text.TextField)
 

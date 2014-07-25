@@ -3,6 +3,8 @@ package openfl._internal.renderer.dom;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormatAlign;
 
 #if js
 import js.Browser;
@@ -37,7 +39,7 @@ class DOMTextField {
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 					
-					textField.__div.innerHTML = __text;
+					textField.__div.innerHTML = textField.__text;
 					
 					if (textField.background) {
 						
@@ -105,7 +107,7 @@ class DOMTextField {
 				
 			}
 			
-			if textField.(__div != null) {
+			if (textField.__div != null) {
 				
 				// TODO: Enable scrollRect clipping
 				
