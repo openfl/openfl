@@ -328,6 +328,8 @@ class Stage extends Sprite {
 			
 			case DOM (element):
 				
+				element.style.background = __colorString;
+				
 				__renderSession.z = 1;
 				__renderSession.element = element;
 				__renderDOM (__renderSession);
