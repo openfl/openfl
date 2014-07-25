@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -71,7 +72,7 @@ class Shape extends DisplayObject {
 		
 		if (__graphics != null) {
 			
-			__graphics.__render (renderSession);
+			CanvasGraphics.render (graphics, renderSession);
 			
 			if (__graphics.__canvas != null) {
 				
@@ -115,7 +116,7 @@ class Shape extends DisplayObject {
 		
 			if (__graphics.__dirty || __worldAlphaChanged || (__canvas == null && __graphics.__canvas != null)) {
 				
-				__graphics.__render (renderSession);
+				CanvasGraphics.render (graphics, renderSession);
 				
 				if (__graphics.__canvas != null) {
 					

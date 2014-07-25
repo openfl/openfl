@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -116,13 +117,13 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics != null) {
 			
-			__graphics.__render (renderSession);
+			CanvasGraphics.render (graphics, renderSession);
 			
 			if (__graphics.__canvas != null) {
 				
 				if (__mask != null) {
 					
-					renderSession.maskManager.pushMask (__mask);
+					//renderSession.maskManager.pushMask (__mask);
 					
 				}
 				
@@ -153,7 +154,7 @@ class Sprite extends DisplayObjectContainer {
 				
 				if (__mask != null) {
 					
-					renderSession.maskManager.popMask ();
+					//renderSession.maskManager.popMask ();
 					
 				}
 				
@@ -174,7 +175,7 @@ class Sprite extends DisplayObjectContainer {
 			
 			if (__graphics.__dirty || __worldAlphaChanged || (__canvas == null && __graphics.__canvas != null)) {
 				
-				__graphics.__render (renderSession);
+				CanvasGraphics.render (graphics, renderSession);
 				
 				if (__graphics.__canvas != null) {
 					
@@ -246,7 +247,7 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics != null) {
 			
-			__graphics.__render (renderSession);
+			//__graphics.__render (renderSession);
 			
 			/*if (__graphics.__canvas != null) {
 				
@@ -264,8 +265,8 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics != null) {
 			
-			__graphics.__renderMask (renderSession);
-				
+			CanvasGraphics.renderMask (__graphics, renderSession);
+			
 		} else {
 			
 			super.__renderMask (renderSession);

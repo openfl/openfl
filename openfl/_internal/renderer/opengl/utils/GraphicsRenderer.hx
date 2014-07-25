@@ -6,7 +6,11 @@ import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.Graphics;
 import openfl.geom.Point;
+
+
+@:access(openfl.display.Graphics)
 
 
 class  GraphicsRenderer {
@@ -610,15 +614,16 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function renderGraphics (graphics:Dynamic, renderSession:RenderSession):Void {
+	public static function renderGraphics (graphics:Graphics, renderSession:RenderSession):Void {
 		
+		/*
 		var gl:GLRenderContext = renderSession.gl;
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
 		var shader = renderSession.shaderManager.primitiveShader;
 		var webGLData:GLGraphicsData;
 		
-		if (graphics.dirty) {
+		if (graphics.__dirty) {
 			
 			updateGraphics (graphics, gl);
 			
@@ -664,7 +669,7 @@ class  GraphicsRenderer {
 				
 			}
 			
-		}
+		}*/
 		
 	}
 	
@@ -705,8 +710,9 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function updateGraphics (graphics:Dynamic, gl:GLRenderContext):Void {
+	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
 		
+		/*
 		var webGL = graphics._webGL[GLRenderer.glContextId];
 		
 		if (webGL == null) {
@@ -715,7 +721,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		graphics.dirty = false;
+		graphics.__dirty = false;
 		
 		if (graphics.clearDirty) {
 			
@@ -798,7 +804,7 @@ class  GraphicsRenderer {
 			webGLData = cast webGL.data[i];
 			if (webGLData.dirty) webGLData.upload ();
 			
-		}
+		}*/
 		
 	}
 	

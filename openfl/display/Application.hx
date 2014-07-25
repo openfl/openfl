@@ -32,7 +32,7 @@ class Application extends lime.app.Application {
 		
 		super.create (config);
 		
-		stage = new Stage (config.width, config.height, config.background);
+		stage = new Stage (window.width, window.height, config.background);
 		stage.addChild (Lib.current);
 		
 	}

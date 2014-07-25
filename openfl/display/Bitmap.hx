@@ -106,7 +106,7 @@ class Bitmap extends DisplayObjectContainer {
 			
 			if (__mask != null) {
 				
-				renderSession.maskManager.pushMask (__mask);
+				//renderSession.maskManager.pushMask (__mask);
 				
 			}
 			
@@ -169,7 +169,7 @@ class Bitmap extends DisplayObjectContainer {
 			
 			if (__mask != null) {
 				
-				renderSession.maskManager.popMask ();
+				//renderSession.maskManager.popMask ();
 				
 			}
 			
