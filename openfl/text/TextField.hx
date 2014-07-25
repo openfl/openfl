@@ -1,6 +1,8 @@
 package openfl.text; #if !flash
 
 
+import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.RenderSession;
 import haxe.xml.Fast;
 import openfl.display.DisplayObject;
@@ -20,9 +22,10 @@ import js.html.Element;
 import js.Browser;
 #end
 
-
 @:access(openfl.display.Graphics)
 @:access(openfl.text.TextFormat)
+
+
 class TextField extends InteractiveObject {
 	
 	
@@ -73,8 +76,6 @@ class TextField extends InteractiveObject {
 	private var __width:Float;
 	
 	#if js
-	private var __canvas:CanvasElement;
-	private var __context:CanvasRenderingContext2D;
 	private var __div:DivElement;
 	#end
 	
@@ -352,321 +353,14 @@ class TextField extends InteractiveObject {
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		#if js
-		
-		if (!__renderable || __worldAlpha <= 0) return;
-		
-		if (__dirty) {
-			
-			if (((__text == null || __text == "") && !background && !border) || ((width <= 0 || height <= 0) && autoSize != TextFieldAutoSize.LEFT)) {
-				
-				__canvas = null;
-				__context = null;
-				
-			} else {
-				
-				if (__canvas == null) {
-					
-					__canvas = cast Browser.document.createElement ("canvas");
-					__context = __canvas.getContext ("2d");
-					
-				}
-				
-				if (__text != null && __text != "") {
-					
-					var measurements = __measureText ();
-					var textWidth = 0.0;
-					
-					for (measurement in measurements) {
-						
-						textWidth += measurement;
-						
-					}
-					
-					if (autoSize == TextFieldAutoSize.LEFT) {
-						
-						__width = textWidth + 4;
-						
-					}
-					
-					__canvas.width = Math.ceil (__width);
-					__canvas.height = Math.ceil (__height);
-					
-					if (border || background) {
-						
-						__context.rect (0.5, 0.5, __width - 1, __height - 1);
-						
-						if (background) {
-							
-							__context.fillStyle = "#" + StringTools.hex (backgroundColor, 6);
-							__context.fill ();
-							
-						}
-						
-						if (border) {
-							
-							__context.lineWidth = 1;
-							__context.strokeStyle = "#" + StringTools.hex (borderColor, 6);
-							__context.stroke ();
-							
-						}
-						
-					}
-					
-					if (__ranges == null) {
-						
-						__renderText (text, __textFormat, 0);
-						
-					} else {
-						
-						var currentIndex = 0;
-						var range;
-						var offsetX = 0.0;
-						
-						for (i in 0...__ranges.length) {
-							
-							range = __ranges[i];
-							
-							__renderText (text.substring (range.start, range.end), range.format, offsetX);
-							offsetX += measurements[i];
-							
-						}
-						
-					}
-					
-				} else {
-					
-					if (autoSize == TextFieldAutoSize.LEFT) {
-						
-						__width = 4;
-						
-					}
-					
-					__canvas.width = Math.ceil (__width);
-					__canvas.height = Math.ceil (__height);
-					
-					if (border || background) {
-						
-						if (border) {
-							
-							__context.rect (0.5, 0.5, __width - 1, __height - 1);
-
-						} else {
-							
-							__context.rect (0, 0, __width, __height);
-
-						}					
-						
-						if (background) {
-							
-							__context.fillStyle = "#" + StringTools.hex (backgroundColor, 6);
-							__context.fill ();
-							
-						}
-						
-						if (border) {
-							
-							__context.lineWidth = 1;
-							__context.lineCap = "square";
-							__context.strokeStyle = "#" + StringTools.hex (borderColor, 6);
-							__context.stroke ();
-							
-						}
-						
-					}
-					
-				}
-				
-			}
-			
-			__dirty = false;
-			
-		}
-		
-		if (__canvas != null) {
-			
-			var context = renderSession.context;
-			
-			context.globalAlpha = __worldAlpha;
-			var transform = __worldTransform;
-			
-			if (renderSession.roundPixels) {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-				
-			} else {
-				
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-				
-			}
-			
-			if (scrollRect == null) {
-				
-				context.drawImage (__canvas, 0, 0);
-				
-			} else {
-				
-				context.drawImage (__canvas, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				
-			}
-			
-		}
-		
-		#end
+		CanvasTextField.render (this, renderSession);
 		
 	}
 	
 	
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
-		#if js
-		
-		if (stage != null && __worldVisible && __renderable) {
-			
-			if (__dirty || __div == null) {
-				
-				if (__text != "" || background || border) {
-					
-					if (__div == null) {
-						
-						__div = cast Browser.document.createElement ("div");
-						__initializeElement (__div, renderSession);
-						__style.setProperty ("cursor", "inherit", null);
-						
-					}
-					
-					// TODO: Handle ranges using span
-					// TODO: Vertical align
-					
-					__div.innerHTML = __text;
-					
-					if (background) {
-						
-						__style.setProperty ("background-color", "#" + StringTools.hex (backgroundColor, 6), null);
-						
-					} else {
-						
-						__style.removeProperty ("background-color");
-						
-					}
-					
-					if (border) {
-						
-						__style.setProperty ("border", "solid 1px #" + StringTools.hex (borderColor, 6), null);
-						
-					} else {
-						
-						__style.removeProperty ("border");
-						
-					}
-					
-					__style.setProperty ("font", __getFont (__textFormat), null);
-					__style.setProperty ("color", "#" + StringTools.hex (__textFormat.color, 6), null);
-					
-					if (autoSize != TextFieldAutoSize.NONE) {
-						
-						__style.setProperty ("width", "auto", null);
-						
-					} else {
-						
-						__style.setProperty ("width", __width + "px", null);
-						
-					}
-					
-					__style.setProperty ("height", __height + "px", null);
-					
-					switch (__textFormat.align) {
-						
-						case TextFormatAlign.CENTER:
-							
-							__style.setProperty ("text-align", "center", null);
-						
-						case TextFormatAlign.RIGHT:
-							
-							__style.setProperty ("text-align", "right", null);
-						
-						default:
-							
-							__style.setProperty ("text-align", "left", null);
-						
-					}
-					
-					__dirty = false;
-					
-				} else {
-					
-					if (__div != null) {
-						
-						renderSession.element.removeChild (__div);
-						__div = null;
-						
-					}
-					
-				}
-				
-			}
-			
-			if (__div != null) {
-				
-				// TODO: Enable scrollRect clipping
-				
-				__applyStyle (renderSession, true, true, false);
-				
-			}
-			
-		} else {
-			
-			if (__div != null) {
-				
-				renderSession.element.removeChild (__div);
-				__div = null;
-				__style = null;
-				
-			}
-			
-		}
-		
-		#end
-		
-	}
-	
-	
-	private function __renderText (text:String, format:TextFormat, offsetX:Float):Void {
-		
-		#if js
-		
-		__context.font = __getFont (format);
-		__context.textBaseline = "top";
-		__context.fillStyle = "#" + StringTools.hex (format.color, 6);
-		
-		var lines = text.split("\n");
-		var yOffset:Float = 0;
-		
-		for (line in lines) {
-			
-			switch (format.align) {
-				
-				case TextFormatAlign.CENTER:
-					
-					__context.textAlign = "center";
-					__context.fillText (line, __width / 2, 2 + yOffset, __width - 4);
-					
-				case TextFormatAlign.RIGHT:
-					
-					__context.textAlign = "end";
-					__context.fillText (line, __width - 2, 2 + yOffset, __width - 4);
-					
-				default:
-					
-					__context.textAlign = "start";
-					__context.fillText (line, 2 + offsetX, 2 + yOffset, __width - 4);
-					
-			}
-			
-			yOffset += this.textHeight;
-		}
-		
-		#end
+		DOMTextField.render (this, renderSession);
 		
 	}
 	
