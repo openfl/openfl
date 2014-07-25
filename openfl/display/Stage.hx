@@ -11,8 +11,10 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLUniformLocation;
 import lime.graphics.RenderContext;
 import lime.utils.GLUtils;
+import openfl._internal.renderer.AbstractRenderer;
+import openfl._internal.renderer.canvas.CanvasRenderer;
+import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.RenderSession;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -63,16 +65,12 @@ class Stage extends Sprite {
 	private var __dragOffsetY:Float;
 	private var __focus:InteractiveObject;
 	private var __fullscreen:Bool;
-	private var __glRenderer:GLRenderer;
-	//private var __glContextID:Int;
-	//private var __glContextLost:Bool;
-	//private var __glOptions:Dynamic;
 	private var __invalidated:Bool;
 	private var __mouseX:Float = 0;
 	private var __mouseY:Float = 0;
 	private var __originalWidth:Int;
 	private var __originalHeight:Int;
-	private var __renderSession:RenderSession;
+	private var __renderer:AbstractRenderer;
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
@@ -105,31 +103,6 @@ class Stage extends Sprite {
 		
 		__mouseX = 0;
 		__mouseY = 0;
-		
-		__renderSession = new RenderSession ();
-		__renderSession.roundPixels = true;
-		
-		#if js
-		var prefix = untyped __js__ ("(function () {
-		  var styles = window.getComputedStyle(document.documentElement, ''),
-			pre = (Array.prototype.slice
-			  .call(styles)
-			  .join('') 
-			  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
-			)[1],
-			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
-		  return {
-			dom: dom,
-			lowercase: pre,
-			css: '-' + pre + '-',
-			js: pre[0].toUpperCase() + pre.substr(1)
-		  };
-		})")();
-		
-		__renderSession.vendorPrefix = prefix.lowercase;
-		__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
-		__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
-		#end
 		
 		stageWidth = width;
 		stageHeight = height;
@@ -299,40 +272,33 @@ class Stage extends Sprite {
 			
 			case OPENGL (gl):
 				
-				if (__glRenderer == null) {
+				if (__renderer == null) {
 					
-					__glRenderer = new GLRenderer (stageWidth, stageHeight, gl);
+					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
 					
 				}
 				
-				__glRenderer.render (this);
+				__renderer.render (this);
 			
 			case CANVAS (context):
 				
-				context.setTransform (1, 0, 0, 1, 0, 0);
-				context.globalAlpha = 1;
-				
-				if (!__transparent && __clearBeforeRender) {
+				if (__renderer == null) {
 					
-					context.fillStyle = __colorString;
-					context.fillRect (0, 0, stageWidth, stageHeight);
-					
-				} else if (__transparent && __clearBeforeRender) {
-					
-					context.clearRect (0, 0, stageWidth, stageHeight);
+					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
 					
 				}
 				
-				__renderSession.context = context;
-				__renderCanvas (__renderSession);
+				__renderer.render (this);
 			
 			case DOM (element):
 				
-				element.style.background = __colorString;
+				if (__renderer == null) {
+					
+					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+					
+				}
 				
-				__renderSession.z = 1;
-				__renderSession.element = element;
-				__renderDOM (__renderSession);
+				__renderer.render (this);
 			
 			default:
 			
@@ -569,18 +535,6 @@ class Stage extends Sprite {
 	private function canvas_onContextRestored (event:js.html.webgl.ContextEvent):Void {
 		
 		//__glContextLost = false;
-		
-	}
-	#end
-	
-	
-	#if js
-	private function window_onResize (event:js.html.Event):Void {
-		
-		__resize ();
-		
-		var event = new Event (Event.RESIZE);
-		__broadcast (event, false);
 		
 	}
 	#end

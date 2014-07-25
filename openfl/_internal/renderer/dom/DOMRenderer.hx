@@ -1,9 +1,12 @@
 package openfl._internal.renderer.dom;
 
 
+import lime.graphics.DOMRenderContext;
+import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Shape;
+import openfl.display.Stage;
 import openfl.geom.Matrix;
 
 #if js
@@ -13,9 +16,58 @@ import js.Browser;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shape)
+@:access(openfl.display.Stage)
 
 
-class DOMRenderer {
+class DOMRenderer extends AbstractRenderer {
+	
+	
+	private var element:DOMRenderContext;
+	
+	
+	public function new (width:Int, height:Int, element:DOMRenderContext) {
+		
+		super (width, height);
+		
+		this.element = element;
+		
+		renderSession = new RenderSession ();
+		renderSession.element = element;
+		renderSession.roundPixels = true;
+		
+		#if js
+		var prefix = untyped __js__ ("(function () {
+		  var styles = window.getComputedStyle(document.documentElement, ''),
+			pre = (Array.prototype.slice
+			  .call(styles)
+			  .join('') 
+			  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
+			)[1],
+			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
+		  return {
+			dom: dom,
+			lowercase: pre,
+			css: '-' + pre + '-',
+			js: pre[0].toUpperCase() + pre.substr(1)
+		  };
+		})")();
+		
+		renderSession.vendorPrefix = prefix.lowercase;
+		renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
+		renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
+		#end
+		
+	}
+	
+	
+	public override function render (stage:Stage):Void {
+		
+		element.style.background = stage.__colorString;
+		
+		renderSession.z = 1;
+		stage.__renderDOM (renderSession);
+		
+	}
 	
 	
 	public static inline function renderShape (shape:Shape, renderSession:RenderSession):Void {

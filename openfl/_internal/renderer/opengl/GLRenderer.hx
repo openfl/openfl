@@ -4,6 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.graphics.GL;
 import lime.graphics.GLFramebuffer;
 import lime.graphics.GLRenderContext;
+import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.MaskManager;
 import openfl._internal.renderer.RenderSession;
@@ -13,12 +14,11 @@ import openfl.display.Stage;
 import openfl.errors.Error;
 import openfl.geom.Point;
 
-
 @:access(lime.graphics.GL)
 @:access(openfl.display.Stage)
 
 
-class GLRenderer {
+class GLRenderer extends AbstractRenderer {
 	
 	
 	public static var blendModesWebGL:Map <BlendMode, Array<Int>> = null;
@@ -30,24 +30,23 @@ class GLRenderer {
 	public var filterManager:FilterManager;
 	public var gl:GLRenderContext;
 	public var _glContextId:Int;
-	public var height:Int;
 	public var maskManager:openfl._internal.renderer.opengl.utils.MaskManager;
 	public var offset:Point;
 	public var options:Dynamic;
 	public var preserveDrawingBuffer:Bool;
 	public var projection:Point;
-	public var renderSession:RenderSession;
 	public var shaderManager:ShaderManager;
 	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
 	public var transparent:Bool;
 	public var view:Dynamic;
-	public var width:Int;
 	
 	private var __stage:Dynamic;
 	
 	
 	public function new (width:Int = 800, height:Int = 600, gl:GLRenderContext /*view:Dynamic = null*/, transparent:Bool = false, antialias:Bool = false, preserveDrawingBuffer:Bool = false) {
+		
+		super (width, height);
 		
 		this.transparent = transparent;
 		this.preserveDrawingBuffer = preserveDrawingBuffer;
@@ -236,7 +235,7 @@ class GLRenderer {
 	}
 	
 	
-	public function render (stage:Stage):Void {
+	public override function render (stage:Stage):Void {
 		
 		if (contextLost) return;
 		
@@ -281,10 +280,9 @@ class GLRenderer {
 	}
 	
 	
-	public function resize (width:Int, height:Int):Void {
+	public override function resize (width:Int, height:Int):Void {
 		
-		this.width = width;
-		this.height = height;
+		super.resize (width, height);
 		
 		gl.viewport (0, 0, width, height);
 		

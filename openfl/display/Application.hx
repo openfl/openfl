@@ -9,9 +9,10 @@ import openfl.events.TouchEvent;
 import openfl.geom.Point;
 import openfl.Lib;
 
-
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
+
+
 class Application extends lime.app.Application {
 	
 	
@@ -266,6 +267,17 @@ class Application extends lime.app.Application {
 		
 		var event = new openfl.events.Event (openfl.events.Event.DEACTIVATE);
 		stage.__broadcast (event, true);
+		
+	}
+	
+	
+	public override function onWindowResize (width:Int, height:Int):Void {
+		
+		stage.stageWidth = width;
+		stage.stageHeight = height;
+		
+		var event = new openfl.events.Event (openfl.events.Event.RESIZE);
+		stage.__broadcast (event, false);
 		
 	}
 	
