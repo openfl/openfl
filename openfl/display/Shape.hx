@@ -1,17 +1,11 @@
 package openfl.display; #if !flash
 
 
-import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.canvas.CanvasRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
+import openfl._internal.renderer.canvas.CanvasShape;
+import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-
-#if js
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-#end
 
 @:access(openfl.display.Graphics)
 
@@ -20,13 +14,6 @@ class Shape extends DisplayObject {
 	
 	
 	public var graphics (get, null):Graphics;
-	
-	private var __graphics:Graphics;
-	
-	#if js
-	private var __canvas:CanvasElement;
-	private var __canvasContext:CanvasRenderingContext2D;
-	#end
 	
 	
 	public function new () {
@@ -68,14 +55,14 @@ class Shape extends DisplayObject {
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		CanvasRenderer.renderShape (this, renderSession);
+		CanvasShape.render (this, renderSession);
 		
 	}
 	
 	
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
-		DOMRenderer.renderShape (this, renderSession);
+		DOMShape.render (this, renderSession);
 		
 	}
 	

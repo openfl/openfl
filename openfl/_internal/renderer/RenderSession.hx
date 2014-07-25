@@ -26,6 +26,7 @@ class RenderSession {
 	//public var mask:Bool;
 	//public var maskManager:MaskManager;
 	public var projectionMatrix:Matrix4;
+	public var renderer:AbstractRenderer;
 	//public var scaleMode:ScaleMode;
 	public var roundPixels:Bool;
 	public var transformProperty:String;
@@ -41,7 +42,6 @@ class RenderSession {
 	public var blendModeManager:BlendModeManager;
 	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
-	public var renderer:GLRenderer;
 	public var currentBlendMode:BlendMode;
 	public var projection:Point;
 	public var offset:Point;

@@ -16,6 +16,8 @@ import openfl.geom.Transform;
 import openfl.Lib;
 
 #if js
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.html.Element;
 #end
@@ -59,6 +61,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	private var __alpha:Float;
 	private var __filters:Array<BitmapFilter>;
+	private var __graphics:Graphics;
 	private var __interactive:Bool;
 	private var __isMask:Bool;
 	private var __mask:DisplayObject;
@@ -88,6 +91,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	private var __y:Float;
 	
 	#if js
+	private var __canvas:CanvasElement;
+	private var __context:CanvasRenderingContext2D;
 	private var __style:CSSStyleDeclaration;
 	#end
 	
@@ -196,55 +201,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	private function __applyStyle (renderSession:RenderSession, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void {
-		
-		#if js
-		if (setTransform && __worldTransformChanged) {
-			
-			__style.setProperty (renderSession.transformProperty, __worldTransform.to3DString (renderSession.roundPixels), null);
-			
-		}
-		
-		if (__worldZ != ++renderSession.z) {
-			
-			__worldZ = renderSession.z;
-			__style.setProperty ("z-index", Std.string (__worldZ), null);
-			
-		}
-		
-		if (setAlpha && __worldAlphaChanged) {
-			
-			if (__worldAlpha < 1) {
-				
-				__style.setProperty ("opacity", Std.string (__worldAlpha), null);
-				
-			} else {
-				
-				__style.removeProperty ("opacity");
-				
-			}
-			
-		}
-		
-		if (setClip && __worldClipChanged) {
-			
-			if (__worldClip == null) {
-				
-				__style.removeProperty ("clip");
-				
-			} else {
-				
-				var clip = __worldClip.transform (__worldTransform.clone ().invert ());
-				__style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
-				
-			}
-			
-		}
-		#end
-		
-	}
-	
-	
 	private function __broadcast (event:Event, notifyChilden:Bool):Bool {
 		
 		if (__eventMap != null && hasEventListener (event.type)) {
@@ -332,27 +288,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		return false;
 		
 	}
-	
-	
-	#if js
-	private function __initializeElement (element:Element, renderSession:RenderSession):Void {
-		
-		__style = element.style;
-		__style.setProperty ("position", "absolute", null);
-		__style.setProperty ("top", "0", null);
-		__style.setProperty ("left", "0", null);
-		__style.setProperty (renderSession.transformOriginProperty, "0 0 0", null);
-		
-		renderSession.element.appendChild (element);
-		
-		__worldAlphaChanged = true;
-		__worldClipChanged = true;
-		__worldTransformChanged = true;
-		__worldVisibleChanged = true;
-		__worldZ = -1;
-		
-	}
-	#end
 	
 	
 	public function __renderCanvas (renderSession:RenderSession):Void {

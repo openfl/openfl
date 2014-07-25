@@ -1,6 +1,8 @@
 package openfl.display;
 
 
+import openfl._internal.renderer.dom.DOMRenderer;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 
@@ -31,12 +33,12 @@ class DOMSprite extends Sprite {
 			
 			if (!__active) {
 				
-				__initializeElement (__element, renderSession);
+				DOMRenderer.initializeElement (this, __element, renderSession);
 				__active = true;
 				
 			}
 			
-			__applyStyle (renderSession, true, true, true);
+			DOMRenderer.applyStyle (this, renderSession, true, true, true);
 			
 		} else {
 			

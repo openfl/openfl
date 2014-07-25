@@ -3,19 +3,15 @@ package openfl._internal.renderer.dom;
 
 import lime.graphics.DOMRenderContext;
 import openfl._internal.renderer.AbstractRenderer;
-import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
-import openfl.display.Shape;
+import openfl.display.DisplayObject;
 import openfl.display.Stage;
-import openfl.geom.Matrix;
 
 #if js
-import js.html.CSSStyleDeclaration;
-import js.Browser;
+import js.html.Element;
 #end
 
-@:access(openfl.display.Graphics)
-@:access(openfl.display.Shape)
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
 
 
@@ -57,7 +53,82 @@ class DOMRenderer extends AbstractRenderer {
 		renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
 		#end
 		
+		renderSession.renderer = this;
+		
 	}
+	
+	
+	public static function applyStyle (displayObject:DisplayObject, renderSession:RenderSession, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void {
+		
+		#if js
+		var style = displayObject.__style;
+		
+		if (setTransform && displayObject.__worldTransformChanged) {
+			
+			style.setProperty (renderSession.transformProperty, displayObject.__worldTransform.to3DString (renderSession.roundPixels), null);
+			
+		}
+		
+		if (displayObject.__worldZ != ++renderSession.z) {
+			
+			displayObject.__worldZ = renderSession.z;
+			style.setProperty ("z-index", Std.string (displayObject.__worldZ), null);
+			
+		}
+		
+		if (setAlpha && displayObject.__worldAlphaChanged) {
+			
+			if (displayObject.__worldAlpha < 1) {
+				
+				style.setProperty ("opacity", Std.string (displayObject.__worldAlpha), null);
+				
+			} else {
+				
+				style.removeProperty ("opacity");
+				
+			}
+			
+		}
+		
+		if (setClip && displayObject.__worldClipChanged) {
+			
+			if (displayObject.__worldClip == null) {
+				
+				style.removeProperty ("clip");
+				
+			} else {
+				
+				var clip = displayObject.__worldClip.transform (displayObject.__worldTransform.clone ().invert ());
+				style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
+				
+			}
+			
+		}
+		#end
+		
+	}
+	
+	
+	#if js
+	public static function initializeElement (displayObject:DisplayObject, element:Element, renderSession:RenderSession):Void {
+		
+		var style = displayObject.__style = element.style;
+		
+		style.setProperty ("position", "absolute", null);
+		style.setProperty ("top", "0", null);
+		style.setProperty ("left", "0", null);
+		style.setProperty (renderSession.transformOriginProperty, "0 0 0", null);
+		
+		renderSession.element.appendChild (element);
+		
+		displayObject.__worldAlphaChanged = true;
+		displayObject.__worldClipChanged = true;
+		displayObject.__worldTransformChanged = true;
+		displayObject.__worldVisibleChanged = true;
+		displayObject.__worldZ = -1;
+		
+	}
+	#end
 	
 	
 	public override function render (stage:Stage):Void {
@@ -66,79 +137,6 @@ class DOMRenderer extends AbstractRenderer {
 		
 		renderSession.z = 1;
 		stage.__renderDOM (renderSession);
-		
-	}
-	
-	
-	public static inline function renderShape (shape:Shape, renderSession:RenderSession):Void {
-		
-		#if js
-		var graphics = shape.__graphics;
-		
-		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null) {
-			
-			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas == null && graphics.__canvas != null)) {
-				
-				CanvasGraphics.render (graphics, renderSession);
-				
-				if (graphics.__canvas != null) {
-					
-					if (shape.__canvas == null) {
-						
-						shape.__canvas = cast Browser.document.createElement ("canvas");	
-						shape.__canvasContext = shape.__canvas.getContext ("2d");
-						shape.__initializeElement (shape.__canvas, renderSession);
-						
-					}
-					
-					shape.__canvas.width = graphics.__canvas.width;
-					shape.__canvas.height = graphics.__canvas.height;
-					
-					shape.__canvasContext.globalAlpha = shape.__worldAlpha;
-					shape.__canvasContext.drawImage (graphics.__canvas, 0, 0);
-					
-				} else {
-					
-					if (shape.__canvas != null) {
-						
-						renderSession.element.removeChild (shape.__canvas);
-						shape.__canvas = null;
-						shape.__style = null;
-						
-					}
-					
-				}
-				
-			}
-			
-			if (shape.__canvas != null) {
-				
-				if (shape.__worldTransformChanged) {
-					
-					var transform = new Matrix ();
-					transform.translate (graphics.__bounds.x, graphics.__bounds.y);
-					transform = transform.mult (shape.__worldTransform);
-					
-					shape.__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
-					
-				}
-				
-				shape.__applyStyle (renderSession, false, false, true);
-				
-			}
-				
-		} else {
-			
-			if (shape.__canvas != null) {
-				
-				renderSession.element.removeChild (shape.__canvas);
-				shape.__canvas = null;
-				shape.__style = null;
-				
-			}
-			
-		}
-		#end
 		
 	}
 	
