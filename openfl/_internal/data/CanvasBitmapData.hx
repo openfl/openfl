@@ -1,16 +1,27 @@
-package openfl._internal.renderer.canvas;
+package openfl._internal.data;
 
 
 import haxe.crypto.BaseCode;
+import haxe.io.Bytes;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 import openfl.display.BlendMode;
 import openfl.display.IBitmapDrawable;
+import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
+
+#if js
+import js.html.CanvasElement;
+import js.html.Image;
+import js.html.Uint8ClampedArray;
+import js.Browser;
+#end
 
 @:access(openfl.display.BitmapData)
 
@@ -25,7 +36,7 @@ class CanvasBitmapData {
 	public static inline function applyFilter (bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void {
 		
 		#if js
-		if (!bitmapData.__isValid || bitmapData.sourceBitmapData == null || !bitmapData.sourceBitmapData.__isValid) return;
+		if (!bitmapData.__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid) return;
 		
 		convertToCanvas (bitmapData);
 		createImageData (bitmapData);
@@ -145,8 +156,8 @@ class CanvasBitmapData {
 		convertToCanvas (bitmapData);
 		createImageData (bitmapData);
 		
-		var data = __sourceImageData.data;
-		var stride = width * 4;
+		var data = bitmapData.__sourceImageData.data;
+		var stride = bitmapData.width * 4;
 		var offset:Int;
 		
 		for (row in Std.int (rect.y)...Std.int (rect.height)) {
@@ -170,7 +181,7 @@ class CanvasBitmapData {
 	}
 	
 	
-	private static function convertToCanvas (bitmapData:BitmapData):Void {
+	public static function convertToCanvas (bitmapData:BitmapData):Void {
 		
 		#if js
 		if (bitmapData.__loading) return;
@@ -198,7 +209,7 @@ class CanvasBitmapData {
 		sourceRect = clipRect (bitmapData, sourceRect);
 		if (!bitmapData.__isValid || sourceRect == null) return;
 		
-		if (destChannel == BitmapDataChannel.ALPHA && !transparent) return;
+		if (destChannel == BitmapDataChannel.ALPHA && !bitmapData.transparent) return;
 		if (sourceRect.width <= 0 || sourceRect.height <= 0) return;
 		if (sourceRect.x + sourceRect.width > sourceBitmapData.width) sourceRect.width = sourceBitmapData.width - sourceRect.x;
 		if (sourceRect.y + sourceRect.height > sourceBitmapData.height) sourceRect.height = sourceBitmapData.height - sourceRect.y;
@@ -311,7 +322,7 @@ class CanvasBitmapData {
 			
 			if (alphaPoint == null) alphaPoint = new Point ();
 			
-			var tempData = clone ();
+			var tempData = clone (bitmapData);
 			tempData.copyChannel (alphaBitmapData, new Rectangle (alphaPoint.x, alphaPoint.y, sourceRect.width, sourceRect.height), new Point (sourceRect.x, sourceRect.y), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
 			sourceBitmapData = tempData;
 			
@@ -321,7 +332,7 @@ class CanvasBitmapData {
 		
 		if (!mergeAlpha) {
 			
-			if (transparent && sourceBitmapData.transparent) {
+			if (bitmapData.transparent && sourceBitmapData.transparent) {
 				
 				bitmapData.__sourceContext.clearRect (destPoint.x, destPoint.y, sourceRect.width, sourceRect.height);
 				
@@ -348,7 +359,7 @@ class CanvasBitmapData {
 	public static inline function create (bitmapData:BitmapData, fillColor:Int):Void {
 		
 		#if js
-		createCanvas (bitmapData, width, height);
+		createCanvas (bitmapData, bitmapData.width, bitmapData.height);
 		#end
 		
 		if (!bitmapData.transparent) {
@@ -467,17 +478,20 @@ class CanvasBitmapData {
 		convertToCanvas (bitmapData);
 		syncImageData (bitmapData);
 		
-		if (rect.x == 0 && rect.y == 0 && rect.width == width && rect.height == height) {
+		var fill = true;
+		
+		if (rect.x == 0 && rect.y == 0 && rect.width == bitmapData.width && rect.height == bitmapData.height) {
 			
 			if (bitmapData.transparent && ((color & 0xFF000000) == 0)) {
 				
-				bitmapData.__sourceCanvas.width = width;
-				return;
+				bitmapData.__sourceCanvas.width = bitmapData.width;
+				fill = false;
 				
 			}
 			
 		}
 		
+		if (fill)
 		__fillRect (bitmapData, rect, color);
 		#end
 		
@@ -501,16 +515,16 @@ class CanvasBitmapData {
 		
 		var data = bitmapData.__sourceImageData.data;
 		
-		var offset = ((y * (width * 4)) + (x * 4));
+		var offset = ((y * (bitmapData.width * 4)) + (x * 4));
 		var hitColorR = data[offset + 0];
 		var hitColorG = data[offset + 1];
 		var hitColorB = data[offset + 2];
-		var hitColorA = transparent ? data[offset + 3] : 0xFF;
+		var hitColorA = bitmapData.transparent ? data[offset + 3] : 0xFF;
 		
 		var r = (color & 0xFF0000) >>> 16;
 		var g = (color & 0x00FF00) >>> 8;
 		var b = (color & 0x0000FF);
-		var a = transparent ? (color & 0xFF000000) >>> 24 : 0xFF;
+		var a = bitmapData.transparent ? (color & 0xFF000000) >>> 24 : 0xFF;
 		
 		if (hitColorR == r && hitColorG == g && hitColorB == b && hitColorA == a) return;
 		
@@ -531,13 +545,13 @@ class CanvasBitmapData {
 				var nextPointX = curPointX + dx[i];
 				var nextPointY = curPointY + dy[i];
 				
-				if (nextPointX < 0 || nextPointY < 0 || nextPointX >= width || nextPointY >= height) {
+				if (nextPointX < 0 || nextPointY < 0 || nextPointX >= bitmapData.width || nextPointY >= bitmapData.height) {
 					
 					continue;
 					
 				}
 				
-				var nextPointOffset = (nextPointY * width + nextPointX) * 4;
+				var nextPointOffset = (nextPointY * bitmapData.width + nextPointX) * 4;
 				
 				if (data[nextPointOffset + 0] == hitColorR && data[nextPointOffset + 1] == hitColorG && data[nextPointOffset + 2] == hitColorB && data[nextPointOffset + 3] == hitColorA) {
 					
@@ -585,7 +599,7 @@ class CanvasBitmapData {
 		
 		#if js
 		bitmapData.__sourceImage = new Image ();	
-		bitmapData.__sourceImage.onload = static inline function (_) {
+		bitmapData.__sourceImage.onload = function (_) {
 			
 			bitmapData.width = bitmapData.__sourceImage.width;
 			bitmapData.height = bitmapData.__sourceImage.height;
@@ -600,7 +614,7 @@ class CanvasBitmapData {
 			
 		}
 		
-		bitmapData.__sourceImage.onerror = static inline function (_) {
+		bitmapData.__sourceImage.onerror = function (_) {
 			
 			bitmapData.__isValid = false;
 			if (onfail != null) {
@@ -647,7 +661,7 @@ class CanvasBitmapData {
 		bitmapData.width = canvas.width;
 		bitmapData.height = canvas.height;
 		bitmapData.rect = new Rectangle (0, 0, canvas.width, canvas.height);
-		bitmapData.createCanvas (bitmapData, canvas.width, canvas.height);
+		createCanvas (bitmapData, canvas.width, canvas.height);
 		bitmapData.__sourceContext.drawImage (canvas, 0, 0);
 		return bitmapData;
 		
@@ -656,9 +670,9 @@ class CanvasBitmapData {
 	
 	
 	#if js
-	private static inline function getInt32 (offset:Int, data:Uint8ClampedArray) {
+	private static inline function getInt32 (bitmapData:BitmapData, offset:Int, data:Uint8ClampedArray) {
 		
-		return (transparent ? data[offset + 3] : 0xFF) << 24 | data[offset] << 16 | data[offset + 1] << 8 | data[offset + 2]; 
+		return (bitmapData.transparent ? data[offset + 3] : 0xFF) << 24 | data[offset] << 16 | data[offset + 1] << 8 | data[offset + 2]; 
 		
 	}
 	#end
@@ -689,7 +703,7 @@ class CanvasBitmapData {
 		convertToCanvas (bitmapData);
 		createImageData (bitmapData);
 		
-		return __getInt32 ((4 * y * bitmapData.width + x * 4), bitmapData.__sourceImageData.data);
+		return getInt32 (bitmapData, (4 * y * bitmapData.width + x * 4), bitmapData.__sourceImageData.data);
 		#else
 		return 0;
 		#end
@@ -878,7 +892,7 @@ class CanvasBitmapData {
 		var sh:Int = Std.int (sourceRect.height);
 		
 		memory.length = ((sw * sh) * 4);
-		memory = getPixels (sourceRect);
+		memory = bitmapData.getPixels (sourceRect);
 		memory.position = 0;
 		Memory.select (memory);
 		
@@ -893,7 +907,7 @@ class CanvasBitmapData {
 			g = (pixelValue >> 16) & 0xFF;
 			b = (pixelValue >> 24) & 0xFF;
 			
-			color = __flipPixel ((0xff << 24) |
+			color = flipPixel ((0xff << 24) |
 				redArray[r] | 
 				greenArray[g] | 
 				blueArray[b]);
@@ -1031,7 +1045,7 @@ class CanvasBitmapData {
 	}
 	
 	
-	private static inline function syncImageData (bitmapData:BitmapData):Void {
+	public static inline function syncImageData (bitmapData:BitmapData):Void {
 		
 		#if js
 		if (bitmapData.__sourceImageDataChanged) {
@@ -1072,7 +1086,7 @@ class CanvasBitmapData {
 				
 				for (xx in 0...bitmapData.width) {
 					
-					position = (bitmapData.width_yy + xx) * 4;
+					position = (width_yy + xx) * 4;
 					pixelValue = Memory.getI32 (position);
 					pixelMask = cast pixelValue & mask;
 					

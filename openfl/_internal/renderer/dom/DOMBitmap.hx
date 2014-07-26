@@ -1,6 +1,7 @@
 package openfl._internal.renderer.dom;
 
 
+import openfl._internal.data.CanvasBitmapData;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
@@ -81,7 +82,7 @@ class DOMBitmap {
 			
 		}
 		
-		bitmap.bitmapData.__syncImageData ();
+		CanvasBitmapData.syncImageData (bitmap.bitmapData);
 		
 		bitmap.__canvas.width = bitmap.bitmapData.width;
 		bitmap.__canvas.height = bitmap.bitmapData.height;

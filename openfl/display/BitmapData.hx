@@ -6,8 +6,8 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
-import openfl._internal.renderer.canvas.CanvasBitmapData;
-import openfl._internal.renderer.opengl.GLBitmapData;
+import openfl._internal.data.CanvasBitmapData;
+import openfl._internal.data.BitmapDataArray;
 import openfl._internal.renderer.RenderSession;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
@@ -87,7 +87,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		return CanvasBitmapData.clone (this);
 		#else
-		return GLBitmapData.clone (this);
+		return BitmapDataArray.clone (this);
 		#end
 		
 	}
@@ -125,7 +125,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		CanvasBitmapData.dispose (this);
 		#else
-		GLBitmapData.dispose (this);
+		BitmapDataArray.dispose (this);
 		#end
 		
 		width = 0;
@@ -209,7 +209,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		return CanvasBitmapData.fromImage (image, transparent);
 		#else
-		return GLBitmapData.fromImage (image, transparent);
+		return BitmapDataArray.fromImage (image, transparent);
 		#end
 		
 	}
@@ -298,7 +298,33 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getTexture (gl:GLRenderContext):GLTexture {
 		
-		return GLBitmapData.getTexture (this, gl);
+		if (__texture == null) {
+			
+			__texture = gl.createTexture ();
+			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			#if js
+			if (__sourceBytes == null) {
+				
+				CanvasBitmapData.convertToCanvas (this);
+				
+				var pixels = __sourceContext.getImageData (0, 0, width, height);
+				var data = new lime.graphics.ImageData (pixels.data);
+				data.premultiply ();
+				
+				__sourceBytes = data;
+				
+			}
+			#end
+			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __sourceBytes);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.bindTexture (gl.TEXTURE_2D, null);
+			
+		}
+		
+		return __texture;
 		
 	}
 	
@@ -407,7 +433,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
 		#if js
-		CanvasBitmapData (this, rect, byteArray);
+		CanvasBitmapData.setPixels (this, rect, byteArray);
 		#end
 		
 	}
@@ -425,7 +451,7 @@ class BitmapData implements IBitmapDrawable {
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
 		#if js
-		return CanvasBitmapData (this, sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource);
+		return CanvasBitmapData.threshold (this, sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource);
 		#else
 		return 0;
 		#end
