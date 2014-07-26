@@ -174,7 +174,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool {
 		
-		return false;
+		return getBounds (null).contains (x,y);
 		
 	}
 	
