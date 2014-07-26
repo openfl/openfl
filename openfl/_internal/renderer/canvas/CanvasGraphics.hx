@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 
-import openfl._internal.data.CanvasBitmapData;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
@@ -185,7 +184,7 @@ class CanvasGraphics {
 								pattern = null;
 								setFill = false;
 								
-								CanvasBitmapData.syncImageData (bitmap);
+								bitmap.__syncImageData ();
 								
 							}
 							
@@ -364,7 +363,7 @@ class CanvasGraphics {
 							var previousTileID = -1;
 							
 							var surface:Dynamic;
-							CanvasBitmapData.syncImageData (sheet.__bitmap);
+							sheet.__bitmap.__syncImageData ();
 							
 							if (sheet.__bitmap.__sourceImage != null) {
 								

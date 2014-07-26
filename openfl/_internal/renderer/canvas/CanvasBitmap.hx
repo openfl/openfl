@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 
-import openfl._internal.data.CanvasBitmapData;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
@@ -27,7 +26,7 @@ class CanvasBitmap {
 				
 			}
 			
-			CanvasBitmapData.syncImageData (bitmap.bitmapData);
+			bitmap.bitmapData.__syncImageData ();
 			
 			context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__worldTransform;
