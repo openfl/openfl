@@ -35,11 +35,13 @@ class SharedObject extends EventDispatcher {
 		
 		data = { };
 		
+		#if js
 		try {
 			
 			__getLocalStorage ().removeItem (__key);
 			
 		} catch (e:Dynamic) {}
+		#end
 		
 		flush ();
 		
@@ -48,6 +50,7 @@ class SharedObject extends EventDispatcher {
 	
 	public function flush ():SharedObjectFlushStatus {
 		
+		#if js
 		var data = Serializer.run (data);
 		
 		try {
@@ -61,6 +64,7 @@ class SharedObject extends EventDispatcher {
 			return SharedObjectFlushStatus.PENDING;
 			
 		}
+		#end
 		
 		return SharedObjectFlushStatus.FLUSHED;
 		
@@ -69,22 +73,26 @@ class SharedObject extends EventDispatcher {
 	
 	public static function getLocal (name:String, localPath:String = null, secure:Bool = false /* note: unsupported */) {
 		
+		#if js
 		if (localPath == null) {
 			
 			localPath = Browser.window.location.href;
 			
 		}
+		#end
 		
 		var so = new SharedObject ();
 		so.__key = localPath + ":" + name;
 		var rawData = null;
 		
+		#if js
 		try {
 			
 			// user may have privacy settings which prevent reading
 			rawData = __getLocalStorage ().getItem (so.__key);
 			
-		} catch (e:Dynamic) {}
+		} catch (e:Dynamic) { }
+		#end
 		
 		so.data = { };
 		
@@ -107,6 +115,7 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
+	#if js
 	private static function __getLocalStorage ():Storage {
 		
 		var res = Browser.getLocalStorage ();
@@ -114,6 +123,7 @@ class SharedObject extends EventDispatcher {
 		return res;
 		
 	}
+	#end
 	
 	
 	private static function resolveClass (name:String):Class <Dynamic> {

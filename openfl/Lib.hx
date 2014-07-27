@@ -2,6 +2,8 @@ package openfl;
 
 
 import haxe.Timer;
+import lime.system.System;
+import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
@@ -14,6 +16,8 @@ import js.Browser;
 
 @:access(openfl.display.Stage) class Lib {
 	
+	
+	public static var application:Application;
 	
 	#if !flash
 	public static var current (default, null):MovieClip = new MovieClip ();
@@ -47,14 +51,26 @@ import js.Browser;
 	}
 	
 	
+	#if js
+	@:keep @:expose("openfl.embed")
+	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null) {
+		
+		System.embed (elementName, width, height, background);
+		
+	}
+	#end
+	
+	
 	#if flash
 	public static function eval (path:String):Dynamic {
 		
 		return flash.Lib.eval (path);
 		
 	}
+	#end
 	
 	
+	#if flash
 	public static function fscommand (cmd:String, ?param:String) {
 		
 		return flash.Lib.fscommand (cmd, param);
