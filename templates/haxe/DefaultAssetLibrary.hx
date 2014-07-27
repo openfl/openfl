@@ -250,17 +250,14 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	public override function getFont (id:String):Font {
 		
-		#if pixi
-		
-		return null;
-		
-		#elseif (flash || js)
+		#if (flash || js)
 		
 		return cast (Type.createInstance (className.get (id), []), Font);
 		
 		#else
 		
-		return null;
+		return new Font ();
+		//return null;
 		/*if (className.exists(id)) {
 			var fontClass = className.get(id);
 			Font.registerFont(fontClass);
@@ -316,7 +313,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		return null;
+		return new Sound ();
+		//return null;
 		//if (className.exists(id)) return cast (Type.createInstance (className.get (id), []), Sound);
 		//else return new Sound (new URLRequest (path.get (id)), null, true);
 		
@@ -342,11 +340,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	public override function getSound (id:String):Sound {
 		
-		#if pixi
-		
-		return null;
-		
-		#elseif (flash)
+		#if (flash)
 		
 		return cast (Type.createInstance (className.get (id), []), Sound);
 		
@@ -356,7 +350,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		return null;
+		return new Sound (new URLRequest (path.get (id)));
+		//return null;
 		//if (className.exists(id)) return cast (Type.createInstance (className.get (id), []), Sound);
 		//else return new Sound (new URLRequest (path.get (id)), null, type.get (id) == MUSIC);
 		

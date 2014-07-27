@@ -85,7 +85,7 @@ class Sound extends EventDispatcher {
 	}
 	
 	
-	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int):Void {
+	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int, forcePlayAsMusic = false):Void {
 		
 		openfl.Lib.notImplemented ("Sound.loadCompressedDataFromByteArray");
 		
