@@ -43,7 +43,7 @@ class Stage extends Sprite {
 	public var align:StageAlign;
 	public var allowsFullScreen:Bool;
 	public var color (get, set):Int;
-	public var displayState(default, set):StageDisplayState;
+	public var displayState (default, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
 	public var frameRate:Float;
 	public var quality:StageQuality;
@@ -633,8 +633,8 @@ class Stage extends Sprite {
 				}");
 				fsfunction(__element);
 			default:
-		}
-		displayState = value;*/
+		}*/
+		displayState = value;
 		return value;
 	}
 	

@@ -74,10 +74,12 @@ class URLRequestTest {
 		
 		// TODO: Confirm functionality
 		
+		#if !flash
 		var urlRequest = new URLRequest ();
 		var exists = urlRequest.userAgent;
 		
 		Assert.isNull (exists);
+		#end
 		
 	}
 	

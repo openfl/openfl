@@ -1,36 +1,56 @@
 package openfl.utils; #if !flash
 
 
+import haxe.Timer in HaxeTimer;
+import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.events.TimerEvent;
+
+#if js
+import js.Browser;
+#end
 
 
 class Timer extends EventDispatcher {
 	
 	
 	public var currentCount (default, null):Int;
-	public var delay (default, set):Float;
+	public var delay (get, set):Float;
 	public var repeatCount (default, set):Int;
 	public var running (default, null):Bool;
-
-	private var timerId:Int;
 	
-
+	private var __delay:Float;
+	private var __timer:HaxeTimer;
+	private var __timerID:Int;
+	
+	
 	public function new (delay:Float, repeatCount:Int = 0):Void {
+		
+		if (Math.isNaN (delay) || delay < 0) {
+			
+			throw new Error ("The delay specified is negative or not a finite number");
+			
+		}
 		
 		super ();
 		
-		this.running = false;
-		this.delay = delay;
+		__delay = delay;
 		this.repeatCount = repeatCount;
-		this.currentCount = 0;
+		
+		running = false;
+		currentCount = 0;
 		
 	}
 	
 	
 	public function reset ():Void {
 		
-		stop();
+		if (running) {
+			
+			stop ();
+			
+		}
+		
 		currentCount = 0;
 		
 	}
@@ -38,50 +58,41 @@ class Timer extends EventDispatcher {
 	
 	public function start ():Void {
 		
-		if (running) return;
-		
-		running = true;
-		timerId = untyped window.setInterval (__onInterval, Std.int (delay));
+		if (!running) {
+			
+			running = true;
+			
+			#if js
+			__timerID = Browser.window.setInterval (timer_onTimer, Std.int (__delay));
+			#else
+			__timer = new HaxeTimer (__delay);
+			__timer.run = timer_onTimer;
+			#end
+			
+		}
 		
 	}
 	
 	
 	public function stop ():Void {
 		
-		if (timerId != null) {
-			
-			untyped window.clearInterval (timerId);
-			timerId = null;
-			
-		}
-		
 		running = false;
 		
-	}
-	
-	
-	
-	
-	// Event Handlers
-	
-	
-	
-	
-	private function __onInterval ():Void {
-		
-		currentCount ++;
-		
-		if (repeatCount > 0 && currentCount >= repeatCount) {
+		#if js
+		if (__timerID != null) {
 			
-			stop ();
-			dispatchEvent (new TimerEvent (TimerEvent.TIMER));
-			dispatchEvent (new TimerEvent (TimerEvent.TIMER_COMPLETE));
-			
-		} else {
-			
-			dispatchEvent (new TimerEvent (TimerEvent.TIMER));
+			Browser.window.clearInterval (__timerID);
+			__timerID = null;
 			
 		}
+		#else
+		if (__timer != null) {
+			
+			__timer.stop ();
+			__timer = null;
+			
+		}
+		#end
 		
 	}
 	
@@ -93,21 +104,25 @@ class Timer extends EventDispatcher {
 	
 	
 	
-	private function set_delay (v:Float):Float {
+	private function get_delay ():Float {
 		
-		if (v != delay) {
+		return __delay;
+		
+	}
+	
+	
+	private function set_delay (value:Float):Float {
+		
+		__delay = value;
+		
+		if (running) {
 			
-			var wasRunning = running;
-			
-			if (running) stop ();
-			
-			this.delay = v;
-			
-			if (wasRunning) start ();
+			stop ();
+			start ();
 			
 		}
 		
-		return v;
+		return __delay;
 		
 	}
 	
@@ -122,6 +137,32 @@ class Timer extends EventDispatcher {
 		
 		repeatCount = v;
 		return v;
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private function timer_onTimer ():Void {
+		
+		currentCount ++;
+		
+		if (repeatCount > 0 && currentCount >= repeatCount) {
+			
+			stop ();
+			dispatchEvent (new TimerEvent (TimerEvent.TIMER));
+			dispatchEvent (new TimerEvent (TimerEvent.TIMER_COMPLETE));
+			
+		} else {
+			
+			dispatchEvent (new TimerEvent (TimerEvent.TIMER));
+			
+		}
 		
 	}
 	

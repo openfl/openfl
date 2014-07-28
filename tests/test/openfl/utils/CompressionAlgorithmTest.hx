@@ -11,7 +11,8 @@ class CompressionAlgorithmTest {
 		
 		switch (CompressionAlgorithm.DEFLATE) {
 			
-			case CompressionAlgorithm.DEFLATE, CompressionAlgorithm.ZLIB, CompressionAlgorithm.LZMA, CompressionAlgorithm.GZIP:
+			case CompressionAlgorithm.DEFLATE, CompressionAlgorithm.ZLIB, CompressionAlgorithm.LZMA:
+			default: //CompressionAlgorithm.GZIP:
 			
 		}
 		

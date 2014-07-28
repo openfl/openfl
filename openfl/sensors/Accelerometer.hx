@@ -15,7 +15,7 @@ import js.Browser;
 class Accelerometer extends EventDispatcher {
 	
 	
-	public static var isSupported (get_isSupported, null):Bool;
+	public static var isSupported (get, null):Bool;
 	
 	public var muted (default, set_muted):Bool;
 	

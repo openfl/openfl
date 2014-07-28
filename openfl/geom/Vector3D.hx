@@ -4,12 +4,12 @@ package openfl.geom; #if !flash
 class Vector3D {
 	
 	
-	public static var X_AXIS (get_X_AXIS, null):Vector3D;
-	public static var Y_AXIS (get_Y_AXIS, null):Vector3D;
-	public static var Z_AXIS (get_Z_AXIS,null):Vector3D;
+	public static var X_AXIS (get, null):Vector3D;
+	public static var Y_AXIS (get, null):Vector3D;
+	public static var Z_AXIS (get, null):Vector3D;
 	
-	public var length (get_length, null):Float;
-	public var lengthSquared (get_lengthSquared, null):Float;
+	public var length (get, null):Float;
+	public var lengthSquared (get, null):Float;
 	public var w:Float;
 	public var x:Float;
 	public var y:Float;

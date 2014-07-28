@@ -12,7 +12,7 @@ class LineScaleModeTest {
 			
 			//TODO: Add fake LineScaleMode.OPENGL value for Flash?
 			#if (cpp || neko)
-			case LineScaleMode.OPENGL:
+			//case LineScaleMode.OPENGL:
 			#end
 			
 		}

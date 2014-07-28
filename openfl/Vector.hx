@@ -464,9 +464,6 @@ class VectorDataIterator<T> {
 #else
 
 
-package openfl;
-
-
 abstract Vector<T>(VectorData<T>) {
 	
 	

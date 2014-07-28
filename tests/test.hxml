@@ -4,9 +4,10 @@
 -lib munit
 -lib hamcrest
 -lib mlib
+-lib lime
 -lib openfl
+-D openfl-flash
 -D web
---macro openfl.Lib.includeBackend('flash')
 -cp test
 -swf-version 11.3
 -swf build/as3_test.swf

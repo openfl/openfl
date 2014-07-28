@@ -3,6 +3,8 @@ package openfl;
 
 
 import haxe.Unserializer;
+import lime.Assets.AssetLibrary in LimeAssetLibrary;
+import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
@@ -57,7 +59,7 @@ class Assets {
 	
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
-		return lime.Assets.exists (id, cast type);
+		return LimeAssets.exists (id, cast type);
 		
 	}
 	
@@ -71,7 +73,7 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		var image = lime.Assets.getImage (id, useCache);
+		var image = LimeAssets.getImage (id, useCache);
 		
 		if (image != null) {
 			
@@ -96,7 +98,7 @@ class Assets {
 	 */
 	public static function getBytes (id:String):ByteArray {
 		
-		return lime.Assets.getBytes (id);
+		return LimeAssets.getBytes (id);
 		
 	}
 	
@@ -172,7 +174,7 @@ class Assets {
 		
 		// TODO
 		
-		return cast lime.Assets.libraries.get (name);
+		return cast LimeAssets.libraries.get (name);
 		
 	}
 	
@@ -299,7 +301,7 @@ class Assets {
 	 */
 	public static function getPath (id:String):String {
 		
-		return lime.Assets.getPath (id);
+		return LimeAssets.getPath (id);
 		
 	}
 	
@@ -379,7 +381,7 @@ class Assets {
 	 */
 	public static function getText (id:String):String {
 		
-		return lime.Assets.getText (id);
+		return LimeAssets.getText (id);
 		
 	}
 	
@@ -484,14 +486,14 @@ class Assets {
 	
 	public static function list (type:AssetType = null):Array<String> {
 		
-		return lime.Assets.list (cast type);
+		return LimeAssets.list (cast type);
 		
 	}
 	
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
-		lime.Assets.loadImage (id, function (image) {
+		LimeAssets.loadImage (id, function (image) {
 			
 			if (image != null) {
 				
@@ -597,9 +599,9 @@ class Assets {
 	}
 	
 	
-	public static function loadLibrary (name:String, handler:lime.Assets.AssetLibrary -> Void):Void {
+	public static function loadLibrary (name:String, handler:LimeAssetLibrary -> Void):Void {
 		
-		lime.Assets.loadLibrary (name, handler);
+		LimeAssets.loadLibrary (name, handler);
 		
 	}
 	
@@ -762,14 +764,14 @@ class Assets {
 	
 	public static function loadText (id:String, handler:String -> Void):Void {
 		
-		lime.Assets.loadText (id, handler);
+		LimeAssets.loadText (id, handler);
 		
 	}
 	
 	
 	public static function registerLibrary (name:String, library:AssetLibrary):Void {
 		
-		lime.Assets.registerLibrary (name, library);
+		LimeAssets.registerLibrary (name, library);
 		
 	}
 	
@@ -809,7 +811,7 @@ class Assets {
 	
 	public static function unloadLibrary (name:String):Void {
 		
-		lime.Assets.unloadLibrary (name);
+		LimeAssets.unloadLibrary (name);
 		
 	}
 	
@@ -836,7 +838,7 @@ class Assets {
 }
 
 
-class AssetLibrary extends lime.Assets.AssetLibrary {
+class AssetLibrary extends LimeAssetLibrary {
 	
 	
 	public function new () {

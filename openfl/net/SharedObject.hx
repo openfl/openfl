@@ -19,7 +19,7 @@ class SharedObject extends EventDispatcher {
 	
 	
 	public var data (default, null):Dynamic;
-	public var size (get_size, never):Int;
+	public var size (get, never):Int;
 	
 	private var __key:String;
 	

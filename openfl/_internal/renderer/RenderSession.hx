@@ -1,4 +1,4 @@
-package openfl._internal.renderer;
+package openfl._internal.renderer; #if !flash
 
 
 import lime.geom.Matrix4;
@@ -11,7 +11,6 @@ import openfl._internal.renderer.opengl.utils.MaskManager;
 import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.opengl.utils.StencilManager;
-import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.display.BlendMode;
 import openfl.geom.Point;
 
@@ -36,15 +35,16 @@ class RenderSession {
 	//public var smoothProperty:Null<Bool> = null;
 	
 	public var drawCount:Int;
+	public var currentBlendMode:BlendMode;
+	public var projection:Point;
+	public var offset:Point;
+	
 	public var shaderManager:ShaderManager;
 	public var maskManager:MaskManager;
 	public var filterManager:FilterManager;
 	public var blendModeManager:BlendModeManager;
 	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
-	public var currentBlendMode:BlendMode;
-	public var projection:Point;
-	public var offset:Point;
 	
 	
 	public function new () {
@@ -54,4 +54,4 @@ class RenderSession {
 	}
 	
 	
-}
+} #end

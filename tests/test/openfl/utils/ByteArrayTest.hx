@@ -389,7 +389,7 @@ class ByteArrayTest {
 	}
 	
 	//#if (cpp || neko)
-	#if (cpp)
+	/*#if (cpp)
 	@Test public function testCompressUncompressLzma() {
 		
 		var data:ByteArray = new ByteArray();
@@ -415,9 +415,9 @@ class ByteArrayTest {
 		Assert.areEqual(str.length, data.length);
 		Assert.areEqual(str, data.readUTFBytes(str.length));
 	}
-	#end
+	#end*/
 	
-	@Test public function testUncompress () {
+	/*@Test public function testUncompress () {
 	
 		var data = new ByteArray();
 
@@ -454,7 +454,7 @@ class ByteArrayTest {
 		Assert.areEqual(108, data.readUnsignedByte());
 		Assert.areEqual(111, data.readUnsignedByte());
 		
-	}
+	}*/
 	
 	
 }

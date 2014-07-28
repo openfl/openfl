@@ -1,14 +1,16 @@
 package openfl.display;
 
 
+#if !flash
+import openfl._internal.renderer.dom.DOMRenderer;
+import openfl._internal.renderer.RenderSession;
+#end
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
 import openfl.gl.GL;
 import openfl.Lib;
 
 #if js
-import js.html.webgl.RenderingContext;
-import js.html.CanvasElement;
 import js.Browser;
 #end
 
@@ -20,15 +22,10 @@ class OpenGLView extends DirectRenderer {
 	public static inline var CONTEXT_LOST = "glcontextlost";
 	public static inline var CONTEXT_RESTORED = "glcontextrestored";
 	
-	public static var isSupported (get_isSupported, null):Bool;
+	public static var isSupported (get, null):Bool;
 	
 	private var __added:Bool;
 	private var __initialized:Bool;
-	
-	#if js
-	private var __canvas:CanvasElement;
-	private var __context:RenderingContext;
-	#end
 	
 	
 	public function new () {
@@ -88,7 +85,7 @@ class OpenGLView extends DirectRenderer {
 				renderSession.element.appendChild (__canvas);
 				__added = true;
 				
-				__initializeElement (__canvas, renderSession);
+				DOMRenderer.initializeElement (this, __canvas, renderSession);
 				
 			}
 			

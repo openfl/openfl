@@ -3,6 +3,7 @@ package openfl.display;
 
 import massive.munit.Assert;
 import openfl.display.GraphicsPath;
+import openfl.Vector;
 
 
 class GraphicsPathTest {
@@ -12,7 +13,8 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath ([]);
+		var commands = new Vector<Int> ();
+		var graphicsPath = new GraphicsPath (commands);
 		var exists = graphicsPath.commands;
 		
 		Assert.isNotNull (exists);
@@ -24,7 +26,8 @@ class GraphicsPathTest {
 		
 		// TODO: Confirm functionality
 		
-		var graphicsPath = new GraphicsPath (null, []);
+		var data = new Vector<Float> ();
+		var graphicsPath = new GraphicsPath (null, data);
 		var exists = graphicsPath.data;
 		
 		Assert.isNotNull (exists);

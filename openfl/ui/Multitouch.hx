@@ -12,11 +12,11 @@ import js.Browser;
 class Multitouch {
 	
 	
-	public static var inputMode (get_inputMode, set_inputMode):MultitouchInputMode;
+	public static var inputMode (get, set):MultitouchInputMode;
 	public static var maxTouchPoints (default, null):Int;
 	public static var supportedGestures (default, null):Array<String>;
 	public static var supportsGestureEvents (default, null):Bool;
-	public static var supportsTouchEvents (get_supportsTouchEvents, null):Bool;
+	public static var supportsTouchEvents (get, null):Bool;
 	
 	
 	public static function __init__ () {

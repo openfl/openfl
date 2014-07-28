@@ -6,6 +6,8 @@ import haxe.io.Bytes;
 import lime.graphics.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.graphics.GLTexture;
+import lime.graphics.Image;
+import lime.graphics.ImageData;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
@@ -21,8 +23,8 @@ import openfl.Vector;
 #if js
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.Image;
-import js.html.ImageData;
+import js.html.Image in HTMLImage;
+import js.html.ImageData in HTMLImageData;
 import js.html.Uint8ClampedArray;
 import js.Browser;
 #end
@@ -54,8 +56,8 @@ class BitmapData implements IBitmapDrawable {
 	#if js
 	private var __sourceCanvas:CanvasElement;
 	private var __sourceContext:CanvasRenderingContext2D;
-	private var __sourceImage:Image;
-	private var __sourceImageData:ImageData;
+	private var __sourceImage:HTMLImage;
+	private var __sourceImageData:HTMLImageData;
 	private var __sourceImageDataChanged:Bool;
 	#end
 	
@@ -147,7 +149,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		if (__sourceImage != null) {
 			
-			return BitmapData.fromImage (new lime.graphics.Image (__sourceImage, width, height), transparent);
+			return BitmapData.fromImage (new Image (__sourceImage, width, height), transparent);
 			
 		} else {
 			
@@ -155,7 +157,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		return BitmapData.fromImage (new lime.graphics.Image (__sourceBytes, width, height), transparent);
+		return BitmapData.fromImage (new Image (__sourceBytes, width, height), transparent);
 		#end
 		
 	}
@@ -618,7 +620,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if js
 		var bitmapData = new BitmapData (0, 0, true);
-		bitmapData.__sourceImage = new Image ();	
+		bitmapData.__sourceImage = new HTMLImage ();
 		bitmapData.__sourceImage.onload = function (_) {
 			
 			bitmapData.width = bitmapData.__sourceImage.width;
@@ -651,14 +653,14 @@ class BitmapData implements IBitmapDrawable {
 		if (bitmapData.__sourceImage.complete) { }
 		return bitmapData;
 		#else
-		var image = lime.graphics.Image.loadFromFile (path);
+		var image = Image.loadFromFile (path);
 		return BitmapData.fromImage (image);
 		#end
 		
 	}
 	
 	
-	public static function fromImage (image:lime.graphics.Image, transparent:Bool = true):BitmapData {
+	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		#if js
@@ -842,7 +844,8 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			
 			#if js
-			__syncImageData ();
+			// TODO: Premultiply the canvas, or modify __sourceBytes directly, to improve performance
+			/*__syncImageData ();
 			
 			if (__sourceImage != null) {
 				
@@ -852,7 +855,17 @@ class BitmapData implements IBitmapDrawable {
 				
 				gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __sourceCanvas);
 				
-			}
+			}*/
+			__convertToCanvas ();
+			__syncImageData ();
+			
+			var pixels = __sourceContext.getImageData (0, 0, width, height);
+			var data = new ImageData (pixels.data);
+			data.premultiply ();
+			
+			__sourceBytes = data;
+			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __sourceBytes);
+			
 			#else
 			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __sourceBytes);
 			#end
@@ -1727,7 +1740,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		var image = lime.graphics.Image.loadFromBytes (bytes);
+		var image = Image.loadFromBytes (bytes);
 		image.premultiplyAlpha ();
 		__sourceBytes = image.data;
 		width = image.width;

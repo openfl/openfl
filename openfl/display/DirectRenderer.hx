@@ -2,13 +2,14 @@ package openfl.display;
 
 
 import openfl.display.DisplayObject;
+import openfl.display.Sprite;
 
 
-class DirectRenderer extends DisplayObject {
+class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
 	
 	
-	public var render (get_render, set_render):Dynamic;
-
+	public var render (get, set):Dynamic;
+	
 	private var __render:Dynamic;
 	
 	

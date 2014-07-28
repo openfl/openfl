@@ -1,6 +1,8 @@
 package openfl.display;
 
 
+import lime.app.Application in LimeApplication;
+import lime.app.Config in LimeConfig;
 import lime.graphics.RenderContext;
 import lime.ui.KeyCode;
 import openfl.display.Stage;
@@ -15,7 +17,7 @@ import openfl.Lib;
 @:access(openfl.display.Stage)
 
 
-class Application extends lime.app.Application {
+class Application extends LimeApplication {
 	
 	
 	private var stage:Stage;
@@ -279,7 +281,7 @@ class Application extends lime.app.Application {
 	}
 	
 	
-	public override function create (config:lime.app.Config):Void {
+	public override function create (config:LimeConfig):Void {
 		
 		super.create (config);
 		
