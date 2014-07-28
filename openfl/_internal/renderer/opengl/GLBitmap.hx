@@ -12,7 +12,7 @@ class GLBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
-		
+		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 		/*if (!__renderable || __worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
@@ -55,7 +55,7 @@ class GLBitmap {
 		#end*/
 		
 		// if the sprite is not visible or the alpha is 0 then no need to render this element
-    if(!bitmap.visible || bitmap.alpha <= 0)return;
+    //if(!bitmap.visible || bitmap.alpha <= 0)return;
     
     var i,j;
 

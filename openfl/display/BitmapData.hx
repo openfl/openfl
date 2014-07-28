@@ -616,9 +616,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onfail:Void -> Void = null):BitmapData {
 		
-		var bitmapData = new BitmapData (0, 0, true);
-		
 		#if js
+		var bitmapData = new BitmapData (0, 0, true);
 		bitmapData.__sourceImage = new Image ();	
 		bitmapData.__sourceImage.onload = function (_) {
 			
@@ -650,9 +649,11 @@ class BitmapData implements IBitmapDrawable {
 		// Another IE9 bug: loading 20+ images fails unless this line is added.
 		// (issue #1019768)
 		if (bitmapData.__sourceImage.complete) { }
-		#end
-		
 		return bitmapData;
+		#else
+		var image = lime.graphics.Image.loadFromFile (path);
+		return BitmapData.fromImage (image);
+		#end
 		
 	}
 	
@@ -1725,6 +1726,14 @@ class BitmapData implements IBitmapDrawable {
 			__loadFromBase64 (__base64Encode (bytes), type, onload);
 			
 		}
+		#else
+		var image = lime.graphics.Image.loadFromBytes (bytes);
+		image.premultiplyAlpha ();
+		__sourceBytes = image.data;
+		width = image.width;
+		height = image.height;
+		rect = new Rectangle (0, 0, image.width, image.height);
+		__isValid = true;
 		#end
 		
 	}

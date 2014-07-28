@@ -191,6 +191,8 @@ class SpriteBatch {
 		
 		var texture = sprite.bitmapData;
 		
+		if (texture == null) return;
+		
 		if (currentBatchSize >= size) {
 			
 			flush ();
