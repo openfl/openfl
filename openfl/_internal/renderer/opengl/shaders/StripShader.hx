@@ -1,9 +1,9 @@
 package openfl._internal.renderer.opengl.shaders;
 
 
-import lime.graphics.GLProgram;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.GLRenderContext;
-import lime.graphics.GLUniformLocation;
 
 
 class StripShader extends AbstractShader {

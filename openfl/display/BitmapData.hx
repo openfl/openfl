@@ -3,11 +3,11 @@ package openfl.display; #if !flash
 
 import haxe.crypto.BaseCode;
 import haxe.io.Bytes;
-import lime.graphics.GLBuffer;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
-import lime.graphics.GLTexture;
-import lime.graphics.Image;
-import lime.graphics.ImageData;
+import lime.media.Image;
+import lime.media.ImageBuffer;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
@@ -24,7 +24,7 @@ import openfl.Vector;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.Image in HTMLImage;
-import js.html.ImageData in HTMLImageData;
+import js.html.ImageData;
 import js.html.Uint8ClampedArray;
 import js.Browser;
 #end
@@ -57,7 +57,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __sourceCanvas:CanvasElement;
 	private var __sourceContext:CanvasRenderingContext2D;
 	private var __sourceImage:HTMLImage;
-	private var __sourceImageData:HTMLImageData;
+	private var __sourceImageData:ImageData;
 	private var __sourceImageDataChanged:Bool;
 	#end
 	
@@ -653,7 +653,7 @@ class BitmapData implements IBitmapDrawable {
 		if (bitmapData.__sourceImage.complete) { }
 		return bitmapData;
 		#else
-		var image = Image.loadFromFile (path);
+		var image = Image.fromFile (path);
 		return BitmapData.fromImage (image);
 		#end
 		
@@ -860,7 +860,7 @@ class BitmapData implements IBitmapDrawable {
 			__syncImageData ();
 			
 			var pixels = __sourceContext.getImageData (0, 0, width, height);
-			var data = new ImageData (pixels.data);
+			var data = new ImageBuffer (pixels.data);
 			data.premultiply ();
 			
 			__sourceBytes = data;
@@ -1740,7 +1740,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		var image = Image.loadFromBytes (bytes);
+		var image = Image.fromBytes (bytes);
 		image.premultiplyAlpha ();
 		__sourceBytes = image.data;
 		width = image.width;

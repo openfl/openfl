@@ -2,15 +2,15 @@ package openfl.display; #if !flash
 
 
 import haxe.EnumFlags;
-import lime.geom.Matrix4;
+import lime.graphics.opengl.GL;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
-import lime.graphics.GL;
-import lime.graphics.GLProgram;
 import lime.graphics.GLRenderContext;
-import lime.graphics.GLUniformLocation;
 import lime.graphics.RenderContext;
 import lime.utils.GLUtils;
+import lime.utils.Matrix4;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;

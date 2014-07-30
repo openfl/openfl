@@ -4,7 +4,7 @@ package;
 import haxe.Timer;
 import haxe.Unserializer;
 import lime.app.Preloader;
-import lime.graphics.Image;
+import lime.media.Image;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
@@ -283,7 +283,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		return Image.loadFromFile (path.get (id));
+		return Image.fromFile (path.get (id));
 		
 		#end
 		

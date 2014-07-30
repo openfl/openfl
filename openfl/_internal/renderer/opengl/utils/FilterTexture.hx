@@ -1,10 +1,10 @@
 package openfl._internal.renderer.opengl.utils ;
 
 
-import lime.graphics.GLRenderbuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
-import lime.graphics.GLTexture;
-import openfl.gl.GLFramebuffer;
 
 
 class FilterTexture {

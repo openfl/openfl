@@ -1,8 +1,8 @@
 package openfl._internal.renderer.opengl.utils;
 
 
-import lime.graphics.GLBuffer;
-import lime.graphics.GLFramebuffer;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;

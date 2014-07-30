@@ -1,8 +1,8 @@
 package openfl._internal.renderer.opengl;
 
 
-import lime.graphics.GL;
-import lime.graphics.GLFramebuffer;
+import lime.graphics.opengl.GL;
+import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.opengl.utils.*;
@@ -14,7 +14,7 @@ import openfl.display.Stage;
 import openfl.errors.Error;
 import openfl.geom.Point;
 
-@:access(lime.graphics.GL)
+@:access(lime.graphics.opengl.GL)
 @:access(openfl.display.Stage)
 
 

@@ -1,9 +1,9 @@
 package openfl._internal.renderer.opengl.utils ;
 
 
-import lime.graphics.GLBuffer;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
-import lime.graphics.GLTexture;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
