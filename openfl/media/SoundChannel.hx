@@ -1,6 +1,7 @@
 package openfl.media; #if !flash
 
 
+import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
@@ -14,38 +15,23 @@ class SoundChannel extends EventDispatcher {
 	public var rightPeak (default, null):Float;
 	public var soundTransform (get, set):SoundTransform;
 	
-	#if js
-	private var __soundInstance:SoundJSInstance;
-	#end
+	private var __source:AudioSource;
 	
 	
-	private function new (#if js soundInstance:SoundJSInstance #end):Void {
+	private function new (source:AudioSource):Void {
 		
 		super (this);
 		
-		#if js
-		__soundInstance = soundInstance;
-		__soundInstance.addEventListener ("complete", soundInstance_onComplete);
-		#end
+		__source = source;
+		__source.onComplete.add (source_onComplete);
+		__source.play ();
 		
 	}
 	
 	
 	public function stop ():Void {
 		
-		#if js
-		__soundInstance.stop ();
-		#end
-		
-	}
-	
-	
-	private function __dispose ():Void {
-		
-		#if js
-		__soundInstance.stop ();
-		__soundInstance = null;
-		#end
+		__source.stop ();
 		
 	}
 	
@@ -59,44 +45,33 @@ class SoundChannel extends EventDispatcher {
 	
 	private function get_position ():Float {
 		
-		#if js
-		return __soundInstance.getPosition ();
-		#else
-		return 0;
-		#end
+		return __source.timeOffset / 1000;
 		
 	}
 	
 	
 	private function set_position (value:Float):Float {
 		
-		#if js
-		__soundInstance.setPosition (Std.int (value));
-		return __soundInstance.getPosition ();
-		#else
-		return 0;
-		#end
+		__source.timeOffset = Std.int (value * 1000);
+		return value;
 		
 	}
 	
 	
 	private function get_soundTransform ():SoundTransform {
 		
-		#if js
-		return new SoundTransform (__soundInstance.getVolume (), __soundInstance.getPan ());
-		#else
-		return null;
-		#end
+		// TODO: pan
+		
+		return new SoundTransform (__source.gain, 0);
 		
 	}
 	
 	
 	private function set_soundTransform (value:SoundTransform):SoundTransform {
 		
-		#if js
-		__soundInstance.setVolume (value.volume);
-		__soundInstance.setPan (value.pan);
-		#end
+		__source.gain = value.volume;
+		
+		// TODO: pan
 		
 		return value;
 		
@@ -110,7 +85,7 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	
-	private function soundInstance_onComplete (_):Void {
+	private function source_onComplete ():Void {
 		
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));
 		

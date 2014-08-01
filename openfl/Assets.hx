@@ -111,7 +111,7 @@ class Assets {
 	 */
 	public static function getFont (id:String, useCache:Bool = true):Font {
 		
-		#if (tools && !display)
+		/*#if (tools && !display)
 		
 		if (useCache && cache.enabled && cache.font.exists (id)) {
 			
@@ -157,9 +157,9 @@ class Assets {
 			
 		}
 		
-		#end
+		#end*/
 		
-		return null;
+		return new Font ();
 		
 	}
 	
@@ -234,61 +234,7 @@ class Assets {
 	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
 		
-		#if (tools && !display)
-		
-		if (useCache && cache.enabled && cache.sound.exists (id)) {
-			
-			var sound = cache.sound.get (id);
-			
-			if (isValidSound (sound)) {
-				
-				return sound;
-				
-			}
-			
-		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.MUSIC)) {
-				
-				if (library.isLocal (symbolName, cast AssetType.MUSIC)) {
-					
-					var sound = library.getMusic (symbolName);
-					
-					if (useCache && cache.enabled) {
-						
-						cache.sound.set (id, sound);
-						
-					}
-					
-					return sound;
-					
-				} else {
-					
-					trace ("[openfl.Assets] Sound asset \"" + id + "\" exists, but only asynchronously");
-					
-				}
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		return null;
+		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
 		
 	}
 	
@@ -314,61 +260,7 @@ class Assets {
 	 */
 	public static function getSound (id:String, useCache:Bool = true):Sound {
 		
-		#if (tools && !display)
-		
-		if (useCache && cache.enabled && cache.sound.exists (id)) {
-			
-			var sound = cache.sound.get (id);
-			
-			if (isValidSound (sound)) {
-				
-				return sound;
-				
-			}
-			
-		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.SOUND)) {
-				
-				if (library.isLocal (symbolName, cast AssetType.SOUND)) {
-					
-					var sound = library.getSound (symbolName);
-					
-					if (useCache && cache.enabled) {
-						
-						cache.sound.set (id, sound);
-						
-					}
-					
-					return sound;
-					
-				} else {
-					
-					trace ("[openfl.Assets] Sound asset \"" + id + "\" exists, but only asynchronously");
-					
-				}
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		return null;
+		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
 		
 	}
 	
@@ -608,61 +500,15 @@ class Assets {
 	
 	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
-		#if (tools && !display)
-		
-		if (useCache && cache.enabled && cache.sound.exists (id)) {
+		LimeAssets.loadAudioBuffer (id, function (buffer) {
 			
-			var sound = cache.sound.get (id);
-			
-			if (isValidSound (sound)) {
+			if (buffer != null) {
 				
-				handler (sound);
-				return;
+				handler (Sound.fromAudioBuffer (buffer));
 				
 			}
 			
-		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.MUSIC)) {
-				
-				if (useCache && cache.enabled) {
-					
-					library.loadMusic (symbolName, function (sound:Sound):Void {
-						
-						cache.sound.set (id, sound);
-						handler (sound);
-						
-					});
-					
-				} else {
-					
-					library.loadMusic (symbolName, handler);
-					
-				}
-				
-				return;
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		handler (null);
+		}, useCache);
 		
 	}
 	
@@ -703,61 +549,15 @@ class Assets {
 	
 	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
-		#if (tools && !display)
-		
-		if (useCache && cache.enabled && cache.sound.exists (id)) {
+		LimeAssets.loadAudioBuffer (id, function (buffer) {
 			
-			var sound = cache.sound.get (id);
-			
-			if (isValidSound (sound)) {
+			if (buffer != null) {
 				
-				handler (sound);
-				return;
+				handler (Sound.fromAudioBuffer (buffer));
 				
 			}
 			
-		}
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.SOUND)) {
-				
-				if (useCache && cache.enabled) {
-					
-					library.loadSound (symbolName, function (sound:Sound):Void {
-						
-						cache.sound.set (id, sound);
-						handler (sound);
-						
-					});
-					
-				} else {
-					
-					library.loadSound (symbolName, handler);
-					
-				}
-				
-				return;
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
-		
-		#end
-		
-		handler (null);
+		}, useCache);
 		
 	}
 	
@@ -1316,8 +1116,8 @@ class Assets {
 				
 				super();
 				
-				var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
-				loadCompressedDataFromByteArray(byteArray, byteArray.length, forcePlayAsMusic);
+				var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
+				loadCompressedDataFromByteArray (byteArray, byteArray.length, forcePlayAsMusic);
 				
 			};
 			
