@@ -73,14 +73,14 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		var buffer = LimeAssets.getImageBuffer (id, useCache);
+		var image = LimeAssets.getImage (id, useCache);
 		
-		if (buffer != null) {
+		if (image != null) {
 			
 			#if flash
-			return buffer.src;
+			return image.src;
 			#else
-			return BitmapData.fromImageBuffer (buffer);
+			return BitmapData.fromImage (image);
 			#end
 			
 		}
@@ -234,7 +234,12 @@ class Assets {
 	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
 		
+		#if flash
+		var buffer = LimeAssets.getAudioBuffer (id, useCache);
+		return (buffer != null) ? buffer.src : null;
+		#else
 		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
+		#end
 		
 	}
 	
@@ -260,7 +265,12 @@ class Assets {
 	 */
 	public static function getSound (id:String, useCache:Bool = true):Sound {
 		
+		#if flash
+		var buffer = LimeAssets.getAudioBuffer (id, useCache);
+		return (buffer != null) ? buffer.src : null;
+		#else
 		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
+		#end
 		
 	}
 	
@@ -385,14 +395,14 @@ class Assets {
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
-		LimeAssets.loadImageBuffer (id, function (buffer) {
+		LimeAssets.loadImage (id, function (image) {
 			
-			if (buffer != null) {
+			if (image != null) {
 				
 				#if flash
-				handler (buffer.src);
+				handler (image.src);
 				#else
-				handler (BitmapData.fromImageBuffer (buffer));
+				handler (BitmapData.fromImage (image));
 				#end
 				
 			}
@@ -504,7 +514,11 @@ class Assets {
 			
 			if (buffer != null) {
 				
+				#if flash
+				handler ((buffer != null) ? buffer.src : null);
+				#else
 				handler (Sound.fromAudioBuffer (buffer));
+				#end
 				
 			}
 			
@@ -553,7 +567,11 @@ class Assets {
 			
 			if (buffer != null) {
 				
+				#if flash
+				handler ((buffer != null) ? buffer.src : null);
+				#else
 				handler (Sound.fromAudioBuffer (buffer));
+				#end
 				
 			}
 			

@@ -149,7 +149,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		if (__sourceImage != null) {
 			
-			return BitmapData.fromImageBuffer (ImageBuffer.fromImage (__sourceImage), transparent);
+			return BitmapData.fromImage (Image.fromImage (__sourceImage), transparent);
 			
 		} else {
 			
@@ -157,7 +157,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		return BitmapData.fromImageBuffer (new ImageBuffer (__sourceBytes, width, height), transparent);
+		return BitmapData.fromImage (new Image (new ImageBuffer (__sourceBytes, width, height)), transparent);
 		#end
 		
 	}
@@ -616,6 +616,21 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	#if js
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, transparent);
+		bitmapData.width = canvas.width;
+		bitmapData.height = canvas.height;
+		bitmapData.rect = new Rectangle (0, 0, canvas.width, canvas.height);
+		bitmapData.__createCanvas (canvas.width, canvas.height);
+		bitmapData.__sourceContext.drawImage (canvas, 0, 0);
+		return bitmapData;
+		
+	}
+	#end
+	
+	
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onfail:Void -> Void = null):BitmapData {
 		
 		#if js
@@ -653,8 +668,8 @@ class BitmapData implements IBitmapDrawable {
 		if (bitmapData.__sourceImage.complete) { }
 		return bitmapData;
 		#else
-		var image = ImageBuffer.fromFile (path);
-		return BitmapData.fromImageBuffer (image);
+		var image = Image.fromFile (path);
+		return BitmapData.fromImage (image);
 		#end
 		
 	}
@@ -664,10 +679,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		#if js
-		bitmapData.__sourceImage = image.buffer.src;
+		bitmapData.__sourceImage = image.src;
 		#else
 		image.premultiplied = true;
-		bitmapData.__sourceBytes = image.buffer.data;
+		bitmapData.__sourceBytes = image.data;
 		#end
 		bitmapData.width = image.width;
 		bitmapData.height = image.height;
@@ -676,41 +691,6 @@ class BitmapData implements IBitmapDrawable {
 		return bitmapData;
 		
 	}
-	
-	
-	public static function fromImageBuffer (imageBuffer:ImageBuffer, transparent:Bool = true):BitmapData {
-		
-		var bitmapData = new BitmapData (0, 0, transparent);
-		#if js
-		bitmapData.__sourceImage = imageBuffer.src;
-		#else
-		var image = new Image (imageBuffer);
-		image.premultiplied = true;
-		//image.premultiplyAlpha ();
-		bitmapData.__sourceBytes = imageBuffer.data;
-		#end
-		bitmapData.width = imageBuffer.width;
-		bitmapData.height = imageBuffer.height;
-		bitmapData.rect = new Rectangle (0, 0, imageBuffer.width, imageBuffer.height);
-		bitmapData.__isValid = true;
-		return bitmapData;
-		
-	}
-	
-	
-	#if js
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
-		
-		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.width = canvas.width;
-		bitmapData.height = canvas.height;
-		bitmapData.rect = new Rectangle (0, 0, canvas.width, canvas.height);
-		bitmapData.__createCanvas (canvas.width, canvas.height);
-		bitmapData.__sourceContext.drawImage (canvas, 0, 0);
-		return bitmapData;
-		
-	}
-	#end
 	
 	
 	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle {
@@ -1761,8 +1741,8 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		var image = ImageBuffer.fromBytes (bytes);
-		//image.premultiplyAlpha ();
+		var image = Image.fromBytes (bytes);
+		image.premultiplied = true;
 		__sourceBytes = image.data;
 		width = image.width;
 		height = image.height;
