@@ -2,8 +2,8 @@ package openfl.media; #if !flash
 
 
 import haxe.io.Path;
-import lime.media.AudioBuffer;
-import lime.media.AudioSource;
+import lime.audio.AudioBuffer;
+import lime.audio.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;

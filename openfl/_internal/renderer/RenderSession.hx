@@ -4,7 +4,7 @@ package openfl._internal.renderer; #if !flash
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
-import lime.utils.Matrix4;
+import lime.math.Matrix4;
 import openfl._internal.renderer.opengl.utils.BlendModeManager;
 import openfl._internal.renderer.opengl.utils.FilterManager;
 import openfl._internal.renderer.opengl.utils.MaskManager;
