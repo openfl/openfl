@@ -149,7 +149,7 @@ class BitmapData implements IBitmapDrawable {
 		#if js
 		if (__sourceImage != null) {
 			
-			return BitmapData.fromImage (new Image (__sourceImage, width, height), transparent);
+			return BitmapData.fromImageBuffer (ImageBuffer.fromImage (__sourceImage), transparent);
 			
 		} else {
 			
@@ -157,7 +157,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		return BitmapData.fromImage (new Image (__sourceBytes, width, height), transparent);
+		return BitmapData.fromImageBuffer (new ImageBuffer (__sourceBytes, width, height), transparent);
 		#end
 		
 	}
@@ -653,8 +653,8 @@ class BitmapData implements IBitmapDrawable {
 		if (bitmapData.__sourceImage.complete) { }
 		return bitmapData;
 		#else
-		var image = Image.fromFile (path);
-		return BitmapData.fromImage (image);
+		var image = ImageBuffer.fromFile (path);
+		return BitmapData.fromImageBuffer (image);
 		#end
 		
 	}
@@ -664,14 +664,34 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		#if js
-		bitmapData.__sourceImage = image.src;
+		bitmapData.__sourceImage = image.buffer.src;
 		#else
-		image.premultiplyAlpha ();
-		bitmapData.__sourceBytes = image.data;
+		image.premultiplied = true;
+		bitmapData.__sourceBytes = image.buffer.data;
 		#end
 		bitmapData.width = image.width;
 		bitmapData.height = image.height;
 		bitmapData.rect = new Rectangle (0, 0, image.width, image.height);
+		bitmapData.__isValid = true;
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromImageBuffer (imageBuffer:ImageBuffer, transparent:Bool = true):BitmapData {
+		
+		var bitmapData = new BitmapData (0, 0, transparent);
+		#if js
+		bitmapData.__sourceImage = imageBuffer.src;
+		#else
+		var image = new Image (imageBuffer);
+		image.premultiplied = true;
+		//image.premultiplyAlpha ();
+		bitmapData.__sourceBytes = imageBuffer.data;
+		#end
+		bitmapData.width = imageBuffer.width;
+		bitmapData.height = imageBuffer.height;
+		bitmapData.rect = new Rectangle (0, 0, imageBuffer.width, imageBuffer.height);
 		bitmapData.__isValid = true;
 		return bitmapData;
 		
@@ -860,10 +880,11 @@ class BitmapData implements IBitmapDrawable {
 			__syncImageData ();
 			
 			var pixels = __sourceContext.getImageData (0, 0, width, height);
-			var data = new ImageBuffer (pixels.data);
-			data.premultiply ();
+			var buffer = new ImageBuffer (new UInt8Array (pixels.data), width, height);
+			var image = new Image (buffer);
+			image.premultiplied = true;
 			
-			__sourceBytes = data;
+			__sourceBytes = image.buffer.data;
 			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __sourceBytes);
 			
 			#else
@@ -1740,8 +1761,8 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		#else
-		var image = Image.fromBytes (bytes);
-		image.premultiplyAlpha ();
+		var image = ImageBuffer.fromBytes (bytes);
+		//image.premultiplyAlpha ();
 		__sourceBytes = image.data;
 		width = image.width;
 		height = image.height;

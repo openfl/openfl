@@ -73,14 +73,14 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		var image = LimeAssets.getImage (id, useCache);
+		var buffer = LimeAssets.getImageBuffer (id, useCache);
 		
-		if (image != null) {
+		if (buffer != null) {
 			
 			#if flash
-			return image.src;
+			return buffer.src;
 			#else
-			return BitmapData.fromImage (image);
+			return BitmapData.fromImageBuffer (buffer);
 			#end
 			
 		}
@@ -385,14 +385,14 @@ class Assets {
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
-		LimeAssets.loadImage (id, function (image) {
+		LimeAssets.loadImageBuffer (id, function (buffer) {
 			
-			if (image != null) {
+			if (buffer != null) {
 				
 				#if flash
-				handler (image.src);
+				handler (buffer.src);
 				#else
-				handler (BitmapData.fromImage (image));
+				handler (BitmapData.fromImageBuffer (buffer));
 				#end
 				
 			}
