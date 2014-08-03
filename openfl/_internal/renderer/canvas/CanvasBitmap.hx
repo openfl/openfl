@@ -26,7 +26,7 @@ class CanvasBitmap {
 				
 			}
 			
-			bitmap.bitmapData.__syncImageData ();
+			bitmap.bitmapData.__sync ();
 			
 			context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__worldTransform;
@@ -52,27 +52,11 @@ class CanvasBitmap {
 			
 			if (scrollRect == null) {
 				
-				if (bitmap.bitmapData.__sourceImage != null) {
-					
-					context.drawImage (bitmap.bitmapData.__sourceImage, 0, 0);
-					
-				} else {
-					
-					context.drawImage (bitmap.bitmapData.__sourceCanvas, 0, 0);
-					
-				}
+				context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
 				
 			} else {
 				
-				if (bitmap.bitmapData.__sourceImage != null) {
-					
-					context.drawImage (bitmap.bitmapData.__sourceImage, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-					
-				} else {
-					
-					context.drawImage (bitmap.bitmapData.__sourceCanvas, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-					
-				}
+				context.drawImage (bitmap.bitmapData.__image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 				
 			}
 			

@@ -1,4 +1,5 @@
 package openfl.geom; #if !flash
+import lime.math.Vector2;
 
 
 class Point {
@@ -96,6 +97,13 @@ class Point {
 	public function subtract (v:Point):Point {
 		
 		return new Point (x - v.x, y - v.y);
+		
+	}
+	
+	
+	private function __toLimeVector2 ():Vector2 {
+		
+		return new Vector2 (x, y);
 		
 	}
 	

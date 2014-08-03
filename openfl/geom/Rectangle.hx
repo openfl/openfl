@@ -1,6 +1,9 @@
 package openfl.geom; #if !flash
 
 
+import lime.math.Rectangle in LimeRectangle;
+
+
 class Rectangle {
 	
 	
@@ -275,6 +278,13 @@ class Rectangle {
 		if (this.y > y) this.y = y;
 		if (cacheRight < x + width) this.width = x + width - this.x;
 		if (cacheBottom < y + height) this.height = y + height - this.y;
+		
+	}
+	
+	
+	private function __toLimeRectangle ():LimeRectangle {
+		
+		return new LimeRectangle (x, y, width, height);
 		
 	}
 	

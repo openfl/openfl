@@ -360,7 +360,7 @@ class Assets {
 		
 		#elseif openfl_html5
 		
-		return (bitmapData.__sourceImage != null || bitmapData.__sourceCanvas != null);
+		return (bitmapData.__isValid);
 		
 		#end
 		#end

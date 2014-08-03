@@ -58,15 +58,7 @@ class CanvasGraphics {
 		
 		if (pattern == null) {
 			
-			if (bitmapFill.__sourceImage != null) {
-				
-				pattern = context.createPattern (bitmapFill.__sourceImage, bitmapRepeat ? "repeat" : "no-repeat");
-				
-			} else {
-				
-				pattern = context.createPattern (bitmapFill.__sourceCanvas, bitmapRepeat ? "repeat" : "no-repeat");
-				
-			}
+			pattern = context.createPattern (bitmapFill.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
 			
 		}
 		
@@ -98,7 +90,7 @@ class CanvasGraphics {
 					
 				}
 				
-				context.translate( bounds.x, bounds.y);
+				context.translate (bounds.x, bounds.y);
 				
 			}
 			
@@ -184,7 +176,7 @@ class CanvasGraphics {
 								pattern = null;
 								setFill = false;
 								
-								bitmap.__syncImageData ();
+								bitmap.__sync ();
 								
 							}
 							
@@ -304,16 +296,7 @@ class CanvasGraphics {
 								if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
 									
 									optimizationUsed = true;
-									
-									if (bitmapFill.__sourceImage != null) {
-										
-										context.drawImage (bitmapFill.__sourceImage, sl, st, sr - sl, sb - st, x, y, width, height);
-										
-									} else {
-										
-										context.drawImage (bitmapFill.__sourceCanvas, sl, st, sr - sl, sb - st, x, y, width, height);
-										
-									}
+									context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x, y, width, height);
 									
 								}
 								
@@ -363,17 +346,8 @@ class CanvasGraphics {
 							var previousTileID = -1;
 							
 							var surface:Dynamic;
-							sheet.__bitmap.__syncImageData ();
-							
-							if (sheet.__bitmap.__sourceImage != null) {
-								
-								surface = sheet.__bitmap.__sourceImage;
-								
-							} else {
-								
-								surface = sheet.__bitmap.__sourceCanvas;
-								
-							}
+							sheet.__bitmap.__sync ();
+							surface = sheet.__bitmap.__image.src;
 							
 							while (index < totalCount) {
 								

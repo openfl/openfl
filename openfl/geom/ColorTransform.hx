@@ -1,6 +1,10 @@
 package openfl.geom; #if !flash
 
 
+import lime.math.ColorMatrix;
+import lime.utils.Float32Array;
+
+
 class ColorTransform {
 	
 	
@@ -64,6 +68,13 @@ class ColorTransform {
 		blueMultiplier = 0;
 		
 		return color;
+		
+	}
+	
+	
+	private function __toLimeColorMatrix ():ColorMatrix {
+		
+		return cast new Float32Array ([ redMultiplier, 0, 0, 0, redOffset, 0, greenMultiplier, 0, 0, greenOffset, 0, 0, blueMultiplier, 0, blueOffset, 0, 0, 0, alphaMultiplier, alphaOffset ]);
 		
 	}
 	
