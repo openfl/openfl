@@ -74,7 +74,7 @@ class ColorTransform {
 	
 	private function __toLimeColorMatrix ():ColorMatrix {
 		
-		return cast new Float32Array ([ redMultiplier, 0, 0, 0, redOffset, 0, greenMultiplier, 0, 0, greenOffset, 0, 0, blueMultiplier, 0, blueOffset, 0, 0, 0, alphaMultiplier, alphaOffset ]);
+		return cast new Float32Array ([ redMultiplier, 0, 0, 0, redOffset / 255, 0, greenMultiplier, 0, 0, greenOffset / 255, 0, 0, blueMultiplier, 0, blueOffset / 255, 0, 0, 0, alphaMultiplier, alphaOffset / 255 ]);
 		
 	}
 	

@@ -52,6 +52,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __image:Image;
 	private var __isValid:Bool;
 	private var __texture:GLTexture;
+	private var __textureImage:Image;
 	private var __uvData:TextureUvs;
 	
 	
@@ -72,6 +73,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			__image = new Image (null, 0, 0, width, height, fillColor);
+			__image.transparent = transparent;
 			__isValid = true;
 			
 		}
@@ -273,6 +275,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__loadFromImage (Image.fromCanvas (canvas));
+		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 		
 	}
@@ -292,6 +295,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__loadFromImage (image);
+		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 		
 	}
@@ -378,8 +382,9 @@ class BitmapData implements IBitmapDrawable {
 		if (__image.dirty) {
 			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
-			if (!__image.premultiplied) __image.premultiplied = true;
-			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, __image.data);
+			var textureImage = __image.clone ();
+			textureImage.premultiplied = true;
+			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, textureImage.data);
 			gl.bindTexture (gl.TEXTURE_2D, null);
 			__image.dirty = false;
 			

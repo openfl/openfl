@@ -417,7 +417,7 @@ class Assets {
 		#end
 		#end
 		
-		return null;
+		return true;
 		
 	}
 	
