@@ -272,14 +272,7 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.width = canvas.width;
-		bitmapData.height = canvas.height;
-		bitmapData.rect = new Rectangle (0, 0, canvas.width, canvas.height);
-		var buffer = new ImageBuffer (null, canvas.width, canvas.height);
-		buffer.__srcCanvas = canvas;
-		bitmapData.__image = new Image (buffer);
-		//bitmapData.__createCanvas (canvas.width, canvas.height);
-		//bitmapData.__sourceContext.drawImage (canvas, 0, 0);
+		bitmapData.__loadFromImage (Image.fromCanvas (canvas));
 		return bitmapData;
 		
 	}
@@ -362,51 +355,7 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixels (rect:Rectangle):ByteArray {
 		
 		if (!__isValid) return null;
-		
-		#if js
-		ImageCanvasUtil.convertToCanvas (__image);
-		ImageCanvasUtil.createImageData (__image);
-		#end
-		
-		var byteArray = new ByteArray ();
-		
-		if ((rect == null || rect.equals (this.rect)) && #if js true #else false #end) {
-			
-			#if js
-			byteArray.length = __image.buffer.data.length;
-			byteArray.byteView.set (__image.buffer.data);
-			#end
-			
-		} else { 
-			
-			var srcData = __image.buffer.data;
-			var srcStride = Std.int (__image.buffer.width * 4);
-			var srcPosition = Std.int ((rect.x * 4) + (srcStride * rect.y));
-			var srcRowOffset = srcStride - Std.int (4 * rect.width);
-			var srcRowEnd = Std.int (4 * (rect.x + rect.width));
-			
-			var length = Std.int (4 * rect.width * rect.height);
-			#if js
-			byteArray.length = length;
-			#end
-			
-			for (i in 0...length) {
-				
-				byteArray.__set (i, srcData[srcPosition++]);
-				
-				if ((srcPosition % srcStride) > srcRowEnd) {
-					
-					srcPosition += srcRowOffset;
-					
-				}
-				
-			}
-			
-		}
-		
-		byteArray.position = 0;
-		
-		return byteArray;
+		return __image.getPixels (rect);
 		
 	}
 	
@@ -573,52 +522,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
-		rect = __clipRect (rect);
 		if (!__isValid || rect == null) return;
-		
-		#if js
-		ImageCanvasUtil.convertToCanvas (__image);
-		#end
-		
-		var len = Math.round (4 * rect.width * rect.height);
-		
-		if ((rect.x == 0 && rect.y == 0 && rect.width == width && rect.height == height) && #if js true #else false #end) {
-			
-			#if js
-			ImageCanvasUtil.createImageData (__image);
-			__image.buffer.data.set (byteArray.byteView);
-			__image.dirty = true;
-			#else
-			//__sourceBytes.set (byteArray.byteView);
-			#end
-			
-		} else {
-			
-			#if js
-			ImageCanvasUtil.createImageData (__image);
-			#end
-			
-			var data = __image.buffer.data;
-			var offset = Math.round (4 * width * rect.y + rect.x * 4);
-			var pos = offset;
-			var boundR = Math.round (4 * (rect.x + rect.width));
-			
-			for (i in 0...len) {
-				
-				if (((pos) % (width * 4)) > boundR - 1) {
-					
-					pos += width * 4 - boundR;
-					
-				}
-				
-				data[pos] = byteArray.readByte ();
-				pos++;
-				
-			}
-			
-		}
-		
-		__image.dirty = true;
+		__image.setPixels (rect, byteArray);
 		
 	}
 	
@@ -660,7 +565,7 @@ class BitmapData implements IBitmapDrawable {
 			Memory.select (memory);
 			
 			var thresholdMask:Int = cast threshold & mask;
-
+			
 			var width_yy:Int, position:Int, pixelMask:Int, pixelValue, i, test;
 			
 			for (yy in 0...height) {
@@ -800,49 +705,6 @@ class BitmapData implements IBitmapDrawable {
 	public function unlock (changeRect:Rectangle = null):Void {
 		
 		
-		
-	}
-	
-	
-	private function __clipRect (r:Rectangle):Rectangle {
-		
-		if (r == null) return null;
-		
-		if (r.x < 0) {
-			
-			r.width -= -r.x;
-			r.x = 0;
-			
-			if (r.x + r.width <= 0) return null;
-			
-		}
-		
-		if (r.y < 0) {
-			
-			r.height -= -r.y;
-			r.y = 0;
-			
-			if (r.y + r.height <= 0) return null;
-			
-		}
-		
-		if (r.x + r.width >= width) {
-			
-			r.width -= r.x + r.width - width;
-			
-			if (r.width <= 0) return null;
-			
-		}
-		
-		if (r.y + r.height >= height) {
-			
-			r.height -= r.y + r.height - height;
-			
-			if (r.height <= 0) return null;
-			
-		}
-		
-		return r;
 		
 	}
 	
