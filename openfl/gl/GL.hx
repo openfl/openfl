@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GL = lime.graphics.GL;
+typedef GL = lime.graphics.opengl.GL;

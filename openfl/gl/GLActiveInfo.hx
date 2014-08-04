@@ -1,4 +1,4 @@
 package openfl.gl;
 
 
-typedef GLActiveInfo = lime.graphics.GLActiveInfo;
+typedef GLActiveInfo = lime.graphics.opengl.GLActiveInfo;

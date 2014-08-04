@@ -355,7 +355,8 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixels (rect:Rectangle):ByteArray {
 		
 		if (!__isValid) return null;
-		return __image.getPixels (rect);
+		if (rect == null) rect = this.rect;
+		return __image.getPixels (rect.__toLimeRectangle ());
 		
 	}
 	
@@ -523,7 +524,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
 		if (!__isValid || rect == null) return;
-		__image.setPixels (rect, byteArray);
+		__image.setPixels (rect.__toLimeRectangle (), byteArray);
 		
 	}
 	
