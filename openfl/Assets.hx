@@ -15,6 +15,9 @@ import openfl.net.URLRequest;
 import openfl.text.Font;
 import openfl.utils.ByteArray;
 
+@:access(lime.Assets)
+@:access(openfl.AssetLibrary)
+@:access(openfl.display.BitmapData)
 
 /**
  * <p>The Assets class provides a cross-platform interface to access 
@@ -32,9 +35,8 @@ import openfl.utils.ByteArray;
  * and specifying a custom preloader using <window preloader="" />
  * in the project file.</p>
  */
-@:access(lime.Assets)
-@:access(openfl.AssetLibrary)
-@:access(openfl.display.BitmapData)
+
+
 class Assets {
 	
 	
@@ -73,17 +75,41 @@ class Assets {
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
 		
-		var image = LimeAssets.getImage (id, useCache);
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+			
+			var bitmapData = cache.bitmapData.get (id);
+			
+			if (isValidBitmapData (bitmapData)) {
+				
+				return bitmapData;
+				
+			}
+			
+		}
+		
+		var image = LimeAssets.getImage (id, false);
 		
 		if (image != null) {
 			
 			#if flash
-			return image.src;
+			var bitmapData = image.src;
 			#else
-			return BitmapData.fromImage (image);
+			var bitmapData = BitmapData.fromImage (image);
 			#end
 			
+			if (useCache && cache.enabled) {
+				
+				cache.bitmapData.set (id, bitmapData);
+				
+			}
+			
+			return bitmapData;
+			
 		}
+		
+		#end
 		
 		return null;
 		
@@ -265,12 +291,43 @@ class Assets {
 	 */
 	public static function getSound (id:String, useCache:Bool = true):Sound {
 		
-		#if flash
-		var buffer = LimeAssets.getAudioBuffer (id, useCache);
-		return (buffer != null) ? buffer.src : null;
-		#else
-		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.sound.exists (id)) {
+			
+			var sound = cache.sound.get (id);
+			
+			if (isValidSound (sound)) {
+				
+				return sound;
+				
+			}
+			
+		}
+		
+		var buffer = LimeAssets.getAudioBuffer (id, false);
+		
+		if (buffer != null) {
+			
+			#if flash
+			var sound = buffer.src;
+			#else
+			var sound = Sound.fromAudioBuffer (buffer);
+			#end
+			
+			if (useCache && cache.enabled) {
+				
+				cache.sound.set (id, sound);
+				
+			}
+			
+			return sound;
+			
+		}
+		
 		#end
+		
+		return null;
 		
 	}
 	
@@ -341,12 +398,7 @@ class Assets {
 	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
 		
 		#if (tools && !display)
-		#if (cpp || neko)
-		
-		return true;
-		//return (bitmapData.__handle != null);
-		
-		#elseif flash
+		#if flash
 		
 		try {
 			
@@ -358,14 +410,14 @@ class Assets {
 			
 		}
 		
-		#elseif openfl_html5
+		#else
 		
-		return (bitmapData.__isValid);
+		return (bitmapData != null);
 		
 		#end
 		#end
 		
-		return true;
+		return null;
 		
 	}
 	
@@ -395,19 +447,44 @@ class Assets {
 	
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
+		#if (tools && !display)
+		
+		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+			
+			var bitmapData = cache.bitmapData.get (id);
+			
+			if (isValidBitmapData (bitmapData)) {
+				
+				handler (bitmapData);
+				return;
+				
+			}
+			
+		}
+		
 		LimeAssets.loadImage (id, function (image) {
 			
 			if (image != null) {
 				
 				#if flash
-				handler (image.src);
+				var bitmapData = image.src;
 				#else
-				handler (BitmapData.fromImage (image));
+				var bitmapData = BitmapData.fromImage (image);
 				#end
+				
+				if (useCache && cache.enabled) {
+					
+					cache.bitmapData.set (id, bitmapData);
+					
+				}
+				
+				handler (bitmapData);
 				
 			}
 			
-		}, useCache);
+		}, false);
+		
+		#end
 		
 	}
 	
