@@ -170,9 +170,6 @@ class Bitmap extends DisplayObjectContainer {
 			if (value != bitmapData.width) {
 				
 				__setTransformDirty ();
-				trace (value);
-				trace (bitmapData);
-				trace (bitmapData.width);
 				scaleX = value / bitmapData.width;
 				
 			}
