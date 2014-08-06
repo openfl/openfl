@@ -1,51 +1,47 @@
 language: c++
 
-#before_install:
-  #- "export DISPLAY=:99.0"
-  #- "sh -e /etc/init.d/xvfb start"
-  #- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x32 -extension GLX"
-  #- "export AUDIODEV=null"
-  #- sudo add-apt-repository ppa:eyecreate/haxe -y
-  #- sudo apt-get update
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x32 -extension GLX"
+  - "export AUDIODEV=null"
+  - sudo add-apt-repository ppa:eyecreate/haxe -y
+  - sudo apt-get update
 
-#install:
-  #- sudo apt-get install haxe -y --force-yes
-  #- sudo apt-get install g++-multilib gcc-multilib
-  #- sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev -y
-  #- mkdir ~/haxelib
-  #- haxelib setup ~/haxelib
-  #- git clone https://github.com/openfl/lime ~/lime --depth 1
-  #- haxelib dev lime ~/lime
-  #- git clone https://github.com/openfl/lime-tools ~/lime-tools --depth 1
-  #- haxelib dev lime-tools ~/lime-tools
-  #- git clone https://github.com/haxenme/nme ~/nme --depth 1
-  #- haxelib dev nme ~/nme
-  #- git clone https://github.com/haxenme/nme-dev ~/nme-dev --depth 1
-  #- haxelib dev nme-dev ~/nme-dev
-  #- haxelib install hxcpp
-  #- haxelib install format
-  #- haxelib install svg
-  #- haxelib install dox
-  #- haxelib install mlib
-  #- haxelib install mcover
-  #- haxelib install hamcrest
-  #- git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
-  #- haxelib dev munit ~/munit/src
-  #- haxelib dev openfl $(pwd)
-  #- cd ~/munit/tool
-  #- haxe build.hxml
-  #- haxelib run lime rebuild linux -release -64
-  #- haxelib run lime rebuild tools
+install:
+  - sudo apt-get install haxe -y --force-yes
+  - sudo apt-get install g++-multilib gcc-multilib
+  - sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev -y
+  - mkdir ~/haxelib
+  - haxelib setup ~/haxelib
+  - git clone -b next --recursive https://github.com/openfl/lime ~/lime --depth 1
+  - haxelib dev lime ~/lime
+  - git clone https://github.com/openfl/aether ~/aether --depth 1
+  - haxelib dev aether ~/aether
+  - haxelib install hxcpp
+  - haxelib install format
+  - haxelib install svg
+  - haxelib install dox
+  - haxelib install mlib
+  - haxelib install mcover
+  - haxelib install hamcrest
+  - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
+  - haxelib dev munit ~/munit/src
+  - haxelib dev openfl $(pwd)
+  - cd ~/munit/tool
+  - haxe build.hxml
+  - haxelib run aether rebuild lime linux -release -64
+  - haxelib run aether rebuild tools
 
-#before_script:
-  #- cd $TRAVIS_BUILD_DIR/tests
+before_script:
+  - cd $TRAVIS_BUILD_DIR/tests
 
-#script:
-  #- haxelib run munit test -as3 -norun
-  #- haxelib run munit test -browser phantomjs
-  #- haxelib run lime test linux
-  #- cd $TRAVIS_BUILD_DIR/documentation
-  #- haxe build.hxml
+script:
+  - haxelib run munit test -as3 -norun
+  - haxelib run munit test -browser phantomjs
+  - haxelib run aether test linux
+  - cd $TRAVIS_BUILD_DIR/documentation
+  - haxe build.hxml
 
 #notifications:
   #slack: openfl:ba3HbgtZflW8TNcJEQ1B4tAY
