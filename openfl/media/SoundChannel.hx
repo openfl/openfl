@@ -17,23 +17,46 @@ class SoundChannel extends EventDispatcher {
 	
 	private var __source:AudioSource;
 	
+	#if html5
+	private var __soundInstance:SoundJSInstance;
+	#end
 	
-	private function new (source:AudioSource):Void {
+	
+	private function new (#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end):Void {
 		
 		super (this);
 		
+		#if !html5
 		__source = source;
 		__source.onComplete.add (source_onComplete);
 		__source.play ();
+		#else
+		__soundInstance = soundInstance;
+		__soundInstance.addEventListener ("complete", source_onComplete);
+		#end
 		
 	}
 	
 	
 	public function stop ():Void {
 		
+		#if !html5
 		__source.stop ();
+		#else
+		__soundInstance.stop ();
+		#end
 		
 	}
+	
+	
+	#if html5
+	private function __dispose ():Void {
+		
+		__soundInstance.stop ();
+		__soundInstance = null;
+		
+	}
+	#end
 	
 	
 	
@@ -45,15 +68,24 @@ class SoundChannel extends EventDispatcher {
 	
 	private function get_position ():Float {
 		
+		#if !html5
 		return __source.timeOffset / 1000;
+		#else
+		return __soundInstance.getPosition ();
+		#end
 		
 	}
 	
 	
 	private function set_position (value:Float):Float {
 		
+		#if !html5
 		__source.timeOffset = Std.int (value * 1000);
 		return value;
+		#else
+		__soundInstance.setPosition (Std.int (value));
+		return __soundInstance.getPosition ();
+		#end
 		
 	}
 	
@@ -62,18 +94,29 @@ class SoundChannel extends EventDispatcher {
 		
 		// TODO: pan
 		
+		#if !html5
 		return new SoundTransform (__source.gain, 0);
+		#else
+		return new SoundTransform (__soundInstance.getVolume (), __soundInstance.getPan ());
+		#end
 		
 	}
 	
 	
 	private function set_soundTransform (value:SoundTransform):SoundTransform {
 		
+		#if !html5
 		__source.gain = value.volume;
 		
 		// TODO: pan
 		
 		return value;
+		#else
+		__soundInstance.setVolume (value.volume);
+		__soundInstance.setPan (value.pan);
+		
+		return value;
+		#end
 		
 	}
 	
@@ -83,6 +126,15 @@ class SoundChannel extends EventDispatcher {
 	// Event Handlers
 	
 	
+	
+	
+	#if html5
+	private function soundInstance_onComplete (_):Void {
+		
+		dispatchEvent (new Event (Event.SOUND_COMPLETE));
+		
+	}
+	#end
 	
 	
 	private function source_onComplete ():Void {

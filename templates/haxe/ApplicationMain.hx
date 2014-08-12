@@ -6,14 +6,14 @@ class ApplicationMain {
 	
 	
 	public static var config:lime.app.Config;
-	public static var preloader:lime.app.Preloader;
+	public static var preloader:openfl.display.Preloader;
 	
 	private static var app:lime.app.Application;
 	
 	
 	public static function create ():Void {
 		
-		preloader = new ::if (PRELOADER_NAME != "")::::PRELOADER_NAME::::else::lime.app.Preloader::end:: ();
+		preloader = new ::if (PRELOADER_NAME != "")::::PRELOADER_NAME::::else::openfl.display.Preloader::end:: ();
 		preloader.onComplete = start;
 		preloader.create (config);
 		

@@ -264,7 +264,19 @@ class Assets {
 		var buffer = LimeAssets.getAudioBuffer (id, useCache);
 		return (buffer != null) ? buffer.src : null;
 		#else
+		#if !html5
 		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
+		#else
+		var path = LimeAssets.getPath (id);
+		
+		if (path != null) {
+			
+			return new Sound (new URLRequest (path));
+			
+		}
+		
+		return null;
+		#end
 		#end
 		
 	}
@@ -305,6 +317,7 @@ class Assets {
 			
 		}
 		
+		#if !html5
 		var buffer = LimeAssets.getAudioBuffer (id, false);
 		
 		if (buffer != null) {
@@ -324,6 +337,15 @@ class Assets {
 			return sound;
 			
 		}
+		#else
+		var path = LimeAssets.getPath (id);
+		
+		if (path != null) {
+			
+			return new Sound (new URLRequest (path));
+			
+		}
+		#end
 		
 		#end
 		
@@ -587,6 +609,7 @@ class Assets {
 	
 	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
+		#if !html5
 		LimeAssets.loadAudioBuffer (id, function (buffer) {
 			
 			if (buffer != null) {
@@ -600,6 +623,9 @@ class Assets {
 			}
 			
 		}, useCache);
+		#else
+		handler (getMusic (id, useCache));
+		#end
 		
 	}
 	
@@ -640,6 +666,7 @@ class Assets {
 	
 	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
+		#if !html5
 		LimeAssets.loadAudioBuffer (id, function (buffer) {
 			
 			if (buffer != null) {
@@ -653,6 +680,9 @@ class Assets {
 			}
 			
 		}, useCache);
+		#else
+		handler (getSound (id, useCache));
+		#end
 		
 	}
 	
