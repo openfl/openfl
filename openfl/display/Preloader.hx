@@ -9,10 +9,6 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.URLRequest;
 
-#if js
-import js.Browser;
-#end
-
 
 class Preloader extends LimePreloader {
 	
@@ -29,7 +25,6 @@ class Preloader extends LimePreloader {
 		#if html5
 		
 		var sounds = [];
-		var fonts = [];
 		var url = null;
 		
 		for (i in 0...urls.length) {
@@ -50,16 +45,6 @@ class Preloader extends LimePreloader {
 					
 					sounds.push (sound);
 				
-				case FONT:
-					
-					if (!fonts.remove (url)) {
-						
-						total++;
-						
-					}
-					
-					fonts.push (url);
-				
 				default:
 				
 			}
@@ -75,89 +60,11 @@ class Preloader extends LimePreloader {
 			
 		}
 		
-		for (font in fonts) {
-			
-			loadFont (font);
-			
-		}
-		
 		#end
 		
 		super.load (urls, types);
 		
 	}
-	
-	
-	#if html5
-	private function loadFont (font:String):Void {
-		
-		var node = Browser.document.createElement ("span");
-		node.innerHTML = "giItT1WQy@!-/#";
-		var style = node.style;
-		style.position = "absolute";
-		style.left = "-10000px";
-		style.top = "-10000px";
-		style.fontSize = "300px";
-		style.fontFamily = "sans-serif";
-		style.fontVariant = "normal";
-		style.fontStyle = "normal";
-		style.fontWeight = "normal";
-		style.letterSpacing = "0";
-		Browser.document.body.appendChild (node);
-		
-		var width = node.offsetWidth;
-		style.fontFamily = "'" + font + "'";
-		
-		var interval:Null<Int> = null;
-		var found = false;
-		
-		var checkFont = function () {
-			
-			if (node.offsetWidth != width) {
-				
-				// Test font was still not available yet, try waiting one more interval?
-				if (!found) {
-					
-					found = true;
-					return false;
-					
-				}
-				
-				loaded ++;
-				
-				if (interval != null) {
-					
-					Browser.window.clearInterval (interval);
-					
-				}
-				
-				node.parentNode.removeChild (node);
-				node = null;
-				
-				update (loaded, total);
-				
-				if (loaded == total) {
-					
-					start ();
-					
-				}
-				
-				return true;
-				
-			}
-			
-			return false;
-			
-		}
-		
-		if (!checkFont ()) {
-			
-			interval = Browser.window.setInterval (checkFont, 50);
-			
-		}
-		
-	}
-	#end
 	
 	
 	
