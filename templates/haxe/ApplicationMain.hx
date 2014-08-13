@@ -26,6 +26,7 @@ class ApplicationMain {
 		::if (type == "image")::types.push (AssetType.IMAGE);
 		::elseif (type == "binary")::types.push (AssetType.BINARY);
 		::elseif (type == "text")::types.push (AssetType.TEXT);
+		::elseif (type == "font")::types.push (AssetType.FONT);
 		::elseif (type == "sound")::types.push (AssetType.SOUND);
 		::elseif (type == "music")::types.push (AssetType.MUSIC);
 		::else::types.push (null);::end::

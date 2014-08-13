@@ -1,8 +1,10 @@
 package openfl.text; #if !flash
 
 
+import lime.graphics.opengl.GLTexture;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
 import haxe.xml.Fast;
 import openfl.display.DisplayObject;
@@ -73,6 +75,7 @@ class TextField extends InteractiveObject {
 	private var __ranges:Array<TextFormatRange>;
 	private var __text:String;
 	private var __textFormat:TextFormat;
+	private var __texture:GLTexture;
 	private var __width:Float;
 	
 	#if js
@@ -361,6 +364,13 @@ class TextField extends InteractiveObject {
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMTextField.render (this, renderSession);
+		
+	}
+	
+	
+	public override function __renderGL (renderSession:RenderSession):Void {
+		
+		GLTextField.render (this, renderSession);
 		
 	}
 	
