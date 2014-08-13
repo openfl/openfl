@@ -89,13 +89,13 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if js
 		ImageCanvasUtil.convertToCanvas (__image);
-		ImageCanvasUtil.convertToCanvas (__image);
+		ImageCanvasUtil.createImageData (__image);
 		ImageCanvasUtil.convertToCanvas (sourceBitmapData.__image);
-		ImageCanvasUtil.convertToCanvas (sourceBitmapData.__image);
+		ImageCanvasUtil.createImageData (sourceBitmapData.__image);
 		#end
 		
 		#if js
-		filter.__applyFilter (cast __image.buffer.data, cast sourceBitmapData.__image.buffer.data, sourceRect, destPoint);
+		filter.__applyFilter (__image.buffer.__srcImageData, sourceBitmapData.__image.buffer.__srcImageData, sourceRect, destPoint);
 		#end
 		
 		__image.dirty = true;

@@ -137,7 +137,7 @@ class Assets {
 	 */
 	public static function getFont (id:String, useCache:Bool = true):Font {
 		
-		/*#if (tools && !display)
+		#if (tools && !display)
 		
 		if (useCache && cache.enabled && cache.font.exists (id)) {
 			
@@ -145,45 +145,15 @@ class Assets {
 			
 		}
 		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
+		var font = LimeAssets.getFont (id, false);
 		
-		if (library != null) {
+		if (font != null) {
 			
-			if (library.exists (symbolName, cast AssetType.FONT)) {
-				
-				if (library.isLocal (symbolName, cast AssetType.FONT)) {
-					
-					var font = library.getFont (symbolName);
-					
-					if (useCache && cache.enabled) {
-						
-						cache.font.set (id, font);
-						
-					}
-					
-					return font;
-					
-				} else {
-					
-					trace ("[openfl.Assets] Font asset \"" + id + "\" exists, but only asynchronously");
-					
-				}
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
-				
-			}
-			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			return font;
 			
 		}
 		
-		#end*/
+		#end
 		
 		return new Font ();
 		
@@ -773,13 +743,6 @@ class AssetLibrary extends LimeAssetLibrary {
 	}
 	
 	
-	public function getFont (id:String):Font {
-		
-		return null;
-		
-	}
-	
-	
 	public function getMovieClip (id:String):MovieClip {
 		
 		return null;
@@ -797,13 +760,6 @@ class AssetLibrary extends LimeAssetLibrary {
 	public function getSound (id:String):Sound {
 		
 		return null;
-		
-	}
-	
-	
-	public function loadFont (id:String, handler:Font -> Void):Void {
-		
-		handler (getFont (id));
 		
 	}
 	
