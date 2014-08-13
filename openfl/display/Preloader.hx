@@ -74,6 +74,7 @@ class Preloader extends LimePreloader {
 	
 	
 	
+	#if html5
 	private function sound_onComplete (event:Event):Void {
 		
 		loaded++;
@@ -104,6 +105,7 @@ class Preloader extends LimePreloader {
 		}
 		
 	}
+	#end
 	
 	
 }
