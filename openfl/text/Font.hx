@@ -9,9 +9,13 @@ class Font {
 	public var fontType:FontType;
 	
 	
-	public function new () {
+	public function new (name:String = null) {
 		
-		
+		if (name != null) {
+			
+			fontName = name;
+			
+		}
 		
 	}
 	
