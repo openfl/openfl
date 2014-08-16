@@ -70,9 +70,18 @@ class Multitouch {
 	
 	
 	
-	private static var lime_stage_get_multitouch_supported = Lib.load ("lime", "lime_stage_get_multitouch_supported", 1);
-	private static var lime_stage_get_multitouch_active = Lib.load ("lime", "lime_stage_get_multitouch_active", 1);
-	private static var lime_stage_set_multitouch_active = Lib.load ("lime", "lime_stage_set_multitouch_active", 2);
+	private static function __init__ () {
+		
+		lime_stage_get_multitouch_supported = Lib.load ("lime", "lime_stage_get_multitouch_supported", 1);
+		lime_stage_get_multitouch_active = Lib.load ("lime", "lime_stage_get_multitouch_active", 1);
+		lime_stage_set_multitouch_active = Lib.load ("lime", "lime_stage_set_multitouch_active", 2);
+		
+	}
+	
+	
+	private static var lime_stage_get_multitouch_supported;
+	private static var lime_stage_get_multitouch_active;
+	private static var lime_stage_set_multitouch_active;
 	
 	
 }

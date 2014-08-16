@@ -31,7 +31,14 @@ class GraphicsStroke extends IGraphicsData {
 	}
 	
 	
-	private static var lime_graphics_stroke_create = Lib.load ("lime", "lime_graphics_stroke_create", -1);
+	private static function __init__ () {
+		
+		lime_graphics_stroke_create = Lib.load ("lime", "lime_graphics_stroke_create", -1);
+		
+	}
+	
+	
+	private static var lime_graphics_stroke_create;
 	
 	
 }

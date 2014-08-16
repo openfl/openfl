@@ -534,13 +534,25 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	
-	private static var lime_create_display_object_container = Lib.load ("lime", "lime_create_display_object_container", 0);
-	private static var lime_doc_add_child = Lib.load ("lime", "lime_doc_add_child", 2);
-	private static var lime_doc_remove_child = Lib.load ("lime", "lime_doc_remove_child", 2);
-	private static var lime_doc_set_child_index = Lib.load ("lime", "lime_doc_set_child_index", 3);
-	private static var lime_doc_get_mouse_children = Lib.load ("lime", "lime_doc_get_mouse_children", 1);
-	private static var lime_doc_set_mouse_children = Lib.load ("lime", "lime_doc_set_mouse_children", 2);
-	private static var lime_doc_swap_children = Lib.load ("lime", "lime_doc_swap_children", 3);
+	private static function __init__ () {
+		
+		lime_create_display_object_container = Lib.load ("lime", "lime_create_display_object_container", 0);
+		lime_doc_add_child = Lib.load ("lime", "lime_doc_add_child", 2);
+		lime_doc_remove_child = Lib.load ("lime", "lime_doc_remove_child", 2);
+		lime_doc_set_child_index = Lib.load ("lime", "lime_doc_set_child_index", 3);
+		lime_doc_get_mouse_children = Lib.load ("lime", "lime_doc_get_mouse_children", 1);
+		lime_doc_set_mouse_children = Lib.load ("lime", "lime_doc_set_mouse_children", 2);
+		lime_doc_swap_children = Lib.load ("lime", "lime_doc_swap_children", 3);
+		
+	}
+	
+	private static var lime_create_display_object_container;
+	private static var lime_doc_add_child;
+	private static var lime_doc_remove_child;
+	private static var lime_doc_set_child_index;
+	private static var lime_doc_get_mouse_children;
+	private static var lime_doc_set_mouse_children;
+	private static var lime_doc_swap_children;
 	
 	
 }

@@ -543,14 +543,28 @@ class Lib {
 	
 	
 	
+	private static function __init__ () {
+		
+		#if android
+		lime_post_ui_callback = Lib.load ("lime", "lime_post_ui_callback", 1);
+		#end
+		lime_set_package = Lib.load ("lime", "lime_set_package", 4);
+		lime_get_frame_stage = Lib.load ("lime", "lime_get_frame_stage", 1);
+		lime_get_url = Lib.load ("lime", "lime_get_url", 1);
+		lime_pause_animation = Lib.load ("lime", "lime_pause_animation", 0);
+		lime_resume_animation = Lib.load ("lime", "lime_resume_animation", 0);
+		
+	}
+	
+	
 	#if android
-	private static var lime_post_ui_callback = Lib.load ("lime", "lime_post_ui_callback", 1);
+	private static var lime_post_ui_callback;
 	#end
-	private static var lime_set_package = Lib.load ("lime", "lime_set_package", 4);
-	private static var lime_get_frame_stage = Lib.load ("lime", "lime_get_frame_stage", 1);
-	private static var lime_get_url = Lib.load ("lime", "lime_get_url", 1);
-	private static var lime_pause_animation = Lib.load ("lime", "lime_pause_animation", 0);
-	private static var lime_resume_animation = Lib.load ("lime", "lime_resume_animation", 0);
+	private static var lime_set_package;
+	private static var lime_get_frame_stage;
+	private static var lime_get_url;
+	private static var lime_pause_animation;
+	private static var lime_resume_animation;
 	
 	
 }

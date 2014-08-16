@@ -121,12 +121,24 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	
-	private static var lime_simple_button_set_state = Lib.load ("lime", "lime_simple_button_set_state", 3);
-	private static var lime_simple_button_get_enabled = Lib.load ("lime", "lime_simple_button_get_enabled", 1);
-	private static var lime_simple_button_set_enabled = Lib.load ("lime", "lime_simple_button_set_enabled", 2);
-	private static var lime_simple_button_get_hand_cursor = Lib.load ("lime", "lime_simple_button_get_hand_cursor", 1);
-	private static var lime_simple_button_set_hand_cursor = Lib.load ("lime", "lime_simple_button_set_hand_cursor", 2);
-	private static var lime_simple_button_create = Lib.load ("lime", "lime_simple_button_create", 0);
+	private static function __init__ () {
+		
+		lime_simple_button_set_state = Lib.load ("lime", "lime_simple_button_set_state", 3);
+		lime_simple_button_get_enabled = Lib.load ("lime", "lime_simple_button_get_enabled", 1);
+		lime_simple_button_set_enabled = Lib.load ("lime", "lime_simple_button_set_enabled", 2);
+		lime_simple_button_get_hand_cursor = Lib.load ("lime", "lime_simple_button_get_hand_cursor", 1);
+		lime_simple_button_set_hand_cursor = Lib.load ("lime", "lime_simple_button_set_hand_cursor", 2);
+		lime_simple_button_create = Lib.load ("lime", "lime_simple_button_create", 0);
+		
+	}
+	
+	
+	private static var lime_simple_button_set_state;
+	private static var lime_simple_button_get_enabled;
+	private static var lime_simple_button_set_enabled;
+	private static var lime_simple_button_get_hand_cursor;
+	private static var lime_simple_button_set_hand_cursor;
+	private static var lime_simple_button_create;
 	
 	
 }

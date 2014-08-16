@@ -295,17 +295,34 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	
-	private static var lime_sound_channel_is_complete = Lib.load ("lime", "lime_sound_channel_is_complete", 1);
-	private static var lime_sound_channel_get_left = Lib.load ("lime", "lime_sound_channel_get_left", 1);
-	private static var lime_sound_channel_get_right = Lib.load ("lime", "lime_sound_channel_get_right", 1);
-	private static var lime_sound_channel_get_position = Lib.load ("lime", "lime_sound_channel_get_position", 1);
-	private static var lime_sound_channel_set_position = Lib.load ("lime", "lime_sound_channel_set_position", 2);
-	private static var lime_sound_channel_get_data_position = Lib.load ("lime", "lime_sound_channel_get_data_position", 1);
-	private static var lime_sound_channel_stop = Lib.load ("lime", "lime_sound_channel_stop", 1);
-	private static var lime_sound_channel_create = Lib.load ("lime", "lime_sound_channel_create", 4);
-	private static var lime_sound_channel_set_transform = Lib.load ("lime", "lime_sound_channel_set_transform", 2);
-	private static var lime_sound_channel_needs_data = Lib.load ("lime", "lime_sound_channel_needs_data", 1);
-	private static var lime_sound_channel_add_data = Lib.load ("lime", "lime_sound_channel_add_data", 2);
+	private static function __init__ () {
+		
+		lime_sound_channel_is_complete = Lib.load ("lime", "lime_sound_channel_is_complete", 1);
+		lime_sound_channel_get_left = Lib.load ("lime", "lime_sound_channel_get_left", 1);
+		lime_sound_channel_get_right = Lib.load ("lime", "lime_sound_channel_get_right", 1);
+		lime_sound_channel_get_position = Lib.load ("lime", "lime_sound_channel_get_position", 1);
+		lime_sound_channel_set_position = Lib.load ("lime", "lime_sound_channel_set_position", 2);
+		lime_sound_channel_get_data_position = Lib.load ("lime", "lime_sound_channel_get_data_position", 1);
+		lime_sound_channel_stop = Lib.load ("lime", "lime_sound_channel_stop", 1);
+		lime_sound_channel_create = Lib.load ("lime", "lime_sound_channel_create", 4);
+		lime_sound_channel_set_transform = Lib.load ("lime", "lime_sound_channel_set_transform", 2);
+		lime_sound_channel_needs_data = Lib.load ("lime", "lime_sound_channel_needs_data", 1);
+		lime_sound_channel_add_data = Lib.load ("lime", "lime_sound_channel_add_data", 2);
+		
+	}
+	
+	
+	private static var lime_sound_channel_is_complete;
+	private static var lime_sound_channel_get_left;
+	private static var lime_sound_channel_get_right;
+	private static var lime_sound_channel_get_position;
+	private static var lime_sound_channel_set_position;
+	private static var lime_sound_channel_get_data_position;
+	private static var lime_sound_channel_stop;
+	private static var lime_sound_channel_create;
+	private static var lime_sound_channel_set_transform;
+	private static var lime_sound_channel_needs_data;
+	private static var lime_sound_channel_add_data;
 	
 	
 }

@@ -715,50 +715,100 @@ class BitmapData implements IBitmapDrawable {
 	
 	
 	
-	private static var lime_bitmap_data_create = Lib.load ("lime", "lime_bitmap_data_create", -1);
-	private static var lime_bitmap_data_load = Lib.load ("lime", "lime_bitmap_data_load", 2);
-	private static var lime_bitmap_data_from_bytes = Lib.load ("lime", "lime_bitmap_data_from_bytes", 2);
-	private static var lime_bitmap_data_clear = Lib.load ("lime", "lime_bitmap_data_clear", 2);
-	private static var lime_bitmap_data_clone = Lib.load ("lime", "lime_bitmap_data_clone", 1);
-	private static var lime_bitmap_data_apply_filter = Lib.load ("lime", "lime_bitmap_data_apply_filter", 5);
-	private static var lime_bitmap_data_color_transform = Lib.load ("lime", "lime_bitmap_data_color_transform", 3);
-	private static var lime_bitmap_data_copy = Lib.load ("lime", "lime_bitmap_data_copy", 5);
-	private static var lime_bitmap_data_copy_channel = Lib.load ("lime", "lime_bitmap_data_copy_channel", -1);
-	private static var lime_bitmap_data_fill = Lib.load ("lime", "lime_bitmap_data_fill", 4);
-	private static var lime_bitmap_data_get_pixels = Lib.load ("lime", "lime_bitmap_data_get_pixels", 2);
-	private static var lime_bitmap_data_get_pixel = Lib.load ("lime", "lime_bitmap_data_get_pixel", 3);
-	private static var lime_bitmap_data_get_pixel32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
-	private static var lime_bitmap_data_get_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_get_pixel_rgba", 3);
+	private static function __init__ () {
+		
+		lime_bitmap_data_create = Lib.load ("lime", "lime_bitmap_data_create", -1);
+		lime_bitmap_data_load = Lib.load ("lime", "lime_bitmap_data_load", 2);
+		lime_bitmap_data_from_bytes = Lib.load ("lime", "lime_bitmap_data_from_bytes", 2);
+		lime_bitmap_data_clear = Lib.load ("lime", "lime_bitmap_data_clear", 2);
+		lime_bitmap_data_clone = Lib.load ("lime", "lime_bitmap_data_clone", 1);
+		lime_bitmap_data_apply_filter = Lib.load ("lime", "lime_bitmap_data_apply_filter", 5);
+		lime_bitmap_data_color_transform = Lib.load ("lime", "lime_bitmap_data_color_transform", 3);
+		lime_bitmap_data_copy = Lib.load ("lime", "lime_bitmap_data_copy", 5);
+		lime_bitmap_data_copy_channel = Lib.load ("lime", "lime_bitmap_data_copy_channel", -1);
+		lime_bitmap_data_fill = Lib.load ("lime", "lime_bitmap_data_fill", 4);
+		lime_bitmap_data_get_pixels = Lib.load ("lime", "lime_bitmap_data_get_pixels", 2);
+		lime_bitmap_data_get_pixel = Lib.load ("lime", "lime_bitmap_data_get_pixel", 3);
+		lime_bitmap_data_get_pixel32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
+		lime_bitmap_data_get_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_get_pixel_rgba", 3);
+		#if cpp
+		lime_bitmap_data_get_array = Lib.load ("lime", "lime_bitmap_data_get_array", 3);
+		#end
+		lime_bitmap_data_get_color_bounds_rect = Lib.load ("lime", "lime_bitmap_data_get_color_bounds_rect", 5);
+		lime_bitmap_data_scroll = Lib.load ("lime", "lime_bitmap_data_scroll", 3);
+		lime_bitmap_data_set_pixel = Lib.load ("lime", "lime_bitmap_data_set_pixel", 4);
+		lime_bitmap_data_set_pixel32 = Lib.load ("lime", "lime_bitmap_data_set_pixel32", 4);
+		lime_bitmap_data_set_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_set_pixel_rgba", 4);
+		lime_bitmap_data_set_bytes = Lib.load ("lime", "lime_bitmap_data_set_bytes", 4);
+		lime_bitmap_data_set_format = Lib.load ("lime", "lime_bitmap_data_set_format", 2);
+		#if cpp
+		lime_bitmap_data_set_array = Lib.load ("lime", "lime_bitmap_data_set_array", 3);
+		lime_bitmap_data_create_hardware_surface = Lib.load ("lime", "lime_bitmap_data_create_hardware_surface", 1);
+		lime_bitmap_data_destroy_hardware_surface = Lib.load ("lime", "lime_bitmap_data_destroy_hardware_surface", 1);
+		#end
+		lime_bitmap_data_dispose = Lib.load ("lime", "lime_bitmap_data_dispose", 1);
+		lime_bitmap_data_generate_filter_rect = Lib.load ("lime", "lime_bitmap_data_generate_filter_rect", 3);
+		lime_render_surface_to_surface = Lib.load ("lime", "lime_render_surface_to_surface", -1);
+		lime_bitmap_data_height = Lib.load ("lime", "lime_bitmap_data_height", 1);
+		lime_bitmap_data_width = Lib.load ("lime", "lime_bitmap_data_width", 1);
+		lime_bitmap_data_get_transparent = Lib.load ("lime", "lime_bitmap_data_get_transparent", 1);
+		lime_bitmap_data_set_flags = Lib.load ("lime", "lime_bitmap_data_set_flags", 2);
+		lime_bitmap_data_encode = Lib.load ("lime", "lime_bitmap_data_encode", 3);
+		lime_bitmap_data_dump_bits = Lib.load ("lime", "lime_bitmap_data_dump_bits", 1);
+		lime_bitmap_data_flood_fill = Lib.load ("lime", "lime_bitmap_data_flood_fill", 4);
+		lime_bitmap_data_noise = Lib.load ("lime", "lime_bitmap_data_noise", -1);
+		lime_bitmap_data_unmultiply_alpha = Lib.load ("lime", "lime_bitmap_data_unmultiply_alpha", 1);
+		lime_bitmap_data_multiply_alpha = Lib.load ("lime", "lime_bitmap_data_multiply_alpha", 1);
+		lime_bitmap_data_get_prem_alpha = Lib.load ("lime", "lime_bitmap_data_get_prem_alpha", 1);
+		lime_bitmap_data_set_prem_alpha = Lib.load ("lime", "lime_bitmap_data_set_prem_alpha", 2);
+		
+	}
+	
+	
+	private static var lime_bitmap_data_create;
+	private static var lime_bitmap_data_load;
+	private static var lime_bitmap_data_from_bytes;
+	private static var lime_bitmap_data_clear;
+	private static var lime_bitmap_data_clone;
+	private static var lime_bitmap_data_apply_filter;
+	private static var lime_bitmap_data_color_transform;
+	private static var lime_bitmap_data_copy;
+	private static var lime_bitmap_data_copy_channel;
+	private static var lime_bitmap_data_fill;
+	private static var lime_bitmap_data_get_pixels;
+	private static var lime_bitmap_data_get_pixel;
+	private static var lime_bitmap_data_get_pixel32;
+	private static var lime_bitmap_data_get_pixel_rgba;
 	#if cpp
-	private static var lime_bitmap_data_get_array = Lib.load ("lime", "lime_bitmap_data_get_array", 3);
+	private static var lime_bitmap_data_get_array;
 	#end
-	private static var lime_bitmap_data_get_color_bounds_rect = Lib.load ("lime", "lime_bitmap_data_get_color_bounds_rect", 5);
-	private static var lime_bitmap_data_scroll = Lib.load ("lime", "lime_bitmap_data_scroll", 3);
-	private static var lime_bitmap_data_set_pixel = Lib.load ("lime", "lime_bitmap_data_set_pixel", 4);
-	private static var lime_bitmap_data_set_pixel32 = Lib.load ("lime", "lime_bitmap_data_set_pixel32", 4);
-	private static var lime_bitmap_data_set_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_set_pixel_rgba", 4);
-	private static var lime_bitmap_data_set_bytes = Lib.load ("lime", "lime_bitmap_data_set_bytes", 4);
-	private static var lime_bitmap_data_set_format = Lib.load ("lime", "lime_bitmap_data_set_format", 2);
+	private static var lime_bitmap_data_get_color_bounds_rect;
+	private static var lime_bitmap_data_scroll;
+	private static var lime_bitmap_data_set_pixel;
+	private static var lime_bitmap_data_set_pixel32;
+	private static var lime_bitmap_data_set_pixel_rgba;
+	private static var lime_bitmap_data_set_bytes;
+	private static var lime_bitmap_data_set_format;
 	#if cpp
-	private static var lime_bitmap_data_set_array = Lib.load ("lime", "lime_bitmap_data_set_array", 3);
-	private static var lime_bitmap_data_create_hardware_surface = Lib.load ("lime", "lime_bitmap_data_create_hardware_surface", 1);
-	private static var lime_bitmap_data_destroy_hardware_surface = Lib.load ("lime", "lime_bitmap_data_destroy_hardware_surface", 1);
+	private static var lime_bitmap_data_set_array;
+	private static var lime_bitmap_data_create_hardware_surface;
+	private static var lime_bitmap_data_destroy_hardware_surface;
 	#end
-	private static var lime_bitmap_data_dispose = Lib.load ("lime", "lime_bitmap_data_dispose", 1);
-	private static var lime_bitmap_data_generate_filter_rect = Lib.load ("lime", "lime_bitmap_data_generate_filter_rect", 3);
-	private static var lime_render_surface_to_surface = Lib.load ("lime", "lime_render_surface_to_surface", -1);
-	private static var lime_bitmap_data_height = Lib.load ("lime", "lime_bitmap_data_height", 1);
-	private static var lime_bitmap_data_width = Lib.load ("lime", "lime_bitmap_data_width", 1);
-	private static var lime_bitmap_data_get_transparent = Lib.load ("lime", "lime_bitmap_data_get_transparent", 1);
-	private static var lime_bitmap_data_set_flags = Lib.load ("lime", "lime_bitmap_data_set_flags", 2);
-	private static var lime_bitmap_data_encode = Lib.load ("lime", "lime_bitmap_data_encode", 3);
-	private static var lime_bitmap_data_dump_bits = Lib.load ("lime", "lime_bitmap_data_dump_bits", 1);
-	private static var lime_bitmap_data_flood_fill = Lib.load ("lime", "lime_bitmap_data_flood_fill", 4);
-	private static var lime_bitmap_data_noise = Lib.load ("lime", "lime_bitmap_data_noise", -1);
-	private static var lime_bitmap_data_unmultiply_alpha = Lib.load ("lime", "lime_bitmap_data_unmultiply_alpha", 1);
-	private static var lime_bitmap_data_multiply_alpha = Lib.load ("lime", "lime_bitmap_data_multiply_alpha", 1);
-	private static var lime_bitmap_data_get_prem_alpha = Lib.load ("lime", "lime_bitmap_data_get_prem_alpha", 1);
-	private static var lime_bitmap_data_set_prem_alpha = Lib.load ("lime", "lime_bitmap_data_set_prem_alpha", 2);
+	private static var lime_bitmap_data_dispose;
+	private static var lime_bitmap_data_generate_filter_rect;
+	private static var lime_render_surface_to_surface;
+	private static var lime_bitmap_data_height;
+	private static var lime_bitmap_data_width;
+	private static var lime_bitmap_data_get_transparent;
+	private static var lime_bitmap_data_set_flags;
+	private static var lime_bitmap_data_encode;
+	private static var lime_bitmap_data_dump_bits;
+	private static var lime_bitmap_data_flood_fill;
+	private static var lime_bitmap_data_noise;
+	private static var lime_bitmap_data_unmultiply_alpha;
+	private static var lime_bitmap_data_multiply_alpha;
+	private static var lime_bitmap_data_get_prem_alpha;
+	private static var lime_bitmap_data_set_prem_alpha;
 	
 }
 

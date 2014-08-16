@@ -92,12 +92,25 @@ class File {
 	
 	
 	
+	private static function __init__ () {
+		
+		#if iphone
+		lime_get_resource_path = Lib.load ("lime", "lime_get_resource_path", 0);
+		#end
+		
+		#if !android
+		lime_filesystem_get_special_dir = Lib.load ("lime", "lime_filesystem_get_special_dir", 1);
+		#end
+		
+	}
+	
+	
 	#if iphone
-	private static var lime_get_resource_path = Lib.load ("lime", "lime_get_resource_path", 0);
+	private static var lime_get_resource_path;
 	#end
 	
 	#if !android
-	private static var lime_filesystem_get_special_dir = Lib.load ("lime", "lime_filesystem_get_special_dir", 1);
+	private static var lime_filesystem_get_special_dir;
 	#else
 	private static var jni_filesystem_get_special_dir:Dynamic = null;
 	private static function lime_filesystem_get_special_dir (which:Int):String {

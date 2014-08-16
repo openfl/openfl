@@ -65,7 +65,14 @@ class System {
 	
 	
 	
-	private static var lime_get_unique_device_identifier = Lib.load ("lime", "lime_get_unique_device_identifier", 0);
+	private static function __init__ () {
+		
+		lime_get_unique_device_identifier = Lib.load ("lime", "lime_get_unique_device_identifier", 0);
+		
+	}
+	
+	
+	private static var lime_get_unique_device_identifier;
 	
 	
 }

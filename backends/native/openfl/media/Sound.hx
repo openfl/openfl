@@ -309,13 +309,26 @@ class Sound extends EventDispatcher {
 	
 	
 	
-	private static var lime_sound_from_file = Lib.load ("lime", "lime_sound_from_file", 2);
-	private static var lime_sound_from_data = Lib.load ("lime", "lime_sound_from_data", 3);
-	private static var lime_sound_get_id3 = Lib.load ("lime", "lime_sound_get_id3", 2);
-	private static var lime_sound_get_length = Lib.load ("lime", "lime_sound_get_length", 1);
-	private static var lime_sound_close = Lib.load ("lime", "lime_sound_close", 1);
-	private static var lime_sound_get_status = Lib.load ("lime", "lime_sound_get_status", 1);
-	private static var lime_sound_channel_create_dynamic = Lib.load ("lime", "lime_sound_channel_create_dynamic", 2);
+	private static function __init__ () {
+		
+		lime_sound_from_file = Lib.load ("lime", "lime_sound_from_file", 2);
+		lime_sound_from_data = Lib.load ("lime", "lime_sound_from_data", 3);
+		lime_sound_get_id3 = Lib.load ("lime", "lime_sound_get_id3", 2);
+		lime_sound_get_length = Lib.load ("lime", "lime_sound_get_length", 1);
+		lime_sound_close = Lib.load ("lime", "lime_sound_close", 1);
+		lime_sound_get_status = Lib.load ("lime", "lime_sound_get_status", 1);
+		lime_sound_channel_create_dynamic = Lib.load ("lime", "lime_sound_channel_create_dynamic", 2);
+		
+	}
+	
+	
+	private static var lime_sound_from_file;
+	private static var lime_sound_from_data;
+	private static var lime_sound_get_id3;
+	private static var lime_sound_get_length;
+	private static var lime_sound_close;
+	private static var lime_sound_get_status;
+	private static var lime_sound_channel_create_dynamic;
 	
 	
 }
