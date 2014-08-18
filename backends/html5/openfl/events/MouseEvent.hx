@@ -67,18 +67,7 @@ class MouseEvent extends Event {
 		if (type == MouseEvent.MOUSE_WHEEL) {
 			
 			var mouseEvent:Dynamic = event;
-			if (mouseEvent.wheelDelta) { /* IE/Opera. */
-				#if (!haxe_210 && !haxe3)
-				if (js.Lib.isOpera)
-					delta = Std.int (mouseEvent.wheelDelta / 40);
-				else
-				#end
-					delta = Std.int (mouseEvent.wheelDelta / 120);
-			} else if (mouseEvent.detail) { /** Mozilla case. */
-				
-				Std.int (-mouseEvent.detail);
-				
-			}
+			delta = mouseEvent.deltaY > 0 ? 1 : -1;
 			
 		}
 		
