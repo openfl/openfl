@@ -3,11 +3,8 @@ package openfl.text;
 
 import haxe.Timer;
 import Math;
-import Math;
 import js.Browser;
 import StringTools;
-import js.Browser;
-import js.Browser;
 import js.Browser;
 import openfl.events.FocusEvent;
 import js.html.CanvasElement;
