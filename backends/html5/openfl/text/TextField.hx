@@ -1,6 +1,5 @@
 package openfl.text;
 
-
 import haxe.Timer;
 import Math;
 import js.Browser;
@@ -30,7 +29,8 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
-	
+	private static var __inputs:Array<TextField>;
+
 	public var antiAliasType:AntiAliasType;
 	@:isVar public var autoSize (default, set):TextFieldAutoSize;
 	@:isVar public var background (default, set):Bool;
@@ -89,6 +89,7 @@ class TextField extends InteractiveObject {
 	private var __verticalPadding:Float = 2;
 	private var __showCursor:Bool;
 	private var __currentTimer:Timer;
+	private var __inputsIndex :UInt;
 
 
 	public function new () {
@@ -133,6 +134,11 @@ class TextField extends InteractiveObject {
 
 	private function setupTextInput():Void
 	{
+		if(__inputs == null) __inputs = new Array<TextField>();
+		__cursorPos = -1;
+
+		__inputs.push(this);
+		__inputsIndex = __inputs.length - 1;
 		// create the hidden input element
 		if(__hiddenInput == null)
 		{
@@ -163,10 +169,15 @@ class TextField extends InteractiveObject {
 			this.addEventListener(Event.ADDED_TO_STAGE, handleAddedToStage);
 			this.addEventListener(Event.REMOVED_FROM_STAGE, handleRemovedFromStage);
 		}
+
 	}
 
 	private function unsetTextInput():Void
 	{
+		if(__inputs != null)
+		{
+			__inputs.remove(this);
+		}
 		removeEventsListeners();
 	}
 	
@@ -180,9 +191,6 @@ class TextField extends InteractiveObject {
 		this.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
 		this.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
 		this.stage.addEventListener(MouseEvent.MOUSE_UP, handleStageClick);
-
-		this.addEventListener(MouseEvent.MOUSE_OVER, handleMouseOver);
-		this.addEventListener(MouseEvent.MOUSE_OUT, handleMouseOut);
 	}
 	
 	private function removeEventsListeners():Void
@@ -195,9 +203,6 @@ class TextField extends InteractiveObject {
 		this.removeEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
 		this.removeEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
 		if(this.stage != null) this.stage.removeEventListener(MouseEvent.MOUSE_UP, handleStageClick);
-
-		this.removeEventListener(MouseEvent.MOUSE_OVER, handleMouseOver);
-		this.removeEventListener(MouseEvent.MOUSE_OUT, handleMouseOut);
 	}
 
 	private function handleAddedToStage(e:Event):Void
@@ -212,6 +217,12 @@ class TextField extends InteractiveObject {
 
 	private function handleFocusOut(e:FocusEvent):Void
 	{
+		blur();
+	}
+
+	private function blur():Void
+	{
+		__cursorPos = -1;
 		__hasFocus = false;
 		stopCursorTimerLoop();
 		__hiddenInput.blur();
@@ -226,11 +237,8 @@ class TextField extends InteractiveObject {
 	private function handleMouseDown(e:MouseEvent):Void
 	{
 		// start the selection drag if inside the input
-		//if (__hasFocus )
-		{
-			__selectionStart = getClickPos(e.localX, e.localY);
-			this.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
-		}
+		__selectionStart = getClickPos(e.localX, e.localY);
+		this.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
 	}
 
 	private function getClickPos(posX:Float, y:Float):Int
@@ -286,8 +294,6 @@ class TextField extends InteractiveObject {
 	private function handleMouseUp(e:MouseEvent):Void
 	{
 		//hide Cursor
-		this.stage.focus = this;
-
 		var upPos:Int = getClickPos(e.localX, e.localY);
 
 		var leftPos:Int;
@@ -309,13 +315,15 @@ class TextField extends InteractiveObject {
 			__cursorPos = getClickPos(e.localX, e.localY);
 			__dirty = true;
 		}
-
 	}
 
 	private function focus():Void
 	{
-
-		//var hasSelection:Bool = (__selectionStart>0) && (Math.abs(__cursorPos - __selectionStart)>0) ;
+		this.stage.focus = this;
+		if(__cursorPos < 0){
+			__cursorPos = text.length;
+			__selectionStart = __cursorPos;
+		}
 		__hiddenInput.focus();
 		__hiddenInput.selectionStart = __selectionStart;
 		__hiddenInput.selectionEnd = __cursorPos;
@@ -337,16 +345,6 @@ class TextField extends InteractiveObject {
 		__currentTimer = Timer.delay(startCursorTimerLoop, 500);
 		__showCursor = !__showCursor;
 		__dirty = true;
-	}
-
-	private function handleMouseOver(e:MouseEvent):Void
-	{
-		//show Cursor
-	}
-
-	private function handleMouseOut(e:MouseEvent):Void
-	{
-		//hide Cursor
 	}
 
 	private function handleKeyUp(e:Dynamic):Void
@@ -372,10 +370,9 @@ class TextField extends InteractiveObject {
 
 		// add support for Ctrl/Cmd+A selection
 		if (keyCode == 65 && (e.ctrlKey || e.metaKey)) {
-			//self._selection = [0, self._value.length];
 			__hiddenInput.selectionStart = 0;
 			__hiddenInput.selectionEnd = this.text.length;
-			//e.preventDefault();
+			e.preventDefault();
 			__dirty = true;
 			return;
 		}
@@ -384,21 +381,21 @@ class TextField extends InteractiveObject {
 		if (keyCode == 17 || e.metaKey || e.ctrlKey) {
 			return;
 		}
-		/*TODO TAB And Enter
-		if (keyCode == 13) { // enter key
-			//e.preventDefault();
+		/*if (keyCode == 13) { // enter key
+			e.preventDefault();
 			//submit;
-		}
-		else if (keyCode == 9) { // tab key
-			//e.preventDefault();
-			if (inputs.length > 1) {
-				var next = (inputs[self._inputsIndex + 1]) ? self._inputsIndex + 1 : 0;
-				self.blur();
-				setTimeout(function() {
-					inputs[next].focus();
-				}, 10);
-			}
 		}*/
+		if (keyCode == 9) { // tab key
+			e.preventDefault();
+			if (__inputs.length > 1) {
+				var nextIndex:Int =  (__inputs.indexOf(this)+1) % __inputs.length;
+				this.blur();
+				Timer.delay(
+					function() {
+						__inputs[nextIndex].focus();
+					}, 10);
+			}
+		}
 
 		// update the canvas input state information from the hidden input
 		text = __hiddenInput.value;
