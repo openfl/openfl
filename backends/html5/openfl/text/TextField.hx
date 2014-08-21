@@ -99,7 +99,7 @@ class TextField extends InteractiveObject {
 		__width = 100;
 		__height = 100;
 		__text = "";
-		
+
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
 		displayAsPassword = false;
@@ -636,7 +636,18 @@ class TextField extends InteractiveObject {
 				__context = null;
 				
 			} else {
-				
+
+				if(displayAsPassword)
+				{
+					var length:Int = text.length;
+					var passMask:String = "";
+					for(i in 0...length)
+					{
+						passMask += "*";
+					}
+					text = passMask;
+				}
+
 				if (__canvas == null) {
 					
 					__canvas = cast Browser.document.createElement ("canvas");
@@ -921,7 +932,8 @@ class TextField extends InteractiveObject {
 	
 	
 	private function __renderText (text:String, format:TextFormat, offsetX:Float):Void {
-		
+
+
 		__context.font = __getFont (format);
 		__context.textBaseline = "top";
 		__context.fillStyle = "#" + StringTools.hex (format.color, 6);
