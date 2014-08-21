@@ -636,16 +636,15 @@ class TextField extends InteractiveObject {
 				__context = null;
 				
 			} else {
-
+				var passwordMask:String = "";
 				if(displayAsPassword)
 				{
 					var length:Int = text.length;
-					var passMask:String = "";
+
 					for(i in 0...length)
 					{
-						passMask += "*";
+						passwordMask += "*";
 					}
-					text = passMask;
 				}
 
 				if (__canvas == null) {
@@ -699,7 +698,7 @@ class TextField extends InteractiveObject {
 					//draw cursor
 					if(__hasFocus && (__selectionStart == __cursorPos) && __showCursor)
 					{
-						var cursorOffset = getTextWidth(text.substring(0, __cursorPos));
+						var cursorOffset = getTextWidth((displayAsPassword? passwordMask:text).substring(0, __cursorPos));
 						__context.fillStyle = "#" + StringTools.hex (__textFormat.color, 6);
 						__context.fillRect( cursorOffset, 0, 1, __height);
 					}
@@ -708,8 +707,8 @@ class TextField extends InteractiveObject {
 						var lowPos:Int = Std.int(Math.min(__selectionStart, __cursorPos));
 						var highPos:Int = Std.int(Math.max(__selectionStart, __cursorPos));
 
-						var xPos:Float = getTextWidth(text.substring(0, lowPos));
-						var widthPos:Float = getTextWidth(text.substring(lowPos, highPos));
+						var xPos:Float = getTextWidth( (displayAsPassword? passwordMask:text).substring(0, lowPos));
+						var widthPos:Float = getTextWidth((displayAsPassword? passwordMask:text).substring(lowPos, highPos));
 
 						__context.fillStyle = "#" + StringTools.hex (__textFormat.color, 6);
 						__context.fillRect( xPos, __verticalPadding, widthPos, __height - __verticalPadding*2);
@@ -717,7 +716,7 @@ class TextField extends InteractiveObject {
 
 					if (__ranges == null) {
 						
-						__renderText (text, __textFormat, 0);
+						__renderText ( displayAsPassword? passwordMask:text, __textFormat, 0);
 						
 					} else {
 						
