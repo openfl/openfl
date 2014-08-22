@@ -28,7 +28,9 @@ class SoundChannel extends EventDispatcher {
 	public var rightPeak (get, null):Float;
 	public var position (get, set):Float;
 	public var soundTransform (get, set):SoundTransform;
+	public var pitch(get_pitch, set_pitch):Float;	
 	
+	@:noCompletion private var __pitch:Float = 1;
 	@:noCompletion public static var __dynamicSoundCount = 0;
 	@:noCompletion private static var __incompleteList = new Array<SoundChannel> ();
 	
@@ -263,6 +265,8 @@ class SoundChannel extends EventDispatcher {
 	private function get_rightPeak ():Float { return lime_sound_channel_get_right (__handle); }
 	private function get_position ():Float { return lime_sound_channel_get_position (__handle); }
 	private function set_position (value:Float):Float { return lime_sound_channel_set_position (__handle, position); }
+	private function get_pitch():Float { return __pitch; }
+	private function set_pitch(value:Float):Float { lime_sound_channel_set_pitch(__handle, value); return __pitch = value; }
 	
 	
 	private function get_soundTransform ():SoundTransform {
@@ -304,6 +308,7 @@ class SoundChannel extends EventDispatcher {
 	private static var lime_sound_channel_stop = Lib.load ("lime", "lime_sound_channel_stop", 1);
 	private static var lime_sound_channel_create = Lib.load ("lime", "lime_sound_channel_create", 4);
 	private static var lime_sound_channel_set_transform = Lib.load ("lime", "lime_sound_channel_set_transform", 2);
+	private static var lime_sound_channel_set_pitch = Lib.load("lime", "lime_sound_channel_set_pitch", 2);
 	private static var lime_sound_channel_needs_data = Lib.load ("lime", "lime_sound_channel_needs_data", 1);
 	private static var lime_sound_channel_add_data = Lib.load ("lime", "lime_sound_channel_add_data", 2);
 	
