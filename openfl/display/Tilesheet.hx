@@ -468,7 +468,15 @@ class Tilesheet
 			var index = 0;
 			var matrix = new Matrix();
 			
-			while (index < tileData.length)
+			var totalCount = count;
+			
+			if (count < 0) {
+				
+				totalCount = tileData.length;
+				
+			}
+			
+			while (index < totalCount)
 			{
 				var x = tileData[index];
 				var y = tileData[index + 1];
