@@ -445,6 +445,7 @@ class Stage extends Sprite {
 		
 		__renderSession.vendorPrefix = prefix.lowercase;
 		__renderSession.transformProperty = (prefix.lowercase == "webkit") ? "-webkit-transform" : "transform";
+		__renderSession.isWebkitDOM = prefix.lowercase == "webkit";
 		__renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
 		
 	}
@@ -1355,6 +1356,7 @@ class RenderSession {
 	public var transformOriginProperty:String;
 	public var vendorPrefix:String;
 	public var z:Int;
+	public var isWebkitDOM:Bool;
 	//public var smoothProperty:Null<Bool> = null;
 	
 	
