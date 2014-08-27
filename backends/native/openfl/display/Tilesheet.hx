@@ -84,8 +84,16 @@ class Tilesheet {
 	
 	
 	
-	private static var lime_tilesheet_create = Lib.load ("lime", "lime_tilesheet_create", 1);
-	private static var lime_tilesheet_add_rect = Lib.load ("lime", "lime_tilesheet_add_rect", 3);
+	private static function __init__ () {
+		
+		lime_tilesheet_create = Lib.load ("lime", "lime_tilesheet_create", 1);
+		lime_tilesheet_add_rect = Lib.load ("lime", "lime_tilesheet_add_rect", 3);
+		
+	}
+	
+	
+	private static var lime_tilesheet_create;
+	private static var lime_tilesheet_add_rect;
 	
 	
 }

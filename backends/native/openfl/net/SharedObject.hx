@@ -271,10 +271,21 @@ class SharedObject extends EventDispatcher {
 	
 	
 	
+	private static function __init__ () {
+		
+		#if (iphone || android || tizen)
+		lime_get_user_preference = Lib.load ("lime", "lime_get_user_preference", 1);
+		lime_set_user_preference = Lib.load ("lime", "lime_set_user_preference", 2);
+		lime_clear_user_preference = Lib.load ("lime", "lime_clear_user_preference", 1);
+		#end
+		
+	}
+	
+	
 	#if (iphone || android || tizen)
-	private static var lime_get_user_preference = Lib.load ("lime", "lime_get_user_preference", 1);
-	private static var lime_set_user_preference = Lib.load ("lime", "lime_set_user_preference", 2);
-	private static var lime_clear_user_preference = Lib.load ("lime", "lime_clear_user_preference", 1);
+	private static var lime_get_user_preference;
+	private static var lime_set_user_preference;
+	private static var lime_clear_user_preference;
 	#end
 	
 	

@@ -303,11 +303,23 @@ class Memory {
 	
 	
 	
+	private static function __init__ () {
+		
+		#if neko
+		_float_of_bytes = Lib.load ("std", "float_of_bytes", 2);
+		_double_of_bytes = Lib.load ("std", "double_of_bytes", 2);
+		_float_bytes = Lib.load ("std", "float_bytes", 2);
+		_double_bytes = Lib.load ("std", "double_bytes", 2);
+		#end
+		
+	}
+	
+	
 	#if neko
-	private static var _float_of_bytes = Lib.load ("std", "float_of_bytes", 2);
-	private static var _double_of_bytes = Lib.load ("std", "double_of_bytes", 2);
-	private static var _float_bytes = Lib.load ("std", "float_bytes", 2);
-	private static var _double_bytes = Lib.load ("std", "double_bytes", 2);
+	private static var _float_of_bytes;
+	private static var _double_of_bytes;
+	private static var _float_bytes;
+	private static var _double_bytes;
 	#end
 	
 	

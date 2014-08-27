@@ -124,13 +124,26 @@ class Capabilities {
 	
 	
 	
-	private static var lime_capabilities_get_pixel_aspect_ratio = Lib.load ("lime", "lime_capabilities_get_pixel_aspect_ratio", 0);
-	private static var lime_capabilities_get_screen_dpi = Lib.load ("lime", "lime_capabilities_get_screen_dpi", 0);
-	private static var lime_capabilities_get_screen_resolution_x = Lib.load ("lime", "lime_capabilities_get_screen_resolution_x", 0);
-	private static var lime_capabilities_get_screen_resolution_y = Lib.load ("lime", "lime_capabilities_get_screen_resolution_y", 0);
-	private static var lime_capabilities_get_screen_resolutions = Lib.load ("lime", "lime_capabilities_get_screen_resolutions", 0 );
-	private static var lime_capabilities_get_screen_modes = Lib.load ("lime", "lime_capabilities_get_screen_modes", 0 );
-	private static var lime_capabilities_get_language = Lib.load ("lime", "lime_capabilities_get_language", 0);
+	private static function __init__ () {
+		
+		lime_capabilities_get_pixel_aspect_ratio = Lib.load ("lime", "lime_capabilities_get_pixel_aspect_ratio", 0);
+		lime_capabilities_get_screen_dpi = Lib.load ("lime", "lime_capabilities_get_screen_dpi", 0);
+		lime_capabilities_get_screen_resolution_x = Lib.load ("lime", "lime_capabilities_get_screen_resolution_x", 0);
+		lime_capabilities_get_screen_resolution_y = Lib.load ("lime", "lime_capabilities_get_screen_resolution_y", 0);
+		lime_capabilities_get_screen_resolutions = Lib.load ("lime", "lime_capabilities_get_screen_resolutions", 0 );
+		lime_capabilities_get_screen_modes = Lib.load ("lime", "lime_capabilities_get_screen_modes", 0 );
+		lime_capabilities_get_language = Lib.load ("lime", "lime_capabilities_get_language", 0);
+		
+	}
+	
+	
+	private static var lime_capabilities_get_pixel_aspect_ratio;
+	private static var lime_capabilities_get_screen_dpi;
+	private static var lime_capabilities_get_screen_resolution_x;
+	private static var lime_capabilities_get_screen_resolution_y;
+	private static var lime_capabilities_get_screen_resolutions;
+	private static var lime_capabilities_get_screen_modes;
+	private static var lime_capabilities_get_language;
 	
 	
 }

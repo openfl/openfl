@@ -23,8 +23,17 @@ class Haptic {
 	
 	
 	
+	private static function __init__ () {
+		
+		#if cpp
+		lime_haptic_vibrate = Lib.load ("lime", "lime_haptic_vibrate", 2);
+		#end
+		
+	}
+	
+	
 	#if cpp
-	static var lime_haptic_vibrate = Lib.load ("lime", "lime_haptic_vibrate", 2);
+	static var lime_haptic_vibrate;
 	#end
 	
 	

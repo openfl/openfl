@@ -368,7 +368,14 @@ class Timer {
 	
 	
 	
-	static var lime_time_stamp = flash.Lib.load ("lime", "lime_time_stamp", 0);
+	private static function __init__ () {
+		
+		lime_time_stamp = flash.Lib.load ("lime", "lime_time_stamp", 0);
+		
+	}
+	
+	
+	static var lime_time_stamp;
 	
 	
 }

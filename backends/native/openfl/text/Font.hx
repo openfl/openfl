@@ -143,9 +143,18 @@ class Font {
 	
 	
 	
-	private static var freetype_import_font = Lib.load ("lime", "freetype_import_font", 4);
-	private static var lime_font_register_font = Lib.load ("lime", "lime_font_register_font", 2);
-	private static var lime_font_iterate_device_fonts = Lib.load ("lime", "lime_font_iterate_device_fonts", 1);
+	private static function __init__ () {
+		
+		freetype_import_font = Lib.load ("lime", "freetype_import_font", 4);
+		lime_font_register_font = Lib.load ("lime", "lime_font_register_font", 2);
+		lime_font_iterate_device_fonts = Lib.load ("lime", "lime_font_iterate_device_fonts", 1);
+		
+	}
+	
+	
+	private static var freetype_import_font;
+	private static var lime_font_register_font;
+	private static var lime_font_iterate_device_fonts;
 	
 	
 }

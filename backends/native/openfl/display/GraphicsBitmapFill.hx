@@ -26,7 +26,14 @@ class GraphicsBitmapFill extends IGraphicsData implements IGraphicsFill {
 	}
 	
 	
-	private static var lime_graphics_solid_fill_create = Lib.load ("lime", "lime_graphics_solid_fill_create", 2);
+	private static function __init__ () {
+		
+		lime_graphics_solid_fill_create = Lib.load ("lime", "lime_graphics_solid_fill_create", 2);
+		
+	}
+	
+	
+	private static var lime_graphics_solid_fill_create;
 	
 	
 }

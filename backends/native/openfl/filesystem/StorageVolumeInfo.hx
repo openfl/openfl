@@ -65,7 +65,14 @@ class StorageVolumeInfo extends EventDispatcher {
 	
 	
 	
-	private static var lime_filesystem_get_volumes = Lib.load ("lime", "lime_filesystem_get_volumes", 2);
+	private static function __init__ () {
+		
+		lime_filesystem_get_volumes = Lib.load ("lime", "lime_filesystem_get_volumes", 2);
+		
+	}
+	
+	
+	private static var lime_filesystem_get_volumes;
 	
 	
 	

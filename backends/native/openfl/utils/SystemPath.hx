@@ -42,9 +42,18 @@ class SystemPath {
 	
 	
 	
+	private static function __init__ () {
+		
+		#if !android
+		lime_filesystem_get_special_dir = Lib.load ("lime", "lime_filesystem_get_special_dir", 1);
+		#end
+		
+	}
+	
+	
 	#if !android
 	
-	private static var lime_filesystem_get_special_dir = Lib.load ("lime", "lime_filesystem_get_special_dir", 1);
+	private static var lime_filesystem_get_special_dir;
 	
 	#else
 	
