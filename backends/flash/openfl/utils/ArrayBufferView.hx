@@ -25,7 +25,7 @@ class ArrayBufferView {
 			while (byteLength > 0) {
 				
 				buffer.writeByte (0);
-				
+				byteLength--;
 			}
 			
 			buffer.position = 0;
