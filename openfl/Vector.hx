@@ -474,7 +474,7 @@ abstract Vector<T>(VectorData<T>) {
 	public inline function new (?length:Int, ?fixed:Bool):Void {
 		
 		this = new VectorData<T> (length, fixed);
-
+		
 		
 	}
 	

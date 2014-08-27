@@ -89,7 +89,7 @@ class ApplicationMain {
 			}
 			
 		}
-			
+		
 		if (hasMain) {
 			
 			Reflect.callMethod (::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
@@ -105,6 +105,8 @@ class ApplicationMain {
 			}
 			
 		}
+		
+		openfl.Lib.current.stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
 		
 		var result = app.exec ();
 		
