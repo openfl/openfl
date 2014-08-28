@@ -4,9 +4,11 @@
   "description": "::META_DESCRIPTION::",
   "launch_path": "/index.html",
   "icons": {
-    "30": "/icon-30.png",
-    "60": "/icon-60.png",
-    "128": "/icon-128.png"
+    "32": "/icon-32.png",
+    "48": "/icon-48.png",
+    "64": "/icon-64.png",
+    "128": "/icon-128.png",
+    "512": "/icon-512.png"
   },
   "developer": {
     "name": "::META_COMPANY::",
