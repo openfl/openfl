@@ -81,6 +81,8 @@ extern class Capabilities {
 	 * application started. Also, the value only specifies the primary screen.
 	 */
 	static var screenResolutionY(default,null) : Float;
+	
+	static var playerType(default,null) : String;
 }
 
 
