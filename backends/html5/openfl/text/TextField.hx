@@ -1,5 +1,6 @@
 package openfl.text;
 
+import openfl.events.TextEvent;
 import haxe.Timer;
 import Math;
 import js.Browser;
@@ -357,6 +358,7 @@ class TextField extends InteractiveObject {
 		__cursorPos = __hiddenInput.selectionStart;
 		__selectionStart = __cursorPos;
 		__dirty = true;
+		dispatchEvent(new Event(Event.CHANGE, true));
 	}
 
 	private function handleKeyDown(e:Dynamic):Void
