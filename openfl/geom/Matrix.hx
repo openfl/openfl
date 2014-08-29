@@ -2,6 +2,7 @@ package openfl.geom; #if !flash
 
 
 import openfl.geom.Point;
+import lime.utils.Float32Array;
 
 
 class Matrix {
@@ -14,6 +15,8 @@ class Matrix {
 	public var tx:Float;
 	public var ty:Float;
 	
+	private var __array:Float32Array;
+
 	private static var __identity = new Matrix ();
 	
 	
@@ -25,6 +28,8 @@ class Matrix {
 		this.d = d;
 		this.tx = tx;
 		this.ty = ty;
+
+		__array = new Float32Array([a, b, c, d, tx, ty, 0, 0, 1]);
 		
 	}
 	
@@ -424,6 +429,33 @@ class Matrix {
 		m.ty = dy;
 		this.concat (m);
 		
+	}
+
+	private function toArray(transpose:Bool = false) {
+
+		if(transpose) {
+			__array[0] = a;
+			__array[1] = c;
+			__array[2] = 0;
+			__array[3] = b;
+			__array[4] = d;
+			__array[5] = 0;
+			__array[6] = tx;
+			__array[7] = ty;
+			__array[8] = 1;
+		} else {
+			__array[0] = a;
+			__array[1] = b;
+			__array[2] = tx;
+			__array[3] = c;
+			__array[4] = d;
+			__array[5] = ty;
+			__array[6] = 0;
+			__array[7] = 0;
+			__array[8] = 1;
+		}
+
+		return __array;
 	}
 	
 	

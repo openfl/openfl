@@ -6,39 +6,44 @@ import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.geom.Point;
 
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
-
+@:access(openfl.geom.Matrix)
 
 class  GraphicsRenderer {
 	
-	
-	public static var POLY = 0;
-	public static var RECT = 1;
-	public static var CIRC = 2;
-	public static var ELIP = 3;
-	public static var RREC = 4;
-	
-	public static var graphicsDataPool:Array<Dynamic>;
+	public static var graphicsDataPool:Array<Dynamic> = [];
 	
 	private static var last:Int;
 	
-	
-	public static function buildCircle (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildCircle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var rectData = graphicsData.points;
+
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
-		var height = rectData[3];
+		var height = rectData[3] == 0 ? width : rectData[3];
+
+		if(graphicsData.type == Ellipse) {
+
+			width /= 2;
+			height /= 2;
+
+			x += width;
+			y += height;
+		}
+		
 		
 		var totalSegs = 40;
 		var seg = (Math.PI * 2) / totalSegs;
 		
-		if (graphicsData.fill != null) {
+		if (graphicsData.hasFill) {
 			
 			var color = hex2rgb (graphicsData.fillColor);
 			var alpha = graphicsData.fillAlpha;
@@ -99,9 +104,9 @@ class  GraphicsRenderer {
 	}
 	
 	
-	private static function buildComplexPoly (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	private static function buildComplexPoly (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
-		var points:Array<Float> = graphicsData.points.slice ();
+		var points:Array<Float> = graphicsData.points.copy();
 		if (points.length < 6) return;
 		
 		var indices = webGLData.indices;
@@ -150,7 +155,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildLine (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildLine (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var points:Array<Float> = graphicsData.points;
 		if (points.length == 0) return;
@@ -393,7 +398,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildPoly (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildPoly (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var points:Array<Float> = graphicsData.points;
 		if (points.length < 6) return;
@@ -437,7 +442,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildRectangle (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var rectData = graphicsData.points;
 		var x = rectData[0];
@@ -445,7 +450,7 @@ class  GraphicsRenderer {
 		var width = rectData[2];
 		var height = rectData[3];
 		
-		if (graphicsData.fill != null) {
+		if (graphicsData.hasFill) {
 			
 			var color = hex2rgb (graphicsData.fillColor);
 			var alpha = graphicsData.fillAlpha;
@@ -507,9 +512,9 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildRoundedRectangle (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildRoundedRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
-		var points = graphicsData.points;
+		var points = graphicsData.points.copy();
 		var x = points[0];
 		var y = points[1];
 		var width = points[2];
@@ -525,7 +530,7 @@ class  GraphicsRenderer {
 		recPoints = recPoints.concat (quadraticBezierCurve (x + width, y + radius, x + width, y, x + width - radius, y));
 		recPoints = recPoints.concat (quadraticBezierCurve (x + radius, y, x, y, x, y + radius));
 		
-		if (graphicsData.fill != null) {
+		if (graphicsData.hasFill) {
 			
 			var color = hex2rgb (graphicsData.fillColor);
 			var alpha = graphicsData.fillAlpha;
@@ -552,8 +557,8 @@ class  GraphicsRenderer {
 				
 			}
 			
-			var i = 0;
-			while (i++ < recPoints.length) {
+			i = 0;
+			while (i < recPoints.length) {
 				
 				verts.push (recPoints[i]);
 				verts.push (recPoints[++i]);
@@ -561,7 +566,7 @@ class  GraphicsRenderer {
 				verts.push (g);
 				verts.push (b);
 				verts.push (alpha);
-				
+				i++;
 			}
 			
 		}
@@ -612,11 +617,22 @@ class  GraphicsRenderer {
 		return points;
 		
 	}
-	
-	
-	public static function renderGraphics (graphics:Graphics, renderSession:RenderSession):Void {
+
+	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
+
+		// cache as bitmap
+
+		renderSession.spriteBatch.end();
 		
-		/*
+		renderGraphics(object, renderSession);
+
+		renderSession.spriteBatch.begin(renderSession);
+
+	}
+
+	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession):Void {
+		
+		var graphics = object.__graphics;
 		var gl:GLRenderContext = renderSession.gl;
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
@@ -629,18 +645,17 @@ class  GraphicsRenderer {
 			
 		}
 		
-		var webGL:Dynamic = graphics._webGL[GLRenderer.glContextId];
-		
+		var webGL:Dynamic = graphics.__openGL[GLRenderer.glContextId];
 		for (i in 0...webGL.data.length) {
 			
 			if (webGL.data[i].mode == 1) {
 				
 				webGLData = webGL.data[i];
-				renderSession.stencilManager.pushStencil (graphics, webGLData, renderSession);
+				renderSession.stencilManager.pushStencil (object, webGLData, renderSession);
 				
 				gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
 				
-				renderSession.stencilManager.popStencil (graphics, webGLData, renderSession);
+				renderSession.stencilManager.popStencil (object, webGLData, renderSession);
 				
 				last = webGLData.mode;
 				
@@ -650,14 +665,15 @@ class  GraphicsRenderer {
 				
 				renderSession.shaderManager.setShader (shader);
 				shader = renderSession.shaderManager.primitiveShader;
-				gl.uniformMatrix3fv (shader.translationMatrix, false, graphics.worldTransform.toArray (true));
+				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 				
 				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 				
-				gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (graphics.tint)));
+				// TODO tintColor
+				gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (0xFFFFFF)));
 				
-				gl.uniform1f (shader.alpha, graphics.worldAlpha);
+				gl.uniform1f (shader.alpha, object.__worldAlpha);
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
 				
@@ -669,12 +685,12 @@ class  GraphicsRenderer {
 				
 			}
 			
-		}*/
+		}
 		
 	}
 	
 	
-	private static function switchMode (webGL:Dynamic, type):GLGraphicsData {
+	private static function switchMode (webGL:Dynamic, type:Int):GLGraphicsData {
 		
 		var webGLData:GLGraphicsData;
 		
@@ -682,7 +698,6 @@ class  GraphicsRenderer {
 			
 			var data = graphicsDataPool.pop ();
 			if (data == null) data = new GLGraphicsData (webGL.gl);
-			
 			webGLData = data;
 			webGLData.mode = type;
 			webGL.data.push (webGLData);
@@ -712,24 +727,24 @@ class  GraphicsRenderer {
 	
 	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
 		
-		/*
-		var webGL = graphics._webGL[GLRenderer.glContextId];
-		
+		var webGL = graphics.__openGL[GLRenderer.glContextId];
+
 		if (webGL == null) {
 			
-			webGL = graphics._webGL[GLRenderer.glContextId] = { lastIndex: 0, data: [], gl: gl };
+			webGL = graphics.__openGL[GLRenderer.glContextId] = { lastIndex: 0, data: [], gl: gl };
 			
 		}
 		
 		graphics.__dirty = false;
 		
-		if (graphics.clearDirty) {
+		
+		//if (graphics.clearDirty) {
 			
-			graphics.clearDirty = false;
+			//graphics.clearDirty = false;
 			
 			for (i in 0...webGL.data.length) {
 				
-				var graphicsData = webGL.data[i];
+				var graphicsData = cast webGL.data[i];
 				graphicsData.reset ();
 				graphicsDataPool.push (graphicsData);
 				
@@ -738,21 +753,22 @@ class  GraphicsRenderer {
 			webGL.data = [];
 			webGL.lastIndex = 0;
 			
-		}
+		//}
+		
 		
 		var webGLData;
 		
-		for (i in webGL.lastIndex...graphics.graphicsData.length) {
+		for (i in webGL.lastIndex...graphics.__graphicsData.length) {
 			
-			var data:Dynamic = graphics.graphicsData[i];
-			
-			if (data.type == GraphicsRenderer.POLY) {
+			var data = graphics.__graphicsData[i];
+
+			if (data.type == Polygon) {
 				
-				if (data.fill != null) {
+				if (data.hasFill) {
 					
 					if (data.points.length > 6) {
 						
-						if (data.points.length > 5 * 2) {
+						if (data.points.length > 10) { // 5 * 2
 							
 							webGLData = switchMode (webGL, 1);
 							buildComplexPoly (data, webGLData);
@@ -778,19 +794,17 @@ class  GraphicsRenderer {
 			} else {
 				
 				webGLData = switchMode (webGL, 0);
-				
-				if (data.type == GraphicsRenderer.RECT) {
-					
-					buildRectangle (data, webGLData);
-					
-				} else if (data.type == GraphicsRenderer.CIRC || data.type == GraphicsRenderer.ELIP) {
-					
-					buildCircle (data, webGLData);
-					
-				} else if (data.type == GraphicsRenderer.RREC) {
-					
-					buildRoundedRectangle (data, webGLData);
-					
+
+				switch(data.type) {
+					case Rectangle(rounded):
+						if(rounded) {
+							buildRoundedRectangle (data, webGLData);
+						} else {
+							buildRectangle (data, webGLData);
+						}
+					case Circle, Ellipse:
+						buildCircle (data, webGLData);
+					case _:
 				}
 				
 			}
@@ -801,10 +815,10 @@ class  GraphicsRenderer {
 		
 		for (i in 0...webGL.data.length) {
 			
-			webGLData = cast webGL.data[i];
+			webGLData = webGL.data[i];
 			if (webGLData.dirty) webGLData.upload ();
 			
-		}*/
+		}
 		
 	}
 	

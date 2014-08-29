@@ -1,6 +1,8 @@
 package openfl.display; #if !flash
 
 
+import openfl.display.CapsStyle;
+import openfl.display.JointStyle;
 import openfl.geom.Point;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
@@ -13,8 +15,7 @@ import js.html.CanvasRenderingContext2D;
 
 
 class Graphics {
-	
-	
+
 	public static inline var TILE_SCALE = 0x0001;
 	public static inline var TILE_ROTATION = 0x0002;
 	public static inline var TILE_RGB = 0x0004;
@@ -22,75 +23,134 @@ class Graphics {
 	public static inline var TILE_TRANS_2x2 = 0x0010;
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
-	
+
+	private var __hasFill:Bool = false;
+	private var __fillColor:Null<Int> = null;
+	private var __fillApha:Float = 1;
+
+	private var __lineWidth:Float = 0;
+	private var __lineColor:Int = 0;
+	private var __lineAlpha:Float = 1;
+
+	//private var __tint:Int = 0xFFFFFF;
+	//private var __blendMode:BlendMode = NORMAL;
+	private var __dirty:Bool = true;
+
+	private var __graphicsData:Array<DrawPath> = [];
+	private var __currentPath:DrawPath;
+	private var __openGL:Array<Dynamic> = [];
+
 	private var __bounds:Rectangle;
-	private var __commands:Array<DrawCommand>;
-	private var __dirty:Bool;
 	private var __halfStrokeWidth:Float;
 	private var __positionX:Float;
 	private var __positionY:Float;
-	private var __visible:Bool;
-	
+
+
 	#if js
 	private var __canvas:CanvasElement;
 	private var __context:CanvasRenderingContext2D;
 	#end
-	
-	
-	public function new () {
-		
-		__commands = new Array ();
+	//TODO delete
+	private var __commands:Array<DrawCommand> = [];
+	private var __visible:Bool = true;
+
+	public function new() {
+
+		__currentPath = new DrawPath();
 		__halfStrokeWidth = 0;
 		__positionX = 0;
 		__positionY = 0;
-		
+
 	}
-	
-	
-	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
-		
-		__commands.push (BeginBitmapFill (bitmap, matrix, repeat, smooth));
-		
-		__visible = true;
-			
+
+	public function beginFill(color:Int = 0, alpha:Float = 1) {
+
+		__hasFill = alpha > 0;
+		__fillColor = color;
+		__fillApha = alpha;
+
+		__commands.push (BeginFill (color & 0xFFFFFF, alpha));
+
 	}
-	
-	
-	public function beginFill (rgb:Int, alpha:Float = 1):Void {
-		
-		__commands.push (BeginFill (rgb & 0xFFFFFF, alpha));
-		
-		if (alpha > 0) __visible = true;
-		
+
+	public function endFill() {
+
+		__hasFill = false;
+		__fillColor = null;
+		__fillApha = 1;
+
 	}
-	
-	
-	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.beginGradientFill");
-		
-	}
-	
-	
-	public function clear ():Void {
-		
-		__commands = new Array ();
-		__halfStrokeWidth = 0;
-		
-		if (__bounds != null) {
-			
-			__dirty = true;
-			__bounds = null;
-			
+
+	public function lineStyle (thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null) {
+
+		if(thickness == null || thickness < 0) {
+			__lineWidth = 0;
+		} else if (thickness == 0){
+			__lineWidth = 1;
+		} else {
+			__lineWidth = thickness;
 		}
-		
-		__visible = false;
-		
+
+		__halfStrokeWidth = __lineWidth / 2;
+
+		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
+
+		graphicDataPop();
+
+		__lineColor = color;
+		__lineAlpha = alpha;
+
+		__currentPath = new DrawPath();
+		__currentPath.update(this);
+		__currentPath.points = [];
+		__currentPath.type = Polygon;
+
+		__graphicsData.push(__currentPath);
+
 	}
-	
-	
-	public function curveTo (cx:Float, cy:Float, x:Float, y:Float):Void {
+
+	public function moveTo (x:Float, y:Float) {
+
+		__positionX = x;
+		__positionY = y;
+
+		__commands.push (MoveTo (x, y));
+
+		graphicDataPop();
+
+		__currentPath = new DrawPath();
+		__currentPath.update(this);
+		__currentPath.type = Polygon;
+		__currentPath.points.push(x);
+		__currentPath.points.push(y);
+
+		__graphicsData.push(__currentPath);
+
+	}
+
+	public function lineTo (x:Float, y:Float) {
+
+		// TODO: Should we consider the origin instead, instead of inflating in all directions?
 		
+		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
+		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		
+		__positionX = x;
+		__positionY = y;
+		
+		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
+		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+
+		__commands.push (LineTo (x, y));
+
+		__currentPath.points.push(x);
+		__currentPath.points.push(y);
+		__dirty = true;
+
+	}
+
+	public function curveTo (cx:Float, cy:Float, x:Float, y:Float) {
+
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
@@ -103,168 +163,196 @@ class Graphics {
 		
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
-		
+
 		__commands.push (CurveTo (cx, cy, x, y));
-		
+
+		if(__currentPath.points.length == 0) {
+			moveTo(0, 0);
+		}
+
+		var xa:Float = 0;
+		var ya:Float = 0;
+		var n = 20;
+
+		var points = __currentPath.points;
+		var fromX = points[points.length-2];
+		var fromY = points[points.length-1];
+
+		var px:Float = 0;
+		var py:Float = 0;
+
+		var tmp:Float = 0;
+
+		for(i in 1...n+1) {
+
+			tmp = i / n;
+
+			xa = fromX + ((cx - fromX) * tmp);
+			ya = fromY + ((cy - fromY) * tmp);
+
+			px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
+			py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
+
+			points.push(px);
+			points.push(py);
+
+		}
+
 		__dirty = true;
-		
+
 	}
-	
-	
-	public function drawCircle (x:Float, y:Float, radius:Float):Void {
+
+	public function cubicCurveTo (cx:Float, cy:Float, cx2:Float, cy2:Float, x:Float, y:Float) {
+
+		if(__currentPath.points.length == 0) {
+			moveTo(0, 0);
+		}
+
+		var n = 20;
+		var dt:Float = 0;
+		var dt2:Float = 0;
+		var dt3:Float = 0;
+		var t2:Float = 0;
+		var t3:Float = 0;
+
+		var points = __currentPath.points;
+		var fromX = points[points.length-2];
+		var fromY = points[points.length-1];
+
+		var px:Float = 0;
+		var py:Float = 0;
+
+		var tmp:Float = 0;
+
+		for(i in 1...n+1) {
+
+			tmp = i / n;
+
+			dt = 1 - tmp;
+			dt2 = dt * dt;
+			dt3 = dt2 * dt;
+
+			t2 = tmp * tmp;
+			t3 = t2 * tmp;
+
+			px = dt3 * fromX + 3 * dt2 * tmp * cx + 3 * dt * t2 * cx2 + t3 * x;
+			py = dt3 * fromY + 3 * dt2 * tmp * cy + 3 * dt * t2 * cy2 + t3 * y;
+
+			points.push(px);
+			points.push(py);
+
+		}
+
+		__dirty = true;
+
+	}
+
+	public function drawRect (x:Float, y:Float, width:Float, height:Float) {
+
+		if (width <= 0 || height <= 0) return;
 		
+		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
+		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+
+		__commands.push (DrawRect (x, y, width, height));
+
+		graphicDataPop();
+
+		__currentPath = new DrawPath();
+		__currentPath.update(this);
+		__currentPath.type = Rectangle(false);
+		__currentPath.points = [x, y, width, height];
+
+		__graphicsData.push(__currentPath);
+
+		__dirty = true;
+
+	}
+
+	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, radius:Float) {
+
+		if (width <= 0 || height <= 0) return;
+		
+		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
+		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+
+		graphicDataPop();
+
+		__currentPath = new DrawPath();
+		__currentPath.update(this);
+		__currentPath.type = Rectangle(true);
+		__currentPath.points = [x, y, width, height, radius];
+
+		__graphicsData.push(__currentPath);
+
+		__dirty = true;
+
+	}
+
+	public function drawCircle (x:Float, y:Float, radius:Float) {
+
 		if (radius <= 0) return;
 		
 		__inflateBounds (x - radius - __halfStrokeWidth, y - radius - __halfStrokeWidth);
 		__inflateBounds (x + radius + __halfStrokeWidth, y + radius + __halfStrokeWidth);
-		
+
 		__commands.push (DrawCircle (x, y, radius));
-		
+
+		graphicDataPop();
+
+		__currentPath = new DrawPath();
+		__currentPath.update(this);
+		__currentPath.type = Circle;
+		__currentPath.points = [x, y, radius];
+
+		__graphicsData.push(__currentPath);
+
 		__dirty = true;
-		
+
 	}
-	
-	
-	public function drawEllipse (x:Float, y:Float, width:Float, height:Float):Void {
-		
+
+	public function drawEllipse (x:Float, y:Float, width:Float, height:Float) {
+
 		if (width <= 0 || height <= 0) return;
 		
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
-		
+
 		__commands.push (DrawEllipse (x, y, width, height));
-		
+
+		graphicDataPop();
+
+		__currentPath = new DrawPath();
+		__currentPath.update(this);
+		__currentPath.type = Ellipse;
+		__currentPath.points = [x, y, width, height];
+
+		__graphicsData.push(__currentPath);
+
 		__dirty = true;
-		
+
 	}
-	
-	
-	public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawGraphicsData");
-		
+
+	public function clear() {
+
+		__commands = new Array ();
+		__lineWidth = 0;
+		__halfStrokeWidth = 0;
+		__hasFill = false;
+		__graphicsData = [];
+		__dirty = false;
+		if(__bounds != null) {
+			__dirty = true;
+			__bounds = null;
+		}
+
 	}
-	
-	
-	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = null):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawPath");
-		
-	}
-	
-	
-	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void {
-		
-		if (width <= 0 || height <= 0) return;
-		
-		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
-		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
-		
-		__commands.push (DrawRect (x, y, width, height));
-		
-		__dirty = true;
-		
-	}
-	
-	
-	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawRoundRect");
-		
-	}
-	
-	
-	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawRoundRectComplex");
-		
-	}
-	
-	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
-		
-		// Checking each tile for extents did not include rotation or scale, and could overflow the maximum canvas
-		// size of some mobile browsers. Always use the full stage size for drawTiles instead?
-		
-		__inflateBounds (0, 0);
-		__inflateBounds (Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
-		
-		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
-		
-		__dirty = true;
-		__visible = true;
-		
-	}
-	
-	
-	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawTriangles");
-		
-	}
-	
-	
-	public function endFill ():Void {
-		
-		__commands.push (EndFill);
-		
-	}
-	
-	
-	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.lineBitmapStyle");
-		
-	}
-	
-	
-	public function lineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.lineGradientStyle");
-		
-	}
-	
-	
-	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
-		
-		__halfStrokeWidth = (thickness != null) ? thickness / 2 : 0;
-		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
-		
-		if (thickness != null) __visible = true;
-		
-	}
-	
-	
-	public function lineTo (x:Float, y:Float):Void {
-		
-		// TODO: Should we consider the origin instead, instead of inflating in all directions?
-		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
-		
-		__positionX = x;
-		__positionY = y;
-		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
-		
-		__commands.push (LineTo (x, y));
-		
-		__dirty = true;
-		
-	}
-	
-	
-	public function moveTo (x:Float, y:Float):Void {
-		
-		__commands.push (MoveTo (x, y));
-		
-		__positionX = x;
-		__positionY = y;
-		
-	}
-	
-	
+
+
+
+
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void { }
+
 	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__bounds == null) return;
@@ -273,8 +361,7 @@ class Graphics {
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 	}
-	
-	
+
 	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
 		
 		if (__bounds == null) return false;
@@ -283,8 +370,7 @@ class Graphics {
 		return (x > bounds.x && y > bounds.y && x <= bounds.right && y <= bounds.bottom);
 		
 	}
-	
-	
+
 	private function __inflateBounds (x:Float, y:Float):Void {
 		
 		if (__bounds == null) {
@@ -321,10 +407,71 @@ class Graphics {
 		}
 		
 	}
-	
+
+
+	private inline function graphicDataPop() {
+		if(__currentPath.points.length == 0) __graphicsData.pop();
+	}
 	
 }
 
+@:access(openfl.display.Graphics)
+class DrawPath {
+
+	public var lineWidth:Float = 0;
+	public var lineColor:Int = 0;
+	public var lineAlpha:Float = 1;
+
+	public var hasFill:Bool = false;
+	public var fillColor:Null<Int> = null;
+	public var fillAlpha:Float = 1;
+
+	public var points:Array<Float> = [];
+
+	public var type:GraphicType = Polygon;
+
+	public function new() {
+
+	}
+
+	public function update(graphics:Graphics):Void {
+		updateLine(graphics.__lineWidth, graphics.__lineColor, graphics.__lineAlpha);
+		updateFill(graphics.__hasFill, graphics.__fillColor, graphics.__fillApha);
+	}
+
+	public function updateLine(width:Float, color:Int, alpha:Float):Void {
+		lineWidth = width;
+		lineColor = color;
+		lineAlpha = alpha;
+	}
+
+	public function updateFill(fill:Bool, color:Int, alpha:Float):Void {
+		hasFill = fill;
+		fillColor = color;
+		fillAlpha = alpha;
+	}
+
+}
+
+typedef LineStyle = {
+	width:Float,
+	color:Float,
+	alpha:Float,
+
+	scaleMode:LineScaleMode,
+	caps:CapsStyle,
+	joints:JointStyle,
+	miterLimit:Float,
+}
+
+enum GraphicType {
+
+	Polygon;
+	Rectangle(rounded:Bool);
+	Circle;
+	Ellipse;
+
+}
 
 enum DrawCommand {
 	

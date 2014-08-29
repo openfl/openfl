@@ -3,6 +3,7 @@ package openfl._internal.renderer.canvas;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -14,6 +15,7 @@ import js.html.CanvasRenderingContext2D;
 import js.Browser;
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 
@@ -117,12 +119,208 @@ class CanvasGraphics {
 		#end
 		
 	}
+
+	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
+
+		#if js
+
+		var worldAlpha = object.__worldAlpha;
+		var graphics = object.__graphics;
+
+		bounds = graphics.__bounds;
+
+		if(!graphics.__dirty) return;
+
+		graphics.__dirty = false;
+
+		if(bounds == null || bounds.width == 0 || bounds.height == 0) {
+
+			graphics.__canvas = null;
+			graphics.__context = null;			
+
+		} else {
+
+			if (graphics.__canvas == null) {
+				
+				graphics.__canvas = cast Browser.document.createElement ("canvas");
+				graphics.__context = graphics.__canvas.getContext ("2d");
+				//untyped (context).mozImageSmoothingEnabled = false;
+				//untyped (context).webkitImageSmoothingEnabled = false;
+				//context.imageSmoothingEnabled = false;
+				
+			}
+
+			var context = graphics.__context;
+
+			graphics.__canvas.width = Math.ceil (bounds.width);
+			graphics.__canvas.height = Math.ceil (bounds.height);
+
+			var offsetX = bounds.x;
+			var offsetY = bounds.y;
+
+			for (i in 0...graphics.__graphicsData.length) {
+
+				var data = graphics.__graphicsData[i];
+				var points = data.points;
+
+				context.strokeStyle = '#' + StringTools.hex (data.lineColor, 6);
+				context.lineWidth = data.lineWidth;
+
+				switch(data.type) {
+
+					case Polygon:
+
+						context.beginPath();
+						context.moveTo(points[0] - offsetX, points[1] - offsetY);
+
+						for(i in 1...Std.int(points.length/2)) {
+							context.lineTo(points[i * 2] - offsetX, points[i * 2 + 1] - offsetY);
+						}
+
+						context.closePath();
+
+						if(data.hasFill) {
+
+							context.globalAlpha = data.fillAlpha * worldAlpha;
+							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
+							context.fill();
+
+						}
+
+						if(data.lineWidth > 0) {
+
+							context.globalAlpha = data.lineAlpha * worldAlpha;
+							context.stroke();
+
+						}
+
+					case Rectangle(round):
+
+						var rx = points[0] - offsetX;
+						var ry = points[1] - offsetY;
+						var width = points[2];
+						var height = points[3];
+
+						if(round) {
+
+							var radius = points[4];
+							var maxRadius = Math.min(width, height) / 2;
+							radius = (radius > maxRadius) ? maxRadius : radius;
+
+							context.beginPath();
+							context.moveTo(rx, ry + radius);
+							context.lineTo(rx, ry + height - radius);
+							context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+							context.lineTo(rx + width - radius, ry + height);
+							context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+							context.lineTo(rx + width, ry + radius);
+							context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+							context.lineTo(rx + radius, ry);
+							context.quadraticCurveTo(rx, ry, rx, ry + radius);
+							context.closePath();
+
+
+
+						} 
+
+						if(data.hasFill) {
+
+							context.globalAlpha = data.fillAlpha * worldAlpha;
+							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
+							if(round) {
+								context.fill();
+							} else {
+								context.fillRect(rx, ry, width, height);
+							}
+
+						}
+
+						if(data.lineWidth > 0) {
+
+							context.globalAlpha = data.lineAlpha * worldAlpha;
+							if(round) {
+								context.stroke();
+							} else {
+								context.strokeRect(rx, ry, width, height);
+							}
+
+						}
+						
+					case Circle:
+
+						context.beginPath();
+						context.arc(points[0] - offsetX, points[1] - offsetY, points[2], 0, 2 * Math.PI, true);
+						context.closePath();
+
+						if(data.hasFill) {
+
+							context.globalAlpha = data.fillAlpha * worldAlpha;
+							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
+							context.fill();
+
+						}
+
+						if(data.lineWidth > 0) {
+
+							context.globalAlpha = data.lineAlpha * worldAlpha;
+							context.stroke();
+
+						}
+
+					case Ellipse:
+
+						var w = points[2];
+						var h = points[3];
+						var x = (points[0] - offsetX);
+						var y = (points[1] - offsetY);
+
+						context.beginPath();
+						var kappa = 0.5522848,
+							ox = (w / 2) * kappa, // control point offset horizontal
+							oy = (h / 2) * kappa, // control point offset vertical
+							xe = x + w, // x-end
+							ye = y + h, // y-end
+							xm = x + w / 2, // x-middle
+							ym = y + h / 2; // y-middle
+						context.moveTo(x, ym);
+						context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+						context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+						context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+						context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+						context.closePath();
+
+						if(data.hasFill) {
+
+							context.globalAlpha = data.fillAlpha * worldAlpha;
+							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
+							context.fill();
+
+						}
+
+						if(data.lineWidth > 0) {
+
+							context.globalAlpha = data.lineAlpha * worldAlpha;
+							context.stroke();
+
+						}
+
+					case _:
+
+				}
+
+			}
+
+		}
+
+		#end
+
+	}
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
 		#if js
-		
+
 		if (graphics.__dirty) {
 			
 			bounds = graphics.__bounds;
