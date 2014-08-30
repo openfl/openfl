@@ -32,7 +32,7 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
 
  * [HaxeFlixel](https://github.com/haxeflixel/flixel)
  * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
- * [NAPE](https://github.com/deltaluca/nape)
+ * [Nape](https://github.com/deltaluca/nape)
  * [Box2D](https://github.com/jgranick/Box2D)
  * [Actuate](https://github.com/jgranick/Actuate)
 
