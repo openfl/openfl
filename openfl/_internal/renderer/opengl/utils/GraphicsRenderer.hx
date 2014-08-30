@@ -6,6 +6,7 @@ import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.geom.Point;
@@ -17,9 +18,7 @@ import openfl.geom.Point;
 
 class  GraphicsRenderer {
 	
-	public static var graphicsDataPool:Array<Dynamic> = [];
-	
-	private static var last:Int;
+	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	
 	public static function buildCircle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
@@ -28,7 +27,7 @@ class  GraphicsRenderer {
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
-		var height = rectData[3] == 0 ? width : rectData[3];
+		var height = (rectData.length == 3) ? width : rectData[3];
 
 		if(graphicsData.type == Ellipse) {
 
@@ -45,8 +44,8 @@ class  GraphicsRenderer {
 		
 		if (graphicsData.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fillColor);
-			var alpha = graphicsData.fillAlpha;
+			var color = hex2rgb (graphicsData.fill.color);
+			var alpha = getAlpha(graphicsData.fill);
 			
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
@@ -84,7 +83,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.lineWidth > 0) {
+		if (graphicsData.line.width > 0) {
 			
 			var tempPoints = graphicsData.points;
 			graphicsData.points = [];
@@ -111,8 +110,8 @@ class  GraphicsRenderer {
 		
 		var indices = webGLData.indices;
 		webGLData.points = points;
-		webGLData.alpha = graphicsData.fillAlpha;
-		webGLData.color = hex2rgb (graphicsData.fillColor);
+		webGLData.alpha = getAlpha(graphicsData.fill);
+		webGLData.color = hex2rgb (graphicsData.fill.color);
 		
 		var minX:Null<Float> = null;
 		var maxX:Null<Float> = null;
@@ -160,7 +159,7 @@ class  GraphicsRenderer {
 		var points:Array<Float> = graphicsData.points;
 		if (points.length == 0) return;
 		
-		if (graphicsData.lineWidth % 2 > 0) {
+		if (graphicsData.line.width % 2 > 0) {
 			
 			for (i in 0...points.length) {
 				
@@ -198,10 +197,10 @@ class  GraphicsRenderer {
 		var indexCount = points.length;
 		var indexStart = Std.int (verts.length / 6);
 		
-		var width = graphicsData.lineWidth / 2;
+		var width = graphicsData.line.width / 2;
 		
-		var color = hex2rgb (graphicsData.lineColor);
-		var alpha = graphicsData.lineAlpha;
+		var color = hex2rgb (graphicsData.line.color);
+		var alpha = graphicsData.line.alpha;
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
@@ -407,8 +406,8 @@ class  GraphicsRenderer {
 		var indices = webGLData.indices;
 		var length = Std.int (points.length / 2);
 		
-		var color = hex2rgb (graphicsData.fillColor);
-		var alpha = graphicsData.fillAlpha;
+		var color = hex2rgb (graphicsData.fill.color);
+		var alpha = getAlpha(graphicsData.fill);
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
@@ -452,8 +451,8 @@ class  GraphicsRenderer {
 		
 		if (graphicsData.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fillColor);
-			var alpha = graphicsData.fillAlpha;
+			var color = hex2rgb (graphicsData.fill.color);
+			var alpha = getAlpha(graphicsData.fill);
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
@@ -500,7 +499,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.lineWidth > 0) {
+		if (graphicsData.line.width > 0) {
 			
 			var tempPoints = graphicsData.points;
 			graphicsData.points = [ x, y, x + width, y, x + width, y + height, x, y + height, x, y];
@@ -513,6 +512,8 @@ class  GraphicsRenderer {
 	
 	
 	public static function buildRoundedRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+		
+		// TODO implementation differ from Flash!
 		
 		var points = graphicsData.points.copy();
 		var x = points[0];
@@ -532,8 +533,8 @@ class  GraphicsRenderer {
 		
 		if (graphicsData.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fillColor);
-			var alpha = graphicsData.fillAlpha;
+			var color = hex2rgb (graphicsData.fill.color);
+			var alpha = getAlpha(graphicsData.fill);
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
@@ -571,7 +572,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.lineWidth > 0) {
+		if (graphicsData.line.width > 0) {
 			
 			var tempPoints = graphicsData.points;
 			graphicsData.points = recPoints;
@@ -618,12 +619,12 @@ class  GraphicsRenderer {
 		
 	}
 
-	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
+	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
 
 		// cache as bitmap
 
 		renderSession.spriteBatch.end();
-		
+
 		renderGraphics(object, renderSession);
 
 		renderSession.spriteBatch.begin(renderSession);
@@ -645,7 +646,8 @@ class  GraphicsRenderer {
 			
 		}
 		
-		var webGL:Dynamic = graphics.__openGL[GLRenderer.glContextId];
+		var webGL = graphics.__GLData[GLRenderer.glContextId];
+		
 		for (i in 0...webGL.data.length) {
 			
 			if (webGL.data[i].mode == 1) {
@@ -656,8 +658,6 @@ class  GraphicsRenderer {
 				gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
 				
 				renderSession.stencilManager.popStencil (object, webGLData, renderSession);
-				
-				last = webGLData.mode;
 				
 			} else {
 				
@@ -690,7 +690,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	private static function switchMode (webGL:Dynamic, type:Int):GLGraphicsData {
+	private static function switchMode (webGL:GLData, type:Int):GLGraphicsData {
 		
 		var webGLData:GLGraphicsData;
 		
@@ -727,11 +727,11 @@ class  GraphicsRenderer {
 	
 	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
 		
-		var webGL = graphics.__openGL[GLRenderer.glContextId];
+		var webGL = graphics.__GLData[GLRenderer.glContextId];
 
 		if (webGL == null) {
 			
-			webGL = graphics.__openGL[GLRenderer.glContextId] = { lastIndex: 0, data: [], gl: gl };
+			webGL = graphics.__GLData[GLRenderer.glContextId] = new GLData(gl);
 			
 		}
 		
@@ -744,7 +744,7 @@ class  GraphicsRenderer {
 			
 			for (i in 0...webGL.data.length) {
 				
-				var graphicsData = cast webGL.data[i];
+				var graphicsData = webGL.data[i];
 				graphicsData.reset ();
 				graphicsDataPool.push (graphicsData);
 				
@@ -756,12 +756,12 @@ class  GraphicsRenderer {
 		//}
 		
 		
-		var webGLData;
+		var webGLData:GLGraphicsData;
 		
 		for (i in webGL.lastIndex...graphics.__graphicsData.length) {
 			
 			var data = graphics.__graphicsData[i];
-
+			
 			if (data.type == Polygon) {
 				
 				if (data.hasFill) {
@@ -784,7 +784,7 @@ class  GraphicsRenderer {
 					
 				}
 				
-				if (data.lineWidth > 0) {
+				if (data.line.width > 0) {
 					
 					webGLData = switchMode (webGL, 0);
 					buildLine (data, webGLData);
@@ -823,20 +823,37 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function hex2rgb (hex) {
+	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
 		
-		return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
+		return hex == null ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
 		
+	}
+	
+	private static inline function getAlpha(fill:FillStyle):Float {
+		return fill.color == null ? 0 : fill.alpha;
 	}
 	
 	
 }
 
+class GLData {
+
+	public var lastIndex:Int = 0;
+	public var data:Array<GLGraphicsData>;
+	public var gl:GLRenderContext;
+
+	public function new (gl:GLRenderContext) {
+		this.gl = gl;
+		data = [];
+		lastIndex = 0;
+	}
+
+}
 
 class GLGraphicsData {
 	
 	
-	public static var graphicsDataPool = [];
+	//public static var graphicsDataPool = [];
 	
 	public var alpha:Float;
 	public var buffer:GLBuffer;
@@ -903,20 +920,19 @@ class GLGraphicsData {
 class PolyK {
 	
 	
-	public static function triangulate (p:Dynamic) {
+	public static function triangulate (p:Array<Float>):Array<Int> {
 		
 		var sign = true;
-		
+
 		var n = p.length >> 1;
 		if (n < 3) return [];
 		
-		var tgs = [];
-		var avl = [];
-		
-		for (i in 0...n) avl.push (i);
+		var tgs:Array<Int> = [];
+		var avl:Array<Int> = [for (i in 0...n) i];
 		
 		var i = 0;
 		var al = n;
+		var earFound = false;
 		
 		while (al > 3) {
 			
@@ -928,7 +944,7 @@ class PolyK {
 			var bx = p[2 * i1], by = p[2 * i1 + 1];
 			var cx = p[2 * i2], cy = p[2 * i2 + 1];
 			
-			var earFound = false;
+			earFound = false;
 			
 			if (PolyK._convex (ax, ay, bx, by, cx, cy, sign)) {
 				
@@ -964,9 +980,7 @@ class PolyK {
 				if (sign) {
 					
 					tgs = [];
-					avl = [];
-					
-					for (i in 0...n) avl.push (i);
+					avl = [for (k in 0...n) k];
 					
 					i = 0;
 					al = n;
@@ -991,14 +1005,14 @@ class PolyK {
 	}
 	
 	
-	public static function _PointInTriangle (px, py, ax, ay, bx, by, cx, cy) {
+	public static function _PointInTriangle (px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float) {
 		
-		var v0x = cx-ax;
-		var v0y = cy-ay;
-		var v1x = bx-ax;
-		var v1y = by-ay;
-		var v2x = px-ax;
-		var v2y = py-ay;
+		var v0x = Std.int(cx-ax);
+		var v0y = Std.int(cy-ay);
+		var v1x = Std.int(bx-ax);
+		var v1y = Std.int(by-ay);
+		var v2x = Std.int(px-ax);
+		var v2y = Std.int(py-ay);
 		
 		var dot00 = (v0x * v0x) + (v0y * v0y);
 		var dot01 = (v0x * v1x) + (v0y * v1y);
@@ -1015,11 +1029,10 @@ class PolyK {
 	}
 	
 	
-	public static function _convex (ax, ay, bx, by, cx, cy, sign) {
+	public static function _convex (ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, sign:Bool) {
 		
 		return ((ay - by) * (cx - bx) + (bx - ax) * (cy - by) >= 0) == sign;
 		
 	}
-	
-	
+		
 }

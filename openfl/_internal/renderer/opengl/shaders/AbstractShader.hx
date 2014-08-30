@@ -11,7 +11,7 @@ class AbstractShader {
 	
 	private static var __UID = 0;
 	
-	public var attributes:Array<Dynamic>;
+	public var attributes:Array<Int>;
 	public var aTextureCoord:Int;
 	public var aVertexPosition:Int;
 	public var colorAttribute:Int;
@@ -31,6 +31,7 @@ class AbstractShader {
 		this.gl = gl;
 		program = null;
 		
+		attributes = [];
 	}
 	
 	
@@ -44,6 +45,7 @@ class AbstractShader {
 		
 		uniforms = null;
 		gl = null;
+		attributes = null;
 		
 	}
 	

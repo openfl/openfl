@@ -120,6 +120,23 @@ class CanvasGraphics {
 		
 	}
 
+	#if js
+	private static inline function setFillStyle(data:DrawPath, context:CanvasRenderingContext2D, worldAlpha:Float) {
+		if (data.hasFill) {
+			
+			context.globalAlpha = data.fill.alpha * worldAlpha;							
+			if (data.fill.bitmap != null) {
+				var bitmap = data.fill.bitmap;
+				var repeat = data.fill.repeat;
+				var pattern = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+				context.fillStyle = pattern;
+			} else {
+				context.fillStyle = '#' + StringTools.hex(data.fill.color, 6);
+			}
+		}
+	}
+	#end
+	
 	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
 
 		#if js
@@ -163,39 +180,36 @@ class CanvasGraphics {
 				var data = graphics.__graphicsData[i];
 				var points = data.points;
 
-				context.strokeStyle = '#' + StringTools.hex (data.lineColor, 6);
-				context.lineWidth = data.lineWidth;
+				context.strokeStyle = '#' + StringTools.hex (data.line.color, 6);
+				context.lineWidth = data.line.width;
+				context.lineCap = Std.string(data.line.caps);
+				context.lineJoin = Std.string(data.line.joints);
+				context.miterLimit = data.line.miterLimit;
 
+				setFillStyle(data, context, worldAlpha);
+				
 				switch(data.type) {
 
 					case Polygon:
-
+						
 						context.beginPath();
 						context.moveTo(points[0] - offsetX, points[1] - offsetY);
-
 						for(i in 1...Std.int(points.length/2)) {
 							context.lineTo(points[i * 2] - offsetX, points[i * 2 + 1] - offsetY);
 						}
-
 						context.closePath();
-
+						
 						if(data.hasFill) {
-
-							context.globalAlpha = data.fillAlpha * worldAlpha;
-							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
 							context.fill();
-
 						}
-
-						if(data.lineWidth > 0) {
-
-							context.globalAlpha = data.lineAlpha * worldAlpha;
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
 							context.stroke();
-
 						}
 
 					case Rectangle(round):
-
+						
 						var rx = points[0] - offsetX;
 						var ry = points[1] - offsetY;
 						var width = points[2];
@@ -219,31 +233,23 @@ class CanvasGraphics {
 							context.quadraticCurveTo(rx, ry, rx, ry + radius);
 							context.closePath();
 
-
-
 						} 
-
-						if(data.hasFill) {
-
-							context.globalAlpha = data.fillAlpha * worldAlpha;
-							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
-							if(round) {
+						
+						if (data.hasFill) {
+							if (round) {
 								context.fill();
 							} else {
 								context.fillRect(rx, ry, width, height);
 							}
-
 						}
-
-						if(data.lineWidth > 0) {
-
-							context.globalAlpha = data.lineAlpha * worldAlpha;
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
 							if(round) {
 								context.stroke();
 							} else {
 								context.strokeRect(rx, ry, width, height);
 							}
-
 						}
 						
 					case Circle:
@@ -253,18 +259,12 @@ class CanvasGraphics {
 						context.closePath();
 
 						if(data.hasFill) {
-
-							context.globalAlpha = data.fillAlpha * worldAlpha;
-							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
 							context.fill();
-
 						}
-
-						if(data.lineWidth > 0) {
-
-							context.globalAlpha = data.lineAlpha * worldAlpha;
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
 							context.stroke();
-
 						}
 
 					case Ellipse:
@@ -290,18 +290,12 @@ class CanvasGraphics {
 						context.closePath();
 
 						if(data.hasFill) {
-
-							context.globalAlpha = data.fillAlpha * worldAlpha;
-							context.fillStyle = '#' + StringTools.hex(data.fillColor, 6);
 							context.fill();
-
 						}
-
-						if(data.lineWidth > 0) {
-
-							context.globalAlpha = data.lineAlpha * worldAlpha;
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
 							context.stroke();
-
 						}
 
 					case _:

@@ -19,9 +19,7 @@ class StencilManager {
 	public var gl:GLRenderContext;
 	public var maskStack:Array<Dynamic>;
 	public var reverse:Bool;
-	public var stencilStack:Array<Dynamic>;
-	
-	private var _currentGraphics:Graphics;
+	public var stencilStack:Array<GLGraphicsData>;
 	
 	
 	public function new (gl:GLRenderContext) {
@@ -37,13 +35,10 @@ class StencilManager {
 	public function bindGraphics (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
 		var graphics = object.__graphics;
-		_currentGraphics = graphics;
-		
-		var gl = this.gl;
 		
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
-		
+
 		if (webGLData.mode == 1) {
 			
 			var shader = renderSession.shaderManager.complexPrimitiveShader;
@@ -95,7 +90,7 @@ class StencilManager {
 	
 	public function destroy ():Void {
 		
-		maskStack = null;
+		stencilStack = null;
 		gl = null;
 		
 	}
@@ -103,8 +98,7 @@ class StencilManager {
 	
 	public function popStencil (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
-		var gl = this.gl;
-		this.stencilStack.pop ();
+		stencilStack.pop ();
 		
 		count--;
 		
@@ -140,7 +134,7 @@ class StencilManager {
 				gl.stencilFunc (gl.ALWAYS, 0, 0xFF);
 				gl.stencilOp (gl.KEEP, gl.KEEP, gl.INVERT);
 				
-				gl.drawElements (gl.TRIANGLE_FAN, Std.int (webGLData.indices.length - 4), gl.UNSIGNED_SHORT, 0);
+				gl.drawElements (gl.TRIANGLE_FAN, webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0);
 				
 				if (!reverse) {
 					
@@ -190,9 +184,8 @@ class StencilManager {
 	
 	public function pushStencil (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
-		var gl = this.gl;
 		bindGraphics (object, webGLData, renderSession);
-		
+
 		if (stencilStack.length == 0) {
 			
 			gl.enable (gl.STENCIL_TEST);
@@ -201,11 +194,12 @@ class StencilManager {
 			count = 0;
 			
 		}
-		
+
 		stencilStack.push (webGLData);
 		
 		var level = count;
 		
+		//gl.colorMask (true, true, true, true);
 		gl.colorMask (false, false, false, false);
 		
 		gl.stencilFunc (gl.ALWAYS, 0, 0xFF);
@@ -227,7 +221,7 @@ class StencilManager {
 				
 			}
 			
-			gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, Std.int ((webGLData.indices.length - 4) * 2));
+			gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
 			
 			if (reverse) {
 				
@@ -270,9 +264,10 @@ class StencilManager {
 		}
 		
 		gl.colorMask (true, true, true, true);
+		//gl.colorMask (false, false, false, false);
 		gl.stencilOp (gl.KEEP, gl.KEEP, gl.KEEP);
 		
-		this.count++;
+		count++;
 		
 	}
 	

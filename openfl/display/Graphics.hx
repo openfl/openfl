@@ -1,8 +1,9 @@
 package openfl.display; #if !flash
 
-
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl.display.CapsStyle;
 import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
 import openfl.geom.Point;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
@@ -24,21 +25,38 @@ class Graphics {
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 
+	private static var DEFAULT_LINE_STYLE:LineStyle = {
+		width: 0,
+		color: 0,
+		alpha: 1,
+		scaleMode: LineScaleMode.NORMAL,
+		caps: CapsStyle.ROUND,
+		joints: JointStyle.ROUND,
+		miterLimit: 3,
+	}
+	
+	private static var DEFAULT_FILL_STYLE:FillStyle = {
+		color: null,
+		alpha: 1,
+		bitmap: null,
+		matrix: null,
+		repeat: true,
+		smooth: false,
+	}
+	
 	private var __hasFill:Bool = false;
-	private var __fillColor:Null<Int> = null;
-	private var __fillApha:Float = 1;
 
-	private var __lineWidth:Float = 0;
-	private var __lineColor:Int = 0;
-	private var __lineAlpha:Float = 1;
+	private var __line:LineStyle;
+	private var __fill:FillStyle;
 
 	//private var __tint:Int = 0xFFFFFF;
 	//private var __blendMode:BlendMode = NORMAL;
 	private var __dirty:Bool = true;
 
 	private var __graphicsData:Array<DrawPath> = [];
+	private var __GLData:Array<GLData> = [];
 	private var __currentPath:DrawPath;
-	private var __openGL:Array<Dynamic> = [];
+	
 
 	private var __bounds:Rectangle;
 	private var __halfStrokeWidth:Float;
@@ -60,45 +78,64 @@ class Graphics {
 		__halfStrokeWidth = 0;
 		__positionX = 0;
 		__positionY = 0;
+		
+		__line = Reflect.copy(DEFAULT_LINE_STYLE);
+		__fill = Reflect.copy(DEFAULT_FILL_STYLE);
 
 	}
 
 	public function beginFill(color:Int = 0, alpha:Float = 1) {
 
+		endFill();
 		__hasFill = alpha > 0;
-		__fillColor = color;
-		__fillApha = alpha;
+		__fill.color = color;
+		__fill.alpha = alpha;
 
 		__commands.push (BeginFill (color & 0xFFFFFF, alpha));
 
+	}
+	
+	public function beginBitmapFill(bitmap:BitmapData, ?matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
+		
+		endFill();
+		__hasFill = bitmap != null;
+		__fill.bitmap = bitmap;
+		__fill.matrix = matrix;
+		__fill.repeat = repeat;
+		__fill.smooth = smooth;
+		__commands.push (BeginBitmapFill(bitmap, matrix, repeat, smooth));
+		
 	}
 
 	public function endFill() {
 
 		__hasFill = false;
-		__fillColor = null;
-		__fillApha = 1;
+		__fill = Reflect.copy(DEFAULT_FILL_STYLE);
 
 	}
 
 	public function lineStyle (thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null) {
 
 		if(thickness == null || thickness < 0) {
-			__lineWidth = 0;
+			__line.width = 0;
 		} else if (thickness == 0){
-			__lineWidth = 1;
+			__line.width = 1;
 		} else {
-			__lineWidth = thickness;
+			__line.width = thickness;
 		}
 
-		__halfStrokeWidth = __lineWidth / 2;
+		__halfStrokeWidth = __line.width / 2;
 
-		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
+		__commands.push (LineStyle (__line.width, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 
 		graphicDataPop();
 
-		__lineColor = color;
-		__lineAlpha = alpha;
+		__line.color = color;
+		__line.alpha = alpha;
+		__line.scaleMode = scaleMode;
+		__line.caps = caps;
+		__line.joints = joints;
+		__line.miterLimit = miterLimit;
 
 		__currentPath = new DrawPath();
 		__currentPath.update(this);
@@ -336,7 +373,8 @@ class Graphics {
 	public function clear() {
 
 		__commands = new Array ();
-		__lineWidth = 0;
+		__line = Reflect.copy(DEFAULT_LINE_STYLE);
+		__fill = Reflect.copy(DEFAULT_FILL_STYLE);
 		__halfStrokeWidth = 0;
 		__hasFill = false;
 		__graphicsData = [];
@@ -418,50 +456,62 @@ class Graphics {
 @:access(openfl.display.Graphics)
 class DrawPath {
 
-	public var lineWidth:Float = 0;
-	public var lineColor:Int = 0;
-	public var lineAlpha:Float = 1;
-
 	public var hasFill:Bool = false;
-	public var fillColor:Null<Int> = null;
-	public var fillAlpha:Float = 1;
+	
+	public var line:LineStyle;
+	public var fill:FillStyle;
 
 	public var points:Array<Float> = [];
 
 	public var type:GraphicType = Polygon;
 
 	public function new() {
-
+		line = Reflect.copy(Graphics.DEFAULT_LINE_STYLE);
+		fill = Reflect.copy(Graphics.DEFAULT_FILL_STYLE);
 	}
 
 	public function update(graphics:Graphics):Void {
-		updateLine(graphics.__lineWidth, graphics.__lineColor, graphics.__lineAlpha);
-		updateFill(graphics.__hasFill, graphics.__fillColor, graphics.__fillApha);
+		updateLine(graphics.__line);
+		updateFill(graphics.__hasFill, graphics.__fill);
 	}
 
-	public function updateLine(width:Float, color:Int, alpha:Float):Void {
-		lineWidth = width;
-		lineColor = color;
-		lineAlpha = alpha;
+	public function updateLine(line:LineStyle):Void {
+		this.line.width = line.width;
+		this.line.color = line.color;
+		this.line.alpha = line.alpha;
+		this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
+		this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
+		this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
+		this.line.miterLimit = line.miterLimit;
 	}
 
-	public function updateFill(fill:Bool, color:Int, alpha:Float):Void {
-		hasFill = fill;
-		fillColor = color;
-		fillAlpha = alpha;
+	public function updateFill(hasFill:Bool, fill:FillStyle):Void {
+		this.hasFill = hasFill;
+		this.fill = Reflect.copy(fill);
 	}
 
 }
 
 typedef LineStyle = {
 	width:Float,
-	color:Float,
+	color:Int,
 	alpha:Float,
 
 	scaleMode:LineScaleMode,
 	caps:CapsStyle,
 	joints:JointStyle,
 	miterLimit:Float,
+}
+
+typedef FillStyle = {
+	
+	color:Null<Int>,
+	alpha:Float,
+	bitmap:BitmapData,
+	repeat:Bool,
+	matrix:Matrix,
+	smooth:Bool,
+
 }
 
 enum GraphicType {

@@ -67,7 +67,7 @@ class ComplexPrimitiveShader extends AbstractShader {
 		
 		aVertexPosition = gl.getAttribLocation (program, 'aVertexPosition');
 		
-		attributes = [ aVertexPosition, colorAttribute];
+		attributes = [aVertexPosition];
 		
 		translationMatrix = gl.getUniformLocation (program, 'translationMatrix');
 		alpha = gl.getUniformLocation (program, 'alpha');
