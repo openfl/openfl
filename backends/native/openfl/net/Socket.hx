@@ -162,8 +162,13 @@ class Socket extends EventDispatcher implements IDataInput /*implements IDataOut
 			dispatchEvent( new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0) );
 		}
 		
-		if( _socket != null )
-			flush();
+		if ( _socket != null ) {
+			try {
+				flush();
+			} catch ( e:IOError ) {
+				dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, e.message) );
+			}
+		}
 	}
 
 	private function cleanSocket(){
@@ -312,12 +317,16 @@ class Socket extends EventDispatcher implements IDataInput /*implements IDataOut
 	//public function writeObject( object:Dynamic ):Void {  _output.writeObject(object); }
 
 	public function flush() {
-		if( _socket == null )
+		if ( _socket == null )
 			throw new IOError("Operation attempted on invalid socket.");
-		if( _output.length > 0 ){
-			_socket.output.write( _output );
-			_output = new ByteArray();
-			_output.endian = endian;
+		if ( _output.length > 0 ){
+			try {
+				_socket.output.write( _output );
+				_output = new ByteArray();
+				_output.endian = endian;
+			} catch ( e:Dynamic ) {
+				throw new IOError("Operation attempted on invalid socket.");
+			}
 		}
 	}
 	
