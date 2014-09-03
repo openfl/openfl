@@ -87,7 +87,7 @@ class TextField extends InteractiveObject {
 	private var __isKeyDown:Bool;
 	private var __hiddenInput:Dynamic;
 
-	private var __verticalPadding:Float = 2;
+	private var __verticalPadding:Float = 5;
 	private var __showCursor:Bool;
 	private var __currentTimer:Timer;
 	private var __inputsIndex :UInt;
@@ -702,7 +702,7 @@ class TextField extends InteractiveObject {
 					{
 						var cursorOffset = getTextWidth((displayAsPassword? passwordMask:text).substring(0, __cursorPos));
 						__context.fillStyle = "#" + StringTools.hex (__textFormat.color, 6);
-						__context.fillRect( cursorOffset, 0, 1, __height);
+						__context.fillRect( cursorOffset, __verticalPadding, 1, __textFormat.size - __verticalPadding);
 					}
 					else if(__hasFocus && ( Math.abs(__selectionStart - __cursorPos)) > 0  && !__isKeyDown )
 					{
@@ -713,7 +713,7 @@ class TextField extends InteractiveObject {
 						var widthPos:Float = getTextWidth((displayAsPassword? passwordMask:text).substring(lowPos, highPos));
 
 						__context.fillStyle = "#" + StringTools.hex (__textFormat.color, 6);
-						__context.fillRect( xPos, __verticalPadding, widthPos, __height - __verticalPadding*2);
+						__context.fillRect( xPos, __verticalPadding, widthPos, __textFormat.size - __verticalPadding );
 					}
 
 					if (__ranges == null) {
