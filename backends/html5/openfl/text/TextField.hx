@@ -1,5 +1,6 @@
 package openfl.text;
 
+import haxe.Json;
 import openfl.events.TextEvent;
 import haxe.Timer;
 import Math;
@@ -188,6 +189,8 @@ class TextField extends InteractiveObject {
 
 		__hiddenInput.addEventListener('keyup', handleKeyUp);
 		__hiddenInput.addEventListener('keydown', handleKeyDown);
+		// use for get the backspace on android
+		__hiddenInput.addEventListener('input', handleKeyUp);
 
 		this.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
 		this.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
@@ -199,6 +202,7 @@ class TextField extends InteractiveObject {
 		if(this.stage != null)this.stage.removeEventListener(FocusEvent.FOCUS_OUT, handleFocusOut);
 
 		if(__hiddenInput != null) __hiddenInput.removeEventListener('keyup', handleKeyUp);
+		if(__hiddenInput != null) __hiddenInput.removeEventListener('input', handleKeyUp);
 		if(__hiddenInput != null) __hiddenInput.removeEventListener('keydown', handleKeyDown);
 
 		this.removeEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
