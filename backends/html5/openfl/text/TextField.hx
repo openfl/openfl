@@ -1,7 +1,13 @@
 package openfl.text;
 
-
-import haxe.xml.Fast;
+import haxe.Json;
+import openfl.events.TextEvent;
+import haxe.Timer;
+import Math;
+import js.Browser;
+import StringTools;
+import js.Browser;
+import openfl.events.FocusEvent;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
@@ -16,7 +22,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextFormatAlign;
-
+import openfl.events.MouseEvent;
+import openfl.events.Event;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.text.TextFormat)
@@ -24,7 +31,8 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
-	
+	private static var __inputs:Array<TextField>;
+
 	public var antiAliasType:AntiAliasType;
 	@:isVar public var autoSize (default, set):TextFieldAutoSize;
 	@:isVar public var background (default, set):Bool;
@@ -71,8 +79,21 @@ class TextField extends InteractiveObject {
 	private var __text:String;
 	private var __textFormat:TextFormat;
 	private var __width:Float;
-	
-	
+
+
+	private var __hasFocus:Bool;
+	private var __selectionStart:Int;
+	private var __cursorPos:Int;
+	private var __mouseDown:Bool;
+	private var __isKeyDown:Bool;
+	private var __hiddenInput:Dynamic;
+
+	private var __verticalPadding:Float = 5;
+	private var __showCursor:Bool;
+	private var __currentTimer:Timer;
+	private var __inputsIndex :UInt;
+
+
 	public function new () {
 		
 		super ();
@@ -80,7 +101,7 @@ class TextField extends InteractiveObject {
 		__width = 100;
 		__height = 100;
 		__text = "";
-		
+
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
 		displayAsPassword = false;
@@ -111,14 +132,291 @@ class TextField extends InteractiveObject {
 		__textFormat = __defaultTextFormat.clone ();
 		
 	}
+
+
+	private function setupTextInput():Void
+	{
+		if(__inputs == null) __inputs = new Array<TextField>();
+		__cursorPos = -1;
+
+		__inputs.push(this);
+		__inputsIndex = __inputs.length - 1;
+		// create the hidden input element
+		if(__hiddenInput == null)
+		{
+			__hiddenInput = Browser.document.createElement('input');
+			__hiddenInput.type = 'text';
+			__hiddenInput.style.position = 'absolute';
+			__hiddenInput.style.opacity = 0;
+			__hiddenInput.style.pointerEvents = 'none';
+
+			__hiddenInput.style.left = (this.x + ( (__canvas != null) ? __canvas.offsetLeft : 0)) + 'px';
+			__hiddenInput.style.top = (this.y + ( (__canvas != null) ? __canvas.offsetTop : 0)) + 'px';
+			__hiddenInput.style.width = __width + 'px';
+			__hiddenInput.style.height = __height + 'px';
+			__hiddenInput.style.zIndex = 0;
+			if (this.maxChars > 0) {
+				__hiddenInput.maxLength = this.maxChars;
+			}
+			Browser.document.body.appendChild(__hiddenInput);
+			__hiddenInput.value = text;
+		}
+
+		if(stage != null)
+		{
+			handleAddedToStage(null);
+		}
+		else
+		{
+			this.addEventListener(Event.ADDED_TO_STAGE, handleAddedToStage);
+			this.addEventListener(Event.REMOVED_FROM_STAGE, handleRemovedFromStage);
+		}
+
+	}
+
+	private function unsetTextInput():Void
+	{
+		if(__inputs != null)
+		{
+			__inputs.remove(this);
+		}
+		removeEventsListeners();
+	}
 	
+	private function addEventsListeners():Void
+	{
+		this.stage.addEventListener(FocusEvent.FOCUS_OUT, handleFocusOut);
+
+		__hiddenInput.addEventListener('keyup', handleKeyUp);
+		__hiddenInput.addEventListener('keydown', handleKeyDown);
+		// use for get the backspace on android
+		__hiddenInput.addEventListener('input', handleKeyUp);
+
+		this.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
+		this.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
+		this.stage.addEventListener(MouseEvent.MOUSE_UP, handleStageClick);
+	}
 	
+	private function removeEventsListeners():Void
+	{
+		if(this.stage != null)this.stage.removeEventListener(FocusEvent.FOCUS_OUT, handleFocusOut);
+
+		if(__hiddenInput != null) __hiddenInput.removeEventListener('keyup', handleKeyUp);
+		if(__hiddenInput != null) __hiddenInput.removeEventListener('input', handleKeyUp);
+		if(__hiddenInput != null) __hiddenInput.removeEventListener('keydown', handleKeyDown);
+
+		this.removeEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
+		this.removeEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
+		if(this.stage != null) this.stage.removeEventListener(MouseEvent.MOUSE_UP, handleStageClick);
+	}
+
+	private function handleAddedToStage(e:Event):Void
+	{
+		addEventsListeners();
+	}
+
+	private function handleRemovedFromStage(e:Event):Void
+	{
+		removeEventsListeners();
+	}
+
+	private function handleFocusOut(e:FocusEvent):Void
+	{
+		blur();
+	}
+
+	private function blur():Void
+	{
+		__cursorPos = -1;
+		__hasFocus = false;
+		stopCursorTimerLoop();
+		__hiddenInput.blur();
+		__dirty = true;
+	}
+
+	private function handleStageClick(e:FocusEvent):Void
+	{
+		this.removeEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+	}
+
+	private function handleMouseDown(e:MouseEvent):Void
+	{
+		// start the selection drag if inside the input
+		__selectionStart = getClickPos(e.localX, e.localY);
+		this.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+	}
+
+	private function getClickPos(posX:Float, y:Float):Int
+	{
+		var value:String = text;
+
+		// determine where the click was made along the string
+		var text:String = value; //clipText(value);
+		var totalW:Float = 0;
+		var pos = text.length;
+
+		if (posX < getTextWidth(text)) {
+			// loop through each character to identify the position
+			for(i in 0...text.length) {
+				totalW += getTextWidth(text.charAt(i));
+				if (totalW >= posX) {
+					pos = i;
+					break;
+				}
+			}
+		}
+		return pos;
+	}
+
+	private function clipText(value) {
+		var textWidth:Float = getTextWidth(value);
+		var fillPer = textWidth / __width;
+		text = fillPer > 1 ? text.substr(-1 * Math.floor(text.length / fillPer)) : text;
+
+		return text + '';
+	}
+
+	private function getTextWidth(text):Float {
+
+		if(__context == null)
+		{
+			__canvas = cast Browser.document.createElement ("canvas");
+			__context = __canvas.getContext ("2d");
+		}
+
+		__context.font = __getFont (__textFormat);
+		__context.textAlign = 'left';
+
+		return __context.measureText(text).width;
+	}
+
+	private function isOverInput(x:Float, y:Float):Bool
+	{
+		return x >= 0 && x <= get_textWidth();
+
+	}
+
+	private function handleMouseUp(e:MouseEvent):Void
+	{
+		//hide Cursor
+		var upPos:Int = getClickPos(e.localX, e.localY);
+
+		var leftPos:Int;
+		var rightPos:Int;
+
+		leftPos = Std.int(Math.min(__selectionStart, upPos));
+		rightPos = Std.int(Math.max(__selectionStart, upPos));
+
+		__selectionStart = leftPos;
+		__cursorPos = rightPos;
+		this.removeEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+
+		focus();
+	}
+
+	private function handleMouseMove(e:MouseEvent)
+	{
+		if (__hasFocus && __selectionStart >= 0) {
+			__cursorPos = getClickPos(e.localX, e.localY);
+			__dirty = true;
+		}
+	}
+
+	private function focus():Void
+	{
+		this.stage.focus = this;
+		if(__cursorPos < 0){
+			__cursorPos = text.length;
+			__selectionStart = __cursorPos;
+		}
+		__hiddenInput.focus();
+		__hiddenInput.selectionStart = __selectionStart;
+		__hiddenInput.selectionEnd = __cursorPos;
+
+		stopCursorTimerLoop();
+		startCursorTimerLoop();
+
+		__hasFocus = true;
+		__dirty = true;
+	}
+
+	private function stopCursorTimerLoop():Void
+	{
+		if(__currentTimer != null) __currentTimer.stop();
+	}
+
+	private function startCursorTimerLoop():Void
+	{
+		__currentTimer = Timer.delay(startCursorTimerLoop, 500);
+		__showCursor = !__showCursor;
+		__dirty = true;
+	}
+
+	private function handleKeyUp(e:Dynamic):Void
+	{
+		__isKeyDown = false;
+		e = (e != null) ? e : Browser.window.event;
+
+		// update the canvas input state information from the hidden input
+		setTextValue(__hiddenInput.value);
+		__cursorPos = __hiddenInput.selectionStart;
+		__selectionStart = __cursorPos;
+		__dirty = true;
+		dispatchEvent(new Event(Event.CHANGE, true));
+	}
+
+	private function handleKeyDown(e:Dynamic):Void
+	{
+		__isKeyDown = true;
+
+		e = (e != null) ? e : Browser.window.event;
+
+		var keyCode:Int = e.which;
+		var isShift:Bool = e.shiftKey;
+
+		// add support for Ctrl/Cmd+A selection
+		if (keyCode == 65 && (e.ctrlKey || e.metaKey)) {
+			__hiddenInput.selectionStart = 0;
+			__hiddenInput.selectionEnd = this.text.length;
+			e.preventDefault();
+			__dirty = true;
+			return;
+		}
+
+		// block keys that shouldn't be processed
+		if (keyCode == 17 || e.metaKey || e.ctrlKey) {
+			return;
+		}
+		/*if (keyCode == 13) { // enter key
+			e.preventDefault();
+			//submit;
+		}*/
+		if (keyCode == 9) { // tab key
+			e.preventDefault();
+			if (__inputs.length > 1) {
+				var nextIndex:Int =  (__inputs.indexOf(this)+1) % __inputs.length;
+				this.blur();
+				Timer.delay(
+					function() {
+						__inputs[nextIndex].focus();
+					}, 10);
+			}
+		}
+
+		// update the canvas input state information from the hidden input
+		setTextValue(__hiddenInput.value);
+		this.__selectionStart = __hiddenInput.selectionStart;
+		this.__ranges = null;
+
+		__dirty = true;
+	}
+	/*end input*/
+
 	public function appendText (text:String):Void {
 		
 		this.text += text;
 		
 	}
-	
 	
 	public function getCharBoundaries (a:Int):Rectangle {
 		
@@ -344,16 +642,26 @@ class TextField extends InteractiveObject {
 				__context = null;
 				
 			} else {
-				
+				var passwordMask:String = "";
+				if(displayAsPassword)
+				{
+					var length:Int = text.length;
+
+					for(i in 0...length)
+					{
+						passwordMask += "*";
+					}
+				}
+
 				if (__canvas == null) {
 					
 					__canvas = cast Browser.document.createElement ("canvas");
 					__context = __canvas.getContext ("2d");
 					
 				}
-				
+
 				if (__text != null && __text != "") {
-					
+
 					var measurements = __measureText ();
 					var textWidth = 0.0;
 					
@@ -392,10 +700,29 @@ class TextField extends InteractiveObject {
 						}
 						
 					}
-					
+
+					//draw cursor
+					if(__hasFocus && (__selectionStart == __cursorPos) && __showCursor)
+					{
+						var cursorOffset = getTextWidth((displayAsPassword? passwordMask:text).substring(0, __cursorPos));
+						__context.fillStyle = "#" + StringTools.hex (__textFormat.color, 6);
+						__context.fillRect( cursorOffset, __verticalPadding, 1, __textFormat.size - __verticalPadding);
+					}
+					else if(__hasFocus && ( Math.abs(__selectionStart - __cursorPos)) > 0  && !__isKeyDown )
+					{
+						var lowPos:Int = Std.int(Math.min(__selectionStart, __cursorPos));
+						var highPos:Int = Std.int(Math.max(__selectionStart, __cursorPos));
+
+						var xPos:Float = getTextWidth( (displayAsPassword? passwordMask:text).substring(0, lowPos));
+						var widthPos:Float = getTextWidth((displayAsPassword? passwordMask:text).substring(lowPos, highPos));
+
+						__context.fillStyle = "#" + StringTools.hex (__textFormat.color, 6);
+						__context.fillRect( xPos, __verticalPadding, widthPos, __textFormat.size - __verticalPadding );
+					}
+
 					if (__ranges == null) {
 						
-						__renderText (text, __textFormat, 0);
+						__renderText ( displayAsPassword? passwordMask:text, __textFormat, 0);
 						
 					} else {
 						
@@ -413,7 +740,9 @@ class TextField extends InteractiveObject {
 						}
 						
 					}
-					
+
+
+
 				} else {
 					
 					if (autoSize == TextFieldAutoSize.LEFT) {
@@ -456,7 +785,9 @@ class TextField extends InteractiveObject {
 					}
 					
 				}
-				
+
+
+
 			}
 			
 			__dirty = false;
@@ -606,7 +937,8 @@ class TextField extends InteractiveObject {
 	
 	
 	private function __renderText (text:String, format:TextFormat, offsetX:Float):Void {
-		
+
+
 		__context.font = __getFont (format);
 		__context.textBaseline = "top";
 		__context.fillStyle = "#" + StringTools.hex (format.color, 6);
@@ -883,16 +1215,22 @@ class TextField extends InteractiveObject {
 	
 	
 	public function set_text (value:String):String {
-		
+
+		this.__hiddenInput.value = value;
+		return  setTextValue(value);
+	}
+
+	private function setTextValue(value:String):String {
+
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = false;
+
 		return __text = value;
-		
 	}
-	
-	
-	public function get_textColor ():Int { 
+
+
+	public function get_textColor ():Int {
 		
 		return __textFormat.color;
 		
@@ -904,7 +1242,7 @@ class TextField extends InteractiveObject {
 		if (value != __textFormat.color) __dirty = true;
 		
 		if (__ranges != null) {
-			
+
 			for (range in __ranges) {
 				
 				range.format.color = value;
@@ -972,7 +1310,15 @@ class TextField extends InteractiveObject {
 	
 	public function set_type (value:TextFieldType):TextFieldType {
 		
-		//if (value != type) __dirty = true;
+		if(value == TextFieldType.INPUT)
+		{
+			setupTextInput();
+		}
+		else
+		{
+			unsetTextInput();
+		}
+		if (value != type) __dirty = true;
 		return type = value;
 		
 	}
