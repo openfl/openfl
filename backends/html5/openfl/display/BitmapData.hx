@@ -1275,11 +1275,11 @@ class BitmapData implements IBitmapDrawable {
 		
 		bytes.position = 0;
 		
-		if (bytes.readUnsignedByte () == 0x47 && bytes.readUnsignedByte () == 0x49 && bytes.readUnsignedByte () == 0x46 && bytes.readUnsignedByte () == 38) {
-			
+		//GIF8
+		if (bytes.readUnsignedByte () == 0x47 && bytes.readUnsignedByte () == 0x49 && bytes.readUnsignedByte () == 0x46 && bytes.readUnsignedByte () == 0x38 )
+		{
 			var b = bytes.readUnsignedByte ();
-			return ((b == 7 || b == 9) && bytes.readUnsignedByte () == 0x61);
-			
+			return ((b==0x37 || b==0x39) && bytes.readUnsignedByte()==0x61 ); //(7|8)a
 		}
 		
 		return false;

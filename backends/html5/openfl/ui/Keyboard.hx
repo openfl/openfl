@@ -284,7 +284,127 @@ class Keyboard {
 		}
 		
 	}
-	
+
+	static public function __getCharCode(keyCode : Int, shift:Bool) : Int
+	{
+	    if (!shift)
+	    {
+	        switch(keyCode)
+	        {
+			case A: return "a".charCodeAt(0);
+			case B: return "b".charCodeAt(0);
+			case C: return "c".charCodeAt(0);
+			case D: return "d".charCodeAt(0);
+			case E: return "e".charCodeAt(0);
+			case F: return "f".charCodeAt(0);
+			case G: return "g".charCodeAt(0);
+			case H: return "h".charCodeAt(0);
+			case I: return "i".charCodeAt(0);
+			case J: return "j".charCodeAt(0);
+			case K: return "k".charCodeAt(0);
+			case L: return "l".charCodeAt(0);
+			case M: return "m".charCodeAt(0);
+			case N: return "n".charCodeAt(0);
+			case O: return "o".charCodeAt(0);
+			case P: return "p".charCodeAt(0);
+			case Q: return "q".charCodeAt(0);
+			case R: return "r".charCodeAt(0);
+			case S: return "s".charCodeAt(0);
+			case T: return "t".charCodeAt(0);
+			case U: return "u".charCodeAt(0);
+			case V: return "v".charCodeAt(0);
+			case W: return "w".charCodeAt(0);
+			case X: return "x".charCodeAt(0);
+			case Y: return "y".charCodeAt(0);
+			case Z: return "z".charCodeAt(0);
+
+			case NUMBER_0: return "0".charCodeAt(0);
+			case NUMBER_1: return "1".charCodeAt(0);
+			case NUMBER_2: return "2".charCodeAt(0);
+			case NUMBER_3: return "3".charCodeAt(0);
+			case NUMBER_4: return "4".charCodeAt(0);
+			case NUMBER_5: return "5".charCodeAt(0);
+			case NUMBER_6: return "6".charCodeAt(0);
+			case NUMBER_7: return "7".charCodeAt(0);
+			case NUMBER_8: return "8".charCodeAt(0);
+			case NUMBER_9: return "9".charCodeAt(0);
+
+			case 192: return "`".charCodeAt(0);
+			case 189: return "-".charCodeAt(0);
+			case 187: return "=".charCodeAt(0);
+			case 219: return "[".charCodeAt(0);
+			case 221: return "]".charCodeAt(0);
+			case 186: return ";".charCodeAt(0);
+			case 222: return "'".charCodeAt(0);
+			case 188: return ",".charCodeAt(0);
+			case 190: return ".".charCodeAt(0);
+			case 191: return "/".charCodeAt(0);
+			case 220: return "\\".charCodeAt(0);
+                
+		    }
+		}
+		else
+		{
+			switch(keyCode)
+			{
+				case A: return "A".charCodeAt(0);
+				case B: return "B".charCodeAt(0);
+				case C: return "C".charCodeAt(0);
+				case D: return "D".charCodeAt(0);
+				case E: return "E".charCodeAt(0);
+				case F: return "F".charCodeAt(0);
+				case G: return "G".charCodeAt(0);
+				case H: return "H".charCodeAt(0);
+				case I: return "I".charCodeAt(0);
+				case J: return "J".charCodeAt(0);
+				case K: return "K".charCodeAt(0);
+				case L: return "L".charCodeAt(0);
+				case M: return "M".charCodeAt(0);
+				case N: return "N".charCodeAt(0);
+				case O: return "O".charCodeAt(0);
+				case P: return "P".charCodeAt(0);
+				case Q: return "Q".charCodeAt(0);
+				case R: return "R".charCodeAt(0);
+				case S: return "S".charCodeAt(0);
+				case T: return "T".charCodeAt(0);
+				case U: return "U".charCodeAt(0);
+				case V: return "V".charCodeAt(0);
+				case W: return "W".charCodeAt(0);
+				case X: return "X".charCodeAt(0);
+				case Y: return "Y".charCodeAt(0);
+				case Z: return "Z".charCodeAt(0);
+
+				case NUMBER_0: return ")".charCodeAt(0);
+				case NUMBER_1: return "!".charCodeAt(0);
+				case NUMBER_2: return "@".charCodeAt(0);
+				case NUMBER_3: return "#".charCodeAt(0);
+				case NUMBER_4: return "$".charCodeAt(0);
+				case NUMBER_5: return "%".charCodeAt(0);
+				case NUMBER_6: return "^".charCodeAt(0);
+				case NUMBER_7: return "&".charCodeAt(0);
+				case NUMBER_8: return "*".charCodeAt(0);
+				case NUMBER_9: return "(".charCodeAt(0);
+
+				case 192: return "~".charCodeAt(0);
+				case 189: return "_".charCodeAt(0);
+				case 187: return "+".charCodeAt(0);
+				case 219: return "{".charCodeAt(0);
+				case 221: return "}".charCodeAt(0);
+				case 186: return ":".charCodeAt(0);
+				case 222: return "\"".charCodeAt(0);
+				case 188: return "<".charCodeAt(0);
+				case 190: return ">".charCodeAt(0);
+				case 191: return "?".charCodeAt(0);
+				case 220: return "|".charCodeAt(0);
+		    }        
+		}
+		
+		#if debug
+			trace("jeashGetCharCode: unknown code: "+ keyCode);
+		#end
+		
+		return keyCode;
+	}
 	
 	public static function __convertWebkitCode (code:String):Int {
 		
