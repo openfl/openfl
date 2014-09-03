@@ -615,9 +615,10 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getVector (rect:Rectangle) {
 		var pixels = getPixels(rect);
-		var result = new Vector<UInt>();
-		for (i in 0...Std.int(pixels.length / 4)) {
-			result.push(pixels.readUnsignedInt());
+		var length = Std.int(pixels.length / 4);
+		var result = new Vector<UInt>(length);
+		for (i in 0...length) {
+			result[i] = pixels.readUnsignedInt();
 		}
 		return result;
 	}
@@ -1258,8 +1259,7 @@ class BitmapData implements IBitmapDrawable {
 	private static function __isJPG (bytes:ByteArray) {
 		
 		bytes.position = 0;
-		var ret = bytes.readUnsignedByte () == 0xFF && bytes.readUnsignedByte () == 0xD8;
-		return ret;
+		return bytes.readUnsignedByte () == 0xFF && bytes.readUnsignedByte () == 0xD8;
 		
 	}
 	
@@ -1276,10 +1276,9 @@ class BitmapData implements IBitmapDrawable {
 		bytes.position = 0;
 		
 		//GIF8
-		if  (bytes.readUnsignedByte () == 0x47 && bytes.readUnsignedByte () == 0x49 && bytes.readUnsignedByte () == 0x46 && bytes.readUnsignedByte () == 0x38 )
+		if (bytes.readUnsignedByte () == 0x47 && bytes.readUnsignedByte () == 0x49 && bytes.readUnsignedByte () == 0x46 && bytes.readUnsignedByte () == 0x38 )
 		{
-			var b = bytes.readUnsignedByte();
-			
+			var b = bytes.readUnsignedByte ();
 			return ((b==0x37 || b==0x39) && bytes.readUnsignedByte()==0x61 ); //(7|8)a
 		}
 		

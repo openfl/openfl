@@ -32,7 +32,7 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
 
  * [HaxeFlixel](https://github.com/haxeflixel/flixel)
  * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
- * [NAPE](https://github.com/deltaluca/nape)
+ * [Nape](https://github.com/deltaluca/nape)
  * [Box2D](https://github.com/jgranick/Box2D)
  * [Actuate](https://github.com/jgranick/Actuate)
 
@@ -61,7 +61,7 @@ OpenFL is powered by [Lime](https://github.com/openfl/lime), which includes powe
 
 Although we believe the Flash API is perfect for 2D development, there is some debate over the Stage3D (released in Flash Player 11), particularly regarding AGAL shaders. We have asked leading Flash developers, whether they would prefer an analog for Stage3D, or if they would prefer an OpenGL-based approach instead, and the answer has overwhelmingly been to support OpenGL-style APIs instead.
 
-In addition to the standard Flash display list APIs, OpenFL includes batch tile rendering and "OpenGLView" for cross-platform OpenGL rendering for native and HTML5 targets. This does not have the limitions of Stage3D, and can be placed above, below or mixed with other DisplayObjects, and uses standard GLSL shaders, and follows the WebGL API.
+In addition to the standard Flash display list APIs, OpenFL includes batch tile rendering and "OpenGLView" for cross-platform OpenGL rendering for native and HTML5 targets. This does not have the limitations of Stage3D, and can be placed above, below or mixed with other DisplayObjects, and uses standard GLSL shaders, and follows the WebGL API.
 
 Native Extensions
 =================
@@ -98,7 +98,7 @@ OpenFL is free, open-source software under the [MIT license](LICENSE.md).
 Installing OpenFL
 =================
 
-To begin using OpenFL, you need to first install Haxe 3.1 for [Windows](http://haxe.org/file/haxe-3.1.3-win.exe), [Mac](http://haxe.org/file/haxe-3.1.3-osx-installer.dmg) or [Linux](http://www.openfl.org/builds/haxe/haxe-3.1.3-linux-installer.tar.gz).
+To begin using OpenFL, you need to first install Haxe 3.1 for [Windows](http://haxe.org/file/haxe-3.1.3-win.exe), [Mac](http://haxe.org/download/file/3.1.3/haxe-3.1.3-osx-installer.pkg) or [Linux](http://www.openfl.org/builds/haxe/haxe-3.1.3-linux-installer.tar.gz).
 
 Once Haxe has been installed, you can install a release version of [Lime](https://github.com/openfl/lime) from a terminal or command-prompt with these commands:
 

@@ -1636,7 +1636,10 @@ class Assets {
 						
 						case EConst(CString(filePath)):
 							
-							var path = Context.resolvePath (filePath);
+							var path = filePath;
+							if (!sys.FileSystem.exists(filePath)) {
+								path = Context.resolvePath (filePath);
+							}
 							var bytes = File.getBytes (path);
 							var resourceName = "__ASSET__" + metaName + "_" + (classType.pack.length > 0 ? classType.pack.join ("_") + "_" : "") + classType.name;
 							

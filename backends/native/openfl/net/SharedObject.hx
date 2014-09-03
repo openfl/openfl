@@ -195,7 +195,7 @@ class SharedObject extends EventDispatcher {
 				
 			} catch (e:Dynamic) {
 				
-				trace ("Could not unserialize SharedObject");
+				trace ('Could not unserialize SharedObject: $name');
 				loadedData = { };
 				
 			}

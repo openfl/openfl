@@ -23,7 +23,7 @@ package flash.display;
 	function drawRect(x : Float, y : Float, width : Float, height : Float) : Void;
 	function drawRoundRect(x : Float, y : Float, width : Float, height : Float, ellipseWidth : Float, ?ellipseHeight : Float) : Void;
 	function drawRoundRectComplex(x : Float, y : Float, width : Float, height : Float, topLeftRadius : Float, topRightRadius : Float, bottomLeftRadius : Float, bottomRightRadius : Float) : Void;
-	@:require(flash10) function drawTriangles(vertices : flash.Vector<Float>, ?indices : openfl.Vector<Int>, ?uvtData : openfl.Vector<Float>, ?culling : TriangleCulling) : Void;
+	@:require(flash10) function drawTriangles(vertices : openfl.Vector<Float>, ?indices : openfl.Vector<Int>, ?uvtData : openfl.Vector<Float>, ?culling : TriangleCulling) : Void;
 	function endFill() : Void;
 	@:require(flash10) function lineBitmapStyle(bitmap : BitmapData, ?matrix : flash.geom.Matrix, repeat : Bool = true, smooth : Bool = false) : Void;
 	function lineGradientStyle(type : GradientType, colors : Array<UInt>, alphas : Array<Dynamic>, ratios : Array<Dynamic>, ?matrix : flash.geom.Matrix, ?spreadMethod : SpreadMethod, ?interpolationMethod : InterpolationMethod, focalPointRatio : Float = 0) : Void;

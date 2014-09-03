@@ -179,6 +179,13 @@ class Rectangle {
 	}
 	
 	
+	public function toString ():String {
+
+		return "(x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ")";
+
+	}
+	
+	
 	public function transform (m:Matrix):Rectangle {
 		
 		var tx0 = m.a * x + m.c * y;

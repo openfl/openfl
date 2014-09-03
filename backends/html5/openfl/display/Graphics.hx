@@ -637,6 +637,12 @@ class Graphics {
 								__context.rect (x - offsetX, y - offsetY, width, height);
 								
 							}
+							
+						case DrawRoundRect (x, y, width, height, rx, ry):
+							__beginPatternFill(bitmapFill, bitmapRepeat);
+							__beginPath();
+							
+							__drawRoundRect(x, y, width, height, rx, ry);
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
 							
@@ -848,6 +854,9 @@ class Graphics {
 						__context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
 						__context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
 						//__closePath (false);
+						
+					case DrawRoundRect(x, y, w, h, rx, ry):
+						__drawRoundRect(x - offsetX, y - offsetY, w, h, rx, ry);
 					
 					case DrawRect (x, y, width, height):
 						
@@ -875,6 +884,28 @@ class Graphics {
 		
 	}
 	
+	function __drawRoundRect(x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void	{
+		var kappa = .5522848,
+			ox = rx * kappa, // control point offset horizontal
+			oy = ry * kappa, // control point offset vertical
+			xe = x + width, // x-end
+			ye = y + height, // y-end
+			cx1 = x + rx, // centre x
+			cy1 = y + ry, // centre y
+			cx2 = xe - rx, // centre x
+			cy2 = ye - ry; // centre y
+		
+		__context.moveTo(x, cy1);
+		__context.bezierCurveTo(x, cy1 - oy, cx1 - ox, y, cx1, y);
+		__context.lineTo(cx2, y);
+		__context.bezierCurveTo(cx2 + ox, y, xe, cy1 - oy, xe, cy1);
+		__context.lineTo(xe, cy2);
+		__context.bezierCurveTo(xe, cy2 + oy, cx2 + ox, ye, cx2, ye);
+		__context.lineTo(cx1, ye);
+		__context.bezierCurveTo(cx1 - ox, ye, x, cy2 + oy, x, cy2);
+		__context.lineTo(x, cy1);
+	}
+	
 	
 }
 
@@ -887,6 +918,7 @@ enum DrawCommand {
 	DrawCircle (x:Float, y:Float, radius:Float);
 	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
+	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
