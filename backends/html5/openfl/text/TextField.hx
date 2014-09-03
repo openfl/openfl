@@ -247,7 +247,7 @@ class TextField extends InteractiveObject {
 		var value:String = text;
 
 		// determine where the click was made along the string
-		var text:String = clipText(value);
+		var text:String = value; //clipText(value);
 		var totalW:Float = 0;
 		var pos = text.length;
 
@@ -354,7 +354,7 @@ class TextField extends InteractiveObject {
 		e = (e != null) ? e : Browser.window.event;
 
 		// update the canvas input state information from the hidden input
-		this.text = __hiddenInput.value;
+		setTextValue(__hiddenInput.value);
 		__cursorPos = __hiddenInput.selectionStart;
 		__selectionStart = __cursorPos;
 		__dirty = true;
@@ -400,7 +400,7 @@ class TextField extends InteractiveObject {
 		}
 
 		// update the canvas input state information from the hidden input
-		text = __hiddenInput.value;
+		setTextValue(__hiddenInput.value);
 		this.__selectionStart = __hiddenInput.selectionStart;
 		this.__ranges = null;
 
@@ -1211,17 +1211,22 @@ class TextField extends InteractiveObject {
 	
 	
 	public function set_text (value:String):String {
-		
+
+		this.__hiddenInput.value = value;
+		return  setTextValue(value);
+	}
+
+	private function setTextValue(value:String):String {
+
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = false;
 
 		return __text = value;
-		
 	}
-	
-	
-	public function get_textColor ():Int { 
+
+
+	public function get_textColor ():Int {
 		
 		return __textFormat.color;
 		
