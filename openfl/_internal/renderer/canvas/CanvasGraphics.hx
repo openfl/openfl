@@ -3,6 +3,7 @@ package openfl._internal.renderer.canvas;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.CapsStyle;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -418,16 +419,11 @@ class CanvasGraphics {
 								
 								context.lineWidth = thickness;
 								
-								#if (haxe_ver > 3.100)
-								context.lineJoin = joints;
-								context.lineCap = caps;
-								#else
 								context.lineJoin = Std.string (joints).toLowerCase ();
 								context.lineCap = switch (caps) {
 									case CapsStyle.NONE: "butt";
 									default: Std.string (caps).toLowerCase ();
 								}
-								#end
 								
 								context.miterLimit = miterLimit;
 								context.strokeStyle =  "#" + StringTools.hex (color, 6);
