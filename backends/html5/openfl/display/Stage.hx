@@ -898,22 +898,18 @@ class Stage extends Sprite {
 		event.preventDefault ();
 		
 		var rect;
+		var touch = event.changedTouches[0];
 		
 		if (__canvas != null) {
 			
 			rect = __canvas.getBoundingClientRect ();
-			
+			__mouseX = (touch.clientX - rect.left) * (stageWidth / rect.width);
+			__mouseY = (touch.clientY - rect.top) * (stageHeight / rect.height);			
 		} else {
-			
 			rect = __div.getBoundingClientRect ();
-			
+			__mouseX = (touch.clientX - rect.left);
+			__mouseY = (touch.clientY - rect.top);
 		}
-		
-		var touch = event.changedTouches[0];
-		var point = new Point ((touch.pageX - rect.left) * (stageWidth / rect.width), (touch.pageY - rect.top) * (stageHeight / rect.height));
-		
-		__mouseX = point.x;
-		__mouseY = point.y;
 		
 		__stack = [];
 		
@@ -940,11 +936,13 @@ class Stage extends Sprite {
 			default:
 			
 		}
-		
+
+		var point = new Point(__mouseX, __mouseY);		
+
 		if (__hitTest (mouseX, mouseY, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
-			var localPoint = target.globalToLocal (point);
+			var localPoint = point;
 			
 			var touchEvent = TouchEvent.__create (type, event, touch, localPoint, cast target);
 			touchEvent.touchPointID = touch.identifier;
@@ -977,83 +975,6 @@ class Stage extends Sprite {
 			__drag (point);
 			
 		}
-		
-		/*case "touchstart":
-				
-				var evt:js.html.TouchEvent = cast evt;
-				evt.preventDefault ();
-				var touchInfo = new TouchInfo ();
-				__touchInfo[evt.changedTouches[0].identifier] = touchInfo;
-				__onTouch (evt, evt.changedTouches[0], TouchEvent.TOUCH_BEGIN, touchInfo, false);
-			
-			case "touchmove":
-				
-				var evt:js.html.TouchEvent = cast evt;
-				evt.preventDefault ();
-				var touchInfo = __touchInfo[evt.changedTouches[0].identifier];
-				__onTouch (evt, evt.changedTouches[0], TouchEvent.TOUCH_MOVE, touchInfo, true);
-			
-			case "touchend":
-				
-				var evt:js.html.TouchEvent = cast evt;
-				evt.preventDefault ();
-				var touchInfo = __touchInfo[evt.changedTouches[0].identifier];
-				__onTouch (evt, evt.changedTouches[0], TouchEvent.TOUCH_END, touchInfo, true);
-				__touchInfo[evt.changedTouches[0].identifier] = null;
-				
-				
-				var rect:Dynamic = untyped Lib.mMe.__scr.getBoundingClientRect ();
-		var point : Point = untyped new Point (touch.pageX - rect.left, touch.pageY - rect.top);
-		var obj = __getObjectUnderPoint (point);
-		
-		// used in drag implementation
-		_mouseX = point.x;
-		_mouseY = point.y;
-		
-		var stack = new Array<InteractiveObject> ();
-		if (obj != null) obj.__getInteractiveObjectStack (stack);
-		
-		if (stack.length > 0) {
-			
-			//var obj = stack[0];
-			
-			stack.reverse ();
-			var local = obj.globalToLocal (point);
-			var evt = TouchEvent.__create (type, event, touch, local, cast obj);
-			
-			evt.touchPointID = touch.identifier;
-			evt.isPrimaryTouchPoint = isPrimaryTouchPoint;
-			
-			__checkInOuts (evt, stack, touchInfo);
-			obj.__fireEvent (evt);
-			
-			var mouseType = switch (type) {
-				
-				case TouchEvent.TOUCH_BEGIN: MouseEvent.MOUSE_DOWN;
-				case TouchEvent.TOUCH_END: MouseEvent.MOUSE_UP;
-				default: 
-					
-					if (__dragObject != null) {
-						
-						__drag (point);
-						
-					}
-					
-					MouseEvent.MOUSE_MOVE;
-				
-			}
-			
-			obj.__fireEvent (MouseEvent.__create (mouseType, cast evt, local, cast obj));
-			
-		} else {
-			
-			var evt = TouchEvent.__create (type, event, touch, point, null);
-			evt.touchPointID = touch.identifier;
-			evt.isPrimaryTouchPoint = isPrimaryTouchPoint;
-			__checkInOuts (evt, stack, touchInfo);
-			
-		}*/
-		
 	}
 	
 	
