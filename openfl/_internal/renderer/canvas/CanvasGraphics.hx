@@ -419,14 +419,14 @@ class CanvasGraphics {
 								
 								context.lineWidth = thickness;
 								
-								context.lineJoin = Std.string (joints).toLowerCase ();
-								context.lineCap = switch (caps) {
+								context.lineJoin = (joints == null ? "round" : Std.string (joints).toLowerCase ());
+								context.lineCap = (caps == null ? "round" : switch (caps) {
 									case CapsStyle.NONE: "butt";
 									default: Std.string (caps).toLowerCase ();
-								}
+								});
 								
-								context.miterLimit = miterLimit;
-								context.strokeStyle =  "#" + StringTools.hex (color, 6);
+								context.miterLimit = (miterLimit == null ? 3 : miterLimit);
+								context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color, 6));
 								
 								hasStroke = true;
 								
