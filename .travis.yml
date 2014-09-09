@@ -14,7 +14,7 @@ install:
   - sudo apt-get install mesa-common-dev libgl1-mesa-dev libglu1-mesa-dev -y
   - mkdir ~/haxelib
   - haxelib setup ~/haxelib
-  - git clone -b next --recursive https://github.com/openfl/lime ~/lime --depth 1
+  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1
   - haxelib dev lime ~/lime
   - git clone https://github.com/openfl/aether ~/aether --depth 1
   - haxelib dev aether ~/aether

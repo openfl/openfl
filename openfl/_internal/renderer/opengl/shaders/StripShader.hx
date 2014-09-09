@@ -20,7 +20,9 @@ class StripShader extends AbstractShader {
 		super (gl);
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision mediump float;',
+			#end
 			'varying vec2 vTextureCoord;',
 			//   'varying float vColor;',
 			'uniform float alpha;',
