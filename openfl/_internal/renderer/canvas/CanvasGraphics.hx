@@ -124,6 +124,7 @@ class CanvasGraphics {
 	
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
 		
+		#if js
 		if (ry == -1) ry = rx;
 		
 		var kappa = .5522848,
@@ -145,6 +146,7 @@ class CanvasGraphics {
 		context.lineTo (cx1, ye);
 		context.bezierCurveTo (cx1 - ox, ye, x, cy2 + oy, x, cy2);
 		context.lineTo (x, cy1);
+		#end
 		
 	}
 	
