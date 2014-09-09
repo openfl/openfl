@@ -120,8 +120,36 @@ class CanvasGraphics {
 		#end
 		
 	}
-
-	#if js
+	
+	
+	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
+		
+		if (ry == -1) ry = rx;
+		
+		var kappa = .5522848,
+		ox = rx * kappa, // control point offset horizontal
+		oy = ry * kappa, // control point offset vertical
+		xe = x + width, // x-end
+		ye = y + height, // y-end
+		cx1 = x + rx, // center x
+		cy1 = y + ry, // center y
+		cx2 = xe - rx, // center x
+		cy2 = ye - ry; // center y
+		
+		context.moveTo (x, cy1);
+		context.bezierCurveTo (x, cy1 - oy, cx1 - ox, y, cx1, y);
+		context.lineTo (cx2, y);
+		context.bezierCurveTo (cx2 + ox, y, xe, cy1 - oy, xe, cy1);
+		context.lineTo (xe, cy2);
+		context.bezierCurveTo (xe, cy2 + oy, cx2 + ox, ye, cx2, ye);
+		context.lineTo (cx1, ye);
+		context.bezierCurveTo (cx1 - ox, ye, x, cy2 + oy, x, cy2);
+		context.lineTo (x, cy1);
+		
+	}
+	
+	
+	/*#if js
 	private static inline function setFillStyle(data:DrawPath, context:CanvasRenderingContext2D, worldAlpha:Float) {
 		if (data.hasFill) {
 			
@@ -309,7 +337,7 @@ class CanvasGraphics {
 
 		#end
 
-	}
+	}*/
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
@@ -410,6 +438,14 @@ class CanvasGraphics {
 							setFill = true;
 							hasFill = true;
 						
+						case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
+							
+							beginPatternFill (bitmapFill, bitmapRepeat);
+							beginPath ();
+							context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+							positionX = x;
+							positionY = y;
+						
 						case CurveTo (cx, cy, x, y):
 							
 							beginPatternFill (bitmapFill, bitmapRepeat);
@@ -502,6 +538,12 @@ class CanvasGraphics {
 								context.rect (x - offsetX, y - offsetY, width, height);
 								
 							}
+						
+						case DrawRoundRect (x, y, width, height, rx, ry):
+							
+							beginPatternFill (bitmapFill, bitmapRepeat);
+							beginPath ();
+							drawRoundRect (x, y, width, height, rx, ry);
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
 							
@@ -671,9 +713,15 @@ class CanvasGraphics {
 				
 				switch (command) {
 					
+					case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
+						
+						context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+						positionX = x;
+						positionY = y;
+					
 					case CurveTo (cx, cy, x, y):
 						
-						context.quadraticCurveTo (cx, cy, x, y);
+						context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 						positionX = x;
 						positionY = y;
 					
@@ -706,6 +754,10 @@ class CanvasGraphics {
 					case DrawRect (x, y, width, height):
 						
 						context.rect (x - offsetX, y - offsetY, width, height);
+					
+					case DrawRoundRect (x, y, width, height, rx, ry):
+						
+						drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
 					
 					case LineTo (x, y):
 						
