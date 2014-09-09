@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.shaders ;
+package openfl._internal.renderer.opengl.shaders;
 
 
 import lime.graphics.opengl.GLProgram;

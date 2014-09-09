@@ -3,7 +3,7 @@
 	
 	<haxedef name="native" if="cpp || neko" />
 	
-	<haxelib name="lime" />
+	<haxelib name="lime" unless="create" />
 	
 	<include haxelib="aether" />
 	<template path="templates" />
@@ -77,6 +77,6 @@
 		
 	</section>
 	
-	<sample path="${haxelib:openfl-samples}" if="create"/>
+	<sample path="${haxelib:openfl-samples}" if="create" />
 	
 </extension>
