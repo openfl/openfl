@@ -6,9 +6,14 @@ import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
+import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 
 
@@ -16,9 +21,12 @@ import openfl.geom.Point;
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
 
-class  GraphicsRenderer {
+
+class GraphicsRenderer {
+	
 	
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
+	
 	
 	public static function buildCircle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
@@ -618,9 +626,10 @@ class  GraphicsRenderer {
 		return points;
 		
 	}
-
+	
+	
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
-
+		
 		// cache as bitmap
 
 		renderSession.spriteBatch.end();
@@ -647,7 +656,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		var webGL = graphics.__GLData[GLRenderer.glContextId];
+		var webGL = graphics.__glData[GLRenderer.glContextId];
 		
 		for (i in 0...webGL.data.length) {
 			
@@ -726,13 +735,302 @@ class  GraphicsRenderer {
 	}
 	
 	
+	private static var DEFAULT_LINE_STYLE:LineStyle = {
+		
+		width: 0,
+		color: 0,
+		alpha: 1,
+		scaleMode: LineScaleMode.NORMAL,
+		caps: CapsStyle.ROUND,
+		joints: JointStyle.ROUND,
+		miterLimit: 3
+		
+	}
+	
+	private static var DEFAULT_FILL_STYLE:FillStyle = {
+		
+		color: null,
+		alpha: 1,
+		bitmap: null,
+		matrix: null,
+		repeat: true,
+		smooth: false
+		
+	}
+	
+	
+	private static var __currentPath:DrawPath;
+	private static var __graphicsData:Array<DrawPath>;
+	private static var __hasFill:Bool;
+	private static var __line:LineStyle;
+	private static var __fill:FillStyle;
+	
+	
+	public static function endFill ():Void {
+		
+		__hasFill = false;
+		__fill = Reflect.copy (DEFAULT_FILL_STYLE);
+		
+	}
+	
+	
+	private inline static function graphicDataPop ():Void {
+		
+		if (__currentPath.points.length == 0) __graphicsData.pop ();
+		
+	}
+	
+	
+	private static function moveTo (x:Float, y:Float):Void {
+		
+		graphicDataPop ();
+		
+		__currentPath = new DrawPath ();
+		__currentPath.update (__line, __hasFill, __fill);
+		__currentPath.type = Polygon;
+		__currentPath.points.push (x);
+		__currentPath.points.push (y);
+		
+		__graphicsData.push (__currentPath);
+		
+	}
+	
+	
 	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
 		
-		var webGL = graphics.__GLData[GLRenderer.glContextId];
-
-		if (webGL == null) {
+		var webGL = null;
+		
+		if (graphics.__dirty) {
 			
-			webGL = graphics.__GLData[GLRenderer.glContextId] = new GLData(gl);
+			var bounds = graphics.__bounds;
+			
+			__graphicsData = new Array ();
+			__currentPath = new DrawPath ();
+			__hasFill = false;
+			__line = Reflect.copy (DEFAULT_LINE_STYLE);
+			__fill = Reflect.copy (DEFAULT_FILL_STYLE);
+			
+			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+				
+				webGL = graphics.__glData[GLRenderer.glContextId] = new GLData (gl);
+				
+			} else {
+				
+				webGL = graphics.__glData[GLRenderer.glContextId];
+				
+				if (webGL == null) {
+					
+					webGL = graphics.__glData[GLRenderer.glContextId] = new GLData (gl);
+					
+				}
+				
+				for (command in graphics.__commands) {
+					
+					switch (command) {
+						
+						case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+							
+							endFill ();
+							
+							__hasFill = bitmap != null;
+							__fill.bitmap = bitmap;
+							__fill.matrix = matrix;
+							__fill.repeat = repeat;
+							__fill.smooth = smooth;
+						
+						case BeginFill (rgb, alpha):
+							
+							endFill ();
+							
+							__hasFill = true;
+							__fill.color = rgb;
+							__fill.alpha = alpha;
+						
+						case CubicCurveTo (cx, cy, cx2, cy2, x, y):
+							
+							if (__currentPath.points.length == 0) {
+								
+								moveTo (0, 0);
+								
+							}
+							
+							var n = 20;
+							var dt:Float = 0;
+							var dt2:Float = 0;
+							var dt3:Float = 0;
+							var t2:Float = 0;
+							var t3:Float = 0;
+							
+							var points = __currentPath.points;
+							var fromX = points[points.length-2];
+							var fromY = points[points.length-1];
+							
+							var px:Float = 0;
+							var py:Float = 0;
+							
+							var tmp:Float = 0;
+							
+							for (i in 1...(n + 1)) {
+								
+								tmp = i / n;
+								
+								dt = 1 - tmp;
+								dt2 = dt * dt;
+								dt3 = dt2 * dt;
+								
+								t2 = tmp * tmp;
+								t3 = t2 * tmp;
+								
+								px = dt3 * fromX + 3 * dt2 * tmp * cx + 3 * dt * t2 * cx2 + t3 * x;
+								py = dt3 * fromY + 3 * dt2 * tmp * cy + 3 * dt * t2 * cy2 + t3 * y;
+								
+								points.push (px);
+								points.push (py);
+								
+							}
+						
+						case CurveTo (cx, cy, x, y):
+							
+							if (__currentPath.points.length == 0) {
+								
+								moveTo (0, 0);
+								
+							}
+							
+							var xa:Float = 0;
+							var ya:Float = 0;
+							var n = 20;
+							
+							var points = __currentPath.points;
+							var fromX = points[points.length-2];
+							var fromY = points[points.length-1];
+							
+							var px:Float = 0;
+							var py:Float = 0;
+							
+							var tmp:Float = 0;
+							
+							for (i in 1...(n + 1)) {
+								
+								tmp = i / n;
+								
+								xa = fromX + ((cx - fromX) * tmp);
+								ya = fromY + ((cy - fromY) * tmp);
+								
+								px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
+								py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
+								
+								points.push (px);
+								points.push (py);
+								
+							}
+						
+						case DrawCircle (x, y, radius):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Circle;
+							__currentPath.points = [ x, y, radius ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case DrawEllipse (x, y, width, height):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Ellipse;
+							__currentPath.points = [ x, y, width, height ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case DrawRect (x, y, width, height):
+							
+							graphicDataPop();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Rectangle (false);
+							__currentPath.points = [ x, y, width, height ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case DrawRoundRect (x, y, width, height, rx, ry):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Rectangle (true);
+							__currentPath.points = [ x, y, width, height, rx, ry != -1 ? ry : rx ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case EndFill:
+							
+							endFill ();
+						
+						case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+							
+							if (thickness == null || thickness < 0) {
+								
+								__line.width = 0;
+								
+							} else if (thickness == 0) {
+								
+								__line.width = 1;
+								
+							} else {
+								
+								__line.width = thickness;
+								
+							}
+							
+							graphicDataPop ();
+							
+							__line.color = color;
+							__line.alpha = alpha;
+							__line.scaleMode = scaleMode;
+							__line.caps = caps;
+							__line.joints = joints;
+							__line.miterLimit = miterLimit;
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.points = [];
+							__currentPath.type = Polygon;
+							
+							__graphicsData.push (__currentPath);
+						
+						case LineTo (x, y):
+							
+							__currentPath.points.push (x);
+							__currentPath.points.push (y);
+						
+						case MoveTo (x, y):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Polygon;
+							__currentPath.points.push (x);
+							__currentPath.points.push (y);
+							
+							__graphicsData.push (__currentPath);
+						
+						default:
+							
+					}
+					
+				}
+				
+			}
+			
+			graphics.__glGraphicsData = __graphicsData;
 			
 		}
 		
@@ -759,9 +1057,9 @@ class  GraphicsRenderer {
 		
 		var webGLData:GLGraphicsData;
 		
-		for (i in webGL.lastIndex...graphics.__graphicsData.length) {
+		for (i in webGL.lastIndex...graphics.__glGraphicsData.length) {
 			
-			var data = graphics.__graphicsData[i];
+			var data = graphics.__glGraphicsData[i];
 			
 			if (data.type == Polygon) {
 				
@@ -1036,4 +1334,97 @@ class PolyK {
 		
 	}
 		
+}
+
+
+typedef LineStyle = {
+	
+	width:Float,
+	color:Int,
+	alpha:Float,
+	
+	scaleMode:LineScaleMode,
+	caps:CapsStyle,
+	joints:JointStyle,
+	miterLimit:Float
+	
+}
+
+
+typedef FillStyle = {
+	
+	color:Null<Int>,
+	alpha:Float,
+	bitmap:BitmapData,
+	repeat:Bool,
+	matrix:Matrix,
+	smooth:Bool
+	
+}
+
+
+@:access(openfl._internal.renderer.opengl.utils.GraphicsRenderer)
+@:access(openfl.display.Graphics)
+
+
+class DrawPath {
+	
+	
+	public var hasFill:Bool = false;
+	
+	public var line:LineStyle;
+	public var fill:FillStyle;
+	
+	public var points:Array<Float> = [];
+	
+	public var type:GraphicType = Polygon;
+	
+	
+	public function new() {
+		
+		line = Reflect.copy (GraphicsRenderer.DEFAULT_LINE_STYLE);
+		fill = Reflect.copy (GraphicsRenderer.DEFAULT_FILL_STYLE);
+		
+	}
+	
+	
+	public function update (line:LineStyle, hasFill:Bool, fill:FillStyle):Void {
+		
+		updateLine (line);
+		updateFill (hasFill, fill);
+		
+	}
+	
+	
+	public function updateFill (hasFill:Bool, fill:FillStyle):Void {
+		
+		this.hasFill = hasFill;
+		this.fill = Reflect.copy (fill);
+		
+	}
+	
+	
+	public function updateLine (line:LineStyle):Void {
+		
+		this.line.width = line.width;
+		this.line.color = line.color;
+		this.line.alpha = line.alpha;
+		this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
+		this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
+		this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
+		this.line.miterLimit = line.miterLimit;
+		
+	}
+	
+	
+}
+
+
+enum GraphicType {
+
+	Polygon;
+	Rectangle(rounded:Bool);
+	Circle;
+	Ellipse;
+
 }

@@ -107,7 +107,7 @@ class AbstractShader {
 		
 		if (!gl.getShaderParameter (shader, gl.COMPILE_STATUS)) {
 			
-			trace ("Error compiling " + Type.getClassName (Type.getClass (this)));
+			//trace ("Error compiling " + Type.getClassName (Type.getClass (this)));
 			trace (gl.getShaderInfoLog (shader));
 			return null;
 			
