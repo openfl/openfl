@@ -60,7 +60,6 @@ class FPS extends TextField {
 		if (currentCount != cacheCount /*&& visible*/) {
 			
 			text = "FPS: " + currentFPS;
-			#if (cpp || neko) trace(text); #end
 			
 		}
 		
