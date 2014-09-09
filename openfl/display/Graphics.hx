@@ -87,7 +87,7 @@ class Graphics {
 	public function beginFill(color:Int = 0, alpha:Float = 1) {
 
 		endFill();
-		__hasFill = alpha > 0;
+		__hasFill = true;
 		__fill.color = color;
 		__fill.alpha = alpha;
 

@@ -630,7 +630,8 @@ class  GraphicsRenderer {
 		renderSession.spriteBatch.begin(renderSession);
 
 	}
-
+	
+	
 	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession):Void {
 		
 		var graphics = object.__graphics;
