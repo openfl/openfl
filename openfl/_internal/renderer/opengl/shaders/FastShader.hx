@@ -24,7 +24,9 @@ class FastShader extends AbstractShader {
 		super (gl);
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision lowp float;',
+			#end
 			'varying vec2 vTextureCoord;',
 			'varying float vColor;',
 			'uniform sampler2D uSampler;',
