@@ -5,6 +5,7 @@ import openfl.geom.Point;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 #if js
 import js.html.CanvasElement;
@@ -199,7 +200,25 @@ class Graphics {
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawTriangles");
+		__inflateBounds (0, 0);
+		
+		var tx = Math.NEGATIVE_INFINITY;
+		var ty = Math.NEGATIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;
+		
+		for (i in 0...(Std.int(vertices.length / 2))) {
+			tx = vertices[i * 2];
+			ty = vertices[i * 2 + 1];
+			if (maxX < tx) maxX = tx;
+			if (maxY < ty) maxY = ty;
+		}
+		
+		__inflateBounds (maxX, maxY);
+		//trace(maxX, maxY);
+		__commands.push (DrawTriangles(vertices, indices, uvtData, culling));
+		__dirty = true;
+		__visible = true;
 		
 	}
 	
@@ -334,7 +353,9 @@ enum DrawCommand {
 	DrawCircle (x:Float, y:Float, radius:Float);
 	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
+	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, radiusX:Float, radiusY:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
+	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
 	LineTo (x:Float, y:Float);
