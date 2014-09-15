@@ -456,37 +456,28 @@ class CanvasGraphics {
 							
 							var v = vertices;
 							var ind = indices;
-							//var uvt = normalizeUvt(uvtData);
-							var uvt = uvtData;
 							
-							//trace(v.toArray());
-							//trace(ind.toArray());
-							//trace(uvt.toArray());
-							
-							var pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
-							//context.drawImage(pattern, 0, 0);
-							//return;
+							var normalizedUvt = normalizeUvt(uvtData);
+							var uvtMax = normalizedUvt.max;
+							var uvt = normalizedUvt.uvt;
+							var pattern:CanvasElement;
+							if (uvtMax > 1) {
+								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
+							} else {
+								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+							}
+
 							var i = 0;
-							var j = 0;
-							var k = 0;
 							var l = ind.length;
 							
 							var a:Int, b:Int, c:Int;
 							var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
 							var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
-							
 							var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
-							
-							var pow = bitmapFill.width / pattern.width;
-							var poh = bitmapFill.height / pattern.height;
-							
-							var w:Float, h:Float, sx:Float, sy:Float;
+							var denom:Float;
 							var t1:Float, t2:Float, t3:Float, t4:Float;
-							
-							var muv:Matrix = new Matrix();
-							var mve:Matrix = new Matrix();
-							var uvxSort:Array<Float>;
-							var uvySort:Array<Float>;
+							var dx:Float, dy:Float;
+							// code from http://tulrich.com/geekstuff/canvas/perspective.html
 							while (i < l) {
 								a = i;
 								b = i + 1;
@@ -500,219 +491,43 @@ class CanvasGraphics {
 								x2 = v[ibx];	y2 = v[iby];
 								x3 = v[icx];	y3 = v[icy];
 								
-								if (false || !isCCW(x1, y1, x2, y2, x3, y3)) {
-									//trace("wasn't CCW");
-									a = i + 2;
-									b = i + 1;
-									c = i;
-									
-									
-									iax = ind[a] * 2;		iay = ind[a] * 2 + 1;
-									ibx = ind[b] * 2;		iby = ind[b] * 2 + 1;
-									icx = ind[c] * 2;		icy = ind[c] * 2 + 1;
-									
-									x1 = v[iax];	y1 = v[iay];
-									x2 = v[ibx];	y2 = v[iby];
-									x3 = v[icx];	y3 = v[icy];
-									
-									//trace("Is it now? " + isCCW(x1, y1, x2, y2, x3, y3));
-								}
-								
-								
 								context.save();
 								context.beginPath();
 								context.moveTo(x1, y1);
 								context.lineTo(x2, y2);
 								context.lineTo(x3, y3);
-								context.lineTo(x1, y1);
 								context.closePath();
 								
 								context.clip(); 
 								
+								uvx1 = uvt[iax] * pattern.width;
+								uvx2 = uvt[ibx] * pattern.width;
+								uvx3 = uvt[icx] * pattern.width;
+								uvy1 = uvt[iay] * pattern.height;
+								uvy2 = uvt[iby] * pattern.height;
+								uvy3 = uvt[icy] * pattern.height;
 								
-								
-								
-								if(true) {
-									// need to find the width and height of the src image
-									uvx1 = uvt[iax] * pattern.width * pow;
-									uvx2 = uvt[ibx] * pattern.width * pow;
-									uvx3 = uvt[icx] * pattern.width * pow;
-									uvy1 = uvt[iay] * pattern.height * poh;
-									uvy2 = uvt[iby] * pattern.height * poh;
-									uvy3 = uvt[icy] * pattern.height * poh;
-									
-									//trace(uvt[iax], uvt[iay]);
-									//trace(uvt[ibx], uvt[iby]);
-									//trace(uvt[icx], uvt[icy]);
-									uvxSort = [uvx1, uvx2, uvx3];
-									uvySort = [uvy1, uvy2, uvy3];
-									uvxSort.sort(function(a, b) return Std.int(a - b));
-									uvySort.sort(function(a, b) return Std.int(a - b));
-									
-									if (uvxSort[0] < 0) uvxSort[0] = 0;
-									if (uvySort[0] < 0) uvySort[0] = 0;
-									
-									trace(uvx1, uvy1);
-									trace(uvx2, uvy2);
-									trace(uvx3, uvy3);
-									//trace(sortX, sortY);
-
-									w = uvxSort[2] - uvxSort[0];
-									h = uvySort[2] - uvySort[0];
-
-									trace(w, h);
-									
-									mve.setTo(x2 - x1, y2 - y1, x3 - x1 , y3 - y1, 0, 0);
-									
-									muv.setTo(uvx2 - uvx1, uvy2 - uvy1, uvx3 - uvx1, uvy3 - uvy1, 0, 0);
-									muv.invert();
-									trace(mve, muv);
-									mve.concat(muv);
-									//mve.invert();
-									//trace(mve);
-									
-
-									t1 = mve.a;
-									t2 = mve.c;
-									t3 = mve.b;
-									t4 = mve.d;
-									trace('($x1,$y1) ($x2,$y2) ($x3,$y3)',t1, t2, t3, t4, x1 - (uvx1 * t1 + uvy1 * t2), y1 - (uvx1 * t3 + uvy1 * t4));
-
-									context.transform(t1, t2, t3, t4, x1 - (uvx1 * t1 + uvy1 * t2), y1 - (uvx1 * t3 + uvy1 * t4));
-									context.drawImage(pattern, uvxSort[0], uvySort[0], w, h, 0, 0, w, h);
-									trace(uvxSort, uvySort, w, h);
-									
-									context.lineWidth = 2;
-									context.strokeStyle = "#000000";
-									context.stroke();
-									
-									context.restore();
-									
+								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
+								if (denom == 0) {
 									i += 3;
-									
-									trace("END");
+									continue;
 								}
+								
+								t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
+								t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
+								t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
+								t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
+								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
+								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
+								
+								context.transform(t1, t2, t3, t4, dx, dy);
+								context.drawImage(pattern, 0, 0);
+								
+								context.restore();
+								
+								i += 3;
+								
 							}						
-							
-							if(false) {
-								var i = 0;
-								var j = 0;
-								var k = 0;
-								var l = ind.length;
-								var c = context;
-								var w:Float, h:Float, sw:Float, sh:Float;
-								var t1:Float, t2:Float, t3:Float, t4:Float;
-								var pow = bitmapFill.width / pattern.width;
-								var poh = bitmapFill.height / pattern.height;
-								while (i < l) {
-									
-									c.save();
-									c.beginPath();
-									c.moveTo(v[ind[i] * 2], v[ind[i] * 2 + 1]);
-									c.lineTo(v[ind[i + 1] * 2], v[ind[i + 1] * 2 + 1]);
-									c.lineTo(v[ind[i + 2] * 2], v[ind[i + 2] * 2 + 1]);
-									c.lineTo(v[ind[i] * 2], v[ind[i] * 2 + 1]);
-									c.closePath();
-									
-									c.lineWidth = 1;
-									c.strokeStyle = "#000000";
-									c.stroke();
-									//break;
-									c.clip();
-									
-									if (i % 6 == 0) {
-										sw = -1;
-										w = (uvt[ind[i + 1 + j] * 2] - uvt[ind[i + j] * 2]) * pattern.width * pow;
-										h = (uvt[ind[i + 2] * 2 + 1] - uvt[ind[i] * 2 + 1]) * pattern.height * poh;
-										if (j == 0 && w < 0) {
-											k = i + 9;
-											while (k < l) {
-												if (uvt[ind[i + 2] * 2 + 1] == uvt[ind[k + 2] * 2 + 1]) {
-													j = k - i;
-													break;
-												}
-												k += 3;
-											}
-											if (j == 0) {
-												j = l - i;
-											}
-											w = (uvt[ind[i + 1 + j] * 2] - uvt[ind[i + j] * 2]) * pattern.width * pow;
-										}
-										if (i + j >= l) {
-											w = (uvt[ind[i + j - l] * 2] - uvt[ind[i + 1] * 2]) * pattern.width * pow;
-											sw = uvt[ind[i] * 2] == 1 ? 0 : pattern.width * pow * uvt[ind[i] * 2] + w;
-											if (sw > pattern.width) {
-												sw -= pattern.width;
-											}
-										} else {
-											sw = pattern.width * pow * uvt[ind[i + j] * 2];
-										}
-										sh = pattern.height * poh * uvt[ind[i] * 2 + 1];
-										if (h < 0) {
-											h = (uvt[ind[i + 2 - (i > 0 ? 6 : -6)] * 2 + 1] - uvt[ind[i - (i > 0 ? 6 : -6)] * 2 + 1]) * pattern.height * poh;
-											sh = 0;
-										}
-										
-										t1 = (v[ind[i + 1] * 2] - v[ind[i] * 2]) / w;
-										t2 = (v[ind[i + 1] * 2 + 1] - v[ind[i] * 2 + 1]) / w;
-										t3 = (v[ind[i + 2] * 2] - v[ind[i] * 2]) / h;
-										t4 = (v[ind[i + 2] * 2 + 1] - v[ind[i] * 2 + 1]) / h;
-										c.transform(t1, t2, t3, t4, v[ind[i] * 2], v[ind[i] * 2 + 1]);
-										c.drawImage(pattern,
-													offsetX + sw, offsetY + sh, 
-													w, h,
-													0, 0,
-													w, h);
-										trace("i%6==0", t1, t2, t3, t4, sw, sh, w, h);
-									} else {
-										w = (uvt[ind[i + 2 + j] * 2] - uvt[ind[i + 1 + j] * 2]) * pattern.width * pow;
-										h = (uvt[ind[i + 2] * 2 + 1] - uvt[ind[i] * 2 + 1]) * pattern.height * poh;
-										if (j == 0 && w < 0) {
-											k = i + 9;
-											while(k < l) {
-												if (uvt[ind[i + 2] * 2 + 1] == uvt[ind[k + 2] * 2 + 1]) {
-													j = k - i;
-													break;
-												}
-												k += 3;
-											}
-											if (j == 0) {
-												j = l - i;
-											}
-											w = (uvt[ind[i + 2 + j] * 2] - uvt[ind[i + 1 + j] * 2]) * pattern.width * pow;
-										}
-										if (i + 1 + j >= l) {
-											w = (uvt[ind[i + 1 + j - l] * 2] - uvt[ind[i + 2] * 2]) * pattern.width * pow;
-											sw = uvt[ind[i + 1] * 2] == 1 ? 0 : pattern.width * pow * uvt[ind[i + 1] * 2] + w;
-											if (sw > pattern.width) {
-												sw -= pattern.width;
-											}
-										} else {
-											sw = pattern.width * pow * uvt[ind[i + 1 + j] * 2];
-										}
-										sh = pattern.height * poh * uvt[ind[i] * 2 + 1];
-										if (h < 0) {
-											h = (uvt[ind[i + 2 - (i > 0 ? 6 : -6)] * 2 + 1] - uvt[ind[i - (i > 0 ? 6 : -6)] * 2 + 1]) * pattern.height * poh;
-											sh = 0;
-										}
-										t1 = (v[ind[i + 2] * 2] - v[ind[i + 1] * 2]) / w;
-										t2 = (v[ind[i + 2] * 2 + 1] - v[ind[i + 1] * 2 + 1]) / w;
-										t3 = (v[ind[i + 2] * 2] - v[ind[i] * 2]) / h;
-										t4 = (v[ind[i + 2] * 2 + 1] - v[ind[i] * 2 + 1]) / h;
-										c.transform(t1, t2, t3, t4, v[ind[i + 1] * 2], v[ind[i + 1] * 2 + 1]);
-										c.drawImage(pattern,
-													offsetX + sw, offsetY + sh,
-													w, h,
-													0, -h,
-													w, h);
-													
-										trace("i%6!=0", t1, t2, t3, t4, sw, sh, w, h);
-									}
-									c.restore();
-									
-									i += 3;
-								}
-							}
 							
 						case _:
 							openfl.Lib.notImplemented("CanvasGraphics");
@@ -837,7 +652,7 @@ class CanvasGraphics {
 		return (vx1 * vy2 - vy1 * vx2) < 0;
 	}
 	
-	private static function normalizeUvt(uvt:Vector<Float>):Vector<Float> {
+	private static function normalizeUvt(uvt:Vector<Float>):{max:Float, uvt:Vector<Float> } {
 		var max:Float = Math.NEGATIVE_INFINITY;
 		var len = uvt.length;
 		var m = 0.0;
@@ -851,7 +666,7 @@ class CanvasGraphics {
 			result[t] = (uvt[t] / max);
 		}
 		
-		return result;
+		return {max:max, uvt:result};
 	}
 	
 }
