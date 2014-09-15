@@ -215,7 +215,6 @@ class Graphics {
 		}
 		
 		__inflateBounds (maxX, maxY);
-		//trace(maxX, maxY);
 		__commands.push (DrawTriangles(vertices, indices, uvtData, culling));
 		__dirty = true;
 		__visible = true;
@@ -353,7 +352,6 @@ enum DrawCommand {
 	DrawCircle (x:Float, y:Float, radius:Float);
 	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
-	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, radiusX:Float, radiusY:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
 	EndFill;

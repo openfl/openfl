@@ -460,13 +460,14 @@ class CanvasGraphics {
 							var normalizedUvt = normalizeUvt(uvtData);
 							var uvtMax = normalizedUvt.max;
 							var uvt = normalizedUvt.uvt;
+							
 							var pattern:CanvasElement;
 							if (uvtMax > 1) {
 								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
 							} else {
 								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
 							}
-
+							
 							var i = 0;
 							var l = ind.length;
 							
@@ -648,7 +649,6 @@ class CanvasGraphics {
 		var vx2 = x3 - x1;
 		var vy2 = y3 - y1;
 		
-		//trace('$vx1*$vy2 - $vy1*$vx2 = ' + (vx1 * vy2 - vy1 * vx2));
 		return (vx1 * vy2 - vy1 * vx2) < 0;
 	}
 	
