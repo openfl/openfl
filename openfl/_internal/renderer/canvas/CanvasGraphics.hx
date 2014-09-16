@@ -456,30 +456,35 @@ class CanvasGraphics {
 							
 							var v = vertices;
 							var ind = indices;
+							var uvt = uvtData;
+							var pattern:CanvasElement = null;
+							var colorFill = bitmapFill == null;
 							
-							if (bitmapFill == null) {
-								// We don't have a bitmap
+							if (colorFill && uvt != null) {
+								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
+								break;
 							}
 							
-							//TODO move this to Graphics?
-							if (uvtData == null) {
-								uvtData = new Vector<Float>();
-								for (i in 0...(Std.int(v.length / 2))) {
-									uvtData.push(v[i * 2] / bitmapFill.width);
-									uvtData.push(v[i * 2 + 1] / bitmapFill.height);
+							if(!colorFill) {
+								//TODO move this to Graphics?
+								if (uvtData == null) {
+									uvtData = new Vector<Float>();
+									for (i in 0...(Std.int(v.length / 2))) {
+										uvtData.push(v[i * 2] / bitmapFill.width);
+										uvtData.push(v[i * 2 + 1] / bitmapFill.height);
+									}
 								}
-							}
-							
-							var skipT = uvtData.length != v.length;
-							var normalizedUvt = normalizeUvt(uvtData, skipT);
-							var maxUvt = normalizedUvt.max;
-							var uvt = normalizedUvt.uvt;
-							
-							var pattern:CanvasElement;
-							if (maxUvt > 1) {
-								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
-							} else {
-								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+								
+								var skipT = uvtData.length != v.length;
+								var normalizedUvt = normalizeUvt(uvtData, skipT);
+								var maxUvt = normalizedUvt.max;
+								uvt = normalizedUvt.uvt;
+								
+								if (maxUvt > 1) {
+									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
+								} else {
+									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+								}
 							}
 							
 							var i = 0;
@@ -520,6 +525,17 @@ class CanvasGraphics {
 									case _:
 								}
 								
+								if (colorFill) {
+									context.beginPath();
+									context.moveTo(x1, y1);
+									context.lineTo(x2, y2);
+									context.lineTo(x3, y3);
+									context.closePath();
+									context.fill();
+									i += 3;
+									continue;
+								} 
+								
 								context.save();
 								context.beginPath();
 								context.moveTo(x1, y1);
@@ -556,7 +572,7 @@ class CanvasGraphics {
 								
 								i += 3;
 								
-							}						
+							}					
 							
 						case _:
 							openfl.Lib.notImplemented("CanvasGraphics");
@@ -695,7 +711,7 @@ class CanvasGraphics {
 			if (skipT && t % 3 == 0) continue;
 			result.push((uvt[t - 1] / max));
 		}
-		trace(max, result.toArray());
+		
 		return {max:max, uvt:result};
 	}
 	
