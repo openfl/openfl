@@ -457,12 +457,18 @@ class CanvasGraphics {
 							var v = vertices;
 							var ind = indices;
 							
-							var normalizedUvt = normalizeUvt(uvtData);
-							var uvtMax = normalizedUvt.max;
+							if (bitmapFill == null) {
+								// We don't have a bitmap
+							}
+							
+							var skipT = uvtData.length != v.length;
+							
+							var normalizedUvt = normalizeUvt(uvtData, skipT);
+							var maxUvt = normalizedUvt.max;
 							var uvt = normalizedUvt.uvt;
 							
 							var pattern:CanvasElement;
-							if (uvtMax > 1) {
+							if (maxUvt > 1) {
 								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
 							} else {
 								pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
@@ -491,6 +497,20 @@ class CanvasGraphics {
 								x1 = v[iax];	y1 = v[iay];
 								x2 = v[ibx];	y2 = v[iby];
 								x3 = v[icx];	y3 = v[icy];
+								
+								switch(culling) {
+									case POSITIVE:
+										if (!isCCW(x1, y1, x2, y2, x3, y3)) {
+											i += 3;
+											continue;
+										}
+									case NEGATIVE:
+										if (isCCW(x1, y1, x2, y2, x3, y3)) {
+											i += 3;
+											continue;
+										}
+									case _:
+								}
 								
 								context.save();
 								context.beginPath();
@@ -652,20 +672,22 @@ class CanvasGraphics {
 		return (vx1 * vy2 - vy1 * vx2) < 0;
 	}
 	
-	private static function normalizeUvt(uvt:Vector<Float>):{max:Float, uvt:Vector<Float> } {
+	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):{max:Float, uvt:Vector<Float> } {
 		var max:Float = Math.NEGATIVE_INFINITY;
+		var tmp = Math.NEGATIVE_INFINITY;
 		var len = uvt.length;
-		var m = 0.0;
-		for(t in 0...len) {
-			m = uvt[t];
-			if (max < m) max = m;
+		for (t in 1...len+1) {
+			if (skipT && t % 3 == 0) continue;
+			tmp = uvt[t - 1];
+			if (max < tmp) max = tmp;
 		}
 		
-		var result:Vector<Float> = new Vector<Float>(len);
-		for(t in 0...len) {
-			result[t] = (uvt[t] / max);
+		var result:Vector<Float> = new Vector<Float>();
+		for (t in 1...len+1) {
+			if (skipT && t % 3 == 0) continue;
+			result.push((uvt[t - 1] / max));
 		}
-		
+		trace(max, result.toArray());
 		return {max:max, uvt:result};
 	}
 	

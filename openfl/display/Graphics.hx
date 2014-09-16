@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import openfl.errors.ArgumentError;
 import openfl.geom.Point;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
@@ -200,18 +201,35 @@ class Graphics {
 	
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
 		
+		var vlen = Std.int(vertices.length / 2);
+		
+		if (culling == null) {
+			culling = NONE;
+		}
+		
+		if (indices == null) {
+			if (vlen % 3 != 0) {
+				throw new ArgumentError("Not enough vertices to close a triangle.");
+			}
+			indices = new Vector<Int>();
+			
+			for (i in 0...vlen) {
+				indices.push(i);
+			}
+		}
+		
 		__inflateBounds (0, 0);
 		
-		var tx = Math.NEGATIVE_INFINITY;
-		var ty = Math.NEGATIVE_INFINITY;
+		var tmpx = Math.NEGATIVE_INFINITY;
+		var tmpy = Math.NEGATIVE_INFINITY;
 		var maxX = Math.NEGATIVE_INFINITY;
-		var maxY = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;		
 		
-		for (i in 0...(Std.int(vertices.length / 2))) {
-			tx = vertices[i * 2];
-			ty = vertices[i * 2 + 1];
-			if (maxX < tx) maxX = tx;
-			if (maxY < ty) maxY = ty;
+		for (i in 0...vlen) {
+			tmpx = vertices[i * 2];
+			tmpy = vertices[i * 2 + 1];
+			if (maxX < tmpx) maxX = tmpx;
+			if (maxY < tmpy) maxY = tmpy;
 		}
 		
 		__inflateBounds (maxX, maxY);
