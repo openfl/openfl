@@ -461,8 +461,16 @@ class CanvasGraphics {
 								// We don't have a bitmap
 							}
 							
-							var skipT = uvtData.length != v.length;
+							//TODO move this to Graphics?
+							if (uvtData == null) {
+								uvtData = new Vector<Float>();
+								for (i in 0...(Std.int(v.length / 2))) {
+									uvtData.push(v[i * 2] / bitmapFill.width);
+									uvtData.push(v[i * 2 + 1] / bitmapFill.height);
+								}
+							}
 							
+							var skipT = uvtData.length != v.length;
 							var normalizedUvt = normalizeUvt(uvtData, skipT);
 							var maxUvt = normalizedUvt.max;
 							var uvt = normalizedUvt.uvt;
