@@ -11,6 +11,7 @@ import openfl.gl.GL;
 import openfl.Lib;
 
 #if js
+import js.html.CanvasElement;
 import js.Browser;
 #end
 
@@ -173,18 +174,24 @@ class OpenGLView extends DirectRenderer {
 			
 		}
 		
-		#if dom
-		var view = new OpenGLView ();
-		
-		if (view.__context == null) {
+		if (GL.context != null) {
 			
-			return false;
+			return true;
+			
+		} else {
+			
+			var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+			var context = cast canvas.getContext ("webgl");
+			
+			if (context == null) {
+				
+				context = cast canvas.getContext ("experimental-webgl");
+				
+			}
+			
+			return (context != null);
 			
 		}
-		#else
-		return (GL.context != null);
-		#end
-		
 		#end
 		
 		return true;
