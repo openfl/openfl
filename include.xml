@@ -70,6 +70,7 @@
 	<section if="setup">
 		
 		<haxelib name="aether" />
+		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
 		<haxelib name="swf" />
 		<haxelib name="actuate" />
