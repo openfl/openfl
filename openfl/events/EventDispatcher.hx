@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if !flash #if (next || js)
 
 
 import openfl.events.EventPhase;
@@ -203,6 +203,9 @@ private class Listener {
 }
 
 
+#else
+typedef EventDispatcher = openfl._v2.events.EventDispatcher;
+#end
 #else
 typedef EventDispatcher = flash.events.EventDispatcher;
 #end

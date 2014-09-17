@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.canvas.CanvasBitmap;
@@ -186,6 +186,9 @@ class Bitmap extends DisplayObjectContainer {
 }
 
 
+#else
+typedef Bitmap = openfl._v2.display.Bitmap;
+#end
 #else
 typedef Bitmap = flash.display.Bitmap;
 #end

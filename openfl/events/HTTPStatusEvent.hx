@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if !flash #if (next || js)
 
 
 class HTTPStatusEvent extends Event {
@@ -24,6 +24,9 @@ class HTTPStatusEvent extends Event {
 }
 
 
+#else
+typedef HTTPStatusEvent = openfl._v2.events.HTTPStatusEvent;
+#end
 #else
 typedef HTTPStatusEvent = flash.events.HTTPStatusEvent;
 #end

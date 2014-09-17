@@ -20,7 +20,9 @@ class PrimitiveShader extends AbstractShader {
 		super (gl);
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision mediump float;',
+			#end
 			'varying vec4 vColor;',
 			
 			'void main(void) {',

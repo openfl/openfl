@@ -1,4 +1,6 @@
-package openfl.geom; #if !flash
+package openfl.geom; #if !flash #if (next || js)
+
+
 import lime.math.Vector2;
 
 
@@ -125,6 +127,9 @@ class Point {
 }
 
 
+#else
+typedef Point = openfl._v2.geom.Point;
+#end
 #else
 typedef Point = flash.geom.Point;
 #end

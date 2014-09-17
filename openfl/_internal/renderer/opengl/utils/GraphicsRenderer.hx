@@ -6,42 +6,54 @@ import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.BlendMode;
+import openfl.display.CapsStyle;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
+import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 
 
-class  GraphicsRenderer {
+class GraphicsRenderer {
 	
 	
-	public static var POLY = 0;
-	public static var RECT = 1;
-	public static var CIRC = 2;
-	public static var ELIP = 3;
-	public static var RREC = 4;
-	
-	public static var graphicsDataPool:Array<Dynamic>;
-	
-	private static var last:Int;
+	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	
 	
-	public static function buildCircle (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildCircle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var rectData = graphicsData.points;
+
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
-		var height = rectData[3];
+		var height = (rectData.length == 3) ? width : rectData[3];
+
+		if(graphicsData.type == Ellipse) {
+
+			width /= 2;
+			height /= 2;
+
+			x += width;
+			y += height;
+		}
+		
 		
 		var totalSegs = 40;
 		var seg = (Math.PI * 2) / totalSegs;
 		
-		if (graphicsData.fill != null) {
+		if (graphicsData.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fillColor);
-			var alpha = graphicsData.fillAlpha;
+			var color = hex2rgb (graphicsData.fill.color);
+			var alpha = getAlpha(graphicsData.fill);
 			
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
@@ -79,7 +91,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.lineWidth > 0) {
+		if (graphicsData.line.width > 0) {
 			
 			var tempPoints = graphicsData.points;
 			graphicsData.points = [];
@@ -99,15 +111,15 @@ class  GraphicsRenderer {
 	}
 	
 	
-	private static function buildComplexPoly (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	private static function buildComplexPoly (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
-		var points:Array<Float> = graphicsData.points.slice ();
+		var points:Array<Float> = graphicsData.points.copy();
 		if (points.length < 6) return;
 		
 		var indices = webGLData.indices;
 		webGLData.points = points;
-		webGLData.alpha = graphicsData.fillAlpha;
-		webGLData.color = hex2rgb (graphicsData.fillColor);
+		webGLData.alpha = getAlpha(graphicsData.fill);
+		webGLData.color = hex2rgb (graphicsData.fill.color);
 		
 		var minX:Null<Float> = null;
 		var maxX:Null<Float> = null;
@@ -150,12 +162,12 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildLine (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildLine (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var points:Array<Float> = graphicsData.points;
 		if (points.length == 0) return;
 		
-		if (graphicsData.lineWidth % 2 > 0) {
+		if (graphicsData.line.width % 2 > 0) {
 			
 			for (i in 0...points.length) {
 				
@@ -193,10 +205,10 @@ class  GraphicsRenderer {
 		var indexCount = points.length;
 		var indexStart = Std.int (verts.length / 6);
 		
-		var width = graphicsData.lineWidth / 2;
+		var width = graphicsData.line.width / 2;
 		
-		var color = hex2rgb (graphicsData.lineColor);
-		var alpha = graphicsData.lineAlpha;
+		var color = hex2rgb (graphicsData.line.color);
+		var alpha = graphicsData.line.alpha;
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
@@ -393,7 +405,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildPoly (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildPoly (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var points:Array<Float> = graphicsData.points;
 		if (points.length < 6) return;
@@ -402,8 +414,8 @@ class  GraphicsRenderer {
 		var indices = webGLData.indices;
 		var length = Std.int (points.length / 2);
 		
-		var color = hex2rgb (graphicsData.fillColor);
-		var alpha = graphicsData.fillAlpha;
+		var color = hex2rgb (graphicsData.fill.color);
+		var alpha = getAlpha(graphicsData.fill);
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
@@ -437,7 +449,7 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildRectangle (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
 		var rectData = graphicsData.points;
 		var x = rectData[0];
@@ -445,10 +457,10 @@ class  GraphicsRenderer {
 		var width = rectData[2];
 		var height = rectData[3];
 		
-		if (graphicsData.fill != null) {
+		if (graphicsData.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fillColor);
-			var alpha = graphicsData.fillAlpha;
+			var color = hex2rgb (graphicsData.fill.color);
+			var alpha = getAlpha(graphicsData.fill);
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
@@ -495,7 +507,7 @@ class  GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.lineWidth > 0) {
+		if (graphicsData.line.width > 0) {
 			
 			var tempPoints = graphicsData.points;
 			graphicsData.points = [ x, y, x + width, y, x + width, y + height, x, y + height, x, y];
@@ -507,9 +519,11 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function buildRoundedRectangle (graphicsData:Dynamic, webGLData:GLGraphicsData):Void {
+	public static function buildRoundedRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
 		
-		var points = graphicsData.points;
+		// TODO implementation differ from Flash!
+		
+		var points = graphicsData.points.copy();
 		var x = points[0];
 		var y = points[1];
 		var width = points[2];
@@ -525,10 +539,10 @@ class  GraphicsRenderer {
 		recPoints = recPoints.concat (quadraticBezierCurve (x + width, y + radius, x + width, y, x + width - radius, y));
 		recPoints = recPoints.concat (quadraticBezierCurve (x + radius, y, x, y, x, y + radius));
 		
-		if (graphicsData.fill != null) {
+		if (graphicsData.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fillColor);
-			var alpha = graphicsData.fillAlpha;
+			var color = hex2rgb (graphicsData.fill.color);
+			var alpha = getAlpha(graphicsData.fill);
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
@@ -552,8 +566,8 @@ class  GraphicsRenderer {
 				
 			}
 			
-			var i = 0;
-			while (i++ < recPoints.length) {
+			i = 0;
+			while (i < recPoints.length) {
 				
 				verts.push (recPoints[i]);
 				verts.push (recPoints[++i]);
@@ -561,12 +575,12 @@ class  GraphicsRenderer {
 				verts.push (g);
 				verts.push (b);
 				verts.push (alpha);
-				
+				i++;
 			}
 			
 		}
 		
-		if (graphicsData.lineWidth > 0) {
+		if (graphicsData.line.width > 0) {
 			
 			var tempPoints = graphicsData.points;
 			graphicsData.points = recPoints;
@@ -614,9 +628,22 @@ class  GraphicsRenderer {
 	}
 	
 	
-	public static function renderGraphics (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
 		
-		/*
+		// cache as bitmap
+
+		renderSession.spriteBatch.end();
+
+		renderGraphics(object, renderSession);
+
+		renderSession.spriteBatch.begin(renderSession);
+
+	}
+	
+	
+	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession):Void {
+		
+		var graphics = object.__graphics;
 		var gl:GLRenderContext = renderSession.gl;
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
@@ -629,20 +656,18 @@ class  GraphicsRenderer {
 			
 		}
 		
-		var webGL:Dynamic = graphics._webGL[GLRenderer.glContextId];
+		var webGL = graphics.__glData[GLRenderer.glContextId];
 		
 		for (i in 0...webGL.data.length) {
 			
 			if (webGL.data[i].mode == 1) {
 				
 				webGLData = webGL.data[i];
-				renderSession.stencilManager.pushStencil (graphics, webGLData, renderSession);
+				renderSession.stencilManager.pushStencil (object, webGLData, renderSession);
 				
 				gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
 				
-				renderSession.stencilManager.popStencil (graphics, webGLData, renderSession);
-				
-				last = webGLData.mode;
+				renderSession.stencilManager.popStencil (object, webGLData, renderSession);
 				
 			} else {
 				
@@ -650,14 +675,15 @@ class  GraphicsRenderer {
 				
 				renderSession.shaderManager.setShader (shader);
 				shader = renderSession.shaderManager.primitiveShader;
-				gl.uniformMatrix3fv (shader.translationMatrix, false, graphics.worldTransform.toArray (true));
+				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 				
 				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 				
-				gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (graphics.tint)));
+				// TODO tintColor
+				gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (0xFFFFFF)));
 				
-				gl.uniform1f (shader.alpha, graphics.worldAlpha);
+				gl.uniform1f (shader.alpha, object.__worldAlpha);
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
 				
@@ -669,12 +695,12 @@ class  GraphicsRenderer {
 				
 			}
 			
-		}*/
+		}
 		
 	}
 	
 	
-	private static function switchMode (webGL:Dynamic, type):GLGraphicsData {
+	private static function switchMode (webGL:GLData, type:Int):GLGraphicsData {
 		
 		var webGLData:GLGraphicsData;
 		
@@ -682,7 +708,6 @@ class  GraphicsRenderer {
 			
 			var data = graphicsDataPool.pop ();
 			if (data == null) data = new GLGraphicsData (webGL.gl);
-			
 			webGLData = data;
 			webGLData.mode = type;
 			webGL.data.push (webGLData);
@@ -710,22 +735,311 @@ class  GraphicsRenderer {
 	}
 	
 	
+	private static var DEFAULT_LINE_STYLE:LineStyle = {
+		
+		width: 0,
+		color: 0,
+		alpha: 1,
+		scaleMode: LineScaleMode.NORMAL,
+		caps: CapsStyle.ROUND,
+		joints: JointStyle.ROUND,
+		miterLimit: 3
+		
+	}
+	
+	private static var DEFAULT_FILL_STYLE:FillStyle = {
+		
+		color: null,
+		alpha: 1,
+		bitmap: null,
+		matrix: null,
+		repeat: true,
+		smooth: false
+		
+	}
+	
+	
+	private static var __currentPath:DrawPath;
+	private static var __graphicsData:Array<DrawPath>;
+	private static var __hasFill:Bool;
+	private static var __line:LineStyle;
+	private static var __fill:FillStyle;
+	
+	
+	public static function endFill ():Void {
+		
+		__hasFill = false;
+		__fill = Reflect.copy (DEFAULT_FILL_STYLE);
+		
+	}
+	
+	
+	private inline static function graphicDataPop ():Void {
+		
+		if (__currentPath.points.length == 0) __graphicsData.pop ();
+		
+	}
+	
+	
+	private static function moveTo (x:Float, y:Float):Void {
+		
+		graphicDataPop ();
+		
+		__currentPath = new DrawPath ();
+		__currentPath.update (__line, __hasFill, __fill);
+		__currentPath.type = Polygon;
+		__currentPath.points.push (x);
+		__currentPath.points.push (y);
+		
+		__graphicsData.push (__currentPath);
+		
+	}
+	
+	
 	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
 		
-		/*
-		var webGL = graphics._webGL[GLRenderer.glContextId];
+		var webGL = null;
 		
-		if (webGL == null) {
+		if (graphics.__dirty) {
 			
-			webGL = graphics._webGL[GLRenderer.glContextId] = { lastIndex: 0, data: [], gl: gl };
+			var bounds = graphics.__bounds;
+			
+			__graphicsData = new Array ();
+			__currentPath = new DrawPath ();
+			__hasFill = false;
+			__line = Reflect.copy (DEFAULT_LINE_STYLE);
+			__fill = Reflect.copy (DEFAULT_FILL_STYLE);
+			
+			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+				
+				webGL = graphics.__glData[GLRenderer.glContextId] = new GLData (gl);
+				
+			} else {
+				
+				webGL = graphics.__glData[GLRenderer.glContextId];
+				
+				if (webGL == null) {
+					
+					webGL = graphics.__glData[GLRenderer.glContextId] = new GLData (gl);
+					
+				}
+				
+				for (command in graphics.__commands) {
+					
+					switch (command) {
+						
+						case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+							
+							endFill ();
+							
+							__hasFill = bitmap != null;
+							__fill.bitmap = bitmap;
+							__fill.matrix = matrix;
+							__fill.repeat = repeat;
+							__fill.smooth = smooth;
+						
+						case BeginFill (rgb, alpha):
+							
+							endFill ();
+							
+							__hasFill = true;
+							__fill.color = rgb;
+							__fill.alpha = alpha;
+						
+						case CubicCurveTo (cx, cy, cx2, cy2, x, y):
+							
+							if (__currentPath.points.length == 0) {
+								
+								moveTo (0, 0);
+								
+							}
+							
+							var n = 20;
+							var dt:Float = 0;
+							var dt2:Float = 0;
+							var dt3:Float = 0;
+							var t2:Float = 0;
+							var t3:Float = 0;
+							
+							var points = __currentPath.points;
+							var fromX = points[points.length-2];
+							var fromY = points[points.length-1];
+							
+							var px:Float = 0;
+							var py:Float = 0;
+							
+							var tmp:Float = 0;
+							
+							for (i in 1...(n + 1)) {
+								
+								tmp = i / n;
+								
+								dt = 1 - tmp;
+								dt2 = dt * dt;
+								dt3 = dt2 * dt;
+								
+								t2 = tmp * tmp;
+								t3 = t2 * tmp;
+								
+								px = dt3 * fromX + 3 * dt2 * tmp * cx + 3 * dt * t2 * cx2 + t3 * x;
+								py = dt3 * fromY + 3 * dt2 * tmp * cy + 3 * dt * t2 * cy2 + t3 * y;
+								
+								points.push (px);
+								points.push (py);
+								
+							}
+						
+						case CurveTo (cx, cy, x, y):
+							
+							if (__currentPath.points.length == 0) {
+								
+								moveTo (0, 0);
+								
+							}
+							
+							var xa:Float = 0;
+							var ya:Float = 0;
+							var n = 20;
+							
+							var points = __currentPath.points;
+							var fromX = points[points.length-2];
+							var fromY = points[points.length-1];
+							
+							var px:Float = 0;
+							var py:Float = 0;
+							
+							var tmp:Float = 0;
+							
+							for (i in 1...(n + 1)) {
+								
+								tmp = i / n;
+								
+								xa = fromX + ((cx - fromX) * tmp);
+								ya = fromY + ((cy - fromY) * tmp);
+								
+								px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
+								py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
+								
+								points.push (px);
+								points.push (py);
+								
+							}
+						
+						case DrawCircle (x, y, radius):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Circle;
+							__currentPath.points = [ x, y, radius ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case DrawEllipse (x, y, width, height):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Ellipse;
+							__currentPath.points = [ x, y, width, height ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case DrawRect (x, y, width, height):
+							
+							graphicDataPop();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Rectangle (false);
+							__currentPath.points = [ x, y, width, height ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case DrawRoundRect (x, y, width, height, rx, ry):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Rectangle (true);
+							__currentPath.points = [ x, y, width, height, rx, ry != -1 ? ry : rx ];
+							
+							__graphicsData.push (__currentPath);
+						
+						case EndFill:
+							
+							endFill ();
+						
+						case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+							
+							if (thickness == null || thickness < 0) {
+								
+								__line.width = 0;
+								
+							} else if (thickness == 0) {
+								
+								__line.width = 1;
+								
+							} else {
+								
+								__line.width = thickness;
+								
+							}
+							
+							graphicDataPop ();
+							
+							__line.color = color;
+							__line.alpha = alpha;
+							__line.scaleMode = scaleMode;
+							__line.caps = caps;
+							__line.joints = joints;
+							__line.miterLimit = miterLimit;
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.points = [];
+							__currentPath.type = Polygon;
+							
+							__graphicsData.push (__currentPath);
+						
+						case LineTo (x, y):
+							
+							__currentPath.points.push (x);
+							__currentPath.points.push (y);
+						
+						case MoveTo (x, y):
+							
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __hasFill, __fill);
+							__currentPath.type = Polygon;
+							__currentPath.points.push (x);
+							__currentPath.points.push (y);
+							
+							__graphicsData.push (__currentPath);
+						
+						default:
+							
+					}
+					
+				}
+				
+			}
+			
+			graphics.__glGraphicsData = __graphicsData;
 			
 		}
 		
 		graphics.__dirty = false;
 		
-		if (graphics.clearDirty) {
+		
+		//if (graphics.clearDirty) {
 			
-			graphics.clearDirty = false;
+			//graphics.clearDirty = false;
 			
 			for (i in 0...webGL.data.length) {
 				
@@ -738,21 +1052,22 @@ class  GraphicsRenderer {
 			webGL.data = [];
 			webGL.lastIndex = 0;
 			
-		}
+		//}
 		
-		var webGLData;
 		
-		for (i in webGL.lastIndex...graphics.graphicsData.length) {
+		var webGLData:GLGraphicsData;
+		
+		for (i in webGL.lastIndex...graphics.__glGraphicsData.length) {
 			
-			var data:Dynamic = graphics.graphicsData[i];
+			var data = graphics.__glGraphicsData[i];
 			
-			if (data.type == GraphicsRenderer.POLY) {
+			if (data.type == Polygon) {
 				
-				if (data.fill != null) {
+				if (data.hasFill) {
 					
 					if (data.points.length > 6) {
 						
-						if (data.points.length > 5 * 2) {
+						if (data.points.length > 10) { // 5 * 2
 							
 							webGLData = switchMode (webGL, 1);
 							buildComplexPoly (data, webGLData);
@@ -768,7 +1083,7 @@ class  GraphicsRenderer {
 					
 				}
 				
-				if (data.lineWidth > 0) {
+				if (data.line.width > 0) {
 					
 					webGLData = switchMode (webGL, 0);
 					buildLine (data, webGLData);
@@ -778,19 +1093,17 @@ class  GraphicsRenderer {
 			} else {
 				
 				webGLData = switchMode (webGL, 0);
-				
-				if (data.type == GraphicsRenderer.RECT) {
-					
-					buildRectangle (data, webGLData);
-					
-				} else if (data.type == GraphicsRenderer.CIRC || data.type == GraphicsRenderer.ELIP) {
-					
-					buildCircle (data, webGLData);
-					
-				} else if (data.type == GraphicsRenderer.RREC) {
-					
-					buildRoundedRectangle (data, webGLData);
-					
+
+				switch(data.type) {
+					case Rectangle(rounded):
+						if(rounded) {
+							buildRoundedRectangle (data, webGLData);
+						} else {
+							buildRectangle (data, webGLData);
+						}
+					case Circle, Ellipse:
+						buildCircle (data, webGLData);
+					case _:
 				}
 				
 			}
@@ -801,28 +1114,45 @@ class  GraphicsRenderer {
 		
 		for (i in 0...webGL.data.length) {
 			
-			webGLData = cast webGL.data[i];
+			webGLData = webGL.data[i];
 			if (webGLData.dirty) webGLData.upload ();
 			
-		}*/
+		}
 		
 	}
 	
 	
-	public static function hex2rgb (hex) {
+	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
 		
-		return [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
+		return hex == null ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
 		
+	}
+	
+	private static inline function getAlpha(fill:FillStyle):Float {
+		return fill.color == null ? 0 : fill.alpha;
 	}
 	
 	
 }
 
+class GLData {
+
+	public var lastIndex:Int = 0;
+	public var data:Array<GLGraphicsData>;
+	public var gl:GLRenderContext;
+
+	public function new (gl:GLRenderContext) {
+		this.gl = gl;
+		data = [];
+		lastIndex = 0;
+	}
+
+}
 
 class GLGraphicsData {
 	
 	
-	public static var graphicsDataPool = [];
+	//public static var graphicsDataPool = [];
 	
 	public var alpha:Float;
 	public var buffer:GLBuffer;
@@ -889,20 +1219,19 @@ class GLGraphicsData {
 class PolyK {
 	
 	
-	public static function triangulate (p:Dynamic) {
+	public static function triangulate (p:Array<Float>):Array<Int> {
 		
 		var sign = true;
-		
+
 		var n = p.length >> 1;
 		if (n < 3) return [];
 		
-		var tgs = [];
-		var avl = [];
-		
-		for (i in 0...n) avl.push (i);
+		var tgs:Array<Int> = [];
+		var avl:Array<Int> = [for (i in 0...n) i];
 		
 		var i = 0;
 		var al = n;
+		var earFound = false;
 		
 		while (al > 3) {
 			
@@ -914,7 +1243,7 @@ class PolyK {
 			var bx = p[2 * i1], by = p[2 * i1 + 1];
 			var cx = p[2 * i2], cy = p[2 * i2 + 1];
 			
-			var earFound = false;
+			earFound = false;
 			
 			if (PolyK._convex (ax, ay, bx, by, cx, cy, sign)) {
 				
@@ -950,9 +1279,7 @@ class PolyK {
 				if (sign) {
 					
 					tgs = [];
-					avl = [];
-					
-					for (i in 0...n) avl.push (i);
+					avl = [for (k in 0...n) k];
 					
 					i = 0;
 					al = n;
@@ -977,14 +1304,14 @@ class PolyK {
 	}
 	
 	
-	public static function _PointInTriangle (px, py, ax, ay, bx, by, cx, cy) {
+	public static function _PointInTriangle (px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float) {
 		
-		var v0x = cx-ax;
-		var v0y = cy-ay;
-		var v1x = bx-ax;
-		var v1y = by-ay;
-		var v2x = px-ax;
-		var v2y = py-ay;
+		var v0x = Std.int(cx-ax);
+		var v0y = Std.int(cy-ay);
+		var v1x = Std.int(bx-ax);
+		var v1y = Std.int(by-ay);
+		var v2x = Std.int(px-ax);
+		var v2y = Std.int(py-ay);
 		
 		var dot00 = (v0x * v0x) + (v0y * v0y);
 		var dot01 = (v0x * v1x) + (v0y * v1y);
@@ -1001,11 +1328,103 @@ class PolyK {
 	}
 	
 	
-	public static function _convex (ax, ay, bx, by, cx, cy, sign) {
+	public static function _convex (ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, sign:Bool) {
 		
 		return ((ay - by) * (cx - bx) + (bx - ax) * (cy - by) >= 0) == sign;
 		
 	}
+		
+}
+
+
+typedef LineStyle = {
+	
+	width:Float,
+	color:Int,
+	alpha:Float,
+	
+	scaleMode:LineScaleMode,
+	caps:CapsStyle,
+	joints:JointStyle,
+	miterLimit:Float
+	
+}
+
+
+typedef FillStyle = {
+	
+	color:Null<Int>,
+	alpha:Float,
+	bitmap:BitmapData,
+	repeat:Bool,
+	matrix:Matrix,
+	smooth:Bool
+	
+}
+
+
+@:access(openfl._internal.renderer.opengl.utils.GraphicsRenderer)
+@:access(openfl.display.Graphics)
+
+
+class DrawPath {
 	
 	
+	public var hasFill:Bool = false;
+	
+	public var line:LineStyle;
+	public var fill:FillStyle;
+	
+	public var points:Array<Float> = [];
+	
+	public var type:GraphicType = Polygon;
+	
+	
+	public function new() {
+		
+		line = Reflect.copy (GraphicsRenderer.DEFAULT_LINE_STYLE);
+		fill = Reflect.copy (GraphicsRenderer.DEFAULT_FILL_STYLE);
+		
+	}
+	
+	
+	public function update (line:LineStyle, hasFill:Bool, fill:FillStyle):Void {
+		
+		updateLine (line);
+		updateFill (hasFill, fill);
+		
+	}
+	
+	
+	public function updateFill (hasFill:Bool, fill:FillStyle):Void {
+		
+		this.hasFill = hasFill;
+		this.fill = Reflect.copy (fill);
+		
+	}
+	
+	
+	public function updateLine (line:LineStyle):Void {
+		
+		this.line.width = line.width;
+		this.line.color = line.color;
+		this.line.alpha = line.alpha;
+		this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
+		this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
+		this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
+		this.line.miterLimit = line.miterLimit;
+		
+	}
+	
+	
+}
+
+
+enum GraphicType {
+
+	Polygon;
+	Rectangle(rounded:Bool);
+	Circle;
+	Ellipse;
+
 }

@@ -1,9 +1,10 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -123,13 +124,14 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics != null) {
 			
+			GraphicsRenderer.render (this, renderSession);
 			//__graphics.__render (renderSession);
 			
 			/*if (__graphics.__canvas != null) {
 				
 				
 			}*/
-			
+		
 		}
 		
 		super.__renderGL (renderSession);
@@ -175,6 +177,9 @@ class Sprite extends DisplayObjectContainer {
 }
 
 
+#else
+typedef Sprite = openfl._v2.display.Sprite;
+#end
 #else
 typedef Sprite = flash.display.Sprite;
 #end

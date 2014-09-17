@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 class TextFormat {
@@ -91,6 +91,9 @@ class TextFormat {
 }
 
 
+#else
+typedef TextFormat = openfl._v2.text.TextFormat;
+#end
 #else
 typedef TextFormat = flash.text.TextFormat;
 #end

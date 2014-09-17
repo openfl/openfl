@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import lime.graphics.opengl.GLBuffer;
@@ -951,6 +951,9 @@ class TextureUvs {
 }
 
 
+#else
+typedef BitmapData = openfl._v2.display.BitmapData;
+#end
 #else
 typedef BitmapData = flash.display.BitmapData;
 #end

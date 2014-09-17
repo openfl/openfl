@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash
+package openfl.filters; #if !flash #if (next || js)
 
 
 class BlurFilter extends BitmapFilter {
@@ -30,6 +30,9 @@ class BlurFilter extends BitmapFilter {
 }
 
 
+#else
+typedef BlurFilter = openfl._v2.filters.BlurFilter;
+#end
 #else
 typedef BlurFilter = flash.filters.BlurFilter;
 #end

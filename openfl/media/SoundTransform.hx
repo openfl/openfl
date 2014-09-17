@@ -24,6 +24,13 @@ class SoundTransform {
 	}
 	
 	
+	public function clone ():SoundTransform {
+		
+		return new SoundTransform (volume, pan);
+		
+	}
+	
+	
 }
 
 

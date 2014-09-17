@@ -19,6 +19,20 @@ class TextEvent extends Event {
 	}
 	
 	
+	public override function clone ():Event {
+		
+		return new TextEvent (type, bubbles, cancelable, text);
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return "[TextEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + "]";
+		
+	}
+	
+	
 }
 
 

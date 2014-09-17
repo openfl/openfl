@@ -1,4 +1,4 @@
-package openfl; #if !flash
+package openfl; #if !flash #if (next || js)
 
 
 abstract Vector<T>(VectorData<T>) {
@@ -461,6 +461,9 @@ class VectorDataIterator<T> {
 }
 
 
+#else
+typedef Vector<T> = openfl._v2.Vector<T>;
+#end
 #else
 
 

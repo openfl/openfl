@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.IGraphicsData;
@@ -59,6 +59,8 @@ class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill {
 }
 
 
+#else
+typedef GraphicsGradientFill = openfl._v2.display.GraphicsGradientFill;
 #else
 typedef GraphicsGradientFill = flash.display.GraphicsGradientFill;
 #end

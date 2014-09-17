@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net; #if !flash #if (next || js)
 
 
 import haxe.io.Output;
@@ -303,6 +303,9 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 }
 
 
+#else
+typedef Socket = openfl._v2.net.Socket;
+#end
 #else
 typedef Socket = flash.net.Socket;
 #end

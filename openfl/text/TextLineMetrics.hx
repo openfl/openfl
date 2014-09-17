@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 class TextLineMetrics {
@@ -27,6 +27,9 @@ class TextLineMetrics {
 }
 
 
+#else
+typedef TextLineMetrics = openfl._v2.text.TextLineMetrics;
+#end
 #else
 typedef TextLineMetrics = flash.text.TextLineMetrics;
 #end

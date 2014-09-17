@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom; #if !flash #if (next || js)
 
 
 import openfl.display.DisplayObject;
@@ -81,6 +81,9 @@ class Transform {
 }
 
 
+#else
+typedef Transform = openfl._v2.geom.Transform;
+#end
 #else
 typedef Transform = flash.geom.Transform;
 #end

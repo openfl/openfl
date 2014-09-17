@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import haxe.EnumFlags;
@@ -641,6 +641,9 @@ class Stage extends Sprite {
 }
 
 
+#else
+typedef Stage = openfl._v2.display.Stage;
+#end
 #else
 typedef Stage = flash.display.Stage;
 #end

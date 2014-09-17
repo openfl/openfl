@@ -1,4 +1,4 @@
-package openfl;
+package openfl; #if (flash || next || js)
 #if !macro
 
 
@@ -1217,4 +1217,13 @@ class Assets {
 }
 
 
+#end
+#else
+typedef Assets = openfl._v2.Assets;
+#if !macro
+typedef AssetLibrary = openfl._v2.Assets.AssetLibrary;
+typedef AssetCache = openfl._v2.Assets.AssetCache;
+typedef AssetData = openfl._v2.Assets.AssetData;
+typedef AssetType = openfl._v2.Assets.AssetType;
+#end
 #end

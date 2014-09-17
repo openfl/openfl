@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if !flash #if (next || js)
 
 
 import openfl.events.Event;
@@ -15,6 +15,9 @@ interface IEventDispatcher {
 }
 
 
+#else
+typedef IEventDispatcher = openfl._v2.events.IEventDispatcher;
+#end
 #else
 typedef IEventDispatcher = flash.events.IEventDispatcher;
 #end

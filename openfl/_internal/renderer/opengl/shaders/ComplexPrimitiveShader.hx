@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.shaders ;
+package openfl._internal.renderer.opengl.shaders;
 
 
 import lime.graphics.opengl.GLProgram;
@@ -21,7 +21,9 @@ class ComplexPrimitiveShader extends AbstractShader {
 		super (gl);
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision mediump float;',
+			#end
 			'varying vec4 vColor;',
 			'void main(void) {',
 			'   gl_FragColor = vColor;',
@@ -67,7 +69,7 @@ class ComplexPrimitiveShader extends AbstractShader {
 		
 		aVertexPosition = gl.getAttribLocation (program, 'aVertexPosition');
 		
-		attributes = [ aVertexPosition, colorAttribute];
+		attributes = [aVertexPosition];
 		
 		translationMatrix = gl.getUniformLocation (program, 'translationMatrix');
 		alpha = gl.getUniformLocation (program, 'alpha');

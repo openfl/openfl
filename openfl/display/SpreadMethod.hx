@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 enum SpreadMethod {
@@ -10,6 +10,9 @@ enum SpreadMethod {
 }
 
 
+#else
+typedef SpreadMethod = openfl._v2.display.SpreadMethod;
+#end
 #else
 typedef SpreadMethod = flash.display.SpreadMethod;
 #end

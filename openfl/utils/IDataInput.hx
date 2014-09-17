@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash
+package openfl.utils; #if !flash #if (next || js)
 
 
 import openfl.utils.UInt;
@@ -28,6 +28,9 @@ interface IDataInput {
 }
 
 
+#else
+typedef IDataInput = openfl._v2.utils.IDataInput;
+#end
 #else
 typedef IDataInput = flash.utils.IDataInput;
 #end

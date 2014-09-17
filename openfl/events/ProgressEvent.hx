@@ -21,6 +21,20 @@ class ProgressEvent extends Event {
 	}
 	
 	
+	public override function clone ():Event {
+		
+		return new ProgressEvent (type, bubbles, cancelable, bytesLoaded, bytesTotal);
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return "[ProgressEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " bytesLoaded=" + bytesLoaded + " bytesTotal=" + bytesTotal + "]";
+		
+	}
+	
+	
 }
 
 

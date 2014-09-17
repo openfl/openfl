@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom; #if !flash #if (next || js)
 
 
 import lime.math.Rectangle in LimeRectangle;
@@ -315,6 +315,9 @@ class Rectangle {
 }
 
 
+#else
+typedef Rectangle = openfl._v2.geom.Rectangle;
+#end
 #else
 typedef Rectangle = flash.geom.Rectangle;
 #end

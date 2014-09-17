@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if !flash #if (next || js)
 
 
 import openfl.display.InteractiveObject;
@@ -28,11 +28,11 @@ class Event {
 	public static var RESIZE = "resize";
 	public static var SCROLL = "scroll";
 	public static var SELECT = "select";
+	public static var SOUND_COMPLETE = "soundComplete";
 	public static var TAB_CHILDREN_CHANGE = "tabChildrenChange";
 	public static var TAB_ENABLED_CHANGE = "tabEnabledChange";
 	public static var TAB_INDEX_CHANGE = "tabIndexChange";
 	public static var UNLOAD = "unload";
-	public static var SOUND_COMPLETE = "soundComplete";
 	
 	public var bubbles (default, null):Bool;
 	public var cancelable (default, null):Bool;
@@ -98,6 +98,9 @@ class Event {
 }
 
 
+#else
+typedef Event = openfl._v2.events.Event;
+#end
 #else
 typedef Event = flash.events.Event;
 #end

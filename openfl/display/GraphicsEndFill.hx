@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.IGraphicsData;
@@ -23,6 +23,9 @@ class GraphicsEndFill implements IGraphicsData implements IGraphicsFill {
 }
 
 
+#else
+typedef GraphicsEndFill = openfl._v2.display.GraphicsEndFill;
+#end
 #else
 typedef GraphicsEndFill = flash.display.GraphicsEndFill;
 #end

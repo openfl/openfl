@@ -1,10 +1,11 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.errors.ArgumentError;
-import openfl.geom.Point;
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
@@ -26,12 +27,14 @@ class Graphics {
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
 	private var __bounds:Rectangle;
-	private var __commands:Array<DrawCommand>;
-	private var __dirty:Bool;
+	private var __commands:Array<DrawCommand> = [];
+	private var __dirty:Bool = true;
+	private var __glData:Array<GLData> = [];
+	private var __glGraphicsData:Array<DrawPath>;
 	private var __halfStrokeWidth:Float;
 	private var __positionX:Float;
 	private var __positionY:Float;
-	private var __visible:Bool;
+	private var __visible:Bool = true;
 	
 	#if js
 	private var __canvas:CanvasElement;
@@ -49,18 +52,18 @@ class Graphics {
 	}
 	
 	
-	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
+	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 		
 		__commands.push (BeginBitmapFill (bitmap, matrix, repeat, smooth));
 		
 		__visible = true;
-			
+		
 	}
 	
 	
-	public function beginFill (rgb:Int, alpha:Float = 1):Void {
+	public function beginFill (color:Int = 0, alpha:Float = 1):Void {
 		
-		__commands.push (BeginFill (rgb & 0xFFFFFF, alpha));
+		__commands.push (BeginFill (color & 0xFFFFFF, alpha));
 		
 		if (alpha > 0) __visible = true;
 		
@@ -91,22 +94,45 @@ class Graphics {
 	}
 	
 	
-	public function curveTo (cx:Float, cy:Float, x:Float, y:Float):Void {
+	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
+		
+		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
+		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		
+		// TODO: Is this the right calculation for bounds?
+		
+		__inflateBounds (controlX1, controlY1);
+		__inflateBounds (controlX2, controlY2);
+		
+		__positionX = anchorX;
+		__positionY = anchorY;
+		
+		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
+		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		
+		__commands.push (CubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY));
+		
+		__dirty = true;
+		
+	}
+	
+	
+	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float) {
 		
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
 		// TODO: Be a little less lenient in canvas size?
 		
-		__inflateBounds (cx, cy);
+		__inflateBounds (controlX, controlY);
 		
-		__positionX = x;
-		__positionY = y;
+		__positionX = anchorX;
+		__positionY = anchorY;
 		
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
-		__commands.push (CurveTo (cx, cy, x, y));
+		__commands.push (CurveTo (controlX, controlY, anchorX, anchorY));
 		
 		__dirty = true;
 		
@@ -171,7 +197,17 @@ class Graphics {
 	
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawRoundRect");
+		if (width <= 0 || height <= 0) return;
+		if (rx > width / 2) rx = width / 2;
+		if (ry > height / 2) ry = height / 2;
+		if (ry < 0) ry = rx;
+		
+		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
+		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+		
+		__commands.push (DrawRoundRect (x, y, width, height, rx, ry));
+		
+		__dirty = true;
 		
 	}
 	
@@ -290,13 +326,13 @@ class Graphics {
 		
 	}
 	
-	
+
 	public function moveTo (x:Float, y:Float):Void {
-		
-		__commands.push (MoveTo (x, y));
 		
 		__positionX = x;
 		__positionY = y;
+		
+		__commands.push (MoveTo (x, y));
 		
 	}
 	
@@ -312,6 +348,8 @@ class Graphics {
 	
 	
 	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
+		
+		//TODO: Shape flag
 		
 		if (__bounds == null) return false;
 		
@@ -365,11 +403,13 @@ class Graphics {
 enum DrawCommand {
 	
 	BeginBitmapFill (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
-	BeginFill (rgb:Int, alpha:Float);
-	CurveTo (cx:Float, cy:Float, x:Float, y:Float);
+	BeginFill (color:Int, alpha:Float);
+	CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
+	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
 	DrawCircle (x:Float, y:Float, radius:Float);
 	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
+	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
 	EndFill;
@@ -380,6 +420,9 @@ enum DrawCommand {
 }
 
 
+#else
+typedef Graphics = openfl._v2.display.Graphics;
+#end
 #else
 typedef Graphics = flash.display.Graphics;
 #end

@@ -30,7 +30,7 @@ class GLRenderer extends AbstractRenderer {
 	public var filterManager:FilterManager;
 	public var gl:GLRenderContext;
 	public var _glContextId:Int;
-	public var maskManager:openfl._internal.renderer.opengl.utils.MaskManager;
+	public var maskManager:MaskManager;
 	public var offset:Point;
 	public var options:Dynamic;
 	public var preserveDrawingBuffer:Bool;
@@ -121,7 +121,7 @@ class GLRenderer extends AbstractRenderer {
 		gl.disable (gl.CULL_FACE);
 		
 		gl.enable (gl.BLEND);
-		gl.colorMask (true, true, true, transparent);
+		gl.colorMask (true, true, true, this.transparent);
 		
 	}
 	

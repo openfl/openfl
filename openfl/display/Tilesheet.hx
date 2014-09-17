@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if (flash || next || js)
 
 
 import openfl.display.BitmapData;
@@ -76,3 +76,8 @@ class Tilesheet {
 	
 	
 }
+
+
+#else
+typedef Tilesheet = openfl._v2.display.Tilesheet;
+#end

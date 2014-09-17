@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if !flash #if (next || js)
 
 
 import openfl.display.InteractiveObject;
@@ -103,6 +103,20 @@ class MouseEvent extends Event {
 	}
 	
 	
+	public override function clone ():Event {
+		
+		return new MouseEvent (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return "[MouseEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " localX=" + localX + " localY=" + localY + " relatedObject=" + relatedObject + " ctrlKey=" + ctrlKey + " altKey=" + altKey + " shiftKey=" + shiftKey + " buttonDown=" + buttonDown + " delta=" + delta + "]";
+		
+	}
+	
+	
 	public function updateAfterEvent ():Void {
 		
 		
@@ -113,6 +127,9 @@ class MouseEvent extends Event {
 }
 
 
+#else
+typedef MouseEvent = openfl._v2.events.MouseEvent;
+#end
 #else
 typedef MouseEvent = flash.events.MouseEvent;
 #end

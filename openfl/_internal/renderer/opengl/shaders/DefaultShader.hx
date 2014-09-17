@@ -41,7 +41,9 @@ class DefaultShader extends AbstractShader {
 		super (gl);
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision lowp float;',
+			#end
 			'varying vec2 vTextureCoord;',
 			'varying vec4 vColor;',
 			'uniform sampler2D uSampler;',

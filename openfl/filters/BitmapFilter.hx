@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash
+package openfl.filters; #if !flash #if (next || js)
 
 
 import openfl.geom.Point;
@@ -38,6 +38,9 @@ class BitmapFilter {
 }
 
 
+#else
+typedef BitmapFilter = openfl._v2.filters.BitmapFilter;
+#end
 #else
 typedef BitmapFilter = flash.filters.BitmapFilter;
 #end

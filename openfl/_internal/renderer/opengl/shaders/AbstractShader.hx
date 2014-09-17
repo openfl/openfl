@@ -11,7 +11,7 @@ class AbstractShader {
 	
 	private static var __UID = 0;
 	
-	public var attributes:Array<Dynamic>;
+	public var attributes:Array<Int>;
 	public var aTextureCoord:Int;
 	public var aVertexPosition:Int;
 	public var colorAttribute:Int;
@@ -31,6 +31,7 @@ class AbstractShader {
 		this.gl = gl;
 		program = null;
 		
+		attributes = [];
 	}
 	
 	
@@ -44,6 +45,7 @@ class AbstractShader {
 		
 		uniforms = null;
 		gl = null;
+		attributes = null;
 		
 	}
 	
@@ -60,48 +62,59 @@ class AbstractShader {
 	}
 	
 	
-	public static function compileProgram (gl:GLRenderContext, vertexSrc, fragmentSrc):Dynamic
-	{
-		var fragmentShader = AbstractShader.CompileFragmentShader(gl, fragmentSrc);
-		var vertexShader = AbstractShader.CompileVertexShader(gl, vertexSrc);
-
-		var shaderProgram = gl.createProgram();
-
-		gl.attachShader(shaderProgram, vertexShader);
-		gl.attachShader(shaderProgram, fragmentShader);
-		gl.linkProgram(shaderProgram);
-
+	public static function compileProgram (gl:GLRenderContext, vertexSrc, fragmentSrc):Dynamic {
+		
+		var fragmentShader = AbstractShader.CompileFragmentShader (gl, fragmentSrc);
+		var vertexShader = AbstractShader.CompileVertexShader (gl, vertexSrc);
+		
+		var shaderProgram = gl.createProgram ();
+		
+		gl.attachShader (shaderProgram, vertexShader);
+		gl.attachShader (shaderProgram, fragmentShader);
+		gl.linkProgram (shaderProgram);
+		
 		if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) == 0) {
-			trace("Could not initialize shaders");
+			
+			trace ("Could not initialize shaders");
+			
 		}
-
+		
 		return shaderProgram;
+		
 	}
-
-
-	public static function CompileVertexShader (gl:Dynamic, shaderSrc)
-	{
-		return AbstractShader._CompileShader(gl, shaderSrc, gl.VERTEX_SHADER);
+	
+	
+	public static function CompileVertexShader (gl:Dynamic, shaderSrc) {
+		
+		return AbstractShader._CompileShader (gl, shaderSrc, gl.VERTEX_SHADER);
+		
 	}
-
-	public static function CompileFragmentShader (gl:Dynamic, shaderSrc)
-	{
-		return AbstractShader._CompileShader(gl, shaderSrc, gl.FRAGMENT_SHADER);
+	
+	
+	public static function CompileFragmentShader (gl:Dynamic, shaderSrc) {
+		
+		return AbstractShader._CompileShader (gl, shaderSrc, gl.FRAGMENT_SHADER);
+		
 	}
-
-	public static function _CompileShader (gl:Dynamic, shaderSrc, shaderType)
-	{
-		var src = shaderSrc.join("\n");
-		var shader = gl.createShader(shaderType);
-		gl.shaderSource(shader, src);
-		gl.compileShader(shader);
-
-		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		trace(gl.getShaderInfoLog(shader));
-		return null;
+	
+	
+	public static function _CompileShader (gl:Dynamic, shaderSrc, shaderType) {
+		
+		var src = shaderSrc.join ("\n");
+		var shader = gl.createShader (shaderType);
+		gl.shaderSource (shader, src);
+		gl.compileShader (shader);
+		
+		if (!gl.getShaderParameter (shader, gl.COMPILE_STATUS)) {
+			
+			//trace ("Error compiling " + Type.getClassName (Type.getClass (this)));
+			trace (gl.getShaderInfoLog (shader));
+			return null;
+			
 		}
-
+		
 		return shader;
+		
 	}
 	
 	

@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.utils ;
+package openfl._internal.renderer.opengl.utils;
 
 
 import lime.graphics.GLRenderContext;
@@ -6,7 +6,11 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.Graphics;
+import openfl.display.DisplayObject;
 
+@:access(openfl.display.DisplayObject)
+@:access(openfl.geom.Matrix)
 
 class StencilManager {
 	
@@ -15,9 +19,7 @@ class StencilManager {
 	public var gl:GLRenderContext;
 	public var maskStack:Array<Dynamic>;
 	public var reverse:Bool;
-	public var stencilStack:Array<Dynamic>;
-	
-	private var _currentGraphics:Dynamic;
+	public var stencilStack:Array<GLGraphicsData>;
 	
 	
 	public function new (gl:GLRenderContext) {
@@ -30,29 +32,28 @@ class StencilManager {
 	}
 	
 	
-	public function bindGraphics (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+	public function bindGraphics (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
-		_currentGraphics = graphics;
-		
-		var gl = this.gl;
+		var graphics = object.__graphics;
 		
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
-		
+
 		if (webGLData.mode == 1) {
 			
 			var shader = renderSession.shaderManager.complexPrimitiveShader;
 			renderSession.shaderManager.setShader (shader);
 			
-			gl.uniformMatrix3fv (shader.translationMatrix, false, graphics.worldTransform.toArray (true));
+			gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 			
 			gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 			gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 			
-			gl.uniform3fv (shader.tintColor, new Float32Array (GraphicsRenderer.hex2rgb (graphics.tint)));
+			// TODO tintColor
+			gl.uniform3fv (shader.tintColor, new Float32Array (GraphicsRenderer.hex2rgb (0xFFFFFF)));
 			gl.uniform3fv (shader.color, new Float32Array (webGLData.color));
 			
-			gl.uniform1f (shader.alpha, graphics.worldAlpha * webGLData.alpha);
+			gl.uniform1f (shader.alpha, object.__worldAlpha * webGLData.alpha);
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
 			
@@ -65,14 +66,15 @@ class StencilManager {
 			var shader = renderSession.shaderManager.primitiveShader;
 			renderSession.shaderManager.setShader (shader);
 			
-			gl.uniformMatrix3fv (shader.translationMatrix, false, graphics.worldTransform.toArray (true));
+			gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 			
 			gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 			gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 			
-			gl.uniform3fv (shader.tintColor, new Float32Array (GraphicsRenderer.hex2rgb (graphics.tint)));
+			// TODO tintColor
+			gl.uniform3fv (shader.tintColor, new Float32Array (GraphicsRenderer.hex2rgb (0xFFFFFF)));
 			
-			gl.uniform1f (shader.alpha, graphics.worldAlpha);
+			gl.uniform1f (shader.alpha, object.__worldAlpha);
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
 			
@@ -88,16 +90,15 @@ class StencilManager {
 	
 	public function destroy ():Void {
 		
-		maskStack = null;
+		stencilStack = null;
 		gl = null;
 		
 	}
 	
 	
-	public function popStencil (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+	public function popStencil (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
-		var gl = this.gl;
-		this.stencilStack.pop ();
+		stencilStack.pop ();
 		
 		count--;
 		
@@ -108,7 +109,7 @@ class StencilManager {
 		} else {
 			
 			var level = count;
-			bindGraphics (graphics, webGLData, renderSession);
+			bindGraphics (object, webGLData, renderSession);
 			
 			gl.colorMask (false, false, false, false);
 			
@@ -133,7 +134,7 @@ class StencilManager {
 				gl.stencilFunc (gl.ALWAYS, 0, 0xFF);
 				gl.stencilOp (gl.KEEP, gl.KEEP, gl.INVERT);
 				
-				gl.drawElements (gl.TRIANGLE_FAN, Std.int (webGLData.indices.length - 4), gl.UNSIGNED_SHORT, 0);
+				gl.drawElements (gl.TRIANGLE_FAN, webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0);
 				
 				if (!reverse) {
 					
@@ -181,11 +182,10 @@ class StencilManager {
 	}
 	
 	
-	public function pushStencil (graphics:Dynamic, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+	public function pushStencil (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
 		
-		var gl = this.gl;
-		bindGraphics (graphics, webGLData, renderSession);
-		
+		bindGraphics (object, webGLData, renderSession);
+
 		if (stencilStack.length == 0) {
 			
 			gl.enable (gl.STENCIL_TEST);
@@ -194,11 +194,12 @@ class StencilManager {
 			count = 0;
 			
 		}
-		
+
 		stencilStack.push (webGLData);
 		
 		var level = count;
 		
+		//gl.colorMask (true, true, true, true);
 		gl.colorMask (false, false, false, false);
 		
 		gl.stencilFunc (gl.ALWAYS, 0, 0xFF);
@@ -220,7 +221,7 @@ class StencilManager {
 				
 			}
 			
-			gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, Std.int ((webGLData.indices.length - 4) * 2));
+			gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
 			
 			if (reverse) {
 				
@@ -263,9 +264,10 @@ class StencilManager {
 		}
 		
 		gl.colorMask (true, true, true, true);
+		//gl.colorMask (false, false, false, false);
 		gl.stencilOp (gl.KEEP, gl.KEEP, gl.KEEP);
 		
-		this.count++;
+		count++;
 		
 	}
 	

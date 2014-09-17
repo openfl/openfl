@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.IGraphicsData;
@@ -35,6 +35,9 @@ class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 }
 
 
+#else
+typedef GraphicsStroke = openfl._v2.display.GraphicsStroke;
+#end
 #else
 typedef GraphicsStroke = flash.display.GraphicsStroke;
 #end

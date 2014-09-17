@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.Bitmap;
@@ -151,6 +151,9 @@ class Loader extends Sprite {
 }
 
 
+#else
+typedef Loader = openfl._v2.display.Loader;
+#end
 #else
 typedef Loader = flash.display.Loader;
 #end

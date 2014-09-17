@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net; #if !flash #if (next || js)
 
 
 import openfl.utils.ByteArray;
@@ -52,6 +52,9 @@ class URLRequest {
 }
 
 
+#else
+typedef URLRequest = openfl._v2.net.URLRequest;
+#end
 #else
 typedef URLRequest = flash.net.URLRequest;
 #end

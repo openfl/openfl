@@ -19,7 +19,11 @@ class CanvasShape {
 		
 		if (graphics != null) {
 			
+			//#if old
 			CanvasGraphics.render (graphics, renderSession);
+			//#else
+			//CanvasGraphics.renderObjectGraphics (shape, renderSession);
+			//#end
 			
 			if (graphics.__canvas != null) {
 				

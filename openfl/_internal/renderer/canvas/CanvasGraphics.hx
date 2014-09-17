@@ -4,6 +4,7 @@ package openfl._internal.renderer.canvas;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
+import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -18,6 +19,7 @@ import js.html.CanvasRenderingContext2D;
 import js.Browser;
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 
@@ -123,6 +125,226 @@ class CanvasGraphics {
 	}
 	
 	
+	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
+		
+		#if js
+		if (ry == -1) ry = rx;
+		
+		var kappa = .5522848,
+		ox = rx * kappa, // control point offset horizontal
+		oy = ry * kappa, // control point offset vertical
+		xe = x + width, // x-end
+		ye = y + height, // y-end
+		cx1 = x + rx, // center x
+		cy1 = y + ry, // center y
+		cx2 = xe - rx, // center x
+		cy2 = ye - ry; // center y
+		
+		context.moveTo (x, cy1);
+		context.bezierCurveTo (x, cy1 - oy, cx1 - ox, y, cx1, y);
+		context.lineTo (cx2, y);
+		context.bezierCurveTo (cx2 + ox, y, xe, cy1 - oy, xe, cy1);
+		context.lineTo (xe, cy2);
+		context.bezierCurveTo (xe, cy2 + oy, cx2 + ox, ye, cx2, ye);
+		context.lineTo (cx1, ye);
+		context.bezierCurveTo (cx1 - ox, ye, x, cy2 + oy, x, cy2);
+		context.lineTo (x, cy1);
+		#end
+		
+	}
+	
+	
+	/*#if js
+	private static inline function setFillStyle(data:DrawPath, context:CanvasRenderingContext2D, worldAlpha:Float) {
+		if (data.hasFill) {
+			
+			context.globalAlpha = data.fill.alpha * worldAlpha;							
+			if (data.fill.bitmap != null) {
+				var bitmap = data.fill.bitmap;
+				var repeat = data.fill.repeat;
+				var pattern = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+				context.fillStyle = pattern;
+			} else {
+				context.fillStyle = '#' + StringTools.hex(data.fill.color, 6);
+			}
+		}
+	}
+	#end
+	
+	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
+
+		#if js
+
+		var worldAlpha = object.__worldAlpha;
+		var graphics = object.__graphics;
+
+		bounds = graphics.__bounds;
+
+		if(!graphics.__dirty) return;
+
+		graphics.__dirty = false;
+
+		if(bounds == null || bounds.width == 0 || bounds.height == 0) {
+
+			graphics.__canvas = null;
+			graphics.__context = null;			
+
+		} else {
+
+			if (graphics.__canvas == null) {
+				
+				graphics.__canvas = cast Browser.document.createElement ("canvas");
+				graphics.__context = graphics.__canvas.getContext ("2d");
+				//untyped (context).mozImageSmoothingEnabled = false;
+				//untyped (context).webkitImageSmoothingEnabled = false;
+				//context.imageSmoothingEnabled = false;
+				
+			}
+
+			var context = graphics.__context;
+
+			graphics.__canvas.width = Math.ceil (bounds.width);
+			graphics.__canvas.height = Math.ceil (bounds.height);
+
+			var offsetX = bounds.x;
+			var offsetY = bounds.y;
+
+			for (i in 0...graphics.__graphicsData.length) {
+
+				var data = graphics.__graphicsData[i];
+				var points = data.points;
+
+				context.strokeStyle = '#' + StringTools.hex (data.line.color, 6);
+				context.lineWidth = data.line.width;
+				context.lineCap = Std.string(data.line.caps);
+				context.lineJoin = Std.string(data.line.joints);
+				context.miterLimit = data.line.miterLimit;
+
+				setFillStyle(data, context, worldAlpha);
+				
+				switch(data.type) {
+
+					case Polygon:
+						
+						context.beginPath();
+						context.moveTo(points[0] - offsetX, points[1] - offsetY);
+						for(i in 1...Std.int(points.length/2)) {
+							context.lineTo(points[i * 2] - offsetX, points[i * 2 + 1] - offsetY);
+						}
+						context.closePath();
+						
+						if(data.hasFill) {
+							context.fill();
+						}
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
+							context.stroke();
+						}
+
+					case Rectangle(round):
+						
+						var rx = points[0] - offsetX;
+						var ry = points[1] - offsetY;
+						var width = points[2];
+						var height = points[3];
+
+						if(round) {
+
+							var radius = points[4];
+							var maxRadius = Math.min(width, height) / 2;
+							radius = (radius > maxRadius) ? maxRadius : radius;
+
+							context.beginPath();
+							context.moveTo(rx, ry + radius);
+							context.lineTo(rx, ry + height - radius);
+							context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
+							context.lineTo(rx + width - radius, ry + height);
+							context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
+							context.lineTo(rx + width, ry + radius);
+							context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
+							context.lineTo(rx + radius, ry);
+							context.quadraticCurveTo(rx, ry, rx, ry + radius);
+							context.closePath();
+
+						} 
+						
+						if (data.hasFill) {
+							if (round) {
+								context.fill();
+							} else {
+								context.fillRect(rx, ry, width, height);
+							}
+						}
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
+							if(round) {
+								context.stroke();
+							} else {
+								context.strokeRect(rx, ry, width, height);
+							}
+						}
+						
+					case Circle:
+
+						context.beginPath();
+						context.arc(points[0] - offsetX, points[1] - offsetY, points[2], 0, 2 * Math.PI, true);
+						context.closePath();
+
+						if(data.hasFill) {
+							context.fill();
+						}
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
+							context.stroke();
+						}
+
+					case Ellipse:
+
+						var w = points[2];
+						var h = points[3];
+						var x = (points[0] - offsetX);
+						var y = (points[1] - offsetY);
+
+						context.beginPath();
+						var kappa = 0.5522848,
+							ox = (w / 2) * kappa, // control point offset horizontal
+							oy = (h / 2) * kappa, // control point offset vertical
+							xe = x + w, // x-end
+							ye = y + h, // y-end
+							xm = x + w / 2, // x-middle
+							ym = y + h / 2; // y-middle
+						context.moveTo(x, ym);
+						context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+						context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+						context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+						context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+						context.closePath();
+
+						if(data.hasFill) {
+							context.fill();
+						}
+						
+						if(data.line.width > 0) {
+							context.globalAlpha = data.line.alpha * worldAlpha;
+							context.stroke();
+						}
+
+					case _:
+
+				}
+
+			}
+
+		}
+
+		#end
+
+	}*/
+	
+	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
 		#if js
@@ -221,6 +443,14 @@ class CanvasGraphics {
 							setFill = true;
 							hasFill = true;
 						
+						case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
+							
+							beginPatternFill (bitmapFill, bitmapRepeat);
+							beginPath ();
+							context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+							positionX = x;
+							positionY = y;
+						
 						case CurveTo (cx, cy, x, y):
 							
 							beginPatternFill (bitmapFill, bitmapRepeat);
@@ -313,6 +543,12 @@ class CanvasGraphics {
 								context.rect (x - offsetX, y - offsetY, width, height);
 								
 							}
+						
+						case DrawRoundRect (x, y, width, height, rx, ry):
+							
+							beginPatternFill (bitmapFill, bitmapRepeat);
+							beginPath ();
+							drawRoundRect (x, y, width, height, rx, ry);
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
 							
@@ -609,9 +845,15 @@ class CanvasGraphics {
 				
 				switch (command) {
 					
+					case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
+						
+						context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+						positionX = x;
+						positionY = y;
+					
 					case CurveTo (cx, cy, x, y):
 						
-						context.quadraticCurveTo (cx, cy, x, y);
+						context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 						positionX = x;
 						positionY = y;
 					
@@ -644,6 +886,10 @@ class CanvasGraphics {
 					case DrawRect (x, y, width, height):
 						
 						context.rect (x - offsetX, y - offsetY, width, height);
+					
+					case DrawRoundRect (x, y, width, height, rx, ry):
+						
+						drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
 					
 					case LineTo (x, y):
 						
