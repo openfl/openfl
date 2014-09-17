@@ -1,4 +1,4 @@
-package openfl.external; #if !flash #if (next || js)
+package openfl.external; #if !flash #if (display || next || js)
 
 
 import openfl.Lib;

@@ -373,10 +373,14 @@ class Timer {
 	
 	
 	
+	#if display
+	static var lime_time_stamp:Dynamic;
+	#else
 	#if (lime >= "2.0.0-alpha")
 	static var lime_time_stamp = System.load ("lime", "lime_system_get_timestamp", 0);
 	#else
 	static var lime_time_stamp = flash.Lib.load ("lime", "lime_time_stamp", 0);
+	#end
 	#end
 	
 	

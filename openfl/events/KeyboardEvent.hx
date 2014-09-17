@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if (next || js)
+package openfl.events; #if !flash #if (display || next || js)
 
 
 import openfl.ui.KeyLocation;

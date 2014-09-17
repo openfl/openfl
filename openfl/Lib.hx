@@ -1,4 +1,4 @@
-package openfl; #if (flash || next || js)
+package openfl; #if (flash || next || js || display)
 #if !macro
 
 
@@ -157,6 +157,7 @@ import js.Browser;
 	
 	
 	
+	#if flash
 	private static function get_current ():MovieClip {
 		
 		return flash.Lib.current;
@@ -169,6 +170,7 @@ import js.Browser;
 		return flash.Lib.current = current;
 		
 	}
+	#end
 	
 	
 }

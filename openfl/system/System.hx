@@ -1,4 +1,4 @@
-package openfl.system; #if !flash #if (next || js)
+package openfl.system; #if !flash #if (display || next || js)
 
 
 class System {

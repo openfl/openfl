@@ -1,4 +1,4 @@
-package openfl.media; #if !flash #if (next || js)
+package openfl.media; #if !flash #if (display || next || js)
 
 
 import haxe.io.Path;

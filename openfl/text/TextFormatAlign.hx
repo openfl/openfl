@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if (next || js)
+package openfl.text; #if !flash #if (display || next || js)
 
 
 enum TextFormatAlign {

@@ -1,4 +1,4 @@
-package openfl.sensors; #if !flash #if (next || js)
+package openfl.sensors; #if !flash #if (display || next || js)
 
 
 import haxe.Timer;

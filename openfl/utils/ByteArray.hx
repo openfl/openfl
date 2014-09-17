@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-#if (flash || next || js)
+#if (flash || next || js || display)
 typedef ByteArray = lime.utils.ByteArray;
 #else
 typedef ByteArray = openfl._v2.utils.ByteArray;

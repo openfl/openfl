@@ -1,4 +1,4 @@
-package openfl; #if !flash #if (next || js)
+package openfl; #if !flash #if (display || next || js)
 
 
 abstract Vector<T>(VectorData<T>) {

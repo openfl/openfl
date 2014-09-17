@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if (next || js)
+package openfl.net; #if !flash #if (display || next || js)
 
 
 import openfl.events.DataEvent;

@@ -1,7 +1,4 @@
-package openfl.utils; #if !flash #if (next || js)
-
-
-import openfl.utils.UInt;
+package openfl.utils; #if !flash #if (display || next || js)
 
 
 interface IDataInput {

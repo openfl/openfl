@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if (next || js)
+package openfl.net; #if !flash
 
 
 import haxe.io.Output;
@@ -17,44 +17,45 @@ import openfl.utils.IDataInput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.Lib;
+import sys.net.Host;
 
 
 class Socket extends EventDispatcher /*implements IDataInput implements IDataOutput*/ {
 	private var _stamp : Float;
 	private var _buf : haxe.io.Bytes;
-	private var _socket: Dynamic;
-	private var _connected: Bool;
-	private var _host: String;
-	private var _port: Int;
+    private var _socket: sys.net.Socket;
+    private var _connected: Bool;
+    private var _host: String;
+    private var _port: Int;
 
 	private var _inputBuffer : ByteArray;
 	private var _input : ByteArray;
 	private var _output : ByteArray;
 
-	public var bytesAvailable(get, null) : Int;
+    public var bytesAvailable(get, null) : Int;
 	public var bytesPending(get, null) : Int;
 	public var timeout : Int;
-	public var objectEncoding : Int;
-	@:isVar
-	public var endian(get, set): String;
+    public var objectEncoding : Int;
+    @:isVar
+    public var endian(get, set): String;
 
-	public var connected(get, null): Bool;
+    public var connected(get, null): Bool;
 
-	private function get_connected(): Bool {
-		return _connected;
-	}
+    private function get_connected(): Bool {
+        return _connected;
+    }
 
-	private function get_endian(): String {
-		return endian;
-	}
+    private function get_endian(): String {
+        return endian;
+    }
 
-	private function set_endian(value: String): String {
-		endian = value;
+    private function set_endian(value: String): String {
+        endian = value;
 		if( _input != null ) _input.endian = value;
 		if( _inputBuffer != null ) _inputBuffer.endian = value;
 		if( _output != null ) _output.endian = value;
-		return endian;
-	}
+        return endian;
+    }
 
 	private function get_bytesAvailable() : Int {
 		return _input.bytesAvailable;
@@ -64,7 +65,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		return _output.length;
 	}
 
-	public function new(host:String = null, port:Int = 0) {
+    public function new(host:String = null, port:Int = 0) {
 		super();
 		endian = Endian.BIG_ENDIAN;
 		timeout = 20000;
@@ -74,14 +75,25 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 	}
 	
 	public function connect( ?host: String = null, ?port: Int = 0) {
-		#if js
 		if( _socket != null )
 			close();
 
 		if( port < 0 || port > 65535 )
 			throw new SecurityError("Invalid socket port number specified.");
-
+		
+		#if js
 		_stamp = haxe.Timer.stamp();
+		#else
+		var h : Host = null;
+		try {
+			h = new Host( host );
+		}catch( e : Dynamic ){
+			dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Invalid host") );
+			return;
+		}
+		
+		_stamp = Sys.time();
+		#end
 		
 		_host = host;
 		_port = port;
@@ -90,9 +102,12 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		_output.endian = endian;
 		_input = new ByteArray();
 		_input.endian = endian;
+		#if js
 		_inputBuffer = new ByteArray();
 		_inputBuffer.endian = endian;
-
+		#end
+		
+		#if js
 		_socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
 
 		_socket.onopen = onOpenHandler;
@@ -100,35 +115,21 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		_socket.onclose = onCloseHandler;
 		_socket.onerror = onErrorHandler;
 		_socket.binaryType = "arraybuffer";
+		#else
+		_socket = new sys.net.Socket();
+		_socket.setBlocking( false );
+		_socket.setFastSend( true );
+		try {
+			_socket.connect( h, port );
+		}catch(e:Dynamic){
+		}
+		#end
 
 		Lib.current.addEventListener( Event.ENTER_FRAME, onFrame );
-		#end
-	}
-
-	private function onOpenHandler (_):Void {
-		_connected = true;
-		dispatchEvent (new Event (Event.CONNECT));
-	}
-
-	private function onMessageHandler (msg:Dynamic):Void {
-		var newData = ByteArray.__ofBuffer(msg.data);
-		newData.readBytes(_inputBuffer, _inputBuffer.length);
 	}
 	
-
-	private function onCloseHandler (_):Void {
-		
-		dispatchEvent (new Event (Event.CLOSE));
-		
-	}
-
-	private function onErrorHandler (_):Void {
-		
-		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
-		
-	}
-
 	private function onFrame( _ ){
+		#if js
 		if (_inputBuffer.bytesAvailable > 0)
 		{
 			var newInput = new ByteArray();
@@ -144,6 +145,69 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		
 		if( _socket != null )
 			flush();
+		#else
+		var doConnect = false;
+		var doClose = false;
+
+		if( !connected ){
+			var r = sys.net.Socket.select(null,[_socket],null,0);
+			if( r.write[0] == _socket )
+				doConnect = true;
+			else if ( Sys.time() - _stamp > timeout/1000 )
+				doClose = true;
+		}
+		
+		var b = new BytesBuffer();
+		var bLength = 0;
+		if( connected || doConnect ){
+			try {
+				var l : Int;
+				do {
+					l = _socket.input.readBytes(_buf,0,_buf.length);
+					if( l > 0 ){
+						b.addBytes( _buf, 0, l );
+						bLength += l;
+					}
+				}while( l == _buf.length );
+			}catch( e : haxe.io.Error ){
+				if( e != haxe.io.Error.Blocked )
+					doClose = true;
+			}catch( e : Dynamic ){
+				doClose = true;
+			}
+		}
+
+		if( doClose && connected ){
+			_connected = false;
+			cleanSocket();
+			dispatchEvent( new Event(Event.CLOSE) );
+		}else if( doClose ){
+			_connected = false;
+			cleanSocket();
+			dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Connection failed") );
+		}else if( doConnect ){
+			_connected = true;
+			dispatchEvent( new Event(Event.CONNECT) );
+		}
+		
+		if ( bLength > 0 ){
+			var newData = b.getBytes();
+			var rl = _input.length - _input.position;
+			var newInput = new ByteArray( rl + newData.length );
+			newInput.blit( 0, _input, _input.position, rl );
+			newInput.blit( rl, newData, 0, newData.length );
+			_input = newInput;
+			dispatchEvent( new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0) );
+		}
+		
+		if ( _socket != null ) {
+			try {
+				flush();
+			} catch ( e:IOError ) {
+				dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, e.message) );
+			}
+		}
+		#end
 	}
 
 	private function cleanSocket(){
@@ -155,22 +219,22 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		Lib.current.removeEventListener( Event.ENTER_FRAME, onFrame );
 	}
 
-	public function close(): Void {
-		if( _socket!=null ){
+    public function close(): Void {
+        if( _socket!=null ){
 			cleanSocket();
-		}else{
+        }else{
 			throw new IOError("Operation attempted on invalid socket.");
 		}
-	}
+    }
 	
 	// **** READ ****
 
-	public function readBoolean():Bool {
+    public function readBoolean():Bool {
 		if ( _socket == null ) 
 			throw new IOError("Operation attempted on invalid socket.");
 		return _input.readBoolean();
 	}
-	public function readByte():Int {
+    public function readByte():Int {
 		if ( _socket == null ) 
 			throw new IOError("Operation attempted on invalid socket.");
 		return _input.readByte(); 
@@ -290,22 +354,52 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		_output.writeUnsignedInt(value); 
 	}
 	//public function writeObject( object:Dynamic ):Void {  _output.writeObject(object); }
+	
+	#if js
+	private function onOpenHandler (_):Void {
+		_connected = true;
+		dispatchEvent (new Event (Event.CONNECT));
+	}
 
+	private function onMessageHandler (msg:Dynamic):Void {
+		var newData = ByteArray.__ofBuffer(msg.data);
+		newData.readBytes(_inputBuffer, _inputBuffer.length);
+	}
+	
+
+	private function onCloseHandler (_):Void {
+		
+		dispatchEvent (new Event (Event.CLOSE));
+		
+	}
+
+	private function onErrorHandler (_):Void {
+		
+		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
+		
+	}
+	#end
+	
 	public function flush() {
 		if( _socket == null )
 			throw new IOError("Operation attempted on invalid socket.");
 		if( _output.length > 0 ){
-			_socket.send( _output.__getBuffer() );
-			_output = new ByteArray();
-			_output.endian = endian;
+			try {
+				#if js
+				_socket.send( _output.__getBuffer() );
+				#else
+				_socket.output.write( _output );
+				#end
+				_output = new ByteArray();
+				_output.endian = endian;
+			} catch (e:Dynamic) {
+				throw new IOError("Operation attempted on invalid socket.");
+			}
 		}
 	}
 }
 
 
-#else
-typedef Socket = openfl._v2.net.Socket;
-#end
 #else
 typedef Socket = flash.net.Socket;
 #end

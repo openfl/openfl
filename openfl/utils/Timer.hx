@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash #if (next || js)
+package openfl.utils; #if !flash #if (display || next || js)
 
 
 import haxe.Timer in HaxeTimer;

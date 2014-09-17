@@ -4,6 +4,7 @@
 -cpp obj/docs
 -D display
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -15,6 +16,7 @@ ImportAll
 -cpp obj/docs
 -D display
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -26,6 +28,7 @@ ImportAll
 -D native
 -D windows
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -37,6 +40,7 @@ ImportAll
 -D native
 -D mac
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -48,6 +52,7 @@ ImportAll
 -D native
 -D linux
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -59,6 +64,7 @@ ImportAll
 -D native
 -D ios
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -70,6 +76,7 @@ ImportAll
 -D native
 -D android
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -81,6 +88,7 @@ ImportAll
 -D native
 -D blackberry
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -92,17 +100,19 @@ ImportAll
 -D native
 -D tizen
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
 --next
 
--xml Firefox OS.xml
+-xml Firefox.xml
 -cpp obj/docs
 -D display
 -D html5
--D firefoxos
+-D firefox
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
@@ -113,9 +123,10 @@ ImportAll
 -D display
 -D html5
 ImportAll
+-lib lime
 -lib openfl
 --no-output
 
 --next
 
--cmd haxelib run dox -i . -r /documentation/api -t templates -in openfl
+-cmd haxelib run dox -i . -in openfl

@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash #if (next || js)
+package openfl.geom; #if !flash #if (display || next || js)
 
 
 import openfl.display.DisplayObject;

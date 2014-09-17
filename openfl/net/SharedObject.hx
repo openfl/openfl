@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if (next || js)
+package openfl.net; #if !flash #if (display || next || js)
 
 
 import haxe.io.Bytes;
@@ -169,6 +169,7 @@ class SharedObject extends EventDispatcher {
 
 #else
 typedef SharedObject = openfl._v2.net.SharedObject;
+#end
 #else
 typedef SharedObject = flash.net.SharedObject;
 #end

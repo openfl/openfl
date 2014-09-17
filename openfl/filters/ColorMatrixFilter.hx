@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if (next || js)
+package openfl.filters; #if !flash #if (display || next || js)
 
 
 import openfl.geom.Point;
