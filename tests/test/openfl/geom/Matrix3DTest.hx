@@ -719,9 +719,9 @@ class Matrix3DTest {
 		var rdExpected = expected.rawData;
 		var rdActual = actual.rawData;
 		
-		trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
-		trace("Expected (Matrix3D)("+tolerance+"):"+rdExpected.join(", "));
-		trace("Actual   (Matrix3D)("+tolerance+"):"+rdActual.join(", "));
+		//trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
+		//trace("Expected (Matrix3D)("+tolerance+"):"+rdExpected.join(", "));
+		//trace("Actual   (Matrix3D)("+tolerance+"):"+rdActual.join(", "));
 		
 		Assert.isTrue( nearEquals( rdExpected[  0 ], rdActual[  0 ], tolerance ));
 		Assert.isTrue( nearEquals( rdExpected[  1 ], rdActual[  1 ], tolerance ));
@@ -744,9 +744,9 @@ class Matrix3DTest {
 
 	private function assertVector3DnearEquals( expected:Vector3D, actual:Vector3D, ?tolerance:Float =0.001, ?pos : haxe.PosInfos ) {
 
-		trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
-		trace("Expected (Vector3D)("+tolerance+"):"+expected.x+", "+expected.y+", "+expected.z+", "+expected.w);
-		trace("Actual   (Vector3D)("+tolerance+"):"+actual.x+", "+actual.y+", "+actual.z+", "+actual.w);
+		//trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
+		//trace("Expected (Vector3D)("+tolerance+"):"+expected.x+", "+expected.y+", "+expected.z+", "+expected.w);
+		//trace("Actual   (Vector3D)("+tolerance+"):"+actual.x+", "+actual.y+", "+actual.z+", "+actual.w);
 		
 		Assert.isTrue( nearEquals( expected.x, actual.x, tolerance ));
 		Assert.isTrue( nearEquals( expected.y, actual.y, tolerance ));
@@ -756,11 +756,11 @@ class Matrix3DTest {
 
 	private function assertVectorNearEquals( expected:Vector<Float>, actual:Vector<Float>, ?tolerance:Float =0.001, ?pos : haxe.PosInfos ) {
 
-		trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
+		//trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
 		
 		Assert.areEqual( expected.length, actual.length);
 		for (i in 0...expected.length) {
-		trace("Expected (Vector)("+tolerance+"):"+expected[i]+" == "+actual[i]);
+			//trace("Expected (Vector)("+tolerance+"):"+expected[i]+" == "+actual[i]);
 			Assert.isTrue( nearEquals( expected[i], actual[i], tolerance ));		
 		}
 

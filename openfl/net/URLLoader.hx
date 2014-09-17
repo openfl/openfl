@@ -333,7 +333,7 @@ class URLLoader extends EventDispatcher {
 		
 		return dataFormat;
 		#else
-		return inputVal;
+		return dataFormat = inputVal;
 		#end
 		
 	}
