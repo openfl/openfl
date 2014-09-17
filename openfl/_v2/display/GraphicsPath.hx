@@ -1,6 +1,7 @@
 package openfl._v2.display;
 
 
+import openfl.display.GraphicsPathWinding;
 import openfl.Lib;
 
 

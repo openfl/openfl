@@ -1,6 +1,8 @@
 package openfl._v2.display;
 
 
+import openfl.display.GradientType;
+import openfl.display.InterpolationMethod;
 import openfl.geom.Matrix;
 import openfl.Lib;
 

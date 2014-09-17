@@ -6,6 +6,7 @@ import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.events.EventDispatcher;
+import openfl.net.SharedObjectFlushStatus;
 import openfl.Lib;
 import sys.io.File;
 import sys.io.FileInput;
@@ -151,7 +152,7 @@ class SharedObject extends EventDispatcher {
 	
 	private static function getFilePath (name:String, localPath:String):String {
 		
-		var path = flash.filesystem.File.applicationStorageDirectory.nativePath;
+		var path = openfl._v2.filesystem.File.applicationStorageDirectory.nativePath;
 		path +=  "/" + localPath + "/" + name + ".sol";
 		return path;
 		

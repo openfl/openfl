@@ -173,7 +173,7 @@ class BitmapDataTest {
 		
 		// premultiplied
 		
-		#if !flash
+		#if (!flash && (js || next))
 		var colorTransform = new ColorTransform (0, 0, 0, 1, 0xFF, 0, 0, 0);
 		
 		var bitmapData = new BitmapData (100, 100);
