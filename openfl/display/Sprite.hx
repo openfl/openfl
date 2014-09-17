@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -177,6 +177,9 @@ class Sprite extends DisplayObjectContainer {
 }
 
 
+#else
+typedef Sprite = openfl._v2.display.Sprite;
+#end
 #else
 typedef Sprite = flash.display.Sprite;
 #end

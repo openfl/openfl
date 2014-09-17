@@ -1,4 +1,4 @@
-package openfl;
+package openfl; #if (flash || next || js)
 #if !macro
 
 
@@ -212,4 +212,7 @@ class Lib {
 }
 
 
+#end
+#else
+typedef Lib = openfl._v2.Lib;
 #end

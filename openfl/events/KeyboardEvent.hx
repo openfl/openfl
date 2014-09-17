@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if !flash #if (next || js)
 
 
 import openfl.ui.KeyLocation;
@@ -36,9 +36,28 @@ class KeyboardEvent extends Event {
 	}
 	
 	
+	
+	
+	public override function clone ():Event {
+		
+		return new KeyboardEvent (type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey, controlKey, commandKey);
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return "[KeyboardEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " charCode=" + charCode + " keyCode=" + keyCode + " keyLocation=" + keyLocation + " ctrlKey=" + ctrlKey + " altKey=" + altKey + " shiftKey=" + shiftKey + "]";
+		
+	}
+	
+	
 }
 
 
+#else
+typedef KeyboardEvent = openfl._v2.events.KeyboardEvent;
+#end
 #else
 typedef KeyboardEvent = flash.events.KeyboardEvent;
 #end

@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
@@ -383,6 +383,9 @@ enum DrawCommand {
 }
 
 
+#else
+typedef Graphics = openfl._v2.display.Graphics;
+#end
 #else
 typedef Graphics = flash.display.Graphics;
 #end

@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 enum TextFormatAlign {
@@ -11,6 +11,9 @@ enum TextFormatAlign {
 }
 
 
+#else
+typedef TextFormatAlign = openfl._v2.text.TextFormatAlign;
+#end
 #else
 typedef TextFormatAlign = flash.text.TextFormatAlign;
 #end

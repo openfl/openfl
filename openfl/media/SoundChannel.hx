@@ -1,4 +1,4 @@
-package openfl.media; #if !flash
+package openfl.media; #if !flash #if (next || js)
 
 
 import lime.audio.AudioSource;
@@ -147,6 +147,9 @@ class SoundChannel extends EventDispatcher {
 }
 
 
+#else
+typedef SoundChannel = openfl._v2.media.SoundChannel;
+#end
 #else
 typedef SoundChannel = flash.media.SoundChannel;
 #end

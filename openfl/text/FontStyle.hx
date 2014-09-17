@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 enum FontStyle {
@@ -11,6 +11,9 @@ enum FontStyle {
 }
 
 
+#else
+typedef FontStyle = openfl._v2.text.FontStyle;
+#end
 #else
 typedef FontStyle = flash.text.FontStyle;
 #end

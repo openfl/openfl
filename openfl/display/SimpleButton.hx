@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.DisplayObject;
@@ -149,6 +149,9 @@ class SimpleButton extends DisplayObjectContainer {
 }
 
 
+#else
+typedef SimpleButton = openfl._v2.display.SimpleButton;
+#end
 #else
 typedef SimpleButton = flash.display.SimpleButton;
 #end

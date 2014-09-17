@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom; #if !flash #if (next || js)
 
 
 import lime.math.ColorMatrix;
@@ -82,6 +82,9 @@ class ColorTransform {
 }
 
 
+#else
+typedef ColorTransform = openfl._v2.geom.ColorTransform;
+#end
 #else
 typedef ColorTransform = flash.geom.ColorTransform;
 #end

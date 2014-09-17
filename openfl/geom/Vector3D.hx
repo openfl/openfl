@@ -16,7 +16,7 @@ class Vector3D {
 	public var z:Float;
 	
 	
-	public function new (x:Float = 0., y:Float = 0., z:Float = 0., w:Float = 0.) {
+	public function new (x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0) {
 		
 		this.w = w;
 		this.x = x;
@@ -95,7 +95,7 @@ class Vector3D {
 	}
 	
 	
-	inline public function equals (toCompare:Vector3D, ?allFour:Bool = false):Bool {
+	inline public function equals (toCompare:Vector3D, allFour:Bool = false):Bool {
 		
 		return x == toCompare.x && y == toCompare.y && z == toCompare.z && (!allFour || w == toCompare.w);
 		
@@ -192,35 +192,35 @@ class Vector3D {
 	
 	
 	
-	inline public function get_length ():Float {
+	inline private function get_length ():Float {
 		
 		return Math.sqrt (x * x + y * y + z * z);
 		
 	}
 	
 	
-	inline public function get_lengthSquared ():Float {
+	inline private function get_lengthSquared ():Float {
 		
 		return x * x + y * y + z * z;
 		
 	}
 	
 	
-	inline public static function get_X_AXIS ():Vector3D {
+	inline private static function get_X_AXIS ():Vector3D {
 		
 		return new Vector3D (1, 0, 0);
 		
 	}
 	
 	
-	inline public static function get_Y_AXIS ():Vector3D {
+	inline private static function get_Y_AXIS ():Vector3D {
 		
 		return new Vector3D (0, 1, 0);
 		
 	}
 	
 	
-	inline public static function get_Z_AXIS ():Vector3D {
+	inline private static function get_Z_AXIS ():Vector3D {
 		
 		return new Vector3D (0, 0, 1);
 		

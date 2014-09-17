@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 class Font {
@@ -303,6 +303,9 @@ typedef GlyphData = {
 }*/
 
 
+#else
+typedef Font = openfl._v2.text.Font;
+#end
 #else
 typedef Font = flash.text.Font;
 #end

@@ -15,4 +15,6 @@ extern class SystemEvent extends Event {
 }
 
 
+#elseif (!next && !js && !flash)
+typedef SystemEvent = openfl._v2.events.SystemEvent;
 #end

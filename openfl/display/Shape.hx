@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.canvas.CanvasShape;
@@ -102,6 +102,9 @@ class Shape extends DisplayObject {
 }
 
 
+#else
+typedef Shape = openfl._v2.display.Shape;
+#end
 #else
 typedef Shape = flash.display.Shape;
 #end

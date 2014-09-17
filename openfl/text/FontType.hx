@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 enum FontType {
@@ -10,6 +10,9 @@ enum FontType {
 }
 
 
+#else
+typedef FontType = openfl._v2.text.FontType;
+#end
 #else
 typedef FontType = flash.text.FontType;
 #end

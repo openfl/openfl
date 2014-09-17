@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash
+package openfl.ui; #if !flash #if (next || js)
 
 
 import openfl.Lib;
@@ -25,6 +25,9 @@ class Mouse {
 }
 
 
+#else
+typedef Mouse = openfl._v2.ui.Mouse;
+#end
 #else
 typedef Mouse = flash.ui.Mouse;
 #end

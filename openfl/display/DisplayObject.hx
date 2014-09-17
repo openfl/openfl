@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.RenderSession;
@@ -878,6 +878,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 }
 
 
+#else
+typedef DisplayObject = openfl._v2.display.DisplayObject;
+#end
 #else
 typedef DisplayObject = flash.display.DisplayObject;
 #end

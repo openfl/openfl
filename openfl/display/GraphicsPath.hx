@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.IGraphicsData;
@@ -101,6 +101,8 @@ class GraphicsPath implements IGraphicsData implements IGraphicsPath {
 }
 
 
+#else
+typedef GraphicsPath = openfl._v2.display.GraphicsPath;
 #else
 typedef GraphicsPath = flash.display.GraphicsPath;
 #end

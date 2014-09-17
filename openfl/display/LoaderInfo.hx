@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.events.EventDispatcher;
@@ -64,6 +64,9 @@ class LoaderInfo extends EventDispatcher {
 }
 
 
+#else
+typedef LoaderInfo = openfl._v2.display.LoaderInfo;
+#end
 #else
 typedef LoaderInfo = flash.display.LoaderInfo;
 #end

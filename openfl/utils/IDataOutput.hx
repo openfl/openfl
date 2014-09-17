@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash
+package openfl.utils; #if !flash #if (next || js)
 
 
 interface IDataOutput {
@@ -22,6 +22,9 @@ interface IDataOutput {
 }
 
 
+#else
+typedef IDataOutput = openfl._v2.utils.IDataOutput;
+#end
 #else
 typedef IDataOutput = flash.utils.IDataOutput;
 #end

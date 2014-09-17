@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.RenderSession;
@@ -16,6 +16,9 @@ interface IBitmapDrawable {
 }
 
 
+#else
+typedef IBitmapDrawable = openfl._v2.display.IBitmapDrawable;
+#end
 #else
 typedef IBitmapDrawable = flash.display.IBitmapDrawable;
 #end

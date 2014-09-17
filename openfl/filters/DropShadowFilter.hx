@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash
+package openfl.filters; #if !flash #if (next || js)
 
 
 class DropShadowFilter extends BitmapFilter {
@@ -46,6 +46,9 @@ class DropShadowFilter extends BitmapFilter {
 }
 
 
+#else
+typedef DropShadowFilter = openfl._v2.filters.DropShadowFilter;
+#end
 #else
 typedef DropShadowFilter = flash.filters.DropShadowFilter;
 #end

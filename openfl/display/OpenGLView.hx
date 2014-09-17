@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if (flash || next || js)
 
 
 #if !flash
@@ -193,3 +193,8 @@ class OpenGLView extends DirectRenderer {
 	
 	
 }
+
+
+#else
+typedef OpenGLView = openfl._v2.display.OpenGLView;
+#end

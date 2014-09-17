@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net; #if !flash #if (next || js)
 
 
 import openfl.events.Event;
@@ -345,6 +345,9 @@ class URLLoader extends EventDispatcher {
 typedef XMLHttpRequestProgressEvent = Dynamic;
 
 
+#else
+typedef URLLoader = openfl._v2.net.URLLoader;
+#end
 #else
 typedef URLLoader = flash.net.URLLoader;
 #end

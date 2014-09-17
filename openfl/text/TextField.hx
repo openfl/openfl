@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if !flash #if (next || js)
 
 
 import lime.graphics.opengl.GLTexture;
@@ -801,6 +801,9 @@ class TextFormatRange {
 }
 
 
+#else
+typedef TextField = openfl._v2.text.TextField;
+#end
 #else
 typedef TextField = flash.text.TextField;
 #end

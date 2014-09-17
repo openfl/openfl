@@ -1,17 +1,6 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
-#if (haxe > 3.100)
 
-@:enum abstract LineScaleMode(String) to String {
-
-	var HORIZONTAL = "horizontal";
-	var NONE = "none";
-	var NORMAL = "normal";
-	var VERTICAL = "vertical";
-
-}
-
-#else
 enum LineScaleMode {
 	
 	HORIZONTAL;
@@ -20,9 +9,11 @@ enum LineScaleMode {
 	VERTICAL;
 	
 }
+
+
+#else
+typedef LineScaleMode = openfl._v2.display.LineScaleMode;
 #end
-
-
 #else
 typedef LineScaleMode = flash.display.LineScaleMode;
 #end

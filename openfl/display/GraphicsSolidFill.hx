@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl.display.IGraphicsData;
@@ -28,6 +28,9 @@ class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill {
 }
 
 
+#else
+typedef GraphicsSolidFill = openfl._v2.display.GraphicsSolidFill;
+#end
 #else
 typedef GraphicsSolidFill = flash.display.GraphicsSolidFill;
 #end

@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if !flash #if (next || js)
 
 
 import openfl._internal.renderer.RenderSession;
@@ -609,6 +609,9 @@ class DisplayObjectContainer extends InteractiveObject {
 }
 
 
+#else
+typedef DisplayObjectContainer = openfl._v2.display.DisplayObjectContainer;
+#end
 #else
 typedef DisplayObjectContainer = flash.display.DisplayObjectContainer;
 #end

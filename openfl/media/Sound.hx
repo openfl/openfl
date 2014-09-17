@@ -1,4 +1,4 @@
-package openfl.media; #if !flash
+package openfl.media; #if !flash #if (next || js)
 
 
 import haxe.io.Path;
@@ -318,6 +318,9 @@ class Sound extends EventDispatcher {
 #end
 
 
+#else
+typedef Sound = openfl._v2.media.Sound;
+#end
 #else
 typedef Sound = flash.media.Sound;
 #end

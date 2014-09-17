@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net; #if !flash #if (next || js)
 
 
 class URLRequestMethod {
@@ -13,6 +13,9 @@ class URLRequestMethod {
 }
 
 
+#else
+typedef URLRequestMethod = openfl._v2.net.URLRequestMethod;
+#end
 #else
 typedef URLRequestMethod = flash.net.URLRequestMethod;
 #end

@@ -33,8 +33,17 @@ class FocusEvent extends Event {
 		var event = new FocusEvent (type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
 		event.target = target;
 		event.currentTarget = currentTarget;
+		#if next
 		event.eventPhase = eventPhase;
+		#end
 		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return "[FocusEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " relatedObject=" + relatedObject + " shiftKey=" + shiftKey + " keyCode=" + keyCode + "]";
 		
 	}
 	
