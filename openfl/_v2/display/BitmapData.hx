@@ -11,7 +11,7 @@ import openfl.utils.ByteArray;
 import openfl.Lib;
 
 
-@:autoBuild(openfl.Assets.embedBitmap())
+@:autoBuild(openfl._v2.Assets.embedBitmap())
 class BitmapData implements IBitmapDrawable {
 	
 	

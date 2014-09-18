@@ -22,7 +22,7 @@ import openfl.utils.IMemoryRange;
 import openfl.Lib;
 
 
-//@:autoBuild(openfl.Assets.embedFile())
+@:autoBuild(openfl._v2.Assets.embedFile())
 class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput implements IMemoryRange implements IDataOutput {
 	
 

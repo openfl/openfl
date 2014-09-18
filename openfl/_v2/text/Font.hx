@@ -7,7 +7,7 @@ import openfl.utils.ByteArray;
 import openfl.Lib;
 
 
-@:autoBuild(openfl.Assets.embedFont())
+@:autoBuild(openfl._v2.Assets.embedFont())
 class Font {
 	
 	

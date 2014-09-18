@@ -15,7 +15,7 @@ import openfl.utils.Endian;
 import openfl.Lib;
 
 
-@:autoBuild(openfl.Assets.embedSound())
+@:autoBuild(openfl._v2.Assets.embedSound())
 class Sound extends EventDispatcher {
 	
 	
