@@ -192,6 +192,28 @@ class BitmapData implements IBitmapDrawable {
 				var renderSession = new RenderSession ();
 				renderSession.context = buffer.__srcContext;
 				renderSession.roundPixels = true;
+				if (blendMode != null) {
+					
+					renderSession.currentBlendMode = blendMode;
+					
+				}
+				
+				if (colorTransform != null && Std.is(source, BitmapData)) {
+					var tmp = colorTransform.alphaMultiplier;
+					buffer.__srcContext.globalAlpha = tmp;
+					
+					if (colorTransform.redMultiplier == 1 && colorTransform.blueMultiplier == 1 && colorTransform.greenMultiplier == 1) {
+						// only alpha
+					} else {
+						colorTransform.alphaMultiplier = 1;
+						var bd = cast (source, BitmapData);
+						bd.colorTransform(bd.rect, colorTransform);
+						colorTransform.alphaMultiplier = tmp;
+					}
+				} else {
+					buffer.__srcContext.globalAlpha = 1;
+				}
+				buffer.__srcContext.globalAlpha = colorTransform == null ? 1 : colorTransform.alphaMultiplier;
 				
 				if (!smoothing) {
 					
@@ -831,7 +853,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__worldTransform == null) __worldTransform = new Matrix ();
 		
-		context.globalAlpha = 1;
+		if (context.globalAlpha >= 1) context.globalAlpha = 1;
+		
 		var transform = __worldTransform;
 		
 		if (renderSession.roundPixels) {
@@ -845,6 +868,8 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		context.drawImage (__image.buffer.src, 0, 0);
+		
+		if (context.globalAlpha != 1) context.globalAlpha = 1;
 		#end
 		
 	}
