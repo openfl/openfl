@@ -39,7 +39,7 @@ before_script:
 script:
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
-  - haxelib run aether test linux
+  - haxelib run aether test linux -Dnext
   - cd $TRAVIS_BUILD_DIR/documentation
   - haxe build.hxml
 
