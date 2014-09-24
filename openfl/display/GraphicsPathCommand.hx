@@ -1,6 +1,13 @@
 package openfl.display; #if !flash
 
 
+/**
+ * Defines the values to use for specifying path-drawing commands.
+ *
+ * <p>The values in this class are used by the
+ * <code>Graphics.drawPath()</code> method, or stored in the
+ * <code>commands</code> vector of a GraphicsPath object.</p>
+ */
 class GraphicsPathCommand {
 	
 	public static inline var LINE_TO = 2;

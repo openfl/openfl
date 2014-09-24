@@ -733,7 +733,7 @@ class Assets {
 }
 
 
-class AssetLibrary extends LimeAssetLibrary {
+@:dox(hide) class AssetLibrary extends LimeAssetLibrary {
 	
 	
 	public function new () {
@@ -788,7 +788,7 @@ class AssetLibrary extends LimeAssetLibrary {
 }
 
 
-class AssetCache {
+@:dox(hide) class AssetCache {
 	
 	
 	public var bitmapData:Map<String, BitmapData>;
@@ -860,7 +860,7 @@ class AssetCache {
 }
 
 
-@:enum abstract AssetType(String) {
+@:dox(hide) @:enum abstract AssetType(String) {
 	
 	var BINARY = "BINARY";
 	var FONT = "FONT";

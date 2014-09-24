@@ -411,7 +411,7 @@ abstract Vector<T>(VectorData<T>) {
 }
 
 
-class VectorData<T> {
+@:dox(hide) class VectorData<T> {
 	
 	
 	public var data:haxe.ds.Vector<T>;
@@ -429,7 +429,7 @@ class VectorData<T> {
 }
 
 
-class VectorDataIterator<T> {
+@:dox(hide) class VectorDataIterator<T> {
 	
 	
 	private var index:Int;
