@@ -54,5 +54,5 @@ script:
   - cd $TRAVIS_BUILD_DIR/documentation
   - haxe build.hxml
 
-#notifications:
-  #slack: openfl:ba3HbgtZflW8TNcJEQ1B4tAY
+notifications:
+  slack: openfl:ba3HbgtZflW8TNcJEQ1B4tAY
