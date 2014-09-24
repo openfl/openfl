@@ -1,4 +1,4 @@
-package openfl.display; #if !flash  #if (next || js || display)
+package openfl.display; #if !flash  #if (display|| openfl_next || js)
 
 
 /**

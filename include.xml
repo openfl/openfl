@@ -2,7 +2,11 @@
 <extension>
 	
 	<haxedef name="native" if="cpp || neko" />
-	<set name="legacy" if="native" unless="next" />
+	
+	<set name="openfl-next" if="next || openfl_next" />
+	<haxedef name="openfl-next" if="openfl-next" />
+	<set name="lime-legacy" if="native || legacy || lime_legacy" unless="openfl-next" />
+	
 	<unset name="custom-backend" />
 	
 	<section unless="no-custom-backend">
@@ -22,7 +26,7 @@
 		
 	</section>
 	
-	<haxelib name="lime" unless="create || native legacy" />
+	<haxelib name="lime" unless="create || native lime-legacy" />
 	<include haxelib="aether" />
 	<template path="templates" />
 	
@@ -38,7 +42,7 @@
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<section if="legacy">
+			<section if="lime-legacy">
 				
 				<include haxelib="lime" />
 				<source path="legacy" />

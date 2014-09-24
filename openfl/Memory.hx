@@ -1,4 +1,4 @@
-package openfl; #if !flash #if (display || next || js)
+package openfl; #if !flash #if (display || openfl_next || js)
 
 
 import haxe.io.BytesData;

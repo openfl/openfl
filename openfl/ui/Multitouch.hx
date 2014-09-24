@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if (display || next || js)
+package openfl.ui; #if !flash #if (display || openfl_next || js)
 
 
 import openfl.ui.MultitouchInputMode;

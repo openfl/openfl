@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if (display || next || js)
+package openfl.text; #if !flash #if (display || openfl_next || js)
 
 
 import lime.graphics.opengl.GLTexture;

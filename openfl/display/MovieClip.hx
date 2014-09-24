@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if (display || next || js)
+package openfl.display; #if !flash #if (display || openfl_next || js)
 
 
 class MovieClip extends Sprite {

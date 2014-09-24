@@ -1,4 +1,4 @@
-package openfl; #if (flash || next || js || display)
+package openfl; #if (flash || openfl_next || js || display)
 #if !macro
 
 

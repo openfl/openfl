@@ -1,4 +1,4 @@
-package openfl.utils; #if (flash || next || js || display)
+package openfl.utils; #if (flash || openfl_next || js || display)
 
 
 import openfl.utils.ByteArray;

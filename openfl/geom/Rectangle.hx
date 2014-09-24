@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash #if (display || next || js)
+package openfl.geom; #if !flash #if (display || openfl_next || js)
 
 
 import lime.math.Rectangle in LimeRectangle;
