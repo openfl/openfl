@@ -806,9 +806,9 @@ class Graphics {
 	 *                     has a specific maximum angle for which the miter is
 	 *                     cut off. The following table lists some examples:</p>
 	 */
-	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
+	public function lineStyle (thickness:Float = 0, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void {
 		
-		__halfStrokeWidth = (thickness != null) ? thickness / 2 : 0;
+		__halfStrokeWidth = (thickness != 0) ? thickness / 2 : 0;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
@@ -947,7 +947,7 @@ class Graphics {
 	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 	EndFill;
-	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
+	LineStyle (thickness:Float, color:Int, alpha:Float, pixelHinting:Bool, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Float);
 	LineTo (x:Float, y:Float);
 	MoveTo (x:Float, y:Float);
 	
