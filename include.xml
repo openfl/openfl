@@ -3,9 +3,9 @@
 	
 	<haxedef name="native" if="cpp || neko" />
 	
-	<set name="openfl-next" if="next || openfl_next" />
+	<set name="openfl-next" value="1" if="next || openfl_next" />
 	<haxedef name="openfl-next" if="openfl-next" />
-	<set name="lime-legacy" if="native || legacy || lime_legacy" unless="openfl-next" />
+	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next" />
 	
 	<unset name="custom-backend" />
 	
