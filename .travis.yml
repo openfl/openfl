@@ -37,8 +37,8 @@ install:
   - cd ~/munit/tool
   - haxe build.hxml
   - cd ~/hxcpp/project
-  - haxelib run hxcpp Build.xml -Dlinux
-  - haxelib run hxcpp Build.xml -Dlinux -Dstatic_link
+  - haxelib run hxcpp Build.xml -Dlinux -DHXCPP_M64
+  - haxelib run hxcpp Build.xml -Dlinux -Dstatic_link -DHXCPP_M64
   - haxelib run aether rebuild lime linux -release -64
   - cd ~/nme-dev/project
   - neko build.n linux
