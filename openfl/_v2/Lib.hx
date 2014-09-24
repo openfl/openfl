@@ -46,6 +46,7 @@ class Lib {
 	@:noCompletion private static var __moduleNames:Map<String, String> = null;
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
 	@:noCompletion private static var __stage:Stage = null;
+	@:noCompletion private static var __uncaughtExceptionHandler:UncaughtErrorEvent->Bool = null;
 	
 	
 	public inline static function as<T> (v:Dynamic, c:Class<T>):Null<T> {
@@ -288,6 +289,13 @@ class Lib {
 	public static function rethrow (error:Dynamic):Void {
 		
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, error);
+		
+		if (__uncaughtExceptionHandler != null && __uncaughtExceptionHandler (event)) {
+			
+			return;
+			
+		}
+		
 		Lib.current.loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
 		
 		if (!event.__getIsCancelled ()) {
@@ -320,6 +328,13 @@ class Lib {
 			Sys.exit (1);
 			
 		}
+		
+	}
+	
+	
+	public static function setUncaughtExceptionHandler (f:UncaughtErrorEvent->Bool):Void {
+		
+		__uncaughtExceptionHandler = f;
 		
 	}
 	
