@@ -39,8 +39,9 @@ install:
   - haxelib run aether rebuild lime linux -release -64
   - cd ~/nme-dev/project
   - neko build.n linux
-  - haxelib run aether rebuild lime linux -release -64 -Dlegacy
   - haxelib run aether rebuild hxcpp linux
+  - haxelib run aether rebuild hxcpp linux -static
+  - haxelib run aether rebuild lime linux -release -64 -Dlegacy
   - haxelib run aether rebuild tools
 
 before_script:
