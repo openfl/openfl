@@ -202,7 +202,7 @@ class Graphics {
 	}
 	
 	
-	public function lineStyle (thickness:Float = null, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void {
+	public function lineStyle (thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void {
 		
 		lime_gfx_line_style (__handle, thickness, color, alpha, pixelHinting, scaleMode == null ?  0 : Type.enumIndex (scaleMode), caps == null ?  0 : Type.enumIndex (caps), joints == null ?  0 : Type.enumIndex (joints), miterLimit);
 		
