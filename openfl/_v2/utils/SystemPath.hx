@@ -2,7 +2,7 @@ package openfl._v2.utils;
 
 
 import openfl.Lib;
-import openfl.utils.JNI;
+import openfl._v2.utils.JNI;
 
 
 class SystemPath {

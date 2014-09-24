@@ -24,7 +24,7 @@ import sys.FileSystem;
 #end
 
 #if ios
-import openfl.utils.SystemPath;
+import openfl._v2.utils.SystemPath;
 #end
 
 
