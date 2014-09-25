@@ -103,6 +103,13 @@ class Point {
 	}
 	
 	
+	public function toString ():String {
+		
+		return "(x=" + x + ", y=" + y + ")";
+		
+	}
+	
+	
 	private function __toLimeVector2 ():Vector2 {
 		
 		return new Vector2 (x, y);

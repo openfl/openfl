@@ -160,7 +160,7 @@ class Assets {
 	}
 	
 	
-	private static function getLibrary (name:String):AssetLibrary {
+	private static function getLibrary (name:String):lime.Assets.AssetLibrary {
 		
 		if (name == null || name == "") {
 			
@@ -187,7 +187,7 @@ class Assets {
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
+		var library:AssetLibrary = cast getLibrary (libraryName);
 		
 		if (library != null) {
 			
@@ -606,7 +606,7 @@ class Assets {
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
+		var library:AssetLibrary = cast getLibrary (libraryName);
 		
 		if (library != null) {
 			

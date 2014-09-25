@@ -585,7 +585,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void):BitmapData {
+	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
 		bitmapData.__loadFromBase64 (base64, type, onload);
@@ -594,7 +594,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void):BitmapData {
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
 		bitmapData.__loadFromBytes (bytes, rawAlpha, onload);

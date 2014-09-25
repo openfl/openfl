@@ -2,6 +2,7 @@ package openfl._v2;
 #if !macro
 
 
+import haxe.Json;
 import haxe.Unserializer;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -863,14 +864,12 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		var data = getText ("libraries/" + name + ".dat");
+		var data = getText ("libraries/" + name + ".json");
 		
 		if (data != null && data != "") {
 			
-			var unserializer = new Unserializer (data);
-			unserializer.setResolver (cast { resolveEnum: resolveEnum, resolveClass: resolveClass });
-			
-			var library:AssetLibrary = unserializer.unserialize ();
+			var info = Json.parse (data);
+			var library = Type.createInstance (Type.resolveClass (info.type), info.args);
 			libraries.set (name, library);
 			library.eventCallback = library_onEvent;
 			library.load (handler);
