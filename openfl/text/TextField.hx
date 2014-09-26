@@ -161,7 +161,7 @@ class TextField extends InteractiveObject {
 		
 		openfl.Lib.notImplemented ("TextField.getLineMetrics");
 		
-		return null;
+		return new TextLineMetrics (0, 0, 0, 0, 0, 0);
 		
 	}
 	
