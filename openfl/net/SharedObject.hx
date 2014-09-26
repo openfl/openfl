@@ -48,7 +48,7 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	public function flush ():SharedObjectFlushStatus {
+	public function flush (minDiskSpace:Int = 0):SharedObjectFlushStatus {
 		
 		#if js
 		var data = Serializer.run (data);
