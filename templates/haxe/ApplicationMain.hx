@@ -13,7 +13,8 @@ class ApplicationMain {
 	
 	public static function create ():Void {
 		
-		preloader = new ::if (PRELOADER_NAME != "")::::PRELOADER_NAME::::else::openfl.display.Preloader::end:: ();
+		//preloader = new ::if (PRELOADER_NAME != "")::::PRELOADER_NAME::::else::openfl.display.Preloader::end:: ();
+		preloader = new openfl.display.Preloader ();
 		preloader.onComplete = start;
 		preloader.create (config);
 		
