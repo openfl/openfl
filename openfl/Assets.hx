@@ -916,7 +916,7 @@ class Assets {
 	
 	macro public static function embedBitmap ():Array<Field> {
 		
-		#if (html5 && !openfl_html5_dom)
+		#if html5
 		var fields = embedData (":bitmap", true);
 		#else
 		var fields = embedData (":bitmap");
@@ -927,53 +927,22 @@ class Assets {
 			var constructor = macro { 
 				
 				#if html5
-				#if openfl_html5_dom
-				
-				super (width, height, transparent, fillRGBA);
-				
-				var currentType = Type.getClass (this);
-				
-				if (preload != null) {
-					
-					___textureBuffer.width = Std.int (preload.width);
-					___textureBuffer.height = Std.int (preload.height);
-					rect = new openfl.geom.Rectangle (0, 0, preload.width, preload.height);
-					setPixels(rect, preload.getPixels(rect));
-					__buildLease();
-					
-				} else {
-					
-					var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes(resourceName));
-					
-					if (onload != null && !Std.is (onload, Bool)) {
-						
-						__loadFromBytes(byteArray, null, onload);
-						
-					} else {
-						
-						__loadFromBytes(byteArray);
-						
-					}
-					
-				}
-				
-				#else
 				
 				super (0, 0, transparent, fillRGBA);
 				
 				if (preload != null) {
 					
-					__sourceImage = preload;
-					width = __sourceImage.width;
-					height = __sourceImage.height;
+					__image = preload;
+					width = __image.width;
+					height = __image.height;
 					
 				} else {
 					
-					__loadFromBase64 (haxe.Resource.getString(resourceName), resourceType, function (b) {
+					__loadFromBase64 (haxe.Resource.getString (resourceName), resourceType, function (b) {
 						
 						if (preload == null) {
 							
-							preload = b.__sourceImage;
+							preload = b.__image;
 							
 						}
 						
@@ -987,7 +956,6 @@ class Assets {
 					
 				}
 				
-				#end
 				#else
 				
 				super (width, height, transparent, fillRGBA);
@@ -1003,11 +971,7 @@ class Assets {
 			
 			#if html5
 			args.push ({ name: "onload", opt: true, type: macro :Dynamic, value: null });
-			#if openfl_html5_dom
-			fields.push ({ kind: FVar(macro :openfl.display.BitmapData, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
-			#else
-			fields.push ({ kind: FVar(macro :js.html.Image, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
-			#end
+			fields.push ({ kind: FVar(macro :lime.graphics.Image, null), name: "preload", doc: null, meta: [], access: [ APublic, AStatic ], pos: Context.currentPos() });
 			#end
 			
 			fields.push ({ name: "new", access: [ APublic ], kind: FFun({ args: args, expr: constructor, params: [], ret: null }), pos: Context.currentPos() });
@@ -1099,11 +1063,7 @@ class Assets {
 				
 				super();
 				
-				#if openfl_html5_dom
-				nmeFromBytes (haxe.Resource.getBytes (resourceName));
-				#else
 				__fromBytes (haxe.Resource.getBytes (resourceName));
-				#end
 				
 			};
 			
