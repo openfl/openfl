@@ -3,7 +3,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2013-2014 OpenFL Technologies and contributors
+Copyright (c) 2013-2014 OpenFL contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@ THE SOFTWARE.
 
 Portions of other MIT-license projects are also used, including content that is
 
-Copyright (c) 2007-2014 NME contributors
-Copyright (c) 2013-2014 Mathew Groves
+    Copyright (c) 2007-2014 NME contributors
+    Copyright (c) 2013-2014 Mathew Groves
 
 -------
 
