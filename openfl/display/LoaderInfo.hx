@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if (display || openfl_next || js)
 
 
 import openfl.events.EventDispatcher;
+import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
 
@@ -24,6 +25,7 @@ class LoaderInfo extends EventDispatcher {
 	public var parentAllowsChild (default, null):Bool;
 	public var sameDomain (default, null):Bool;
 	public var sharedEvents (default, null):EventDispatcher;
+	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
 	public var url (default, null):String;
 	public var width (default, null):Int;
 	//static function getLoaderInfoByDefinition(object : Dynamic) : LoaderInfo;
@@ -42,21 +44,22 @@ class LoaderInfo extends EventDispatcher {
 	}
 	
 	
-	public static function create (ldr:Loader):LoaderInfo {
+	public static function create (loader:Loader):LoaderInfo {
 		
-		var li = new LoaderInfo ();
+		var loaderInfo = new LoaderInfo ();
+		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents ();
 		
-		if (ldr != null) {
+		if (loader != null) {
 			
-			li.loader = ldr;
+			loaderInfo.loader = loader;
 			
 		} else {
 			
-			li.url = "";
+			loaderInfo.url = "";
 			
 		}
 		
-		return li;
+		return loaderInfo;
 		
 	}
 	
