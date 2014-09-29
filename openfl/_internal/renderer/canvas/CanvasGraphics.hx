@@ -19,6 +19,7 @@ import js.Browser;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.Tilesheet)
 
 
 class CanvasGraphics {
