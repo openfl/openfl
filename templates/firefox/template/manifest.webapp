@@ -14,5 +14,6 @@
     "name": "::META_COMPANY::",
     "url": "::META_COMPANY_URL::"
   },
-  "orientation": ::if (WIN_ORIENTATION == "landscape")::"landscape"::else::"portrait"::end::
+  "orientation": ::if (WIN_ORIENTATION == "landscape")::"landscape"::else::"portrait"::end::,
+  "fullscreen": "::WIN_FULLSCREEN::"
 }
