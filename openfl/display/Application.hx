@@ -452,7 +452,7 @@ class Application extends LimeApplication {
 			
 		}
 		
-		if (stage.__hitTest (x, x, false, __stack, true)) {
+		if (stage.__hitTest (x, y, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
 			var localPoint = target.globalToLocal (point);
