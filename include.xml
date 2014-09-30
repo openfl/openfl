@@ -33,7 +33,7 @@
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
 	
-	<section unless="display || custom-backend">
+	<section unless="custom-backend">
 		
 		<section if="native">
 			
@@ -45,7 +45,6 @@
 			<section if="lime-legacy">
 				
 				<include haxelib="lime" />
-				<source path="legacy" />
 				<template path="templates/v2" />
 				
 			</section>
