@@ -27,7 +27,7 @@
 	</section>
 	
 	<haxelib name="lime" unless="create || native lime-legacy" />
-	<include haxelib="aether" />
+	<!-- <include haxelib="aether" /> -->
 	<template path="templates" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
@@ -72,7 +72,7 @@
 	
 	<section if="setup">
 		
-		<haxelib name="aether" />
+		<!-- <haxelib name="aether" /> -->
 		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
 		<haxelib name="swf" />

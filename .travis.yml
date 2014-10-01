@@ -16,8 +16,6 @@ install:
   - haxelib setup ~/haxelib
   - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1
   - haxelib dev lime ~/lime
-  - git clone https://github.com/openfl/aether ~/aether --depth 1
-  - haxelib dev aether ~/aether
   - git clone --recursive https://github.com/haxenme/nme ~/nme --depth 1
   - haxelib dev nme ~/nme
   - git clone --recursive https://github.com/haxenme/nme-dev ~/nme-dev --depth 1
@@ -39,11 +37,11 @@ install:
   - cd ~/hxcpp/project
   - haxelib run hxcpp Build.xml -Dlinux -DHXCPP_M64
   - haxelib run hxcpp Build.xml -Dlinux -Dstatic_link -DHXCPP_M64
-  - haxelib run aether rebuild lime linux -release -64
+  - haxelib run lime rebuild lime linux -release -64 -nocffi
   - cd ~/nme-dev/project
   - neko build.n linux
-  - haxelib run aether rebuild lime linux -release -64 -Dlegacy
-  - haxelib run aether rebuild tools
+  - haxelib run lime rebuild lime linux -release -64 -Dlegacy -nocffi
+  - haxelib run lime rebuild tools
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/tests
@@ -51,7 +49,7 @@ before_script:
 script:
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
-  - haxelib run aether test linux
+  - haxelib run lime test linux
   - cd $TRAVIS_BUILD_DIR/documentation
   - haxe build.hxml
 
