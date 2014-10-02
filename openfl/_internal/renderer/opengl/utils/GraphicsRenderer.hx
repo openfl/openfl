@@ -5,6 +5,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer.RenderMode;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -28,16 +29,16 @@ class GraphicsRenderer {
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	
 	
-	public static function buildCircle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+	public static function buildCircle (drawPath:DrawPath, glData:GLGraphicsData):Void {
 		
-		var rectData = graphicsData.points;
+		var rectData = drawPath.points;
 
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
 		var height = (rectData.length == 3) ? width : rectData[3];
 
-		if(graphicsData.type == Ellipse) {
+		if(drawPath.type == Ellipse) {
 
 			width /= 2;
 			height /= 2;
@@ -50,17 +51,17 @@ class GraphicsRenderer {
 		var totalSegs = 40;
 		var seg = (Math.PI * 2) / totalSegs;
 		
-		if (graphicsData.hasFill) {
+		if (drawPath.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fill.color);
-			var alpha = getAlpha(graphicsData.fill);
+			var color = hex2rgb (drawPath.fill.color);
+			var alpha = getAlpha(drawPath.fill);
 			
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
 			
-			var verts = webGLData.points;
-			var indices = webGLData.indices;
+			var verts = glData.data;
+			var indices = glData.indices;
 			
 			var vecPos = Std.int (verts.length / 6);
 			
@@ -91,35 +92,35 @@ class GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.line.width > 0) {
+		if (drawPath.line.width > 0) {
 			
-			var tempPoints = graphicsData.points;
-			graphicsData.points = [];
+			var tempPoints = drawPath.points;
+			drawPath.points = [];
 			
 			for (i in 0...totalSegs + 1) {
 				
-				graphicsData.points.push (x + Math.sin (seg * i) * width);
-				graphicsData.points.push (y + Math.cos (seg * i) * height);
+				drawPath.points.push (x + Math.sin (seg * i) * width);
+				drawPath.points.push (y + Math.cos (seg * i) * height);
 				
 			}
 			
-			buildLine (graphicsData, webGLData);
-			graphicsData.points = tempPoints;
+			buildLine (drawPath, glData);
+			drawPath.points = tempPoints;
 			
 		}
 		
 	}
 	
 	
-	private static function buildComplexPoly (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+	private static function buildComplexPoly (drawPath:DrawPath, glData:GLGraphicsData):Void {
 		
-		var points:Array<Float> = graphicsData.points.copy();
+		var points:Array<Float> = drawPath.points.copy();
 		if (points.length < 6) return;
 		
-		var indices = webGLData.indices;
-		webGLData.points = points;
-		webGLData.alpha = getAlpha(graphicsData.fill);
-		webGLData.color = hex2rgb (graphicsData.fill.color);
+		var indices = glData.indices;
+		glData.data = points;
+		glData.alpha = getAlpha(drawPath.fill);
+		glData.tint = hex2rgb (drawPath.fill.color);
 		
 		var minX:Null<Float> = null;
 		var maxX:Null<Float> = null;
@@ -162,12 +163,12 @@ class GraphicsRenderer {
 	}
 	
 	
-	public static function buildLine (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+	public static function buildLine (drawPath:DrawPath, glData:GLGraphicsData):Void {
 		
-		var points:Array<Float> = graphicsData.points;
+		var points:Array<Float> = drawPath.points;
 		if (points.length == 0) return;
 		
-		if (graphicsData.line.width % 2 > 0) {
+		if (drawPath.line.width % 2 > 0) {
 			
 			for (i in 0...points.length) {
 				
@@ -199,16 +200,16 @@ class GraphicsRenderer {
 			
 		}
 		
-		var verts = webGLData.points;
-		var indices = webGLData.indices;
+		var verts = glData.data;
+		var indices = glData.indices;
 		var length = Std.int (points.length / 2);
 		var indexCount = points.length;
 		var indexStart = Std.int (verts.length / 6);
 		
-		var width = graphicsData.line.width / 2;
+		var width = drawPath.line.width / 2;
 		
-		var color = hex2rgb (graphicsData.line.color);
-		var alpha = graphicsData.line.alpha;
+		var color = hex2rgb (drawPath.line.color);
+		var alpha = drawPath.line.alpha;
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
@@ -405,17 +406,17 @@ class GraphicsRenderer {
 	}
 	
 	
-	public static function buildPoly (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+	public static function buildPoly (drawPath:DrawPath, glData:GLGraphicsData):Void {
 		
-		var points:Array<Float> = graphicsData.points;
+		var points:Array<Float> = drawPath.points;
 		if (points.length < 6) return;
 		
-		var verts = webGLData.points;
-		var indices = webGLData.indices;
+		var verts = glData.data;
+		var indices = glData.indices;
 		var length = Std.int (points.length / 2);
 		
-		var color = hex2rgb (graphicsData.fill.color);
-		var alpha = getAlpha(graphicsData.fill);
+		var color = hex2rgb (drawPath.fill.color);
+		var alpha = getAlpha(drawPath.fill);
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
@@ -449,24 +450,24 @@ class GraphicsRenderer {
 	}
 	
 	
-	public static function buildRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+	public static function buildRectangle (drawPath:DrawPath, glData:GLGraphicsData):Void {
 		
-		var rectData = graphicsData.points;
+		var rectData = drawPath.points;
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
 		var height = rectData[3];
 		
-		if (graphicsData.hasFill) {
+		if (drawPath.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fill.color);
-			var alpha = getAlpha(graphicsData.fill);
+			var color = hex2rgb (drawPath.fill.color);
+			var alpha = getAlpha(drawPath.fill);
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
 			
-			var verts = webGLData.points;
-			var indices = webGLData.indices;
+			var verts = glData.data;
+			var indices = glData.indices;
 			
 			var vertPos = Std.int (verts.length / 6);
 			
@@ -507,23 +508,21 @@ class GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.line.width > 0) {
+		if (drawPath.line.width > 0) {
 			
-			var tempPoints = graphicsData.points;
-			graphicsData.points = [ x, y, x + width, y, x + width, y + height, x, y + height, x, y];
-			buildLine (graphicsData, webGLData);
-			graphicsData.points = tempPoints;
+			var tempPoints = drawPath.points;
+			drawPath.points = [ x, y, x + width, y, x + width, y + height, x, y + height, x, y];
+			buildLine (drawPath, glData);
+			drawPath.points = tempPoints;
 			
 		}
 		
 	}
 	
 	
-	public static function buildRoundedRectangle (graphicsData:DrawPath, webGLData:GLGraphicsData):Void {
+	public static function buildRoundedRectangle (drawPath:DrawPath, glData:GLGraphicsData):Void {
 		
-		// TODO implementation differ from Flash!
-		
-		var points = graphicsData.points.copy();
+		var points = drawPath.points.copy();
 		var x = points[0];
 		var y = points[1];
 		var width = points[2];
@@ -539,16 +538,16 @@ class GraphicsRenderer {
 		recPoints = recPoints.concat (quadraticBezierCurve (x + width, y + radius, x + width, y, x + width - radius, y));
 		recPoints = recPoints.concat (quadraticBezierCurve (x + radius, y, x, y, x, y + radius));
 		
-		if (graphicsData.hasFill) {
+		if (drawPath.hasFill) {
 			
-			var color = hex2rgb (graphicsData.fill.color);
-			var alpha = getAlpha(graphicsData.fill);
+			var color = hex2rgb (drawPath.fill.color);
+			var alpha = getAlpha(drawPath.fill);
 			var r = color[0] * alpha;
 			var g = color[1] * alpha;
 			var b = color[2] * alpha;
 			
-			var verts = webGLData.points;
-			var indices = webGLData.indices;
+			var verts = glData.data;
+			var indices = glData.indices;
 			
 			var vecPos = verts.length / 6;
 			
@@ -580,12 +579,12 @@ class GraphicsRenderer {
 			
 		}
 		
-		if (graphicsData.line.width > 0) {
+		if (drawPath.line.width > 0) {
 			
-			var tempPoints = graphicsData.points;
-			graphicsData.points = recPoints;
-			buildLine (graphicsData, webGLData);
-			graphicsData.points = tempPoints;
+			var tempPoints = drawPath.points;
+			drawPath.points = recPoints;
+			buildLine (drawPath, glData);
+			drawPath.points = tempPoints;
 			
 		}
 		
@@ -648,7 +647,7 @@ class GraphicsRenderer {
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
 		var shader = renderSession.shaderManager.primitiveShader;
-		var webGLData:GLGraphicsData;
+		var glData:GLGraphicsData;
 		
 		if (graphics.__dirty) {
 			
@@ -656,43 +655,42 @@ class GraphicsRenderer {
 			
 		}
 		
-		var webGL = graphics.__glData[GLRenderer.glContextId];
+		var glStack = graphics.__glData[GLRenderer.glContextId];
 		
-		for (i in 0...webGL.data.length) {
+		for (i in 0...glStack.data.length) {
 			
-			if (webGL.data[i].mode == 1) {
-				
-				webGLData = webGL.data[i];
-				renderSession.stencilManager.pushStencil (object, webGLData, renderSession);
-				
-				gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
-				
-				renderSession.stencilManager.popStencil (object, webGLData, renderSession);
-				
-			} else {
-				
-				webGLData = webGL.data[i];
-				
-				renderSession.shaderManager.setShader (shader);
-				shader = renderSession.shaderManager.primitiveShader;
-				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
-				
-				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
-				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
-				
-				// TODO tintColor
-				gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (0xFFFFFF)));
-				
-				gl.uniform1f (shader.alpha, object.__worldAlpha);
-				
-				gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
-				
-				gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-				gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
-				
-				gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
-				gl.drawElements (gl.TRIANGLE_STRIP, webGLData.indices.length, gl.UNSIGNED_SHORT, 0);
-				
+			glData = glStack.data[i];
+			
+			switch(glData.mode) {
+				case DEFAULT:
+					renderSession.shaderManager.setShader (shader);
+					shader = renderSession.shaderManager.primitiveShader;
+					gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+					
+					gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+					gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+					
+					// TODO tintColor
+					gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (0xFFFFFF)));
+					
+					gl.uniform1f (shader.alpha, object.__worldAlpha);
+					
+					gl.bindBuffer (gl.ARRAY_BUFFER, glData.dataBuffer);
+					
+					gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+					gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
+					
+					gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, glData.indexBuffer);
+					gl.drawElements (gl.TRIANGLE_STRIP, glData.indices.length, gl.UNSIGNED_SHORT, 0);
+				case STENCIL:
+					renderSession.stencilManager.pushStencil (object, glData, renderSession);
+					gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (glData.indices.length - 4) * 2);
+					renderSession.stencilManager.popStencil (object, glData, renderSession);
+				case DRAWTRIANGLES:
+					
+				case DRAWTILES:
+					
+				case _:
 			}
 			
 		}
@@ -700,37 +698,37 @@ class GraphicsRenderer {
 	}
 	
 	
-	private static function switchMode (webGL:GLData, type:Int):GLGraphicsData {
+	private static function switchMode (glStack:GLStack, mode:RenderMode):GLGraphicsData {
 		
-		var webGLData:GLGraphicsData;
+		var glData:GLGraphicsData;
 		
-		if (webGL.data == null || webGL.data.length == 0) {
+		if (glStack.data == null || glStack.data.length == 0) {
 			
 			var data = graphicsDataPool.pop ();
-			if (data == null) data = new GLGraphicsData (webGL.gl);
-			webGLData = data;
-			webGLData.mode = type;
-			webGL.data.push (webGLData);
+			if (data == null) data = new GLGraphicsData (glStack.gl);
+			glData = data;
+			glData.mode = mode;
+			glStack.data.push (glData);
 			
 		} else {
 			
-			webGLData = webGL.data[Std.int (webGL.data.length - 1)];
+			glData = glStack.data[Std.int (glStack.data.length - 1)];
 			
-			if (webGLData.mode != type || type == 1) {
+			if (glData.mode != mode || mode == RenderMode.STENCIL) {
 				
 				var data = graphicsDataPool.pop ();
-				if (data == null) data = new GLGraphicsData (webGL.gl);
-				webGLData = data;
-				webGLData.mode = type;
-				webGL.data.push (webGLData);
+				if (data == null) data = new GLGraphicsData (glStack.gl);
+				glData = data;
+				glData.mode = mode;
+				glStack.data.push (glData);
 				
 			}
 			
 		}
 		
-		webGLData.dirty = true;
+		glData.dirty = true;
 		
-		return webGLData;
+		return glData;
 		
 	}
 	
@@ -798,7 +796,7 @@ class GraphicsRenderer {
 	
 	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
 		
-		var webGL = null;
+		var glStack = null;
 		
 		if (graphics.__dirty) {
 			
@@ -812,15 +810,15 @@ class GraphicsRenderer {
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
-				webGL = graphics.__glData[GLRenderer.glContextId] = new GLData (gl);
+				glStack = graphics.__glData[GLRenderer.glContextId] = new GLStack (gl);
 				
 			} else {
 				
-				webGL = graphics.__glData[GLRenderer.glContextId];
+				glStack = graphics.__glData[GLRenderer.glContextId];
 				
-				if (webGL == null) {
+				if (glStack == null) {
 					
-					webGL = graphics.__glData[GLRenderer.glContextId] = new GLData (gl);
+					glStack = graphics.__glData[GLRenderer.glContextId] = new GLStack (gl);
 					
 				}
 				
@@ -1041,23 +1039,23 @@ class GraphicsRenderer {
 			
 			//graphics.clearDirty = false;
 			
-			for (i in 0...webGL.data.length) {
+			for (i in 0...glStack.data.length) {
 				
-				var graphicsData = webGL.data[i];
+				var graphicsData = glStack.data[i];
 				graphicsData.reset ();
 				graphicsDataPool.push (graphicsData);
 				
 			}
 			
-			webGL.data = [];
-			webGL.lastIndex = 0;
+			glStack.data = [];
+			glStack.lastIndex = 0;
 			
 		//}
 		
 		
-		var webGLData:GLGraphicsData;
+		var glData:GLGraphicsData;
 		
-		for (i in webGL.lastIndex...graphics.__glGraphicsData.length) {
+		for (i in glStack.lastIndex...graphics.__glGraphicsData.length) {
 			
 			var data = graphics.__glGraphicsData[i];
 			
@@ -1069,13 +1067,13 @@ class GraphicsRenderer {
 						
 						if (data.points.length > 10) { // 5 * 2
 							
-							webGLData = switchMode (webGL, 1);
-							buildComplexPoly (data, webGLData);
+							glData = switchMode (glStack, STENCIL);
+							buildComplexPoly (data, glData);
 							
 						} else {
 							
-							webGLData = switchMode (webGL, 0);
-							buildPoly (data, webGLData);
+							glData = switchMode (glStack, DEFAULT);
+							buildPoly (data, glData);
 							
 						}
 						
@@ -1085,37 +1083,37 @@ class GraphicsRenderer {
 				
 				if (data.line.width > 0) {
 					
-					webGLData = switchMode (webGL, 0);
-					buildLine (data, webGLData);
+					glData = switchMode (glStack, DEFAULT);
+					buildLine (data, glData);
 					
 				}
 				
 			} else {
 				
-				webGLData = switchMode (webGL, 0);
+				glData = switchMode (glStack, DEFAULT);
 
 				switch(data.type) {
 					case Rectangle(rounded):
 						if(rounded) {
-							buildRoundedRectangle (data, webGLData);
+							buildRoundedRectangle (data, glData);
 						} else {
-							buildRectangle (data, webGLData);
+							buildRectangle (data, glData);
 						}
 					case Circle, Ellipse:
-						buildCircle (data, webGLData);
+						buildCircle (data, glData);
 					case _:
 				}
 				
 			}
 			
-			webGL.lastIndex++;
+			glStack.lastIndex++;
 			
 		}
 		
-		for (i in 0...webGL.data.length) {
+		for (i in 0...glStack.data.length) {
 			
-			webGLData = webGL.data[i];
-			if (webGLData.dirty) webGLData.upload ();
+			glData = glStack.data[i];
+			if (glData.dirty) glData.upload ();
 			
 		}
 		
@@ -1135,7 +1133,7 @@ class GraphicsRenderer {
 	
 }
 
-class GLData {
+class GLStack {
 
 	public var lastIndex:Int = 0;
 	public var data:Array<GLGraphicsData>;
@@ -1154,40 +1152,36 @@ class GLGraphicsData {
 	
 	//public static var graphicsDataPool = [];
 	
-	public var alpha:Float;
-	public var buffer:GLBuffer;
-	public var color:Array<Float>;
-	public var dirty:Bool;
 	public var gl:GLRenderContext;
-	public var glPoints:Float32Array;
+	
+	public var tint:Array<Float> = [1.0, 1.0, 1.0];
+	public var alpha:Float = 1.0;
+	public var dirty:Bool = true;
+	public var mode:RenderMode = RenderMode.DEFAULT;
+	public var lastIndex:Int = 0;
+	
+	public var data:Array<Float> = [];
+	public var glData:Float32Array;
+	public var dataBuffer:GLBuffer;
+	
+	public var indices:Array<Int> = [];
 	public var glIndices:UInt16Array;
 	public var indexBuffer:GLBuffer;
-	public var indices:Array<Int>;
-	public var lastIndex:Int;
-	public var mode:Int;
-	public var points:Array<Float>;
 	
 	
 	public function new (gl:GLRenderContext) {
 		
 		this.gl = gl;
 		
-		color = [ 0, 0, 0];
-		points = [];
-		indices = [];
-		lastIndex = 0;
-		buffer = gl.createBuffer ();
-		indexBuffer = gl.createBuffer ();
-		mode = 1;
-		alpha = 1;
-		dirty = true;
+		dataBuffer = gl.createBuffer();
+		indexBuffer = gl.createBuffer();
 		
 	}
 	
 	
 	public function reset ():Void {
 		
-		points = [];
+		data = [];
 		indices = [];
 		lastIndex = 0;
 		
@@ -1196,15 +1190,12 @@ class GLGraphicsData {
 	
 	public function upload ():Void {
 		
-		var gl = this.gl;
+		glData = new Float32Array (cast data);
+		gl.bindBuffer (gl.ARRAY_BUFFER, dataBuffer);
+		gl.bufferData (gl.ARRAY_BUFFER, glData, gl.STATIC_DRAW);
 		
-		glPoints = new Float32Array (cast points);
-		
-		gl.bindBuffer (gl.ARRAY_BUFFER, buffer);
-		gl.bufferData (gl.ARRAY_BUFFER, glPoints, gl.STATIC_DRAW);
 		
 		glIndices = new UInt16Array (cast indices);
-		
 		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STATIC_DRAW);
 		
@@ -1427,4 +1418,11 @@ enum GraphicType {
 	Circle;
 	Ellipse;
 
+}
+
+@:enum abstract RenderMode(Int) {
+	var DEFAULT = 0;
+	var STENCIL = 1;
+	var DRAWTRIANGLES = 2;
+	var DRAWTILES = 3;
 }

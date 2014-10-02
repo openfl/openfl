@@ -32,14 +32,14 @@ class StencilManager {
 	}
 	
 	
-	public function bindGraphics (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+	public function bindGraphics (object:DisplayObject, glData:GLGraphicsData, renderSession:RenderSession):Void {
 		
 		var graphics = object.__graphics;
 		
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
 
-		if (webGLData.mode == 1) {
+		if (glData.mode == RenderMode.STENCIL) {
 			
 			var shader = renderSession.shaderManager.complexPrimitiveShader;
 			renderSession.shaderManager.setShader (shader);
@@ -51,15 +51,15 @@ class StencilManager {
 			
 			// TODO tintColor
 			gl.uniform3fv (shader.tintColor, new Float32Array (GraphicsRenderer.hex2rgb (0xFFFFFF)));
-			gl.uniform3fv (shader.color, new Float32Array (webGLData.color));
+			gl.uniform3fv (shader.color, new Float32Array (glData.tint));
 			
-			gl.uniform1f (shader.alpha, object.__worldAlpha * webGLData.alpha);
+			gl.uniform1f (shader.alpha, object.__worldAlpha * glData.alpha);
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
+			gl.bindBuffer (gl.ARRAY_BUFFER, glData.dataBuffer);
 			
 			gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
 			
-			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
+			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, glData.indexBuffer);
 			
 		} else {
 			
@@ -76,12 +76,12 @@ class StencilManager {
 			
 			gl.uniform1f (shader.alpha, object.__worldAlpha);
 			
-			gl.bindBuffer (gl.ARRAY_BUFFER, webGLData.buffer);
+			gl.bindBuffer (gl.ARRAY_BUFFER, glData.dataBuffer);
 			
 			gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
 			gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false,4 * 6, 2 * 4);
 			
-			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, webGLData.indexBuffer);
+			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, glData.indexBuffer);
 			
 		}
 		
@@ -96,7 +96,7 @@ class StencilManager {
 	}
 	
 	
-	public function popStencil (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+	public function popStencil (object:DisplayObject, glData:GLGraphicsData, renderSession:RenderSession):Void {
 		
 		stencilStack.pop ();
 		
@@ -109,11 +109,11 @@ class StencilManager {
 		} else {
 			
 			var level = count;
-			bindGraphics (object, webGLData, renderSession);
+			bindGraphics (object, glData, renderSession);
 			
 			gl.colorMask (false, false, false, false);
 			
-			if (webGLData.mode == 1) {
+			if (glData.mode == RenderMode.STENCIL) {
 				
 				reverse = !reverse;
 				
@@ -129,12 +129,12 @@ class StencilManager {
 					
 				}
 				
-				gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
+				gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (glData.indices.length - 4) * 2);
 				
 				gl.stencilFunc (gl.ALWAYS, 0, 0xFF);
 				gl.stencilOp (gl.KEEP, gl.KEEP, gl.INVERT);
 				
-				gl.drawElements (gl.TRIANGLE_FAN, webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0);
+				gl.drawElements (gl.TRIANGLE_FAN, glData.indices.length - 4, gl.UNSIGNED_SHORT, 0);
 				
 				if (!reverse) {
 					
@@ -160,7 +160,7 @@ class StencilManager {
 					
 				}
 				
-				gl.drawElements (gl.TRIANGLE_STRIP, webGLData.indices.length, gl.UNSIGNED_SHORT, 0);
+				gl.drawElements (gl.TRIANGLE_STRIP, glData.indices.length, gl.UNSIGNED_SHORT, 0);
 				
 				if (!reverse) {
 					
@@ -182,9 +182,9 @@ class StencilManager {
 	}
 	
 	
-	public function pushStencil (object:DisplayObject, webGLData:GLGraphicsData, renderSession:RenderSession):Void {
+	public function pushStencil (object:DisplayObject, glData:GLGraphicsData, renderSession:RenderSession):Void {
 		
-		bindGraphics (object, webGLData, renderSession);
+		bindGraphics (object, glData, renderSession);
 
 		if (stencilStack.length == 0) {
 			
@@ -195,7 +195,7 @@ class StencilManager {
 			
 		}
 
-		stencilStack.push (webGLData);
+		stencilStack.push (glData);
 		
 		var level = count;
 		
@@ -205,9 +205,9 @@ class StencilManager {
 		gl.stencilFunc (gl.ALWAYS, 0, 0xFF);
 		gl.stencilOp (gl.KEEP, gl.KEEP, gl.INVERT);
 		
-		if (webGLData.mode == 1) {
+		if (glData.mode == RenderMode.STENCIL) {
 			
-			gl.drawElements (gl.TRIANGLE_FAN, webGLData.indices.length - 4, gl.UNSIGNED_SHORT, 0);
+			gl.drawElements (gl.TRIANGLE_FAN, glData.indices.length - 4, gl.UNSIGNED_SHORT, 0);
 			
 			if (reverse) {
 				
@@ -221,7 +221,7 @@ class StencilManager {
 				
 			}
 			
-			gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (webGLData.indices.length - 4) * 2);
+			gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (glData.indices.length - 4) * 2);
 			
 			if (reverse) {
 				
@@ -249,7 +249,7 @@ class StencilManager {
 				
 			}
 			
-			gl.drawElements (gl.TRIANGLE_STRIP, webGLData.indices.length, gl.UNSIGNED_SHORT, 0);
+			gl.drawElements (gl.TRIANGLE_STRIP, glData.indices.length, gl.UNSIGNED_SHORT, 0);
 			
 			if (!reverse) {
 				

@@ -687,7 +687,7 @@ class CanvasGraphics {
 							positionX = x;
 							positionY = y;
 							
-						case DrawTriangles (vertices, indices, uvtData, culling):
+						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
 							
 							closePath(false);
 							

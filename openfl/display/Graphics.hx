@@ -43,7 +43,7 @@ class Graphics {
 	private var __bounds:Rectangle;
 	private var __commands:Array<DrawCommand> = [];
 	private var __dirty:Bool = true;
-	private var __glData:Array<GLData> = [];
+	private var __glData:Array<GLStack> = [];
 	private var __glGraphicsData:Array<DrawPath>;
 	private var __halfStrokeWidth:Float;
 	private var __positionX:Float;
@@ -549,7 +549,7 @@ class Graphics {
 	 *                parameter can be set to any value defined by the
 	 *                TriangleCulling class.
 	 */
-	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
+	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling = null, ?colors:Vector<Int>, blendMode:Int = 0):Void {
 		
 		var vlen = Std.int(vertices.length / 2);
 		
@@ -583,7 +583,7 @@ class Graphics {
 		}
 		
 		__inflateBounds (maxX, maxY);
-		__commands.push (DrawTriangles(vertices, indices, uvtData, culling));
+		__commands.push (DrawTriangles(vertices, indices, uvtData, culling, colors, blendMode));
 		__dirty = true;
 		__visible = true;
 		
@@ -982,7 +982,7 @@ class Graphics {
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
 	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
-	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
+	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
 	LineTo (x:Float, y:Float);
