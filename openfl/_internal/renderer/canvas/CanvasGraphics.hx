@@ -9,8 +9,11 @@ import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Lib;
+import openfl.Vector;
 
 #if js
+import js.html.CanvasElement;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
@@ -683,6 +686,133 @@ class CanvasGraphics {
 							context.moveTo (x - offsetX, y - offsetY);
 							positionX = x;
 							positionY = y;
+							
+						case DrawTriangles (vertices, indices, uvtData, culling):
+							
+							closePath(false);
+							
+							var v = vertices;
+							var ind = indices;
+							var uvt = uvtData;
+							var pattern:CanvasElement = null;
+							var colorFill = bitmapFill == null;
+							
+							if (colorFill && uvt != null) {
+								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
+								break;
+							}
+							
+							if(!colorFill) {
+								//TODO move this to Graphics?
+								if (uvtData == null) {
+									uvtData = new Vector<Float>();
+									for (i in 0...(Std.int(v.length / 2))) {
+										uvtData.push(v[i * 2] / bitmapFill.width);
+										uvtData.push(v[i * 2 + 1] / bitmapFill.height);
+									}
+								}
+								
+								var skipT = uvtData.length != v.length;
+								var normalizedUvt = normalizeUvt(uvtData, skipT);
+								var maxUvt = normalizedUvt.max;
+								uvt = normalizedUvt.uvt;
+								
+								if (maxUvt > 1) {
+									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
+								} else {
+									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+								}
+							}
+							
+							var i = 0;
+							var l = ind.length;
+							
+							var a:Int, b:Int, c:Int;
+							var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
+							var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
+							var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
+							var denom:Float;
+							var t1:Float, t2:Float, t3:Float, t4:Float;
+							var dx:Float, dy:Float;
+							// code from http://tulrich.com/geekstuff/canvas/perspective.html
+							while (i < l) {
+								a = i;
+								b = i + 1;
+								c = i + 2;
+								
+								iax = ind[a] * 2;		iay = ind[a] * 2 + 1;
+								ibx = ind[b] * 2;		iby = ind[b] * 2 + 1;
+								icx = ind[c] * 2;		icy = ind[c] * 2 + 1;
+								
+								x1 = v[iax];	y1 = v[iay];
+								x2 = v[ibx];	y2 = v[iby];
+								x3 = v[icx];	y3 = v[icy];
+								
+								switch(culling) {
+									case POSITIVE:
+										if (!isCCW(x1, y1, x2, y2, x3, y3)) {
+											i += 3;
+											continue;
+										}
+									case NEGATIVE:
+										if (isCCW(x1, y1, x2, y2, x3, y3)) {
+											i += 3;
+											continue;
+										}
+									case _:
+								}
+								
+								if (colorFill) {
+									context.beginPath();
+									context.moveTo(x1, y1);
+									context.lineTo(x2, y2);
+									context.lineTo(x3, y3);
+									context.closePath();
+									context.fill();
+									i += 3;
+									continue;
+								} 
+								
+								context.save();
+								context.beginPath();
+								context.moveTo(x1, y1);
+								context.lineTo(x2, y2);
+								context.lineTo(x3, y3);
+								context.closePath();
+								
+								context.clip(); 
+								
+								uvx1 = uvt[iax] * pattern.width;
+								uvx2 = uvt[ibx] * pattern.width;
+								uvx3 = uvt[icx] * pattern.width;
+								uvy1 = uvt[iay] * pattern.height;
+								uvy2 = uvt[iby] * pattern.height;
+								uvy3 = uvt[icy] * pattern.height;
+								
+								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
+								if (denom == 0) {
+									i += 3;
+									continue;
+								}
+								
+								t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
+								t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
+								t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
+								t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
+								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
+								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
+								
+								context.transform(t1, t2, t3, t4, dx, dy);
+								context.drawImage(pattern, 0, 0);
+								
+								context.restore();
+								
+								i += 3;
+								
+							}					
+							
+						case _:
+							openfl.Lib.notImplemented("CanvasGraphics");
 						
 					}
 					
@@ -784,5 +914,52 @@ class CanvasGraphics {
 		
 	}
 	
+	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Float, height:Float) {
+		
+		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+		var context:CanvasRenderingContext2D = canvas.getContext ("2d");
+		
+		canvas.width = Math.ceil (width);
+		canvas.height = Math.ceil (height);
+		
+		context.fillStyle = context.createPattern(bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+		context.beginPath();
+		context.moveTo(0, 0);
+		context.lineTo(0, height);
+		context.lineTo(width, height);
+		context.lineTo(width, 0);
+		context.lineTo(0, 0);
+		context.closePath();
+		context.fill();
+		return canvas;
+	}
+	
+	private static function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
+		var vx1 = x2 - x1;
+		var vy1 = y2 - y1;
+		var vx2 = x3 - x1;
+		var vy2 = y3 - y1;
+		
+		return (vx1 * vy2 - vy1 * vx2) < 0;
+	}
+	
+	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):{max:Float, uvt:Vector<Float> } {
+		var max:Float = Math.NEGATIVE_INFINITY;
+		var tmp = Math.NEGATIVE_INFINITY;
+		var len = uvt.length;
+		for (t in 1...len+1) {
+			if (skipT && t % 3 == 0) continue;
+			tmp = uvt[t - 1];
+			if (max < tmp) max = tmp;
+		}
+		
+		var result:Vector<Float> = new Vector<Float>();
+		for (t in 1...len+1) {
+			if (skipT && t % 3 == 0) continue;
+			result.push((uvt[t - 1] / max));
+		}
+		
+		return {max:max, uvt:result};
+	}
 	
 }

@@ -1,11 +1,13 @@
 package openfl.display; #if !flash #if (display || openfl_next || js)
 
 
+import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 #if js
 import js.html.CanvasElement;
@@ -549,7 +551,41 @@ class Graphics {
 	 */
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawTriangles");
+		var vlen = Std.int(vertices.length / 2);
+		
+		if (culling == null) {
+			culling = NONE;
+		}
+		
+		if (indices == null) {
+			if (vlen % 3 != 0) {
+				throw new ArgumentError("Not enough vertices to close a triangle.");
+			}
+			indices = new Vector<Int>();
+			
+			for (i in 0...vlen) {
+				indices.push(i);
+			}
+		}
+		
+		__inflateBounds (0, 0);
+		
+		var tmpx = Math.NEGATIVE_INFINITY;
+		var tmpy = Math.NEGATIVE_INFINITY;
+		var maxX = Math.NEGATIVE_INFINITY;
+		var maxY = Math.NEGATIVE_INFINITY;		
+		
+		for (i in 0...vlen) {
+			tmpx = vertices[i * 2];
+			tmpy = vertices[i * 2 + 1];
+			if (maxX < tmpx) maxX = tmpx;
+			if (maxY < tmpy) maxY = tmpy;
+		}
+		
+		__inflateBounds (maxX, maxY);
+		__commands.push (DrawTriangles(vertices, indices, uvtData, culling));
+		__dirty = true;
+		__visible = true;
 		
 	}
 	
@@ -946,6 +982,7 @@ class Graphics {
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
 	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
+	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
 	LineTo (x:Float, y:Float);
