@@ -916,6 +916,7 @@ class CanvasGraphics {
 	
 	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Float, height:Float) {
 		
+		#if js
 		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
 		var context:CanvasRenderingContext2D = canvas.getContext ("2d");
 		
@@ -932,6 +933,7 @@ class CanvasGraphics {
 		context.closePath();
 		context.fill();
 		return canvas;
+		#end
 	}
 	
 	private static function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
