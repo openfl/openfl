@@ -13,8 +13,12 @@ class ApplicationMain {
 	
 	public static function create ():Void {
 		
-		//preloader = new ::if (PRELOADER_NAME != "")::::PRELOADER_NAME::::else::openfl.display.Preloader::end:: ();
-		preloader = new openfl.display.Preloader ();
+		app = new openfl.display.Application ();
+		app.create (config);
+		
+		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
+		
+		preloader = new openfl.display.Preloader (display);
 		preloader.onComplete = start;
 		preloader.create (config);
 		
@@ -34,6 +38,12 @@ class ApplicationMain {
 		::end::::end::
 		
 		preloader.load (urls, types);
+		#end
+		
+		var result = app.exec ();
+		
+		#if sys
+		Sys.exit (result);
 		#end
 		
 	}
@@ -72,9 +82,6 @@ class ApplicationMain {
 	
 	public static function start ():Void {
 		
-		app = new openfl.display.Application ();
-		app.create (config);
-		
 		openfl.Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
 		openfl.Lib.current.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
 		
@@ -108,12 +115,6 @@ class ApplicationMain {
 		}
 		
 		openfl.Lib.current.stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
-		
-		var result = app.exec ();
-		
-		#if sys
-		Sys.exit (result);
-		#end
 		
 	}
 	
