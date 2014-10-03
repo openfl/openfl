@@ -3,6 +3,7 @@ package openfl.display; #if !flash #if (display || openfl_next || js)
 
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -43,8 +44,8 @@ class Graphics {
 	private var __bounds:Rectangle;
 	private var __commands:Array<DrawCommand> = [];
 	private var __dirty:Bool = true;
-	private var __glData:Array<GLStack> = [];
-	private var __glGraphicsData:Array<DrawPath>;
+	private var __glStack:Array<GLStack> = [];
+	private var __drawPaths:Array<DrawPath>;
 	private var __halfStrokeWidth:Float;
 	private var __positionX:Float;
 	private var __positionY:Float;

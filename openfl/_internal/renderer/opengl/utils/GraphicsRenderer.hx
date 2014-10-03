@@ -1,12 +1,15 @@
 package openfl._internal.renderer.opengl.utils;
 
 
+import haxe.ds.Vector;
+import haxe.EnumFlags;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer.RenderMode;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
@@ -14,8 +17,11 @@ import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
+import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.gl.GLTexture;
+import openfl.utils.Int16Array;
 
 
 @:access(openfl.display.DisplayObject)
@@ -27,148 +33,114 @@ class GraphicsRenderer {
 	
 	
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
+	public static var bucketPool:Array<GLBucket> = [];
 	
-	
-	public static function buildCircle (drawPath:DrawPath, glData:GLGraphicsData):Void {
-		
-		var rectData = drawPath.points;
+	public static function buildCircle (path:DrawPath, glStack:GLStack):Void {
+		var rectData = path.points;
 
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
 		var height = (rectData.length == 3) ? width : rectData[3];
-
-		if(drawPath.type == Ellipse) {
-
+		
+		if (path.type == Ellipse) {
 			width /= 2;
 			height /= 2;
-
 			x += width;
 			y += height;
 		}
 		
-		
 		var totalSegs = 40;
 		var seg = (Math.PI * 2) / totalSegs;
 		
-		if (drawPath.hasFill) {
+		var bucket:GLBucket = prepareBucket(path, glStack);
+
+		
+		if(bucket != null) {
+			var verts = bucket.verts;
+			var indices = bucket.indices;
 			
-			var color = hex2rgb (drawPath.fill.color);
-			var alpha = getAlpha(drawPath.fill);
+			var vertPos = Std.int (verts.length / 2);
 			
-			var r = color[0] * alpha;
-			var g = color[1] * alpha;
-			var b = color[2] * alpha;
-			
-			var verts = glData.data;
-			var indices = glData.indices;
-			
-			var vecPos = Std.int (verts.length / 6);
-			
-			indices.push (vecPos);
+			indices.push (vertPos);
 			
 			for (i in 0...totalSegs + 1) {
 				
 				verts.push (x);
 				verts.push (y);
-				verts.push (r);
-				verts.push (g);
-				verts.push (b);
-				verts.push (alpha);
 				
 				verts.push (x + Math.sin (seg * i) * width);
 				verts.push (y + Math.cos (seg * i) * height);
-				verts.push (r);
-				verts.push (g);
-				verts.push (b);
-				verts.push (alpha);
 				
-				indices.push (vecPos++);
-				indices.push (vecPos++);
+				indices.push (vertPos++);
+				indices.push (vertPos++);
 				
 			}
 			
-			indices.push (vecPos - 1);
+			indices.push (vertPos - 1);
 			
 		}
 		
-		if (drawPath.line.width > 0) {
+		
+		if (path.line.width > 0) {
 			
-			var tempPoints = drawPath.points;
-			drawPath.points = [];
+			var tempPoints = path.points;
+			path.points = [];
 			
 			for (i in 0...totalSegs + 1) {
 				
-				drawPath.points.push (x + Math.sin (seg * i) * width);
-				drawPath.points.push (y + Math.cos (seg * i) * height);
+				path.points.push (x + Math.sin (seg * i) * width);
+				path.points.push (y + Math.cos (seg * i) * height);
 				
 			}
 			
-			buildLine (drawPath, glData);
-			drawPath.points = tempPoints;
+			buildLine (path, bucket.line);
+			path.points = tempPoints;
 			
 		}
 		
 	}
 	
-	
-	private static function buildComplexPoly (drawPath:DrawPath, glData:GLGraphicsData):Void {
+	public static function buildComplexPoly (path:DrawPath, glStack:GLStack):Void {
+		if (path.points.length < 6) return;
+		var points = path.points;
 		
-		var points:Array<Float> = drawPath.points.copy();
-		if (points.length < 6) return;
-		
-		var indices = glData.indices;
-		glData.data = points;
-		glData.alpha = getAlpha(drawPath.fill);
-		glData.tint = hex2rgb (drawPath.fill.color);
-		
-		var minX:Null<Float> = null;
-		var maxX:Null<Float> = null;
-		var minY:Null<Float> = null;
-		var maxY:Null<Float> = null;
-		var x,y;
-		
-		var i = 0;
-		while (i < points.length) {
-			
-			x = points[i];
-			y = points[i + 1];
-			
-			minX = (minX == null || x < minX) ? x : minX;
-			maxX = (maxX == null || x > maxX) ? x : maxX;
-			minY = (minY == null || y < minY) ? y : minY;
-			maxY = (maxY == null || y > maxY) ? y : maxY;
-			
-			i += 2;
-			
+		var l = points.length;
+		var sx = points[0];		var sy = points[1];
+		var ex = points[l - 2];	var ey = points[l - 1];
+		// close polygon
+		if (sx != ex || sy != ey) {
+			points.push(sx);
+			points.push(sy);
 		}
 		
-		points.push (minX);
-		points.push (minY);
-		points.push (maxX);
-		points.push (minY);
-		points.push (maxX);
-		points.push (maxY);
-		points.push (minX);
-		points.push (maxY);
+		//var bucket = popBucket(glData, Complex);
+		var bucket = prepareBucket(path, glStack);
+		bucket.drawMode = glStack.gl.TRIANGLE_FAN;
+		bucket.verts = points;
 		
+		var indices = bucket.indices;
 		var length = Std.int (points.length / 2);
-		
 		for (i in 0...length) {
 			
 			indices.push (i);
 			
 		}
 		
+		if (path.line.width > 0) {
+			
+			buildLine (path, bucket.line);
+			
+		}
 	}
 	
-	
-	public static function buildLine (drawPath:DrawPath, glData:GLGraphicsData):Void {
-		
-		var points:Array<Float> = drawPath.points;
+	public static function buildLine (path:DrawPath, bucket:GLBucket):Void {
+		var points = path.points;
 		if (points.length == 0) return;
 		
-		if (drawPath.line.width % 2 > 0) {
+		bucket.dirty = true;
+		
+		if (path.line.width % 2 > 0) {
 			
 			for (i in 0...points.length) {
 				
@@ -200,24 +172,24 @@ class GraphicsRenderer {
 			
 		}
 		
-		var verts = glData.data;
-		var indices = glData.indices;
+		var verts = bucket.verts;
+		var indices = bucket.indices;
 		var length = Std.int (points.length / 2);
 		var indexCount = points.length;
 		var indexStart = Std.int (verts.length / 6);
 		
-		var width = drawPath.line.width / 2;
+		var width = path.line.width / 2;
 		
-		var color = hex2rgb (drawPath.line.color);
-		var alpha = drawPath.line.alpha;
+		var color = hex2rgb (path.line.color);
+		var alpha = path.line.alpha;
 		var r = color[0] * alpha;
 		var g = color[1] * alpha;
 		var b = color[2] * alpha;
 		
-		var px, py, p1x, p1y, p2x, p2y, p3x, p3y;
+		var px:Float, py:Float, p1x:Float, p1y:Float, p2x:Float, p2y:Float, p3x:Float, p3y:Float;
 		var perpx:Float, perpy:Float, perp2x:Float, perp2y:Float, perp3x:Float, perp3y:Float;
-		var a1, b1, c1, a2, b2, c2;
-		var denom, pdist, dist;
+		var a1:Float, b1:Float, c1:Float, a2:Float, b2:Float, c2:Float;
+		var denom:Float, pdist:Float, dist:Float;
 		
 		p1x = points[0];
 		p1y = points[1];
@@ -228,12 +200,12 @@ class GraphicsRenderer {
 		perpx = -(p1y - p2y);
 		perpy =  p1x - p2x;
 		
-		dist = Math.sqrt ((perpx * perpx) + (perpy * perpy));
+		dist = Math.sqrt (Math.abs((perpx * perpx) + (perpy * perpy)));
 		
-		perpx /= dist;
-		perpy /= dist;
-		perpx *= width;
-		perpy *= width;
+		perpx = perpx / dist;
+		perpy = perpy / dist;
+		perpx = perpx * width;
+		perpy = perpy * width;
 		
 		verts.push (p1x - perpx);
 		verts.push (p1y - perpy);
@@ -261,20 +233,20 @@ class GraphicsRenderer {
 			perpx = -(p1y - p2y);
 			perpy = p1x - p2x;
 			
-			dist = Math.sqrt ((perpx * perpx) + (perpy * perpy));
-			perpx /= dist;
-			perpy /= dist;
-			perpx *= width;
-			perpy *= width;
+			dist = Math.sqrt (Math.abs((perpx * perpx) + (perpy * perpy)));
+			perpx = perpx / dist;
+			perpy = perpy / dist;
+			perpx = perpx * width;
+			perpy = perpy * width;
 			
 			perp2x = -(p2y - p3y);
 			perp2y = p2x - p3x;
 			
-			dist = Math.sqrt ((perp2x * perp2x) + (perp2y * perp2y));
-			perp2x /= dist;
-			perp2y /= dist;
-			perp2x *= width;
-			perp2y *= width;
+			dist = Math.sqrt (Math.abs((perp2x * perp2x) + (perp2y * perp2y)));
+			perp2x = perp2x / dist;
+			perp2y = perp2y / dist;
+			perp2x = perp2x * width;
+			perp2y = perp2y * width;
 			
 			a1 = (-perpy + p1y) - (-perpy + p2y);
 			b1 = (-perpx + p2x) - (-perpx + p1x);
@@ -317,14 +289,14 @@ class GraphicsRenderer {
 				perp3x = perpx - perp2x;
 				perp3y = perpy - perp2y;
 				
-				dist = Math.sqrt ((perp3x * perp3x) + (perp3y * perp3y));
-				perp3x /= dist;
-				perp3y /= dist;
-				perp3x *= width;
-				perp3y *= width;
+				dist = Math.sqrt (Math.abs((perp3x * perp3x) + (perp3y * perp3y)));
+				perp3x = perp3x / dist;
+				perp3y = perp3y / dist;
+				perp3x = perp3x * width;
+				perp3y = perp3y * width;
 				
 				verts.push (p2x - perp3x);
-				verts.push (p2y -perp3y);
+				verts.push (p2y - perp3y);
 				verts.push (r);
 				verts.push (g);
 				verts.push (b);
@@ -373,11 +345,12 @@ class GraphicsRenderer {
 		perpx = -(p1y - p2y);
 		perpy = p1x - p2x;
 		
-		dist = Math.sqrt ((perpx * perpx) + (perpy * perpy));
-		perpx /= dist;
-		perpy /= dist;
-		perpx *= width;
-		perpy *= width;
+		dist = Math.sqrt (Math.abs((perpx * perpx) + (perpy * perpy)));
+		if (!Math.isFinite(dist)) trace(((perpx * perpx) + (perpy * perpy)));
+		perpx = perpx / dist;
+		perpy = perpy / dist;
+		perpx = perpx * width;
+		perpy = perpy * width;
 		
 		verts.push (p2x - perpx);
 		verts.push (p2y - perpy);
@@ -402,102 +375,81 @@ class GraphicsRenderer {
 		}
 		
 		indices.push (indexStart - 1);
-		
 	}
 	
-	
-	public static function buildPoly (drawPath:DrawPath, glData:GLGraphicsData):Void {
+	public static function buildPoly (path:DrawPath, glStack:GLStack):Void {
+		if (path.points.length < 6) return;
+		var points = path.points;
 		
-		var points:Array<Float> = drawPath.points;
-		if (points.length < 6) return;
+		var l = points.length;
+		var sx = points[0];		var sy = points[1];
+		var ex = points[l - 2];	var ey = points[l - 1];
+		// close polygon
+		if (sx != ex || sy != ey) {
+			points.push(sx);
+			points.push(sy);
+		}
 		
-		var verts = glData.data;
-		var indices = glData.indices;
 		var length = Std.int (points.length / 2);
 		
-		var color = hex2rgb (drawPath.fill.color);
-		var alpha = getAlpha(drawPath.fill);
-		var r = color[0] * alpha;
-		var g = color[1] * alpha;
-		var b = color[2] * alpha;
+		var bucket = prepareBucket(path, glStack);
+		var verts = bucket.verts;
+		var indices = bucket.indices;
 		
-		var triangles = PolyK.triangulate (points);
-		var vertPos = verts.length / 6;
-		
-		var i = 0;
-		while (i < triangles.length) {
+		if (bucket != null) {
+			var triangles = PolyK.triangulate (points);
+			var vertPos = verts.length / 2;
 			
-			indices.push (Std.int (triangles[i] + vertPos));
-			indices.push (Std.int (triangles[i] + vertPos));
-			indices.push (Std.int (triangles[i+1] + vertPos));
-			indices.push (Std.int (triangles[i+2] +vertPos));
-			indices.push (Std.int (triangles[i + 2] + vertPos));
-			i += 3;
+			var i = 0;
+			while (i < triangles.length) {
+				
+				indices.push (Std.int (triangles[i] + vertPos));
+				indices.push (Std.int (triangles[i] + vertPos));
+				indices.push (Std.int (triangles[i+1] + vertPos));
+				indices.push (Std.int (triangles[i+2] + vertPos));
+				indices.push (Std.int (triangles[i+2] + vertPos));
+				i += 3;
+				
+			}
 			
+			for (i in 0...length) {
+				
+				verts.push (points[i * 2]);
+				verts.push (points[i * 2 + 1]);
+				
+			}
 		}
 		
-		for (i in 0...length) {
+		if (path.line.width > 0) {
 			
-			verts.push (points[i * 2]);
-			verts.push (points[i * 2 + 1]);
-			verts.push (r);
-			verts.push (g);
-			verts.push (b);
-			verts.push (alpha);
+			buildLine (path, bucket.line);
 			
 		}
-		
 	}
 	
-	
-	public static function buildRectangle (drawPath:DrawPath, glData:GLGraphicsData):Void {
-		
-		var rectData = drawPath.points;
+	public static function buildRectangle (path:DrawPath, glStack:GLStack):Void {
+		var rectData = path.points;
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
 		var height = rectData[3];
 		
-		if (drawPath.hasFill) {
+		var bucket:GLBucket = prepareBucket(path, glStack);
+		
+		if(bucket != null) {
+			var verts = bucket.verts;
+			var indices = bucket.indices;
 			
-			var color = hex2rgb (drawPath.fill.color);
-			var alpha = getAlpha(drawPath.fill);
-			var r = color[0] * alpha;
-			var g = color[1] * alpha;
-			var b = color[2] * alpha;
+			var vertPos = Std.int (verts.length / 2);
 			
-			var verts = glData.data;
-			var indices = glData.indices;
-			
-			var vertPos = Std.int (verts.length / 6);
-			
-			verts.push (x);
+			verts.push (x); 
 			verts.push (y);
-			verts.push (r);
-			verts.push (g);
-			verts.push (b);
-			verts.push (alpha);
-			
 			verts.push (x + width);
 			verts.push (y);
-			verts.push (r);
-			verts.push (g);
-			verts.push (b);
-			verts.push (alpha);
-			
 			verts.push (x);
 			verts.push (y + height);
-			verts.push (r);
-			verts.push (g);
-			verts.push (b);
-			verts.push (alpha);
-			
 			verts.push (x + width);
 			verts.push (y + height);
-			verts.push (r);
-			verts.push (g);
-			verts.push (b);
-			verts.push (alpha);
 			
 			indices.push (vertPos);
 			indices.push (vertPos);
@@ -505,24 +457,21 @@ class GraphicsRenderer {
 			indices.push (vertPos + 2);
 			indices.push (vertPos + 3);
 			indices.push (vertPos + 3);
-			
 		}
 		
-		if (drawPath.line.width > 0) {
+		
+		if (path.line.width > 0) {
 			
-			var tempPoints = drawPath.points;
-			drawPath.points = [ x, y, x + width, y, x + width, y + height, x, y + height, x, y];
-			buildLine (drawPath, glData);
-			drawPath.points = tempPoints;
+			var tempPoints = path.points;
+			path.points = [ x, y, x + width, y, x + width, y + height, x, y + height, x, y];
+			buildLine (path, bucket.line);
+			path.points = tempPoints;
 			
 		}
-		
 	}
 	
-	
-	public static function buildRoundedRectangle (drawPath:DrawPath, glData:GLGraphicsData):Void {
-		
-		var points = drawPath.points.copy();
+	public static function buildRoundedRectangle (path:DrawPath, glStack:GLStack):Void {
+		var points = path.points.copy();
 		var x = points[0];
 		var y = points[1];
 		var width = points[2];
@@ -538,18 +487,13 @@ class GraphicsRenderer {
 		recPoints = recPoints.concat (quadraticBezierCurve (x + width, y + radius, x + width, y, x + width - radius, y));
 		recPoints = recPoints.concat (quadraticBezierCurve (x + radius, y, x, y, x, y + radius));
 		
-		if (drawPath.hasFill) {
+		var bucket = prepareBucket(path, glStack);
+		
+		if (bucket != null) {
+			var verts = bucket.verts;
+			var indices = bucket.indices;
 			
-			var color = hex2rgb (drawPath.fill.color);
-			var alpha = getAlpha(drawPath.fill);
-			var r = color[0] * alpha;
-			var g = color[1] * alpha;
-			var b = color[2] * alpha;
-			
-			var verts = glData.data;
-			var indices = glData.indices;
-			
-			var vecPos = verts.length / 6;
+			var vecPos = verts.length / 2;
 			
 			var triangles = PolyK.triangulate (recPoints);
 			
@@ -570,26 +514,32 @@ class GraphicsRenderer {
 				
 				verts.push (recPoints[i]);
 				verts.push (recPoints[++i]);
-				verts.push (r);
-				verts.push (g);
-				verts.push (b);
-				verts.push (alpha);
 				i++;
 			}
-			
 		}
 		
-		if (drawPath.line.width > 0) {
+		if (path.line.width > 0) {
 			
-			var tempPoints = drawPath.points;
-			drawPath.points = recPoints;
-			buildLine (drawPath, glData);
-			drawPath.points = tempPoints;
+			var tempPoints = path.points;
+			path.points = recPoints;
+			buildLine (path, bucket.line);
+			path.points = tempPoints;
 			
 		}
-		
 	}
 	
+	public static function buildDrawTriangles (path:DrawPath, glStack:GLStack):Void {
+		
+		return;
+		var args = Type.enumParameters(path.type);
+		var vertices:Vector<Float> = args[0];
+		var indices:Vector<Int> = args[1];
+		var uvtData:Vector<Float> = args[2];
+		var culling:TriangleCulling = args[3];
+		var colors:Vector<Int> = args[4];
+		var blendMode:Int = args[5];
+		
+	}
 	
 	private static function quadraticBezierCurve (fromX:Float, fromY:Float, cpX:Float, cpY:Float, toX:Float, toY:Float):Array<Float> {
 		
@@ -639,484 +589,238 @@ class GraphicsRenderer {
 
 	}
 	
-	
 	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession):Void {
-		
 		var graphics = object.__graphics;
-		var gl:GLRenderContext = renderSession.gl;
+		var gl = renderSession.gl;
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
-		var shader = renderSession.shaderManager.primitiveShader;
-		var glData:GLGraphicsData;
 		
 		if (graphics.__dirty) {
-			
-			updateGraphics (graphics, gl);
-			
+			updateGraphics (object, gl);
 		}
 		
-		var glStack = graphics.__glData[GLRenderer.glContextId];
-		
-		for (i in 0...glStack.data.length) {
+		var glStack = graphics.__glStack[GLRenderer.glContextId];
+		var bucket:GLBucket;
+		var shader:Dynamic = null;
+		for (i in 0...glStack.buckets.length) {
+			bucket = glStack.buckets[i];
 			
-			glData = glStack.data[i];
-			
-			switch(glData.mode) {
-				case DEFAULT:
-					renderSession.shaderManager.setShader (shader);
-					shader = renderSession.shaderManager.primitiveShader;
-					gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
-					
-					gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
-					gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
-					
-					// TODO tintColor
-					gl.uniform3fv (shader.tintColor, new Float32Array (hex2rgb (0xFFFFFF)));
-					
-					gl.uniform1f (shader.alpha, object.__worldAlpha);
-					
-					gl.bindBuffer (gl.ARRAY_BUFFER, glData.dataBuffer);
-					
-					gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-					gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
-					
-					gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, glData.indexBuffer);
-					gl.drawElements (gl.TRIANGLE_STRIP, glData.indices.length, gl.UNSIGNED_SHORT, 0);
-				case STENCIL:
-					renderSession.stencilManager.pushStencil (object, glData, renderSession);
-					gl.drawElements (gl.TRIANGLE_FAN, 4, gl.UNSIGNED_SHORT, (glData.indices.length - 4) * 2);
-					renderSession.stencilManager.popStencil (object, glData, renderSession);
-				case DRAWTRIANGLES:
-					
-				case DRAWTILES:
-					
-				case _:
-			}
-			
-		}
-		
-	}
-	
-	
-	private static function switchMode (glStack:GLStack, mode:RenderMode):GLGraphicsData {
-		
-		var glData:GLGraphicsData;
-		
-		if (glStack.data == null || glStack.data.length == 0) {
-			
-			var data = graphicsDataPool.pop ();
-			if (data == null) data = new GLGraphicsData (glStack.gl);
-			glData = data;
-			glData.mode = mode;
-			glStack.data.push (glData);
-			
-		} else {
-			
-			glData = glStack.data[Std.int (glStack.data.length - 1)];
-			
-			if (glData.mode != mode || mode == RenderMode.STENCIL) {
+			if (bucket.mode == Fill || bucket.mode == PatternFill) {
 				
-				var data = graphicsDataPool.pop ();
-				if (data == null) data = new GLGraphicsData (glStack.gl);
-				glData = data;
-				glData.mode = mode;
-				glStack.data.push (glData);
+				renderSession.stencilManager.pushBucket(object, bucket, renderSession);
 				
-			}
-			
-		}
-		
-		glData.dirty = true;
-		
-		return glData;
-		
-	}
-	
-	
-	private static var DEFAULT_LINE_STYLE:LineStyle = {
-		
-		width: 0,
-		color: 0,
-		alpha: 1,
-		scaleMode: LineScaleMode.NORMAL,
-		caps: CapsStyle.ROUND,
-		joints: JointStyle.ROUND,
-		miterLimit: 3
-		
-	}
-	
-	private static var DEFAULT_FILL_STYLE:FillStyle = {
-		
-		color: null,
-		alpha: 1,
-		bitmap: null,
-		matrix: null,
-		repeat: true,
-		smooth: false
-		
-	}
-	
-	
-	private static var __currentPath:DrawPath;
-	private static var __graphicsData:Array<DrawPath>;
-	private static var __hasFill:Bool;
-	private static var __line:LineStyle;
-	private static var __fill:FillStyle;
-	
-	
-	public static function endFill ():Void {
-		
-		__hasFill = false;
-		__fill = Reflect.copy (DEFAULT_FILL_STYLE);
-		
-	}
-	
-	
-	private inline static function graphicDataPop ():Void {
-		
-		if (__currentPath.points.length == 0) __graphicsData.pop ();
-		
-	}
-	
-	
-	private static function moveTo (x:Float, y:Float):Void {
-		
-		graphicDataPop ();
-		
-		__currentPath = new DrawPath ();
-		__currentPath.update (__line, __hasFill, __fill);
-		__currentPath.type = Polygon;
-		__currentPath.points.push (x);
-		__currentPath.points.push (y);
-		
-		__graphicsData.push (__currentPath);
-		
-	}
-	
-	
-	public static function updateGraphics (graphics:Graphics, gl:GLRenderContext):Void {
-		
-		var glStack = null;
-		
-		if (graphics.__dirty) {
-			
-			var bounds = graphics.__bounds;
-			
-			__graphicsData = new Array ();
-			__currentPath = new DrawPath ();
-			__hasFill = false;
-			__line = Reflect.copy (DEFAULT_LINE_STYLE);
-			__fill = Reflect.copy (DEFAULT_FILL_STYLE);
-			
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+				shader = bucket.mode == Fill ? renderSession.shaderManager.fillShader : renderSession.shaderManager.patternFillShader;
+				renderSession.shaderManager.setShader(shader);
 				
-				glStack = graphics.__glData[GLRenderer.glContextId] = new GLStack (gl);
-				
-			} else {
-				
-				glStack = graphics.__glData[GLRenderer.glContextId];
-				
-				if (glStack == null) {
+				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (false));
+				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+
+				gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
+				if(bucket.mode == Fill) {
+					gl.uniform3fv (shader.color, new Float32Array (bucket.color));
+				} else if(bucket.texture != null) {
+					gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 					
-					glStack = graphics.__glData[GLRenderer.glContextId] = new GLStack (gl);
+					#if !js
+					if (bucket.textureRepeat) {
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+					} else {
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+					}
+					#end
 					
-				}
-				
-				for (command in graphics.__commands) {
-					
-					switch (command) {
-						
-						case BeginBitmapFill (bitmap, matrix, repeat, smooth):
-							
-							endFill ();
-							
-							__hasFill = bitmap != null;
-							__fill.bitmap = bitmap;
-							__fill.matrix = matrix;
-							__fill.repeat = repeat;
-							__fill.smooth = smooth;
-						
-						case BeginFill (rgb, alpha):
-							
-							endFill ();
-							
-							__hasFill = true;
-							__fill.color = rgb;
-							__fill.alpha = alpha;
-						
-						case CubicCurveTo (cx, cy, cx2, cy2, x, y):
-							
-							if (__currentPath.points.length == 0) {
-								
-								moveTo (0, 0);
-								
-							}
-							
-							var n = 20;
-							var dt:Float = 0;
-							var dt2:Float = 0;
-							var dt3:Float = 0;
-							var t2:Float = 0;
-							var t3:Float = 0;
-							
-							var points = __currentPath.points;
-							var fromX = points[points.length-2];
-							var fromY = points[points.length-1];
-							
-							var px:Float = 0;
-							var py:Float = 0;
-							
-							var tmp:Float = 0;
-							
-							for (i in 1...(n + 1)) {
-								
-								tmp = i / n;
-								
-								dt = 1 - tmp;
-								dt2 = dt * dt;
-								dt3 = dt2 * dt;
-								
-								t2 = tmp * tmp;
-								t3 = t2 * tmp;
-								
-								px = dt3 * fromX + 3 * dt2 * tmp * cx + 3 * dt * t2 * cx2 + t3 * x;
-								py = dt3 * fromY + 3 * dt2 * tmp * cy + 3 * dt * t2 * cy2 + t3 * y;
-								
-								points.push (px);
-								points.push (py);
-								
-							}
-						
-						case CurveTo (cx, cy, x, y):
-							
-							if (__currentPath.points.length == 0) {
-								
-								moveTo (0, 0);
-								
-							}
-							
-							var xa:Float = 0;
-							var ya:Float = 0;
-							var n = 20;
-							
-							var points = __currentPath.points;
-							var fromX = points[points.length-2];
-							var fromY = points[points.length-1];
-							
-							var px:Float = 0;
-							var py:Float = 0;
-							
-							var tmp:Float = 0;
-							
-							for (i in 1...(n + 1)) {
-								
-								tmp = i / n;
-								
-								xa = fromX + ((cx - fromX) * tmp);
-								ya = fromY + ((cy - fromY) * tmp);
-								
-								px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
-								py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
-								
-								points.push (px);
-								points.push (py);
-								
-							}
-						
-						case DrawCircle (x, y, radius):
-							
-							graphicDataPop ();
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __hasFill, __fill);
-							__currentPath.type = Circle;
-							__currentPath.points = [ x, y, radius ];
-							
-							__graphicsData.push (__currentPath);
-						
-						case DrawEllipse (x, y, width, height):
-							
-							graphicDataPop ();
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __hasFill, __fill);
-							__currentPath.type = Ellipse;
-							__currentPath.points = [ x, y, width, height ];
-							
-							__graphicsData.push (__currentPath);
-						
-						case DrawRect (x, y, width, height):
-							
-							graphicDataPop();
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __hasFill, __fill);
-							__currentPath.type = Rectangle (false);
-							__currentPath.points = [ x, y, width, height ];
-							
-							__graphicsData.push (__currentPath);
-						
-						case DrawRoundRect (x, y, width, height, rx, ry):
-							
-							graphicDataPop ();
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __hasFill, __fill);
-							__currentPath.type = Rectangle (true);
-							__currentPath.points = [ x, y, width, height, rx, ry != -1 ? ry : rx ];
-							
-							__graphicsData.push (__currentPath);
-						
-						case EndFill:
-							
-							endFill ();
-						
-						case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-							
-							if (thickness == null || thickness < 0) {
-								
-								__line.width = 0;
-								
-							} else if (thickness == 0) {
-								
-								__line.width = 1;
-								
-							} else {
-								
-								__line.width = thickness;
-								
-							}
-							
-							graphicDataPop ();
-							
-							__line.color = color;
-							__line.alpha = alpha;
-							__line.scaleMode = scaleMode;
-							__line.caps = caps;
-							__line.joints = joints;
-							__line.miterLimit = miterLimit;
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __hasFill, __fill);
-							__currentPath.points = [];
-							__currentPath.type = Polygon;
-							
-							__graphicsData.push (__currentPath);
-						
-						case LineTo (x, y):
-							
-							__currentPath.points.push (x);
-							__currentPath.points.push (y);
-						
-						case MoveTo (x, y):
-							
-							graphicDataPop ();
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __hasFill, __fill);
-							__currentPath.type = Polygon;
-							__currentPath.points.push (x);
-							__currentPath.points.push (y);
-							
-							__graphicsData.push (__currentPath);
-						
-						default:
-							
+					if (bucket.textureSmooth) {
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					} else {
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
 					}
 					
+					
+					gl.uniform1i(shader.pattern, 0);
+					gl.uniform2f(shader.patternTL, bucket.textureTL.x, bucket.textureTL.y);
+					gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);
+					
+					gl.uniformMatrix3fv(shader.patternMatrix, false, bucket.textureMatrix.toArray(false));
+					
 				}
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
+				gl.vertexAttribPointer (shader.aVertexPosition, 4, gl.SHORT, false, 0, 0);
+				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+				
+				renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				
 			}
 			
-			graphics.__glGraphicsData = __graphicsData;
+			if (bucket.line != null) {
+				bucket = bucket.line;
+				shader = renderSession.shaderManager.primitiveShader;
+				
+				renderSession.shaderManager.setShader (shader);
+				
+				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+				gl.uniform1f (shader.alpha, object.__worldAlpha);
+				
+				gl.bindBuffer (gl.ARRAY_BUFFER, bucket.vertsBuffer);
+
+				gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+				gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
+			
+				
+				gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucket.indexBuffer);
+				gl.drawElements (gl.TRIANGLE_STRIP, bucket.indices.length, gl.UNSIGNED_SHORT, 0);
+			}
+			
+		}
+	}
+		
+	public static function updateGraphics (object:DisplayObject, gl:GLRenderContext):Void {
+		
+		var graphics = object.__graphics;
+		var glStack:GLStack = null;
+		
+		if (graphics.__dirty) {
+			
+			glStack = DrawPath.getStack(graphics, gl);
 			
 		}
 		
 		graphics.__dirty = false;
+			
+		for (data in glStack.buckets) {
+			data.reset();
+			bucketPool.push(data);
+		}
 		
-		
-		//if (graphics.clearDirty) {
+		glStack.reset();
 			
-			//graphics.clearDirty = false;
+		for (i in glStack.lastIndex...graphics.__drawPaths.length) {
+			var path = graphics.__drawPaths[i];
 			
-			for (i in 0...glStack.data.length) {
-				
-				var graphicsData = glStack.data[i];
-				graphicsData.reset ();
-				graphicsDataPool.push (graphicsData);
-				
-			}
-			
-			glStack.data = [];
-			glStack.lastIndex = 0;
-			
-		//}
-		
-		
-		var glData:GLGraphicsData;
-		
-		for (i in glStack.lastIndex...graphics.__glGraphicsData.length) {
-			
-			var data = graphics.__glGraphicsData[i];
-			
-			if (data.type == Polygon) {
-				
-				if (data.hasFill) {
-					
-					if (data.points.length > 6) {
-						
-						if (data.points.length > 10) { // 5 * 2
-							
-							glData = switchMode (glStack, STENCIL);
-							buildComplexPoly (data, glData);
-							
+			switch(path.type) {
+				case Polygon:
+					if (path.points.length > 6) {
+						if (path.points.length > 10) { // 5 * 2
+							buildComplexPoly (path, glStack);
 						} else {
-							
-							glData = switchMode (glStack, DEFAULT);
-							buildPoly (data, glData);
-							
+							buildPoly (path, glStack);
 						}
-						
+					} else {
+						// It's a line, draw it
+						if (path.line.width > 0) {
+							var bucket = switchBucket(path.fillIndex, glStack, None);
+							buildLine (path, bucket.line);
+						}
 					}
-					
-				}
-				
-				if (data.line.width > 0) {
-					
-					glData = switchMode (glStack, DEFAULT);
-					buildLine (data, glData);
-					
-				}
-				
-			} else {
-				
-				glData = switchMode (glStack, DEFAULT);
-
-				switch(data.type) {
-					case Rectangle(rounded):
-						if(rounded) {
-							buildRoundedRectangle (data, glData);
-						} else {
-							buildRectangle (data, glData);
-						}
-					case Circle, Ellipse:
-						buildCircle (data, glData);
-					case _:
-				}
-				
+				case Rectangle(rounded):
+					if (rounded) {
+						buildRoundedRectangle (path, glStack);
+					} else {
+						buildRectangle (path, glStack);
+					}
+				case Circle, Ellipse:
+					buildCircle (path, glStack);
+				case DrawTriangles(_):
+					buildDrawTriangles(path, glStack);
+				case _:
 			}
 			
 			glStack.lastIndex++;
+		}
+		
+		var bucket:GLBucket;
+		for (i in 0...glStack.buckets.length) {
+			
+			bucket = glStack.buckets[i];
+			if (bucket.dirty) bucket.upload ();
+			if (bucket.line.dirty) bucket.line.upload();
 			
 		}
 		
-		for (i in 0...glStack.data.length) {
-			
-			glData = glStack.data[i];
-			if (glData.dirty) glData.upload ();
-			
+	}
+	
+	private static function prepareBucket(path:DrawPath, glStack:GLStack):GLBucket {
+		var bucket:GLBucket = null;
+
+		switch(path.fill) {
+			case Color(c, a):
+				bucket = switchBucket(path.fillIndex, glStack, Fill);
+				bucket.color = hex2rgb(c);
+				bucket.alpha = a;
+				
+				
+			case Texture(b, m, r, s):
+				bucket = switchBucket(path.fillIndex, glStack, PatternFill);
+				bucket.bitmap = b;
+				bucket.textureRepeat = r;
+				bucket.textureSmooth = s;
+				bucket.texture = b.bitmapData.getTexture(glStack.gl);
+				
+				//prepare the matrix
+				var tMatrix = new Matrix();
+				var pMatrix:Matrix;
+				if (m == null) {
+					pMatrix = new Matrix();
+				} else {
+					pMatrix = m.clone();
+				}
+				
+				var objx = 0 * (620/2);
+				var objy = 0 * (380/2);
+				
+				pMatrix = pMatrix.invert();
+				var tx = (pMatrix.tx + objx) / (b.width);
+				var ty = (pMatrix.ty + objy) / (b.height);
+				//pMatrix.tx = 0;
+				//pMatrix.ty = 0;
+				tMatrix.concat(pMatrix);
+				bucket.textureTL.x = tx;
+				bucket.textureTL.y = ty;
+				bucket.textureBR.x = 1 + tx;
+				bucket.textureBR.y = 1 + ty;
+				
+				tMatrix.scale(1 / b.width, 1 / b.height);
+				
+				bucket.textureMatrix = tMatrix;
+			case _:
+				bucket = switchBucket(path.fillIndex + 1, glStack, Line);
 		}
 		
+		
+		return bucket;
+	}
+	
+	private static function popBucket(glStack:GLStack, mode:BucketMode):GLBucket {
+		var b = bucketPool.pop();
+		if (b == null) b = new GLBucket(glStack.gl);
+		b.mode = mode;
+		glStack.buckets.push(b);
+		return b;
+	}
+	
+	private static function switchBucket (fillIndex:Int, glStack:GLStack, mode:BucketMode):GLBucket {
+		var bucket:GLBucket;
+		
+		if (glStack.buckets.length == 0) {
+			bucket = popBucket(glStack, mode);
+		} else {
+			bucket = glStack.buckets[glStack.buckets.length - 1];
+			if (bucket.fillIndex != fillIndex) {
+				bucket = popBucket(glStack, mode);
+			}
+		}
+		
+		bucket.dirty = true;
+		bucket.fillIndex = fillIndex;
+		
+		return bucket;
 	}
 	
 	
@@ -1126,31 +830,140 @@ class GraphicsRenderer {
 		
 	}
 	
-	private static inline function getAlpha(fill:FillStyle):Float {
-		return fill.color == null ? 0 : fill.alpha;
-	}
-	
 	
 }
 
 class GLStack {
 
 	public var lastIndex:Int = 0;
-	public var data:Array<GLGraphicsData>;
+	public var buckets:Array<GLBucket>;
 	public var gl:GLRenderContext;
 
 	public function new (gl:GLRenderContext) {
 		this.gl = gl;
-		data = [];
+		buckets = [];
+		lastIndex = 0;
+	}
+	
+	public function reset() {
+		buckets = [];
 		lastIndex = 0;
 	}
 
 }
 
+class GLBucket {
+	public var gl:GLRenderContext;
+	public var color:Array<Float>;
+	public var alpha:Float;	
+	public var dirty:Bool;
+	
+	public var lastIndex:Int;
+	
+	public var fillIndex:Int = 0;
+	public var line:GLBucket;
+	
+	public var mode:BucketMode;
+	
+	public var drawMode:Int;
+	
+	public var vertsBuffer:GLBuffer;
+	public var glVerts:Float32Array;
+	public var verts:Array<Float>;
+	
+	public var indexBuffer:GLBuffer;
+	public var glIndices:UInt16Array;
+	public var indices:Array<Int>;
+	
+	public var bitmap:Bitmap;
+	public var texture:GLTexture;
+	public var textureMatrix:Matrix;
+	public var textureRepeat:Bool = false;
+	public var textureSmooth:Bool = true;
+	public var textureTL:Point;
+	public var textureBR:Point;
+	
+	public var tileBuffer:GLBuffer;
+	public var glTile:Int16Array;
+	public var tile:Array<Int>;	
+	
+	public function new (gl:GLRenderContext, ?initLine:Bool = true) {
+		
+		this.gl = gl;
+		
+		color = [0, 0, 0];
+		lastIndex = 0;
+		alpha = 1;
+		dirty = true;
+		
+		mode = Fill;
+		
+		drawMode = gl.TRIANGLE_STRIP;
+		
+		if(initLine) {
+			line = new GLBucket(gl, false);
+			line.mode = Line;
+		}
+		
+		textureMatrix = new Matrix();
+		textureTL = new Point();
+		textureBR = new Point(1, 1);
+		
+		verts = [];
+		vertsBuffer = gl.createBuffer ();
+		indices = [];
+		indexBuffer = gl.createBuffer ();
+		
+		tileBuffer = gl.createBuffer();
+		tile = [
+			0, 0, 		0, 0,
+			4096, 0, 	1, 0,
+			0, 4096, 	0, 1,
+			4096, 4096, 1, 1
+		];
+		
+		glTile = new Int16Array (tile);
+		gl.bindBuffer (gl.ARRAY_BUFFER, tileBuffer);
+		gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
+	}
+	
+	public function reset ():Void {
+		verts = [];
+		indices = [];
+		fillIndex = 0;
+		//lastIndex = 0;
+		if(line != null) line.reset();
+	}
+	public function upload ():Void {
+		
+		if(verts.length > 0) {
+			glVerts = new Float32Array (verts);
+			gl.bindBuffer (gl.ARRAY_BUFFER, vertsBuffer);
+			gl.bufferData (gl.ARRAY_BUFFER, glVerts, gl.STATIC_DRAW);
+		}
+		
+		if(indices.length > 0) {
+			glIndices = new UInt16Array (indices);
+			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STATIC_DRAW);
+		}
+
+		dirty = false;
+		
+	}
+}
+
+@:enum abstract BucketMode(Int) {
+	var None = -1;
+	var Fill = 0;
+	var PatternFill = 1;
+	var Line = 2;
+	var PatternLine = 3;
+	var Complex = 9;
+}
+
+
 class GLGraphicsData {
-	
-	
-	//public static var graphicsDataPool = [];
 	
 	public var gl:GLRenderContext;
 	
@@ -1328,95 +1141,13 @@ class PolyK {
 }
 
 
-typedef LineStyle = {
-	
-	width:Float,
-	color:Int,
-	alpha:Float,
-	
-	scaleMode:LineScaleMode,
-	caps:CapsStyle,
-	joints:JointStyle,
-	miterLimit:Float
-	
-}
-
-
-typedef FillStyle = {
-	
-	color:Null<Int>,
-	alpha:Float,
-	bitmap:BitmapData,
-	repeat:Bool,
-	matrix:Matrix,
-	smooth:Bool
-	
-}
-
-
-@:access(openfl._internal.renderer.opengl.utils.GraphicsRenderer)
-@:access(openfl.display.Graphics)
-
-
-class DrawPath {
-	
-	
-	public var hasFill:Bool = false;
-	
-	public var line:LineStyle;
-	public var fill:FillStyle;
-	
-	public var points:Array<Float> = [];
-	
-	public var type:GraphicType = Polygon;
-	
-	
-	public function new() {
-		
-		line = Reflect.copy (GraphicsRenderer.DEFAULT_LINE_STYLE);
-		fill = Reflect.copy (GraphicsRenderer.DEFAULT_FILL_STYLE);
-		
-	}
-	
-	
-	public function update (line:LineStyle, hasFill:Bool, fill:FillStyle):Void {
-		
-		updateLine (line);
-		updateFill (hasFill, fill);
-		
-	}
-	
-	
-	public function updateFill (hasFill:Bool, fill:FillStyle):Void {
-		
-		this.hasFill = hasFill;
-		this.fill = Reflect.copy (fill);
-		
-	}
-	
-	
-	public function updateLine (line:LineStyle):Void {
-		
-		this.line.width = line.width;
-		this.line.color = line.color;
-		this.line.alpha = line.alpha;
-		this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
-		this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
-		this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
-		this.line.miterLimit = line.miterLimit;
-		
-	}
-	
-	
-}
-
-
 enum GraphicType {
 
 	Polygon;
 	Rectangle(rounded:Bool);
 	Circle;
 	Ellipse;
+	DrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
 
 }
 

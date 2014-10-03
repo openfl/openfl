@@ -21,16 +21,67 @@ class StencilManager {
 	public var reverse:Bool;
 	public var stencilStack:Array<GLGraphicsData>;
 	
+	public var bucketStack:Array<GLBucket>;
+	
 	
 	public function new (gl:GLRenderContext) {
 		
 		stencilStack = [];
+		bucketStack = [];
 		setContext (gl);
 		reverse = true;
 		count = 0;
 		
 	}
 	
+	public function prepareGraphics(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
+		var graphics = object.__graphics;
+		
+		var projection = renderSession.projection;
+		var offset = renderSession.offset;
+		var shader = renderSession.shaderManager.fillShader;
+		renderSession.shaderManager.setShader (shader);
+		
+		gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+		gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+		gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+		//gl.uniform3fv (shader.color, new Float32Array (bucket.color));
+		//gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
+			
+		gl.bindBuffer (gl.ARRAY_BUFFER, bucket.vertsBuffer);
+		gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
+		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucket.indexBuffer);
+	}
+	
+	public function pushBucket (object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
+		
+		if (bucketStack.length == 0) {
+			gl.enable(gl.STENCIL_TEST);
+			gl.clear(gl.STENCIL_BUFFER_BIT);
+		}
+		
+		bucketStack.push(bucket);
+		
+		gl.colorMask(false, false, false, false);
+		gl.stencilFunc(gl.NEVER, 1, 0xFF);
+		gl.stencilOp(gl.INVERT, gl.KEEP, gl.KEEP);
+		
+		gl.stencilMask(0xFF);
+		gl.clear(gl.STENCIL_BUFFER_BIT);
+		
+		prepareGraphics(object, bucket, renderSession);
+		gl.drawElements (bucket.drawMode, bucket.indices.length, gl.UNSIGNED_SHORT, 0);
+		
+		gl.colorMask(true, true, true, true);
+		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+		gl.stencilFunc(gl.EQUAL, 0xFF, 0xFF);
+	}
+	
+	public function popBucket (object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
+		bucketStack.pop();
+		count--;
+		gl.disable(gl.STENCIL_TEST);
+	}
 	
 	public function bindGraphics (object:DisplayObject, glData:GLGraphicsData, renderSession:RenderSession):Void {
 		
@@ -91,6 +142,7 @@ class StencilManager {
 	public function destroy ():Void {
 		
 		stencilStack = null;
+		bucketStack = null;
 		gl = null;
 		
 	}
