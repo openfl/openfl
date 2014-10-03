@@ -90,13 +90,36 @@ class PathBuiler {
 		
 		graphicDataPop ();
 		
-		__currentPath = new DrawPath ();
-		__currentPath.update(__line, __fill, __fillIndex);
-		__currentPath.type = Polygon;
-		__currentPath.points.push (x);
-		__currentPath.points.push (y);
+		var close = true;
+		var l  = __currentPath.points.length;
+		if (__currentPath.type == Polygon && l > 10) {
+			
+			var sx = __currentPath.points[0];
+			var sy = __currentPath.points[1];
+			var ex = __currentPath.points[l - 2];
+			var ey = __currentPath.points[l - 1];
+			
+			close = sx == x && sy == y && sx == ex && sy == ey;
+			
+			if (close) {
+				__currentPath.points.push (sx);
+				__currentPath.points.push (sy);
+				__currentPath.points.push (ex);
+				__currentPath.points.push (ey);
+			}
+		}
 		
-		__drawPaths.push (__currentPath);
+		close = true;
+		
+		if(close) {
+			__currentPath = new DrawPath ();
+			__currentPath.update(__line, __fill, __fillIndex);
+			__currentPath.type = Polygon;
+			__currentPath.points.push (x);
+			__currentPath.points.push (y);
+			
+			__drawPaths.push (__currentPath);
+		}
 		
 	}
 	

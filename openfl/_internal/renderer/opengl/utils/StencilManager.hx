@@ -34,9 +34,7 @@ class StencilManager {
 		
 	}
 	
-	public function prepareGraphics(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
-		var graphics = object.__graphics;
-		
+	public inline function prepareGraphics(object:DisplayObject, bucketData:GLBucketData, renderSession:RenderSession):Void {
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
 		var shader = renderSession.shaderManager.fillShader;
@@ -48,9 +46,9 @@ class StencilManager {
 		//gl.uniform3fv (shader.color, new Float32Array (bucket.color));
 		//gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
 			
-		gl.bindBuffer (gl.ARRAY_BUFFER, bucket.vertsBuffer);
+		gl.bindBuffer (gl.ARRAY_BUFFER, bucketData.vertsBuffer);
 		gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
-		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucket.indexBuffer);
+		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucketData.indexBuffer);
 	}
 	
 	public function pushBucket (object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
@@ -63,14 +61,16 @@ class StencilManager {
 		bucketStack.push(bucket);
 		
 		gl.colorMask(false, false, false, false);
-		gl.stencilFunc(gl.NEVER, 1, 0xFF);
+		gl.stencilFunc(gl.NEVER, 0x01, 0xFF);
 		gl.stencilOp(gl.INVERT, gl.KEEP, gl.KEEP);
 		
 		gl.stencilMask(0xFF);
 		gl.clear(gl.STENCIL_BUFFER_BIT);
 		
-		prepareGraphics(object, bucket, renderSession);
-		gl.drawElements (bucket.drawMode, bucket.indices.length, gl.UNSIGNED_SHORT, 0);
+		for(bucketData in bucket.data) {
+			prepareGraphics(object, bucketData, renderSession);
+			gl.drawElements (bucketData.drawMode, bucketData.indices.length, gl.UNSIGNED_SHORT, 0);
+		}
 		
 		gl.colorMask(true, true, true, true);
 		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
@@ -79,8 +79,9 @@ class StencilManager {
 	
 	public function popBucket (object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
 		bucketStack.pop();
-		count--;
-		gl.disable(gl.STENCIL_TEST);
+		if (bucketStack.length == 0) {
+			gl.disable(gl.STENCIL_TEST);
+		}
 	}
 	
 	public function bindGraphics (object:DisplayObject, glData:GLGraphicsData, renderSession:RenderSession):Void {

@@ -7,6 +7,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer.GLBucketData;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer.RenderMode;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
@@ -53,7 +54,7 @@ class GraphicsRenderer {
 		var totalSegs = 40;
 		var seg = (Math.PI * 2) / totalSegs;
 		
-		var bucket:GLBucket = prepareBucket(path, glStack);
+		var bucket = prepareBucket(path, glStack);
 
 		
 		if(bucket != null) {
@@ -134,11 +135,9 @@ class GraphicsRenderer {
 		}
 	}
 	
-	public static function buildLine (path:DrawPath, bucket:GLBucket):Void {
+	public static function buildLine (path:DrawPath, bucket:GLBucketData):Void {
 		var points = path.points;
 		if (points.length == 0) return;
-		
-		bucket.dirty = true;
 		
 		if (path.line.width % 2 > 0) {
 			
@@ -434,7 +433,7 @@ class GraphicsRenderer {
 		var width = rectData[2];
 		var height = rectData[3];
 		
-		var bucket:GLBucket = prepareBucket(path, glStack);
+		var bucket = prepareBucket(path, glStack);
 		
 		if(bucket != null) {
 			var verts = bucket.verts;
@@ -609,54 +608,34 @@ class GraphicsRenderer {
 				
 				renderSession.stencilManager.pushBucket(object, bucket, renderSession);
 				
-				shader = bucket.mode == Fill ? renderSession.shaderManager.fillShader : renderSession.shaderManager.patternFillShader;
-				renderSession.shaderManager.setShader(shader);
-				
-				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (false));
-				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
-				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
-
-				gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
-				if(bucket.mode == Fill) {
-					gl.uniform3fv (shader.color, new Float32Array (bucket.color));
-				} else if(bucket.texture != null) {
-					gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
-					
-					#if !js
-					if (bucket.textureRepeat) {
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-					} else {
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-					}
-					#end
-					
-					if (bucket.textureSmooth) {
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-					} else {
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
-					}
-					
-					
-					gl.uniform1i(shader.pattern, 0);
-					gl.uniform2f(shader.patternTL, bucket.textureTL.x, bucket.textureTL.y);
-					gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);
-					
-					gl.uniformMatrix3fv(shader.patternMatrix, false, bucket.textureMatrix.toArray(false));
-					
-				}
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
-				gl.vertexAttribPointer (shader.aVertexPosition, 4, gl.SHORT, false, 0, 0);
-				gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+				doFill(object, bucket, renderSession);
 				
 				renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				
 			}
 			
+			for (data in bucket.data) {
+				if (data.line != null) {
+					shader = renderSession.shaderManager.primitiveShader;
+				
+					renderSession.shaderManager.setShader (shader);
+					
+					gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+					gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+					gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+					gl.uniform1f (shader.alpha, object.__worldAlpha);
+					
+					gl.bindBuffer (gl.ARRAY_BUFFER, data.line.vertsBuffer);
+
+					gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
+					gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
+				
+					
+					gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.line.indexBuffer);
+					gl.drawElements (gl.TRIANGLE_STRIP, data.line.indices.length, gl.UNSIGNED_SHORT, 0);
+				}
+			}
+			/*
 			if (bucket.line != null) {
 				bucket = bucket.line;
 				shader = renderSession.shaderManager.primitiveShader;
@@ -677,7 +656,7 @@ class GraphicsRenderer {
 				gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucket.indexBuffer);
 				gl.drawElements (gl.TRIANGLE_STRIP, bucket.indices.length, gl.UNSIGNED_SHORT, 0);
 			}
-			
+			*/
 		}
 	}
 		
@@ -714,10 +693,10 @@ class GraphicsRenderer {
 						}
 					} else {
 						// It's a line, draw it
-						if (path.line.width > 0) {
-							var bucket = switchBucket(path.fillIndex, glStack, None);
-							buildLine (path, bucket.line);
-						}
+						//if (path.line.width > 0) {
+							//var bucket = switchBucket(path.fillIndex, glStack, None);
+							//buildLine (path, bucket);
+						//}
 					}
 				case Rectangle(rounded):
 					if (rounded) {
@@ -740,13 +719,12 @@ class GraphicsRenderer {
 			
 			bucket = glStack.buckets[i];
 			if (bucket.dirty) bucket.upload ();
-			if (bucket.line.dirty) bucket.line.upload();
 			
 		}
 		
 	}
 	
-	private static function prepareBucket(path:DrawPath, glStack:GLStack):GLBucket {
+	private static function prepareBucket(path:DrawPath, glStack:GLStack):GLBucketData {
 		var bucket:GLBucket = null;
 
 		switch(path.fill) {
@@ -790,11 +768,12 @@ class GraphicsRenderer {
 				
 				bucket.textureMatrix = tMatrix;
 			case _:
-				bucket = switchBucket(path.fillIndex + 1, glStack, Line);
+				bucket = switchBucket(path.fillIndex, glStack, Line);
 		}
-		
-		
-		return bucket;
+		trace(bucket.data.length);
+		var bucketData = new GLBucketData(glStack.gl);
+		bucket.data.push(bucketData);
+		return bucketData;
 	}
 	
 	private static function popBucket(glStack:GLStack, mode:BucketMode):GLBucket {
@@ -817,12 +796,67 @@ class GraphicsRenderer {
 			}
 		}
 		
+		trace("Switching to bucket " + bucket.fillIndex + " for " + fillIndex);
+		
 		bucket.dirty = true;
 		bucket.fillIndex = fillIndex;
 		
 		return bucket;
 	}
 	
+	private static inline function doFill(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
+		var gl = renderSession.gl;
+		var projection = renderSession.projection;
+		var offset = renderSession.offset;
+		
+		var shader:Dynamic = bucket.mode == Fill ? renderSession.shaderManager.fillShader : renderSession.shaderManager.patternFillShader;
+		renderSession.shaderManager.setShader(shader);
+		
+		gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (false));
+		gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+		gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+
+		gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
+		
+		if (bucket.mode == Fill) {
+			
+			gl.uniform3fv (shader.color, new Float32Array (bucket.color));
+			
+		} else if (bucket.texture != null) {
+			
+			gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
+			
+			#if !js
+			if (bucket.textureRepeat) {
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+			} else {
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			}
+			#end
+			
+			if (bucket.textureSmooth) {
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			} else {
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
+			}
+			
+			
+			gl.uniform1i(shader.pattern, 0);
+			gl.uniform2f(shader.patternTL, bucket.textureTL.x, bucket.textureTL.y);
+			gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);
+			
+			gl.uniformMatrix3fv(shader.patternMatrix, false, bucket.textureMatrix.toArray(false));
+			
+		}
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
+		gl.vertexAttribPointer (shader.aVertexPosition, 4, gl.SHORT, false, 0, 0);
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+	}
 	
 	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
 		
@@ -861,19 +895,10 @@ class GLBucket {
 	public var lastIndex:Int;
 	
 	public var fillIndex:Int = 0;
-	public var line:GLBucket;
 	
 	public var mode:BucketMode;
 	
-	public var drawMode:Int;
-	
-	public var vertsBuffer:GLBuffer;
-	public var glVerts:Float32Array;
-	public var verts:Array<Float>;
-	
-	public var indexBuffer:GLBuffer;
-	public var glIndices:UInt16Array;
-	public var indices:Array<Int>;
+	public var data:Array<GLBucketData> = [];
 	
 	public var bitmap:Bitmap;
 	public var texture:GLTexture;
@@ -887,7 +912,7 @@ class GLBucket {
 	public var glTile:Int16Array;
 	public var tile:Array<Int>;	
 	
-	public function new (gl:GLRenderContext, ?initLine:Bool = true) {
+	public function new (gl:GLRenderContext) {
 		
 		this.gl = gl;
 		
@@ -898,21 +923,9 @@ class GLBucket {
 		
 		mode = Fill;
 		
-		drawMode = gl.TRIANGLE_STRIP;
-		
-		if(initLine) {
-			line = new GLBucket(gl, false);
-			line.mode = Line;
-		}
-		
 		textureMatrix = new Matrix();
 		textureTL = new Point();
 		textureBR = new Point(1, 1);
-		
-		verts = [];
-		vertsBuffer = gl.createBuffer ();
-		indices = [];
-		indexBuffer = gl.createBuffer ();
 		
 		tileBuffer = gl.createBuffer();
 		tile = [
@@ -928,14 +941,58 @@ class GLBucket {
 	}
 	
 	public function reset ():Void {
-		verts = [];
-		indices = [];
+		for (d in data) {
+			d.destroy();
+		}
+		data = [];
 		fillIndex = 0;
-		//lastIndex = 0;
-		if(line != null) line.reset();
 	}
+	
 	public function upload ():Void {
 		
+		for (d in data) {
+			d.upload();
+		}
+
+		dirty = false;
+		
+	}
+}
+
+class GLBucketData {
+	public var gl:GLRenderContext;
+	public var drawMode:Int;
+	
+	public var vertsBuffer:GLBuffer;
+	public var glVerts:Float32Array;
+	public var verts:Array<Float>;
+	
+	public var indexBuffer:GLBuffer;
+	public var glIndices:UInt16Array;
+	public var indices:Array<Int>;
+	
+	public var line:GLBucketData;
+	
+	public function new (gl:GLRenderContext, ?initLine = true) {
+		this.gl = gl;
+		drawMode = gl.TRIANGLE_STRIP;
+		verts = [];
+		vertsBuffer = gl.createBuffer ();
+		indices = [];
+		indexBuffer = gl.createBuffer ();
+		
+		if(initLine) {
+			line = new GLBucketData(gl, false);
+		}
+	}
+	
+	public function destroy():Void {
+		verts = null;
+		indices = null;
+		if (line != null) line.destroy();
+	}
+	
+	public function upload():Void {
 		if(verts.length > 0) {
 			glVerts = new Float32Array (verts);
 			gl.bindBuffer (gl.ARRAY_BUFFER, vertsBuffer);
@@ -947,9 +1004,8 @@ class GLBucket {
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STATIC_DRAW);
 		}
-
-		dirty = false;
 		
+		if (line != null) line.upload();
 	}
 }
 
