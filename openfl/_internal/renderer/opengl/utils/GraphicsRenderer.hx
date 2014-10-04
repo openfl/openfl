@@ -36,6 +36,9 @@ class GraphicsRenderer {
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	public static var bucketPool:Array<GLBucket> = [];
 	
+	private static var objectOffsetX:Float = 0;
+	private static var objectOffsetY:Float = 0;
+	
 	public static function buildCircle (path:DrawPath, glStack:GLStack):Void {
 		var rectData = path.points;
 
@@ -109,13 +112,7 @@ class GraphicsRenderer {
 		var l = points.length;
 		var sx = points[0];		var sy = points[1];
 		var ex = points[l - 2];	var ey = points[l - 1];
-		// close polygon
-		if (sx != ex || sy != ey) {
-			points.push(sx);
-			points.push(sy);
-		}
 		
-		//var bucket = popBucket(glData, Complex);
 		var bucket = prepareBucket(path, glStack);
 		bucket.drawMode = glStack.gl.TRIANGLE_FAN;
 		bucket.verts = points;
@@ -635,34 +632,14 @@ class GraphicsRenderer {
 					gl.drawElements (gl.TRIANGLE_STRIP, data.line.indices.length, gl.UNSIGNED_SHORT, 0);
 				}
 			}
-			/*
-			if (bucket.line != null) {
-				bucket = bucket.line;
-				shader = renderSession.shaderManager.primitiveShader;
-				
-				renderSession.shaderManager.setShader (shader);
-				
-				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
-				gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
-				gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
-				gl.uniform1f (shader.alpha, object.__worldAlpha);
-				
-				gl.bindBuffer (gl.ARRAY_BUFFER, bucket.vertsBuffer);
-
-				gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
-				gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
-			
-				
-				gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucket.indexBuffer);
-				gl.drawElements (gl.TRIANGLE_STRIP, bucket.indices.length, gl.UNSIGNED_SHORT, 0);
-			}
-			*/
 		}
 	}
 		
 	public static function updateGraphics (object:DisplayObject, gl:GLRenderContext):Void {
 		
 		var graphics = object.__graphics;
+		objectOffsetX = object.x;
+		objectOffsetY = object.y;
 		var glStack:GLStack = null;
 		
 		if (graphics.__dirty) {
@@ -685,19 +662,22 @@ class GraphicsRenderer {
 			
 			switch(path.type) {
 				case Polygon:
+					buildComplexPoly (path, glStack);
+					
+					/*
 					if (path.points.length > 6) {
 						if (path.points.length > 10) { // 5 * 2
 							buildComplexPoly (path, glStack);
 						} else {
-							buildPoly (path, glStack);
+							buildComplexPoly (path, glStack);
 						}
 					} else {
 						// It's a line, draw it
-						//if (path.line.width > 0) {
-							//var bucket = switchBucket(path.fillIndex, glStack, None);
-							//buildLine (path, bucket);
-						//}
-					}
+						if (path.line.width > 0) {
+							var data = prepareBucket(path, glStack);
+							buildLine (path, data);
+						}
+					}*/
 				case Rectangle(rounded):
 					if (rounded) {
 						buildRoundedRectangle (path, glStack);
@@ -750,19 +730,18 @@ class GraphicsRenderer {
 					pMatrix = m.clone();
 				}
 				
-				var objx = 0 * (620/2);
-				var objy = 0 * (380/2);
-				
 				pMatrix = pMatrix.invert();
-				var tx = (pMatrix.tx + objx) / (b.width);
-				var ty = (pMatrix.ty + objy) / (b.height);
+				pMatrix.tx -= objectOffsetX;
+				pMatrix.ty -= objectOffsetY;
+				var tx = (pMatrix.tx) / (b.width);
+				var ty = (pMatrix.ty) / (b.height);
 				//pMatrix.tx = 0;
 				//pMatrix.ty = 0;
 				tMatrix.concat(pMatrix);
 				bucket.textureTL.x = tx;
 				bucket.textureTL.y = ty;
-				bucket.textureBR.x = 1 + tx;
-				bucket.textureBR.y = 1 + ty;
+				bucket.textureBR.x = tx + 1;
+				bucket.textureBR.y = ty + 1;
 				
 				tMatrix.scale(1 / b.width, 1 / b.height);
 				
@@ -770,7 +749,7 @@ class GraphicsRenderer {
 			case _:
 				bucket = switchBucket(path.fillIndex, glStack, Line);
 		}
-		trace(bucket.data.length);
+		
 		var bucketData = new GLBucketData(glStack.gl);
 		bucket.data.push(bucketData);
 		return bucketData;
@@ -796,7 +775,7 @@ class GraphicsRenderer {
 			}
 		}
 		
-		trace("Switching to bucket " + bucket.fillIndex + " for " + fillIndex);
+		trace("Switching from bucket " + bucket.fillIndex + " to " + fillIndex);
 		
 		bucket.dirty = true;
 		bucket.fillIndex = fillIndex;

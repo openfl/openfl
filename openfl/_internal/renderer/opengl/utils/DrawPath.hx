@@ -78,6 +78,23 @@ class PathBuiler {
 	private static var __fill:FillType;
 	private static var __fillIndex:Int = 0;
 	
+	private static function closePath():Void {
+		var l = __currentPath.points.length;
+		if (__currentPath.type == Polygon) {
+			
+			var sx = __currentPath.points[0];
+			var sy = __currentPath.points[1];
+			var ex = __currentPath.points[l - 2];
+			var ey = __currentPath.points[l - 1];
+			
+			// close the polygon if needed
+			if (!(sx == ex && sy == ey)) {
+				__currentPath.points.push (sx);
+				__currentPath.points.push (sy);
+			}
+		}
+	}
+	
 	private static function endFill ():Void {
 		
 		__fill = None;
@@ -85,47 +102,26 @@ class PathBuiler {
 		
 	}
 	
-	
 	private static function moveTo (x:Float, y:Float):Void {
 		
 		graphicDataPop ();
+		__currentPath = new DrawPath ();
+		__currentPath.update(__line, __fill, __fillIndex);
+		__currentPath.type = Polygon;
+		__currentPath.points.push (x);
+		__currentPath.points.push (y);
 		
-		var close = true;
-		var l  = __currentPath.points.length;
-		if (__currentPath.type == Polygon && l > 10) {
-			
-			var sx = __currentPath.points[0];
-			var sy = __currentPath.points[1];
-			var ex = __currentPath.points[l - 2];
-			var ey = __currentPath.points[l - 1];
-			
-			close = sx == x && sy == y && sx == ex && sy == ey;
-			
-			if (close) {
-				__currentPath.points.push (sx);
-				__currentPath.points.push (sy);
-				__currentPath.points.push (ex);
-				__currentPath.points.push (ey);
-			}
-		}
-		
-		close = true;
-		
-		if(close) {
-			__currentPath = new DrawPath ();
-			__currentPath.update(__line, __fill, __fillIndex);
-			__currentPath.type = Polygon;
-			__currentPath.points.push (x);
-			__currentPath.points.push (y);
-			
-			__drawPaths.push (__currentPath);
-		}
+		__drawPaths.push (__currentPath);
 		
 	}
 	
 	private inline static function graphicDataPop ():Void {
 		
-		if (__currentPath.points.length == 0) __drawPaths.pop ();
+		if (__currentPath.points.length == 0) {
+			__drawPaths.pop ();
+		} else {
+			closePath();
+		}
 		
 	}
 	
@@ -139,6 +135,7 @@ class PathBuiler {
 		__hasFill = false;
 		__line = Reflect.copy (DrawPath.DEFAULT_LINE_STYLE);
 		__fill = None;
+		__fillIndex = 0;
 		
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 			
@@ -384,6 +381,8 @@ class PathBuiler {
 				}
 				
 			}
+			
+			closePath();
 			
 		}
 		
