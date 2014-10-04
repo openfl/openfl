@@ -73,21 +73,20 @@ class PathBuiler {
 	
 	private static var __currentPath:DrawPath;
 	private static var __drawPaths:Array<DrawPath>;
-	private static var __hasFill:Bool;
 	private static var __line:LineStyle;
 	private static var __fill:FillType;
 	private static var __fillIndex:Int = 0;
 	
 	private static function closePath():Void {
 		var l = __currentPath.points.length;
-		if (__currentPath.type == Polygon) {
-			
+		if (l <= 0) return;
+		// the paths are only closed when the type is a polygon and there is a fill
+		if (__currentPath.type == Polygon && __fill != None) {
 			var sx = __currentPath.points[0];
 			var sy = __currentPath.points[1];
 			var ex = __currentPath.points[l - 2];
 			var ey = __currentPath.points[l - 1];
 			
-			// close the polygon if needed
 			if (!(sx == ex && sy == ey)) {
 				__currentPath.points.push (sx);
 				__currentPath.points.push (sy);
@@ -132,7 +131,6 @@ class PathBuiler {
 		
 		__drawPaths = new Array ();
 		__currentPath = new DrawPath ();
-		__hasFill = false;
 		__line = Reflect.copy (DrawPath.DEFAULT_LINE_STYLE);
 		__fill = None;
 		__fillIndex = 0;
