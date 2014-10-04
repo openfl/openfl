@@ -312,7 +312,7 @@ class PathBuiler {
 						
 						__line = Reflect.copy (DrawPath.DEFAULT_LINE_STYLE);
 						
-						if (thickness == null || thickness < 0) {
+						if (thickness == null || thickness == Math.NaN || thickness < 0) {
 							
 							__line.width = 0;
 							
@@ -396,7 +396,7 @@ typedef LineStyle = {
 	
 	width:Float,
 	color:Int,
-	alpha:Float,
+	alpha:Null<Float>,
 	
 	scaleMode:LineScaleMode,
 	caps:CapsStyle,
