@@ -54,7 +54,7 @@ class DrawPath {
 	public function updateLine(line:LineStyle):Void {
 		this.line.width = line.width;
 		this.line.color = line.color;
-		this.line.alpha = line.alpha;
+		this.line.alpha = line.alpha == null ? 1 : line.alpha;
 		this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
 		this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
 		this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
@@ -81,7 +81,7 @@ class PathBuiler {
 		var l = __currentPath.points.length;
 		if (l <= 0) return;
 		// the paths are only closed when the type is a polygon and there is a fill
-		if (__currentPath.type == Polygon && __fill != None) {
+		if (__currentPath.type == Polygon && __currentPath.fill != None) {
 			var sx = __currentPath.points[0];
 			var sy = __currentPath.points[1];
 			var ex = __currentPath.points[l - 2];
@@ -309,6 +309,8 @@ class PathBuiler {
 						endFill ();
 					
 					case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+						
+						__line = Reflect.copy (DrawPath.DEFAULT_LINE_STYLE);
 						
 						if (thickness == null || thickness < 0) {
 							
