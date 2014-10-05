@@ -5,6 +5,7 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.shaders.ComplexPrimitiveShader;
 import openfl._internal.renderer.opengl.shaders.DefaultShader;
+import openfl._internal.renderer.opengl.shaders.DrawTrianglesShader;
 import openfl._internal.renderer.opengl.shaders.FastShader;
 import openfl._internal.renderer.opengl.shaders.FillShader;
 import openfl._internal.renderer.opengl.shaders.PatternFillShader;
@@ -26,6 +27,7 @@ class ShaderManager {
 	
 	public var fillShader:FillShader;
 	public var patternFillShader:PatternFillShader;
+	public var drawTrianglesShader:DrawTrianglesShader;
 	
 	public var shaderMap:Array<AbstractShader>;
 	public var stripShader:StripShader;
@@ -63,6 +65,7 @@ class ShaderManager {
 		
 		fillShader.destroy();
 		patternFillShader.destroy();
+		drawTrianglesShader.destroy();
 		
 		gl = null;
 		
@@ -121,6 +124,7 @@ class ShaderManager {
 		
 		fillShader = new FillShader(gl);
 		patternFillShader = new PatternFillShader(gl);
+		drawTrianglesShader = new DrawTrianglesShader(gl);
 		
 		setShader (defaultShader);
 		

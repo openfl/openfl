@@ -1,7 +1,6 @@
 package openfl._internal.renderer.opengl.utils;
 
 
-import haxe.ds.Vector;
 import haxe.EnumFlags;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.GLRenderContext;
@@ -108,10 +107,6 @@ class GraphicsRenderer {
 	public static function buildComplexPoly (path:DrawPath, glStack:GLStack):Void {
 		if (path.points.length < 6) return;
 		var points = path.points;
-		
-		var l = points.length;
-		var sx = points[0];		var sy = points[1];
-		var ex = points[l - 2];	var ey = points[l - 1];
 		
 		var bucket = prepareBucket(path, glStack);
 		bucket.drawMode = glStack.gl.TRIANGLE_FAN;
@@ -526,15 +521,58 @@ class GraphicsRenderer {
 	
 	public static function buildDrawTriangles (path:DrawPath, glStack:GLStack):Void {
 		
-		return;
+		//return;
 		var args = Type.enumParameters(path.type);
-		var vertices:Vector<Float> = args[0];
-		var indices:Vector<Int> = args[1];
-		var uvtData:Vector<Float> = args[2];
-		var culling:TriangleCulling = args[3];
-		var colors:Vector<Int> = args[4];
+		var vertices:Vector<Float> = cast args[0];
+		var indices:Vector<Int> = cast args[1];
+		//var uvtData:Vector<Float> = normalizeUvt(cast args[2], false);
+		var uvtData:Vector<Float> = cast args[2];
+		var culling:TriangleCulling = cast args[3];
+		var colors:Vector<Int> = cast args[4];
 		var blendMode:Int = args[5];
 		
+		var bucket = prepareBucket(path, glStack);
+		
+		var hasColors = colors != null && colors.length > 0;
+		hasColors = false;
+		var verts = bucket.verts;
+		var i0 = 0; var i1 = 0; var i2 = 0;
+		var idx = 0;
+		for (i in 0...Std.int(indices.length / 3)) {
+			i0 = indices[i * 3] * 2; i1 = indices[i * 3 + 1] * 2; i2 = indices[i * 3 + 2] * 2;
+			//trace(i0, i1, i2);
+			verts.push(vertices[i0]); verts.push(vertices[i0 + 1]);
+			verts.push(uvtData[i0]); verts.push(uvtData[i0 + 1]);
+			if(hasColors) {
+				verts.push(colors[i0]); verts.push(colors[i0 + 1]);
+			} else {
+				verts.push(0x00FFFFFF); verts.push(0x00FFFFFF);
+			}
+			
+			verts.push(vertices[i1]); verts.push(vertices[i1 + 1]);
+			verts.push(uvtData[i1]); verts.push(uvtData[i1 + 1]);
+			if (hasColors) {
+				verts.push(colors[i1]); verts.push(colors[i1 + 1]);
+			} else {
+				verts.push(0x00FFFFFF); verts.push(0x00FFFFFF);
+			}
+			
+			verts.push(vertices[i2]); verts.push(vertices[i2 + 1]);
+			verts.push(uvtData[i2]); verts.push(uvtData[i2 + 1]);
+			if (hasColors) {
+				verts.push(colors[i2]); verts.push(colors[i2 + 1]);
+			} else {
+				verts.push(0x00FFFFFF); verts.push(0x00FFFFFF);
+			}
+			
+			bucket.indices.push(idx);
+			bucket.indices.push(idx + 1);
+			bucket.indices.push(idx + 2);
+			idx += 3;
+		}
+		
+		//trace(bucket.indices);
+		//trace(verts);
 	}
 	
 	private static function quadraticBezierCurve (fromX:Float, fromY:Float, cpX:Float, cpY:Float, toX:Float, toY:Float):Array<Float> {
@@ -601,18 +639,20 @@ class GraphicsRenderer {
 		for (i in 0...glStack.buckets.length) {
 			bucket = glStack.buckets[i];
 			
-			if (bucket.mode == Fill || bucket.mode == PatternFill) {
-				
-				renderSession.stencilManager.pushBucket(object, bucket, renderSession);
-				
-				doFill(object, bucket, renderSession);
-				
-				renderSession.stencilManager.popBucket(object, bucket, renderSession);
-				
+			switch(bucket.mode) {
+				case Fill, PatternFill:
+					renderSession.stencilManager.pushBucket(object, bucket, renderSession);
+					renderFill(object, bucket, renderSession);
+					renderSession.stencilManager.popBucket(object, bucket, renderSession);
+				case DrawTriangles:
+					//trace("drawTriangles");
+					renderDrawTriangles(object, bucket, renderSession);
+					
+				case _:
 			}
 			
 			for (data in bucket.data) {
-				if (data.line != null) {
+				if (data.line != null && data.line.verts.length > 0) {
 					shader = renderSession.shaderManager.primitiveShader;
 				
 					renderSession.shaderManager.setShader (shader);
@@ -649,7 +689,7 @@ class GraphicsRenderer {
 		}
 		
 		graphics.__dirty = false;
-			
+		
 		for (data in glStack.buckets) {
 			data.reset();
 			bucketPool.push(data);
@@ -663,21 +703,6 @@ class GraphicsRenderer {
 			switch(path.type) {
 				case Polygon:
 					buildComplexPoly (path, glStack);
-					
-					/*
-					if (path.points.length > 6) {
-						if (path.points.length > 10) { // 5 * 2
-							buildComplexPoly (path, glStack);
-						} else {
-							buildComplexPoly (path, glStack);
-						}
-					} else {
-						// It's a line, draw it
-						if (path.line.width > 0) {
-							var data = prepareBucket(path, glStack);
-							buildLine (path, data);
-						}
-					}*/
 				case Rectangle(rounded):
 					if (rounded) {
 						buildRoundedRectangle (path, glStack);
@@ -706,7 +731,6 @@ class GraphicsRenderer {
 	
 	private static function prepareBucket(path:DrawPath, glStack:GLStack):GLBucketData {
 		var bucket:GLBucket = null;
-
 		switch(path.fill) {
 			case Color(c, a):
 				bucket = switchBucket(path.fillIndex, glStack, Fill);
@@ -750,14 +774,23 @@ class GraphicsRenderer {
 				bucket = switchBucket(path.fillIndex, glStack, Line);
 		}
 		
+		switch(path.type) {
+			case DrawTriangles(_):
+				// TODO find a way to set color or texture
+				bucket.mode = DrawTriangles;
+			case _:
+		}
 		var bucketData = new GLBucketData(glStack.gl);
 		bucket.data.push(bucketData);
 		return bucketData;
 	}
 	
-	private static function popBucket(glStack:GLStack, mode:BucketMode):GLBucket {
+	private static function getBucket(glStack:GLStack, mode:BucketMode):GLBucket {
 		var b = bucketPool.pop();
-		if (b == null) b = new GLBucket(glStack.gl);
+		if (b == null) {
+			b = new GLBucket(glStack.gl);
+			trace("new bucket");
+		}
 		b.mode = mode;
 		glStack.buckets.push(b);
 		return b;
@@ -767,15 +800,15 @@ class GraphicsRenderer {
 		var bucket:GLBucket;
 		
 		if (glStack.buckets.length == 0) {
-			bucket = popBucket(glStack, mode);
+			bucket = getBucket(glStack, mode);
 		} else {
 			bucket = glStack.buckets[glStack.buckets.length - 1];
 			if (bucket.fillIndex != fillIndex) {
-				bucket = popBucket(glStack, mode);
+				bucket = getBucket(glStack, mode);
 			}
 		}
 		
-		trace("Switching from bucket " + bucket.fillIndex + " to " + fillIndex);
+		//trace("Switching from bucket " + bucket.fillIndex + " to " + fillIndex);
 		
 		bucket.dirty = true;
 		bucket.fillIndex = fillIndex;
@@ -783,7 +816,7 @@ class GraphicsRenderer {
 		return bucket;
 	}
 	
-	private static inline function doFill(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
+	private static inline function renderFill(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
 		var gl = renderSession.gl;
 		var projection = renderSession.projection;
 		var offset = renderSession.offset;
@@ -837,12 +870,62 @@ class GraphicsRenderer {
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 	}
 	
+	public static inline function renderDrawTriangles(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
+		var gl = renderSession.gl;
+		var projection = renderSession.projection;
+		var offset = renderSession.offset;
+		var shader = renderSession.shaderManager.drawTrianglesShader;
+		
+		renderSession.shaderManager.setShader (shader);
+		
+		for(data in bucket.data) {
+			gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
+			
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+			
+			gl.uniform1i (shader.sampler, 0);
+			gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+			gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
+			gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
+			gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
+			
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, data.vertsBuffer);
+			var stride =  6 * 4;
+			gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+			gl.vertexAttribPointer (shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+			gl.vertexAttribPointer (shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
+			
+			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.indexBuffer);
+			gl.drawElements (gl.TRIANGLES, data.indices.length, gl.UNSIGNED_SHORT, 0);
+		}
+	}
+	
 	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
 		
 		return hex == null ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
 		
 	}
 	
+	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):Vector<Float> {
+		var max:Float = Math.NEGATIVE_INFINITY;
+		var tmp = Math.NEGATIVE_INFINITY;
+		var len = uvt.length;
+		for (t in 1...len+1) {
+			if (skipT && t % 3 == 0) continue;
+			tmp = uvt[t - 1];
+			if (max < tmp) max = tmp;
+		}
+		
+		var result:Vector<Float> = new Vector<Float>();
+		for (t in 1...len+1) {
+			if (skipT && t % 3 == 0) continue;
+			result.push((uvt[t - 1] / max));
+		}
+		
+		return result;
+	}	
 	
 }
 
@@ -988,13 +1071,13 @@ class GLBucketData {
 	}
 }
 
-@:enum abstract BucketMode(Int) {
-	var None = -1;
-	var Fill = 0;
-	var PatternFill = 1;
-	var Line = 2;
-	var PatternLine = 3;
-	var Complex = 9;
+enum BucketMode {
+	None;
+	Fill;
+	PatternFill;
+	Line;
+	PatternLine;
+	DrawTriangles;
 }
 
 
