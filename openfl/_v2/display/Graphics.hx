@@ -73,6 +73,13 @@ class Graphics {
 	}
 	
 	
+	public function copyFrom (sourceGraphics:Graphics):Void {
+		
+		openfl.Lib.notImplemented ("Graphics.copyFrom");
+		
+	}
+	
+	
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void {
 		
 		lime_gfx_curve_to (__handle, controlX, controlY, anchorX, anchorY);

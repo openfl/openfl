@@ -229,6 +229,19 @@ class Graphics {
 	}
 	
 	
+	public function copyFrom (sourceGraphics:Graphics):Void {
+		
+		__bounds = sourceGraphics.__bounds.clone ();
+		__commands = sourceGraphics.__commands.copy ();
+		__dirty = true;
+		__halfStrokeWidth = sourceGraphics.__halfStrokeWidth;
+		__positionX = sourceGraphics.__positionX;
+		__positionY = sourceGraphics.__positionY;
+		__visible = sourceGraphics.__visible;
+		
+	}
+	
+	
 	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
 		
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
