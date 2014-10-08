@@ -41,19 +41,19 @@ class Graphics {
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
-	private var __bounds:Rectangle;
-	private var __commands:Array<DrawCommand> = [];
-	private var __dirty:Bool = true;
-	private var __glStack:Array<GLStack> = [];
-	private var __drawPaths:Array<DrawPath>;
-	private var __halfStrokeWidth:Float;
-	private var __positionX:Float;
-	private var __positionY:Float;
-	private var __visible:Bool = true;
+	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __commands:Array<DrawCommand> = [];
+	@:noCompletion private var __dirty:Bool = true;
+	@:noCompletion private var __glStack:Array<GLStack> = [];
+	@:noCompletion private var __drawPaths:Array<DrawPath>;
+	@:noCompletion private var __halfStrokeWidth:Float;
+	@:noCompletion private var __positionX:Float;
+	@:noCompletion private var __positionY:Float;
+	@:noCompletion private var __visible:Bool = true;
 	
 	#if js
-	private var __canvas:CanvasElement;
-	private var __context:CanvasRenderingContext2D;
+	@:noCompletion private var __canvas:CanvasElement;
+	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#end
 	
 	
@@ -226,6 +226,19 @@ class Graphics {
 		}
 		
 		__visible = false;
+		
+	}
+	
+	
+	public function copyFrom (sourceGraphics:Graphics):Void {
+		
+		__bounds = sourceGraphics.__bounds.clone ();
+		__commands = sourceGraphics.__commands.copy ();
+		__dirty = true;
+		__halfStrokeWidth = sourceGraphics.__halfStrokeWidth;
+		__positionX = sourceGraphics.__positionX;
+		__positionY = sourceGraphics.__positionY;
+		__visible = sourceGraphics.__visible;
 		
 	}
 	
@@ -909,7 +922,7 @@ class Graphics {
 	}
 	
 	
-	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__bounds == null) return;
 		
@@ -919,7 +932,7 @@ class Graphics {
 	}
 	
 	
-	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
+	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
 		
 		//TODO: Shape flag
 		
@@ -931,7 +944,7 @@ class Graphics {
 	}
 	
 	
-	private function __inflateBounds (x:Float, y:Float):Void {
+	@:noCompletion private function __inflateBounds (x:Float, y:Float):Void {
 		
 		if (__bounds == null) {
 			
@@ -972,7 +985,7 @@ class Graphics {
 }
 
 
-@:dox(hide) enum DrawCommand {
+@:noCompletion @:dox(hide) enum DrawCommand {
 	
 	BeginBitmapFill (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
 	BeginFill (color:Int, alpha:Float);

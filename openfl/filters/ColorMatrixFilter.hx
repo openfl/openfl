@@ -39,7 +39,7 @@ class ColorMatrixFilter extends BitmapFilter {
 	
 	
 	#if js
-	public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	@:noCompletion public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		var source = sourceData.data;
 		var target = targetData.data;

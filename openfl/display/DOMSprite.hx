@@ -14,8 +14,8 @@ import js.html.Element;
 class DOMSprite extends Sprite {
 	
 	
-	private var __active:Bool;
-	private var __element:Element;
+	@:noCompletion private var __active:Bool;
+	@:noCompletion private var __element:Element;
 	
 	
 	public function new (element:Element) {
@@ -27,7 +27,7 @@ class DOMSprite extends Sprite {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		if (stage != null && __worldVisible && __renderable) {
 			

@@ -84,7 +84,7 @@ class Bitmap extends DisplayObjectContainer {
 	public var smoothing:Bool;
 	
 	#if js
-	private var __image:ImageElement;
+	@:noCompletion private var __image:ImageElement;
 	#end
 	
 	
@@ -105,7 +105,7 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (bitmapData != null) {
 			
@@ -119,7 +119,7 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || bitmapData == null) return false;
 		
@@ -142,28 +142,28 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
-	@:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasBitmap.render (this, renderSession);
 		
 	}
 	
 	
-	@:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMBitmap.render (this, renderSession);
 		
 	}
 	
 	
-	@:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLBitmap.render (this, renderSession);
 		
 	}
 	
 	
-	@:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
 		
 		renderSession.context.rect (0, 0, width, height);
 		
@@ -177,7 +177,7 @@ class Bitmap extends DisplayObjectContainer {
 	
 	
 	
-	private override function get_height ():Float {
+	@:noCompletion private override function get_height ():Float {
 		
 		if (bitmapData != null) {
 			
@@ -190,7 +190,7 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
-	private override function set_height (value:Float):Float {
+	@:noCompletion private override function set_height (value:Float):Float {
 		
 		if (bitmapData != null) {
 			
@@ -210,7 +210,7 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
-	private override function get_width ():Float {
+	@:noCompletion private override function get_width ():Float {
 		
 		if (bitmapData != null) {
 			
@@ -223,7 +223,7 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
-	private override function set_width (value:Float):Float {
+	@:noCompletion private override function set_width (value:Float):Float {
 		
 		if (bitmapData != null) {
 			

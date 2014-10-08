@@ -15,9 +15,9 @@ class Matrix {
 	public var tx:Float;
 	public var ty:Float;
 	
-	private var __array:Float32Array;
+	@:noCompletion private var __array:Float32Array;
 
-	private static var __identity = new Matrix ();
+	@:noCompletion private static var __identity = new Matrix ();
 	
 	
 	public function new (a:Float = 1, b:Float = 0, c:Float = 0, d:Float = 1, tx:Float = 0, ty:Float = 0) {
@@ -430,10 +430,12 @@ class Matrix {
 		this.concat (m);
 		
 	}
-
-	private function toArray(transpose:Bool = false) {
-
-		if(transpose) {
+	
+	
+	@:noCompletion private function toArray (transpose:Bool = false):Float32Array {
+		
+		if (transpose) {
+			
 			__array[0] = a;
 			__array[1] = c;
 			__array[2] = 0;
@@ -443,7 +445,9 @@ class Matrix {
 			__array[6] = tx;
 			__array[7] = ty;
 			__array[8] = 1;
+			
 		} else {
+			
 			__array[0] = a;
 			__array[1] = b;
 			__array[2] = tx;
@@ -453,13 +457,15 @@ class Matrix {
 			__array[6] = 0;
 			__array[7] = 0;
 			__array[8] = 1;
+			
 		}
-
+		
 		return __array;
+		
 	}
 	
 	
-	private inline function __cleanValues ():Void {
+	@:noCompletion private inline function __cleanValues ():Void {
 		
 		a = Math.round (a * 1000) / 1000;
 		b = Math.round (b * 1000) / 1000;
@@ -471,21 +477,21 @@ class Matrix {
 	}
 	
 	
-	public inline function __transformX (pos:Point):Float {
+	@:noCompletion public inline function __transformX (pos:Point):Float {
 		
 		return pos.x * a + pos.y * c + tx;
 		
 	}
 	
 	
-	public inline function __transformY (pos:Point):Float {
+	@:noCompletion public inline function __transformY (pos:Point):Float {
 		
 		return pos.x * b + pos.y * d + ty;
 		
 	}
 	
 	
-	public inline function __translateTransformed (pos:Point):Void {
+	@:noCompletion public inline function __translateTransformed (pos:Point):Void {
 		
 		tx = __transformX (pos);
 		ty = __transformY (pos);

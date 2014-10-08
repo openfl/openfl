@@ -50,14 +50,14 @@ class ColorTransform {
 	
 	
 
-	private function get_color ():Int {
+	@:noCompletion private function get_color ():Int {
 		
 		return ((Std.int (redOffset) << 16) | (Std.int (greenOffset) << 8) | Std.int (blueOffset));
 		
 	}
 	
 	
-	private function set_color (value:Int):Int {
+	@:noCompletion private function set_color (value:Int):Int {
 		
 		redOffset = (value >> 16) & 0xFF;
 		greenOffset = (value >> 8) & 0xFF;
@@ -72,7 +72,7 @@ class ColorTransform {
 	}
 	
 	
-	private function __toLimeColorMatrix ():ColorMatrix {
+	@:noCompletion private function __toLimeColorMatrix ():ColorMatrix {
 		
 		return cast new Float32Array ([ redMultiplier, 0, 0, 0, redOffset / 255, 0, greenMultiplier, 0, 0, greenOffset / 255, 0, 0, blueMultiplier, 0, blueOffset / 255, 0, 0, 0, alphaMultiplier, alphaOffset / 255 ]);
 		

@@ -52,34 +52,34 @@ class Stage extends Sprite {
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
 	
-	private var __clearBeforeRender:Bool;
-	private var __color:Int;
-	private var __colorSplit:Array<Float>;
-	private var __colorString:String;
-	private var __cursor:String;
-	private var __cursorHidden:Bool;
-	private var __dirty:Bool;
-	private var __dragBounds:Rectangle;
-	private var __dragObject:Sprite;
-	private var __dragOffsetX:Float;
-	private var __dragOffsetY:Float;
-	private var __focus:InteractiveObject;
-	private var __fullscreen:Bool;
-	private var __invalidated:Bool;
-	private var __mouseX:Float = 0;
-	private var __mouseY:Float = 0;
-	private var __originalWidth:Int;
-	private var __originalHeight:Int;
-	private var __renderer:AbstractRenderer;
-	private var __stack:Array<DisplayObject>;
-	private var __transparent:Bool;
-	private var __wasDirty:Bool;
+	@:noCompletion private var __clearBeforeRender:Bool;
+	@:noCompletion private var __color:Int;
+	@:noCompletion private var __colorSplit:Array<Float>;
+	@:noCompletion private var __colorString:String;
+	@:noCompletion private var __cursor:String;
+	@:noCompletion private var __cursorHidden:Bool;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __dragBounds:Rectangle;
+	@:noCompletion private var __dragObject:Sprite;
+	@:noCompletion private var __dragOffsetX:Float;
+	@:noCompletion private var __dragOffsetY:Float;
+	@:noCompletion private var __focus:InteractiveObject;
+	@:noCompletion private var __fullscreen:Bool;
+	@:noCompletion private var __invalidated:Bool;
+	@:noCompletion private var __mouseX:Float = 0;
+	@:noCompletion private var __mouseY:Float = 0;
+	@:noCompletion private var __originalWidth:Int;
+	@:noCompletion private var __originalHeight:Int;
+	@:noCompletion private var __renderer:AbstractRenderer;
+	@:noCompletion private var __stack:Array<DisplayObject>;
+	@:noCompletion private var __transparent:Bool;
+	@:noCompletion private var __wasDirty:Bool;
 	
 	#if js
-	//private var __div:DivElement;
-	//private var __element:HtmlElement;
+	//@:noCompletion private var __div:DivElement;
+	//@:noCompletion private var __element:HtmlElement;
 	#if stats
-	private var __stats:Dynamic;
+	@:noCompletion private var __stats:Dynamic;
 	#end
 	#end
 	
@@ -144,7 +144,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __drag (mouse:Point):Void {
+	@:noCompletion private function __drag (mouse:Point):Void {
 		
 		var parent = __dragObject.parent;
 		if (parent != null) {
@@ -186,7 +186,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __fireEvent (event:Event, stack:Array<DisplayObject>):Void {
+	@:noCompletion private function __fireEvent (event:Event, stack:Array<DisplayObject>):Void {
 		
 		var length = stack.length;
 		
@@ -247,14 +247,14 @@ class Stage extends Sprite {
 	}
 	
 	
-	private override function __getInteractive (stack:Array<DisplayObject>):Void {
+	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Void {
 		
 		stack.push (this);
 		
 	}
 	
 	
-	private function __render (context:RenderContext):Void {
+	@:noCompletion private function __render (context:RenderContext):Void {
 		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
 		
@@ -307,7 +307,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __resize ():Void {
+	@:noCompletion private function __resize ():Void {
 		
 		/*
 		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
@@ -368,7 +368,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __setCursor (cursor:String):Void {
+	@:noCompletion private function __setCursor (cursor:String):Void {
 		
 		if (__cursor != cursor) {
 			
@@ -386,7 +386,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __setCursorHidden (value:Bool):Void {
+	@:noCompletion private function __setCursorHidden (value:Bool):Void {
 		
 		if (__cursorHidden != value) {
 			
@@ -400,7 +400,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
+	@:noCompletion private function __startDrag (sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void {
 		
 		__dragBounds = (bounds == null) ? null : bounds.clone ();
 		__dragObject = sprite;
@@ -433,7 +433,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function __stopDrag (sprite:Sprite):Void {
+	@:noCompletion private function __stopDrag (sprite:Sprite):Void {
 		
 		__dragBounds = null;
 		__dragObject = null;
@@ -441,7 +441,7 @@ class Stage extends Sprite {
 	}
 	
 	
-	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		if (transformOnly) {
 			
@@ -503,14 +503,14 @@ class Stage extends Sprite {
 	
 	
 	
-	private override function get_mouseX ():Float {
+	@:noCompletion private override function get_mouseX ():Float {
 		
 		return __mouseX;
 		
 	}
 	
 	
-	private override function get_mouseY ():Float {
+	@:noCompletion private override function get_mouseY ():Float {
 		
 		return __mouseY;
 		
@@ -525,14 +525,14 @@ class Stage extends Sprite {
 	
 	
 	#if js
-	private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
+	@:noCompletion private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
 		
 		//__glContextLost = true;
 		
 	}
 	
 	
-	private function canvas_onContextRestored (event:js.html.webgl.ContextEvent):Void {
+	@:noCompletion private function canvas_onContextRestored (event:js.html.webgl.ContextEvent):Void {
 		
 		//__glContextLost = false;
 		
@@ -547,14 +547,14 @@ class Stage extends Sprite {
 	
 	
 	
-	private function get_color ():Int {
+	@:noCompletion private function get_color ():Int {
 		
 		return __color;
 		
 	}
 	
 	
-	private function set_color (value:Int):Int {
+	@:noCompletion private function set_color (value:Int):Int {
 		
 		var r = (value & 0xFF0000) >>> 16;
 		var g = (value & 0x00FF00) >>> 8;
@@ -568,14 +568,14 @@ class Stage extends Sprite {
 	}
 	
 	
-	private function get_focus ():InteractiveObject {
+	@:noCompletion private function get_focus ():InteractiveObject {
 		
 		return __focus;
 		
 	}
 	
 	
-	private function set_focus (value:InteractiveObject):InteractiveObject {
+	@:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject {
 		
 		if (value != __focus) {
 			
@@ -606,9 +606,9 @@ class Stage extends Sprite {
 		return __focus;
 		
 	}
-
-
-	function set_displayState (value:StageDisplayState):StageDisplayState {
+	
+	
+	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
 		
 		/*switch(value) {
 			case NORMAL:
@@ -636,7 +636,9 @@ class Stage extends Sprite {
 		}*/
 		displayState = value;
 		return value;
+		
 	}
+	
 	
 }
 

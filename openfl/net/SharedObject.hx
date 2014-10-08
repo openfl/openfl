@@ -21,7 +21,7 @@ class SharedObject extends EventDispatcher {
 	public var data (default, null):Dynamic;
 	public var size (get, never):Int;
 	
-	private var __key:String;
+	@:noCompletion private var __key:String;
 	
 
 	private function new () {
@@ -116,7 +116,7 @@ class SharedObject extends EventDispatcher {
 	
 	
 	#if js
-	private static function __getLocalStorage ():Storage {
+	@:noCompletion private static function __getLocalStorage ():Storage {
 		
 		var res = Browser.getLocalStorage ();
 		if (res == null) throw new Error ("SharedObject not supported");
@@ -126,7 +126,7 @@ class SharedObject extends EventDispatcher {
 	#end
 	
 	
-	private static function resolveClass (name:String):Class <Dynamic> {
+	@:noCompletion private static function resolveClass (name:String):Class <Dynamic> {
 		
 		if (name != null) {
 			
@@ -156,7 +156,7 @@ class SharedObject extends EventDispatcher {
 	
 	
 	
-	private function get_size ():Int {
+	@:noCompletion private function get_size ():Int {
 		
 		var d = Serializer.run (data);
 		return Bytes.ofString (d).length;

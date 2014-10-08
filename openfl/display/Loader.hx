@@ -588,7 +588,7 @@ class Loader extends Sprite {
 	
 	
 	
-	private function BitmapData_onLoad (bitmapData:BitmapData):Void {
+	@:noCompletion private function BitmapData_onLoad (bitmapData:BitmapData):Void {
 		
 		contentLoaderInfo.content = new Bitmap (bitmapData);
 		content = contentLoaderInfo.content;
@@ -601,7 +601,8 @@ class Loader extends Sprite {
 		
 	}
 	
-	private function BitmapData_onError ():Void {
+	
+	@:noCompletion private function BitmapData_onError ():Void {
 		
 		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
 		event.target = contentLoaderInfo;

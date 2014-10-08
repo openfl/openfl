@@ -41,15 +41,15 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 
     public var connected(get, null): Bool;
 
-    private function get_connected(): Bool {
+    @:noCompletion private function get_connected(): Bool {
         return _connected;
     }
 
-    private function get_endian(): String {
+    @:noCompletion private function get_endian(): String {
         return endian;
     }
 
-    private function set_endian(value: String): String {
+    @:noCompletion private function set_endian(value: String): String {
         endian = value;
 		if( _input != null ) _input.endian = value;
 		if( _inputBuffer != null ) _inputBuffer.endian = value;
@@ -57,11 +57,11 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
         return endian;
     }
 
-	private function get_bytesAvailable() : Int {
+	@:noCompletion private function get_bytesAvailable() : Int {
 		return _input.bytesAvailable;
 	}
 	
-	private function get_bytesPending() : Int {
+	@:noCompletion private function get_bytesPending() : Int {
 		return _output.length;
 	}
 
@@ -128,7 +128,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		Lib.current.addEventListener( Event.ENTER_FRAME, onFrame );
 	}
 	
-	private function onFrame( _ ){
+	@:noCompletion private function onFrame( _ ){
 		#if js
 		if (_inputBuffer.bytesAvailable > 0)
 		{
@@ -210,7 +210,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		#end
 	}
 
-	private function cleanSocket(){
+	@:noCompletion private function cleanSocket(){
 		try {
 			_socket.close();
 		}catch( e : Dynamic ){
@@ -356,24 +356,24 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 	//public function writeObject( object:Dynamic ):Void {  _output.writeObject(object); }
 	
 	#if js
-	private function onOpenHandler (_):Void {
+	@:noCompletion private function onOpenHandler (_):Void {
 		_connected = true;
 		dispatchEvent (new Event (Event.CONNECT));
 	}
 
-	private function onMessageHandler (msg:Dynamic):Void {
+	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
 		var newData = ByteArray.__ofBuffer(msg.data);
 		newData.readBytes(_inputBuffer, _inputBuffer.length);
 	}
 	
 
-	private function onCloseHandler (_):Void {
+	@:noCompletion private function onCloseHandler (_):Void {
 		
 		dispatchEvent (new Event (Event.CLOSE));
 		
 	}
 
-	private function onErrorHandler (_):Void {
+	@:noCompletion private function onErrorHandler (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		

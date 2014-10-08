@@ -255,7 +255,7 @@ class Keyboard {
 	}
 	
 	
-	public static function __convertMozillaCode (code:Int):Int {
+	@:noCompletion public static function __convertMozillaCode (code:Int):Int {
 		
 		switch (code) {
 			
@@ -286,7 +286,7 @@ class Keyboard {
 	}
 	
 	
-	public static function __convertWebkitCode (code:String):Int {
+	@:noCompletion public static function __convertWebkitCode (code:String):Int {
 		
 		switch (code.toLowerCase ()) {
 			

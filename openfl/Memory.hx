@@ -12,7 +12,7 @@ class Memory {
 	private static var len:Int;
 	
 	
-	static private function _setPositionTemporarily<T> (position:Int, action:Void -> T):T {
+	@:noCompletion static private function _setPositionTemporarily<T> (position:Int, action:Void -> T):T {
 		
 		var oldPosition:Int = gcRef.position;
 		gcRef.position = position;

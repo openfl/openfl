@@ -31,8 +31,8 @@ class FrameLabel extends EventDispatcher {
 	
 	
 	
-	private function get_frame ():Int { return __frame; }
-	private function get_name ():String { return __name; }
+	@:noCompletion private function get_frame ():Int { return __frame; }
+	@:noCompletion private function get_name ():String { return __name; }
 	
 	
 }

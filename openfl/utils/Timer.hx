@@ -19,9 +19,9 @@ class Timer extends EventDispatcher {
 	public var repeatCount (default, set):Int;
 	public var running (default, null):Bool;
 	
-	private var __delay:Float;
-	private var __timer:HaxeTimer;
-	private var __timerID:Int;
+	@:noCompletion private var __delay:Float;
+	@:noCompletion private var __timer:HaxeTimer;
+	@:noCompletion private var __timerID:Int;
 	
 	
 	public function new (delay:Float, repeatCount:Int = 0):Void {
@@ -104,14 +104,14 @@ class Timer extends EventDispatcher {
 	
 	
 	
-	private function get_delay ():Float {
+	@:noCompletion private function get_delay ():Float {
 		
 		return __delay;
 		
 	}
 	
 	
-	private function set_delay (value:Float):Float {
+	@:noCompletion private function set_delay (value:Float):Float {
 		
 		__delay = value;
 		
@@ -127,7 +127,7 @@ class Timer extends EventDispatcher {
 	}
 	
 	
-	private function set_repeatCount (v:Int):Int {
+	@:noCompletion private function set_repeatCount (v:Int):Int {
 		
 		if (running && v != 0 && v <= currentCount) {
 			
@@ -148,7 +148,7 @@ class Timer extends EventDispatcher {
 	
 	
 	
-	private function timer_onTimer ():Void {
+	@:noCompletion private function timer_onTimer ():Void {
 		
 		currentCount ++;
 		

@@ -27,8 +27,8 @@ class Capabilities {
 	
 	
 	
-	private static function get_pixelAspectRatio ():Float { return 1; }
-	private static function get_screenDPI ():Float {
+	@:noCompletion private static function get_pixelAspectRatio ():Float { return 1; }
+	@:noCompletion private static function get_screenDPI ():Float {
 		
 		#if js
 		
@@ -57,7 +57,7 @@ class Capabilities {
 	}
 	
 	
-	private static function get_screenResolutionX ():Float { 
+	@:noCompletion private static function get_screenResolutionX ():Float { 
 		
 		#if js
 		
@@ -72,7 +72,7 @@ class Capabilities {
 	}
 	
 	
-	private static function get_screenResolutionY ():Float {
+	@:noCompletion private static function get_screenResolutionY ():Float {
 		
 		#if js
 		
@@ -87,7 +87,7 @@ class Capabilities {
 	}
 	
 	
-	private static function get_language ():String {
+	@:noCompletion private static function get_language ():String {
 		
 		#if js
 		

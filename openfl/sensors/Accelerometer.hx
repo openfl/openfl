@@ -98,7 +98,7 @@ class Accelerometer extends EventDispatcher {
 	
 	
 	
-	private static function get_isSupported ():Bool { 
+	@:noCompletion private static function get_isSupported ():Bool { 
 		
 		//var supported = Reflect.hasField (Browser.window, "on" + Lib.HTML_ACCELEROMETER_EVENT_TYPE);
 		//return supported;
@@ -107,7 +107,7 @@ class Accelerometer extends EventDispatcher {
 	}
 	
 	
-	private function set_muted (inVal:Bool):Bool {
+	@:noCompletion private function set_muted (inVal:Bool):Bool {
 		
 		this.muted = inVal;
 		setRequestedUpdateInterval (_interval);

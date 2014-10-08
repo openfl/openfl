@@ -79,8 +79,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public var tabChildren:Bool;
 	
-	private var __children:Array<DisplayObject>;
-	private var __removedChildren:Array<DisplayObject>;
+	@:noCompletion private var __children:Array<DisplayObject>;
+	@:noCompletion private var __removedChildren:Array<DisplayObject>;
 	
 	
 	/**
@@ -624,7 +624,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
+	@:noCompletion private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
 		
 		if (event.target == null) {
 			
@@ -653,7 +653,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__children.length == 0) return;
 		
@@ -684,7 +684,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
 		
@@ -731,7 +731,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -770,7 +770,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		//if (!__renderable) return;
 		
@@ -809,7 +809,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -824,7 +824,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
 		
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
@@ -834,7 +834,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __setStageReference (stage:Stage):Void {
+	@:noCompletion private override function __setStageReference (stage:Stage):Void {
 		
 		if (this.stage != stage) {
 			
@@ -863,7 +863,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:dox(hide) public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion @:dox(hide) public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		
 		super.__update (transformOnly, updateChildren);
 		
@@ -888,7 +888,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:dox(hide) public override function __updateChildren (transformOnly:Bool):Void {
+	@:noCompletion @:dox(hide) public override function __updateChildren (transformOnly:Bool):Void {
 		
 		super.__updateChildren (transformOnly);
 		
@@ -908,7 +908,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	
-	private function get_numChildren ():Int {
+	@:noCompletion private function get_numChildren ():Int {
 		
 		return __children.length;
 		

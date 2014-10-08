@@ -24,7 +24,7 @@ class Shape extends DisplayObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__graphics != null) {
 			
@@ -35,7 +35,7 @@ class Shape extends DisplayObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (visible && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __worldTransform)) {
 			
@@ -54,28 +54,30 @@ class Shape extends DisplayObject {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasShape.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMShape.render (this, renderSession);
 		
 	}
-
-	public override function __renderGL (renderSession:RenderSession):Void {
-
+	
+	
+	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
+		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		if (__graphics != null) {
-
+			
 			GraphicsRenderer.render (this, renderSession);
 			
 		}
+		
 	}
 	
 	
@@ -86,7 +88,7 @@ class Shape extends DisplayObject {
 	
 	
 	
-	private function get_graphics ():Graphics {
+	@:noCompletion private function get_graphics ():Graphics {
 		
 		if (__graphics == null) {
 			

@@ -366,14 +366,14 @@ abstract Vector<T>(VectorData<T>) {
 	
 	
 	
-	private inline function get_length ():Int {
+	@:noCompletion private inline function get_length ():Int {
 		
 		return this.length;
 		
 	}
 	
 	
-	private inline function set_length (value:Int):Int {
+	@:noCompletion private inline function set_length (value:Int):Int {
 		
 		if (!fixed) {
 			
@@ -394,14 +394,14 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	private inline function get_fixed ():Bool {
+	@:noCompletion private inline function get_fixed ():Bool {
 		
 		return this.fixed;
 		
 	}
 	
 	
-	private inline function set_fixed (value:Bool):Bool {
+	@:noCompletion private inline function set_fixed (value:Bool):Bool {
 		
 		return this.fixed = value;
 		
@@ -411,7 +411,7 @@ abstract Vector<T>(VectorData<T>) {
 }
 
 
-@:dox(hide) class VectorData<T> {
+@:noCompletion @:dox(hide) class VectorData<T> {
 	
 	
 	public var data:haxe.ds.Vector<T>;
@@ -680,28 +680,28 @@ abstract Vector<T>(VectorData<T>) {
 	
 	
 	
-	private inline function get_length ():Int {
+	@:noCompletion private inline function get_length ():Int {
 		
 		return this.length;
 		
 	}
 	
 	
-	private inline function set_length (value:Int):Int {
+	@:noCompletion private inline function set_length (value:Int):Int {
 		
 		return this.length = value;
 		
 	}
 	
 	
-	private inline function get_fixed ():Bool {
+	@:noCompletion private inline function get_fixed ():Bool {
 		
 		return this.fixed;
 		
 	}
 	
 	
-	private inline function set_fixed (value:Bool):Bool {
+	@:noCompletion private inline function set_fixed (value:Bool):Bool {
 		
 		return this.fixed = value;
 		

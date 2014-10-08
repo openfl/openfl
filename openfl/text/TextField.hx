@@ -31,7 +31,7 @@ import js.Browser;
 class TextField extends InteractiveObject {
 	
 	
-	private static var __defaultTextFormat:TextFormat;
+	@:noCompletion private static var __defaultTextFormat:TextFormat;
 	
 	public var antiAliasType:AntiAliasType;
 	@:isVar public var autoSize (default, set):TextFieldAutoSize;
@@ -67,16 +67,16 @@ class TextField extends InteractiveObject {
 	@:isVar public var type (default, set):TextFieldType;
 	@:isVar public var wordWrap (get, set):Bool;
 	
-	private var __dirty:Bool;
-	private var __height:Float;
-	private var __isHTML:Bool;
-	private var __measuredHeight:Int;
-	private var __measuredWidth:Int;
-	private var __ranges:Array<TextFormatRange>;
-	private var __text:String;
-	private var __textFormat:TextFormat;
-	private var __texture:GLTexture;
-	private var __width:Float;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __height:Float;
+	@:noCompletion private var __isHTML:Bool;
+	@:noCompletion private var __measuredHeight:Int;
+	@:noCompletion private var __measuredWidth:Int;
+	@:noCompletion private var __ranges:Array<TextFormatRange>;
+	@:noCompletion private var __text:String;
+	@:noCompletion private var __textFormat:TextFormat;
+	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __width:Float;
 	
 	#if js
 	private var __div:DivElement;
@@ -224,7 +224,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
 		bounds.transform (__worldTransform);
@@ -234,7 +234,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function __getFont (format:TextFormat):String {
+	@:noCompletion private function __getFont (format:TextFormat):String {
 		
 		var font = format.italic ? "italic " : "normal ";
 		font += "normal ";
@@ -258,7 +258,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
 		
@@ -281,7 +281,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function __measureText ():Array<Float> {
+	@:noCompletion private function __measureText ():Array<Float> {
 		
 		#if js
 		
@@ -314,7 +314,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function __measureTextWithDOM ():Void {
+	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
 	 	#if js
 	 	
@@ -354,21 +354,21 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTextField.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMTextField.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLTextField.render (this, renderSession);
 		
@@ -382,7 +382,7 @@ class TextField extends InteractiveObject {
 	
 	
 	
-	private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize {
+	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize {
 		
 		if (value != autoSize) __dirty = true;
 		return autoSize = value;
@@ -390,7 +390,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function set_background (value:Bool):Bool {
+	@:noCompletion private function set_background (value:Bool):Bool {
 		
 		if (value != background) __dirty = true;
 		return background = value;
@@ -398,7 +398,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function set_backgroundColor (value:Int):Int {
+	@:noCompletion private function set_backgroundColor (value:Int):Int {
 		
 		if (value != backgroundColor) __dirty = true;
 		return backgroundColor = value;
@@ -406,7 +406,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function set_border (value:Bool):Bool {
+	@:noCompletion private function set_border (value:Bool):Bool {
 		
 		if (value != border) __dirty = true;
 		return border = value;
@@ -414,7 +414,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function set_borderColor (value:Int):Int {
+	@:noCompletion private function set_borderColor (value:Int):Int {
 		
 		if (value != borderColor) __dirty = true;
 		return borderColor = value;
@@ -422,7 +422,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function get_bottomScrollV ():Int {
+	@:noCompletion private function get_bottomScrollV ():Int {
 		
 		// TODO: Only return lines that are visible
 		
@@ -431,21 +431,21 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function get_caretPos ():Int {
+	@:noCompletion private function get_caretPos ():Int {
 		
 		return 0;
 		
 	}
 	
 	
-	private function get_defaultTextFormat ():TextFormat {
+	@:noCompletion private function get_defaultTextFormat ():TextFormat {
 		
 		return __textFormat.clone ();
 		
 	}
 	
 	
-	private function set_defaultTextFormat (value:TextFormat):TextFormat {
+	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat {
 		
 		//__textFormat = __defaultTextFormat.clone ();
 		__textFormat.__merge (value);
@@ -454,14 +454,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function get_height ():Float {
+	@:noCompletion private override function get_height ():Float {
 		
 		return __height * scaleY;
 		
 	}
 	
 	
-	private override function set_height (value:Float):Float {
+	@:noCompletion private override function set_height (value:Float):Float {
 		
 		if (scaleY != 1 || value != __height) {
 			
@@ -476,7 +476,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function get_htmlText ():String {
+	@:noCompletion private function get_htmlText ():String {
 		
 		return __text;
 		
@@ -485,7 +485,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function set_htmlText (value:String):String {
+	@:noCompletion private function set_htmlText (value:String):String {
 		
 		#if js
 		
@@ -582,11 +582,11 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function get_maxScrollH ():Int { return 0; }
-	private function get_maxScrollV ():Int { return 1; }
+	@:noCompletion private function get_maxScrollH ():Int { return 0; }
+	@:noCompletion private function get_maxScrollV ():Int { return 1; }
 	
 	
-	private function get_numLines ():Int {
+	@:noCompletion private function get_numLines ():Int {
 		
 		if (text != "" && text != null) {
 			
@@ -607,7 +607,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function get_text ():String {
+	@:noCompletion public function get_text ():String {
 		
 		if (__isHTML) {
 			
@@ -620,7 +620,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function set_text (value:String):String {
+	@:noCompletion public function set_text (value:String):String {
 		
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
@@ -630,14 +630,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function get_textColor ():Int { 
+	@:noCompletion public function get_textColor ():Int { 
 		
 		return __textFormat.color;
 		
 	}
 	
 	
-	public function set_textColor (value:Int):Int {
+	@:noCompletion public function set_textColor (value:Int):Int {
 		
 		if (value != __textFormat.color) __dirty = true;
 		
@@ -656,7 +656,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function get_textWidth ():Float {
+	@:noCompletion public function get_textWidth ():Float {
 		
 		#if js
 		
@@ -693,7 +693,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function get_textHeight ():Float {
+	@:noCompletion public function get_textHeight ():Float {
 		
 		#if js
 		
@@ -724,7 +724,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function set_type (value:TextFieldType):TextFieldType {
+	@:noCompletion public function set_type (value:TextFieldType):TextFieldType {
 		
 		//if (value != type) __dirty = true;
 		return type = value;
@@ -763,14 +763,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public function get_wordWrap ():Bool {
+	@:noCompletion public function get_wordWrap ():Bool {
 		
 		return wordWrap;
 		
 	}
 	
 	
-	public function set_wordWrap (value:Bool):Bool {
+	@:noCompletion public function set_wordWrap (value:Bool):Bool {
 		
 		//if (value != wordWrap) __dirty = true;
 		return wordWrap = value;
@@ -781,7 +781,7 @@ class TextField extends InteractiveObject {
 }
 
 
-class TextFormatRange {
+@:noCompletion @:dox(hide) class TextFormatRange {
 	
 	
 	public var end:Int;

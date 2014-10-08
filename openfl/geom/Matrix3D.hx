@@ -810,8 +810,8 @@ class Matrix3D {
 	
 	
 	
-	inline public function get_determinant ():Float {
-
+	@:noCompletion inline public function get_determinant ():Float {
+		
 		return 1 * ((rawData[0] * rawData[5] - rawData[4] * rawData[1]) * (rawData[10] * rawData[15] - rawData[14] * rawData[11]) 
 			- (rawData[0] * rawData[9] - rawData[8] * rawData[1]) * (rawData[6] * rawData[15] - rawData[14] * rawData[7])
 			+ (rawData[0] * rawData[13] - rawData[12] * rawData[1]) * (rawData[6] * rawData[11] - rawData[10] * rawData[7])
@@ -822,14 +822,14 @@ class Matrix3D {
 	}
 	
 	
-	inline public function get_position ():Vector3D {
+	@:noCompletion inline public function get_position ():Vector3D {
 		
 		return new Vector3D (rawData[12], rawData[13], rawData[14]);
 		
 	}
 	
 	
-	inline public function set_position (val:Vector3D):Vector3D {
+	@:noCompletion inline public function set_position (val:Vector3D):Vector3D {
 		
 		rawData[12] = val.x;
 		rawData[13] = val.y;

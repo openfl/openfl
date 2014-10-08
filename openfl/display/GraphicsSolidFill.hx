@@ -29,8 +29,8 @@ class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill {
 	 */
 	public var color:UInt;
 	
-	@:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
-	@:dox(hide) public var __graphicsFillType (default, null):GraphicsFillType;
+	@:noCompletion @:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion @:dox(hide) public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	/**

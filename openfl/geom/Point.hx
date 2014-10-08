@@ -110,7 +110,7 @@ class Point {
 	}
 	
 	
-	private function __toLimeVector2 ():Vector2 {
+	@:noCompletion private function __toLimeVector2 ():Vector2 {
 		
 		return new Vector2 (x, y);
 		
@@ -124,7 +124,7 @@ class Point {
 	
 	
 	
-	private function get_length ():Float {
+	@:noCompletion private function get_length ():Float {
 		
 		return Math.sqrt (x * x + y * y);
 		

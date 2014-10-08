@@ -68,7 +68,7 @@ class URLLoader extends EventDispatcher {
 	
 	
 	#if js
-	private function registerEvents (subject:EventTarget):Void {
+	@:noCompletion private function registerEvents (subject:EventTarget):Void {
 		
 		var self = this;
 		if (untyped __js__("typeof XMLHttpRequestProgressEvent") != __js__('"undefined"')) {
@@ -133,7 +133,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function requestUrl (url:String, method:String, data:Dynamic, requestHeaders:Array<URLRequestHeader>):Void {
+	@:noCompletion private function requestUrl (url:String, method:String, data:Dynamic, requestHeaders:Array<URLRequestHeader>):Void {
 		
 		var xmlHttpRequest:XMLHttpRequest = untyped __new__("XMLHttpRequest");
 		registerEvents (cast xmlHttpRequest);
@@ -239,7 +239,7 @@ class URLLoader extends EventDispatcher {
 	
 	
 	
-	private function onData (_):Void {
+	@:noCompletion private function onData (_):Void {
 		
 		#if js
 		var content:Dynamic = getData ();
@@ -259,7 +259,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function onError (msg:String):Void {
+	@:noCompletion private function onError (msg:String):Void {
 		
 		var evt = new IOErrorEvent (IOErrorEvent.IO_ERROR);
 		evt.text = msg;
@@ -269,7 +269,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function onOpen ():Void {
+	@:noCompletion private function onOpen ():Void {
 		
 		var evt = new Event (Event.OPEN);
 		evt.currentTarget = this;
@@ -278,7 +278,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function onProgress (event:XMLHttpRequestProgressEvent):Void {
+	@:noCompletion private function onProgress (event:XMLHttpRequestProgressEvent):Void {
 		
 		var evt = new ProgressEvent (ProgressEvent.PROGRESS);
 		evt.currentTarget = this;
@@ -289,7 +289,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function onSecurityError (msg:String):Void {
+	@:noCompletion private function onSecurityError (msg:String):Void {
 		
 		var evt = new SecurityErrorEvent (SecurityErrorEvent.SECURITY_ERROR);
 		evt.text = msg;
@@ -299,7 +299,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function onStatus (status:Int):Void {
+	@:noCompletion private function onStatus (status:Int):Void {
 		
 		var evt = new HTTPStatusEvent (HTTPStatusEvent.HTTP_STATUS, false, false, status);
 		evt.currentTarget = this;
@@ -315,7 +315,7 @@ class URLLoader extends EventDispatcher {
 	
 	
 	
-	private function set_dataFormat (inputVal:URLLoaderDataFormat):URLLoaderDataFormat {
+	@:noCompletion private function set_dataFormat (inputVal:URLLoaderDataFormat):URLLoaderDataFormat {
 		
 		#if js
 		// prevent inadvertently using typed arrays when they are unsupported

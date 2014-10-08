@@ -10,7 +10,7 @@ class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
 	
 	public var render (get, set):Dynamic;
 	
-	private var __render:Dynamic;
+	@:noCompletion private var __render:Dynamic;
 	
 	
 	public function new (type:String = "DirectRenderer") {
@@ -27,14 +27,14 @@ class DirectRenderer extends #if flash Sprite #else DisplayObject #end {
 	
 	
 	
-	private function get_render ():Dynamic {
+	@:noCompletion private function get_render ():Dynamic {
 		
 		return __render;
 		
 	}
 	
 	
-	private function set_render (value:Dynamic):Dynamic {
+	@:noCompletion private function set_render (value:Dynamic):Dynamic {
 		
 		return __render = value;
 		
