@@ -9,8 +9,8 @@ import openfl.events.IEventDispatcher;
 class EventDispatcher implements IEventDispatcher {
 	
 	
-	private var __targetDispatcher:IEventDispatcher;
-	private var __eventMap:Map<String, Array<Listener>>;
+	@:noCompletion private var __targetDispatcher:IEventDispatcher;
+	@:noCompletion private var __eventMap:Map<String, Array<Listener>>;
 	
 	
 	public function new (target:IEventDispatcher = null):Void {
@@ -166,7 +166,7 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
-	private static function __sortByPriority (l1:Listener, l2:Listener):Int {
+	@:noCompletion private static function __sortByPriority (l1:Listener, l2:Listener):Int {
 		
 		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
 		

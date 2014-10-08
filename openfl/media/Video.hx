@@ -13,19 +13,20 @@ import js.html.MediaElement;
 import js.Browser;
 #end
 
-
 @:access(openfl.net.NetStream)
+
+
 class Video extends DisplayObject {
 	
 	
 	public var deblocking:Int;
 	public var smoothing:Bool;
 	
-	private var __active:Bool;
-	private var __dirty:Bool;
-	private var __height:Float;
-	private var __stream:NetStream;
-	private var __width:Float;
+	@:noCompletion private var __active:Bool;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __height:Float;
+	@:noCompletion private var __stream:NetStream;
+	@:noCompletion private var __width:Float;
 	
 	
 	public function new (width:Int = 320, height:Int = 240):Void {
@@ -56,7 +57,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
 		bounds.transform (__worldTransform);
@@ -66,7 +67,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible) return false;
 		
@@ -89,7 +90,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -153,7 +154,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		if (stage != null && __worldVisible && __renderable) {
 			
@@ -196,14 +197,14 @@ class Video extends DisplayObject {
 	
 	
 	
-	private override function get_height ():Float {
+	@:noCompletion private override function get_height ():Float {
 		
 		return __height * scaleY;
 		
 	}
 	
 	
-	private override function set_height (value:Float):Float {
+	@:noCompletion private override function set_height (value:Float):Float {
 		
 		if (scaleY != 1 || value != __height) {
 			
@@ -218,14 +219,14 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function get_width ():Float {
+	@:noCompletion private override function get_width ():Float {
 		
 		return __width * scaleX;
 		
 	}
 	
 	
-	private override function set_width (value:Float):Float {
+	@:noCompletion private override function set_width (value:Float):Float {
 		
 		if (scaleX != 1 || __width != value) {
 			

@@ -1419,7 +1419,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __createUVs ():Void {
+	@:noCompletion private function __createUVs ():Void {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
 		
@@ -1435,14 +1435,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private static inline function __flipPixel (pixel:Int):Int {
+	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
 		
 		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
 		
 	}
 	
 	
-	private inline function __loadFromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
+	@:noCompletion private inline function __loadFromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
 		
 		Image.fromBase64 (base64, type, function (image) {
 			
@@ -1459,7 +1459,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
+	@:noCompletion private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
 		
 		Image.fromBytes (bytes, function (image) {
 			
@@ -1495,7 +1495,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __loadFromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
+	@:noCompletion private function __loadFromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
 		
 		Image.fromFile (path, function (image) {
 			
@@ -1512,7 +1512,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __loadFromImage (image:Image):Void {
+	@:noCompletion private function __loadFromImage (image:Image):Void {
 		
 		__image = image;
 		
@@ -1524,7 +1524,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public function __renderCanvas (renderSession:RenderSession):Void {
 		
 		#if js
 		if (!__isValid) return;
@@ -1554,14 +1554,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function __renderMask (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public function __renderMask (renderSession:RenderSession):Void {
 		
 		
 		
 	}
 	
 	
-	private function __sync ():Void {
+	@:noCompletion private function __sync ():Void {
 		
 		#if js
 		ImageCanvasUtil.sync (__image);
@@ -1570,7 +1570,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private static function __ucompare (n1:Int, n2:Int) : Int {
+	@:noCompletion private static function __ucompare (n1:Int, n2:Int) : Int {
 		
 		var tmp1 : Int;
 		var tmp2 : Int;
@@ -1624,7 +1624,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:dox(hide) public function __updateChildren (transformOnly:Bool):Void {
+	@:noCompletion @:dox(hide) public function __updateChildren (transformOnly:Bool):Void {
 		
 		
 		
@@ -1634,7 +1634,7 @@ class BitmapData implements IBitmapDrawable {
 }
 
 
-@:dox(hide) class TextureUvs {
+@:noCompletion @:dox(hide) class TextureUvs {
 	
 	
 	public var x0:Float = 0;

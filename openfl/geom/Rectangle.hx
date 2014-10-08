@@ -240,7 +240,7 @@ class Rectangle {
 	}
 	
 	
-	public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
+	@:noCompletion public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		if (this.width == 0 && this.height == 0) {
 			
@@ -259,7 +259,7 @@ class Rectangle {
 	}
 	
 	
-	public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
+	@:noCompletion public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		if (this.width == 0 && this.height == 0) {
 			
@@ -282,7 +282,7 @@ class Rectangle {
 	}
 	
 	
-	private function __toLimeRectangle ():LimeRectangle {
+	@:noCompletion private function __toLimeRectangle ():LimeRectangle {
 		
 		return new LimeRectangle (x, y, width, height);
 		
@@ -296,20 +296,20 @@ class Rectangle {
 	
 	
 	
-	private function get_bottom ():Float { return y + height; }
-	private function set_bottom (b:Float):Float { height = b - y; return b; }
-	private function get_bottomRight ():Point { return new Point (x + width, y + height); }
-	private function set_bottomRight (p:Point):Point { width = p.x - x; height = p.y - y; return p.clone (); }
-	private function get_left ():Float { return x; }
-	private function set_left (l:Float):Float { width -= l - x; x = l; return l; }
-	private function get_right ():Float { return x + width; }
-	private function set_right (r:Float):Float { width = r - x; return r; }
-	private function get_size ():Point { return new Point (width, height); }
-	private function set_size (p:Point):Point { width = p.x; height = p.y; return p.clone (); }
-	private function get_top ():Float { return y; }
-	private function set_top (t:Float):Float { height -= t - y; y = t; return t; }
-	private function get_topLeft ():Point { return new Point (x, y); }
-	private function set_topLeft (p:Point):Point { x = p.x; y = p.y; return p.clone (); }
+	@:noCompletion private function get_bottom ():Float { return y + height; }
+	@:noCompletion private function set_bottom (b:Float):Float { height = b - y; return b; }
+	@:noCompletion private function get_bottomRight ():Point { return new Point (x + width, y + height); }
+	@:noCompletion private function set_bottomRight (p:Point):Point { width = p.x - x; height = p.y - y; return p.clone (); }
+	@:noCompletion private function get_left ():Float { return x; }
+	@:noCompletion private function set_left (l:Float):Float { width -= l - x; x = l; return l; }
+	@:noCompletion private function get_right ():Float { return x + width; }
+	@:noCompletion private function set_right (r:Float):Float { width = r - x; return r; }
+	@:noCompletion private function get_size ():Point { return new Point (width, height); }
+	@:noCompletion private function set_size (p:Point):Point { width = p.x; height = p.y; return p.clone (); }
+	@:noCompletion private function get_top ():Float { return y; }
+	@:noCompletion private function set_top (t:Float):Float { height -= t - y; y = t; return t; }
+	@:noCompletion private function get_topLeft ():Point { return new Point (x, y); }
+	@:noCompletion private function set_topLeft (p:Point):Point { x = p.x; y = p.y; return p.clone (); }
 	
 	
 }

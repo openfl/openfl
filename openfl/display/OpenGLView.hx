@@ -26,8 +26,8 @@ class OpenGLView extends DirectRenderer {
 	
 	public static var isSupported (get, null):Bool;
 	
-	private var __added:Bool;
-	private var __initialized:Bool;
+	@:noCompletion private var __added:Bool;
+	@:noCompletion private var __initialized:Bool;
 	
 	
 	public function new () {
@@ -38,7 +38,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__added) {
 			
@@ -54,7 +54,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if js
 		if (stage != null && __worldVisible && __renderable) {
@@ -130,7 +130,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (stage != null && __renderable) {
 			
@@ -160,7 +160,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	
-	private static function get_isSupported ():Bool {
+	@:noCompletion private static function get_isSupported ():Bool {
 		
 		#if flash
 		

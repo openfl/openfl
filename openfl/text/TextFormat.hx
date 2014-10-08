@@ -64,7 +64,7 @@ class TextFormat {
 	}
 	
 	
-	private function __merge (format:TextFormat):Void {
+	@:noCompletion private function __merge (format:TextFormat):Void {
 		
 		if (format.font != null) font = format.font;
 		if (format.size != null) size = format.size;

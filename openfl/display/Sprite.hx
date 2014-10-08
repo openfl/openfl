@@ -54,7 +54,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		super.__getBounds (rect, matrix);
 		
@@ -67,7 +67,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
 		
@@ -100,7 +100,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasShape.render (this, renderSession);
 		
@@ -109,7 +109,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMShape.render (this, renderSession);
 		
@@ -118,7 +118,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -131,7 +131,7 @@ class Sprite extends DisplayObjectContainer {
 				
 				
 			}*/
-		
+			
 		}
 		
 		super.__renderGL (renderSession);
@@ -139,7 +139,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	public override function __renderMask (renderSession:RenderSession):Void {
+	@:noCompletion public override function __renderMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -161,7 +161,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 	
-	private function get_graphics ():Graphics {
+	@:noCompletion private function get_graphics ():Graphics {
 		
 		if (__graphics == null) {
 			

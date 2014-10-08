@@ -19,8 +19,8 @@ class SimpleButton extends DisplayObjectContainer {
 	public var upState (default, set):DisplayObject;
 	public var useHandCursor:Bool;
 	
-	private var __currentState (default, set):DisplayObject;
-	private var __soundTransform:SoundTransform;
+	@:noCompletion private var __currentState (default, set):DisplayObject;
+	@:noCompletion private var __soundTransform:SoundTransform;
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -41,7 +41,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function switchState (state:DisplayObject):Void {
+	@:noCompletion private function switchState (state:DisplayObject):Void {
 		
 		if (__currentState != null && __currentState.stage != null) {
 			
@@ -57,7 +57,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function __generateDefaultState ():DisplayObject {
+	@:noCompletion private function __generateDefaultState ():DisplayObject {
 		
 		return new DisplayObject ();
 		
@@ -71,7 +71,7 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	
 	
-	private function set_downState (downState:DisplayObject):DisplayObject {
+	@:noCompletion private function set_downState (downState:DisplayObject):DisplayObject {
 		
 		if (this.downState != null && __currentState == this.downState) __currentState = downState;
 		return this.downState = downState;
@@ -79,7 +79,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
+	@:noCompletion private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
 		
 		if (hitTestState != this.hitTestState) {
 			
@@ -99,7 +99,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function set_overState (overState:DisplayObject):DisplayObject {
+	@:noCompletion private function set_overState (overState:DisplayObject):DisplayObject {
 		
 		if (this.overState != null && __currentState == this.overState) __currentState = overState;
 		return this.overState = overState;
@@ -107,7 +107,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function get_soundTransform ():SoundTransform {
+	@:noCompletion private function get_soundTransform ():SoundTransform {
 		
 		if (__soundTransform == null) {
 			
@@ -120,7 +120,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function set_soundTransform (value:SoundTransform):SoundTransform {
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform {
 		
 		__soundTransform = new SoundTransform (value.volume, value.pan);
 		return value;
@@ -128,7 +128,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function set_upState (upState:DisplayObject):DisplayObject {
+	@:noCompletion private function set_upState (upState:DisplayObject):DisplayObject {
 		
 		if (this.upState != null && __currentState == this.upState) __currentState = upState;
 		return this.upState = upState;
@@ -136,7 +136,7 @@ class SimpleButton extends DisplayObjectContainer {
 	}
 	
 	
-	private function set___currentState (state:DisplayObject):DisplayObject {
+	@:noCompletion private function set___currentState (state:DisplayObject):DisplayObject {
 		
 		if (__currentState == state) return state;
 		switchState (state);

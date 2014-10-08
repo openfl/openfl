@@ -126,7 +126,7 @@ class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 	 */
 	public var thickness:Float;
 	
-	@:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion @:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
 	
 	
 	/**

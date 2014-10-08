@@ -42,7 +42,7 @@ class GraphicsPath implements IGraphicsData implements IGraphicsPath {
 	 */
 	public var winding:GraphicsPathWinding; /* note: currently ignored */
 	
-	@:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
+	@:noCompletion @:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
 	
 	
 	/**

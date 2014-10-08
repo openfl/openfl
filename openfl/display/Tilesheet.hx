@@ -23,20 +23,20 @@ class Tilesheet {
 	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
 	public static inline var TILE_BLEND_SCREEN = 0x00040000;
 	
-	private static var __defaultPoint = new Point (0, 0);
+	@:noCompletion private static var __defaultPoint = new Point (0, 0);
 	
-	/** @private */ private var __bitmap:BitmapData;
-	/** @private */ private var __centerPoints:Array<Point>;
-	/** @private */ private var __tileRects:Array<Rectangle>;
-	/** @private */ private var __tileUVs:Array<Rectangle>;
+	@:noCompletion private var __bitmap:BitmapData;
+	@:noCompletion private var __centerPoints:Array<Point>;
+	@:noCompletion private var __tileRects:Array<Rectangle>;
+	@:noCompletion private var __tileUVs:Array<Rectangle>;
 	
 	#if flash
-	private var __bitmapHeight:Int;
-	private var __bitmapWidth:Int;
-	private var __ids:Vector<Int>;
-	private var __indices:Vector<Int>;
-	private var __uvs:Vector<Float>;
-	private var __vertices:Vector<Float>;
+	@:noCompletion private var __bitmapHeight:Int;
+	@:noCompletion private var __bitmapWidth:Int;
+	@:noCompletion private var __ids:Vector<Int>;
+	@:noCompletion private var __indices:Vector<Int>;
+	@:noCompletion private var __uvs:Vector<Float>;
+	@:noCompletion private var __vertices:Vector<Float>;
 	#end
 	
 	

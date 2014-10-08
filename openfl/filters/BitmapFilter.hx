@@ -27,7 +27,7 @@ class BitmapFilter {
 	
 	
 	#if js
-	public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	@:noCompletion public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		
 		

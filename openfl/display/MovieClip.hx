@@ -82,12 +82,12 @@ class MovieClip extends Sprite {
 	
 	
 	
-	private function get_currentFrame ():Int { return __currentFrame; }
-	private function get_currentFrameLabel ():String { return __currentFrameLabel; }
-	private function get_currentLabel ():String { return __currentLabel; }
-	private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
-	private function get_framesLoaded ():Int { return __totalFrames; }
-	private function get_totalFrames ():Int { return __totalFrames; }
+	@:noCompletion private function get_currentFrame ():Int { return __currentFrame; }
+	@:noCompletion private function get_currentFrameLabel ():String { return __currentFrameLabel; }
+	@:noCompletion private function get_currentLabel ():String { return __currentLabel; }
+	@:noCompletion private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
+	@:noCompletion private function get_framesLoaded ():Int { return __totalFrames; }
+	@:noCompletion private function get_totalFrames ():Int { return __totalFrames; }
 	
 	
 }

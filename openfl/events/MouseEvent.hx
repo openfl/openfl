@@ -25,7 +25,7 @@ class MouseEvent extends Event {
 	public static var ROLL_OUT:String = "rollOut";
 	public static var ROLL_OVER:String = "rollOver";
 
-	private static var __buttonDown:Bool;
+	@:noCompletion private static var __buttonDown:Bool;
 	
 	public var altKey:Bool;
 	public var buttonDown:Bool;
@@ -60,7 +60,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	public static function __create (type:String, /*event:lime.ui.MouseEvent,*/ local:Point, target:InteractiveObject):MouseEvent {
+	@:noCompletion public static function __create (type:String, /*event:lime.ui.MouseEvent,*/ local:Point, target:InteractiveObject):MouseEvent {
 		
 		var delta = 2;
 		

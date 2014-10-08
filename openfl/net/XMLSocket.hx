@@ -78,28 +78,29 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
-	private function onMessageHandler (msg:Dynamic):Void {
+	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
 		
 		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, msg.data));
 		
 	}
 	
 	
-	private function onOpenHandler (_):Void {
+	@:noCompletion private function onOpenHandler (_):Void {
+		
 		connected = true;
 		dispatchEvent (new Event (Event.CONNECT));
 		
 	}
 	
 	
-	private function onCloseHandler (_):Void {
+	@:noCompletion private function onCloseHandler (_):Void {
 		
 		dispatchEvent (new Event (Event.CLOSE));
 		
 	}
 	
 	
-	private function onErrorHandler (_):Void {
+	@:noCompletion private function onErrorHandler (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		

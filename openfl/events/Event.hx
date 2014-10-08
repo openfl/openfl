@@ -41,8 +41,8 @@ class Event {
 	public var target:Dynamic;
 	public var type (default, null):String;
 	
-	private var __isCancelled:Bool;
-	private var __isCancelledNow:Bool;
+	@:noCompletion private var __isCancelled:Bool;
+	@:noCompletion private var __isCancelledNow:Bool;
 	
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false) {

@@ -26,8 +26,8 @@ import js.Browser;
 	public static var current (get, set):MovieClip;
 	#end
 	
-	private static var __sentWarnings = new Map<String, Bool> ();
-	private static var __startTime:Float = Timer.stamp ();
+	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
+	@:noCompletion private static var __startTime:Float = Timer.stamp ();
 	
 	
 	public static function as<T> (v:Dynamic, c:Class<T>):Null<T> {
@@ -158,14 +158,14 @@ import js.Browser;
 	
 	
 	#if flash
-	private static function get_current ():MovieClip {
+	@:noCompletion private static function get_current ():MovieClip {
 		
 		return flash.Lib.current;
 		
 	}
 	
 	
-	private static function set_current (current:MovieClip):MovieClip {
+	@:noCompletion private static function set_current (current:MovieClip):MovieClip {
 		
 		return flash.Lib.current = current;
 		

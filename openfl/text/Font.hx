@@ -71,12 +71,12 @@ class Font {
 	public var fontStyle (default, null):FontStyle;
 	public var fontType (default, null):FontType;
 	
-	private static var __fontData:Array<Dynamic>;
-	private static var __registeredFonts = new Array<Font> ();
+	@:noCompletion private static var __fontData:Array<Dynamic>;
+	@:noCompletion private static var __registeredFonts = new Array<Font> ();
 	
-	private var __fontScale:Float;
-	private var __glyphData:Map<Int, GlyphData>;
-	private var __metrics:Array<Int>;
+	@:noCompletion private var __fontScale:Float;
+	@:noCompletion private var __glyphData:Map<Int, GlyphData>;
+	@:noCompletion private var __metrics:Array<Int>;
 	
 	
 	public function new () {
@@ -119,7 +119,7 @@ class Font {
 	}
 	
 	
-	public function __getAdvance (inGlyph:Int, height:Int):Int {
+	@:noCompletion public function __getAdvance (inGlyph:Int, height:Int):Int {
 		
 		var m = __metrics[inGlyph];
 		
@@ -143,7 +143,7 @@ class Font {
 	
 	
 	// hxswfml ttf2hash myfont.ttf -glyphs [32-126] > myfont.hash; haxe -resource myfont.hash@myfont ...; Font.registerFont( Resource.get( "myfont" ) );
-	public static function __ofResource (resourceName:String, fontName:String = ""):String {
+	@:noCompletion public static function __ofResource (resourceName:String, fontName:String = ""):String {
 		
 		var data = Unserializer.run (Resource.getString(resourceName));
 		
@@ -169,7 +169,7 @@ class Font {
 	}
 	
 	
-	public function __render (graphics:Graphics, inChar:Int, inX:Int, inY:Int, inOutline:Bool):Void {
+	@:noCompletion public function __render (graphics:Graphics, inChar:Int, inX:Int, inY:Int, inOutline:Bool):Void {
 		var index = 0;
 		var glyph = __glyphData.get (inChar);
 		
@@ -193,7 +193,7 @@ class Font {
 	}
 	
 	
-	public function __setScale (scale:Float):Void {
+	@:noCompletion public function __setScale (scale:Float):Void {
 		
 		__fontScale = scale / 1024;
 		
@@ -226,7 +226,7 @@ class Font {
 	
 	
 	
-	private function set_fontName (name:String) {
+	@:noCompletion private function set_fontName (name:String) {
 
 		if (name == "_sans" || name == "_serif" || name == "_typewriter") {
 			

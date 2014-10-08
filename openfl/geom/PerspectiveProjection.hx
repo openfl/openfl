@@ -44,7 +44,7 @@ class PerspectiveProjection {
 	
 	
 	
-	private function set_fieldOfView (fieldOfView:Float):Float {
+	@:noCompletion private function set_fieldOfView (fieldOfView:Float):Float {
 		
 		var p_nFovY = fieldOfView * TO_RADIAN;
 		this.fieldOfView = p_nFovY;

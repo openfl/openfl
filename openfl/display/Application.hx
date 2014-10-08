@@ -35,7 +35,7 @@ class Application extends LimeApplication {
 	#if !flash
 	
 	
-	private function convertKeyCode (keyCode:KeyCode):Int {
+	@:noCompletion private function convertKeyCode (keyCode:KeyCode):Int {
 		
 		return switch (keyCode) {
 			
@@ -291,7 +291,7 @@ class Application extends LimeApplication {
 	}
 	
 	
-	private function onKey (event:KeyboardEvent):Void {
+	@:noCompletion private function onKey (event:KeyboardEvent):Void {
 		
 		var stack = new Array <DisplayObject> ();
 		
@@ -337,7 +337,7 @@ class Application extends LimeApplication {
 	}
 	
 	
-	private function onMouse (type:String, x:Float, y:Float):Void {
+	@:noCompletion private function onMouse (type:String, x:Float, y:Float):Void {
 		
 		/*var rect;
 		
@@ -417,7 +417,7 @@ class Application extends LimeApplication {
 	}
 	
 	
-	private function onTouch (type:String, x:Float, y:Float, id:Int):Void {
+	@:noCompletion private function onTouch (type:String, x:Float, y:Float, id:Int):Void {
 		
 		/*event.preventDefault ();
 		

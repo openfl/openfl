@@ -51,14 +51,14 @@ class System {
 	
 	
 	
-	private static function get_totalMemory ():Int {
+	@:noCompletion private static function get_totalMemory ():Int {
 		
 		return 0;
 		
 	}
 	
 	
-	private static function get_vmVersion ():String {
+	@:noCompletion private static function get_vmVersion ():String {
 		
 		return "1.0.0";
 		

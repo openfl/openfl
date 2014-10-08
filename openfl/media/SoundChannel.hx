@@ -15,10 +15,10 @@ class SoundChannel extends EventDispatcher {
 	public var rightPeak (default, null):Float;
 	public var soundTransform (get, set):SoundTransform;
 	
-	private var __source:AudioSource;
+	@:noCompletion private var __source:AudioSource;
 	
 	#if html5
-	private var __soundInstance:SoundJSInstance;
+	@:noCompletion private var __soundInstance:SoundJSInstance;
 	#end
 	
 	
@@ -50,7 +50,7 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	#if html5
-	private function __dispose ():Void {
+	@:noCompletion private function __dispose ():Void {
 		
 		__soundInstance.stop ();
 		__soundInstance = null;
@@ -66,7 +66,7 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	
-	private function get_position ():Float {
+	@:noCompletion private function get_position ():Float {
 		
 		#if !html5
 		return __source.timeOffset / 1000;
@@ -77,7 +77,7 @@ class SoundChannel extends EventDispatcher {
 	}
 	
 	
-	private function set_position (value:Float):Float {
+	@:noCompletion private function set_position (value:Float):Float {
 		
 		#if !html5
 		__source.timeOffset = Std.int (value * 1000);
@@ -90,7 +90,7 @@ class SoundChannel extends EventDispatcher {
 	}
 	
 	
-	private function get_soundTransform ():SoundTransform {
+	@:noCompletion private function get_soundTransform ():SoundTransform {
 		
 		// TODO: pan
 		
@@ -103,7 +103,7 @@ class SoundChannel extends EventDispatcher {
 	}
 	
 	
-	private function set_soundTransform (value:SoundTransform):SoundTransform {
+	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform {
 		
 		#if !html5
 		__source.gain = value.volume;
@@ -129,7 +129,7 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	#if html5
-	private function soundInstance_onComplete (_):Void {
+	@:noCompletion private function soundInstance_onComplete (_):Void {
 		
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));
 		
@@ -137,7 +137,7 @@ class SoundChannel extends EventDispatcher {
 	#end
 	
 	
-	private function source_onComplete ():Void {
+	@:noCompletion private function source_onComplete ():Void {
 		
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));
 		

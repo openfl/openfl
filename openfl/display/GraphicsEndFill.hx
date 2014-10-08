@@ -15,8 +15,8 @@ import openfl.display.IGraphicsFill;
 class GraphicsEndFill implements IGraphicsData implements IGraphicsFill {
 	
 	
-	public var __graphicsDataType (default,null):GraphicsDataType;
-	public var __graphicsFillType (default, null):GraphicsFillType;
+	@:noCompletion public var __graphicsDataType (default,null):GraphicsDataType;
+	@:noCompletion public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	/**

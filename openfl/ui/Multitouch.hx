@@ -19,7 +19,7 @@ class Multitouch {
 	public static var supportsTouchEvents (get, null):Bool;
 	
 	
-	public static function __init__ () {
+	@:noCompletion public static function __init__ () {
 		
 		maxTouchPoints = 2;
 		supportedGestures = null;
@@ -35,14 +35,14 @@ class Multitouch {
 	
 	
 	
-	private static function get_inputMode ():MultitouchInputMode {
+	@:noCompletion private static function get_inputMode ():MultitouchInputMode {
 		
 		return MultitouchInputMode.TOUCH_POINT;
 		
 	}
 	
 	
-	private static function set_inputMode (inMode:MultitouchInputMode):MultitouchInputMode {
+	@:noCompletion private static function set_inputMode (inMode:MultitouchInputMode):MultitouchInputMode {
 		
 		if (inMode == MultitouchInputMode.GESTURE) {
 			
@@ -56,7 +56,7 @@ class Multitouch {
 	}
 	
 	
-	private static function get_supportsTouchEvents ():Bool {
+	@:noCompletion private static function get_supportsTouchEvents ():Bool {
 		
 		#if js
 		if (untyped __js__ ("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)")) {

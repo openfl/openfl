@@ -192,35 +192,35 @@ class Vector3D {
 	
 	
 	
-	inline private function get_length ():Float {
+	@:noCompletion inline private function get_length ():Float {
 		
 		return Math.sqrt (x * x + y * y + z * z);
 		
 	}
 	
 	
-	inline private function get_lengthSquared ():Float {
+	@:noCompletion inline private function get_lengthSquared ():Float {
 		
 		return x * x + y * y + z * z;
 		
 	}
 	
 	
-	inline private static function get_X_AXIS ():Vector3D {
+	@:noCompletion inline private static function get_X_AXIS ():Vector3D {
 		
 		return new Vector3D (1, 0, 0);
 		
 	}
 	
 	
-	inline private static function get_Y_AXIS ():Vector3D {
+	@:noCompletion inline private static function get_Y_AXIS ():Vector3D {
 		
 		return new Vector3D (0, 1, 0);
 		
 	}
 	
 	
-	inline private static function get_Z_AXIS ():Vector3D {
+	@:noCompletion inline private static function get_Z_AXIS ():Vector3D {
 		
 		return new Vector3D (0, 0, 1);
 		

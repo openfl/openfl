@@ -40,19 +40,19 @@ class Graphics {
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
-	private var __bounds:Rectangle;
-	private var __commands:Array<DrawCommand> = [];
-	private var __dirty:Bool = true;
-	private var __glData:Array<GLData> = [];
-	private var __glGraphicsData:Array<DrawPath>;
-	private var __halfStrokeWidth:Float;
-	private var __positionX:Float;
-	private var __positionY:Float;
-	private var __visible:Bool = true;
+	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __commands:Array<DrawCommand> = [];
+	@:noCompletion private var __dirty:Bool = true;
+	@:noCompletion private var __glData:Array<GLData> = [];
+	@:noCompletion private var __glGraphicsData:Array<DrawPath>;
+	@:noCompletion private var __halfStrokeWidth:Float;
+	@:noCompletion private var __positionX:Float;
+	@:noCompletion private var __positionY:Float;
+	@:noCompletion private var __visible:Bool = true;
 	
 	#if js
-	private var __canvas:CanvasElement;
-	private var __context:CanvasRenderingContext2D;
+	@:noCompletion private var __canvas:CanvasElement;
+	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#end
 	
 	
@@ -921,7 +921,7 @@ class Graphics {
 	}
 	
 	
-	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__bounds == null) return;
 		
@@ -931,7 +931,7 @@ class Graphics {
 	}
 	
 	
-	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
+	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
 		
 		//TODO: Shape flag
 		
@@ -943,7 +943,7 @@ class Graphics {
 	}
 	
 	
-	private function __inflateBounds (x:Float, y:Float):Void {
+	@:noCompletion private function __inflateBounds (x:Float, y:Float):Void {
 		
 		if (__bounds == null) {
 			
@@ -984,7 +984,7 @@ class Graphics {
 }
 
 
-@:dox(hide) enum DrawCommand {
+@:noCompletion @:dox(hide) enum DrawCommand {
 	
 	BeginBitmapFill (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
 	BeginFill (color:Int, alpha:Float);

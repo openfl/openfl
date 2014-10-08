@@ -16,7 +16,7 @@ class Sound extends EventDispatcher {
 	
 	
 	#if html5
-	private static var __registeredSounds = new Map<String, Bool> ();
+	@:noCompletion private static var __registeredSounds = new Map<String, Bool> ();
 	#end
 	
 	public var bytesLoaded (default, null):Int;
@@ -26,11 +26,11 @@ class Sound extends EventDispatcher {
 	public var length (default, null):Float;
 	public var url (default, null):String;
 	
-	private var __buffer:AudioBuffer;
+	@:noCompletion private var __buffer:AudioBuffer;
 	
 	#if html5
-	private var __sound:SoundJSInstance;
-	private var __soundID:String;
+	@:noCompletion private var __sound:SoundJSInstance;
+	@:noCompletion private var __soundID:String;
 	#end
 	
 	
@@ -154,7 +154,7 @@ class Sound extends EventDispatcher {
 	
 	
 	#if html5
-	private static function __init__ ():Void {
+	@:noCompletion private static function __init__ ():Void {
 		
 		if (untyped window.createjs != null) {
 			
@@ -173,7 +173,7 @@ class Sound extends EventDispatcher {
 	
 	
 	
-	private function get_id3 ():ID3Info {
+	@:noCompletion private function get_id3 ():ID3Info {
 		
 		return new ID3Info ();
 		
@@ -187,7 +187,7 @@ class Sound extends EventDispatcher {
 	
 	
 	
-	private function AudioBuffer_onURLLoad (buffer:AudioBuffer):Void {
+	@:noCompletion private function AudioBuffer_onURLLoad (buffer:AudioBuffer):Void {
 		
 		__buffer = buffer;
 		dispatchEvent (new Event (Event.COMPLETE));
@@ -196,7 +196,7 @@ class Sound extends EventDispatcher {
 	
 	
 	#if html5
-	private function SoundJS_onFileLoad (event:Dynamic):Void {
+	@:noCompletion private function SoundJS_onFileLoad (event:Dynamic):Void {
 		
 		if (event.id == __soundID) {
 			

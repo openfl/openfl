@@ -119,7 +119,7 @@ class Preloader extends LimePreloader {
 	
 	
 	
-	private function display_onComplete (event:Event):Void {
+	@:noCompletion private function display_onComplete (event:Event):Void {
 		
 		display.removeEventListener (Event.COMPLETE, display_onComplete);
 		Lib.current.removeChild (display);
@@ -132,7 +132,7 @@ class Preloader extends LimePreloader {
 	
 	
 	#if html5
-	private function sound_onComplete (event:Event):Void {
+	@:noCompletion private function sound_onComplete (event:Event):Void {
 		
 		loaded++;
 		
@@ -147,7 +147,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	private function sound_onIOError (event:IOErrorEvent):Void {
+	@:noCompletion private function sound_onIOError (event:IOErrorEvent):Void {
 		
 		// if it is actually valid, it will load later when requested
 		

@@ -13,8 +13,8 @@ class Transform {
 	public var matrix (get, set):Matrix;
 	public var pixelBounds:Rectangle;
 	
-	private var __displayObject:DisplayObject;
-	private var __matrix:Matrix;
+	@:noCompletion private var __displayObject:DisplayObject;
+	@:noCompletion private var __matrix:Matrix;
 	
 	
 	public function new (displayObject:DisplayObject) {
@@ -37,7 +37,7 @@ class Transform {
 	
 	
 	
-	private function get_matrix ():Matrix {
+	@:noCompletion private function get_matrix ():Matrix {
 		
 		if (__matrix != null) {
 			
@@ -55,7 +55,7 @@ class Transform {
 	}
 	
 	
-	private function set_matrix (value:Matrix):Matrix {
+	@:noCompletion private function set_matrix (value:Matrix):Matrix {
 		
 		if (value == null) {
 			
