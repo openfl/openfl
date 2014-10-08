@@ -807,6 +807,7 @@ class GraphicsRenderer {
 			case DrawTriangles(_):
 				// TODO find a way to set color or texture
 				bucket.mode = DrawTriangles;
+				bucket.uploadTileBuffer = false;
 			case _:
 		}
 		var bucketData = bucket.getData();
@@ -988,7 +989,9 @@ class GLBucket {
 	
 	public var tileBuffer:GLBuffer;
 	public var glTile:Int16Array;
-	public var tile:Array<Int>;	
+	public var tile:Array<Int>;
+	
+	public var uploadTileBuffer = true;
 	
 	public function new (gl:GLRenderContext) {
 		
@@ -1012,10 +1015,7 @@ class GLBucket {
 			0, 4096, 	0, 1,
 			4096, 4096, 1, 1
 		];
-		
 		glTile = new Int16Array (tile);
-		gl.bindBuffer (gl.ARRAY_BUFFER, tileBuffer);
-		gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
 	}
 	
 	public function getData():GLBucketData {
@@ -1049,6 +1049,12 @@ class GLBucket {
 	}
 	
 	public function upload ():Void {
+		
+		if(uploadTileBuffer) {
+			gl.bindBuffer (gl.ARRAY_BUFFER, tileBuffer);
+			gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
+			uploadTileBuffer = false;
+		}
 		
 		for (d in data) {
 			if (!d.destroyed) {
@@ -1097,13 +1103,16 @@ class GLBucketData {
 	}
 	
 	public function upload():Void {
-		if(verts.length > 0) {
+		
+		if (verts.length > 0) {
+			
 			glVerts = new Float32Array (verts);
 			gl.bindBuffer (gl.ARRAY_BUFFER, vertsBuffer);
 			gl.bufferData (gl.ARRAY_BUFFER, glVerts, gl.DYNAMIC_DRAW);
 		}
 		
-		if(indices.length > 0) {
+		if (indices.length > 0) {
+			
 			glIndices = new UInt16Array (indices);
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.DYNAMIC_DRAW);
