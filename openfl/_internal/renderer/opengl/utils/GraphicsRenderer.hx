@@ -521,58 +521,87 @@ class GraphicsRenderer {
 	
 	public static function buildDrawTriangles (path:DrawPath, glStack:GLStack):Void {
 		
-		//return;
 		var args = Type.enumParameters(path.type);
 		var vertices:Vector<Float> = cast args[0];
 		var indices:Vector<Int> = cast args[1];
-		//var uvtData:Vector<Float> = normalizeUvt(cast args[2], false);
 		var uvtData:Vector<Float> = cast args[2];
 		var culling:TriangleCulling = cast args[3];
 		var colors:Vector<Int> = cast args[4];
 		var blendMode:Int = args[5];
 		
 		var bucket = prepareBucket(path, glStack);
+		bucket.indices = indices.toArray();
+		var verts = bucket.verts;
 		
 		var hasColors = colors != null && colors.length > 0;
-		hasColors = false;
-		var verts = bucket.verts;
+		
+		var v0 = 0; var v1 = 0; var v2 = 0;
 		var i0 = 0; var i1 = 0; var i2 = 0;
 		var idx = 0;
+		var color = hex2rgba(0xFFFFFFFF);
+		var ctmp = color;
+		var stride = 8;
 		for (i in 0...Std.int(indices.length / 3)) {
-			i0 = indices[i * 3] * 2; i1 = indices[i * 3 + 1] * 2; i2 = indices[i * 3 + 2] * 2;
-			//trace(i0, i1, i2);
-			verts.push(vertices[i0]); verts.push(vertices[i0 + 1]);
-			verts.push(uvtData[i0]); verts.push(uvtData[i0 + 1]);
-			if(hasColors) {
-				verts.push(colors[i0]); verts.push(colors[i0 + 1]);
-			} else {
-				verts.push(0x00FFFFFF); verts.push(0x00FFFFFF);
-			}
 			
-			verts.push(vertices[i1]); verts.push(vertices[i1 + 1]);
-			verts.push(uvtData[i1]); verts.push(uvtData[i1 + 1]);
+			i0 = indices[i * 3]; i1 = indices[i * 3 + 1]; i2 = indices[i * 3 + 2];
+			v0 = i0 * 2; v1 = i1 * 2; v2 = i2 * 2;
+			
+			idx = i0 * stride;
+			verts[idx++] = vertices[v0];
+			verts[idx++] = vertices[v0 + 1];
+			verts[idx++] = uvtData[v0];
+			verts[idx++] = uvtData[v0 + 1];
 			if (hasColors) {
-				verts.push(colors[i1]); verts.push(colors[i1 + 1]);
+				ctmp = hex2rgba(colors[i0]);
+				verts[idx++] = ctmp[0];
+				verts[idx++] = ctmp[1];
+				verts[idx++] = ctmp[2];
+				verts[idx++] = ctmp[3];
 			} else {
-				verts.push(0x00FFFFFF); verts.push(0x00FFFFFF);
+				verts[idx++] = color[0];
+				verts[idx++] = color[1];
+				verts[idx++] = color[2];
+				verts[idx++] = color[3];
 			}
 			
-			verts.push(vertices[i2]); verts.push(vertices[i2 + 1]);
-			verts.push(uvtData[i2]); verts.push(uvtData[i2 + 1]);
+			idx = i1 * stride;
+			verts[idx++] = vertices[v1];
+			verts[idx++] = vertices[v1 + 1];
+			verts[idx++] = uvtData[v1];
+			verts[idx++] = uvtData[v1 + 1];
 			if (hasColors) {
-				verts.push(colors[i2]); verts.push(colors[i2 + 1]);
+				ctmp = hex2rgba(colors[i1]);
+				verts[idx++] = ctmp[0];
+				verts[idx++] = ctmp[1];
+				verts[idx++] = ctmp[2];
+				verts[idx++] = ctmp[3];
 			} else {
-				verts.push(0x00FFFFFF); verts.push(0x00FFFFFF);
+				verts[idx++] = color[0];
+				verts[idx++] = color[1];
+				verts[idx++] = color[2];
+				verts[idx++] = color[3];
 			}
 			
-			bucket.indices.push(idx);
-			bucket.indices.push(idx + 1);
-			bucket.indices.push(idx + 2);
-			idx += 3;
+			idx = i2 * stride;
+			verts[idx++] = vertices[v2];
+			verts[idx++] = vertices[v2 + 1];
+			verts[idx++] = uvtData[v2];
+			verts[idx++] = uvtData[v2 + 1];
+			if (hasColors) {
+				ctmp = hex2rgba(colors[i2]);
+				verts[idx++] = ctmp[0];
+				verts[idx++] = ctmp[1];
+				verts[idx++] = ctmp[2];
+				verts[idx++] = ctmp[3];
+			} else {
+				verts[idx++] = color[0];
+				verts[idx++] = color[1];
+				verts[idx++] = color[2];
+				verts[idx++] = color[3];
+			}
+			
 		}
 		
-		//trace(bucket.indices);
-		//trace(verts);
 	}
 	
 	private static function quadraticBezierCurve (fromX:Float, fromY:Float, cpX:Float, cpY:Float, toX:Float, toY:Float):Array<Float> {
@@ -696,7 +725,7 @@ class GraphicsRenderer {
 		}
 		
 		glStack.reset();
-			
+		
 		for (i in glStack.lastIndex...graphics.__drawPaths.length) {
 			var path = graphics.__drawPaths[i];
 			
@@ -780,8 +809,8 @@ class GraphicsRenderer {
 				bucket.mode = DrawTriangles;
 			case _:
 		}
-		var bucketData = new GLBucketData(glStack.gl);
-		bucket.data.push(bucketData);
+		var bucketData = bucket.getData();
+		
 		return bucketData;
 	}
 	
@@ -789,7 +818,6 @@ class GraphicsRenderer {
 		var b = bucketPool.pop();
 		if (b == null) {
 			b = new GLBucket(glStack.gl);
-			trace("new bucket");
 		}
 		b.mode = mode;
 		glStack.buckets.push(b);
@@ -836,26 +864,7 @@ class GraphicsRenderer {
 			
 		} else if (bucket.texture != null) {
 			
-			gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
-			
-			#if !js
-			if (bucket.textureRepeat) {
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-			} else {
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			}
-			#end
-			
-			if (bucket.textureSmooth) {
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-			} else {
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
-			}
-			
+			bindTexture(gl, bucket);
 			
 			gl.uniform1i(shader.pattern, 0);
 			gl.uniform2f(shader.patternTL, bucket.textureTL.x, bucket.textureTL.y);
@@ -878,11 +887,10 @@ class GraphicsRenderer {
 		
 		renderSession.shaderManager.setShader (shader);
 		
-		for(data in bucket.data) {
-			gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
+		for (data in bucket.data) {
+			if (data.destroyed || bucket.texture == null) continue;
 			
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+			bindTexture(gl, bucket);
 			
 			gl.uniform1i (shader.sampler, 0);
 			gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
@@ -892,10 +900,10 @@ class GraphicsRenderer {
 			
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, data.vertsBuffer);
-			var stride =  6 * 4;
+			var stride =  8 * 4;
 			gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
 			gl.vertexAttribPointer (shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-			gl.vertexAttribPointer (shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
+			gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, stride, 4 * 4);
 			
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.indexBuffer);
 			gl.drawElements (gl.TRIANGLES, data.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -908,24 +916,32 @@ class GraphicsRenderer {
 		
 	}
 	
-	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):Vector<Float> {
-		var max:Float = Math.NEGATIVE_INFINITY;
-		var tmp = Math.NEGATIVE_INFINITY;
-		var len = uvt.length;
-		for (t in 1...len+1) {
-			if (skipT && t % 3 == 0) continue;
-			tmp = uvt[t - 1];
-			if (max < tmp) max = tmp;
-		}
+	public static inline function hex2rgba (hex:Null<Int>):Array<Float> {
 		
-		var result:Vector<Float> = new Vector<Float>();
-		for (t in 1...len+1) {
-			if (skipT && t % 3 == 0) continue;
-			result.push((uvt[t - 1] / max));
-		}
+		return hex == null ? [1,1,1,1] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255, (hex >> 24 & 0xFF) / 255];
+	}
+	
+	private static inline function bindTexture(gl:GLRenderContext, bucket:GLBucket) {
+		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 		
-		return result;
-	}	
+		#if !js
+		if (bucket.textureRepeat) {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+		} else {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		}
+		#end
+		
+		if (bucket.textureSmooth) {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		} else {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
+		}
+	}
 	
 }
 
@@ -1002,18 +1018,42 @@ class GLBucket {
 		gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
 	}
 	
+	public function getData():GLBucketData {
+		var result:GLBucketData = null;
+		var remove:Bool = false;
+		for (d in data) {
+			if (d.destroyed) {
+				result = d;
+				remove = true;
+				break;
+			}
+		}
+		
+		if (result == null) {
+			result = new GLBucketData(gl);
+		}
+		
+		result.destroyed = false;
+		
+		if(remove) data.remove(result);
+		data.push(result);
+		
+		return result;
+	}
+	
 	public function reset ():Void {
 		for (d in data) {
 			d.destroy();
 		}
-		data = [];
 		fillIndex = 0;
 	}
 	
 	public function upload ():Void {
 		
 		for (d in data) {
-			d.upload();
+			if (!d.destroyed) {
+				d.upload();
+			}
 		}
 
 		dirty = false;
@@ -1034,6 +1074,7 @@ class GLBucketData {
 	public var indices:Array<Int>;
 	
 	public var line:GLBucketData;
+	public var destroyed:Bool = false;
 	
 	public function new (gl:GLRenderContext, ?initLine = true) {
 		this.gl = gl;
@@ -1049,8 +1090,9 @@ class GLBucketData {
 	}
 	
 	public function destroy():Void {
-		verts = null;
-		indices = null;
+		destroyed = true;
+		verts = [];
+		indices = [];
 		if (line != null) line.destroy();
 	}
 	
@@ -1058,13 +1100,13 @@ class GLBucketData {
 		if(verts.length > 0) {
 			glVerts = new Float32Array (verts);
 			gl.bindBuffer (gl.ARRAY_BUFFER, vertsBuffer);
-			gl.bufferData (gl.ARRAY_BUFFER, glVerts, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, glVerts, gl.DYNAMIC_DRAW);
 		}
 		
 		if(indices.length > 0) {
 			glIndices = new UInt16Array (indices);
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STATIC_DRAW);
+			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.DYNAMIC_DRAW);
 		}
 		
 		if (line != null) line.upload();

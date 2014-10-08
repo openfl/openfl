@@ -370,10 +370,14 @@ class PathBuiler {
 							culling = NONE;
 						}
 						if (colors == null) {
-							colors = new Vector<Int>();
+							//colors = new Vector<Int>();
 						}
 						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
-
+						__currentPath.points = [0];
+						__drawPaths.push (__currentPath);
+						
+						__currentPath = new DrawPath ();
+						__currentPath.update (__line, __fill, __fillIndex);
 						__drawPaths.push (__currentPath);
 					
 					default:

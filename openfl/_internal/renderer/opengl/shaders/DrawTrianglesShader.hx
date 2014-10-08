@@ -18,7 +18,7 @@ class DrawTrianglesShader extends AbstractShader {
 		vertexSrc = [
 			'attribute vec2 aVertexPosition;',
 			'attribute vec2 aTextureCoord;',
-			'attribute vec2 aColor;',
+			'attribute vec4 aColor;',
 			'uniform mat3 translationMatrix;',
 			'uniform vec2 projectionVector;',
 			'uniform vec2 offsetVector;',
@@ -31,9 +31,8 @@ class DrawTrianglesShader extends AbstractShader {
 			'   v -= offsetVector.xyx;',
 			'   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
 			'   vPos = aTextureCoord;',
-			'   vec3 color = mod(vec3(aColor.y/65536.0, aColor.y/256.0, aColor.y), 256.0) / 256.0;',
-			'   vColor = vec4(color * aColor.x, aColor.x);',
-			'}'
+			'   vColor = aColor;',
+			'}',
 
 		];
 		
@@ -46,7 +45,9 @@ class DrawTrianglesShader extends AbstractShader {
 			'varying vec4 vColor;',
 			
 			'void main(void) {',
-			'   gl_FragColor = vec4(texture2D(sampler, vPos).rgb * alpha, alpha);',
+			'   vec4 tcol = texture2D(sampler, vPos);',
+			'   float a = tcol.a * vColor.a * alpha;',
+			'   gl_FragColor = vec4(vec3((tcol.rgb * vColor.rgb) * a), a);',
 			'}'
 		];
 		

@@ -67,7 +67,8 @@ class StencilManager {
 		gl.stencilMask(0xFF);
 		gl.clear(gl.STENCIL_BUFFER_BIT);
 		
-		for(bucketData in bucket.data) {
+		for (bucketData in bucket.data) {
+			if (bucketData.destroyed) continue;
 			prepareGraphics(object, bucketData, renderSession);
 			gl.drawElements (bucketData.drawMode, bucketData.indices.length, gl.UNSIGNED_SHORT, 0);
 		}
