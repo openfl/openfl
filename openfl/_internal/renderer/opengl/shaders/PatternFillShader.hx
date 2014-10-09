@@ -10,7 +10,7 @@ class PatternFillShader extends AbstractShader {
 	public var patternMatrix:GLUniformLocation;
 	public var patternTL:GLUniformLocation;
 	public var patternBR:GLUniformLocation;
-	public var pattern:GLUniformLocation;
+	public var sampler:GLUniformLocation;
 	public var alpha:GLUniformLocation;
 	
 	public function new(gl:GLRenderContext) {
@@ -65,7 +65,7 @@ class PatternFillShader extends AbstractShader {
 		patternMatrix = gl.getUniformLocation (program, 'patternMatrix');
 		patternTL = gl.getUniformLocation (program, 'patternTL');
 		patternBR = gl.getUniformLocation (program, 'patternBR');
-		pattern = gl.getUniformLocation (program, 'sampler');
+		sampler = gl.getUniformLocation (program, 'sampler');
 		alpha = gl.getUniformLocation (program, 'alpha');
 		
 		aVertexPosition = gl.getAttribLocation (program, 'aVertexPosition');

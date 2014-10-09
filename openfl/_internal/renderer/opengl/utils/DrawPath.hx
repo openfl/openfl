@@ -16,6 +16,7 @@ import openfl.display.LineScaleMode;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.Vector;
 
 class DrawPath {
 	
@@ -35,8 +36,10 @@ class DrawPath {
 	public var line:LineStyle;
 	public var fill:FillType;
 	public var fillIndex:Int = 0;
+	public var isRemovable:Bool = true;
 
 	public var points:Array<Float> = [];
+	
 
 	public var type:GraphicType = Polygon;
 
@@ -116,7 +119,7 @@ class PathBuiler {
 	
 	private inline static function graphicDataPop ():Void {
 		
-		if (__currentPath.points.length == 0) {
+		if (__currentPath.isRemovable && __currentPath.points.length == 0) {
 			__drawPaths.pop ();
 		} else {
 			closePath();
@@ -357,23 +360,11 @@ class PathBuiler {
 						
 						__currentPath = new DrawPath ();
 						__currentPath.update (__line, __fill, __fillIndex);
-						if (vertices == null) {
-							break;
-						}
-						if (indices == null) {
-							indices = new Vector<Int>();
-						}
 						if (uvtData == null) {
 							uvtData = new Vector<Float>();
 						}
-						if (culling == null) {
-							culling = NONE;
-						}
-						if (colors == null) {
-							//colors = new Vector<Int>();
-						}
 						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
-						__currentPath.points = [0];
+						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
 						
 						__currentPath = new DrawPath ();
