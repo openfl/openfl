@@ -534,7 +534,7 @@ class GraphicsRenderer {
 		var blendMode:Int = args[5];
 		
 		var bucket = prepareBucket(path, glStack);
-		bucket.indices = indices.toArray();
+		bucket.indices = indices;
 		var verts = bucket.verts;
 		
 		var hasColors = colors != null && colors.length > 0;
@@ -775,7 +775,7 @@ class GraphicsRenderer {
 				bucket.bitmap = b;
 				bucket.textureRepeat = r;
 				bucket.textureSmooth = s;
-				bucket.texture = b.bitmapData.getTexture(glStack.gl);
+				bucket.texture = b.getTexture(glStack.gl);
 				
 				//prepare the matrix
 				var tMatrix = new Matrix();
@@ -944,7 +944,7 @@ class GraphicsRenderer {
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 		
 		// webgl can only repeat textures that are power of two
-		if (bucket.textureRepeat #if js && bucket.bitmap.bitmapData.__image.powerOfTwo #end) {
+		if (bucket.textureRepeat #if js && bucket.bitmap.__image.powerOfTwo #end) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 		} else {
@@ -996,7 +996,7 @@ class GLBucket {
 	
 	public var data:Array<GLBucketData> = [];
 	
-	public var bitmap:Bitmap;
+	public var bitmap:BitmapData;
 	public var texture:GLTexture;
 	public var textureMatrix:Matrix;
 	public var textureRepeat:Bool = false;

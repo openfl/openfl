@@ -159,7 +159,7 @@ class PathBuiler {
 					case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 						
 						endFill();
-						__fill = bitmap != null ? Texture(new Bitmap(bitmap), matrix, repeat, smooth) : None;
+						__fill = bitmap != null ? Texture(bitmap, matrix, repeat, smooth) : None;
 						
 						if (__currentPath.points.length == 0) {
 							graphicDataPop();
@@ -366,10 +366,6 @@ class PathBuiler {
 						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
-						
-						__currentPath = new DrawPath ();
-						__currentPath.update (__line, __fill, __fillIndex);
-						__drawPaths.push (__currentPath);
 					
 					default:
 						
@@ -404,6 +400,6 @@ typedef LineStyle = {
 enum FillType {
 	None;
 	Color(color:Int, alpha:Float);
-	Texture(bitmap:Bitmap, matrix:Matrix, repeat:Bool, smooth:Bool);
+	Texture(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
 	Gradient;
 }
