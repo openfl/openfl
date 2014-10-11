@@ -463,8 +463,13 @@ abstract Vector<T>(VectorData<T>) {
 
 #else
 typedef Vector<T> = openfl._v2.Vector<T>;
+#if java
 typedef VectorData<T> = openfl._v2.Vector.VectorData<T>;
 typedef VectorDataIterator<T> = openfl._v2.Vector.VectorDataIterator<T>;
+#else
+typedef VectorData<T> = Dynamic;
+typedef VectorDataIterator<T> = Dynamic;
+#end
 #end
 #else
 
