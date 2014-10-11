@@ -463,6 +463,8 @@ abstract Vector<T>(VectorData<T>) {
 
 #else
 typedef Vector<T> = openfl._v2.Vector<T>;
+typedef VectorData<T> = openfl._v2.Vector.VectorData<T>;
+typedef VectorDataIterator<T> = openfl._v2.Vector.VectorDataIterator<T>;
 #end
 #else
 
