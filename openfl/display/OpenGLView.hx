@@ -34,20 +34,56 @@ class OpenGLView extends DirectRenderer {
 		
 		super ("OpenGLView");
 		
+		#if html5
+		#if dom
+		if (!__initialized) {
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			__canvas.width = Lib.current.stage.stageWidth;
+			__canvas.height = Lib.current.stage.stageHeight;
+			
+			__context = cast __canvas.getContext ("webgl");
+			
+			if (__context == null) {
+				
+				__context = cast __canvas.getContext ("experimental-webgl");
+				
+			}
+			
+			#if debug
+			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
+			#end
+			
+			GL.context = cast __context;
+			__initialized = true;
+			
+		}
+		#elseif !webgl
+		if (!__added) {
+			
+			__added = true;
+			
+			trace ("Warning: OpenGLView is not available in HTML5 canvas rendering mode");
+			trace ("Please compile your project using -Ddom or -Dwebgl (beta) to enable");
+			
+		}
+		#end
+		#end
+		
 	}
 	
 	
 	#if !flash
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__added) {
+		/*if (!__added) {
 			
 			__added = true;
 			
 			trace ("Warning: openfl-html5 only can run OpenGLView content using the DOM rendering mode");
 			trace ("Please compile your project using -Ddom (on the command-line) or <haxedef name=\"dom\" /> to enable");
 			
-		}
+		}*/
 		
 	}
 	#end
@@ -61,7 +97,7 @@ class OpenGLView extends DirectRenderer {
 			
 			if (!__added) {
 				
-				if (!__initialized) {
+				/*if (!__initialized) {
 					
 					__canvas = cast Browser.document.createElement ("canvas");
 					__canvas.width = Lib.current.stage.stageWidth;
@@ -82,7 +118,7 @@ class OpenGLView extends DirectRenderer {
 					//GL.__context = __context;
 					__initialized = true;
 					
-				}
+				}*/
 				
 				renderSession.element.appendChild (__canvas);
 				__added = true;
