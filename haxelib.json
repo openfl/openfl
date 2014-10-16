@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "2.1.0",
-	"releasenote": "Updated for Lime 2.0, moving toward a unified codebase, many improvements",
+	"version": "2.1.1",
+	"releasenote": "Minor patch",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
