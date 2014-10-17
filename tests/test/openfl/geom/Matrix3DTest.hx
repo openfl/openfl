@@ -91,17 +91,17 @@ class Matrix3DTest {
 		var exists = matrix3D.appendRotation;
 		
 		Assert.isNotNull (exists);
-
+		
 		matrix3D = setupTestMatrix3D ();
-		matrix3D.append (new Matrix3D (Vector.fromArray ([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ])));
+		matrix3D.append (new Matrix3D ([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
 		
 		var expected = new Matrix3D([ 64.28496551513672, 72.80441284179688, 81.32386779785156, 89.84331512451172, 2.8154678344726563, 3.088881254196167, 3.362294912338257, 3.635709047317505, -5.6544413566589355, -4.923484802246094, -4.19252872467041, -3.461571216583252, 9090.5439453125, 10123.5390625, 11156.533203125, 12189.5283203125 ] );
-
+		
 		assertMatrix3DnearEquals(expected, matrix3D );
-
+		
 	}
-
-
+	
+	
 	@Test public function appendRotation () {
 		
 		// TODO: Confirm functionality
@@ -110,28 +110,28 @@ class Matrix3DTest {
 		var exists = matrix3D.appendRotation;
 		
 		Assert.isNotNull (exists);
-
+		
 		matrix3D = setupTestMatrix3D();
-
+		
 		// Append rotations
 		matrix3D.appendRotation( 25, Vector3D.X_AXIS );
 		matrix3D.appendRotation(-35, Vector3D.Y_AXIS );
 		matrix3D.appendRotation( 45, Vector3D.Z_AXIS );
-
+		
 		var recomposed = new Matrix3D();
 		recomposed.recompose(matrix3D.decompose());
-
+		
 		var v1 = matrix3D.decompose();
 		var v2 = recomposed.decompose();
 		var rotation = v1[1];
 		var expectedRotation = v2[1];
 		var expectedRotatedMatrix3D = new Matrix3D([ -0.3636549711227417, -3.372683525085449, 5.835120677947998, 0, 0.21577900648117065, -0.3639894127845764, 0.28737783432006836, 0, 0.9405853152275085, 1.4176323413848877, 0.2845056653022766, 0, -126.25172424316406, -620.2042846679688, 740.5840454101563, 1 ] );
-
+		
 		assertVector3DnearEquals(expectedRotation, rotation );
-
+		
 		// Test the rotation matches to the rotation values in Flash
 		assertMatrix3DnearEquals(expectedRotatedMatrix3D, matrix3D );
-
+		
 	}
 	
 	

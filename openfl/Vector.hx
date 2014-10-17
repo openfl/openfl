@@ -285,14 +285,14 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:arrayAccess public inline function arrayAccess (key:Int):T {
+	@:noCompletion @:arrayAccess public inline function arrayAccess (key:Int):T {
 		
 		return this.data[key];
 		
 	}
 	
 	
-	@:arrayAccess public inline function arrayWrite (key:Int, value:T):T {
+	@:noCompletion @:arrayAccess public inline function arrayWrite (key:Int, value:T):T {
 		
 		if (key >= this.length && !this.fixed) this.length = key + 1;
 		
@@ -301,7 +301,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:from static public inline function fromArray<T> (value:Array<T>):Vector<T> {
+	@:noCompletion @:from static public inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = value.length;
@@ -312,7 +312,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:to public inline function toArray<T> ():Array<T> {
+	@:noCompletion @:to public inline function toArray<T> ():Array<T> {
 		
 		var value = new Array ();
 		
@@ -327,7 +327,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:from static public inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
+	@:noCompletion @:from static public inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = value.length;
@@ -338,21 +338,21 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:to public inline function toHaxeVector<T> ():haxe.ds.Vector<T> {
+	@:noCompletion @:to public inline function toHaxeVector<T> ():haxe.ds.Vector<T> {
 		
 		return this.data;
 		
 	}
 	
 	
-	@:from static public inline function fromVectorData<T> (value:VectorData<T>):Vector<T> {
+	@:noCompletion @:from static public inline function fromVectorData<T> (value:VectorData<T>):Vector<T> {
 		
 		return cast value;
 		
 	}
 	
 	
-	@:to public inline function toVectorData<T> ():VectorData<T> {
+	@:noCompletion @:to public inline function toVectorData<T> ():VectorData<T> {
 		
 		return cast this;
 		
@@ -429,7 +429,7 @@ abstract Vector<T>(VectorData<T>) {
 }
 
 
-@:dox(hide) class VectorDataIterator<T> {
+@:noCompletion @:dox(hide) class VectorDataIterator<T> {
 	
 	
 	private var index:Int;
@@ -616,28 +616,28 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:arrayAccess public inline function get (index:Int):Null<T> {
+	@:noCompletion @:arrayAccess public inline function get (index:Int):Null<T> {
 		
 		return this[index];
 		
 	}
 	
 	
-	@:arrayAccess public inline function set (index:Int, value:T):T {
+	@:noCompletion @:arrayAccess public inline function set (index:Int, value:T):T {
 		
 		return this[index] = value;
 		
 	}
 	
 	
-	@:from static public inline function fromArray<T> (value:Array<T>):Vector<T> {
+	@:noCompletion @:from static public inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		return VectorData.ofArray (value);
 		
 	}
 	
 	
-	@:to public inline function toArray<T> ():Array<T> {
+	@:noCompletion @:to public inline function toArray<T> ():Array<T> {
 		
 		var array = new Array<T> ();
 		
@@ -652,28 +652,28 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:from static public inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
+	@:noCompletion @:from static public inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
 		
 		return cast value;
 		
 	}
 	
 	
-	@:to public inline function toHaxeVector<T> ():haxe.ds.Vector<T> {
+	@:noCompletion @:to public inline function toHaxeVector<T> ():haxe.ds.Vector<T> {
 		
 		return cast this;
 		
 	}
 	
 	
-	@:from static public inline function fromVectorData<T> (value:VectorData<T>):Vector<T> {
+	@:noCompletion @:from static public inline function fromVectorData<T> (value:VectorData<T>):Vector<T> {
 		
 		return cast value;
 		
 	}
 	
 	
-	@:to public inline function toVectorData<T> ():VectorData<T> {
+	@:noCompletion @:to public inline function toVectorData<T> ():VectorData<T> {
 		
 		return cast this;
 		
