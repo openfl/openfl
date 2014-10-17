@@ -1073,7 +1073,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			var tileHalfWidth:Float = 0;
 			var tileHeight:Float = 0;
 			var tileWidth:Float = 0;
-
+			
 			while (index < totalCount) {
 				
 				var x = tileData[index];
