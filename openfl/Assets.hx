@@ -58,7 +58,12 @@ class Assets {
 		
 	}
 	
-	
+	/**
+	 * Returns whether a specific asset exists
+	 * @param	id 		The ID or asset path for the file
+	 * @param	type	The type of assets AssetType.BINARY | AssetType.FONT | AssetType.IMAGE | AssetType.MOVIE_CLIP | AssetType.MUSIC | AssetType.SOUND | AssetType.TEMPLATE | AssetType.TEXT
+	 * @return	TRUE if an asset with a given id, and type exists FALSE otherwise
+	 */
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
 		return LimeAssets.exists (id, cast type);
@@ -343,7 +348,13 @@ class Assets {
 		
 	}
 	
-	
+	/**
+	 * Returns whether an asset with a given id and "AssetType" exists within the cache or Asset Library
+	 * @param	id 		The ID or asset path for the file
+	 * @param	type	The type of assets AssetType.BINARY | AssetType.FONT | AssetType.IMAGE | AssetType.MOVIE_CLIP | AssetType.MUSIC | AssetType.SOUND | AssetType.TEMPLATE | AssetType.TEXT
+	 * @param	useCache Whether or not to use the cache. if FALSE this function will search for the asset in any known library
+	 * @return	whether or not an asset with the given id exists within the asset cache or any asset library;
+	 */
 	public static function isLocal (id:String, type:AssetType = null, useCache:Bool = true):Bool {
 		
 		#if (tools && !display)
@@ -429,14 +440,26 @@ class Assets {
 		
 	}
 	
-	
+	/**
+	 * Returns an array of embeded assets
+	 * @param	type	The type of assets to include AssetType.BINARY | AssetType.FONT | AssetType.IMAGE | AssetType.MOVIE_CLIP | AssetType.MUSIC | AssetType.SOUND | AssetType.TEMPLATE | AssetType.TEXT
+	 * @return an Array of embeded assets
+	 */
 	public static function list (type:AssetType = null):Array<String> {
 		
 		return LimeAssets.list (cast type);
 		
 	}
 	
-	
+	/**
+	 * Asynchronously loads an instance of an embeded bitmap
+	 * @usage 	Asset.loadBitmapData("MyReallyBigPic.jpg", function(_loadedBitmapData):Void{
+	 * 				var myReallyBigBitmap = new Bitmap(_loadedBitmapData);
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded BitmapData
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
 		
 		#if (tools && !display)
@@ -480,7 +503,15 @@ class Assets {
 		
 	}
 	
-	
+		/**
+	 * Asynchronously loads an instance of an embedded binary file
+	 * @usage Asset.loadBytes("MyReallyBigBin.bin", function(_loadedByteArray):Void{
+	 * 				myParserFunction(_loadedByteArray)
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded ByteArray
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadBytes (id:String, handler:ByteArray -> Void):Void {
 		
 		#if (tools && !display)
@@ -505,7 +536,7 @@ class Assets {
 		} else {
 			
 			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
+		
 		}
 		
 		#end
@@ -513,8 +544,15 @@ class Assets {
 		handler (null);
 		
 	}
-	
-	
+	/**
+	 * Asynchronously loads an instance of an embedded font
+	 * @usage Asset.loadFont("MyReallyLongSong.ttf", function(_loadedFont):Void{
+	 * 				myTextFortmat.font = _loadedFont.fontName;
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded font
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadFont (id:String, handler:Font -> Void, useCache:Bool = true):Void {
 		
 		#if (tools && !display)
@@ -569,14 +607,26 @@ class Assets {
 		
 	}
 	
-	
+	/**
+	 * Loads an Asset Library with a given Name
+	 * @param	name the name of the library to load
+	 * @param	handler the function to handle the loaded AssetLibrary
+	 */
 	public static function loadLibrary (name:String, handler:LimeAssetLibrary -> Void):Void {
 		
 		LimeAssets.loadLibrary (name, handler);
 		
 	}
 	
-	
+	/**
+	 * Asynchronously loads an instance of an embedded streaming sound
+	 * @usage Asset.loadMusic("MyReallyLongSong.ogg", function(_loadedSound):Void{
+	 * 				_loadedSound.play();
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded music
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
 		#if !html5
@@ -599,7 +649,15 @@ class Assets {
 		
 	}
 	
-	
+	/**
+	 * Asynchronously loads an instance of a MovieClip from a library
+	 * @usage Asset.loadMovieClip("libary:MovieClip", function(_loadedMovieClip):Void{
+	 * 				sprite.addChild(_loadedMovieClip);
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded movieclip
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
 		#if (tools && !display)
@@ -633,7 +691,16 @@ class Assets {
 		
 	}
 	
-	
+		
+	/**
+	 * Asynchronously loads an instance of a sound.
+	 * @usage Asset.loadSound("MyReallyShortSong.wav", function(_loadedSound):Void{
+	 * 				_loadedSound.play();
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded sound
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
 		#if !html5
@@ -656,14 +723,27 @@ class Assets {
 		
 	}
 	
-	
+		
+	/**
+	 * Asynchronously loads an instance of an embedded text
+	 * @usage Asset.loadText("MyReallyLongText.txt", function(_loadedText):Void{
+	 * 				myTextField.text = _loadedText;
+	 * 			});
+	 * @param	id 		The ID or asset path for the file
+	 * @param	handler	a funtion to handle the loaded text
+	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 */
 	public static function loadText (id:String, handler:String -> Void):Void {
 		
 		LimeAssets.loadText (id, handler);
 		
 	}
 	
-	
+	/**
+	 * Registers an AssetLibrary
+	 * @param	name the name of the library
+	 * @param	library the AssetLibrary to register
+	 */
 	public static function registerLibrary (name:String, library:AssetLibrary):Void {
 		
 		LimeAssets.registerLibrary (name, library);
