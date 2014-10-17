@@ -39,7 +39,10 @@ class Tilesheet {
 	@:noCompletion private var __vertices:Vector<Float>;
 	#end
 	
-	
+	/**
+	 *Creates new TileSheet Object
+	 * @param	image a bitmap data to create tiles from
+	 */
 	public function new (image:BitmapData) {
 		
 		__bitmap = image;
@@ -58,7 +61,12 @@ class Tilesheet {
 		
 	}
 	
-	
+	/**
+	 * Adds an single tile to this TileSheet
+	 * @param	rectangle a rectangle defining the dimensions and positioning of a new tile
+	 * @param	centerPoint if set, will act as the translation point of the tile, default: top-left corner
+	 * @return an Int representing the id of a single tile rect
+	 */
 	public function addTileRect (rectangle:Rectangle, centerPoint:Point = null):Int {
 		
 		__tileRects.push (rectangle);
@@ -155,7 +163,14 @@ class Tilesheet {
 	}
 	#end
 	
-	
+	/**
+	 * Draws tiles to a give Graphic Object
+	 * @param	graphics the "Graphics" object to draw tiles to
+	 * @param	tileData an Array<Float>(3) denoting the X position, Y position, and tile to render repsectively
+	 * @param	smooth whether to smooth the tile or not
+	 * @param	flags
+	 * @param	count
+	 */
 	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
 		
 		graphics.drawTiles (this, tileData, smooth, flags, count);
