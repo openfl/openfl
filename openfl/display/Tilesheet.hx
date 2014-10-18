@@ -18,6 +18,9 @@ class Tilesheet {
 	public static inline var TILE_RGB = 0x0004;
 	public static inline var TILE_ALPHA = 0x0008;
 	public static inline var TILE_TRANS_2x2 = 0x0010;
+	public static inline var TILE_RECT = 0x0020;
+	public static inline var TILE_ORIGIN = 0x0040;
+	
 	public static inline var TILE_BLEND_NORMAL   = 0x00000000;
 	public static inline var TILE_BLEND_ADD      = 0x00010000;
 	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
@@ -29,6 +32,10 @@ class Tilesheet {
 	@:noCompletion private var __centerPoints:Array<Point>;
 	@:noCompletion private var __tileRects:Array<Rectangle>;
 	@:noCompletion private var __tileUVs:Array<Rectangle>;
+	
+	@:noCompletion private var __rectTile:Rectangle;
+	@:noCompletion private var __rectUV:Rectangle;
+	@:noCompletion private var __point:Point;
 	
 	#if flash
 	@:noCompletion private var __bitmapHeight:Int;
@@ -49,6 +56,10 @@ class Tilesheet {
 		__centerPoints = new Array<Point> ();
 		__tileRects = new Array<Rectangle> ();
 		__tileUVs = new Array<Rectangle> ();
+		
+		__rectTile = new Rectangle();
+		__rectUV = new Rectangle();
+		__point = new Point();
 		
 		#if flash
 		__bitmapWidth = __bitmap.width;
@@ -176,7 +187,6 @@ class Tilesheet {
 		graphics.drawTiles (this, tileData, smooth, flags, count);
 		
 	}
-	
 	
 	public inline function getTileCenter (index:Int):Point {
 		

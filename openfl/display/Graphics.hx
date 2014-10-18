@@ -37,6 +37,8 @@ class Graphics {
 	public static inline var TILE_RGB = 0x0004;
 	public static inline var TILE_ALPHA = 0x0008;
 	public static inline var TILE_TRANS_2x2 = 0x0010;
+	public static inline var TILE_RECT = 0x0020;
+	public static inline var TILE_ORIGIN = 0x0040;
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
@@ -1029,6 +1031,21 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
 		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
 		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
+		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
+		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
+		
+		var tile:Rectangle = null;
+		var tileUV:Rectangle = null;
+		var tilePoint:Point = null;
+		
+		var numValues = 3;
+		var totalCount = count;
+		var itemCount;
+		if (count < 0) {
+			
+			totalCount = tileData.length;
+			
+		}
 		
 		if (useTransform || useScale || useRotation || useRGB || useAlpha) {
 			
@@ -1037,24 +1054,15 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			var rgbIndex = 0;
 			var alphaIndex = 0;
 			var transformIndex = 0;
-			var numValues = 3;
 			
+			if (useRect) { numValues = useOrigin ? 8 : 6; }
 			if (useScale) { scaleIndex = numValues; numValues ++; }
 			if (useRotation) { rotationIndex = numValues; numValues ++; }
 			if (useTransform) { transformIndex = numValues; numValues += 4; }
 			if (useRGB) { rgbIndex = numValues; numValues += 3; }
 			if (useAlpha) { alphaIndex = numValues; numValues ++; }
 			
-			var totalCount = count;
-			
-			if (count < 0) {
-				
-				totalCount = tileData.length;
-				
-			}
-			
-			var itemCount = Std.int (totalCount / numValues);
-			
+			itemCount = Std.int (totalCount / numValues);
 			var ids = sheet.adjustIDs (sheet.__ids, itemCount);
 			var vertices = sheet.adjustLen (sheet.__vertices, itemCount * 8); 
 			var indices = sheet.adjustIndices (sheet.__indices, itemCount * 6); 
@@ -1066,19 +1074,11 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			var tileID:Int = 0;
 			var cacheID:Int = -1;
 			
-			var tile:Rectangle = null;
-			var tileUV:Rectangle = null;
-			var tilePoint:Point = null;
-			var tileHalfHeight:Float = 0;
-			var tileHalfWidth:Float = 0;
-			var tileHeight:Float = 0;
-			var tileWidth:Float = 0;
-			
 			while (index < totalCount) {
 				
 				var x = tileData[index];
 				var y = tileData[index + 1];
-				var tileID = Std.int (tileData[index + 2]);
+				var tileID = (!useRect) ? Std.int(tileData[index + 2]) : -1;
 				var scale = 1.0;
 				var rotation = 0.0;
 				var alpha = 1.0;
@@ -1107,13 +1107,28 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					
 				}
 				
-				if (cacheID != tileID) {
+				if (!useRect && cacheID != tileID) {
 					
 					cacheID = tileID;
 					tile = sheet.__tileRects[tileID];
 					tileUV = sheet.__tileUVs[tileID];
 					tilePoint = sheet.__centerPoints[tileID];
-					
+				}
+				else if (useRect)
+				{
+					tile = sheet.__rectTile;
+					tile.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+					tileUV = sheet.__rectUV;
+					tileUV.setTo(tile.x / sheet.__bitmap.width, tile.y / sheet.__bitmap.height, tile.right / sheet.__bitmap.width, tile.bottom / sheet.__bitmap.height);
+					tilePoint = sheet.__point;
+					if (useOrigin)
+					{
+						tilePoint.setTo(tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+					}
+					else
+					{
+						tilePoint.setTo(0, 0);
+					}
 				}
 				
 				if (useTransform) {
@@ -1176,7 +1191,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					
 				}
 				
-				if (ids[tileIndex] != tileID) {
+				if (ids[tileIndex] != tileID || useRect) {
 					
 					ids[tileIndex] = tileID;
 					uvtData[offset8] = uvtData[offset8 + 4] = tileUV.left;
@@ -1199,54 +1214,33 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			
 			var index = 0;
 			var matrix = new Matrix ();
-			
-			while (index < tileData.length) {
+			while (index < totalCount) {
 				
-				var x = tileData[index];
-				var y = tileData[index + 1];
-				var tileID = Std.int (tileData[index + 2]);
-				index += 3;
+				var x = tileData[index++];
+				var y = tileData[index++];
+				var tileID = (!useRect) ? Std.int (tileData[index++]) : -1;
+				var ox:Float = 0; 
+				var oy:Float = 0;
 				
-				var tile = sheet.__tileRects[tileID];
-				var centerPoint = sheet.__centerPoints[tileID];
-				var ox = centerPoint.x * tile.width, oy = centerPoint.y * tile.height;
-				
-				var scale = 1.0;
-				var rotation = 0.0;
-				var alpha = 1.0;
-				
-				if (useScale) {
+				if (!useRect) {
 					
-					scale = tileData[index];
-					index ++;
-					
+					tile = sheet.__tileRects[tileID];
+					tilePoint = sheet.__centerPoints[tileID];
+					ox = tilePoint.x * tile.width;
+					oy = tilePoint.y * tile.height;
 				}
-				
-				if (useRotation) {
-					
-					rotation = tileData[index];
-					index ++;
-					
-				}
-				
-				if (useRGB) {
-					
-					//ignore for now
-					index += 3;
-					
-				}
-				
-				if (useAlpha) {
-					
-					alpha = tileData[index];
-					index++;
-					
+				else {
+					tile = sheet.__rectTile;
+					tile.setTo(tileData[index++], tileData[index++], tileData[index++], tileData[index++]);
+					if (useOrigin)
+					{
+						ox = tileData[index++];
+						oy = tileData[index++];
+					}
 				}
 				
 				matrix.tx = x - tile.x - ox;
 				matrix.ty = y - tile.y - oy;
-				
-				// need to add support for rotation, alpha, scale and RGB
 				
 				this.beginBitmapFill (sheet.__bitmap, matrix, false, smooth);
 				this.drawRect (x - ox, y - oy, tile.width, tile.height);
