@@ -1030,6 +1030,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
 		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
 		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
+		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
 		
 		var tile:Rectangle = null;
 		var tileUV:Rectangle = null;
@@ -1044,7 +1045,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			var transformIndex = 0;
 			var numValues = 3;
 			
-			if (useRect) { numValues = 8; }
+			if (useRect) { numValues = useOrigin ? 8 : 6; }
 			if (useScale) { scaleIndex = numValues; numValues ++; }
 			if (useRotation) { rotationIndex = numValues; numValues ++; }
 			if (useTransform) { transformIndex = numValues; numValues += 4; }
@@ -1060,7 +1061,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			}
 			
 			var itemCount = Std.int (totalCount / numValues);
-			
 			var ids = sheet.adjustIDs (sheet.__ids, itemCount);
 			var vertices = sheet.adjustLen (sheet.__vertices, itemCount * 8); 
 			var indices = sheet.adjustIndices (sheet.__indices, itemCount * 6); 
@@ -1077,7 +1077,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 				var x = tileData[index];
 				var y = tileData[index + 1];
 				var tileID = (!useRect) ? Std.int(tileData[index + 2]) : -1;
-				
 				var scale = 1.0;
 				var rotation = 0.0;
 				var alpha = 1.0;
@@ -1120,7 +1119,14 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tileUV = sheet.__rectUV;
 					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.width / sheet.__bitmapWidth, tile.height / sheet.__bitmapHeight);
 					tilePoint = sheet.__point;
-					tilePoint.setTo(tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+					if (useOrigin)
+					{
+						tilePoint.setTo(tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+					}
+					else
+					{
+						tilePoint.setTo(0, 0);
+					}
 				}
 				
 				if (useTransform) {
@@ -1206,7 +1212,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			
 			var index = 0;
 			var matrix = new Matrix ();
-			
 			while (index < tileData.length) {
 				
 				var x = tileData[index];
@@ -1223,7 +1228,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tilePoint = sheet.__centerPoints[tileID];
 					ox = tilePoint.x * tile.width;
 					oy = tilePoint.y * tile.height;
-					index += 5; // (3 + 5) = 8;
 				}
 				else {
 					tile = sheet.__rectTile;
@@ -1234,6 +1238,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tilePoint.setTo(tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
 					ox = tileData[index + 6];
 					oy = tileData[index + 7];
+					index += useOrigin ? 5 : 3;
 				}
 				
 				var scale = 1.0;
