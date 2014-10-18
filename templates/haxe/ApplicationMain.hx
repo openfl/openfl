@@ -19,7 +19,7 @@ class ApplicationMain {
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
 		
 		preloader = new openfl.display.Preloader (display);
-		preloader.onComplete = start;
+		preloader.onComplete = init;
 		preloader.create (config);
 		
 		#if js
@@ -45,6 +45,36 @@ class ApplicationMain {
 		#if sys
 		Sys.exit (result);
 		#end
+		
+	}
+	
+	
+	public static function init ():Void {
+		
+		var loaded = 0;
+		var total = 0;
+		var library_onLoad = function (_) {
+			
+			loaded++;
+			
+			if (loaded == total) {
+				
+				start ();
+				
+			}
+			
+		}
+		
+		::if (libraries != null)::::foreach libraries::::if (preload)::
+		total++;
+		openfl.Assets.loadLibrary ("::name::", library_onLoad);
+		::end::::end::::end::
+		
+		if (loaded == total) {
+			
+			start ();
+			
+		}
 		
 	}
 	
