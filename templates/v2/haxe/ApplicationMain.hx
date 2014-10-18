@@ -77,6 +77,10 @@ class ApplicationMain {
 				} catch (e:Dynamic) {}
 				#end
 				
+				::if (libraries != null)::::foreach libraries::::if (preload)::
+				openfl.Assets.loadLibrary ("::name::", function (_) {});
+				::end::::end::::end::
+				
 				var hasMain = false;
 				
 				for (methodName in Type.getClassFields (::APP_MAIN::)) {
