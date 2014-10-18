@@ -1213,8 +1213,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			
 			var index = 0;
 			var matrix = new Matrix ();
-			itemCount = Std.int (totalCount / numValues);
-			while (index < itemCount) {
+			while (index < totalCount) {
 				
 				var x = tileData[index++];
 				var y = tileData[index++];
@@ -1225,7 +1224,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 				if (!useRect) {
 					
 					tile = sheet.__tileRects[tileID];
-					tileUV = sheet.__tileUVs[tileID];
 					tilePoint = sheet.__centerPoints[tileID];
 					ox = tilePoint.x * tile.width;
 					oy = tilePoint.y * tile.height;
@@ -1233,8 +1231,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 				else {
 					tile = sheet.__rectTile;
 					tile.setTo(tileData[index++], tileData[index++], tileData[index++], tileData[index++]);
-					tileUV = sheet.__rectTile;
-					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.right / sheet.__bitmapWidth, tile.bottom / sheet.__bitmapHeight);
 					if (useOrigin)
 					{
 						ox = tileData[index++];
