@@ -1117,7 +1117,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tile = sheet.__rectTile;
 					tile.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
 					tileUV = sheet.__rectUV;
-					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.width / sheet.__bitmapWidth, tile.height / sheet.__bitmapHeight);
+					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.right / sheet.__bitmapWidth, tile.bottom / sheet.__bitmapHeight);
 					tilePoint = sheet.__point;
 					if (useOrigin)
 					{
@@ -1189,7 +1189,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					
 				}
 				
-				if (ids[tileIndex] != tileID) {
+				if (ids[tileIndex] != tileID || useRect) {
 					
 					ids[tileIndex] = tileID;
 					uvtData[offset8] = uvtData[offset8 + 4] = tileUV.left;
@@ -1233,11 +1233,16 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tile = sheet.__rectTile;
 					tile.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
 					tileUV = sheet.__rectTile;
-					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.width / sheet.__bitmapWidth, tile.height / sheet.__bitmapHeight);
-					tilePoint = sheet.__point;
-					tilePoint.setTo(tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
-					ox = tileData[index + 6];
-					oy = tileData[index + 7];
+					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.right / sheet.__bitmapWidth, tile.bottom / sheet.__bitmapHeight);
+					if (useOrigin)
+					{
+						ox = tileData[index + 6];
+						oy = tileData[index + 7];
+					}
+					else
+					{
+						ox = oy = 0;
+					}
 					index += useOrigin ? 5 : 3;
 				}
 				
