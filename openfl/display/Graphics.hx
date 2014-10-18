@@ -37,6 +37,8 @@ class Graphics {
 	public static inline var TILE_RGB = 0x0004;
 	public static inline var TILE_ALPHA = 0x0008;
 	public static inline var TILE_TRANS_2x2 = 0x0010;
+	public static inline var TILE_RECT = 0x0020;
+	public static inline var TILE_ORIGIN = 0x0040;
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
@@ -1053,7 +1055,6 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 			var alphaIndex = 0;
 			var transformIndex = 0;
 			
-			
 			if (useRect) { numValues = useOrigin ? 8 : 6; }
 			if (useScale) { scaleIndex = numValues; numValues ++; }
 			if (useRotation) { rotationIndex = numValues; numValues ++; }
@@ -1118,7 +1119,7 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tile = sheet.__rectTile;
 					tile.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
 					tileUV = sheet.__rectUV;
-					tileUV.setTo(tile.x / sheet.__bitmapWidth, tile.y / sheet.__bitmapHeight, tile.right / sheet.__bitmapWidth, tile.bottom / sheet.__bitmapHeight);
+					tileUV.setTo(tile.x / sheet.__bitmap.width, tile.y / sheet.__bitmap.height, tile.right / sheet.__bitmap.width, tile.bottom / sheet.__bitmap.height);
 					tilePoint = sheet.__point;
 					if (useOrigin)
 					{
