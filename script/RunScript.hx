@@ -47,7 +47,7 @@ class RunScript {
 			
 		}
 		
-		Sys.exit (Sys.command ("haxelib", args));
+		Sys.exit (Sys.command ("haxelib", args.concat ([ "-openfl" ])));
 		
 	}
 	
