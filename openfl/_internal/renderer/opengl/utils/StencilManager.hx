@@ -70,7 +70,7 @@ class StencilManager {
 		for (bucketData in bucket.data) {
 			if (bucketData.destroyed) continue;
 			prepareGraphics(object, bucketData, renderSession);
-			gl.drawElements (bucketData.drawMode, bucketData.indices.length, gl.UNSIGNED_SHORT, 0);
+			gl.drawElements (bucketData.drawMode, bucketData.glIndices.length, gl.UNSIGNED_SHORT, 0);
 		}
 		
 		gl.colorMask(true, true, true, true);

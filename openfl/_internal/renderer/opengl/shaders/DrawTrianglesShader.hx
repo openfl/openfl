@@ -27,7 +27,8 @@ class DrawTrianglesShader extends AbstractShader {
 			'varying vec4 vColor;',
 			
 			'void main(void) {',
-			'   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
+			//'   vec3 v = translationMatrix * vec3(aVertexPosition , 1.0);',
+			'   vec3 v = vec3(aVertexPosition , 1.0);',
 			'   v -= offsetVector.xyx;',
 			'   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
 			'   vPos = aTextureCoord;',

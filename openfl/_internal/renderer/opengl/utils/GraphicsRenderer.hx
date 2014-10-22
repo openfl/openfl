@@ -523,7 +523,7 @@ class GraphicsRenderer {
 		}
 	}
 	
-	public static function buildDrawTriangles (path:DrawPath, glStack:GLStack):Void {
+	public static function buildDrawTriangles (path:DrawPath, object:DisplayObject, glStack:GLStack):Void {
 		
 		var args = Type.enumParameters(path.type);
 		var vertices:Vector<Float> = cast args[0];
@@ -533,14 +533,57 @@ class GraphicsRenderer {
 		var colors:Vector<Int> = cast args[4];
 		var blendMode:Int = args[5];
 		
+		var a = object.__worldTransform.a;
+		var b = object.__worldTransform.b;
+		var c = object.__worldTransform.c;
+		var d = object.__worldTransform.d;
+		var tx = object.__worldTransform.tx;
+		var ty = object.__worldTransform.ty;
+		
 		var bucket = prepareBucket(path, glStack);
-		bucket.indices = indices;
-		var verts = bucket.verts;
+		//bucket.parent.usesStaticVertsBuffer = true;
+		bucket.rawVerts = true;
+		//bucket.rawIndices = true;
+		//bucket.indices = indices;
+		
+		//var inds:UInt16Array;
+		//if (bucket.glIndices == null || bucket.glIndices.length != indices.length) {
+			//inds = new UInt16Array(indices.length);
+			//bucket.glIndices = inds;
+		//} else {
+			//inds = bucket.glIndices;
+		//}
+		//for (i in 0...indices.length) {
+			//inds[i] = indices[i];
+		//}
+		
+		//bucket.drawArraysStart = GLBucket.offsetVertsBuffer = 0;
+		//bucket.drawArraysStart = Std.int(GLBucket.offsetVertsBuffer / 8);
+		bucket.drawArraysLength = indices.length;
+		bucket.stride = 8;
+		
+		var len = indices.length * 8;
+		var verts:Float32Array;
+		//if (GLBucket.offsetVertsBuffer + len > verts.length) {
+			//bucket.drawArraysStart = GLBucket.offsetVertsBuffer = 0;
+		//} else {
+			//GLBucket.offsetVertsBuffer += len;
+		//}
+		
+		if (bucket.glVerts == null || bucket.glVerts.length < len) {
+			verts = new Float32Array(len);
+			bucket.glVerts = verts;
+		} else {
+			verts = bucket.glVerts;
+		}
 		
 		var hasColors = colors != null && colors.length > 0;
 		
 		var v0 = 0; var v1 = 0; var v2 = 0;
 		var i0 = 0; var i1 = 0; var i2 = 0;
+		
+		var x = 0.0; var y = 0.0;
+		
 		var idx = 0;
 		var color = hex2rgba(0xFFFFFFFF);
 		var ctmp = color;
@@ -550,9 +593,16 @@ class GraphicsRenderer {
 			i0 = indices[i * 3]; i1 = indices[i * 3 + 1]; i2 = indices[i * 3 + 2];
 			v0 = i0 * 2; v1 = i1 * 2; v2 = i2 * 2;
 			
-			idx = i0 * stride;
-			verts[idx++] = vertices[v0];
-			verts[idx++] = vertices[v0 + 1];
+			//if (isCCW(vertices[v0], vertices[v0 + 1], vertices[v1], vertices[v1 + 1], vertices[v2], vertices[v2 + 1])) {
+				//i0 = indices[i * 3 + 1]; i1 = indices[i * 3]; i2 = indices[i * 3 + 2];
+				//v0 = i0 * 2; v1 = i1 * 2; v2 = i2 * 2;
+			//}
+			
+			//idx = i0 * stride;
+			x = vertices[v0];
+			y = vertices[v0 + 1];
+			verts[idx++] = a * x + c * y + tx;
+			verts[idx++] = b * x + d * y + ty;
 			verts[idx++] = uvtData[v0];
 			verts[idx++] = uvtData[v0 + 1];
 			if (hasColors) {
@@ -568,9 +618,11 @@ class GraphicsRenderer {
 				verts[idx++] = color[3];
 			}
 			
-			idx = i1 * stride;
-			verts[idx++] = vertices[v1];
-			verts[idx++] = vertices[v1 + 1];
+			//idx = i1 * stride;
+			x = vertices[v1];
+			y = vertices[v1 + 1];
+			verts[idx++] = a * x + c * y + tx;
+			verts[idx++] = b * x + d * y + ty;
 			verts[idx++] = uvtData[v1];
 			verts[idx++] = uvtData[v1 + 1];
 			if (hasColors) {
@@ -586,9 +638,11 @@ class GraphicsRenderer {
 				verts[idx++] = color[3];
 			}
 			
-			idx = i2 * stride;
-			verts[idx++] = vertices[v2];
-			verts[idx++] = vertices[v2 + 1];
+			//idx = i2 * stride;
+			x = vertices[v2];
+			y = vertices[v2 + 1];
+			verts[idx++] = a * x + c * y + tx;
+			verts[idx++] = b * x + d * y + ty;
 			verts[idx++] = uvtData[v2];
 			verts[idx++] = uvtData[v2 + 1];
 			if (hasColors) {
@@ -647,13 +701,11 @@ class GraphicsRenderer {
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
 		
 		// cache as bitmap
-
 		renderSession.spriteBatch.end();
-
+		
 		renderGraphics(object, renderSession);
-
+		
 		renderSession.spriteBatch.begin(renderSession);
-
 	}
 	
 	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession):Void {
@@ -745,25 +797,20 @@ class GraphicsRenderer {
 				case Circle, Ellipse:
 					buildCircle (path, glStack);
 				case DrawTriangles(_):
-					buildDrawTriangles(path, glStack);
+					buildDrawTriangles(path, object, glStack);
 				case _:
 			}
 			
 			glStack.lastIndex++;
 		}
 		
-		var bucket:GLBucket;
-		for (i in 0...glStack.buckets.length) {
-			
-			bucket = glStack.buckets[i];
-			if (bucket.dirty) bucket.upload ();
-			
-		}
+		glStack.upload();
 		
 	}
 	
 	private static function prepareBucket(path:DrawPath, glStack:GLStack):GLBucketData {
 		var bucket:GLBucket = null;
+		
 		switch(path.fill) {
 			case Color(c, a):
 				bucket = switchBucket(path.fillIndex, glStack, Fill);
@@ -847,6 +894,7 @@ class GraphicsRenderer {
 		return bucket;
 	}
 	
+	private static var lastBucketMode:BucketMode;
 	private static inline function prepareShader(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
 		var gl = renderSession.gl;
 		var projection = renderSession.projection;
@@ -866,8 +914,12 @@ class GraphicsRenderer {
 		
 		if (shader == null) return null;
 		
-		renderSession.shaderManager.setShader(shader);
+		var newShader = renderSession.shaderManager.setShader(shader);
 		
+		if (!newShader && lastBucketMode == bucket.mode) {
+			return shader;
+		}
+		lastBucketMode = bucket.mode;
 		// common uniforms
 		gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 		gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
@@ -909,7 +961,7 @@ class GraphicsRenderer {
 	
 	private static inline function renderDrawTriangles(bucket:GLBucket, shader:DrawTrianglesShader, renderSession:RenderSession) {
 		var gl = renderSession.gl;
-
+		
 		for (data in bucket.data) {
 			if (data.destroyed) continue;
 			
@@ -917,16 +969,26 @@ class GraphicsRenderer {
 				// draw color
 			} else {
 				bindTexture(gl, bucket);
-				
-				gl.bindBuffer (gl.ARRAY_BUFFER, data.vertsBuffer);
-				var stride =  8 * 4;
-				gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-				gl.vertexAttribPointer (shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-				gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, stride, 4 * 4);
-				gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.indexBuffer);
-				gl.drawElements (gl.TRIANGLES, data.indices.length, gl.UNSIGNED_SHORT, 0);
+				bindDrawTrianglesBuffer(gl, shader, data);
+				//gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.indexBuffer);
+				//gl.drawElements (gl.TRIANGLES, data.glIndices.length, gl.UNSIGNED_SHORT, 0);
+				gl.drawArrays(gl.TRIANGLES, data.drawArraysStart, data.drawArraysLength);
 			}
 		}
+	}
+	
+	private static var lastVertsBuffer:GLBuffer;
+	private static inline function bindDrawTrianglesBuffer(gl:GLRenderContext, shader:DrawTrianglesShader, data:GLBucketData) {
+		if (lastVertsBuffer == data.vertsBuffer) {
+			return;
+		}
+		lastVertsBuffer = data.vertsBuffer;
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, data.vertsBuffer);
+		var stride =  data.stride * 4;
+		gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
+		gl.vertexAttribPointer (shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
+		gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, stride, 4 * 4);
 	}
 	
 	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
@@ -940,7 +1002,17 @@ class GraphicsRenderer {
 		return hex == null ? [1,1,1,1] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255, (hex >> 24 & 0xFF) / 255];
 	}
 	
+	private static var lastTexture:GLTexture;
+	private static var lastTextureRepeat:Bool;
+	private static var lastTextureSmooth:Bool;
 	private static inline function bindTexture(gl:GLRenderContext, bucket:GLBucket) {
+		if (bucket.texture == lastTexture && bucket.textureRepeat == lastTextureRepeat && bucket.textureSmooth == lastTextureSmooth) {
+			return;
+		}
+		lastTexture = bucket.texture;
+		lastTextureRepeat = bucket.textureRepeat;
+		lastTextureSmooth = bucket.textureSmooth;
+		
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 		
 		// webgl can only repeat textures that are power of two
@@ -960,6 +1032,15 @@ class GraphicsRenderer {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
 		}
 	}
+
+	private static function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
+		var vx1 = x2 - x1;
+		var vy1 = y2 - y1;
+		var vx2 = x3 - x1;
+		var vy2 = y3 - y1;
+		
+		return (vx1 * vy2 - vy1 * vx2) >= 0;
+	}
 	
 }
 
@@ -978,6 +1059,14 @@ class GLStack {
 	public function reset() {
 		buckets = [];
 		lastIndex = 0;
+	}
+	
+	public function upload() {
+		for (bucket in buckets) {
+			
+			if (bucket.dirty) bucket.upload ();
+			
+		}
 	}
 
 }
@@ -1051,6 +1140,7 @@ class GLBucket {
 		}
 		
 		result.destroyed = false;
+		result.parent = this;
 		
 		if(remove) data.remove(result);
 		data.push(result);
@@ -1063,6 +1153,7 @@ class GLBucket {
 			d.destroy();
 		}
 		fillIndex = 0;
+		uploadTileBuffer = true;
 	}
 	
 	public function upload ():Void {
@@ -1072,12 +1163,13 @@ class GLBucket {
 			gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
 			uploadTileBuffer = false;
 		}
-		
+
 		for (d in data) {
 			if (!d.destroyed) {
 				d.upload();
 			}
 		}
+		
 		dirty = false;
 		
 	}
@@ -1086,17 +1178,25 @@ class GLBucket {
 class GLBucketData {
 	public var gl:GLRenderContext;
 	public var drawMode:Int;
+	public var drawArraysLength:Int = 0;
+	public var drawArraysStart:Int = 0;
 	
 	public var vertsBuffer:GLBuffer;
+	public var lastVertsSize:Int = 0;
 	public var glVerts:Float32Array;
 	public var verts:Array<Float>;
+	public var rawVerts:Bool = false;
+	public var stride:Int = 0;
 	
 	public var indexBuffer:GLBuffer;
 	public var glIndices:UInt16Array;
 	public var indices:Array<Int>;
+	public var rawIndices:Bool = false;
 	
 	public var line:GLBucketData;
 	public var destroyed:Bool = false;
+	
+	public var parent:GLBucket;
 	
 	public function new (gl:GLRenderContext, ?initLine = true) {
 		this.gl = gl;
@@ -1115,21 +1215,39 @@ class GLBucketData {
 		destroyed = true;
 		verts = [];
 		indices = [];
+		drawArraysLength = 0;
+		drawArraysStart = 0;
+		stride = 0;
+		rawVerts = false;
+		rawIndices = false;
 		if (line != null) line.destroy();
 	}
 	
 	public function upload():Void {
 		
-		if (verts.length > 0) {
-			glVerts = new Float32Array (verts);
+		if ((rawVerts && glVerts != null && glVerts.length > 0) || verts.length > 0) {
+			if (!rawVerts) glVerts = new Float32Array (verts);
 			gl.bindBuffer (gl.ARRAY_BUFFER, vertsBuffer);
-			gl.bufferData (gl.ARRAY_BUFFER, glVerts, gl.STATIC_DRAW);
+			if (glVerts.length <= lastVertsSize) {
+				var end = drawArraysLength * 4 * stride;
+				if (drawArraysLength > 0 && lastVertsSize > end) {
+					var view = glVerts.subarray(0, end);
+					gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
+					view = null;
+				} else {
+					gl.bufferSubData(gl.ARRAY_BUFFER, 0, glVerts);
+				}
+			} else {
+				gl.bufferData (gl.ARRAY_BUFFER, glVerts, gl.STREAM_DRAW);
+				lastVertsSize = glVerts.length;
+			}
+			
 		}
 		
-		if (indices.length > 0) {
-			glIndices = new UInt16Array (indices);
+		if (drawArraysLength == 0 && ((rawIndices && glIndices != null && glIndices.length > 0) || indices.length > 0)) {
+			if(!rawIndices) glIndices = new UInt16Array (indices);
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STATIC_DRAW);
+			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STREAM_DRAW);
 		}
 		
 		if (line != null) line.upload();

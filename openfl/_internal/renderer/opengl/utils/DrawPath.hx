@@ -19,67 +19,55 @@ import openfl.geom.Point;
 import openfl.Vector;
 
 class DrawPath {
-	
-	public static var DEFAULT_LINE_STYLE:LineStyle = {
-		
-		width: 0,
-		color: 0,
-		alpha: 1,
-		scaleMode: LineScaleMode.NORMAL,
-		caps: CapsStyle.ROUND,
-		joints: JointStyle.ROUND,
-		miterLimit: 3
-		
-	}
-	
 
-	public var line:LineStyle;
-	public var fill:FillType;
-	public var fillIndex:Int = 0;
-	public var isRemovable:Bool = true;
 
-	public var points:Array<Float> = [];
-	
+public var line:LineStyle;
+public var fill:FillType;
+public var fillIndex:Int = 0;
+public var isRemovable:Bool = true;
 
-	public var type:GraphicType = Polygon;
+public var points:Array<Float> = [];
 
-	public function new() {
-		line = Reflect.copy(DEFAULT_LINE_STYLE);
-		fill = None;
-	}
 
-	public function update(line:LineStyle, fill:FillType, fillIndex:Int):Void {
-		updateLine(line);
-		this.fill = fill;
-		this.fillIndex = fillIndex;
-	}
+public var type:GraphicType = Polygon;
 
-	public function updateLine(line:LineStyle):Void {
-		this.line.width = line.width;
-		this.line.color = line.color;
-		this.line.alpha = line.alpha == null ? 1 : line.alpha;
-		this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
-		this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
-		this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
-		this.line.miterLimit = line.miterLimit;
-	}
-	
-	public static function getStack(graphics:Graphics, gl:GLRenderContext):GLStack {
-		return PathBuiler.build(graphics, gl);
-	}
-	
+public function new() {
+	line = new LineStyle();
+	fill = None;
+}
+
+public function update(line:LineStyle, fill:FillType, fillIndex:Int):Void {
+	updateLine(line);
+	this.fill = fill;
+	this.fillIndex = fillIndex;
+}
+
+public function updateLine(line:LineStyle):Void {
+	this.line.width = line.width;
+	this.line.color = line.color;
+	this.line.alpha = line.alpha == null ? 1 : line.alpha;
+	this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
+	this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;
+	this.line.joints = line.joints == null ? JointStyle.ROUND : line.joints;
+	this.line.miterLimit = line.miterLimit;
+}
+
+public static function getStack(graphics:Graphics, gl:GLRenderContext):GLStack {
+	return PathBuiler.build(graphics, gl);
+}
+
 }
 
 @:access(openfl._internal.renderer.opengl.utils.GraphicsRenderer)
 @:access(openfl.display.Graphics)
 class PathBuiler {
-	
+
 	private static var __currentPath:DrawPath;
 	private static var __drawPaths:Array<DrawPath>;
 	private static var __line:LineStyle;
 	private static var __fill:FillType;
 	private static var __fillIndex:Int = 0;
-	
+
 	private static function closePath():Void {
 		var l = __currentPath.points.length;
 		if (l <= 0) return;
@@ -96,14 +84,14 @@ class PathBuiler {
 			}
 		}
 	}
-	
+
 	private static function endFill ():Void {
 		
 		__fill = None;
 		__fillIndex++;
 		
 	}
-	
+
 	private static function moveTo (x:Float, y:Float):Void {
 		
 		graphicDataPop ();
@@ -116,7 +104,7 @@ class PathBuiler {
 		__drawPaths.push (__currentPath);
 		
 	}
-	
+
 	private inline static function graphicDataPop ():Void {
 		
 		if (__currentPath.isRemovable && __currentPath.points.length == 0) {
@@ -126,7 +114,7 @@ class PathBuiler {
 		}
 		
 	}
-	
+
 	public static function build(graphics:Graphics, gl:GLRenderContext):GLStack {
 		
 		var glStack:GLStack = null;
@@ -134,7 +122,7 @@ class PathBuiler {
 		
 		__drawPaths = new Array ();
 		__currentPath = new DrawPath ();
-		__line = Reflect.copy (DrawPath.DEFAULT_LINE_STYLE);
+		__line = new LineStyle();
 		__fill = None;
 		__fillIndex = 0;
 		
@@ -313,7 +301,7 @@ class PathBuiler {
 					
 					case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
 						
-						__line = Reflect.copy (DrawPath.DEFAULT_LINE_STYLE);
+						__line = new LineStyle();
 						
 						if (thickness == null || thickness == Math.NaN || thickness < 0) {
 							
@@ -356,16 +344,16 @@ class PathBuiler {
 						
 					case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 						
-						graphicDataPop ();
-						
-						__currentPath = new DrawPath ();
-						__currentPath.update (__line, __fill, __fillIndex);
-						if (uvtData == null) {
-							uvtData = new Vector<Float>();
-						}
-						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
-						__currentPath.isRemovable = false;
-						__drawPaths.push (__currentPath);
+							graphicDataPop ();
+							
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __fill, __fillIndex);
+							if (uvtData == null) {
+								uvtData = new Vector<Float>();
+							}
+							__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
+							__currentPath.isRemovable = false;
+							__drawPaths.push (__currentPath);
 					
 					default:
 						
@@ -381,25 +369,36 @@ class PathBuiler {
 		
 		return glStack;
 	}
+
 }
 
-typedef LineStyle = {
+class LineStyle {
+
+	public var width:Float;
+	public var color:Int;
+	public var alpha:Null<Float>;
+
+	public var scaleMode:LineScaleMode;
+	public var caps:CapsStyle;
+	public var joints:JointStyle;
+	public var miterLimit:Float;
 	
-	width:Float,
-	color:Int,
-	alpha:Null<Float>,
-	
-	scaleMode:LineScaleMode,
-	caps:CapsStyle,
-	joints:JointStyle,
-	miterLimit:Float
-	
+	public function new() {
+		width = 0;
+		color = 0;
+		alpha = 1;
+		scaleMode = LineScaleMode.NORMAL;
+		caps = CapsStyle.ROUND;
+		joints = JointStyle.ROUND;
+		miterLimit = 3;
+	}
+
 }
 
 
 enum FillType {
-	None;
-	Color(color:Int, alpha:Float);
-	Texture(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
-	Gradient;
+None;
+Color(color:Int, alpha:Float);
+Texture(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
+Gradient;
 }
