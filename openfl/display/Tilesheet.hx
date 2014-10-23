@@ -18,6 +18,9 @@ class Tilesheet {
 	public static inline var TILE_RGB = 0x0004;
 	public static inline var TILE_ALPHA = 0x0008;
 	public static inline var TILE_TRANS_2x2 = 0x0010;
+	public static inline var TILE_RECT = 0x0020;
+	public static inline var TILE_ORIGIN = 0x0040;
+	
 	public static inline var TILE_BLEND_NORMAL   = 0x00000000;
 	public static inline var TILE_BLEND_ADD      = 0x00010000;
 	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
@@ -30,6 +33,10 @@ class Tilesheet {
 	@:noCompletion private var __tileRects:Array<Rectangle>;
 	@:noCompletion private var __tileUVs:Array<Rectangle>;
 	
+	@:noCompletion private var __rectTile:Rectangle;
+	@:noCompletion private var __rectUV:Rectangle;
+	@:noCompletion private var __point:Point;
+	
 	#if flash
 	@:noCompletion private var __bitmapHeight:Int;
 	@:noCompletion private var __bitmapWidth:Int;
@@ -39,13 +46,20 @@ class Tilesheet {
 	@:noCompletion private var __vertices:Vector<Float>;
 	#end
 	
-	
+	/**
+	 *Creates new TileSheet Object
+	 * @param	image a bitmap data to create tiles from
+	 */
 	public function new (image:BitmapData) {
 		
 		__bitmap = image;
 		__centerPoints = new Array<Point> ();
 		__tileRects = new Array<Rectangle> ();
 		__tileUVs = new Array<Rectangle> ();
+		
+		__rectTile = new Rectangle();
+		__rectUV = new Rectangle();
+		__point = new Point();
 		
 		#if flash
 		__bitmapWidth = __bitmap.width;
@@ -58,7 +72,12 @@ class Tilesheet {
 		
 	}
 	
-	
+	/**
+	 * Adds an single tile to this TileSheet
+	 * @param	rectangle a rectangle defining the dimensions and positioning of a new tile
+	 * @param	centerPoint if set, will act as the translation point of the tile, default: top-left corner
+	 * @return an Int representing the id of a single tile rect
+	 */
 	public function addTileRect (rectangle:Rectangle, centerPoint:Point = null):Int {
 		
 		__tileRects.push (rectangle);
@@ -155,13 +174,19 @@ class Tilesheet {
 	}
 	#end
 	
-	
+	/**
+	 * Draws tiles to a give Graphic Object
+	 * @param	graphics the "Graphics" object to draw tiles to
+	 * @param	tileData an Array<Float>(3) denoting the X position, Y position, and tile to render repsectively
+	 * @param	smooth whether to smooth the tile or not
+	 * @param	flags
+	 * @param	count
+	 */
 	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
 		
 		graphics.drawTiles (this, tileData, smooth, flags, count);
 		
 	}
-	
 	
 	public inline function getTileCenter (index:Int):Point {
 		

@@ -1,4 +1,5 @@
-package openfl.geom;
+package openfl.geom; #if !flash
+
 
 import openfl.geom.Orientation3D;
 import openfl.geom.Vector3D;
@@ -312,20 +313,21 @@ class Matrix3D {
 		}
 		
 	}
-
-
+	
+	
 	public function copyToMatrix3D (other:Matrix3D):Void {
-
+		
 		other.rawData = rawData.copy();
-
+	
 	}
-
+	
+	
 	/**
 	 * Returns the transformation matrix's translation, rotation, and scale settings as a Vector of three Vector3D objects.
 	 */
 	public function decompose(?orientationStyle:Orientation3D):Vector<Vector3D> {
-
-		if (orientationStyle==null)
+		
+		if (orientationStyle == null)
 			orientationStyle = Orientation3D.EULER_ANGLES;
 		
 		var vec = new Vector<Vector3D>();
@@ -364,7 +366,7 @@ class Matrix3D {
 			
 			case Orientation3D.AXIS_ANGLE:
 				rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
-
+				
 				var len = Math.sqrt((mr[6] - mr[9]) * (mr[6] - mr[9]) + (mr[8] - mr[2]) * (mr[8] - mr[2]) + (mr[1] - mr[4]) * (mr[1] - mr[4]));
 				rot.x = (mr[6] - mr[9]) / len;
 				rot.y = (mr[8] - mr[2]) / len;
@@ -372,22 +374,22 @@ class Matrix3D {
 			
 			case Orientation3D.QUATERNION:
 				var tr = mr[0] + mr[5] + mr[10];
-
+				
 				if (tr > 0) {
 					rot.w = Math.sqrt(1 + tr) / 2;
-
+					
 					rot.x = (mr[6] - mr[9]) / (4 * rot.w);
 					rot.y = (mr[8] - mr[2]) / (4 * rot.w);
 					rot.z = (mr[1] - mr[4]) / (4 * rot.w);
 				} else if ((mr[0] > mr[5]) && (mr[0] > mr[10])) {
 					rot.x = Math.sqrt(1 + mr[0] - mr[5] - mr[10]) / 2;
-
+					
 					rot.w = (mr[6] - mr[9]) / (4 * rot.x);
 					rot.y = (mr[1] + mr[4]) / (4 * rot.x);
 					rot.z = (mr[8] + mr[2]) / (4 * rot.x);
 				} else if (mr[5] > mr[10]) {
 					rot.y = Math.sqrt(1 + mr[5] - mr[0] - mr[10]) / 2;
-
+					
 					rot.x = (mr[1] + mr[4]) / (4 * rot.y);
 					rot.w = (mr[8] - mr[2]) / (4 * rot.y);
 					rot.z = (mr[6] + mr[9]) / (4 * rot.y);
@@ -637,23 +639,23 @@ class Matrix3D {
 	}
 	
 	
-	public function recompose (components:Vector<Vector3D>, ?orientationStyle:Orientation3D ):Bool {
+	public function recompose (components:Vector<Vector3D>, ?orientationStyle:Orientation3D):Bool {
 		
 		if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0)
 			return false;
 	  
 		if (orientationStyle == null)
 			orientationStyle = Orientation3D.EULER_ANGLES;
-
+		
 		identity();
-
+		
 		var scale = [];
 		scale[0] = scale[1] = scale[2] = components[2].x;
 		scale[4] = scale[5] = scale[6] = components[2].y;
 		scale[8] = scale[9] = scale[10] = components[2].z;
-
+		
 		switch (orientationStyle) {
-
+			
 			case Orientation3D.EULER_ANGLES:
 				var cx = Math.cos(components[1].x);
 				var cy = Math.cos(components[1].y);
@@ -840,3 +842,84 @@ class Matrix3D {
 	
 	
 }
+
+
+#else
+
+
+@:forward(determinant, position, append, appendRotation, appendScale, appendTranslation, clone, copyColumnFrom, copyColumnTo, copyFrom, copyRowFrom, copyRowTo, copyToMatrix3D, deltaTransformVector, identity, interpolateTo, invert, pointAt, prepend, prependRotation, prependScale, prependTranslation, transformVector, transpose)
+
+
+abstract Matrix3D(flash.geom.Matrix3D) from flash.geom.Matrix3D to flash.geom.Matrix3D {
+	
+	
+	public var rawData (get, set):Vector<Float>;
+	
+	
+	public inline function new (v:Vector<Float> = null) {
+		
+		this = new flash.geom.Matrix3D (v);
+		
+	}
+	
+	
+	public function copyRawDataFrom (vector:Vector<Float>, index:UInt = 0, transpose:Bool = false):Void {
+		
+		this.copyRawDataFrom (vector, index, transpose);
+		
+	}
+	
+	
+	public function copyRawDataTo (vector:Vector<Float>, index:UInt = 0, transpose:Bool = false):Void {
+		
+		this.copyRawDataTo (vector, index, transpose);
+		
+	}
+	
+	
+	public function decompose (orientationStyle:Orientation3D = null):Vector<Vector3D> {
+		
+		return this.decompose (orientationStyle == null ? EULER_ANGLES : orientationStyle);
+		
+	}
+	
+	
+	public static function interpolate (thisMat:Matrix3D, toMat:Matrix3D, percent:Float):Matrix3D {
+		
+		return flash.geom.Matrix3D.interpolate (thisMat, toMat, percent);
+		
+	}
+	
+	
+	public function recompose (components:Vector<Vector3D>, orientationStyle:Orientation3D = null):Bool {
+		
+		return this.recompose (components, orientationStyle == null ? EULER_ANGLES : orientationStyle);
+		
+	}
+	
+	
+	public function transformVectors (vin:Vector<Float>, vout:Vector<Float>):Void {
+		
+		this.transformVectors (vin, vout);
+		
+	}
+	
+	
+	private inline function get_rawData ():Vector<Float> {
+		
+		return this.rawData;
+		
+	}
+	
+	
+	private inline function set_rawData (value:Vector<Float>):Vector<Float> {
+		
+		return this.rawData = value;
+		
+	}
+	
+	
+}
+
+
+#end

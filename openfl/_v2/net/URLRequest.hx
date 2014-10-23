@@ -70,6 +70,12 @@ class URLRequest {
 	
 	@:noCompletion public function __prepare ():Void {
 		
+		if (userAgent == null) {
+			
+			userAgent = ""; // hack to fix _v2 native crash
+			
+		}
+		
 		if (data == null) {
 			
 			__bytes = new ByteArray ();

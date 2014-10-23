@@ -54,4 +54,4 @@ script:
   - haxe build.hxml
 
 notifications:
-  slack: openfl:ba3HbgtZflW8TNcJEQ1B4tAY
+  slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz

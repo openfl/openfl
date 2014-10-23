@@ -5,3 +5,4 @@
 --macro allowPackage("flash")
 -dce full
 -D final
+-D js-flatten

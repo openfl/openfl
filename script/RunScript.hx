@@ -2,6 +2,8 @@ package;
 
 
 import helpers.LogHelper;
+import helpers.PathHelper;
+import project.Haxelib;
 
 
 class RunScript {
@@ -33,6 +35,16 @@ class RunScript {
 			
 			args[1] = "openfl:" + args[1];
 			
+		} else if (args[0] == "setup") {
+			
+			var limeDirectory = PathHelper.getHaxelib (new Haxelib ("lime"));
+			
+			if (limeDirectory == null || limeDirectory == "" || limeDirectory.indexOf ("is not installed") > -1) {
+				
+				Sys.command ("haxelib install lime");
+				
+			}
+			
 		}
 		
 		var args = [ "run", "lime" ].concat (args);
@@ -47,7 +59,7 @@ class RunScript {
 			
 		}
 		
-		Sys.exit (Sys.command ("haxelib", args));
+		Sys.exit (Sys.command ("haxelib", args.concat ([ "-openfl" ])));
 		
 	}
 	

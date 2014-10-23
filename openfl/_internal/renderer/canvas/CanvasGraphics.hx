@@ -560,6 +560,8 @@ class CanvasGraphics {
 							var useTransform = (flags & Graphics.TILE_TRANS_2x2) > 0;
 							var useRGB = (flags & Graphics.TILE_RGB) > 0;
 							var useAlpha = (flags & Graphics.TILE_ALPHA) > 0;
+							var useRect = (flags & Graphics.TILE_RECT) > 0;
+							var useOrigin = (flags & Graphics.TILE_ORIGIN) > 0;
 							
 							if (useTransform) { useScale = false; useRotation = false; }
 							
@@ -571,6 +573,7 @@ class CanvasGraphics {
 							
 							var numValues = 3;
 							
+							if (useRect) { numValues = useOrigin ? 8 : 6; }
 							if (useScale) { scaleIndex = numValues; numValues ++; }
 							if (useRotation) { rotationIndex = numValues; numValues ++; }
 							if (useTransform) { transformIndex = numValues; numValues += 4; }
@@ -592,15 +595,29 @@ class CanvasGraphics {
 							
 							while (index < totalCount) {
 								
-								var tileID = Std.int (tileData[index + 2]);
+								var tileID = (!useRect) ? Std.int (tileData[index + 2]) : -1;
 								
-								if (tileID != previousTileID) {
+								if (!useRect && tileID != previousTileID) {
 									
 									rect = sheet.__tileRects[tileID];
 									center = sheet.__centerPoints[tileID];
 									
 									previousTileID = tileID;
 									
+								}
+								else if (useRect)
+								{
+									rect = sheet.__rectTile;
+									rect.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+									center = sheet.__point;
+									if (useOrigin)
+									{
+										center.setTo(tileData[index + 6], tileData[index + 7]);
+									}
+									else
+									{
+										center.setTo(0, 0);
+									}
 								}
 								
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
