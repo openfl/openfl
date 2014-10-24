@@ -40,7 +40,7 @@ class RenderSession {
 	public var offset:Point;
 	
 	public var shaderManager:ShaderManager;
-	public var maskManager:MaskManager;
+	public var maskManager:Dynamic;
 	public var filterManager:FilterManager;
 	public var blendModeManager:BlendModeManager;
 	public var spriteBatch:SpriteBatch;

@@ -25,6 +25,7 @@ class CanvasRenderer extends AbstractRenderer {
 		renderSession.context = context;
 		renderSession.roundPixels = true;
 		renderSession.renderer = this;
+		renderSession.maskManager = new MaskManager(renderSession);
 		
 	}
 	
