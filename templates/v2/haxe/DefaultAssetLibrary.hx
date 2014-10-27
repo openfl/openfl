@@ -153,7 +153,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 			
 			#else
 			
-			if (type == BINARY || type == null) {
+			if (type == BINARY || type == null || (assetType == BINARY && type == TEXT)) {
 				
 				return true;
 				
