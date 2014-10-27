@@ -22,7 +22,7 @@ class CanvasBitmap {
 			
 			if (bitmap.__mask != null) {
 				
-				//renderSession.maskManager.pushMask (__mask);
+				renderSession.maskManager.pushMask (bitmap.__mask);
 				
 			}
 			
@@ -70,7 +70,7 @@ class CanvasBitmap {
 			
 			if (bitmap.__mask != null) {
 				
-				//renderSession.maskManager.popMask ();
+				renderSession.maskManager.popMask ();
 				
 			}
 			
