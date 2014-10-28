@@ -8,6 +8,7 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.DisplayObject;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -42,7 +43,7 @@ class SpriteBatch {
 	public function new (gl:GLRenderContext) {
 		
 		vertSize = 6;
-		size = 2000;//Math.pow(2, 16) /  this.vertSize;
+		size = Math.floor(Math.pow(2, 16) /  this.vertSize);
 		
 		var numVerts = size * 4 * vertSize;
 		var numIndices = size * 6;
@@ -82,7 +83,7 @@ class SpriteBatch {
 	}
 	
 	
-	public function begin (renderSession:Dynamic):Void {
+	public function begin (renderSession:RenderSession):Void {
 		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
@@ -283,7 +284,7 @@ class SpriteBatch {
 		
 	}
 	
-	
+		
 	private function renderBatch (texture:BitmapData, size:Int, startIndex:Int):Void {
 		
 		if (size == 0)return;

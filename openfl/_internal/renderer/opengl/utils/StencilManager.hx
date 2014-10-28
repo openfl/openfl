@@ -56,6 +56,7 @@ class StencilManager {
 		if (bucketStack.length == 0) {
 			gl.enable(gl.STENCIL_TEST);
 			gl.clear(gl.STENCIL_BUFFER_BIT);
+			gl.stencilMask(0xFF);
 		}
 		
 		bucketStack.push(bucket);
@@ -64,7 +65,7 @@ class StencilManager {
 		gl.stencilFunc(gl.NEVER, 0x01, 0xFF);
 		gl.stencilOp(gl.INVERT, gl.KEEP, gl.KEEP);
 		
-		gl.stencilMask(0xFF);
+		
 		gl.clear(gl.STENCIL_BUFFER_BIT);
 		
 		for (bucketData in bucket.data) {

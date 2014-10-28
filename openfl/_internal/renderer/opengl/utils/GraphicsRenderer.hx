@@ -42,6 +42,12 @@ class GraphicsRenderer {
 	private static var objectOffsetX:Float = 0;
 	private static var objectOffsetY:Float = 0;
 	
+	private static var lastVertsBuffer:GLBuffer;
+	private static var lastBucketMode:BucketMode;
+	private static var lastTexture:GLTexture;
+	private static var lastTextureRepeat:Bool;
+	private static var lastTextureSmooth:Bool;
+	
 	public static function buildCircle (path:DrawPath, glStack:GLStack):Void {
 		var rectData = path.points;
 
@@ -540,69 +546,52 @@ class GraphicsRenderer {
 		var tx = object.__worldTransform.tx;
 		var ty = object.__worldTransform.ty;
 		
+		var hasColors = colors != null && colors.length > 0;
+		
 		var bucket = prepareBucket(path, glStack);
-		//bucket.parent.usesStaticVertsBuffer = true;
 		bucket.rawVerts = true;
-		//bucket.rawIndices = true;
-		//bucket.indices = indices;
-		
-		//var inds:UInt16Array;
-		//if (bucket.glIndices == null || bucket.glIndices.length != indices.length) {
-			//inds = new UInt16Array(indices.length);
-			//bucket.glIndices = inds;
-		//} else {
-			//inds = bucket.glIndices;
-		//}
-		//for (i in 0...indices.length) {
-			//inds[i] = indices[i];
-		//}
-		
-		//bucket.drawArraysStart = GLBucket.offsetVertsBuffer = 0;
-		//bucket.drawArraysStart = Std.int(GLBucket.offsetVertsBuffer / 8);
-		bucket.drawArraysLength = indices.length;
+		bucket.glLength = indices.length;
 		bucket.stride = 8;
 		
-		var len = indices.length * 8;
+		var vertsLength = bucket.glLength * bucket.stride;
 		var verts:Float32Array;
-		//if (GLBucket.offsetVertsBuffer + len > verts.length) {
-			//bucket.drawArraysStart = GLBucket.offsetVertsBuffer = 0;
-		//} else {
-			//GLBucket.offsetVertsBuffer += len;
-		//}
 		
-		if (bucket.glVerts == null || bucket.glVerts.length < len) {
-			verts = new Float32Array(len);
+		if (bucket.glVerts == null || bucket.glVerts.length < vertsLength) {
+			verts = new Float32Array(vertsLength);
 			bucket.glVerts = verts;
 		} else {
 			verts = bucket.glVerts;
 		}
 		
-		var hasColors = colors != null && colors.length > 0;
-		
 		var v0 = 0; var v1 = 0; var v2 = 0;
 		var i0 = 0; var i1 = 0; var i2 = 0;
 		
-		var x = 0.0; var y = 0.0;
+		var x0 = 0.0; var y0 = 0.0;
+		var x1 = 0.0; var y1 = 0.0;
+		var x2 = 0.0; var y2 = 0.0;
 		
 		var idx = 0;
 		var color = hex2rgba(0xFFFFFFFF);
 		var ctmp = color;
-		var stride = 8;
 		for (i in 0...Std.int(indices.length / 3)) {
 			
-			i0 = indices[i * 3]; i1 = indices[i * 3 + 1]; i2 = indices[i * 3 + 2];
+			i0 = indices[i * 3]; i1 = indices[i * 3 + 1]; i2 = indices[i * 3 + 2];	
 			v0 = i0 * 2; v1 = i1 * 2; v2 = i2 * 2;
 			
-			//if (isCCW(vertices[v0], vertices[v0 + 1], vertices[v1], vertices[v1 + 1], vertices[v2], vertices[v2 + 1])) {
-				//i0 = indices[i * 3 + 1]; i1 = indices[i * 3]; i2 = indices[i * 3 + 2];
-				//v0 = i0 * 2; v1 = i1 * 2; v2 = i2 * 2;
-			//}
+			x0 = vertices[v0];	y0 = vertices[v0 + 1];
+			x1 = vertices[v1];	y1 = vertices[v1 + 1];
+			x2 = vertices[v2];	y2 = vertices[v2 + 1];
 			
-			//idx = i0 * stride;
-			x = vertices[v0];
-			y = vertices[v0 + 1];
-			verts[idx++] = a * x + c * y + tx;
-			verts[idx++] = b * x + d * y + ty;
+			switch(culling) {
+				case POSITIVE:
+					if (!isCCW(x0, y0, x1, y1, x2, y2)) continue;
+				case NEGATIVE:
+					if (isCCW(x0, y0, x1, y1, x2, y2)) continue;
+				case _:
+			}
+			
+			verts[idx++] = a * x0 + c * y0 + tx;
+			verts[idx++] = b * x0 + d * y0 + ty;
 			verts[idx++] = uvtData[v0];
 			verts[idx++] = uvtData[v0 + 1];
 			if (hasColors) {
@@ -618,11 +607,9 @@ class GraphicsRenderer {
 				verts[idx++] = color[3];
 			}
 			
-			//idx = i1 * stride;
-			x = vertices[v1];
-			y = vertices[v1 + 1];
-			verts[idx++] = a * x + c * y + tx;
-			verts[idx++] = b * x + d * y + ty;
+			
+			verts[idx++] = a * x1 + c * y1 + tx;
+			verts[idx++] = b * x1 + d * y1 + ty;
 			verts[idx++] = uvtData[v1];
 			verts[idx++] = uvtData[v1 + 1];
 			if (hasColors) {
@@ -638,11 +625,8 @@ class GraphicsRenderer {
 				verts[idx++] = color[3];
 			}
 			
-			//idx = i2 * stride;
-			x = vertices[v2];
-			y = vertices[v2 + 1];
-			verts[idx++] = a * x + c * y + tx;
-			verts[idx++] = b * x + d * y + ty;
+			verts[idx++] = a * x2 + c * y2 + tx;
+			verts[idx++] = b * x2 + d * y2 + ty;
 			verts[idx++] = uvtData[v2];
 			verts[idx++] = uvtData[v2 + 1];
 			if (hasColors) {
@@ -697,12 +681,10 @@ class GraphicsRenderer {
 		
 	}
 	
-	
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
-		
 		// cache as bitmap
 		renderSession.spriteBatch.end();
-		
+	
 		renderGraphics(object, renderSession);
 		
 		renderSession.spriteBatch.begin(renderSession);
@@ -724,14 +706,14 @@ class GraphicsRenderer {
 		for (i in 0...glStack.buckets.length) {
 			bucket = glStack.buckets[i];
 			
-			shader = prepareShader(object, bucket, renderSession);
-			
 			switch(bucket.mode) {
 				case Fill, PatternFill:
 					renderSession.stencilManager.pushBucket(object, bucket, renderSession);
+					shader = prepareShader(object, bucket, renderSession);
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
+					shader = prepareShader(object, bucket, renderSession);
 					renderDrawTriangles(bucket, cast shader, renderSession);
 				case _:
 			}
@@ -759,7 +741,7 @@ class GraphicsRenderer {
 			}
 		}
 	}
-		
+
 	public static function updateGraphics (object:DisplayObject, gl:GLRenderContext):Void {
 		
 		var graphics = object.__graphics;
@@ -834,12 +816,11 @@ class GraphicsRenderer {
 				}
 				
 				pMatrix = pMatrix.invert();
+				// TODO fix object position relative to texture matrix
 				pMatrix.tx -= objectOffsetX;
 				pMatrix.ty -= objectOffsetY;
 				var tx = (pMatrix.tx) / (b.width);
 				var ty = (pMatrix.ty) / (b.height);
-				//pMatrix.tx = 0;
-				//pMatrix.ty = 0;
 				tMatrix.concat(pMatrix);
 				bucket.textureTL.x = tx;
 				bucket.textureTL.y = ty;
@@ -886,15 +867,12 @@ class GraphicsRenderer {
 			}
 		}
 		
-		//trace("Switching from bucket " + bucket.fillIndex + " to " + fillIndex);
-		
 		bucket.dirty = true;
 		bucket.fillIndex = fillIndex;
 		
 		return bucket;
 	}
 	
-	private static var lastBucketMode:BucketMode;
 	private static inline function prepareShader(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
 		var gl = renderSession.gl;
 		var projection = renderSession.projection;
@@ -916,10 +894,12 @@ class GraphicsRenderer {
 		
 		var newShader = renderSession.shaderManager.setShader(shader);
 		
-		if (!newShader && lastBucketMode == bucket.mode) {
-			return shader;
-		}
-		lastBucketMode = bucket.mode;
+		//if (!newShader && lastBucketMode == bucket.mode) {
+			//return shader;
+		//}
+		//
+		//lastBucketMode = bucket.mode;
+		
 		// common uniforms
 		gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 		gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
@@ -937,7 +917,6 @@ class GraphicsRenderer {
 				gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);
 				gl.uniformMatrix3fv(shader.patternMatrix, false, bucket.textureMatrix.toArray(false));
 			case DrawTriangles:
-				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 				gl.uniform1i (shader.sampler, 0);
 			case _:
 		}
@@ -949,9 +928,7 @@ class GraphicsRenderer {
 		var gl = renderSession.gl;
 		
 		if (bucket.mode == PatternFill && bucket.texture != null) {
-			
 			bindTexture(gl, bucket);
-			
 		}
 		
 		gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
@@ -966,23 +943,21 @@ class GraphicsRenderer {
 			if (data.destroyed) continue;
 			
 			if (bucket.texture == null) {
-				// draw color
+				// TODO draw it with color
 			} else {
 				bindTexture(gl, bucket);
-				bindDrawTrianglesBuffer(gl, shader, data);
-				//gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.indexBuffer);
-				//gl.drawElements (gl.TRIANGLES, data.glIndices.length, gl.UNSIGNED_SHORT, 0);
-				gl.drawArrays(gl.TRIANGLES, data.drawArraysStart, data.drawArraysLength);
 			}
+			
+			bindDrawTrianglesBuffer(gl, shader, data);
+			gl.drawArrays(gl.TRIANGLES, data.glStart, data.glLength);
 		}
 	}
 	
-	private static var lastVertsBuffer:GLBuffer;
 	private static inline function bindDrawTrianglesBuffer(gl:GLRenderContext, shader:DrawTrianglesShader, data:GLBucketData) {
-		if (lastVertsBuffer == data.vertsBuffer) {
-			return;
-		}
-		lastVertsBuffer = data.vertsBuffer;
+		//if (lastVertsBuffer == data.vertsBuffer) {
+			//return;
+		//}
+		//lastVertsBuffer = data.vertsBuffer;
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, data.vertsBuffer);
 		var stride =  data.stride * 4;
@@ -991,31 +966,17 @@ class GraphicsRenderer {
 		gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, stride, 4 * 4);
 	}
 	
-	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
-		
-		return hex == null ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
-		
-	}
-	
-	public static inline function hex2rgba (hex:Null<Int>):Array<Float> {
-		
-		return hex == null ? [1,1,1,1] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255, (hex >> 24 & 0xFF) / 255];
-	}
-	
-	private static var lastTexture:GLTexture;
-	private static var lastTextureRepeat:Bool;
-	private static var lastTextureSmooth:Bool;
 	private static inline function bindTexture(gl:GLRenderContext, bucket:GLBucket) {
-		if (bucket.texture == lastTexture && bucket.textureRepeat == lastTextureRepeat && bucket.textureSmooth == lastTextureSmooth) {
-			return;
-		}
-		lastTexture = bucket.texture;
-		lastTextureRepeat = bucket.textureRepeat;
-		lastTextureSmooth = bucket.textureSmooth;
+		//if (bucket.texture == lastTexture && bucket.textureRepeat == lastTextureRepeat && bucket.textureSmooth == lastTextureSmooth) {
+			//return;
+		//}
+		//lastTexture = bucket.texture;
+		//lastTextureRepeat = bucket.textureRepeat;
+		//lastTextureSmooth = bucket.textureSmooth;
 		
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 		
-		// webgl can only repeat textures that are power of two
+		// TODO Fix this: webgl can only repeat textures that are power of two
 		if (bucket.textureRepeat #if js && bucket.bitmap.__image.powerOfTwo #end) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
@@ -1033,15 +994,18 @@ class GraphicsRenderer {
 		}
 	}
 
-	private static function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
-		var vx1 = x2 - x1;
-		var vy1 = y2 - y1;
-		var vx2 = x3 - x1;
-		var vy2 = y3 - y1;
-		
-		return (vx1 * vy2 - vy1 * vx2) >= 0;
+	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
+		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 	
+	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
+		return hex == null ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
+	}
+	
+	public static inline function hex2rgba (hex:Null<Int>):Array<Float> {
+		return hex == null ? [1,1,1,1] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255, (hex >> 24 & 0xFF) / 255];
+	}
+
 }
 
 class GLStack {
@@ -1126,7 +1090,7 @@ class GLBucket {
 	
 	public function getData():GLBucketData {
 		var result:GLBucketData = null;
-		var remove:Bool = false;
+		var remove = false;
 		for (d in data) {
 			if (d.destroyed) {
 				result = d;
@@ -1178,8 +1142,8 @@ class GLBucket {
 class GLBucketData {
 	public var gl:GLRenderContext;
 	public var drawMode:Int;
-	public var drawArraysLength:Int = 0;
-	public var drawArraysStart:Int = 0;
+	public var glLength:Int = 0;
+	public var glStart:Int = 0;
 	
 	public var vertsBuffer:GLBuffer;
 	public var lastVertsSize:Int = 0;
@@ -1215,8 +1179,8 @@ class GLBucketData {
 		destroyed = true;
 		verts = [];
 		indices = [];
-		drawArraysLength = 0;
-		drawArraysStart = 0;
+		glLength = 0;
+		glStart = 0;
 		stride = 0;
 		rawVerts = false;
 		rawIndices = false;
@@ -1225,12 +1189,13 @@ class GLBucketData {
 	
 	public function upload():Void {
 		
+		// only upload a verts buffer if verts has anything inside
 		if ((rawVerts && glVerts != null && glVerts.length > 0) || verts.length > 0) {
 			if (!rawVerts) glVerts = new Float32Array (verts);
 			gl.bindBuffer (gl.ARRAY_BUFFER, vertsBuffer);
 			if (glVerts.length <= lastVertsSize) {
-				var end = drawArraysLength * 4 * stride;
-				if (drawArraysLength > 0 && lastVertsSize > end) {
+				var end = glLength * 4 * stride;
+				if (glLength > 0 && lastVertsSize > end) {
 					var view = glVerts.subarray(0, end);
 					gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
 					view = null;
@@ -1244,7 +1209,8 @@ class GLBucketData {
 			
 		}
 		
-		if (drawArraysLength == 0 && ((rawIndices && glIndices != null && glIndices.length > 0) || indices.length > 0)) {
+		// only upload a index buffer is there is no length provided and indices has anything inside
+		if (glLength == 0 && ((rawIndices && glIndices != null && glIndices.length > 0) || indices.length > 0)) {
 			if(!rawIndices) glIndices = new UInt16Array (indices);
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STREAM_DRAW);
@@ -1455,6 +1421,4 @@ enum GraphicType {
 @:enum abstract RenderMode(Int) {
 	var DEFAULT = 0;
 	var STENCIL = 1;
-	var DRAWTRIANGLES = 2;
-	var DRAWTILES = 3;
 }

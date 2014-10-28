@@ -350,6 +350,14 @@ class PathBuiler {
 							__currentPath.update (__line, __fill, __fillIndex);
 							if (uvtData == null) {
 								uvtData = new Vector<Float>();
+								switch(__fill) {
+									case Texture(b, _):
+										for (i in 0...Std.int(vertices.length / 2)) {
+											uvtData.push(vertices[i * 2] / b.width);
+											uvtData.push(vertices[i * 2 + 1] / b.height);
+										}
+									case _:
+								}
 							}
 							__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
 							__currentPath.isRemovable = false;

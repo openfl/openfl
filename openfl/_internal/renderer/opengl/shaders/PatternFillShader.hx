@@ -30,7 +30,6 @@ class PatternFillShader extends AbstractShader {
 			'   v -= offsetVector.xyx;',
 			'   gl_Position = vec4( v.x / projectionVector.x -1.0, v.y / -projectionVector.y + 1.0 , 0.0, 1.0);',
 			'   vPos = (patternMatrix * vec3(aVertexPosition, 1)).xy;',
-			//'   vPos = aVertexPosition;',
 			'}'
 
 		];
@@ -46,7 +45,8 @@ class PatternFillShader extends AbstractShader {
 			
 			'void main(void) {',
 			'   vec2 pos = mix(patternTL, patternBR, vPos);',
-			'   gl_FragColor = vec4(texture2D(sampler, pos).rgb * alpha, alpha);',
+			'   vec4 tcol = texture2D(sampler, pos);',
+			'   gl_FragColor = vec4(tcol.rgb * alpha, tcol.a * alpha);',
 			'}'
 		];
 		
