@@ -1267,7 +1267,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			}
 			
 			#if dom
-			__worldClipChanged = ((worldClip == null && __worldClip != null) || (worldClip != null && !worldClip.equals (__worldClip)));
+			__worldClipChanged = (__worldClip != null || (worldClip != null && !worldClip.equals (__worldClip)));
 			__worldClip = worldClip;
 			#end
 			
