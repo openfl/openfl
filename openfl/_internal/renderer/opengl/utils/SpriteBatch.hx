@@ -242,8 +242,8 @@ class SpriteBatch {
 		var index = currentBatchSize * 4 * vertSize;
 		var worldTransform = sprite.__worldTransform;
 		var a = worldTransform.a;//[0];
-		var b = worldTransform.c;//[3];
-		var c = worldTransform.b;//[1];
+		var b = worldTransform.b;//[3];
+		var c = worldTransform.c;//[1];
 		var d = worldTransform.d;//[4];
 		var tx = worldTransform.tx;//[2];
 		var ty = worldTransform.ty;///[5];
