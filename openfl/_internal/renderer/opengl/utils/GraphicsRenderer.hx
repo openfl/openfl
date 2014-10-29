@@ -814,11 +814,9 @@ class GraphicsRenderer {
 				} else {
 					pMatrix = m.clone();
 				}
-				
+
 				pMatrix = pMatrix.invert();
-				// TODO fix object position relative to texture matrix
-				pMatrix.tx -= objectOffsetX;
-				pMatrix.ty -= objectOffsetY;
+				pMatrix.__translateTransformed(new Point( -objectOffsetX, -objectOffsetY));
 				var tx = (pMatrix.tx) / (b.width);
 				var ty = (pMatrix.ty) / (b.height);
 				tMatrix.concat(pMatrix);
