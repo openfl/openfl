@@ -697,7 +697,9 @@ class DefaultAssetLibrary extends AssetLibrary {
 ::foreach assets::::if (type == "font")::@:keep #if display private #end class __ASSET__::flatName:: extends flash.text.Font { #if (!openfl_html5_dom) public function new () { super (); fontName = "::id::"; } #end }::end::
 ::end::
 
-#elseif (windows || mac || linux)
+#else
+
+#if (windows || mac || linux)
 
 ::if (assets != null)::
 ::foreach assets::::if (embed)::::if (type == "image")::@:bitmap("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.display.BitmapData {}
@@ -710,5 +712,13 @@ class DefaultAssetLibrary extends AssetLibrary {
 ::if (assets != null)::
 ::foreach assets::::if (!embed)::::if (type == "font")::class __ASSET__::flatName:: extends openfl.text.Font { public function new () { super (); __fontPath = "::targetPath::"; fontName = "::fontName::"; }}
 ::end::::end::::end::::end::
+
+#else
+
+::if (assets != null)::
+::foreach assets::::if (type == "font")::class __ASSET__::flatName:: extends openfl.text.Font { public function new () { super (); __fontPath = "::targetPath::"; fontName = "::fontName::";  }}
+::end::::end::::end::
+
+#end
 
 #end
