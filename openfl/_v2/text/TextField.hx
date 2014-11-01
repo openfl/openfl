@@ -8,6 +8,8 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.Lib;
 
+@:access(openfl._v2.text.Font)
+
 
 class TextField extends InteractiveObject {
 	
@@ -87,6 +89,17 @@ class TextField extends InteractiveObject {
 		
 		var result = new TextFormat ();
 		lime_text_field_get_text_format (__handle, result, beginIndex, endIndex);
+		
+		for (font in Font.__registeredFonts) {
+			
+			if (result.font == font.__fontPath) {
+				
+				result.font = font.fontName;
+				
+			}
+			
+		}
+		
 		return result;
 		
 	}
@@ -107,6 +120,20 @@ class TextField extends InteractiveObject {
 	
 	
 	public function setTextFormat (format:TextFormat, beginIndex:Int = -1, endIndex:Int = -1):Void {
+		
+		if (format != null) {
+			
+			for (font in Font.__registeredFonts) {
+				
+				if (font.__fontPath != null && format.font == font.fontName) {
+					
+					format.font = font.__fontPath;
+					
+				}
+				
+			}
+			
+		}
 		
 		lime_text_field_set_text_format (__handle, format, beginIndex, endIndex);
 		
@@ -131,8 +158,50 @@ class TextField extends InteractiveObject {
 	private function get_borderColor ():Int { return lime_text_field_get_border_color (__handle); }
 	private function set_borderColor (value:Int):Int { lime_text_field_set_border_color (__handle, value); return value; }
 	private function get_bottomScrollV ():Int { return lime_text_field_get_bottom_scroll_v (__handle); }
-	private function get_defaultTextFormat ():TextFormat { var result = new TextFormat(); lime_text_field_get_def_text_format (__handle, result); return result; }
-	private function set_defaultTextFormat (value:TextFormat):TextFormat { lime_text_field_set_def_text_format (__handle, value); return value; }
+	
+	
+	private function get_defaultTextFormat ():TextFormat { 
+		
+		var result = new TextFormat();
+		lime_text_field_get_def_text_format (__handle, result);
+		
+		for (font in Font.__registeredFonts) {
+			
+			if (result.font == font.__fontPath) {
+				
+				result.font = font.fontName;
+				
+			}
+			
+		}
+		
+		return result;
+	
+	}
+	
+	
+	private function set_defaultTextFormat (value:TextFormat):TextFormat {
+		
+		if (value != null) {
+			
+			for (font in Font.__registeredFonts) {
+				
+				if (font.__fontPath != null && value.font == font.fontName) {
+					
+					value.font = font.__fontPath;
+					
+				}
+				
+			}
+			
+		}
+		
+		lime_text_field_set_def_text_format (__handle, value);
+		return value;
+		
+	}
+	
+	
 	private function get_displayAsPassword ():Bool { return lime_text_field_get_display_as_password (__handle); }
 	private function set_displayAsPassword (value:Bool):Bool { lime_text_field_set_display_as_password (__handle, value); return value; }
 	private function get_embedFonts ():Bool { return __embedFonts; }

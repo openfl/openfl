@@ -15,7 +15,9 @@ class Font {
 	public var fontStyle (default, null):FontStyle;
 	public var fontType (default, null):FontType;
 	
-	@:noCompletion private static var __registeredFonts = new Array<Font>();
+	@:noCompletion private var __fontPath:String;
+	
+	@:noCompletion private static var __registeredFonts = new Array<Font> ();
 	@:noCompletion private static var __deviceFonts:Array<Font>;
 	
 	
@@ -27,29 +29,7 @@ class Font {
 			
 			if (Reflect.hasField (fontClass, "resourceName")) {
 				
-				var bytes = ByteArray.fromBytes (Resource.getBytes (Reflect.field (fontClass, "resourceName")));
-				var details = loadBytes (bytes);
-				fontName = details.family_name;
-				
-				if (details.is_bold && details.is_italic) {
-					
-					fontStyle = FontStyle.BOLD_ITALIC;
-					
-				} else if (details.is_bold) {
-					
-					fontStyle = FontStyle.BOLD;
-					
-				} else if (details.is_italic) {
-					
-					fontStyle = FontStyle.ITALIC;
-					
-				} else {
-					
-					fontStyle = FontStyle.REGULAR;
-					
-				}
-				
-				fontType = FontType.EMBEDDED;
+				__fromBytes (ByteArray.fromBytes (Resource.getBytes (Reflect.field (fontClass, "resourceName"))));
 				
 			} else {
 				
@@ -62,6 +42,7 @@ class Font {
 			
 		} else {
 			
+			__fontPath = filename;
 			fontName = filename;
 			fontStyle = style == null ? FontStyle.REGULAR : style;
 			fontType = type == null ? FontType.EMBEDDED : type;
@@ -94,6 +75,24 @@ class Font {
 	}
 	
 	
+	public static function fromBytes (bytes:ByteArray):Font {
+		
+		var font = new Font ();
+		font.__fromBytes (bytes);
+		return font;
+		
+	}
+	
+	
+	public static function fromFile (path:String):Font {
+		
+		var font = new Font ();
+		font.__fromFile (path);
+		return font;
+		
+	}
+	
+	
 	public static function load (filename:String):NativeFontData {
 		
 		var result = freetype_import_font (filename, null, 1024 * 20, null);
@@ -112,7 +111,7 @@ class Font {
 	
 	public static function registerFont (font:Class<Font>):Void {
 		
-		var instance = Type.createInstance (font, [ "", null, null ]);
+		var instance = Type.createInstance (font, []);
 		
 		if (instance != null) {
 			
@@ -132,6 +131,68 @@ class Font {
 	public function toString ():String {
 		
 		return "{ name=" + fontName + ", style=" + fontStyle + ", type=" + fontType + " }";
+		
+	}
+	
+	
+	@:noCompletion private function __fromBytes (bytes:ByteArray):Void {
+		
+		var details = loadBytes (bytes);
+		fontName = details.family_name;
+		
+		if (details.is_bold && details.is_italic) {
+			
+			fontStyle = FontStyle.BOLD_ITALIC;
+			
+		} else if (details.is_bold) {
+			
+			fontStyle = FontStyle.BOLD;
+			
+		} else if (details.is_italic) {
+			
+			fontStyle = FontStyle.ITALIC;
+			
+		} else {
+			
+			fontStyle = FontStyle.REGULAR;
+			
+		}
+		
+		fontType = FontType.EMBEDDED;
+		
+	}
+	
+	
+	@:noCompletion private function __fromFile (path:String):Void {
+		
+		__fontPath = path;
+		
+		if (__fontPath != null) {
+			
+			var details = Font.load (__fontPath);
+			fontName = details.family_name;
+			
+			if (details.is_bold && details.is_italic) {
+				
+				fontStyle = FontStyle.BOLD_ITALIC;
+				
+			} else if (details.is_bold) {
+				
+				fontStyle = FontStyle.BOLD;
+				
+			} else if (details.is_italic) {
+				
+				fontStyle = FontStyle.ITALIC;
+				
+			} else {
+				
+				fontStyle = FontStyle.REGULAR;
+				
+			}
+			
+			fontType = FontType.EMBEDDED;
+			
+		}
 		
 	}
 	

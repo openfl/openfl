@@ -61,6 +61,10 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
+		::if (assets != null)::
+		::foreach assets::::if (type == "font")::Font.registerFont (__ASSET__::flatName::);::end::
+		::end::::end::
+		
 		#if (windows || mac || linux)
 		
 		var useManifest = false;
@@ -701,6 +705,10 @@ class DefaultAssetLibrary extends AssetLibrary {
 ::elseif (type == "music")::@:sound("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.media.Sound {}
 ::elseif (type == "font")::@:font("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.text.Font {}
 ::else::@:file("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.utils.ByteArray {}
+::end::::end::::end::::end::
+
+::if (assets != null)::
+::foreach assets::::if (!embed)::::if (type == "font")::class __ASSET__::flatName:: extends openfl.text.Font { public function new () { super (); __fontPath = "::targetPath::"; fontName = "::fontName::"; }}
 ::end::::end::::end::::end::
 
 #end

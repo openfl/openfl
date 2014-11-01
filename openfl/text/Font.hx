@@ -1,21 +1,22 @@
 package openfl.text; #if !flash #if (display || openfl_next || js)
 
 
-class Font {
+import openfl.utils.ByteArray;
+
+
+class Font extends lime.graphics.Font {
 	
 	
-	public var fontName:String;
+	//public var fontName:String;
 	public var fontStyle:FontStyle;
 	public var fontType:FontType;
+	
+	@:noCompletion private static var __registeredFonts = new Array<Font> ();
 	
 	
 	public function new (name:String = null) {
 		
-		if (name != null) {
-			
-			fontName = name;
-			
-		}
+		super (name);
 		
 	}
 	
@@ -27,21 +28,39 @@ class Font {
 	}
 	
 	
+	public static function fromBytes (bytes:ByteArray):Font {
+		
+		var font = new Font ();
+		// TODO font.__fromBytes (bytes);
+		return font;
+		
+	}
+	
+	
+	public static function fromFile (path:String):Font {
+		
+		var font = new Font ();
+		font.__fromFile (path);
+		return font;
+		
+	}
+	
+	
 	public static function registerFont (font:Class<Dynamic>) {
 		
-		/*var instance = cast (Type.createInstance (font, []), Font);
+		var instance = cast (Type.createInstance (font, []), Font);
 		
 		if (instance != null) {
 			
-			if (Reflect.hasField (font, "resourceName")) {
+			/*if (Reflect.hasField (font, "resourceName")) {
 				
 				instance.fontName = __ofResource (Reflect.field (font, "resourceName"));
 				
-			}
+			}*/
 			
 			__registeredFonts.push (instance);
 			
-		}*/
+		}
 		
 	}
 	
