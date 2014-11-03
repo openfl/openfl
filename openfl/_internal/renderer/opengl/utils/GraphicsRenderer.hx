@@ -22,6 +22,7 @@ import openfl.display.LineScaleMode;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.gl.GLTexture;
 import openfl.utils.Int16Array;
 import openfl.Vector;
@@ -39,8 +40,8 @@ class GraphicsRenderer {
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	public static var bucketPool:Array<GLBucket> = [];
 	
-	private static var objectOffsetX:Float = 0;
-	private static var objectOffsetY:Float = 0;
+	private static var objectPosition:Point = new Point();
+	private static var objectBounds:Rectangle = new Rectangle();
 	
 	private static var lastVertsBuffer:GLBuffer;
 	private static var lastBucketMode:BucketMode;
@@ -48,7 +49,7 @@ class GraphicsRenderer {
 	private static var lastTextureRepeat:Bool;
 	private static var lastTextureSmooth:Bool;
 	
-	public static function buildCircle (path:DrawPath, glStack:GLStack):Void {
+	public static function buildCircle (path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void {
 		var rectData = path.points;
 
 		var x = rectData[0];
@@ -62,7 +63,12 @@ class GraphicsRenderer {
 			x += width;
 			y += height;
 		}
-		
+
+		if(localCoords) {
+			x -= objectBounds.x;
+			y -= objectBounds.y;
+		}
+
 		var totalSegs = 40;
 		var seg = (Math.PI * 2) / totalSegs;
 		
@@ -114,9 +120,17 @@ class GraphicsRenderer {
 		
 	}
 	
-	public static function buildComplexPoly (path:DrawPath, glStack:GLStack):Void {
+	public static function buildComplexPoly (path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void {
 		if (path.points.length < 6) return;
-		var points = path.points;
+		var points = path.points.copy();
+		
+		if(localCoords) {
+			for (i in 0...Std.int(points.length / 2)) {
+				points[i * 2] -= objectBounds.x;
+				points[i * 2 + 1] -= objectBounds.y;
+			}
+		}
+		
 		
 		var bucket = prepareBucket(path, glStack);
 		bucket.drawMode = glStack.gl.TRIANGLE_FAN;
@@ -132,14 +146,21 @@ class GraphicsRenderer {
 		
 		if (path.line.width > 0) {
 			
-			buildLine (path, bucket.line);
+			buildLine (path, bucket.line, localCoords);
 			
 		}
 	}
 	
-	public static function buildLine (path:DrawPath, bucket:GLBucketData):Void {
+	public static function buildLine (path:DrawPath, bucket:GLBucketData, localCoords:Bool = false):Void {
 		var points = path.points;
 		if (points.length == 0) return;
+		
+		if (localCoords) {
+			for (i in 0...Std.int(points.length / 2)) {
+				points[i * 2] -= objectBounds.x;
+				points[i * 2 + 1] -= objectBounds.y;
+			}
+		}
 		
 		if (path.line.width % 2 > 0) {
 			
@@ -428,12 +449,17 @@ class GraphicsRenderer {
 		}
 	}
 	
-	public static function buildRectangle (path:DrawPath, glStack:GLStack):Void {
+	public static function buildRectangle (path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void {
 		var rectData = path.points;
 		var x = rectData[0];
 		var y = rectData[1];
 		var width = rectData[2];
 		var height = rectData[3];
+		
+		if (localCoords) {
+			x -= objectBounds.x;
+			y -= objectBounds.y;
+		}
 		
 		var bucket = prepareBucket(path, glStack);
 		
@@ -471,13 +497,18 @@ class GraphicsRenderer {
 		}
 	}
 	
-	public static function buildRoundedRectangle (path:DrawPath, glStack:GLStack):Void {
+	public static function buildRoundedRectangle (path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void {
 		var points = path.points.copy();
 		var x = points[0];
 		var y = points[1];
 		var width = points[2];
 		var height = points[3];
 		var radius = points[4];
+		
+		if (localCoords) {
+			x -= objectBounds.x;
+			y -= objectBounds.y;
+		}
 		
 		var recPoints:Array<Float> = [];
 		recPoints.push (x);
@@ -683,37 +714,73 @@ class GraphicsRenderer {
 	
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
 		// cache as bitmap
-		renderSession.spriteBatch.end();
-	
-		renderGraphics(object, renderSession);
-		
-		renderSession.spriteBatch.begin(renderSession);
+		if (object.cacheAsBitmap) {			
+			var graphics = object.__graphics;
+			if (graphics.__dirty) {
+				
+				var gl = renderSession.gl;
+				var bounds = graphics.__bounds;
+				var texture = graphics.__cachedTexture;
+				
+				var w = Math.floor(bounds.width + 0.5);
+				var h = Math.floor(bounds.height+ 0.5);
+
+				if (texture == null) {
+					texture = new FilterTexture(gl, w, h, false);
+					graphics.__cachedTexture = texture;
+				}
+				
+				texture.resize(w, h);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
+				gl.viewport (0, 0, w, h);
+				texture.clear();
+				renderGraphics(object, renderSession, new Point(w / 2, -h / 2), true);
+				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+				
+				gl.viewport(0, 0, renderSession.renderer.width, renderSession.renderer.height);
+			}
+			
+			renderSession.spriteBatch.renderCachedGraphics(object);
+			
+		} else {
+			renderSession.spriteBatch.end();		
+			renderGraphics(object, renderSession, renderSession.projection, false);
+			renderSession.spriteBatch.begin(renderSession);
+		}
+
 	}
 	
-	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession):Void {
+	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession, projection:Point, ?localCoords:Bool = false):Void {
 		var graphics = object.__graphics;
 		var gl = renderSession.gl;
-		var projection = renderSession.projection;
 		var offset = renderSession.offset;
 		
 		if (graphics.__dirty) {
-			updateGraphics (object, gl);
+			updateGraphics (object, gl, localCoords);
 		}
 		
 		var glStack = graphics.__glStack[GLRenderer.glContextId];
 		var bucket:GLBucket;
 		var shader:Dynamic = null;
+		
+		var translationMatrix:Float32Array;
+		if (localCoords) {
+			translationMatrix = Matrix.__identity.toArray(true);
+		} else {
+			translationMatrix = object.__worldTransform.toArray(true);
+		}
+		
 		for (i in 0...glStack.buckets.length) {
 			bucket = glStack.buckets[i];
 			
 			switch(bucket.mode) {
 				case Fill, PatternFill:
-					renderSession.stencilManager.pushBucket(object, bucket, renderSession);
-					shader = prepareShader(object, bucket, renderSession);
+					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix);
+					shader = prepareShader(bucket, renderSession, object, projection, translationMatrix);
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
-					shader = prepareShader(object, bucket, renderSession);
+					shader = prepareShader(bucket, renderSession, object, projection, null);
 					renderDrawTriangles(bucket, cast shader, renderSession);
 				case _:
 			}
@@ -724,7 +791,7 @@ class GraphicsRenderer {
 				
 					renderSession.shaderManager.setShader (shader);
 					
-					gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+					gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);
 					gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 					gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 					gl.uniform1f (shader.alpha, object.__worldAlpha);
@@ -742,11 +809,11 @@ class GraphicsRenderer {
 		}
 	}
 
-	public static function updateGraphics (object:DisplayObject, gl:GLRenderContext):Void {
+	public static function updateGraphics (object:DisplayObject, gl:GLRenderContext, ?localCoords:Bool = false):Void {
 		
 		var graphics = object.__graphics;
-		objectOffsetX = object.x;
-		objectOffsetY = object.y;
+		objectPosition.setTo(object.x, object.y);
+		objectBounds.copyFrom(graphics.__bounds);
 		var glStack:GLStack = null;
 		
 		if (graphics.__dirty) {
@@ -769,15 +836,15 @@ class GraphicsRenderer {
 			
 			switch(path.type) {
 				case Polygon:
-					buildComplexPoly (path, glStack);
+					buildComplexPoly (path, glStack, localCoords);
 				case Rectangle(rounded):
 					if (rounded) {
-						buildRoundedRectangle (path, glStack);
+						buildRoundedRectangle (path, glStack, localCoords);
 					} else {
-						buildRectangle (path, glStack);
+						buildRectangle (path, glStack, localCoords);
 					}
 				case Circle, Ellipse:
-					buildCircle (path, glStack);
+					buildCircle (path, glStack, localCoords);
 				case DrawTriangles(_):
 					buildDrawTriangles(path, object, glStack);
 				case _:
@@ -807,7 +874,8 @@ class GraphicsRenderer {
 				bucket.texture = b.getTexture(glStack.gl);
 				
 				//prepare the matrix
-				var tMatrix = new Matrix();
+				var tMatrix = bucket.textureMatrix;
+				tMatrix.identity();
 				var pMatrix:Matrix;
 				if (m == null) {
 					pMatrix = new Matrix();
@@ -816,7 +884,7 @@ class GraphicsRenderer {
 				}
 
 				pMatrix = pMatrix.invert();
-				pMatrix.__translateTransformed(new Point( -objectOffsetX, -objectOffsetY));
+				pMatrix.__translateTransformed(new Point( -objectPosition.x, -objectPosition.y));
 				var tx = (pMatrix.tx) / (b.width);
 				var ty = (pMatrix.ty) / (b.height);
 				tMatrix.concat(pMatrix);
@@ -871,9 +939,8 @@ class GraphicsRenderer {
 		return bucket;
 	}
 	
-	private static inline function prepareShader(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
+	private static inline function prepareShader(bucket:GLBucket, renderSession:RenderSession, object:DisplayObject, projection:Point, translationMatrix:Float32Array) {
 		var gl = renderSession.gl;
-		var projection = renderSession.projection;
 		var offset = renderSession.offset;
 		var shader:Dynamic =  null;
 		
@@ -906,10 +973,10 @@ class GraphicsRenderer {
 		// specific uniforms
 		switch(bucket.mode) {
 			case Fill:
-				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (false));
+				gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);
 				gl.uniform3fv (shader.color, new Float32Array (bucket.color));
 			case PatternFill:
-				gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (false));				
+				gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);				
 				gl.uniform1i(shader.sampler, 0);
 				gl.uniform2f(shader.patternTL, bucket.textureTL.x, bucket.textureTL.y);
 				gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);

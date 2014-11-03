@@ -6,8 +6,10 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl.geom.Matrix;
 import openfl.display.Graphics;
 import openfl.display.DisplayObject;
+import openfl.geom.Point;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
@@ -34,24 +36,21 @@ class StencilManager {
 		
 	}
 	
-	public inline function prepareGraphics(object:DisplayObject, bucketData:GLBucketData, renderSession:RenderSession):Void {
-		var projection = renderSession.projection;
+	public inline function prepareGraphics(bucketData:GLBucketData, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
 		var offset = renderSession.offset;
 		var shader = renderSession.shaderManager.fillShader;
-		renderSession.shaderManager.setShader (shader);
 		
-		gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
+		renderSession.shaderManager.setShader (shader);
+		gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);
 		gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 		gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
-		//gl.uniform3fv (shader.color, new Float32Array (bucket.color));
-		//gl.uniform1f (shader.alpha, object.__worldAlpha * bucket.alpha);
 			
 		gl.bindBuffer (gl.ARRAY_BUFFER, bucketData.vertsBuffer);
 		gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
 		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucketData.indexBuffer);
 	}
 	
-	public function pushBucket (object:DisplayObject, bucket:GLBucket, renderSession:RenderSession):Void {
+	public function pushBucket (bucket:GLBucket, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
 		
 		if (bucketStack.length == 0) {
 			gl.enable(gl.STENCIL_TEST);
@@ -70,7 +69,7 @@ class StencilManager {
 		
 		for (bucketData in bucket.data) {
 			if (bucketData.destroyed) continue;
-			prepareGraphics(object, bucketData, renderSession);
+			prepareGraphics(bucketData, renderSession, projection, translationMatrix);
 			gl.drawElements (bucketData.drawMode, bucketData.glIndices.length, gl.UNSIGNED_SHORT, 0);
 		}
 		

@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if (display || openfl_next || js)
 
 
+import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
@@ -52,6 +53,7 @@ class Graphics {
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __visible:Bool = true;
+	@:noCompletion private var __cachedTexture:FilterTexture;
 	
 	#if js
 	@:noCompletion private var __canvas:CanvasElement;
