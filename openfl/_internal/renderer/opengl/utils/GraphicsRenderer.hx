@@ -763,11 +763,11 @@ class GraphicsRenderer {
 		var bucket:GLBucket;
 		var shader:Dynamic = null;
 		
-		var translationMatrix:Float32Array;
+		var translationMatrix:Matrix;
 		if (localCoords) {
-			translationMatrix = Matrix.__identity.toArray(true);
+			translationMatrix = Matrix.__identity;
 		} else {
-			translationMatrix = object.__worldTransform.toArray(true);
+			translationMatrix = object.__worldTransform;
 		}
 		
 		for (i in 0...glStack.buckets.length) {
@@ -775,8 +775,8 @@ class GraphicsRenderer {
 			
 			switch(bucket.mode) {
 				case Fill, PatternFill:
-					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix);
-					shader = prepareShader(bucket, renderSession, object, projection, translationMatrix);
+					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix.toArray(true));
+					shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(false));
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
@@ -791,7 +791,7 @@ class GraphicsRenderer {
 				
 					renderSession.shaderManager.setShader (shader);
 					
-					gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);
+					gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix.toArray(true));
 					gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 					gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 					gl.uniform1f (shader.alpha, object.__worldAlpha);
@@ -800,7 +800,6 @@ class GraphicsRenderer {
 
 					gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 6, 0);
 					gl.vertexAttribPointer (shader.colorAttribute, 4, gl.FLOAT, false, 4 * 6, 2 * 4);
-				
 					
 					gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, data.line.indexBuffer);
 					gl.drawElements (gl.TRIANGLE_STRIP, data.line.indices.length, gl.UNSIGNED_SHORT, 0);
@@ -976,7 +975,7 @@ class GraphicsRenderer {
 				gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);
 				gl.uniform3fv (shader.color, new Float32Array (bucket.color));
 			case PatternFill:
-				gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);				
+				gl.uniformMatrix3fv (shader.translationMatrix, false, translationMatrix);		
 				gl.uniform1i(shader.sampler, 0);
 				gl.uniform2f(shader.patternTL, bucket.textureTL.x, bucket.textureTL.y);
 				gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);
