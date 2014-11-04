@@ -560,7 +560,7 @@ class GraphicsRenderer {
 		}
 	}
 	
-	public static function buildDrawTriangles (path:DrawPath, object:DisplayObject, glStack:GLStack):Void {
+	public static function buildDrawTriangles (path:DrawPath, object:DisplayObject, glStack:GLStack, localCoords:Bool = false):Void {
 		
 		var args = Type.enumParameters(path.type);
 		var vertices:Vector<Float> = cast args[0];
@@ -570,12 +570,23 @@ class GraphicsRenderer {
 		var colors:Vector<Int> = cast args[4];
 		var blendMode:Int = args[5];
 		
-		var a = object.__worldTransform.a;
-		var b = object.__worldTransform.b;
-		var c = object.__worldTransform.c;
-		var d = object.__worldTransform.d;
-		var tx = object.__worldTransform.tx;
-		var ty = object.__worldTransform.ty;
+		var a, b, c, d, tx, ty;
+		
+		if (localCoords) {
+			a = 1.0;
+			b = 0.0;
+			c = 0.0;
+			d = 1.0;
+			tx = 0.0;
+			ty = 0.0;
+		} else {
+			a = object.__worldTransform.a;
+			b = object.__worldTransform.b;
+			c = object.__worldTransform.c;
+			d = object.__worldTransform.d;
+			tx = object.__worldTransform.tx;
+			ty = object.__worldTransform.ty;
+		}
 		
 		var hasColors = colors != null && colors.length > 0;
 		
@@ -612,6 +623,15 @@ class GraphicsRenderer {
 			x0 = vertices[v0];	y0 = vertices[v0 + 1];
 			x1 = vertices[v1];	y1 = vertices[v1 + 1];
 			x2 = vertices[v2];	y2 = vertices[v2 + 1];
+			
+			if (localCoords) {
+				x0 -= objectBounds.x;
+				y0 -= objectBounds.y;
+				x1 -= objectBounds.x;
+				y1 -= objectBounds.y;
+				x2 -= objectBounds.x;
+				y2 -= objectBounds.y;
+			}
 			
 			switch(culling) {
 				case POSITIVE:
@@ -845,7 +865,7 @@ class GraphicsRenderer {
 				case Circle, Ellipse:
 					buildCircle (path, glStack, localCoords);
 				case DrawTriangles(_):
-					buildDrawTriangles(path, object, glStack);
+					buildDrawTriangles(path, object, glStack, localCoords);
 				case _:
 			}
 			
