@@ -792,7 +792,11 @@ class TextField extends InteractiveObject {
 		if (__canvas != null) {
 			
 			// TODO: Make this more accurate
-			return __textFormat.size * 1.185;
+			if (wordWrap && __wrappedText != null) 
+				return __wrappedText.split('\n').length * __textFormat.size * 1.185;	
+			else if (__text !=null)
+				return __text.split('\n').length * __textFormat.size * 1.185;
+			else return __textFormat.size * 1.185;
 			
 		} else if (__div != null) {
 			
