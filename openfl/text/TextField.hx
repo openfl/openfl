@@ -67,6 +67,8 @@ class TextField extends InteractiveObject {
 	@:isVar public var type (default, set):TextFieldType;
 	@:isVar public var wordWrap (get, set):Bool;
 	
+	@:noCompletion public var __wrappedText:String;
+	
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;
 	@:noCompletion private var __isHTML:Bool;
@@ -351,6 +353,96 @@ class TextField extends InteractiveObject {
 		
 		#end
 		
+	}
+	
+	@:noCompletion public function __buildWrappedText():String
+	{	
+		var textLength:Int = __text.length;
+		
+		if (textLength == 1) return __text;
+		
+		__wrappedText = '';
+		
+		var lineStart:Int = 0;
+		var wordStart:Int = 0;
+		var lineWidth:Float;
+		var str1:String;
+		var str2:String;
+		var str3:String;
+		var e:Int = 0;
+		var i:Int = 0;
+		var char:String;
+		
+		if (__ranges == null)
+		{
+			__context.font = __getFont (__textFormat);
+			
+			while (true)
+			{
+				if (i >= __text.length) break;
+				
+				char = __text.charAt(i);
+				
+				if (char == "") break;
+				
+				if (char == '\n' || char == '\r' || char == '\t' || char == ' ' || char == '-')
+					wordStart = i + 1;
+					
+				if (char == '\n' || char == '\r')
+						lineStart = i + 1;
+				
+				str3 = __text.substring(lineStart, i + 1);
+				lineWidth = __context.measureText(str3).width;
+				
+				//make line break
+				// CanvasTextField.renderText() is using 2px-left and 2px-right indents for fillText().
+				// Therefore here is __width-4
+				if (lineWidth >= __width-4 && str3.length > 1)
+				{
+					if (wordStart == lineStart)
+					{
+						// cut the word
+						__wrappedText += '\n';
+						
+						lineStart = i ;
+						wordStart = lineStart;
+						
+					}else 
+					{	
+						str1 = __wrappedText.substring(0, wordStart + e);
+						
+						if (wordStart > i)		// That means line end is a space-symbol
+						{
+							__wrappedText = str1 + '\n' + __text.charAt(wordStart);
+								
+							--e;
+							i= wordStart+1;
+						}else					// back to word-start and place that word to a new line
+						{
+						
+							str2 = __text.substring(wordStart, i);	// current i-char is out of the text line width, so here just 'i' instead i+1;
+								
+							__wrappedText = str1 + '\n' + str2;		
+						}
+						
+						lineStart = wordStart ;
+					}
+					
+					e++;
+				}else
+				{
+					__wrappedText += char;
+					
+					i++;
+				}
+			}
+		}
+		else
+		{
+			
+		}
+		
+		return __wrappedText;
 	}
 	
 	
@@ -772,7 +864,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function set_wordWrap (value:Bool):Bool {
 		
-		//if (value != wordWrap) __dirty = true;
+		if (value != wordWrap) __dirty = true;
 		return wordWrap = value;
 		
 	}
