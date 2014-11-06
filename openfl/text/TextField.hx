@@ -571,6 +571,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat {
 		
 		//__textFormat = __defaultTextFormat.clone ();
+		if (__textFormat != value) __dirty = true;
 		__textFormat.__merge (value);
 		return value;
 		
