@@ -233,6 +233,8 @@ class CanvasTextField {
 					
 				}
 				
+				textField.__dirty = false;
+				
 				return true;
 				
 			}
