@@ -325,15 +325,20 @@ class TextField extends InteractiveObject {
 		#if js
 		
 		var lines = text.split('\n');
-		var longest:Int = 0;
-		for (i in 0...lines.length)
-		{
-			if (lines[i].length > lines[longest].length )
-				longest = i;
-		}
+		var current = 0.0;
 		
 		__context.font = __getFont (__textFormat);
-		return __context.measureText(lines[longest]).width;
+		var longest = __context.measureText(lines[0]).width;
+		
+		for (i in 1...lines.length)
+		{
+			current = __context.measureText(lines[i]).width;
+			
+			if (current > longest )
+				longest = current;
+		}
+		
+		return longest;
 		
 		#else
 		
