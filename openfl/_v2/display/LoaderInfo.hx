@@ -49,11 +49,10 @@ class LoaderInfo extends URLLoader {
 	
 	public static function create (loader:Loader):LoaderInfo {
 		
-		addEventListener (Event.COMPLETE, this_onComplete);
-		
 		var loaderInfo = new LoaderInfo ();
 		loaderInfo.loader = loader;
 		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents();
+		loaderInfo.addEventListener (Event.COMPLETE, loaderInfo.this_onComplete);
 		
 		if (loader == null) {
 			
