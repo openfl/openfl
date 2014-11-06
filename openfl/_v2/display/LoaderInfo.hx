@@ -43,12 +43,13 @@ class LoaderInfo extends URLLoader {
 		frameRate = 0;
 		dataFormat = URLLoaderDataFormat.BINARY;
 		loaderURL = null;
-		addEventListener (Event.COMPLETE, this_onComplete);
 		
 	}
 	
 	
 	public static function create (loader:Loader):LoaderInfo {
+		
+		addEventListener (Event.COMPLETE, this_onComplete);
 		
 		var loaderInfo = new LoaderInfo ();
 		loaderInfo.loader = loader;
@@ -102,6 +103,7 @@ class LoaderInfo extends URLLoader {
 	private function this_onComplete (event:Event):Void {
 		
 		url = __pendingURL;
+		removeEventListener (Event.COMPLETE, this_onComplete);
 		
 	}
 	
