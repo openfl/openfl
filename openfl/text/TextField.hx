@@ -706,7 +706,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_numLines ():Int {
 		
-		if (text != "" && text != null) {
+		if (wordWrap && __wrappedText != "" && __wrappedText != null)
+		{
+			
+			return __wrappedText.split("\n").length;
+			
+		}else if (text != "" && text != null)
+		{
 			
 			var count = text.split ("\n").length;
 			
@@ -717,7 +723,6 @@ class TextField extends InteractiveObject {
 			}
 			
 			return count;
-			
 		}
 		
 		return 1;
