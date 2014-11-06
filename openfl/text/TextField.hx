@@ -867,7 +867,7 @@ class TextField extends InteractiveObject {
 	
 	override public function get_width ():Float {
 		
-		if (autoSize == TextFieldAutoSize.LEFT) {
+		if (autoSize != TextFieldAutoSize.NONE) {
 			
 			//return __width * scaleX;
 			return (textWidth + 4) * scaleX;
