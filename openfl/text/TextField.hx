@@ -289,8 +289,13 @@ class TextField extends InteractiveObject {
 		
 		if (__ranges == null) {
 			
-			__context.font = __getFont (__textFormat);
-			return [ __context.measureText (__text).width ];
+			// HTML5 measureText().width contains full length of string
+			// where \n or \r included in the result width like character and we need split text
+			// for calculation of width of longest line.
+			// http://jsfiddle.net/kpnu9q0t/
+			
+			if (wordWrap) return [__measureLongestLine(__wrappedText, __textFormat)];
+			else return [__measureLongestLine(__text, __textFormat)] ;
 			
 		} else {
 			
@@ -315,6 +320,27 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function __measureLongestLine(text:String, format:TextFormat):Float
+	{
+		#if js
+		
+		var lines = text.split('\n');
+		var longest:Int = 0;
+		for (i in 0...lines.length)
+		{
+			if (lines[i].length > lines[longest].length )
+				longest = i;
+		}
+		
+		__context.font = __getFont (__textFormat);
+		return __context.measureText(lines[longest]).width;
+		
+		#else
+		
+		return 0;
+		
+		#end
+	}
 	
 	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
