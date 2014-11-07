@@ -14,6 +14,7 @@ import openfl.display.Graphics;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.TriangleCulling;
+import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.Vector;
@@ -344,25 +345,34 @@ class PathBuiler {
 						
 					case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 						
-							graphicDataPop ();
-							
-							__currentPath = new DrawPath ();
-							__currentPath.update (__line, __fill, __fillIndex);
-							if (uvtData == null) {
-								uvtData = new Vector<Float>();
-								switch(__fill) {
-									case Texture(b, _):
-										for (i in 0...Std.int(vertices.length / 2)) {
-											uvtData.push(vertices[i * 2] / b.width);
-											uvtData.push(vertices[i * 2 + 1] / b.height);
-										}
-									case _:
-								}
+						graphicDataPop ();
+						
+						__currentPath = new DrawPath ();
+						__currentPath.update (__line, __fill, __fillIndex);
+						if (uvtData == null) {
+							uvtData = new Vector<Float>();
+							switch(__fill) {
+								case Texture(b, _):
+									for (i in 0...Std.int(vertices.length / 2)) {
+										uvtData.push(vertices[i * 2] / b.width);
+										uvtData.push(vertices[i * 2 + 1] / b.height);
+									}
+								case _:
 							}
-							__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
-							__currentPath.isRemovable = false;
-							__drawPaths.push (__currentPath);
+						}
+						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
+						__currentPath.isRemovable = false;
+						__drawPaths.push (__currentPath);
 					
+					case DrawTiles (sheet, tileData, smooth, flags, count):
+						graphicDataPop ();
+						
+						__currentPath = new DrawPath ();
+						__currentPath.update (__line, __fill, __fillIndex);
+						__currentPath.type = GraphicType.DrawTiles(sheet, tileData, smooth, flags, count);
+						__currentPath.isRemovable = false;
+						__drawPaths.push (__currentPath);
+							
 					default:
 						
 				}

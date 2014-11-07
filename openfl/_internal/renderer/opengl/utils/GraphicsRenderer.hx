@@ -20,6 +20,7 @@ import openfl.display.Graphics;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.TriangleCulling;
+import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -697,6 +698,10 @@ class GraphicsRenderer {
 		
 	}
 	
+	public static function buildDrawTiles (path:DrawPath, object:DisplayObject, glStack:GLStack, localCoords:Bool = false):Void {
+		var bucket = prepareBucket(path, glStack);
+	}
+	
 	private static function quadraticBezierCurve (fromX:Float, fromY:Float, cpX:Float, cpY:Float, toX:Float, toY:Float):Array<Float> {
 		
 		var xa, ya, xb, yb, x, y;
@@ -733,9 +738,15 @@ class GraphicsRenderer {
 	}
 	
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
-		// cache as bitmap
+		var graphics = object.__graphics;
+		
+		if (graphics.__commands.length <= 0) {
+			return;
+		}
+		
+		//TODO find a way to remove drawTiles calls
 		if (object.cacheAsBitmap) {			
-			var graphics = object.__graphics;
+			
 			if (graphics.__dirty) {
 				
 				var gl = renderSession.gl;
@@ -802,6 +813,8 @@ class GraphicsRenderer {
 				case DrawTriangles:
 					shader = prepareShader(bucket, renderSession, object, projection, null);
 					renderDrawTriangles(bucket, cast shader, renderSession);
+				case DrawTiles:
+					renderDrawTiles(object, bucket, renderSession);
 				case _:
 			}
 			
@@ -866,6 +879,8 @@ class GraphicsRenderer {
 					buildCircle (path, glStack, localCoords);
 				case DrawTriangles(_):
 					buildDrawTriangles(path, object, glStack, localCoords);
+				case DrawTiles(_):
+					buildDrawTiles(path, object, glStack, localCoords);
 				case _:
 			}
 			
@@ -923,8 +938,13 @@ class GraphicsRenderer {
 			case DrawTriangles(_):
 				bucket.mode = DrawTriangles;
 				bucket.uploadTileBuffer = false;
+			case DrawTiles(_):
+				bucket.mode = DrawTiles;
+				bucket.uploadTileBuffer = false;
 			case _:
 		}
+		
+		bucket.graphicType = path.type;
 		var bucketData = bucket.getData();
 		
 		return bucketData;
@@ -1037,6 +1057,27 @@ class GraphicsRenderer {
 		}
 	}
 	
+	private static inline function renderDrawTiles(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
+		var spritebatch = renderSession.spriteBatch;
+		var restart = !spritebatch.drawing;
+		if (restart) {
+			spritebatch.begin(renderSession);
+		}
+		
+		var args = Type.enumParameters(bucket.graphicType);
+		var sheet:Tilesheet = cast args[0];
+		var tileData:Array<Float> = cast args[1];
+		var smooth:Bool = cast args[2];
+		var flags:Int = cast args[3];
+		var count:Int = cast args[4];
+		
+		spritebatch.renderTiles(object, sheet, tileData, smooth, flags, count);
+		
+		if (restart) {
+			spritebatch.end();
+		}
+	}
+	
 	private static inline function bindDrawTrianglesBuffer(gl:GLRenderContext, shader:DrawTrianglesShader, data:GLBucketData) {
 		//if (lastVertsBuffer == data.vertsBuffer) {
 			//return;
@@ -1124,6 +1165,7 @@ class GLBucket {
 	public var color:Array<Float>;
 	public var alpha:Float;	
 	public var dirty:Bool;
+	public var graphicType:GraphicType;
 	
 	public var lastIndex:Int;
 	
@@ -1202,6 +1244,7 @@ class GLBucket {
 		}
 		fillIndex = 0;
 		uploadTileBuffer = true;
+		graphicType = GraphicType.Polygon;
 	}
 	
 	public function upload ():Void {
@@ -1311,6 +1354,7 @@ enum BucketMode {
 	Line;
 	PatternLine;
 	DrawTriangles;
+	DrawTiles;
 }
 
 
@@ -1499,6 +1543,7 @@ enum GraphicType {
 	Circle;
 	Ellipse;
 	DrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
+	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 
 }
 

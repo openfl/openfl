@@ -8,17 +8,20 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.display.DisplayObject;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.geom.Rectangle;
 
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.Tilesheet)
 
 
 class SpriteBatch {
@@ -90,7 +93,7 @@ class SpriteBatch {
 		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
-		
+		drawing = true;
 		start ();
 		
 	}
@@ -114,6 +117,7 @@ class SpriteBatch {
 	public function end ():Void {
 		
 		flush ();
+		drawing = false;
 		
 	}
 	
@@ -263,7 +267,176 @@ class SpriteBatch {
 		currentBatchSize++;
 	}
 	
-	private inline function fillVertices(index:Int, aX:Float, aY:Float, width:Float, height:Float, tint:Int, alpha:Float, uvs:TextureUvs, matrix:Matrix) {
+	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1) {		
+		
+		var texture = sheet.__bitmap.getTexture(gl);
+		if (texture == null) return;
+		
+		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
+		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
+		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
+		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
+		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
+		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
+		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
+		
+		if (useTransform) { useScale = false; useRotation = false; }
+		
+		var scaleIndex = 0;
+		var rotationIndex = 0;
+		var rgbIndex = 0;
+		var alphaIndex = 0;
+		var transformIndex = 0;
+		
+		var numValues = 3;
+		
+		if (useRect) { numValues = useOrigin ? 8 : 6; }
+		if (useScale) { scaleIndex = numValues; numValues ++; }
+		if (useRotation) { rotationIndex = numValues; numValues ++; }
+		if (useTransform) { transformIndex = numValues; numValues += 4; }
+		if (useRGB) { rgbIndex = numValues; numValues += 3; }
+		if (useAlpha) { alphaIndex = numValues; numValues ++; }
+		
+		var totalCount = tileData.length;
+		if (count >= 0 && totalCount > count) totalCount = count;
+		var itemCount = Std.int (totalCount / numValues);
+		var iIndex = 0;
+		
+		var tileID = -1;
+		var rect:Rectangle = new Rectangle();
+		var tileUV:Rectangle = new Rectangle();
+		var center:Point = new Point();
+		var x = 0.0, y = 0.0;
+		var alpha = 1.0, tint = 0xFFFFFF;
+		var scale = 1.0, rotation = 0.0;
+		var cosTheta = 1.0, sinTheta = 0.0;
+		var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
+		var ox = 0.0, oy = 0.0;
+		var matrix = new Matrix();
+		var oMatrix = object.__worldTransform;
+		var uvs = new TextureUvs();
+		
+		var bIndex = 0;
+		
+		while (iIndex < totalCount) {
+			
+			if (currentBatchSize >= size) {
+				flush ();
+				currentBaseTexture = texture;
+			}
+			
+			if (rect == null) {
+				rect = new Rectangle();
+			}
+			if (center == null) {
+				center = new Point();
+			}
+			
+			x = tileData[iIndex + 0];
+			y = tileData[iIndex + 1];
+			
+			if (useRect) {
+				tileID = -1;
+
+				rect.x = tileData[iIndex + 2];
+				rect.y = tileData[iIndex + 3];
+				rect.width = tileData[iIndex + 4];
+				rect.height = tileData[iIndex + 5];
+				
+				if (useOrigin) {
+					center.x = tileData[iIndex + 6];
+					center.y = tileData[iIndex + 7];
+				} else {
+					center.setTo(0, 0);
+				}
+				
+			} else {
+				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
+				rect = sheet.getTileRect(tileID);
+				center = sheet.getTileCenter(tileID);
+				tileUV = sheet.getTileUVs(tileID);
+			}
+			
+			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
+				
+				alpha = 1;
+				tint = 0xFFFFFF;
+				a = 0; b = 0; c = 0; d = 0; tx = 0; ty = 0;
+				scale = 1.0;
+				rotation = 0.0;
+				cosTheta = 1.0;
+				sinTheta = 0.0;
+				matrix.identity();
+				
+				if (useAlpha) {
+					alpha = tileData[iIndex + alphaIndex];
+				}
+				
+				if (useRGB) {
+					tint = Std.int(tileData[iIndex + rgbIndex]) << 16 | Std.int(tileData[iIndex + rgbIndex+1]) << 8 | Std.int(tileData[iIndex + rgbIndex+2]);
+				}
+				
+				if (useScale) {
+					scale = tileData[iIndex + scaleIndex];
+				}
+				
+				if (useRotation) {
+					rotation = tileData[iIndex + rotationIndex];
+					cosTheta = Math.cos(rotation);
+					sinTheta = Math.sin(rotation);
+				}
+				
+				if (useTransform) {
+					a = tileData[iIndex + transformIndex + 0];
+					b = tileData[iIndex + transformIndex + 1];
+					c = tileData[iIndex + transformIndex + 2];
+					d = tileData[iIndex + transformIndex + 3];
+				} else {
+					a = scale * cosTheta;
+					b = scale * sinTheta;
+					c = -b;
+					d = a;
+				}
+				
+				ox = center.x * a + center.y * c;
+				oy = center.x * b + center.y * d;
+				
+				tx = x - ox;
+				ty = y - oy;
+				
+				matrix.a = a * oMatrix.a + b * oMatrix.c;
+				matrix.b = a * oMatrix.b + b * oMatrix.d;
+				matrix.c = c * oMatrix.a + d * oMatrix.c;
+				matrix.d = c * oMatrix.b + d * oMatrix.d;
+				matrix.tx = tx * oMatrix.a + ty * oMatrix.c/* + oMatrix.tx*/;
+				matrix.ty = tx * oMatrix.b + ty * oMatrix.d/* + oMatrix.ty*/;
+				
+				uvs.x0 = tileUV.left;  uvs.y0 = tileUV.bottom;
+				uvs.x1 = tileUV.right; uvs.y1 = tileUV.bottom;
+				uvs.x2 = tileUV.right; uvs.y2 = tileUV.top;
+				uvs.x3 = tileUV.left;  uvs.y3 = tileUV.top;
+				
+				bIndex = currentBatchSize * 4 * vertSize;
+				
+				fillVertices(bIndex, 0, 0, rect.width, rect.height, tint, alpha, uvs, matrix);
+				
+				textures[currentBatchSize] = texture;
+				blendModes[currentBatchSize] = object.blendMode;
+				
+				currentBatchSize++;
+			}
+			
+			iIndex += numValues;
+			
+		}
+	}
+	
+	private inline function fillVertices(index:Int,
+										aX:Float, aY:Float,
+										width:Float, height:Float,
+										tint:Int, alpha:Float,
+										uvs:TextureUvs,
+										matrix:Matrix) {
 
 		var w0, w1, h0, h1;
 		w0 = width * (1 - aX);
