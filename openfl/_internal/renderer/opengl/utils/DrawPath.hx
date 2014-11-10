@@ -127,19 +127,19 @@ class PathBuiler {
 		__fill = None;
 		__fillIndex = 0;
 		
-		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+		glStack = graphics.__glStack[GLRenderer.glContextId];
+			
+		if (glStack == null) {
 			
 			glStack = graphics.__glStack[GLRenderer.glContextId] = new GLStack (gl);
 			
+		}
+		
+		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+			
+			//glStack = graphics.__glStack[GLRenderer.glContextId] = new GLStack (gl);
+			
 		} else {
-			
-			glStack = graphics.__glStack[GLRenderer.glContextId];
-			
-			if (glStack == null) {
-				
-				glStack = graphics.__glStack[GLRenderer.glContextId] = new GLStack (gl);
-				
-			}
 			
 			for (command in graphics.__commands) {
 				
@@ -160,7 +160,7 @@ class PathBuiler {
 						}
 					
 					case BeginFill (rgb, alpha):
-						
+
 						endFill();
 						__fill = alpha > 0 ? Color(rgb & 0xFFFFFF, alpha) : None;
 
@@ -367,6 +367,7 @@ class PathBuiler {
 					case DrawTiles (sheet, tileData, smooth, flags, count):
 						graphicDataPop ();
 						
+						__fillIndex++;
 						__currentPath = new DrawPath ();
 						__currentPath.update (__line, __fill, __fillIndex);
 						__currentPath.type = GraphicType.DrawTiles(sheet, tileData, smooth, flags, count);
