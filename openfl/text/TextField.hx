@@ -580,7 +580,19 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function get_height ():Float {
 		
-		return __height * scaleY;
+		if (autoSize != TextFieldAutoSize.NONE && wordWrap) {
+			
+			return __height * scaleX;
+			
+		} else if (autoSize != TextFieldAutoSize.NONE) {
+			
+			return (textHeight + 4) * scaleX;
+			
+		} else {	
+			
+			return __height * scaleX;
+			
+		}
 		
 	}
 	
