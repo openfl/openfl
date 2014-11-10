@@ -92,6 +92,7 @@ class TextField extends InteractiveObject {
 		__width = 100;
 		__height = 100;
 		__text = "";
+		__wrappedText = "";
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -841,11 +842,11 @@ class TextField extends InteractiveObject {
 		if (__canvas != null) {
 			
 			// TODO: Make this more accurate
-			if (wordWrap && __wrappedText != null) 
+			if (wordWrap && __wrappedText != null && __wrappedText!="") 
 				return __wrappedText.split('\n').length * __textFormat.size * 1.185;	
-			else if (__text !=null)
+			else if (__text !=null && __text != "")
 				return __text.split('\n').length * __textFormat.size * 1.185;
-			else return __textFormat.size * 1.185;
+			else return 0;
 			
 		} else if (__div != null) {
 			
