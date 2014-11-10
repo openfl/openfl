@@ -13,6 +13,8 @@ class TextFieldTest {
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
+		// auto width
+		
 		Assert.areNotEqual (textField.textWidth + 4, textField.width);
 		
 		textField.autoSize = TextFieldAutoSize.LEFT;
@@ -27,6 +29,24 @@ class TextFieldTest {
 		
 		Assert.areEqual (textField.textWidth + 4, textField.width);
 		
+		// auto height
+		
+		textField = new TextField();
+		textField.text = "Hello";
+		
+		Assert.areNotEqual (textField.textHeight + 4, textField.height);
+		
+		textField.autoSize = TextFieldAutoSize.LEFT;
+		
+		Assert.areEqual (textField.textHeight + 4, textField.height);
+		
+		textField.text = "H";
+		
+		Assert.areEqual (textField.textHeight + 4, textField.height);
+		
+		textField.text = "Hello World";
+		
+		Assert.areEqual (textField.textHeight + 4, textField.height);
 	}
 	
 	
