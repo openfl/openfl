@@ -2,6 +2,7 @@
 <extension>
 	
 	<haxedef name="native" if="cpp || neko" />
+	<set name="native" if="cpp || neko" />
 	
 	<set name="openfl-next" value="1" if="next || openfl_next" />
 	<haxedef name="openfl-next" if="openfl-next" />
