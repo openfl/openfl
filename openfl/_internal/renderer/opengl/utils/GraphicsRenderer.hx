@@ -698,7 +698,7 @@ class GraphicsRenderer {
 		
 	}
 	
-	public static function buildDrawTiles (path:DrawPath, glStack:GLStack):Void {
+	public static inline function buildDrawTiles (path:DrawPath, glStack:GLStack):Void {
 		prepareBucket(path, glStack);
 	}
 	
@@ -740,18 +740,19 @@ class GraphicsRenderer {
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
 		var graphics = object.__graphics;
 		var spritebatch = renderSession.spriteBatch;
+		var dirty = graphics.__dirty;
 		if (graphics.__commands.length <= 0) {
 			return;
 		}
 		
-		if (graphics.__dirty) {
+		if (dirty) {
 			updateGraphics (object, renderSession.gl, object.cacheAsBitmap);
 		}
 		
 		//TODO find a way to remove drawTiles calls
-		if (object.cacheAsBitmap) {			
+		if (object.cacheAsBitmap) {
 			
-			if (graphics.__dirty) {
+			if (dirty) {
 				
 				var gl = renderSession.gl;
 				var bounds = graphics.__bounds;
@@ -773,6 +774,10 @@ class GraphicsRenderer {
 				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 				
 				gl.viewport(0, 0, renderSession.renderer.width, renderSession.renderer.height);
+			}
+			
+			if (!spritebatch.drawing) {
+				spritebatch.begin(renderSession);
 			}
 			
 			spritebatch.renderCachedGraphics(object);
@@ -806,7 +811,7 @@ class GraphicsRenderer {
 			bucket = glStack.buckets[i];
 			switch(bucket.mode) {
 				case Fill, PatternFill:
-					if (batchDrawing) {
+					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.end();
 					}
 					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix.toArray(true));
@@ -814,7 +819,7 @@ class GraphicsRenderer {
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
-					if (batchDrawing) {
+					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.end();
 					}
 					shader = prepareShader(bucket, renderSession, object, projection, null);
@@ -830,7 +835,7 @@ class GraphicsRenderer {
 			for (data in bucket.data) {
 				if (data.line != null && data.line.verts.length > 0) {
 					batchDrawing = renderSession.spriteBatch.drawing;
-					if (batchDrawing) {
+					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.end();
 					}
 					shader = renderSession.shaderManager.primitiveShader;
@@ -853,7 +858,7 @@ class GraphicsRenderer {
 			}
 			
 			batchDrawing = renderSession.spriteBatch.drawing;
-			if (!batchDrawing) {
+			if (!batchDrawing && !localCoords) {
 				renderSession.spriteBatch.begin(renderSession);
 			}
 		}
@@ -1078,25 +1083,9 @@ class GraphicsRenderer {
 		}
 	}
 	
-	private static function renderDrawTiles(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
-		var spritebatch = renderSession.spriteBatch;
-		var restart = !spritebatch.drawing;
-		if (restart) {
-			//spritebatch.begin(renderSession);
-		}
-		
-		var args = Type.enumParameters(bucket.graphicType);
-		var sheet:Tilesheet = cast args[0];
-		var tileData:Array<Float> = cast args[1];
-		var smooth:Bool = cast args[2];
-		var flags:Int = cast args[3];
-		var count:Int = cast args[4];
-		
-		spritebatch.renderTiles(object, sheet, tileData, smooth, flags, count);
-		
-		if (restart) {
-			//spritebatch.end();
-		}
+	private static inline function renderDrawTiles(object:DisplayObject, bucket:GLBucket, renderSession:RenderSession) {
+		var args = Type.enumParameters(bucket.graphicType);		
+		renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
 	}
 	
 	private static function bindDrawTrianglesBuffer(gl:GLRenderContext, shader:DrawTrianglesShader, data:GLBucketData) {
