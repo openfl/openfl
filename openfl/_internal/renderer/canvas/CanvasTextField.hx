@@ -160,7 +160,7 @@ class CanvasTextField {
 					
 					if (textField.wordWrap && textField.autoSize != TextFieldAutoSize.NONE)
 					{	
-						if (textField.__width <= 4)
+						if (textField.__width < 4)
 						{
 							textField.wordWrap = false;
 							textField.__height = textField.textHeight+4;
