@@ -583,15 +583,15 @@ class TextField extends InteractiveObject {
 		
 		if (autoSize != TextFieldAutoSize.NONE && wordWrap) {
 			
-			return __height * scaleX;
+			return __height * __scaleY;
 			
 		} else if (autoSize != TextFieldAutoSize.NONE) {
 			
-			return (textHeight + 4) * scaleX;
+			return (textHeight + 4) * __scaleY;
 			
 		} else {	
 			
-			return __height * scaleX;
+			return __height * __scaleY;
 			
 		}
 		
