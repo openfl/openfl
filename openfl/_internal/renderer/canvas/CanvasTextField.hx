@@ -74,31 +74,41 @@ class CanvasTextField {
 		context.textBaseline = "top";
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
 		
-		var lines = textField.text.split("\n");
+		var lines = text.split("\n");
 		var yOffset:Float = 0;
+		var i:Int = 0;
+		var line:String;
 		
-		for (line in lines) {
+		while(i < lines.length) {
+			
+			line = lines[i];
+			
+			if (yOffset + format.size * 1.185 > textField.__canvas.height - 2 && i > 0) {
+				
+				break;
+			}
 			
 			switch (format.align) {
 				
 				case TextFormatAlign.CENTER:
 					
 					context.textAlign = "center";
-					context.fillText (line, textField.__width / 2, 2 + yOffset, textField.__width - 4);
+					context.fillText (line, textField.__width / 2, 2 + yOffset/*, textField.__width - 4*/);
 					
 				case TextFormatAlign.RIGHT:
 					
 					context.textAlign = "end";
-					context.fillText (line, textField.__width - 2, 2 + yOffset, textField.__width - 4);
+					context.fillText (line, textField.__width - 2, 2 + yOffset/*, textField.__width - 4*/);
 					
 				default:
 					
 					context.textAlign = "start";
-					context.fillText (line, 2 + offsetX, 2 + yOffset, textField.__width - 4);
+					context.fillText (line, 2 + offsetX, 2 + yOffset/*, textField.__width - 4*/);
 					
 			}
 			
-			yOffset += textField.textHeight;
+			yOffset += format.size * 1.185;
+			++i;
 		}
 		
 		#end
@@ -112,7 +122,15 @@ class CanvasTextField {
 		
 		if (textField.__dirty) {
 			
-			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.LEFT)) {
+			var negativeSize:Bool = textField.width <= 0 || textField.height <= 0;
+			var noAutoSize:Bool = textField.autoSize == TextFieldAutoSize.NONE;
+			
+			if((textField.__text == null || textField.__text == "") && !textField.background && !textField.border || negativeSize && noAutoSize) {
+				
+				textField.__canvas = null;
+				textField.__context = null;
+				
+			} else if (negativeSize && !noAutoSize && textField.wordWrap) {
 				
 				textField.__canvas = null;
 				textField.__context = null;
@@ -126,53 +144,78 @@ class CanvasTextField {
 					
 				}
 				
+				var canvas = textField.__canvas;
+				
 				context = textField.__context;
 				
 				if (textField.__text != null && textField.__text != "") {
 					
-					var measurements = textField.__measureText ();
+					var measurements = [];
 					var textWidth = 0.0;
 					
-					for (measurement in measurements) {
-						
-						textWidth += measurement;
-						
+					if (textField.wordWrap)
+					{
+						textField.__buildWrappedText ();
 					}
 					
-					if (textField.autoSize == TextFieldAutoSize.LEFT) {
+					if (textField.wordWrap && textField.autoSize != TextFieldAutoSize.NONE)
+					{	
+						if (textField.__width <= 4)
+						{
+							textField.wordWrap = false;
+							textField.__height = textField.textHeight+4;
+							textField.wordWrap = true;
+						} else 
+						{
+							textField.__height = textField.textHeight+4;
+						}
 						
+					} else if (!textField.wordWrap && textField.autoSize != TextFieldAutoSize.NONE)
+					{	
+						measurements =  textField.__measureText ();
+						
+						for (measurement in measurements) 
+						{
+							textWidth += measurement;
+						}
+						
+						switch(textField.autoSize)
+						{
+							case TextFieldAutoSize.RIGHT:
+									
+									textField.x = textField.x + textField.__width * textField.__scaleX - textWidth - 4;
+									
+							case TextFieldAutoSize.CENTER:
+								
+									textField.x += textField.__width * textField.__scaleX / 2 - (textWidth + 4) / 2;
+									
+							default:	0;
+						}
 						textField.__width = textWidth + 4;
+						textField.__height = textField.textHeight + 4;
+					}
+					
+					canvas.width = Math.ceil (textField.__width);
+					canvas.height = Math.ceil (textField.__height);
+					
+					// first draw background
+					var isBg:Bool = textField.border || textField.background;
+					
+					if (isBg) context.rect (0.5, 0.5, canvas.width - 1, canvas.height - 1);
+					
+					if (isBg && textField.background) {
+						
+						context.fillStyle = "#" + StringTools.hex (textField.backgroundColor, 6);
+						context.fill ();
 						
 					}
 					
-					textField.__canvas.width = Math.ceil (textField.__width);
-					textField.__canvas.height = Math.ceil (textField.__height);
-					
-					if (textField.border || textField.background) {
-						
-						textField.__context.rect (0.5, 0.5, textField.__width - 1, textField.__height - 1);
-						
-						if (textField.background) {
-							
-							context.fillStyle = "#" + StringTools.hex (textField.backgroundColor, 6);
-							context.fill ();
-							
-						}
-						
-						if (textField.border) {
-							
-							context.lineWidth = 1;
-							context.strokeStyle = "#" + StringTools.hex (textField.borderColor, 6);
-							context.stroke ();
-							
-						}
-						
-					}
-					
+					// then draw text
 					if (textField.__ranges == null) {
 						
-						renderText (textField, textField.text, textField.__textFormat, 0);
-						
+						if (!textField.wordWrap)	renderText (textField, textField.text, textField.__textFormat, 0);
+						else						renderText (textField, textField.__wrappedText, textField.__textFormat, 0);
+							
 					} else {
 						
 						var currentIndex = 0;
@@ -190,26 +233,40 @@ class CanvasTextField {
 						
 					}
 					
-				} else {
-					
-					if (textField.autoSize == TextFieldAutoSize.LEFT) {
-						
-						textField.__width = 4;
+					// finaly draw border
+					if (isBg && textField.border) {
+							
+						context.lineWidth = 1;
+						context.strokeStyle = "#" + StringTools.hex (textField.borderColor, 6);
+						context.stroke ();
 						
 					}
 					
-					textField.__canvas.width = Math.ceil (textField.__width);
-					textField.__canvas.height = Math.ceil (textField.__height);
+				} 
+				else {
+					
+					if (textField.wordWrap && !noAutoSize) {
+						
+						textField.__height = 4;
+						
+					} else if (!noAutoSize) {
+						
+						textField.__width = 4;
+						textField.__height = 4;
+					}
+					
+					canvas.width = Math.ceil (textField.__width);
+					canvas.height = Math.ceil (textField.__height);
 					
 					if (textField.border || textField.background) {
 						
 						if (textField.border) {
 							
-							context.rect (0.5, 0.5, textField.__width - 1, textField.__height - 1);
+							context.rect (0.5, 0.5, canvas.width - 1, canvas.height - 1);
 							
 						} else {
 							
-							textField.__context.rect (0, 0, textField.__width, textField.__height);
+							context.rect (0, 0, canvas.width, canvas.height);
 							
 						}
 						
