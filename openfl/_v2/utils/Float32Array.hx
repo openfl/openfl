@@ -3,6 +3,11 @@ package openfl._v2.utils;
 
 import openfl.geom.Matrix3D;
 
+#if neko
+import haxe.ds.Vector;
+import openfl._v2.Vector.VectorData;
+#end
+
 
 class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {
 	
@@ -13,7 +18,7 @@ class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {
 	public var length (default, null):Int;
 	
 	
-	public function new (bufferOrArray:Dynamic, start:Int = 0, length:Null<Int> = null) {
+	public function new (bufferOrArray:Dynamic, start:Int = 0, elements:Null<Int> = null) {
 		
 		BYTES_PER_ELEMENT = 4;
 		
@@ -23,12 +28,12 @@ class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {
 			this.length = Std.int(bufferOrArray);
 			
 		} else if (Std.is (bufferOrArray, Array)) {
-			
+				
 			var floats:Array<Float> = bufferOrArray;
 			
-			if (length != null) {
+			if (elements != null) {
 				
-				this.length = length;
+				this.length = elements;
 				
 			} else {
 				
@@ -51,10 +56,44 @@ class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {
 				#end
 				
 			}
+		
+		#if neko
+		
+		} else if (Std.is (bufferOrArray, VectorData)) {
+			
+			var floats:Vector<Float> = bufferOrArray.data;
+			
+			if (elements != null) {
+				
+				this.length = elements;
+				
+			} else {
+				
+				this.length = floats.length - start;
+				
+			}
+			
+			super (this.length << 2);
+			
+			#if !cpp
+			buffer.position = 0;
+			#end
+			
+			for (i in 0...this.length) {
+				
+				#if cpp
+				untyped __global__.__hxcpp_memory_set_float (bytes, (i << 2), floats[i]);
+				#else
+				buffer.writeFloat (floats[i + start]);
+				#end
+				
+			}
+		
+		#end
 			
 		} else {
 			
-			super (bufferOrArray, start, length);
+			super (bufferOrArray, start, elements != null ? elements * 4 : null);
 			
 			if ((byteLength & 0x03) > 0) {
 				

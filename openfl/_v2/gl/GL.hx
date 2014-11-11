@@ -1063,40 +1063,40 @@ class GL {
 		lime_gl_uniform4iv(location, v);
 	}
 
-	public static inline function uniformMatrix2fv(location:GLUniformLocation, transpose:Bool, v:Float32Data):Void 
+	public static inline function uniformMatrix2fv(location:GLUniformLocation, transpose:Bool, v:Float32Array):Void 
 	{
 		#if mobile
 			if( transpose )
 				throw "Unsupported in GLES";
 		#end
 		
-		lime_gl_uniform_matrix(location, transpose, v, 2);
+		lime_gl_uniform_matrix(location, transpose, v.getByteBuffer (), 2);
 	}
 
-	public static inline function uniformMatrix3fv(location:GLUniformLocation, transpose:Bool, v:Float32Data):Void 
+	public static inline function uniformMatrix3fv(location:GLUniformLocation, transpose:Bool, v:Float32Array):Void 
 	{
 		#if mobile
 			if( transpose )
 				throw "Unsupported in GLES";
 		#end
 		
-		lime_gl_uniform_matrix(location, transpose, v, 3);
+		lime_gl_uniform_matrix(location, transpose, v.getByteBuffer (), 3);
 	}
 
 	//
-	public static inline function uniformMatrix4fv(location:GLUniformLocation, transpose:Bool, v:Float32Data):Void 
+	public static inline function uniformMatrix4fv(location:GLUniformLocation, transpose:Bool, v:Float32Array):Void 
 	{
 		#if mobile
 			if( transpose )
 				throw "Unsupported in GLES";
 		#end
-
-		lime_gl_uniform_matrix(location, transpose, v, 4);
+		
+		lime_gl_uniform_matrix(location, transpose, v.getByteBuffer (), 4);
 	}
 
 	public static inline function uniformMatrix3D(location:GLUniformLocation, transpose:Bool, matrix:Matrix3D):Void 
 	{
-		lime_gl_uniform_matrix(location, transpose, Float32Array.fromMatrix(matrix), 4);
+		lime_gl_uniform_matrix(location, transpose, Float32Array.fromMatrix (matrix).getByteBuffer(), 4);
 	}
 
 	public static inline function useProgram(program:GLProgram):Void 
