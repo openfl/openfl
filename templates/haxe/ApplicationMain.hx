@@ -65,6 +65,8 @@ class ApplicationMain {
 			
 		}
 		
+		preloader = null;
+		
 		::if (libraries != null)::::foreach libraries::::if (preload)::
 		total++;
 		openfl.Assets.loadLibrary ("::name::", library_onLoad);
