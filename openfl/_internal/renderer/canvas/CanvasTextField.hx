@@ -183,11 +183,11 @@ class CanvasTextField {
 						{
 							case TextFieldAutoSize.RIGHT:
 									
-									textField.x = textField.x + textField.__width * textField.__scaleX - textWidth - 4;
+									textField.x = textField.__x + textField.__width * textField.__scaleX - textWidth - 4;
 									
 							case TextFieldAutoSize.CENTER:
 								
-									textField.x += textField.__width * textField.__scaleX / 2 - (textWidth + 4) / 2;
+									textField.x = textField.__x + textField.__width * textField.__scaleX / 2 - (textWidth + 4) / 2;
 									
 							default:	0;
 						}

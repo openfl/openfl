@@ -47,7 +47,7 @@ class TextField extends InteractiveObject {
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var htmlText (get, set):String;
-	public var length (default, null):Int;
+	public var length (get, null):Int;
 	public var maxChars:Int;
 	public var maxScrollH (get, null):Int;
 	public var maxScrollV (get, null):Int;
@@ -927,6 +927,10 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion inline private function get_length ():Int {
+		
+		return __text == null ? 0 : __text.length;
+	}
 	
 }
 
