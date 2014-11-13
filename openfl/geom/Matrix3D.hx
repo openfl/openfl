@@ -368,9 +368,18 @@ class Matrix3D {
 				rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
 				
 				var len = Math.sqrt((mr[6] - mr[9]) * (mr[6] - mr[9]) + (mr[8] - mr[2]) * (mr[8] - mr[2]) + (mr[1] - mr[4]) * (mr[1] - mr[4]));
-				rot.x = (mr[6] - mr[9]) / len;
-				rot.y = (mr[8] - mr[2]) / len;
-				rot.z = (mr[1] - mr[4]) / len;
+				
+				if (len != 0) {
+					
+					rot.x = (mr[6] - mr[9]) / len;
+					rot.y = (mr[8] - mr[2]) / len;
+					rot.z = (mr[1] - mr[4]) / len;
+					
+				} else {
+					
+					rot.x = rot.y = rot.z = 0;
+					
+				}
 			
 			case Orientation3D.QUATERNION:
 				var tr = mr[0] + mr[5] + mr[10];
