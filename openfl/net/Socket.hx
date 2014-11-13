@@ -17,13 +17,18 @@ import openfl.utils.IDataInput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.Lib;
+
+#if sys
 import sys.net.Host;
+#end
 
 
 class Socket extends EventDispatcher /*implements IDataInput implements IDataOutput*/ {
+	
+	
 	private var _stamp : Float;
 	private var _buf : haxe.io.Bytes;
-    private var _socket: sys.net.Socket;
+    private var _socket: #if sys sys.net.Socket #else Dynamic #end;
     private var _connected: Bool;
     private var _host: String;
     private var _port: Int;
