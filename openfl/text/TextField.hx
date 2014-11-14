@@ -600,6 +600,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function set_height (value:Float):Float {
 		
+		if (value < 0 ) return __height * __scaleY;
+		
 		if (scaleY != 1 || value != __height) {
 			
 			__setTransformDirty ();
@@ -899,6 +901,8 @@ class TextField extends InteractiveObject {
 	
 	
 	override public function set_width (value:Float):Float {
+		
+		if (value < 0) return __width * __scaleX;
 		
 		if (scaleX != 1 || __width != value) {
 			
