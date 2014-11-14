@@ -361,7 +361,7 @@ class SpriteBatch {
 				
 				alpha = 1;
 				tint = 0xFFFFFF;
-				a = 0; b = 0; c = 0; d = 0; tx = 0; ty = 0;
+				a = 1; b = 0; c = 0; d = 1; tx = 0; ty = 0;
 				scale = 1.0;
 				rotation = 0.0;
 				cosTheta = 1.0;
@@ -411,10 +411,10 @@ class SpriteBatch {
 				matrix.tx = tx * oMatrix.a + ty * oMatrix.c/* + oMatrix.tx*/;
 				matrix.ty = tx * oMatrix.b + ty * oMatrix.d/* + oMatrix.ty*/;
 				
-				uvs.x0 = tileUV.left;  uvs.y0 = tileUV.bottom;
-				uvs.x1 = tileUV.right; uvs.y1 = tileUV.bottom;
-				uvs.x2 = tileUV.right; uvs.y2 = tileUV.top;
-				uvs.x3 = tileUV.left;  uvs.y3 = tileUV.top;
+				uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
+				uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;
+				uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
+				uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
 				
 				bIndex = currentBatchSize * 4 * vertSize;
 				
