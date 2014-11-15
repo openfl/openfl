@@ -531,7 +531,7 @@ class CanvasGraphics {
 								if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
 									
 									optimizationUsed = true;
-									context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x, y, width, height);
+									context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
 									
 								}
 								

@@ -110,7 +110,7 @@ class Graphics {
 	 */
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 		
-		__commands.push (BeginBitmapFill (bitmap, matrix, repeat, smooth));
+		__commands.push (BeginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
 		
 		__visible = true;
 		

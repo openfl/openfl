@@ -16,31 +16,17 @@ install:
   - haxelib setup ~/haxelib
   - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1
   - haxelib dev lime ~/lime
-  - git clone --recursive https://github.com/haxenme/nme ~/nme --depth 1
-  - haxelib dev nme ~/nme
-  - git clone --recursive https://github.com/haxenme/nme-dev ~/nme-dev --depth 1
-  - haxelib dev nme-dev ~/nme-dev
-  #- haxelib install hxcpp
-  - git clone --recursive https://github.com/haxefoundation/hxcpp ~/hxcpp --depth 1
-  - haxelib dev hxcpp ~/hxcpp
+  - haxelib install hxcpp
   - haxelib install format
-  - haxelib install svg
   - haxelib install dox
-  - haxelib install mlib
   - haxelib install mcover
-  - haxelib install hamcrest
   - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
   - haxelib dev munit ~/munit/src
   - haxelib dev openfl $(pwd)
   - cd ~/munit/tool
   - haxe build.hxml
-  - cd ~/hxcpp/project
-  - haxelib run hxcpp Build.xml -Dlinux -DHXCPP_M64
-  - haxelib run hxcpp Build.xml -Dlinux -Dstatic_link -DHXCPP_M64
-  - haxelib run lime rebuild lime linux -release -64 -nocffi
-  - cd ~/nme-dev/project
-  - neko build.n linux
-  - haxelib run lime rebuild lime linux -release -64 -Dlegacy -nocffi
+  - haxelib run lime rebuild linux -release -64 -nocffi
+  - haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi
   - haxelib run lime rebuild tools
 
 before_script:
