@@ -8,20 +8,29 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.Tilesheet;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.display.DisplayObject;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.geom.Rectangle;
 
 
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.Tilesheet)
 
 
 class SpriteBatch {
 	
 	
-	public var blendModes:Array<BlendMode>;
-	public var currentBaseTexture:BitmapData;
+	public var states:Array<State> = [];
+	public var currentState:State;
+	
+	public var currentBaseTexture:GLTexture;
 	public var currentBatchSize:Int;
 	public var currentBlendMode:BlendMode;
 	public var dirty:Bool;
@@ -33,7 +42,6 @@ class SpriteBatch {
 	public var renderSession:RenderSession;
 	public var shader:AbstractShader;
 	public var size:Int;
-	public var textures:Array<BitmapData>;
 	public var vertexBuffer:GLBuffer;
 	public var vertices:Float32Array;
 	public var vertSize:Int;
@@ -42,7 +50,7 @@ class SpriteBatch {
 	public function new (gl:GLRenderContext) {
 		
 		vertSize = 6;
-		size = 2000;//Math.pow(2, 16) /  this.vertSize;
+		size = Math.floor(Math.pow(2, 16) /  this.vertSize);
 		
 		var numVerts = size * 4 * vertSize;
 		var numIndices = size * 6;
@@ -76,17 +84,16 @@ class SpriteBatch {
 		
 		dirty = true;
 		
-		textures = [];
-		blendModes = [];
+		currentState = new State();
 		
 	}
 	
 	
-	public function begin (renderSession:Dynamic):Void {
+	public function begin (renderSession:RenderSession):Void {
 		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
-		
+		drawing = true;
 		start ();
 		
 	}
@@ -110,6 +117,7 @@ class SpriteBatch {
 	public function end ():Void {
 		
 		flush ();
+		drawing = false;
 		
 	}
 	
@@ -151,29 +159,31 @@ class SpriteBatch {
 			
 		}
 		
-		var nextTexture, nextBlendMode;
+		var nextState:State;
 		var batchSize = 0;
 		var start = 0;
 		
-		var currentBaseTexture = null;
-		var currentBlendMode = renderSession.blendModeManager.currentBlendMode;
+		currentState.texture = null;
+		currentState.textureSmooth = true;
+		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
 		
 		var j = this.currentBatchSize;
 		for (i in 0...j) {
 			
-			nextTexture = this.textures[i];
-			nextBlendMode = this.blendModes[i];
+			nextState = states[i];
 			
-			if (currentBaseTexture != nextTexture || currentBlendMode != nextBlendMode) {
+			if (currentState.texture != nextState.texture || currentState.blendMode != nextState.blendMode) {
 				
-				renderBatch (currentBaseTexture, batchSize, start);
+				renderBatch (currentState, batchSize, start);
 				
 				start = i;
 				batchSize = 0;
-				currentBaseTexture = nextTexture;
-				currentBlendMode = nextBlendMode;
+				currentState.texture = nextState.texture;
+				currentState.textureSmooth = nextState.textureSmooth;
+				currentState.blendMode = nextState.blendMode;
 				
-				renderSession.blendModeManager.setBlendMode (currentBlendMode);
+				
+				renderSession.blendModeManager.setBlendMode (currentState.blendMode);
 				
 			}
 			
@@ -181,7 +191,7 @@ class SpriteBatch {
 			
 		}
 		
-		renderBatch (currentBaseTexture, batchSize, start);
+		renderBatch (currentState, batchSize, start);
 		currentBatchSize = 0;
 		
 	}
@@ -189,57 +199,65 @@ class SpriteBatch {
 	
 	public function render (sprite:Bitmap):Void {
 		
-		var texture = sprite.bitmapData;
+		var bitmapData = sprite.bitmapData;
+		var texture = bitmapData.getTexture(gl);
 		
-		if (texture == null) return;
+		if (bitmapData == null) return;
 		
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentBaseTexture = texture;
+			currentState.texture = texture;
 			
 		}
 		
-		var uvs = texture.__uvData;
+		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
 		var alpha = sprite.__worldAlpha;
 		//var tint = sprite.tint;
 		var tint = 0xFFFFFF;
 		
-		var vertices = this.vertices;
-		
 		//var aX = sprite.anchor.x;
 		var aX = 0;
 		//var aY = sprite.anchor.y;
 		var aY = 0;
 		
-		var w0, w1, h0, h1;
+		var index = currentBatchSize * 4 * vertSize;
+		fillVertices(index, aX, aY, bitmapData.width, bitmapData.height, tint, alpha, uvs, sprite.__worldTransform);
 		
-		/*if (texture.trim != null) {
-			
-			var trim = texture.trim;
-			
-			w1 = trim.x - aX * trim.width;
-			w0 = w1 + texture.crop.width;
-			h1 = trim.y - aY * trim.height;
-			h0 = h1 + texture.crop.height;
-			
-		} else {
-			
-			w0 = (texture.frame.width) * (1 - aX);
-			w1 = (texture.frame.width) * -aX;
-			h0 = texture.frame.height * (1 - aY);
-			h1 = texture.frame.height * -aY;
-			
-		}*/
+		setState(currentBatchSize, texture, sprite.blendMode);
 		
-		w0 = (texture.width) * (1 - aX);
-		w1 = (texture.width) * -aX;
-		h0 = texture.height * (1 - aY);
-		h1 = texture.height * -aY;
+		currentBatchSize++;
+		
+	}
+	
+	public function renderCachedGraphics(object:DisplayObject) {
+		var cachedTexture = object.__graphics.__cachedTexture;
+		
+		if (cachedTexture == null) return;
+		
+		if (currentBatchSize >= size) {
+			
+			flush ();
+			currentBaseTexture = cachedTexture.texture;
+			
+		}
+		
+		var alpha = object.__worldAlpha;
+		var tint = 0xFFFFFF;
+		
+		var aX = 0;
+		var aY = 0;
+		
+		var uvs = new TextureUvs();
+		uvs.x0 = 0;		uvs.y0 = 1;
+		uvs.x1 = 1;		uvs.y1 = 1;
+		uvs.x2 = 1;		uvs.y2 = 0;
+		uvs.x3 = 0;		uvs.y3 = 0;
 		
 		var index = currentBatchSize * 4 * vertSize;
+<<<<<<< HEAD
 		var worldTransform = sprite.__worldTransform;
 		var a = worldTransform.a;//[0];
 		var b = worldTransform.b;//[3];
@@ -247,53 +265,266 @@ class SpriteBatch {
 		var d = worldTransform.d;//[4];
 		var tx = worldTransform.tx;//[2];
 		var ty = worldTransform.ty;///[5];
+=======
+		var worldTransform = object.__worldTransform.clone();
+		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
+>>>>>>> 90947dc1f50da39234bbde316bc36124e9c91df4
 		
-		vertices[index++] = a * w1 + c * h1 + tx;
-		vertices[index++] = d * h1 + b * w1 + ty;
+		fillVertices(index, aX, aY, cachedTexture.width, cachedTexture.height, tint, alpha, uvs, worldTransform);
+
+		setState(currentBatchSize, cachedTexture.texture, object.blendMode);
+		
+		currentBatchSize++;
+	}
+	
+	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1) {		
+		
+		var texture = sheet.__bitmap.getTexture(gl);
+		if (texture == null) return;
+		
+		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
+		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
+		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
+		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
+		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
+		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
+		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
+		
+		var blendMode:BlendMode = switch(flags & 0xF0000) {
+			case Tilesheet.TILE_BLEND_ADD:		ADD;
+			case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
+			case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
+			case _:								NORMAL;
+		};
+		
+		if (useTransform) { useScale = false; useRotation = false; }
+		
+		var scaleIndex = 0;
+		var rotationIndex = 0;
+		var rgbIndex = 0;
+		var alphaIndex = 0;
+		var transformIndex = 0;
+		
+		var numValues = 3;
+		
+		if (useRect) { numValues = useOrigin ? 8 : 6; }
+		if (useScale) { scaleIndex = numValues; numValues ++; }
+		if (useRotation) { rotationIndex = numValues; numValues ++; }
+		if (useTransform) { transformIndex = numValues; numValues += 4; }
+		if (useRGB) { rgbIndex = numValues; numValues += 3; }
+		if (useAlpha) { alphaIndex = numValues; numValues ++; }
+		
+		var totalCount = tileData.length;
+		if (count >= 0 && totalCount > count) totalCount = count;
+		var itemCount = Std.int (totalCount / numValues);
+		var iIndex = 0;
+		
+		var tileID = -1;
+		var rect:Rectangle = new Rectangle();
+		var tileUV:Rectangle = new Rectangle();
+		var center:Point = new Point();
+		var x = 0.0, y = 0.0;
+		var alpha = 1.0, tint = 0xFFFFFF;
+		var scale = 1.0, rotation = 0.0;
+		var cosTheta = 1.0, sinTheta = 0.0;
+		var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
+		var ox = 0.0, oy = 0.0;
+		var matrix = new Matrix();
+		var oMatrix = object.__worldTransform;
+		var uvs = new TextureUvs();
+		
+		var bIndex = 0;
+		
+		while (iIndex < totalCount) {
+			
+			if (currentBatchSize >= size) {
+				flush ();
+				currentBaseTexture = texture;
+			}
+			
+			if (rect == null) {
+				rect = new Rectangle();
+			}
+			if (center == null) {
+				center = new Point();
+			}
+			
+			x = tileData[iIndex + 0];
+			y = tileData[iIndex + 1];
+			
+			if (useRect) {
+				tileID = -1;
+
+				rect.x = tileData[iIndex + 2];
+				rect.y = tileData[iIndex + 3];
+				rect.width = tileData[iIndex + 4];
+				rect.height = tileData[iIndex + 5];
+				
+				if (useOrigin) {
+					center.x = tileData[iIndex + 6];
+					center.y = tileData[iIndex + 7];
+				} else {
+					center.setTo(0, 0);
+				}
+				
+			} else {
+				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
+				rect = sheet.getTileRect(tileID);
+				center = sheet.getTileCenter(tileID);
+				tileUV = sheet.getTileUVs(tileID);
+			}
+			
+			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
+				
+				alpha = 1;
+				tint = 0xFFFFFF;
+				a = 1; b = 0; c = 0; d = 1; tx = 0; ty = 0;
+				scale = 1.0;
+				rotation = 0.0;
+				cosTheta = 1.0;
+				sinTheta = 0.0;
+				matrix.identity();
+				
+				if (useAlpha) {
+					alpha = tileData[iIndex + alphaIndex];
+				}
+				
+				if (useRGB) {
+					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
+				}
+				
+				if (useScale) {
+					scale = tileData[iIndex + scaleIndex];
+				}
+				
+				if (useRotation) {
+					rotation = tileData[iIndex + rotationIndex];
+					cosTheta = Math.cos(rotation);
+					sinTheta = Math.sin(rotation);
+				}
+				
+				if (useTransform) {
+					a = tileData[iIndex + transformIndex + 0];
+					b = tileData[iIndex + transformIndex + 1];
+					c = tileData[iIndex + transformIndex + 2];
+					d = tileData[iIndex + transformIndex + 3];
+				} else {
+					a = scale * cosTheta;
+					b = scale * sinTheta;
+					c = -b;
+					d = a;
+				}
+				
+				ox = center.x * a + center.y * c;
+				oy = center.x * b + center.y * d;
+				
+				tx = x - ox;
+				ty = y - oy;
+				
+				matrix.a = a * oMatrix.a + b * oMatrix.c;
+				matrix.b = a * oMatrix.b + b * oMatrix.d;
+				matrix.c = c * oMatrix.a + d * oMatrix.c;
+				matrix.d = c * oMatrix.b + d * oMatrix.d;
+				matrix.tx = tx * oMatrix.a + ty * oMatrix.c/* + oMatrix.tx*/;
+				matrix.ty = tx * oMatrix.b + ty * oMatrix.d/* + oMatrix.ty*/;
+				
+				uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
+				uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;
+				uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
+				uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
+				
+				bIndex = currentBatchSize * 4 * vertSize;
+				
+				fillVertices(bIndex, 0, 0, rect.width, rect.height, tint, alpha, uvs, matrix);
+				
+				setState(currentBatchSize, texture, smooth, blendMode);
+				
+				currentBatchSize++;
+			}
+			
+			iIndex += numValues;
+			
+		}
+	}
+	
+	private inline function fillVertices(index:Int,
+										aX:Float, aY:Float,
+										width:Float, height:Float,
+										tint:Int, alpha:Float,
+										uvs:TextureUvs,
+										matrix:Matrix) {
+
+		var w0, w1, h0, h1;
+		w0 = width * (1 - aX);
+		w1 = width * -aX;
+		h0 = height * (1 - aY);
+		h1 = height * -aY;
+		
+		var a = matrix.a;
+		var b = matrix.b;
+		var c = matrix.c;
+		var d = matrix.d;
+		var tx = matrix.tx;
+		var ty = matrix.ty;
+		
+		vertices[index++] = (a * w1 + c * h1 + tx);
+		vertices[index++] = (d * h1 + b * w1 + ty);
 		vertices[index++] = uvs.x0;
 		vertices[index++] = uvs.y0;
 		vertices[index++] = alpha;
 		vertices[index++] = tint;
 		
-		vertices[index++] = a * w0 + c * h1 + tx;
-		vertices[index++] = d * h1 + b * w0 + ty;
+		vertices[index++] = (a * w0 + c * h1 + tx);
+		vertices[index++] = (d * h1 + b * w0 + ty);
 		vertices[index++] = uvs.x1;
 		vertices[index++] = uvs.y1;
 		vertices[index++] = alpha;
 		vertices[index++] = tint;
 		
-		vertices[index++] = a * w0 + c * h0 + tx;
-		vertices[index++] = d * h0 + b * w0 + ty;
+		vertices[index++] = (a * w0 + c * h0 + tx);
+		vertices[index++] = (d * h0 + b * w0 + ty);
 		vertices[index++] = uvs.x2;
 		vertices[index++] = uvs.y2;
 		vertices[index++] = alpha;
 		vertices[index++] = tint;
 		
-		vertices[index++] = a * w1 + c * h0 + tx;
-		vertices[index++] = d * h0 + b * w1 + ty;
+		vertices[index++] = (a * w1 + c * h0 + tx);
+		vertices[index++] = (d * h0 + b * w1 + ty);
 		vertices[index++] = uvs.x3;
 		vertices[index++] = uvs.y3;
 		vertices[index++] = alpha;
 		vertices[index++] = tint;
 		
-		textures[currentBatchSize] = /*sprite.bitmapData.texture.baseTexture*/sprite.bitmapData;
-		blendModes[currentBatchSize] = sprite.blendMode;
-		
-		currentBatchSize++;
-		
 	}
 	
+	private function setState(index:Int, texture:GLTexture, smooth:Bool = true, blendMode:BlendMode) {
+		var state:State = states[currentBatchSize];
+		if (state == null) {
+			state = states[currentBatchSize] = new State();
+		}
+		state.texture = texture;
+		state.textureSmooth = smooth;
+		state.blendMode = blendMode;
+	}
 	
-	private function renderBatch (texture:BitmapData, size:Int, startIndex:Int):Void {
+		
+	private function renderBatch (state:State, size:Int, startIndex:Int):Void {
 		
 		if (size == 0)return;
 		
-		var gl = this.gl;
+		//var gl = this.gl;
 		
-		var tex:GLTexture = /*texture._glTextures[GLRenderer.glContextId];*/ texture.getTexture (gl);
+		//var tex:GLTexture = /*texture._glTextures[GLRenderer.glContextId];*/ texture.getTexture (gl);
 		//if (tex == null) tex = Texture.createWebGLTexture (texture, gl);
-		gl.bindTexture (gl.TEXTURE_2D, tex);
+		gl.bindTexture (gl.TEXTURE_2D, state.texture);
 		
+		if (state.textureSmooth) {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		} else {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
+		}
 		/*if (texture._dirty[GLRenderer.glContextId]) {
 			
 			Texture.updateWebGLTexture (currentBaseTexture, gl);
@@ -308,7 +539,7 @@ class SpriteBatch {
 	
 	
 	public function renderTilingSprite (tilingSprite:Dynamic):Void {
-		
+		/*
 		var texture = tilingSprite.tilingTexture;
 		
 		if (currentBatchSize >= size) {
@@ -400,7 +631,7 @@ class SpriteBatch {
 		textures[currentBatchSize] = texture;
 		blendModes[currentBatchSize] = tilingSprite.blendMode;
 		currentBatchSize++;
-		
+		*/
 	}
 	
 	
@@ -436,4 +667,14 @@ class SpriteBatch {
 	}
 	
 	
+}
+
+private class State {
+	public var texture:GLTexture;
+	public var textureSmooth:Bool = true;
+	public var blendMode:BlendMode;
+	// TODO
+	//public var shader:Dynamic;
+	
+	public function new() {}
 }

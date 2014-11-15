@@ -704,7 +704,7 @@ class CanvasGraphics {
 							positionX = x;
 							positionY = y;
 							
-						case DrawTriangles (vertices, indices, uvtData, culling):
+						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
 							
 							closePath(false);
 							
@@ -953,13 +953,8 @@ class CanvasGraphics {
 		#end
 	}
 	
-	private static function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
-		var vx1 = x2 - x1;
-		var vy1 = y2 - y1;
-		var vx2 = x3 - x1;
-		var vy2 = y3 - y1;
-		
-		return (vx1 * vy2 - vy1 * vx2) < 0;
+	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
+		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 	
 	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):{max:Float, uvt:Vector<Float> } {
