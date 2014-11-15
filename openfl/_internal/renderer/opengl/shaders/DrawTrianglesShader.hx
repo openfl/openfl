@@ -40,7 +40,9 @@ class DrawTrianglesShader extends AbstractShader {
 		];
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision mediump float;',
+			#end
 			'uniform sampler2D sampler;',
 			'uniform vec3 color;',
 			'uniform bool useTexture;',

@@ -69,13 +69,17 @@ class AbstractShader {
 		
 		var shaderProgram = gl.createProgram ();
 		
-		gl.attachShader (shaderProgram, vertexShader);
-		gl.attachShader (shaderProgram, fragmentShader);
-		gl.linkProgram (shaderProgram);
-		
-		if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) == 0) {
+		if (fragmentShader != null && vertexShader != null) {
 			
-			trace ("Could not initialize shaders");
+			gl.attachShader (shaderProgram, vertexShader);
+			gl.attachShader (shaderProgram, fragmentShader);
+			gl.linkProgram (shaderProgram);
+			
+			if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) == 0) {
+				
+				trace ("Could not initialize shaders");
+				
+			}
 			
 		}
 		

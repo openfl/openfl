@@ -28,7 +28,9 @@ class FillShader extends AbstractShader {
 		];
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision mediump float;',
+			#end
 			'uniform vec3 color;',
 			'uniform float alpha;',
 			

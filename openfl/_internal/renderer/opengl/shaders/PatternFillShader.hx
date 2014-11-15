@@ -35,7 +35,9 @@ class PatternFillShader extends AbstractShader {
 		];
 		
 		fragmentSrc = [
+			#if !desktop
 			'precision mediump float;',
+			#end
 			'uniform float alpha;',
 			'uniform vec2 patternTL;',
 			'uniform vec2 patternBR;',
