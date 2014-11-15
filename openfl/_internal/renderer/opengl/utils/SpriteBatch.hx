@@ -380,7 +380,7 @@ class SpriteBatch {
 				}
 				
 				if (useRGB) {
-					tint = Std.int(tileData[iIndex + rgbIndex]) << 16 | Std.int(tileData[iIndex + rgbIndex+1]) << 8 | Std.int(tileData[iIndex + rgbIndex+2]);
+					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
 				}
 				
 				if (useScale) {
