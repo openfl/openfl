@@ -10,6 +10,8 @@ class DrawTrianglesShader extends AbstractShader {
 	public var patternTL:GLUniformLocation;
 	public var patternBR:GLUniformLocation;
 	public var sampler:GLUniformLocation;
+	public var color:GLUniformLocation;
+	public var useTexture:GLUniformLocation;
 	public var alpha:GLUniformLocation;
 	
 	public function new(gl:GLRenderContext) {
@@ -40,15 +42,23 @@ class DrawTrianglesShader extends AbstractShader {
 		fragmentSrc = [
 			'precision mediump float;',
 			'uniform sampler2D sampler;',
+			'uniform vec3 color;',
+			'uniform bool useTexture;',
 			'uniform float alpha;',
 			
 			'varying vec2 vPos;',
 			'varying vec4 vColor;',
 			
+			'vec4 tmp;',
+			
 			'void main(void) {',
-			'   vec4 tcol = texture2D(sampler, vPos);',
-			'   float a = tcol.a * vColor.a * alpha;',
-			'   gl_FragColor = vec4(vec3((tcol.rgb * vColor.rgb) * a), a);',
+			'   if(useTexture) {',
+			'       tmp = texture2D(sampler, vPos);',
+			'   } else {',
+			'       tmp = vec4(color, 1.);',
+			'   }',
+			'   float a = tmp.a * vColor.a * alpha;',
+			'   gl_FragColor = vec4(vec3((tmp.rgb * vColor.rgb) * a), a);',
 			'}'
 		];
 		
@@ -66,6 +76,9 @@ class DrawTrianglesShader extends AbstractShader {
 		
 		sampler = gl.getUniformLocation (program, 'sampler');
 		alpha = gl.getUniformLocation (program, 'alpha');
+		
+		color = gl.getUniformLocation (program, 'color');
+		useTexture = gl.getUniformLocation (program, 'useTexture');
 		
 		aVertexPosition = gl.getAttribLocation (program, 'aVertexPosition');
 		aTextureCoord = gl.getAttribLocation (program, 'aTextureCoord');

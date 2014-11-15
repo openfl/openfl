@@ -1046,7 +1046,13 @@ class GraphicsRenderer {
 				gl.uniform2f(shader.patternBR, bucket.textureBR.x, bucket.textureBR.y);
 				gl.uniformMatrix3fv(shader.patternMatrix, false, bucket.textureMatrix.toArray(false));
 			case DrawTriangles:
-				gl.uniform1i (shader.sampler, 0);
+				if (bucket.texture != null) {
+					gl.uniform1i(shader.useTexture, 1);
+					gl.uniform1i(shader.sampler, 0);
+				} else {
+					gl.uniform1i(shader.useTexture, 0);
+					gl.uniform3fv(shader.color, new Float32Array (bucket.color));
+				}
 			case _:
 		}
 		
