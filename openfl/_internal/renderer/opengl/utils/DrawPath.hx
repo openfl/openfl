@@ -345,6 +345,12 @@ class PathBuiler {
 						
 					case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 						
+						var isColor = switch(__fill) { case Color(_, _): true; case _: false; };
+						if (isColor && uvtData != null) {
+								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
+								continue;
+						}
+						
 						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
