@@ -5,7 +5,10 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.shaders.ComplexPrimitiveShader;
 import openfl._internal.renderer.opengl.shaders.DefaultShader;
+import openfl._internal.renderer.opengl.shaders.DrawTrianglesShader;
 import openfl._internal.renderer.opengl.shaders.FastShader;
+import openfl._internal.renderer.opengl.shaders.FillShader;
+import openfl._internal.renderer.opengl.shaders.PatternFillShader;
 import openfl._internal.renderer.opengl.shaders.PrimitiveShader;
 import openfl._internal.renderer.opengl.shaders.StripShader;
 
@@ -21,6 +24,11 @@ class ShaderManager {
 	public var gl:GLRenderContext;
 	public var maxAttibs:Int;
 	public var primitiveShader:PrimitiveShader;
+	
+	public var fillShader:FillShader;
+	public var patternFillShader:PatternFillShader;
+	public var drawTrianglesShader:DrawTrianglesShader;
+	
 	public var shaderMap:Array<AbstractShader>;
 	public var stripShader:StripShader;
 	public var tempAttribState:Array<Bool>;
@@ -54,6 +62,11 @@ class ShaderManager {
 		defaultShader.destroy ();
 		fastShader.destroy ();
 		stripShader.destroy ();
+		
+		fillShader.destroy();
+		patternFillShader.destroy();
+		drawTrianglesShader.destroy();
+		
 		gl = null;
 		
 	}
@@ -108,6 +121,11 @@ class ShaderManager {
 		defaultShader = new DefaultShader (gl);
 		fastShader = new FastShader (gl);
 		stripShader = new StripShader (gl);
+		
+		fillShader = new FillShader(gl);
+		patternFillShader = new PatternFillShader(gl);
+		drawTrianglesShader = new DrawTrianglesShader(gl);
+		
 		setShader (defaultShader);
 		
 	}

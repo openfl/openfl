@@ -1,8 +1,10 @@
 package openfl.display; #if !flash #if (display || openfl_next || js)
 
 
+import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -45,12 +47,13 @@ class Graphics {
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty:Bool = true;
-	@:noCompletion private var __glData:Array<GLData> = [];
-	@:noCompletion private var __glGraphicsData:Array<DrawPath>;
+	@:noCompletion private var __glStack:Array<GLStack> = [];
+	@:noCompletion private var __drawPaths:Array<DrawPath>;
 	@:noCompletion private var __halfStrokeWidth:Float;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __visible:Bool = true;
+	@:noCompletion private var __cachedTexture:FilterTexture;
 	
 	#if js
 	@:noCompletion private var __canvas:CanvasElement;
@@ -564,7 +567,7 @@ class Graphics {
 	 *                parameter can be set to any value defined by the
 	 *                TriangleCulling class.
 	 */
-	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = null):Void {
+	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling = null, ?colors:Vector<Int>, blendMode:Int = 0):Void {
 		
 		var vlen = Std.int(vertices.length / 2);
 		
@@ -598,7 +601,7 @@ class Graphics {
 		}
 		
 		__inflateBounds (maxX, maxY);
-		__commands.push (DrawTriangles(vertices, indices, uvtData, culling));
+		__commands.push (DrawTriangles(vertices, indices, uvtData, culling, colors, blendMode));
 		__dirty = true;
 		__visible = true;
 		
@@ -997,7 +1000,7 @@ class Graphics {
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
 	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
 	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
-	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
+	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
 	LineTo (x:Float, y:Float);
