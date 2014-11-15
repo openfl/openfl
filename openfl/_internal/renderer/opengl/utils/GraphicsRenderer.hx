@@ -795,7 +795,6 @@ class GraphicsRenderer {
 		
 		var glStack = graphics.__glStack[GLRenderer.glContextId];
 		var bucket:GLBucket;
-		var shader:Dynamic = null;
 		
 		var translationMatrix:Matrix;
 		if (localCoords) {
@@ -815,14 +814,14 @@ class GraphicsRenderer {
 						renderSession.spriteBatch.end();
 					}
 					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix.toArray(true));
-					shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(false));
+					var shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(false));
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
 					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.end();
 					}
-					shader = prepareShader(bucket, renderSession, object, projection, null);
+					var shader = prepareShader(bucket, renderSession, object, projection, null);
 					renderDrawTriangles(bucket, cast shader, renderSession);
 				case DrawTiles:
 					if (!batchDrawing) {
@@ -838,7 +837,7 @@ class GraphicsRenderer {
 					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.end();
 					}
-					shader = renderSession.shaderManager.primitiveShader;
+					var shader = renderSession.shaderManager.primitiveShader;
 				
 					renderSession.shaderManager.setShader (shader);
 					

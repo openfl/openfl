@@ -27,7 +27,9 @@ import openfl.geom.Rectangle;
 class SpriteBatch {
 	
 	
-	public var blendModes:Array<BlendMode>;
+	public var states:Array<State> = [];
+	public var currentState:State;
+	
 	public var currentBaseTexture:GLTexture;
 	public var currentBatchSize:Int;
 	public var currentBlendMode:BlendMode;
@@ -40,7 +42,6 @@ class SpriteBatch {
 	public var renderSession:RenderSession;
 	public var shader:AbstractShader;
 	public var size:Int;
-	public var textures:Array<GLTexture>;
 	public var vertexBuffer:GLBuffer;
 	public var vertices:Float32Array;
 	public var vertSize:Int;
@@ -83,8 +84,7 @@ class SpriteBatch {
 		
 		dirty = true;
 		
-		textures = [];
-		blendModes = [];
+		currentState = new State();
 		
 	}
 	
@@ -159,29 +159,31 @@ class SpriteBatch {
 			
 		}
 		
-		var nextTexture, nextBlendMode;
+		var nextState:State;
 		var batchSize = 0;
 		var start = 0;
 		
-		var currentBaseTexture = null;
-		var currentBlendMode = renderSession.blendModeManager.currentBlendMode;
+		currentState.texture = null;
+		currentState.textureSmooth = true;
+		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
 		
 		var j = this.currentBatchSize;
 		for (i in 0...j) {
 			
-			nextTexture = this.textures[i];
-			nextBlendMode = this.blendModes[i];
+			nextState = states[i];
 			
-			if (currentBaseTexture != nextTexture || currentBlendMode != nextBlendMode) {
+			if (currentState.texture != nextState.texture || currentState.blendMode != nextState.blendMode) {
 				
-				renderBatch (currentBaseTexture, batchSize, start);
+				renderBatch (currentState, batchSize, start);
 				
 				start = i;
 				batchSize = 0;
-				currentBaseTexture = nextTexture;
-				currentBlendMode = nextBlendMode;
+				currentState.texture = nextState.texture;
+				currentState.textureSmooth = nextState.textureSmooth;
+				currentState.blendMode = nextState.blendMode;
 				
-				renderSession.blendModeManager.setBlendMode (currentBlendMode);
+				
+				renderSession.blendModeManager.setBlendMode (currentState.blendMode);
 				
 			}
 			
@@ -189,7 +191,7 @@ class SpriteBatch {
 			
 		}
 		
-		renderBatch (currentBaseTexture, batchSize, start);
+		renderBatch (currentState, batchSize, start);
 		currentBatchSize = 0;
 		
 	}
@@ -205,7 +207,7 @@ class SpriteBatch {
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentBaseTexture = texture;
+			currentState.texture = texture;
 			
 		}
 		
@@ -224,8 +226,7 @@ class SpriteBatch {
 		var index = currentBatchSize * 4 * vertSize;
 		fillVertices(index, aX, aY, bitmapData.width, bitmapData.height, tint, alpha, uvs, sprite.__worldTransform);
 		
-		textures[currentBatchSize] = texture;
-		blendModes[currentBatchSize] = sprite.blendMode;
+		setState(currentBatchSize, texture, sprite.blendMode);
 		
 		currentBatchSize++;
 		
@@ -260,9 +261,8 @@ class SpriteBatch {
 		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
 		
 		fillVertices(index, aX, aY, cachedTexture.width, cachedTexture.height, tint, alpha, uvs, worldTransform);
-		
-		textures[currentBatchSize] = cachedTexture.texture;
-		blendModes[currentBatchSize] = object.blendMode;
+
+		setState(currentBatchSize, cachedTexture.texture, object.blendMode);
 		
 		currentBatchSize++;
 	}
@@ -279,6 +279,13 @@ class SpriteBatch {
 		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
 		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
 		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
+		
+		var blendMode:BlendMode = switch(flags & 0xF0000) {
+			case Tilesheet.TILE_BLEND_ADD:		ADD;
+			case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
+			case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
+			case _:								NORMAL;
+		};
 		
 		if (useTransform) { useScale = false; useRotation = false; }
 		
@@ -420,8 +427,7 @@ class SpriteBatch {
 				
 				fillVertices(bIndex, 0, 0, rect.width, rect.height, tint, alpha, uvs, matrix);
 				
-				textures[currentBatchSize] = texture;
-				blendModes[currentBatchSize] = object.blendMode;
+				setState(currentBatchSize, texture, smooth, blendMode);
 				
 				currentBatchSize++;
 			}
@@ -481,8 +487,18 @@ class SpriteBatch {
 		
 	}
 	
+	private function setState(index:Int, texture:GLTexture, smooth:Bool = true, blendMode:BlendMode) {
+		var state:State = states[currentBatchSize];
+		if (state == null) {
+			state = states[currentBatchSize] = new State();
+		}
+		state.texture = texture;
+		state.textureSmooth = smooth;
+		state.blendMode = blendMode;
+	}
+	
 		
-	private function renderBatch (texture:GLTexture, size:Int, startIndex:Int):Void {
+	private function renderBatch (state:State, size:Int, startIndex:Int):Void {
 		
 		if (size == 0)return;
 		
@@ -490,8 +506,15 @@ class SpriteBatch {
 		
 		//var tex:GLTexture = /*texture._glTextures[GLRenderer.glContextId];*/ texture.getTexture (gl);
 		//if (tex == null) tex = Texture.createWebGLTexture (texture, gl);
-		gl.bindTexture (gl.TEXTURE_2D, texture);
+		gl.bindTexture (gl.TEXTURE_2D, state.texture);
 		
+		if (state.textureSmooth) {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+		} else {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
+		}
 		/*if (texture._dirty[GLRenderer.glContextId]) {
 			
 			Texture.updateWebGLTexture (currentBaseTexture, gl);
@@ -634,4 +657,14 @@ class SpriteBatch {
 	}
 	
 	
+}
+
+private class State {
+	public var texture:GLTexture;
+	public var textureSmooth:Bool = true;
+	public var blendMode:BlendMode;
+	// TODO
+	//public var shader:Dynamic;
+	
+	public function new() {}
 }
