@@ -257,18 +257,8 @@ class SpriteBatch {
 		uvs.x3 = 0;		uvs.y3 = 0;
 		
 		var index = currentBatchSize * 4 * vertSize;
-<<<<<<< HEAD
-		var worldTransform = sprite.__worldTransform;
-		var a = worldTransform.a;//[0];
-		var b = worldTransform.b;//[3];
-		var c = worldTransform.c;//[1];
-		var d = worldTransform.d;//[4];
-		var tx = worldTransform.tx;//[2];
-		var ty = worldTransform.ty;///[5];
-=======
 		var worldTransform = object.__worldTransform.clone();
 		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
->>>>>>> 90947dc1f50da39234bbde316bc36124e9c91df4
 		
 		fillVertices(index, aX, aY, cachedTexture.width, cachedTexture.height, tint, alpha, uvs, worldTransform);
 
