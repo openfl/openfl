@@ -294,7 +294,21 @@ abstract Vector<T>(VectorData<T>) {
 	
 	@:noCompletion @:arrayAccess public inline function arrayWrite (key:Int, value:T):T {
 		
-		if (key >= this.length && !this.fixed) this.length = key + 1;
+		if (!this.fixed) {
+			
+			if (key >= this.length) {
+				this.length = key + 1;
+			}
+			
+			if (this.data.length < this.length) {
+				
+				var data = new haxe.ds.Vector<T> (this.data.length + 10);
+				haxe.ds.Vector.blit (this.data, 0, data, 0, this.data.length);
+				this.data = data;
+				
+			}
+			
+		}		
 		
 		return this.data[key] = value;
 		

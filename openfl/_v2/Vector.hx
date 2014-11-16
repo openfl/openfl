@@ -548,13 +548,28 @@ abstract Vector<T>(VectorData<T>) {
         return this.data[index];
 
     }
-
-
-	@:arrayAccess public inline function set (index:Int, value:T):T {
+	
+	@:arrayAccess public inline function set (key:Int, value:T):T {
 		
-		return this.data[index] = value;
-
-    }
+		if (!this.fixed) {
+			
+			if (key >= this.length) {
+				this.length = key + 1;
+			}
+			
+			if (this.data.length < this.length) {
+				
+				var data = new haxe.ds.Vector<T> (this.data.length + 10);
+				haxe.ds.Vector.blit (this.data, 0, data, 0, this.data.length);
+				this.data = data;
+				
+			}
+			
+		}		
+		
+		return this.data[key] = value;
+		
+	}
 
 
 	@:from static public inline function fromArray<T> (value:Array<T>):Vector<T> {
