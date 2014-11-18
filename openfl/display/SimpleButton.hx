@@ -43,12 +43,13 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	@:noCompletion private function switchState (state:DisplayObject):Void {
 		
-		if (__currentState != null && __currentState.stage != null) {
+		if (__currentState != null && __currentState.parent == this) {
 			
 			removeChild (__currentState);
-			addChild (state);
 			
-		} else {
+		}
+		
+		if (state != null) {
 			
 			addChild (state);
 			
@@ -83,14 +84,28 @@ class SimpleButton extends DisplayObjectContainer {
 		
 		if (hitTestState != this.hitTestState) {
 			
-			// Events bubble up to this instance.
-			addEventListener (MouseEvent.MOUSE_OVER, function(_) { if (overState != __currentState) __currentState = overState; });
-			addEventListener (MouseEvent.MOUSE_OUT, function(_) {  if (upState != __currentState) __currentState = upState; });
-			addEventListener (MouseEvent.MOUSE_DOWN, function(_) { __currentState = downState; });
-			addEventListener (MouseEvent.MOUSE_UP, function(_) { __currentState = overState; });
+			if (this.hitTestState != null && this.hitTestState.parent == this) {
+				
+				removeChild (this.hitTestState);
+				
+			}
 			
-			hitTestState.alpha = 0.0;
-			addChild (hitTestState);
+			removeEventListener (MouseEvent.MOUSE_DOWN, __this_onMouseDown);
+			removeEventListener (MouseEvent.MOUSE_OUT, __this_onMouseOut);
+			removeEventListener (MouseEvent.MOUSE_OVER, __this_onMouseOver);
+			removeEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
+			
+			if (hitTestState != null) {
+				
+				addEventListener (MouseEvent.MOUSE_DOWN, __this_onMouseDown);
+				addEventListener (MouseEvent.MOUSE_OUT, __this_onMouseOut);
+				addEventListener (MouseEvent.MOUSE_OVER, __this_onMouseOver);
+				addEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
+				
+				hitTestState.alpha = 0.0;
+				addChild (hitTestState);
+				
+			}
 			
 		}
 		
@@ -142,6 +157,49 @@ class SimpleButton extends DisplayObjectContainer {
 		switchState (state);
 		
 		return __currentState = state;
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	@:noCompletion private function __this_onMouseDown (event:MouseEvent):Void {
+		
+		__currentState = downState;
+		
+	}
+	
+	
+	@:noCompletion private function __this_onMouseOut (event:MouseEvent):Void {
+		
+		if (upState != __currentState) {
+			
+			__currentState = upState;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __this_onMouseOver (event:MouseEvent):Void {
+		
+		if (overState != __currentState) {
+			
+			__currentState = overState;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function __this_onMouseUp (event:MouseEvent):Void {
+		
+		__currentState = overState;
 		
 	}
 	
