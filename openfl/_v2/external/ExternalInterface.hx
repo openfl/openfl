@@ -7,7 +7,7 @@ class ExternalInterface {
 	
 	
 	public static var available (get, null):Bool;
-	public static var marshallExceptions:Bool;
+	public static var marshallExceptions:Bool = false;
 	public static var objectID:String;
 	
 	private static var callbacks = new Map<String, Dynamic> ();

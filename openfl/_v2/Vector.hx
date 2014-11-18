@@ -493,7 +493,7 @@ abstract Vector<T>(VectorData<T>) {
 			
 		}
 		
-		return -1;
+		return value;
 		
 	}
 	

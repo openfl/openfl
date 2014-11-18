@@ -113,7 +113,9 @@ class MouseEventTest {
 		var exists = mouseEvent.stageX;
 		
 		#if cpp
-		Assert.isNotNull (exists);
+		Assert.areEqual (0, exists);
+		#elseif neko
+		Assert.isNull (exists);
 		#else
 		Assert.isNaN (exists);
 		#end
@@ -129,7 +131,9 @@ class MouseEventTest {
 		var exists = mouseEvent.stageY;
 		
 		#if cpp
-		Assert.isNotNull (exists);
+		Assert.areEqual (0, exists);
+		#elseif neko
+		Assert.isNull (exists);
 		#else
 		Assert.isNaN (exists);
 		#end

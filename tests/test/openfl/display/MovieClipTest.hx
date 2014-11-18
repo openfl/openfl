@@ -63,7 +63,7 @@ class MovieClipTest {
 		var movieClip = new MovieClip ();
 		var exists = movieClip.enabled;
 		
-		Assert.isNotNull (exists);
+		Assert.isTrue (exists);
 		
 	}
 	

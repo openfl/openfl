@@ -262,9 +262,11 @@ class MatrixTest {
 		// TODO: Confirm functionality
 		
 		var matrix = new Matrix ();
+		#if !neko
 		var exists = matrix.setTo;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	

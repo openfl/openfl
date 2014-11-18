@@ -564,6 +564,7 @@ class GraphicsRenderer {
 	public static function buildDrawTriangles (path:DrawPath, object:DisplayObject, glStack:GLStack, localCoords:Bool = false):Void {
 		
 		var args = Type.enumParameters(path.type);
+		
 		var vertices:Vector<Float> = cast args[0];
 		var indices:Vector<Int> = cast args[1];
 		var uvtData:Vector<Float> = cast args[2];

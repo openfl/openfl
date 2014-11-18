@@ -31,6 +31,7 @@ class Timer extends EventDispatcher {
 		__delay = delay;
 		this.repeatCount = repeatCount;
 		currentCount = 0;
+		running = false;
 		
 	}
 	

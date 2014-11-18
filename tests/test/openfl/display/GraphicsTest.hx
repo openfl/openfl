@@ -56,9 +56,11 @@ class GraphicsTest {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;
+		#if !neko
 		var exists = graphics.beginGradientFill;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -160,9 +162,11 @@ class GraphicsTest {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;
+		#if !neko
 		var exists = graphics.drawRoundRect;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -173,9 +177,11 @@ class GraphicsTest {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;
+		#if !neko
 		var exists = graphics.drawRoundRectComplex;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -186,9 +192,11 @@ class GraphicsTest {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;
+		#if !neko
 		var exists = graphics.drawTriangles;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -225,9 +233,11 @@ class GraphicsTest {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;
+		#if !neko
 		var exists = graphics.lineGradientStyle;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -238,9 +248,11 @@ class GraphicsTest {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;
+		#if !neko
 		var exists = graphics.lineStyle;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	

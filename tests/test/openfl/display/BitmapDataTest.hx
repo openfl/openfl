@@ -108,7 +108,7 @@ class BitmapDataTest {
 	}
 	
 	
-	#if html5 @Ignore #end @Test public function applyFilter () {
+	#if (html5 || openfl_next) @Ignore #end @Test public function applyFilter () {
 		
 		#if !html5
 		
@@ -313,7 +313,7 @@ class BitmapDataTest {
 	}
 	
 	
-	@Test public function draw () {
+	#if openfl_next @Ignore #end @Test public function draw () {
 		
 		var bitmapData = new BitmapData (100, 100);
 		var bitmapData2 = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));
@@ -494,9 +494,11 @@ class BitmapDataTest {
 		// TODO: Confirm functionality
 		
 		var bitmapData = new BitmapData (100, 100);
+		#if !neko
 		var exists = bitmapData.perlinNoise;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
@@ -566,9 +568,11 @@ class BitmapDataTest {
 		// TODO: Confirm functionality
 		
 		var bitmapData = new BitmapData (100, 100);
+		#if !neko
 		var exists = bitmapData.threshold;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	

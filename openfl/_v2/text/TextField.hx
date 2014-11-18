@@ -51,6 +51,7 @@ class TextField extends InteractiveObject {
 		
 		gridFitType = GridFitType.PIXEL;
 		sharpness = 0;
+		embedFonts = false;
 		
 	}
 	

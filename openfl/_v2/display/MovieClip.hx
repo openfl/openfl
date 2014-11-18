@@ -31,6 +31,7 @@ class MovieClip extends Sprite {
 		__currentLabel = null;
 		__currentLabels = [];
 		__totalFrames = 0;
+		enabled = true;
 		
 	}
 	

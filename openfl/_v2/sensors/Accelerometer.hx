@@ -23,6 +23,7 @@ class Accelerometer extends EventDispatcher {
 		
 		super ();
 		
+		muted = false;
 		setRequestedUpdateInterval (__defaultInterval);
 		
 	}

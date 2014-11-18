@@ -16,6 +16,7 @@ class Sprite extends DisplayObjectContainer {
 		super (DisplayObjectContainer.lime_create_display_object_container (), __getType ());
 		
 		useHandCursor = true;
+		buttonMode = false;
 		
 	}
 	

@@ -29,7 +29,9 @@ class DirectRendererTest {
 		var exists = directRenderer.render;
 		
 		Assert.isNotNull (exists);
+		#if (!neko || openfl_next)
 		Assert.areEqual (func, directRenderer.render);
+		#end
 		
 	}
 	

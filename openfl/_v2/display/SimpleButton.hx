@@ -28,6 +28,7 @@ class SimpleButton extends InteractiveObject {
 		this.overState = overState;
 		this.downState = downState;
 		this.hitTestState = hitTestState;
+		trackAsMenu = false;
 		
 	}
 	

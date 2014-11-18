@@ -88,7 +88,11 @@ class GraphicsStrokeTest {
 		var stroke = new GraphicsStroke ();
 		var exists = stroke.thickness;
 		
+		#if neko
+		Assert.isNull (exists);
+		#else
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	
