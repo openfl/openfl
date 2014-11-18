@@ -417,10 +417,10 @@ class TextField extends InteractiveObject {
 				
 				if (char == "") break;
 				
-				if (char == '\n' || char == '\r' || char == '\t' || char == ' ' || char == '-')
+				if (char == '\n' /*|| char == '\r'*/ || char == '\t' || char == ' ' || char == '-')
 					wordStart = i + 1;
 					
-				if (char == '\n' || char == '\r')
+				if (char == '\n' /*|| char == '\r'*/)
 						lineStart = i + 1;
 				
 				str3 = __text.substring(lineStart, i + 1);
@@ -765,6 +765,8 @@ class TextField extends InteractiveObject {
 	
 	
 	@:noCompletion public function set_text (value:String):String {
+		
+		value = value.split('\r').join('\n');
 		
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
