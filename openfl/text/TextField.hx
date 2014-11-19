@@ -395,6 +395,8 @@ class TextField extends InteractiveObject {
 		
 		__wrappedText = '';
 		
+		#if js
+		
 		var lineStart:Int = 0;
 		var wordStart:Int = 0;
 		var lineWidth:Float;
@@ -473,6 +475,8 @@ class TextField extends InteractiveObject {
 		{
 			
 		}
+		
+		#end
 		
 		return __wrappedText;
 	}
