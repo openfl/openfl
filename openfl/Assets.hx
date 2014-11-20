@@ -40,7 +40,7 @@ import openfl.utils.ByteArray;
 class Assets {
 	
 	
-	public static var cache = new AssetCache ();
+	public static var cache:IAssetCache = new AssetCache ();
 	
 	private static var dispatcher = new EventDispatcher ();
 	
@@ -82,9 +82,9 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+		if (useCache && cache.enabled && cache.hasBitmapData (id)) {
 			
-			var bitmapData = cache.bitmapData.get (id);
+			var bitmapData = cache.getBitmapData (id);
 			
 			if (isValidBitmapData (bitmapData)) {
 				
@@ -106,7 +106,7 @@ class Assets {
 			
 			if (useCache && cache.enabled) {
 				
-				cache.bitmapData.set (id, bitmapData);
+				cache.setBitmapData (id, bitmapData);
 				
 			}
 			
@@ -144,9 +144,9 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (useCache && cache.enabled && cache.font.exists (id)) {
+		if (useCache && cache.enabled && cache.hasFont (id)) {
 			
-			return cache.font.get (id);
+			return cache.getFont (id);
 			
 		}
 		
@@ -280,9 +280,9 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (useCache && cache.enabled && cache.sound.exists (id)) {
+		if (useCache && cache.enabled && cache.hasSound (id)) {
 			
-			var sound = cache.sound.get (id);
+			var sound = cache.getSound (id);
 			
 			if (isValidSound (sound)) {
 				
@@ -305,7 +305,7 @@ class Assets {
 			
 			if (useCache && cache.enabled) {
 				
-				cache.sound.set (id, sound);
+				cache.setSound (id, sound);
 				
 			}
 			
@@ -363,19 +363,19 @@ class Assets {
 			
 			if (type == AssetType.IMAGE || type == null) {
 				
-				if (cache.bitmapData.exists (id)) return true;
+				if (cache.hasBitmapData (id)) return true;
 				
 			}
 			
 			if (type == AssetType.FONT || type == null) {
 				
-				if (cache.font.exists (id)) return true;
+				if (cache.hasFont (id)) return true;
 				
 			}
 			
 			if (type == AssetType.SOUND || type == AssetType.MUSIC || type == null) {
 				
-				if (cache.sound.exists (id)) return true;
+				if (cache.hasSound (id)) return true;
 				
 			}
 			
@@ -464,9 +464,9 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (useCache && cache.enabled && cache.bitmapData.exists (id)) {
+		if (useCache && cache.enabled && cache.hasBitmapData (id)) {
 			
-			var bitmapData = cache.bitmapData.get (id);
+			var bitmapData = cache.getBitmapData (id);
 			
 			if (isValidBitmapData (bitmapData)) {
 				
@@ -489,7 +489,7 @@ class Assets {
 				
 				if (useCache && cache.enabled) {
 					
-					cache.bitmapData.set (id, bitmapData);
+					cache.setBitmapData (id, bitmapData);
 					
 				}
 				
@@ -557,9 +557,9 @@ class Assets {
 		
 		#if (tools && !display)
 		
-		if (useCache && cache.enabled && cache.font.exists (id)) {
+		if (useCache && cache.enabled && cache.hasFont (id)) {
 			
-			handler (cache.font.get (id));
+			handler (cache.getFont (id));
 			return;
 			
 		}
@@ -576,7 +576,7 @@ class Assets {
 					
 					library.loadFont (symbolName, function (font:Font):Void {
 						
-						cache.font.set (id, font);
+						cache.setFont (id, font);
 						handler (font);
 						
 					});
@@ -868,13 +868,16 @@ class Assets {
 }
 
 
-@:dox(hide) class AssetCache {
+@:dox(hide) class AssetCache implements IAssetCache {
 	
 	
-	public var bitmapData:Map<String, BitmapData>;
-	public var enabled:Bool = true;
-	public var font:Map<String, Font>;
-	public var sound:Map<String, Sound>;
+	public var enabled (get, set):Bool;
+	
+	@:deprecated public var bitmapData:Map<String, BitmapData>;
+	@:deprecated public var font:Map<String, Font>;
+	@:deprecated public var sound:Map<String, Sound>;
+	
+	private var __enabled = true;
 	
 	
 	public function new () {
@@ -936,6 +939,132 @@ class Assets {
 		
 	}
 	
+	
+	public function getBitmapData (id:String):BitmapData {
+		
+		return bitmapData.get (id);
+		
+	}
+	
+	
+	public function getFont (id:String):Font {
+		
+		return font.get (id);
+		
+	}
+	
+	
+	public function getSound (id:String):Sound {
+		
+		return sound.get (id);
+		
+	}
+	
+	
+	public function hasBitmapData (id:String):Bool {
+		
+		return bitmapData.exists (id);
+		
+	}
+	
+	
+	public function hasFont (id:String):Bool {
+		
+		return font.exists (id);
+		
+	}
+	
+	
+	public function hasSound (id:String):Bool {
+		
+		return sound.exists (id);
+		
+	}
+	
+	
+	public function removeBitmapData (id:String):Bool {
+		
+		return bitmapData.remove (id);
+		
+	}
+	
+	
+	public function removeFont (id:String):Bool {
+		
+		return font.remove (id);
+		
+	}
+	
+	
+	public function removeSound (id:String):Bool {
+		
+		return sound.remove (id);
+		
+	}
+	
+	
+	public function setBitmapData (id:String, bitmapData:BitmapData):Void {
+		
+		bitmapData.set (id, bitmapData);
+		
+	}
+	
+	
+	public function setFont (id:String, font:Font):Void {
+		
+		font.set (id, font);
+		
+	}
+	
+	
+	public function setSound (id:String, sound:Sound):Void {
+		
+		sound.set (id, sound);
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_enabled ():Bool {
+		
+		return __enabled;
+		
+	}
+	
+	
+	private function set_enabled (value:Bool):Bool {
+		
+		return __enabled = value;
+		
+	}
+	
+	
+}
+
+
+@:dox(hide) interface IAssetCache {
+	
+	public var enabled (get, set):Bool;
+	
+	public function clear (prefix:String = null):Void;
+	public function getBitmapData (id:String):BitmapData;
+	public function getFont (id:String):Font;
+	public function getSound (id:String):Sound;
+	public function hasBitmapData (id:String):Bool;
+	public function hasFont (id:String):Bool;
+	public function hasSound (id:String):Bool;
+	public function removeBitmapData (id:String):Bool;
+	public function removeFont (id:String):Bool;
+	public function removeSound (id:String):Bool;
+	public function setBitmapData (id:String, bitmapData:BitmapData):Void;
+	public function setFont (id:String, font:Font):Void;
+	public function setSound (id:String, sound:Sound):Void;
 	
 }
 
