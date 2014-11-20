@@ -310,9 +310,9 @@ class SpriteBatch {
 		var iIndex = 0;
 		
 		var tileID = -1;
-		var rect:Rectangle = new Rectangle();
-		var tileUV:Rectangle = new Rectangle();
-		var center:Point = new Point();
+		var rect:Rectangle = sheet.__rectTile;
+		var tileUV:Rectangle = sheet.__rectUV;
+		var center:Point = sheet.__point;
 		var x = 0.0, y = 0.0;
 		var alpha = 1.0, tint = 0xFFFFFF;
 		var scale = 1.0, rotation = 0.0;
@@ -330,13 +330,6 @@ class SpriteBatch {
 			if (currentBatchSize >= size) {
 				flush ();
 				currentBaseTexture = texture;
-			}
-			
-			if (rect == null) {
-				rect = new Rectangle();
-			}
-			if (center == null) {
-				center = new Point();
 			}
 			
 			x = tileData[iIndex + 0];
@@ -357,6 +350,7 @@ class SpriteBatch {
 					center.setTo(0, 0);
 				}
 				
+				tileUV.setTo(rect.left / sheet.__bitmap.width, rect.top / sheet.__bitmap.height, rect.right / sheet.__bitmap.width, rect.bottom / sheet.__bitmap.height);
 			} else {
 				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
 				rect = sheet.getTileRect(tileID);
