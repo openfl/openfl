@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "2.1.5",
-	"releasenote": "Use true font name on all platforms, minor fixes",
+	"version": "2.1.6",
+	"releasenote": "Improvements to 'next' rendering",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
