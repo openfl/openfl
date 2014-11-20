@@ -1392,6 +1392,7 @@ typedef Assets = openfl._v2.Assets;
 #if !macro
 typedef AssetLibrary = openfl._v2.Assets.AssetLibrary;
 typedef AssetCache = openfl._v2.Assets.AssetCache;
+typedef IAssetCache = openfl._v2.Assets.IAssetCache;
 typedef AssetData = openfl._v2.Assets.AssetData;
 typedef AssetType = openfl._v2.Assets.AssetType;
 #end
