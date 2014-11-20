@@ -873,9 +873,9 @@ class Assets {
 	
 	public var enabled (get, set):Bool;
 	
-	@:deprecated public var bitmapData:Map<String, BitmapData>;
-	@:deprecated public var font:Map<String, Font>;
-	@:deprecated public var sound:Map<String, Sound>;
+	/* deprecated */ @:dox(hide) public var bitmapData:Map<String, BitmapData>;
+	/* deprecated */ @:dox(hide) public var font:Map<String, Font>;
+	/* deprecated */ @:dox(hide) public var sound:Map<String, Sound>;
 	
 	private var __enabled = true;
 	
@@ -1005,21 +1005,21 @@ class Assets {
 	
 	public function setBitmapData (id:String, bitmapData:BitmapData):Void {
 		
-		bitmapData.set (id, bitmapData);
+		this.bitmapData.set (id, bitmapData);
 		
 	}
 	
 	
 	public function setFont (id:String, font:Font):Void {
 		
-		font.set (id, font);
+		this.font.set (id, font);
 		
 	}
 	
 	
 	public function setSound (id:String, sound:Sound):Void {
 		
-		sound.set (id, sound);
+		this.sound.set (id, sound);
 		
 	}
 	
