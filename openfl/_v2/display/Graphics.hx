@@ -82,6 +82,13 @@ class Graphics {
 	}
 	
 	
+	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
+		
+		openfl.Lib.notImplemented ("Graphics.cubicCurveTo");
+		
+	}
+	
+	
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void {
 		
 		lime_gfx_curve_to (__handle, controlX, controlY, anchorX, anchorY);
