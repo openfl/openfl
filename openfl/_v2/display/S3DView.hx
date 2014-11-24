@@ -1,4 +1,4 @@
-package openfl._v2.display;
+package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 import openfl.gl.GL;
 import openfl.gl.GLFramebuffer;
 import openfl.gl.GLRenderbuffer;
@@ -382,3 +382,6 @@ class S3DView extends OpenGLView {
 		GL.useProgram (null);
 	}
 }
+
+
+#end

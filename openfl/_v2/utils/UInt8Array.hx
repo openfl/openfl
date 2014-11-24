@@ -1,4 +1,4 @@
-package openfl._v2.utils;
+package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
 
 
 #if neko
@@ -104,3 +104,6 @@ class UInt8Array extends ArrayBufferView implements ArrayAccess<Int> {
 	
 	
 }
+
+
+#end

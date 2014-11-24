@@ -1,4 +1,4 @@
-package openfl._v2.events;
+package openfl._v2.events; #if (!flash && !html5 && !openfl_next)
 
 
 interface IEventDispatcher {
@@ -14,3 +14,6 @@ interface IEventDispatcher {
 }
 
 typedef Function = Dynamic -> Void;
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.geom;
+package openfl._v2.geom; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.display.DisplayObject;
@@ -40,3 +40,6 @@ class Transform {
 	
 	
 }
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.utils;
+package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
 
 
 enum CompressionAlgorithm {
@@ -9,3 +9,6 @@ enum CompressionAlgorithm {
 	GZIP;
 	
 }
+
+
+#end

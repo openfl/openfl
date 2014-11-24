@@ -1,4 +1,4 @@
-package openfl._v2.text;
+package openfl._v2.text; #if (!flash && !html5 && !openfl_next)
 
 
 class TextFormat {
@@ -45,3 +45,6 @@ class TextFormat {
 	
 	
 }
+
+
+#end

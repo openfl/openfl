@@ -1,4 +1,4 @@
-package openfl._v2.filters;
+package openfl._v2.filters; #if (!flash && !html5 && !openfl_next)
 
 
 class BlurFilter extends BitmapFilter {
@@ -28,3 +28,6 @@ class BlurFilter extends BitmapFilter {
 	
 	
 }
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.sensors;
+package openfl._v2.sensors; #if (!flash && !html5 && !openfl_next)
 
 
 import haxe.Timer;
@@ -104,3 +104,6 @@ class Accelerometer extends EventDispatcher {
 
 
 typedef Function = Dynamic -> Void;
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.geom;
+package openfl._v2.geom; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.geom.Vector3D;
@@ -354,3 +354,6 @@ class Matrix #if cpp implements cpp.rtti.FieldNumericIntegerLookup #end {
 	
 	
 }
+
+
+#end

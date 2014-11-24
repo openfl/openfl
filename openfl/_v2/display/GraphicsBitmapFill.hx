@@ -1,4 +1,4 @@
-package openfl._v2.display;
+package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.geom.Matrix;
@@ -30,3 +30,6 @@ class GraphicsBitmapFill extends IGraphicsData implements IGraphicsFill {
 	
 	
 }
+
+
+#end

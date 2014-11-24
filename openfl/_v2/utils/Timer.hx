@@ -1,4 +1,4 @@
-package openfl._v2.utils;
+package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.errors.Error;
@@ -133,3 +133,6 @@ class Timer extends EventDispatcher {
 	
 	
 }
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.utils;
+package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
 #if (android)
 
 
@@ -350,4 +350,5 @@ class JNIMethod {
 }
 
 
+#end
 #end

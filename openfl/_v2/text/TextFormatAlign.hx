@@ -1,4 +1,4 @@
-package openfl._v2.text;
+package openfl._v2.text; #if (!flash && !html5 && !openfl_next)
 
 
 class TextFormatAlign 
@@ -8,3 +8,6 @@ class TextFormatAlign
 	public static var CENTER = "center";
 	public static var JUSTIFY = "justify";
 }
+
+
+#end

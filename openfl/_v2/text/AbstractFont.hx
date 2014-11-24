@@ -1,4 +1,4 @@
-package openfl._v2.text;
+package openfl._v2.text; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.display.BitmapData;
@@ -113,3 +113,6 @@ typedef GlyphInfo = {
 	offsetY:Int,
 	
 };
+
+
+#end

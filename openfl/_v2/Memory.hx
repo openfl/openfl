@@ -1,4 +1,4 @@
-package openfl._v2;
+package openfl._v2; #if (!flash && !html5 && !openfl_next)
 
 
 import haxe.io.BytesData;
@@ -312,3 +312,6 @@ class Memory {
 	
 	
 }
+
+
+#end

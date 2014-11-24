@@ -1,4 +1,4 @@
-package openfl._v2.text;
+package openfl._v2.text; #if (!flash && !html5 && !openfl_next)
 
 
 import haxe.Resource;
@@ -253,3 +253,6 @@ typedef NativeKerningData = {
 	var y:Int;
 	
 }
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.display;
+package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.display.Stage;
@@ -121,3 +121,6 @@ class ManagedStage extends Stage {
 	
 	
 }
+
+
+#end

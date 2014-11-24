@@ -1,4 +1,4 @@
-package openfl._v2.events;
+package openfl._v2.events; #if (!flash && !html5 && !openfl_next)
 
 
 class HTTPStatusEvent extends Event {
@@ -35,3 +35,6 @@ class HTTPStatusEvent extends Event {
 	
 	
 }
+
+
+#end

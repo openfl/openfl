@@ -1,4 +1,4 @@
-package openfl._v2.ui;
+package openfl._v2.ui; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.Lib;
@@ -18,3 +18,6 @@ class Accelerometer {
 	
 	
 }
+
+
+#end

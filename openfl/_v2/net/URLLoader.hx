@@ -1,4 +1,4 @@
-package openfl._v2.net;
+package openfl._v2.net; #if (!flash && !html5 && !openfl_next)
 
 
 import sys.io.File;
@@ -303,3 +303,6 @@ class URLLoader extends EventDispatcher {
 	private static var lime_curl_initialize = Lib.load ("lime", "lime_curl_initialize", 1);
 	
 }
+
+
+#end

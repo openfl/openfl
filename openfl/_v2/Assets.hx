@@ -1,4 +1,4 @@
-package openfl._v2;
+package openfl._v2; #if (!flash && !html5 && !openfl_next)
 #if !macro
 
 
@@ -1944,4 +1944,5 @@ class Assets {
 }
 
 
+#end
 #end

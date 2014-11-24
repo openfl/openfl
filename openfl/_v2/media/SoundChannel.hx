@@ -1,4 +1,4 @@
-package openfl._v2.media;
+package openfl._v2.media; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.events.Event;
@@ -399,4 +399,5 @@ class SoundChannel extends EventDispatcher {
 	
 }
 
+#end
 #end

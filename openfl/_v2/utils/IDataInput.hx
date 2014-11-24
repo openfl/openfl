@@ -1,4 +1,4 @@
-package openfl._v2.utils;
+package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
 
 
 interface IDataInput {
@@ -22,3 +22,6 @@ interface IDataInput {
 	
 	
 }
+
+
+#end

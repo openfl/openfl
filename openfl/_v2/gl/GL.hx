@@ -1,4 +1,4 @@
-package openfl._v2.gl;
+package openfl._v2.gl; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.display.BitmapData;
@@ -1336,3 +1336,6 @@ abstract Float32Data(Dynamic) {
     	return new Float32Data (f);
     
 }
+
+
+#end

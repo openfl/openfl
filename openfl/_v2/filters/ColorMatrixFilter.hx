@@ -1,4 +1,4 @@
-package openfl._v2.filters;
+package openfl._v2.filters; #if (!flash && !html5 && !openfl_next)
 
 
 class ColorMatrixFilter extends BitmapFilter {
@@ -30,3 +30,6 @@ class ColorMatrixFilter extends BitmapFilter {
 	
 	
 }
+
+
+#end

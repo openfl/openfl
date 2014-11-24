@@ -1,4 +1,4 @@
-package openfl._v2.feedback;
+package openfl._v2.feedback; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.Lib;
@@ -29,3 +29,6 @@ class Haptic {
 	
 	
 }
+
+
+#end

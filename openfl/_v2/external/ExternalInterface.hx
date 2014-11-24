@@ -1,4 +1,4 @@
-package openfl._v2.external;
+package openfl._v2.external; #if (!flash && !html5 && !openfl_next)
 
 import openfl.Lib;
 
@@ -90,3 +90,6 @@ class ExternalInterface {
 	
 	
 }
+
+
+#end

@@ -1,4 +1,4 @@
-package openfl._v2.filters;
+package openfl._v2.filters; #if (!flash && !html5 && !openfl_next)
 
 
 class BitmapFilter {
@@ -25,3 +25,6 @@ class BitmapFilter {
 	
 	
 }
+
+
+#end

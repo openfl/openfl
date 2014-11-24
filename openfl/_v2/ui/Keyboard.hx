@@ -1,4 +1,4 @@
-package openfl._v2.ui;
+package openfl._v2.ui; #if (!flash && !html5 && !openfl_next)
 
 
 class Keyboard {
@@ -111,3 +111,6 @@ class Keyboard {
 	
 	
 }
+
+
+#end

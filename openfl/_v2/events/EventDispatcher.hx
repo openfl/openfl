@@ -1,4 +1,4 @@
-package openfl._v2.events;
+package openfl._v2.events; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.events.Event;
@@ -284,3 +284,6 @@ class Listener {
 
 typedef ListenerList = Array<Listener>;
 typedef EventMap = haxe.ds.StringMap<ListenerList>;
+
+
+#end

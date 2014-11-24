@@ -1,4 +1,4 @@
-package openfl._v2.filesystem;
+package openfl._v2.filesystem; #if (!flash && !html5 && !openfl_next)
 
 
 class StorageVolume {
@@ -27,3 +27,6 @@ class StorageVolume {
 	
 	
 }
+
+
+#end

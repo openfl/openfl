@@ -1,4 +1,4 @@
-package openfl._v2.filters;
+package openfl._v2.filters; #if (!flash && !html5 && !openfl_next)
 
 
 class GlowFilter extends BitmapFilter {
@@ -45,3 +45,6 @@ class GlowFilter extends BitmapFilter {
 	
 	
 }
+
+
+#end

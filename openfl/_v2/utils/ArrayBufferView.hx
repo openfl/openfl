@@ -1,4 +1,4 @@
-package openfl._v2.utils;
+package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.utils.ByteArray;
@@ -199,3 +199,6 @@ class ArrayBufferView implements IMemoryRange {
 	
 	
 }
+
+
+#end

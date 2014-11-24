@@ -1,4 +1,4 @@
-package openfl._v2.system;
+package openfl._v2.system; #if (!flash && !html5 && !openfl_next)
 
 
 import openfl.Lib;
@@ -69,3 +69,6 @@ class System {
 	
 	
 }
+
+
+#end

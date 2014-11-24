@@ -1,4 +1,4 @@
-package openfl._v2.net;
+package openfl._v2.net; #if (!flash && !html5 && !openfl_next)
 
 
 class URLRequestMethod {
@@ -13,3 +13,6 @@ class URLRequestMethod {
 	
 	
 }
+
+
+#end

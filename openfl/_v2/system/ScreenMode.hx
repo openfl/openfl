@@ -1,4 +1,4 @@
-package openfl._v2.system;
+package openfl._v2.system; #if (!flash && !html5 && !openfl_next)
 
 class ScreenMode {
 	public var format:PixelFormat;
@@ -13,3 +13,6 @@ class ScreenMode {
 		this.refreshRate = -1;
 	}
 }
+
+
+#end
