@@ -933,10 +933,6 @@ class GraphicsRenderer {
 			glStack.lastIndex++;
 		}
 		
-		for (bucket in glStack.buckets) {
-			bucket.optimize();
-		}
-		
 		glStack.upload();
 		
 	}
@@ -1313,82 +1309,6 @@ class GLBucket {
 			line.invalidate();
 		}
 	}
-	
-	public function optimize() {
-		
-		inline function opt(data:Array<GLBucketData>, type:BucketDataType) {
-			if (data.length > 1) {
-				var result:Array<GLBucketData> = [];
-				var tmp:GLBucketData = null;
-				var last:GLBucketData = null;
-				var idx:Int = 0;
-				var vi:Int = 0;
-				var ii:Int = 0;
-				var before = data.length;
-				for (d in data) {
-					if (d.available || d.rawVerts || d.rawIndices) {
-						if (tmp != null) {
-							result.push(tmp);
-							tmp = null;
-						}
-						result.push(d);
-						last = d;
-						//trace("destroyed or raw data");
-						continue;
-					}
-					//trace("last null? "+(last == null)+" or same drawmode? "+ (last != null && last.drawMode == d.drawMode) + " " + d.drawMode);
-					if (last == null || (last.drawMode == d.drawMode)) {
-						if (tmp == null) {
-							tmp = d;
-						} else {
-							vi = tmp.verts.length;
-							ii = tmp.indices.length;
-							for (j in 0...d.verts.length) {
-								tmp.verts[j + vi] = d.verts[j];
-							}
-							for (j in 0...d.indices.length) {
-								tmp.indices[j + ii] = d.indices[j] + idx;
-							}
-						}
-						idx = tmp.indices[tmp.indices.length - 1] + 1;
-						last = d;
-					} else {
-						if (tmp != null) {
-							result.push(tmp);
-							tmp = null;
-						}
-						result.push(d);
-						last = d;
-						continue;
-					}
-					
-				}
-				
-				if (result.length == 0 && tmp != null) {
-					result.push(tmp);
-				}
-				
-				if(result.length > 0) {
-					switch(type) {
-						case Fill:
-							this.fills = result;
-						case _:
-							this.lines = result;
-					}
-					//data = result;
-				}
-				
-				//trace("Optimized from: " + before + " to: " + result.length);
-				
-			}
-		}
-		
-		//opt(fills, Fill);
-		opt(lines, Line);
-		
-		
-	}
-	
 	
 	public function reset ():Void {
 		for (fill in fills) {
