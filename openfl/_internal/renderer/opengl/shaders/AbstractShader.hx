@@ -75,7 +75,7 @@ class AbstractShader {
 			gl.attachShader (shaderProgram, fragmentShader);
 			gl.linkProgram (shaderProgram);
 			
-			if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) && !gl.isContextLost()) {
+			if (gl.getProgramParameter(shaderProgram, gl.LINK_STATUS) == 0 && !gl.isContextLost()) {
 				
 				trace (gl.getProgramInfoLog (shaderProgram));
 				
@@ -109,7 +109,7 @@ class AbstractShader {
 		gl.shaderSource (shader, src);
 		gl.compileShader (shader);
 		
-		if (!gl.getShaderParameter (shader, gl.COMPILE_STATUS) && !gl.isContextLost()) {
+		if (gl.getShaderParameter (shader, gl.COMPILE_STATUS) == 0 && !gl.isContextLost()) {
 			
 			//trace ("Error compiling " + Type.getClassName (Type.getClass (this)));
 			trace (gl.getShaderInfoLog (shader));

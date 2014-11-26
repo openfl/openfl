@@ -774,14 +774,21 @@ class GraphicsRenderer {
 				var gl = renderSession.gl;
 				var bounds = graphics.__bounds;
 				var texture = graphics.__cachedTexture;
+				var bitmap = graphics.__cachedBitmapData;
 				
 				var w = Math.floor(bounds.width + 0.5);
 				var h = Math.floor(bounds.height+ 0.5);
 
 				if (texture == null) {
-					texture = new FilterTexture(gl, w, h, false);
-					graphics.__cachedTexture = texture;
+					texture = graphics.__cachedTexture = new FilterTexture(gl, w, h, false);
 				}
+				
+				if (bitmap == null) {
+					bitmap = graphics.__cachedBitmapData = new BitmapData(w, h, true);
+					bitmap.__image.dirty = false;
+				}
+				
+				bitmap.__texture = texture.texture;
 				
 				texture.resize(w, h);
 				gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);

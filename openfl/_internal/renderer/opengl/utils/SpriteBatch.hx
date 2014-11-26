@@ -228,16 +228,13 @@ class SpriteBatch {
 	
 	public function renderCachedGraphics(object:DisplayObject) {
 		
-		/*
-		
-		var cachedTexture = object.__graphics.__cachedTexture;
-		
-		if (cachedTexture == null) return;
+		var bitmap = object.__graphics.__cachedBitmapData;
+		if (bitmap == null) return;
 		
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentBaseTexture = cachedTexture.texture;
+			currentState.bitmapData = bitmap;
 			
 		}
 		
@@ -257,13 +254,11 @@ class SpriteBatch {
 		var worldTransform = object.__worldTransform.clone();
 		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
 		
-		fillVertices(index, aX, aY, cachedTexture.width, cachedTexture.height, tint, alpha, uvs, worldTransform);
+		fillVertices(index, aX, aY, bitmap.width, bitmap.height, tint, alpha, uvs, worldTransform);
 
-		setState(currentBatchSize, cachedTexture.texture, object.blendMode);
+		setState(currentBatchSize, bitmap, object.blendMode);
 		
 		currentBatchSize++;
-		
-		*/
 	}
 	
 	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1) {		

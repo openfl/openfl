@@ -54,6 +54,7 @@ class Graphics {
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __visible:Bool = true;
 	@:noCompletion private var __cachedTexture:FilterTexture;
+	@:noCompletion private var __cachedBitmapData:BitmapData;
 	
 	#if js
 	@:noCompletion private var __canvas:CanvasElement;
@@ -926,8 +927,10 @@ class Graphics {
 	}
 	
 	@:noCompletion private function __invalidate() {
+		
 		__dirty = true;
 		
+		__cachedTexture = null;
 		for (stack in __glStack) {
 			if(stack != null) stack.invalidate();
 		}
