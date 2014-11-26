@@ -160,7 +160,7 @@ class SpriteBatch {
 		
 		currentState.bitmapData = null;
 		currentState.smoothing = true;
-		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
+		currentState.blendMode = renderSession.blendModeManager.currentBlendMode == null ? BlendMode.NORMAL : renderSession.blendModeManager.currentBlendMode;
 		
 		var j = this.currentBatchSize;
 		for (i in 0...j) {
@@ -622,7 +622,7 @@ class SpriteBatch {
 		}
 		
 		for (state in states) {
-			if(state.bitmapData != null) state.bitmapData.__invalidate();
+			if (state.bitmapData != null) state.bitmapData.__invalidate();
 		}
 		
 		vertexBuffer = gl.createBuffer ();
