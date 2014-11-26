@@ -769,22 +769,22 @@ class GraphicsRenderer {
 		//TODO find a way to remove drawTiles calls
 		if (object.cacheAsBitmap) {
 			
+			var bounds = graphics.__bounds;
+			var w = Math.floor(bounds.width + 0.5);
+			var h = Math.floor(bounds.height + 0.5);
+			
 			if (dirty) {
 				
 				var gl = renderSession.gl;
-				var bounds = graphics.__bounds;
 				var texture = graphics.__cachedTexture;
 				var bitmap = graphics.__cachedBitmapData;
-				
-				var w = Math.floor(bounds.width + 0.5);
-				var h = Math.floor(bounds.height+ 0.5);
 
 				if (texture == null) {
 					texture = graphics.__cachedTexture = new FilterTexture(gl, w, h, false);
 				}
 				
 				if (bitmap == null) {
-					bitmap = graphics.__cachedBitmapData = new BitmapData(w, h, true);
+					bitmap = graphics.__cachedBitmapData = new BitmapData(1, 1, false);
 					bitmap.__image.dirty = false;
 				}
 				
@@ -804,7 +804,7 @@ class GraphicsRenderer {
 				spritebatch.begin(renderSession);
 			}
 			
-			spritebatch.renderCachedGraphics(object);
+			spritebatch.renderCachedGraphics(object, w, h);
 			
 		} else {
 			renderGraphics(object, renderSession, renderSession.projection, false);

@@ -226,10 +226,10 @@ class SpriteBatch {
 		
 	}
 	
-	public function renderCachedGraphics(object:DisplayObject) {
+	public function renderCachedGraphics(object:DisplayObject, width:Float, height:Float) {
 		
 		var bitmap = object.__graphics.__cachedBitmapData;
-		if (bitmap == null) return;
+		if (bitmap.__texture == null) return;
 		
 		if (currentBatchSize >= size) {
 			
@@ -254,7 +254,7 @@ class SpriteBatch {
 		var worldTransform = object.__worldTransform.clone();
 		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
 		
-		fillVertices(index, aX, aY, bitmap.width, bitmap.height, tint, alpha, uvs, worldTransform);
+		fillVertices(index, aX, aY, width, height, tint, alpha, uvs, worldTransform);
 
 		setState(currentBatchSize, bitmap, object.blendMode);
 		
