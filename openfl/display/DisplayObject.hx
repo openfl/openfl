@@ -1079,6 +1079,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
+	@:noCompletion @:dox(hide) public function __invalidate ():Void {
+		
+		
+		
+	}
+	
 	
 	@:noCompletion private function __setStageReference (stage:Stage):Void {
 		

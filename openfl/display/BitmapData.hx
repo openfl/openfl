@@ -1418,6 +1418,10 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
+	@:noCompletion private function __invalidate():Void {
+		__texture = null;
+	}
+	
 	
 	@:noCompletion private function __createUVs ():Void {
 		

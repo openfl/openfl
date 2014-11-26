@@ -143,6 +143,21 @@ class Stage extends Sprite {
 		
 	}
 	
+	@:noCompletion private function __contextLost() {
+		__renderer.handleContextLost();
+		__invalidate();
+		__invalidated = true;
+	}
+	
+	@:noCompletion private function __contextRestored(context:RenderContext) {
+		__renderer.handleContextRestored(context);
+	}
+	
+	@:noCompletion public override function __invalidate() {
+		super.__invalidate();
+		__invalidated = false;
+	}
+	
 	
 	@:noCompletion private function __drag (mouse:Point):Void {
 		
@@ -279,7 +294,7 @@ class Stage extends Sprite {
 				}
 				
 				__renderer.render (this);
-			
+				
 			case CANVAS (context):
 				
 				if (__renderer == null) {

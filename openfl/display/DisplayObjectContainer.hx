@@ -833,6 +833,16 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion @:dox(hide) public override function __invalidate ():Void {
+		
+		for (child in __children) {
+			
+			child.__invalidate();
+			
+		}
+		
+	}
+	
 	
 	@:noCompletion private override function __setStageReference (stage:Stage):Void {
 		

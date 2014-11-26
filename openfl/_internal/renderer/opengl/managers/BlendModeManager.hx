@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.utils;
+package openfl._internal.renderer.opengl.managers ;
 
 
 import lime.graphics.GLRenderContext;

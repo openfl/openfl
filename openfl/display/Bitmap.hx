@@ -162,6 +162,12 @@ class Bitmap extends DisplayObjectContainer {
 		
 	}
 	
+	@:noCompletion @:dox(hide) public override function __invalidate ():Void {
+		
+		bitmapData.__invalidate();
+		
+	}
+	
 	
 	@:noCompletion @:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
 		

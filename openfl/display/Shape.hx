@@ -3,7 +3,7 @@ package openfl.display; #if !flash #if (display || openfl_next || js)
 
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -76,6 +76,14 @@ class Shape extends DisplayObject {
 			
 			GraphicsRenderer.render (this, renderSession);
 			
+		}
+		
+	}
+	
+	@:noCompletion public override function __invalidate ():Void {
+		
+		if (__graphics != null) {
+			__graphics.__invalidate();
 		}
 		
 	}
