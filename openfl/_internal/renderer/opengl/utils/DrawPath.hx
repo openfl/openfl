@@ -289,8 +289,8 @@ class PathBuiler {
 						
 						if (ry == -1) ry = rx;
 						
-						rx *= 0.25;
-						ry *= 0.25;
+						rx *= 0.5;
+						ry *= 0.5;
 						
 						if (rx > width / 2) rx = width / 2;
 						if (ry > height / 2) ry = height / 2;
