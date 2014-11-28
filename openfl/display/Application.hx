@@ -539,13 +539,13 @@ class Application extends LimeApplication {
 		
 	}
 	
-	public override function onContextLost ():Void {
+	public override function onRenderContextLost ():Void {
 		
 		stage.__contextLost();
 		
 	}
 	
-	public override function onContextRestored (context:RenderContext):Void {
+	public override function onRenderContextRestored (context:RenderContext):Void {
 		
 		stage.__contextRestored(context);
 		
