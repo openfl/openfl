@@ -28,6 +28,9 @@ import js.Browser;
 class CanvasGraphics {
 	
 	
+	private static var SIN45 = 0.70710678118654752440084436210485;
+	private static var TAN22 = 0.4142135623730950488016887242097;
+	
 	private static var bounds:Rectangle;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
@@ -131,25 +134,32 @@ class CanvasGraphics {
 		#if js
 		if (ry == -1) ry = rx;
 		
-		var kappa = .5522848,
-		ox = rx * kappa, // control point offset horizontal
-		oy = ry * kappa, // control point offset vertical
-		xe = x + width, // x-end
-		ye = y + height, // y-end
-		cx1 = x + rx, // center x
-		cy1 = y + ry, // center y
-		cx2 = xe - rx, // center x
-		cy2 = ye - ry; // center y
+		rx *= 0.5;
+		ry *= 0.5;
 		
-		context.moveTo (x, cy1);
-		context.bezierCurveTo (x, cy1 - oy, cx1 - ox, y, cx1, y);
-		context.lineTo (cx2, y);
-		context.bezierCurveTo (cx2 + ox, y, xe, cy1 - oy, xe, cy1);
-		context.lineTo (xe, cy2);
-		context.bezierCurveTo (xe, cy2 + oy, cx2 + ox, ye, cx2, ye);
-		context.lineTo (cx1, ye);
-		context.bezierCurveTo (cx1 - ox, ye, x, cy2 + oy, x, cy2);
-		context.lineTo (x, cy1);
+		if (rx > width * 0.5) rx = width * 0.5;
+		if (ry > height * 0.5) ry = height * 0.5;
+		
+		var xe = x + width,
+		ye = y + height,
+		cpx1 = -rx + (rx * SIN45),
+		cpx2 = -rx + (rx * TAN22),
+		cpy1 = -ry + (ry * SIN45),
+		cpy2 = -ry + (ry * TAN22);
+		
+		context.moveTo (xe, ye - ry);
+		context.quadraticCurveTo (xe, ye + cpy2, xe + cpx1, ye + cpy1);
+		context.quadraticCurveTo (xe + cpx2, ye, xe - rx, ye);
+		context.lineTo (x + rx, ye);
+		context.quadraticCurveTo (x - cpx2, ye, x - cpx1, ye + cpy1);
+		context.quadraticCurveTo (x, ye + cpy2, x, ye - ry);
+		context.lineTo (x, y + ry);
+		context.quadraticCurveTo (x, y - cpy2, x - cpx1, y - cpy1);
+		context.quadraticCurveTo (x - cpx2, y, x + rx, y);
+		context.lineTo (xe - rx, y);
+		context.quadraticCurveTo (xe + cpx2, y, xe + cpx1, y - cpy1);
+		context.quadraticCurveTo (xe, y - cpy2, xe, y + ry);
+		context.lineTo (xe, ye - ry);
 		#end
 		
 	}
@@ -549,7 +559,7 @@ class CanvasGraphics {
 							
 							beginPatternFill (bitmapFill, bitmapRepeat);
 							beginPath ();
-							drawRoundRect (x, y, width, height, rx, ry);
+							drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
 							
