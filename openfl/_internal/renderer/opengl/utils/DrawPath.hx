@@ -287,12 +287,20 @@ class PathBuiler {
 					
 					case DrawRoundRect (x, y, width, height, rx, ry):
 						
+						if (ry == -1) ry = rx;
+						
+						rx *= 0.25;
+						ry *= 0.25;
+						
+						if (rx > width / 2) rx = width / 2;
+						if (ry > height / 2) ry = height / 2;
+						
 						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
 						__currentPath.update(__line, __fill, __fillIndex);
 						__currentPath.type = Rectangle (true);
-						__currentPath.points = [ x, y, width, height, rx, ry != -1 ? ry : rx ];
+						__currentPath.points = [ x, y, width, height, rx, ry ];
 						
 						__drawPaths.push (__currentPath);
 					

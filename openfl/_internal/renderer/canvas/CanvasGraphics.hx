@@ -137,8 +137,8 @@ class CanvasGraphics {
 		rx *= 0.5;
 		ry *= 0.5;
 		
-		if (rx > width * 0.5) rx = width * 0.5;
-		if (ry > height * 0.5) ry = height * 0.5;
+		if (rx > width / 2) rx = width / 2;
+		if (ry > height / 2) ry = height / 2;
 		
 		var xe = x + width,
 		ye = y + height,

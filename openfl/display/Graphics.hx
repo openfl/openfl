@@ -512,9 +512,6 @@ class Graphics {
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void {
 		
 		if (width <= 0 || height <= 0) return;
-		if (rx > width / 2) rx = width / 2;
-		if (ry > height / 2) ry = height / 2;
-		if (ry < 0) ry = rx;
 		
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
