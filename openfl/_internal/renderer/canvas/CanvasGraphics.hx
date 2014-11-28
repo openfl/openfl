@@ -142,23 +142,23 @@ class CanvasGraphics {
 		
 		var xe = x + width,
 		ye = y + height,
-		cpx1 = -rx + (rx * SIN45),
-		cpx2 = -rx + (rx * TAN22),
-		cpy1 = -ry + (ry * SIN45),
-		cpy2 = -ry + (ry * TAN22);
+		cx1 = -rx + (rx * SIN45),
+		cx2 = -rx + (rx * TAN22),
+		cy1 = -ry + (ry * SIN45),
+		cy2 = -ry + (ry * TAN22);
 		
 		context.moveTo (xe, ye - ry);
-		context.quadraticCurveTo (xe, ye + cpy2, xe + cpx1, ye + cpy1);
-		context.quadraticCurveTo (xe + cpx2, ye, xe - rx, ye);
+		context.quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
+		context.quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
 		context.lineTo (x + rx, ye);
-		context.quadraticCurveTo (x - cpx2, ye, x - cpx1, ye + cpy1);
-		context.quadraticCurveTo (x, ye + cpy2, x, ye - ry);
+		context.quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
+		context.quadraticCurveTo (x, ye + cy2, x, ye - ry);
 		context.lineTo (x, y + ry);
-		context.quadraticCurveTo (x, y - cpy2, x - cpx1, y - cpy1);
-		context.quadraticCurveTo (x - cpx2, y, x + rx, y);
+		context.quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
+		context.quadraticCurveTo (x - cx2, y, x + rx, y);
 		context.lineTo (xe - rx, y);
-		context.quadraticCurveTo (xe + cpx2, y, xe + cpx1, y - cpy1);
-		context.quadraticCurveTo (xe, y - cpy2, xe, y + ry);
+		context.quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
+		context.quadraticCurveTo (xe, y - cy2, xe, y + ry);
 		context.lineTo (xe, ye - ry);
 		#end
 		
