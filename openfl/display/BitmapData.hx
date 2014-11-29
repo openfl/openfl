@@ -160,6 +160,9 @@ class BitmapData implements IBitmapDrawable {
 		height = height == null ? 0 : height;
 		#end
 		
+		width = width < 0 ? 0 : width;
+		height = height < 0 ? 0 : height;
+		
 		this.width = width;
 		this.height = height;
 		rect = new Rectangle (0, 0, width, height);
