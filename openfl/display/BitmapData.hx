@@ -155,7 +155,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		this.transparent = transparent;
 		
-		#if (neko || html5)
+		#if (neko || (js && html5))
 		width = width == null ? 0 : width;
 		height = height == null ? 0 : height;
 		#end
