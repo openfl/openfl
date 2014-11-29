@@ -337,7 +337,9 @@ class Application extends LimeApplication {
 	}
 	
 	
-	@:noCompletion private function onMouse (type:String, x:Float, y:Float):Void {
+	@:noCompletion private function onMouse (type:String, x:Float, y:Float, button:Int):Void {
+		
+		if (button > 2) return;
 		
 		/*var rect;
 		
@@ -357,6 +359,15 @@ class Application extends LimeApplication {
 			
 		}*/
 		
+		var clickType = switch (type) {
+			
+			case MouseEvent.MOUSE_UP: MouseEvent.CLICK;
+			case MouseEvent.MIDDLE_MOUSE_UP: MouseEvent.MIDDLE_CLICK;
+			case MouseEvent.RIGHT_MOUSE_UP: MouseEvent.RIGHT_CLICK;
+			default: null;
+			
+		}
+		
 		stage.__mouseX = x;
 		stage.__mouseY = y;
 		
@@ -366,22 +377,22 @@ class Application extends LimeApplication {
 			
 			var target = __stack[__stack.length - 1];
 			stage.__setCursor (untyped (target).buttonMode ? "pointer" : "default");
-			stage.__fireEvent (MouseEvent.__create (type, /*event,*/ target.globalToLocal (new Point (x, y)), cast target), __stack);
+			stage.__fireEvent (MouseEvent.__create (type, button, target.globalToLocal (new Point (x, y)), cast target), __stack);
 			
-			if (type == MouseEvent.MOUSE_UP) {
+			if (clickType != null) {
 				
-				stage.__fireEvent (MouseEvent.__create (MouseEvent.CLICK, /*event,*/ target.globalToLocal (new Point (x, y)), cast target), __stack);
+				stage.__fireEvent (MouseEvent.__create (clickType, button, target.globalToLocal (new Point (x, y)), cast target), __stack);
 				
 			}
 			
 		} else {
 			
 			stage.__setCursor (stage.buttonMode ? "pointer" : "default");
-			stage.__fireEvent (MouseEvent.__create (type, /*event,*/ new Point (x, y), stage), [ stage ]);
+			stage.__fireEvent (MouseEvent.__create (type, button, new Point (x, y), stage), [ stage ]);
 			
-			if (type == MouseEvent.MOUSE_UP) {
+			if (clickType != null) {
 				
-				stage.__fireEvent (MouseEvent.__create (MouseEvent.CLICK, /*event,*/ new Point (x, y), stage), [ stage ]);
+				stage.__fireEvent (MouseEvent.__create (clickType, button, new Point (x, y), stage), [ stage ]);
 				
 			}
 			
@@ -398,21 +409,37 @@ class Application extends LimeApplication {
 	
 	public override function onMouseDown (x:Float, y:Float, button:Int):Void {
 		
-		onMouse (MouseEvent.MOUSE_DOWN, x, y);
+		var type = switch (button) {
+			
+			case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
+			case 2: MouseEvent.RIGHT_MOUSE_DOWN;
+			default: MouseEvent.MOUSE_DOWN;
+			
+		}
+		
+		onMouse (type, x, y, button);
 		
 	}
 	
 	
 	public override function onMouseMove (x:Float, y:Float, button:Int):Void {
 		
-		onMouse (MouseEvent.MOUSE_MOVE, x, y);
+		onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
 		
 	}
 	
 	
 	public override function onMouseUp (x:Float, y:Float, button:Int):Void {
 		
-		onMouse (MouseEvent.MOUSE_UP, x, y);
+		var type = switch (button) {
+			
+			case 1: MouseEvent.MIDDLE_MOUSE_UP;
+			case 2: MouseEvent.RIGHT_MOUSE_UP;
+			default: MouseEvent.MOUSE_UP;
+			
+		}
+		
+		onMouse (type, x, y, button);
 		
 	}
 	
@@ -462,7 +489,7 @@ class Application extends LimeApplication {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			var mouseEvent = MouseEvent.__create (mouseType, /*cast event,*/ localPoint, cast target);
+			var mouseEvent = MouseEvent.__create (mouseType, 0, localPoint, cast target);
 			mouseEvent.buttonDown = (type != TouchEvent.TOUCH_END);
 			
 			stage.__fireEvent (touchEvent, __stack);
@@ -475,7 +502,7 @@ class Application extends LimeApplication {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			var mouseEvent = MouseEvent.__create (mouseType, /*cast event,*/ point, stage);
+			var mouseEvent = MouseEvent.__create (mouseType, 0, point, stage);
 			mouseEvent.buttonDown = (type != TouchEvent.TOUCH_END);
 			
 			stage.__fireEvent (touchEvent, [ stage ]);

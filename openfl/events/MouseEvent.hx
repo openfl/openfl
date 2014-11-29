@@ -25,7 +25,7 @@ class MouseEvent extends Event {
 	public static var ROLL_OUT:String = "rollOut";
 	public static var ROLL_OVER:String = "rollOver";
 
-	@:noCompletion private static var __buttonDown:Bool;
+	@:noCompletion private static var __buttonDown = [ false, false, false ];
 	
 	public var altKey:Bool;
 	public var buttonDown:Bool;
@@ -60,7 +60,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	@:noCompletion public static function __create (type:String, /*event:lime.ui.MouseEvent,*/ local:Point, target:InteractiveObject):MouseEvent {
+	@:noCompletion public static function __create (type:String, button:Int, local:Point, target:InteractiveObject):MouseEvent {
 		
 		var delta = 2;
 		
@@ -83,17 +83,20 @@ class MouseEvent extends Event {
 		}*/
 		
 		// source: http://unixpapa.com/js/mouse.html
-		if (type == MouseEvent.MOUSE_DOWN) {
+		
+		switch (type) {
 			
-			__buttonDown = true;
-			
-		} else if (type == MouseEvent.MOUSE_UP) {
-			
-			__buttonDown = false;
+			case MouseEvent.MOUSE_DOWN, MouseEvent.MIDDLE_MOUSE_DOWN, MouseEvent.RIGHT_MOUSE_DOWN:
+				
+				__buttonDown[button] = true;
+				
+			case MouseEvent.MOUSE_UP, MouseEvent.MIDDLE_MOUSE_UP, MouseEvent.RIGHT_MOUSE_UP:
+				
+				__buttonDown[button] = false;
 			
 		}
 		
-		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, __buttonDown, delta);
+		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, __buttonDown[button], delta);
 		pseudoEvent.stageX = Lib.current.stage.mouseX;
 		pseudoEvent.stageY = Lib.current.stage.mouseY;
 		pseudoEvent.target = target;
