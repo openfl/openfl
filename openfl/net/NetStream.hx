@@ -7,7 +7,7 @@ import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundTransform;
 
-#if js
+#if (js && html5)
 import js.html.VideoElement;
 import js.Browser;
 #end
@@ -34,7 +34,10 @@ class NetStream extends EventDispatcher {
 	
 	@:noCompletion private var __connection:NetConnection;
 	@:noCompletion private var __timer:Timer;
+	
+	#if (js && html5)
 	@:noCompletion private var __video (default, null):VideoElement;
+	#end
 	
 	
 	public function new (connection:NetConnection):Void {
@@ -43,6 +46,7 @@ class NetStream extends EventDispatcher {
 		
 		__connection = connection;
 		
+		#if (js && html5)
 		__video = cast Browser.document.createElement ("video");
 		
 		__video.addEventListener ("error", video_onError, false);
@@ -57,27 +61,33 @@ class NetStream extends EventDispatcher {
 		__video.addEventListener ("durationchanged", video_onDurationChanged, false);
 		__video.addEventListener ("canplay", video_onCanPlay, false);
 		__video.addEventListener ("canplaythrough", video_onCanPlayThrough, false);
+		#end
 		
 	}
 	
 	
 	public function pause ():Void {
 		
+		#if (js && html5)
 		__video.pause ();
+		#end
 		
 	}
 	
 	
 	public function play (url:String, ?_, ?_, ?_, ?_, ?_):Void {
 		
+		#if (js && html5)
 		__video.src = url;
 		__video.play ();
+		#end
 		
 	}
 	
 	
 	public function requestVideoStatus ():Void {
 		
+		#if (js && html5)
 		if (__timer == null) {
 			
 			__timer = new Timer (1);
@@ -99,19 +109,23 @@ class NetStream extends EventDispatcher {
 			__timer.stop ();
 			
 		};
+		#end
 		
 	}
 	
 	
 	public function resume ():Void {
 		
+		#if (js && html5)
 		__video.play ();
+		#end
 		
 	}
 	
 	
 	public function seek (offset:Float):Void {
 		
+		#if (js && html5)
 		var time = __video.currentTime + offset;
 		
 		if (time < 0) {
@@ -125,12 +139,14 @@ class NetStream extends EventDispatcher {
 		}
 		
 		__video.currentTime = time;
+		#end
 		
 	}
 	
 	
 	public function togglePause ():Void {
 		
+		#if (js && html5)
 		if (__video.paused) {
 			
 			__video.play ();
@@ -140,12 +156,14 @@ class NetStream extends EventDispatcher {
 			__video.pause ();
 			
 		}
+		#end
 		
 	}
 	
 	
 	@:noCompletion private function __playStatus (code:String):Void {
 		
+		#if (js && html5)
 		if (client != null) {
 			
 			try {
@@ -164,6 +182,7 @@ class NetStream extends EventDispatcher {
 			} catch (e:Dynamic) {}
 			
 		}
+		#end
 		
 	}
 	
@@ -271,14 +290,22 @@ class NetStream extends EventDispatcher {
 	
 	@:noCompletion private function get_speed ():Float {
 		
+		#if (js && html5)
 		return __video.playbackRate;
+		#else
+		return 1;
+		#end
 		
 	}
 	
 	
 	@:noCompletion private function set_speed (value:Float):Float {
 		
+		#if (js && html5)
 		return __video.playbackRate = value;
+		#else
+		return value;
+		#end
 		
 	}
 	

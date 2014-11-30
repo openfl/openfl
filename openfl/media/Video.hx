@@ -1,6 +1,7 @@
-package openfl.media; #if !flash
+package openfl.media; #if !flash #if (display || openfl_next || js)
 
 
+import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
@@ -9,6 +10,7 @@ import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
 #if js
+import openfl._internal.renderer.dom.DOMRenderer;
 import js.html.MediaElement;
 import js.Browser;
 #end
@@ -45,7 +47,10 @@ class Video extends DisplayObject {
 	public function attachNetStream (ns:NetStream):Void {
 		
 		__stream = ns;
+		
+		#if (js && html5)
 		__stream.__video.play ();
+		#end
 		
 	}
 	
@@ -90,8 +95,9 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
+		#if (js && html5)
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		var context = renderSession.context;
@@ -150,17 +156,19 @@ class Video extends DisplayObject {
 			}
 			
 		}
+		#end
 		
 	}
 	
 	
-	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
 			
 			if (!__active) {
 				
-				__initializeElement (__stream.__video, renderSession);
+				DOMRenderer.initializeElement (this, __stream.__video, renderSession);
 				__active = true;
 				__dirty = true;
 				
@@ -174,7 +182,7 @@ class Video extends DisplayObject {
 				
 			}
 			
-			__applyStyle (renderSession, true, true, true);
+			DOMRenderer.applyStyle (this, renderSession, true, true, true);
 			
 		} else {
 			
@@ -186,6 +194,7 @@ class Video extends DisplayObject {
 			}
 			
 		}
+		#end
 		
 	}
 	
@@ -244,6 +253,26 @@ class Video extends DisplayObject {
 }
 
 
+#else
+
+
+import openfl.display.DisplayObject;
+
+
+class Video extends DisplayObject implements Dynamic {
+	
+	
+	public function new (width:Int = 320, height:Int = 240):Void {
+		
+		super (null, "video");
+		
+	}
+	
+	
+}
+
+
+#end
 #else
 typedef Video = flash.media.Video;
 #end
