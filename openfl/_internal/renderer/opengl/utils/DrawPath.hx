@@ -2,8 +2,8 @@ package openfl._internal.renderer.opengl.utils;
 
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer.GLStack;
+import openfl._internal.renderer.opengl.GraphicsRenderer;
+import openfl._internal.renderer.opengl.GraphicsRenderer.GLStack;
 import openfl.display.Graphics;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;

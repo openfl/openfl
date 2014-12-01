@@ -70,8 +70,6 @@ class DefaultShader extends AbstractShader {
 		
 		super.init ();
 		
-		var gl = this.gl;
-		
 		uSampler = gl.getUniformLocation (program, 'uSampler');
 		projectionVector = gl.getUniformLocation (program, 'projectionVector');
 		offsetVector = gl.getUniformLocation (program, 'offsetVector');

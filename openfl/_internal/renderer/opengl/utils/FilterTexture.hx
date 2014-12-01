@@ -23,6 +23,47 @@ class FilterTexture {
 		
 		this.gl = gl;
 		
+		init(width, height, smoothing);
+	}
+	
+	
+	public function clear ():Void {
+		
+		var gl = this.gl;
+		
+		gl.clearColor (0, 0, 0, 0);
+		gl.clear (gl.COLOR_BUFFER_BIT);
+		
+	}
+	
+	
+	public function destroy ():Void {
+
+		gl.deleteFramebuffer (frameBuffer);
+		gl.deleteTexture (texture);
+		
+		frameBuffer = null;
+		texture = null;
+		
+	}
+	
+	
+	public function resize (width:Int, height:Int):Void {
+		
+		if (this.width == width && this.height == height) return;
+		
+		this.width = width;
+		this.height = height;
+		
+		gl.bindTexture (gl.TEXTURE_2D, texture);
+		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		
+		gl.bindRenderbuffer (gl.RENDERBUFFER, renderBuffer);
+		gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
+		
+	}
+	
+	private function init(width:Int, height:Int, smoothing:Bool = true) {
 		frameBuffer = gl.createFramebuffer ();
 		texture = gl.createTexture ();
 		
@@ -40,47 +81,6 @@ class FilterTexture {
 		gl.framebufferRenderbuffer (gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, renderBuffer);
 		
 		resize (width, height);
-		
-	}
-	
-	
-	public function clear ():Void {
-		
-		var gl = this.gl;
-		
-		gl.clearColor (0, 0, 0, 0);
-		gl.clear (gl.COLOR_BUFFER_BIT);
-		
-	}
-	
-	
-	public function destroy ():Void {
-		
-		var gl = this.gl;
-		gl.deleteFramebuffer (frameBuffer);
-		gl.deleteTexture (texture);
-		
-		frameBuffer = null;
-		texture = null;
-		
-	}
-	
-	
-	public function resize (width:Int, height:Int):Void {
-		
-		if (this.width == width && this.height == height) return;
-		
-		this.width = width;
-		this.height = height;
-		
-		var gl = this.gl;
-		
-		gl.bindTexture (gl.TEXTURE_2D, texture);
-		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-		
-		gl.bindRenderbuffer (gl.RENDERBUFFER, renderBuffer);
-		gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
-		
 	}
 	
 	

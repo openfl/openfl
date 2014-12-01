@@ -5,12 +5,8 @@ import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.math.Matrix4;
-import openfl._internal.renderer.opengl.utils.BlendModeManager;
-import openfl._internal.renderer.opengl.utils.FilterManager;
-import openfl._internal.renderer.opengl.utils.MaskManager;
-import openfl._internal.renderer.opengl.utils.ShaderManager;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
-import openfl._internal.renderer.opengl.utils.StencilManager;
+import openfl._internal.renderer.opengl.managers.*;
+import openfl._internal.renderer.opengl.utils.*;
 import openfl.display.BlendMode;
 import openfl.geom.Point;
 

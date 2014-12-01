@@ -30,9 +30,7 @@ class SpriteBatch {
 	public var states:Array<State> = [];
 	public var currentState:State;
 	
-	public var currentBaseTexture:GLTexture;
 	public var currentBatchSize:Int;
-	public var currentBlendMode:BlendMode;
 	public var dirty:Bool;
 	public var drawing:Bool;
 	public var gl:GLRenderContext;
@@ -78,7 +76,6 @@ class SpriteBatch {
 		
 		drawing = false;
 		currentBatchSize = 0;
-		currentBaseTexture = null;
 		
 		setContext (gl);
 		
@@ -106,8 +103,6 @@ class SpriteBatch {
 		
 		gl.deleteBuffer (vertexBuffer);
 		gl.deleteBuffer (indexBuffer);
-		
-		currentBaseTexture = null;
 		
 		gl = null;
 		
@@ -163,23 +158,23 @@ class SpriteBatch {
 		var batchSize = 0;
 		var start = 0;
 		
-		currentState.texture = null;
-		currentState.textureSmooth = true;
-		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
+		currentState.bitmapData = null;
+		currentState.smoothing = true;
+		currentState.blendMode = renderSession.blendModeManager.currentBlendMode == null ? BlendMode.NORMAL : renderSession.blendModeManager.currentBlendMode;
 		
 		var j = this.currentBatchSize;
 		for (i in 0...j) {
 			
 			nextState = states[i];
 			
-			if (currentState.texture != nextState.texture || currentState.blendMode != nextState.blendMode) {
+			if (currentState.bitmapData != nextState.bitmapData || currentState.blendMode != nextState.blendMode) {
 				
 				renderBatch (currentState, batchSize, start);
 				
 				start = i;
 				batchSize = 0;
-				currentState.texture = nextState.texture;
-				currentState.textureSmooth = nextState.textureSmooth;
+				currentState.bitmapData = nextState.bitmapData;
+				currentState.smoothing = nextState.smoothing;
 				currentState.blendMode = nextState.blendMode;
 				
 				
@@ -200,14 +195,13 @@ class SpriteBatch {
 	public function render (sprite:Bitmap):Void {
 		
 		var bitmapData = sprite.bitmapData;
-		var texture = bitmapData.getTexture(gl);
 		
 		if (bitmapData == null) return;
 		
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentState.texture = texture;
+			currentState.bitmapData = bitmapData;
 			
 		}
 		
@@ -226,21 +220,21 @@ class SpriteBatch {
 		var index = currentBatchSize * 4 * vertSize;
 		fillVertices(index, aX, aY, bitmapData.width, bitmapData.height, tint, alpha, uvs, sprite.__worldTransform);
 		
-		setState(currentBatchSize, texture, sprite.blendMode);
+		setState(currentBatchSize, bitmapData, sprite.blendMode);
 		
 		currentBatchSize++;
 		
 	}
 	
-	public function renderCachedGraphics(object:DisplayObject) {
-		var cachedTexture = object.__graphics.__cachedTexture;
+	public function renderCachedGraphics(object:DisplayObject, width:Float, height:Float) {
 		
-		if (cachedTexture == null) return;
+		var bitmap = object.__graphics.__cachedBitmapData;
+		if (bitmap.__texture == null) return;
 		
 		if (currentBatchSize >= size) {
 			
 			flush ();
-			currentBaseTexture = cachedTexture.texture;
+			currentState.bitmapData = bitmap;
 			
 		}
 		
@@ -260,17 +254,17 @@ class SpriteBatch {
 		var worldTransform = object.__worldTransform.clone();
 		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
 		
-		fillVertices(index, aX, aY, cachedTexture.width, cachedTexture.height, tint, alpha, uvs, worldTransform);
+		fillVertices(index, aX, aY, width, height, tint, alpha, uvs, worldTransform);
 
-		setState(currentBatchSize, cachedTexture.texture, object.blendMode);
+		setState(currentBatchSize, bitmap, object.blendMode);
 		
 		currentBatchSize++;
 	}
 	
 	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1) {		
 		
-		var texture = sheet.__bitmap.getTexture(gl);
-		if (texture == null) return;
+		var bitmapData = sheet.__bitmap;
+		if (bitmapData == null) return;
 		
 		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
 		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
@@ -329,7 +323,7 @@ class SpriteBatch {
 			
 			if (currentBatchSize >= size) {
 				flush ();
-				currentBaseTexture = texture;
+				currentState.bitmapData = bitmapData;
 			}
 			
 			x = tileData[iIndex + 0];
@@ -421,7 +415,7 @@ class SpriteBatch {
 				
 				fillVertices(bIndex, 0, 0, rect.width, rect.height, tint, alpha, uvs, matrix);
 				
-				setState(currentBatchSize, texture, smooth, blendMode);
+				setState(currentBatchSize, bitmapData, smooth, blendMode);
 				
 				currentBatchSize++;
 			}
@@ -481,13 +475,13 @@ class SpriteBatch {
 		
 	}
 	
-	private function setState(index:Int, texture:GLTexture, smooth:Bool = true, blendMode:BlendMode) {
+	private function setState(index:Int, bitmapData:BitmapData, smooth:Bool = true, blendMode:BlendMode) {
 		var state:State = states[currentBatchSize];
 		if (state == null) {
 			state = states[currentBatchSize] = new State();
 		}
-		state.texture = texture;
-		state.textureSmooth = smooth;
+		state.bitmapData = bitmapData;
+		state.smoothing = smooth;
 		state.blendMode = blendMode;
 	}
 	
@@ -500,9 +494,9 @@ class SpriteBatch {
 		
 		//var tex:GLTexture = /*texture._glTextures[GLRenderer.glContextId];*/ texture.getTexture (gl);
 		//if (tex == null) tex = Texture.createWebGLTexture (texture, gl);
-		gl.bindTexture (gl.TEXTURE_2D, state.texture);
+		gl.bindTexture (gl.TEXTURE_2D, state.bitmapData.getTexture(gl));
 		
-		if (state.textureSmooth) {
+		if (state.smoothing) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		} else {
@@ -623,6 +617,14 @@ class SpriteBatch {
 		
 		this.gl = gl;
 		
+		if (currentState != null && currentState.bitmapData != null) {
+			currentState.bitmapData.__invalidate();
+		}
+		
+		for (state in states) {
+			if (state.bitmapData != null) state.bitmapData.__invalidate();
+		}
+		
 		vertexBuffer = gl.createBuffer ();
 		indexBuffer = gl.createBuffer ();
 		
@@ -631,8 +633,6 @@ class SpriteBatch {
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
 		gl.bufferData (gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
-		
-		currentBlendMode = null;
 		
 	}
 	
@@ -654,8 +654,8 @@ class SpriteBatch {
 }
 
 private class State {
-	public var texture:GLTexture;
-	public var textureSmooth:Bool = true;
+	public var bitmapData:BitmapData;
+	public var smoothing:Bool = true;
 	public var blendMode:BlendMode;
 	// TODO
 	//public var shader:Dynamic;

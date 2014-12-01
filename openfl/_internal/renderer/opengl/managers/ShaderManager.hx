@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.utils ;
+package openfl._internal.renderer.opengl.managers ;
 
 
 import lime.graphics.GLRenderContext;
@@ -72,7 +72,7 @@ class ShaderManager {
 	}
 	
 	
-	public function setAttribs (attribs:Array<Dynamic>):Void {
+	public function setAttribs (attribs:Array<Int>):Void {
 		
 		for (i in 0...tempAttribState.length) {
 			
@@ -86,8 +86,6 @@ class ShaderManager {
 			tempAttribState[attribId] = true;
 			
 		}
-		
-		var gl = this.gl;
 		
 		for (i in 0...attribState.length) {
 			
@@ -125,6 +123,12 @@ class ShaderManager {
 		fillShader = new FillShader(gl);
 		patternFillShader = new PatternFillShader(gl);
 		drawTrianglesShader = new DrawTrianglesShader(gl);
+		
+		_currentId = -1;
+		
+		for (i in 0...attribState.length) {
+			attribState[i] = false;
+		}
 		
 		setShader (defaultShader);
 		

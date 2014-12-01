@@ -4,9 +4,10 @@ package openfl._internal.renderer.opengl;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
+import lime.graphics.RenderContext;
 import openfl._internal.renderer.AbstractRenderer;
+import openfl._internal.renderer.opengl.managers.*;
 import openfl._internal.renderer.opengl.utils.*;
-import openfl._internal.renderer.opengl.utils.MaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
@@ -26,7 +27,6 @@ class GLRenderer extends AbstractRenderer {
 	public static var glContexts = [];
 	
 	public var blendModeManager:BlendModeManager;
-	public var contextLost:Bool;
 	public var filterManager:FilterManager;
 	public var gl:GLRenderContext;
 	public var _glContextId:Int;
@@ -99,7 +99,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		shaderManager = new ShaderManager (gl);
 		spriteBatch = new SpriteBatch (gl);
-		maskManager = new openfl._internal.renderer.opengl.utils.MaskManager (gl);
+		maskManager = new MaskManager (gl);
 		filterManager = new FilterManager (gl, this.transparent);
 		stencilManager = new StencilManager (gl);
 		blendModeManager = new BlendModeManager (gl);
@@ -177,35 +177,20 @@ class GLRenderer extends AbstractRenderer {
 	}*/
 	
 	
-	private function handleContextLost (event:Dynamic):Void {
+	public override function handleContextLost ():Void {
 		
-		event.preventDefault ();
-		contextLost = true;
+		super.handleContextLost();
 		
 	}
 	
-	
-	private function handleContextRestored ():Void {
+	public override function handleContextRestored (context:RenderContext):Void {
 		
-		/*try {
-			
-			gl = this.view.getContext ('experimental-webgl',  this.options);
-			
-		} catch (e:Dynamic) {
-			
-			try {
-				
-				this.gl = this.view.getContext ('webgl',  this.options);
-				
-			} catch (e2:Dynamic) {
-				
-				throw new Error ('This browser does not support webGL. Try using the canvas renderer' + this);
-				
-			}
-			
-		}*/
+		switch(context) {
+			case OPENGL(gl):
+				this.gl = gl;
+			case _:
+		}
 		
-		var gl = this.gl;
 		glContextId++;
 		
 		shaderManager.setContext (gl);
@@ -215,13 +200,17 @@ class GLRenderer extends AbstractRenderer {
 		
 		renderSession.gl = gl;
 		
+		shaderManager.setShader(shaderManager.defaultShader);
+		
 		gl.disable (gl.DEPTH_TEST);
 		gl.disable (gl.CULL_FACE);
 		
 		gl.enable (gl.BLEND);
-		gl.colorMask (true, true, true, transparent);
+		gl.colorMask (true, true, true, this.transparent);
 		
 		gl.viewport (0, 0, width, height);
+		
+		blendModeManager.currentBlendMode = null;
 		
 		/*for (key in Texture.TextureCache.keys ()) {
 			
@@ -230,7 +219,7 @@ class GLRenderer extends AbstractRenderer {
 			
 		}*/
 		
-		contextLost = false;
+		super.handleContextRestored(context);
 		
 	}
 	
@@ -241,7 +230,6 @@ class GLRenderer extends AbstractRenderer {
 		
 		//updateTextures ();
 		
-		var gl = this.gl;
 		gl.viewport (0, 0, width, height);
 		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
 		

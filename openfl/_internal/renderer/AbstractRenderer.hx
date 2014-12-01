@@ -1,6 +1,7 @@
 package openfl._internal.renderer;
 
 
+import lime.graphics.RenderContext;
 import openfl.display.Shape;
 import openfl.display.Stage;
 
@@ -10,6 +11,7 @@ class AbstractRenderer {
 	
 	public var height:Int;
 	public var width:Int;
+	public var contextLost:Bool = false;
 	
 	private var renderSession:RenderSession;
 	
@@ -39,6 +41,20 @@ class AbstractRenderer {
 	public function resize (width:Int, height:Int):Void {
 		
 		
+		
+	}
+	
+	
+	public function handleContextLost():Void {
+		
+		contextLost = true;
+		
+	}
+	
+	
+	public function handleContextRestored(context:RenderContext):Void {
+		
+		contextLost = false;
 		
 	}
 	

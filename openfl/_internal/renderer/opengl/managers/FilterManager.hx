@@ -1,4 +1,4 @@
-package openfl._internal.renderer.opengl.utils;
+package openfl._internal.renderer.opengl.managers ;
 
 
 import lime.graphics.opengl.GLBuffer;
@@ -8,6 +8,7 @@ import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
 import openfl._internal.renderer.opengl.shaders.DefaultShader;
+import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Rectangle;
 

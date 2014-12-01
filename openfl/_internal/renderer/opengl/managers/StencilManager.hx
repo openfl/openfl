@@ -1,10 +1,10 @@
-package openfl._internal.renderer.opengl.utils;
+package openfl._internal.renderer.opengl.managers ;
 
 
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.shaders.AbstractShader;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.display.Graphics;
@@ -36,7 +36,7 @@ class StencilManager {
 		
 	}
 	
-	public inline function prepareGraphics(bucketData:GLBucketData, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
+	public inline function prepareGraphics(fill:GLBucketData, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
 		var offset = renderSession.offset;
 		var shader = renderSession.shaderManager.fillShader;
 		
@@ -45,9 +45,9 @@ class StencilManager {
 		gl.uniform2f (shader.projectionVector, projection.x, -projection.y);
 		gl.uniform2f (shader.offsetVector, -offset.x, -offset.y);
 			
-		gl.bindBuffer (gl.ARRAY_BUFFER, bucketData.vertsBuffer);
+		gl.bindBuffer (gl.ARRAY_BUFFER, fill.vertsBuffer);
 		gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, 4 * 2, 0);
-		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, bucketData.indexBuffer);
+		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, fill.indexBuffer);
 	}
 	
 	public function pushBucket (bucket:GLBucket, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
@@ -67,10 +67,10 @@ class StencilManager {
 		
 		gl.clear(gl.STENCIL_BUFFER_BIT);
 		
-		for (bucketData in bucket.data) {
-			if (bucketData.destroyed) continue;
-			prepareGraphics(bucketData, renderSession, projection, translationMatrix);
-			gl.drawElements (bucketData.drawMode, bucketData.glIndices.length, gl.UNSIGNED_SHORT, 0);
+		for (fill in bucket.fills) {
+			if (fill.available) continue;
+			prepareGraphics(fill, renderSession, projection, translationMatrix);
+			gl.drawElements (fill.drawMode, fill.glIndices.length, gl.UNSIGNED_SHORT, 0);
 		}
 		
 		gl.colorMask(true, true, true, true);
