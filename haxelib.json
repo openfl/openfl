@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "2.1.6",
-	"releasenote": "Improvements to 'next' rendering",
+	"version": "2.1.7",
+	"releasenote": "Graphic improvement, right-click on HTML5, compile guards",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
