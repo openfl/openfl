@@ -1,22 +1,22 @@
 Install
 -------
 
-    git clone https://github.com/openfl/openfl-validation
-    haxelib dev openfl-validation openfl-validation
+    git clone https://github.com/openfl/openfl
+    haxelib dev openfl _your_path_to_OpenFL_build_
     haxelib install munit
     
 Testing
 -------------
 
-First, change to the openfl-validation directory:
+First, change to the openfl tests directory:
 
-    cd openfl-validation
+    cd _your_path_to_OpenFL_build_\tests
 
 Next, you can test HTML5 and Flash using munit:
 
     haxelib run munit test
     
-Other targets can be tested using the normal OpenFL test commands:
+Other targets can be tested using the normal OpenFL test commands and munit test command for specific target:
 
     lime test windows
     lime test windows -neko
@@ -29,6 +29,8 @@ Other targets can be tested using the normal OpenFL test commands:
     lime test android
     lime test blackberry
     lime test blackberry -simulator
+	
+	haxelib run munit test -js
 
 Contributing
 -------------

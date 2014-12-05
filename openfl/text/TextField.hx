@@ -47,7 +47,7 @@ class TextField extends InteractiveObject {
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var htmlText (get, set):String;
-	public var length (default, null):Int;
+	public var length (get, null):Int;
 	public var maxChars:Int;
 	public var maxScrollH (get, null):Int;
 	public var maxScrollV (get, null):Int;
@@ -66,6 +66,8 @@ class TextField extends InteractiveObject {
 	public var textWidth (get, null):Float;
 	@:isVar public var type (default, set):TextFieldType;
 	@:isVar public var wordWrap (get, set):Bool;
+	
+	@:noCompletion public var __wrappedText:String;
 	
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;
@@ -90,6 +92,7 @@ class TextField extends InteractiveObject {
 		__width = 100;
 		__height = 100;
 		__text = "";
+		__wrappedText = "";
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -287,8 +290,13 @@ class TextField extends InteractiveObject {
 		
 		if (__ranges == null) {
 			
-			__context.font = __getFont (__textFormat);
-			return [ __context.measureText (__text).width ];
+			// HTML5 measureText().width contains full length of string
+			// where \n or \r included in the result width like character and we need split text
+			// for calculation of width of longest line.
+			// http://jsfiddle.net/kpnu9q0t/
+			
+			if (wordWrap) return [__measureLongestLine(__wrappedText, __textFormat)];
+			else return [__measureLongestLine(__text, __textFormat)] ;
 			
 		} else {
 			
@@ -313,6 +321,32 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function __measureLongestLine(text:String, format:TextFormat):Float
+	{
+		#if js
+		
+		var lines = text.split('\n');
+		var current = 0.0;
+		
+		__context.font = __getFont (__textFormat);
+		var longest = __context.measureText(lines[0]).width;
+		
+		for (i in 1...lines.length)
+		{
+			current = __context.measureText(lines[i]).width;
+			
+			if (current > longest )
+				longest = current;
+		}
+		
+		return longest;
+		
+		#else
+		
+		return 0;
+		
+		#end
+	}
 	
 	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
@@ -351,6 +385,100 @@ class TextField extends InteractiveObject {
 		
 		#end
 		
+	}
+	
+	@:noCompletion public function __buildWrappedText():String
+	{	
+		var textLength:Int = __text.length;
+		
+		if (textLength == 1) return __text;
+		
+		__wrappedText = '';
+		
+		#if js
+		
+		var lineStart:Int = 0;
+		var wordStart:Int = 0;
+		var lineWidth:Float;
+		var str1:String;
+		var str2:String;
+		var str3:String;
+		var e:Int = 0;
+		var i:Int = 0;
+		var char:String;
+		
+		if (__ranges == null)
+		{
+			__context.font = __getFont (__textFormat);
+			
+			while (true)
+			{
+				if (i >= __text.length) break;
+				
+				char = __text.charAt(i);
+				
+				if (char == "") break;
+				
+				if (char == '\n' /*|| char == '\r'*/ || char == '\t' || char == ' ' || char == '-')
+					wordStart = i + 1;
+					
+				if (char == '\n' /*|| char == '\r'*/)
+						lineStart = i + 1;
+				
+				str3 = __text.substring(lineStart, i + 1);
+				lineWidth = __context.measureText(str3).width;
+				
+				//make line break
+				// CanvasTextField.renderText() is using 2px-left and 2px-right indents for fillText().
+				// Therefore here is __width-4
+				if (lineWidth >= __width-4 && str3.length > 1)
+				{
+					if (wordStart == lineStart)
+					{
+						// cut the word
+						__wrappedText += '\n';
+						
+						lineStart = i ;
+						wordStart = lineStart;
+						
+					}else 
+					{	
+						str1 = __wrappedText.substring(0, wordStart + e);
+						
+						if (wordStart > i)		// That means line end is a space-symbol
+						{
+							__wrappedText = str1 + '\n' + __text.charAt(wordStart);
+								
+							--e;
+							i= wordStart+1;
+						}else					// back to word-start and place that word to a new line
+						{
+						
+							str2 = __text.substring(wordStart, i);	// current i-char is out of the text line width, so here just 'i' instead i+1;
+								
+							__wrappedText = str1 + '\n' + str2;		
+						}
+						
+						lineStart = wordStart ;
+					}
+					
+					e++;
+				}else
+				{
+					__wrappedText += char;
+					
+					i++;
+				}
+			}
+		}
+		else
+		{
+			
+		}
+		
+		#end
+		
+		return __wrappedText;
 	}
 	
 	
@@ -448,6 +576,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat {
 		
 		//__textFormat = __defaultTextFormat.clone ();
+		if (__textFormat != value) __dirty = true;
 		__textFormat.__merge (value);
 		return value;
 		
@@ -456,12 +585,26 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function get_height ():Float {
 		
-		return __height * scaleY;
+		if (autoSize != TextFieldAutoSize.NONE && wordWrap) {
+			
+			return __height * __scaleY;
+			
+		} else if (autoSize != TextFieldAutoSize.NONE) {
+			
+			return (textHeight + 4) * __scaleY;
+			
+		} else {	
+			
+			return __height * __scaleY;
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion private override function set_height (value:Float):Float {
+		
+		if (value < 0 ) return __height * __scaleY;
 		
 		if (scaleY != 1 || value != __height) {
 			
@@ -588,7 +731,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_numLines ():Int {
 		
-		if (text != "" && text != null) {
+		if (wordWrap && __wrappedText != "" && __wrappedText != null)
+		{
+			
+			return __wrappedText.split("\n").length;
+			
+		}else if (text != "" && text != null)
+		{
 			
 			var count = text.split ("\n").length;
 			
@@ -599,7 +748,6 @@ class TextField extends InteractiveObject {
 			}
 			
 			return count;
-			
 		}
 		
 		return 1;
@@ -621,6 +769,8 @@ class TextField extends InteractiveObject {
 	
 	
 	@:noCompletion public function set_text (value:String):String {
+		
+		value = value.split('\r').join('\n');
 		
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
@@ -700,7 +850,11 @@ class TextField extends InteractiveObject {
 		if (__canvas != null) {
 			
 			// TODO: Make this more accurate
-			return __textFormat.size * 1.185;
+			if (wordWrap && __wrappedText != null && __wrappedText!="") 
+				return __wrappedText.split('\n').length * __textFormat.size * 1.185;	
+			else if (__text !=null && __text != "")
+				return __text.split('\n').length * __textFormat.size * 1.185;
+			else return 0;
 			
 		} else if (__div != null) {
 			
@@ -734,12 +888,16 @@ class TextField extends InteractiveObject {
 	
 	override public function get_width ():Float {
 		
-		if (autoSize == TextFieldAutoSize.LEFT) {
+		if (autoSize != TextFieldAutoSize.NONE && wordWrap) {
+			
+			return __width * scaleX;
+			
+		} else if (autoSize != TextFieldAutoSize.NONE) {
 			
 			//return __width * scaleX;
 			return (textWidth + 4) * scaleX;
 			
-		} else {
+		} else {	
 			
 			return __width * scaleX;
 			
@@ -749,6 +907,8 @@ class TextField extends InteractiveObject {
 	
 	
 	override public function set_width (value:Float):Float {
+		
+		if (value < 0) return __width * __scaleX;
 		
 		if (scaleX != 1 || __width != value) {
 			
@@ -772,11 +932,15 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function set_wordWrap (value:Bool):Bool {
 		
-		//if (value != wordWrap) __dirty = true;
+		if (value != wordWrap) __dirty = true;
 		return wordWrap = value;
 		
 	}
 	
+	@:noCompletion inline private function get_length ():Int {
+		
+		return __text == null ? 0 : __text.length;
+	}
 	
 }
 
