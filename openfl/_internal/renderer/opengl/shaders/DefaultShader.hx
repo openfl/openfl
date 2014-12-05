@@ -121,11 +121,11 @@ class DefaultShader extends AbstractShader {
 			
 			var data = uniform.textureData;
 			
-			var magFilter = (data.magFilter != #if cpp 0 #else null #end) ? data.magFilter : gl.LINEAR;
-			var minFilter = (data.minFilter != #if cpp 0 #else null #end) ? data.minFilter : gl.LINEAR;
-			var wrapS = (data.wrapS != #if cpp 0 #else null #end) ? data.wrapS : gl.CLAMP_TO_EDGE;
-			var wrapT = (data.wrapT != #if cpp 0 #else null #end) ? data.wrapT : gl.CLAMP_TO_EDGE;
-			var format = (data.luminance != #if cpp 0 #else null #end) ? gl.LUMINANCE : gl.RGBA;
+			var magFilter = (data.magFilter != #if !neko 0 #else null #end) ? data.magFilter : gl.LINEAR;
+			var minFilter = (data.minFilter != #if !neko 0 #else null #end) ? data.minFilter : gl.LINEAR;
+			var wrapS = (data.wrapS != #if !neko 0 #else null #end) ? data.wrapS : gl.CLAMP_TO_EDGE;
+			var wrapT = (data.wrapT != #if !neko 0 #else null #end) ? data.wrapT : gl.CLAMP_TO_EDGE;
+			var format = (data.luminance != #if !neko 0 #else null #end) ? gl.LUMINANCE : gl.RGBA;
 			
 			if (data.repeat) {
 				
@@ -134,13 +134,13 @@ class DefaultShader extends AbstractShader {
 				
 			}
 			
-			gl.pixelStorei (gl.UNPACK_FLIP_Y_WEBGL, #if cpp data.flip #else data.flip != null ? data.flip : 0 #end);
+			gl.pixelStorei (gl.UNPACK_FLIP_Y_WEBGL, #if !neko data.flip #else data.flip != null ? data.flip : 0 #end);
 			
-			if (data.width != #if cpp 0 #else null #end) {
+			if (data.width != #if !neko 0 #else null #end) {
 				
-				var width = (data.width != #if cpp 0 #else null #end) ? data.width : 512;
-				var height = (data.height != #if cpp 0 #else null #end) ? data.height : 2;
-				var border = (data.border != #if cpp 0 #else null #end) ? data.border : 0;
+				var width = (data.width != #if !neko 0 #else null #end) ? data.width : 512;
+				var height = (data.height != #if !neko 0 #else null #end) ? data.height : 2;
+				var border = (data.border != #if !neko 0 #else null #end) ? data.border : 0;
 				
 				gl.texImage2D (gl.TEXTURE_2D, 0, format, width, height, border, format, gl.UNSIGNED_BYTE, null);
 				
