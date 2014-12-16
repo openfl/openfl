@@ -41,13 +41,6 @@ class DOMShape {
 						
 					}
 					
-					if (!graphics.__bounds.equals (shape.__cacheBounds)) {
-						
-						shape.__cacheBounds = graphics.__bounds.clone ();
-						shape.__worldTransformChanged = true;
-						
-					}
-					
 					shape.__canvas.width = graphics.__canvas.width;
 					shape.__canvas.height = graphics.__canvas.height;
 					
@@ -61,7 +54,6 @@ class DOMShape {
 						renderSession.element.removeChild (shape.__canvas);
 						shape.__canvas = null;
 						shape.__style = null;
-						shape.__cacheBounds = null;
 						
 					}
 					
@@ -71,7 +63,9 @@ class DOMShape {
 			
 			if (shape.__canvas != null) {
 				
-				if (shape.__worldTransformChanged) {
+				if (shape.__worldTransformChanged || graphics.__transformDirty) {
+					
+					graphics.__transformDirty = false;
 					
 					var transform = new Matrix ();
 					transform.translate (graphics.__bounds.x, graphics.__bounds.y);

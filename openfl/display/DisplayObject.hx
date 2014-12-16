@@ -700,7 +700,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
 	
 	@:noCompletion private var __alpha:Float;
-	@:noCompletion private var __cacheBounds:Rectangle;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
