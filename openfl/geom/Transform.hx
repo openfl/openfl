@@ -69,8 +69,36 @@ class Transform {
 			__displayObject.y = value.ty;
 			__displayObject.scaleX = Math.sqrt ((value.a * value.a) + (value.b * value.b));
 			__displayObject.scaleY = Math.sqrt ((value.c * value.c) + (value.d * value.d));
-			__displayObject.rotation = Math.atan2 (value.b, value.a) * (180 / Math.PI);
 			
+			if (value.a < 0) {
+				
+				__displayObject.scaleX = -__displayObject.scaleX;
+				
+			}
+			
+			if (value.d < 0) {
+				
+				__displayObject.scaleY = -__displayObject.scaleY;
+				
+			}
+			
+			var sign = Math.atan(-value.c / value.a);
+			var rad  = Math.acos(value.a / __displayObject.scaleX);
+			var deg  = rad * 180 / Math.PI;
+
+			if (deg > 90 && sign > 0) {
+				
+				__displayObject.rotation = (360 - deg);
+				
+			} else if (deg < 90 && sign < 0) {
+				
+				__displayObject.rotation = (360 - deg);
+				
+			} else {
+				
+				__displayObject.rotation = deg;
+				
+			}
 		}
 		
 		return value;
