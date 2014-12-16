@@ -41,6 +41,13 @@ class DOMShape {
 						
 					}
 					
+					if (!graphics.__bounds.equals (shape.__cacheBounds)) {
+						
+						shape.__cacheBounds = graphics.__bounds.clone ();
+						shape.__worldTransformChanged = true;
+						
+					}
+					
 					shape.__canvas.width = graphics.__canvas.width;
 					shape.__canvas.height = graphics.__canvas.height;
 					
@@ -54,6 +61,7 @@ class DOMShape {
 						renderSession.element.removeChild (shape.__canvas);
 						shape.__canvas = null;
 						shape.__style = null;
+						shape.__cacheBounds = null;
 						
 					}
 					
