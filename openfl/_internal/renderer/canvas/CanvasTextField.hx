@@ -116,6 +116,7 @@ class CanvasTextField {
 				
 				textField.__canvas = null;
 				textField.__context = null;
+				textField.__dirty = false;
 				
 			} else {
 				
@@ -233,11 +234,10 @@ class CanvasTextField {
 					
 				}
 				
+				textField.__dirty = false;
 				return true;
 				
 			}
-			
-			textField.__dirty = false;
 			
 		}
 		
