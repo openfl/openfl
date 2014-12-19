@@ -658,3 +658,5 @@
 1.0.0
 =====
 
+* Initial release: http://www.openfl.org/blog/2013/07/10/introducing-openfl/
+
