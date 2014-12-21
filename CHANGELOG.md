@@ -1,3 +1,16 @@
+2.1.8
+=====
+
+#### HTML5
+
+* Fixed positioning for DOM shape rendering
+* Fixed the "dirty" flag on HTML5 TextField
+
+#### Java
+
+* Implemented improvements for beta Java support
+
+
 2.1.7
 =====
 
