@@ -33,6 +33,12 @@ class Point {
 		
 	}
 	
+	public function copyFrom (sourcePoint:Point):Void {
+		
+		x = sourcePoint.x;
+		y = sourcePoint.y;
+		
+	}
 	
 	public static function distance (pt1:Point, pt2:Point):Float {
 		
