@@ -84,6 +84,17 @@ class Memory {
 		
 	}
 	
+	static public function selectTemp (bytes:ByteArray, callback: Void -> Void):Void {
+		var old = gcRef;
+		try {
+			select(bytes);
+			callback();
+			select(old);
+		} catch (e:Dynamic) {
+			select(old);
+			throw e;
+		}
+	}
 	
 	public static function select (inBytes:ByteArray):Void {
 		

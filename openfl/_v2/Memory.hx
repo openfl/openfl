@@ -17,11 +17,25 @@ class Memory {
 	#else
 	private static var gcRef:ByteArray;
 	#end
+	private static var _gcRef:ByteArray;
 	private static var len:Int;
 	
+	static public function selectTemp (bytes:ByteArray, callback: Void -> Void):Void {
+		var old = _gcRef;
+		try {
+			select(bytes);
+			callback();
+			select(old);
+		} catch (e:Dynamic) {
+			select(old);
+			throw e;
+		}
+	}
 	
 	static public function select (bytes:ByteArray):Void {
 		
+		_gcRef = bytes;
+
 		#if neko
 		if (bytes == null) {
 			
