@@ -27,7 +27,7 @@ class DOMShape {
 				
 				if (graphics.__drawTilesMode) {
 					var m = shape.__worldTransform.clone();
-					var p = m.deltaTransformPoint(new openfl.geom.Point(shape.__x, shape.__y));
+					var p = m.deltaTransformPoint(new openfl.geom.Point(m.tx, m.ty));
 					m.translate(-p.x, -p.y);
 					m.invert();
 					
@@ -35,8 +35,8 @@ class DOMShape {
 					graphics.__bounds.width = p.x;
 					graphics.__bounds.height = p.y;
 					
-					graphics.__bounds.x -= shape.__x;
-					graphics.__bounds.y -= shape.__y;
+					graphics.__bounds.x -= shape.__worldTransform.tx;
+					graphics.__bounds.y -= shape.__worldTransform.ty;
 					graphics.__drawTilesMode = false;
 				}
 				
