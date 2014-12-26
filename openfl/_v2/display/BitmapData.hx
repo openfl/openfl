@@ -247,20 +247,15 @@ class BitmapData implements IBitmapDrawable {
 		
 		var data = bitmapData.getPixels (new Rectangle (0, 0, bitmapData.width, bitmapData.height));
 		var size = bitmapData.width * bitmapData.height;
+		var v;
 		
-		var alpha, red, green, blue;
+		data.position = 0;
 		
 		for (i in 0...size) {
 			
-			alpha = data[i * 4];
-			red = data[i * 4 + 1];
-			green = data[i * 4 + 2];
-			blue = data[i * 4 + 3];
-			
-			data[i * 4] = red;
-			data[i * 4 + 1] = green;
-			data[i * 4 + 2] = blue;
-			data[i * 4 + 3] = alpha;
+			v = data.readInt ();
+			data.position = i << 2;
+			data.writeInt ((((v >>> 8) & 0xFF) << 0) | (((v >>> 16) & 0xFF) << 8) | (((v >>> 24) & 0xFF) << 16) | (((v >>> 0) & 0xFF) << 24));
 			
 		}
 		
