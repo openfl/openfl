@@ -119,6 +119,7 @@ class Stage extends Sprite {
 		
 		__clearBeforeRender = true;
 		__stack = [];
+		__cursor = "";
 		
 	}
 	
@@ -385,15 +386,15 @@ class Stage extends Sprite {
 		
 	}
 	
-	
+	@:access(openfl._internal.renderer.AbstractRenderer)
 	@:noCompletion private function __setCursorHidden (value:Bool):Void {
 		
 		if (__cursorHidden != value) {
 			
 			__cursorHidden = value;
 			
-			//var element = __canvas != null ? __canvas : __div;
-			//element.style.cursor = value ? "none" : __cursor;
+			var element = __renderer.renderSession.context != null ? __renderer.renderSession.context.canvas : __renderer.renderSession.element;
+			element.style.cursor = value ? "none" : __cursor;
 			
 		}
 		

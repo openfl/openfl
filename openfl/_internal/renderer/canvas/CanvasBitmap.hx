@@ -29,6 +29,10 @@ class CanvasBitmap {
 			bitmap.bitmapData.__sync ();
 			
 			context.globalAlpha = bitmap.__worldAlpha;
+			if (bitmap.blendMode != null)
+			{
+				context.globalCompositeOperation = CanvasHelper.blendModeToCompositeOperation(bitmap.blendMode);
+			}
 			var transform = bitmap.__worldTransform;
 			var scrollRect = bitmap.scrollRect;
 			
@@ -72,6 +76,11 @@ class CanvasBitmap {
 				
 				renderSession.maskManager.popMask ();
 				
+			}
+
+			if (bitmap.blendMode != null)
+			{
+				context.globalCompositeOperation = CanvasHelper.blendModeToCompositeOperation(openfl.display.BlendMode.NORMAL);
 			}
 			
 		}

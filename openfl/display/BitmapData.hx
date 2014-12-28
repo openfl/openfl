@@ -506,6 +506,12 @@ class BitmapData implements IBitmapDrawable {
 				}
 				
 				var matrixCache = source.__worldTransform;
+
+				if (blendMode != null)
+				{
+					buffer.__srcContext.globalCompositeOperation = openfl._internal.renderer.canvas.CanvasHelper.blendModeToCompositeOperation(blendMode);
+				}
+
 				source.__worldTransform = matrix != null ? matrix : new Matrix ();
 				source.__updateChildren (false);
 				source.__renderCanvas (renderSession);
