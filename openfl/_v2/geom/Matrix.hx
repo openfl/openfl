@@ -4,7 +4,7 @@ package openfl._v2.geom; #if (!flash && !html5 && !openfl_next)
 import openfl.geom.Vector3D;
 
 
-class Matrix #if cpp implements cpp.rtti.FieldNumericIntegerLookup #end {
+class Matrix #if (cpp && haxe_ver < 3.2) implements cpp.rtti.FieldNumericIntegerLookup #end {
 	
 	
 	public var a:Float;

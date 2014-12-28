@@ -1,0 +1,675 @@
+2.1.8
+=====
+
+#### HTML5
+
+* Fixed positioning for DOM shape rendering
+* Fixed the "dirty" flag on HTML5 TextField
+
+#### Java
+
+* Implemented improvements for beta Java support
+
+
+2.1.7
+=====
+
+#### HTML5, Native (next)
+
+* Improved Graphics.drawRoundRect
+* Improved OpenGL Tilesheet.drawTiles
+* Restored middle/right mouse button events
+* Fixed HTML5 support of openfl.media.Video
+
+#### Native (v2)
+
+* Fixes for DisplayObject.hitTestObject
+* Fixed compilation when openfl.media.Video is imported
+* Added non-op Graphics.cubicCurveTo for compatibility
+
+
+2.1.6
+=====
+
+#### General
+
+* Fixed API documentation script
+
+#### Flash
+
+* Improved the openfl.Assets cache
+
+#### HTML5, Native (next)
+
+* Added OpenGL Tilesheet.drawTiles
+* Improved OpenGL Graphics.drawTriangles
+* Made other improvements OpenGL Graphics class
+* Improved Graphics.drawRect on canvas
+* Fixed a divide-by-zero issue in Matrix3D.decompose
+* Improved openfl.Vector array access in Neko
+* Improved openfl.display.SimpleButton
+* Improved the openfl.Assets cache
+
+#### Native (v2)
+
+* Added OpenGLView.dispose() (similar to "next")
+* Improved cleanup in openfl.display.LoaderInfo
+* Fixed typed array use in GL uniformMatrix
+* Removed v2 openfl.Vector, preferring the "next" implementation
+
+
+2.1.5
+=====
+
+#### HTML5, Native (next)
+
+* Matrix fix in OpenGL display list rendering
+* Improved OpenGL Graphics rendering
+* Improved font handling to use true font names
+* Embedded fonts are now automatically registered
+
+#### Native (v2)
+
+* Improved font handling to use true font names
+* Embedded fonts are now automatically registered
+
+
+2.1.4
+=====
+
+#### HTML5, Native (next)
+
+* Fixed masking in canvas renderer
+
+#### Native (v2)
+
+* Fixed Assets.getText when asset is type BINARY
+
+
+2.1.3
+=====
+
+#### General
+
+* Added support for the "openfl" command again
+* Fixed install of Lime using "openfl setup"
+
+#### HTML5, Native (next)
+
+* Improvements to OpenGL Graphics.drawTriangles
+
+
+2.1.2
+=====
+
+#### General
+
+* Added support for `<library path="" preload="" />`
+* Added support for Tilesheet TILE_RECT
+* Improved code completion in FlashDevelop
+
+#### Flash
+
+* Fixed mapping of openfl.geom.Matrix3D to flash.geom.Matrix3D
+* Fixed mapping of openfl.geom.Orientation3D to flash.geom.Orientation3D
+* Made Matrix3D use openfl.Vector instead of flash.Vector for consistency
+
+
+2.1.1
+=====
+
+#### HTML5, Native (next)
+
+* Fixed openfl.display.OpenGLView
+
+#### Native (v2)
+
+* Fix compilation of openfl.utils.JNI when not targeting Android
+
+
+2.1.0
+=====
+
+#### General
+
+* Migrated Flash and native (-Dnext) to Lime 2.0
+* Unified each target backend under a single openfl.* class set
+* Preserved the older native backend under openfl._v2, used by default
+
+#### Flash
+
+* Added Graphics.drawTiles
+* Improved Tilesheet.drawTiles
+* Fixed ArrayBufferView
+
+#### HTML5, Native (next)
+
+* Added openfl.geom.Orientation3D
+* Improved openfl.geom.Matrix3D
+* Fixed loading of images with GET parameters
+* Improved embedded asset behavior
+* Added OpenGL premultiplied alpha
+* Added DisplayObject.hitTestPoint
+* Added Graphics.drawRoundRect
+* Improved OpenGL display list support
+* Added initial OpenGL Graphics API support
+* Added OpenGL BitmapData support
+* Added Graphics.copyFrom
+* Using -Djs-flatten on HTML5
+
+#### Native (v2)
+
+* Initial version (using Lime legacy)
+
+
+2.0.1
+=====
+
+#### Native
+
+* Added joystick input filtering to prevent redundant events
+* Improved compatibility of openfl.net.SharedObject
+* Added a userAgent property for openfl.net.URLRequest
+
+#### HTML5
+
+* Migrated to the new Lime 2.0, removed unnecessary code
+* Added openfl.events.UncaughtErrorEvent
+* Added BitmapData paletteMap, threshold and histogram
+* Added BitmapData getVector/setVector
+* Added Sprite startDrag/stopDrag
+* Added openfl.net.Socket using web sockets
+* Added a "count" parameter to Tilesheet.drawTiles
+* Improved BitmapData.copyPixels
+* Improved Graphics bitmap fill
+* Fixed TextField multiline support in canvas
+* Fixed webfont handling (Chrome)
+* Fixed CSS transforms (Chrome)
+* Fixed fullscreen stageWidth/stageHeight in DOM mode
+* Minor fixes for ExternalInterface
+* Added an initial WebGL renderer
+* Improved openfl.Vector for older Haxe releases
+
+#### Flash
+
+* Added a non-op userAgent property for compatibility
+
+
+2.0.0
+=====
+
+#### General
+
+* Implemented support for live asset reloading (desktop)
+* Many consistency improvements between target backends
+* Combined "openfl-native" and "openfl-html5" into one "openfl" library
+* Move from "flash" to "openfl" for all classes
+* Improved the behavior of FocusEvent
+* Added a new fast Vector implementation
+* Added Assets.list
+
+#### Native
+
+* Fixed issues in the Android JNI class
+* Added Event.isDefaultPrevented
+* Improved the behavior of Event.CHANGE on native
+* Fixed focus event behavior
+
+#### HTML5
+
+* Fixed ByteArray embedding in HTML5
+* Exposed "openfl.embed" to allow control of HTML5 embeds from JavaScript
+* Fixed coordinates reported from HTML5 touch events
+* Added support for OpenGLView when targeting HTML5 -Ddom
+* Added support for HTML5 "dependencies" to link additional scripts
+
+#### Flash
+
+* Fixed an issue with Stage focus when leaving the Flash preloader
+
+
+1.4.2
+=====
+
+#### HTML5
+
+* Improved the behavior of "textWidth" and "textHeight" for flash.text.TextField
+* Fix for "over bubbling" of certain events
+* Implemented "scrollRect" support for DOM (-Ddom) projects
+* Fixed cases where world transforms could be invalid when calculating positions and sizes
+* Increased caching to change styles less often when using DOM rendering
+* Fixed z-ordering for DOM rendered projects
+* Optimized flash.display.Graphics to not render when a fill is fully transparent
+* Improved HTML text when using DOM renderering
+* No longer keep events queue, allow events to dispatch immediately
+
+
+1.4.1
+=====
+
+#### HTML5
+
+* Improvements to DOM render caching behavior
+* Fixed "border" and "background" properties for flash.text.TextField
+* Fixed cases where flash.display.Graphics was considered invisible and not rendered
+* Improved the behavior of "scrollRect" for flash.display.DisplayObject
+* Fixes for alpha fades on flash.display.Sprite or flash.display.Shape "graphics"
+* Added openfl.display.DOMSprite
+* Implemented support for flash.media.Video
+* Implemented better measurement for flash.text.TextField
+* Added Event.ADDED and Event.REMOVED events
+* Added a much smarter system for managing dirty transforms
+* Fixes for flash.display.Graphics lines
+* Fix when embedding assets of type "music"
+* Implemented flash.ui.Mouse "show" and "hide"
+* Fixed a small error in flash.display.BitmapData "copyPixels"
+
+
+1.4.0
+=====
+
+#### General
+
+* Updated to new OpenFL logo and icon
+* Install hxcpp instead of hxlibc during setup
+
+#### Native
+
+* Now openfl.gl.GL accepts both Array<Float> and Float32Array values, where appropriate
+* Implemented "cullFace" in openfl.gl.GL, as well as other minor fixes
+* Fixed lime_bitmap_data_set_flags to use the right number of parameters
+* Fixed a position offset error in openfl.utils.UInt8Array
+* Implemented "followRedirects" in flash.net.URLLoader, still true by default
+* Implemented "responseHeaders" in flash.net.HTTPStatusEvent
+* Set hxcpp critical errors to throw in Haxe instead of stderr in debug builds
+
+#### HTML5
+
+* Fix (possible) infinite loop in flash.display.BitmapData.floodFill
+* Fix bounds calculation for display objects
+* Added Event.ACTIVATE and Event.DEACTIVATE when leaving/entering window
+* Added "copyFrom" and "setTo" for flash.geom.Matrix
+* Added "copyFrom" to flash.geom.Rectangle and fixed internal "expand" method
+* Copied additional classes from "openfl-html5-dom"
+* Changed flash.display.DisplayObject to allow override of more core properties
+* Skipped creation of a canvas for flash.display.Graphics with a size of zero
+* Improved the "transform.matrix" property for flash.display.DisplayObject
+* Created a DOM render path (use -Ddom while compiling or <haxedef name="dom" />)
+* Silenced keyLocation warnings on certain browsers
+* Toggling canvas smoothing based upon "smoothing" value of flash.display.Bitmap
+* Added "unload" to flash.net.Loader and "invalidate" to flash.display.Stage
+* Fixed issue when using "drawTiles" with tiles with a width or height <= 0
+* Fixed "rect" for flash.display.BitmapData
+* Switched from Howler.js to SoundJS for audio backend
+* Implemented support for automatically embedding of webfonts
+* Disabled "image drag" behavior in Firefox
+* Added support for older Haxe releases, tested on Haxe 3.1, possibly compatible with 3.0
+* Added Event.ADDED_TO_STAGE event for the document class
+* Populating the "content" property of flash.display.Loader
+* Added flash.events.FocusEvent support
+* Consistency fixes to the event capture/target/bubble implementation
+* Fixed bubbling for manually dispatched events
+* Made KeyboardEvents dispatch through the currently focused object
+* Added initial "scrollRect" support for flash.display.DisplayObject
+* Fixed bounds checking for objects that have an alpha of 0 but are visible
+* Added initial support for bitmap fill matrix in flash.display.Graphics
+
+
+1.3.0
+=====
+
+#### General
+
+* Improved the Assets.embedBitmap macro
+* Fixed Assets.getBitmapData when the BitmapData was disposed
+* Added Firefox OS support
+
+#### Native
+
+* Fixed touch event duplication
+* Minor fixes for flash.net.SharedObject
+* Added initial stereoscopic 3D support
+
+#### HTML5
+
+* Added a brand-new HTML5 target, too many improvements to list!
+
+#### Flash
+
+* Improved default Flash preloader
+
+
+1.2.3
+=====
+
+#### General
+
+* Add references for JoystickEvent.DEVICE_ADDED and JoystickEvent.DEVICE_REMOVED
+* Add "currentFPS" to openfl.display.FPS
+* Add "count" parameter for openfl.display.Tilesheet drawTiles
+* Do not add --no-inline to Flash debug builds (this can be added on the command-line)
+* Remove custom UInt type, since Haxe 3.1 supports UInt
+* Restore Flash UInt types, since Haxe now converts between Int and UInt naturally
+* Updated for automated builds: http://openfl.org/builds/openfl
+
+#### Native
+
+* Fix behavior of "removeChildren" in flash.display.DisplayObjectContainer
+* flash.filters.GlowFilter no longer extends flash.filters.DropShadowFilter
+* Dispatch MouseEvent.MOUSE_OVER/MOUSE_OUT/ROLL_OVER/ROLL_OUT events when using touch as well
+* Added support for JoystickEvent.DEVICE_ADDED and JoystickEvent.DEVICE_REMOVED
+* Added "setTo" to flash.geom.Rectangle
+* Improved working directory behavior in Linux
+* Updates to flash.net.XMLSocket
+* Improvements to threaded audio behavior
+* Added support for Android "immersive mode"
+* Fixes to Android joystick handling, supporting newer OUYA gamepad hardware
+* Updates to improve support for pre-multiplied alpha
+* Improvements to "paletteMap" in flash.display.BitmapData
+* Improved Android timing scheme to prevent over-eager render or update calls
+* Added "count" parameter to openfl.display.Tileshet drawTiles
+* Moved template files to Lime
+* Fixed support for "perlinNoise" in flash.display.BitmapData
+* Added flash.display.FrameLabel
+* Fixes to flash.net.URLLoader
+
+
+1.2.2
+=====
+
+#### General
+
+* Fixed case where Assets.getMusic could return disposed sound
+
+#### Native
+
+* Minor fix for haxe.Timer
+* Minor fix in Android showKeyboard
+* Prevented infinite loop in EventDispatcher
+
+#### HTML5
+
+* Improved handling of flash.media.Video
+* Minor compile fixes
+
+
+1.2.1
+=====
+
+#### General
+
+* Merged the "create project" template into OpenFL
+* Cleaned up the run scripts to rely upon Lime
+* Fix case where Assets.getSound could return disposed sound
+
+#### Native
+
+* Improved handling of haxe.Timer
+* Updated for Tizen emulator support
+
+#### HTML5
+
+* Added Rectangle.setTo
+* Added DisplayObjectContainer.removeChildren
+* Fixed support for GIF images
+* Minor compile fixes
+
+
+1.2.0
+=====
+
+#### General
+
+* Added a new Tizen target
+* Added Assets.getMusic
+
+#### Native
+
+* Added support for threaded audio streaming
+* Added BitmapData.paletteMap
+* Added stage.color
+* Fixed case where tiny text rendered improperly
+* Fixed issues in openfl.utils.JNI
+* Fix to Sound bytesLoaded/bytesTotal
+* Fixes for flash.net.Socket
+* Minor improvement to Android -debug handling
+* Improved support for UncaughtErrorEvent
+
+#### HTML5
+
+* Added Stage.color
+* Fixed Bitmap reference optimization
+* Fixed ByteArray.writeBytes
+* Improved ErrorEvent
+* Minor compile fixes
+
+
+1.1.4
+=====
+
+#### Native
+
+* Improved support for OpenAL audio
+* Minor fixes
+
+
+1.1.3
+=====
+
+#### Native
+
+* Fixed Stage.quality setting
+* Add a cap to Android framerate to <= 60 FPS for better performance
+* Add hook for GL readPixels
+* Fix file boundaries when streaming sound on Android
+
+
+1.1.2
+=====
+
+#### Native
+
+* Made improvements to typed arrays
+* Added DisplayObjectContainer.removeChildren
+* Fixed _sans for OS X Mavericks and iOS 7
+* Improved handling of unsupported filters
+
+
+1.1.1
+=====
+
+#### Native
+
+* Updated OpenAL for Android
+* Fixed OpenAL audio looping
+* Added ARMv7 binaries for Android by default
+
+#### HTML5
+
+* Added Matrix3D.copyFrom
+* Added GL.getExtension
+* Fixed openfl.Assets embedded assets
+* Minor fixes
+
+
+1.1.0
+=====
+
+#### General
+
+* Added a new "asset library" system
+* Added Assets isLocal, exists, getPath
+* Added Assets loadBitmapData, loadFont, loadSound
+* Added Assets loadText, loadBytes
+* Added Assets.cache.enabled
+* Starting caching fonts and sounds in addition to BitmapData
+* Added Tilesheet getTileCenter, getTileRect, getTileUVs
+* Improved the "openfl rebuild" command
+* Made it easier to override default OpenFL backends
+* Added support for middle and right mouse events
+
+#### Native
+
+* Moved to SDL2 and OpenAL on Windows, Mac and Linux
+* Moved to OpenAL on Android
+* Created a new Android extension system
+* Added 64-bit Neko support
+* Added additional iOS icon sizes
+* Added JNI.createInterface
+* Fixed --no-traces on Android
+* Fixed NMEFont, renamed to AbstractFont
+* Fixed ByteArray.readUTFBytes on Neko
+* Made the Android permissions dynamic
+* Added a non-op SharedObject.close for compatibility
+* Fixed support of dead-code elimination
+* Fixes for SoundChannel
+* Improved flash.net.Socket
+* Fixed target/relatedObject for MOUSE_OVER events
+* Added flash.events.UncaughtErrorEvents
+
+#### HTML5
+
+* Added Point.setTo
+* Added "target" support in Lib.getURL
+* Fixed `<assets path="" embed="true" />`
+* Fixed getObjectUnderPoint when using scaled bitmaps
+* Fixed SoundChannel Event.SOUND_COMPLETE
+
+#### Flash
+
+* Moved to a standard trace(), removed override
+
+
+1.0.8
+=====
+
+#### Native
+
+* Improved the behavior of Stage.frameRate for consistency
+* Implemented many openfl.utils.JNI improvements
+* Improved handling of the iOS status bar
+
+
+1.0.7
+=====
+
+#### Native
+
+* Added flash.net.Socket and flash.net.XMLSocket
+* Improved relative path handling on Windows and Linux
+
+
+1.0.6
+=====
+
+#### General
+
+* Improved handling of SWF assets
+* Improved API documentation
+* Forwarding defines when using "openfl rebuild"
+* Improved the FPS counter
+
+#### Native
+
+* Fixed support for Mac64 NDLL type
+
+
+1.0.5
+=====
+
+#### General
+
+* Added support for overriding target backends
+
+#### Native
+
+* Added Point.setTo
+* Added Rectangle copyFrom, toString
+* Added Matrix copyFrom, copyRowTo, copyRowFrom
+* Added Matrix copyColumnTo, copyColumnFrom, setTo, toString
+* Fixed a rare issue in the static initialization order
+* Fixed displayObjectContainer.contains
+* Improved bitmapData.dispose
+
+#### HTML5
+
+* Improved Lib.getURL
+* Fixed loaderInfo.parameters
+* Added flash.external.ExternalInterface
+* Improved handling of touch and mouse events
+
+
+1.0.4
+=====
+
+#### General
+
+* Fixed handling of UInt type
+
+#### Native
+
+* Added improvements to gamepad support
+* Fixed keyboard for Android 2.3
+
+#### HTML5
+
+* Improve mouse and touch event coordinates
+* Fix DisplayObjectContainer .visible handling
+* Improvements to DisplayObjectContainer behavior
+* Improved Graphics.drawRoundRect
+* Improved focus and keyboard event handling
+* Minor Graphics path fix
+* Other minor fixes
+
+
+1.0.3
+=====
+
+#### General
+
+* Improved the "openfl setup" command
+
+#### Native
+
+* Added improvements for OUYA
+
+#### HTML5
+
+* Update x/y values when setting transform matrices
+* Fixed recovery from a width and height of zero
+
+
+1.0.2
+=====
+
+#### General
+
+* Fixed handling of inline macros
+
+#### Native
+
+* Fixed default ALT+ENTER behavior on Windows and Linux
+* Added joystick support for Android
+
+#### HTML5
+
+* Added ByteArray.toString
+
+
+1.0.1
+=====
+
+#### General
+
+* Minor code completion fixes
+
+#### HTML5
+
+* Improved handling of applicationDomain
+
+
+1.0.0
+=====
+
+* Initial release: http://www.openfl.org/blog/2013/07/10/introducing-openfl/
+

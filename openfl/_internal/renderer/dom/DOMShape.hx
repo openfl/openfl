@@ -63,7 +63,9 @@ class DOMShape {
 			
 			if (shape.__canvas != null) {
 				
-				if (shape.__worldTransformChanged) {
+				if (shape.__worldTransformChanged || graphics.__transformDirty) {
+					
+					graphics.__transformDirty = false;
 					
 					var transform = new Matrix ();
 					transform.translate (graphics.__bounds.x, graphics.__bounds.y);

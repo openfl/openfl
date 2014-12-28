@@ -7,192 +7,165 @@ import openfl.events.IOErrorEvent;
 import openfl._v2.events.IEventDispatcher;
 import openfl._v2.utils.WeakRef;
 
+@:access(openfl._v2.events.Event)
+
 
 class EventDispatcher implements IEventDispatcher {
 	
 	
-	@:noCompletion private var __eventMap:EventMap;
-	@:noCompletion private var __target:IEventDispatcher;
+	@:noCompletion private var __targetDispatcher:IEventDispatcher;
+	@:noCompletion private var __eventMap:Map<String, Array<Listener>>;
 	
 	
 	public function new (target:IEventDispatcher = null):Void {
 		
-		__target = (target == null ? this : target);
-		__eventMap = null;
+		if (target != null) {
+			
+			__targetDispatcher = target;
+			
+		}
 		
 	}
 	
 	
-	public function addEventListener (type:String, listener:Function, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
-		
-		if (useWeakReference) {
-			
-			trace ("WARNING: Weak listener not supported for native (using hard reference)");
-			useWeakReference = false;
-			
-		}
+	public function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
 		
 		if (__eventMap == null) {
 			
-			__eventMap = new EventMap ();
+			__eventMap = new Map<String, Array<Listener>> ();
 			
 		}
 		
-		var list = __eventMap.get (type);
-		
-		if (list == null) {
+		if (!__eventMap.exists (type)) {
 			
-			list = new ListenerList ();
+			var list = new Array<Listener> ();
+			list.push (new Listener (listener, useCapture, priority));
 			__eventMap.set (type, list);
 			
+		} else {
+			
+			var list = __eventMap.get (type);
+			list.push (new Listener (listener, useCapture, priority));
+			list.sort (__sortByPriority);
+			
 		}
-		
-		list.push (new Listener (new WeakRef<Function> (listener, useWeakReference), useCapture, priority));
-		list.sort (__sortEvents);
 		
 	}
 	
-
+	
 	public function dispatchEvent (event:Event):Bool {
 		
-		if (__eventMap == null) {
-			
-			return false;
-			
-		}
+		if (__eventMap == null || event == null) return false;
+		
+		var list = __eventMap.get (event.type);
+		
+		if (list == null) return false;
 		
 		if (event.target == null) {
 			
-			event.target = __target;
+			if (__targetDispatcher != null) {
+				
+				event.target = __targetDispatcher;
+				
+			} else {
+				
+				event.target = this;
+				
+			}
 			
 		}
 		
-		if (event.currentTarget == null) {
-			
-			event.currentTarget = __target;
-			
-		}
+		event.currentTarget = this;
 		
-		var list = __eventMap.get (event.type);
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
+		var index = 0;
+		var listener;
 		
-		if (list != null) {
+		while (index < list.length) {
 			
-			var index = 0;
-			var length = list.length;
+			listener = list[index];
 			
-			var listItem, listener;
-			
-			while (index < length) {
+			if (listener.useCapture == capture) {
 				
-				listItem = list[index];
-				listener = ((listItem != null && listItem.listener.get() != null) ? listItem : null);
+				//listener.callback (event.clone ());
+				listener.callback (event);
 				
-				if (listener == null) {
+				if (event.__isCancelledNow) {
 					
-					list.splice (index, 1);
-					length--;
-					
-				} else {
-					
-					if (listener.useCapture == capture) {
-						
-						listener.dispatchEvent (event);
-						
-						if (event.__getIsCancelledNow ()) {
-							
-							return true;
-							
-						}
-						
-					}
-					
-					index++;
+					return true;
 					
 				}
 				
 			}
 			
-			return true;
+			if (listener == list[index]) {
+				
+				index++;
+				
+			}
 			
 		}
 		
-		return false;
+		return true;
 		
 	}
 	
 	
 	public function hasEventListener (type:String):Bool {
 		
-		if (__eventMap == null) {
-			
-			return false;
-			
-		}
-		
-		var list = __eventMap.get (type);
-		
-		if (list != null) {
-			
-			for (item in list) {
-				
-				if (item != null) return true;
-				
-			}
-			
-		}
-		
-		return false;
+		if (__eventMap == null) return false;
+		return __eventMap.exists (type);
 		
 	}
 	
 	
-	public function removeEventListener (type:String, listener:Function, capture:Bool = false):Void {
+	public function removeEventListener (type:String, listener:Dynamic->Void, capture:Bool = false):Void {
 		
-		if (__eventMap == null || !__eventMap.exists (type)) {
-			
-			return;
-			
-		}
+		if (__eventMap == null) return;
 		
 		var list = __eventMap.get (type);
-		var item;
+		
+		if (list == null) return;
 		
 		for (i in 0...list.length) {
 			
-			if (list[i] != null) {
+			if (list[i].match (listener, capture)) {
 				
-				item = list[i];
-				if (item != null && item.is (listener, capture)) {
-					
-					list[i] = null;
-					return;
-					
-				}
+				list.splice (i, 1);
+				break;
 				
 			}
+			
+		}
+		
+		if (list.length == 0) {
+			
+			__eventMap.remove (type);
+			
+		}
+		
+		if (!__eventMap.iterator ().hasNext ()) {
+			
+			__eventMap = null;
 			
 		}
 		
 	}
 	
 	
-	public function toString ():String {
+	public function toString ():String { 
 		
-		return "[object " + Type.getClassName (Type.getClass (this)) + "]";
+		var full = Type.getClassName (Type.getClass (this));
+		var short = full.split (".").pop ();
+		
+		return untyped "[object " + short + "]";
 		
 	}
 	
 	
 	public function willTrigger (type:String):Bool {
 		
-		if (__eventMap == null) {
-			
-			return false;
-			
-		}
-		
-		return __eventMap.exists (type);
+		return hasEventListener (type);
 		
 	}
 	
@@ -211,32 +184,9 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
-	@:noCompletion private static inline function __sortEvents (a:Listener, b:Listener):Int {
+	@:noCompletion private static function __sortByPriority (l1:Listener, l2:Listener):Int {
 		
-		if (a == null || b == null) { 
-			
-			return 0;
-			
-		}
-		
-		var al = a;
-		var bl = b;
-		
-		if (al == null || bl == null) {
-			
-			return 0;
-			
-		}
-		
-		if (al.priority == bl.priority) { 
-			
-			return al.id == bl.id ? 0 : ( al.id > bl.id ? 1 : -1 );
-			
-		} else {
-		
-			return al.priority < bl.priority ? 1 : -1;
-			
-		}
+		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
 		
 	}
 	
@@ -244,46 +194,31 @@ class EventDispatcher implements IEventDispatcher {
 }
 
 
-class Listener {
+private class Listener {
 	
 	
-	public var id:Int;
-	public var listener:WeakRef <Function>;
+	public var callback:Dynamic->Void;
 	public var priority:Int;
 	public var useCapture:Bool;
-
-	private static var __id = 1;
 	
 	
-	public function new (listener:WeakRef <Function>, useCapture:Bool, priority:Int) {
+	public function new (callback:Dynamic->Void, useCapture:Bool, priority:Int) {
 		
-		this.listener = listener;
+		this.callback = callback;
 		this.useCapture = useCapture;
 		this.priority = priority;
-		id = __id++;
 		
 	}
 	
 	
-	public function dispatchEvent (event:Event):Void {
+	public function match (callback:Dynamic->Void, useCapture:Bool) {
 		
-		listener.get () (event);
-		
-	}
-	
-	
-	public function is (listener:Function, useCapture:Bool) {
-		
-		return (Reflect.compareMethods (this.listener.get(), listener) && this.useCapture == useCapture);
+		return (this.callback == callback && this.useCapture == useCapture);
 		
 	}
 	
 	
 }
-
-
-typedef ListenerList = Array<Listener>;
-typedef EventMap = haxe.ds.StringMap<ListenerList>;
 
 
 #end

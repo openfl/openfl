@@ -52,6 +52,7 @@ class Graphics {
 	@:noCompletion private var __halfStrokeWidth:Float;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
+	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool = true;
 	@:noCompletion private var __cachedTexture:FilterTexture;
 	
@@ -225,6 +226,7 @@ class Graphics {
 		if (__bounds != null) {
 			
 			__dirty = true;
+			__transformDirty = true;
 			__bounds = null;
 			
 		}
@@ -242,6 +244,7 @@ class Graphics {
 		__halfStrokeWidth = sourceGraphics.__halfStrokeWidth;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
+		__transformDirty = true;
 		__visible = sourceGraphics.__visible;
 		
 	}
@@ -860,7 +863,7 @@ class Graphics {
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
 		__halfStrokeWidth = (thickness != null) ? thickness / 2 : 0;
-		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
+		__commands.push (LineStyle (thickness, color & 0x00FFFFFF, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
 		
@@ -950,6 +953,7 @@ class Graphics {
 		if (__bounds == null) {
 			
 			__bounds = new Rectangle (x, y, 0, 0);
+			__transformDirty = true;
 			return;
 			
 		}
@@ -958,6 +962,7 @@ class Graphics {
 			
 			__bounds.width += __bounds.x - x;
 			__bounds.x = x;
+			__transformDirty = true;
 			
 		}
 		
@@ -965,6 +970,7 @@ class Graphics {
 			
 			__bounds.height += __bounds.y - y;
 			__bounds.y = y;
+			__transformDirty = true;
 			
 		}
 		

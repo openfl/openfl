@@ -1140,11 +1140,11 @@ class GraphicsRenderer {
 	}
 	
 	public static inline function hex2rgb (hex:Null<Int>):Array<Float> {
-		return hex == null ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
+		return hex == #if java 0 #else null #end ? [0,0,0] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255];
 	}
 	
 	public static inline function hex2rgba (hex:Null<Int>):Array<Float> {
-		return hex == null ? [1,1,1,1] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255, (hex >> 24 & 0xFF) / 255];
+		return hex == #if java 0 #else null #end ? [1,1,1,1] : [(hex >> 16 & 0xFF) / 255, ( hex >> 8 & 0xFF) / 255, (hex & 0xFF) / 255, (hex >> 24 & 0xFF) / 255];
 	}
 
 }
