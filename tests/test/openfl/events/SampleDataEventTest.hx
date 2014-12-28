@@ -14,7 +14,7 @@ class SampleDataEventTest {
 		var sampleDataEvent = new SampleDataEvent (SampleDataEvent.SAMPLE_DATA);
 		var exists = sampleDataEvent.data;
 		
-		Assert.isNull (exists);
+		Assert.isNotNull (exists);
 		
 	}
 	
