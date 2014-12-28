@@ -2,7 +2,7 @@ package openfl.events; #if !flash
 
 
 import openfl.utils.ByteArray;
-
+import openfl.utils.Endian;
 
 class SampleDataEvent extends Event {
 	
@@ -17,8 +17,8 @@ class SampleDataEvent extends Event {
 		
 		super (type, bubbles, cancelable);
 		
-		//data = new ByteArray ();
-		//data.littleEndian = true;
+		data = new ByteArray ();
+		data.endian = Endian.LITTLE_ENDIAN;
 		position = 0.0;
 		
 	}
