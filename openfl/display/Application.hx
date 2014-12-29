@@ -377,7 +377,7 @@ class Application extends LimeApplication {
 		if (stage.__hitTest (x, y, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
-			Mouse.cursor = (untyped (target).buttonMode ? POINTER : DEFAULT);
+			Mouse.cursor = (untyped (target).buttonMode ? POINTER : ARROW);
 			stage.__fireEvent (MouseEvent.__create (type, button, target.globalToLocal (new Point (x, y)), cast target), __stack);
 			
 			if (clickType != null) {
@@ -388,7 +388,7 @@ class Application extends LimeApplication {
 			
 		} else {
 			
-			Mouse.cursor = (stage.buttonMode ? POINTER : DEFAULT);
+			Mouse.cursor = (stage.buttonMode ? POINTER : ARROW);
 			stage.__fireEvent (MouseEvent.__create (type, button, new Point (x, y), stage), [ stage ]);
 			
 			if (clickType != null) {
