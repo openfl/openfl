@@ -9,12 +9,12 @@ class SampleDataEventTest {
 	
 	@Test public function data () {
 		
-		// TODO: Confirm functionality
+		// TODO:  Confirm functionality
 		
 		var sampleDataEvent = new SampleDataEvent (SampleDataEvent.SAMPLE_DATA);
 		var exists = sampleDataEvent.data;
 		
-		Assert.isNull (exists);
+		Assert.isNotNull (exists);
 		
 	}
 	
