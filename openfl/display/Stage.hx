@@ -56,8 +56,6 @@ class Stage extends Sprite {
 	@:noCompletion private var __color:Int;
 	@:noCompletion private var __colorSplit:Array<Float>;
 	@:noCompletion private var __colorString:String;
-	@:noCompletion private var __cursor:String;
-	@:noCompletion private var __cursorHidden:Bool;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __dragBounds:Rectangle;
 	@:noCompletion private var __dragObject:Sprite;
@@ -364,38 +362,6 @@ class Stage extends Sprite {
 			}
 			
 		}*/
-		
-	}
-	
-	
-	@:noCompletion private function __setCursor (cursor:String):Void {
-		
-		if (__cursor != cursor) {
-			
-			__cursor = cursor;
-			
-			if (!__cursorHidden) {
-				
-				//var element = __canvas != null ? __canvas : __div;
-				//element.style.cursor = cursor;
-				
-			}
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function __setCursorHidden (value:Bool):Void {
-		
-		if (__cursorHidden != value) {
-			
-			__cursorHidden = value;
-			
-			//var element = __canvas != null ? __canvas : __div;
-			//element.style.cursor = value ? "none" : __cursor;
-			
-		}
 		
 	}
 	

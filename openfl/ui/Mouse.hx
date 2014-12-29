@@ -1,23 +1,25 @@
 package openfl.ui; #if !flash #if (display || openfl_next || js)
 
 
+import lime.ui.Mouse in LimeMouse;
 import openfl.Lib;
 
-
 @:access(openfl.display.Stage)
+
+
 class Mouse {
 	
 	
 	public static function hide ():Void {
 		
-		Lib.current.stage.__setCursorHidden (true);
+		LimeMouse.hide ();
 		
 	}
 	
 	
 	public static function show ():Void {
 		
-		Lib.current.stage.__setCursorHidden (false);
+		LimeMouse.show ();
 		
 	}
 	

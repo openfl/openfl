@@ -5,6 +5,7 @@ import lime.app.Application in LimeApplication;
 import lime.app.Config in LimeConfig;
 import lime.graphics.RenderContext;
 import lime.ui.KeyCode;
+import lime.ui.Mouse;
 import openfl.display.Stage;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
@@ -376,7 +377,7 @@ class Application extends LimeApplication {
 		if (stage.__hitTest (x, y, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
-			stage.__setCursor (untyped (target).buttonMode ? "pointer" : "default");
+			Mouse.cursor = (untyped (target).buttonMode ? POINTER : DEFAULT);
 			stage.__fireEvent (MouseEvent.__create (type, button, target.globalToLocal (new Point (x, y)), cast target), __stack);
 			
 			if (clickType != null) {
@@ -387,7 +388,7 @@ class Application extends LimeApplication {
 			
 		} else {
 			
-			stage.__setCursor (stage.buttonMode ? "pointer" : "default");
+			Mouse.cursor = (stage.buttonMode ? POINTER : DEFAULT);
 			stage.__fireEvent (MouseEvent.__create (type, button, new Point (x, y), stage), [ stage ]);
 			
 			if (clickType != null) {
