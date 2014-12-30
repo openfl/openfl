@@ -27,7 +27,7 @@ class ApplicationMain {
 		var types = [];
 		
 		::foreach assets::::if (embed)::
-		urls.push ("::resourceName::");
+		urls.push (::if (type == "font")::"::fontName::"::else::"::resourceName::"::end::);
 		::if (type == "image")::types.push (AssetType.IMAGE);
 		::elseif (type == "binary")::types.push (AssetType.BINARY);
 		::elseif (type == "text")::types.push (AssetType.TEXT);
