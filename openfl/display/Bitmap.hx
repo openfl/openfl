@@ -127,7 +127,7 @@ class Bitmap extends DisplayObjectContainer {
 		
 		if (point.x > 0 && point.y > 0 && point.x <= bitmapData.width && point.y <= bitmapData.height) {
 			
-			if (stack != null) {
+			if (stack != null && !interactiveOnly) {
 				
 				stack.push (this);
 				
