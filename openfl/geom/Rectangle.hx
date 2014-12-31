@@ -274,8 +274,16 @@ class Rectangle {
 		var cacheRight = right;
 		var cacheBottom = bottom;
 		
-		if (this.x > x) this.x = x;
-		if (this.y > y) this.y = y;
+		if (this.x > x)
+		{
+			this.x = x;
+			this.width = cacheRight - x;
+		}
+		if (this.y > y)
+		{
+			this.y = y;
+			this.height = cacheBottom - y;
+		}
 		if (cacheRight < x + width) this.width = x + width - this.x;
 		if (cacheBottom < y + height) this.height = y + height - this.y;
 		
