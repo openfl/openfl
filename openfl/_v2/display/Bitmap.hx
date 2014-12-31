@@ -9,6 +9,7 @@ class Bitmap extends DisplayObject {
 	
 	
 	public var bitmapData (default, set):BitmapData;
+	public var pixelSnapping (get, set):PixelSnapping;
 	public var smoothing (default, set):Bool;
 	
 	
@@ -69,6 +70,31 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
+	private function get_pixelSnapping ():PixelSnapping {
+		
+		var i:Int = lime_display_object_get_pixel_snapping (__handle);
+		return Type.createEnumIndex (PixelSnapping, i);
+		
+	}
+	
+	
+	private function set_pixelSnapping (value:PixelSnapping):PixelSnapping {
+		
+		if (value == null) {
+			
+			lime_display_object_set_pixel_snapping (__handle, 0);
+			
+		} else {
+			
+			lime_display_object_set_pixel_snapping (__handle, Type.enumIndex (value));
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	private function set_smoothing (value:Bool):Bool {
 		
 		smoothing = value;
@@ -77,6 +103,17 @@ class Bitmap extends DisplayObject {
 		return value;
 		
 	}
+	
+	
+	
+	
+	// Native Methods
+	
+	
+	
+	
+	private static var lime_display_object_get_pixel_snapping = Lib.load ("lime", "lime_display_object_get_pixel_snapping", 1);
+	private static var lime_display_object_set_pixel_snapping = Lib.load ("lime", "lime_display_object_set_pixel_snapping", 2);
 	
 	
 }

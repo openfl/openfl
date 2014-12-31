@@ -1,7 +1,6 @@
 package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 
 
-import openfl.display.PixelSnapping;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
@@ -31,7 +30,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var opaqueBackground (get, set):Null <Int>;
 	public var parent (get, null):DisplayObjectContainer;
 	public var pedanticBitmapCaching (get, set):Bool;
-	public var pixelSnapping (get, set):PixelSnapping;
 	public var root (get, null):DisplayObject;
 	public var rotation (get, set):Float;
 	public var scale9Grid (get, set):Rectangle;
@@ -513,31 +511,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	private function get_pixelSnapping ():PixelSnapping {
-		
-		var i:Int = lime_display_object_get_pixel_snapping (__handle);
-		return Type.createEnumIndex (PixelSnapping, i);
-		
-	}
-	
-	
-	private function set_pixelSnapping (value:PixelSnapping):PixelSnapping {
-		
-		if (value == null) {
-			
-			lime_display_object_set_pixel_snapping (__handle, 0);
-			
-		} else {
-			
-			lime_display_object_set_pixel_snapping (__handle, Type.enumIndex (value));
-			
-		}
-		
-		return value;
-		
-	}
-	
-	
 	private function get_filters ():Array<Dynamic> {
 		
 		if (__filters == null) return [];
@@ -798,8 +771,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	private static var lime_display_object_set_cache_as_bitmap = Lib.load ("lime", "lime_display_object_set_cache_as_bitmap", 2);
 	private static var lime_display_object_get_pedantic_bitmap_caching = Lib.load ("lime", "lime_display_object_get_pedantic_bitmap_caching", 1);
 	private static var lime_display_object_set_pedantic_bitmap_caching = Lib.load ("lime", "lime_display_object_set_pedantic_bitmap_caching", 2);
-	private static var lime_display_object_get_pixel_snapping = Lib.load ("lime", "lime_display_object_get_pixel_snapping", 1);
-	private static var lime_display_object_set_pixel_snapping = Lib.load ("lime", "lime_display_object_set_pixel_snapping", 2);
 	private static var lime_display_object_get_visible = Lib.load ("lime", "lime_display_object_get_visible", 1);
 	private static var lime_display_object_set_visible = Lib.load ("lime", "lime_display_object_set_visible", 2);
 	private static var lime_display_object_set_filters = Lib.load ("lime", "lime_display_object_set_filters", 2);
