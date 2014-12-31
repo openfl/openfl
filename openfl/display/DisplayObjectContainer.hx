@@ -398,7 +398,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		point = localToGlobal (point);
 		var stack = new Array<DisplayObject> ();
 		__hitTest (point.x, point.y, false, stack, false);
-		stack.shift ();
+		stack.reverse ();
 		return stack;
 		
 	}
@@ -694,7 +694,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			while (--i >= 0) {
 				
-				if (__children[i].__hitTest (x, y, shapeFlag, null, interactiveOnly)) {
+				if (__children[i].__hitTest (x, y, shapeFlag, null, true)) {
 					
 					if (stack != null) {
 						
@@ -714,13 +714,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			while (--i >= 0) {
 				
-				if (__children[i].__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
-					
-					stack.insert (length, this);
-					
-					return true;
-					
-				}
+				__children[i].__hitTest (x, y, shapeFlag, stack, false);
 				
 			}
 			
