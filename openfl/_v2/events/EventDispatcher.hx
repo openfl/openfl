@@ -45,6 +45,13 @@ class EventDispatcher implements IEventDispatcher {
 		} else {
 			
 			var list = __eventMap.get (type);
+			
+			for (i in 0...list.length) {
+				
+				if (Reflect.compareMethods (list[i].callback, listener)) return;
+				
+			}
+			
 			list.push (new Listener (listener, useCapture, priority));
 			list.sort (__sortByPriority);
 			
@@ -213,7 +220,7 @@ private class Listener {
 	
 	public function match (callback:Dynamic->Void, useCapture:Bool) {
 		
-		return (this.callback == callback && this.useCapture == useCapture);
+		return (Reflect.compareMethods (this.callback, callback) && this.useCapture == useCapture);
 		
 	}
 	
