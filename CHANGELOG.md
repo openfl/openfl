@@ -1,3 +1,20 @@
+2.2.1 (01/01/2014)
+------------------
+
+#### HTML5, Native (next)
+
+* Now the document class is added to stage before new ()
+* Improved the hitTest logic for both Sprite and Shape
+* Fixed inline text styles in HTML5 TextField
+* Expanded Capabilities to better match the Flash API
+* Fixed Matrix.createBox
+
+#### Native (v2)
+
+* Expanded Capabilities to better match the Flash API
+* Fixed Matrix.createBox
+
+
 2.2.0 (12/31/2014)
 ------------------
 
