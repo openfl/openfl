@@ -237,6 +237,13 @@ class Matrix #if (cpp && haxe_ver < 3.2) implements cpp.rtti.FieldNumericInteger
 	}
 	
 	
+	public function equals (matrix):Bool {
+		
+		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
+		
+	}
+	
+	
 	public function identity ():Void {
 		
 		a = 1;

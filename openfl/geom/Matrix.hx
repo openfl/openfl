@@ -241,16 +241,16 @@ class Matrix {
 	}
 	
 	
-	public function equals (matrix):Bool {
+	public function deltaTransformPoint (point:Point):Point {
 		
-		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
+		return new Point (point.x * a + point.y * c, point.x * b + point.y * d);
 		
 	}
 	
 	
-	public function deltaTransformPoint (point:Point):Point {
+	public function equals (matrix):Bool {
 		
-		return new Point (point.x * a + point.y * c, point.x * b + point.y * d);
+		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
 		
 	}
 	
