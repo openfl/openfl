@@ -1,5 +1,37 @@
-2.1.8
-=====
+2.2.0 (12/31/2014)
+------------------
+
+#### HTML5, Native (next)
+
+* Added MouseEvent.DOUBLE_CLICK event
+* Added Mouse hide/show support
+* Added support for buttonMode/useHandCursor
+* Added Point.copyFrom
+* Improved the behavior of getRect and related functions
+* Improved the behavior of getObjectsUnderPoint
+* Improved Graphics.lineStyle color
+* Fixed font.fontName for embedded HTML5 fonts
+* Fixed event.target when clicking a Bitmap
+* Fixed BitmapData getPixels/paletteMap
+* Fixed removeEventListener on Neko
+* Updated the behavior of SampleDataEvent
+* Updated to match Flash 12 addEventListener behavior
+
+#### Native (v2)
+
+* Improved the behavior of MouseEvent.DOUBLE_CLICK
+* Migrated to the "next" EventDispatcher to fix issues
+* Fixed support for Windows icons
+* Fixed BitmapData paletteMap
+* Moved "pixelSnapping" from DisplayObject to Bitmap
+* Updated BitmapData.getRGBAPixels
+* Fixed removeEventListener on Neko
+* Updated to match Flash 12 addEventListener behavior
+* Minor fix for development Haxe releases
+
+
+2.1.8 (12/21/2014)
+------------------
 
 #### HTML5
 
@@ -11,8 +43,8 @@
 * Implemented improvements for beta Java support
 
 
-2.1.7
-=====
+2.1.7 (12/04/2014)
+------------------
 
 #### HTML5, Native (next)
 
@@ -28,8 +60,8 @@
 * Added non-op Graphics.cubicCurveTo for compatibility
 
 
-2.1.6
-=====
+2.1.6 (11/20/2014)
+------------------
 
 #### General
 
@@ -58,8 +90,8 @@
 * Removed v2 openfl.Vector, preferring the "next" implementation
 
 
-2.1.5
-=====
+2.1.5 (11/01/2014)
+------------------
 
 #### HTML5, Native (next)
 
@@ -74,8 +106,8 @@
 * Embedded fonts are now automatically registered
 
 
-2.1.4
-=====
+2.1.4 (10/28/2014)
+------------------
 
 #### HTML5, Native (next)
 
@@ -86,8 +118,8 @@
 * Fixed Assets.getText when asset is type BINARY
 
 
-2.1.3
-=====
+2.1.3 (10/23/2014)
+------------------
 
 #### General
 
@@ -99,8 +131,8 @@
 * Improvements to OpenGL Graphics.drawTriangles
 
 
-2.1.2
-=====
+2.1.2 (10/20/2014)
+------------------
 
 #### General
 
@@ -115,8 +147,8 @@
 * Made Matrix3D use openfl.Vector instead of flash.Vector for consistency
 
 
-2.1.1
-=====
+2.1.1 (10/16/2014)
+------------------
 
 #### HTML5, Native (next)
 
@@ -127,8 +159,8 @@
 * Fix compilation of openfl.utils.JNI when not targeting Android
 
 
-2.1.0
-=====
+2.1.0 (10/14/2014)
+------------------
 
 #### General
 
@@ -162,8 +194,8 @@
 * Initial version (using Lime legacy)
 
 
-2.0.1
-=====
+2.0.1 (06/24/2014)
+------------------
 
 #### Native
 
@@ -195,8 +227,8 @@
 * Added a non-op userAgent property for compatibility
 
 
-2.0.0
-=====
+2.0.0 (05/29/2014)
+------------------
 
 #### General
 
@@ -228,8 +260,8 @@
 * Fixed an issue with Stage focus when leaving the Flash preloader
 
 
-1.4.2
-=====
+1.4.2 (04/30/2014)
+------------------
 
 #### HTML5
 
@@ -244,8 +276,8 @@
 * No longer keep events queue, allow events to dispatch immediately
 
 
-1.4.1
-=====
+1.4.1 (04/25/2014)
+------------------
 
 #### HTML5
 
@@ -265,8 +297,8 @@
 * Fixed a small error in flash.display.BitmapData "copyPixels"
 
 
-1.4.0
-=====
+1.4.0 (04/22/2014)
+------------------
 
 #### General
 
@@ -315,8 +347,8 @@
 * Added initial support for bitmap fill matrix in flash.display.Graphics
 
 
-1.3.0
-=====
+1.3.0 (03/18/2014)
+------------------
 
 #### General
 
@@ -339,8 +371,8 @@
 * Improved default Flash preloader
 
 
-1.2.3
-=====
+1.2.3 (03/04/2014)
+------------------
 
 #### General
 
@@ -374,8 +406,8 @@
 * Fixes to flash.net.URLLoader
 
 
-1.2.2
-=====
+1.2.2 (12/31/2013)
+------------------
 
 #### General
 
@@ -393,8 +425,8 @@
 * Minor compile fixes
 
 
-1.2.1
-=====
+1.2.1 (12/18/2013)
+------------------
 
 #### General
 
@@ -415,8 +447,8 @@
 * Minor compile fixes
 
 
-1.2.0
-=====
+1.2.0 (12/10/2013)
+------------------
 
 #### General
 
@@ -444,8 +476,8 @@
 * Minor compile fixes
 
 
-1.1.4
-=====
+1.1.4 (11/05/2013)
+------------------
 
 #### Native
 
@@ -453,8 +485,8 @@
 * Minor fixes
 
 
-1.1.3
-=====
+1.1.3 (11/02/2013)
+------------------
 
 #### Native
 
@@ -464,8 +496,8 @@
 * Fix file boundaries when streaming sound on Android
 
 
-1.1.2
-=====
+1.1.2 (10/31/2013)
+------------------
 
 #### Native
 
@@ -475,7 +507,7 @@
 * Improved handling of unsupported filters
 
 
-1.1.1
+1.1.1 (10/27/2013)
 =====
 
 #### Native
@@ -492,8 +524,8 @@
 * Minor fixes
 
 
-1.1.0
-=====
+1.1.0 (10/26/2013)
+------------------
 
 #### General
 
@@ -540,8 +572,8 @@
 * Moved to a standard trace(), removed override
 
 
-1.0.8
-=====
+1.0.8 (08/30/2013)
+------------------
 
 #### Native
 
@@ -551,7 +583,7 @@
 
 
 1.0.7
-=====
+-----
 
 #### Native
 
@@ -560,7 +592,7 @@
 
 
 1.0.6
-=====
+-----
 
 #### General
 
@@ -574,8 +606,8 @@
 * Fixed support for Mac64 NDLL type
 
 
-1.0.5
-=====
+1.0.5 (07/23/2013)
+------------------
 
 #### General
 
@@ -600,7 +632,7 @@
 
 
 1.0.4
-=====
+-----
 
 #### General
 
@@ -623,7 +655,7 @@
 
 
 1.0.3
-=====
+-----
 
 #### General
 
@@ -640,7 +672,7 @@
 
 
 1.0.2
-=====
+-----
 
 #### General
 
@@ -656,8 +688,8 @@
 * Added ByteArray.toString
 
 
-1.0.1
-=====
+1.0.1 (06/19/2013)
+------------------
 
 #### General
 
@@ -668,8 +700,8 @@
 * Improved handling of applicationDomain
 
 
-1.0.0
-=====
+1.0.0 (06/15/2013)
+------------------
 
 * Initial release: http://www.openfl.org/blog/2013/07/10/introducing-openfl/
 
