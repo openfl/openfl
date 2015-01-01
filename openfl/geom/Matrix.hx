@@ -182,9 +182,30 @@ class Matrix {
 	
 	public function createBox (scaleX:Float, scaleY:Float, rotation:Float = 0, tx:Float = 0, ty:Float = 0):Void {
 		
-		a = scaleX;
-		d = scaleY;
-		b = rotation;
+		//identity ();
+		//rotate (rotation);
+		//scale (scaleX, scaleY);
+		//translate (tx, ty);
+		
+		if (rotation != 0) {
+			
+			var cos = Math.cos (rotation);
+			var sin = Math.sin (rotation);
+			
+			a = cos * scaleX;
+			b = sin * scaleY;
+			c = -sin * scaleX;
+			d = cos * scaleY;
+			
+		} else {
+			
+			a = scaleX;
+			b = 0;
+			c = 0;
+			d = scaleY;
+			
+		}
+		
 		this.tx = tx;
 		this.ty = ty;
 		
