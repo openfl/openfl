@@ -865,9 +865,13 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 			}
 			
-			for (child in __children) {
+			if (__children != null) {
 				
-				child.__setStageReference (stage);
+				for (child in __children) {
+					
+					child.__setStageReference (stage);
+					
+				}
 				
 			}
 			

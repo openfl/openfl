@@ -138,11 +138,11 @@ class ApplicationMain {
 			
 			var instance:DocumentClass = Type.createInstance (DocumentClass, []);
 			
-			if (Std.is (instance, openfl.display.DisplayObject)) {
+			/*if (Std.is (instance, openfl.display.DisplayObject)) {
 				
 				openfl.Lib.current.addChild (cast instance);
 				
-			}
+			}*/
 			
 		}
 		
@@ -166,8 +166,7 @@ class ApplicationMain {
 }
 
 
-#if flash @:build(DocumentClass.buildFlash())
-#else @:build(DocumentClass.build()) #end
+@:build(DocumentClass.build())
 @:keep class DocumentClass extends ::APP_MAIN:: {}
 
 
@@ -194,7 +193,7 @@ class DocumentClass {
 				
 				var method = macro {
 					
-					this.stage = flash.Lib.current.stage;
+					openfl.Lib.current.addChild (this);
 					super ();
 					dispatchEvent (new openfl.events.Event (openfl.events.Event.ADDED_TO_STAGE, false, false));
 					
@@ -202,34 +201,6 @@ class DocumentClass {
 				
 				fields.push ({ name: "new", access: [ APublic ], kind: FFun({ args: [], expr: method, params: [], ret: macro :Void }), pos: Context.currentPos () });
 				
-				return fields;
-				
-			}
-			
-			searchTypes = searchTypes.superClass.t.get ();
-			
-		}
-		
-		return null;
-		
-	}
-	
-	
-	macro public static function buildFlash ():Array<Field> {
-		
-		var classType = Context.getLocalClass ().get ();
-		var searchTypes = classType;
-		
-		while (searchTypes.superClass != null) {
-			
-			if (searchTypes.pack.length == 2 && searchTypes.pack[1] == "display" && searchTypes.name == "DisplayObject") {
-				
-				var fields = Context.getBuildFields ();
-				var method = macro {
-					return flash.Lib.current.stage;
-				}
-				
-				fields.push ({ name: "get_stage", access: [ APrivate ], meta: [ { name: ":getter", params: [ macro stage ], pos: Context.currentPos() } ], kind: FFun({ args: [], expr: method, params: [], ret: macro :flash.display.Stage }), pos: Context.currentPos() });
 				return fields;
 				
 			}
