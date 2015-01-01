@@ -7,14 +7,17 @@ import openfl.Lib;
 class Capabilities {
 	
 	
+	public static var hasAccessibility (default, null) = false;
 	public static var language (get, null):String;
 	public static var pixelAspectRatio (get, null):Float;
+	public static var playerType (default, null) = "OpenFL";
 	public static var screenDPI (get, null):Float;
+	public static var screenModes (get, null):Array<ScreenMode>;
 	public static var screenResolutions (get, null):Array<Array<Int>>;
 	public static var screenResolutionX (get, null):Float;
 	public static var screenResolutionY (get, null):Float;
 	
-	public static var screenModes (get, null):Array<ScreenMode>;
+	
 	
 	
 	// Getters & Setters
@@ -22,7 +25,7 @@ class Capabilities {
 	
 	
 	
-	private static function get_language():String {
+	private static function get_language ():String {
 		
 		var locale:String = lime_capabilities_get_language ();
 		

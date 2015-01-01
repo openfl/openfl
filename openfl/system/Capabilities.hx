@@ -12,12 +12,13 @@ import js.Browser;
 class Capabilities {
 	
 	
-	public static var hasAccessibility = false;
+	public static var hasAccessibility (default, null) = false;
+	public static var language (get, null):String;
 	public static var pixelAspectRatio (get, null):Float;
+	public static var playerType (default, null) = "OpenFL";
 	public static var screenDPI (get, null):Float;
 	public static var screenResolutionX (get, null):Float;
 	public static var screenResolutionY (get, null):Float;
-	public static var language (get, null):String;
 	
 	
 	
