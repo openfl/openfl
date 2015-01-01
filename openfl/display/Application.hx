@@ -6,6 +6,7 @@ import lime.app.Config in LimeConfig;
 import lime.graphics.RenderContext;
 import lime.ui.KeyCode;
 import lime.ui.Mouse;
+import openfl.display.InteractiveObject;
 import openfl.display.Stage;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
@@ -22,6 +23,7 @@ class Application extends LimeApplication {
 	
 	
 	private var stage:Stage;
+	private var __lastClickTime:Int;
 	
 	
 	public function new () {
@@ -342,23 +344,25 @@ class Application extends LimeApplication {
 		
 		if (button > 2) return;
 		
-		/*var rect;
+		stage.__mouseX = x;
+		stage.__mouseY = y;
 		
-		if (__canvas != null) {
+		var stack = [];
+		var target:InteractiveObject = null;
+		var targetPoint = new Point (x, y);
+		
+		if (stage.__hitTest (x, y, false, stack, true)) {
 			
-			rect = __canvas.getBoundingClientRect ();
-			__mouseX = (event.clientX - rect.left) * (stageWidth / rect.width);
-			__mouseY = (event.clientY - rect.top) * (stageHeight / rect.height);
+			target = cast stack[stack.length - 1];
 			
 		} else {
 			
-			rect = __div.getBoundingClientRect ();
-			//__mouseX = (event.clientX - rect.left) * (__div.style.width / rect.width);
-			__mouseX = (event.clientX - rect.left);
-			//__mouseY = (event.clientY - rect.top) * (__div.style.height / rect.height);
-			__mouseY = (event.clientY - rect.top);
+			target = stage;
+			stack = [ stage ];
 			
-		}*/
+		}
+		
+		stage.__fireEvent (MouseEvent.__create (type, button, (target == stage ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		var clickType = switch (type) {
 			
@@ -369,39 +373,51 @@ class Application extends LimeApplication {
 			
 		}
 		
-		stage.__mouseX = x;
-		stage.__mouseY = y;
-		
-		var __stack = [];
-		
-		if (stage.__hitTest (x, y, false, __stack, true)) {
+		if (clickType != null) {
 			
-			var target = __stack[__stack.length - 1];
-			Mouse.cursor = (untyped (target).buttonMode ? POINTER : ARROW);
-			stage.__fireEvent (MouseEvent.__create (type, button, target.globalToLocal (new Point (x, y)), cast target), __stack);
+			stage.__fireEvent (MouseEvent.__create (clickType, button, (target == stage ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 			
-			if (clickType != null) {
+			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 				
-				stage.__fireEvent (MouseEvent.__create (clickType, button, target.globalToLocal (new Point (x, y)), cast target), __stack);
-				
-			}
-			
-		} else {
-			
-			Mouse.cursor = (stage.buttonMode ? POINTER : ARROW);
-			stage.__fireEvent (MouseEvent.__create (type, button, new Point (x, y), stage), [ stage ]);
-			
-			if (clickType != null) {
-				
-				stage.__fireEvent (MouseEvent.__create (clickType, button, new Point (x, y), stage), [ stage ]);
+				var currentTime = Lib.getTimer ();
+				if (currentTime - __lastClickTime < 500) {
+					
+					stage.__fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, (target == stage ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+					__lastClickTime = 0;
+					
+				} else {
+					
+					__lastClickTime = currentTime;
+					
+				}
 				
 			}
 			
 		}
 		
+		if (Std.is (target, Sprite)) {
+			
+			var targetSprite:Sprite = cast target;
+			
+			if (targetSprite.buttonMode && targetSprite.useHandCursor) {
+				
+				Mouse.cursor = POINTER;
+				
+			} else {
+				
+				Mouse.cursor = ARROW;
+				
+			}
+			
+		} else {
+			
+			Mouse.cursor = ARROW;
+			
+		}
+		
 		if (stage.__dragObject != null) {
 			
-			stage.__drag (new Point (x, y));
+			stage.__drag (targetPoint);
 			
 		}
 		
