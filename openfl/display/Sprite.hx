@@ -87,7 +87,7 @@ class Sprite extends DisplayObjectContainer {
 			
 			if (stack != null) {
 				
-				stack.insert (length, this);
+				stack.push (this);
 				
 			}
 			
