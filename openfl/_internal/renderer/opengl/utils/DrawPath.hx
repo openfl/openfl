@@ -45,7 +45,7 @@ public function update(line:LineStyle, fill:FillType, fillIndex:Int):Void {
 
 public function updateLine(line:LineStyle):Void {
 	this.line.width = line.width;
-	this.line.color = line.color;
+	this.line.color = line.color == null ? 1 : line.color & 0x00FFFFFF;
 	this.line.alpha = line.alpha == null ? 1 : line.alpha;
 	this.line.scaleMode = line.scaleMode == null ? LineScaleMode.NORMAL : line.scaleMode;
 	this.line.caps = line.caps == null ? CapsStyle.ROUND : line.caps;

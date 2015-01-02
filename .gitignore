@@ -13,3 +13,4 @@ tests/report
 documentation/*.xml
 documentation/pages
 haxedoc.xml
+.temp

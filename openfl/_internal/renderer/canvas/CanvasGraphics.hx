@@ -693,7 +693,7 @@ class CanvasGraphics {
 								});
 								
 								context.miterLimit = (miterLimit == null ? 3 : miterLimit);
-								context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color, 6));
+								context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
 								
 								hasStroke = true;
 								
