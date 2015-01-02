@@ -1,3 +1,12 @@
+2.2.2 (01/02/2014)
+------------------
+
+#### HTML5, Native (next)
+
+* Improved the behavior of getObjectsUnderPoint
+* Fixed an error in Graphics.lineStyle on Neko
+
+
 2.2.1 (01/01/2014)
 ------------------
 
