@@ -155,11 +155,19 @@ class BitmapData implements IBitmapDrawable {
 		
 		this.transparent = transparent;
 		
+		#if (neko || (js && html5))
+		width = width == null ? 0 : width;
+		height = height == null ? 0 : height;
+		#end
+		
+		width = width < 0 ? 0 : width;
+		height = height < 0 ? 0 : height;
+		
+		this.width = width;
+		this.height = height;
+		rect = new Rectangle (0, 0, width, height);
+		
 		if (width > 0 && height > 0) {
-			
-			this.width = width;
-			this.height = height;
-			rect = new Rectangle (0, 0, width, height);
 			
 			if (!transparent) {
 				
@@ -250,6 +258,8 @@ class BitmapData implements IBitmapDrawable {
 	 * @param	colorTransform		A ColorTransform object that describes the color transformation values to apply.
 	 */
 	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void {
+		
+		if (!__isValid) return;
 		
 		__image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
 		
@@ -531,6 +541,11 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
+	public function dumpBits ():Void {
+		
+		
+	}
+	
 	
 	/**
 	 * Encodes the current image as a JPG or PNG format ByteArray.
@@ -729,6 +744,7 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
 		
+		if (!__isValid) return new Rectangle (0, 0, width, height);
 		return __image.rect.__toFlashRectangle ();
 		
 	}
@@ -815,6 +831,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getTexture (gl:GLRenderContext):GLTexture {
 		
+		if (!__isValid) return null;
+		
 		if (__texture == null) {
 			
 			__texture = gl.createTexture ();
@@ -856,11 +874,14 @@ class BitmapData implements IBitmapDrawable {
 		
 		var pixels = getPixels (rect);
 		var result = new Vector<UInt> ();
+		if (pixels != null) {
 		
-		for (i in 0...Std.int (pixels.length / 4)) {
-			
-			result.push (pixels.readUnsignedInt ());
-			
+			for (i in 0...Std.int (pixels.length / 4)) {
+				
+				result.push (pixels.readUnsignedInt ());
+				
+			}
+		
 		}
 		
 		return result;
@@ -874,10 +895,14 @@ class BitmapData implements IBitmapDrawable {
 		var pixels = getPixels (rect);
 		var result = [for (i in 0...4) [for (j in 0...256) 0]];
 		
-		for (i in 0...pixels.length) {
-			
-			++result[i % 4][pixels.readUnsignedByte ()];
-			
+		if (pixels != null) {
+		
+			for (i in 0...pixels.length) {
+				
+				++result[i % 4][pixels.readUnsignedByte ()];
+				
+			}
+		
 		}
 		
 		return result;
