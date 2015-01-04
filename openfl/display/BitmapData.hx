@@ -161,7 +161,14 @@ class BitmapData implements IBitmapDrawable {
 			this.height = height;
 			rect = new Rectangle (0, 0, width, height);
 			
-			if (!transparent) {
+			if (transparent) {
+
+				if ((fillColor & 0xFF000000) == 0) {				
+					fillColor = 0;
+				}
+                
+			}
+			else {
 				
 				fillColor = (0xFF << 24) | (fillColor & 0xFFFFFF);
 				
