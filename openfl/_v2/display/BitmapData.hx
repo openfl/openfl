@@ -2,6 +2,7 @@ package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 
 
 import haxe.io.Bytes;
+import haxe.Int32;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -227,7 +228,17 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getPixel32 (x:Int, y:Int):Int {
+	public function getPixel32 (x:Int, y:Int):Int32 {
+		
+		#if neko
+		if (transparent) {
+			
+			var pixels = getPixels (new Rectangle (x, y, 1, 1));
+			pixels.position = 0;
+			return pixels.readUnsignedInt ();
+			
+		}
+		#end
 		
 		return lime_bitmap_data_get_pixel32 (__handle, x, y);
 		
@@ -733,7 +744,7 @@ class BitmapData implements IBitmapDrawable {
 	private static var lime_bitmap_data_fill = Lib.load ("lime", "lime_bitmap_data_fill", 4);
 	private static var lime_bitmap_data_get_pixels = Lib.load ("lime", "lime_bitmap_data_get_pixels", 2);
 	private static var lime_bitmap_data_get_pixel = Lib.load ("lime", "lime_bitmap_data_get_pixel", 3);
-	private static var lime_bitmap_data_get_pixel32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
+	private static var lime_bitmap_data_get_pixel32:Dynamic -> Int -> Int -> Int32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
 	private static var lime_bitmap_data_get_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_get_pixel_rgba", 3);
 	#if cpp
 	private static var lime_bitmap_data_get_array = Lib.load ("lime", "lime_bitmap_data_get_array", 3);
