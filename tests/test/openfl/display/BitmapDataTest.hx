@@ -607,7 +607,10 @@ class BitmapDataTest {
         
         for (i in 0...Std.int(TEST_WIDTH * TEST_HEIGHT)) {
             pixel = pixels.readUnsignedInt();
-            Assert.areEqual (hex(expectedColor), hex(pixel), posinfo);
+            Assert.isTrue (Math.abs (((expectedColor >> 24) & 0xFF) - ((pixel >> 24) & 0xFF)) <= 1, posinfo);
+            Assert.isTrue (Math.abs (((expectedColor >> 16) & 0xFF) - ((pixel >> 16) & 0xFF)) <= 1, posinfo);
+            Assert.isTrue (Math.abs (((expectedColor >> 8) & 0xFF) - ((pixel >> 8) & 0xFF)) <= 1, posinfo);
+            Assert.isTrue (Math.abs (((expectedColor) & 0xFF) - ((pixel) & 0xFF)) <= 1, posinfo);
         }
 
         // Now run the same test again to make sure the source
@@ -619,7 +622,10 @@ class BitmapDataTest {
         pixels.position = 0;
         for (i in 0...Std.int(TEST_WIDTH * TEST_HEIGHT)) {
             pixel = pixels.readUnsignedInt();
-            Assert.areEqual (hex(expectedColor), hex(pixel), posinfo);
+            Assert.isTrue (Math.abs (((expectedColor >> 24) & 0xFF) - ((pixel >> 24) & 0xFF)) <= 1, posinfo);
+            Assert.isTrue (Math.abs (((expectedColor >> 16) & 0xFF) - ((pixel >> 16) & 0xFF)) <= 1, posinfo);
+            Assert.isTrue (Math.abs (((expectedColor >> 8) & 0xFF) - ((pixel >> 8) & 0xFF)) <= 1, posinfo);
+            Assert.isTrue (Math.abs (((expectedColor) & 0xFF) - ((pixel) & 0xFF)) <= 1, posinfo);
         }
         
 		bitmapData = new BitmapData (TEST_WIDTH, TEST_HEIGHT, destAlpha);
@@ -633,7 +639,10 @@ class BitmapDataTest {
             expectedColor |= 0xFF000000;
         }
         
-        Assert.areEqual (hex(expectedColor), hex(pixel), posinfo);
+        Assert.isTrue (Math.abs (((expectedColor >> 24) & 0xFF) - ((pixel >> 24) & 0xFF)) <= 1, posinfo);
+        Assert.isTrue (Math.abs (((expectedColor >> 16) & 0xFF) - ((pixel >> 16) & 0xFF)) <= 1, posinfo);
+        Assert.isTrue (Math.abs (((expectedColor >> 8) & 0xFF) - ((pixel >> 8) & 0xFF)) <= 1, posinfo);
+        Assert.isTrue (Math.abs (((expectedColor) & 0xFF) - ((pixel) & 0xFF)) <= 1, posinfo);
     }
 
     // There are 6 combinations with an ARGB source that all must be tested:
