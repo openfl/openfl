@@ -29,6 +29,7 @@ Portions of other MIT-license projects are also used, including content that is
 
     Copyright (c) 2007-2015 NME contributors
     Copyright (c) 2013-2015 Mathew Groves
+    Copyright (c) 2014 The Away3D Team
 
 -------
 

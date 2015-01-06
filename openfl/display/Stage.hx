@@ -49,6 +49,7 @@ class Stage extends Sprite {
 	public var quality:StageQuality;
 	public var stageFocusRect:Bool;
 	public var scaleMode:StageScaleMode;
+	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
 	
@@ -117,6 +118,9 @@ class Stage extends Sprite {
 		
 		__clearBeforeRender = true;
 		__stack = [];
+		
+		stage3Ds = new Vector ();
+     	stage3Ds.push (new Stage3D ());
 		
 	}
 	
