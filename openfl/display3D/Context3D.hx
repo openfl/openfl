@@ -1061,5 +1061,5 @@ class AGLSLContext3D extends Context3D {
 
 
 #else
-typedef Context3D = flash.display.Context3D;
+typedef Context3D = flash.display3D.Context3D;
 #end

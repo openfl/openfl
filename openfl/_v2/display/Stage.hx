@@ -6,6 +6,7 @@ import haxe.CallStack;
 import haxe.Timer;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.OpenGLView;
+import openfl.display.Stage3D;
 import openfl.display.StageAlign;
 import openfl.display.StageDisplayState;
 import openfl.display.StageScaleMode;
@@ -59,6 +60,7 @@ class Stage extends DisplayObjectContainer {
 	public var quality (get, set):StageQuality;
 	public var renderRequest:Void -> Void; 
 	public var scaleMode (get, set):StageScaleMode;
+	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect (get, set):Bool;
 	public var stageHeight (get, null):Int;
 	public var stageWidth (get, null):Int;
@@ -122,6 +124,9 @@ class Stage extends DisplayObjectContainer {
 		this.frameRate = 100;
 		__touchInfo = new Map <Int, TouchInfo> ();
 		__joyAxisData = new Map <Int, Array<Float>> ();
+		
+		stage3Ds = new Vector ();
+		stage3Ds.push (new Stage3D ());
 		
 		#if(cpp && (safeMode || debug))
  		untyped __global__.__hxcpp_set_critical_error_handler( function(message:String) { throw message; } );

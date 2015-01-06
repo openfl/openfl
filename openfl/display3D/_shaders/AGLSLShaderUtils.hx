@@ -3,8 +3,8 @@ package openfl.display3D._shaders;
 
 // TODO: Refactor
 
-import aglsl.assembler.AGALMiniAssembler;
-import aglsl.AGLSLCompiler;
+import openfl.utils.AGALMiniAssembler;
+import openfl._internal.aglsl.AGLSLCompiler;
 import openfl.display3D.Context3DProgramType;
 import openfl.utils.ByteArray;
 
