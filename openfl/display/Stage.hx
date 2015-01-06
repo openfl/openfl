@@ -120,7 +120,7 @@ class Stage extends Sprite {
 		__stack = [];
 		
 		stage3Ds = new Vector ();
-     	stage3Ds.push (new Stage3D ());
+		stage3Ds.push (new Stage3D ());
 		
 	}
 	
