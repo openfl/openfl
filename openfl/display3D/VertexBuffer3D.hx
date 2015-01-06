@@ -96,6 +96,8 @@ class VertexBuffer3D {
 		
 		GL.bufferData (GL.ARRAY_BUFFER, float32Array, GL.STATIC_DRAW);
 		
+		float32Array = null;
+		
 	}
 	
 	

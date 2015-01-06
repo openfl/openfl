@@ -104,7 +104,9 @@ class Context3D {
 		 	
 		}
 		
-		//GL.depthMask (true);
+		#if (cpp || neko)
+		GL.depthMask (true);
+		#end
 		GL.clearColor (red, green, blue, alpha);
 		GL.clearDepth (depth);
 		GL.clearStencil (stencil);
@@ -128,6 +130,9 @@ class Context3D {
 		ogl.scrollRect = new Rectangle (0, 0, width, height);
 		scrollRect = ogl.scrollRect.clone ();
 		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+		#if ios
+		defaultFrameBuffer = GL.getParameter(GL.FRAMEBUFFER_BINDING);
+		#end
 		
 	}
 	
@@ -456,7 +461,10 @@ class Context3D {
 			if (location > -1) {
 				
 				GL.disableVertexAttribArray (location);
-				//GL.bindBuffer (GL.ARRAY_BUFFER, null);
+				
+				#if (cpp || neko)
+				GL.bindBuffer (GL.ARRAY_BUFFER, null);
+				#end
 				
 			}
 			
@@ -600,7 +608,11 @@ class Context3D {
 		}
 		
 		GL.bindRenderbuffer (GL.RENDERBUFFER, renderbuffer);
+		#if ios
+		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
+		#else
 		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		#end
 		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.glTexture, 0);
 		
 		if (enableDepthAndStencil) {
@@ -688,11 +700,19 @@ class Context3D {
 		
 		if (!anisotropySupportTested) {
 			
+			#if lime_legacy
+			
+			supportsAnisotropy = (GL.getSupportedExtensions ().indexOf ("GL_EXT_texture_filter_anisotropic") != -1);
+			
+			#else
+			
 			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
 			if (ext == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
 			if (ext == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
-			
 			supportsAnisotropy = (ext != null);
+			
+			#end
+			
 			anisotropySupportTested = true;
 			
 			GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
@@ -702,7 +722,9 @@ class Context3D {
 		
 		if (Std.is (texture, Texture)) {
 			
-			//GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
+			#if (cpp || neko)
+			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
+			#end
 			
 			switch (wrap) {
 				
@@ -777,7 +799,10 @@ class Context3D {
 			
 		} else if (Std.is (texture, RectangleTexture)) {
 			
-			//GL.bindTexture (GL.TEXTURE_2D, cast(texture, RectangleTexture).glTexture);
+			#if (cpp || neko)
+			GL.bindTexture (GL.TEXTURE_2D, cast(texture, RectangleTexture).glTexture);
+			#end
+			
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 			
@@ -821,7 +846,9 @@ class Context3D {
 			
 		} else if (Std.is (texture, CubeTexture)) {
 			
-			//GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture);
+			#if (cpp || neko)
+			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture);
+			#end
 			
 			switch (wrap) {
 				
