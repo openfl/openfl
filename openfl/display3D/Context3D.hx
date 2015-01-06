@@ -688,7 +688,10 @@ class Context3D {
 		
 		if (!anisotropySupportTested) {
 			
-			var ext = GL.getExtension ("EXT_texture_filter_anisotropic") || GL.getExtension ("MOZ_EXT_texture_filter_anisotropic") || GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
+			if (ext == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+			if (ext == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+			
 			supportsAnisotropy = (ext != null);
 			anisotropySupportTested = true;
 			

@@ -22,7 +22,9 @@ class Texture extends TextureBase {
 		
 		optimizeForRenderToTexture = optimize;
 		
+		#if (js || neko)
 		if (optimizeForRenderToTexture == null) optimizeForRenderToTexture = false;
+		#end
 		
 		super (glTexture, width, height);
 		
