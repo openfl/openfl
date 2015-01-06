@@ -266,7 +266,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			v = data.readInt ();
 			data.position = i << 2;
-			data.writeInt ((((v >>> 8) & 0xFF) << 0) | (((v >>> 16) & 0xFF) << 8) | (((v >>> 24) & 0xFF) << 16) | (((v >>> 0) & 0xFF) << 24));
+			data.writeInt ((((v >>> 0) & 0xFF) << 8) | (((v >>> 8) & 0xFF) << 16) | (((v >>> 16) & 0xFF) << 24) | (((v >>> 24) & 0xFF) << 0));
 			
 		}
 		
