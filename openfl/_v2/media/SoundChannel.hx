@@ -52,7 +52,7 @@ class SoundChannel extends EventDispatcher {
 	#end	
 	
 
-	public function new (handle:Dynamic, startTime:Float, loops:Int, soundTransform:SoundTransform) {
+	public function new (handle:Dynamic = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null) {
 		
 		super ();
 

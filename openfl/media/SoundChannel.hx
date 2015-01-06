@@ -15,6 +15,7 @@ class SoundChannel extends EventDispatcher {
 	public var rightPeak (default, null):Float;
 	public var soundTransform (get, set):SoundTransform;
 	
+	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __source:AudioSource;
 	
 	#if html5
@@ -22,23 +23,40 @@ class SoundChannel extends EventDispatcher {
 	#end
 	
 	
-	private function new (#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end):Void {
+	private function new (#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end = null):Void {
 		
 		super (this);
 		
 		#if !html5
-		__source = source;
-		__source.onComplete.add (source_onComplete);
-		__source.play ();
+			
+			if (source != null) {
+				
+				__source = source;
+				__source.onComplete.add (source_onComplete);
+				__isValid = true;
+				
+				__source.play ();
+				
+			}
+			
 		#else
-		__soundInstance = soundInstance;
-		__soundInstance.addEventListener ("complete", source_onComplete);
+			
+			if (soundInstance != null) {
+				
+				__soundInstance = soundInstance;
+				__soundInstance.addEventListener ("complete", source_onComplete);
+				__isValid = true;
+				
+			}
+			
 		#end
 		
 	}
 	
 	
 	public function stop ():Void {
+		
+		if (!__isValid) return;
 		
 		#if !html5
 		__source.stop ();
@@ -51,6 +69,8 @@ class SoundChannel extends EventDispatcher {
 	
 	#if html5
 	@:noCompletion private function __dispose ():Void {
+		
+		if (!__isValid) return;
 		
 		__soundInstance.stop ();
 		__soundInstance = null;
@@ -68,6 +88,8 @@ class SoundChannel extends EventDispatcher {
 	
 	@:noCompletion private function get_position ():Float {
 		
+		if (!__isValid) return 0;
+		
 		#if !html5
 		return __source.timeOffset / 1000;
 		#else
@@ -78,6 +100,8 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	@:noCompletion private function set_position (value:Float):Float {
+		
+		if (!__isValid) return 0;
 		
 		#if !html5
 		__source.timeOffset = Std.int (value * 1000);
@@ -92,6 +116,8 @@ class SoundChannel extends EventDispatcher {
 	
 	@:noCompletion private function get_soundTransform ():SoundTransform {
 		
+		if (!__isValid) return new SoundTransform ();
+		
 		// TODO: pan
 		
 		#if !html5
@@ -104,6 +130,8 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform {
+		
+		if (!__isValid) return value;
 		
 		#if !html5
 		__source.gain = value.volume;
