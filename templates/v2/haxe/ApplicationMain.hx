@@ -67,12 +67,6 @@ class ApplicationMain {
 					var currentPath = haxe.io.Path.directory (Sys.executablePath ());
 					Sys.setCwd (currentPath);
 					
-					if (sys.FileSystem.exists ("icon.png")) {
-						
-						openfl.Lib.setIcon ("icon.png");
-						
-					}
-					
 				} catch (e:Dynamic) {}
 				#elseif linux
 				try {
