@@ -105,7 +105,7 @@ class NMEPreloader extends Sprite
 		
 		if (percentLoaded > 1)
 		{
-			percentLoaded == 1;
+			percentLoaded = 1;
 		}
 		
 		progress.scaleX = percentLoaded;
