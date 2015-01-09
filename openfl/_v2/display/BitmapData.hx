@@ -330,14 +330,18 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function merge (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt):Void {
 		
+		if (sourceBitmapData == null) return;
+		
 		var sw:Int = Std.int (sourceRect.width);
 		var sh:Int = Std.int (sourceRect.height);
 		
 		var sourcePixels = sourceBitmapData.getPixels (sourceRect);
+		if (sourcePixels == null) return;
 		sourcePixels.position = 0;
 		
 		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
 		var destPixels = getPixels (destRect);
+		if (destPixels == null) return;
 		destPixels.position = 0;
 		
 		var sourcePixel:Int, destPixel:Int, r:Int, g:Int, b:Int, a:Int, color:Int, c1:Int, c2:Int, c3:Int, c4:Int;
