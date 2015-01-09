@@ -13,13 +13,13 @@ import openfl.geom.Transform;
 import openfl.Lib;
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable {
+@:keep class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 
 	
 	public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
-	public var filters (get, set):Array<Dynamic>;
+	public var filters (get, set):Array<BitmapFilter>;
 	public var graphics (get, null):Graphics;
 	public var height (get, set):Float;
 	public var loaderInfo:LoaderInfo;
@@ -511,10 +511,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	private function get_filters ():Array<Dynamic> {
+	private function get_filters ():Array<BitmapFilter> {
 		
 		if (__filters == null) return [];
-		var result = new Array<Dynamic> ();
+		var result = new Array<BitmapFilter> ();
 		
 		for (filter in __filters) {
 			
@@ -527,7 +527,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	private function set_filters (value:Array<Dynamic>):Array<Dynamic> {
+	private function set_filters<T:BitmapFilter> (value:Array<T>):Array<BitmapFilter> {
 		
 		if (filters == null || value == null) {
 			
@@ -535,7 +535,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		} else {
 			
-			__filters = new Array<Dynamic> ();
+			__filters = new Array<BitmapFilter> ();
 			
 			for (filter in value) {
 				
