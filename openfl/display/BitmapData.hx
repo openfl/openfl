@@ -918,6 +918,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function merge (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt):Void {
+		
+		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
+		__image.merge (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
+		
+	}
+	
+	
 	/**
 	 * Fills an image with pixels representing random noise.
 	 * 

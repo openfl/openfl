@@ -328,6 +328,49 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public function merge (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt):Void {
+		
+		var sw:Int = Std.int (sourceRect.width);
+		var sh:Int = Std.int (sourceRect.height);
+		
+		var sourcePixels = sourceBitmapData.getPixels (sourceRect);
+		sourcePixels.position = 0;
+		
+		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
+		var destPixels = getPixels (destRect);
+		destPixels.position = 0;
+		
+		var sourcePixel:Int, destPixel:Int, r:Int, g:Int, b:Int, a:Int, color:Int, c1:Int, c2:Int, c3:Int, c4:Int;
+		
+		for (i in 0...(sh * sw)) {
+			
+			sourcePixel = sourcePixels.readUnsignedInt ();
+			destPixel = destPixels.readUnsignedInt ();
+			
+			a = Std.int (((((sourcePixel >> 24) & 0xFF) * redMultiplier) + (((destPixel >> 24) & 0xFF) * (256 - redMultiplier))) / 256);
+			r = Std.int (((((sourcePixel >> 16) & 0xFF) * redMultiplier) + (((destPixel >> 16) & 0xFF) * (256 - redMultiplier))) / 256);
+			g = Std.int (((((sourcePixel >> 8) & 0xFF) * redMultiplier) + (((destPixel >> 8) & 0xFF) * (256 - redMultiplier))) / 256);
+			b = Std.int ((((sourcePixel & 0xFF) * redMultiplier) + ((destPixel & 0xFF) * (256 - redMultiplier))) / 256);
+			
+			if (a > 255 || r > 255 || g > 255 || b > 255) {
+				
+				trace (a + ", " + r + ", " + g + ", " + b);
+				
+			}
+			
+			color = a << 24 | r << 16 | g << 8 | b;
+			
+			destPixels.position = i * 4;
+			destPixels.writeUnsignedInt (color);
+			
+		}
+		
+		destPixels.position = 0;
+		setPixels (destRect, destPixels);
+		
+	}
+	
+	
 	public function multiplyAlpha ():Void {
 		
 		lime_bitmap_data_multiply_alpha (__handle);
@@ -347,7 +390,7 @@ class BitmapData implements IBitmapDrawable {
 		var sw:Int = Std.int (sourceRect.width);
 		var sh:Int = Std.int (sourceRect.height);
 		
-		var pixels = getPixels (sourceRect);
+		var pixels = sourceBitmapData.getPixels (sourceRect);
 		pixels.position = 0;
 		
 		var pixelValue:Int, r:Int, g:Int, b:Int, a:Int, color:Int, c1:Int, c2:Int, c3:Int, c4:Int;
