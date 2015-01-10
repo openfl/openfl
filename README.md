@@ -1,5 +1,6 @@
 [![Stories in Ready](https://badge.waffle.io/openfl/openfl.svg?label=ready&title=ready)](https://waffle.io/openfl/openfl) [![Build Status](https://img.shields.io/travis/openfl/openfl.svg)](https://travis-ci.org/openfl/openfl) [![GitHub version](https://img.shields.io/github/tag/openfl/openfl.svg?label=release)](http://lib.haxe.org/p/openfl)
 
+<br />
 <p align="center"><img src="openfl.png"/></p>
 
 
