@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/openfl/openfl.png?label=ready)](https://waffle.io/openfl/openfl) [![Build Status](https://img.shields.io/travis/openfl/openfl.svg)](https://travis-ci.org/openfl/openfl) [![GitHub version](https://img.shields.io/github/tag/openfl/openfl.svg)](http://badge.fury.io/gh/openfl%2Fopenfl)
+[![Stories in Ready](https://badge.waffle.io/openfl/openfl.svg?label=ready&title=ready)](https://waffle.io/openfl/openfl) [![Build Status](https://img.shields.io/travis/openfl/openfl.svg)](https://travis-ci.org/openfl/openfl) [![GitHub version](https://img.shields.io/github/tag/openfl/openfl.svg?label=release)](http://lib.haxe.org/p/openfl)
 
 <p align="center"><img src="openfl.png"/></p>
 
