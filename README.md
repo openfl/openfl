@@ -1,4 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/openfl/openfl.png?label=ready)](https://waffle.io/openfl/openfl)
+[![Stories in Ready](https://badge.waffle.io/openfl/openfl.png?label=ready)](https://waffle.io/openfl/openfl) [![Build Status](https://travis-ci.org/openfl/openfl.png?branch=master)](https://travis-ci.org/openfl/openfl) [![GitHub version](https://badge.fury.io/gh/openfl%2Fopenfl.svg)](http://badge.fury.io/gh/openfl%2Fopenfl)
 
 <p align="center"><img src="openfl.png"/></p>
 
