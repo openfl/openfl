@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/openfl/openfl.svg?style=flat)](https://travis-ci.org/openfl/openfl) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=release)](http://lib.haxe.org/p/openfl)
+[![Build Status](https://img.shields.io/travis/openfl/openfl.svg?style=flat)](https://travis-ci.org/openfl/openfl) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl)
 
 
 <p align="center"><img src="openfl.png"/></p>
