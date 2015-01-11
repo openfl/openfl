@@ -10,7 +10,7 @@ Introduction
 
 OpenFL (Open Flash Library) is a fast, open-source implementation of the industry-standard Flash API. Unlike the Adobe implementation, OpenFL uses hardware rendering, compiles to native C++ for target platforms and reaches many more platforms than Adobe AIR. OpenFL is also 100% compatible with Flash Player, so you can still target Flash in the browser, or even AIR if you want.
 
-Also unlike Adobe Flash, OpenFL uses the [Haxe](http://haxe.org/) programming language. Before Adobe abandoned the "ActionScript Next" project, they detailed the pitfalls of ActionScript, and how they felt the language needed to improve. If you have a history performing ActionScript 3 development, you can almost approach Haxe as if it were ActionScript 4. It is powerful, flexible, has many more features and the first version of Haxe (with AVM2 support) was even released before Flash CS3 (with ActionScript 3 support) -- Haxe (and before it, MTASC) has a long history of supporting Flash.
+Also unlike Adobe Flash, OpenFL uses the [Haxe](http://haxe.org/) programming language. Before Adobe abandoned the "ActionScript Next" project, they detailed the pitfalls of ActionScript, and how they felt the language needed to improve. If you have a history performing ActionScript 3 development, you can almost approach Haxe as if it were ActionScript 4. It is powerful, flexible, has many more features and the first version of Haxe (with AVM2 support) was even released before Flash CS3 (wiath ActionScript 3 support) -- Haxe (and before it, MTASC) has a long history of supporting Flash.
 
 
 Platforms
@@ -69,9 +69,9 @@ Plugins have been written for many [code editors](http://haxe.org/com/ide), but 
 Easy Deployment
 ===============
 
-OpenFL is powered by [Aether](https://github.com/openfl/aether), which includes powerful command-line tools to make cross-platform deployment sensible.
+OpenFL is powered by [Lime](https://github.com/openfl/lime), which includes powerful command-line tools to make cross-platform deployment sensible.
 
-"aether test <target>" is usually all that is required to build, package, install and run your project on the platform of your choice, assuming you have the standard target SDK installed (such as Xcode or Visual Studio C++). Aether includes "setup" commands to even help the install of these standard tools.
+"openfl test <target>" is usually all that is required to build, package, install and run your project on the platform of your choice, assuming you have the standard target SDK installed (such as Xcode or Visual Studio C++). Lime includes "setup" commands to even help the install of these standard tools.
 
 
 3D Support
@@ -97,7 +97,6 @@ Core Components
 
  * [openfl](https://github.com/openfl/openfl)
  * [lime](https://github.com/openfl/lime)
- * [aether](https://github.com/openfl/aether)
  * [hxcpp](https://github.com/HaxeFoundation/hxcpp)
 
 OpenFL relies upon [Lime](https://github.com/openfl/lime), a foundation for easy, cross-platform development.
