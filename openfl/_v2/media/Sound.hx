@@ -4,6 +4,7 @@ package openfl._v2.media; #if (!flash && !html5 && !openfl_next)
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl._v2.events.IEventDispatcher;
+import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.SampleDataEvent;
 import openfl.media.ID3Info;
@@ -97,6 +98,7 @@ class Sound extends EventDispatcher {
 		if (__handle == null) {
 			
 			trace ("Error: Could not load \"" + stream.url + "\"");
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
 			
 		} else {
 			
@@ -104,6 +106,7 @@ class Sound extends EventDispatcher {
 			__loading = true;
 			__checkLoading ();
 			__loading = false;
+			dispatchEvent (new Event (Event.COMPLETE));
 			
 		}
 		
