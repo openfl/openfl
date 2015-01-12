@@ -4,4 +4,3 @@
 -D html5
 --macro allowPackage("flash")
 -debug
--D js-flatten
