@@ -41,11 +41,19 @@ class Transform {
 		
 		if (__matrix != null) {
 			
-			__matrix.identity ();
-			__matrix.scale (__displayObject.scaleX, __displayObject.scaleY);
-			__matrix.rotate (__displayObject.rotation * (Math.PI / 180));
-			__matrix.translate (__displayObject.x, __displayObject.y);
-			
+			var m00 = __displayObject.__skewA * __displayObject.scaleX;
+			var m01 = __displayObject.__skewB * __displayObject.scaleX;
+			var m10 = __displayObject.__skewC * __displayObject.scaleY;
+			var m11 = __displayObject.__skewD * __displayObject.scaleY;
+			var angle = __displayObject.rotation * Math.PI / 180.0;
+			var s = Math.sin(angle);
+			var c = Math.cos(angle);
+			__matrix.setTo(
+				m00 * c - m01 * s,
+				m00 * s + m01 * c,
+				m10 * c - m11 * s,
+				m10 * s + m11 * c,
+				__displayObject.x, __displayObject.y);
 			return __matrix.clone ();
 			
 		}
@@ -69,7 +77,34 @@ class Transform {
 			__displayObject.y = value.ty;
 			__displayObject.scaleX = Math.sqrt ((value.a * value.a) + (value.b * value.b));
 			__displayObject.scaleY = Math.sqrt ((value.c * value.c) + (value.d * value.d));
-			__displayObject.rotation = Math.atan2 (value.b, value.a) * (180 / Math.PI);
+			if ((value.a * value.d - value.b * value.c) < 0.0) {
+				
+				if (value.b == 0.0 && value.c == 0.0 && value.d == 1.0)
+					__displayObject.scaleX = -__displayObject.scaleX;
+				else
+					__displayObject.scaleY = -__displayObject.scaleY;
+				
+			}
+			var angle = Math.atan2 (value.b, __displayObject.scaleX < 0.0 ? -value.a : value.a);
+			__displayObject.rotation = angle * 180.0 / Math.PI;
+			var s = Math.sin(-angle);
+			var c = Math.cos(-angle);
+			__displayObject.__skewA = value.a * c - value.b * s;
+			__displayObject.__skewB = value.a * s + value.b * c;
+			__displayObject.__skewC = value.c * c - value.d * s;
+			__displayObject.__skewD = value.c * s + value.d * c;
+			if (__displayObject.scaleX != 0.0) {
+			
+				__displayObject.__skewA /= __displayObject.scaleX;
+				__displayObject.__skewB /= __displayObject.scaleX;
+			
+			}
+			if (__displayObject.scaleY != 0.0) {
+			
+				__displayObject.__skewC /= __displayObject.scaleY;
+				__displayObject.__skewD /= __displayObject.scaleY;
+			
+			}
 			
 		}
 		

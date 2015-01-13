@@ -698,6 +698,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var y (get, set):Float;
 	
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
+	@:dox(hide) @:noCompletion public var __skewA:Float;
+	@:dox(hide) @:noCompletion public var __skewB:Float;
+	@:dox(hide) @:noCompletion public var __skewC:Float;
+	@:dox(hide) @:noCompletion public var __skewD:Float;
 	
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
@@ -751,6 +755,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
+		__skewA = __skewD = 1.0;
+		__skewB = __skewC = 0.0;
 		__rotationCache = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
@@ -1145,10 +1151,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			var parentTransform = parent.__worldTransform;
 			
-			var a00 = __rotationCosine * scaleX,
-			a01 = __rotationSine * scaleX,
-			a10 = -__rotationSine * scaleY,
-			a11 = __rotationCosine * scaleY,
+			var m00 = __skewA * scaleX,
+			m01 = __skewB * scaleX,
+			m10 = __skewC * scaleY,
+			m11 = __skewD * scaleY;
+			var a00 = m00 * __rotationCosine - m01 * __rotationSine,
+			a01 = m00 * __rotationSine + m01 * __rotationCosine,
+			a10 = m10 * __rotationCosine - m11 * __rotationSine,
+			a11 = m10 * __rotationSine + m11 * __rotationCosine,
 			b00 = parentTransform.a, b01 = parentTransform.b,
 			b10 = parentTransform.c, b11 = parentTransform.d;
 			
@@ -1171,10 +1181,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		} else {
 			
-			__worldTransform.a = __rotationCosine * scaleX;
-			__worldTransform.c = -__rotationSine * scaleY;
-			__worldTransform.b = __rotationSine * scaleX;
-			__worldTransform.d = __rotationCosine * scaleY;
+			var m00 = __skewA * scaleX,
+			m01 = __skewB * scaleX,
+			m10 = __skewC * scaleY,
+			m11 = __skewD * scaleY;
+			__worldTransform.a = m00 * __rotationCosine - m01 * __rotationSine;
+			__worldTransform.c = m10 * __rotationCosine - m11 * __rotationSine;
+			__worldTransform.b = m00 * __rotationSine + m01 * __rotationCosine;
+			__worldTransform.d = m10 * __rotationSine + m11 * __rotationCosine;
 			
 			if (scrollRect == null) {
 				
