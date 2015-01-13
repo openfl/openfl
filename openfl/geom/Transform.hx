@@ -79,10 +79,13 @@ class Transform {
 			__displayObject.scaleY = Math.sqrt ((value.c * value.c) + (value.d * value.d));
 			if ((value.a * value.d - value.b * value.c) < 0.0) {
 				
-				__displayObject.scaleY = -__displayObject.scaleY;
+				if (value.b == 0.0 && value.c == 0.0 && value.d == 1.0)
+					__displayObject.scaleX = -__displayObject.scaleX;
+				else
+					__displayObject.scaleY = -__displayObject.scaleY;
 				
 			}
-			var angle = Math.atan2 (value.b, value.a);
+			var angle = Math.atan2 (value.b, __displayObject.scaleX < 0.0 ? -value.a : value.a);
 			__displayObject.rotation = angle * 180.0 / Math.PI;
 			var s = Math.sin(-angle);
 			var c = Math.cos(-angle);
