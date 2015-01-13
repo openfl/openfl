@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "2.2.2",
-	"releasenote": "Improved getObjectsUnderPoint, fixed Neko crash",
+	"version": "2.2.3",
+	"releasenote": "Added initial support for Stage3D APIs",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
