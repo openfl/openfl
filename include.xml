@@ -71,6 +71,7 @@
 			<haxedef name="canvas" unless="webgl || dom" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			<dependency path="dependencies/soundjs.min.js" />
+			<haxedef name="js-flatten" />
 			
 		</section>
 		
