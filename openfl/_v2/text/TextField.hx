@@ -206,7 +206,7 @@ class TextField extends InteractiveObject {
 	private function get_displayAsPassword ():Bool { return lime_text_field_get_display_as_password (__handle); }
 	private function set_displayAsPassword (value:Bool):Bool { lime_text_field_set_display_as_password (__handle, value); return value; }
 	private function get_embedFonts ():Bool { return lime_text_field_get_embed_fonts (__handle); }
-	private function set_embedFonts (value:Bool):Bool { return lime_text_field_set_embed_fonts (__handle, value); return value; }
+	private function set_embedFonts (value:Bool):Bool { lime_text_field_set_embed_fonts (__handle, value); return value; }
 	private function get_htmlText ():String { return StringTools.replace (lime_text_field_get_html_text (__handle), "\n", "<br/>"); }
 	private function set_htmlText (value:String):String	{ lime_text_field_set_html_text (__handle, value); return value; }
 	private function get_maxChars ():Int { return lime_text_field_get_max_chars (__handle); }
