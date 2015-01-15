@@ -71,6 +71,7 @@
 			<haxedef name="canvas" unless="webgl || dom" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			<dependency path="dependencies/soundjs.min.js" />
+			<haxedef name="js-flatten" />
 			
 		</section>
 		
@@ -82,7 +83,6 @@
 		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
 		<haxelib name="swf" />
-		<haxelib name="actuate" />
 		
 	</section>
 	

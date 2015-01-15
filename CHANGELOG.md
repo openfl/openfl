@@ -1,3 +1,27 @@
+2.2.3 (01/13/2015)
+------------------
+
+#### General
+
+* Merged in the Away3D compatibility layer for Stage3D
+* Added support for creating new empty SoundChannel instances
+* Added support for bitmapData.merge()
+* Improved compatibility with Haxe dead-code elimination
+
+#### HTML5, Native (next)
+
+* Improved the correctness of getPixels/setPixels
+* Improved text align for HTML5 canvas TextField
+* Fixed a minor issue in the Flash/HTML5 preloader
+
+#### Native (v2)
+
+* Added Event.COMPLETE/IOErrorEvent.IO_ERROR events to Sound
+* Fixed large bitmapData.getPixel32() values on Neko
+* Fixed the color order for getRGBAPixels
+* Improved the load order for native fonts
+
+
 2.2.2 (01/02/2015)
 ------------------
 
