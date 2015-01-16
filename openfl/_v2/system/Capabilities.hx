@@ -1,6 +1,7 @@
 package openfl._v2.system; #if (!flash && !html5 && !openfl_next)
 
 
+import openfl.system.TouchscreenType;
 import openfl.Lib;
 
 
@@ -38,7 +39,7 @@ class Capabilities {
 	public static var serverString (default, null) = ""; // TODO
 	public static var supports32BitProcesses (default, null) = #if sys true #else false #end;
 	public static var supports64BitProcesses (default, null) = #if desktop true #else false #end; // TODO
-	public static var touchscreenType (default, null) = "finger"; // TODO
+	public static var touchscreenType (default, null) = TouchscreenType.FINGER; // TODO
 	public static var version (default, null) = ""; // TODO
 	
 	public static var screenModes (get, null):Array<ScreenMode>;
