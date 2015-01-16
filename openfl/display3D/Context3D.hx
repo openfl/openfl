@@ -56,12 +56,14 @@ class Context3D {
 	private var stencilReadMask:Int;
 	private var texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
 	private var vertexBuffersCreated:Array<VertexBuffer3D>; // to keep track of stuff to dispose when calling dispose
-	
+	private var _yFlip:Float;
 	
 	public function new () {
 		
 		disposed = false;
 		
+		_yFlip = 1;
+
 		vertexBuffersCreated = new Array ();
 		indexBuffersCreated = new Array ();
 		programsCreated = new Array ();
@@ -128,8 +130,11 @@ class Context3D {
 		
 		// TODO use antiAlias parameter
 		ogl.scrollRect = new Rectangle (0, 0, width, height);
+		ogl.width = width;
+		ogl.height = height;
 		scrollRect = ogl.scrollRect.clone ();
 		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+
 		#if ios
 		defaultFrameBuffer = GL.getParameter(GL.FRAMEBUFFER_BINDING);
 		#end
@@ -258,6 +263,9 @@ class Context3D {
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
+		var location:GLUniformLocation = GL.getUniformLocation (currentProgram.glProgram, "yflip");
+		GL.uniform1f (location, this._yFlip);
+
 		if (!drawing) {
 			
 			throw new Error ("Need to clear before drawing if the buffer has not been cleared since the last present() call.");
@@ -346,6 +354,29 @@ class Context3D {
 			
 		}
 		
+		switch (triangleFaceToCull) {
+			
+			case Context3DTriangleFace.FRONT:
+				
+				this._yFlip = -1;
+			
+			case Context3DTriangleFace.BACK:
+				
+				this._yFlip = 1; // checked
+			
+			case Context3DTriangleFace.FRONT_AND_BACK:
+				
+				this._yFlip = 1;
+			
+			case Context3DTriangleFace.NONE:
+				
+				this._yFlip = 1; // checked
+			
+			default:
+				
+				throw "Unknown culling mode " + triangleFaceToCull + ".";
+ 			
+ 		}
 	}
 	
 	
@@ -359,14 +390,9 @@ class Context3D {
 	}
 	
 	
-	public function setGLSLProgramConstantsFromByteArray (locationName:String, data:ByteArray, byteArrayOffset:Int = -1):Void {
+	public function setGLSLProgramConstantsFromByteArray (locationName:String, data:ByteArray, byteArrayOffset:Int = 0):Void {
 		
-		if (byteArrayOffset != -1) {
-			
-			data.position = byteArrayOffset;
-			
-		}
-		
+		data.position = byteArrayOffset;
 		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniform4f (location, data.readFloat (), data.readFloat (), data.readFloat (), data.readFloat ());
 		
@@ -529,7 +555,7 @@ class Context3D {
 			glProgram = program3D.glProgram;
 			
 		}
-		
+
 		GL.useProgram (glProgram);
 		currentProgram = program3D;
 		//TODO reset bound textures, buffers... ?
@@ -554,9 +580,22 @@ class Context3D {
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
-		var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister);
-		setProgramConstantsFromVector (programType, firstRegister, matrix.rawData, 16);
+		// var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister);
+		// setProgramConstantsFromVector (programType, firstRegister, matrix.rawData, 16);
 		
+		var d = matrix.rawData;
+		if (transposedMatrix) {
+			this.setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[4], d[8], d[12] ], 1);  
+			this.setProgramConstantsFromVector(programType, firstRegister + 1, [ d[1], d[5], d[9], d[13] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 2, [ d[2], d[6], d[10], d[14] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 3, [ d[3], d[7], d[11], d[15] ], 1);
+		} else {
+			this.setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[1], d[2], d[3] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 1, [ d[4], d[5], d[6], d[7] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 2, [ d[8], d[9], d[10], d[11] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 3, [ d[12], d[13], d[14], d[15] ], 1);
+		}
+
 	}
 	
 	
@@ -988,104 +1027,6 @@ private class SamplerState {
 	
 	
 }
-
-
-class AGLSLContext3D extends Context3D {
-	
-	
-	private var _yFlip:Float;
-	
-	
-	public function new () {
-		
-		super ();
-		
-		_yFlip = -1;
-		
-	}
-	
-	
-	override public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
-		
-		var location:GLUniformLocation = GL.getUniformLocation (currentProgram.glProgram, "yflip");
-		GL.uniform1f (location, this._yFlip);
-		super.drawTriangles (indexBuffer, firstIndex, numTriangles);
-		
-	}
-	
-	
-	override public function present ():Void {
-		
-		#if html5
-		this.drawing = false;
-		#else
-		super.present ();
-		#end
-		
-	}
-	
-	
-	override public function setCulling (triangleFaceToCull:Int):Void {
-		
-		super.setCulling (triangleFaceToCull); 
-		
-		switch (triangleFaceToCull) {
-			
-			case Context3DTriangleFace.FRONT:
-				
-				this._yFlip = -1;
-			
-			case Context3DTriangleFace.BACK:
-				
-				this._yFlip = 1; // checked
-			
-			case Context3DTriangleFace.FRONT_AND_BACK:
-				
-				this._yFlip = 1;
-			
-			case Context3DTriangleFace.NONE:
-				
-				this._yFlip = 1; // checked
-			
-			default:
-				
-				throw "Unknown culling mode " + triangleFaceToCull + ".";
-			
-		}
-		
-	}
-	
-	
-	/**
-	 * A openfl.geom.Matrix3D equivalent of the current Matrix
-	 */
-	override public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
-		
-		//todo
-		var d = matrix.rawData;
-		
-		if (transposedMatrix) {
-			
-			this.setProgramConstantsFromVector (programType, firstRegister, [ d[0], d[4], d[8], d[12] ], 1);  
-			this.setProgramConstantsFromVector (programType, firstRegister + 1, [ d[1], d[5], d[9], d[13] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 2, [ d[2], d[6], d[10], d[14] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 3, [ d[3], d[7], d[11], d[15] ], 1);
-			
-		} else {
-			
-			this.setProgramConstantsFromVector (programType, firstRegister, [ d[0], d[1], d[2], d[3] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 1, [ d[4], d[5], d[6], d[7] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 2, [ d[8], d[9], d[10], d[11] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 3, [ d[12], d[13], d[14], d[15] ], 1);
-			
-		}
-		
-	}
-	
-	
-}
- 
-
 
 #else
 typedef Context3D = flash.display3D.Context3D;

@@ -52,12 +52,7 @@ class Texture extends TextureBase {
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
 		
-		//#if lime_legacy
-		//var p = bitmapData.getRGBAPixels ();
-		//#else
-		var p = bitmapData.getPixels (new Rectangle (0, 0, bitmapData.width, bitmapData.height));
-		//#end
-		
+		var p = bitmapData.getRGBAPixels ();
 		width = bitmapData.width;
 		height = bitmapData.height;
 		uploadFromByteArray (p, 0, miplevel);
@@ -105,5 +100,5 @@ class Texture extends TextureBase {
 
 
 #else
-typedef Texture = openfl.display3D.textures.Texture;
+typedef Texture = flash.display3D.textures.Texture;
 #end
