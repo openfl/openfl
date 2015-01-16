@@ -50,7 +50,7 @@ class RectangleTexture extends TextureBase {
 		#if lime_legacy
 		var p = BitmapData.getRGBAPixels (bitmapData);
 		#elseif js
-		var p = ByteArray.__ofBuffer (@:privateAccess (bitmapData.__image).data);
+		var p = ByteArray.__ofBuffer (@:privateAccess (bitmapData.__image).data.buffer);
 		#else
 		var p = @:privateAccess (bitmapData.__image).data.buffer;
 		#end
