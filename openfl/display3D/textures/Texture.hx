@@ -52,7 +52,16 @@ class Texture extends TextureBase {
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
 		
-		var p = bitmapData.getRGBAPixels ();
+		// TODO: Support upload from UInt8Array directly
+		
+		#if lime_legacy
+		var p = BitmapData.getRGBAPixels (bitmapData);
+		#elseif js
+		var p = ByteArray.__ofBuffer (@:privateAccess (bitmapData.__image).data);
+		#else
+		var p = @:privateAccess (bitmapData.__image).data.buffer;
+		#end
+		
 		width = bitmapData.width;
 		height = bitmapData.height;
 		uploadFromByteArray (p, 0, miplevel);

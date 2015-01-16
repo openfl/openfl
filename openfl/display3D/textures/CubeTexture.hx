@@ -47,31 +47,14 @@ class CubeTexture extends TextureBase {
 	}
 	
 	
-	public function uploadFromBitmapData (data:BitmapData, side:Int, miplevel:Int = 0):Void {
+	public function uploadFromBitmapData (bitmapData:BitmapData, side:Int, miplevel:Int = 0):Void {
 		
-		//#if html5
-		var p = data.getPixels (new Rectangle (0, 0, data.width, data.height));
-		//#else
-		//var p = data.getRGBAPixels();
-		//#end
+		// TODO: Support upload from UInt8Array directly
 		
-		var source:UInt8Array = null;
-		
-		#if html5
-		source = new UInt8Array (p.length);
-		p.position = 0;
-		
-		var i:Int = 0;
-		
-		while (p.position < p.length) {
-			
-			source[i] = p.readUnsignedByte ();
-			i++;
-			
-		}
+		#if lime_legacy
+		var source = new UInt8Array (BitmapData.getRGBAPixels (bitmapData));
 		#else
-		//TODO byteArrayOffset ?
-		source = new UInt8Array (p);
+		var source = @:privateAccess (bitmapData.__image).data;
 		#end
 		
 		GL.bindTexture (GL.TEXTURE_CUBE_MAP, glTexture);
@@ -80,27 +63,27 @@ class CubeTexture extends TextureBase {
 			
 			case 0:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, GL.RGBA, data.width, data.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 			
 			case 1:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, GL.RGBA, data.width, data.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 			
 			case 2:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, GL.RGBA, data.width, data.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 			
 			case 3:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, GL.RGBA, data.width, data.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 			
 			case 4:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, GL.RGBA, data.width, data.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 			
 			case 5:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, GL.RGBA, data.width, data.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 			
 			default:
 				

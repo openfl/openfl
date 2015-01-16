@@ -820,25 +820,6 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public inline static function getRGBAPixels (bitmapData:BitmapData):ByteArray {
-		
-		var data = bitmapData.getPixels (new Rectangle (0, 0, bitmapData.width, bitmapData.height));
-		var size = bitmapData.width * bitmapData.height;
-		var v;
-		
-		data.position = 0;
-		
-		for (i in 0...size) {
-			
-			v = data.readInt ();
-			data.position = i << 2;
-			data.writeInt ((((v >>> 0) & 0xFF) << 8) | (((v >>> 8) & 0xFF) << 16) | (((v >>> 16) & 0xFF) << 24) | (((v >>> 24) & 0xFF) << 0));
-			
-		}
-		
-		return data;
-	}	
-
 	public function getTexture (gl:GLRenderContext):GLTexture {
 		
 		if (__texture == null) {
