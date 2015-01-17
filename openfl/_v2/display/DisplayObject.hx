@@ -86,7 +86,7 @@ import openfl.Lib;
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		var result = new Rectangle ();
-		lime_display_object_get_bounds (__handle, targetCoordinateSpace.__handle, result, true);
+		lime_display_object_get_bounds (__handle, targetCoordinateSpace != null ? targetCoordinateSpace.__handle : null, result, true);
 		return result;
 		
 	}
