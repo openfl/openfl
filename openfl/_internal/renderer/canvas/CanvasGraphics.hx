@@ -700,7 +700,20 @@ class CanvasGraphics {
 								});
 								
 								context.miterLimit = (miterLimit == null ? 3 : miterLimit);
-								context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
+								
+								if (alpha == 1) {
+								
+									context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
+								
+								} else {
+									
+									var r = (color & 0xFF0000) >>> 16;
+									var g = (color & 0x00FF00) >>> 8;
+									var b = (color & 0x0000FF);
+									
+									context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+									
+								}
 								
 								hasStroke = true;
 								
