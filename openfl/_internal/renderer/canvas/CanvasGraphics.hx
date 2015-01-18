@@ -572,6 +572,7 @@ class CanvasGraphics {
 							var useAlpha = (flags & Graphics.TILE_ALPHA) > 0;
 							var useRect = (flags & Graphics.TILE_RECT) > 0;
 							var useOrigin = (flags & Graphics.TILE_ORIGIN) > 0;
+							var useBlendAdd = (flags & Graphics.TILE_BLEND_ADD) > 0;
 							
 							if (useTransform) { useScale = false; useRotation = false; }
 							
@@ -602,6 +603,9 @@ class CanvasGraphics {
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.__image.src;
+
+							if (useBlendAdd)
+								context.globalCompositeOperation = "lighter";
 							
 							while (index < totalCount) {
 								
@@ -669,6 +673,9 @@ class CanvasGraphics {
 								index += numValues;
 								
 							}
+
+							if (useBlendAdd)
+								context.globalCompositeOperation = "source-over";
 						
 						case EndFill:
 							
