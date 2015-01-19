@@ -440,9 +440,11 @@ class Lib {
 	
 	
 	static public function getTimer ():Int {
-		
-		return Std.int (Timer.stamp() * 1000.0);
-		
+		#if neko
+		return Std.int ( ( Timer.stamp() % 0x7ffff ) * 1000.0);	
+		#else
+		return Std.int ( Timer.stamp() * 1000.0);	
+		#end
 	}
 	
 	
