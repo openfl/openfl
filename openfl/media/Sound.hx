@@ -94,6 +94,7 @@ class Sound extends EventDispatcher {
 			
 			__registeredSounds.set (__soundID, true);
 			SoundJS.addEventListener ("fileload", SoundJS_onFileLoad);
+			SoundJS.addEventListener ("fileerror", SoundJS_onFileError);
 			SoundJS.registerSound (url, __soundID);
 			
 		} else {
@@ -201,7 +202,20 @@ class Sound extends EventDispatcher {
 		if (event.id == __soundID) {
 			
 			SoundJS.removeEventListener ("fileload", SoundJS_onFileLoad);
+			SoundJS.removeEventListener ("fileerror", SoundJS_onFileError);
 			dispatchEvent (new Event (Event.COMPLETE));
+			
+		}
+		
+	}
+	
+	@:noCompletion private function SoundJS_onFileError (event:Dynamic):Void {
+		
+		if (event.id == __soundID) {
+			
+			SoundJS.removeEventListener ("fileload", SoundJS_onFileLoad);
+			SoundJS.removeEventListener ("fileerror", SoundJS_onFileError);
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
 			
 		}
 		
