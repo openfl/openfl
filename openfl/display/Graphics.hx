@@ -10,6 +10,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+import openfl.display.GraphicsPathCommand;
 
 #if js
 import js.html.CanvasElement;
@@ -449,10 +450,29 @@ class Graphics {
 	 *                GraphicsPathWinding class.
 	 */
 	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = null):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawPath");
+		var i:Int = 0;
+		var dataIndex:Int = 0;
+		while (i < commands.length) {
+			switch(commands[i]) {
+			case GraphicsPathCommand.MOVE_TO:
+			moveTo(data[dataIndex], data[dataIndex + 1]);	
+			dataIndex+=2;	
+			case GraphicsPathCommand.LINE_TO:
+			lineTo(data[dataIndex], data[dataIndex + 1]);
+			dataIndex+=2;	
+			case GraphicsPathCommand.CURVE_TO:
+			curveTo(data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3]);
+			dataIndex+=4;	
+			case GraphicsPathCommand.CUBIC_CURVE_TO:
+			cubicCurveTo (data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3], data[dataIndex + 4], data[dataIndex + 5]);
+			}
+			i++;	
+		}
+
+		//openfl.Lib.notImplemented ("Graphics.drawPath");
 		
 	}
+
 	
 	
 	/**
