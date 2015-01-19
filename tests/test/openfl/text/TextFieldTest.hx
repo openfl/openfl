@@ -13,6 +13,8 @@ class TextFieldTest {
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
+		#if !lime_legacy
+		
 		Assert.areNotEqual (textField.textWidth + 4, textField.width);
 		
 		textField.autoSize = TextFieldAutoSize.LEFT;
@@ -26,6 +28,8 @@ class TextFieldTest {
 		textField.text = "Hello World";
 		
 		Assert.areEqual (textField.textWidth + 4, textField.width);
+		
+		#end
 		
 	}
 	
