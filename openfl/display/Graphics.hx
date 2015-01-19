@@ -10,6 +10,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+import openfl.display.GraphicsPathCommand;
 
 #if js
 import js.html.CanvasElement;
