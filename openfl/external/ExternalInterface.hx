@@ -16,9 +16,9 @@ class ExternalInterface {
 	public static function addCallback (functionName:String, closure:Dynamic):Void {
 		
 		#if js
-		if (Lib.application.window.element != null) {
+		if (Lib.application.window.backend.element != null) {
 			
-			untyped Lib.application.window.element[functionName] = closure;
+			untyped Lib.application.window.backend.element[functionName] = closure;
 			
 		}
 		#end
