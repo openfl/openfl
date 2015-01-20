@@ -18,8 +18,6 @@ class TextField extends InteractiveObject {
 	public var autoSize (get, set):TextFieldAutoSize;
 	public var background (get, set):Bool;
 	public var backgroundColor (get, set):Int;
-	public var caretColor (get, set):Int;
-	public var highlightColor (get, set):Int;
 	public var border (get, set):Bool;
 	public var borderColor (get, set):Int;
 	public var bottomScrollV (get, null):Int;
@@ -40,6 +38,8 @@ class TextField extends InteractiveObject {
 	public var text (get, set):String;
 	public var textColor (get, set):Int;
 	public var highlightedTextColor (get, set):Int;
+	public var highlightColor (get, set):Int;
+	public var caretColor (get, set):Int;
 	public var textHeight (get, null):Float;
 	public var textWidth (get, null):Float;
 	public var type (get, set):TextFieldType;
@@ -157,10 +157,6 @@ class TextField extends InteractiveObject {
 	private function set_background (value:Bool):Bool { lime_text_field_set_background (__handle, value); return value; }
 	private function get_backgroundColor ():Int { return lime_text_field_get_background_color (__handle); }
 	private function set_backgroundColor (value:Int):Int { lime_text_field_set_background_color (__handle, value); return value; }
-	private function get_highlightColor ():Int { return lime_text_field_get_highlight_color (__handle); }
-	private function set_highlightColor (value:Int):Int { lime_text_field_set_highlight_color (__handle, value); return value; }
-	private function get_caretColor ():Int { return lime_text_field_get_caretcolor (__handle); }
-	private function set_caretColor (value:Int):Int { lime_text_field_set_caret_color (__handle, value); return value; }
 	private function get_border ():Bool { return lime_text_field_get_border (__handle); }
 	private function set_border (value:Bool):Bool { lime_text_field_set_border (__handle, value); return value; }
 	private function get_borderColor ():Int { return lime_text_field_get_border_color (__handle); }
@@ -235,6 +231,10 @@ class TextField extends InteractiveObject {
 	private function set_textColor (value:Int):Int { lime_text_field_set_text_color (__handle, value); return value; }
 	private function get_highlightedTextColor ():Int { return lime_text_field_get_highlighted_text_color (__handle); }
 	private function set_highlightedTextColor (value:Int):Int { lime_text_field_set_highlighted_text_color (__handle, value); return value; }
+	private function get_highlightColor ():Int { return lime_text_field_get_highlight_color (__handle); }
+	private function set_highlightColor (value:Int):Int { lime_text_field_set_highlight_color (__handle, value); return value; }
+	private function get_caretColor ():Int { return lime_text_field_get_caret_color (__handle); }
+	private function set_caretColor (value:Int):Int { lime_text_field_set_caret_color (__handle, value); return value; }
 	private function get_textWidth ():Float { return lime_text_field_get_text_width (__handle); }
 	private function get_textHeight ():Float { return lime_text_field_get_text_height (__handle); }
 	private function get_type ():TextFieldType { return lime_text_field_get_type (__handle) ? TextFieldType.INPUT : TextFieldType.DYNAMIC; }
