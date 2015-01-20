@@ -3,6 +3,8 @@ package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 
 import haxe.io.Bytes;
 import haxe.Int32;
+import openfl.display.JPEGEncoderOptions;
+import openfl.display.PNGEncoderOptions;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -161,9 +163,35 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function encode (format:String, quality:Float = 0.9):ByteArray {
+	public function encode (rectOrFormat:Dynamic, compressorOrQuality:Dynamic = 0.9, byteArray:ByteArray = null):ByteArray {
 		
-		return lime_bitmap_data_encode (__handle, format, quality);
+		// TODO: Support rect
+		// COMPATIBILITY: Support older "encode ('jpg', 0.9)" format as well
+		
+		if (Std.is (rectOrFormat, String)) {
+			
+			var format:String = cast rectOrFormat;
+			var quality = cast (compressorOrQuality, Float);
+			
+			return lime_bitmap_data_encode (__handle, format, quality);
+			
+		} else {
+			
+			if (rectOrFormat == null) return byteArray = null;
+			
+			if (Std.is (compressorOrQuality, PNGEncoderOptions)) {
+				
+				return byteArray = lime_bitmap_data_encode (__handle, "png", 0);
+				
+			} else if (Std.is (compressorOrQuality, JPEGEncoderOptions)) {
+				
+				return byteArray = lime_bitmap_data_encode (__handle, "jpg", cast (compressorOrQuality, JPEGEncoderOptions).quality / 100);
+				
+			}
+			
+			return byteArray = null;
+			
+		}
 		
 	}
 	
