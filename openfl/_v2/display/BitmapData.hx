@@ -2,7 +2,6 @@ package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
 
 
 import haxe.io.Bytes;
-import haxe.Int32;
 import openfl.display.JPEGEncoderOptions;
 import openfl.display.PNGEncoderOptions;
 import openfl.filters.BitmapFilter;
@@ -256,7 +255,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getPixel32 (x:Int, y:Int):Int32 {
+	public function getPixel32 (x:Int, y:Int):Int {
 		
 		#if neko
 		if (transparent) {
@@ -819,7 +818,7 @@ class BitmapData implements IBitmapDrawable {
 	private static var lime_bitmap_data_fill = Lib.load ("lime", "lime_bitmap_data_fill", 4);
 	private static var lime_bitmap_data_get_pixels = Lib.load ("lime", "lime_bitmap_data_get_pixels", 2);
 	private static var lime_bitmap_data_get_pixel = Lib.load ("lime", "lime_bitmap_data_get_pixel", 3);
-	private static var lime_bitmap_data_get_pixel32:Dynamic -> Int -> Int -> Int32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
+	private static var lime_bitmap_data_get_pixel32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
 	private static var lime_bitmap_data_get_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_get_pixel_rgba", 3);
 	#if cpp
 	private static var lime_bitmap_data_get_array = Lib.load ("lime", "lime_bitmap_data_get_array", 3);
