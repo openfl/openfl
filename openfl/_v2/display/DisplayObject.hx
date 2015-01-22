@@ -72,7 +72,7 @@ import openfl.Lib;
 		if (event.__getIsCancelled ())
 			return true;
 		
-		if (event.bubbles && parent != null) {
+		if (event.bubbles && parent != null && parent != this) {
 			
 			parent.dispatchEvent (event);
 			
