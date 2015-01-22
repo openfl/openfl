@@ -37,6 +37,8 @@ class ApplicationMain {
 		::else::types.push (null);::end::
 		::end::::end::
 		
+		urls = [for (url in urls) Assets.getPath(url)];
+		
 		preloader.load (urls, types);
 		#end
 		

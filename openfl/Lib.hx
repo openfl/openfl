@@ -54,9 +54,9 @@ import js.Browser;
 	
 	#if js
 	@:keep @:expose("openfl.embed")
-	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null) {
+	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
 		
-		System.embed (elementName, width, height, background);
+		System.embed (elementName, width, height, background, assetsPrefix);
 		
 	}
 	#end
