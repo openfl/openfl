@@ -1,3 +1,30 @@
+2.2.4 (01/22/2015)
+------------------
+
+#### General
+
+* Added bitmapData.encode
+* Added transform.matrix3D (using 2D matrix values for now)
+* Added openfl.system.TouchscreenType
+* Updated Sound.js, added error event dispatching for it
+* Improved compatibility for the Stage3D layer
+
+#### HTML5, Native (next)
+
+* Combined js-flatten, DCE full and -minify for "html5 -final"
+* Added graphics.drawPath
+* Added graphics.lineStyle with alpha support to canvas
+* Added support for Tilesheet.TILE_BLEND_ADD in canvas
+* Improved bitmapData.getVector performance
+* Fixed the event.target in Event.ADDED events
+
+#### Native (v2)
+
+* Reverted the Int32 change in bitmapData.getPixel32
+* Improved Lib.getTimer on Neko
+* Fixed sprite.getBounds (null)
+
+
 2.2.3 (01/13/2015)
 ------------------
 
