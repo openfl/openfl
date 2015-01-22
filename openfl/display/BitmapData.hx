@@ -866,11 +866,12 @@ class BitmapData implements IBitmapDrawable {
 	public function getVector (rect:Rectangle) {
 		
 		var pixels = getPixels (rect);
-		var result = new Vector<UInt> ();
+		var length = Std.int (pixels.length / 4);
+		var result = new Vector<UInt> (length, true);
 		
-		for (i in 0...Std.int (pixels.length / 4)) {
+		for (i in 0...length) {
 			
-			result.push (pixels.readUnsignedInt ());
+			result[i] = pixels.readUnsignedInt ();
 			
 		}
 		
