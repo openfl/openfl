@@ -94,17 +94,17 @@ ImportAll
 
 --next
 
--xml Tizen.xml
--cpp obj/docs
--D display
--D native
--D tizen
-ImportAll
--lib lime
--lib openfl
---no-output
-
---next
+#-xml Tizen.xml
+#-cpp obj/docs
+#-D display
+#-D native
+#-D tizen
+#ImportAll
+#-lib lime
+#-lib openfl
+#--no-output
+#
+#--next
 
 -xml Firefox.xml
 -cpp obj/docs
@@ -129,4 +129,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . -in openfl
+-cmd haxelib run dox -i . -in openfl -in lime -theme flambe --title "OpenFL Documentation"

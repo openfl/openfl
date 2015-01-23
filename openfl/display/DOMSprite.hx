@@ -6,7 +6,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 
-#if js
+#if (js && html5)
 import js.html.Element;
 #end
 
@@ -15,10 +15,10 @@ class DOMSprite extends Sprite {
 	
 	
 	@:noCompletion private var __active:Bool;
-	@:noCompletion private var __element:Element;
+	@:noCompletion private var __element:#if (js && html5) Element #else Dynamic #end;
 	
 	
-	public function new (element:Element) {
+	public function new (element:#if (js && html5) Element #else Dynamic #end) {
 		
 		super ();
 		
@@ -29,6 +29,7 @@ class DOMSprite extends Sprite {
 	
 	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
 			
 			if (!__active) {
@@ -52,7 +53,9 @@ class DOMSprite extends Sprite {
 		}
 		
 		super.__renderDOM (renderSession);
+		#end
 		
 	}
+	
 	
 }

@@ -10,7 +10,7 @@ out
 target
 tests/build
 tests/report
-documentation/*.xml
-documentation/pages
+docs/*.xml
+docs/pages
 haxedoc.xml
 .temp

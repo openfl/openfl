@@ -40,7 +40,7 @@ class Preloader extends LimePreloader {
 	
 	public override function load (urls:Array<String>, types:Array<AssetType>):Void {
 		
-		#if html5
+		#if (js && html5)
 		
 		var sounds = [];
 		var url = null;
@@ -131,7 +131,7 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	#if html5
+	#if (js && html5)
 	@:noCompletion private function sound_onComplete (event:Event):Void {
 		
 		loaded++;
@@ -174,9 +174,9 @@ typedef OpenFLPreloader = NMEPreloader
 private class OpenFLPreloader extends Sprite {
 	
 	public function new () { super (); }
-	public function onInit ():Void;
-	public function onUpdate (loaded:Int, total:Int):Void;
-	public function onComplete ():Void;
+	public function onInit ():Void {};
+	public function onUpdate (loaded:Int, total:Int):Void {};
+	public function onLoaded ():Void {};
 	
 }
 #end
