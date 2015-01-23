@@ -29,15 +29,6 @@ import js.html.Uint8ClampedArray;
 import js.Browser;
 #end
 
-@:access(lime.graphics.Image)
-@:access(lime.graphics.ImageBuffer)
-@:access(lime.math.Rectangle)
-@:access(openfl.geom.ColorTransform)
-@:access(openfl.geom.Point)
-@:access(openfl.geom.Rectangle)
-
-@:autoBuild(openfl.Assets.embedBitmap())
-
 
 /**
  * The BitmapData class lets you work with the data(pixels) of a Bitmap
@@ -96,6 +87,17 @@ import js.Browser;
  * it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation 
  * is 2,880 pixels in height and 2,880 in width.</p>
  */
+
+@:access(lime.graphics.Image)
+@:access(lime.graphics.ImageBuffer)
+@:access(lime.math.Rectangle)
+@:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Point)
+@:access(openfl.geom.Rectangle)
+
+@:autoBuild(openfl.Assets.embedBitmap())
+
+
 class BitmapData implements IBitmapDrawable {
 	
 	

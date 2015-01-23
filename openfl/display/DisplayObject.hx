@@ -22,9 +22,6 @@ import js.html.CSSStyleDeclaration;
 import js.html.Element;
 #end
 
-@:access(openfl.events.Event)
-@:access(openfl.display.Stage)
-
 
 /**
  * The DisplayObject class is the base class for all objects that can be
@@ -155,6 +152,11 @@ import js.html.Element;
  *                         display is not rendering. This is the case when the
  *                         content is either minimized or obscured. </p>
  */
+
+@:access(openfl.events.Event)
+@:access(openfl.display.Stage)
+
+
 class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	

@@ -13,8 +13,6 @@ import openfl.geom.Rectangle;
 import js.html.ImageElement;
 #end
 
-@:access(openfl.display.BitmapData)
-
 
 /**
  * The Bitmap class represents display objects that represent bitmap images.
@@ -50,6 +48,10 @@ import js.html.ImageElement;
  * <code>addEventListener()</code> method of the display object container that
  * contains the Bitmap object.</p>
  */
+
+@:access(openfl.display.BitmapData)
+
+
 class Bitmap extends DisplayObjectContainer {
 	
 	

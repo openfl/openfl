@@ -9,8 +9,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-@:access(openfl.events.Event)
-
 
 /**
  * The DisplayObjectContainer class is the base class for all objects that can
@@ -33,6 +31,10 @@ import openfl.geom.Rectangle;
  * <p>For more information, see the "Display Programming" chapter of the
  * <i>ActionScript 3.0 Developer's Guide</i>.</p>
  */
+
+@:access(openfl.events.Event)
+
+
 class DisplayObjectContainer extends InteractiveObject {
 	
 	

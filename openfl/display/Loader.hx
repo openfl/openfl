@@ -14,8 +14,6 @@ import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 
-@:access(openfl.display.LoaderInfo)
-
 
 /**
  * The Loader class is used to load SWF files or image(JPG, PNG, or GIF)
@@ -80,6 +78,10 @@ import openfl.utils.ByteArray;
  * of the Loader object) from drawing to portions of the Stage outside of that
  * mask, as shown in the following code:</p>
  */
+
+@:access(openfl.display.LoaderInfo)
+
+
 class Loader extends Sprite {
 	
 	

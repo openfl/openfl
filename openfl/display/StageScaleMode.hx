@@ -1,6 +1,10 @@
 package openfl.display; #if !flash
 
 
+/**
+ * The StageScaleMode class provides values for the
+ * <code>Stage.scaleMode</code> property.
+ */
 enum StageScaleMode {
 	
 	SHOW_ALL;

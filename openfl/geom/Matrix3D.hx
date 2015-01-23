@@ -7,6 +7,61 @@ import openfl.errors.Error;
 import openfl.Vector;
 
 
+/**
+ * The Matrix class represents a transformation matrix that determines how to
+ * map points from one coordinate space to another. You can perform various
+ * graphical transformations on a display object by setting the properties of
+ * a Matrix object, applying that Matrix object to the <code>matrix</code>
+ * property of a Transform object, and then applying that Transform object as
+ * the <code>transform</code> property of the display object. These
+ * transformation functions include translation(<i>x</i> and <i>y</i>
+ * repositioning), rotation, scaling, and skewing.
+ *
+ * <p>Together these types of transformations are known as <i>affine
+ * transformations</i>. Affine transformations preserve the straightness of
+ * lines while transforming, so that parallel lines stay parallel.</p>
+ *
+ * <p>To apply a transformation matrix to a display object, you create a
+ * Transform object, set its <code>matrix</code> property to the
+ * transformation matrix, and then set the <code>transform</code> property of
+ * the display object to the Transform object. Matrix objects are also used as
+ * parameters of some methods, such as the following:</p>
+ *
+ * <ul>
+ *   <li>The <code>draw()</code> method of a BitmapData object</li>
+ *   <li>The <code>beginBitmapFill()</code> method,
+ * <code>beginGradientFill()</code> method, or
+ * <code>lineGradientStyle()</code> method of a Graphics object</li>
+ * </ul>
+ *
+ * <p>A transformation matrix object is a 3 x 3 matrix with the following
+ * contents:</p>
+ *
+ * <p>In traditional transformation matrixes, the <code>u</code>,
+ * <code>v</code>, and <code>w</code> properties provide extra capabilities.
+ * The Matrix class can only operate in two-dimensional space, so it always
+ * assumes that the property values <code>u</code> and <code>v</code> are 0.0,
+ * and that the property value <code>w</code> is 1.0. The effective values of
+ * the matrix are as follows:</p>
+ *
+ * <p>You can get and set the values of all six of the other properties in a
+ * Matrix object: <code>a</code>, <code>b</code>, <code>c</code>,
+ * <code>d</code>, <code>tx</code>, and <code>ty</code>.</p>
+ *
+ * <p>The Matrix class supports the four major types of transformations:
+ * translation, scaling, rotation, and skewing. You can set three of these
+ * transformations by using specialized methods, as described in the following
+ * table: </p>
+ *
+ * <p>Each transformation function alters the current matrix properties so
+ * that you can effectively combine multiple transformations. To do this, you
+ * call more than one transformation function before applying the matrix to
+ * its display object target(by using the <code>transform</code> property of
+ * that display object).</p>
+ *
+ * <p>Use the <code>new Matrix()</code> constructor to create a Matrix object
+ * before you can call the methods of the Matrix object.</p>
+ */
 class Matrix3D {
 	
 	
@@ -15,6 +70,16 @@ class Matrix3D {
 	public var rawData:Vector<Float>;
 	
 	
+	/**
+	 * Creates a new Matrix object with the specified parameters. In matrix
+	 * notation, the properties are organized like this:
+	 *
+	 * <p>If you do not provide any parameters to the <code>new Matrix()</code>
+	 * constructor, it creates an <i>identity matrix</i> with the following
+	 * values:</p>
+	 *
+	 * <p>In matrix notation, the identity matrix looks like this:</p>
+	 */
 	public function new (v:Vector<Float> = null) {
 		
 		if (v != null && v.length == 16) {
@@ -30,7 +95,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function append (lhs:Matrix3D):Void {
+	public inline function append (lhs:Matrix3D):Void {
 		
 		var m111:Float = this.rawData[0], m121:Float = this.rawData[4], m131:Float = this.rawData[8], m141:Float = this.rawData[12],
 			m112:Float = this.rawData[1], m122:Float = this.rawData[5], m132:Float = this.rawData[9], m142:Float = this.rawData[13],
@@ -64,7 +129,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
+	public inline function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
 		var m = getAxisRotation (axis.x, axis.y, axis.z, degrees);
 		
@@ -80,14 +145,14 @@ class Matrix3D {
 	}
 	
 	
-	inline public function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
+	public inline function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
 		this.append (new Matrix3D ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ]));
 		
 	}
 	
 	
-	inline public function appendTranslation (x:Float, y:Float, z:Float):Void {
+	public inline function appendTranslation (x:Float, y:Float, z:Float):Void {
 		
 		rawData[12] += x;
 		rawData[13] += y;
@@ -96,7 +161,13 @@ class Matrix3D {
 	}
 	
 	
-	inline public function clone ():Matrix3D {
+	/**
+	 * Returns a new Matrix object that is a clone of this matrix, with an exact
+	 * copy of the contained object.
+	 * 
+	 * @return A Matrix object.
+	 */
+	public inline function clone ():Matrix3D {
 		
 		return new Matrix3D (this.rawData.copy ());
 		
@@ -466,7 +537,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function interpolateTo (toMat:Matrix3D, percent:Float):Void {
+	public inline function interpolateTo (toMat:Matrix3D, percent:Float):Void {
 		
 		for (i in 0...16) {
 			
@@ -477,7 +548,13 @@ class Matrix3D {
 	}
 	
 	
-	inline public function invert ():Bool {
+	/**
+	 * Performs the opposite transformation of the original matrix. You can apply
+	 * an inverted matrix to an object to undo the transformation performed when
+	 * applying the original matrix.
+	 * 
+	 */
+	public inline function invert ():Bool {
 		
 		var d = determinant;
 		var invertable = Math.abs (d) > 0.00000000001;
@@ -582,7 +659,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function prepend (rhs:Matrix3D):Void {
+	public inline function prepend (rhs:Matrix3D):Void {
 		
 		var m111:Float = rhs.rawData[0], m121:Float = rhs.rawData[4], m131:Float = rhs.rawData[8], m141:Float = rhs.rawData[12],
 			m112:Float = rhs.rawData[1], m122:Float = rhs.rawData[5], m132:Float = rhs.rawData[9], m142:Float = rhs.rawData[13],
@@ -616,7 +693,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
+	public inline function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
 		var m = getAxisRotation (axis.x, axis.y, axis.z, degrees);
 		
@@ -632,14 +709,14 @@ class Matrix3D {
 	}
 	
 	
-	inline public function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
+	public inline function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
 		this.prepend (new Matrix3D ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
 		
 	}
 	
 	
-	inline public function prependTranslation (x:Float, y:Float, z:Float):Void {
+	public inline function prependTranslation (x:Float, y:Float, z:Float):Void {
 		
 		var m = new Matrix3D ();
 		m.position = new Vector3D (x, y, z);
@@ -732,7 +809,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function transformVector (v:Vector3D):Vector3D {
+	public inline function transformVector (v:Vector3D):Vector3D {
 		
 		var x:Float = v.x, y:Float = v.y, z:Float = v.z;
 		
@@ -764,7 +841,7 @@ class Matrix3D {
 	}
 	
 	
-	inline public function transpose ():Void {
+	public inline function transpose ():Void {
 		
 		var oRawData = rawData.copy ();
 		rawData[1] = oRawData[4];
@@ -821,7 +898,7 @@ class Matrix3D {
 	
 	
 	
-	@:noCompletion inline public function get_determinant ():Float {
+	@:noCompletion public inline function get_determinant ():Float {
 		
 		return 1 * ((rawData[0] * rawData[5] - rawData[4] * rawData[1]) * (rawData[10] * rawData[15] - rawData[14] * rawData[11]) 
 			- (rawData[0] * rawData[9] - rawData[8] * rawData[1]) * (rawData[6] * rawData[15] - rawData[14] * rawData[7])
@@ -833,14 +910,14 @@ class Matrix3D {
 	}
 	
 	
-	@:noCompletion inline public function get_position ():Vector3D {
+	@:noCompletion public inline function get_position ():Vector3D {
 		
 		return new Vector3D (rawData[12], rawData[13], rawData[14]);
 		
 	}
 	
 	
-	@:noCompletion inline public function set_position (val:Vector3D):Vector3D {
+	@:noCompletion public inline function set_position (val:Vector3D):Vector3D {
 		
 		rawData[12] = val.x;
 		rawData[13] = val.y;
