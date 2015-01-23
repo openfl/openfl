@@ -39,7 +39,7 @@ script:
   - haxelib run munit test -browser phantomjs
   - haxelib run lime test linux
   - haxelib run lime test linux -Dnext
-  - cd $TRAVIS_BUILD_DIR/documentation
+  - cd $TRAVIS_BUILD_DIR/docs
   - haxe build.hxml
 
 notifications:
