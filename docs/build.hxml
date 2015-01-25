@@ -118,6 +118,8 @@ ImportAll
 
 --next
 
+# TODO: Unify types to build using JS target
+
 -xml HTML5.xml
 -cpp obj/docs
 -D display
@@ -129,4 +131,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . -in openfl -in lime -theme flambe --title "OpenFL Documentation"
+-cmd haxelib run dox -i . -theme flambe --title "OpenFL Documentation"
