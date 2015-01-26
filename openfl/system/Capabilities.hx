@@ -522,9 +522,15 @@ class Capabilities {
 				var versionString = "MOZ";
 				#elseif html5
 				var versionString = "HTM";
+				#else
+				var versionString = "OFL";
 				#end
 				
-				versionString += " " + StringTools.replace (Context.definedValue ("openfl"), ".", ",") + ",0";
+				if (Context.defined ("openfl")) {
+					
+					versionString += " " + StringTools.replace (Context.definedValue ("openfl"), ".", ",") + ",0";
+					
+				}
 				
 				field.kind = FVar (macro : String, Context.makeExpr (versionString, Context.currentPos ()));
 				
