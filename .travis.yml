@@ -18,7 +18,8 @@ install:
   - haxelib dev lime ~/lime
   - haxelib install hxcpp
   - haxelib install format
-  - haxelib install dox
+  - git clone https://github.com/openfl/dox ~/dox --depth 1
+  - haxelib dev dox ~/dox
   - haxelib install mcover
   - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
   - haxelib dev munit ~/munit/src
