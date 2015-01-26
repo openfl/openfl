@@ -503,7 +503,7 @@ class BitmapData implements IBitmapDrawable {
 				var buffer = __image.buffer;
 				
 				var renderSession = new RenderSession ();
-				renderSession.context = buffer.__srcContext;
+				renderSession.context = cast buffer.__srcContext;
 				renderSession.roundPixels = true;
 				
 				if (!smoothing) {
