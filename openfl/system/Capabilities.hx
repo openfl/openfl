@@ -1,4 +1,4 @@
-package openfl.system; #if !flash #if (display || openfl_next || js)
+package openfl.system; #if !flash #if (display || openfl_next || js) #if !macro
 
 
 import openfl.Lib;
@@ -30,6 +30,10 @@ import js.Browser;
  *
  * <p>All properties of the Capabilities class are read-only.</p>
  */
+
+@:build(openfl.system.Capabilities.build()) 
+
+
 class Capabilities {
 	
 	
@@ -362,7 +366,7 @@ class Capabilities {
 	 *
 	 * <p>The server string is <code>V</code>.</p>
 	 */
-	public static var version (default, null) = ""; // TODO
+	public static var version (default, null):String;
 	
 	
 	public static function hasMultiChannelAudio (type:String):Bool {
@@ -484,6 +488,59 @@ class Capabilities {
 }
 
 
+#else
+
+
+import haxe.macro.Context;
+import haxe.macro.Expr;
+
+
+class Capabilities {
+	
+	
+	macro public static function build ():Array<Field> {
+		
+		var fields = Context.getBuildFields ();
+		
+		for (field in fields) {
+			
+			if (field.name == "version") {
+				
+				#if windows
+				var versionString = "WIN";
+				#elseif mac
+				var versionString = "MAC";
+				#elseif linux
+				var versionString = "LNX";
+				#elseif ios
+				var versionString = "IOS";
+				#elseif android
+				var versionString = "AND";
+				#elseif blackberry
+				var versionString = "QNX";
+				#elseif firefox
+				var versionString = "MOZ";
+				#elseif html5
+				var versionString = "HTM";
+				#end
+				
+				versionString += " " + StringTools.replace (Context.definedValue ("openfl"), ".", ",") + ",0";
+				
+				field.kind = FVar (macro : String, Context.makeExpr (versionString, Context.currentPos ()));
+				
+			}
+			
+		}
+		
+		return fields;
+		
+	}
+	
+	
+}
+
+
+#end
 #else
 typedef Capabilities = openfl._v2.system.Capabilities;
 #end
