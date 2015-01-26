@@ -1,4 +1,4 @@
-package openfl; #if (flash || openfl_next || js || display)
+package openfl; #if (flash || openfl_next || js || html5 || display)
 #if !macro
 
 
@@ -48,6 +48,20 @@ import js.Browser;
 		#else
 		return new MovieClip ();
 		#end
+		
+	}
+	
+	
+	macro public static function defined (haxedef:String):Bool {
+		
+		return false;
+		
+	}
+	
+	
+	macro public static function definedValue (haxedef:String):String {
+		
+		return null;
 		
 	}
 	
@@ -181,10 +195,25 @@ import js.Browser;
 
 import haxe.macro.Compiler;
 import haxe.macro.Context;
+import haxe.macro.Expr;
 import sys.FileSystem;
 
 
 class Lib {
+	
+	
+	public static function defined (haxedef:String):Expr {
+		
+		return Context.makeExpr (Context.defined (haxedef), Context.currentPos ());
+		
+	}
+	
+	
+	public static function definedValue (haxedef:String):Expr {
+		
+		return Context.makeExpr (Context.definedValue (haxedef), Context.currentPos ());
+		
+	}
 	
 	
 	public static function includeBackend (type:String) {

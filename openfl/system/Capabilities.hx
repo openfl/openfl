@@ -7,9 +7,6 @@ import openfl.Lib;
 import js.html.Element;
 import js.Browser;
 #end
-#if macro
-import haxe.macro.Context;
-#end
 
 
 /**
@@ -365,7 +362,7 @@ class Capabilities {
 	 *
 	 * <p>The server string is <code>V</code>.</p>
 	 */
-	public static var version (default, null) = get_version ();
+	public static var version (get, null):String;
 	
 	
 	public static function hasMultiChannelAudio (type:String):Bool {
@@ -484,35 +481,35 @@ class Capabilities {
 	}
 	
 	
-	@:noCompletion private static macro function get_version () {
+	@:noCompletion private static function get_version () {
 		
 		#if windows
-		var version = "WIN";
+		var value = "WIN";
 		#elseif mac
-		var version = "MAC";
+		var value = "MAC";
 		#elseif linux
-		var version = "LNX";
+		var value = "LNX";
 		#elseif ios
-		var version = "IOS";
+		var value = "IOS";
 		#elseif android
-		var version = "AND";
+		var value = "AND";
 		#elseif blackberry
-		var version = "QNX";
+		var value = "QNX";
 		#elseif firefox
-		var version = "MOZ";
+		var value = "MOZ";
 		#elseif html5
-		var version = "HTM";
+		var value = "WEB";
 		#else
-		var version = "OFL";
+		var value = "OFL";
 		#end
 		
-		if (Context.defined ("openfl")) {
+		if (Lib.defined ("openfl")) {
 			
-			version += " " + StringTools.replace (Context.definedValue ("openfl"), ".", ",") + ",0";
+			value += " " + StringTools.replace (Lib.definedValue ("openfl"), ".", ",") + ",0";
 			
 		}
 		
-		return Context.makeExpr (version, Context.currentPos ());
+		return value;
 		
 	}
 	

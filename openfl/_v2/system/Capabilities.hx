@@ -40,7 +40,7 @@ class Capabilities {
 	public static var supports32BitProcesses (default, null) = #if sys true #else false #end;
 	public static var supports64BitProcesses (default, null) = #if desktop true #else false #end; // TODO
 	public static var touchscreenType (default, null) = TouchscreenType.FINGER; // TODO
-	public static var version (default, null) = ""; // TODO
+	public static var version (get, null):String; // TODO
 	
 	public static var screenModes (get, null):Array<ScreenMode>;
 	public static var screenResolutions (get, null):Array<Array<Int>>;
@@ -182,6 +182,37 @@ class Capabilities {
 
 		return out;
 	}
+	
+	
+	private static function get_version () {
+		
+		#if windows
+		var value = "WIN";
+		#elseif mac
+		var value = "MAC";
+		#elseif linux
+		var value = "LNX";
+		#elseif ios
+		var value = "IOS";
+		#elseif android
+		var value = "AND";
+		#elseif blackberry
+		var value = "QNX";
+		#else
+		var value = "OFL";
+		#end
+		
+		if (Lib.defined ("openfl")) {
+			
+			value += " " + StringTools.replace (Lib.definedValue ("openfl"), ".", ",") + ",0";
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	
 	
 	// Native Methods

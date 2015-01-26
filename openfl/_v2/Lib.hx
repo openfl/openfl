@@ -1,4 +1,5 @@
 package openfl._v2; #if (!flash && !html5 && !openfl_next)
+#if !macro
 
 
 import openfl.display.BitmapData;
@@ -133,6 +134,20 @@ class Lib {
 		__stage = result;
 		
 		return result;
+		
+	}
+	
+	
+	macro public static function defined (haxedef:String):Bool {
+		
+		return false;
+		
+	}
+	
+	
+	macro public static function definedValue (haxedef:String):String {
+		
+		return null;
 		
 	}
 	
@@ -573,4 +588,32 @@ class Lib {
 }
 
 
+#else
+
+
+import haxe.macro.Context;
+import haxe.macro.Expr;
+
+
+class Lib {
+	
+	
+	public static function defined (haxedef:String):Expr {
+		
+		return Context.makeExpr (Context.defined (haxedef), Context.currentPos ());
+		
+	}
+	
+	
+	public static function definedValue (haxedef:String):Expr {
+		
+		return Context.makeExpr (Context.definedValue (haxedef), Context.currentPos ());
+		
+	}
+	
+	
+}
+
+
+#end
 #end
