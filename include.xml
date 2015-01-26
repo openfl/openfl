@@ -33,7 +33,7 @@
 	
 	<haxelib name="lime" unless="create || native lime-legacy" />
 	<haxelib name="lime" if="display || rebuild" />
-	<!-- <include haxelib="aether" /> -->
+	
 	<template path="templates" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
