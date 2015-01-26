@@ -1,4 +1,4 @@
-package openfl._v2.gl; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.gl; #if lime_legacy
 
 
 typedef GLActiveInfo = {

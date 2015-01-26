@@ -1,4 +1,4 @@
-package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.display; #if lime_legacy
 
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;

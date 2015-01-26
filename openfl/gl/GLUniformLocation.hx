@@ -1,7 +1,7 @@
 package openfl.gl;
 
 
-#if (!openfl_next && !flash && !js && !display)
+#if lime_legacy
 typedef GLUniformLocation = openfl._v2.gl.GLUniformLocation;
 #else
 typedef GLUniformLocation = lime.graphics.opengl.GLUniformLocation;

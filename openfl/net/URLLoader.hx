@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if (display || openfl_next || js)
+package openfl.net; #if !flash #if !lime_legacy
 
 
 import openfl.events.Event;

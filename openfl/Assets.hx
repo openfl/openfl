@@ -1,4 +1,4 @@
-package openfl; #if (flash || openfl_next || js || display || html5)
+package openfl; #if !lime_legacy
 #if !macro
 
 

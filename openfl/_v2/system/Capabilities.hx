@@ -1,4 +1,4 @@
-package openfl._v2.system; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.system; #if lime_legacy
 
 
 import openfl.system.TouchscreenType;

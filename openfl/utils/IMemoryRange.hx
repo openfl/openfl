@@ -1,4 +1,4 @@
-package openfl.utils; #if (flash || openfl_next || js || display)
+package openfl.utils; #if !lime_legacy
 
 
 import openfl.utils.ByteArray;

@@ -1,4 +1,4 @@
-package openfl.media; #if !flash #if (display || openfl_next || js)
+package openfl.media; #if !flash #if !lime_legacy
 
 
 import openfl._internal.renderer.RenderSession;

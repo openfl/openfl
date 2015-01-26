@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if (display || openfl_next || js)
+package openfl.ui; #if !flash #if !lime_legacy
 
 
 /**

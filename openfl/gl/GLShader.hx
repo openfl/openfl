@@ -1,7 +1,7 @@
 package openfl.gl;
 
 
-#if (!openfl_next && !flash && !js && !display)
+#if lime_legacy
 typedef GLShader = openfl._v2.gl.GLShader;
 #else
 typedef GLShader = lime.graphics.opengl.GLShader;

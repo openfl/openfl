@@ -79,7 +79,7 @@ class TextFieldTest {
 		bitmapData.draw (textField);
 		
 		// Need to determine why alpha is FE in native
-		#if !openfl_next
+		#if (flash || lime_legacy)
 		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFF00FF00, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFE00FF00, 8)));
 		#end
 		//Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));

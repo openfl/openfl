@@ -1,4 +1,4 @@
-package openfl._v2.filesystem; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.filesystem; #if lime_legacy
 
 
 import openfl.Lib;

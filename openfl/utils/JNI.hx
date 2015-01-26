@@ -1,6 +1,6 @@
 package openfl.utils;
 
 
-#if (android && !openfl_next)
+#if (android && lime_legacy)
 typedef JNI = openfl._v2.utils.JNI;
 #end

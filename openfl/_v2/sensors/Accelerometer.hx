@@ -1,4 +1,4 @@
-package openfl._v2.sensors; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.sensors; #if lime_legacy
 
 
 import haxe.Timer;

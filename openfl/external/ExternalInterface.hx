@@ -1,4 +1,4 @@
-package openfl.external; #if !flash #if (display || openfl_next || js)
+package openfl.external; #if !flash #if !lime_legacy
 
 
 import openfl.Lib;

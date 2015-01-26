@@ -1,6 +1,6 @@
 package openfl.ui;
 
 
-#if ((cpp || neko) && !openfl_next)
+#if lime_legacy
 typedef Acceleration = openfl._v2.ui.Acceleration;
 #end
