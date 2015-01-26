@@ -1011,7 +1011,7 @@ import neko.vm.Module;
 import neko.vm.Mutex;
 import neko.vm.Thread;
 import neko.vm.Tls;
-import neko.vm.UI;
+//import neko.vm.UI;
 import neko.zip.Compress;
 import neko.zip.Flush;
 import neko.zip.Uncompress;
