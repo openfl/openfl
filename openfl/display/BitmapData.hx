@@ -506,14 +506,6 @@ class BitmapData implements IBitmapDrawable {
 				renderSession.context = cast buffer.__srcContext;
 				renderSession.roundPixels = true;
 				
-				if (!smoothing) {
-					
-					untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-					untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-					buffer.__srcContext.imageSmoothingEnabled = false;
-					
-				}
-				
 				var matrixCache = source.__worldTransform;
 				source.__worldTransform = matrix != null ? matrix : new Matrix ();
 				source.__updateChildren (false);
@@ -521,13 +513,10 @@ class BitmapData implements IBitmapDrawable {
 				source.__worldTransform = matrixCache;
 				source.__updateChildren (true);
 				
-				if (!smoothing) {
-					
-					untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-					untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-					buffer.__srcContext.imageSmoothingEnabled = true;
-					
-				}
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = smoothing;
+				untyped (buffer.__srcContext).webkitImageSmoothingEnabled = smoothing;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = smoothing;
+				buffer.__srcContext.imageSmoothingEnabled = smoothing;
 				
 				buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 				#end
