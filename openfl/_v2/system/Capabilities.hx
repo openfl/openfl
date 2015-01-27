@@ -1,6 +1,7 @@
 package openfl._v2.system; #if lime_legacy
 
 
+import haxe.macro.Compiler;
 import openfl.system.TouchscreenType;
 import openfl.Lib;
 
@@ -202,9 +203,9 @@ class Capabilities {
 		var value = "OFL";
 		#end
 		
-		if (Lib.defined ("openfl")) {
+		if (Compiler.getDefine ("openfl") != null) {
 			
-			value += " " + StringTools.replace (Lib.definedValue ("openfl"), ".", ",") + ",0";
+			value += " " + StringTools.replace (Compiler.getDefine ("openfl"), ".", ",") + ",0";
 			
 		}
 		

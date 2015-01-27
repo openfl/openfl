@@ -1,5 +1,4 @@
 package openfl._v2; #if lime_legacy
-#if !macro
 
 
 import openfl.display.BitmapData;
@@ -588,32 +587,4 @@ class Lib {
 }
 
 
-#else
-
-
-import haxe.macro.Context;
-import haxe.macro.Expr;
-
-
-class Lib {
-	
-	
-	public static function defined (haxedef:String):Expr {
-		
-		return Context.makeExpr (Context.defined (haxedef), Context.currentPos ());
-		
-	}
-	
-	
-	public static function definedValue (haxedef:String):Expr {
-		
-		return Context.makeExpr (Context.definedValue (haxedef), Context.currentPos ());
-		
-	}
-	
-	
-}
-
-
-#end
 #end

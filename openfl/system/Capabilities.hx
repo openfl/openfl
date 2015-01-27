@@ -1,7 +1,7 @@
 package openfl.system; #if !flash #if !lime_legacy
 
 
-import openfl.Lib;
+import haxe.macro.Compiler;
 
 #if js
 import js.html.Element;
@@ -503,9 +503,9 @@ class Capabilities {
 		var value = "OFL";
 		#end
 		
-		if (Lib.defined ("openfl")) {
+		if (Compiler.getDefine ("openfl") != null) {
 			
-			value += " " + StringTools.replace (Lib.definedValue ("openfl"), ".", ",") + ",0";
+			value += " " + StringTools.replace (Compiler.getDefine ("openfl"), ".", ",") + ",0";
 			
 		}
 		

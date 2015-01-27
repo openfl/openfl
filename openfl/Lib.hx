@@ -52,20 +52,6 @@ import js.Browser;
 	}
 	
 	
-	macro public static function defined (haxedef:String):Bool {
-		
-		return false;
-		
-	}
-	
-	
-	macro public static function definedValue (haxedef:String):String {
-		
-		return null;
-		
-	}
-	
-	
 	#if js
 	@:keep @:expose("openfl.embed")
 	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null) {
@@ -195,25 +181,10 @@ import js.Browser;
 
 import haxe.macro.Compiler;
 import haxe.macro.Context;
-import haxe.macro.Expr;
 import sys.FileSystem;
 
 
 class Lib {
-	
-	
-	public static function defined (haxedef:String):Expr {
-		
-		return Context.makeExpr (Context.defined (haxedef), Context.currentPos ());
-		
-	}
-	
-	
-	public static function definedValue (haxedef:String):Expr {
-		
-		return Context.makeExpr (Context.definedValue (haxedef), Context.currentPos ());
-		
-	}
 	
 	
 	public static function includeBackend (type:String) {
