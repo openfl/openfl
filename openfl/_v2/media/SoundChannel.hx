@@ -6,6 +6,7 @@ import openfl.events.EventDispatcher;
 import openfl.events.SampleDataEvent;
 import openfl._v2.media.Sound;
 import openfl.media.SoundTransform;
+import openfl.utils.ByteArray;
 import openfl.Lib;
 
 #if (!audio_thread_disabled && !emscripten)
