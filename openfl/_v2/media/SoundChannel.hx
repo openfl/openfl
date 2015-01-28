@@ -6,6 +6,7 @@ import openfl.events.EventDispatcher;
 import openfl.events.SampleDataEvent;
 import openfl._v2.media.Sound;
 import openfl.media.SoundTransform;
+import openfl.utils.ByteArray;
 import openfl.Lib;
 
 #if (!audio_thread_disabled && !emscripten)
@@ -39,6 +40,8 @@ class SoundChannel extends EventDispatcher {
 	@:noCompletion private var __pitch:Float = 1;
 	@:noCompletion public var __soundInstance:Sound;
 	@:noCompletion private var __transform:SoundTransform;
+	
+	@:noCompletion private var __dynamicBytes:ByteArray = null;
 	
 	#if (!audio_thread_disabled && !emscripten)
 		
@@ -89,6 +92,12 @@ class SoundChannel extends EventDispatcher {
 		
 		__dynamicSoundCount ++;
 		
+		// Get the next samples so we can feed the ByteArray immediately when asked
+		var request = new SampleDataEvent (SampleDataEvent.SAMPLE_DATA);
+		request.position = lime_sound_channel_get_data_position (handle);
+		dataProvider.dispatchEvent (request);
+		result.__dynamicBytes = request.data;
+		
 		return result;
 		
 	}
@@ -122,13 +131,15 @@ class SoundChannel extends EventDispatcher {
 				
 				var request = new SampleDataEvent (SampleDataEvent.SAMPLE_DATA);
 				request.position = lime_sound_channel_get_data_position (__handle);
-				__dataProvider.dispatchEvent (request);
 				
-				if (request.data.length > 0) {
+				if (__dynamicBytes.length > 0) {
 					
-					lime_sound_channel_add_data (__handle, request.data);
+					lime_sound_channel_add_data (__handle, __dynamicBytes);
 					
 				}
+				
+				__dataProvider.dispatchEvent (request);
+				__dynamicBytes = request.data;
 				
 			}
 			
