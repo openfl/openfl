@@ -432,7 +432,9 @@ class GL {
 	public static var drawingBufferHeight(get_drawingBufferHeight, null):Int;
 	public static var drawingBufferWidth(get_drawingBufferWidth, null):Int;
 	public static var version(get_version, null):Int;
-
+	
+	private static var defaultFramebuffer:GLFramebuffer;
+	
 	public static inline function activeTexture(texture:Int):Void { lime_gl_active_texture(texture); }
 
 	public static inline function attachShader(program:GLProgram, shader:GLShader):Void 
@@ -458,6 +460,9 @@ class GL {
 
 	public static inline function bindFramebuffer(target:Int, framebuffer:GLFramebuffer):Void 
 	{
+		#if ios
+		if (framebuffer == null) framebuffer = defaultFramebuffer;
+		#end
 		lime_gl_bind_framebuffer(target, framebuffer == null ? null : framebuffer.id);
 	}
 

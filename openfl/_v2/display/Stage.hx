@@ -22,10 +22,14 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.media.SoundChannel;
 import openfl.net.URLLoader;
+import openfl._v2.gl.GL;
+import openfl._v2.gl.GLFramebuffer;
 import openfl._v2.system.ScreenMode;
 import openfl.ui.Keyboard;
 import openfl.Lib;
 import openfl.Vector;
+
+@:access(openfl._v2.gl.GL)
 
 
 class Stage extends DisplayObjectContainer {
@@ -113,6 +117,10 @@ class Stage extends DisplayObjectContainer {
 		renderRequest = lime_stage_request_render;
 		#else
 		renderRequest = null;
+		#end
+		
+		#if ios
+		GL.defaultFramebuffer = new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING));
 		#end
 		
 		lime_set_stage_handler (__handle, __processStageEvent, width, height);
@@ -957,6 +965,10 @@ class Stage extends DisplayObjectContainer {
 	
 	
 	@:noCompletion private function __onRenderContext (active:Bool):Void {
+		
+		#if ios
+		GL.defaultFramebuffer = active ? new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING)) : null;
+		#end
 		
 		var event = new Event (!active ? OpenGLView.CONTEXT_LOST : OpenGLView.CONTEXT_RESTORED);
 		__dispatchEvent (event);
