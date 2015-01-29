@@ -11,6 +11,7 @@ target
 tests/build
 tests/report
 tests/src
+tests/test/ExampleTest.hx
 tests/test/TestMain.hx
 tests/test/TestSuite.hx
 docs/*.xml
