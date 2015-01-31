@@ -55,4 +55,5 @@ https://github.com/haxenme/nme
     openfl/_v2/
 
 Excerpts of the Adobe ActionScript 3.0 Reference are used, with modification,
-available under the "CreativeCommons BY-NC-SA 3.0" license.
+which is available under the "CC BY-NC-SA 3.0" license. For details, see
+http://creativecommons.org/licenses/by-nc-sa/3.0/
