@@ -74,6 +74,7 @@ import openfl.Lib;
  */
 
 @:access(openfl.display.Stage)
+@:access(lime.ui.Window)
 
 
 class ExternalInterface {
