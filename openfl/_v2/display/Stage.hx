@@ -120,7 +120,7 @@ class Stage extends DisplayObjectContainer {
 		#end
 		
 		#if ios
-		GL.defaultFramebuffer = new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING));
+		GL.defaultFramebuffer = GL.getParameter (GL.FRAMEBUFFER_BINDING);
 		#end
 		
 		lime_set_stage_handler (__handle, __processStageEvent, width, height);
@@ -967,7 +967,7 @@ class Stage extends DisplayObjectContainer {
 	@:noCompletion private function __onRenderContext (active:Bool):Void {
 		
 		#if ios
-		GL.defaultFramebuffer = active ? new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING)) : null;
+		GL.defaultFramebuffer = active ? GL.getParameter (GL.FRAMEBUFFER_BINDING) : null;
 		#end
 		
 		var event = new Event (!active ? OpenGLView.CONTEXT_LOST : OpenGLView.CONTEXT_RESTORED);

@@ -768,7 +768,7 @@ class GL {
 
 	public static inline function getParameter(pname:Int):Dynamic 
 	{
-		var value = lime_gl_get_parameter(pname);
+		var value:Dynamic = lime_gl_get_parameter(pname);
 		
 		switch (pname) {
 			
