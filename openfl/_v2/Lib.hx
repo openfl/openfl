@@ -221,7 +221,17 @@ class Lib {
 		
 		__moduleNames.set (library, library);
 		
+		#if blackberry
+		var result:Dynamic = tryLoad ("/app/native/" + library, library, method, args);
+		
+		if (result == null) {
+			
+			result = tryLoad ("./" + library, library, method, args);
+			
+		}
+		#else
 		var result:Dynamic = tryLoad ("./" + library, library, method, args);
+		#end
 		
 		if (result == null) {
 			
@@ -238,15 +248,15 @@ class Lib {
 		if (result == null) {
 			
 			var slash = (sysName ().substr (7).toLowerCase () == "windows") ? "\\" : "/";
-			var haxelib = findHaxeLib ("openfl-native");
+			var haxelib = findHaxeLib ("lime");
 			
 			if (haxelib != "") {
 				
-				result = tryLoad (haxelib + slash + "ndll" + slash + sysName () + slash + library, library, method, args);
+				result = tryLoad (haxelib + slash + "legacy" + slash + "ndll" + slash + sysName () + slash + library, library, method, args);
 				
 				if (result == null) {
 					
-					result = tryLoad (haxelib + slash + "ndll" + slash + sysName() + "64" + slash + library, library, method, args);
+					result = tryLoad (haxelib + slash + "legacy" + slash + "ndll" + slash + sysName() + "64" + slash + library, library, method, args);
 					
 				}
 				
