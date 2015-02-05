@@ -267,7 +267,11 @@ class Timer {
 	
 	public static function stamp ():Float {
 		
+		#if lime_legacy
 		return lime_time_stamp ();
+		#else
+		return System.getTimer () / 1000;
+		#end
 		
 	}
 	
@@ -294,6 +298,7 @@ class Timer {
 	}
 	
 	
+	#if lime_legacy
 	@:noCompletion private function __check (inTime:Float) {
 		
 		if (inTime >= mFireAt) {
@@ -364,6 +369,7 @@ class Timer {
 		return limit * 0.001;
 		
 	}
+	#end
 	
 	
 	
@@ -373,14 +379,8 @@ class Timer {
 	
 	
 	
-	#if display
-	static var lime_time_stamp:Dynamic;
-	#else
-	#if (lime && !lime_legacy)
-	static var lime_time_stamp = System.load ("lime", "lime_system_get_timestamp", 0);
-	#else
+	#if lime_legacy
 	static var lime_time_stamp = flash.Lib.load ("lime", "lime_time_stamp", 0);
-	#end
 	#end
 	
 	
