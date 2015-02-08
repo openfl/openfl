@@ -8,12 +8,10 @@ class ApplicationMain {
 	public static var config:lime.app.Config;
 	public static var preloader:openfl.display.Preloader;
 	
-	private static var app:lime.app.Application;
-	
 	
 	public static function create ():Void {
 		
-		app = new openfl.display.Application ();
+		var app = new openfl.display.Application ();
 		app.create (config);
 		
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
