@@ -67,7 +67,7 @@ class Transform {
 	 * 
 	 * @throws TypeError The colorTransform is null when being set
 	 */
-	public var colorTransform:ColorTransform;
+	public var colorTransform (get, set):ColorTransform;
 	
 	/**
 	 * A ColorTransform object representing the combined color transformations
@@ -125,6 +125,7 @@ class Transform {
 	 */
 	public var pixelBounds:Rectangle;
 	
+	@:noCompletion private var __colorTransform:ColorTransform;
 	@:noCompletion private var __displayObject:DisplayObject;
 	@:noCompletion private var __hasMatrix:Bool;
 	@:noCompletion private var __hasMatrix3D:Bool;
@@ -132,7 +133,7 @@ class Transform {
 	
 	public function new (displayObject:DisplayObject) {
 		
-		colorTransform = new ColorTransform ();
+		__colorTransform = new ColorTransform ();
 		concatenatedColorTransform = new ColorTransform ();
 		concatenatedMatrix = new Matrix ();
 		pixelBounds = new Rectangle ();
@@ -148,6 +149,28 @@ class Transform {
 	// Get & Set Methods
 	
 	
+	
+	
+	@:noCompletion private function get_colorTransform ():ColorTransform {
+		
+		return __colorTransform;
+		
+	}
+	
+	
+	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
+		
+		__colorTransform = value;
+		
+		if (value != null) {
+			
+			__displayObject.alpha = value.alphaMultiplier;
+			
+		}
+		
+		return __colorTransform;
+		
+	}
 	
 	
 	@:noCompletion private function get_matrix ():Matrix {
