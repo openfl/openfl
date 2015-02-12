@@ -9,7 +9,7 @@ class ApplicationMain {
 	public static var preloader:openfl.display.Preloader;
 	
 	
-	public static function create ():Void {
+	public static function __internalCreate ():Void {
 		
 		var app = new openfl.display.Application ();
 		app.create (config);
@@ -106,7 +106,7 @@ class ApplicationMain {
 		flash.Lib.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 		#end
 		#else
-		create ();
+		ApplicationMain.__internalCreate ();
 		#end
 		
 	}
