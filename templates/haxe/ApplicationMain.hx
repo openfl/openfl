@@ -118,8 +118,9 @@ class ApplicationMain {
 		openfl.Lib.current.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
 		
 		var hasMain = false;
+		var entryPoint = Type.resolveClass ("::APP_MAIN::");
 		
-		for (methodName in Type.getClassFields (::APP_MAIN::)) {
+		for (methodName in Type.getClassFields (entryPoint)) {
 			
 			if (methodName == "main") {
 				
@@ -132,7 +133,7 @@ class ApplicationMain {
 		
 		if (hasMain) {
 			
-			Reflect.callMethod (::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
+			Reflect.callMethod (entryPoint, Reflect.field (entryPoint, "main"), []);
 			
 		} else {
 			
