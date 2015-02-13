@@ -1,3 +1,17 @@
+2.2.6 (02/13/2015)
+------------------
+
+#### General
+
+* Fixed regression in HTML5 font asset embedding
+* Minor Stage3D improvements
+
+#### HTML5, Native (next)
+
+* Added support for Emscripten
+* Improved handling of conflicting main class names
+
+
 2.2.5 (02/11/2015)
 ------------------
 
