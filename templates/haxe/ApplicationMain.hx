@@ -39,7 +39,11 @@ class ApplicationMain {
 			
 			for (i in 0...urls.length) {
 				
-				urls[i] = config.assetsPrefix + urls[i];
+				if (types[i] != AssetType.FONT) {
+					
+					urls[i] = config.assetsPrefix + urls[i];
+					
+				}
 				
 			}
 			
