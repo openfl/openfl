@@ -6,7 +6,7 @@
 	
 	<set name="openfl-next" value="1" if="next || openfl_next" />
 	<haxedef name="openfl-next" if="openfl-next" />
-	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next || display" />
+	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next || display || emscripten" />
 	
 	<section if="openfl-next || webgl">
 		<window stencil-buffer="true" />
