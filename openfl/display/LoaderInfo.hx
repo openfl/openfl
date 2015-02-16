@@ -6,6 +6,10 @@ import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
 
+#if (js && html5)
+import js.Browser;
+#end
+
 
 /**
  * The LoaderInfo class provides information about a loaded SWF file or a
@@ -106,6 +110,8 @@ import openfl.utils.ByteArray;
  */
 class LoaderInfo extends EventDispatcher {
 	
+	
+	private static var __rootURL = #if (js && html5) Browser.document.URL #else "" #end;
 	
 	/**
 	 * When an external SWF file is loaded, all ActionScript 3.0 definitions
@@ -399,7 +405,7 @@ class LoaderInfo extends EventDispatcher {
 			
 		} else {
 			
-			loaderInfo.url = "";
+			loaderInfo.url = __rootURL;
 			
 		}
 		

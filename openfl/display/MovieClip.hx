@@ -130,8 +130,6 @@ class MovieClip extends Sprite {
 		__totalFrames = 0;
 		enabled = true;
 		
-		loaderInfo = LoaderInfo.create (null);
-		
 	}
 	
 	
