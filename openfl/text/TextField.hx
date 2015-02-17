@@ -946,7 +946,7 @@ class TextField extends InteractiveObject {
 		if (__div == null) {
 			
 			div = Browser.document.createElement ("div");
-			div.innerHTML = __text;
+			div.innerHTML = new EReg ("\n", "g").replace (__text, "<br>");
 			div.style.setProperty ("font", __getFont (__textFormat), null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
@@ -1321,12 +1321,10 @@ class TextField extends InteractiveObject {
 		#if js
 		
 		if (__canvas != null) {
-			
 			// TODO: Make this more accurate
 			return __textFormat.size * 1.185;
 			
 		} else if (__div != null) {
-			
 			return __div.clientHeight;
 			
 		} else {
