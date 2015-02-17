@@ -126,9 +126,6 @@ class ApplicationMain {
 	
 	public static function start ():Void {
 		
-		openfl.Lib.current.stage.align = openfl.display.StageAlign.TOP_LEFT;
-		openfl.Lib.current.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
-		
 		var hasMain = false;
 		var entryPoint = Type.resolveClass ("::APP_MAIN::");
 		

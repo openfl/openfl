@@ -8,6 +8,8 @@ import lime.ui.KeyCode;
 import lime.ui.Mouse;
 import openfl.display.InteractiveObject;
 import openfl.display.Stage;
+import openfl.display.StageAlign;
+import openfl.display.StageScaleMode;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TouchEvent;
@@ -290,6 +292,9 @@ class Application extends LimeApplication {
 		
 		stage = new Stage (window.width, window.height, config.background);
 		stage.addChild (Lib.current);
+		
+		stage.align = StageAlign.TOP_LEFT;
+		stage.scaleMode = StageScaleMode.NO_SCALE;
 		
 	}
 	
