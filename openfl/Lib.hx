@@ -1,8 +1,7 @@
-package openfl; #if (flash || openfl_next || js || display)
+package openfl; #if !lime_legacy
 #if !macro
 
 
-import haxe.Timer;
 import lime.system.System;
 import openfl.display.Application;
 import openfl.display.MovieClip;
@@ -27,7 +26,6 @@ import js.Browser;
 	#end
 	
 	@:noCompletion private static var __sentWarnings = new Map<String, Bool> ();
-	@:noCompletion private static var __startTime:Float = Timer.stamp ();
 	
 	
 	public static function as<T> (v:Dynamic, c:Class<T>):Null<T> {
@@ -54,9 +52,9 @@ import js.Browser;
 	
 	#if js
 	@:keep @:expose("openfl.embed")
-	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null) {
+	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
 		
-		System.embed (elementName, width, height, background);
+		System.embed (elementName, width, height, background, assetsPrefix);
 		
 	}
 	#end
@@ -85,7 +83,7 @@ import js.Browser;
 		#if flash
 		return flash.Lib.getTimer ();
 		#else
-		return Std.int ((Timer.stamp () - __startTime) * 1000);
+		return System.getTimer ();
 		#end
 		
 	}

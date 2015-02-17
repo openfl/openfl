@@ -23,7 +23,7 @@ class PerspectiveProjection {
 	
 	public function toMatrix3D ():Matrix3D {
 		
-		if (fieldOfView == null || projectionCenter == null) return null;
+		if (#if neko fieldOfView == null || #end projectionCenter == null) return null;
 		
 		var _mp = matrix3D.rawData;
 		_mp[0] = focalLength;

@@ -1,4 +1,4 @@
-package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.display; #if lime_legacy
 
 
 import openfl.events.Event;
@@ -72,7 +72,7 @@ import openfl.Lib;
 		if (event.__getIsCancelled ())
 			return true;
 		
-		if (event.bubbles && parent != null) {
+		if (event.bubbles && parent != null && parent != this) {
 			
 			parent.dispatchEvent (event);
 			
@@ -86,7 +86,7 @@ import openfl.Lib;
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		var result = new Rectangle ();
-		lime_display_object_get_bounds (__handle, targetCoordinateSpace.__handle, result, true);
+		lime_display_object_get_bounds (__handle, targetCoordinateSpace != null ? targetCoordinateSpace.__handle : null, result, true);
 		return result;
 		
 	}

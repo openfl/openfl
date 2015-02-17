@@ -1,4 +1,4 @@
-package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.utils; #if lime_legacy
 
 
 import openfl.geom.Matrix3D;
@@ -113,6 +113,11 @@ class Float32Array extends ArrayBufferView implements ArrayAccess<Float> {
 		
 	}
 	
+	public inline function __setLength( nbFloat : Int) {
+		length = nbFloat;
+		byteLength = nbFloat << 2;
+		buffer.setLength(byteLength);
+	}
 	
 	public static function fromMatrix (matrix:Matrix3D):Float32Array {
 		

@@ -6,7 +6,7 @@
 	
 	<set name="openfl-next" value="1" if="next || openfl_next" />
 	<haxedef name="openfl-next" if="openfl-next" />
-	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next" />
+	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next || display || emscripten" />
 	
 	<section if="openfl-next || webgl">
 		<window stencil-buffer="true" />
@@ -33,7 +33,7 @@
 	
 	<haxelib name="lime" unless="create || native lime-legacy" />
 	<haxelib name="lime" if="display || rebuild" />
-	<!-- <include haxelib="aether" /> -->
+	
 	<template path="templates" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
@@ -71,7 +71,6 @@
 			<haxedef name="canvas" unless="webgl || dom" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			<dependency path="dependencies/soundjs.min.js" />
-			<haxedef name="js-flatten" />
 			
 		</section>
 		
@@ -79,7 +78,6 @@
 	
 	<section if="setup">
 		
-		<!-- <haxelib name="aether" /> -->
 		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
 		<haxelib name="swf" />

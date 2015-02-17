@@ -14,7 +14,7 @@ class URLRequestTest {
 		var urlRequest = new URLRequest ();
 		var exists = urlRequest.contentType;
 		
-		#if (!openfl_next && openfl_native) // to be revisited later
+		#if lime_legacy // to be revisited later
 		Assert.isNotNull (exists);
 		#else
 		Assert.isNull (exists);

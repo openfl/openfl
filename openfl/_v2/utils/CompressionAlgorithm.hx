@@ -1,4 +1,4 @@
-package openfl._v2.utils; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.utils; #if lime_legacy
 
 
 enum CompressionAlgorithm {

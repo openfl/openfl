@@ -202,7 +202,7 @@ typedef VectorData<T> = Array<T>;
 typedef VectorDataIterator<T> = Iterator<T>;
 
 
-#elseif !cpp
+#elseif (!cpp || display)
 
 
 abstract Vector<T>(VectorData<T>) {
@@ -566,8 +566,8 @@ abstract Vector<T>(VectorData<T>) {
 			if (this.data.length < this.length) {
 				
 				var data = new haxe.ds.Vector<T> (this.data.length + 10);
-				haxe.ds.Vector.blit (this.data, 0, data, 0, this.data.length);
-				this.data = data;
+				haxe.ds.Vector.blit (cast this.data, 0, data, 0, this.data.length);
+				this.data = cast data;
 				
 			}
 			

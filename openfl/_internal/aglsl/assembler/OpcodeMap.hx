@@ -24,7 +24,7 @@ class OpcodeMap {
 			OpcodeMap._map.set ("max", new Opcode ("vector", "vector", 4, "vector", 4, 0x07, true, false, false, false));
 			OpcodeMap._map.set ("frc", new Opcode ("vector", "vector", 4, "none", 0, 0x08, true, false, false, false));
 			OpcodeMap._map.set ("sqt", new Opcode ("vector", "vector", 4, "none", 0, 0x09, true, false, false, false));
-			OpcodeMap._map.set  ("rsq", new Opcode ("vector", "vector", 4, "none", 0, 0x0a, true, false, false, false));
+			OpcodeMap._map.set ("rsq", new Opcode ("vector", "vector", 4, "none", 0, 0x0a, true, false, false, false));
 			OpcodeMap._map.set ("pow", new Opcode ("vector", "vector", 4, "vector", 4, 0x0b, true, false, false, false));
 			OpcodeMap._map.set ("log", new Opcode ("vector", "vector", 4, "none", 0, 0x0c, true, false, false, false));
 			OpcodeMap._map.set ("exp", new Opcode ("vector", "vector", 4, "none", 0, 0x0d, true, false, false, false));

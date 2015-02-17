@@ -28,13 +28,13 @@ class AGLSLCompiler {
 		switch (programType) {
 			case "vertex":
 				
-				concatSource = "part vertex 1 \n" + source + "endpart";
+				concatSource = "part vertex 1 \n" + source + "\nendpart\n";
 				agalMiniAssembler.assemble (concatSource);
 				data = agalMiniAssembler.r.get ("vertex").data;
 			
 			case "fragment":
 				
-				concatSource = "part fragment 1 \n" + source + "endpart";
+				concatSource = "part fragment 1 \n" + source + "\nendpart\n";
 				agalMiniAssembler.assemble (concatSource);
 				data = agalMiniAssembler.r.get ("fragment").data;
 			

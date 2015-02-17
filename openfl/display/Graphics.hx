@@ -1,16 +1,16 @@
-package openfl.display; #if !flash #if (display || openfl_next || js)
+package openfl.display; #if !flash #if !lime_legacy
 
 
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
+import openfl.display.GraphicsPathCommand;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-import openfl.display.GraphicsPathCommand;
 
 #if js
 import js.html.CanvasElement;
@@ -450,29 +450,40 @@ class Graphics {
 	 *                GraphicsPathWinding class.
 	 */
 	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = null):Void {
-		var i:Int = 0;
-		var dataIndex:Int = 0;
-		while (i < commands.length) {
-			switch(commands[i]) {
-			case GraphicsPathCommand.MOVE_TO:
-			moveTo(data[dataIndex], data[dataIndex + 1]);	
-			dataIndex+=2;	
-			case GraphicsPathCommand.LINE_TO:
-			lineTo(data[dataIndex], data[dataIndex + 1]);
-			dataIndex+=2;	
-			case GraphicsPathCommand.CURVE_TO:
-			curveTo(data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3]);
-			dataIndex+=4;	
-			case GraphicsPathCommand.CUBIC_CURVE_TO:
-			cubicCurveTo (data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3], data[dataIndex + 4], data[dataIndex + 5]);
+		
+		var dataIndex = 0;
+		
+		for (command in commands) {
+			
+			switch (command) {
+				
+				case GraphicsPathCommand.MOVE_TO:
+					
+					moveTo (data[dataIndex], data[dataIndex + 1]);	
+					dataIndex += 2;
+					
+				case GraphicsPathCommand.LINE_TO:
+					
+					lineTo (data[dataIndex], data[dataIndex + 1]);
+					dataIndex += 2;
+					
+				case GraphicsPathCommand.CURVE_TO:
+					
+					curveTo (data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3]);
+					dataIndex += 4;
+					
+				case GraphicsPathCommand.CUBIC_CURVE_TO:
+					
+					cubicCurveTo (data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3], data[dataIndex + 4], data[dataIndex + 5]);
+					dataIndex += 6;
+				
+				default:
+				
 			}
-			i++;	
+			
 		}
-
-		//openfl.Lib.notImplemented ("Graphics.drawPath");
 		
 	}
-
 	
 	
 	/**

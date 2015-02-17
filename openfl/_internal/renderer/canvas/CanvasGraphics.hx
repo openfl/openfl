@@ -572,6 +572,7 @@ class CanvasGraphics {
 							var useAlpha = (flags & Graphics.TILE_ALPHA) > 0;
 							var useRect = (flags & Graphics.TILE_RECT) > 0;
 							var useOrigin = (flags & Graphics.TILE_ORIGIN) > 0;
+							var useBlendAdd = (flags & Graphics.TILE_BLEND_ADD) > 0;
 							
 							if (useTransform) { useScale = false; useRotation = false; }
 							
@@ -602,6 +603,9 @@ class CanvasGraphics {
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.__image.src;
+
+							if (useBlendAdd)
+								context.globalCompositeOperation = "lighter";
 							
 							while (index < totalCount) {
 								
@@ -669,6 +673,9 @@ class CanvasGraphics {
 								index += numValues;
 								
 							}
+
+							if (useBlendAdd)
+								context.globalCompositeOperation = "source-over";
 						
 						case EndFill:
 							
@@ -693,7 +700,20 @@ class CanvasGraphics {
 								});
 								
 								context.miterLimit = (miterLimit == null ? 3 : miterLimit);
-								context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
+								
+								if (alpha == 1) {
+								
+									context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
+								
+								} else {
+									
+									var r = (color & 0xFF0000) >>> 16;
+									var g = (color & 0x00FF00) >>> 8;
+									var b = (color & 0x0000FF);
+									
+									context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+									
+								}
 								
 								hasStroke = true;
 								

@@ -88,7 +88,7 @@ class GraphicsStrokeTest {
 		var stroke = new GraphicsStroke ();
 		var exists = stroke.thickness;
 		
-		#if (neko && !openfl_next)
+		#if (neko && lime_legacy)
 		Assert.isNull (exists);
 		#else
 		Assert.isNotNull (exists);

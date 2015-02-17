@@ -1,4 +1,4 @@
-package openfl._v2.gl; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.gl; #if lime_legacy
 
 
 import openfl.display.BitmapData;
@@ -432,7 +432,9 @@ class GL {
 	public static var drawingBufferHeight(get_drawingBufferHeight, null):Int;
 	public static var drawingBufferWidth(get_drawingBufferWidth, null):Int;
 	public static var version(get_version, null):Int;
-
+	
+	private static var defaultFramebuffer:GLFramebuffer;
+	
 	public static inline function activeTexture(texture:Int):Void { lime_gl_active_texture(texture); }
 
 	public static inline function attachShader(program:GLProgram, shader:GLShader):Void 
@@ -458,6 +460,9 @@ class GL {
 
 	public static inline function bindFramebuffer(target:Int, framebuffer:GLFramebuffer):Void 
 	{
+		#if ios
+		if (framebuffer == null) framebuffer = defaultFramebuffer;
+		#end
 		lime_gl_bind_framebuffer(target, framebuffer == null ? null : framebuffer.id);
 	}
 
@@ -763,7 +768,35 @@ class GL {
 
 	public static inline function getParameter(pname:Int):Dynamic 
 	{
-		return lime_gl_get_parameter(pname);
+		var value:Dynamic = lime_gl_get_parameter(pname);
+		
+		switch (pname) {
+			
+			case ARRAY_BUFFER_BINDING, ELEMENT_ARRAY_BUFFER_BINDING:
+				
+				return new GLBuffer (version, value);
+			
+			case CURRENT_PROGRAM:
+				
+				return new GLProgram (version, value);
+			
+			case FRAMEBUFFER_BINDING:
+				
+				return new GLFramebuffer (version, value);
+			
+			case RENDERBUFFER_BINDING:
+				
+				return new GLRenderbuffer (version, value);
+			
+			case TEXTURE_BINDING_2D, TEXTURE_BINDING_CUBE_MAP:
+				
+				return new GLTexture (version, value);
+			
+			default:
+				
+				return value;
+			
+		}
 	}
 
 	public static inline function getProgramInfoLog(program:GLProgram):String 

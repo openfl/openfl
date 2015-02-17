@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash #if (display || openfl_next || js)
+package openfl.utils; #if !flash #if !lime_legacy
 
 
 interface IDataOutput {

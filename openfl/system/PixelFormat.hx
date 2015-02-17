@@ -1,6 +1,6 @@
 package openfl.system;
 
 
-#if ((cpp || neko) && !openfl_next)
+#if lime_legacy
 typedef PixelFormat = openfl._v2.system.PixelFormat;
 #end

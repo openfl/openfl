@@ -8,12 +8,10 @@ class ApplicationMain {
 	public static var config:lime.app.Config;
 	public static var preloader:openfl.display.Preloader;
 	
-	private static var app:lime.app.Application;
-	
 	
 	public static function create ():Void {
 		
-		app = new openfl.display.Application ();
+		var app = new openfl.display.Application ();
 		app.create (config);
 		
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
@@ -22,7 +20,7 @@ class ApplicationMain {
 		preloader.onComplete = init;
 		preloader.create (config);
 		
-		#if js
+		#if (js && html5)
 		var urls = [];
 		var types = [];
 		
@@ -37,12 +35,26 @@ class ApplicationMain {
 		::else::types.push (null);::end::
 		::end::::end::
 		
+		if (config.assetsPrefix != null) {
+			
+			for (i in 0...urls.length) {
+				
+				if (types[i] != AssetType.FONT) {
+					
+					urls[i] = config.assetsPrefix + urls[i];
+					
+				}
+				
+			}
+			
+		}
+		
 		preloader.load (urls, types);
 		#end
 		
 		var result = app.exec ();
 		
-		#if sys
+		#if (sys && !emscripten)
 		Sys.exit (result);
 		#end
 		
@@ -118,8 +130,9 @@ class ApplicationMain {
 		openfl.Lib.current.stage.scaleMode = openfl.display.StageScaleMode.NO_SCALE;
 		
 		var hasMain = false;
+		var entryPoint = Type.resolveClass ("::APP_MAIN::");
 		
-		for (methodName in Type.getClassFields (::APP_MAIN::)) {
+		for (methodName in Type.getClassFields (entryPoint)) {
 			
 			if (methodName == "main") {
 				
@@ -132,7 +145,7 @@ class ApplicationMain {
 		
 		if (hasMain) {
 			
-			Reflect.callMethod (::APP_MAIN::, Reflect.field (::APP_MAIN::, "main"), []);
+			Reflect.callMethod (entryPoint, Reflect.field (entryPoint, "main"), []);
 			
 		} else {
 			

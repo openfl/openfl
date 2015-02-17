@@ -1,8 +1,9 @@
-package openfl._v2.display; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.display; #if lime_legacy
 
 
 import haxe.io.Bytes;
-import haxe.Int32;
+import openfl.display.JPEGEncoderOptions;
+import openfl.display.PNGEncoderOptions;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -161,9 +162,35 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function encode (format:String, quality:Float = 0.9):ByteArray {
+	public function encode (rectOrFormat:Dynamic, compressorOrQuality:Dynamic = 0.9, byteArray:ByteArray = null):ByteArray {
 		
-		return lime_bitmap_data_encode (__handle, format, quality);
+		// TODO: Support rect
+		// COMPATIBILITY: Support older "encode ('jpg', 0.9)" format as well
+		
+		if (Std.is (rectOrFormat, String)) {
+			
+			var format:String = cast rectOrFormat;
+			var quality = cast (compressorOrQuality, Float);
+			
+			return lime_bitmap_data_encode (__handle, format, quality);
+			
+		} else {
+			
+			if (rectOrFormat == null) return byteArray = null;
+			
+			if (Std.is (compressorOrQuality, PNGEncoderOptions)) {
+				
+				return byteArray = lime_bitmap_data_encode (__handle, "png", 0);
+				
+			} else if (Std.is (compressorOrQuality, JPEGEncoderOptions)) {
+				
+				return byteArray = lime_bitmap_data_encode (__handle, "jpg", cast (compressorOrQuality, JPEGEncoderOptions).quality / 100);
+				
+			}
+			
+			return byteArray = null;
+			
+		}
 		
 	}
 	
@@ -228,7 +255,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getPixel32 (x:Int, y:Int):Int32 {
+	public function getPixel32 (x:Int, y:Int):Int {
 		
 		#if neko
 		if (transparent) {
@@ -791,7 +818,7 @@ class BitmapData implements IBitmapDrawable {
 	private static var lime_bitmap_data_fill = Lib.load ("lime", "lime_bitmap_data_fill", 4);
 	private static var lime_bitmap_data_get_pixels = Lib.load ("lime", "lime_bitmap_data_get_pixels", 2);
 	private static var lime_bitmap_data_get_pixel = Lib.load ("lime", "lime_bitmap_data_get_pixel", 3);
-	private static var lime_bitmap_data_get_pixel32:Dynamic -> Int -> Int -> Int32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
+	private static var lime_bitmap_data_get_pixel32 = Lib.load ("lime", "lime_bitmap_data_get_pixel32", 3);
 	private static var lime_bitmap_data_get_pixel_rgba = Lib.load ("lime", "lime_bitmap_data_get_pixel_rgba", 3);
 	#if cpp
 	private static var lime_bitmap_data_get_array = Lib.load ("lime", "lime_bitmap_data_get_array", 3);

@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if (display || openfl_next || js)
+package openfl.display; #if !flash #if !lime_legacy
 
 
 import openfl._internal.renderer.canvas.CanvasBitmap;
@@ -12,8 +12,6 @@ import openfl.geom.Rectangle;
 #if js
 import js.html.ImageElement;
 #end
-
-@:access(openfl.display.BitmapData)
 
 
 /**
@@ -50,6 +48,10 @@ import js.html.ImageElement;
  * <code>addEventListener()</code> method of the display object container that
  * contains the Bitmap object.</p>
  */
+
+@:access(openfl.display.BitmapData)
+
+
 class Bitmap extends DisplayObjectContainer {
 	
 	

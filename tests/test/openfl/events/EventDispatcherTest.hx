@@ -168,6 +168,46 @@ class EventDispatcherTest {
 		Assert.isTrue (sprite2Event);
 		Assert.isTrue (correctOrder);
 		
+		// Capture event bubbling
+		
+		#if flash // todo
+		var sprite = new Sprite ();
+		var sprite2 = new Sprite ();
+		
+		var spriteEvent = false;
+		var sprite2Event = false;
+		
+		var listener = function (_) {
+			
+			spriteEvent = true;
+			correctOrder = true;
+			
+		}
+		
+		var listener2 = function (_) {
+			
+			sprite2Event = true;
+			correctOrder = false;
+			
+		}
+		
+		sprite.addEventListener ("event", listener, true);
+		sprite2.addEventListener ("event", listener2, true);
+		sprite.addChild (sprite2);
+		sprite2.dispatchEvent (new Event ("event"));
+		
+		Assert.isTrue (spriteEvent);
+		Assert.isFalse (sprite2Event);
+		
+		sprite2Event = false;
+		
+		sprite2.dispatchEvent (new Event ("event", true));
+		
+		Assert.isTrue (spriteEvent);
+		Assert.isFalse (sprite2Event);
+		Assert.isTrue (correctOrder);
+		#end
+		
 	}
 	
 	

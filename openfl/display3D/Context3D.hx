@@ -39,8 +39,6 @@ class Context3D {
 	private var blendEnabled:Bool; // to mimic Stage3d behavior of keeping blending across frames:
 	private var blendSourceFactor:Int; // to mimic Stage3d behavior of keeping blending across frames:
 	private var currentProgram:Program3D;
-	private var depthbuffer:GLRenderbuffer;
-	private var defaultFrameBuffer:GLFramebuffer;
 	private var disposed:Bool;
 	private var drawing:Bool; // to mimic Stage3d behavior of not allowing calls to drawTriangles between present and clear
 	private var framebuffer:GLFramebuffer;
@@ -73,7 +71,7 @@ class Context3D {
 		for (i in 0...MAX_SAMPLERS) {
 			
 			samplerParameters[i] = new SamplerState ();
-			samplerParameters[i].wrap = Context3DWrapMode.REPEAT;
+			samplerParameters[i].wrap = Context3DWrapMode.CLAMP;
 			samplerParameters[i].filter = Context3DTextureFilter.LINEAR;
 			samplerParameters[i].mipfilter =Context3DMipFilter.MIPNONE;
 			
@@ -87,12 +85,7 @@ class Context3D {
 		ogl.width = stage.stageWidth;
 		ogl.height = stage.stageHeight;
 		
-		//todo html something 
-		//#if html5
-		//stage.addChild(ogl);
-		//#else
 		stage.addChildAt(ogl, 0);
-		//#end
 		
 	}
 	
@@ -134,10 +127,6 @@ class Context3D {
 		ogl.height = height;
 		scrollRect = ogl.scrollRect.clone ();
 		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
-
-		#if ios
-		defaultFrameBuffer = GL.getParameter(GL.FRAMEBUFFER_BINDING);
-		#end
 		
 	}
 	
@@ -300,6 +289,18 @@ class Context3D {
 		GL.bindBuffer (GL.ARRAY_BUFFER, null);
 		GL.disable (GL.CULL_FACE);
 		
+		if (framebuffer != null) {
+
+			GL.bindFramebuffer (GL.FRAMEBUFFER, null);
+
+		}
+		
+		if (renderbuffer != null) {
+
+			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
+
+		}
+
 	}
 	
 	
@@ -471,7 +472,7 @@ class Context3D {
 			
 		} else {
 			
-			setTextureParameters (texture, Context3DWrapMode.REPEAT, Context3DTextureFilter.NEAREST, Context3DMipFilter.MIPNONE);
+			setTextureParameters (texture, Context3DWrapMode.CLAMP, Context3DTextureFilter.NEAREST, Context3DMipFilter.MIPNONE);
 			
 		}
 		
@@ -623,8 +624,22 @@ class Context3D {
 	
 	public function setRenderToBackBuffer ():Void {
 		
-		GL.bindFramebuffer (GL.FRAMEBUFFER, defaultFrameBuffer);
+		GL.disable (GL.DEPTH_TEST);
+		GL.disable (GL.STENCIL_TEST);
+		GL.disable (GL.SCISSOR_TEST);
+
+		if (framebuffer != null) {
+
+			GL.bindFramebuffer (GL.FRAMEBUFFER, null);
+
+		}
 		
+		if (renderbuffer != null) {
+
+			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
+
+		}
+
 	}
 	
 	
@@ -650,24 +665,25 @@ class Context3D {
 		#if ios
 		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
 		#else
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);
 		#end
 		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.glTexture, 0);
+
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, renderbuffer);
 		
 		if (enableDepthAndStencil) {
 			
 			GL.enable (GL.DEPTH_TEST);
 			GL.enable (GL.STENCIL_TEST);
-			
-			GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, renderbuffer);
-			
 		}
 		
 		GL.bindTexture (GL.TEXTURE_2D, texture.glTexture);
 		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, texture.width, texture.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
 		
 		GL.viewport (0, 0, texture.width, texture.height);
-		
 	}
 	
 	
@@ -702,7 +718,7 @@ class Context3D {
 		}
 		
 		GL.enable (GL.SCISSOR_TEST);
-		GL.scissor (Std.int (rectangle.x), Std.int (scrollRect.height - rectangle.y - rectangle.height), Std.int (rectangle.width), Std.int (rectangle.height));
+		GL.scissor (Std.int (rectangle.x), Std.int (rectangle.y), Std.int (rectangle.width), Std.int (rectangle.height));
 		
 	}
 	

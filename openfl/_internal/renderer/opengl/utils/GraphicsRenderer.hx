@@ -868,7 +868,7 @@ class GraphicsRenderer {
 		
 		var graphics = object.__graphics;
 		objectPosition.setTo(object.x, object.y);
-		objectBounds.copyFrom(graphics.__bounds);
+		if (graphics.__bounds != null) objectBounds.copyFrom(graphics.__bounds);
 		var glStack:GLStack = null;
 		
 		if (graphics.__dirty) {

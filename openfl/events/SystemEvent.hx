@@ -1,5 +1,5 @@
 package openfl.events;
-#if (display)
+#if display
 
 
 import openfl.events.Event;
@@ -15,6 +15,6 @@ extern class SystemEvent extends Event {
 }
 
 
-#elseif (!openfl_next && !js && !flash)
+#elseif lime_legacy
 typedef SystemEvent = openfl._v2.events.SystemEvent;
 #end

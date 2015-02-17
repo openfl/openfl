@@ -17,6 +17,7 @@ class AGALTokenizer {
 	public function decribeAGALByteArray (bytes:ByteArray):Description {
 		
 		var header = new Header ();
+		bytes.position = 0;
 		
 		if (bytes.readUnsignedByte () != 0xa0)  {
 			
