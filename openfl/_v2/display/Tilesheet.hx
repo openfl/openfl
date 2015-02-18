@@ -23,6 +23,7 @@ class Tilesheet {
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
 	public static inline var TILE_BLEND_SCREEN = 0x00040000;
+	public static inline var TILE_BLEND_SUBTRACT = 0x00080000;
 	
 	@:noCompletion public var __bitmap:BitmapData;
 	@:noCompletion public var __handle:Dynamic;
