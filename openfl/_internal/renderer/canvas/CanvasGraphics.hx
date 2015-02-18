@@ -701,7 +701,7 @@ class CanvasGraphics {
 								
 								context.miterLimit = (miterLimit == null ? 3 : miterLimit);
 								
-								if (alpha == 1) {
+								if (alpha == 1 || alpha == null) {
 								
 									context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
 								
