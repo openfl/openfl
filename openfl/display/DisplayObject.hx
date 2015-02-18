@@ -743,13 +743,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		super ();
 		
-		alpha = 1;
-		rotation = 0;
-		scaleX = 1;
-		scaleY = 1;
-		visible = true;
-		x = 0;
-		y = 0;
+		__alpha = 1;
+		__rotation = 0;
+		__scaleX = 1;
+		__scaleY = 1;
+		__visible = true;
+		__x = 0;
+		__y = 0;
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
@@ -1010,20 +1010,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getTransform ():Matrix {
 		
-		if (__worldTransformDirty > 0) {
+		if (__transformDirty || __worldTransformDirty > 0) {
 			
 			var list = [];
 			var current = this;
 			var transformDirty = __transformDirty;
 			
-			while (current.parent != null) {
+			if (parent == null) {
 				
-				list.push (current);
-				current = current.parent;
+				if (transformDirty) __update (true, false);
 				
-				if (current.__transformDirty) {
+			} else {
+				
+				while (current.parent != null) {
 					
-					transformDirty = true;
+					list.push (current);
+					current = current.parent;
+					
+					if (current.__transformDirty) {
+						
+						transformDirty = true;
+						
+					}
 					
 				}
 				

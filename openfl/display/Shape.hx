@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !lime_legacy
 
 
+import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
@@ -98,6 +99,17 @@ class Shape extends DisplayObject {
 		if (__graphics != null) {
 			
 			GraphicsRenderer.render (this, renderSession);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public override function __renderMask (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CanvasGraphics.renderMask (__graphics, renderSession);
 			
 		}
 		

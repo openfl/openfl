@@ -764,7 +764,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__mask != null) {
 			
-			//renderSession.maskManager.pushMask (__mask);
+			renderSession.maskManager.pushMask (__mask);
 			
 		}
 		
@@ -778,7 +778,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__mask != null) {
 			
-			//renderSession.maskManager.popMask ();
+			renderSession.maskManager.popMask ();
 			
 		}
 		
@@ -795,11 +795,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		//if (!__renderable) return;
 		
-		//if (__mask != null) {
+		if (__mask != null) {
 			
-			//renderSession.maskManager.pushMask (__mask);
+			renderSession.maskManager.pushMask (__mask);
 			
-		//}
+		}
 		
 		// TODO: scrollRect
 		
@@ -821,11 +821,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren = [];
 		
-		//if (__mask != null) {
+		if (__mask != null) {
 			
-			//renderSession.maskManager.popMask ();
+			renderSession.maskManager.popMask ();
 			
-		//}
+		}
 		
 	}
 	
@@ -850,7 +850,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);	
+		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		
+		/*for (child in __children) {
+			
+			child.__renderMask (renderSession);
+			
+		}*/
 		
 	}
 	

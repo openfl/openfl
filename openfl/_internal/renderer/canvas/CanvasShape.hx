@@ -27,11 +27,11 @@ class CanvasShape {
 			
 			if (graphics.__canvas != null) {
 				
-				//if (sprite.__mask != null) {
+				if (shape.__mask != null) {
 					
-					//renderSession.maskManager.pushMask (__mask);
+					renderSession.maskManager.pushMask (shape.__mask);
 					
-				//}
+				}
 				
 				var context = renderSession.context;
 				var scrollRect = shape.scrollRect;
@@ -59,11 +59,11 @@ class CanvasShape {
 					
 				}
 				
-				//if (sprite.__mask != null) {
+				if (shape.__mask != null) {
 					
-					//renderSession.maskManager.popMask ();
+					renderSession.maskManager.popMask ();
 					
-				//}
+				}
 				
 			}
 			

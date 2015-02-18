@@ -1,7 +1,11 @@
 package openfl._internal.renderer.canvas;
 
+
 import openfl.display.*;
 import openfl.geom.*;
+
+@:access(openfl.display.DisplayObject)
+
 
 class MaskManager {
 	
@@ -16,15 +20,14 @@ class MaskManager {
 	}
 	
 	
-	public function pushMask (mask:IBitmapDrawable):Void {
+	public function pushMask (mask:DisplayObject):Void {
 		
 		var context = renderSession.context;
 		
 		context.save ();
 		
 		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__worldTransform;
-		if (transform == null) transform = new Matrix ();
+		var transform = mask.__getTransform ();
 		
 		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
 		
