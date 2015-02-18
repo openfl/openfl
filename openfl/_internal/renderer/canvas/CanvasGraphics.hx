@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import lime.graphics.CanvasRenderContext;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
@@ -357,21 +358,12 @@ class CanvasGraphics {
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
-		
 		#if js
-		
 		if (graphics.__dirty) {
-			
 			bounds = graphics.__bounds;
 			
-			hasFill = false;
-			hasStroke = false;
-			inPath = false;
-			positionX = 0;
-			positionY = 0;
-			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
-				
+
 				graphics.__canvas = null;
 				graphics.__context = null;
 				
@@ -391,6 +383,43 @@ class CanvasGraphics {
 				
 				graphics.__canvas.width = Math.ceil (bounds.width);
 				graphics.__canvas.height = Math.ceil (bounds.height);
+			}
+			renderToContext(graphics, renderSession, graphics.__bounds);
+
+			graphics.__dirty = false;
+		}
+		#end
+	}
+
+	public static function renderTo(targetContext:CanvasRenderContext, graphics:Graphics, renderSession:RenderSession, targetBounds:Rectangle):Void {
+		#if js
+		context = cast targetContext;
+
+		context.save();
+		renderToContext(graphics, renderSession, targetBounds);
+		context.restore();
+		#end
+	}
+
+
+	private static function renderToContext (graphics:Graphics, renderSession:RenderSession, targetBounds:Rectangle):Void {
+		
+		#if js
+		
+		if (graphics != null) {
+			
+			bounds = targetBounds;
+			
+			hasFill = false;
+			hasStroke = false;
+			inPath = false;
+			positionX = 0;
+			positionY = 0;
+
+			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+				
+				
+			} else {
 				
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
@@ -867,7 +896,6 @@ class CanvasGraphics {
 				
 			}
 			
-			graphics.__dirty = false;
 			closePath (false);
 			
 		}
