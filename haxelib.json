@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "2.2.6",
-	"releasenote": "Minor fixes",
+	"version": "2.2.7",
+	"releasenote": "Added canvas mask support and TILE_BLEND_SUBTRACT, other improvements",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }

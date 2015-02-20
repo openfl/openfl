@@ -1,3 +1,20 @@
+2.2.7 (02/20/2015)
+------------------
+
+#### General
+
+* Added TILE_BLEND_SUBTRACT to drawTiles
+* Fixed issue calling "openfl" from a batch file
+
+#### HTML5, Native (next)
+
+* Updated the style of the default preloader
+* Improved handling of HTML5 loaderInfo.url
+* Improved calculation of HTML5 TextField height
+* Restored support for displayObject.mask in HTML5
+* Fixed difficulty changing stage align/scaleMode
+
+
 2.2.6 (02/13/2015)
 ------------------
 
