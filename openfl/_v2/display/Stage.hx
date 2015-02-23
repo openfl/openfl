@@ -821,23 +821,29 @@ class Stage extends DisplayObjectContainer {
 				
 				event.result = 1;
 				
-			}
-			
-			#if (windows || linux)
-			else if (flags & efAltDown > 0 && type == KeyboardEvent.KEY_DOWN && event.code == Keyboard.ENTER) {
+			} else {
 				
-				if (displayState == StageDisplayState.NORMAL) {
+				#if desktop
+				#if (windows || linux)
+				if (flags & efAltDown > 0 && type == KeyboardEvent.KEY_DOWN && event.code == Keyboard.ENTER) {
+				#elseif (mac)
+				if (flags & efCtrlDown > 0 && flags & efCommandDown > 0 && type == KeyboardEvent.KEY_DOWN && event.value == Keyboard.F) {
+				#end
 					
-					displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
-					
-				} else {
-					
-					displayState = StageDisplayState.NORMAL;
+					if (displayState == StageDisplayState.NORMAL) {
+						
+						displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+						
+					} else {
+						
+						displayState = StageDisplayState.NORMAL;
+						
+					}
 					
 				}
+				#end
 				
 			}
-			#end
 			
 		}
 		
