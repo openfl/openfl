@@ -1,7 +1,7 @@
 package openfl._v2.text; #if lime_legacy
 
 
-class TextFormat {
+@:keep class TextFormat {
 	
 	
 	public var align:String;
