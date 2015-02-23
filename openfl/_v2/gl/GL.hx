@@ -768,35 +768,7 @@ class GL {
 
 	public static inline function getParameter(pname:Int):Dynamic 
 	{
-		var value:Dynamic = lime_gl_get_parameter(pname);
-		
-		switch (pname) {
-			
-			case ARRAY_BUFFER_BINDING, ELEMENT_ARRAY_BUFFER_BINDING:
-				
-				return new GLBuffer (version, value);
-			
-			case CURRENT_PROGRAM:
-				
-				return new GLProgram (version, value);
-			
-			case FRAMEBUFFER_BINDING:
-				
-				return new GLFramebuffer (version, value);
-			
-			case RENDERBUFFER_BINDING:
-				
-				return new GLRenderbuffer (version, value);
-			
-			case TEXTURE_BINDING_2D, TEXTURE_BINDING_CUBE_MAP:
-				
-				return new GLTexture (version, value);
-			
-			default:
-				
-				return value;
-			
-		}
+		return lime_gl_get_parameter(pname);
 	}
 
 	public static inline function getProgramInfoLog(program:GLProgram):String 
