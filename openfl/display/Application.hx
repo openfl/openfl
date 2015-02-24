@@ -15,6 +15,7 @@ import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TouchEvent;
 import openfl.geom.Point;
+import openfl.text.TextField;
 import openfl.ui.Keyboard;
 import openfl.Lib;
 
@@ -423,6 +424,20 @@ class Application extends LimeApplication {
 			if (targetButton.useHandCursor) {
 				
 				Mouse.cursor = POINTER;
+				
+			} else {
+				
+				Mouse.cursor = ARROW;
+				
+			}
+			
+		} else if (Std.is (target, TextField)) {
+			
+			var targetTextField:TextField = cast target;
+			
+			if (targetTextField.type == INPUT) {
+				
+				Mouse.cursor = TEXT;
 				
 			} else {
 				

@@ -2,14 +2,20 @@ package openfl.text; #if !flash #if !lime_legacy
 
 
 import lime.graphics.opengl.GLTexture;
+import lime.ui.Mouse;
+import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
 import haxe.xml.Fast;
+import haxe.Timer;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.events.Event;
+import openfl.events.FocusEvent;
+import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -21,6 +27,8 @@ import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.html.DivElement;
 import js.html.Element;
+import js.html.InputElement;
+import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
@@ -543,19 +551,27 @@ class TextField extends InteractiveObject {
 	 */
 	@:isVar public var wordWrap (get, set):Bool;
 	
+	@:noCompletion private var __cursorPosition:Int;
+	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __hasFocus:Bool;
 	@:noCompletion private var __height:Float;
 	@:noCompletion private var __isHTML:Bool;
+	@:noCompletion private var __isKeyDown:Bool;
 	@:noCompletion private var __measuredHeight:Int;
 	@:noCompletion private var __measuredWidth:Int;
 	@:noCompletion private var __ranges:Array<TextFormatRange>;
+	@:noCompletion private var __selectionStart:Int;
+	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __text:String;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __width:Float;
 	
+	
 	#if js
 	private var __div:DivElement;
+	private var __hiddenInput:InputElement;
 	#end
 	
 	
@@ -847,6 +863,69 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __clipText (value:String):String {
+		
+		var textWidth = __getTextWidth (value);
+		var fillPer = textWidth / __width;
+		text = fillPer > 1 ? text.substr (-1 * Math.floor (text.length / fillPer)) : text;
+		return text + '';
+		
+	}
+	
+	
+	@:noCompletion private function __disableInputMode ():Void {
+		
+		this_onRemovedFromStage (null);
+		
+	}
+	
+	
+	@:noCompletion private function __enableInputMode ():Void {
+		
+		#if (js && html5)
+		
+		__cursorPosition = -1;
+		
+		if (__hiddenInput == null) {
+			
+			__hiddenInput = cast Browser.document.createElement ('input');
+			__hiddenInput.type = 'text';
+			__hiddenInput.style.position = 'absolute';
+			__hiddenInput.style.opacity = "0";
+			untyped (__hiddenInput.style).pointerEvents = 'none';
+			__hiddenInput.style.left = (x + ((__canvas != null) ? __canvas.offsetLeft : 0)) + 'px';
+			__hiddenInput.style.top = (y + ((__canvas != null) ? __canvas.offsetTop : 0)) + 'px';
+			__hiddenInput.style.width = __width + 'px';
+			__hiddenInput.style.height = __height + 'px';
+			__hiddenInput.style.zIndex = "0";
+			
+			if (this.maxChars > 0) {
+				
+				__hiddenInput.maxLength = this.maxChars;
+				
+			}
+			
+			Browser.document.body.appendChild (__hiddenInput);
+			__hiddenInput.value = __text;
+			
+		}
+		
+		if (stage != null) {
+			
+			this_onAddedToStage (null);
+			
+		} else {
+			
+			addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
+			addEventListener (Event.REMOVED_FROM_STAGE, this_onRemovedFromStage);
+			
+		}
+		
+		#end
+		
+	}
+	
+	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
@@ -877,6 +956,52 @@ class TextField extends InteractiveObject {
 		font += "'";
 		
 		return font;
+		
+	}
+	
+	
+	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
+		
+		var value:String = text;
+		var text:String = value;
+		var totalW:Float = 0;
+		var pos = text.length;
+		
+		if (x < __getTextWidth (text)) {
+			
+			for (i in 0...text.length) {
+				
+				totalW += __getTextWidth (text.charAt (i));
+				
+				if (totalW >= x) {
+					
+					pos = i;
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+		return pos;
+		
+	}
+	
+	
+	@:noCompletion private function __getTextWidth (text:String):Float {
+		
+		if (__context == null) {
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			__context = __canvas.getContext ("2d");
+			
+		}
+		
+		__context.font = __getFont (__textFormat);
+		__context.textAlign = 'left';
+		
+		return __context.measureText (text).width;
 		
 	}
 	
@@ -994,6 +1119,181 @@ class TextField extends InteractiveObject {
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLTextField.render (this, renderSession);
+		
+	}
+	
+	
+	@:noCompletion private function __startCursorTimer ():Void {
+		
+		__cursorTimer = Timer.delay (__startCursorTimer, 500);
+		__showCursor = !__showCursor;
+		__dirty = true;
+		
+	}
+	
+	
+	@:noCompletion private function __stopCursorTimer ():Void {
+		
+		if (__cursorTimer != null) {
+			
+			__cursorTimer.stop ();
+			
+		}
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	@:noCompletion private function input_onKeyUp (event:HTMLKeyboardEvent):Void {
+		
+		__isKeyDown = false;
+		if (event == null) event == Browser.window.event;
+		
+		__text = __hiddenInput.value;
+		__ranges = null;
+		__isHTML = false;
+		
+		__cursorPosition = __hiddenInput.selectionStart;
+		__selectionStart = __cursorPosition;
+		__dirty = true;
+		
+		dispatchEvent (new Event (Event.CHANGE, true));
+		
+	}
+	
+	
+	@:noCompletion private function input_onKeyDown (event:HTMLKeyboardEvent):Void {
+		
+		__isKeyDown = true;
+		if (event == null) event == Browser.window.event;
+		
+		var keyCode = event.which;
+		var isShift = event.shiftKey;
+		
+		if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
+			
+			__hiddenInput.selectionStart = 0;
+			__hiddenInput.selectionEnd = text.length;
+			event.preventDefault ();
+			__dirty = true;
+			return;
+			
+		}
+		
+		if (keyCode == 17 || event.metaKey || event.ctrlKey) {
+			
+			return;
+			
+		}
+		
+		__text = __hiddenInput.value;
+		__ranges = null;
+		__isHTML = false;
+		
+		__selectionStart = __hiddenInput.selectionStart;
+		__dirty = true;
+		
+	}
+	
+	
+	@:noCompletion private function stage_onFocusOut (event:Event):Void {
+		
+		__cursorPosition = -1;
+		__hasFocus = false;
+		__stopCursorTimer ();
+		__hiddenInput.blur ();
+		__dirty = true;
+		
+	}
+	
+	
+	@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
+		
+		if (__hasFocus && __selectionStart >= 0) {
+			
+			__cursorPosition = __getPosition (event.localX, event.localY);
+			__dirty = true;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
+		
+		var upPos:Int = __getPosition (event.localX, event.localY);
+		var leftPos:Int;
+		var rightPos:Int;
+		
+		leftPos = Std.int (Math.min (__selectionStart, upPos));
+		rightPos = Std.int (Math.max (__selectionStart, upPos));
+		
+		__selectionStart = leftPos;
+		__cursorPosition = rightPos;
+		
+		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
+		stage.focus = this;
+		
+		if (__cursorPosition < 0) {
+			
+			__cursorPosition = __text.length;
+			__selectionStart = __cursorPosition;
+			
+		}
+		
+		__hiddenInput.focus ();
+		__hiddenInput.selectionStart = __selectionStart;
+		__hiddenInput.selectionEnd = __cursorPosition;
+		
+		__stopCursorTimer ();
+		__startCursorTimer ();
+		
+		__hasFocus = true;
+		__dirty = true;
+		
+	}
+	
+	
+	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+		
+		stage.addEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
+		
+		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
+		__hiddenInput.addEventListener ('keydown', input_onKeyDown);
+		
+		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		
+	}
+	
+	
+	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
+		
+		__selectionStart = __getPosition (event.localX, event.localY);
+		
+		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
+	}
+	
+	
+	@:noCompletion private function this_onRemovedFromStage (event:Event):Void {
+		
+		if (stage != null) stage.removeEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
+		
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown);
+		
+		removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		if (stage != null) stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		if (stage != null) stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
 	}
 	
@@ -1128,6 +1428,7 @@ class TextField extends InteractiveObject {
 			if (segments.length == 1) {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
+				if (__hiddenInput != null) __hiddenInput.value = value;
 				return __text = value;
 				
 			} else {
@@ -1200,6 +1501,7 @@ class TextField extends InteractiveObject {
 		
 		#end
 		
+		if (__hiddenInput != null) __hiddenInput.value = value;
 		return __text = value;
 		
 	}
@@ -1245,6 +1547,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function set_text (value:String):String {
 		
+		if (__text != value && __hiddenInput != null) __hiddenInput.value = value;
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = false;
@@ -1349,7 +1652,24 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function set_type (value:TextFieldType):TextFieldType {
 		
-		//if (value != type) __dirty = true;
+		if (value != type) {
+			
+			#if !dom
+			if (value == TextFieldType.INPUT) {
+				
+				__enableInputMode ();
+				
+			} else {
+				
+				__disableInputMode ();
+				
+			}
+			#end
+			
+			__dirty = true;
+			
+		}
+		
 		return type = value;
 		
 	}
