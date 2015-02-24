@@ -1266,8 +1266,9 @@ class TextField extends InteractiveObject {
 		
 		stage.addEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
 		
-		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
 		__hiddenInput.addEventListener ('keydown', input_onKeyDown);
+		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
+		__hiddenInput.addEventListener ('input', input_onKeyUp);
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		
@@ -1288,8 +1289,9 @@ class TextField extends InteractiveObject {
 		
 		if (stage != null) stage.removeEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
 		
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);
 		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp);
 		
 		removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		if (stage != null) stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
