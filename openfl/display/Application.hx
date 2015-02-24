@@ -416,6 +416,20 @@ class Application extends LimeApplication {
 				
 			}
 			
+		} else if (Std.is (target, SimpleButton)) {
+			
+			var targetButton:SimpleButton = cast target;
+			
+			if (targetButton.useHandCursor) {
+				
+				Mouse.cursor = POINTER;
+				
+			} else {
+				
+				Mouse.cursor = ARROW;
+				
+			}
+			
 		} else {
 			
 			Mouse.cursor = ARROW;

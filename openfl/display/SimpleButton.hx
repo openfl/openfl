@@ -126,10 +126,13 @@ class SimpleButton extends DisplayObjectContainer {
 		trackAsMenu = false;
 		useHandCursor = true;
 		
-		this.upState = (upState != null) ? upState : __generateDefaultState();
-		this.overState = (overState != null) ? overState : __generateDefaultState();
-		this.downState = (downState != null) ? downState : __generateDefaultState();
-		this.hitTestState = (hitTestState != null) ? hitTestState : __generateDefaultState();
+		// TODO: Inherit from InteractiveObject, not DisplayObjectContainer
+		mouseChildren = false;
+		
+		this.upState = (upState != null) ? upState : __generateDefaultState ();
+		this.overState = (overState != null) ? overState : __generateDefaultState ();
+		this.downState = (downState != null) ? downState : __generateDefaultState ();
+		this.hitTestState = (hitTestState != null) ? hitTestState : __generateDefaultState ();
 		
 		__currentState = this.upState;
 		
