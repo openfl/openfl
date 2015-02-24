@@ -875,7 +875,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __disableInputMode ():Void {
 		
+		#if (js && html5)
 		this_onRemovedFromStage (null);
+		#end
 		
 	}
 	
@@ -991,6 +993,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getTextWidth (text:String):Float {
 		
+		#if (js && html5) 
+		
 		if (__context == null) {
 			
 			__canvas = cast Browser.document.createElement ("canvas");
@@ -1002,6 +1006,12 @@ class TextField extends InteractiveObject {
 		__context.textAlign = 'left';
 		
 		return __context.measureText (text).width;
+		
+		#else
+		
+		return 0;
+		
+		#end
 		
 	}
 	
@@ -1150,6 +1160,7 @@ class TextField extends InteractiveObject {
 	
 	
 	
+	#if (js && html5)
 	@:noCompletion private function input_onKeyUp (event:HTMLKeyboardEvent):Void {
 		
 		__isKeyDown = false;
@@ -1168,7 +1179,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function input_onKeyDown (event:HTMLKeyboardEvent):Void {
+	@:noCompletion private function input_onKeyDown (event:#if (js && html5) HTMLKeyboardEvent #else Dynamic #end):Void {
 		
 		__isKeyDown = true;
 		if (event == null) event == Browser.window.event;
@@ -1298,6 +1309,7 @@ class TextField extends InteractiveObject {
 		if (stage != null) stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
 	}
+	#end
 	
 	
 	
@@ -1430,7 +1442,7 @@ class TextField extends InteractiveObject {
 			if (segments.length == 1) {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
-				if (__hiddenInput != null) __hiddenInput.value = value;
+				#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
 				return __text = value;
 				
 			} else {
@@ -1503,7 +1515,7 @@ class TextField extends InteractiveObject {
 		
 		#end
 		
-		if (__hiddenInput != null) __hiddenInput.value = value;
+		#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
 		return __text = value;
 		
 	}
@@ -1549,7 +1561,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function set_text (value:String):String {
 		
-		if (__text != value && __hiddenInput != null) __hiddenInput.value = value;
+		#if (js && html5) if (__text != value && __hiddenInput != null) __hiddenInput.value = value; #end
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = false;
