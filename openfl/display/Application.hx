@@ -29,6 +29,8 @@ class Application extends LimeApplication {
 	private var __lastClickTime:Int;
 	private var __mouseOutStack = [];
 	
+	// for mouse over & mouse out
+	@:noCompletion private var __mouseOutStack = [];
 	
 	public function new () {
 		
@@ -469,6 +471,26 @@ class Application extends LimeApplication {
 			}
 			
 		}
+		
+		// for mouse over & mouse out
+		for (target in __mouseOutStack) {
+			if (__stack.indexOf(target) == -1) {
+				__mouseOutStack.remove(target);
+				var outLocal = target.globalToLocal (new Point (x, y));
+				var outEvent = new MouseEvent(MouseEvent.MOUSE_OUT,false,false, outLocal.x,outLocal.y, cast target);
+				(cast target).dispatchEvent(outEvent);
+			}
+		}
+		
+		for (target in __stack) {
+			if ((cast target).hasEventListener(MouseEvent.MOUSE_OVER) && __mouseOutStack.indexOf(target)==-1 ) {
+				var overLocal = target.globalToLocal (new Point (x, y));
+				var overEvent = new MouseEvent(MouseEvent.MOUSE_OVER,false,false, overLocal.x,overLocal.y, cast target);
+				(cast target).dispatchEvent(overEvent);
+				if ((cast target).hasEventListener(MouseEvent.MOUSE_OUT) ) __mouseOutStack.push(target);
+			}
+		}
+		// end
 		
 		if (stage.__dragObject != null) {
 			
