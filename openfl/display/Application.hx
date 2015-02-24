@@ -5,6 +5,7 @@ import lime.app.Application in LimeApplication;
 import lime.app.Config in LimeConfig;
 import lime.graphics.RenderContext;
 import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import openfl.display.InteractiveObject;
 import openfl.display.Stage;
@@ -323,24 +324,24 @@ class Application extends LimeApplication {
 	}
 	
 	
-	public override function onKeyDown (keyCode:Int, modifier:Int):Void {
+	public override function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		var keyCode = convertKeyCode (cast keyCode);
 		var charCode = keyCode;
 		
 		//var event = new KeyboardEvent (event.type == KEY_DOWN ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP, true, false, event.code, keyCode, keyLocation, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey)
-		onKey (new KeyboardEvent (KeyboardEvent.KEY_DOWN, true, false, charCode, keyCode));
+		onKey (new KeyboardEvent (KeyboardEvent.KEY_DOWN, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey));
 		
 	}
 	
 	
-	public override function onKeyUp (keyCode:Int, modifier:Int):Void {
+	public override function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		var keyCode = convertKeyCode (cast keyCode);
 		var charCode = keyCode;
 		
 		//var event = new KeyboardEvent (event.type == KEY_DOWN ? KeyboardEvent.KEY_DOWN : KeyboardEvent.KEY_UP, true, false, event.code, keyCode, keyLocation, event.ctrlKey, event.altKey, event.shiftKey, event.metaKey)
-		onKey (new KeyboardEvent (KeyboardEvent.KEY_UP, true, false, charCode, keyCode));
+		onKey (new KeyboardEvent (KeyboardEvent.KEY_UP, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey));
 		
 	}
 	
