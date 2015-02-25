@@ -348,6 +348,19 @@ class Application extends LimeApplication {
 	}
 	
 	
+	@:noCompletion private function findMouseEventTargets(x, y):Array <DisplayObject> {
+		var stack = [];
+		
+		if ( ! stage.__hitTest (x, y, false, stack, true)) {
+			
+			stack = [ stage ];
+			
+		}
+
+		return stack;
+	}
+
+	
 	@:noCompletion private function onMouse (type:String, x:Float, y:Float, button:Int):Void {
 		
 		if (button > 2) return;
@@ -355,20 +368,9 @@ class Application extends LimeApplication {
 		stage.__mouseX = x;
 		stage.__mouseY = y;
 		
-		var stack = [];
-		var target:InteractiveObject = null;
+		var stack = findMouseEventTargets(x, y);
+		var target:InteractiveObject = cast stack[stack.length - 1];
 		var targetPoint = new Point (x, y);
-		
-		if (stage.__hitTest (x, y, false, stack, true)) {
-			
-			target = cast stack[stack.length - 1];
-			
-		} else {
-			
-			target = stage;
-			stack = [ stage ];
-			
-		}
 		
 		stage.__fireEvent (MouseEvent.__create (type, button, (target == stage ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
@@ -530,6 +532,22 @@ class Application extends LimeApplication {
 		
 	}
 	
+	public override function onMouseWheel (deltaX:Float, deltaY:Float):Void {
+		
+		var x = stage.__mouseX;
+		var y = stage.__mouseY;
+		
+		var stack = findMouseEventTargets (x, y);
+		var target:InteractiveObject = cast stack[stack.length - 1];
+		var targetPoint = new Point (x, y);
+
+		var delta = deltaY > 0 ? Math.ceil(deltaY) : deltaY < 0 ? Math.floor(deltaY) : 0;
+		
+		stage.__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, (target == stage ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
+
+		
+	}
+
 	
 	@:noCompletion private function onTouch (type:String, x:Float, y:Float, id:Int):Void {
 		
