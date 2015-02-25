@@ -29,6 +29,10 @@ import openfl.ui.Keyboard;
 import openfl.Lib;
 import openfl.Vector;
 
+#if android
+import openfl._v2.utils.JNI;
+#end
+
 @:access(openfl._v2.gl.GL)
 
 
@@ -64,6 +68,7 @@ class Stage extends DisplayObjectContainer {
 	public var quality (get, set):StageQuality;
 	public var renderRequest:Void -> Void; 
 	public var scaleMode (get, set):StageScaleMode;
+	public var softKeyboardRect (get, null):Rectangle;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect (get, set):Bool;
 	public var stageHeight (get, null):Int;
@@ -99,6 +104,7 @@ class Stage extends DisplayObjectContainer {
 	@:noCompletion private var __lastRender:Float;
 	@:noCompletion private var __mouseOverObjects:Array<InteractiveObject>;
 	@:noCompletion private var __nextRender:Float;
+	@:noCompletion private var __softKeyboardRect:Rectangle;
 	@:noCompletion private var __touchInfo:Map <Int, TouchInfo>;
 	
 	
@@ -1330,6 +1336,39 @@ class Stage extends DisplayObjectContainer {
 	}
 	
 	
+	private function get_softKeyboardRect ():Rectangle {
+		
+		if (__softKeyboardRect == null) {
+			
+			__softKeyboardRect = new Rectangle ();
+			
+		}
+		
+		#if android
+		var height = lime_get_softkeyboardheight ();
+		
+		if (height > 0) {
+			
+			__softKeyboardRect.x = 0;
+			__softKeyboardRect.y = stageHeight - height;
+			__softKeyboardRect.width = stageWidth;
+			__softKeyboardRect.height = height;
+			
+		} else {
+			
+			__softKeyboardRect.x = 0;
+			__softKeyboardRect.y = 0;
+			__softKeyboardRect.width = 0;
+			__softKeyboardRect.height = 0;
+			
+		}
+		#end
+		
+		return __softKeyboardRect;
+		
+	}
+	
+	
 	private override function get_stage ():Stage {
 		
 		return this;
@@ -1406,6 +1445,10 @@ class Stage extends DisplayObjectContainer {
 	private static var lime_stage_set_fixed_orientation = Lib.load ("lime", "lime_stage_set_fixed_orientation", 1);
 	private static var lime_stage_get_orientation = Lib.load ("lime", "lime_stage_get_orientation", 0);
 	private static var lime_stage_get_normal_orientation = Lib.load ("lime", "lime_stage_get_normal_orientation", 0);
+	
+	#if android
+	private static var lime_get_softkeyboardheight = JNI.createStaticMethod ("org.haxe.lime.GameActivity", "getSoftKeyboardHeight", "()F");
+	#end
 	
 	
 }
