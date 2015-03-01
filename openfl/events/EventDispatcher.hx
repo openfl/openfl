@@ -252,6 +252,8 @@ class EventDispatcher implements IEventDispatcher {
 		
 		event.currentTarget = this;
 		
+		if (event.target == event.currentTarget) event.eventPhase = EventPhase.AT_TARGET;
+		
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 		var index = 0;
 		var listener;
