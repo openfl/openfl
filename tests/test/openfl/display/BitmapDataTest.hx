@@ -108,7 +108,7 @@ class BitmapDataTest {
 	}
 	
 	
-	#if (html5 || openfl_next) @Ignore #end @Test public function applyFilter () {
+	#if (!flash && !lime_legacy) @Ignore #end @Test public function applyFilter () {
 		
 		#if !html5
 		
@@ -173,7 +173,7 @@ class BitmapDataTest {
 		
 		// premultiplied
 		
-		#if (!flash && (js || openfl_next))
+		#if (!flash && !lime_legacy)
 		var colorTransform = new ColorTransform (0, 0, 0, 1, 0xFF, 0, 0, 0);
 		
 		var bitmapData = new BitmapData (100, 100);
@@ -313,7 +313,7 @@ class BitmapDataTest {
 	}
 	
 	
-	#if openfl_next @Ignore #end @Test public function draw () {
+	#if (!flash && !lime_legacy) @Ignore #end @Test public function draw () {
 		
 		var bitmapData = new BitmapData (100, 100);
 		var bitmapData2 = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));

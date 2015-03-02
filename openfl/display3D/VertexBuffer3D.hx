@@ -5,7 +5,7 @@ import openfl.gl.GL;
 import openfl.gl.GLBuffer;
 import openfl.utils.Float32Array;
 import openfl.utils.ByteArray;
-
+import openfl.Vector;
 
 class VertexBuffer3D {
 	
@@ -72,7 +72,7 @@ class VertexBuffer3D {
 	#end
 	
 	
-	public function uploadFromVector (data:Array<Float>, startVertex:Int, numVertices:Int):Void {
+	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
 		var bytesPerVertex = data32PerVertex * 4;
 		
@@ -95,6 +95,8 @@ class VertexBuffer3D {
 		#end
 		
 		GL.bufferData (GL.ARRAY_BUFFER, float32Array, GL.STATIC_DRAW);
+		
+		float32Array = null;
 		
 	}
 	

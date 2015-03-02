@@ -1,4 +1,4 @@
-package openfl._v2.net; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.net; #if lime_legacy
 
 
 import haxe.io.Eof;

@@ -1,4 +1,4 @@
-package openfl._v2.media; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.media; #if lime_legacy
 
 
 import openfl.events.Event;
@@ -6,6 +6,7 @@ import openfl.events.EventDispatcher;
 import openfl.events.SampleDataEvent;
 import openfl._v2.media.Sound;
 import openfl.media.SoundTransform;
+import openfl.utils.ByteArray;
 import openfl.Lib;
 
 #if (!audio_thread_disabled && !emscripten)
@@ -27,6 +28,7 @@ class SoundChannel extends EventDispatcher {
 	
 	public var leftPeak (get, null):Float;
 	public var rightPeak (get, null):Float;
+	public var pitch (get, set):Float;
 	public var position (get, set):Float;
 	public var soundTransform (get, set):SoundTransform;
 	
@@ -35,8 +37,11 @@ class SoundChannel extends EventDispatcher {
 	
 	@:noCompletion public var __dataProvider:EventDispatcher;
 	@:noCompletion private var __handle:Dynamic;
+	@:noCompletion private var __pitch:Float = 1;
 	@:noCompletion public var __soundInstance:Sound;
 	@:noCompletion private var __transform:SoundTransform;
+	
+	@:noCompletion private var __dynamicBytes:ByteArray = null;
 	
 	#if (!audio_thread_disabled && !emscripten)
 		
@@ -52,7 +57,7 @@ class SoundChannel extends EventDispatcher {
 	#end	
 	
 
-	public function new (handle:Dynamic, startTime:Float, loops:Int, soundTransform:SoundTransform) {
+	public function new (handle:Dynamic = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null) {
 		
 		super ();
 
@@ -87,6 +92,12 @@ class SoundChannel extends EventDispatcher {
 		
 		__dynamicSoundCount ++;
 		
+		// Get the next samples so we can feed the ByteArray immediately when asked
+		var request = new SampleDataEvent (SampleDataEvent.SAMPLE_DATA);
+		request.position = lime_sound_channel_get_data_position (handle);
+		dataProvider.dispatchEvent (request);
+		result.__dynamicBytes = request.data;
+		
 		return result;
 		
 	}
@@ -120,13 +131,15 @@ class SoundChannel extends EventDispatcher {
 				
 				var request = new SampleDataEvent (SampleDataEvent.SAMPLE_DATA);
 				request.position = lime_sound_channel_get_data_position (__handle);
-				__dataProvider.dispatchEvent (request);
 				
-				if (request.data.length > 0) {
+				if (__dynamicBytes.length > 0) {
 					
-					lime_sound_channel_add_data (__handle, request.data);
+					lime_sound_channel_add_data (__handle, __dynamicBytes);
 					
 				}
+				
+				__dataProvider.dispatchEvent (request);
+				__dynamicBytes = request.data;
 				
 			}
 			
@@ -262,6 +275,8 @@ class SoundChannel extends EventDispatcher {
 	
 	private function get_leftPeak ():Float { return lime_sound_channel_get_left (__handle); }
 	private function get_rightPeak ():Float { return lime_sound_channel_get_right (__handle); }
+	private function get_pitch ():Float { return __pitch; }
+	private function set_pitch (value:Float):Float { lime_sound_channel_set_pitch (__handle, value); return __pitch = value; }
 	private function get_position ():Float { return lime_sound_channel_get_position (__handle); }
 	private function set_position (value:Float):Float { return lime_sound_channel_set_position (__handle, position); }
 	
@@ -305,6 +320,7 @@ class SoundChannel extends EventDispatcher {
 	private static var lime_sound_channel_stop = Lib.load ("lime", "lime_sound_channel_stop", 1);
 	private static var lime_sound_channel_create = Lib.load ("lime", "lime_sound_channel_create", 4);
 	private static var lime_sound_channel_set_transform = Lib.load ("lime", "lime_sound_channel_set_transform", 2);
+	private static var lime_sound_channel_set_pitch = Lib.load ("lime", "lime_sound_channel_set_pitch", 2);
 	private static var lime_sound_channel_needs_data = Lib.load ("lime", "lime_sound_channel_needs_data", 1);
 	private static var lime_sound_channel_add_data = Lib.load ("lime", "lime_sound_channel_add_data", 2);
 	

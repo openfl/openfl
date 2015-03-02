@@ -1,4 +1,4 @@
-package openfl._v2; #if (!flash && !html5 && !openfl_next)
+package openfl._v2; #if lime_legacy
 
 
 import openfl.display.BitmapData;
@@ -137,6 +137,20 @@ class Lib {
 	}
 	
 	
+	macro public static function defined (haxedef:String):Bool {
+		
+		return false;
+		
+	}
+	
+	
+	macro public static function definedValue (haxedef:String):String {
+		
+		return null;
+		
+	}
+	
+	
 	static private function findHaxeLib (library:String):String {
 		
 		try {
@@ -207,7 +221,17 @@ class Lib {
 		
 		__moduleNames.set (library, library);
 		
+		#if blackberry
+		var result:Dynamic = tryLoad ("/app/native/" + library, library, method, args);
+		
+		if (result == null) {
+			
+			result = tryLoad ("./" + library, library, method, args);
+			
+		}
+		#else
 		var result:Dynamic = tryLoad ("./" + library, library, method, args);
+		#end
 		
 		if (result == null) {
 			
@@ -224,15 +248,15 @@ class Lib {
 		if (result == null) {
 			
 			var slash = (sysName ().substr (7).toLowerCase () == "windows") ? "\\" : "/";
-			var haxelib = findHaxeLib ("openfl-native");
+			var haxelib = findHaxeLib ("lime");
 			
 			if (haxelib != "") {
 				
-				result = tryLoad (haxelib + slash + "ndll" + slash + sysName () + slash + library, library, method, args);
+				result = tryLoad (haxelib + slash + "legacy" + slash + "ndll" + slash + sysName () + slash + library, library, method, args);
 				
 				if (result == null) {
 					
-					result = tryLoad (haxelib + slash + "ndll" + slash + sysName() + "64" + slash + library, library, method, args);
+					result = tryLoad (haxelib + slash + "legacy" + slash + "ndll" + slash + sysName() + "64" + slash + library, library, method, args);
 					
 				}
 				
@@ -440,9 +464,11 @@ class Lib {
 	
 	
 	static public function getTimer ():Int {
-		
-		return Std.int (Timer.stamp() * 1000.0);
-		
+		#if neko
+		return Std.int ( ( Timer.stamp() % 0x7ffff ) * 1000.0);	
+		#else
+		return Std.int ( Timer.stamp() * 1000.0);	
+		#end
 	}
 	
 	

@@ -702,15 +702,15 @@ class DefaultAssetLibrary extends AssetLibrary {
 #if (windows || mac || linux)
 
 ::if (assets != null)::
-::foreach assets::::if (embed)::::if (type == "image")::@:bitmap("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.display.BitmapData {}
-::elseif (type == "sound")::@:sound("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.media.Sound {}
-::elseif (type == "music")::@:sound("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.media.Sound {}
-::elseif (type == "font")::@:font("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.text.Font {}
-::else::@:file("::sourcePath::") #if display private #end class __ASSET__::flatName:: extends flash.utils.ByteArray {}
+::foreach assets::::if (embed)::::if (type == "image")::@:bitmap("::sourcePath::") @:keep #if display private #end class __ASSET__::flatName:: extends flash.display.BitmapData {}
+::elseif (type == "sound")::@:sound("::sourcePath::") @:keep #if display private #end class __ASSET__::flatName:: extends flash.media.Sound {}
+::elseif (type == "music")::@:sound("::sourcePath::") @:keep #if display private #end class __ASSET__::flatName:: extends flash.media.Sound {}
+::elseif (type == "font")::@:font("::sourcePath::") @:keep #if display private #end class __ASSET__::flatName:: extends flash.text.Font {}
+::else::@:file("::sourcePath::") @:keep #if display private #end class __ASSET__::flatName:: extends flash.utils.ByteArray {}
 ::end::::end::::end::::end::
 
 ::if (assets != null)::
-::foreach assets::::if (!embed)::::if (type == "font")::class __ASSET__::flatName:: extends openfl.text.Font { public function new () { super (); __fontPath = "::targetPath::"; fontName = "::fontName::"; }}
+::foreach assets::::if (!embed)::::if (type == "font")::@:keep class __ASSET__::flatName:: extends openfl.text.Font { public function new () { super (); __fontPath = "::targetPath::"; fontName = "::fontName::"; }}
 ::end::::end::::end::::end::
 
 #else

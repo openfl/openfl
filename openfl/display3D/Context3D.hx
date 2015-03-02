@@ -39,8 +39,6 @@ class Context3D {
 	private var blendEnabled:Bool; // to mimic Stage3d behavior of keeping blending across frames:
 	private var blendSourceFactor:Int; // to mimic Stage3d behavior of keeping blending across frames:
 	private var currentProgram:Program3D;
-	private var depthbuffer:GLRenderbuffer;
-	private var defaultFrameBuffer:GLFramebuffer;
 	private var disposed:Bool;
 	private var drawing:Bool; // to mimic Stage3d behavior of not allowing calls to drawTriangles between present and clear
 	private var framebuffer:GLFramebuffer;
@@ -56,12 +54,14 @@ class Context3D {
 	private var stencilReadMask:Int;
 	private var texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
 	private var vertexBuffersCreated:Array<VertexBuffer3D>; // to keep track of stuff to dispose when calling dispose
-	
+	private var _yFlip:Float;
 	
 	public function new () {
 		
 		disposed = false;
 		
+		_yFlip = 1;
+
 		vertexBuffersCreated = new Array ();
 		indexBuffersCreated = new Array ();
 		programsCreated = new Array ();
@@ -71,7 +71,7 @@ class Context3D {
 		for (i in 0...MAX_SAMPLERS) {
 			
 			samplerParameters[i] = new SamplerState ();
-			samplerParameters[i].wrap = Context3DWrapMode.REPEAT;
+			samplerParameters[i].wrap = Context3DWrapMode.CLAMP;
 			samplerParameters[i].filter = Context3DTextureFilter.LINEAR;
 			samplerParameters[i].mipfilter =Context3DMipFilter.MIPNONE;
 			
@@ -85,12 +85,7 @@ class Context3D {
 		ogl.width = stage.stageWidth;
 		ogl.height = stage.stageHeight;
 		
-		//todo html something 
-		//#if html5
-		//stage.addChild(ogl);
-		//#else
 		stage.addChildAt(ogl, 0);
-		//#end
 		
 	}
 	
@@ -104,7 +99,9 @@ class Context3D {
 		 	
 		}
 		
-		//GL.depthMask (true);
+		#if (cpp || neko)
+		GL.depthMask (true);
+		#end
 		GL.clearColor (red, green, blue, alpha);
 		GL.clearDepth (depth);
 		GL.clearStencil (stencil);
@@ -126,6 +123,8 @@ class Context3D {
 		
 		// TODO use antiAlias parameter
 		ogl.scrollRect = new Rectangle (0, 0, width, height);
+		ogl.width = width;
+		ogl.height = height;
 		scrollRect = ogl.scrollRect.clone ();
 		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
 		
@@ -253,6 +252,9 @@ class Context3D {
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
+		var location:GLUniformLocation = GL.getUniformLocation (currentProgram.glProgram, "yflip");
+		GL.uniform1f (location, this._yFlip);
+
 		if (!drawing) {
 			
 			throw new Error ("Need to clear before drawing if the buffer has not been cleared since the last present() call.");
@@ -287,6 +289,18 @@ class Context3D {
 		GL.bindBuffer (GL.ARRAY_BUFFER, null);
 		GL.disable (GL.CULL_FACE);
 		
+		if (framebuffer != null) {
+
+			GL.bindFramebuffer (GL.FRAMEBUFFER, null);
+
+		}
+		
+		if (renderbuffer != null) {
+
+			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
+
+		}
+
 	}
 	
 	
@@ -341,6 +355,29 @@ class Context3D {
 			
 		}
 		
+		switch (triangleFaceToCull) {
+			
+			case Context3DTriangleFace.FRONT:
+				
+				this._yFlip = -1;
+			
+			case Context3DTriangleFace.BACK:
+				
+				this._yFlip = 1; // checked
+			
+			case Context3DTriangleFace.FRONT_AND_BACK:
+				
+				this._yFlip = 1;
+			
+			case Context3DTriangleFace.NONE:
+				
+				this._yFlip = 1; // checked
+			
+			default:
+				
+				throw "Unknown culling mode " + triangleFaceToCull + ".";
+ 			
+ 		}
 	}
 	
 	
@@ -354,14 +391,9 @@ class Context3D {
 	}
 	
 	
-	public function setGLSLProgramConstantsFromByteArray (locationName:String, data:ByteArray, byteArrayOffset:Int = -1):Void {
+	public function setGLSLProgramConstantsFromByteArray (locationName:String, data:ByteArray, byteArrayOffset:Int = 0):Void {
 		
-		if (byteArrayOffset != -1) {
-			
-			data.position = byteArrayOffset;
-			
-		}
-		
+		data.position = byteArrayOffset;
 		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniform4f (location, data.readFloat (), data.readFloat (), data.readFloat (), data.readFloat ());
 		
@@ -440,7 +472,7 @@ class Context3D {
 			
 		} else {
 			
-			setTextureParameters (texture, Context3DWrapMode.REPEAT, Context3DTextureFilter.NEAREST, Context3DMipFilter.MIPNONE);
+			setTextureParameters (texture, Context3DWrapMode.CLAMP, Context3DTextureFilter.NEAREST, Context3DMipFilter.MIPNONE);
 			
 		}
 		
@@ -456,7 +488,10 @@ class Context3D {
 			if (location > -1) {
 				
 				GL.disableVertexAttribArray (location);
-				//GL.bindBuffer (GL.ARRAY_BUFFER, null);
+				
+				#if (cpp || neko)
+				GL.bindBuffer (GL.ARRAY_BUFFER, null);
+				#end
 				
 			}
 			
@@ -521,7 +556,7 @@ class Context3D {
 			glProgram = program3D.glProgram;
 			
 		}
-		
+
 		GL.useProgram (glProgram);
 		currentProgram = program3D;
 		//TODO reset bound textures, buffers... ?
@@ -546,9 +581,22 @@ class Context3D {
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
-		var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister);
-		setProgramConstantsFromVector (programType, firstRegister, matrix.rawData, 16);
+		// var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister);
+		// setProgramConstantsFromVector (programType, firstRegister, matrix.rawData, 16);
 		
+		var d = matrix.rawData;
+		if (transposedMatrix) {
+			this.setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[4], d[8], d[12] ], 1);  
+			this.setProgramConstantsFromVector(programType, firstRegister + 1, [ d[1], d[5], d[9], d[13] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 2, [ d[2], d[6], d[10], d[14] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 3, [ d[3], d[7], d[11], d[15] ], 1);
+		} else {
+			this.setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[1], d[2], d[3] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 1, [ d[4], d[5], d[6], d[7] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 2, [ d[8], d[9], d[10], d[11] ], 1);
+			this.setProgramConstantsFromVector(programType, firstRegister + 3, [ d[12], d[13], d[14], d[15] ], 1);
+		}
+
 	}
 	
 	
@@ -576,8 +624,22 @@ class Context3D {
 	
 	public function setRenderToBackBuffer ():Void {
 		
-		GL.bindFramebuffer (GL.FRAMEBUFFER, defaultFrameBuffer);
+		GL.disable (GL.DEPTH_TEST);
+		GL.disable (GL.STENCIL_TEST);
+		GL.disable (GL.SCISSOR_TEST);
+
+		if (framebuffer != null) {
+
+			GL.bindFramebuffer (GL.FRAMEBUFFER, null);
+
+		}
 		
+		if (renderbuffer != null) {
+
+			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
+
+		}
+
 	}
 	
 	
@@ -600,23 +662,28 @@ class Context3D {
 		}
 		
 		GL.bindRenderbuffer (GL.RENDERBUFFER, renderbuffer);
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		#if ios
+		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
+		#else
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);
+		#end
 		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.glTexture, 0);
+
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, renderbuffer);
 		
 		if (enableDepthAndStencil) {
 			
 			GL.enable (GL.DEPTH_TEST);
 			GL.enable (GL.STENCIL_TEST);
-			
-			GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, renderbuffer);
-			
 		}
 		
 		GL.bindTexture (GL.TEXTURE_2D, texture.glTexture);
 		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, texture.width, texture.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
 		
 		GL.viewport (0, 0, texture.width, texture.height);
-		
 	}
 	
 	
@@ -651,7 +718,7 @@ class Context3D {
 		}
 		
 		GL.enable (GL.SCISSOR_TEST);
-		GL.scissor (Std.int (rectangle.x), Std.int (scrollRect.height - rectangle.y - rectangle.height), Std.int (rectangle.width), Std.int (rectangle.height));
+		GL.scissor (Std.int (rectangle.x), Std.int (rectangle.y), Std.int (rectangle.width), Std.int (rectangle.height));
 		
 	}
 	
@@ -688,11 +755,19 @@ class Context3D {
 		
 		if (!anisotropySupportTested) {
 			
+			#if lime_legacy
+			
+			supportsAnisotropy = (GL.getSupportedExtensions ().indexOf ("GL_EXT_texture_filter_anisotropic") != -1);
+			
+			#else
+			
 			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
 			if (ext == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
 			if (ext == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
-			
 			supportsAnisotropy = (ext != null);
+			
+			#end
+			
 			anisotropySupportTested = true;
 			
 			GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
@@ -702,7 +777,9 @@ class Context3D {
 		
 		if (Std.is (texture, Texture)) {
 			
-			//GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
+			#if (cpp || neko)
+			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
+			#end
 			
 			switch (wrap) {
 				
@@ -777,7 +854,10 @@ class Context3D {
 			
 		} else if (Std.is (texture, RectangleTexture)) {
 			
-			//GL.bindTexture (GL.TEXTURE_2D, cast(texture, RectangleTexture).glTexture);
+			#if (cpp || neko)
+			GL.bindTexture (GL.TEXTURE_2D, cast(texture, RectangleTexture).glTexture);
+			#end
+			
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 			
@@ -821,7 +901,9 @@ class Context3D {
 			
 		} else if (Std.is (texture, CubeTexture)) {
 			
-			//GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture);
+			#if (cpp || neko)
+			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture);
+			#end
 			
 			switch (wrap) {
 				
@@ -962,104 +1044,6 @@ private class SamplerState {
 	
 }
 
-
-class AGLSLContext3D extends Context3D {
-	
-	
-	private var _yFlip:Float;
-	
-	
-	public function new () {
-		
-		super ();
-		
-		_yFlip = -1;
-		
-	}
-	
-	
-	override public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
-		
-		var location:GLUniformLocation = GL.getUniformLocation (currentProgram.glProgram, "yflip");
-		GL.uniform1f (location, this._yFlip);
-		super.drawTriangles (indexBuffer, firstIndex, numTriangles);
-		
-	}
-	
-	
-	override public function present ():Void {
-		
-		#if html5
-		this.drawing = false;
-		#else
-		super.present ();
-		#end
-		
-	}
-	
-	
-	override public function setCulling (triangleFaceToCull:Int):Void {
-		
-		super.setCulling (triangleFaceToCull); 
-		
-		switch (triangleFaceToCull) {
-			
-			case Context3DTriangleFace.FRONT:
-				
-				this._yFlip = -1;
-			
-			case Context3DTriangleFace.BACK:
-				
-				this._yFlip = 1; // checked
-			
-			case Context3DTriangleFace.FRONT_AND_BACK:
-				
-				this._yFlip = 1;
-			
-			case Context3DTriangleFace.NONE:
-				
-				this._yFlip = 1; // checked
-			
-			default:
-				
-				throw "Unknown culling mode " + triangleFaceToCull + ".";
-			
-		}
-		
-	}
-	
-	
-	/**
-	 * A openfl.geom.Matrix3D equivalent of the current Matrix
-	 */
-	override public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
-		
-		//todo
-		var d = matrix.rawData;
-		
-		if (transposedMatrix) {
-			
-			this.setProgramConstantsFromVector (programType, firstRegister, [ d[0], d[4], d[8], d[12] ], 1);  
-			this.setProgramConstantsFromVector (programType, firstRegister + 1, [ d[1], d[5], d[9], d[13] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 2, [ d[2], d[6], d[10], d[14] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 3, [ d[3], d[7], d[11], d[15] ], 1);
-			
-		} else {
-			
-			this.setProgramConstantsFromVector (programType, firstRegister, [ d[0], d[1], d[2], d[3] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 1, [ d[4], d[5], d[6], d[7] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 2, [ d[8], d[9], d[10], d[11] ], 1);
-			this.setProgramConstantsFromVector (programType, firstRegister + 3, [ d[12], d[13], d[14], d[15] ], 1);
-			
-		}
-		
-	}
-	
-	
-}
- 
-
-
 #else
-typedef Context3D = flash.display.Context3D;
+typedef Context3D = flash.display3D.Context3D;
 #end

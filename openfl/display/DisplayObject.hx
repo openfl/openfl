@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if (display || openfl_next || js)
+package openfl.display; #if !flash #if !lime_legacy
 
 
 import openfl._internal.renderer.RenderSession;
@@ -21,9 +21,6 @@ import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.html.Element;
 #end
-
-@:access(openfl.events.Event)
-@:access(openfl.display.Stage)
 
 
 /**
@@ -155,6 +152,11 @@ import js.html.Element;
  *                         display is not rendering. This is the case when the
  *                         content is either minimized or obscured. </p>
  */
+
+@:access(openfl.events.Event)
+@:access(openfl.display.Stage)
+
+
 class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
@@ -741,13 +743,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		super ();
 		
-		alpha = 1;
-		rotation = 0;
-		scaleX = 1;
-		scaleY = 1;
-		visible = true;
-		x = 0;
-		y = 0;
+		__alpha = 1;
+		__rotation = 0;
+		__scaleX = 1;
+		__scaleY = 1;
+		__visible = true;
+		__x = 0;
+		__y = 0;
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
@@ -1008,20 +1010,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getTransform ():Matrix {
 		
-		if (__worldTransformDirty > 0) {
+		if (__transformDirty || __worldTransformDirty > 0) {
 			
 			var list = [];
 			var current = this;
 			var transformDirty = __transformDirty;
 			
-			while (current.parent != null) {
+			if (parent == null) {
 				
-				list.push (current);
-				current = current.parent;
+				if (transformDirty) __update (true, false);
 				
-				if (current.__transformDirty) {
+			} else {
+				
+				while (current.parent != null) {
 					
-					transformDirty = true;
+					list.push (current);
+					current = current.parent;
+					
+					if (current.__transformDirty) {
+						
+						transformDirty = true;
+						
+					}
 					
 				}
 				
@@ -1145,12 +1155,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			var parentTransform = parent.__worldTransform;
 			
-			var a00 = __rotationCosine * scaleX,
-			a01 = __rotationSine * scaleX,
-			a10 = -__rotationSine * scaleY,
-			a11 = __rotationCosine * scaleY,
-			b00 = parentTransform.a, b01 = parentTransform.b,
-			b10 = parentTransform.c, b11 = parentTransform.d;
+			var a00 = __rotationCosine * scaleX;
+			var a01 = __rotationSine * scaleX;
+			var a10 = -__rotationSine * scaleY;
+			var a11 = __rotationCosine * scaleY;
+			var b00 = parentTransform.a;
+			var b01 = parentTransform.b;
+			var b10 = parentTransform.c;
+			var b11 = parentTransform.d;
+			
+			if (__worldTransform == null) __worldTransform = new Matrix ();
 			
 			__worldTransform.a = a00 * b00 + a01 * b10;
 			__worldTransform.b = a00 * b01 + a01 * b11;

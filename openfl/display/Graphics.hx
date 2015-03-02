@@ -1,10 +1,11 @@
-package openfl.display; #if !flash #if (display || openfl_next || js)
+package openfl.display; #if !flash #if !lime_legacy
 
 
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
+import openfl.display.GraphicsPathCommand;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -450,7 +451,37 @@ class Graphics {
 	 */
 	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = null):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawPath");
+		var dataIndex = 0;
+		
+		for (command in commands) {
+			
+			switch (command) {
+				
+				case GraphicsPathCommand.MOVE_TO:
+					
+					moveTo (data[dataIndex], data[dataIndex + 1]);	
+					dataIndex += 2;
+					
+				case GraphicsPathCommand.LINE_TO:
+					
+					lineTo (data[dataIndex], data[dataIndex + 1]);
+					dataIndex += 2;
+					
+				case GraphicsPathCommand.CURVE_TO:
+					
+					curveTo (data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3]);
+					dataIndex += 4;
+					
+				case GraphicsPathCommand.CUBIC_CURVE_TO:
+					
+					cubicCurveTo (data[dataIndex], data[dataIndex + 1], data[dataIndex + 2], data[dataIndex + 3], data[dataIndex + 4], data[dataIndex + 5]);
+					dataIndex += 6;
+				
+				default:
+				
+			}
+			
+		}
 		
 	}
 	
@@ -1119,22 +1150,25 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					tile = sheet.__tileRects[tileID];
 					tileUV = sheet.__tileUVs[tileID];
 					tilePoint = sheet.__centerPoints[tileID];
-				}
-				else if (useRect)
-				{
+					
+				} else if (useRect) {
+					
 					tile = sheet.__rectTile;
-					tile.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+					tile.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
 					tileUV = sheet.__rectUV;
-					tileUV.setTo(tile.x / sheet.__bitmap.width, tile.y / sheet.__bitmap.height, tile.right / sheet.__bitmap.width, tile.bottom / sheet.__bitmap.height);
+					tileUV.setTo (tile.x / sheet.__bitmap.width, tile.y / sheet.__bitmap.height, tile.right / sheet.__bitmap.width, tile.bottom / sheet.__bitmap.height);
 					tilePoint = sheet.__point;
-					if (useOrigin)
-					{
-						tilePoint.setTo(tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+					
+					if (useOrigin) {
+						
+						tilePoint.setTo (tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+						
+					} else {
+						
+						tilePoint.setTo (0, 0);
+						
 					}
-					else
-					{
-						tilePoint.setTo(0, 0);
-					}
+					
 				}
 				
 				if (useTransform) {
@@ -1167,22 +1201,28 @@ abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.d
 					
 					if (rotation != 0) {
 						
-						var kx = tilePoint.x * tileWidth;
-						var ky = tilePoint.y * tileHeight;
-						var akx = (1 - tilePoint.x) * tileWidth;
-						var aky = (1 - tilePoint.y) * tileHeight;
 						var ca = Math.cos (rotation);
 						var sa = Math.sin (rotation);
-						var xc = kx * sa, xs = kx * ca, yc = ky * sa, ys = ky * ca;
-						var axc = akx * sa, axs = akx * ca, ayc = aky * sa, ays = aky * ca;
-						vertices[offset8] = x - (xc + ys);
-						vertices[offset8 + 1] = y - (-xs + yc);
-						vertices[offset8 + 2] = x + axc - ys;
-						vertices[offset8 + 3] = y - (axs + yc);
-						vertices[offset8 + 4] = x - (xc - ays);
-						vertices[offset8 + 5] = y + xs + ayc;
-						vertices[offset8 + 6] = x + axc + ays;
-						vertices[offset8 + 7] = y + (-axs + ayc);
+						var tw = tile.width;
+						var th = tile.height;
+						var t0 = ca;
+						var t1 = sa;
+						var t2 = -sa;
+						var t3 = ca;
+						var ox = tilePoint.x * tw;
+						var oy = tilePoint.y * th;
+						var ox_ = ox * t0 + oy * t2;
+						oy = ox * t1 + oy * t3;
+						x -= ox_;
+						y -= oy;
+						vertices[offset8] = x;
+						vertices[offset8 + 1] = y;
+						vertices[offset8 + 2] = x + tw * t0;
+						vertices[offset8 + 3] = y + tw * t1;
+						vertices[offset8 + 4] = x + th * t2;
+						vertices[offset8 + 5] = y + th * t3;
+						vertices[offset8 + 6] = x + tw * t0 + th * t2;
+						vertices[offset8 + 7] = y + tw * t1 + th * t3;
 						
 					} else {
 						

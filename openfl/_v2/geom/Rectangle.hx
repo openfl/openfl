@@ -1,4 +1,4 @@
-package openfl._v2.geom; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.geom; #if lime_legacy
 
 
 class Rectangle {

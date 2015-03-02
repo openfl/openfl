@@ -28,6 +28,18 @@ class Texture extends TextureBase {
 		
 		super (glTexture, width, height);
 		
+		#if (cpp || neko)
+		if (optimizeForRenderToTexture) { 
+			
+			GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1); 
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+			
+		}
+		#end
+		
 	}
 	
 	
@@ -40,7 +52,16 @@ class Texture extends TextureBase {
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
 		
-		var p = bitmapData.getPixels (new Rectangle (0, 0, bitmapData.width, bitmapData.height));
+		// TODO: Support upload from UInt8Array directly
+		
+		#if lime_legacy
+		var p = BitmapData.getRGBAPixels (bitmapData);
+		#elseif js
+		var p = ByteArray.__ofBuffer (@:privateAccess (bitmapData.__image).data.buffer);
+		#else
+		var p = @:privateAccess (bitmapData.__image).data.buffer;
+		#end
+		
 		width = bitmapData.width;
 		height = bitmapData.height;
 		uploadFromByteArray (p, 0, miplevel);
@@ -62,6 +83,7 @@ class Texture extends TextureBase {
 			
 		}
 		
+		#if (js && html5)
 		var source = new UInt8Array (data.length);
 		data.position = byteArrayOffset;
 		
@@ -73,6 +95,9 @@ class Texture extends TextureBase {
 			i++;
 			
 		}
+		#else
+		var source = new UInt8Array (data);
+		#end
 		
 		GL.texImage2D (GL.TEXTURE_2D, miplevel, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
 		GL.bindTexture (GL.TEXTURE_2D, null);
@@ -84,5 +109,5 @@ class Texture extends TextureBase {
 
 
 #else
-typedef Texture = openfl.display3D.textures.Texture;
+typedef Texture = flash.display3D.textures.Texture;
 #end

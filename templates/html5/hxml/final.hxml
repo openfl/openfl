@@ -6,3 +6,4 @@
 -dce full
 -D final
 -D js-flatten
+-dce full

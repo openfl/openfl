@@ -1,4 +1,4 @@
-package openfl._v2.ui; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.ui; #if lime_legacy
 
 
 import openfl.ui.MultitouchInputMode;

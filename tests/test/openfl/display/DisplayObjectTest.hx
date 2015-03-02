@@ -73,7 +73,7 @@ class DisplayObjectTest {
 	}
 	
 	
-	@Test public function loaderInfo () {
+	#if !lime_legacy @Ignore #end @Test public function loaderInfo () {
 		
 		// TODO: Confirm functionality
 		

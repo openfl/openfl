@@ -1,4 +1,4 @@
-package openfl._v2.events; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.events; #if lime_legacy
 
 
 class KeyboardEvent extends Event {

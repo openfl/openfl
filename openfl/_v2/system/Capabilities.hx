@@ -1,6 +1,8 @@
-package openfl._v2.system; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.system; #if lime_legacy
 
 
+import haxe.macro.Compiler;
+import openfl.system.TouchscreenType;
 import openfl.Lib;
 
 
@@ -38,8 +40,8 @@ class Capabilities {
 	public static var serverString (default, null) = ""; // TODO
 	public static var supports32BitProcesses (default, null) = #if sys true #else false #end;
 	public static var supports64BitProcesses (default, null) = #if desktop true #else false #end; // TODO
-	public static var touchscreenType (default, null) = "finger"; // TODO
-	public static var version (default, null) = ""; // TODO
+	public static var touchscreenType (default, null) = TouchscreenType.FINGER; // TODO
+	public static var version (get, null):String; // TODO
 	
 	public static var screenModes (get, null):Array<ScreenMode>;
 	public static var screenResolutions (get, null):Array<Array<Int>>;
@@ -181,6 +183,37 @@ class Capabilities {
 
 		return out;
 	}
+	
+	
+	private static function get_version () {
+		
+		#if windows
+		var value = "WIN";
+		#elseif mac
+		var value = "MAC";
+		#elseif linux
+		var value = "LNX";
+		#elseif ios
+		var value = "IOS";
+		#elseif android
+		var value = "AND";
+		#elseif blackberry
+		var value = "QNX";
+		#else
+		var value = "OFL";
+		#end
+		
+		if (Compiler.getDefine ("openfl") != null) {
+			
+			value += " " + StringTools.replace (Compiler.getDefine ("openfl"), ".", ",") + ",0";
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
 	
 	
 	// Native Methods

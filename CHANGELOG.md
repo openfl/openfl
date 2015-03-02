@@ -1,4 +1,110 @@
-2.2.2 (01/02/2014)
+2.2.7 (02/20/2015)
+------------------
+
+#### General
+
+* Added TILE_BLEND_SUBTRACT to drawTiles
+* Fixed issue calling "openfl" from a batch file
+
+#### HTML5, Native (next)
+
+* Updated the style of the default preloader
+* Improved handling of HTML5 loaderInfo.url
+* Improved calculation of HTML5 TextField height
+* Restored support for displayObject.mask in HTML5
+* Fixed difficulty changing stage align/scaleMode
+
+
+2.2.6 (02/13/2015)
+------------------
+
+#### General
+
+* Fixed regression in HTML5 font asset embedding
+* Minor Stage3D improvements
+
+#### HTML5, Native (next)
+
+* Added support for Emscripten
+* Improved handling of conflicting main class names
+
+
+2.2.5 (02/11/2015)
+------------------
+
+#### General
+
+* Improved documentation
+* Implemented Capabilities.version
+* Switched to Lime 2.1 System.getTimer where appropriate
+* Improved Stage3D render-to-texture support
+* Switched #if lime_legacy to #if !openfl_next, internally
+
+#### HTML5, Native (next)
+
+* Fixed conflicts with projects that use an "app" package
+* Added initial alpha support for transform.colorTransform
+
+#### Native (v2)
+
+* Fixed support for the BlackBerry 10.3 simulator
+* Fixed SAMPLE_DATA sounds on Android
+* Fixed bindFramebuffer (null) behavior on iOS
+* Improved the behavior of GL.getParameter
+
+
+2.2.4 (01/22/2015)
+------------------
+
+#### General
+
+* Added bitmapData.encode
+* Added transform.matrix3D (using 2D matrix values for now)
+* Added openfl.system.TouchscreenType
+* Updated Sound.js, added error event dispatching for it
+* Improved compatibility for the Stage3D layer
+
+#### HTML5, Native (next)
+
+* Combined js-flatten, DCE full and -minify for "html5 -final"
+* Added graphics.drawPath
+* Added graphics.lineStyle with alpha support to canvas
+* Added support for Tilesheet.TILE_BLEND_ADD in canvas
+* Improved bitmapData.getVector performance
+* Fixed the event.target in Event.ADDED events
+
+#### Native (v2)
+
+* Reverted the Int32 change in bitmapData.getPixel32
+* Improved Lib.getTimer on Neko
+* Fixed sprite.getBounds (null)
+
+
+2.2.3 (01/13/2015)
+------------------
+
+#### General
+
+* Merged in the Away3D compatibility layer for Stage3D
+* Added support for creating new empty SoundChannel instances
+* Added support for bitmapData.merge()
+* Improved compatibility with Haxe dead-code elimination
+
+#### HTML5, Native (next)
+
+* Improved the correctness of getPixels/setPixels
+* Improved text align for HTML5 canvas TextField
+* Fixed a minor issue in the Flash/HTML5 preloader
+
+#### Native (v2)
+
+* Added Event.COMPLETE/IOErrorEvent.IO_ERROR events to Sound
+* Fixed large bitmapData.getPixel32() values on Neko
+* Fixed the color order for getRGBAPixels
+* Improved the load order for native fonts
+
+
+2.2.2 (01/02/2015)
 ------------------
 
 #### HTML5, Native (next)
@@ -7,7 +113,7 @@
 * Fixed an error in Graphics.lineStyle on Neko
 
 
-2.2.1 (01/01/2014)
+2.2.1 (01/01/2015)
 ------------------
 
 #### HTML5, Native (next)

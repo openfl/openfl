@@ -1,4 +1,4 @@
-package openfl._v2.filters; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.filters; #if lime_legacy
 
 
 class BlurFilter extends BitmapFilter {

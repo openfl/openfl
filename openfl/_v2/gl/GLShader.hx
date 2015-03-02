@@ -1,4 +1,4 @@
-package openfl._v2.gl; #if (!flash && !html5 && !openfl_next)
+package openfl._v2.gl; #if lime_legacy
 
 
 class GLShader extends GLObject {
@@ -14,6 +14,13 @@ class GLShader extends GLObject {
 	override private function getType ():String {
 		
 		return "Shader";
+		
+	}
+	
+	
+	public override function isValid ():Bool {
+		
+		return id != 0 && id != null && version == GL.version;
 		
 	}
 	

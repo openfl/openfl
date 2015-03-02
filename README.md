@@ -1,5 +1,7 @@
-[![Stories in Ready](https://badge.waffle.io/openfl/openfl.png?label=ready)](https://waffle.io/openfl/openfl)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/travis/openfl/openfl.svg?style=flat)](https://travis-ci.org/openfl/openfl)
 
+
+<br />
 <p align="center"><img src="openfl.png"/></p>
 
 
@@ -67,9 +69,9 @@ Plugins have been written for many [code editors](http://haxe.org/com/ide), but 
 Easy Deployment
 ===============
 
-OpenFL is powered by [Aether](https://github.com/openfl/aether), which includes powerful command-line tools to make cross-platform deployment sensible.
+OpenFL is powered by [Lime](https://github.com/openfl/lime), which includes powerful command-line tools to make cross-platform deployment sensible.
 
-"aether test <target>" is usually all that is required to build, package, install and run your project on the platform of your choice, assuming you have the standard target SDK installed (such as Xcode or Visual Studio C++). Aether includes "setup" commands to even help the install of these standard tools.
+"openfl test <target>" is usually all that is required to build, package, install and run your project on the platform of your choice, assuming you have the standard target SDK installed (such as Xcode or Visual Studio C++). Lime includes "setup" commands to even help the install of these standard tools.
 
 
 3D Support
@@ -95,7 +97,6 @@ Core Components
 
  * [openfl](https://github.com/openfl/openfl)
  * [lime](https://github.com/openfl/lime)
- * [aether](https://github.com/openfl/aether)
  * [hxcpp](https://github.com/HaxeFoundation/hxcpp)
 
 OpenFL relies upon [Lime](https://github.com/openfl/lime), a foundation for easy, cross-platform development.

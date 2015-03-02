@@ -131,6 +131,23 @@ class CanvasTextField {
 				
 				if (textField.__text != null && textField.__text != "") {
 					
+					var text = textField.text;
+					
+					if (textField.displayAsPassword) {
+						
+						var length = text.length;
+						var mask = "";
+						
+						for (i in 0...length) {
+							
+							mask += "*";
+							
+						}
+						
+						text = mask;
+						
+					}
+					
 					var measurements = textField.__measureText ();
 					var textWidth = 0.0;
 					
@@ -170,9 +187,27 @@ class CanvasTextField {
 						
 					}
 					
+					if (textField.__hasFocus && (textField.__selectionStart == textField.__cursorPosition) && textField.__showCursor) {
+						
+						var cursorOffset = textField.__getTextWidth (text.substring (0, textField.__cursorPosition));
+						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
+						context.fillRect (cursorOffset, 5, 1, textField.__textFormat.size - 5);
+						
+					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0 && !textField.__isKeyDown) {
+						
+						var lowPos = Std.int (Math.min (textField.__selectionStart, textField.__cursorPosition));
+						var highPos = Std.int (Math.max (textField.__selectionStart, textField.__cursorPosition));
+						var xPos = textField.__getTextWidth (text.substring (0, lowPos));
+						var widthPos = textField.__getTextWidth (text.substring (lowPos, highPos));
+						
+						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
+						context.fillRect (xPos, 5, widthPos, textField.__textFormat.size - 5);
+						
+					}
+					
 					if (textField.__ranges == null) {
 						
-						renderText (textField, textField.text, textField.__textFormat, 0);
+						renderText (textField, text, textField.__textFormat, 0);
 						
 					} else {
 						
@@ -184,7 +219,7 @@ class CanvasTextField {
 							
 							range = textField.__ranges[i];
 							
-							renderText (textField, textField.text.substring (range.start, range.end), range.format, offsetX);
+							renderText (textField, text.substring (range.start, range.end), range.format, offsetX);
 							offsetX += measurements[i];
 							
 						}

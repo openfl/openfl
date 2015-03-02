@@ -1,16 +1,20 @@
+package;
+
+
 import openfl.display.Sprite;
 import openfl.events.Event;
 
 
-class NMEPreloader extends Sprite
-{
+class NMEPreloader extends Sprite {
+	
+	
 	private var outline:Sprite;
 	private var progress:Sprite;
 	
 	
-	public function new()
-	{
-		super();
+	public function new () {
+		
+		super ();
 		
 		var backgroundColor = getBackgroundColor ();
 		var r = backgroundColor >> 16 & 0xFF;
@@ -26,15 +30,15 @@ class NMEPreloader extends Sprite
 		}
 		
 		var x = 30;
-		var height = 9;
+		var height = 7;
 		var y = getHeight () / 2 - height / 2;
 		var width = getWidth () - x * 2;
 		
-		var padding = 3;
+		var padding = 2;
 		
 		outline = new Sprite ();
-		outline.graphics.lineStyle (1, color, 0.15, true);
-		outline.graphics.drawRoundRect (0, 0, width, height, padding * 2, padding * 2);
+		outline.graphics.beginFill (color, 0.07);
+		outline.graphics.drawRect (0, 0, width, height);
 		outline.x = x;
 		outline.y = y;
 		addChild (outline);
@@ -46,17 +50,19 @@ class NMEPreloader extends Sprite
 		progress.y = y + padding;
 		progress.scaleX = 0;
 		addChild (progress);
+		
 	}
 	
 	
-	public function getBackgroundColor():Int
-	{
+	public function getBackgroundColor ():Int {
+		
 		return ::WIN_BACKGROUND::;
+		
 	}
 	
 	
-	public function getHeight():Float
-	{
+	public function getHeight ():Float {
+		
 		var height = ::WIN_HEIGHT::;
 		
 		if (height > 0) {
@@ -68,11 +74,12 @@ class NMEPreloader extends Sprite
 			return flash.Lib.current.stage.stageHeight;
 			
 		}
+		
 	}
 	
 	
-	public function getWidth():Float
-	{
+	public function getWidth ():Float {
+		
 		var width = ::WIN_WIDTH::;
 		
 		if (width > 0) {
@@ -84,32 +91,37 @@ class NMEPreloader extends Sprite
 			return flash.Lib.current.stage.stageWidth;
 			
 		}
-	}
-	
-	
-	public function onInit()
-	{
 		
 	}
 	
 	
-	public function onLoaded()
-	{
-		dispatchEvent (new Event (Event.COMPLETE));
+	public function onInit () {
+		
+		
+		
 	}
-
 	
-	public function onUpdate(bytesLoaded:Int, bytesTotal:Int)
-	{
+	
+	public function onLoaded () {
+		
+		dispatchEvent (new Event (Event.COMPLETE));
+		
+	}
+	
+	
+	public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
+		
 		var percentLoaded = bytesLoaded / bytesTotal;
 		
-		if (percentLoaded > 1)
-		{
-			percentLoaded == 1;
+		if (percentLoaded > 1) {
+			
+			percentLoaded = 1;
+			
 		}
 		
 		progress.scaleX = percentLoaded;
+		
 	}
-
+	
 	
 }

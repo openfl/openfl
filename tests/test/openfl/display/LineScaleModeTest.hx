@@ -11,7 +11,7 @@ class LineScaleModeTest {
 			case LineScaleMode.HORIZONTAL, LineScaleMode.NONE, LineScaleMode.NORMAL, LineScaleMode.VERTICAL:
 			
 			//TODO: Add fake LineScaleMode.OPENGL value for Flash?
-			#if ((cpp || neko) && !openfl_next)
+			#if lime_legacy
 			case LineScaleMode.OPENGL:
 			#end
 			

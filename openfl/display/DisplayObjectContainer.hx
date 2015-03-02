@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if (display || openfl_next || js)
+package openfl.display; #if !flash #if !lime_legacy
 
 
 import openfl._internal.renderer.RenderSession;
@@ -8,8 +8,6 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-@:access(openfl.events.Event)
 
 
 /**
@@ -33,6 +31,10 @@ import openfl.geom.Rectangle;
  * <p>For more information, see the "Display Programming" chapter of the
  * <i>ActionScript 3.0 Developer's Guide</i>.</p>
  */
+
+@:access(openfl.events.Event)
+
+
 class DisplayObjectContainer extends InteractiveObject {
 	
 	
@@ -156,7 +158,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
-			child.dispatchEvent (new Event (Event.ADDED, true));
+			
+			var event = new Event (Event.ADDED, true);
+			event.target = child;
+			child.dispatchEvent (event);
 			
 		}
 		
@@ -224,7 +229,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
-			child.dispatchEvent (new Event (Event.ADDED, true));
+			
+			var event = new Event (Event.ADDED, true);
+			event.target = child;
+			child.dispatchEvent (event);
 			
 		}
 		
@@ -756,7 +764,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__mask != null) {
 			
-			//renderSession.maskManager.pushMask (__mask);
+			renderSession.maskManager.pushMask (__mask);
 			
 		}
 		
@@ -770,7 +778,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__mask != null) {
 			
-			//renderSession.maskManager.popMask ();
+			renderSession.maskManager.popMask ();
 			
 		}
 		
@@ -787,11 +795,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		//if (!__renderable) return;
 		
-		//if (__mask != null) {
+		if (__mask != null) {
 			
-			//renderSession.maskManager.pushMask (__mask);
+			renderSession.maskManager.pushMask (__mask);
 			
-		//}
+		}
 		
 		// TODO: scrollRect
 		
@@ -813,11 +821,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren = [];
 		
-		//if (__mask != null) {
+		if (__mask != null) {
 			
-			//renderSession.maskManager.popMask ();
+			renderSession.maskManager.popMask ();
 			
-		//}
+		}
 		
 	}
 	
@@ -842,7 +850,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);	
+		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		
+		/*for (child in __children) {
+			
+			child.__renderMask (renderSession);
+			
+		}*/
 		
 	}
 	
