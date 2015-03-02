@@ -1,3 +1,26 @@
+2.2.8 (03/02/2015)
+------------------
+
+#### Flash
+
+* Fixed Tilesheet TILE_ROTATION
+
+#### HTML5, Native (next)
+
+* Added modifier support to keyboard events
+* Added initial MOUSE_OVER/MOUSE_OUT support
+* Added initial SimpleButton support
+* Added initial input TextField support on HTML5
+
+#### Native (v2)
+
+* Added stage.softKeyboardRect for Android
+* Added support for Mac fullscreen keyboard shortcut
+* Fixed GLShader isValid/isInvalid
+* Fixed dead-code elimination with TextFormat class
+* Fixed GL.getParameter
+
+
 2.2.7 (02/20/2015)
 ------------------
 
