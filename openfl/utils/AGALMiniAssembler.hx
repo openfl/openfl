@@ -277,7 +277,7 @@ class AGALMiniAssembler {
 		if (!ereg.match (text)) return matches;
 		
 		var m:UInt = 0;
-		var t;
+		var t = null;
 		var completed:Bool = false;
 		
 		while (!completed && (t = ereg.matched (m++)) != null) {

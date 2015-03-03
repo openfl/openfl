@@ -175,7 +175,7 @@ class NetStream extends EventDispatcher {
 					duration: __video.duration,
 					position: __video.currentTime,
 					speed: __video.playbackRate,
-					start: __video.startTime
+					start: untyped __video.startTime
 					
 				});
 				

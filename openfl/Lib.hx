@@ -9,7 +9,6 @@ import openfl.display.Stage;
 import openfl.net.URLRequest;
 
 #if js
-import js.html.HtmlElement;
 import js.Browser;
 #end
 

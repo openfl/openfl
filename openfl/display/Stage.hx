@@ -31,7 +31,6 @@ import openfl.ui.KeyLocation;
 import js.html.CanvasElement;
 import js.html.DivElement;
 import js.html.Element;
-import js.html.HtmlElement;
 import js.Browser;
 #end
 
