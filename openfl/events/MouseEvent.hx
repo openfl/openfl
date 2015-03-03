@@ -303,9 +303,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	@:noCompletion public static function __create (type:String, button:Int, local:Point, target:InteractiveObject):MouseEvent {
-		
-		var delta = 2;
+	@:noCompletion public static function __create (type:String, button:Int, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
 		
 		/*if (type == MouseEvent.MOUSE_WHEEL) {
 			
