@@ -1,3 +1,4 @@
+import openfl.Lib;
 import lime.Assets;
 #if !macro
 
@@ -11,8 +12,13 @@ class ApplicationMain {
 	
 	public static function create ():Void {
 		
-		var app = new openfl.display.Application ();
+		var app = new lime.app.Application ();
 		app.create (config);
+		openfl.Lib.application = app;
+		
+		var stage = new openfl.display.Stage (app.window.width, app.window.height, config.background);
+		stage.addChild (openfl.Lib.current);
+		app.addModule (stage);
 		
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
 		
@@ -115,7 +121,7 @@ class ApplicationMain {
 		
 		#if js
 		#if (munit || utest)
-		flash.Lib.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
+		openfl.Lib.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 		#end
 		#else
 		create ();
