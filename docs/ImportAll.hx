@@ -1,7 +1,6 @@
 package;
 
 
-import openfl.display.Application;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
