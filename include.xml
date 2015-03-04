@@ -4,8 +4,9 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<set name="openfl-next" value="1" if="next || openfl_next" />
+	<set name="openfl-next" value="1" if="next || openfl_next || lime" />
 	<haxedef name="openfl-next" if="openfl-next" />
+	
 	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next || display || emscripten" />
 	
 	<section if="openfl-next || webgl">
@@ -31,10 +32,14 @@
 		
 	</section>
 	
-	<haxelib name="lime" unless="create || native lime-legacy" />
-	<haxelib name="lime" if="display || rebuild" />
-	
-	<template path="templates" />
+	<section unless="lime">
+		
+		<haxelib name="lime" unless="create || native lime-legacy" />
+		<haxelib name="lime" if="display || rebuild" />
+		
+		<template path="templates" />
+		
+	</section>
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
