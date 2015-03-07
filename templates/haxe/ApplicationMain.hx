@@ -16,9 +16,11 @@ class ApplicationMain {
 		app.create (config);
 		openfl.Lib.application = app;
 		
+		#if !flash
 		var stage = new openfl.display.Stage (app.window.width, app.window.height, config.background);
 		stage.addChild (openfl.Lib.current);
 		app.addModule (stage);
+		#end
 		
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
 		
