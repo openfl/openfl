@@ -265,6 +265,13 @@ class Sound extends EventDispatcher {
 	}
 	
 	
+	public static function fromFile (path:String):Sound {
+		
+		return fromAudioBuffer (AudioBuffer.fromFile (path));
+		
+	}
+	
+	
 	/**
 	 * Initiates loading of an external MP3 file from the specified URL. If you
 	 * provide a valid URLRequest object to the Sound constructor, the
