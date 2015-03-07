@@ -453,18 +453,22 @@ abstract Vector<T>(VectorData<T>) {
 		#if cpp
 		vectorData.data = this.data.splice (pos, len);
 		#else
-		vectorData.data = new haxe.ds.Vector<T> (len);
-		haxe.ds.Vector.blit (this.data, pos, vectorData.data, 0, len);
+		var oldData = this.data;
+		vectorData.data = new haxe.ds.Vector<T>(this.length - len);
+		haxe.ds.Vector.blit (this.data, 0, vectorData.data, 0, pos);
 		#end
 
 		if (len > 0) {
 			
 			this.length -= len;
 			#if !cpp
-			haxe.ds.Vector.blit (this.data, pos + len, this.data, pos, this.length - pos);
+			haxe.ds.Vector.blit (oldData, pos + len, vectorData.data, pos, this.length - pos);
 			#end
-
 		}
+		
+		#if !cpp
+		this.data = vectorData.data;
+		#end
 
 		return cast vectorData;
 		//return this.splice (pos, len);
@@ -670,7 +674,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		if (!fixed) {
 			
-			if (value > this.length) {
+			if (value > this.length #if !cpp || value < this.length #end ) {
 				
 				#if cpp
 				untyped (this.data).__SetSizeExact (value);
@@ -679,7 +683,6 @@ abstract Vector<T>(VectorData<T>) {
 				haxe.ds.Vector.blit (this.data, 0, data, 0, Std.int (Math.min (this.data.length, value)));
 				this.data = data;
 				#end
-
 			}
 			
 			this.length = value;
