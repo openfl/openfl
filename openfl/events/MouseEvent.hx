@@ -303,9 +303,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	@:noCompletion public static function __create (type:String, button:Int, local:Point, target:InteractiveObject):MouseEvent {
-		
-		var delta = 2;
+	@:noCompletion public static function __create (type:String, button:Int, local:Point, target:InteractiveObject, ctrlKey:Bool, altKey:Bool, shiftKey:Bool, delta:Int = 0):MouseEvent {
 		
 		/*if (type == MouseEvent.MOUSE_WHEEL) {
 			
@@ -339,7 +337,7 @@ class MouseEvent extends Event {
 			
 		}
 		
-		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, __buttonDown[button], delta);
+		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, ctrlKey, altKey, shiftKey, __buttonDown[button], delta);
 		pseudoEvent.stageX = Lib.current.stage.mouseX;
 		pseudoEvent.stageY = Lib.current.stage.mouseY;
 		pseudoEvent.target = target;
