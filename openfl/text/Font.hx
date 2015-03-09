@@ -18,7 +18,7 @@ class Font extends lime.text.Font {
 	/**
 	 * The name of an embedded font.
 	 */
-	//public var fontName:String;
+	public var fontName (get, set):String;
 	
 	/**
 	 * The style of the font. This value can be any of the values defined in the
@@ -99,6 +99,27 @@ class Font extends lime.text.Font {
 			__registeredFonts.push (instance);
 			
 		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private inline function get_fontName ():String {
+		
+		return name;
+		
+	}
+	
+	
+	private inline function set_fontName (value:String):String {
+		
+		return name = value;
 		
 	}
 	
