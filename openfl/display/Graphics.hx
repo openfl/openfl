@@ -70,6 +70,9 @@ class Graphics {
 		__positionX = 0;
 		__positionY = 0;
 		
+		#if js
+		moveTo( 0, 0);
+		#end
 	}
 	
 	
@@ -234,6 +237,9 @@ class Graphics {
 		
 		__visible = false;
 		
+		#if js
+		moveTo( 0, 0);
+		#end
 	}
 	
 	
