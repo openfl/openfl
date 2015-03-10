@@ -297,7 +297,7 @@ import lime.project.WindowData;
 import lime.system.System;
 import lime.text.Font;
 import lime.text.TextDirection;
-import lime.text.TextLayout;
+import lime.text.TextEngine;
 import lime.text.TextScript;
 
 
