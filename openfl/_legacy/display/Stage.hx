@@ -1344,8 +1344,8 @@ class Stage extends DisplayObjectContainer {
 			
 		}
 		
-		#if android
-		var height = lime_get_softkeyboardheight ();
+		#if (ios || android)
+		var height = #if android lime_get_softkeyboardheight #else lime_stage_get_keyboard_height #end ();
 		
 		if (height > 0) {
 			
@@ -1424,6 +1424,9 @@ class Stage extends DisplayObjectContainer {
 	private static var lime_stage_get_focus_rect = Lib.load ("lime", "lime_stage_get_focus_rect", 1);
 	private static var lime_stage_set_focus_rect = Lib.load ("lime", "lime_stage_set_focus_rect", 2);
 	private static var lime_stage_is_opengl = Lib.load ("lime", "lime_stage_is_opengl", 1);
+	#if ios
+	private static var lime_stage_get_keyboard_height = Lib.load ("lime", "lime_stage_get_keyboard_height", 1);
+	#end
 	private static var lime_stage_get_stage_width = Lib.load ("lime", "lime_stage_get_stage_width", 1);
 	private static var lime_stage_get_stage_height = Lib.load ("lime", "lime_stage_get_stage_height", 1);
 	private static var lime_stage_get_dpi_scale = Lib.load ("lime", "lime_stage_get_dpi_scale", 1);
