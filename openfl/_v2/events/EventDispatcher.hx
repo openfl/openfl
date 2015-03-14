@@ -16,6 +16,9 @@ class EventDispatcher implements IEventDispatcher {
 	@:noCompletion private var __targetDispatcher:IEventDispatcher;
 	@:noCompletion private var __eventMap:Map<String, Array<Listener>>;
 	
+	@:noCompletion private var __loopingType:String;
+	@:noCompletion private var __loopingCapture:Bool;
+	@:noCompletion private var __loopIndex:UInt;
 	
 	public function new (target:IEventDispatcher = null):Void {
 		
@@ -52,9 +55,29 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			list.push (new Listener (listener, useCapture, priority));
-			list.sort (__sortByPriority);
+			var insertIndex = 0;
 			
+			while (insertIndex < list.length) {
+				
+				if (list[insertIndex].priority < priority) {
+					
+					break;
+					
+				} else {
+					
+					insertIndex++;
+					
+				}
+				
+			}
+			
+			list.insert (insertIndex, new Listener (listener, useCapture, priority));
+			
+			if (__loopingType == type && __loopingCapture == useCapture && __loopIndex >= insertIndex) {
+				
+				__loopIndex++;
+				
+			}
 		}
 		
 	}
@@ -85,12 +108,14 @@ class EventDispatcher implements IEventDispatcher {
 		event.currentTarget = this;
 		
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
-		var index = 0;
+		__loopIndex = 0;
+		__loopingType = event.type;
+		__loopingCapture = capture;
 		var listener;
 		
-		while (index < list.length) {
+		while (__loopIndex < list.length) {
 			
-			listener = list[index];
+			listener = list[__loopIndex];
 			
 			if (listener.useCapture == capture) {
 				
@@ -98,20 +123,18 @@ class EventDispatcher implements IEventDispatcher {
 				listener.callback (event);
 				
 				if (event.__isCancelledNow) {
-					
+					__loopingType = null;
 					return true;
 					
 				}
 				
 			}
 			
-			if (listener == list[index]) {
-				
-				index++;
-				
-			}
+			__loopIndex++;
 			
 		}
+		
+		__loopingType = null;
 		
 		return true;
 		
@@ -139,6 +162,13 @@ class EventDispatcher implements IEventDispatcher {
 			if (list[i].match (listener, capture)) {
 				
 				list.splice (i, 1);
+				
+				if (__loopingType == type && __loopingCapture == capture && __loopIndex >= i) {
+					
+					__loopIndex--;
+					
+				}
+				
 				break;
 				
 			}
