@@ -96,8 +96,7 @@ class GLTextField {
 		
 		var graphics = textField.__graphics;
 		
-		
-		if (textField.text != null && textField.text != "") {
+		if (font != null && textField.text != null && textField.text != "") {
 			
 			if (textField.text != cacheText) {
 				
