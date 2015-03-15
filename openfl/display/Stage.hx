@@ -1,7 +1,6 @@
 package openfl.display; #if !flash #if !lime_legacy
 
 
-import flash.display.DisplayObjectContainer;
 import haxe.EnumFlags;
 import lime.app.IModule;
 import lime.graphics.opengl.GL;
@@ -20,6 +19,7 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
+import openfl.display.DisplayObjectContainer;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;

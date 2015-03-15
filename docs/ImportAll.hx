@@ -296,8 +296,11 @@ import lime.project.WindowData;
 
 import lime.system.System;
 import lime.text.Font;
+import lime.text.Glyph;
+import lime.text.GlyphMetrics;
+import lime.text.GlyphPosition;
 import lime.text.TextDirection;
-import lime.text.TextEngine;
+import lime.text.TextLayout;
 import lime.text.TextScript;
 
 
@@ -453,6 +456,11 @@ import haxe.ds.StringMap;
 import haxe.ds.Vector;
 import haxe.ds.WeakMap;
 
+#if (haxe_ver >= "3.2")
+import haxe.extern.EitherType;
+import haxe.extern.Rest;
+#end
+
 import haxe.format.JsonParser;
 import haxe.format.JsonPrinter;
 
@@ -549,8 +557,6 @@ import haxe.zip.Writer;
 
 #if (haxe_ver >= "3.2")
 import haxe.DynamicAccess;
-import haxe.EitherType;
-import haxe.Rest;
 #end
 import haxe.CallStack;
 import haxe.Constraints;
@@ -1085,7 +1091,6 @@ import js.html.PopupBlockedEventInit;
 import js.html.Position;
 import js.html.PositionOptions;
 import js.html.ProgressEventInit;
-import js.html.Promise;
 import js.html.PropertyNodeList;
 import js.html.RecordErrorEvent;
 import js.html.RecordErrorEventInit;
@@ -1441,6 +1446,7 @@ import js.html.MediaError;
 import js.html.MediaKeyError;
 
 #if (haxe_ver >= "3.2")
+import js.Promise;
 import js.RegExp;
 #end
 import js.Boot;
