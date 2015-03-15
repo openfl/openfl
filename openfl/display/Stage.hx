@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !lime_legacy
 
 
+import flash.display.DisplayObjectContainer;
 import haxe.EnumFlags;
 import lime.app.IModule;
 import lime.graphics.opengl.GL;
@@ -160,7 +161,7 @@ import js.Browser;
 @:access(openfl.events.Event)
 
 
-class Stage extends Sprite implements IModule {
+class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	/**
