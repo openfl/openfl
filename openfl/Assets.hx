@@ -3,6 +3,7 @@ package openfl; #if !lime_legacy
 
 
 import haxe.Unserializer;
+import lime.text.Font in LimeFont;
 import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
@@ -18,6 +19,7 @@ import openfl.utils.ByteArray;
 @:access(lime.Assets)
 @:access(openfl.AssetLibrary)
 @:access(openfl.display.BitmapData)
+@:access(openfl.text.Font)
 
 /**
  * <p>The Assets class provides a cross-platform interface to access 
@@ -150,9 +152,17 @@ class Assets {
 			
 		}
 		
-		var font = LimeAssets.getFont (id, false);
+		var limeFont = LimeAssets.getFont (id, false);
 		
-		if (font != null) {
+		if (limeFont != null) {
+			
+			var font = Font.__fromLimeFont (limeFont);
+			
+			if (useCache && cache.enabled) {
+				
+				cache.setFont (id, font);
+				
+			}
 			
 			return font;
 			
@@ -572,20 +582,19 @@ class Assets {
 			
 			if (library.exists (symbolName, cast AssetType.FONT)) {
 				
-				if (useCache && cache.enabled) {
+				library.loadFont (symbolName, function (limeFont:LimeFont):Void {
 					
-					library.loadFont (symbolName, function (font:Font):Void {
+					var font = Font.__fromLimeFont (limeFont);
+					
+					if (useCache && cache.enabled) {
 						
 						cache.setFont (id, font);
-						handler (font);
 						
-					});
+					}
 					
-				} else {
+					handler (font);
 					
-					library.loadFont (symbolName, handler);
-					
-				}
+				});
 				
 				return;
 				

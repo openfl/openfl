@@ -106,9 +106,9 @@ class GLTextField {
 				cacheText = textField.text;
 				textLayout.text = textField.text;
 				
-				var r = (textField.defaultTextFormat.color >> 16) & 0xFF;
-				var g = (textField.defaultTextFormat.color >> 8) & 0xFF;
-				var b = (textField.defaultTextFormat.color) & 0xFF;
+				var r = ((textField.defaultTextFormat.color >> 16) & 0xFF) / 0xFF;
+				var g = ((textField.defaultTextFormat.color >> 8) & 0xFF) / 0xFF;
+				var b = ((textField.defaultTextFormat.color) & 0xFF) / 0xFF;
 				
 				var image;
 				var x = textField.__worldTransform.tx;

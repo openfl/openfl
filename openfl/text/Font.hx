@@ -1,6 +1,7 @@
 package openfl.text; #if !flash #if !lime_legacy
 
 
+import lime.text.Font in LimeFont;
 import openfl.utils.ByteArray;
 
 
@@ -12,7 +13,7 @@ import openfl.utils.ByteArray;
  * load external fonts, or to create an instance of a Font object by itself.
  * Use the Font class as an abstract base class.
  */
-class Font extends lime.text.Font {
+class Font extends LimeFont {
 	
 	
 	/**
@@ -99,6 +100,16 @@ class Font extends lime.text.Font {
 			__registeredFonts.push (instance);
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private static function __fromLimeFont (value:LimeFont):Font {
+		
+		var font = new Font ();
+		font.__fontPath = value.__fontPath;
+		font.__handle = value.__handle;
+		return font;
 		
 	}
 	
