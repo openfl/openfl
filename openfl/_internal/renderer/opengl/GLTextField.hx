@@ -1,8 +1,17 @@
 package openfl._internal.renderer.opengl;
 
 
+import lime.graphics.Image;
+import lime.text.Font;
+import lime.text.Glyph;
+import lime.text.TextLayout;
 import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.Graphics;
+import openfl.display.Tilesheet;
+import openfl.geom.Rectangle;
 import openfl.text.TextField;
 
 @:access(openfl.text.TextField)
@@ -11,54 +20,133 @@ import openfl.text.TextField;
 class GLTextField {
 	
 	
+	private static var bitmapData:BitmapData;
+	private static var cacheText:String;
+	private static var font:Font;
+	private static var images:Map<Glyph, Image>;
+	private static var textLayout:TextLayout;
+	private static var tileData:Array<Float>;
+	private static var tileID:Map <Int, Int>;
+	private static var tilesheet:Tilesheet;
+	
+	
 	public static function render (textField:TextField, renderSession:RenderSession) {
 		
 		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
 		
-		#if js
-		
-		var gl = renderSession.gl;
-		var changed = CanvasTextField.update (textField);
-		
-		if (textField.__texture == null) {
+		if (textField.__graphics == null) {
 			
-			textField.__texture = gl.createTexture ();
-			gl.bindTexture (gl.TEXTURE_2D, (textField.__texture));
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-			changed = true;
+			textField.__graphics = new Graphics ();
 			
 		}
 		
-		if (changed) {
+		if (font == null && Assets.exists ("assets/KatamotzIkasi.ttf")) {
 			
-			gl.bindTexture (gl.TEXTURE_2D, textField.__texture);
+			font = Font.fromFile ("assets/KatamotzIkasi.ttf");
 			
-			// TODO: Premultiply
+			var size:Int = textField.defaultTextFormat.size != null ? Std.int (textField.defaultTextFormat.size) : 12;
 			
-			gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textField.__canvas);
-			gl.bindTexture (gl.TEXTURE_2D, null);
+			textLayout = new TextLayout ();
+			textLayout.font = font;
+			textLayout.size = size;
+			
+			images = font.renderGlyphs (font.getGlyphs (), size);
+			
+			var width, height, data;
+			
+			for (image in images) {
+				
+				width = image.buffer.width;
+				height = image.buffer.height;
+				data = image.data;
+				
+				break;
+				
+			}
+			
+			bitmapData = new BitmapData (width, height);
+			
+			for (x in 0...width) {
+				
+				for (y in 0...height) {
+					
+					var alpha = data[(y * width) + x];
+					var color = alpha << 24 | 0xFF << 16 | 0xFF << 8 | 0xFF;
+					bitmapData.setPixel32 (x, y, color);
+					
+				}
+				
+			}
+			
+			tilesheet = new Tilesheet (bitmapData);
+			tileID = new Map ();
+			
+			var image, index;
+			
+			for (key in images.keys ()) {
+				
+				image = images.get (key);
+				index = tilesheet.addTileRect (new Rectangle (image.offsetX, image.offsetY, image.width, image.height));
+				
+				tileID.set (key, index);
+				
+			}
 			
 		}
 		
-		/*renderSession.shaderManager.setShader (renderSession.shaderManager.defaultShader);
+		var graphics = textField.__graphics;
 		
-		gl.activeTexture (gl.TEXTURE0);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		if (textField.text != null && textField.text != "") {
+			
+			if (textField.text != cacheText) {
+				
+				graphics.clear ();
+				
+				cacheText = textField.text;
+				textLayout.text = textField.text;
+				
+				var r = (textField.defaultTextFormat.color >> 16) & 0xFF;
+				var g = (textField.defaultTextFormat.color >> 8) & 0xFF;
+				var b = (textField.defaultTextFormat.color) & 0xFF;
+				
+				var image;
+				var x = textField.__worldTransform.tx;
+				var y = textField.__worldTransform.tx + textField.defaultTextFormat.size;
+				
+				tileData = [];
+				
+				for (position in textLayout.positions) {
+					
+					image = images.get (position.glyph);
+					
+					if (image != null) {
+						
+						tileData.push (x + position.offset.x + image.x);
+						tileData.push (y + position.offset.y - image.y);
+						tileData.push (tileID.get (position.glyph));
+						tileData.push (r);
+						tileData.push (g);
+						tileData.push (b);
+						
+					}
+					
+					x += position.advance.x;
+					y -= position.advance.y;
+					
+				}
+				
+				graphics.drawTiles (tilesheet, tileData, true, Tilesheet.TILE_RGB);
+				
+			}
+			
+		} else {
+			
+			graphics.clear ();
+			
+		}
 		
-		var projection = renderSession.projection;
-		gl.uniform2f (shader.projectionVector, projection.x, projection.y);
-		
-		var stride =  vertSize * 4;
-		gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-		gl.vertexAttribPointer (shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-		gl.vertexAttribPointer (shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);*/
-		
-		#end
+		GraphicsRenderer.render (textField, renderSession);
 		
 	}
 	
