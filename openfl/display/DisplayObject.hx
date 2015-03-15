@@ -1,6 +1,10 @@
 package openfl.display; #if !flash #if !lime_legacy
 
 
+import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.canvas.CanvasShape;
+import openfl._internal.renderer.dom.DOMShape;
+import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -154,6 +158,7 @@ import js.html.Element;
  */
 
 @:access(openfl.events.Event)
+@:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 
 
@@ -988,7 +993,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		
+		if (__graphics != null) {
+			
+			__graphics.__getBounds (rect, matrix != null ? matrix : __worldTransform);
+			
+		}
 		
 	}
 	
@@ -1057,6 +1066,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
+		if (__graphics != null) {
+			
+			if (visible && __graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
+				
+				if (!interactiveOnly) {
+					
+					stack.push (this);
+					
+				}
+				
+				return true;
+				
+			}
+			
+		}
+		
 		return false;
 		
 	}
@@ -1064,28 +1089,46 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderCanvas (renderSession:RenderSession):Void {
 		
-		
+		if (__graphics != null) {
+			
+			CanvasShape.render (this, renderSession);
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion @:dox(hide) public function __renderDOM (renderSession:RenderSession):Void {
 		
-		
+		if (__graphics != null) {
+			
+			DOMShape.render (this, renderSession);
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
+		if (!__renderable || __worldAlpha <= 0) return;
 		
+		if (__graphics != null) {
+			
+			GraphicsRenderer.render (this, renderSession);
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion @:dox(hide) public function __renderMask (renderSession:RenderSession):Void {
 		
-		
+		if (__graphics != null) {
+			
+			CanvasGraphics.renderMask (__graphics, renderSession);
+			
+		}
 		
 	}
 	

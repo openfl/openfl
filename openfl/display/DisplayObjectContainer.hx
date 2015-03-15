@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !lime_legacy
 
 
+import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
@@ -756,6 +757,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		super.__renderCanvas (renderSession);
+		
 		if (scrollRect != null) {
 			
 			//renderSession.maskManager.pushRect (scrollRect, __worldTransform);
@@ -794,6 +797,8 @@ class DisplayObjectContainer extends InteractiveObject {
 	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		//if (!__renderable) return;
+		
+		super.__renderDOM (renderSession);
 		
 		if (__mask != null) {
 			
@@ -834,6 +839,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		super.__renderGL (renderSession);
+		
 		for (child in __children) {
 			
 			child.__renderGL (renderSession);
@@ -846,6 +853,12 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	@:noCompletion @:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CanvasGraphics.renderMask (__graphics, renderSession);
+			
+		}
 		
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);

@@ -159,19 +159,6 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
-		
-		super.__getBounds (rect, matrix);
-		
-		if (__graphics != null) {
-			
-			__graphics.__getBounds (rect, matrix != null ? matrix : __worldTransform);
-			
-		}
-		
-	}
-	
-	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
@@ -201,60 +188,6 @@ class Sprite extends DisplayObjectContainer {
 		}
 		
 		return false;
-		
-	}
-	
-	
-	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
-		
-		CanvasShape.render (this, renderSession);
-		
-		super.__renderCanvas (renderSession);
-		
-	}
-	
-	
-	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		DOMShape.render (this, renderSession);
-		
-		super.__renderDOM (renderSession);
-		
-	}
-	
-	
-	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
-		
-		if (!__renderable || __worldAlpha <= 0) return;
-		
-		if (__graphics != null) {
-			
-			GraphicsRenderer.render (this, renderSession);
-			//__graphics.__render (renderSession);
-			
-			/*if (__graphics.__canvas != null) {
-				
-				
-			}*/
-			
-		}
-		
-		super.__renderGL (renderSession);
-		
-	}
-	
-	
-	@:noCompletion public override function __renderMask (renderSession:RenderSession):Void {
-		
-		if (__graphics != null) {
-			
-			CanvasGraphics.renderMask (__graphics, renderSession);
-			
-		} else {
-			
-			super.__renderMask (renderSession);
-			
-		}
 		
 	}
 	
