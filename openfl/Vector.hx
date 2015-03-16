@@ -231,7 +231,7 @@ abstract Vector<T>(VectorData<T>) {
 		var vectorData = new VectorData<T> ();
 		vectorData.length = (a != null) ? this.length + a.length : this.length;
 		vectorData.fixed = false;
-
+		
 		#if cpp
 		vectorData.data = this.data.slice (0, this.length).concat (a.data);
 		#else
@@ -241,7 +241,7 @@ abstract Vector<T>(VectorData<T>) {
 			haxe.ds.Vector.blit (a.data, 0, vectorData.data, this.length, a.length);
 		}
 		#end
-
+		
 		return cast vectorData;
 		
 	}
@@ -273,14 +273,14 @@ abstract Vector<T>(VectorData<T>) {
 	public inline function join (sep:String):String {
 		
 		var output = "";
-
+		
 		for (i in 0...this.length) {
 			
 			if (i > 0) output += sep;
 			output += this.data[i];
-
+			
 		}
-
+		
 		return output;
 		
 	}
@@ -289,18 +289,18 @@ abstract Vector<T>(VectorData<T>) {
 	public inline function pop ():Null<T> {
 		
 		var value = null;
-
+		
 		if (!this.fixed) {
 			
 			if (this.length > 0) {
 				
 				this.length--;
 				value = this.data[this.length];
-
+				
 			}
-
+			
 		}
-
+		
 		return value;
 		
 	}
@@ -311,7 +311,7 @@ abstract Vector<T>(VectorData<T>) {
 		if (!this.fixed) {
 			
 			this.length++;
-
+			
 			if (this.data.length < this.length) {
 				
 				#if cpp
@@ -321,13 +321,13 @@ abstract Vector<T>(VectorData<T>) {
 				haxe.ds.Vector.blit (this.data, 0, data, 0, this.data.length);
 				this.data = data;
 				#end
-
+				
 			}
-
+			
 			this.data[this.length - 1] = x;
 			
 		}
-
+		
 		return this.length;
 		
 	}
@@ -354,7 +354,7 @@ abstract Vector<T>(VectorData<T>) {
 		if (!this.fixed && this.length > 0) {
 			
 			this.length--;
-
+			
 			#if cpp
 			return this.data.shift ();
 			#else
@@ -362,9 +362,9 @@ abstract Vector<T>(VectorData<T>) {
 			haxe.ds.Vector.blit (this.data, 1, this.data, 0, this.length);
 			return value;
 			#end
-
+			
 		}
-
+		
 		return null;
 		
 	}
@@ -375,7 +375,7 @@ abstract Vector<T>(VectorData<T>) {
 		if (!this.fixed) {
 			
 			this.length++;
-
+			
 			if (this.data.length < this.length) {
 				
 				#if cpp
@@ -385,21 +385,21 @@ abstract Vector<T>(VectorData<T>) {
 				haxe.ds.Vector.blit (this.data, 0, data, 1, this.data.length);
 				this.data = data;
 				#end
-
+				
 			} else {
 				
 				#if !cpp
 				haxe.ds.Vector.blit (this.data, 0, this.data, 1, this.length - 1);
 				#end
-
+				
 			}
-
+			
 			#if cpp
 			this.data.unshift (x);
 			#else
 			this.data[0] = x;
 			#end
-
+			
 		}
 		
 	}
@@ -412,7 +412,7 @@ abstract Vector<T>(VectorData<T>) {
 		if (end > this.length) end = this.length;
 		var length = end - pos;
 		if (length <= 0 || length > this.length) length = this.length;
-
+		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = end - pos;
 		vectorData.fixed = true;
@@ -445,27 +445,27 @@ abstract Vector<T>(VectorData<T>) {
 		if (pos < 0) pos += this.length;
 		if (pos + len > this.length) len = this.length - pos;
 		if (len < 0) len = 0;
-
+		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = len;
 		vectorData.fixed = false;
-
+		
 		#if cpp
 		vectorData.data = this.data.splice (pos, len);
 		#else
 		vectorData.data = new haxe.ds.Vector<T> (len);
 		haxe.ds.Vector.blit (this.data, pos, vectorData.data, 0, len);
 		#end
-
+		
 		if (len > 0) {
 			
 			this.length -= len;
 			#if !cpp
 			haxe.ds.Vector.blit (this.data, pos + len, this.data, pos, this.length - pos);
 			#end
-
+			
 		}
-
+		
 		return cast vectorData;
 		//return this.splice (pos, len);
 		
@@ -486,7 +486,7 @@ abstract Vector<T>(VectorData<T>) {
 	public inline function indexOf (x:T, ?from:Int = 0):Int {
 		
 		var value = -1;
-
+		
 		for (i in from...this.length) {
 			
 			if (this.data[i] == x) {
@@ -514,9 +514,9 @@ abstract Vector<T>(VectorData<T>) {
 				
 				value = i;
 				break;
-
+				
 			}
-
+			
 			i--;
 			
 		}
@@ -546,12 +546,12 @@ abstract Vector<T>(VectorData<T>) {
 		return cast v;
 		
 	}
-
-
+	
+	
 	@:noCompletion @:arrayAccess public inline function get (index:Int):Null<T> {
 		
 		return this.data[index];
-
+		
 	}
 	
 	
@@ -571,13 +571,13 @@ abstract Vector<T>(VectorData<T>) {
 				
 			}
 			
-		}		
+		}
 		
 		return this.data[key] = value;
 		
 	}
-
-
+	
+	
 	@:noCompletion @:from static public inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		var vectorData = new VectorData<T> ();
@@ -589,10 +589,10 @@ abstract Vector<T>(VectorData<T>) {
 		vectorData.data = haxe.ds.Vector.fromArrayCopy (value);
 		#end
 		return cast vectorData;
-
+		
 	}
-
-
+	
+	
 	@:noCompletion @:to public inline function toArray<T> ():Array<T> {
 		
 		#if cpp
@@ -604,10 +604,10 @@ abstract Vector<T>(VectorData<T>) {
 		}
 		return value;
 		#end
-
+		
 	}
-
-
+	
+	
 	@:noCompletion @:from static public inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
 		
 		var vectorData = new VectorData<T> ();
@@ -623,10 +623,10 @@ abstract Vector<T>(VectorData<T>) {
 		vectorData.data = value;
 		#end
 		return cast vectorData;
-
+		
 	}
-
-
+	
+	
 	@:noCompletion @:to public inline function toHaxeVector<T> ():haxe.ds.Vector<T> {
 		
 		#if cpp
@@ -634,21 +634,21 @@ abstract Vector<T>(VectorData<T>) {
 		#else
 		return this.data;
 		#end
-
+		
 	}
-
-
+	
+	
 	@:noCompletion @:from static public inline function fromVectorData<T> (value:VectorData<T>):Vector<T> {
 		
 		return cast value;
-
+		
 	}
-
-
+	
+	
 	@:noCompletion @:to public inline function toVectorData<T> ():VectorData<T> {
 		
 		return cast this;
-
+		
 	}
 	
 	
@@ -709,8 +709,8 @@ abstract Vector<T>(VectorData<T>) {
 
 
 @:dox(hide) class VectorData<T> {
-
-
+	
+	
 	#if cpp
 	public var data:Array<T>;
 	#else
@@ -718,47 +718,47 @@ abstract Vector<T>(VectorData<T>) {
 	#end
 	public var fixed:Bool;
 	public var length:Int;
-
-
+	
+	
 	public function new () {
 		
 		length = 0;
 		
 	}
-
-
+	
+	
 }
 
 
 @:dox(hide) class VectorDataIterator<T> {
-
-
+	
+	
 	private var index:Int;
 	private var vectorData:VectorData<T>;
-
-
+	
+	
 	public function new (data:VectorData<T>) {
 		
 		index = 0;
 		vectorData = data;
-
+		
 	}
-
-
+	
+	
 	public function hasNext ():Bool {
 		
 		return index < vectorData.length;
-
+		
 	}
-
-
+	
+	
 	public function next ():T {
 		
 		return vectorData.data[index++];
-
+		
 	}
-
-
+	
+	
 }
 
 
@@ -993,7 +993,7 @@ abstract Vector<T>(VectorData<T>) {
 	public var fixed (get, set):Bool;
 	
 	
-	public inline function new (?length:Int, ?fixed:Bool):Void {
+	public inline function new (length:Int = 0, fixed:Bool = false):Void {
 		
 		this = new VectorData<T> (length, fixed);
 		
@@ -1072,7 +1072,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function slice (?pos:Int, ?end:Int):Vector<T> {
+	public inline function slice (pos:Int = 0, end:Int = 16777215):Vector<T> {
 		
 		return this.slice (pos, end);
 		
@@ -1100,14 +1100,14 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	public inline function indexOf (x:T, ?from:Int):Int {
+	public inline function indexOf (x:T, from:Int = 0):Int {
 		
 		return this.indexOf (x, from);
 		
 	}
 	
 	
-	public inline function lastIndexOf (x:T, ?from:Int):Int {
+	public inline function lastIndexOf (x:T, from:Int = 0x7fffffff):Int {
 		
 		return this.lastIndexOf (x, from);
 		

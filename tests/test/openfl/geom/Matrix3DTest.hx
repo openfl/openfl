@@ -51,7 +51,7 @@ class Matrix3DTest {
 		
 		Assert.isNotNull (exists);
 		
-		matrix3D.rawData = [ 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5 ];
+		matrix3D.rawData = Vector.ofArray ([ 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5 ]);
 		
 		Assert.isTrue (nearEquals (1.0, matrix3D.rawData[0]));
 		Assert.isTrue (nearEquals (1.1, matrix3D.rawData[1]));
