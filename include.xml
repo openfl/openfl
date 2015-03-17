@@ -4,10 +4,11 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<set name="openfl-next" value="1" if="next || openfl_next || lime" />
-	<haxedef name="openfl-next" if="openfl-next" />
+	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy" unless="display" />
+	<haxedef name="openfl-legacy" if="openfl-legacy" unless="display" />
 	
-	<set name="lime-legacy" value="1" if="native || legacy || lime_legacy" unless="openfl-next || display || emscripten" />
+	<set name="lime-legacy" value="1" if="openfl-legacy" />
+	<set name="openfl-next" value="1" unless="openfl-legacy" />
 	
 	<section if="openfl-next || webgl">
 		<window stencil-buffer="true" />
