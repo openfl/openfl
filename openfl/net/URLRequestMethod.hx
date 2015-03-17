@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if !lime_legacy
+package openfl.net; #if !flash #if !openfl_legacy
 
 
 /**
@@ -47,7 +47,7 @@ class URLRequestMethod {
 
 
 #else
-typedef URLRequestMethod = openfl._v2.net.URLRequestMethod;
+typedef URLRequestMethod = openfl._legacy.net.URLRequestMethod;
 #end
 #else
 typedef URLRequestMethod = flash.net.URLRequestMethod;

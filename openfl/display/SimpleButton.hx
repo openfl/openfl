@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.display.DisplayObject;
@@ -306,7 +306,7 @@ class SimpleButton extends DisplayObjectContainer {
 
 
 #else
-typedef SimpleButton = openfl._v2.display.SimpleButton;
+typedef SimpleButton = openfl._legacy.display.SimpleButton;
 #end
 #else
 typedef SimpleButton = flash.display.SimpleButton;

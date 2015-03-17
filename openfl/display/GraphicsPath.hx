@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -183,7 +183,7 @@ class GraphicsPath implements IGraphicsData implements IGraphicsPath {
 
 
 #else
-typedef GraphicsPath = openfl._v2.display.GraphicsPath;
+typedef GraphicsPath = openfl._legacy.display.GraphicsPath;
 #end
 #else
 typedef GraphicsPath = flash.display.GraphicsPath;

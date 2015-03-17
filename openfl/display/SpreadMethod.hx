@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -30,7 +30,7 @@ enum SpreadMethod {
 
 
 #else
-typedef SpreadMethod = openfl._v2.display.SpreadMethod;
+typedef SpreadMethod = openfl._legacy.display.SpreadMethod;
 #end
 #else
 typedef SpreadMethod = flash.display.SpreadMethod;

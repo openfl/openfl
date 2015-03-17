@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl._internal.renderer.opengl.utils.FilterTexture;
@@ -1050,7 +1050,7 @@ class Graphics {
 
 
 #else
-typedef Graphics = openfl._v2.display.Graphics;
+typedef Graphics = openfl._legacy.display.Graphics;
 #end
 #else
 

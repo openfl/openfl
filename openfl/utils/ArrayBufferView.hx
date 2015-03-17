@@ -1,8 +1,8 @@
 package openfl.utils;
 
 
-#if !lime_legacy
+#if !openfl_legacy
 typedef ArrayBufferView = lime.utils.ArrayBufferView;
 #else
-typedef ArrayBufferView = openfl._v2.utils.ArrayBufferView;
+typedef ArrayBufferView = openfl._legacy.utils.ArrayBufferView;
 #end

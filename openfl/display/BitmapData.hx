@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.opengl.GLBuffer;
@@ -1682,7 +1682,7 @@ class BitmapData implements IBitmapDrawable {
 
 
 #else
-typedef BitmapData = openfl._v2.display.BitmapData;
+typedef BitmapData = openfl._legacy.display.BitmapData;
 #end
 #else
 typedef BitmapData = flash.display.BitmapData;

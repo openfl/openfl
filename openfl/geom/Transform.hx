@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash #if !lime_legacy
+package openfl.geom; #if !flash #if !openfl_legacy
 
 
 import openfl.display.DisplayObject;
@@ -266,7 +266,7 @@ class Transform {
 
 
 #else
-typedef Transform = openfl._v2.geom.Transform;
+typedef Transform = openfl._legacy.geom.Transform;
 #end
 #else
 typedef Transform = flash.geom.Transform;

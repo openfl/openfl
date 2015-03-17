@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -228,7 +228,7 @@ class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 
 
 #else
-typedef GraphicsStroke = openfl._v2.display.GraphicsStroke;
+typedef GraphicsStroke = openfl._legacy.display.GraphicsStroke;
 #end
 #else
 typedef GraphicsStroke = flash.display.GraphicsStroke;

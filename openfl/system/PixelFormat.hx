@@ -1,6 +1,6 @@
 package openfl.system;
 
 
-#if lime_legacy
-typedef PixelFormat = openfl._v2.system.PixelFormat;
+#if openfl_legacy
+typedef PixelFormat = openfl._legacy.system.PixelFormat;
 #end

@@ -1,4 +1,4 @@
-package openfl.display; #if !lime_legacy
+package openfl.display; #if !openfl_legacy
 
 
 #if !flash
@@ -239,5 +239,5 @@ class OpenGLView extends DirectRenderer {
 
 
 #else
-typedef OpenGLView = openfl._v2.display.OpenGLView;
+typedef OpenGLView = openfl._legacy.display.OpenGLView;
 #end

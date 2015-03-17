@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if !lime_legacy
+package openfl.text; #if !flash #if !openfl_legacy
 
 
 /**
@@ -85,7 +85,7 @@ class TextLineMetrics {
 
 
 #else
-typedef TextLineMetrics = openfl._v2.text.TextLineMetrics;
+typedef TextLineMetrics = openfl._legacy.text.TextLineMetrics;
 #end
 #else
 typedef TextLineMetrics = flash.text.TextLineMetrics;

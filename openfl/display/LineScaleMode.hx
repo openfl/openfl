@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -46,7 +46,7 @@ enum LineScaleMode {
 
 
 #else
-typedef LineScaleMode = openfl._v2.display.LineScaleMode;
+typedef LineScaleMode = openfl._legacy.display.LineScaleMode;
 #end
 #else
 typedef LineScaleMode = flash.display.LineScaleMode;

@@ -1,6 +1,6 @@
 package openfl.system;
 
 
-#if lime_legacy
-typedef ScreenMode = openfl._v2.system.ScreenMode;
+#if openfl_legacy
+typedef ScreenMode = openfl._legacy.system.ScreenMode;
 #end

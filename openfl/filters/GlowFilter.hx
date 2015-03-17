@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !lime_legacy
+package openfl.filters; #if !flash #if !openfl_legacy
 
 
 /**
@@ -181,7 +181,7 @@ class GlowFilter extends BitmapFilter {
 
 
 #else
-typedef GlowFilter = openfl._v2.filters.GlowFilter;
+typedef GlowFilter = openfl._legacy.filters.GlowFilter;
 #end
 #else
 typedef GlowFilter = flash.filters.GlowFilter;

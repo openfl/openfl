@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -33,7 +33,7 @@ enum JointStyle {
 
 
 #else
-typedef JointStyle = openfl._v2.display.JointStyle;
+typedef JointStyle = openfl._legacy.display.JointStyle;
 #end
 #else
 typedef JointStyle = flash.display.JointStyle;

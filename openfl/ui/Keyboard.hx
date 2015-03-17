@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if !lime_legacy
+package openfl.ui; #if !flash #if !openfl_legacy
 
 
 /**
@@ -767,7 +767,7 @@ class Keyboard {
 
 
 #else
-typedef Keyboard = openfl._v2.ui.Keyboard;
+typedef Keyboard = openfl._legacy.ui.Keyboard;
 #end
 #else
 typedef Keyboard = flash.ui.Keyboard;

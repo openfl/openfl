@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash #if !lime_legacy
+package openfl.geom; #if !flash #if !openfl_legacy
 
 
 import openfl.geom.Point;
@@ -783,7 +783,7 @@ class Matrix {
 
 
 #else
-typedef Matrix = openfl._v2.geom.Matrix;
+typedef Matrix = openfl._legacy.geom.Matrix;
 #end
 #else
 typedef Matrix = flash.geom.Matrix;

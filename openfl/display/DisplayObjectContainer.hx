@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -963,7 +963,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 
 #else
-typedef DisplayObjectContainer = openfl._v2.display.DisplayObjectContainer;
+typedef DisplayObjectContainer = openfl._legacy.display.DisplayObjectContainer;
 #end
 #else
 typedef DisplayObjectContainer = flash.display.DisplayObjectContainer;

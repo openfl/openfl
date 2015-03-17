@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if !lime_legacy
+package openfl.text; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.opengl.GLTexture;
@@ -1759,7 +1759,7 @@ class TextField extends InteractiveObject {
 
 
 #else
-typedef TextField = openfl._v2.text.TextField;
+typedef TextField = openfl._legacy.text.TextField;
 #end
 #else
 typedef TextField = flash.text.TextField;

@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if !lime_legacy
+package openfl.net; #if !flash #if !openfl_legacy
 
 
 import openfl.events.Event;
@@ -583,7 +583,7 @@ typedef XMLHttpRequestProgressEvent = Dynamic;
 
 
 #else
-typedef URLLoader = openfl._v2.net.URLLoader;
+typedef URLLoader = openfl._legacy.net.URLLoader;
 #end
 #else
 typedef URLLoader = flash.net.URLLoader;

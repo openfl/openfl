@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -61,7 +61,7 @@ class Shape extends DisplayObject {
 
 
 #else
-typedef Shape = openfl._v2.display.Shape;
+typedef Shape = openfl._legacy.display.Shape;
 #end
 #else
 typedef Shape = flash.display.Shape;

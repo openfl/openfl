@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.display.Bitmap;
@@ -618,7 +618,7 @@ class Loader extends Sprite {
 
 
 #else
-typedef Loader = openfl._v2.display.Loader;
+typedef Loader = openfl._legacy.display.Loader;
 #end
 #else
 typedef Loader = flash.display.Loader;

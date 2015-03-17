@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash #if !lime_legacy
+package openfl.utils; #if !flash #if !openfl_legacy
 
 
 import haxe.Timer in HaxeTimer;
@@ -257,7 +257,7 @@ class Timer extends EventDispatcher {
 
 
 #else
-typedef Timer = openfl._v2.utils.Timer;
+typedef Timer = openfl._legacy.utils.Timer;
 #end
 #else
 typedef Timer = flash.utils.Timer;

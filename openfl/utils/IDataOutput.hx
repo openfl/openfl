@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash #if !lime_legacy
+package openfl.utils; #if !flash #if !openfl_legacy
 
 
 interface IDataOutput {
@@ -23,7 +23,7 @@ interface IDataOutput {
 
 
 #else
-typedef IDataOutput = openfl._v2.utils.IDataOutput;
+typedef IDataOutput = openfl._legacy.utils.IDataOutput;
 #end
 #else
 typedef IDataOutput = flash.utils.IDataOutput;

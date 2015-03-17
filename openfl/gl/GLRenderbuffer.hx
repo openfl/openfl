@@ -1,8 +1,8 @@
 package openfl.gl;
 
 
-#if lime_legacy
-typedef GLRenderbuffer = openfl._v2.gl.GLRenderbuffer;
+#if openfl_legacy
+typedef GLRenderbuffer = openfl._legacy.gl.GLRenderbuffer;
 #else
 typedef GLRenderbuffer = lime.graphics.opengl.GLRenderbuffer;
 #end

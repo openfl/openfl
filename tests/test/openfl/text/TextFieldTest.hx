@@ -13,7 +13,7 @@ class TextFieldTest {
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
-		#if !lime_legacy
+		#if !openfl_legacy
 		
 		Assert.areNotEqual (textField.textWidth + 4, textField.width);
 		
@@ -79,7 +79,7 @@ class TextFieldTest {
 		bitmapData.draw (textField);
 		
 		// Need to determine why alpha is FE in native
-		#if (flash || lime_legacy)
+		#if (flash || openfl_legacy)
 		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFF00FF00, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFE00FF00, 8)));
 		#end
 		//Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));

@@ -1,4 +1,4 @@
-package openfl.system; #if !flash #if !lime_legacy
+package openfl.system; #if !flash #if !openfl_legacy
 
 
 /**
@@ -193,7 +193,7 @@ class System {
 
 
 #else
-typedef System = openfl._v2.system.System;
+typedef System = openfl._legacy.system.System;
 #end
 #else
 typedef System = flash.system.System;

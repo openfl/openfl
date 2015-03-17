@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if !lime_legacy
+package openfl.events; #if !flash #if !openfl_legacy
 
 
 import openfl.display.InteractiveObject;
@@ -288,7 +288,7 @@ class TouchEvent extends Event {
 
 
 #else
-typedef TouchEvent = openfl._v2.events.TouchEvent;
+typedef TouchEvent = openfl._legacy.events.TouchEvent;
 #end
 #else
 typedef TouchEvent = flash.events.TouchEvent;

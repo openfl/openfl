@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if !lime_legacy
+package openfl.events; #if !flash #if !openfl_legacy
 
 
 import openfl.events.Event;
@@ -16,7 +16,7 @@ interface IEventDispatcher {
 
 
 #else
-typedef IEventDispatcher = openfl._v2.events.IEventDispatcher;
+typedef IEventDispatcher = openfl._legacy.events.IEventDispatcher;
 #end
 #else
 typedef IEventDispatcher = flash.events.IEventDispatcher;

@@ -755,7 +755,7 @@ class Context3D {
 		
 		if (!anisotropySupportTested) {
 			
-			#if lime_legacy
+			#if openfl_legacy
 			
 			supportsAnisotropy = (GL.getSupportedExtensions ().indexOf ("GL_EXT_texture_filter_anisotropic") != -1);
 			

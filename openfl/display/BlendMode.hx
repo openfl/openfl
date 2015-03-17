@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -172,7 +172,7 @@ enum BlendMode {
 
 
 #else
-typedef BlendMode = openfl._v2.display.BlendMode;
+typedef BlendMode = openfl._legacy.display.BlendMode;
 #end
 #else
 typedef BlendMode = flash.display.BlendMode;

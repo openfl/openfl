@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl._internal.renderer.canvas.CanvasBitmap;
@@ -249,7 +249,7 @@ class Bitmap extends DisplayObjectContainer {
 
 
 #else
-typedef Bitmap = openfl._v2.display.Bitmap;
+typedef Bitmap = openfl._legacy.display.Bitmap;
 #end
 #else
 typedef Bitmap = flash.display.Bitmap;

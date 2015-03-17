@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if !lime_legacy
+package openfl.events; #if !flash #if !openfl_legacy
 
 
 import openfl.display.InteractiveObject;
@@ -472,7 +472,7 @@ class Event {
 
 
 #else
-typedef Event = openfl._v2.events.Event;
+typedef Event = openfl._legacy.events.Event;
 #end
 #else
 typedef Event = flash.events.Event;

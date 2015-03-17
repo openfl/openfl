@@ -1,8 +1,8 @@
 package openfl.utils;
 
 
-#if !lime_legacy
+#if !openfl_legacy
 typedef Float32Array = lime.utils.Float32Array;
 #else
-typedef Float32Array = openfl._v2.utils.Float32Array;
+typedef Float32Array = openfl._legacy.utils.Float32Array;
 #end

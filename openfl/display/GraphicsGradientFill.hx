@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -60,7 +60,7 @@ class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill {
 
 
 #else
-typedef GraphicsGradientFill = openfl._v2.display.GraphicsGradientFill;
+typedef GraphicsGradientFill = openfl._legacy.display.GraphicsGradientFill;
 #end
 #else
 typedef GraphicsGradientFill = flash.display.GraphicsGradientFill;

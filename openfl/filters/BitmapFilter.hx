@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !lime_legacy
+package openfl.filters; #if !flash #if !openfl_legacy
 
 
 import openfl.geom.Point;
@@ -55,7 +55,7 @@ class BitmapFilter {
 
 
 #else
-typedef BitmapFilter = openfl._v2.filters.BitmapFilter;
+typedef BitmapFilter = openfl._legacy.filters.BitmapFilter;
 #end
 #else
 typedef BitmapFilter = flash.filters.BitmapFilter;

@@ -29,7 +29,7 @@ class DirectRendererTest {
 		var exists = directRenderer.render;
 		
 		Assert.isNotNull (exists);
-		#if (!neko || !lime_legacy)
+		#if (!neko || !openfl_legacy)
 		Assert.areEqual (func, directRenderer.render);
 		#end
 		

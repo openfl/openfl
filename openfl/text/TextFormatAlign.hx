@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if !lime_legacy
+package openfl.text; #if !flash #if !openfl_legacy
 
 
 /**
@@ -35,7 +35,7 @@ enum TextFormatAlign {
 
 
 #else
-typedef TextFormatAlign = openfl._v2.text.TextFormatAlign;
+typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
 #end
 #else
 typedef TextFormatAlign = flash.text.TextFormatAlign;

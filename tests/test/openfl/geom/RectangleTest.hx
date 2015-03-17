@@ -263,7 +263,7 @@ class RectangleTest {
 	}
 	
 	
-	#if lime_legacy @Ignore #end @Test public function containsPoint () {
+	#if openfl_legacy @Ignore #end @Test public function containsPoint () {
 		
 		// This function works on the older native code, but sometimes causes
 		// a race condition when run on the Travis CI servers

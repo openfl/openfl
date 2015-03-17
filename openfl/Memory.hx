@@ -1,4 +1,4 @@
-package openfl; #if !flash #if !lime_legacy
+package openfl; #if !flash #if !openfl_legacy
 
 
 import haxe.io.BytesData;
@@ -158,7 +158,7 @@ class Memory {
 
 
 #else
-typedef Memory = openfl._v2.Memory;
+typedef Memory = openfl._legacy.Memory;
 #end
 #else
 typedef Memory = flash.Memory;

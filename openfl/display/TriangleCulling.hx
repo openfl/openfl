@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -44,7 +44,7 @@ enum TriangleCulling {
 
 
 #else
-typedef TriangleCulling = openfl._v2.display.TriangleCulling;
+typedef TriangleCulling = openfl._legacy.display.TriangleCulling;
 #end
 #else
 typedef TriangleCulling = flash.display.TriangleCulling;

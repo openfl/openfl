@@ -15,6 +15,6 @@ extern class SystemEvent extends Event {
 }
 
 
-#elseif lime_legacy
-typedef SystemEvent = openfl._v2.events.SystemEvent;
+#elseif openfl_legacy
+typedef SystemEvent = openfl._legacy.events.SystemEvent;
 #end

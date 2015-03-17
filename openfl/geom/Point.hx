@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash #if !lime_legacy
+package openfl.geom; #if !flash #if !openfl_legacy
 
 
 import lime.math.Vector2;
@@ -270,7 +270,7 @@ class Point {
 
 
 #else
-typedef Point = openfl._v2.geom.Point;
+typedef Point = openfl._legacy.geom.Point;
 #end
 #else
 typedef Point = flash.geom.Point;

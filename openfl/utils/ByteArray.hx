@@ -1,10 +1,10 @@
 package openfl.utils;
 
 
-#if !lime_legacy
+#if !openfl_legacy
 typedef ByteArray = lime.utils.ByteArray;
 #else
-typedef ByteArray = openfl._v2.utils.ByteArray;
+typedef ByteArray = openfl._legacy.utils.ByteArray;
 #end
 
 /*

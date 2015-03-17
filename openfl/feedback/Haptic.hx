@@ -1,6 +1,6 @@
 package openfl.feedback;
 
 
-#if lime_legacy
-typedef Haptic = openfl._v2.feedback.Haptic;
+#if openfl_legacy
+typedef Haptic = openfl._legacy.feedback.Haptic;
 #end

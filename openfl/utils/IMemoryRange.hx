@@ -1,4 +1,4 @@
-package openfl.utils; #if !lime_legacy
+package openfl.utils; #if !openfl_legacy
 
 
 import openfl.utils.ByteArray;
@@ -14,5 +14,5 @@ interface IMemoryRange {
 
 
 #else
-typedef IMemoryRange = openfl._v2.utils.IMemoryRange;
+typedef IMemoryRange = openfl._legacy.utils.IMemoryRange;
 #end

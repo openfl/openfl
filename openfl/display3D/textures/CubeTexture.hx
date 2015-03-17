@@ -51,7 +51,7 @@ class CubeTexture extends TextureBase {
 		
 		// TODO: Support upload from UInt8Array directly
 		
-		#if lime_legacy
+		#if openfl_legacy
 		var source = new UInt8Array (BitmapData.getRGBAPixels (bitmapData));
 		#else
 		var source = @:privateAccess (bitmapData.__image).data;

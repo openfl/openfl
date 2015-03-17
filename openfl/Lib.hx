@@ -1,4 +1,4 @@
-package openfl; #if !lime_legacy
+package openfl; #if !openfl_legacy
 #if !macro
 
 
@@ -213,5 +213,5 @@ class Lib {
 
 #end
 #else
-typedef Lib = openfl._v2.Lib;
+typedef Lib = openfl._legacy.Lib;
 #end

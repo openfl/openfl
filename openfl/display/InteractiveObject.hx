@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.geom.Rectangle;
@@ -1178,7 +1178,7 @@ class InteractiveObject extends DisplayObject {
 
 
 #else
-typedef InteractiveObject = openfl._v2.display.InteractiveObject;
+typedef InteractiveObject = openfl._legacy.display.InteractiveObject;
 #end
 #else
 typedef InteractiveObject = flash.display.InteractiveObject;

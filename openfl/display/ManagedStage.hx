@@ -1,6 +1,6 @@
 package openfl.display;
 
 
-#if lime_legacy
-typedef ManagedStage = openfl._v2.display.ManagedStage;
+#if openfl_legacy
+typedef ManagedStage = openfl._legacy.display.ManagedStage;
 #end

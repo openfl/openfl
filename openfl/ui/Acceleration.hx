@@ -1,6 +1,6 @@
 package openfl.ui;
 
 
-#if lime_legacy
-typedef Acceleration = openfl._v2.ui.Acceleration;
+#if openfl_legacy
+typedef Acceleration = openfl._legacy.ui.Acceleration;
 #end

@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if !lime_legacy
+package openfl.ui; #if !flash #if !openfl_legacy
 
 
 import openfl.ui.MultitouchInputMode;
@@ -166,7 +166,7 @@ class Multitouch {
 
 
 #else
-typedef Multitouch = openfl._v2.ui.Multitouch;
+typedef Multitouch = openfl._legacy.ui.Multitouch;
 #end
 #else
 typedef Multitouch = flash.ui.Multitouch;

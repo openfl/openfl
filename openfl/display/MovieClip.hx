@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -243,7 +243,7 @@ class MovieClip extends Sprite {
 
 
 #else
-typedef MovieClip = openfl._v2.display.MovieClip;
+typedef MovieClip = openfl._legacy.display.MovieClip;
 #end
 #else
 typedef MovieClip = flash.display.MovieClip;

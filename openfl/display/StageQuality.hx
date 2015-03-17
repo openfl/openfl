@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -36,7 +36,7 @@ enum StageQuality {
 
 
 #else
-typedef StageQuality = openfl._v2.display.StageQuality;
+typedef StageQuality = openfl._legacy.display.StageQuality;
 #end
 #else
 typedef StageQuality = flash.display.StageQuality;

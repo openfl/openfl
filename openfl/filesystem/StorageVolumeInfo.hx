@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
 
-#if lime_legacy
-typedef StorageVolumeInfo = openfl._v2.filesystem.StorageVolumeInfo;
+#if openfl_legacy
+typedef StorageVolumeInfo = openfl._legacy.filesystem.StorageVolumeInfo;
 #end

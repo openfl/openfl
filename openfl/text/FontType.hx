@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if !lime_legacy
+package openfl.text; #if !flash #if !openfl_legacy
 
 
 /**
@@ -49,7 +49,7 @@ enum FontType {
 
 
 #else
-typedef FontType = openfl._v2.text.FontType;
+typedef FontType = openfl._legacy.text.FontType;
 #end
 #else
 typedef FontType = flash.text.FontType;

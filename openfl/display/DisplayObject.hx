@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -1682,7 +1682,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 
 
 #else
-typedef DisplayObject = openfl._v2.display.DisplayObject;
+typedef DisplayObject = openfl._legacy.display.DisplayObject;
 #end
 #else
 typedef DisplayObject = flash.display.DisplayObject;

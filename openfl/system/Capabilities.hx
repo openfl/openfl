@@ -1,4 +1,4 @@
-package openfl.system; #if !flash #if !lime_legacy
+package openfl.system; #if !flash #if !openfl_legacy
 
 
 import haxe.macro.Compiler;
@@ -519,7 +519,7 @@ class Capabilities {
 
 
 #else
-typedef Capabilities = openfl._v2.system.Capabilities;
+typedef Capabilities = openfl._legacy.system.Capabilities;
 #end
 #else
 typedef Capabilities = flash.system.Capabilities;

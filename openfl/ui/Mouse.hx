@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if !lime_legacy
+package openfl.ui; #if !flash #if !openfl_legacy
 
 
 import lime.ui.Mouse in LimeMouse;
@@ -53,7 +53,7 @@ class Mouse {
 
 
 #else
-typedef Mouse = openfl._v2.ui.Mouse;
+typedef Mouse = openfl._legacy.ui.Mouse;
 #end
 #else
 typedef Mouse = flash.ui.Mouse;

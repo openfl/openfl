@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -216,7 +216,7 @@ class Sprite extends DisplayObjectContainer {
 
 
 #else
-typedef Sprite = openfl._v2.display.Sprite;
+typedef Sprite = openfl._legacy.display.Sprite;
 #end
 #else
 typedef Sprite = flash.display.Sprite;

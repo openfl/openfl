@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if !lime_legacy
+package openfl.events; #if !flash #if !openfl_legacy
 
 
 /**
@@ -112,7 +112,7 @@ class HTTPStatusEvent extends Event {
 
 
 #else
-typedef HTTPStatusEvent = openfl._v2.events.HTTPStatusEvent;
+typedef HTTPStatusEvent = openfl._legacy.events.HTTPStatusEvent;
 #end
 #else
 typedef HTTPStatusEvent = flash.events.HTTPStatusEvent;

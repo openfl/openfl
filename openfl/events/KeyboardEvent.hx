@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if !lime_legacy
+package openfl.events; #if !flash #if !openfl_legacy
 
 
 import openfl.ui.KeyLocation;
@@ -156,7 +156,7 @@ class KeyboardEvent extends Event {
 
 
 #else
-typedef KeyboardEvent = openfl._v2.events.KeyboardEvent;
+typedef KeyboardEvent = openfl._legacy.events.KeyboardEvent;
 #end
 #else
 typedef KeyboardEvent = flash.events.KeyboardEvent;

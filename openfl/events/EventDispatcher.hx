@@ -1,4 +1,4 @@
-package openfl.events; #if !flash #if !lime_legacy
+package openfl.events; #if !flash #if !openfl_legacy
 
 
 import openfl.events.EventPhase;
@@ -438,7 +438,7 @@ private class Listener {
 
 
 #else
-typedef EventDispatcher = openfl._v2.events.EventDispatcher;
+typedef EventDispatcher = openfl._legacy.events.EventDispatcher;
 #end
 #else
 typedef EventDispatcher = flash.events.EventDispatcher;

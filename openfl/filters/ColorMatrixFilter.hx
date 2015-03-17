@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !lime_legacy
+package openfl.filters; #if !flash #if !openfl_legacy
 
 
 import openfl.geom.Point;
@@ -81,7 +81,7 @@ class ColorMatrixFilter extends BitmapFilter {
 
 
 #else
-typedef ColorMatrixFilter = openfl._v2.filters.ColorMatrixFilter;
+typedef ColorMatrixFilter = openfl._legacy.filters.ColorMatrixFilter;
 #end
 #else
 typedef ColorMatrixFilter = flash.filters.ColorMatrixFilter;

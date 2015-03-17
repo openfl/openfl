@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !lime_legacy
+package openfl.filters; #if !flash #if !openfl_legacy
 
 
 /**
@@ -143,7 +143,7 @@ class BlurFilter extends BitmapFilter {
 
 
 #else
-typedef BlurFilter = openfl._v2.filters.BlurFilter;
+typedef BlurFilter = openfl._legacy.filters.BlurFilter;
 #end
 #else
 typedef BlurFilter = flash.filters.BlurFilter;

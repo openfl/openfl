@@ -1,4 +1,4 @@
-package openfl.display; #if !lime_legacy
+package openfl.display; #if !openfl_legacy
 
 
 import openfl.display.BitmapData;
@@ -214,5 +214,5 @@ class Tilesheet {
 
 
 #else
-typedef Tilesheet = openfl._v2.display.Tilesheet;
+typedef Tilesheet = openfl._legacy.display.Tilesheet;
 #end

@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if !lime_legacy
+package openfl.text; #if !flash #if !openfl_legacy
 
 
 import lime.text.Font in LimeFont;
@@ -393,7 +393,7 @@ typedef GlyphData = {
 
 
 #else
-typedef Font = openfl._v2.text.Font;
+typedef Font = openfl._legacy.text.Font;
 #end
 #else
 typedef Font = flash.text.Font;

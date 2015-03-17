@@ -57,7 +57,7 @@
 			<section if="lime-legacy">
 				
 				<include haxelib="lime" />
-				<template path="templates/v2" />
+				<template path="templates/legacy" />
 				
 			</section>
 			

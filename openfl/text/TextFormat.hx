@@ -1,4 +1,4 @@
-package openfl.text; #if !flash #if !lime_legacy
+package openfl.text; #if !flash #if !openfl_legacy
 
 
 /**
@@ -292,7 +292,7 @@ class TextFormat {
 
 
 #else
-typedef TextFormat = openfl._v2.text.TextFormat;
+typedef TextFormat = openfl._legacy.text.TextFormat;
 #end
 #else
 typedef TextFormat = flash.text.TextFormat;

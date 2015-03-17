@@ -54,7 +54,7 @@ class Texture extends TextureBase {
 		
 		// TODO: Support upload from UInt8Array directly
 		
-		#if lime_legacy
+		#if openfl_legacy
 		var p = BitmapData.getRGBAPixels (bitmapData);
 		#elseif js
 		var p = ByteArray.__ofBuffer (@:privateAccess (bitmapData.__image).data.buffer);

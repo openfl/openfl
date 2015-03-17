@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -55,7 +55,7 @@ class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill {
 
 
 #else
-typedef GraphicsSolidFill = openfl._v2.display.GraphicsSolidFill;
+typedef GraphicsSolidFill = openfl._legacy.display.GraphicsSolidFill;
 #end
 #else
 typedef GraphicsSolidFill = flash.display.GraphicsSolidFill;

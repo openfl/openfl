@@ -1,4 +1,4 @@
-package openfl.external; #if !flash #if !lime_legacy
+package openfl.external; #if !flash #if !openfl_legacy
 
 
 import openfl.Lib;
@@ -297,7 +297,7 @@ class ExternalInterface {
 
 
 #else
-typedef ExternalInterface = openfl._v2.external.ExternalInterface;
+typedef ExternalInterface = openfl._legacy.external.ExternalInterface;
 #end
 #else
 typedef ExternalInterface = flash.external.ExternalInterface;

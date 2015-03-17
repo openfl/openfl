@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !lime_legacy
+package openfl.display; #if !flash #if !openfl_legacy
 
 
 /**
@@ -32,7 +32,7 @@ enum CapsStyle {
 
 
 #else
-typedef CapsStyle = openfl._v2.display.CapsStyle;
+typedef CapsStyle = openfl._legacy.display.CapsStyle;
 #end
 #else
 typedef CapsStyle = flash.display.CapsStyle;
