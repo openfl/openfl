@@ -534,6 +534,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __stack:Array<DisplayObject>;
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
+	@:noCompletion private var __ctrlKey:Bool;
+	@:noCompletion private var __altKey:Bool;
+	@:noCompletion private var __shiftKey:Bool;
+	
 	
 	#if js
 	//@:noCompletion private var __div:DivElement;
@@ -641,6 +645,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var keyCode = __convertKeyCode (keyCode);
 		var charCode = keyCode;
 		
+		switch(keyCode) {
+			case Keyboard.CONTROL:
+				__ctrlKey = true;
+			case Keyboard.ALTERNATE:
+				__altKey = true;
+			case Keyboard.SHIFT:
+				__shiftKey = true;
+		}
+		
 		__onKey (new KeyboardEvent (KeyboardEvent.KEY_DOWN, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey));
 		
 	}
@@ -650,6 +663,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var keyCode = __convertKeyCode (keyCode);
 		var charCode = keyCode;
+		
+		switch(keyCode) {
+			case Keyboard.CONTROL:
+				__ctrlKey = false;
+			case Keyboard.ALTERNATE:
+				__altKey = false;
+			case Keyboard.SHIFT:
+				__shiftKey = false;
+		}
 		
 		__onKey (new KeyboardEvent (KeyboardEvent.KEY_UP, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey));
 		
@@ -695,8 +717,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onMouseWheel (deltaX:Float, deltaY:Float):Void {
 		
+		var x = __mouseX;
+		var y = __mouseY;
 		
+		var stack = findMouseEventTargets(x, y);
+		var target:InteractiveObject = cast stack[stack.length - 1];
+		var targetPoint = new Point (x, y);
 		
+		var delta = deltaY > 0 ? Math.ceil(deltaY) : deltaY < 0 ? Math.floor(deltaY) : 0;
+		
+		__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, __ctrlKey, __altKey, __shiftKey, delta), stack);
+
 	}
 	
 	
@@ -1235,6 +1266,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	@:noCompletion private function findMouseEventTargets(x, y):Array < DisplayObject > {
+		var stack:Array< DisplayObject > = [];
+		
+		if ( ! __hitTest (x, y, false, stack, true)) {
+			
+			stack = [ this ];
+			
+		}
+		
+		return stack;
+	}
+	
+	
 	@:noCompletion private function __onMouse (type:String, x:Float, y:Float, button:Int):Void {
 		
 		if (button > 2) return;
@@ -1242,22 +1286,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseX = x;
 		__mouseY = y;
 		
-		var stack = [];
-		var target:InteractiveObject = null;
+		var stack = findMouseEventTargets(x, y);
+		var target:InteractiveObject = cast stack[stack.length - 1];
 		var targetPoint = new Point (x, y);
 		
-		if (__hitTest (x, y, false, stack, true)) {
-			
-			target = cast stack[stack.length - 1];
-			
-		} else {
-			
-			target = this;
-			stack = [ this ];
-			
-		}
-		
-		__fireEvent (MouseEvent.__create (type, button, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+		__fireEvent (MouseEvent.__create (type, button, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, __ctrlKey, __altKey, __shiftKey), stack);
 		
 		var clickType = switch (type) {
 			
@@ -1270,14 +1303,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (clickType != null) {
 			
-			__fireEvent (MouseEvent.__create (clickType, button, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+			__fireEvent (MouseEvent.__create (clickType, button, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, __ctrlKey, __altKey, __shiftKey), stack);
 			
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 				
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 					
-					__fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+					__fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, __ctrlKey, __altKey, __shiftKey), stack);
 					__lastClickTime = 0;
 					
 				} else {
@@ -1345,7 +1378,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__mouseOutStack.remove (target);
 				
 				var localPoint = target.globalToLocal (targetPoint);
-				target.dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OUT, false, false, localPoint.x, localPoint.y, cast target));
+				target.dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OUT, false, false, localPoint.x, localPoint.y, cast target, __ctrlKey, __altKey, __shiftKey));
 				
 			}
 			
@@ -1358,7 +1391,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				if (target.hasEventListener (MouseEvent.MOUSE_OVER)) {
 					
 					var localPoint = target.globalToLocal (targetPoint);
-					target.dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OVER, false, false, localPoint.x, localPoint.y, cast target));
+					target.dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OVER, false, false, localPoint.x, localPoint.y, cast target, __ctrlKey, __altKey, __shiftKey));
 					
 				}
 				
@@ -1426,7 +1459,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			var mouseEvent = MouseEvent.__create (mouseType, 0, localPoint, cast target);
+			var mouseEvent = MouseEvent.__create (mouseType, 0, localPoint, cast target, __ctrlKey, __altKey, __shiftKey);
 			mouseEvent.buttonDown = (type != TouchEvent.TOUCH_END);
 			
 			__fireEvent (touchEvent, __stack);
@@ -1439,7 +1472,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			var mouseEvent = MouseEvent.__create (mouseType, 0, point, this);
+			var mouseEvent = MouseEvent.__create (mouseType, 0, point, this, __ctrlKey, __altKey, __shiftKey);
 			mouseEvent.buttonDown = (type != TouchEvent.TOUCH_END);
 			
 			__fireEvent (touchEvent, [ stage ]);
