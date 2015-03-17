@@ -150,8 +150,12 @@ class MouseEvent extends Event {
 	 * <p>This event has the following properties:</p>
 	 */
 	public static var ROLL_OVER:String = "rollOver";
-
+	
+	@:noCompletion private static var __altKey:Bool;
 	@:noCompletion private static var __buttonDown = [ false, false, false ];
+	@:noCompletion private static var __commandKey:Bool;
+	@:noCompletion private static var __ctrlKey:Bool;
+	@:noCompletion private static var __shiftKey:Bool;
 	
 	
 	/**
@@ -303,29 +307,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	@:noCompletion public static function __create (type:String, button:Int, local:Point, target:InteractiveObject):MouseEvent {
-		
-		var delta = 2;
-		
-		/*if (type == MouseEvent.MOUSE_WHEEL) {
-			
-			var mouseEvent:Dynamic = event;
-			if (mouseEvent.wheelDelta) { // IE/Opera.
-				#if (!haxe_210 && !haxe3)
-				if (js.Lib.isOpera)
-					delta = Std.int (mouseEvent.wheelDelta / 40);
-				else
-				#end
-					delta = Std.int (mouseEvent.wheelDelta / 120);
-			} else if (mouseEvent.detail) { // Mozilla case.
-				
-				Std.int (-mouseEvent.detail);
-				
-			}
-			
-		}*/
-		
-		// source: http://unixpapa.com/js/mouse.html
+	@:noCompletion public static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
 		
 		switch (type) {
 			
@@ -339,12 +321,12 @@ class MouseEvent extends Event {
 			
 		}
 		
-		var pseudoEvent = new MouseEvent (type, true, false, local.x, local.y, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, __buttonDown[button], delta);
-		pseudoEvent.stageX = Lib.current.stage.mouseX;
-		pseudoEvent.stageY = Lib.current.stage.mouseY;
-		pseudoEvent.target = target;
+		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown[button], delta, __commandKey);
+		event.stageX = stageX;
+		event.stageY = stageY;
+		event.target = target;
 		
-		return pseudoEvent;
+		return event;
 		
 	}
 	
