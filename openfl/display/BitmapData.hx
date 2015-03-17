@@ -244,7 +244,15 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else {
 			
+			#if js
+			
+			var bmd = new BitmapData (width, height, transparent);
+			bmd.copyPixels(this, new Rectangle(0, 0, width, height), new Point(0, 0));
+			return bmd;
+			
+			#else
 			return BitmapData.fromImage (__image.clone (), transparent);
+			#end
 			
 		}
 		
