@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "2.2.8",
-	"releasenote": "Added MOUSE_OVER/MOUSE_OUT and SimpleButton support on next, other improvements",
+	"version": "3.0.0-beta",
+	"releasenote": "",
 	"contributors": [ "singmajesty" ],
 	"dependencies": {}
 }
