@@ -156,7 +156,11 @@ class Assets {
 		
 		if (limeFont != null) {
 			
+			#if flash
+			var font = limeFont.src;
+			#else
 			var font = Font.__fromLimeFont (limeFont);
+			#end
 			
 			if (useCache && cache.enabled) {
 				
@@ -584,7 +588,11 @@ class Assets {
 				
 				library.loadFont (symbolName, function (limeFont:LimeFont):Void {
 					
+					#if flash
+					var font = limeFont.src;
+					#else
 					var font = Font.__fromLimeFont (limeFont);
+					#end
 					
 					if (useCache && cache.enabled) {
 						

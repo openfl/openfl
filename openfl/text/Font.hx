@@ -107,8 +107,8 @@ class Font extends LimeFont {
 	@:noCompletion private static function __fromLimeFont (value:LimeFont):Font {
 		
 		var font = new Font ();
-		font.__fontPath = value.__fontPath;
-		font.__handle = value.__handle;
+		font.name = value.name;
+		font.src = value.src;
 		return font;
 		
 	}
