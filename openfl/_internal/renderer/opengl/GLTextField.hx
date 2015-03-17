@@ -2,7 +2,6 @@ package openfl._internal.renderer.opengl;
 
 
 import lime.graphics.Image;
-import lime.text.Font;
 import lime.text.Glyph;
 import lime.text.TextLayout;
 import openfl._internal.renderer.canvas.CanvasTextField;
@@ -12,8 +11,10 @@ import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Tilesheet;
 import openfl.geom.Rectangle;
+import openfl.text.Font;
 import openfl.text.TextField;
 
+@:access(openfl.text.Font)
 @:access(openfl.text.TextField)
 
 
@@ -40,9 +41,19 @@ class GLTextField {
 			
 		}
 		
-		if (font == null && Assets.exists ("assets/KatamotzIkasi.ttf")) {
+		if (font == null) {
 			
-			font = Font.fromFile ("assets/KatamotzIkasi.ttf");
+			for (registeredFont in Font.__registeredFonts) {
+				
+				if (registeredFont.fontName == textField.defaultTextFormat.font) {
+					
+					font = registeredFont;
+					
+				}
+				
+			}
+			
+			if (font == null) return;
 			
 			var size:Int = textField.defaultTextFormat.size != null ? Std.int (textField.defaultTextFormat.size) : 12;
 			
@@ -111,7 +122,7 @@ class GLTextField {
 				
 				var image;
 				var x = textField.__worldTransform.tx;
-				var y = textField.__worldTransform.tx + textField.defaultTextFormat.size;
+				var y = textField.__worldTransform.ty + textField.defaultTextFormat.size;
 				
 				tileData = [];
 				
