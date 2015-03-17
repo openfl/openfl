@@ -20,7 +20,7 @@ class AGLSLParser {
 		var body:String = "";
 		var i:Int = 0;
 		
-		#if html5
+		#if (html5 || android)
 		header += "precision highp float;\n";
 		#end
 		
