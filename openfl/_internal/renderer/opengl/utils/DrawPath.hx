@@ -312,7 +312,7 @@ class PathBuiler {
 						
 						__line = new LineStyle();
 						
-						if (thickness == null || thickness == Math.NaN || thickness < 0) {
+						if (thickness == null || Math.isNaN(thickness) || thickness < 0) {
 							
 							__line.width = 0;
 							
