@@ -36,11 +36,11 @@ before_script:
 
 script:
   - haxelib run lime test neko
-  - haxelib run lime test neko -Dnext
+  - haxelib run lime test neko -Dlegacy
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
   - haxelib run lime test linux
-  - haxelib run lime test linux -Dnext
+  - haxelib run lime test linux -Dlegacy
   - cd $TRAVIS_BUILD_DIR/docs
   - haxe build.hxml
 
