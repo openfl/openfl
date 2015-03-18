@@ -761,7 +761,7 @@ class GraphicsRenderer {
 				
 				var w = Math.floor(bounds.width + 0.5);
 				var h = Math.floor(bounds.height+ 0.5);
-
+				
 				if (texture == null) {
 					texture = new FilterTexture(gl, w, h, false);
 					graphics.__cachedTexture = texture;

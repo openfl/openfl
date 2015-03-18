@@ -409,8 +409,8 @@ class SpriteBatch {
 				matrix.b = a * oMatrix.b + b * oMatrix.d;
 				matrix.c = c * oMatrix.a + d * oMatrix.c;
 				matrix.d = c * oMatrix.b + d * oMatrix.d;
-				matrix.tx = tx * oMatrix.a + ty * oMatrix.c/* + oMatrix.tx*/;
-				matrix.ty = tx * oMatrix.b + ty * oMatrix.d/* + oMatrix.ty*/;
+				matrix.tx = tx * oMatrix.a + ty * oMatrix.c + oMatrix.tx;
+				matrix.ty = tx * oMatrix.b + ty * oMatrix.d + oMatrix.ty;
 				
 				uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
 				uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;

@@ -166,8 +166,8 @@ class GLTextField {
 			var b = ((format.color) & 0xFF) / 0xFF;
 			
 			var image;
-			var x = textField.__worldTransform.tx + offsetX;
-			var y = textField.__worldTransform.ty + size;
+			var x:Float = offsetX;
+			var y:Float = size;
 			
 			if (format.align == TextFormatAlign.RIGHT) {
 				
