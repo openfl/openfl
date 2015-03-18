@@ -77,8 +77,6 @@ class GLTextField {
 		
 		var font = textField.__getFontInstance (format);
 		
-		trace (font);
-		
 		if (font != null && format.size != null) {
 			
 			if (!glyphs.exists (font)) {
