@@ -83,7 +83,7 @@ class Texture extends TextureBase {
 			
 		}
 		
-		#if (js && html5)
+		#if js
 		var source = new UInt8Array (data.length);
 		data.position = byteArrayOffset;
 		

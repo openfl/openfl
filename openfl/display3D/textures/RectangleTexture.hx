@@ -67,7 +67,7 @@ class RectangleTexture extends TextureBase {
 		
 		GL.bindTexture (GL.TEXTURE_2D, glTexture);
 		
-		#if (js && html5)
+		#if js
 			
 			if (optimizeForRenderToTexture)
 				GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);
