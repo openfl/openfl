@@ -29,6 +29,9 @@ class CanvasShape {
 		#end
 	}
 
+	#if js
+	private static var __renderDirectRect:Rectangle = new Rectangle();
+	#end
 	private static inline function renderDirect (shape:DisplayObject, renderSession:RenderSession):Void {
 		#if js
 		var graphics = shape.__graphics;
@@ -45,7 +48,8 @@ class CanvasShape {
 			context.transform(wt.a, wt.b, wt.c, wt.d,
 				renderSession.roundPixels ? Std.int(wt.tx) : wt.tx,
 				renderSession.roundPixels ? Std.int(wt.ty) : wt.ty);
-			CanvasGraphics.renderTo(context, graphics, renderSession, new Rectangle(0, 0, canvas.width, canvas.height));
+			__renderDirectRect.setTo(0, 0, canvas.width, canvas.height);
+			CanvasGraphics.renderTo(context, graphics, renderSession, __renderDirectRect);
 			context.restore();
 		}
 		#end
