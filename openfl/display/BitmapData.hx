@@ -180,6 +180,12 @@ class BitmapData implements IBitmapDrawable {
 			__image.transparent = transparent;
 			__isValid = true;
 			
+		} else {
+			
+			this.width = 0;
+			this.height = 0;
+			rect = new Rectangle ();
+			
 		}
 		
 		__createUVs ();
@@ -259,6 +265,8 @@ class BitmapData implements IBitmapDrawable {
 	 * @param	colorTransform		A ColorTransform object that describes the color transformation values to apply.
 	 */
 	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void {
+		
+		if (!__isValid) return;
 		
 		__image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
 		
@@ -827,6 +835,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	
 	public function getTexture (gl:GLRenderContext):GLTexture {
+		
+		if (!__isValid) return null;
 		
 		if (__texture == null) {
 			

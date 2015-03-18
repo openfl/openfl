@@ -5,6 +5,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
 @:access(openfl.display.Bitmap)
+@:access(openfl.display.BitmapData)
 
 
 class GLBitmap {
@@ -12,7 +13,7 @@ class GLBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null) return;
+		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData != null || !bitmap.bitmapData.__isValid) return;
 		/*if (!__renderable || __worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
