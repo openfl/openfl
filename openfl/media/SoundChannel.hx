@@ -66,6 +66,9 @@ class SoundChannel extends EventDispatcher {
 		
 		super (this);
 		
+		leftPeak = 1;
+		rightPeak = 1;
+		
 		#if !html5
 			
 			if (source != null) {

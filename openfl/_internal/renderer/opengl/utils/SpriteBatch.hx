@@ -370,7 +370,9 @@ class SpriteBatch {
 				matrix.identity();
 				
 				if (useAlpha) {
-					alpha = tileData[iIndex + alphaIndex];
+					alpha = tileData[iIndex + alphaIndex] * object.__worldAlpha;
+				} else {
+					alpha = object.__worldAlpha;
 				}
 				
 				if (useRGB) {
