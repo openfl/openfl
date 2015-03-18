@@ -636,6 +636,41 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onGamepadAxisMove (id:Int, axis:Int, value:Float):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadButtonDown (id:Int, button:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadButtonUp (id:Int, button:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadConnect (id:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadDisconnect (id:Int):Void {
+		
+		
+		
+	}
+	
+	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
