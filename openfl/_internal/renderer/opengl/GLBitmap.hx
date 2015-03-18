@@ -12,7 +12,7 @@ class GLBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
-		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
+		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null) return;
 		/*if (!__renderable || __worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
