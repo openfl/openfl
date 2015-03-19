@@ -832,6 +832,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		stageWidth = width;
 		stageHeight = height;
 		
+		if (__renderer != null) {
+			
+			__renderer.resize (width, height);
+			
+		}
+		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
 		
