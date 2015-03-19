@@ -609,7 +609,7 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
-		bitmapData.__loadFromBase64 (base64, type, onload);
+		bitmapData.__fromBase64 (base64, type, onload);
 		return bitmapData;
 		
 	}
@@ -618,7 +618,7 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
-		bitmapData.__loadFromBytes (bytes, rawAlpha, onload);
+		bitmapData.__fromBytes (bytes, rawAlpha, onload);
 		return bitmapData;
 		
 	}
@@ -628,7 +628,7 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__loadFromImage (Image.fromCanvas (canvas));
+		bitmapData.__fromImage (Image.fromCanvas (canvas));
 		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 		
@@ -639,7 +639,7 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
-		bitmapData.__loadFromFile (path, onload, onerror);
+		bitmapData.__fromFile (path, onload, onerror);
 		return bitmapData;
 		
 	}
@@ -648,7 +648,7 @@ class BitmapData implements IBitmapDrawable {
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
-		bitmapData.__loadFromImage (image);
+		bitmapData.__fromImage (image);
 		bitmapData.__image.transparent = transparent;
 		return bitmapData;
 		
@@ -1479,11 +1479,11 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private inline function __loadFromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
+	@:noCompletion private inline function __fromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
 		
 		Image.fromBase64 (base64, type, function (image) {
 			
-			__loadFromImage (image);
+			__fromImage (image);
 			
 			if (onload != null) {
 				
@@ -1496,11 +1496,11 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private inline function __loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
+	@:noCompletion private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
 		
 		Image.fromBytes (bytes, function (image) {
 			
-			__loadFromImage (image);
+			__fromImage (image);
 			
 			if (rawAlpha != null) {
 				
@@ -1532,11 +1532,11 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __loadFromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
+	@:noCompletion private function __fromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
 		
 		Image.fromFile (path, function (image) {
 			
-			__loadFromImage (image);
+			__fromImage (image);
 			
 			if (onload != null) {
 				
@@ -1549,7 +1549,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __loadFromImage (image:Image):Void {
+	@:noCompletion private function __fromImage (image:Image):Void {
 		
 		__image = image;
 		
