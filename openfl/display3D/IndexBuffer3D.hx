@@ -39,7 +39,7 @@ class IndexBuffer3D {
 		var offset:Int = byteArrayOffset + startOffset * bytesPerIndex;
 		var indices:Int16Array;
 		
-		#if html5
+		#if js
 		indices = new Int16Array (length);
 		byteArray.position = offset;
 		
@@ -65,7 +65,7 @@ class IndexBuffer3D {
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, glBuffer);
 		var indices:Int16Array;
 		
-		#if html5
+		#if js
 		indices = new Int16Array (count);
 		
 		for (i in startOffset...(startOffset + count)) {

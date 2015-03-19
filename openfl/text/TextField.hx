@@ -2,6 +2,7 @@ package openfl.text; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.opengl.GLTexture;
+import lime.text.TextLayout;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasTextField;
@@ -13,12 +14,14 @@ import haxe.Timer;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.Tilesheet;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.text.Font;
 import openfl.text.TextFormatAlign;
 
 #if js
@@ -114,6 +117,7 @@ import js.Browser;
  */
 
 @:access(openfl.display.Graphics)
+@:access(openfl.text.Font)
 @:access(openfl.text.TextFormat)
 
 
@@ -565,7 +569,10 @@ class TextField extends InteractiveObject {
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __text:String;
 	@:noCompletion private var __textFormat:TextFormat;
+	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __tileData:Array<Array<Float>>;
+	@:noCompletion private var __tilesheets:Array<Tilesheet>;
 	@:noCompletion private var __width:Float;
 	
 	
@@ -962,6 +969,33 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __getFontInstance (format:TextFormat):Font {
+		
+		#if (cpp || neko)
+		
+		if (format == null || format.font == null) return null;
+		
+		for (registeredFont in Font.__registeredFonts) {
+			
+			if (registeredFont.fontName == format.font) {
+				
+				return registeredFont;
+				
+			}
+			
+		}
+		
+		return null;
+		
+		#else
+		
+		return null;
+		
+		#end
+		
+	}
+	
+	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
 		var value:String = text;
@@ -1056,6 +1090,70 @@ class TextField extends InteractiveObject {
 				
 				__context.font = __getFont (range.format);
 				measurements.push (__context.measureText (text.substring (range.start, range.end)).width);
+				
+			}
+			
+			return measurements;
+			
+		}
+		
+		#elseif (cpp || neko)
+		
+		if (__textLayout == null) {
+			
+			__textLayout = new TextLayout ();
+			
+		}
+		
+		if (__ranges == null) {
+			
+			var font = __getFontInstance (__textFormat);
+			
+			if (font != null && __textFormat.size != null) {
+				
+				__textLayout.text = null;
+				__textLayout.font = font;
+				__textLayout.size = Std.int (__textFormat.size);
+				__textLayout.text = __text;
+				
+			}
+			
+			var width = 0.0;
+			
+			for (position in __textLayout.positions) {
+				
+				width += position.advance.x;
+				
+			}
+			
+			return [ width ];
+			
+		} else {
+			
+			var measurements = [];
+			
+			for (range in __ranges) {
+				
+				var font = __getFontInstance (range.format);
+				
+				if (font != null && range.format.size != null) {
+					
+					__textLayout.text = null;
+					__textLayout.font = font;
+					__textLayout.size = Std.int (range.format.size);
+					__textLayout.text = text.substring (range.start, range.end);
+					
+				}
+				
+				var width = 0.0;
+				
+				for (position in __textLayout.positions) {
+					
+					width += position.advance.x;
+					
+				}
+				
+				measurements.push (width);
 				
 			}
 			
@@ -1424,13 +1522,11 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_htmlText (value:String):String {
 		
-		#if js
-		
 		if (!__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = true;
 		
-		if (#if dom false && #end __div == null) {
+		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
 			
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
@@ -1512,8 +1608,6 @@ class TextField extends InteractiveObject {
 			}
 			
 		}
-		
-		#end
 		
 		#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
 		return __text = value;

@@ -1,6 +1,7 @@
-import openfl.Lib;
-import lime.Assets;
 #if !macro
+
+
+@:access(lime.Assets)
 
 
 class ApplicationMain {
@@ -34,12 +35,12 @@ class ApplicationMain {
 		
 		::foreach assets::::if (embed)::
 		urls.push (::if (type == "font")::"::fontName::"::else::"::resourceName::"::end::);
-		::if (type == "image")::types.push (AssetType.IMAGE);
-		::elseif (type == "binary")::types.push (AssetType.BINARY);
-		::elseif (type == "text")::types.push (AssetType.TEXT);
-		::elseif (type == "font")::types.push (AssetType.FONT);
-		::elseif (type == "sound")::types.push (AssetType.SOUND);
-		::elseif (type == "music")::types.push (AssetType.MUSIC);
+		::if (type == "image")::types.push (lime.Assets.AssetType.IMAGE);
+		::elseif (type == "binary")::types.push (lime.Assets.AssetType.BINARY);
+		::elseif (type == "text")::types.push (lime.Assets.AssetType.TEXT);
+		::elseif (type == "font")::types.push (lime.Assets.AssetType.FONT);
+		::elseif (type == "sound")::types.push (lime.Assets.AssetType.SOUND);
+		::elseif (type == "music")::types.push (lime.Assets.AssetType.MUSIC);
 		::else::types.push (null);::end::
 		::end::::end::
 		
@@ -47,7 +48,7 @@ class ApplicationMain {
 			
 			for (i in 0...urls.length) {
 				
-				if (types[i] != AssetType.FONT) {
+				if (types[i] != lime.Assets.AssetType.FONT) {
 					
 					urls[i] = config.assetsPrefix + urls[i];
 					
@@ -108,20 +109,24 @@ class ApplicationMain {
 			antialiasing: Std.int (::WIN_ANTIALIASING::),
 			background: Std.int (::WIN_BACKGROUND::),
 			borderless: ::WIN_BORDERLESS::,
+			company: "::META_COMPANY::",
 			depthBuffer: ::WIN_DEPTH_BUFFER::,
+			file: "::APP_FILE::",
 			fps: Std.int (::WIN_FPS::),
 			fullscreen: ::WIN_FULLSCREEN::,
 			height: Std.int (::WIN_HEIGHT::),
 			orientation: "::WIN_ORIENTATION::",
+			packageName: "::META_PACKAGE_NAME::",
 			resizable: ::WIN_RESIZABLE::,
 			stencilBuffer: ::WIN_STENCIL_BUFFER::,
 			title: "::APP_TITLE::",
+			version: "::META_VERSION::",
 			vsync: ::WIN_VSYNC::,
 			width: Std.int (::WIN_WIDTH::),
 			
 		}
 		
-		#if js
+		#if (js && html5)
 		#if (munit || utest)
 		openfl.Lib.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 		#end
@@ -147,6 +152,8 @@ class ApplicationMain {
 			}
 			
 		}
+		
+		lime.Assets.initialize ();
 		
 		if (hasMain) {
 			

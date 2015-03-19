@@ -1187,7 +1187,7 @@ class Assets {
 				super (width, height, transparent, fillRGBA);
 				
 				var byteArray = openfl.utils.ByteArray.fromBytes (haxe.Resource.getBytes (resourceName));
-				__loadFromBytes (byteArray);
+				__fromBytes (byteArray);
 				
 				#end
 				

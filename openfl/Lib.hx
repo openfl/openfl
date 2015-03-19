@@ -49,7 +49,7 @@ import js.Browser;
 	}
 	
 	
-	#if js
+	#if (js && html5)
 	@:keep @:expose("openfl.embed")
 	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
 		

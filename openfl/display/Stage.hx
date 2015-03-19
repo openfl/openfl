@@ -12,6 +12,9 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
 import lime.math.Matrix4;
 import lime.utils.GLUtils;
+import lime.ui.Gamepad;
+import lime.ui.GamepadAxis;
+import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse;
@@ -595,7 +598,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function init (context:RenderContext):Void {
 		
-		__updateRenderer(context);
+		switch (context) {
+			
+			case OPENGL (gl):
+				
+				__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+			
+			case CANVAS (context):
+				
+				__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
+			
+			case DOM (element):
+				
+				__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+			
+			default:
+			
+		}
 		
 	}
 	
@@ -632,6 +651,41 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public override function localToGlobal (pos:Point):Point {
 		
 		return pos;
+		
+	}
+	
+	
+	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadConnect (gamepad:Gamepad):Void {
+		
+		
+		
+	}
+	
+	
+	public function onGamepadDisconnect (gamepad:Gamepad):Void {
+		
+		
 		
 	}
 	
@@ -778,6 +832,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		stageWidth = width;
 		stageHeight = height;
 		
+		if (__renderer != null) {
+			
+			__renderer.resize (width, height);
+			
+		}
+		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
 		
@@ -801,7 +861,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__renderable = true;
 		__update (false, true);
 		
-		__updateRenderer (context);
+		if (__renderer != null) {
+			
+			__renderer.render (this);
+			
+		}
 		
 		__rendering = false;
 		
@@ -817,39 +881,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function __updateRenderer (context:RenderContext) {
 		
-		switch (context) {
 			
-			case OPENGL (gl):
-				
-				if (__renderer == null) {
-					
-					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
-					
-				}
-				
-				__renderer.render (this);
-			
-			case CANVAS (context):
-				
-				if (__renderer == null) {
-					
-					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-					
-				}
-				
-				__renderer.render (this);
-			
-			case DOM (element):
-				
-				if (__renderer == null) {
-					
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-					
-				}
-				
-				__renderer.render (this);
-			
-			default:
+			__renderer.render (this);
 			
 		}
 		
@@ -1235,7 +1268,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var keyCode = __convertKeyCode (keyCode);
 			var charCode = keyCode;
 			
-			var event = new KeyboardEvent (KeyboardEvent.KEY_DOWN, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey);
+			var event = new KeyboardEvent (type, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey);
 			
 			stack.reverse ();
 			__fireEvent (event, stack);

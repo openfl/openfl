@@ -283,6 +283,9 @@ class GLRenderer extends AbstractRenderer {
 	
 	public override function resize (width:Int, height:Int):Void {
 		
+		this.width = width;
+		this.height = height;
+		
 		super.resize (width, height);
 		
 		gl.viewport (0, 0, width, height);
