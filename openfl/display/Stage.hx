@@ -595,7 +595,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function init (context:RenderContext):Void {
 		
-		trace("Stage.init()");
 		__updateRenderer(context);
 		
 	}

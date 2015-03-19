@@ -549,8 +549,6 @@ class BitmapData implements IBitmapDrawable {
 				#end
 				
 			case DATA:
-				trace("BitmapData.draw()");
-				//trace("Renderer " + @:privateAccess Lib.current.stage.__renderer);
 				
 				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 				var gl:GLRenderContext = renderSession.gl;

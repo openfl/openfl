@@ -1264,7 +1264,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!transformOnly && __mask != null && !__mask.__maskCached) {
 			
-			trace("Mask caching");
 			if (__maskGraphics == null) {
 				__maskGraphics = new Graphics();
 			}
