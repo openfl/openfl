@@ -879,15 +879,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private function __updateRenderer (context:RenderContext) {
-		
-			
-			__renderer.render (this);
-			
-		}
-		
-	}
-	
 	@:noCompletion private function __convertKeyCode (keyCode:KeyCode):Int {
 		
 		return switch (keyCode) {
