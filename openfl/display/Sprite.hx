@@ -204,6 +204,7 @@ class Sprite extends DisplayObjectContainer {
 		if (__graphics == null) {
 			
 			__graphics = new Graphics ();
+			@:privateAccess __graphics.__owner = this;
 			
 		}
 		

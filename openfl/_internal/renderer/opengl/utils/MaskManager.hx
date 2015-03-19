@@ -2,8 +2,35 @@ package openfl._internal.renderer.opengl.utils;
 
 
 import lime.graphics.GLRenderContext;
+import openfl._internal.renderer.RenderSession;
+import openfl.display.DisplayObject;
 
+class MaskManager {
+	
+	public var gl:GLRenderContext;
+	
+	public function new(gl:GLRenderContext) {
+		setContext(gl);
+	}
+	
+	public function destroy() {
+		gl = null;
+	}
+	
+	public function setContext(gl:GLRenderContext) {
+		this.gl = gl;
+	}
+	
+	public function pushMask(object:DisplayObject, renderSession:RenderSession) {
+		renderSession.stencilManager.pushMask(object, renderSession);
+	}
+	
+	public function popMask(object:DisplayObject, renderSession:RenderSession) {
+		renderSession.stencilManager.popMask(object, renderSession);
+	}
+}
 
+/*
 class MaskManager {
 	
 	
@@ -67,7 +94,7 @@ class MaskManager {
 	
 	
 }
-
+*/
 
 /*class MaskManager {
 	

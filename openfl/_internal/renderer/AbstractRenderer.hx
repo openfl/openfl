@@ -10,6 +10,7 @@ class AbstractRenderer {
 	
 	public var height:Int;
 	public var width:Int;
+	public var transparent:Bool;
 	
 	private var renderSession:RenderSession;
 	

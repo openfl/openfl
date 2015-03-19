@@ -6,8 +6,7 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
-import openfl._internal.renderer.opengl.shaders.AbstractShader;
-import openfl._internal.renderer.opengl.shaders.DefaultShader;
+import openfl._internal.renderer.opengl.shaders2.*;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Rectangle;
 
@@ -51,6 +50,7 @@ class FilterManager {
 	
 	public function applyFilterPass (filter:Dynamic, filterArea:Rectangle, width:Int, height:Int):Void {
 		
+		/*
 		var gl = this.gl;
 		var shader:DefaultShader = cast filter.shaders[GLRenderer.glContextId];
 		
@@ -94,6 +94,7 @@ class FilterManager {
 		
 		gl.drawElements (gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
 		renderSession.drawCount++;
+		*/
 		
 	}
 	
@@ -101,7 +102,7 @@ class FilterManager {
 	public function begin (renderSession:RenderSession, buffer:GLFramebuffer = null):Void {
 		
 		this.renderSession = renderSession;
-		defaultShader = renderSession.shaderManager.defaultShader;
+		defaultShader = renderSession.shaderManager2.defaultShader;
 		
 		var projection = renderSession.projection;
 		
@@ -169,6 +170,7 @@ class FilterManager {
 	
 	public function popFilter ():Void {
 		
+		/*
 		var gl = this.gl;
 		var filterBlock = filterStack.pop();
 		var filterArea:Rectangle = filterBlock._filterArea;
@@ -320,12 +322,14 @@ class FilterManager {
 		
 		texturePool.push (texture);
 		filterBlock._glFilterTexture = null;
+		*/
 		
 	}
 	
 	
 	public function pushFilter (filterBlock:Dynamic):Void {
 		
+		/*
 		var gl = this.gl;
 		
 		var projection = renderSession.projection;
@@ -394,6 +398,7 @@ class FilterManager {
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		
 		filterBlock._glFilterTexture = texture;
+		*/
 		
 	}
 	

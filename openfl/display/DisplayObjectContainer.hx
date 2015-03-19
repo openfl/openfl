@@ -34,6 +34,7 @@ import openfl.geom.Rectangle;
  */
 
 @:access(openfl.events.Event)
+@:access(openfl.display.Graphics)
 
 
 class DisplayObjectContainer extends InteractiveObject {
@@ -839,12 +840,26 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
+		
+		if (masked) {
+			renderSession.spriteBatch2.stop();
+			renderSession.maskManager.pushMask(this, renderSession);
+			renderSession.spriteBatch2.start();
+		}
+		
 		super.__renderGL (renderSession);
 		
 		for (child in __children) {
 			
 			child.__renderGL (renderSession);
 			
+		}
+		
+		if(masked) {
+			renderSession.spriteBatch2.stop();
+			renderSession.maskManager.popMask(this, renderSession);
+			renderSession.spriteBatch2.start();
 		}
 		
 		__removedChildren = [];
@@ -907,11 +922,12 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion @:dox(hide) public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
-		super.__update (transformOnly, updateChildren);
+		super.__update (transformOnly, updateChildren, maskGraphics);
 		
-		if (!__renderable #if dom && !__worldAlphaChanged && !__worldClipChanged && !__worldTransformChanged && !__worldVisibleChanged #end) {
+		// nested objects into a mask are non renderables but are part of the mask
+		if (!__renderable && !__isMask #if dom && !__worldAlphaChanged && !__worldClipChanged && !__worldTransformChanged && !__worldVisibleChanged #end) {
 			
 			return;
 			
@@ -923,7 +939,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			for (child in __children) {
 				
-				child.__update (transformOnly, true);
+				child.__update (transformOnly, true, maskGraphics);
 				
 			}
 			

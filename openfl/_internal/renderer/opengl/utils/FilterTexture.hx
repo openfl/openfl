@@ -45,9 +45,7 @@ class FilterTexture {
 	
 	
 	public function clear ():Void {
-		
-		var gl = this.gl;
-		
+			
 		gl.clearColor (0, 0, 0, 0);
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		
@@ -56,7 +54,6 @@ class FilterTexture {
 	
 	public function destroy ():Void {
 		
-		var gl = this.gl;
 		gl.deleteFramebuffer (frameBuffer);
 		gl.deleteTexture (texture);
 		
@@ -72,8 +69,6 @@ class FilterTexture {
 		
 		this.width = width;
 		this.height = height;
-		
-		var gl = this.gl;
 		
 		gl.bindTexture (gl.TEXTURE_2D, texture);
 		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);

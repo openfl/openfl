@@ -8,8 +8,8 @@ import lime.math.Matrix4;
 import openfl._internal.renderer.opengl.utils.BlendModeManager;
 import openfl._internal.renderer.opengl.utils.FilterManager;
 import openfl._internal.renderer.opengl.utils.MaskManager;
-import openfl._internal.renderer.opengl.utils.ShaderManager;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
+import openfl._internal.renderer.opengl.utils.ShaderManager2;
+import openfl._internal.renderer.opengl.utils.SpriteBatch2;
 import openfl._internal.renderer.opengl.utils.StencilManager;
 import openfl.display.BlendMode;
 import openfl.geom.Point;
@@ -39,11 +39,11 @@ class RenderSession {
 	public var projection:Point;
 	public var offset:Point;
 	
-	public var shaderManager:ShaderManager;
+	public var shaderManager2:ShaderManager2;
 	public var maskManager:Dynamic;
 	public var filterManager:FilterManager;
 	public var blendModeManager:BlendModeManager;
-	public var spriteBatch:SpriteBatch;
+	public var spriteBatch2:SpriteBatch2;
 	public var stencilManager:StencilManager;
 	
 	

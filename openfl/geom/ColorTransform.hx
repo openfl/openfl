@@ -174,6 +174,38 @@ class ColorTransform {
 	}
 	
 	
+	@:noCompletion private function __combine (ct:ColorTransform):Void {
+		redMultiplier *= ct.redMultiplier;
+		greenMultiplier *= ct.greenMultiplier;
+		blueMultiplier *= ct.blueMultiplier;
+		alphaMultiplier *= ct.alphaMultiplier;
+		
+		redOffset += ct.redOffset;
+		greenOffset += ct.greenOffset;
+		blueOffset += ct.blueOffset;
+		alphaOffset += ct.alphaOffset;
+		
+	}
+	
+	
+	@:noCompletion private function __equals (ct:ColorTransform, ?skipAlphaMultiplier:Bool = false):Bool {
+		return ( ct != null &&
+			redMultiplier == ct.redMultiplier &&
+			greenMultiplier == ct.greenMultiplier &&
+			blueMultiplier == ct.blueMultiplier &&
+			(skipAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) &&
+			
+			redOffset == ct.redOffset &&
+			greenOffset == ct.greenOffset &&
+			blueOffset == ct.blueOffset &&
+			alphaOffset == ct.alphaOffset
+		);
+	}
+	
+	
+	@:noCompletion private function __clone ():ColorTransform {
+		return new ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+	}
 	
 	
 	// Getters & Setters
