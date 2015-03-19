@@ -598,7 +598,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function init (context:RenderContext):Void {
 		
-		
+		switch (context) {
+			
+			case OPENGL (gl):
+				
+				__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+			
+			case CANVAS (context):
+				
+				__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
+			
+			case DOM (element):
+				
+				__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+			
+			default:
+			
+		}
 		
 	}
 	
@@ -839,39 +855,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__renderable = true;
 		__update (false, true);
 		
-		switch (context) {
+		if (__renderer != null) {
 			
-			case OPENGL (gl):
-				
-				if (__renderer == null) {
-					
-					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
-					
-				}
-				
-				__renderer.render (this);
-			
-			case CANVAS (context):
-				
-				if (__renderer == null) {
-					
-					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-					
-				}
-				
-				__renderer.render (this);
-			
-			case DOM (element):
-				
-				if (__renderer == null) {
-					
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-					
-				}
-				
-				__renderer.render (this);
-			
-			default:
+			__renderer.render (this);
 			
 		}
 		
