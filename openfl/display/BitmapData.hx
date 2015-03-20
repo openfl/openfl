@@ -11,7 +11,7 @@ import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
-import openfl._internal.renderer.opengl.utils.SpriteBatch2;
+import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
 import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
@@ -142,7 +142,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __framebuffer:FilterTexture;
 	@:noCompletion private var __uvData:TextureUvs;
 	
-	private var __spritebatch:SpriteBatch2;
+	private var __spritebatch:SpriteBatch;
 	
 	/**
 	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
@@ -555,7 +555,7 @@ class BitmapData implements IBitmapDrawable {
 				if (gl == null) return;
 				
 				
-				var mainSpritebatch = renderSession.spriteBatch2;
+				var mainSpritebatch = renderSession.spriteBatch;
 				var mainProjection = renderSession.projection;
 				
 				if (clipRect == null) {
@@ -567,11 +567,11 @@ class BitmapData implements IBitmapDrawable {
 
 				var drawSelf = false;
 				if (__spritebatch == null) {
-					__spritebatch = new SpriteBatch2(gl);
+					__spritebatch = new SpriteBatch(gl);
 					drawSelf = true;
 				}
 				
-				renderSession.spriteBatch2 = __spritebatch;
+				renderSession.spriteBatch = __spritebatch;
 				renderSession.projection = new Point((width / 2), -(height / 2));
 				
 				if (__framebuffer == null) {
@@ -621,7 +621,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				gl.viewport(0, 0, renderSession.renderer.width, renderSession.renderer.height);
 				
-				renderSession.spriteBatch2 = mainSpritebatch;
+				renderSession.spriteBatch = mainSpritebatch;
 				renderSession.projection = mainProjection;
 				
 				gl.colorMask(true, true, true, renderSession.renderer.transparent);
@@ -1699,7 +1699,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__worldTransform == null) __worldTransform = new Matrix();
 		if (__worldColorTransform == null) __worldColorTransform = new ColorTransform();
-		renderSession.spriteBatch2.renderBitmapData(this, __worldTransform, __worldColorTransform);
+		renderSession.spriteBatch.renderBitmapData(this, __worldTransform, __worldColorTransform);
 		
 	}
 	

@@ -34,8 +34,8 @@ class GLRenderer extends AbstractRenderer {
 	public var options:Dynamic;
 	public var preserveDrawingBuffer:Bool;
 	public var projection:Point;
-	public var shaderManager2:ShaderManager2;
-	public var spriteBatch2:SpriteBatch2;
+	public var shaderManager:ShaderManager;
+	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
 	public var view:Dynamic;
 	
@@ -95,8 +95,8 @@ class GLRenderer extends AbstractRenderer {
 		resize (this.width, this.height);
 		contextLost = false;
 		
-		shaderManager2 = new ShaderManager2 (gl);
-		spriteBatch2 = new SpriteBatch2 (gl);
+		shaderManager = new ShaderManager (gl);
+		spriteBatch = new SpriteBatch (gl);
 		maskManager = new MaskManager (gl);
 		filterManager = new FilterManager (gl, this.transparent);
 		stencilManager = new StencilManager (gl);
@@ -105,18 +105,18 @@ class GLRenderer extends AbstractRenderer {
 		renderSession = new RenderSession ();
 		renderSession.gl = this.gl;
 		renderSession.drawCount = 0;
-		renderSession.shaderManager2 = this.shaderManager2;
+		renderSession.shaderManager = this.shaderManager;
 		renderSession.maskManager = this.maskManager;
 		renderSession.filterManager = this.filterManager;
 		renderSession.blendModeManager = this.blendModeManager;
-		renderSession.spriteBatch2 = this.spriteBatch2;
+		renderSession.spriteBatch = this.spriteBatch;
 		renderSession.stencilManager = this.stencilManager;
 		renderSession.renderer = this;
 		
 		renderSession.projection = projection;
 		renderSession.offset = offset;
 		
-		shaderManager2.setShader(shaderManager2.defaultShader);
+		shaderManager.setShader(shaderManager.defaultShader);
 		
 		gl.disable (gl.DEPTH_TEST);
 		gl.disable (gl.CULL_FACE);
@@ -137,13 +137,13 @@ class GLRenderer extends AbstractRenderer {
 		projection = null;
 		offset = null;
 		
-		shaderManager2.destroy ();
-		spriteBatch2.destroy ();
+		shaderManager.destroy ();
+		spriteBatch.destroy ();
 		maskManager.destroy ();
 		filterManager.destroy ();
 		
-		shaderManager2 = null;
-		spriteBatch2 = null;
+		shaderManager = null;
+		spriteBatch = null;
 		maskManager = null;
 		filterManager = null;
 		
@@ -209,8 +209,8 @@ class GLRenderer extends AbstractRenderer {
 		var gl = this.gl;
 		glContextId++;
 		
-		shaderManager2.setContext (gl);
-		spriteBatch2.setContext (gl);
+		shaderManager.setContext (gl);
+		spriteBatch.setContext (gl);
 		maskManager.setContext (gl);
 		filterManager.setContext (gl);
 		
@@ -272,11 +272,11 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.projection = projection;
 		renderSession.offset = offset;
 		
-		spriteBatch2.begin (renderSession);
+		spriteBatch.begin (renderSession);
 		filterManager.begin (renderSession, buffer);
 		displayObject.__renderGL (renderSession);
 		
-		spriteBatch2.finish();
+		spriteBatch.finish();
 		
 	}
 	

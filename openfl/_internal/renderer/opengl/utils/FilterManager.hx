@@ -102,7 +102,7 @@ class FilterManager {
 	public function begin (renderSession:RenderSession, buffer:GLFramebuffer = null):Void {
 		
 		this.renderSession = renderSession;
-		defaultShader = renderSession.shaderManager2.defaultShader;
+		defaultShader = renderSession.shaderManager.defaultShader;
 		
 		var projection = renderSession.projection;
 		

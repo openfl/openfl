@@ -843,9 +843,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
 		
 		if (masked) {
-			renderSession.spriteBatch2.stop();
+			renderSession.spriteBatch.stop();
 			renderSession.maskManager.pushMask(this, renderSession);
-			renderSession.spriteBatch2.start();
+			renderSession.spriteBatch.start();
 		}
 		
 		super.__renderGL (renderSession);
@@ -857,9 +857,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		if(masked) {
-			renderSession.spriteBatch2.stop();
+			renderSession.spriteBatch.stop();
 			renderSession.maskManager.popMask(this, renderSession);
-			renderSession.spriteBatch2.start();
+			renderSession.spriteBatch.start();
 		}
 		
 		__removedChildren = [];

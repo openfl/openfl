@@ -753,7 +753,7 @@ class GraphicsRenderer {
 	
 	public static function render (object:DisplayObject, renderSession:RenderSession):Void {
 		var graphics = object.__graphics;
-		var spritebatch = renderSession.spriteBatch2;
+		var spritebatch = renderSession.spriteBatch;
 		var dirty = graphics.__dirty;
 		if (graphics.__commands.length <= 0) {
 			return;
@@ -823,16 +823,16 @@ class GraphicsRenderer {
 		
 		renderSession.blendModeManager.setBlendMode(NORMAL);
 		
-		var batchDrawing = renderSession.spriteBatch2.drawing;
+		var batchDrawing = renderSession.spriteBatch.drawing;
 		
 		for (i in 0...glStack.buckets.length) {
-			batchDrawing = renderSession.spriteBatch2.drawing;
+			batchDrawing = renderSession.spriteBatch.drawing;
 			bucket = glStack.buckets[i];
 			
 			switch(bucket.mode) {
 				case Fill, PatternFill:
 					if (batchDrawing && !localCoords) {
-						renderSession.spriteBatch2.finish();
+						renderSession.spriteBatch.finish();
 					}
 					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix.toArray(true));
 					var shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(false));
@@ -840,29 +840,29 @@ class GraphicsRenderer {
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
 					if (batchDrawing && !localCoords) {
-						renderSession.spriteBatch2.finish();
+						renderSession.spriteBatch.finish();
 					}
 					var shader = prepareShader(bucket, renderSession, object, projection, null);
 					renderDrawTriangles(bucket, shader, renderSession);
 				case DrawTiles:
 					if (!batchDrawing) {
-						renderSession.spriteBatch2.begin(renderSession);
+						renderSession.spriteBatch.begin(renderSession);
 					}
 					var args = Type.enumParameters(bucket.graphicType);		
-					renderSession.spriteBatch2.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
+					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
 				case _:
 			}
 			
 			var ct:ColorTransform = object.__worldColorTransform;
 			for (line in bucket.lines) {
 				if (line != null && line.verts.length > 0) {
-					batchDrawing = renderSession.spriteBatch2.drawing;
+					batchDrawing = renderSession.spriteBatch.drawing;
 					if (batchDrawing && !localCoords) {
-						renderSession.spriteBatch2.finish();
+						renderSession.spriteBatch.finish();
 					}
-					var shader = renderSession.shaderManager2.primitiveShader;
+					var shader = renderSession.shaderManager.primitiveShader;
 				
-					renderSession.shaderManager2.setShader (shader);
+					renderSession.shaderManager.setShader (shader);
 					
 					gl.uniformMatrix3fv (shader.getUniformLocation(PrimitiveUniform.TranslationMatrix), false, translationMatrix.toArray(true));
 					gl.uniform2f (shader.getUniformLocation(PrimitiveUniform.ProjectionVector), projection.x, -projection.y);
@@ -880,9 +880,9 @@ class GraphicsRenderer {
 				}
 			}
 			
-			batchDrawing = renderSession.spriteBatch2.drawing;
+			batchDrawing = renderSession.spriteBatch.drawing;
 			if (!batchDrawing && !localCoords) {
-				renderSession.spriteBatch2.begin(renderSession);
+				renderSession.spriteBatch.begin(renderSession);
 			}
 		}
 	}
@@ -1045,18 +1045,18 @@ class GraphicsRenderer {
 		
 		shader = switch(bucket.mode) {
 			case Fill:
-				renderSession.shaderManager2.fillShader;
+				renderSession.shaderManager.fillShader;
 			case PatternFill:
-				renderSession.shaderManager2.patternFillShader;
+				renderSession.shaderManager.patternFillShader;
 			case DrawTriangles:
-				renderSession.shaderManager2.drawTrianglesShader;
+				renderSession.shaderManager.drawTrianglesShader;
 			case _:
 				null;
 		}
 		
 		if (shader == null) return null;
 		
-		var newShader = renderSession.shaderManager2.setShader(shader);
+		var newShader = renderSession.shaderManager.setShader(shader);
 		
 		// common uniforms
 		gl.uniform2f (shader.getUniformLocation(DefUniform.OffsetVector), -offset.x, -offset.y);

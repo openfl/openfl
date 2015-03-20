@@ -40,9 +40,9 @@ class StencilManager {
 	
 	public inline function prepareGraphics(fill:GLBucketData, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
 		var offset = renderSession.offset;
-		var shader = renderSession.shaderManager2.fillShader;
+		var shader = renderSession.shaderManager.fillShader;
 		
-		renderSession.shaderManager2.setShader (shader);
+		renderSession.shaderManager.setShader (shader);
 		gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.TranslationMatrix), false, translationMatrix);
 		gl.uniform2f (shader.getUniformLocation(FillUniform.ProjectionVector), projection.x, -projection.y);
 		gl.uniform2f (shader.getUniformLocation(FillUniform.OffsetVector), -offset.x, -offset.y);
@@ -161,8 +161,8 @@ class StencilManager {
 
 		if (glData.mode == RenderMode.STENCIL) {
 			
-			var shader = renderSession.shaderManager2.complexPrimitiveShader;
-			renderSession.shaderManager2.setShader (shader);
+			var shader = renderSession.shaderManager.complexPrimitiveShader;
+			renderSession.shaderManager.setShader (shader);
 			
 			gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 			
@@ -183,8 +183,8 @@ class StencilManager {
 			
 		} else {
 			
-			var shader = renderSession.shaderManager2.primitiveShader;
-			renderSession.shaderManager2.setShader (shader);
+			var shader = renderSession.shaderManager.primitiveShader;
+			renderSession.shaderManager.setShader (shader);
 			
 			gl.uniformMatrix3fv (shader.translationMatrix, false, object.__worldTransform.toArray (true));
 			
