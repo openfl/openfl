@@ -758,6 +758,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		#if !neko
+		
 		super.__renderCanvas (renderSession);
 		
 		if (scrollRect != null) {
@@ -792,10 +794,14 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		#end
+		
 	}
 	
 	
 	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
+		
+		#if !neko
 		
 		//if (!__renderable) return;
 		
@@ -833,6 +839,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		#end
+		
 	}
 	
 	
@@ -843,9 +851,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
 		
 		if (masked) {
-			renderSession.spriteBatch.stop();
-			renderSession.maskManager.pushMask(this, renderSession);
-			renderSession.spriteBatch.start();
+			
+			renderSession.spriteBatch.stop ();
+			renderSession.maskManager.pushMask (this, renderSession);
+			renderSession.spriteBatch.start ();
+			
 		}
 		
 		super.__renderGL (renderSession);
