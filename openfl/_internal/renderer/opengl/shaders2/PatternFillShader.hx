@@ -43,7 +43,8 @@ class PatternFillShader extends Shader {
 			'varying vec2 vPosition;',
 			
 			'vec4 colorTransform(const vec4 color, const float alpha, const vec4 multiplier, const vec4 offset) {',
-			'   vec4 result = color * multiplier;',
+			'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
+			'   vec4 result = unmultiply * multiplier;',
 			'   result.a *= alpha;',
 			'   result = result + offset;',
 			'   result = clamp(result, 0., 1.);',
