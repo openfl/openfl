@@ -278,7 +278,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 *                       <code>allowFullScreen</code> attribute is not set to
 	 *                       <code>true</code> throws a security error.
 	 */
-	public var displayState (default, set):StageDisplayState;
+	public var displayState (get, set):StageDisplayState;
 	
 	/**
 	 * The interactive object with keyboard focus; or <code>null</code> if focus
@@ -519,6 +519,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __colorSplit:Array<Float>;
 	@:noCompletion private var __colorString:String;
 	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __displayState:StageDisplayState;
 	@:noCompletion private var __dragBounds:Rectangle;
 	@:noCompletion private var __dragObject:Sprite;
 	@:noCompletion private var __dragOffsetX:Float;
@@ -564,6 +565,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		this.name = null;
 		
+		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
 		
@@ -574,7 +576,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = false;
-		displayState = StageDisplayState.NORMAL;
 		frameRate = 60;
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
@@ -820,6 +821,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowFullscreen ():Void {
+		
+		
+		
+	}
+	
+	
+	public function onWindowMinimize ():Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowMove (x:Float, y:Float):Void {
 		
 		
@@ -840,6 +855,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
+		
+	}
+	
+	
+	public function onWindowRestore ():Void {
+		
+		
 		
 	}
 	
@@ -1263,6 +1285,34 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			stack.reverse ();
 			__fireEvent (event, stack);
+			
+			#if (windows || linux)
+			
+			if (keyCode == KeyCode.RETURN && modifier.altKey && type == KeyboardEvent.KEY_DOWN && !modifier.ctrlKey && !modifier.shiftKey && !modifier.metaKey && !event.isDefaultPrevented ()) {
+				
+				switch (displayState) {
+					
+					case NORMAL: displayState = FULL_SCREEN;
+					default: displayState = NORMAL;
+					
+				}
+				
+			}
+			
+			#elseif mac
+			
+			if (keyCode == KeyCode.F && modifier.ctrlKey && modifier.metaKey && type == KeyboardEvent.KEY_DOWN && !modifier.altKey && !modifier.shiftKey && !event.isDefaultPrevented ()) {
+				
+				switch (displayState) {
+					
+					case NORMAL: displayState = FULL_SCREEN;
+					default: displayState = NORMAL;
+					
+				}
+				
+			}
+			
+			#end
 			
 		}
 		
@@ -1781,34 +1831,30 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	@:noCompletion private inline function get_displayState ():StageDisplayState {
+		
+		return __displayState;
+		
+	}
+	
+	
 	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
 		
-		/*switch(value) {
+		switch (value) {
+			
 			case NORMAL:
-				var fs_exit_function = untyped __js__("function() {
-			    if (document.exitFullscreen) {
-			      document.exitFullscreen();
-			    } else if (document.msExitFullscreen) {
-			      document.msExitFullscreen();
-			    } else if (document.mozCancelFullScreen) {
-			      document.mozCancelFullScreen();
-			    } else if (document.webkitExitFullscreen) {
-			      document.webkitExitFullscreen();
-			    }
-				}");
-				fs_exit_function();
-			case FULL_SCREEN | FULL_SCREEN_INTERACTIVE:
-				var fsfunction = untyped __js__("function(elem) {
-					if (elem.requestFullscreen) elem.requestFullscreen();
-					else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
-					else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
-					else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
-				}");
-				fsfunction(__element);
+				
+				//Lib.application.window.minimized = false;
+				Lib.application.window.fullscreen = false;
+			
 			default:
-		}*/
-		displayState = value;
-		return value;
+				
+				//Lib.application.window.minimized = false;
+				Lib.application.window.fullscreen = true;
+			
+		}
+		
+		return __displayState = value;
 		
 	}
 	
