@@ -148,7 +148,7 @@ class SpriteBatch {
 		flush();
 	}
 	
-	public function renderBitmapData(bitmapData:BitmapData, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode) {
+	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode) {
 		if (bitmapData == null) return;
 		var texture = bitmapData.getTexture(gl);
 		
@@ -167,7 +167,7 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, null, color);
 		
-		setState(batchedSprites, texture, blendMode, ct, true);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, true);
 		
 		batchedSprites++;
 	}
