@@ -49,7 +49,8 @@ class DrawTrianglesShader extends Shader {
 			'vec4 tmp;',
 			
 			'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
-			'   vec4 result = color * tint * multiplier;',
+			'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
+			'   vec4 result = unmultiply * tint * multiplier;',
 			'   result = result + offset;',
 			'   result = clamp(result, 0., 1.);',
 			'   result = vec4(result.rgb * result.a, result.a);',
