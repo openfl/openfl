@@ -4,7 +4,7 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy" unless="display" />
+	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2" unless="display" />
 	<haxedef name="openfl-legacy" if="openfl-legacy" unless="display" />
 	
 	<set name="lime-legacy" value="1" if="openfl-legacy" />

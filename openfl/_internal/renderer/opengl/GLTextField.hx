@@ -195,7 +195,7 @@ class GLTextField {
 			}
 			
 			var offsetY = 0;
-			var lines = text.split("\n");
+			var lines = text.split ("\n");
 			
 			if (textField.__textLayout == null) {
 				
@@ -232,6 +232,7 @@ class GLTextField {
 					
 				}
 				
+				x = 0;
 				y += size * 1.185;
 				
 			}
