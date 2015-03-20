@@ -1098,7 +1098,7 @@ class GraphicsRenderer {
 		if (bucket.mode == PatternFill && bucket.texture != null) {
 			bindTexture(gl, bucket);
 		}
-		gl.uniformMatrix3fv (shader.getUniformLocation(PatternFillUniform.TranslationMatrix), false, translationMatrix);
+		//gl.uniformMatrix3fv (shader.getUniformLocation(PatternFillUniform.TranslationMatrix), false, translationMatrix);
 		gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
 		gl.vertexAttribPointer (shader.getAttribLocation(FillAttrib.Position), 4, gl.SHORT, false, 0, 0);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
