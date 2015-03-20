@@ -1664,13 +1664,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	@:noCompletion public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGrahpics:Graphics = null):Void {
 		
 		if (transformOnly) {
 			
 			if (DisplayObject.__worldTransformDirty > 0) {
 				
-				super.__update (true, updateChildren);
+				super.__update (true, updateChildren, maskGrahpics);
 				
 				if (updateChildren) {
 					
@@ -1685,7 +1685,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (DisplayObject.__worldTransformDirty > 0 || __dirty || DisplayObject.__worldRenderDirty > 0) {
 				
-				super.__update (false, updateChildren);
+				super.__update (false, updateChildren, maskGrahpics);
 				
 				if (updateChildren) {
 					
@@ -1704,7 +1704,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				// If we were dirty last time, we need at least one more
 				// update in order to clear "changed" properties
 				
-				super.__update (false, updateChildren);
+				super.__update (false, updateChildren, maskGrahpics);
 				
 				if (updateChildren) {
 					

@@ -1,70 +1,92 @@
-package openfl._internal.renderer.opengl.utils ;
+package openfl._internal.renderer.opengl.utils;
 
-
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
-import openfl._internal.renderer.opengl.shaders.AbstractShader;
+import openfl._internal.renderer.opengl.shaders2.*;
+import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefAttrib;
+import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.Tilesheet;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
-import openfl.display.DisplayObject;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
 import openfl.geom.Rectangle;
-
+import openfl.gl.GLBuffer;
+import openfl.gl.GLTexture;
+import openfl.display.BlendMode;
+import lime.utils.*;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Tilesheet)
-
-
 class SpriteBatch {
+
+	static inline var VERTS_PER_SPRITE:Int = 4;
 	
-	
-	public var states:Array<State> = [];
-	public var currentState:State;
-	
-	public var currentBaseTexture:GLTexture;
-	public var currentBatchSize:Int;
-	public var currentBlendMode:BlendMode;
-	public var dirty:Bool;
-	public var drawing:Bool;
 	public var gl:GLRenderContext;
-	public var indexBuffer:GLBuffer;
-	public var indices:UInt16Array;
-	public var lastIndexCount:Int;
-	public var renderSession:RenderSession;
-	public var shader:AbstractShader;
-	public var size:Int;
-	public var vertexBuffer:GLBuffer;
-	public var vertices:Float32Array;
-	public var vertSize:Int;
+	var renderSession:RenderSession;
+	
+	var states:Array<State> = [];
+	var currentState:State;
+	
+	var vertexArray:VertexArray;
+	var positions:Float32Array;
+	var colors:UInt32Array;
+	
+	var indexBuffer:GLBuffer;
+	var indices:UInt16Array;
+	
+	var dirty:Bool = true;
+	public var drawing:Bool = false;
+	
+	var clipRect:Rectangle;
+	
+	var maxSprites:Int;
+	var batchedSprites:Int;
+	var vertexArraySize:Int;
+	var indexArraySize:Int;
+	var maxElementsPerVertex:Int;
+	var elementsPerVertex:Int;
+	
+	var writtenVertexBytes:Int = 0;
+	
+	var shader:Shader;
+	var attributes:Array<VertexAttribute> = [];
+	
+	var enableColor:Bool = true;
+	
+	var lastEnableColor:Bool = true;
 	
 	
-	public function new (gl:GLRenderContext) {
+	public function new(gl:GLRenderContext, maxSprites:Int = 2000) {
+		this.maxSprites = maxSprites;
 		
-		vertSize = 6;
-		size = Math.floor(Math.pow(2, 16) /  this.vertSize);
+		attributes.push(new VertexAttribute(2, ElementType.FLOAT, false, DefAttrib.Position));
+		attributes.push(new VertexAttribute(2, ElementType.FLOAT, false, DefAttrib.TexCoord));
+		attributes.push(new VertexAttribute(4, ElementType.UNSIGNED_BYTE, true, DefAttrib.Color));
 		
-		var numVerts = size * 4 * vertSize;
-		var numIndices = size * 6;
+		attributes[2].defaultValue = new Float32Array([1, 1, 1, 1]);
 		
-		vertices = new Float32Array (numVerts);
-		indices = new UInt16Array (numIndices);
+		maxElementsPerVertex = 0;
 		
-		lastIndexCount = 0;
+		for (a in attributes) {
+			maxElementsPerVertex += a.elements;
+		}
 		
-		var i = 0;
-		var j = 0;
+		vertexArraySize = maxSprites * maxElementsPerVertex * VERTS_PER_SPRITE * 4;
+		indexArraySize = maxSprites * 6;
 		
-		while (i < numIndices) {
-			
+		vertexArray = new VertexArray(attributes, vertexArraySize, false);
+		positions = new Float32Array(vertexArray.buffer);
+		colors = new UInt32Array(vertexArray.buffer);
+		
+		indices = new UInt16Array(indexArraySize);
+		
+		var i = 0, j = 0;
+		while (i < indexArraySize) {
 			indices[i + 0] = j + 0;
 			indices[i + 1] = j + 1;
 			indices[i + 2] = j + 2;
@@ -73,198 +95,81 @@ class SpriteBatch {
 			indices[i + 5] = j + 3;
 			i += 6;
 			j += 4;
-			
 		}
 		
-		drawing = false;
-		currentBatchSize = 0;
-		currentBaseTexture = null;
-		
-		setContext (gl);
-		
-		dirty = true;
-		
 		currentState = new State();
+		dirty = true;
+		drawing = false;
+		batchedSprites = 0;
+		
+		setContext(gl);
 		
 	}
 	
+	public function destroy() {
+		vertexArray.destroy();
+		vertexArray = null;
+		
+		indices = null;
+		gl.deleteBuffer(indexBuffer);
+		
+		currentState.destroy();
+		for (state in states) {
+			state.destroy();
+		}
+		
+		gl = null;
+	}
 	
-	public function begin (renderSession:RenderSession):Void {
+	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null):Void {
 		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
 		drawing = true;
-		start ();
+		start(clipRect);
 		
 	}
 	
-	
-	public function destroy ():Void {
-		
-		vertices = null;
-		indices = null;
-		
-		gl.deleteBuffer (vertexBuffer);
-		gl.deleteBuffer (indexBuffer);
-		
-		currentBaseTexture = null;
-		
-		gl = null;
-		
-	}
-	
-	
-	public function end ():Void {
-		
-		flush ();
+	public function finish() {
+		flush();
+		clipRect = null;
 		drawing = false;
-		
 	}
 	
-	
-	private function flush ():Void {
-		
-		if (currentBatchSize == 0) return;
-		
-		var gl = this.gl;
-		
-		renderSession.shaderManager.setShader (renderSession.shaderManager.defaultShader);
-		
-		if (dirty) {
-			
-			dirty = false;
-			gl.activeTexture (gl.TEXTURE0);
-			
-			gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-			
-			var projection = renderSession.projection;
-			gl.uniform2f (shader.projectionVector, projection.x, projection.y);
-			
-			var stride =  vertSize * 4;
-			gl.vertexAttribPointer (shader.aVertexPosition, 2, gl.FLOAT, false, stride, 0);
-			gl.vertexAttribPointer (shader.aTextureCoord, 2, gl.FLOAT, false, stride, 2 * 4);
-			gl.vertexAttribPointer (shader.colorAttribute, 2, gl.FLOAT, false, stride, 4 * 4);
-			
+	public function start(?clipRect:Rectangle = null) {
+		if (!drawing) {
+			throw "Call Spritebatch.begin() before start()";
 		}
-		
-		if (currentBatchSize > (size * 0.5)) {
-			
-			gl.bufferSubData (gl.ARRAY_BUFFER, 0, vertices);
-			
-		} else {
-			
-			var view = vertices.subarray (0, currentBatchSize * 4 * vertSize);
-			gl.bufferSubData (gl.ARRAY_BUFFER, 0, view);
-			
-		}
-		
-		var nextState:State;
-		var batchSize = 0;
-		var start = 0;
-		
-		currentState.texture = null;
-		currentState.textureSmooth = true;
-		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
-		
-		var j = this.currentBatchSize;
-		for (i in 0...j) {
-			
-			nextState = states[i];
-			
-			if (currentState.texture != nextState.texture || currentState.blendMode != nextState.blendMode) {
-				
-				renderBatch (currentState, batchSize, start);
-				
-				start = i;
-				batchSize = 0;
-				currentState.texture = nextState.texture;
-				currentState.textureSmooth = nextState.textureSmooth;
-				currentState.blendMode = nextState.blendMode;
-				
-				
-				renderSession.blendModeManager.setBlendMode (currentState.blendMode);
-				
-			}
-			
-			batchSize++;
-			
-		}
-		
-		renderBatch (currentState, batchSize, start);
-		currentBatchSize = 0;
-		
+		dirty = true;
+		this.clipRect = clipRect;
 	}
 	
+	public function stop() {
+		flush();
+	}
 	
-	public function render (sprite:Bitmap):Void {
-		
-		var bitmapData = sprite.bitmapData;
+	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode) {
+		if (bitmapData == null) return;
 		var texture = bitmapData.getTexture(gl);
 		
-		if (bitmapData == null) return;
-		
-		if (currentBatchSize >= size) {
-			
-			flush ();
-			currentState.texture = texture;
-			
+		if (batchedSprites >= maxSprites) {
+			flush();
 		}
 		
 		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
-		var alpha = sprite.__worldAlpha;
-		//var tint = sprite.tint;
-		var tint = 0xFFFFFF;
+		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
 		
-		//var aX = sprite.anchor.x;
-		var aX = 0;
-		//var aY = sprite.anchor.y;
-		var aY = 0;
+		//enableAttributes(color);
+		enableAttributes(0);
 		
-		var index = currentBatchSize * 4 * vertSize;
-		fillVertices(index, aX, aY, bitmapData.width, bitmapData.height, tint, alpha, uvs, sprite.__worldTransform);
+		var index = batchedSprites * 4 * elementsPerVertex;
+		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, null, color);
 		
-		setState(currentBatchSize, texture, sprite.blendMode);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, true);
 		
-		currentBatchSize++;
-		
-	}
-	
-	public function renderCachedGraphics(object:DisplayObject) {
-		var cachedTexture = object.__graphics.__cachedTexture;
-		
-		if (cachedTexture == null) return;
-		
-		if (currentBatchSize >= size) {
-			
-			flush ();
-			currentBaseTexture = cachedTexture.texture;
-			
-		}
-		
-		var alpha = object.__worldAlpha;
-		var tint = 0xFFFFFF;
-		
-		var aX = 0;
-		var aY = 0;
-		
-		var uvs = new TextureUvs();
-		uvs.x0 = 0;		uvs.y0 = 1;
-		uvs.x1 = 1;		uvs.y1 = 1;
-		uvs.x2 = 1;		uvs.y2 = 0;
-		uvs.x3 = 0;		uvs.y3 = 0;
-		
-		var index = currentBatchSize * 4 * vertSize;
-		var worldTransform = object.__worldTransform.clone();
-		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
-		
-		fillVertices(index, aX, aY, cachedTexture.width, cachedTexture.height, tint, alpha, uvs, worldTransform);
-
-		setState(currentBatchSize, cachedTexture.texture, object.blendMode);
-		
-		currentBatchSize++;
+		batchedSprites++;
 	}
 	
 	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1) {		
@@ -314,7 +219,7 @@ class SpriteBatch {
 		var tileUV:Rectangle = sheet.__rectUV;
 		var center:Point = sheet.__point;
 		var x = 0.0, y = 0.0;
-		var alpha = 1.0, tint = 0xFFFFFF;
+		var alpha = 1.0, tint = 0xFFFFFF, color = 0xFFFFFFFF;
 		var scale = 1.0, rotation = 0.0;
 		var cosTheta = 1.0, sinTheta = 0.0;
 		var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
@@ -325,11 +230,13 @@ class SpriteBatch {
 		
 		var bIndex = 0;
 		
+		//enableAttributes((useRGB || useAlpha) ? 0 : 0xFFFFFFFF);
+		enableAttributes(0);
+		
 		while (iIndex < totalCount) {
 			
-			if (currentBatchSize >= size) {
+			if (batchedSprites >= maxSprites) {
 				flush ();
-				currentBaseTexture = texture;
 			}
 			
 			x = tileData[iIndex + 0];
@@ -419,13 +326,15 @@ class SpriteBatch {
 				uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
 				uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
 				
-				bIndex = currentBatchSize * 4 * vertSize;
+				bIndex = batchedSprites * 4 * elementsPerVertex;
 				
-				fillVertices(bIndex, 0, 0, rect.width, rect.height, tint, alpha, uvs, matrix);
+				color = ((Std.int(alpha * 255)) & 0xFF) << 24 | (tint & 0xFF) << 16 | ((tint >> 8) & 0xFF) << 8 | ((tint >> 16) & 0xFF);
 				
-				setState(currentBatchSize, texture, smooth, blendMode);
+				fillVertices(bIndex, rect.width, rect.height, matrix, uvs, null, color);
 				
-				currentBatchSize++;
+				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, false);
+				
+				batchedSprites++;
 			}
 			
 			iIndex += numValues;
@@ -433,18 +342,52 @@ class SpriteBatch {
 		}
 	}
 	
-	private inline function fillVertices(index:Int,
-										aX:Float, aY:Float,
-										width:Float, height:Float,
-										tint:Int, alpha:Float,
-										uvs:TextureUvs,
-										matrix:Matrix) {
+	public function renderCachedGraphics(object:DisplayObject) {
+		var cachedTexture = object.__graphics.__cachedTexture;
+		
+		if (cachedTexture == null) return;
+		
+		if (batchedSprites >= maxSprites) {
+			flush();
+		}
+		
+		var alpha = object.__worldAlpha;
+		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
+		
 
-		var w0, w1, h0, h1;
-		w0 = width * (1 - aX);
-		w1 = width * -aX;
-		h0 = height * (1 - aY);
-		h1 = height * -aY;
+		var uvs = new TextureUvs();
+		uvs.x0 = 0;		uvs.y0 = 1;
+		uvs.x1 = 1;		uvs.y1 = 1;
+		uvs.x2 = 1;		uvs.y2 = 0;
+		uvs.x3 = 0;		uvs.y3 = 0;
+		
+		var worldTransform = object.__worldTransform.clone();
+		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
+		
+		enableAttributes(color);
+		
+		var index = batchedSprites * 4 * elementsPerVertex;
+		fillVertices(index, cachedTexture.width, cachedTexture.height, worldTransform, uvs, null, color);
+		
+		setState(batchedSprites, cachedTexture.texture, object.blendMode, object.__worldColorTransform);
+		
+		batchedSprites++;
+	}
+	
+	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs, ?pivot:Point,
+		?color:Int = 0xFFFFFFFF) {
+		
+		var w0:Float, w1:Float, h0:Float, h1:Float;
+		
+		if (pivot == null) {
+			w0 = width; w1 = 0;
+			h0 = height; h1 = 0;
+		} else {
+			w0 = width * (1 - pivot.x); 
+			w1 = width * -pivot.x; 
+			h0 = height * (1 - pivot.y); 
+			h1 = height * -pivot.y; 
+		}
 		
 		var a = matrix.a;
 		var b = matrix.b;
@@ -452,57 +395,153 @@ class SpriteBatch {
 		var d = matrix.d;
 		var tx = matrix.tx;
 		var ty = matrix.ty;
+		var cOffsetIndex = 0;
 		
-		vertices[index++] = (a * w1 + c * h1 + tx);
-		vertices[index++] = (d * h1 + b * w1 + ty);
-		vertices[index++] = uvs.x0;
-		vertices[index++] = uvs.y0;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		vertices[index++] = (a * w0 + c * h1 + tx);
-		vertices[index++] = (d * h1 + b * w0 + ty);
-		vertices[index++] = uvs.x1;
-		vertices[index++] = uvs.y1;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		vertices[index++] = (a * w0 + c * h0 + tx);
-		vertices[index++] = (d * h0 + b * w0 + ty);
-		vertices[index++] = uvs.x2;
-		vertices[index++] = uvs.y2;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		vertices[index++] = (a * w1 + c * h0 + tx);
-		vertices[index++] = (d * h0 + b * w1 + ty);
-		vertices[index++] = uvs.x3;
-		vertices[index++] = uvs.y3;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-	}
-	
-	private function setState(index:Int, texture:GLTexture, smooth:Bool = true, blendMode:BlendMode) {
-		var state:State = states[currentBatchSize];
-		if (state == null) {
-			state = states[currentBatchSize] = new State();
+		positions[index++] = (a * w1 + c * h1 + tx);
+		positions[index++] = (d * h1 + b * w1 + ty);
+		positions[index++] = uvs.x0;
+		positions[index++] = uvs.y0;
+		if(enableColor) {
+			colors[index++] = color;
 		}
-		state.texture = texture;
-		state.textureSmooth = smooth;
-		state.blendMode = blendMode;
+		
+		positions[index++] = (a * w0 + c * h1 + tx);
+		positions[index++] = (d * h1 + b * w0 + ty);
+		positions[index++] = uvs.x1;
+		positions[index++] = uvs.y1;
+		if(enableColor) {
+			colors[index++] = color;
+		}
+		
+		positions[index++] = (a * w0 + c * h0 + tx);
+		positions[index++] = (d * h0 + b * w0 + ty);
+		positions[index++] = uvs.x2;
+		positions[index++] = uvs.y2;
+		if(enableColor) {
+			colors[index++] = color;
+		}
+		
+		
+		positions[index++] = (a * w1 + c * h0 + tx);
+		positions[index++] = (d * h0 + b * w1 + ty);
+		positions[index++] = uvs.x3;
+		positions[index++] = uvs.y3;
+		if(enableColor) {
+			colors[index++] = color;
+		}
+		
+		writtenVertexBytes = index;
 	}
 	
+	inline function enableAttributes(?color:Int = 0xFFFFFFFF) {
+		enableColor = color != 0xFFFFFFFF;
 		
-	private function renderBatch (state:State, size:Int, startIndex:Int):Void {
+		if (enableColor != lastEnableColor) {
+			flush();
+			lastEnableColor = enableColor;
+		}
 		
-		if (size == 0)return;
+		attributes[2].enabled = lastEnableColor;
 		
-		//var gl = this.gl;
+		elementsPerVertex = getElementsPerVertex();
+	}
+	
+	function flush() {
+		if (batchedSprites == 0) return;
 		
-		//var tex:GLTexture = /*texture._glTextures[GLRenderer.glContextId];*/ texture.getTexture (gl);
-		//if (tex == null) tex = Texture.createWebGLTexture (texture, gl);
-		gl.bindTexture (gl.TEXTURE_2D, state.texture);
+		if (clipRect == null) {
+			gl.disable(gl.SCISSOR_TEST);
+		} else {
+			gl.enable(gl.SCISSOR_TEST);
+			gl.scissor(Math.floor(clipRect.x), 
+						Math.floor(clipRect.y),
+						Math.floor(clipRect.width),
+						Math.floor(clipRect.height)
+					);
+		}
+		
+		if (dirty) {
+			dirty = false;
+			
+			gl.activeTexture(gl.TEXTURE0);
+			
+			vertexArray.bind();
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		}
+		
+		if(writtenVertexBytes > (vertexArraySize * 0.5)) {
+			vertexArray.upload(positions);
+		} else {
+			var view = positions.subarray(0, writtenVertexBytes);
+			vertexArray.upload(view);
+		}
+		
+		var nextState:State;
+		var batchSize:Int = 0;
+		var start:Int = 0;
+		
+		currentState.shader = renderSession.shaderManager.defaultShader;
+		currentState.texture = null;
+		currentState.textureSmooth = false;
+		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
+		currentState.colorTransform = null;
+		currentState.skipColorTransformAlpha = false;
+		
+		for (i in 0...batchedSprites) {
+			nextState = states[i];
+			currentState.skipColorTransformAlpha = nextState.skipColorTransformAlpha;
+			if (!nextState.equals(currentState)) {
+				renderBatch(currentState, batchSize, start);
+				
+				start = i;
+				batchSize = 0;
+				
+				currentState.shader = nextState.shader;
+				currentState.texture = nextState.texture;
+				currentState.textureSmooth = nextState.textureSmooth;
+				currentState.blendMode = nextState.blendMode;
+				currentState.colorTransform = nextState.colorTransform;
+			}
+			
+			batchSize++;
+		}
+		
+		renderBatch (currentState, batchSize, start);
+		batchedSprites = 0;
+		writtenVertexBytes = 0;
+		
+		if (clipRect != null) {
+			gl.disable(gl.SCISSOR_TEST);
+		}
+		
+	}
+	
+	
+	function renderBatch(state:State, size:Int, start:Int) {
+		if (size == 0 || state.texture == null) return;
+		
+		var shader:Shader = state.shader == null ? renderSession.shaderManager.defaultShader : state.shader;
+		renderSession.shaderManager.setShader(shader);
+		
+		// TODO cache this somehow?, don't do each state change?
+		shader.bindVertexArray(vertexArray);
+		
+		var projection = renderSession.projection;
+		gl.uniform2f(shader.getUniformLocation(DefUniform.ProjectionVector), projection.x, projection.y);
+		
+		if (state.colorTransform != null) {
+			var ct = state.colorTransform;
+			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier),
+						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, state.skipColorTransformAlpha ? 1 : ct.alphaMultiplier);
+			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset),
+						ct.redOffset / 255., ct.greenOffset / 255., ct.blueOffset / 255., ct.alphaOffset / 255.);
+		} else {
+			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
+			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
+		}
+		
+		renderSession.blendModeManager.setBlendMode(state.blendMode);
+		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 		
 		if (state.textureSmooth) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -511,156 +550,71 @@ class SpriteBatch {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
 		}
-		/*if (texture._dirty[GLRenderer.glContextId]) {
-			
-			Texture.updateWebGLTexture (currentBaseTexture, gl);
-			
-		}*/
 		
-		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, startIndex * 6 * 2);
+		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
 		
 		renderSession.drawCount++;
 		
 	}
 	
-	
-	public function renderTilingSprite (tilingSprite:Dynamic):Void {
-		/*
-		var texture = tilingSprite.tilingTexture;
-		
-		if (currentBatchSize >= size) {
-			
-			flush ();
-			currentBaseTexture = texture;
-			
+	function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?skipAlpha:Bool = false) {
+		var state:State = states[index];
+		if (state == null) {
+			state = states[index] = new State();
 		}
-		
-		if (tilingSprite._uvs == null) tilingSprite._uvs = new TextureUvs ();
-		var uvs = tilingSprite._uvs;
-		
-		tilingSprite.tilePosition.x %= texture.width * tilingSprite.tileScaleOffset.x;
-		tilingSprite.tilePosition.y %= texture.height * tilingSprite.tileScaleOffset.y;
-		
-		var offsetX =  tilingSprite.tilePosition.x / (texture.width * tilingSprite.tileScaleOffset.x);
-		var offsetY =  tilingSprite.tilePosition.y / (texture.height * tilingSprite.tileScaleOffset.y);
-		
-		var scaleX =  (tilingSprite.width / texture.width)  / (tilingSprite.tileScale.x * tilingSprite.tileScaleOffset.x);
-		var scaleY =  (tilingSprite.height / texture.height) / (tilingSprite.tileScale.y * tilingSprite.tileScaleOffset.y);
-		
-		uvs.x0 = 0 - offsetX;
-		uvs.y0 = 0 - offsetY;
-		
-		uvs.x1 = (1 * scaleX) - offsetX;
-		uvs.y1 = 0 - offsetY;
-		
-		uvs.x2 = (1 * scaleX) - offsetX;
-		uvs.y2 = (1 * scaleY) - offsetY;
-		
-		uvs.x3 = 0 - offsetX;
-		uvs.y3 = (1 * scaleY) - offsetY;
-		
-		var alpha = tilingSprite.worldAlpha;
-		var tint = tilingSprite.tint;
-		
-		var vertices = this.vertices;
-		
-		var width = tilingSprite.width;
-		var height = tilingSprite.height;
-		
-		var aX = tilingSprite.anchor.x;
-		var aY = tilingSprite.anchor.y;
-		var w0 = width * (1 - aX);
-		var w1 = width * -aX;
-		
-		var h0 = height * (1 - aY);
-		var h1 = height * -aY;
-		
-		var index = this.currentBatchSize * 4 * this.vertSize;
-		
-		var worldTransform = tilingSprite.worldTransform;
-		
-		var a = worldTransform.a;//[0];
-		var b = worldTransform.b;//[3];
-		var c = worldTransform.c;//[1];
-		var d = worldTransform.d;//[4];
-		var tx = worldTransform.tx;//[2];
-		var ty = worldTransform.ty;///[5];
-		
-		vertices[index++] = a * w1 + c * h1 + tx;
-		vertices[index++] = d * h1 + b * w1 + ty;
-		vertices[index++] = uvs.x0;
-		vertices[index++] = uvs.y0;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		vertices[index++] = (a * w0 + c * h1 + tx);
-		vertices[index++] = d * h1 + b * w0 + ty;
-		vertices[index++] = uvs.x1;
-		vertices[index++] = uvs.y1;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		vertices[index++] = a * w0 + c * h0 + tx;
-		vertices[index++] = d * h0 + b * w0 + ty;
-		vertices[index++] = uvs.x2;
-		vertices[index++] = uvs.y2;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		vertices[index++] = a * w1 + c * h0 + tx;
-		vertices[index++] = d * h0 + b * w1 + ty;
-		vertices[index++] = uvs.x3;
-		vertices[index++] = uvs.y3;
-		vertices[index++] = alpha;
-		vertices[index++] = tint;
-		
-		textures[currentBatchSize] = texture;
-		blendModes[currentBatchSize] = tilingSprite.blendMode;
-		currentBatchSize++;
-		*/
+		state.texture = texture;
+		state.textureSmooth = smooth;
+		state.blendMode = blendMode;
+		state.colorTransform = colorTransform;
+		state.skipColorTransformAlpha = skipAlpha;
 	}
 	
-	
-	public function setContext (gl:GLRenderContext):Void {
-		
+	public function setContext(gl:GLRenderContext) {
 		this.gl = gl;
 		
-		vertexBuffer = gl.createBuffer ();
-		indexBuffer = gl.createBuffer ();
+		vertexArray.setContext(gl, positions);
 		
-		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-		
-		gl.bindBuffer (gl.ARRAY_BUFFER, vertexBuffer);
-		gl.bufferData (gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
-		
-		currentBlendMode = null;
+		indexBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 		
 	}
 	
 	
-	public function start ():Void {
+	inline function getElementsPerVertex() {
+		var r = 0;
 		
-		dirty = true;
+		for (a in attributes) {
+			if(a.enabled) r += a.elements;
+		}
 		
+		return r;
 	}
-	
-	
-	public function stop ():Void {
-		
-		flush ();
-		
-	}
-	
-	
 }
 
+@:access(openfl.geom.ColorTransform)
 private class State {
 	public var texture:GLTexture;
 	public var textureSmooth:Bool = true;
 	public var blendMode:BlendMode;
-	// TODO
-	//public var shader:Dynamic;
+	public var colorTransform:ColorTransform;
+	public var skipColorTransformAlpha:Bool = false;
+	public var shader:Shader;
 	
-	public function new() {}
+	public function new() { }
+	
+	public inline function equals(other:State) {
+		return ((shader == null || other.shader == null) || shader.ID == other.shader.ID) &&
+				texture == other.texture &&
+				textureSmooth == other.textureSmooth &&
+				blendMode == other.blendMode &&
+				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
+				(colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha))
+		;
+	}
+	
+	public function destroy() {
+		texture = null;
+		colorTransform = null;
+	}
 }

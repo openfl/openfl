@@ -62,9 +62,13 @@ class GLTextField {
 			
 		}
 		
-		for (i in 0...textField.__tilesheets.length) {
+		if (textField.__tilesheets != null) {
 			
-			graphics.drawTiles (textField.__tilesheets[i], textField.__tileData[i], true, Tilesheet.TILE_RGB);
+			for (i in 0...textField.__tilesheets.length) {
+				
+				graphics.drawTiles (textField.__tilesheets[i], textField.__tileData[i], true, Tilesheet.TILE_RGB);
+				
+			}
 			
 		}
 		

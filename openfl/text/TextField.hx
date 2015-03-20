@@ -1077,6 +1077,13 @@ class TextField extends InteractiveObject {
 		
 		#if js
 		
+		if (__context == null) {
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			__context = __canvas.getContext ("2d");
+			
+		}
+		
 		if (__ranges == null) {
 			
 			__context.font = __getFont (__textFormat);
