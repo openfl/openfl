@@ -5,7 +5,9 @@
 	<set name="native" if="cpp || neko" />
 	
 	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2" unless="display" />
-	<unset name="openfl-legacy" if="web" />
+	
+	<unset name="openfl-legacy" if="web" />	
+	<unset name="lime-legacy" if="web" />	
 	
 	<set name="lime-legacy" value="1" if="openfl-legacy" />
 	<set name="openfl-next" value="1" unless="openfl-legacy" />
