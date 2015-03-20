@@ -5,6 +5,9 @@ _Legacy OpenFL v2 behavior is available using -Dv2 or -Dlegacy_
 
 * Added support for Haxe 3.2
 * Added support for using OpenFL as a Lime module
+* Added initial support for GL colorTransform
+* Added initial support for GL masks
+* Added initial support for OpenGL BitmapData.draw
 * Added initial OpenGL TextField support
 * Added fullscreen toggle support
 * Implemented key modifiers for mouse events
