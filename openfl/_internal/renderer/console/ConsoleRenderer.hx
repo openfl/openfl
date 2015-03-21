@@ -1,0 +1,792 @@
+package openfl._internal.renderer.console;
+#if lime_console
+
+
+import cpp.vm.WeakRef;
+import cpp.UInt8;
+import lime.graphics.console.IndexBuffer;
+import lime.graphics.console.PointerUtil;
+import lime.graphics.console.Primitive;
+import lime.graphics.console.Shader;
+import lime.graphics.console.Texture;
+import lime.graphics.console.TextureData;
+import lime.graphics.console.TextureFormat;
+import lime.graphics.console.VertexDecl;
+import lime.graphics.console.VertexBuffer;
+import lime.graphics.ConsoleRenderContext;
+import lime.graphics.Image;
+import lime.math.Matrix4;
+import openfl._internal.renderer.AbstractRenderer;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.BlendMode;
+import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectContainer;
+import openfl.display.Graphics;
+import openfl.display.Shape;
+import openfl.display.Sprite;
+import openfl.display.Stage;
+import openfl.display.Tilesheet;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.text.TextField;
+
+
+@:access(openfl.display.Bitmap)
+@:access(openfl.display.BitmapData)
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.DisplayObjectContainer)
+@:access(openfl.display.Graphics)
+@:access(openfl.display.Sprite)
+@:access(openfl.display.Stage)
+@:access(openfl.display.Tilesheet)
+
+
+class ConsoleRenderer extends AbstractRenderer {
+	
+
+	private var ctx:ConsoleRenderContext;
+
+	private var defaultShader:Shader;
+	private var fillShader:Shader;
+
+	// TODO(james4k): move to a TransientBuffers class or something.. or move to C++
+	private var indexBufferCounts:Array<Int> = [];
+	private var indexBuffers:Array<IndexBuffer> = [];
+	private var indexBufferAges:Array<UInt8> = [];
+	private var vertexBufferDecls:Array<VertexDecl> = [];
+	private var vertexBufferCounts:Array<Int> = [];
+	private var vertexBuffers:Array<VertexBuffer> = [];
+	private var vertexBufferAges:Array<UInt8> = [];
+
+	private var textureImages:Array<WeakRef<Image>> = [];
+	private var textures:Array<Texture> = [];
+
+	private var viewProj:Matrix4;
+	private var transform:Matrix4;
+
+	
+	public function new (width:Int, height:Int, ctx:ConsoleRenderContext) {
+
+		this.ctx = ctx;
+		
+		super (width, height);
+		
+		this.width = width;
+		this.height = height;
+
+		defaultShader = ctx.lookupShader ("openfl_default");
+		fillShader = ctx.lookupShader ("openfl_fill");
+
+	}
+
+
+	public function destroy ():Void {
+
+		for (ib in indexBuffers) {
+			ctx.destroyIndexBuffer (ib);
+		}
+
+		for (vb in vertexBuffers) {
+			ctx.destroyVertexBuffer (vb);
+		}
+
+		for (tex in textures) {
+			ctx.destroyTexture (tex);
+		}
+
+		indexBuffers = null;
+		vertexBuffers = null;
+		textures = null;
+
+	}
+	
+	
+	public override function render (stage:Stage):Void {
+
+		viewProj = Matrix4.createOrtho (0, width, height, 0, -1, 1);
+
+		ctx.setViewport (0, 0, width, height);
+		ctx.clear (
+			Std.int (stage.__colorSplit[0] * 0xff),
+			Std.int (stage.__colorSplit[1] * 0xff),
+			Std.int (stage.__colorSplit[2] * 0xff),
+			0xff
+		);
+
+		// TODO(james4k): no culling, no depth testing, default blending
+
+		renderDisplayObject (stage);
+
+		collectTransientBuffers ();
+		collectTextures ();
+
+	}
+
+
+	public override function resize (width:Int, height:Int):Void {
+
+		super.resize (width, height);
+
+		this.width = width;
+		this.height = height;
+
+	}
+
+	
+	private function renderDisplayObject (object:DisplayObject) {
+
+		if (!object.__renderable || object.__worldAlpha <= 0) {
+			return;
+		}
+
+		if (Std.is (object, DisplayObjectContainer)) {
+
+			renderDisplayObjectContainer (cast (object));
+
+		} else if (Std.is (object, Shape)) {
+
+			renderShape (cast (object));
+
+		} else if (Std.is (object, TextField)) {
+
+			renderTextField (cast (object));
+
+		}
+
+	}
+
+
+	private function renderDisplayObjectContainer (object:DisplayObjectContainer) {
+
+		if (Std.is (object, Sprite)) {
+
+			renderSprite (cast (object));
+
+		} else if (Std.is (object, Bitmap)) {
+
+			renderBitmap (cast (object));
+
+		}
+
+		for (child in object.__children) {
+
+			renderDisplayObject (child);
+
+		}
+
+		object.__removedChildren = [];
+
+	}
+
+
+	private function setObjectTransform (object:DisplayObject) {
+
+		transform = Matrix4.createABCD (
+			object.__worldTransform.a,
+			object.__worldTransform.b,
+			object.__worldTransform.c,
+			object.__worldTransform.d,
+			object.__worldTransform.tx,
+			object.__worldTransform.ty
+		);
+
+	}
+
+
+	// transientIndexBuffer returns an IndexBuffer that is only valid for the frame
+	private function transientIndexBuffer (indexCount:Int):IndexBuffer {
+ 
+		// aligned indexCount to allow for more reusability
+		var align = 16;
+		indexCount = (indexCount + align - 1) & ~(align - 1);
+
+		for (i in 0...vertexBuffers.length) {
+
+			if (indexBufferCounts[i] == indexCount &&
+				indexBufferAges[i] > 0
+			) {
+				indexBufferAges[i] = 0;
+				return indexBuffers[i];
+			}
+
+		}
+
+		var ib = ctx.createIndexBuffer (null, indexCount);	
+
+		indexBufferCounts.push (indexCount);
+		indexBuffers.push (ib);
+		indexBufferAges.push (0);
+
+		return ib;
+
+	}
+
+
+	// transientVertexBuffer returns a VertexBuffer that is only valid for the frame
+	private function transientVertexBuffer (decl:VertexDecl, vertexCount:Int):VertexBuffer {
+ 
+		// aligned vertexCount to allow for more reusability
+		var align = 16;
+		vertexCount = (vertexCount + align - 1) & ~(align - 1);
+
+		for (i in 0...vertexBuffers.length) {
+
+			if (vertexBufferDecls[i] == decl &&
+				vertexBufferCounts[i] == vertexCount &&
+				vertexBufferAges[i] > 0
+			) {
+				vertexBufferAges[i] = 0;
+				return vertexBuffers[i];
+			}
+
+		}
+
+		var vb = ctx.createVertexBuffer (decl, vertexCount);	
+
+		vertexBufferDecls.push (decl);
+		vertexBufferCounts.push (vertexCount);
+		vertexBuffers.push (vb);
+		vertexBufferAges.push (0);
+
+		return vb;
+
+	}
+
+
+	private function collectTransientBuffers ():Void {
+
+		var i = 0;
+
+		while (i < indexBufferAges.length) {
+
+			if (indexBufferAges[i] > 1) {
+
+				ctx.destroyIndexBuffer (indexBuffers[i]);
+
+				if (i == indexBufferCounts.length - 1) {
+					indexBufferCounts.pop ();
+					indexBuffers.pop ();
+					indexBufferAges.pop ();
+				} else {
+					indexBufferCounts[i] = indexBufferCounts.pop ();
+					indexBuffers[i] = indexBuffers.pop ();
+					indexBufferAges[i] = indexBufferAges.pop ();
+				}
+
+			}
+
+			indexBufferAges[i]++;
+			i++;
+
+		}
+
+		i = 0;
+
+		while (i < vertexBufferAges.length) {
+
+			if (vertexBufferAges[i] > 1) {
+
+				ctx.destroyVertexBuffer (vertexBuffers[i]);
+
+				if (i == vertexBufferDecls.length - 1) {
+					vertexBufferDecls.pop ();
+					vertexBufferCounts.pop ();
+					vertexBuffers.pop ();
+					vertexBufferAges.pop ();
+				} else {
+					vertexBufferDecls[i] = vertexBufferDecls.pop ();
+					vertexBufferCounts[i] = vertexBufferCounts.pop ();
+					vertexBuffers[i] = vertexBuffers.pop ();
+					vertexBufferAges[i] = vertexBufferAges.pop ();
+				}
+
+			}
+
+			vertexBufferAges[i]++;
+			i++;
+
+		}
+
+	}
+
+
+	private function collectTextures ():Void {
+
+		var i = 0;
+
+		while (i < textureImages.length) {
+
+			if (textureImages[i].get () == null) {
+
+				ctx.destroyTexture (textures[i]);
+
+				if (i == textureImages.length - 1) {
+					textureImages.pop ();
+					textures.pop ();
+				} else {
+					textureImages[i] = textureImages.pop ();
+					textures[i] = textures.pop ();
+				}
+
+			}
+
+			i++;
+
+		}
+
+	}
+
+
+	private function imageTexture (image:Image):Texture {
+
+		for (i in 0...textureImages.length) {
+
+			if (textureImages[i].get () == image) {
+				return textures[i];
+			}
+
+		}
+
+		var texdata:TextureData = cast (image.buffer.src);
+
+		var texture = ctx.createTexture (
+			TextureFormat.ARGB,
+			image.buffer.width,
+			image.buffer.height,
+			untyped __cpp__ (
+				"(::cpp::UInt8 *){0}",
+				texdata.pointer	
+			)
+		);
+
+		textureImages.push (new WeakRef (image));
+		textures.push (texture);
+
+		return texture;
+
+	}
+
+
+	private function renderBitmap (bitmap:Bitmap) {
+
+		setObjectTransform (bitmap);
+		transform.append (viewProj);
+		transform.transpose ();
+
+		var w = bitmap.bitmapData.width;
+		var h = bitmap.bitmapData.height;
+		var color:Array<cpp.Float32> = [1, 1, 1, 1];
+
+		var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, 4);
+		var out = vertexBuffer.lock ();
+		out.vec3 (0, 0, 0);
+		out.vec2 (0, 0);
+		out.color(0xff, 0xff, 0xff, 0xff);
+		out.vec3 (0, h, 0);
+		out.vec2 (0, 1);
+		out.color(0xff, 0xff, 0xff, 0xff);
+		out.vec3 (w, 0, 0);
+		out.vec2 (1, 0);
+		out.color(0xff, 0xff, 0xff, 0xff);
+		out.vec3 (w, h, 0);
+		out.vec2 (1, 1);
+		out.color(0xff, 0xff, 0xff, 0xff);
+		vertexBuffer.unlock ();
+
+		var texture = imageTexture (bitmap.bitmapData.__image);
+
+		ctx.bindShader (defaultShader);
+		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
+		ctx.setVertexSource (vertexBuffer);
+		ctx.setTexture (0, texture);
+		ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+	}
+
+
+	private function renderShape (shape:Shape) {
+
+
+
+	}
+
+
+	private function renderSprite (sprite:Sprite) {
+
+		if (sprite.__graphics == null) {
+			return;
+		}
+
+		draw (sprite);
+
+	}
+	
+	
+	private function renderTextField (textField:TextField) {
+
+		
+
+	}
+
+
+	private function draw (object:DisplayObject) {
+
+		var graphics = object.__graphics;
+		var dirty = graphics.__dirty;
+		if (graphics.__commands.length == 0) {
+			return;
+		}
+
+		drawNaive (object, graphics);
+
+/*
+		if (dirty) {
+
+			//update (object, graphics);
+
+		}
+
+		if (object.cacheAsBitmap) {
+
+			trace ("not implemented");
+
+		} else {
+			
+			//submit ();
+
+		}
+*/
+
+	}
+
+	
+	// div divides an integer by an integer using integer math.
+	// Normally in haxe, Int divided by Int returns Float. Can't seem to be
+	// avoided even with cast() or Std.int()
+	private inline function div (a:Int, b:Int):Int {
+
+		return untyped __cpp__ ("{0} / {1}", a, b);
+
+	}
+
+
+	private function drawNaive (object:DisplayObject, graphics:Graphics) {
+
+		graphics.__dirty = false;
+
+		var fillBitmap:BitmapData = null;
+		var fillColor:Array<cpp.Float32> = [1, 1, 1, object.__worldAlpha];
+
+		// TODO(james4k): set blend state based on object.blendMode
+
+		for (cmd in graphics.__commands) {
+
+			switch (cmd) {
+
+				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+
+					fillBitmap = bitmap;
+
+					// TODO(james4k): deal with matrix, repeat, smooth
+
+				case BeginFill (rgb, alpha):
+
+					// TODO(james4k): color transform. no sense doing that in shader for fill, right?
+					fillColor[0] = ((rgb >> 16) & 0xFF) / 255.0;
+					fillColor[1] = ((rgb >> 8) & 0xFF) / 255.0;
+					fillColor[2] = ((rgb >> 0) & 0xFF) / 255.0;
+					fillColor[3] = alpha * object.__worldAlpha;
+
+				case DrawRect (x, y, width, height):
+
+					transform = viewProj.clone ();
+					transform.transpose ();
+
+					var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
+					var out = vertexBuffer.lock ();
+					out.vec3 (x, y, 0);
+					out.vec3 (x, y + height, 0);
+					out.vec3 (x + width, y, 0);
+					out.vec3 (x + width, y + height, 0);
+					vertexBuffer.unlock ();
+
+					ctx.bindShader (fillShader);
+					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+					ctx.setVertexSource (vertexBuffer);
+					ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+				case DrawTiles (sheet, tileData, smooth, flags, count):
+
+					var useScale = (flags & Tilesheet.TILE_SCALE) != 0;
+					var useRotation = (flags & Tilesheet.TILE_ROTATION) != 0;
+					var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) != 0;
+					var useRGB = (flags & Tilesheet.TILE_RGB) != 0;
+					var useAlpha = (flags & Tilesheet.TILE_ALPHA) != 0;
+					var useRect = (flags & Tilesheet.TILE_RECT) != 0;
+					var useOrigin = (flags & Tilesheet.TILE_ORIGIN) != 0;
+
+					if (useRGB || useRect || useOrigin) {
+						trace ("DrawTiles not implemented for flags:", flags);
+						break;
+					}
+
+					var blendMode:BlendMode = switch(flags & 0xF0000) {
+						case Tilesheet.TILE_BLEND_ADD:		ADD;
+						case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
+						case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
+						case _:								NORMAL;
+					};
+
+					if (blendMode != BlendMode.NORMAL) {
+						trace ("DrawTiles not implemented for BlendMode:", blendMode);
+					}
+
+					if (useTransform) {
+						useScale = false;
+						useRotation = false;
+					}
+
+					var scaleIndex = 0;
+					var rotationIndex = 0;
+					var transformIndex = 0;
+					var alphaIndex = 0;
+
+					var stride = 3;
+					if (useScale) {
+						scaleIndex = stride;
+						stride += 1;
+					}
+					if (useRotation) {
+						rotationIndex = stride;
+						stride += 1;
+					}
+					if (useAlpha) {
+						alphaIndex = stride;
+						stride += 1;
+					}
+
+					var totalCount = tileData.length;
+					if (count >= 0 && totalCount > count) {
+						totalCount = count;
+					}
+					var itemCount = div (totalCount, stride);
+
+					var tileID = -1;
+					var rect:Rectangle = sheet.__rectTile;
+					var tileUV:Rectangle = sheet.__rectUV;
+					var center:Point = sheet.__point;
+
+					var vertexCount = itemCount * 4;
+					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
+					var out = vertexBuffer.lock ();
+
+					for (itemIndex in 0...itemCount) {
+
+						var index = itemIndex * stride;
+
+						var x = tileData[index + 0];
+						var y = tileData[index + 1];
+
+						if (useRect) {
+
+						} else {
+
+							tileID = Std.int (tileData[index + 2]);
+							rect = sheet.getTileRect(tileID);	
+							center = sheet.getTileCenter(tileID);	
+							tileUV = sheet.getTileUVs(tileID);	
+
+						}
+
+						if (rect == null || rect.width <= 0 || rect.height <= 0 || center == null) {
+							continue;
+						}	
+
+						var alpha = object.__worldAlpha;
+						var scale = 1.0;
+						var rotation = 0.0;
+						//var tint = 0xffffff;
+
+						if (useAlpha) {
+							alpha *= tileData[index + alphaIndex];	
+						}
+
+						if (useScale) {
+							scale = tileData[index + scaleIndex];
+						}
+
+						if (useRotation) {
+							rotation = tileData[index + rotationIndex];
+						}
+
+					/*
+						if (useTransform) {
+							a = tileData[index + transformIndex + 0];
+							b = tileData[index + transformIndex + 1];
+							c = tileData[index + transformIndex + 2];
+							d = tileData[index + transformIndex + 3];
+						} else {
+							a = scale * Math.cos (rotation);
+							b = scale * Math.sin (rotation);
+							c = -b;
+							d = a;
+						}
+
+						var tx = x - (center.x * a + center.y * c);
+						var ty = y - (center.x * b + center.y * d);
+					*/
+
+						// TODO(james4k): transform the verts
+
+						out.vec3 (x, y, 0);
+						out.vec2 (tileUV.x, tileUV.y);
+						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.vec3 (x + rect.width, y, 0);
+						out.vec2 (tileUV.width, tileUV.y);
+						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.vec3 (x + rect.width, y + rect.height, 0);
+						out.vec2 (tileUV.width, tileUV.height);
+						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.vec3 (x, y + rect.height, 0);
+						out.vec2 (tileUV.x, tileUV.height);
+						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+
+					}
+
+					vertexBuffer.unlock ();
+
+					var indexBuffer = transientIndexBuffer (itemCount * 6);
+					var unsafeIndices = indexBuffer.lock ();
+					for (i in 0...itemCount) {
+						unsafeIndices[i*6 + 0] = i*4 + 0;
+						unsafeIndices[i*6 + 1] = i*4 + 1;
+						unsafeIndices[i*6 + 2] = i*4 + 2;
+						unsafeIndices[i*6 + 3] = i*4 + 0;
+						unsafeIndices[i*6 + 4] = i*4 + 3;
+						unsafeIndices[i*6 + 5] = i*4 + 2;
+					}
+					indexBuffer.unlock ();
+
+					setObjectTransform (object);
+					transform.append (viewProj);
+					transform.transpose ();
+
+					var texture = imageTexture (sheet.__bitmap.__image);
+
+					ctx.bindShader (defaultShader);
+					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+					ctx.setVertexSource (vertexBuffer);
+					ctx.setIndexSource (indexBuffer);
+					ctx.setTexture (0, texture);
+					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
+
+				case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
+
+					setObjectTransform (object);
+					transform.append (viewProj);
+					transform.transpose ();
+
+					var texture = imageTexture (fillBitmap.__image);
+
+					var vertexCount = div (vertices.length, 2);
+					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
+					var out = vertexBuffer.lock ();
+					var i = 0;
+					while (i < vertices.length) {
+						out.vec3 (vertices[i], vertices[i+1], 0);
+						out.vec2 (uvtData[i], uvtData[i+1]);
+						// TODO(james4k): color
+						out.color (0xff, 0xff, 0xff, 0xff);
+						i += 2;
+					}
+					vertexBuffer.unlock ();
+					
+					var indexBuffer = transientIndexBuffer (indices.length);
+					var unsafeIndices = indexBuffer.lock ();
+					for (i in 0...indices.length) {
+						unsafeIndices[i] = indices[i];
+					}
+					indexBuffer.unlock ();
+
+					ctx.bindShader (defaultShader);
+					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+					ctx.setVertexSource (vertexBuffer);
+					ctx.setIndexSource (indexBuffer);
+					ctx.setTexture (0, texture);
+					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indices.length, 3));
+
+				case EndFill:
+
+					fillBitmap = null;
+					fillColor[0] = 1.0;
+					fillColor[1] = 1.0;
+					fillColor[2] = 1.0;
+					fillColor[3] = object.__worldAlpha;
+
+				default:
+
+					trace ("not implemented");
+
+/*
+
+	COMMANDS TODO
+
+	CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
+	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
+	DrawCircle (x:Float, y:Float, radius:Float);
+	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
+	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
+	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
+	LineTo (x:Float, y:Float);
+	MoveTo (x:Float, y:Float);
+	DrawPathC(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding);
+	OverrideMatrix(matrix:Matrix);
+
+*/
+
+			}
+	
+		}
+	
+	}
+	
+	
+}
+
+
+#else
+
+
+import lime.graphics.ConsoleRenderContext;
+import openfl._internal.renderer.AbstractRenderer;
+import openfl.display.Stage;
+
+
+class ConsoleRenderer extends AbstractRenderer {
+	
+
+	public function new (width:Int, height:Int, ctx:ConsoleRenderContext) {
+		
+		super (width, height);
+
+		throw "ConsoleRenderer not supported";
+
+	}
+	
+	
+	public override function render (stage:Stage):Void {
+
+
+
+	}
+
+
+}
+
+	
+#end

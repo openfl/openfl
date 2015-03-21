@@ -30,13 +30,6 @@ class AbstractRenderer {
 	}
 	
 	
-	public function renderShape (shape:Shape):Void {
-		
-		
-		
-	}
-	
-	
 	public function resize (width:Int, height:Int):Void {
 		
 		

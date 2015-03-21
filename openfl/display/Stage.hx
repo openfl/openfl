@@ -7,6 +7,7 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.CanvasRenderContext;
+import lime.graphics.ConsoleRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
@@ -20,6 +21,7 @@ import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
+import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.display.DisplayObjectContainer;
@@ -604,6 +606,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case OPENGL (gl):
 				
 				__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+
+			case CONSOLE (ctx):
+				
+				__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
 			
 			case CANVAS (context):
 				
