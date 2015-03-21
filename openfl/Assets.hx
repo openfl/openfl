@@ -1164,7 +1164,7 @@ class Assets {
 					
 				} else {
 					
-					__loadFromBase64 (haxe.Resource.getString (resourceName), resourceType, function (b) {
+					__fromBase64 (haxe.Resource.getString (resourceName), resourceType, function (b) {
 						
 						if (preload == null) {
 							
