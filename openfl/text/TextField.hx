@@ -1185,7 +1185,7 @@ class TextField extends InteractiveObject {
 		
 		if (__div == null) {
 			
-			div = Browser.document.createElement ("div");
+			div = Browser.document.createDivElement ();
 			div.innerHTML = new EReg ("\n", "g").replace (__text, "<br>");
 			div.style.setProperty ("font", __getFont (__textFormat), null);
 			div.style.position = "absolute";
