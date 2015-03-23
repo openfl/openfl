@@ -252,7 +252,7 @@ class GLRenderer extends AbstractRenderer {
 			
 		} else {
 			
-			gl.clearColor (Std.int (stage.__colorSplit[0]), Std.int (stage.__colorSplit[1]), Std.int (stage.__colorSplit[2]), 1);
+			gl.clearColor (stage.__colorSplit[0], stage.__colorSplit[1], stage.__colorSplit[2], 1);
 			
 		}
 		
