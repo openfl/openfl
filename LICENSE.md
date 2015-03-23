@@ -52,7 +52,7 @@ The following files were developed in collaboration with the NME project,
 which is available under an "MIT" license. For details, see
 https://github.com/haxenme/nme
 
-    openfl/_v2/
+    openfl/_legacy/
 
 Excerpts of the Adobe ActionScript 3.0 Reference are used, with modification,
 which is available under the "CC BY-NC-SA 3.0" license. For details, see
