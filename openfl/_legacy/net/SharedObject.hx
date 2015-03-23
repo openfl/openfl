@@ -209,7 +209,7 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	private static function resolveClass (name:String):Class < Dynamic > {
+	private static function resolveClass (name:String):Class <Dynamic> {
 		
 		if (name != null) {
 			
@@ -231,7 +231,16 @@ class SharedObject extends EventDispatcher {
 				
 			}
 			
-			return Type.resolveClass (name);
+			if (StringTools.startsWith (name, "openfl._v2.")) {
+				
+				name = StringTools.replace (name, "openfl._v2.", "openfl._legacy.");
+				
+			}
+			
+			var value = Type.resolveClass (name);
+			if (value == null) value = Type.resolveClass (StringTools.replace (name, "openfl.", "openfl._legacy."));
+			
+			return value;
 			
 		}
 		
