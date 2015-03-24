@@ -66,8 +66,13 @@ class Font extends LimeFont {
 	public static function fromBytes (bytes:ByteArray):Font {
 		
 		var font = new Font ();
-		// TODO font.__fromBytes (bytes);
+		font.__fromBytes (bytes);
+		
+		#if (cpp || neko || nodejs)
+		return (font.src != null) ? font : null;
+		#else
 		return font;
+		#end
 		
 	}
 	
@@ -76,7 +81,12 @@ class Font extends LimeFont {
 		
 		var font = new Font ();
 		font.__fromFile (path);
+		
+		#if (cpp || neko || nodejs)
+		return (font.src != null) ? font : null;
+		#else
 		return font;
+		#end
 		
 	}
 	

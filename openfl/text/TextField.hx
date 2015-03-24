@@ -1,7 +1,11 @@
 package openfl.text; #if !flash #if !openfl_legacy
 
 
+import haxe.io.Path;
+import haxe.xml.Fast;
+import haxe.Timer;
 import lime.graphics.opengl.GLTexture;
+import lime.system.System;
 import lime.text.TextLayout;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
@@ -9,8 +13,6 @@ import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
-import haxe.xml.Fast;
-import haxe.Timer;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -23,6 +25,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextFormatAlign;
+import sys.FileSystem;
 
 #if js
 import js.html.CanvasElement;
@@ -971,15 +974,87 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getFontInstance (format:TextFormat):Font {
 		
-		#if (cpp || neko)
+		#if (cpp || neko || nodejs)
 		
 		if (format == null || format.font == null) return null;
 		
+		var systemFontDirectory = System.fontsDirectory;
+		var fontList = null;
+		
+		switch (format.font) {
+			
+			case "_sans":
+				
+				#if windows
+				fontList = [ systemFontDirectory + "/arial.ttf" ];
+				#elseif (mac || ios)
+				fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
+				#elseif linux
+				fontList = [ systemFontDirectory + "/truetype/freefont/FreeSans.ttf" ];
+				#elseif android
+				fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
+				#elseif blackberry
+				fontList = [ systemFontDirectory + "/arial.ttf" ];
+				#end
+				
+			case "_serif":
+				
+				#if windows
+				fontList = [ systemFontDirectory + "/georgia.ttf" ];
+				#elseif (mac || ios)
+				fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
+				#elseif linux
+				fontList = [ systemFontDirectory + "/truetype/freefont/FreeSerif.ttf" ];
+				#elseif android
+				fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
+				#elseif blackberry
+				fontList = [ systemFontDirectory + "/georgia.ttf";
+				#end
+				
+			case "_typewriter":
+				
+				#if windows
+				fontList = [ systemFontDirectory + "/cour.ttf" ];
+				#elseif (mac || ios)
+				fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
+				#elseif linux
+				fontList = [ systemFontDirectory + "/truetype/freefont/FreeMono.ttf" ];
+				#elseif android
+				fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
+				#elseif blackberry
+				fontList = [ systemFontDirectory + "/cour.ttf" ];
+				#end
+			
+			default:
+				
+				fontList = [ format.font, systemFontDirectory + "/" + format.font ];
+			
+		}
+		
+		if (fontList == null) return null;
+		
 		for (registeredFont in Font.__registeredFonts) {
 			
-			if (registeredFont.fontName == format.font) {
+			for (fontName in fontList) {
 				
-				return registeredFont;
+				if (registeredFont.__fontPath == fontName || registeredFont.fontName == fontName || Path.withoutDirectory (registeredFont.__fontPath) == fontName) {
+					
+					return registeredFont;
+					
+				}
+				
+			}
+			
+		}
+		
+		for (fontName in fontList) {
+			
+			var font = Font.fromFile (fontName);
+			
+			if (font != null) {
+				
+				Font.__registeredFonts.push (font);
+				return font;
 				
 			}
 			
@@ -1115,6 +1190,7 @@ class TextField extends InteractiveObject {
 		if (__ranges == null) {
 			
 			var font = __getFontInstance (__textFormat);
+			var width = 0.0;
 			
 			if (font != null && __textFormat.size != null) {
 				
@@ -1123,13 +1199,11 @@ class TextField extends InteractiveObject {
 				__textLayout.size = Std.int (__textFormat.size);
 				__textLayout.text = __text;
 				
-			}
-			
-			var width = 0.0;
-			
-			for (position in __textLayout.positions) {
-				
-				width += position.advance.x;
+				for (position in __textLayout.positions) {
+					
+					width += position.advance.x;
+					
+				}
 				
 			}
 			
@@ -1142,6 +1216,7 @@ class TextField extends InteractiveObject {
 			for (range in __ranges) {
 				
 				var font = __getFontInstance (range.format);
+				var width = 0.0;
 				
 				if (font != null && range.format.size != null) {
 					
@@ -1150,13 +1225,11 @@ class TextField extends InteractiveObject {
 					__textLayout.size = Std.int (range.format.size);
 					__textLayout.text = text.substring (range.start, range.end);
 					
-				}
-				
-				var width = 0.0;
-				
-				for (position in __textLayout.positions) {
-					
-					width += position.advance.x;
+					for (position in __textLayout.positions) {
+						
+						width += position.advance.x;
+						
+					}
 					
 				}
 				
