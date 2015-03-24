@@ -1,0 +1,33 @@
+#include "common.fxh"
+
+
+TEXTURE2D	g_texture	TEXTURE_REG (0);
+SAMPLER2D	g_sampler	SAMPLER_REG (0);
+
+
+struct PS_IN {
+
+	PS_IN_POSITION
+	float4 color : COLOR;
+	float2 texcoord : TEXCOORD;
+
+};
+
+
+struct PS_OUT {
+
+	float4 color : COLOR;
+
+};
+
+
+float4 main (PS_IN In) : PS_TARGET_OUT {
+
+	PS_OUT Out;
+
+	Out.color = TEX2D (g_texture, g_sampler, In.texcoord) * In.color;
+
+	return Out.color;
+
+}
+
