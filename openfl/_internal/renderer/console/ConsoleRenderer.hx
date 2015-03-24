@@ -608,6 +608,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						var alpha = object.__worldAlpha;
 						var scale = 1.0;
 						var rotation = 0.0;
+						var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
 						//var tint = 0xffffff;
 
 						if (useAlpha) {
@@ -622,7 +623,6 @@ class ConsoleRenderer extends AbstractRenderer {
 							rotation = tileData[index + rotationIndex];
 						}
 
-					/*
 						if (useTransform) {
 							a = tileData[index + transformIndex + 0];
 							b = tileData[index + transformIndex + 1];
@@ -637,20 +637,25 @@ class ConsoleRenderer extends AbstractRenderer {
 
 						var tx = x - (center.x * a + center.y * c);
 						var ty = y - (center.x * b + center.y * d);
-					*/
 
-						// TODO(james4k): transform the verts
+						var w0 = rect.width * 1.0;
+						var w1 = 0.0;
+						var h0 = rect.height * 1.0;
+						var h1 = 0.0;
 
-						out.vec3 (x, y, 0);
+						out.vec3 (a*w1 + c*h1 + tx, d*h1 + b*w1 + ty, 0);
 						out.vec2 (tileUV.x, tileUV.y);
 						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
-						out.vec3 (x + rect.width, y, 0);
+
+						out.vec3 (a*w0 + c*h1 + tx, d*h1 + b*w0 + ty, 0);
 						out.vec2 (tileUV.width, tileUV.y);
 						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
-						out.vec3 (x + rect.width, y + rect.height, 0);
+
+						out.vec3 (a*w0 + c*h0 + tx, d*h0 + b*w0 + ty, 0);
 						out.vec2 (tileUV.width, tileUV.height);
 						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
-						out.vec3 (x, y + rect.height, 0);
+
+						out.vec3 (a*w1 + c*h0 + tx, d*h0 + b*w1 + ty, 0);
 						out.vec2 (tileUV.x, tileUV.height);
 						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
 
