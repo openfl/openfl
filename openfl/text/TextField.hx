@@ -25,7 +25,6 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextFormatAlign;
-import sys.FileSystem;
 
 #if js
 import js.html.CanvasElement;
