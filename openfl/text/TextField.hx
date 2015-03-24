@@ -1008,7 +1008,7 @@ class TextField extends InteractiveObject {
 				#elseif android
 				fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
 				#elseif blackberry
-				fontList = [ systemFontDirectory + "/georgia.ttf";
+				fontList = [ systemFontDirectory + "/georgia.ttf" ];
 				#end
 				
 			case "_typewriter":
