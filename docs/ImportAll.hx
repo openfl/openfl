@@ -353,7 +353,11 @@ import lime.tools.platforms.WindowsPlatform;
 #end
 
 
+import lime.ui.Gamepad;
+import lime.ui.GamepadAxis;
+import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
 import lime.ui.Window;
@@ -367,6 +371,7 @@ import lime.utils.IMemoryRange;
 import lime.utils.Int16Array;
 import lime.utils.Int32Array;
 import lime.utils.Int8Array;
+import lime.utils.JNI;
 import lime.utils.UInt16Array;
 import lime.utils.UInt32Array;
 import lime.utils.UInt8Array;
@@ -375,6 +380,18 @@ import lime.Assets;
 
 #if (windows || mac || linux || ios || android || blackberry)
 
+
+#if (haxe_ver >= "3.2")
+import cpp.abi.Abi;
+import cpp.abi.CDecl;
+import cpp.abi.FastCall;
+import cpp.abi.StdCall;
+import cpp.abi.ThisCall;
+import cpp.abi.Winapi;
+
+//import cpp.cppia.Host;
+//import cpp.cppia.HostClasses;
+#end
 
 import cpp.net.Poll;
 import cpp.net.ThreadServer;
@@ -399,7 +416,10 @@ import cpp.zip.Flush;
 import cpp.zip.Uncompress;
 
 #if (haxe_ver >= "3.2")
+import cpp.Callable;
+import cpp.CastCharStar;
 import cpp.Char;
+import cpp.ConstCharStar;
 import cpp.ConstPointer;
 import cpp.Float32;
 import cpp.Float64;
@@ -409,6 +429,7 @@ import cpp.Int32;
 import cpp.Int64;
 import cpp.Int8;
 import cpp.NativeString;
+import cpp.NativeXml;
 import cpp.Object;
 import cpp.RawConstPointer;
 import cpp.RawPointer;
@@ -465,10 +486,14 @@ import haxe.format.JsonParser;
 import haxe.format.JsonPrinter;
 
 #if (haxe_ver >= "3.2")
-import haxe.io.ArrayBufferView;
-import haxe.io.Float32Array;
-import haxe.io.FPHelper;
-import haxe.io.Uint8Array;
+//import haxe.io.ArrayBufferView;
+//import haxe.io.Float32Array;
+//import haxe.io.Float64Array;
+//import haxe.io.FPHelper;
+//import haxe.io.Int32Array;
+//import haxe.io.UInt8Array;
+//import haxe.io.UInt16Array;
+//import haxe.io.UInt32Array;
 #end
 import haxe.io.BufferInput;
 import haxe.io.Bytes;
@@ -571,6 +596,7 @@ import haxe.PosInfos;
 import haxe.Resource;
 import haxe.Serializer;
 import haxe.Template;
+import haxe.Timer;
 import haxe.Ucs2;
 import haxe.Unserializer;
 import haxe.Utf8;
@@ -1035,7 +1061,7 @@ import js.html.HashChangeEventInit;
 import js.html.HitRegionOptions;
 import js.html.HTMLDocument;
 import js.html.HTMLFormControlsCollection;
-import js.html.HTMLHtmlElement;
+//import js.html.HtmlElement;
 import js.html.HTMLPropertiesCollection;
 import js.html.ImageCapture;
 import js.html.InputEvent;
@@ -1407,6 +1433,7 @@ import js.html.HeadElement;
 import js.html.ValidityState;
 import js.html.HeadingElement;
 import js.html.VideoElement;
+import js.html.VideoElement;
 import js.html.History;
 #if (haxe_ver >= "3.2")
 import js.html.HTMLElement;
@@ -1456,7 +1483,7 @@ import js.Error;
 import js.JQuery;
 import js.Lib;
 import js.Selection;
-import js.SWFObject;
+//import js.SWFObject;
 import js.XMLSocket;
 
 
