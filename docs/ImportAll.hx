@@ -1436,7 +1436,7 @@ import js.html.VideoElement;
 import js.html.VideoElement;
 import js.html.History;
 #if (haxe_ver >= "3.2")
-import js.html.HTMLElement;
+//import js.html.HTMLElement;
 #else
 import js.html.HtmlElement;
 #end
