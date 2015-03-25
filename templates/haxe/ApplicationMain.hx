@@ -63,7 +63,7 @@ class ApplicationMain {
 		
 		var result = app.exec ();
 		
-		#if (sys && !emscripten)
+		#if (sys && !nodejs && !emscripten)
 		Sys.exit (result);
 		#end
 		
