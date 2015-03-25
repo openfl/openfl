@@ -1,6 +1,9 @@
 package openfl.system; #if !flash #if !openfl_legacy
 
 
+import lime.system.System in LimeSystem;
+
+
 /**
  * The System class contains properties related to local settings and
  * operations. Among these are settings for camers and microphones, operations
@@ -95,7 +98,7 @@ class System {
 	 */
 	public static function exit (code:Int):Void {
 		
-		throw "System.exit is currently not supported for HTML5";
+		LimeSystem.exit (code);
 		
 	}
 	
