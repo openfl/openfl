@@ -1,3 +1,13 @@
+3.0.0-beta.2 (03/25/2015)
+-------------------------
+
+* Added support for default fonts in GL TextField
+* Fixed an issue when unserializing SharedObjects
+* Fixed an issue when embedding images
+* Fixed builds when using "-Dlegacy" with the HTML5 target
+* Fixed the GL window background color
+
+
 3.0.0-beta (03/20/2015)
 -----------------------
 
