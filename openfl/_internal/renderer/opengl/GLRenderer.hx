@@ -26,6 +26,7 @@ class GLRenderer extends AbstractRenderer {
 	
 	public var blendModeManager:BlendModeManager;
 	public var contextLost:Bool;
+	public var defaultFramebuffer:GLFramebuffer;
 	public var filterManager:FilterManager;
 	public var gl:GLRenderContext;
 	public var _glContextId:Int;
@@ -61,6 +62,12 @@ class GLRenderer extends AbstractRenderer {
 		
 		_glContextId = glContextId ++;
 		this.gl = gl;
+		
+		#if ios
+		defaultFramebuffer = new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING));
+		#else
+		defaultFramebuffer = null;
+		#end
 		
 		glContexts[_glContextId] = gl;
 		
@@ -216,6 +223,12 @@ class GLRenderer extends AbstractRenderer {
 		
 		renderSession.gl = gl;
 		
+		#if ios
+		defaultFramebuffer = new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING));
+		#else
+		defaultFramebuffer = null;
+		#end
+		
 		gl.disable (gl.DEPTH_TEST);
 		gl.disable (gl.CULL_FACE);
 		
@@ -244,7 +257,8 @@ class GLRenderer extends AbstractRenderer {
 		
 		var gl = this.gl;
 		gl.viewport (0, 0, width, height);
-		gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+		
+		gl.bindFramebuffer (gl.FRAMEBUFFER, defaultFramebuffer);
 		
 		if (this.transparent) {
 			
