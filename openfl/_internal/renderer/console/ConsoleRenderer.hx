@@ -274,6 +274,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					indexBufferAges[i] = indexBufferAges.pop ();
 				}
 
+				continue;
+
 			}
 
 			indexBufferAges[i]++;
@@ -300,6 +302,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					vertexBuffers[i] = vertexBuffers.pop ();
 					vertexBufferAges[i] = vertexBufferAges.pop ();
 				}
+
+				continue;
 
 			}
 
@@ -328,6 +332,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					textureImages[i] = textureImages.pop ();
 					textures[i] = textures.pop ();
 				}
+
+				continue;
 
 			}
 
