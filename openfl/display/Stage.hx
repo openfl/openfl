@@ -720,14 +720,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseMove (x:Float, y:Float, button:Int):Void {
+	public function onMouseMove (x:Float, y:Float #if (lime < "2.3.0"), button:Int #end):Void {
 		
 		__onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
 		
 	}
 	
 	
-	public function onMouseMoveRelative (x:Float, y:Float, button:Int):Void {
+	public function onMouseMoveRelative (x:Float, y:Float):Void {
 		
 		
 		
