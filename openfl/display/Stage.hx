@@ -1109,11 +1109,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case LEFT_CTRL: Keyboard.CONTROL;
 			case LEFT_SHIFT: Keyboard.SHIFT;
 			case LEFT_ALT: Keyboard.ALTERNATE;
-			//case LEFT_META: 0x400000E3;
+			case LEFT_META: Keyboard.COMMAND;
 			case RIGHT_CTRL: Keyboard.CONTROL;
 			case RIGHT_SHIFT: Keyboard.SHIFT;
 			case RIGHT_ALT: Keyboard.ALTERNATE;
-			//case RIGHT_META: 0x400000E7;
+			case RIGHT_META: Keyboard.COMMAND;
 			//case MODE: 0x40000101;
 			//case AUDIO_NEXT: 0x40000102;
 			//case AUDIO_PREVIOUS: 0x40000103;
