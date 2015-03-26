@@ -1,3 +1,12 @@
+3.0.0-beta.3 (03/26/2015)
+-------------------------
+
+* Updated for Lime 2.3
+* Improved handling of default framebuffer on iOS
+* Fixed mapping of the meta/command key
+* Fixed System.exit
+
+
 3.0.0-beta.2 (03/25/2015)
 -------------------------
 
