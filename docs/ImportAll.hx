@@ -430,7 +430,7 @@ import cpp.Int64;
 import cpp.Int8;
 import cpp.NativeString;
 import cpp.NativeXml;
-import cpp.Object;
+//import cpp.Object;
 import cpp.RawConstPointer;
 import cpp.RawPointer;
 import cpp.UInt16;
