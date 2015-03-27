@@ -835,8 +835,8 @@ class GraphicsRenderer {
 						renderSession.spriteBatch.finish();
 					}
 					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix.toArray(true));
-					var shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(false));
-					renderFill(bucket, shader, renderSession, translationMatrix.toArray(true));
+					var shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(true));
+					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
 					if (batchDrawing && !localCoords) {
@@ -890,11 +890,13 @@ class GraphicsRenderer {
 	public static function updateGraphics (object:DisplayObject, graphics:Graphics, gl:GLRenderContext, ?localCoords:Bool = false):Void {
 		
 		objectPosition.setTo(object.x, object.y);
+		
 		if (graphics.__bounds == null) {
 			objectBounds = new Rectangle();
 		} else {
 			objectBounds.copyFrom(graphics.__bounds);
 		}
+		
 		var glStack:GLStack = null;
 		
 		if (graphics.__dirty) {
@@ -939,6 +941,16 @@ class GraphicsRenderer {
 		}
 		
 		for (bucket in glStack.buckets) {
+			
+			if (bucket.uploadTileBuffer) {
+				bucket.uploadTile(
+					Math.ceil(objectBounds.left), 
+					Math.ceil(objectBounds.top),
+					Math.floor(objectBounds.right), 
+					Math.floor(objectBounds.bottom));
+			}
+			
+			
 			bucket.optimize();
 		}
 		
@@ -972,18 +984,18 @@ class GraphicsRenderer {
 				} else {
 					pMatrix = m.clone();
 				}
-
+	
+				tMatrix.concat(pMatrix);
 				pMatrix = pMatrix.invert();
-				pMatrix.__translateTransformed(new Point( -objectPosition.x, -objectPosition.y));
 				var tx = (pMatrix.tx) / (b.width);
 				var ty = (pMatrix.ty) / (b.height);
-				tMatrix.concat(pMatrix);
+				
 				bucket.textureTL.x = tx;
 				bucket.textureTL.y = ty;
 				bucket.textureBR.x = tx + 1;
 				bucket.textureBR.y = ty + 1;
 				
-				tMatrix.scale(1 / b.width, 1 / b.height);
+				tMatrix.scale(1 / b.width, 1 / b.height);				
 				
 				bucket.textureMatrix = tMatrix;
 			case _:
@@ -1092,13 +1104,13 @@ class GraphicsRenderer {
 		return shader;
 	}
 	
-	private static function renderFill(bucket:GLBucket, shader:Shader, renderSession:RenderSession, translationMatrix:Float32Array) {
+	private static function renderFill(bucket:GLBucket, shader:Shader, renderSession:RenderSession) {
 		var gl = renderSession.gl;
 		
 		if (bucket.mode == PatternFill && bucket.texture != null) {
 			bindTexture(gl, bucket);
 		}
-		//gl.uniformMatrix3fv (shader.getUniformLocation(PatternFillUniform.TranslationMatrix), false, translationMatrix);
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
 		gl.vertexAttribPointer (shader.getAttribLocation(FillAttrib.Position), 4, gl.SHORT, false, 0, 0);
 		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -1371,23 +1383,28 @@ class GLBucket {
 		graphicType = GraphicType.Polygon;
 	}
 	
-	public function upload ():Void {
+	public function uploadTile (x:Int, y:Int, w:Int, h:Int):Void {
 		
-		if (uploadTileBuffer) {
-			if(tileBuffer == null) {
-				tileBuffer = gl.createBuffer();
-				tile = [
-					0, 0, 		0, 0,
-					4096, 0, 	1, 0,
-					0, 4096, 	0, 1,
-					4096, 4096, 1, 1
-				];
-				glTile = new Int16Array (tile);
-			}
-			gl.bindBuffer (gl.ARRAY_BUFFER, tileBuffer);
-			gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
-			uploadTileBuffer = false;
+		if(tileBuffer == null) {
+			tileBuffer = gl.createBuffer();
 		}
+		
+		
+		tile = [
+			x, y,	0, 0,
+			w, y, 	1, 0,
+			x, h, 	0, 1,
+			w, h,	1, 1
+		];
+		
+		glTile = new Int16Array (tile);
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, tileBuffer);
+		gl.bufferData (gl.ARRAY_BUFFER, glTile, gl.STATIC_DRAW);
+		
+	}
+	
+	public function upload ():Void {
 
 		if(this.mode != Line) {
 			for (fill in fills) {

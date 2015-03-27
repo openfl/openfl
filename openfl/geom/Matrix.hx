@@ -715,9 +715,9 @@ class Matrix {
 		if (transpose) {
 			
 			__array[0] = a;
-			__array[1] = c;
+			__array[1] = b;
 			__array[2] = 0;
-			__array[3] = b;
+			__array[3] = c;
 			__array[4] = d;
 			__array[5] = 0;
 			__array[6] = tx;
@@ -727,9 +727,9 @@ class Matrix {
 		} else {
 			
 			__array[0] = a;
-			__array[1] = b;
+			__array[1] = c;
 			__array[2] = tx;
-			__array[3] = c;
+			__array[3] = b;
 			__array[4] = d;
 			__array[5] = ty;
 			__array[6] = 0;
