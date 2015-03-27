@@ -5,6 +5,7 @@ import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
+import haxe.Int32;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
@@ -84,6 +85,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __pingPongTexture:PingPongTexture;
 	private var __usingPingPongTexture:Bool = false;
 	private var __uvData:TextureUvs;
+	@:noCompletion private var __changeId:Int32 = -1;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -165,6 +167,7 @@ class BitmapData implements IBitmapDrawable {
 		#end
 		
 		image.dirty = true;
+		__changeId++;
 		
 	}
 	
@@ -190,6 +193,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -346,6 +350,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.copyChannel (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), sourceChannel, destChannel);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -356,6 +361,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -368,6 +374,7 @@ class BitmapData implements IBitmapDrawable {
 		height = 0;
 		rect = null;
 		__isValid = false;
+		__changeId++;
 		
 		if (__texture != null) {
 			
@@ -522,6 +529,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		#end
 		
+		__changeId++;
+		
 	}
 	
 	
@@ -558,6 +567,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -567,6 +577,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		image.floodFill (x, y, color, ARGB32);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -959,6 +970,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
 		image.merge (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -1017,6 +1029,9 @@ class BitmapData implements IBitmapDrawable {
 				setPixel32(x, y, rgb);
 			}
 		}		
+		
+		__changeId++;
+		
 	}
 	
 	
@@ -1060,7 +1075,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		pixels.position = 0;
 		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
-		setPixels (destRect, pixels);
+		setPixels (destRect, pixels); // __changeId will be changed in setPixels()
 		
 	}
 	
@@ -1068,6 +1083,7 @@ class BitmapData implements IBitmapDrawable {
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
 		openfl.Lib.notImplemented ("BitmapData.perlinNoise");
+		// __changeId++;
 		
 	}
 	
@@ -1077,6 +1093,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		image.scroll (x, y);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -1086,6 +1103,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		image.setPixel (x, y, color, ARGB32);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -1095,6 +1113,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		image.setPixel32 (x, y, color, ARGB32);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -1104,6 +1123,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || rect == null) return;
 		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
 		__usingPingPongTexture = false;
+		__changeId++;
 		
 	}
 	
@@ -1120,7 +1140,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		byteArray.position = 0;
-		setPixels (rect, byteArray);
+		setPixels (rect, byteArray); // __changeId will be changed in setPixels()
 		
 	}
 	
@@ -1130,6 +1150,8 @@ class BitmapData implements IBitmapDrawable {
 		if (sourceBitmapData == null || sourceRect == null || destPoint == null || sourceRect.x > sourceBitmapData.width || sourceRect.y > sourceBitmapData.height || destPoint.x > width || destPoint.y > height) return 0;
 		
 		return image.threshold (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), operation, threshold, color, mask, copySource, ARGB32);
+		
+		// __changeId will be changed in setPixels()
 		
 	}
 	
@@ -1258,7 +1280,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		Image.fromBase64 (base64, type, function (image) {
 			
-			__fromImage (image);
+			__fromImage (image); // __changeId will be changed inside __fromImage()
 			
 			if (onload != null) {
 				
@@ -1275,7 +1297,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		Image.fromBytes (bytes, function (image) {
 			
-			__fromImage (image);
+			__fromImage (image); // __changeId will be changed inside __fromImage()
 			
 			if (rawAlpha != null) {
 				
@@ -1293,6 +1315,7 @@ class BitmapData implements IBitmapDrawable {
 				}
 				
 				image.dirty = true;
+				__changeId++;
 				
 			}
 			
@@ -1311,7 +1334,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		Image.fromFile (path, function (image) {
 			
-			__fromImage (image);
+			__fromImage (image); // __changeId will be changed inside __fromImage()
 			
 			if (onload != null) {
 				
@@ -1340,6 +1363,7 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			__isValid = true;
+			__changeId++;
 			
 		}
 		

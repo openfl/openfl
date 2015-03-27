@@ -81,18 +81,24 @@ class DOMBitmap {
 			}
 			
 			DOMRenderer.initializeElement (bitmap, bitmap.__canvas, renderSession);
+			bitmap.__changeId = bitmap.bitmapData.__changeId - 1;
 			
 		}
 		
-		bitmap.bitmapData.__sync ();
+		if (bitmap.__changeId != bitmap.bitmapData.__changeId) {
+			
+			bitmap.__changeId = bitmap.bitmapData.__changeId;
+			bitmap.bitmapData.__sync ();
+			
+			bitmap.__canvas.width = bitmap.bitmapData.width;
+			bitmap.__canvas.height = bitmap.bitmapData.height;
+			
+			// [alpha in style will be used instead] bitmap.__context.globalAlpha = bitmap.__worldAlpha;
+			bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
+			
+		}
 		
-		bitmap.__canvas.width = bitmap.bitmapData.width;
-		bitmap.__canvas.height = bitmap.bitmapData.height;
-		
-		bitmap.__context.globalAlpha = bitmap.__worldAlpha;
-		bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
-		
-		DOMRenderer.applyStyle (bitmap, renderSession, true, false, true);
+		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
 		#end
 		
 	}
