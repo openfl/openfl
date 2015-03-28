@@ -7,6 +7,7 @@ import cpp.UInt8;
 import lime.graphics.console.IndexBuffer;
 import lime.graphics.console.PointerUtil;
 import lime.graphics.console.Primitive;
+import lime.graphics.console.RenderState;
 import lime.graphics.console.Shader;
 import lime.graphics.console.Texture;
 import lime.graphics.console.TextureData;
@@ -106,6 +107,10 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		viewProj = Matrix4.createOrtho (0, width, height, 0, -1, 1);
 
+		ctx.setRasterizerState (CULLNONE_SOLID);
+		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
+		ctx.setBlendState (SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB);
+
 		ctx.setViewport (0, 0, width, height);
 		ctx.clear (
 			Std.int (stage.__colorSplit[0] * 0xff),
@@ -113,8 +118,6 @@ class ConsoleRenderer extends AbstractRenderer {
 			Std.int (stage.__colorSplit[2] * 0xff),
 			0xff
 		);
-
-		// TODO(james4k): no culling, no depth testing, default blending
 
 		renderDisplayObject (stage);
 
