@@ -989,7 +989,7 @@ class TextField extends InteractiveObject {
 				#elseif (mac || ios)
 				fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
 				#elseif linux
-				fontList = [ systemFontDirectory + "/truetype/freefont/FreeSans.ttf" ];
+				fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
 				#elseif android
 				fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
 				#elseif blackberry
@@ -1003,7 +1003,7 @@ class TextField extends InteractiveObject {
 				#elseif (mac || ios)
 				fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
 				#elseif linux
-				fontList = [ systemFontDirectory + "/truetype/freefont/FreeSerif.ttf" ];
+				fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
 				#elseif android
 				fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
 				#elseif blackberry
@@ -1017,7 +1017,7 @@ class TextField extends InteractiveObject {
 				#elseif (mac || ios)
 				fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
 				#elseif linux
-				fontList = [ systemFontDirectory + "/truetype/freefont/FreeMono.ttf" ];
+				fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
 				#elseif android
 				fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
 				#elseif blackberry
