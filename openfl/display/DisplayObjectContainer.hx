@@ -661,12 +661,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		return super.__broadcast (event, notifyChilden);
 		
 	}
-	
-	
+
+
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
-		
+		super.__getBounds(rect, matrix);
+
 		if (__children.length == 0) return;
-		
+
 		var matrixCache = null;
 		
 		if (matrix != null) {
