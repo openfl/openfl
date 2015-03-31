@@ -938,7 +938,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			var bounds = new Rectangle ();
 			__getBounds (bounds, null);
-
+			
 			return bounds.containsPoint (new Point (x, y));
 			
 		}
