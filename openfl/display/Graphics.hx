@@ -213,7 +213,18 @@ class Graphics {
 	 */
 	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.beginGradientFill");
+		__commands.push (BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));
+		
+		for (alpha in alphas) {
+			
+			if (alpha > 0) {
+				
+				__visible = true;
+				break;
+				
+			}
+			
+		}
 		
 	}
 	
@@ -1042,6 +1053,7 @@ class Graphics {
 	
 	BeginBitmapFill (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
 	BeginFill (color:Int, alpha:Float);
+	BeginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>);
 	CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
 	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
 	DrawCircle (x:Float, y:Float, radius:Float);
