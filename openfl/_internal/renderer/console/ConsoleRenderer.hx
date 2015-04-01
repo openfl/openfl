@@ -537,8 +537,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					var useRect = (flags & Tilesheet.TILE_RECT) != 0;
 					var useOrigin = (flags & Tilesheet.TILE_ORIGIN) != 0;
 
-					if (useRGB || useRect || useOrigin) {
-						trace ("DrawTiles not implemented for flags:", flags);
+					if (useRect || useOrigin) {
+						trace ("DrawTiles not implemented for flags: " + flags);
 						break;
 					}
 
@@ -550,7 +550,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					};
 
 					if (blendMode != BlendMode.NORMAL) {
-						trace ("DrawTiles not implemented for BlendMode:", blendMode);
+						trace ("DrawTiles not implemented for BlendMode: " + blendMode);
 					}
 
 					if (useTransform) {
@@ -561,6 +561,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					var scaleIndex = 0;
 					var rotationIndex = 0;
 					var transformIndex = 0;
+					var rgbIndex = 0;
 					var alphaIndex = 0;
 
 					var stride = 3;
@@ -571,6 +572,14 @@ class ConsoleRenderer extends AbstractRenderer {
 					if (useRotation) {
 						rotationIndex = stride;
 						stride += 1;
+					}
+					if (useTransform) {
+						transformIndex = stride;
+						stride += 4;
+					}
+					if (useRGB) {
+						rgbIndex = stride;
+						stride += 3;
 					}
 					if (useAlpha) {
 						alphaIndex = stride;
@@ -615,10 +624,17 @@ class ConsoleRenderer extends AbstractRenderer {
 						}	
 
 						var alpha = object.__worldAlpha;
+						var red:UInt8 = 255, green:UInt8 = 255, blue:UInt8 = 255;
 						var scale = 1.0;
 						var rotation = 0.0;
 						var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
-						//var tint = 0xffffff;
+
+						if (useRGB) {
+							// TODO(james4k): premultiplied alpha?
+							red   = Std.int (tileData[index + rgbIndex + 0] * 255);
+							green = Std.int (tileData[index + rgbIndex + 1] * 255);
+							blue  = Std.int (tileData[index + rgbIndex + 2] * 255);
+						}
 
 						if (useAlpha) {
 							alpha *= tileData[index + alphaIndex];	
@@ -654,19 +670,19 @@ class ConsoleRenderer extends AbstractRenderer {
 
 						out.vec3 (a*w1 + c*h1 + tx, d*h1 + b*w1 + ty, 0);
 						out.vec2 (tileUV.x, tileUV.y);
-						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.color (red, green, blue, Std.int(alpha * 0xff));
 
 						out.vec3 (a*w0 + c*h1 + tx, d*h1 + b*w0 + ty, 0);
 						out.vec2 (tileUV.width, tileUV.y);
-						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.color (red, green, blue, Std.int(alpha * 0xff));
 
 						out.vec3 (a*w0 + c*h0 + tx, d*h0 + b*w0 + ty, 0);
 						out.vec2 (tileUV.width, tileUV.height);
-						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.color (red, green, blue, Std.int(alpha * 0xff));
 
 						out.vec3 (a*w1 + c*h0 + tx, d*h0 + b*w1 + ty, 0);
 						out.vec2 (tileUV.x, tileUV.height);
-						out.color (0xff, 0xff, 0xff, Std.int(alpha * 0xff));
+						out.color (red, green, blue, Std.int(alpha * 0xff));
 
 					}
 
