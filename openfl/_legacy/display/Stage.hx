@@ -1345,7 +1345,7 @@ class Stage extends DisplayObjectContainer {
 		}
 		
 		#if (ios || android)
-		var height = #if android lime_get_softkeyboardheight #else lime_stage_get_keyboard_height #end ();
+		var height = #if android lime_get_softkeyboardheight (); #else lime_stage_get_keyboard_height (__handle); #end
 		
 		if (height > 0) {
 			
