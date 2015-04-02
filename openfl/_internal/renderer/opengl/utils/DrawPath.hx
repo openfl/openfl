@@ -111,6 +111,12 @@ class PathBuiler {
 	}
 	
 	private static inline function lineTo (x:Float, y:Float) {
+		if (__currentPath.points.length == 0) {
+			
+			moveTo (0, 0);
+			
+		}
+		
 		__currentPath.points.push (x);
 		__currentPath.points.push (y);
 	}
