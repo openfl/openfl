@@ -11,8 +11,11 @@ import openfl.Lib;
 import lime.text.Font in LimeFont;
 #end
 
-
+#if hybrid
+@:autoBuild(openfl.Assets.embedFont())
+#else
 @:autoBuild(openfl._legacy.Assets.embedFont())
+#end
 
 
 class Font {
@@ -213,6 +216,11 @@ class Font {
 		return font;
 		
 	}
+	
+	public var name (get, set):String;
+	
+	private function get_name ():String { return fontName; }
+	private function set_name (value:String):String { return fontName = value; }
 	#end
 	
 	

@@ -1944,7 +1944,7 @@ class Assets {
 }
 
 
+#end
 #else
 typedef Assets = openfl.Assets;
-#end
 #end
