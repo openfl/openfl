@@ -16,7 +16,7 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.Lib;
 
-#if hybrid
+#if lime_hybrid
 import lime.audio.AudioBuffer;
 #end
 
@@ -95,7 +95,7 @@ class Sound extends EventDispatcher {
 	}
 	
 	
-	#if hybrid
+	#if lime_hybrid
 	public static function fromAudioBuffer (buffer:AudioBuffer):Sound {
 		
 		var sound = new Sound ();

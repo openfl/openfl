@@ -126,7 +126,7 @@ class ArrayBufferView implements IMemoryRange {
 	
 	public function getNativePointer ():Dynamic {
 		
-		#if !hybrid
+		#if !lime_hybrid
 		return buffer.getNativePointer ();
 		#else
 		return null;

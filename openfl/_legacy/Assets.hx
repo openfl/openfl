@@ -1,4 +1,4 @@
-package openfl._legacy; #if (openfl_legacy && !hybrid)
+package openfl._legacy; #if (openfl_legacy && !lime_hybrid)
 #if !macro
 
 

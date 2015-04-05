@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Lib;
 
-#if hybrid
+#if lime_hybrid
 import lime.graphics.Image;
 #end
 
@@ -237,7 +237,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	#if hybrid
+	#if lime_hybrid
 	public static function fromImage (image:Image):BitmapData {
 		
 		var source = image.data.buffer;

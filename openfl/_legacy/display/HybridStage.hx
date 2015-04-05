@@ -1,4 +1,4 @@
-package openfl._legacy.display; #if (openfl_legacy && hybrid)
+package openfl._legacy.display; #if (openfl_legacy && lime_hybrid)
 
 
 import lime.app.IModule;
@@ -25,51 +25,35 @@ class HybridStage extends ManagedStage implements IModule {
 			
 		}
 		
-		pumpEvent ( { type: ManagedStage.etResize, x: width, y: height } );
+		onWindowResize (width, height);
 		
 	}
 	
 	
 	public function init (context:RenderContext):Void {
 		
-		//switch (context) {
-			//
-			//case OPENGL (gl):
-				//
-				//__renderer = new GLRenderer (stageWidth, stageHeight, gl);
-			//
-			//case CANVAS (context):
-				//
-				//__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-			//
-			//case DOM (element):
-				//
-				//__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-			//
-			//default:
-			//
-		//}
+		
 		
 	}
 	
 	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etJoyAxisMove, id: gamepad.id, code: axis, value: value } );
 		
 	}
 	
 	
 	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etJoyButtonDown, id: gamepad.id, code: button } );
 		
 	}
 	
 	
 	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etJoyButtonUp, id: gamepad.id, code: button } );
 		
 	}
 	
@@ -90,36 +74,32 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
-		//__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
+		// TODO: Translate key code and set modifier
+		
+		pumpEvent ( { type: ManagedStage.etKeyDown, value: keyCode, code: keyCode, flags: 0 } );
 		
 	}
 	
 	
 	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
-		//__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
+		// TODO: Translate key code and set modifier
+		
+		pumpEvent ( { type: ManagedStage.etKeyUp, value: keyCode, code: keyCode, flags: 0 } );
 		
 	}
 	
 	
 	public function onMouseDown (x:Float, y:Float, button:Int):Void {
 		
-		//var type = switch (button) {
-			//
-			//case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
-			//case 2: MouseEvent.RIGHT_MOUSE_DOWN;
-			//default: MouseEvent.MOUSE_DOWN;
-			//
-		//}
-		//
-		//__onMouse (type, x, y, button);
+		pumpEvent ( { type: ManagedStage.etMouseDown, x: x, y: y, value: button, flags: 0 } );
 		
 	}
 	
 	
 	public function onMouseMove (x:Float, y:Float):Void {
 		
-		//__onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
+		pumpEvent ( { type: ManagedStage.etMouseMove, x: x, y: y, value: 0, flags: 0 } );
 		
 	}
 	
@@ -133,94 +113,86 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	public function onMouseUp (x:Float, y:Float, button:Int):Void {
 		
-		//var type = switch (button) {
-			//
-			//case 1: MouseEvent.MIDDLE_MOUSE_UP;
-			//case 2: MouseEvent.RIGHT_MOUSE_UP;
-			//default: MouseEvent.MOUSE_UP;
-			//
-		//}
-		//
-		//__onMouse (type, x, y, button);
+		pumpEvent ( { type: ManagedStage.etMouseUp, x: x, y: y, value: button, flags: 0 } );
 		
 	}
 	
 	
 	public function onMouseWheel (deltaX:Float, deltaY:Float):Void {
 		
-		//__onMouseWheel (deltaX, deltaY);
+		var value = deltaY > 0 ? 4 : 3;
+		
+		pumpEvent ( { type: ManagedStage.etMouseDown, x: 0, y: 0, value: value, flags: 0 } );
 		
 	}
 	
 	
 	public function onRenderContextLost ():Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etRenderContextLost } );
 		
 	}
 	
 	
 	public function onRenderContextRestored (context:RenderContext):Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etRenderContextRestored } );
 		
 	}
 	
 	
 	public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
-		//__onTouch (TouchEvent.TOUCH_MOVE, x, y, id);
+		pumpEvent ( { type: ManagedStage.etTouchMove, x: x, y: y, value: id, flags: 0 } );
 		
 	}
 	
 	
 	public function onTouchEnd (x:Float, y:Float, id:Int):Void {
 		
-		//__onTouch (TouchEvent.TOUCH_END, x, y, id);
+		pumpEvent ( { type: ManagedStage.etTouchEnd, x: x, y: y, value: id, flags: 0 } );
 		
 	}
 	
 	
 	public function onTouchStart (x:Float, y:Float, id:Int):Void {
 		
-		//__onTouch (TouchEvent.TOUCH_BEGIN, x, y, id);
+		pumpEvent ( { type: ManagedStage.etTouchBegin, x: x, y: y, value: id, flags: 0 } );
 		
 	}
 	
 	
 	public function onWindowActivate ():Void {
 		
-		//var event = new Event (Event.ACTIVATE);
-		//__broadcast (event, true);
-		//
+		pumpEvent ( { type: ManagedStage.etActivate } );
+		
 	}
 	
 	
 	public function onWindowClose ():Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etQuit } );
 		
 	}
 	
 	
 	public function onWindowDeactivate ():Void {
 		
-		//var event = new Event (Event.DEACTIVATE);
-		//__broadcast (event, true);
+		pumpEvent ( { type: ManagedStage.etDeactivate } );
 		
 	}
 	
 	
 	public function onWindowFocusIn ():Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etGotInputFocus } );
 		
 	}
 	
 	
 	public function onWindowFocusOut ():Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etLostInputFocus } );
 		
 	}
 	
@@ -248,17 +220,7 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	public function onWindowResize (width:Int, height:Int):Void {
 		
-		//stageWidth = width;
-		//stageHeight = height;
-		//
-		//if (__renderer != null) {
-			//
-			//__renderer.resize (width, height);
-			//
-		//}
-		//
-		//var event = new Event (Event.RESIZE);
-		//__broadcast (event, false);
+		pumpEvent ( { type: ManagedStage.etResize, x: width, y: height } );
 		
 	}
 	
@@ -273,29 +235,6 @@ class HybridStage extends ManagedStage implements IModule {
 	public function render (context:RenderContext):Void {
 		
 		__render (true);
-		
-		//if (__rendering) return;
-		//__rendering = true;
-		//
-		//__broadcast (new Event (Event.ENTER_FRAME), true);
-		//
-		//if (__invalidated) {
-			//
-			//__invalidated = false;
-			//__broadcast (new Event (Event.RENDER), true);
-			//
-		//}
-		//
-		//__renderable = true;
-		//__update (false, true);
-		//
-		//if (__renderer != null) {
-			//
-			//__renderer.render (this);
-			//
-		//}
-		//
-		//__rendering = false;
 		
 	}
 	

@@ -1,4 +1,4 @@
-#if !hybrid
+#if !lime_hybrid
 
 
 import openfl.Assets;

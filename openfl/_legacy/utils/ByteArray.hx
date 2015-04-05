@@ -1,4 +1,4 @@
-package openfl._legacy.utils; #if (openfl_legacy && !hybrid)
+package openfl._legacy.utils; #if (openfl_legacy && !lime_hybrid)
 
 
 import haxe.io.Bytes;

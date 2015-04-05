@@ -1,7 +1,7 @@
 package openfl._legacy; #if openfl_legacy
 
 
-#if hybrid
+#if lime_hybrid
 import lime.app.Application;
 #end
 
@@ -33,7 +33,7 @@ class Lib {
 	static public var DEPTH_BUFFER = 0x0200;
 	static public var STENCIL_BUFFER = 0x0400;
 	
-	#if hybrid
+	#if lime_hybrid
 	public static var application:Application;
 	#end
 	
@@ -202,7 +202,7 @@ class Lib {
 	
 	public static function load (library:String, method:String, args:Int = 0):Dynamic {
 		
-		#if !hybrid
+		#if !lime_hybrid
 		if (library == "lime") library = "lime-legacy";
 		#end
 		

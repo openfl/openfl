@@ -7,11 +7,11 @@ import openfl.display.Stage;
 import openfl.utils.ByteArray;
 import openfl.Lib;
 
-#if hybrid
+#if lime_hybrid
 import lime.text.Font in LimeFont;
 #end
 
-#if hybrid
+#if lime_hybrid
 @:autoBuild(openfl.Assets.embedFont())
 #else
 @:autoBuild(openfl._legacy.Assets.embedFont())
@@ -207,7 +207,7 @@ class Font {
 	}
 	
 	
-	#if hybrid
+	#if lime_hybrid
 	public static function __fromLimeFont (value:LimeFont):Font {
 		
 		var font = new Font ();

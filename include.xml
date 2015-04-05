@@ -4,17 +4,25 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2 || hybrid" unless="web || display" />
+	<set name="lime-hybrid" value="1" if="hybrid || lime_hybrid" unless="web || display" />
+	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2 || lime-hybrid" unless="web || display" />
 	
-	<unset name="openfl-legacy" if="web || display" />
-	<unset name="lime-legacy" if="web || display" />
-	<unset name="legacy" if="web || display" />
+	<section if="web || display">
+		
+		<unset name="openfl-legacy" />
+		<unset name="lime-legacy" />
+		<unset name="lime-hybrid" />
+		<unset name="legacy" />
+		<unset name="hybrid" />
+		
+	</section>
 	
 	<set name="lime-legacy" value="1" if="openfl-legacy" />
 	<set name="openfl-next" value="1" unless="openfl-legacy" />
 	
 	<haxedef name="openfl-legacy" if="openfl-legacy" unless="display" />
 	<haxedef name="lime-legacy" if="lime-legacy" unless="display" />
+	<haxedef name="lime-hybrid" if="lime-hybrid" unless="display" />
 	<haxedef name="openfl-next" if="openfl-next" />
 	
 	<section if="openfl-next || webgl">
