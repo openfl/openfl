@@ -4,7 +4,7 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2" unless="web || display" />
+	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2 || hybrid" unless="web || display" />
 	
 	<unset name="openfl-legacy" if="web || display" />
 	<unset name="lime-legacy" if="web || display" />
@@ -45,7 +45,7 @@
 	<section unless="lime">
 		
 		<haxelib name="lime" unless="create || native lime-legacy" />
-		<haxelib name="lime" if="display || rebuild" />
+		<haxelib name="lime" if="display || rebuild || native lime-legacy hybrid" />
 		
 		<template path="templates" />
 		

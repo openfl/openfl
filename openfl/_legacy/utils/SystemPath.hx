@@ -44,7 +44,7 @@ class SystemPath {
 	
 	#if !android
 	
-	private static var lime_filesystem_get_special_dir = Lib.load ("lime", "lime_filesystem_get_special_dir", 1);
+	private static var lime_filesystem_get_special_dir = Lib.load ("lime-legacy", "lime_filesystem_get_special_dir", 1);
 	
 	#else
 	

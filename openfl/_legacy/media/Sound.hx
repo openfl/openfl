@@ -16,8 +16,14 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.Lib;
 
+#if hybrid
+import lime.audio.AudioBuffer;
+#end
+
 
 @:autoBuild(openfl._legacy.Assets.embedSound())
+
+
 class Sound extends EventDispatcher {
 	
 	
@@ -87,6 +93,17 @@ class Sound extends EventDispatcher {
 		__loading = false;
 		
 	}
+	
+	
+	#if hybrid
+	public static function fromAudioBuffer (buffer:AudioBuffer):Sound {
+		
+		var sound = new Sound ();
+		sound.loadPCMFromByteArray (buffer.data, buffer.bitsPerSample, "short", buffer.channels > 1, buffer.sampleRate);
+		return sound;
+		
+	}
+	#end
 	
 	
 	public function load (stream:URLRequest, context:SoundLoaderContext = null, forcePlayAsMusic:Bool = false):Void {
@@ -316,13 +333,13 @@ class Sound extends EventDispatcher {
 	
 	
 	
-	private static var lime_sound_from_file = Lib.load ("lime", "lime_sound_from_file", 2);
-	private static var lime_sound_from_data = Lib.load ("lime", "lime_sound_from_data", 3);
-	private static var lime_sound_get_id3 = Lib.load ("lime", "lime_sound_get_id3", 2);
-	private static var lime_sound_get_length = Lib.load ("lime", "lime_sound_get_length", 1);
-	private static var lime_sound_close = Lib.load ("lime", "lime_sound_close", 1);
-	private static var lime_sound_get_status = Lib.load ("lime", "lime_sound_get_status", 1);
-	private static var lime_sound_channel_create_dynamic = Lib.load ("lime", "lime_sound_channel_create_dynamic", 2);
+	private static var lime_sound_from_file = Lib.load ("lime-legacy", "lime_sound_from_file", 2);
+	private static var lime_sound_from_data = Lib.load ("lime-legacy", "lime_sound_from_data", 3);
+	private static var lime_sound_get_id3 = Lib.load ("lime-legacy", "lime_sound_get_id3", 2);
+	private static var lime_sound_get_length = Lib.load ("lime-legacy", "lime_sound_get_length", 1);
+	private static var lime_sound_close = Lib.load ("lime-legacy", "lime_sound_close", 1);
+	private static var lime_sound_get_status = Lib.load ("lime-legacy", "lime_sound_get_status", 1);
+	private static var lime_sound_channel_create_dynamic = Lib.load ("lime-legacy", "lime_sound_channel_create_dynamic", 2);
 	
 	
 }

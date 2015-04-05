@@ -1415,39 +1415,39 @@ class Stage extends DisplayObjectContainer {
 	
 	
 	
-	private static var lime_set_stage_handler = Lib.load ("lime", "lime_set_stage_handler", 4);
-	private static var lime_render_stage = Lib.load ("lime", "lime_render_stage", 1);
-	private static var lime_stage_get_autos3d = Lib.load ("lime", "lime_stage_get_autos3d", 1);
-	private static var lime_stage_set_autos3d = Lib.load ("lime", "lime_stage_set_autos3d", 2);
-	private static var lime_stage_get_focus_id = Lib.load ("lime", "lime_stage_get_focus_id", 1);
-	private static var lime_stage_set_focus = Lib.load ("lime", "lime_stage_set_focus", 3);
-	private static var lime_stage_get_focus_rect = Lib.load ("lime", "lime_stage_get_focus_rect", 1);
-	private static var lime_stage_set_focus_rect = Lib.load ("lime", "lime_stage_set_focus_rect", 2);
-	private static var lime_stage_is_opengl = Lib.load ("lime", "lime_stage_is_opengl", 1);
+	private static var lime_set_stage_handler = Lib.load ("lime-legacy", "lime_set_stage_handler", 4);
+	private static var lime_render_stage = Lib.load ("lime-legacy", "lime_render_stage", 1);
+	private static var lime_stage_get_autos3d = Lib.load ("lime-legacy", "lime_stage_get_autos3d", 1);
+	private static var lime_stage_set_autos3d = Lib.load ("lime-legacy", "lime_stage_set_autos3d", 2);
+	private static var lime_stage_get_focus_id = Lib.load ("lime-legacy", "lime_stage_get_focus_id", 1);
+	private static var lime_stage_set_focus = Lib.load ("lime-legacy", "lime_stage_set_focus", 3);
+	private static var lime_stage_get_focus_rect = Lib.load ("lime-legacy", "lime_stage_get_focus_rect", 1);
+	private static var lime_stage_set_focus_rect = Lib.load ("lime-legacy", "lime_stage_set_focus_rect", 2);
+	private static var lime_stage_is_opengl = Lib.load ("lime-legacy", "lime_stage_is_opengl", 1);
 	#if ios
-	private static var lime_stage_get_keyboard_height = Lib.load ("lime", "lime_stage_get_keyboard_height", 1);
+	private static var lime_stage_get_keyboard_height = Lib.load ("lime-legacy", "lime_stage_get_keyboard_height", 1);
 	#end
-	private static var lime_stage_get_stage_width = Lib.load ("lime", "lime_stage_get_stage_width", 1);
-	private static var lime_stage_get_stage_height = Lib.load ("lime", "lime_stage_get_stage_height", 1);
-	private static var lime_stage_get_dpi_scale = Lib.load ("lime", "lime_stage_get_dpi_scale", 1);
-	private static var lime_stage_get_scale_mode = Lib.load ("lime", "lime_stage_get_scale_mode", 1);
-	private static var lime_stage_set_scale_mode = Lib.load ("lime", "lime_stage_set_scale_mode", 2);
-	private static var lime_stage_get_align = Lib.load ("lime", "lime_stage_get_align", 1);
-	private static var lime_stage_set_align = Lib.load ("lime", "lime_stage_set_align", 2);
-	private static var lime_stage_get_quality = Lib.load ("lime", "lime_stage_get_quality", 1);
-	private static var lime_stage_set_quality = Lib.load ("lime", "lime_stage_set_quality", 2);
-	private static var lime_stage_get_display_state = Lib.load ("lime", "lime_stage_get_display_state", 1);
-	private static var lime_stage_set_display_state = Lib.load ("lime", "lime_stage_set_display_state", 2);
-	private static var lime_stage_set_next_wake = Lib.load ("lime", "lime_stage_set_next_wake", 2);
-	private static var lime_stage_request_render = Lib.load ("lime", "lime_stage_request_render", 0);
-	private static var lime_stage_resize_window = Lib.load ("lime", "lime_stage_resize_window", 3);
-	private static var lime_stage_set_resolution = Lib.load ("lime", "lime_stage_set_resolution", 3);
-	private static var lime_stage_set_screenmode = Lib.load("lime","lime_stage_set_screenmode", 5);
-	private static var lime_stage_set_fullscreen = Lib.load ("lime", "lime_stage_set_fullscreen", 2);
-	private static var lime_stage_show_cursor = Lib.load ("lime", "lime_stage_show_cursor", 2);
-	private static var lime_stage_set_fixed_orientation = Lib.load ("lime", "lime_stage_set_fixed_orientation", 1);
-	private static var lime_stage_get_orientation = Lib.load ("lime", "lime_stage_get_orientation", 0);
-	private static var lime_stage_get_normal_orientation = Lib.load ("lime", "lime_stage_get_normal_orientation", 0);
+	private static var lime_stage_get_stage_width = Lib.load ("lime-legacy", "lime_stage_get_stage_width", 1);
+	private static var lime_stage_get_stage_height = Lib.load ("lime-legacy", "lime_stage_get_stage_height", 1);
+	private static var lime_stage_get_dpi_scale = Lib.load ("lime-legacy", "lime_stage_get_dpi_scale", 1);
+	private static var lime_stage_get_scale_mode = Lib.load ("lime-legacy", "lime_stage_get_scale_mode", 1);
+	private static var lime_stage_set_scale_mode = Lib.load ("lime-legacy", "lime_stage_set_scale_mode", 2);
+	private static var lime_stage_get_align = Lib.load ("lime-legacy", "lime_stage_get_align", 1);
+	private static var lime_stage_set_align = Lib.load ("lime-legacy", "lime_stage_set_align", 2);
+	private static var lime_stage_get_quality = Lib.load ("lime-legacy", "lime_stage_get_quality", 1);
+	private static var lime_stage_set_quality = Lib.load ("lime-legacy", "lime_stage_set_quality", 2);
+	private static var lime_stage_get_display_state = Lib.load ("lime-legacy", "lime_stage_get_display_state", 1);
+	private static var lime_stage_set_display_state = Lib.load ("lime-legacy", "lime_stage_set_display_state", 2);
+	private static var lime_stage_set_next_wake = Lib.load ("lime-legacy", "lime_stage_set_next_wake", 2);
+	private static var lime_stage_request_render = Lib.load ("lime-legacy", "lime_stage_request_render", 0);
+	private static var lime_stage_resize_window = Lib.load ("lime-legacy", "lime_stage_resize_window", 3);
+	private static var lime_stage_set_resolution = Lib.load ("lime-legacy", "lime_stage_set_resolution", 3);
+	private static var lime_stage_set_screenmode = Lib.load ("lime-legacy","lime_stage_set_screenmode", 5);
+	private static var lime_stage_set_fullscreen = Lib.load ("lime-legacy", "lime_stage_set_fullscreen", 2);
+	private static var lime_stage_show_cursor = Lib.load ("lime-legacy", "lime_stage_show_cursor", 2);
+	private static var lime_stage_set_fixed_orientation = Lib.load ("lime-legacy", "lime_stage_set_fixed_orientation", 1);
+	private static var lime_stage_get_orientation = Lib.load ("lime-legacy", "lime_stage_get_orientation", 0);
+	private static var lime_stage_get_normal_orientation = Lib.load ("lime-legacy", "lime_stage_get_normal_orientation", 0);
 	
 	#if android
 	private static var lime_get_softkeyboardheight = JNI.createStaticMethod ("org.haxe.lime.GameActivity", "getSoftKeyboardHeight", "()F");

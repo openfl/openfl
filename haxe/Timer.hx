@@ -380,7 +380,7 @@ class Timer {
 	
 	
 	#if openfl_legacy
-	static var lime_time_stamp = flash.Lib.load ("lime", "lime_time_stamp", 0);
+	static var lime_time_stamp = flash.Lib.load ("lime-legacy", "lime_time_stamp", 0);
 	#end
 	
 	
