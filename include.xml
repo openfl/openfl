@@ -17,7 +17,7 @@
 		
 	</section>
 	
-	<set name="lime-legacy" value="1" if="openfl-legacy" />
+	<set name="lime-legacy" value="1" if="openfl-legacy" unless="lime-hybrid" />
 	<set name="openfl-next" value="1" unless="openfl-legacy" />
 	
 	<haxedef name="openfl-legacy" if="openfl-legacy" unless="display" />
@@ -53,7 +53,7 @@
 	<section unless="lime">
 		
 		<haxelib name="lime" unless="create || native lime-legacy" />
-		<haxelib name="lime" if="display || rebuild || native lime-legacy hybrid" />
+		<haxelib name="lime" if="display || rebuild" />
 		
 		<template path="templates" />
 		
@@ -71,9 +71,9 @@
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<section if="lime-legacy">
+			<section if="openfl-legacy">
 				
-				<include haxelib="lime" />
+				<include haxelib="lime" if="lime-legacy" />
 				<template path="templates/legacy" />
 				
 			</section>

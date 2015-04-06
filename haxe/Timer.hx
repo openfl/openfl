@@ -200,7 +200,7 @@ private class TimerTask extends java.util.TimerTask {
 #else
 
 
-#if (lime && !openfl_legacy)
+#if !lime_legacy
 import lime.system.System;
 #end
 
@@ -243,7 +243,11 @@ class Timer {
 	
 	private static function getMS ():Float {
 		
-		return stamp () * 1000.0;
+		#if lime_legacy
+		return lime_time_stamp () * 1000.0;
+		#else
+		return System.getTimer ();
+		#end
 		
 	}
 	
@@ -267,7 +271,7 @@ class Timer {
 	
 	public static function stamp ():Float {
 		
-		#if openfl_legacy
+		#if lime_legacy
 		return lime_time_stamp ();
 		#else
 		return System.getTimer () / 1000;
@@ -298,7 +302,6 @@ class Timer {
 	}
 	
 	
-	#if openfl_legacy
 	@:noCompletion private function __check (inTime:Float) {
 		
 		if (inTime >= mFireAt) {
@@ -340,9 +343,10 @@ class Timer {
 	}
 	
 	
+	#if (lime_legacy || lime_hybrid)
 	@:noCompletion public static function __nextWake (limit:Float):Float {
 		
-		var now = lime_time_stamp () * 1000.0;
+		var now = getMS ();
 		var sleep;
 		
 		for (timer in sRunningTimers) {
@@ -379,7 +383,7 @@ class Timer {
 	
 	
 	
-	#if openfl_legacy
+	#if lime_legacy
 	static var lime_time_stamp = flash.Lib.load ("lime-legacy", "lime_time_stamp", 0);
 	#end
 	

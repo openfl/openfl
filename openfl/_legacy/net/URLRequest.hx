@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if lime_legacy
+package openfl._legacy.net; #if openfl_legacy
 
 
 import openfl.net.URLRequestHeader;
