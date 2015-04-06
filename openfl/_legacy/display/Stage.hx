@@ -118,7 +118,7 @@ class Stage extends DisplayObjectContainer {
 		allowsFullScreen = true;
 		pauseWhenDeactivated = true;
 		
-		#if android
+		#if (android && !lime_hybrid)
 		__hatValue = 0;
 		renderRequest = lime_stage_request_render;
 		#else
@@ -1345,7 +1345,7 @@ class Stage extends DisplayObjectContainer {
 		}
 		
 		#if (ios || android)
-		var height = #if android lime_get_softkeyboardheight (); #else lime_stage_get_keyboard_height (__handle); #end
+		var height = #if android #if lime_legacy lime_get_softkeyboardheight (); #else 0; #end #else lime_stage_get_keyboard_height (__handle); #end
 		
 		if (height > 0) {
 			
@@ -1449,7 +1449,7 @@ class Stage extends DisplayObjectContainer {
 	private static var lime_stage_get_orientation = Lib.load ("lime-legacy", "lime_stage_get_orientation", 0);
 	private static var lime_stage_get_normal_orientation = Lib.load ("lime-legacy", "lime_stage_get_normal_orientation", 0);
 	
-	#if android
+	#if (android && lime_legacy)
 	private static var lime_get_softkeyboardheight = JNI.createStaticMethod ("org.haxe.lime.GameActivity", "getSoftKeyboardHeight", "()F");
 	#end
 	

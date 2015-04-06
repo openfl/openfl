@@ -4,6 +4,10 @@ package openfl._legacy.utils; #if openfl_legacy
 import openfl.Lib;
 import openfl._legacy.utils.JNI;
 
+#if lime_hybrid
+import lime.system.System;
+#end
+
 
 class SystemPath {
   
@@ -52,13 +56,30 @@ class SystemPath {
 	
 	private static function lime_filesystem_get_special_dir (inWhich:Int):String {
 		
-		if (jni_filesystem_get_special_dir == null) {
+		#if lime_hybrid
+		
+		switch (which) {
 			
-			jni_filesystem_get_special_dir = JNI.createStaticMethod ("org.haxe.lime.GameActivity", "getSpecialDir", "(I)Ljava/lang/String;");
+			case APP: return System.applicationDirectory;
+			case STORAGE: return System.applicationStorageDirectory;
+			case DESKTOP: return System.desktopDirectory;
+			case DOCS: return System.documentsDirectory;
+			case USER: return System.userDirectory;
+			default; return "";
 			
 		}
 		
-		return jni_filesystem_get_special_dir (inWhich);
+		#else
+		
+		if (jni_filesystem_get_special_dir == null) {
+			
+			jni_filesystem_get_special_dir = JNI.createStaticMethod ("org/haxe/lime/GameActivity", "getSpecialDir", "(I)Ljava/lang/String;");
+			
+		}
+		
+		return jni_filesystem_get_special_dir (which);
+		
+		#end
 		
 	}
 	

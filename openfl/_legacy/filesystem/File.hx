@@ -3,6 +3,10 @@ package openfl._legacy.filesystem; #if openfl_legacy
 
 import openfl.Lib;
 
+#if lime_hybrid
+import lime.system.System;
+#end
+
 #if android
 import openfl.utils.JNI;
 #end
@@ -102,6 +106,21 @@ class File {
 	private static var jni_filesystem_get_special_dir:Dynamic = null;
 	private static function lime_filesystem_get_special_dir (which:Int):String {
 		
+		#if lime_hybrid
+		
+		switch (which) {
+			
+			case APP: return System.applicationDirectory;
+			case STORAGE: return System.applicationStorageDirectory;
+			case DESKTOP: return System.desktopDirectory;
+			case DOCS: return System.documentsDirectory;
+			case USER: return System.userDirectory;
+			default; return "";
+			
+		}
+		
+		#else
+		
 		if (jni_filesystem_get_special_dir == null) {
 			
 			jni_filesystem_get_special_dir = JNI.createStaticMethod ("org/haxe/lime/GameActivity", "getSpecialDir", "(I)Ljava/lang/String;");
@@ -109,6 +128,8 @@ class File {
 		}
 		
 		return jni_filesystem_get_special_dir (which);
+		
+		#end
 		
 	}
 	#end
