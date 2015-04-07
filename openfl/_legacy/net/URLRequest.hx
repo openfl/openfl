@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if openfl_legacy
+package openfl._legacy.net; #if (openfl_legacy && !disable_legacy_networking)
 
 
 import openfl.net.URLRequestHeader;
@@ -126,4 +126,6 @@ class URLRequest {
 }
 
 
+#else
+typedef URLRequest = openfl.net.URLRequest;
 #end

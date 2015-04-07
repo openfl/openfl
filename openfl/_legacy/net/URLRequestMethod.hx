@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if openfl_legacy
+package openfl._legacy.net; #if (openfl_legacy && !disable_legacy_networking)
 
 
 class URLRequestMethod {
@@ -15,4 +15,6 @@ class URLRequestMethod {
 }
 
 
+#else
+typedef URLRequestMethod = openfl.net.URLRequestMethod;
 #end

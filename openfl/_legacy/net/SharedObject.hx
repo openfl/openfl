@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if openfl_legacy
+package openfl._legacy.net; #if (openfl_legacy && !disable_legacy_networking)
 
 
 import haxe.io.Eof;
@@ -291,4 +291,6 @@ class SharedObject extends EventDispatcher {
 }
 
 
+#else
+typedef SharedObject = openfl.net.SharedObject;
 #end

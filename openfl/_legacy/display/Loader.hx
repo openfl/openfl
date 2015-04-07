@@ -28,7 +28,9 @@ class Loader extends Sprite {
 		super ();
 		
 		contentLoaderInfo = LoaderInfo.create (this);
+		#if !disable_legacy_networking
 		contentLoaderInfo.__onComplete = __onComplete;
+		#end
 		
 	}
 

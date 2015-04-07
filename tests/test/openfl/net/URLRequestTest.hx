@@ -14,7 +14,7 @@ class URLRequestTest {
 		var urlRequest = new URLRequest ();
 		var exists = urlRequest.contentType;
 		
-		#if openfl_legacy // to be revisited later
+		#if (openfl_legacy && !disable_legacy_networking) // to be revisited later
 		Assert.isNotNull (exists);
 		#else
 		Assert.isNull (exists);

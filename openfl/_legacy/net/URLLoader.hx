@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if openfl_legacy
+package openfl._legacy.net; #if (openfl_legacy && !disable_legacy_networking)
 
 
 import sys.io.File;
@@ -305,4 +305,6 @@ class URLLoader extends EventDispatcher {
 }
 
 
+#else
+typedef URLLoader = openfl.net.URLLoader;
 #end
