@@ -1,4 +1,4 @@
-package openfl._legacy.media; #if (openfl_legacy && !disable_legacy_sound)
+package openfl._legacy.media; #if (openfl_legacy && !disable_legacy_audio)
 
 
 import openfl.events.Event;
