@@ -333,13 +333,13 @@ class Sound extends EventDispatcher {
 	
 	
 	
-	private static var lime_sound_from_file = Lib.load ("lime-legacy", "lime_sound_from_file", 2);
-	private static var lime_sound_from_data = Lib.load ("lime-legacy", "lime_sound_from_data", 3);
-	private static var lime_sound_get_id3 = Lib.load ("lime-legacy", "lime_sound_get_id3", 2);
-	private static var lime_sound_get_length = Lib.load ("lime-legacy", "lime_sound_get_length", 1);
-	private static var lime_sound_close = Lib.load ("lime-legacy", "lime_sound_close", 1);
-	private static var lime_sound_get_status = Lib.load ("lime-legacy", "lime_sound_get_status", 1);
-	private static var lime_sound_channel_create_dynamic = Lib.load ("lime-legacy", "lime_sound_channel_create_dynamic", 2);
+	private static var lime_sound_from_file = Lib.load ("lime-legacy", "lime_legacy_sound_from_file", 2);
+	private static var lime_sound_from_data = Lib.load ("lime-legacy", "lime_legacy_sound_from_data", 3);
+	private static var lime_sound_get_id3 = Lib.load ("lime-legacy", "lime_legacy_sound_get_id3", 2);
+	private static var lime_sound_get_length = Lib.load ("lime-legacy", "lime_legacy_sound_get_length", 1);
+	private static var lime_sound_close = Lib.load ("lime-legacy", "lime_legacy_sound_close", 1);
+	private static var lime_sound_get_status = Lib.load ("lime-legacy", "lime_legacy_sound_get_status", 1);
+	private static var lime_sound_channel_create_dynamic = Lib.load ("lime-legacy", "lime_legacy_sound_channel_create_dynamic", 2);
 	
 	
 }

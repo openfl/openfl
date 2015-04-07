@@ -232,8 +232,8 @@ class Font {
 	
 	
 	private static var freetype_import_font = Lib.load ("lime-legacy", "freetype_import_font", 4);
-	private static var lime_font_register_font = Lib.load ("lime-legacy", "lime_font_register_font", 2);
-	private static var lime_font_iterate_device_fonts = Lib.load ("lime-legacy", "lime_font_iterate_device_fonts", 1);
+	private static var lime_font_register_font = Lib.load ("lime-legacy", "lime_legacy_font_register_font", 2);
+	private static var lime_font_iterate_device_fonts = Lib.load ("lime-legacy", "lime_legacy_font_iterate_device_fonts", 1);
 	
 	
 }

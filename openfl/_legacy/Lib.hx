@@ -74,7 +74,7 @@ class Lib {
 	public static function close ():Void {
 		
 		Stage.__exiting = true;
-		var close = Lib.load ("lime-legacy", "lime_close", 0);
+		var close = Lib.load ("lime-legacy", "lime_legacy_close", 0);
 		close ();
 		
 	}
@@ -99,7 +99,7 @@ class Lib {
 		initWidth = width;
 		initHeight = height;
 		
-		var create_main_frame = Lib.load ("lime-legacy", "lime_create_main_frame", -1);
+		var create_main_frame = Lib.load ("lime-legacy", "lime_legacy_create_main_frame", -1);
 		
 		create_main_frame (function (frameHandle:Dynamic) {
 			
@@ -469,7 +469,7 @@ class Lib {
 	
 	public static function forceClose ():Void {
 		
-		var terminate = Lib.load ("lime-legacy", "lime_terminate", 0);
+		var terminate = Lib.load ("lime-legacy", "lime_legacy_terminate", 0);
 		terminate ();
 		
 	}
@@ -518,7 +518,7 @@ class Lib {
 	
 	public static function setIcon (path:String):Void {
 		
-		var set_icon = Lib.load ("lime-legacy", "lime_set_icon", 1);
+		var set_icon = Lib.load ("lime-legacy", "lime_legacy_set_icon", 1);
 		set_icon (path);
 		
 	}
@@ -597,13 +597,13 @@ class Lib {
 	
 	
 	#if android
-	private static var lime_post_ui_callback = Lib.load ("lime-legacy", "lime_post_ui_callback", 1);
+	private static var lime_post_ui_callback = Lib.load ("lime-legacy", "lime_legacy_post_ui_callback", 1);
 	#end
-	private static var lime_set_package = Lib.load ("lime-legacy", "lime_set_package", 4);
-	private static var lime_get_frame_stage = Lib.load ("lime-legacy", "lime_get_frame_stage", 1);
-	private static var lime_get_url = Lib.load ("lime-legacy", "lime_get_url", 1);
-	private static var lime_pause_animation = Lib.load ("lime-legacy", "lime_pause_animation", 0);
-	private static var lime_resume_animation = Lib.load ("lime-legacy", "lime_resume_animation", 0);
+	private static var lime_set_package = Lib.load ("lime-legacy", "lime_legacy_set_package", 4);
+	private static var lime_get_frame_stage = Lib.load ("lime-legacy", "lime_legacy_get_frame_stage", 1);
+	private static var lime_get_url = Lib.load ("lime-legacy", "lime_legacy_get_url", 1);
+	private static var lime_pause_animation = Lib.load ("lime-legacy", "lime_legacy_pause_animation", 0);
+	private static var lime_resume_animation = Lib.load ("lime-legacy", "lime_legacy_resume_animation", 0);
 	
 	
 }

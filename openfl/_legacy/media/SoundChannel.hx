@@ -311,18 +311,18 @@ class SoundChannel extends EventDispatcher {
 	
 	
 	
-	private static var lime_sound_channel_is_complete = Lib.load ("lime-legacy", "lime_sound_channel_is_complete", 1);
-	private static var lime_sound_channel_get_left = Lib.load ("lime-legacy", "lime_sound_channel_get_left", 1);
-	private static var lime_sound_channel_get_right = Lib.load ("lime-legacy", "lime_sound_channel_get_right", 1);
-	private static var lime_sound_channel_get_position = Lib.load ("lime-legacy", "lime_sound_channel_get_position", 1);
-	private static var lime_sound_channel_set_position = Lib.load ("lime-legacy", "lime_sound_channel_set_position", 2);
-	private static var lime_sound_channel_get_data_position = Lib.load ("lime-legacy", "lime_sound_channel_get_data_position", 1);
-	private static var lime_sound_channel_stop = Lib.load ("lime-legacy", "lime_sound_channel_stop", 1);
-	private static var lime_sound_channel_create = Lib.load ("lime-legacy", "lime_sound_channel_create", 4);
-	private static var lime_sound_channel_set_transform = Lib.load ("lime-legacy", "lime_sound_channel_set_transform", 2);
-	private static var lime_sound_channel_set_pitch = Lib.load ("lime-legacy", "lime_sound_channel_set_pitch", 2);
-	private static var lime_sound_channel_needs_data = Lib.load ("lime-legacy", "lime_sound_channel_needs_data", 1);
-	private static var lime_sound_channel_add_data = Lib.load ("lime-legacy", "lime_sound_channel_add_data", 2);
+	private static var lime_sound_channel_is_complete = Lib.load ("lime-legacy", "lime_legacy_sound_channel_is_complete", 1);
+	private static var lime_sound_channel_get_left = Lib.load ("lime-legacy", "lime_legacy_sound_channel_get_left", 1);
+	private static var lime_sound_channel_get_right = Lib.load ("lime-legacy", "lime_legacy_sound_channel_get_right", 1);
+	private static var lime_sound_channel_get_position = Lib.load ("lime-legacy", "lime_legacy_sound_channel_get_position", 1);
+	private static var lime_sound_channel_set_position = Lib.load ("lime-legacy", "lime_legacy_sound_channel_set_position", 2);
+	private static var lime_sound_channel_get_data_position = Lib.load ("lime-legacy", "lime_legacy_sound_channel_get_data_position", 1);
+	private static var lime_sound_channel_stop = Lib.load ("lime-legacy", "lime_legacy_sound_channel_stop", 1);
+	private static var lime_sound_channel_create = Lib.load ("lime-legacy", "lime_legacy_sound_channel_create", 4);
+	private static var lime_sound_channel_set_transform = Lib.load ("lime-legacy", "lime_legacy_sound_channel_set_transform", 2);
+	private static var lime_sound_channel_set_pitch = Lib.load ("lime-legacy", "lime_legacy_sound_channel_set_pitch", 2);
+	private static var lime_sound_channel_needs_data = Lib.load ("lime-legacy", "lime_legacy_sound_channel_needs_data", 1);
+	private static var lime_sound_channel_add_data = Lib.load ("lime-legacy", "lime_legacy_sound_channel_add_data", 2);
 	
 	
 }

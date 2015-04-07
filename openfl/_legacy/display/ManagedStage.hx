@@ -131,8 +131,8 @@ class ManagedStage extends Stage {
 	
 	
 	
-	private static var lime_managed_stage_create = Lib.load ("lime-legacy", "lime_managed_stage_create", 3);
-	private static var lime_managed_stage_pump_event = Lib.load ("lime-legacy", "lime_managed_stage_pump_event", 2);
+	private static var lime_managed_stage_create = Lib.load ("lime-legacy", "lime_legacy_managed_stage_create", 3);
+	private static var lime_managed_stage_pump_event = Lib.load ("lime-legacy", "lime_legacy_managed_stage_pump_event", 2);
 	
 	
 }
