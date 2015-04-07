@@ -557,6 +557,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				var mainSpritebatch = renderSession.spriteBatch;
 				var mainProjection = renderSession.projection;
+				var renderTransparent = renderSession.renderer.transparent;
 				
 				if (clipRect == null) {
 					clipRect = new Rectangle(0, 0, width, height);
@@ -573,6 +574,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				renderSession.spriteBatch = __spritebatch;
 				renderSession.projection = new Point((width / 2), -(height / 2));
+				renderSession.renderer.transparent = transparent;
 				
 				if (__framebuffer == null) {
 					__framebuffer = new FilterTexture(gl, width, height, smoothing);
@@ -623,6 +625,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				renderSession.spriteBatch = mainSpritebatch;
 				renderSession.projection = mainProjection;
+				renderSession.renderer.transparent = renderTransparent;
 				
 				gl.colorMask(true, true, true, renderSession.renderer.transparent);
 				
