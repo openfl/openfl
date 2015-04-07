@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net; #if !flash #if !openfl_legacy
 
 
 import haxe.io.Bytes;
