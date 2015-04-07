@@ -1,4 +1,4 @@
-package openfl.media; #if !flash #if !openfl_legacy
+package openfl.media; #if !flash #if (!openfl_legacy || disable_legacy_sound)
 
 
 import haxe.io.Path;

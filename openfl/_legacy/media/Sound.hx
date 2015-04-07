@@ -1,4 +1,4 @@
-package openfl._legacy.media; #if openfl_legacy
+package openfl._legacy.media; #if (openfl_legacy && !disable_legacy_sound)
 
 
 import openfl._legacy.Assets;
@@ -354,4 +354,6 @@ class Sound extends EventDispatcher {
 }
 
 
+#else
+typedef Sound = openfl.media.Sound;
 #end

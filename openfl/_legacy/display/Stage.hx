@@ -1050,7 +1050,9 @@ class Stage extends DisplayObjectContainer {
 		#if !java
 		Timer.__checkTimers ();
 		#end
+		#if !disable_legacy_sound
 		SoundChannel.__pollComplete ();
+		#end
 		URLLoader.__pollData ();
 		__checkRender ();
 		
@@ -1181,13 +1183,15 @@ class Stage extends DisplayObjectContainer {
 		#else
 		var nextWake = Timer.__nextWake (315000000.0);
 		
+		#if !disable_legacy_sound
 		if (nextWake > 0.001 && SoundChannel.__dynamicSoundCount > 0) {
 			
 			nextWake = 0.001;
 			
 		}
+		#end
 		
-		if (nextWake > 0.02 && (SoundChannel.__completePending () || URLLoader.__loadPending ())) {
+		if (nextWake > 0.02 && (#if !disable_legacy_sound SoundChannel.__completePending () || #end URLLoader.__loadPending ())) {
 			
 			nextWake = (active || !pauseWhenDeactivated) ? 0.020 : 0.500;
 			

@@ -20,6 +20,8 @@
 	<set name="lime-legacy" value="1" if="openfl-legacy" unless="lime-hybrid" />
 	<set name="openfl-next" value="1" unless="openfl-legacy" />
 	
+	<haxedef name="disable-legacy-sound" if="ios lime-hybrid" />
+	
 	<haxedef name="openfl-legacy" if="openfl-legacy" unless="display" />
 	<haxedef name="lime-legacy" if="lime-legacy" unless="display" />
 	<haxedef name="lime-hybrid" if="lime-hybrid" unless="display" />
