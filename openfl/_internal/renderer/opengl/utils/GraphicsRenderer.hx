@@ -62,6 +62,9 @@ class GraphicsRenderer {
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	public static var bucketPool:Array<GLBucket> = [];
 	
+	private static var SIN45 = 0.70710678118654752440084436210485;
+	private static var TAN22 = 0.4142135623730950488016887242097;
+	
 	private static var objectPosition:Point = new Point();
 	private static var objectBounds:Rectangle = new Rectangle();
 	
@@ -196,6 +199,8 @@ class GraphicsRenderer {
 			}
 		}
 		
+		// this seems to move the line when scaling is applied
+		/*
 		if (path.line.width % 2 > 0) {
 			
 			for (i in 0...points.length) {
@@ -205,6 +210,7 @@ class GraphicsRenderer {
 			}
 		
 		}
+		*/
 		
 		var firstPoint = new Point (points[0], points[1]);
 		var lastPoint = new Point (points[Std.int (points.length - 2)], points[Std.int (points.length - 1)]);
@@ -539,21 +545,41 @@ class GraphicsRenderer {
 		var y = points[1];
 		var width = points[2];
 		var height = points[3];
-		var radius = points[4];
+		var rx = points[4];
+		var ry = points[5];
 		
 		if (localCoords) {
 			x -= objectBounds.x;
 			y -= objectBounds.y;
 		}
 		
-		var recPoints:Array<Float> = [];
-		recPoints.push (x);
-		recPoints.push (y + radius);
+		var xe = x + width,
+		ye = y + height,
+		cx1 = -rx + (rx * SIN45),
+		cx2 = -rx + (rx * TAN22),
+		cy1 = -ry + (ry * SIN45),
+		cy2 = -ry + (ry * TAN22);
 		
-		recPoints = recPoints.concat (quadraticBezierCurve (x, y + height - radius, x, y + height, x + radius, y + height));
-		recPoints = recPoints.concat (quadraticBezierCurve (x + width - radius, y + height, x + width, y + height, x + width, y + height - radius));
-		recPoints = recPoints.concat (quadraticBezierCurve (x + width, y + radius, x + width, y, x + width - radius, y));
-		recPoints = recPoints.concat (quadraticBezierCurve (x + radius, y, x, y, x, y + radius));
+		var recPoints:Array<Float> = [];
+		
+		recPoints.push(xe);
+		recPoints.push(ye -ry);
+		curveTo (recPoints, xe, ye + cy2, xe + cx1, ye + cy1);
+		curveTo (recPoints, xe + cx2, ye, xe - rx, ye);
+		recPoints.push(x + rx);
+		recPoints.push(ye); 
+		curveTo (recPoints, x - cx2, ye, x - cx1, ye + cy1);
+		curveTo (recPoints, x, ye + cy2, x, ye - ry);
+		recPoints.push(x);
+		recPoints.push(y + ry);
+		curveTo (recPoints, x, y - cy2, x - cx1, y - cy1);
+		curveTo (recPoints, x - cx2, y, x + rx, y);
+		recPoints.push(xe - rx);
+		recPoints.push(y);
+		curveTo (recPoints, xe + cx2, y, xe + cx1, y - cy1);
+		curveTo (recPoints, xe, y - cy2, xe, y + ry);
+		recPoints.push(xe);
+		recPoints.push(ye - ry);
 		
 		var bucket = prepareBucket(path, glStack);
 		var fill = bucket.getData(Fill);
@@ -714,6 +740,37 @@ class GraphicsRenderer {
 	
 	public static inline function buildDrawTiles (path:DrawPath, glStack:GLStack):Void {
 		prepareBucket(path, glStack);
+	}
+	
+	
+	private static function curveTo (points:Array<Float>, cx:Float, cy:Float, x:Float, y:Float) {
+		
+		var xa:Float = 0;
+		var ya:Float = 0;
+		var n = 20;
+		
+		var fromX = points[points.length-2];
+		var fromY = points[points.length-1];
+		
+		var px:Float = 0;
+		var py:Float = 0;
+		
+		var tmp:Float = 0;
+		
+		for (i in 1...(n + 1)) {
+			
+			tmp = i / n;
+			
+			xa = fromX + ((cx - fromX) * tmp);
+			ya = fromY + ((cy - fromY) * tmp);
+			
+			px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
+			py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
+			
+			points.push (px);
+			points.push (py);
+			
+		}
 	}
 	
 	private static function quadraticBezierCurve (fromX:Float, fromY:Float, cpX:Float, cpY:Float, toX:Float, toY:Float):Array<Float> {
@@ -943,11 +1000,13 @@ class GraphicsRenderer {
 		for (bucket in glStack.buckets) {
 			
 			if (bucket.uploadTileBuffer) {
+				
 				bucket.uploadTile(
 					Math.ceil(objectBounds.left), 
 					Math.ceil(objectBounds.top),
 					Math.floor(objectBounds.right), 
 					Math.floor(objectBounds.bottom));
+					
 			}
 			
 			
@@ -1500,7 +1559,7 @@ class GLBucketData {
 				indexBuffer = gl.createBuffer ();
 			}
 			
-			if(!rawIndices) glIndices = new UInt16Array (indices);
+			if (!rawIndices) glIndices = new UInt16Array (indices);
 			gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STREAM_DRAW);
 		}
