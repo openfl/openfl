@@ -1,3 +1,21 @@
+3.0.0 (04/08/2015)
+------------------
+
+* Added -Dhybrid support (Lime 2 + OpenFL legacy)
+* Added initial support for gradient fills in canvas
+* Added -Ddisable-legacy-audio for use with hybrid builds
+* Added -Ddisable-legacy-networking for use with hybrid builds
+* Improved the behavior of graphics.drawRoundRect in GL
+* Updated OpenFL legacy for use with Lime 2.3.1
+* Improved the transparency of bitmapData.draw renders in GL
+* Fixed the count for HTML5 sound looping
+* Fixed the solid and bitmap fill positioning in GL
+* Fixed displayObject.getBounds for objects with graphics
+* Fixed the default font paths used for Linux systems
+* Fixed displayObject.hitTestPoint to use stage (not local) coordinates
+* Added support for stage.softKeyboardRect in iOS (legacy)
+
+
 3.0.0-beta.3 (03/26/2015)
 -------------------------
 
