@@ -1,4 +1,4 @@
-package openfl._legacy.ui; #if openfl_legacy
+package openfl._legacy.ui; #if (openfl_legacy && !lime_hybrid)
 
 
 import openfl.Lib;
@@ -32,4 +32,6 @@ class Mouse {
 }
 
 
+#else
+typedef Mouse = openfl.ui.Mouse;
 #end

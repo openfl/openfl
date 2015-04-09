@@ -19,6 +19,8 @@ class HybridStage extends ManagedStage implements IModule {
 	public function new (width:Int, height:Int, color:Null<Int> = null) {
 		
 		Lib.__stage = this;
+		Lib.initWidth = width;
+		Lib.initHeight = height;
 		
 		var flags = 0x00000080; // allow shaders
 		
@@ -79,32 +81,56 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
+		var flags = 0;
+		if (modifier.shiftKey) flags |= ManagedStage.efShiftDown;
+		if (modifier.ctrlKey) flags |= ManagedStage.efCtrlDown;
+		if (modifier.altKey) flags |= ManagedStage.efAltDown;
+		if (modifier.metaKey) flags |= ManagedStage.efCommandDown;
+		
 		// TODO: Translate key code and set modifier
 		
-		pumpEvent ( { type: ManagedStage.etKeyDown, value: keyCode, code: keyCode, flags: 0 } );
+		pumpEvent ( { type: ManagedStage.etKeyDown, value: keyCode, code: keyCode, flags: flags } );
 		
 	}
 	
 	
 	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
+		var flags = 0;
+		if (modifier.shiftKey) flags |= ManagedStage.efShiftDown;
+		if (modifier.ctrlKey) flags |= ManagedStage.efCtrlDown;
+		if (modifier.altKey) flags |= ManagedStage.efAltDown;
+		if (modifier.metaKey) flags |= ManagedStage.efCommandDown;
+		
 		// TODO: Translate key code and set modifier
 		
-		pumpEvent ( { type: ManagedStage.etKeyUp, value: keyCode, code: keyCode, flags: 0 } );
+		pumpEvent ( { type: ManagedStage.etKeyUp, value: keyCode, code: keyCode, flags: flags } );
 		
 	}
 	
 	
 	public function onMouseDown (x:Float, y:Float, button:Int):Void {
 		
-		pumpEvent ( { type: ManagedStage.etMouseDown, x: x, y: y, value: button, flags: 0 } );
+		var flags = switch (button) {
+			
+			case 1: ManagedStage.efMiddleDown;
+			case 2: ManagedStage.efRightDown;
+			default: ManagedStage.efLeftDown;
+			
+		}
+		
+		flags |= ManagedStage.efPrimaryTouch;
+		
+		pumpEvent ( { type: ManagedStage.etMouseDown, x: x, y: y, value: button, flags: flags } );
 		
 	}
 	
 	
 	public function onMouseMove (x:Float, y:Float):Void {
 		
-		pumpEvent ( { type: ManagedStage.etMouseMove, x: x, y: y, value: 0, flags: 0 } );
+		var flags = ManagedStage.efPrimaryTouch;
+		
+		pumpEvent ( { type: ManagedStage.etMouseMove, x: x, y: y, value: 0, flags: flags } );
 		
 	}
 	
@@ -117,6 +143,16 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	
 	public function onMouseUp (x:Float, y:Float, button:Int):Void {
+		
+		var flags = switch (button) {
+			
+			case 1: ManagedStage.efMiddleDown;
+			case 2: ManagedStage.efRightDown;
+			default: ManagedStage.efLeftDown;
+			
+		}
+		
+		flags |= ManagedStage.efPrimaryTouch;
 		
 		pumpEvent ( { type: ManagedStage.etMouseUp, x: x, y: y, value: button, flags: 0 } );
 		
@@ -148,21 +184,27 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
-		pumpEvent ( { type: ManagedStage.etTouchMove, x: x, y: y, value: id, flags: 0 } );
+		var flags = ManagedStage.efPrimaryTouch;
+		
+		pumpEvent ( { type: ManagedStage.etTouchMove, x: x, y: y, value: id, flags: flags } );
 		
 	}
 	
 	
 	public function onTouchEnd (x:Float, y:Float, id:Int):Void {
 		
-		pumpEvent ( { type: ManagedStage.etTouchEnd, x: x, y: y, value: id, flags: 0 } );
+		var flags = ManagedStage.efPrimaryTouch;
+		
+		pumpEvent ( { type: ManagedStage.etTouchEnd, x: x, y: y, value: id, flags: flags } );
 		
 	}
 	
 	
 	public function onTouchStart (x:Float, y:Float, id:Int):Void {
 		
-		pumpEvent ( { type: ManagedStage.etTouchBegin, x: x, y: y, value: id, flags: 0 } );
+		var flags = ManagedStage.efPrimaryTouch;
+		
+		pumpEvent ( { type: ManagedStage.etTouchBegin, x: x, y: y, value: id, flags: flags } );
 		
 	}
 	
