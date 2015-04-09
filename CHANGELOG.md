@@ -1,3 +1,11 @@
+3.0.1 (04/09/2015)
+------------------
+
+* Improved -Dhybrid support
+* Improved handling of key codes in events
+* Fixed alpha and blendMode for bitmapData.draw in GL
+
+
 3.0.0 (04/08/2015)
 ------------------
 
