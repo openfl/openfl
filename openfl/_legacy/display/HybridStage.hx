@@ -8,12 +8,17 @@ import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
+import openfl._legacy.Lib;
+
+@:access(openfl._legacy.Lib)
 
 
 class HybridStage extends ManagedStage implements IModule {
 	
 	
 	public function new (width:Int, height:Int, color:Null<Int> = null) {
+		
+		Lib.__stage = this;
 		
 		var flags = 0x00000080; // allow shaders
 		
