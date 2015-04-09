@@ -9,8 +9,10 @@ import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import openfl._legacy.Lib;
+import openfl.ui.Keyboard;
 
 @:access(openfl._legacy.Lib)
+@:access(openfl.ui.Keyboard)
 
 
 class HybridStage extends ManagedStage implements IModule {
@@ -87,9 +89,10 @@ class HybridStage extends ManagedStage implements IModule {
 		if (modifier.altKey) flags |= ManagedStage.efAltDown;
 		if (modifier.metaKey) flags |= ManagedStage.efCommandDown;
 		
-		// TODO: Translate key code and set modifier
+		var value = Keyboard.convertKeyCode (keyCode);
+		var code = Keyboard.__getCharCode (value, modifier.shiftKey);
 		
-		pumpEvent ( { type: ManagedStage.etKeyDown, value: keyCode, code: keyCode, flags: flags } );
+		pumpEvent ( { type: ManagedStage.etKeyDown, value: value, code: code, flags: flags } );
 		
 	}
 	
@@ -102,9 +105,10 @@ class HybridStage extends ManagedStage implements IModule {
 		if (modifier.altKey) flags |= ManagedStage.efAltDown;
 		if (modifier.metaKey) flags |= ManagedStage.efCommandDown;
 		
-		// TODO: Translate key code and set modifier
+		var value = Keyboard.convertKeyCode (keyCode);
+		var code = Keyboard.__getCharCode (value, modifier.shiftKey);
 		
-		pumpEvent ( { type: ManagedStage.etKeyUp, value: keyCode, code: keyCode, flags: flags } );
+		pumpEvent ( { type: ManagedStage.etKeyUp, value: value, code: code, flags: flags } );
 		
 	}
 	
