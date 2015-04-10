@@ -1008,6 +1008,7 @@ class TextField extends InteractiveObject {
 		#if (cpp || neko || nodejs)
 		
 		var instance = null;
+		var fontList = null;
 		
 		if (format != null && format.font != null) {
 			
@@ -1016,7 +1017,6 @@ class TextField extends InteractiveObject {
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
-			var fontList = null;
 			
 			switch (format.font) {
 				
@@ -1074,27 +1074,27 @@ class TextField extends InteractiveObject {
 			
 			if (instance != null) return instance;
 			
-			#if windows
-			fontList = [ systemFontDirectory + "/georgia.ttf" ];
-			#elseif (mac || ios)
-			fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
-			#elseif linux
-			fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
-			#elseif android
-			fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
-			#elseif blackberry
-			fontList = [ systemFontDirectory + "/georgia.ttf" ];
-			#else
-			fontList = [];
-			#end
+		}
+		
+		#if windows
+		fontList = [ systemFontDirectory + "/georgia.ttf" ];
+		#elseif (mac || ios)
+		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
+		#elseif linux
+		fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
+		#elseif android
+		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
+		#elseif blackberry
+		fontList = [ systemFontDirectory + "/georgia.ttf" ];
+		#else
+		fontList = [];
+		#end
+		
+		for (font in fontList) {
 			
-			for (font in fontList) {
-				
-				instance = __findFont (font);
-				
-				if (instance != null) return instance;
-				
-			}
+			instance = __findFont (font);
+			
+			if (instance != null) return instance;
 			
 		}
 		
