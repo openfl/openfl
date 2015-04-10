@@ -713,9 +713,13 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		openfl.Lib.notImplemented ("TextField.getLineMetrics");
+		//openfl.Lib.notImplemented ("TextField.getLineMetrics");
 		
-		return new TextLineMetrics (0, 0, 0, 0, 0, 0);
+		var height = textHeight;
+		
+		return new TextLineMetrics (0, textWidth, height, height, 0, 0); 
+		
+		//return new TextLineMetrics (0, 0, 0, 0, 0, 0);
 		
 	}
 	
@@ -1834,6 +1838,19 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#elseif (cpp || neko)
+		
+		var sizes = __measureText ();
+		var total:Float = 0;
+		
+		for (size in sizes) {
+			
+			total += size;
+			
+		}
+		
+		return total;
+		
 		#else
 		
 		return 0;
@@ -1867,7 +1884,7 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		return 0;
+		return __textFormat.size * 1.185;
 		
 		#end
 		
