@@ -296,18 +296,19 @@ class GLTextField {
 					if (textField.autoSize == TextFieldAutoSize.LEFT) {
 						
 						textField.__width = textWidth + 4;
+						textField.__height = textField.textHeight + 4;
 						
 					}
 					
 					if (textField.__ranges == null) {
 						
-						renderText (textField, text, textField.__textFormat, 0, textWidth);
+						renderText (textField, text, textField.__textFormat, 2, textWidth);
 						
 					} else {
 						
 						var currentIndex = 0;
 						var range;
-						var offsetX = 0.0;
+						var offsetX = 2.0;
 						
 						for (i in 0...textField.__ranges.length) {
 							
@@ -325,6 +326,7 @@ class GLTextField {
 					if (textField.autoSize == TextFieldAutoSize.LEFT) {
 						
 						textField.__width = 4;
+						textField.__height = 4;
 						
 					}
 					
