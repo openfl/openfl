@@ -1076,6 +1076,8 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		var systemFontDirectory = System.fontsDirectory;
+		
 		#if windows
 		fontList = [ systemFontDirectory + "/georgia.ttf" ];
 		#elseif (mac || ios)
