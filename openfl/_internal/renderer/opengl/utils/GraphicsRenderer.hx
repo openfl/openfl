@@ -878,7 +878,7 @@ class GraphicsRenderer {
 			translationMatrix = object.__worldTransform;
 		}
 		
-		renderSession.blendModeManager.setBlendMode(NORMAL);
+		renderSession.blendModeManager.setBlendMode(object.blendMode);
 		
 		var batchDrawing = renderSession.spriteBatch.drawing;
 		
