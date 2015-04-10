@@ -1041,7 +1041,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (stack.length > 0) {
 			
 			var keyCode = Keyboard.convertKeyCode (keyCode);
-			var charCode = Keyboard.__getCharCode (keyCode);
+			var charCode = Keyboard.__getCharCode (keyCode, modifier.shiftKey);
 			
 			var event = new KeyboardEvent (type, true, false, charCode, keyCode, null, modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.metaKey);
 			

@@ -834,6 +834,12 @@ class Keyboard {
 				
 			}
 			
+			if (key >= Keyboard.NUMBER_0 && key <= Keyboard.NUMBER_9) {
+				
+				return key - Keyboard.NUMBER_0 + 48;
+				
+			}
+			
 			if (key >= Keyboard.A && key <= Keyboard.Z) {
 				
 				return key - Keyboard.A + 97;
@@ -870,13 +876,13 @@ class Keyboard {
 			
 			if (key >= Keyboard.A && key <= Keyboard.Z) {
 				
-				key = key - Keyboard.A + 65;
+				return key - Keyboard.A + 65;
 				
 			}
 			
 		}
 		
-		if (key >= Keyboard.NUMPAD_0 && key <= Keyboard.NUMPAD_0) {
+		if (key >= Keyboard.NUMPAD_0 && key <= Keyboard.NUMPAD_9) {
 			
 			return key - Keyboard.NUMPAD_0 + 48;
 			
