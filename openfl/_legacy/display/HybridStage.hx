@@ -3,6 +3,7 @@ package openfl._legacy.display; #if (openfl_legacy && lime_hybrid)
 
 import lime.app.IModule;
 import lime.graphics.RenderContext;
+import lime.system.System;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
@@ -27,6 +28,8 @@ class HybridStage extends ManagedStage implements IModule {
 		var flags = 0x00000080; // allow shaders
 		
 		super (width, height, flags);
+		
+		frameRate = 60;
 		
 		if (color != null) {
 			
@@ -285,14 +288,14 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	public function render (context:RenderContext):Void {
 		
-		__render (true);
+		pumpEvent ( { type: ManagedStage.etPoll } );
 		
 	}
 	
 	
 	public function update (deltaTime:Int):Void {
 		
-		
+		pumpEvent ( { type: ManagedStage.etPoll } );
 		
 	}
 	
