@@ -141,6 +141,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __textureImage:Image;
 	@:noCompletion private var __framebuffer:FilterTexture;
 	@:noCompletion private var __uvData:TextureUvs;
+	@:noCompletion private var __uvFlipped:Bool = false;
 	
 	private var __spritebatch:SpriteBatch;
 	
@@ -565,7 +566,7 @@ class BitmapData implements IBitmapDrawable {
 				var tmpRect = clipRect.clone();
 				// Flip Y
 				tmpRect.y = height - tmpRect.bottom;
-
+				
 				var drawSelf = false;
 				if (__spritebatch == null) {
 					__spritebatch = new SpriteBatch(gl);
@@ -1555,6 +1556,8 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private function __createUVs (?verticalFlip:Bool = false):Void {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
+		
+		__uvFlipped = verticalFlip;
 		
 		if (verticalFlip) {
 			__uvData.x0 = 0;

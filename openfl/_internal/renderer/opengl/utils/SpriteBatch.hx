@@ -321,10 +321,17 @@ class SpriteBatch {
 				matrix.tx = tx * oMatrix.a + ty * oMatrix.c + oMatrix.tx;
 				matrix.ty = tx * oMatrix.b + ty * oMatrix.d + oMatrix.ty;
 				
-				uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
-				uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;
-				uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
-				uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
+				if (sheet.__bitmap.__uvFlipped) {
+					uvs.x0 = tileUV.x;  uvs.y0 = tileUV.height;
+					uvs.x1 = tileUV.width; uvs.y1 = tileUV.height;
+					uvs.x2 = tileUV.width; uvs.y2 = tileUV.y;
+					uvs.x3 = tileUV.x;  uvs.y3 = tileUV.y;
+				} else {
+					uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
+					uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;
+					uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
+					uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
+				}
 				
 				bIndex = batchedSprites * 4 * elementsPerVertex;
 				
