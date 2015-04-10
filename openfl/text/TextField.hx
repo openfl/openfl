@@ -937,6 +937,38 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __findFont (name:String):Font {
+		
+		#if (cpp || neko || nodejs)
+		
+		for (registeredFont in Font.__registeredFonts) {
+			
+			if (registeredFont == null) continue;
+			
+			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || Path.withoutDirectory (registeredFont.__fontPath) == name))) {
+				
+				return registeredFont;
+				
+			}
+			
+		}
+		
+		var font = Font.fromFile (name);
+		
+		if (font != null) {
+			
+			Font.__registeredFonts.push (font);
+			return font;
+			
+		}
+		
+		#end
+		
+		return null;
+		
+	}
+	
+	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
@@ -975,99 +1007,100 @@ class TextField extends InteractiveObject {
 		
 		#if (cpp || neko || nodejs)
 		
-		if (format == null || format.font == null) return null;
+		var instance = null;
 		
-		var systemFontDirectory = System.fontsDirectory;
-		var fontList = null;
-		
-		switch (format.font) {
+		if (format != null && format.font != null) {
 			
-			case "_sans":
-				
-				#if windows
-				fontList = [ systemFontDirectory + "/arial.ttf" ];
-				#elseif (mac || ios)
-				fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
-				#elseif linux
-				fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
-				#elseif android
-				fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
-				#elseif blackberry
-				fontList = [ systemFontDirectory + "/arial.ttf" ];
-				#end
-				
-			case "_serif":
-				
-				#if windows
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
-				#elseif (mac || ios)
-				fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
-				#elseif linux
-				fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
-				#elseif android
-				fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
-				#elseif blackberry
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
-				#end
-				
-			case "_typewriter":
-				
-				#if windows
-				fontList = [ systemFontDirectory + "/cour.ttf" ];
-				#elseif (mac || ios)
-				fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
-				#elseif linux
-				fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
-				#elseif android
-				fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
-				#elseif blackberry
-				fontList = [ systemFontDirectory + "/cour.ttf" ];
-				#end
+			instance = __findFont (format.font);
 			
-			default:
-				
-				fontList = [ format.font, systemFontDirectory + "/" + format.font ];
+			if (instance != null) return instance;
 			
-		}
-		
-		if (fontList == null) return null;
-		
-		for (registeredFont in Font.__registeredFonts) {
+			var systemFontDirectory = System.fontsDirectory;
+			var fontList = null;
 			
-			for (fontName in fontList) {
+			switch (format.font) {
 				
-				if (registeredFont == null) continue;
-				
-				if (registeredFont.fontName == fontName || (registeredFont.__fontPath != null && (registeredFont.__fontPath == fontName || Path.withoutDirectory (registeredFont.__fontPath) == fontName))) {
+				case "_sans":
 					
-					return registeredFont;
+					#if windows
+					fontList = [ systemFontDirectory + "/arial.ttf" ];
+					#elseif (mac || ios)
+					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
+					#elseif linux
+					fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
+					#elseif android
+					fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
+					#elseif blackberry
+					fontList = [ systemFontDirectory + "/arial.ttf" ];
+					#end
+				
+				case "_serif":
+					
+					// skip
+				
+				case "_typewriter":
+					
+					#if windows
+					fontList = [ systemFontDirectory + "/cour.ttf" ];
+					#elseif (mac || ios)
+					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
+					#elseif linux
+					fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
+					#elseif android
+					fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
+					#elseif blackberry
+					fontList = [ systemFontDirectory + "/cour.ttf" ];
+					#end
+				
+				default:
+					
+					fontList = [ systemFontDirectory + "/" + format.font ];
+				
+			}
+			
+			if (fontList != null) {
+				
+				for (font in fontList) {
+					
+					instance = __findFont (font);
+					
+					if (instance != null) return instance;
 					
 				}
 				
 			}
 			
-		}
-		
-		for (fontName in fontList) {
+			instance = __findFont ("_serif");
 			
-			var font = Font.fromFile (fontName);
+			if (instance != null) return instance;
 			
-			if (font != null) {
+			#if windows
+			fontList = [ systemFontDirectory + "/georgia.ttf" ];
+			#elseif (mac || ios)
+			fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
+			#elseif linux
+			fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
+			#elseif android
+			fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
+			#elseif blackberry
+			fontList = [ systemFontDirectory + "/georgia.ttf" ];
+			#else
+			fontList = [];
+			#end
+			
+			for (font in fontList) {
 				
-				Font.__registeredFonts.push (font);
-				return font;
+				instance = __findFont (font);
+				
+				if (instance != null) return instance;
 				
 			}
 			
 		}
 		
-		return null;
-		
-		#else
-		
-		return null;
-		
 		#end
+		
+		return null;
 		
 	}
 	
