@@ -1036,7 +1036,9 @@ class TextField extends InteractiveObject {
 			
 			for (fontName in fontList) {
 				
-				if (registeredFont.__fontPath == fontName || registeredFont.fontName == fontName || Path.withoutDirectory (registeredFont.__fontPath) == fontName) {
+				if (registeredFont == null) continue;
+				
+				if (registeredFont.fontName == fontName || (registeredFont.__fontPath != null && (registeredFont.__fontPath == fontName || Path.withoutDirectory (registeredFont.__fontPath) == fontName))) {
 					
 					return registeredFont;
 					
