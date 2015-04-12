@@ -4,7 +4,7 @@ package openfl._legacy.display; #if openfl_legacy
 import openfl.display.FrameLabel;
 
 
-class MovieClip extends Sprite {
+class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	
 	
 	public var currentFrame (get, null):Int;
