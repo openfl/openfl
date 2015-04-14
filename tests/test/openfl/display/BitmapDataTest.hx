@@ -476,6 +476,22 @@ class BitmapDataTest {
 	}
 	
 	
+	@Test public function merge () {
+		
+		var color = 0xFF000000;
+		var color2 = 0xFFFF0000;
+		
+		var bitmapData = new BitmapData (100, 100, true, color);
+		var sourceBitmapData = new BitmapData (100, 100, true, color2);
+		
+		bitmapData.merge (sourceBitmapData, sourceBitmapData.rect, new Point (), 256, 256, 256, 256);
+		
+		var pixel = bitmapData.getPixel32 (1, 1);
+		Assert.areEqual (StringTools.hex (0xFFFF0000), StringTools.hex (pixel));
+		
+	}
+	
+	
 	@Test public function noise () {
 		
 		// TODO: Confirm functionality
