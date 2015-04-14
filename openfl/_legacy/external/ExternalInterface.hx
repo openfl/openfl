@@ -83,10 +83,10 @@ class ExternalInterface {
 	
 	
 	
-	private static var lime_external_interface_add_callback = Lib.load ("lime", "lime_external_interface_add_callback", 2);
-	private static var lime_external_interface_available = Lib.load ("lime", "lime_external_interface_available", 0);
-	private static var lime_external_interface_call = Lib.load ("lime", "lime_external_interface_call", 2);
-	private static var lime_external_interface_register_callbacks = Lib.load ("lime", "lime_external_interface_register_callbacks", 0);
+	private static var lime_external_interface_add_callback = Lib.load ("lime-legacy", "lime_legacy_external_interface_add_callback", 2);
+	private static var lime_external_interface_available = Lib.load ("lime-legacy", "lime_legacy_external_interface_available", 0);
+	private static var lime_external_interface_call = Lib.load ("lime-legacy", "lime_legacy_external_interface_call", 2);
+	private static var lime_external_interface_register_callbacks = Lib.load ("lime-legacy", "lime_legacy_external_interface_register_callbacks", 0);
 	
 	
 }

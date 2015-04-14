@@ -1,5 +1,8 @@
 package openfl._legacy; #if openfl_legacy
 #if !macro
+#if lime_hybrid
+typedef Assets = openfl.Assets;
+#else
 
 
 import haxe.Json;
@@ -1601,6 +1604,7 @@ enum AssetType {
 }
 
 
+#end
 #else
 
 

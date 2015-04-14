@@ -74,8 +74,8 @@ class WeakRef<T> {
 	
 	
 	
-	private static var lime_weak_ref_create:Dynamic = Lib.load ("lime", "lime_weak_ref_create", 2);
-	private static var lime_weak_ref_get:Dynamic = Lib.load ("lime", "lime_weak_ref_get", 1);
+	private static var lime_weak_ref_create:Dynamic = Lib.load ("lime-legacy", "lime_legacy_weak_ref_create", 2);
+	private static var lime_weak_ref_get:Dynamic = Lib.load ("lime-legacy", "lime_legacy_weak_ref_get", 1);
 	
 	
 }

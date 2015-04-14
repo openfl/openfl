@@ -345,8 +345,8 @@ class PathBuiler {
 						
 						graphicDataPop ();
 						
-						__line.color = color;
-						__line.alpha = alpha;
+						__line.color = color == null ? 0 : color;
+						__line.alpha = alpha == null ? 1 : alpha;
 						__line.scaleMode = scaleMode;
 						__line.caps = caps;
 						__line.joints = joints;

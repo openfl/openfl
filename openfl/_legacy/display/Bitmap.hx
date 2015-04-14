@@ -112,8 +112,8 @@ class Bitmap extends DisplayObject {
 	
 	
 	
-	private static var lime_display_object_get_pixel_snapping = Lib.load ("lime", "lime_display_object_get_pixel_snapping", 1);
-	private static var lime_display_object_set_pixel_snapping = Lib.load ("lime", "lime_display_object_set_pixel_snapping", 2);
+	private static var lime_display_object_get_pixel_snapping = Lib.load ("lime-legacy", "lime_legacy_display_object_get_pixel_snapping", 1);
+	private static var lime_display_object_set_pixel_snapping = Lib.load ("lime-legacy", "lime_legacy_display_object_set_pixel_snapping", 2);
 	
 	
 }

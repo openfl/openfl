@@ -7,8 +7,17 @@ import openfl.display.Stage;
 import openfl.utils.ByteArray;
 import openfl.Lib;
 
+#if lime_hybrid
+import lime.text.Font in LimeFont;
+#end
 
+#if lime_hybrid
+@:autoBuild(openfl.Assets.embedFont())
+#else
 @:autoBuild(openfl._legacy.Assets.embedFont())
+#end
+
+
 class Font {
 	
 	
@@ -198,6 +207,23 @@ class Font {
 	}
 	
 	
+	#if lime_hybrid
+	public static function __fromLimeFont (value:LimeFont):Font {
+		
+		var font = new Font ();
+		font.fontName = value.name;
+		font.__fontPath = value.src;
+		return font;
+		
+	}
+	
+	public var name (get, set):String;
+	
+	private function get_name ():String { return fontName; }
+	private function set_name (value:String):String { return fontName = value; }
+	#end
+	
+	
 	
 	
 	// Native Methods
@@ -205,9 +231,9 @@ class Font {
 	
 	
 	
-	private static var freetype_import_font = Lib.load ("lime", "freetype_import_font", 4);
-	private static var lime_font_register_font = Lib.load ("lime", "lime_font_register_font", 2);
-	private static var lime_font_iterate_device_fonts = Lib.load ("lime", "lime_font_iterate_device_fonts", 1);
+	private static var freetype_import_font = Lib.load ("lime-legacy", "freetype_import_font", 4);
+	private static var lime_font_register_font = Lib.load ("lime-legacy", "lime_legacy_font_register_font", 2);
+	private static var lime_font_iterate_device_fonts = Lib.load ("lime-legacy", "lime_legacy_font_iterate_device_fonts", 1);
 	
 	
 }

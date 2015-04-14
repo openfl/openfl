@@ -70,8 +70,8 @@ class DirectRenderer extends DisplayObject {
 	
 	
 	
-	private static var lime_direct_renderer_create = Lib.load ("lime", "lime_direct_renderer_create", 0);
-	private static var lime_direct_renderer_set = Lib.load ("lime", "lime_direct_renderer_set", 2);
+	private static var lime_direct_renderer_create = Lib.load ("lime-legacy", "lime_legacy_direct_renderer_create", 0);
+	private static var lime_direct_renderer_set = Lib.load ("lime-legacy", "lime_legacy_direct_renderer_set", 2);
 	
 	
 }

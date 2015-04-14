@@ -252,27 +252,27 @@ class Graphics {
 	
 	
 	
-	private static var lime_gfx_clear = Lib.load ("lime", "lime_gfx_clear", 1);
-	private static var lime_gfx_begin_fill = Lib.load ("lime", "lime_gfx_begin_fill", 3);
-	private static var lime_gfx_begin_bitmap_fill = Lib.load ("lime", "lime_gfx_begin_bitmap_fill", 5);
-	private static var lime_gfx_line_bitmap_fill = Lib.load ("lime", "lime_gfx_line_bitmap_fill", 5);
-	private static var lime_gfx_begin_gradient_fill = Lib.load ("lime", "lime_gfx_begin_gradient_fill", -1);
-	private static var lime_gfx_line_gradient_fill = Lib.load ("lime", "lime_gfx_line_gradient_fill", -1);
-	private static var lime_gfx_end_fill = Lib.load ("lime", "lime_gfx_end_fill", 1);
-	private static var lime_gfx_line_style = Lib.load ("lime", "lime_gfx_line_style", -1);
-	private static var lime_gfx_move_to = Lib.load ("lime", "lime_gfx_move_to", 3);
-	private static var lime_gfx_line_to = Lib.load ("lime", "lime_gfx_line_to", 3);
-	private static var lime_gfx_curve_to = Lib.load ("lime", "lime_gfx_curve_to", 5);
-	private static var lime_gfx_arc_to = Lib.load ("lime", "lime_gfx_arc_to", 5);
-	private static var lime_gfx_draw_ellipse = Lib.load ("lime", "lime_gfx_draw_ellipse", 5);
-	private static var lime_gfx_draw_data = Lib.load ("lime", "lime_gfx_draw_data", 2);
-	private static var lime_gfx_draw_datum = Lib.load ("lime", "lime_gfx_draw_datum", 2);
-	private static var lime_gfx_draw_rect = Lib.load ("lime", "lime_gfx_draw_rect", 5);
-	private static var lime_gfx_draw_path = Lib.load ("lime", "lime_gfx_draw_path", 4);
-	private static var lime_gfx_draw_tiles = Lib.load ("lime", "lime_gfx_draw_tiles", 5);
-	private static var lime_gfx_draw_points = Lib.load ("lime", "lime_gfx_draw_points", -1);
-	private static var lime_gfx_draw_round_rect = Lib.load ("lime", "lime_gfx_draw_round_rect", -1);
-	private static var lime_gfx_draw_triangles = Lib.load ("lime", "lime_gfx_draw_triangles", -1);
+	private static var lime_gfx_clear = Lib.load ("lime-legacy", "lime_legacy_gfx_clear", 1);
+	private static var lime_gfx_begin_fill = Lib.load ("lime-legacy", "lime_legacy_gfx_begin_fill", 3);
+	private static var lime_gfx_begin_bitmap_fill = Lib.load ("lime-legacy", "lime_legacy_gfx_begin_bitmap_fill", 5);
+	private static var lime_gfx_line_bitmap_fill = Lib.load ("lime-legacy", "lime_legacy_gfx_line_bitmap_fill", 5);
+	private static var lime_gfx_begin_gradient_fill = Lib.load ("lime-legacy", "lime_legacy_gfx_begin_gradient_fill", -1);
+	private static var lime_gfx_line_gradient_fill = Lib.load ("lime-legacy", "lime_legacy_gfx_line_gradient_fill", -1);
+	private static var lime_gfx_end_fill = Lib.load ("lime-legacy", "lime_legacy_gfx_end_fill", 1);
+	private static var lime_gfx_line_style = Lib.load ("lime-legacy", "lime_legacy_gfx_line_style", -1);
+	private static var lime_gfx_move_to = Lib.load ("lime-legacy", "lime_legacy_gfx_move_to", 3);
+	private static var lime_gfx_line_to = Lib.load ("lime-legacy", "lime_legacy_gfx_line_to", 3);
+	private static var lime_gfx_curve_to = Lib.load ("lime-legacy", "lime_legacy_gfx_curve_to", 5);
+	private static var lime_gfx_arc_to = Lib.load ("lime-legacy", "lime_legacy_gfx_arc_to", 5);
+	private static var lime_gfx_draw_ellipse = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_ellipse", 5);
+	private static var lime_gfx_draw_data = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_data", 2);
+	private static var lime_gfx_draw_datum = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_datum", 2);
+	private static var lime_gfx_draw_rect = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_rect", 5);
+	private static var lime_gfx_draw_path = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_path", 4);
+	private static var lime_gfx_draw_tiles = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_tiles", 5);
+	private static var lime_gfx_draw_points = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_points", -1);
+	private static var lime_gfx_draw_round_rect = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_round_rect", -1);
+	private static var lime_gfx_draw_triangles = Lib.load ("lime-legacy", "lime_legacy_gfx_draw_triangles", -1);
 	
 	
 }

@@ -71,13 +71,13 @@ class S3D {
 	}
 
 	public static function __init__ () {
-		lime_get_s3d_enabled = Lib.load ("lime", "lime_get_s3d_enabled", 0);
-		lime_set_s3d_enabled = Lib.load ("lime", "lime_set_s3d_enabled", 1);
-		lime_get_s3d_supported = Lib.load ("lime", "lime_get_s3d_supported", 0);
-		lime_gl_s3d_get_eye_separation = Lib.load ("lime", "lime_gl_s3d_get_eye_separation", 0);
-		lime_gl_s3d_set_eye_separation = Lib.load ("lime", "lime_gl_s3d_set_eye_separation", 1);
-		lime_gl_s3d_get_focal_length = Lib.load ("lime", "lime_gl_s3d_get_focal_length", 0);
-		lime_gl_s3d_set_focal_length = Lib.load ("lime", "lime_gl_s3d_set_focal_length", 1);
+		lime_get_s3d_enabled = Lib.load ("lime-legacy", "lime_legacy_get_s3d_enabled", 0);
+		lime_set_s3d_enabled = Lib.load ("lime-legacy", "lime_legacy_set_s3d_enabled", 1);
+		lime_get_s3d_supported = Lib.load ("lime-legacy", "lime_legacy_get_s3d_supported", 0);
+		lime_gl_s3d_get_eye_separation = Lib.load ("lime-legacy", "lime_legacy_gl_s3d_get_eye_separation", 0);
+		lime_gl_s3d_set_eye_separation = Lib.load ("lime-legacy", "lime_legacy_gl_s3d_set_eye_separation", 1);
+		lime_gl_s3d_get_focal_length = Lib.load ("lime-legacy", "lime_legacy_gl_s3d_get_focal_length", 0);
+		lime_gl_s3d_set_focal_length = Lib.load ("lime-legacy", "lime_legacy_gl_s3d_set_focal_length", 1);
 	}
 }
 

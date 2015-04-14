@@ -14,7 +14,7 @@ class Accelerometer {
 	}
 	
 	
-	private static var lime_input_get_acceleration = Lib.load ("lime", "lime_input_get_acceleration", 0);
+	private static var lime_input_get_acceleration = Lib.load ("lime-legacy", "lime_legacy_input_get_acceleration", 0);
 	
 	
 }

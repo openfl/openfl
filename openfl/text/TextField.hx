@@ -713,9 +713,13 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		openfl.Lib.notImplemented ("TextField.getLineMetrics");
+		//openfl.Lib.notImplemented ("TextField.getLineMetrics");
 		
-		return new TextLineMetrics (0, 0, 0, 0, 0, 0);
+		var height = textHeight;
+		
+		return new TextLineMetrics (0, textWidth, height, height, 0, 0); 
+		
+		//return new TextLineMetrics (0, 0, 0, 0, 0, 0);
 		
 	}
 	
@@ -937,6 +941,38 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __findFont (name:String):Font {
+		
+		#if (cpp || neko || nodejs)
+		
+		for (registeredFont in Font.__registeredFonts) {
+			
+			if (registeredFont == null) continue;
+			
+			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || Path.withoutDirectory (registeredFont.__fontPath) == name))) {
+				
+				return registeredFont;
+				
+			}
+			
+		}
+		
+		var font = Font.fromFile (name);
+		
+		if (font != null) {
+			
+			Font.__registeredFonts.push (font);
+			return font;
+			
+		}
+		
+		#end
+		
+		return null;
+		
+	}
+	
+	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
@@ -975,106 +1011,110 @@ class TextField extends InteractiveObject {
 		
 		#if (cpp || neko || nodejs)
 		
-		if (format == null || format.font == null) return null;
-		
-		var systemFontDirectory = System.fontsDirectory;
+		var instance = null;
 		var fontList = null;
 		
-		switch (format.font) {
+		if (format != null && format.font != null) {
 			
-			case "_sans":
-				
-				#if windows
-				fontList = [ systemFontDirectory + "/arial.ttf" ];
-				#elseif (mac || ios)
-				fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
-				#elseif linux
-				fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
-				#elseif android
-				fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
-				#elseif blackberry
-				fontList = [ systemFontDirectory + "/arial.ttf" ];
-				#end
-				
-			case "_serif":
-				
-				#if windows
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
-				#elseif (mac || ios)
-				fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
-				#elseif linux
-				fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
-				#elseif android
-				fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
-				#elseif blackberry
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
-				#end
-				
-			case "_typewriter":
-				
-				#if windows
-				fontList = [ systemFontDirectory + "/cour.ttf" ];
-				#elseif (mac || ios)
-				fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
-				#elseif linux
-				fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
-				#elseif android
-				fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
-				#elseif blackberry
-				fontList = [ systemFontDirectory + "/cour.ttf" ];
-				#end
+			var systemFontDirectory = System.fontsDirectory;
 			
-			default:
+			switch (format.font) {
 				
-				fontList = [ format.font, systemFontDirectory + "/" + format.font ];
-			
-		}
+				case "_sans":
+					
+					#if windows
+					fontList = [ systemFontDirectory + "/arial.ttf" ];
+					#elseif (mac || ios)
+					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
+					#elseif linux
+					fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
+					#elseif android
+					fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
+					#elseif blackberry
+					fontList = [ systemFontDirectory + "/arial.ttf" ];
+					#end
+				
+				case "_serif":
+					
+					// skip
+				
+				case "_typewriter":
+					
+					#if windows
+					fontList = [ systemFontDirectory + "/cour.ttf" ];
+					#elseif (mac || ios)
+					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
+					#elseif linux
+					fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
+					#elseif android
+					fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
+					#elseif blackberry
+					fontList = [ systemFontDirectory + "/cour.ttf" ];
+					#end
+				
+				default:
+					
+					fontList = [ format.font, systemFontDirectory + "/" + format.font ];
 
+			}
+
+		}
 
 #if lime_console
 		// TODO(james4k): until we figure out our story for the above switch
 		// statement, always load arial
-		if (fontList == null) {
-			fontList = [ "arial.ttf" ];
-		}
+		fontList = [ "arial.ttf" ];
 #end
 		
 		if (fontList == null) return null;
 		
 		for (registeredFont in Font.__registeredFonts) {
 			
-			for (fontName in fontList) {
+			if (fontList != null) {
 				
-				if (registeredFont.__fontPath == fontName || registeredFont.fontName == fontName || Path.withoutDirectory (registeredFont.__fontPath) == fontName) {
+				for (font in fontList) {
 					
-					return registeredFont;
+					instance = __findFont (font);
+					
+					if (instance != null) return instance;
 					
 				}
 				
 			}
 			
-		}
-		
-		for (fontName in fontList) {
+			instance = __findFont ("_serif");
 			
-			var font = Font.fromFile (fontName);
-			
-			if (font != null) {
-				
-				Font.__registeredFonts.push (font);
-				return font;
-				
-			}
+			if (instance != null) return instance;
 			
 		}
 		
-		return null;
+		var systemFontDirectory = System.fontsDirectory;
 		
+		#if windows
+		fontList = [ systemFontDirectory + "/georgia.ttf" ];
+		#elseif (mac || ios)
+		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
+		#elseif linux
+		fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
+		#elseif android
+		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
+		#elseif blackberry
+		fontList = [ systemFontDirectory + "/georgia.ttf" ];
 		#else
+		fontList = [];
+		#end
 		
-		return null;
+		for (font in fontList) {
+			
+			instance = __findFont (font);
+			
+			if (instance != null) return instance;
+			
+		}
 		
 		#end
+		
+		return null;
 		
 	}
 	
@@ -1806,6 +1846,19 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#elseif (cpp || neko)
+		
+		var sizes = __measureText ();
+		var total:Float = 0;
+		
+		for (size in sizes) {
+			
+			total += size;
+			
+		}
+		
+		return total;
+		
 		#else
 		
 		return 0;
@@ -1839,7 +1892,7 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		return 0;
+		return __textFormat.size * 1.185;
 		
 		#end
 		

@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if !openfl_legacy
+package openfl.ui; #if !flash #if (!openfl_legacy || lime_hybrid)
 
 
 import lime.ui.Mouse in LimeMouse;

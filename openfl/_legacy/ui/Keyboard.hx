@@ -1,4 +1,4 @@
-package openfl._legacy.ui; #if openfl_legacy
+package openfl._legacy.ui; #if (openfl_legacy && !lime_hybrid)
 
 
 class Keyboard {
@@ -35,6 +35,7 @@ class Keyboard {
 	public static inline var BACKQUOTE:Int = 192;
 	public static inline var BACKSLASH:Int = 220;
 	public static inline var BACKSPACE:Int = 8;
+	public static inline var BREAK = 19;
 	public static inline var CAPS_LOCK:Int = 20;
 	public static inline var COMMA:Int = 188;
 	public static inline var COMMAND:Int = 15;
@@ -75,6 +76,7 @@ class Keyboard {
 	public static inline var NUMBER_7:Int = 55;
 	public static inline var NUMBER_8:Int = 56;
 	public static inline var NUMBER_9:Int = 57;
+	public static inline var NUMLOCK:Int = 144;
 	public static inline var NUMPAD:Int = 21;
 	public static inline var NUMPAD_0:Int = 96;
 	public static inline var NUMPAD_1:Int = 97;
@@ -113,4 +115,6 @@ class Keyboard {
 }
 
 
+#else
+typedef Keyboard = openfl.ui.Keyboard;
 #end

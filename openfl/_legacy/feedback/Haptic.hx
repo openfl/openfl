@@ -24,7 +24,7 @@ class Haptic {
 	
 	
 	#if cpp
-	static var lime_haptic_vibrate = Lib.load ("lime", "lime_haptic_vibrate", 2);
+	static var lime_haptic_vibrate = Lib.load ("lime-legacy", "lime_legacy_haptic_vibrate", 2);
 	#end
 	
 	

@@ -189,6 +189,15 @@ class BitmapDataTest {
 		
 		Assert.areEqual (hex (0xFFFF0000), hex (bitmapData.getPixel32 (0, 0)));
 		Assert.areEqual (hex (0xFFFF0000), hex (bitmapData.getPixel32 (50, 50)));
+		
+		var colorTransform = new ColorTransform (0, 0, 0, 1, 0x88, 0, 0, 0);
+		
+		var bitmapData = new BitmapData (100, 100);
+		bitmapData.__image.premultiplied = true;
+		bitmapData.colorTransform (new Rectangle (0, 0, 50, 50), colorTransform);
+		
+		Assert.areEqual (hex (0xFF880000), hex (bitmapData.getPixel32 (0, 0)));
+		Assert.areEqual (hex (0xFFFFFFFF), hex (bitmapData.getPixel32 (50, 50)));
 		#end
 		
 	}

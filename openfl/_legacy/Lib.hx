@@ -1,6 +1,10 @@
 package openfl._legacy; #if openfl_legacy
 
 
+#if lime_hybrid
+import lime.app.Application;
+#end
+
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
@@ -28,6 +32,10 @@ class Lib {
 	static public var REQUIRE_SHADERS = 0x0100;
 	static public var DEPTH_BUFFER = 0x0200;
 	static public var STENCIL_BUFFER = 0x0400;
+	
+	#if lime_hybrid
+	public static var application:Application;
+	#end
 	
 	static public var company (default, null):String;
 	public static var current (get, null):MovieClip;
@@ -66,7 +74,7 @@ class Lib {
 	public static function close ():Void {
 		
 		Stage.__exiting = true;
-		var close = Lib.load ("lime", "lime_close", 0);
+		var close = Lib.load ("lime-legacy", "lime_legacy_close", 0);
 		close ();
 		
 	}
@@ -91,7 +99,7 @@ class Lib {
 		initWidth = width;
 		initHeight = height;
 		
-		var create_main_frame = Lib.load ("lime", "lime_create_main_frame", -1);
+		var create_main_frame = Lib.load ("lime-legacy", "lime_legacy_create_main_frame", -1);
 		
 		create_main_frame (function (frameHandle:Dynamic) {
 			
@@ -194,6 +202,10 @@ class Lib {
 	
 	public static function load (library:String, method:String, args:Int = 0):Dynamic {
 		
+		#if !lime_hybrid
+		if (library == "lime") library = "lime-legacy";
+		#end
+		
 		#if (iphone || emscripten || android)
 		return cpp.Lib.load (library, method, args);
 		#end
@@ -212,7 +224,7 @@ class Lib {
 		}
 		
 		#if waxe
-		if (library == "lime") {
+		if (library == "lime-legacy") {
 			
 			flash.Lib.load ("waxe", "wx_boot", 1);
 			
@@ -267,7 +279,7 @@ class Lib {
 		loaderTrace ("Result : " + result);
 		
 		#if neko
-		if (library == "lime") {
+		if (library == "lime-legacy") {
 			
 			loadNekoAPI ();
 			
@@ -412,11 +424,11 @@ class Lib {
 		
 		if (!__loadedNekoAPI) {
 			
-			var init = load ("lime", "neko_init", 5);
+			var init = load ("lime-legacy", "neko_init", 5);
 			
 			if (init != null) {
 				
-				loaderTrace ("Found nekoapi @ " + __moduleNames.get ("lime"));
+				loaderTrace ("Found nekoapi @ " + __moduleNames.get ("lime-legacy"));
 				init (function(s) return new String (s), function (len:Int) { var r = []; if (len > 0) r[len - 1] = null; return r; }, null, true, false);
 				
 			} else {
@@ -457,7 +469,7 @@ class Lib {
 	
 	public static function forceClose ():Void {
 		
-		var terminate = Lib.load ("lime", "lime_terminate", 0);
+		var terminate = Lib.load ("lime-legacy", "lime_legacy_terminate", 0);
 		terminate ();
 		
 	}
@@ -506,7 +518,7 @@ class Lib {
 	
 	public static function setIcon (path:String):Void {
 		
-		var set_icon = Lib.load ("lime", "lime_set_icon", 1);
+		var set_icon = Lib.load ("lime-legacy", "lime_legacy_set_icon", 1);
 		set_icon (path);
 		
 	}
@@ -585,13 +597,13 @@ class Lib {
 	
 	
 	#if android
-	private static var lime_post_ui_callback = Lib.load ("lime", "lime_post_ui_callback", 1);
+	private static var lime_post_ui_callback = Lib.load ("lime-legacy", "lime_legacy_post_ui_callback", 1);
 	#end
-	private static var lime_set_package = Lib.load ("lime", "lime_set_package", 4);
-	private static var lime_get_frame_stage = Lib.load ("lime", "lime_get_frame_stage", 1);
-	private static var lime_get_url = Lib.load ("lime", "lime_get_url", 1);
-	private static var lime_pause_animation = Lib.load ("lime", "lime_pause_animation", 0);
-	private static var lime_resume_animation = Lib.load ("lime", "lime_resume_animation", 0);
+	private static var lime_set_package = Lib.load ("lime-legacy", "lime_legacy_set_package", 4);
+	private static var lime_get_frame_stage = Lib.load ("lime-legacy", "lime_legacy_get_frame_stage", 1);
+	private static var lime_get_url = Lib.load ("lime-legacy", "lime_legacy_get_url", 1);
+	private static var lime_pause_animation = Lib.load ("lime-legacy", "lime_legacy_pause_animation", 0);
+	private static var lime_resume_animation = Lib.load ("lime-legacy", "lime_legacy_resume_animation", 0);
 	
 	
 }

@@ -221,13 +221,13 @@ class Capabilities {
 	
 	
 	
-	private static var lime_capabilities_get_pixel_aspect_ratio = Lib.load ("lime", "lime_capabilities_get_pixel_aspect_ratio", 0);
-	private static var lime_capabilities_get_screen_dpi = Lib.load ("lime", "lime_capabilities_get_screen_dpi", 0);
-	private static var lime_capabilities_get_screen_resolution_x = Lib.load ("lime", "lime_capabilities_get_screen_resolution_x", 0);
-	private static var lime_capabilities_get_screen_resolution_y = Lib.load ("lime", "lime_capabilities_get_screen_resolution_y", 0);
-	private static var lime_capabilities_get_screen_resolutions = Lib.load ("lime", "lime_capabilities_get_screen_resolutions", 0 );
-	private static var lime_capabilities_get_screen_modes = Lib.load ("lime", "lime_capabilities_get_screen_modes", 0 );
-	private static var lime_capabilities_get_language = Lib.load ("lime", "lime_capabilities_get_language", 0);
+	private static var lime_capabilities_get_pixel_aspect_ratio = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_pixel_aspect_ratio", 0);
+	private static var lime_capabilities_get_screen_dpi = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_dpi", 0);
+	private static var lime_capabilities_get_screen_resolution_x = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_resolution_x", 0);
+	private static var lime_capabilities_get_screen_resolution_y = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_resolution_y", 0);
+	private static var lime_capabilities_get_screen_resolutions = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_resolutions", 0 );
+	private static var lime_capabilities_get_screen_modes = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_modes", 0 );
+	private static var lime_capabilities_get_language = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_language", 0);
 	
 	
 }

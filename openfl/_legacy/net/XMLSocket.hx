@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if openfl_legacy
+package openfl._legacy.net; #if (openfl_legacy && !disable_legacy_networking)
 #if cpp
 
 
@@ -75,4 +75,6 @@ class XMLSocket extends EventDispatcher {
 
 
 #end
+#else
+typedef XMLSocket = openfl.net.XMLSocket;
 #end

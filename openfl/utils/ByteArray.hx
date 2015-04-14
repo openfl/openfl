@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-#if !openfl_legacy
+#if (!openfl_legacy || (openfl_legacy && lime_hybrid))
 typedef ByteArray = lime.utils.ByteArray;
 #else
 typedef ByteArray = openfl._legacy.utils.ByteArray;

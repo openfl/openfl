@@ -55,7 +55,7 @@ class AbstractFont {
 		
 		if (!registered) {
 			
-			var register = Lib.load ("lime", "lime_font_set_factory", 1);
+			var register = Lib.load ("lime-legacy", "lime_legacy_font_set_factory", 1);
 			register (createFont);
 			registered = true;
 			

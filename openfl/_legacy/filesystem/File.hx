@@ -3,6 +3,10 @@ package openfl._legacy.filesystem; #if openfl_legacy
 
 import openfl.Lib;
 
+#if lime_hybrid
+import lime.system.System;
+#end
+
 #if android
 import openfl.utils.JNI;
 #end
@@ -93,14 +97,29 @@ class File {
 	
 	
 	#if iphone
-	private static var lime_get_resource_path = Lib.load ("lime", "lime_get_resource_path", 0);
+	private static var lime_get_resource_path = Lib.load ("lime-legacy", "lime_legacy_get_resource_path", 0);
 	#end
 	
 	#if !android
-	private static var lime_filesystem_get_special_dir = Lib.load ("lime", "lime_filesystem_get_special_dir", 1);
+	private static var lime_filesystem_get_special_dir = Lib.load ("lime-legacy", "lime_legacy_filesystem_get_special_dir", 1);
 	#else
 	private static var jni_filesystem_get_special_dir:Dynamic = null;
 	private static function lime_filesystem_get_special_dir (which:Int):String {
+		
+		#if lime_hybrid
+		
+		switch (which) {
+			
+			case APP: return System.applicationDirectory;
+			case STORAGE: return System.applicationStorageDirectory;
+			case DESKTOP: return System.desktopDirectory;
+			case DOCS: return System.documentsDirectory;
+			case USER: return System.userDirectory;
+			default: return "";
+			
+		}
+		
+		#else
 		
 		if (jni_filesystem_get_special_dir == null) {
 			
@@ -109,6 +128,8 @@ class File {
 		}
 		
 		return jni_filesystem_get_special_dir (which);
+		
+		#end
 		
 	}
 	#end

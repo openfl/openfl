@@ -154,7 +154,7 @@ class JNI {
 		if (!initialized) {
 			
 			initialized = true;
-			var method = Lib.load ("lime", "lime_jni_init_callback", 1);
+			var method = Lib.load ("lime-legacy", "lime_legacy_jni_init_callback", 1);
 			method (onCallback);
 			
 		}
@@ -185,12 +185,12 @@ class JNI {
 	
 	
 	
-	private static var lime_jni_create_field = Lib.load ("lime", "lime_jni_create_field", 4);
-	private static var lime_jni_create_method = Lib.load ("lime", "lime_jni_create_method", 5);
-	private static var lime_jni_get_env = Lib.load ("lime", "lime_jni_get_env", 0);
-	private static var lime_jni_call_member = Lib.load ("lime", "lime_jni_call_member", 3);
-	private static var lime_jni_call_static = Lib.load ("lime", "lime_jni_call_static", 2);
-	//private static var lime_jni_create_interface = Lib.load("lime", "lime_jni_create_interface", 3);
+	private static var lime_jni_create_field = Lib.load ("lime-legacy", "lime_legacy_jni_create_field", 4);
+	private static var lime_jni_create_method = Lib.load ("lime-legacy", "lime_legacy_jni_create_method", 5);
+	private static var lime_jni_get_env = Lib.load ("lime-legacy", "lime_legacy_jni_get_env", 0);
+	private static var lime_jni_call_member = Lib.load ("lime-legacy", "lime_legacy_jni_call_member", 3);
+	private static var lime_jni_call_static = Lib.load ("lime-legacy", "lime_legacy_jni_call_static", 2);
+	//private static var lime_jni_create_interface = Lib.load ("lime-legacy", "lime_legacy_jni_create_interface", 3);
 	
 }
 
@@ -230,8 +230,8 @@ class JNIMemberField {
 	
 	
 	
-	private static var lime_jni_get_member = Lib.load ("lime", "lime_jni_get_member", 2);
-	private static var lime_jni_set_member = Lib.load ("lime", "lime_jni_set_member", 3);
+	private static var lime_jni_get_member = Lib.load ("lime-legacy", "lime_legacy_jni_get_member", 2);
+	private static var lime_jni_set_member = Lib.load ("lime-legacy", "lime_legacy_jni_set_member", 3);
 	
 	
 }
@@ -272,8 +272,8 @@ class JNIStaticField {
 	
 	
 	
-	private static var lime_jni_get_static = Lib.load ("lime", "lime_jni_get_static", 1);
-	private static var lime_jni_set_static = Lib.load ("lime", "lime_jni_set_static", 2);
+	private static var lime_jni_get_static = Lib.load ("lime-legacy", "lime_legacy_jni_get_static", 1);
+	private static var lime_jni_set_static = Lib.load ("lime-legacy", "lime_legacy_jni_set_static", 2);
 	
 	
 }
@@ -343,8 +343,8 @@ class JNIMethod {
 	
 	
 	
-	private static var lime_jni_call_member = Lib.load ("lime", "lime_jni_call_member", 3);
-	private static var lime_jni_call_static = Lib.load ("lime", "lime_jni_call_static", 2);
+	private static var lime_jni_call_member = Lib.load ("lime-legacy", "lime_legacy_jni_call_member", 3);
+	private static var lime_jni_call_static = Lib.load ("lime-legacy", "lime_legacy_jni_call_static", 2);
 	
 	
 }

@@ -122,12 +122,12 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	
-	private static var lime_simple_button_set_state = Lib.load ("lime", "lime_simple_button_set_state", 3);
-	private static var lime_simple_button_get_enabled = Lib.load ("lime", "lime_simple_button_get_enabled", 1);
-	private static var lime_simple_button_set_enabled = Lib.load ("lime", "lime_simple_button_set_enabled", 2);
-	private static var lime_simple_button_get_hand_cursor = Lib.load ("lime", "lime_simple_button_get_hand_cursor", 1);
-	private static var lime_simple_button_set_hand_cursor = Lib.load ("lime", "lime_simple_button_set_hand_cursor", 2);
-	private static var lime_simple_button_create = Lib.load ("lime", "lime_simple_button_create", 0);
+	private static var lime_simple_button_set_state = Lib.load ("lime-legacy", "lime_legacy_simple_button_set_state", 3);
+	private static var lime_simple_button_get_enabled = Lib.load ("lime-legacy", "lime_legacy_simple_button_get_enabled", 1);
+	private static var lime_simple_button_set_enabled = Lib.load ("lime-legacy", "lime_legacy_simple_button_set_enabled", 2);
+	private static var lime_simple_button_get_hand_cursor = Lib.load ("lime-legacy", "lime_legacy_simple_button_get_hand_cursor", 1);
+	private static var lime_simple_button_set_hand_cursor = Lib.load ("lime-legacy", "lime_legacy_simple_button_set_hand_cursor", 2);
+	private static var lime_simple_button_create = Lib.load ("lime-legacy", "lime_legacy_simple_button_create", 0);
 	
 	
 }

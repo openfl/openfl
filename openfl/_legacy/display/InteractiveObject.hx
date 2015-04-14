@@ -100,13 +100,13 @@ class InteractiveObject extends DisplayObject {
 	
 	
 	
-	private static var lime_display_object_set_mouse_enabled = Lib.load ("lime", "lime_display_object_set_mouse_enabled", 2);
-	private static var lime_display_object_set_needs_soft_keyboard = Lib.load ("lime", "lime_display_object_set_needs_soft_keyboard", 2);
-	private static var lime_display_object_get_needs_soft_keyboard = Lib.load ("lime", "lime_display_object_get_needs_soft_keyboard", 1);
-	private static var lime_display_object_set_moves_for_soft_keyboard = Lib.load ("lime", "lime_display_object_set_moves_for_soft_keyboard", 2);
-	private static var lime_display_object_get_moves_for_soft_keyboard = Lib.load ("lime", "lime_display_object_get_moves_for_soft_keyboard", 1);
-	private static var lime_display_object_dismiss_soft_keyboard = Lib.load ("lime", "lime_display_object_dismiss_soft_keyboard", 1);
-	private static var lime_display_object_request_soft_keyboard = Lib.load ("lime", "lime_display_object_request_soft_keyboard", 1);
+	private static var lime_display_object_set_mouse_enabled = Lib.load ("lime-legacy", "lime_legacy_display_object_set_mouse_enabled", 2);
+	private static var lime_display_object_set_needs_soft_keyboard = Lib.load ("lime-legacy", "lime_legacy_display_object_set_needs_soft_keyboard", 2);
+	private static var lime_display_object_get_needs_soft_keyboard = Lib.load ("lime-legacy", "lime_legacy_display_object_get_needs_soft_keyboard", 1);
+	private static var lime_display_object_set_moves_for_soft_keyboard = Lib.load ("lime-legacy", "lime_legacy_display_object_set_moves_for_soft_keyboard", 2);
+	private static var lime_display_object_get_moves_for_soft_keyboard = Lib.load ("lime-legacy", "lime_legacy_display_object_get_moves_for_soft_keyboard", 1);
+	private static var lime_display_object_dismiss_soft_keyboard = Lib.load ("lime-legacy", "lime_legacy_display_object_dismiss_soft_keyboard", 1);
+	private static var lime_display_object_request_soft_keyboard = Lib.load ("lime-legacy", "lime_legacy_display_object_request_soft_keyboard", 1);
 	
 	
 }

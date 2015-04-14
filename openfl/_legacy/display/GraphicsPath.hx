@@ -110,16 +110,16 @@ class GraphicsPath extends IGraphicsData {
 	
 	
 	
-	private static var lime_graphics_path_create = Lib.load ("lime", "lime_graphics_path_create", 3);
-	private static var lime_graphics_path_curve_to = Lib.load ("lime", "lime_graphics_path_curve_to", 5);
-	private static var lime_graphics_path_line_to = Lib.load ("lime", "lime_graphics_path_line_to", 3);
-	private static var lime_graphics_path_move_to = Lib.load ("lime", "lime_graphics_path_move_to", 3);
-	private static var lime_graphics_path_wline_to = Lib.load ("lime", "lime_graphics_path_wline_to", 3);
-	private static var lime_graphics_path_wmove_to = Lib.load ("lime", "lime_graphics_path_wmove_to", 3);
-	private static var lime_graphics_path_get_commands = Lib.load ("lime", "lime_graphics_path_get_commands", 2);
-	private static var lime_graphics_path_set_commands = Lib.load ("lime", "lime_graphics_path_set_commands", 2);
-	private static var lime_graphics_path_get_data = Lib.load ("lime", "lime_graphics_path_get_data", 2);
-	private static var lime_graphics_path_set_data = Lib.load ("lime", "lime_graphics_path_set_data", 2);
+	private static var lime_graphics_path_create = Lib.load ("lime-legacy", "lime_legacy_graphics_path_create", 3);
+	private static var lime_graphics_path_curve_to = Lib.load ("lime-legacy", "lime_legacy_graphics_path_curve_to", 5);
+	private static var lime_graphics_path_line_to = Lib.load ("lime-legacy", "lime_legacy_graphics_path_line_to", 3);
+	private static var lime_graphics_path_move_to = Lib.load ("lime-legacy", "lime_legacy_graphics_path_move_to", 3);
+	private static var lime_graphics_path_wline_to = Lib.load ("lime-legacy", "lime_legacy_graphics_path_wline_to", 3);
+	private static var lime_graphics_path_wmove_to = Lib.load ("lime-legacy", "lime_legacy_graphics_path_wmove_to", 3);
+	private static var lime_graphics_path_get_commands = Lib.load ("lime-legacy", "lime_legacy_graphics_path_get_commands", 2);
+	private static var lime_graphics_path_set_commands = Lib.load ("lime-legacy", "lime_legacy_graphics_path_set_commands", 2);
+	private static var lime_graphics_path_get_data = Lib.load ("lime-legacy", "lime_legacy_graphics_path_get_data", 2);
+	private static var lime_graphics_path_set_data = Lib.load ("lime-legacy", "lime_legacy_graphics_path_set_data", 2);
 	
 	
 }

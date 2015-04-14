@@ -21,7 +21,7 @@ class GraphicsSolidFill extends IGraphicsData implements IGraphicsFill {
 	}
 	
 	
-	private static var lime_graphics_solid_fill_create = Lib.load ("lime", "lime_graphics_solid_fill_create", 2);
+	private static var lime_graphics_solid_fill_create = Lib.load ("lime-legacy", "lime_legacy_graphics_solid_fill_create", 2);
 	
 	
 }

@@ -1,4 +1,4 @@
-package openfl._legacy.utils; #if openfl_legacy
+package openfl._legacy.utils; #if (openfl_legacy && !lime_hybrid)
 
 
 import haxe.io.Bytes;
@@ -755,7 +755,7 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 		var bytes = function (bytes:ByteArray) { return bytes == null ? null : bytes.b; }
 		var slen = function(bytes:ByteArray) { return bytes == null ? 0 : bytes.length; }
 		
-		var init = Lib.load ("lime", "lime_byte_array_init", 4);
+		var init = Lib.load ("lime-legacy", "lime_legacy_byte_array_init", 4);
 		init (factory, slen, resize, bytes);
 		
 	}
@@ -794,7 +794,7 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 	private function get_endian ():String { return bigEndian ? Endian.BIG_ENDIAN : Endian.LITTLE_ENDIAN; }
 	private function set_endian (value:String):String { bigEndian = (value == Endian.BIG_ENDIAN); return value; }
 	
-	
+	//
 	
 	
 	// Native Methods
@@ -807,15 +807,17 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 	private static var _float_bytes = Lib.load ("std", "float_bytes", 2);
 	private static var _float_of_bytes = Lib.load ("std", "float_of_bytes", 2);
 	#if !no_lime_io
-	private static var lime_byte_array_overwrite_file = Lib.load ("lime", "lime_byte_array_overwrite_file", 2);
-	private static var lime_byte_array_read_file = Lib.load ("lime", "lime_byte_array_read_file", 1);
+	private static var lime_byte_array_overwrite_file = Lib.load ("lime-legacy", "lime_legacy_byte_array_overwrite_file", 2);
+	private static var lime_byte_array_read_file = Lib.load ("lime-legacy", "lime_legacy_byte_array_read_file", 1);
 	#end
-	private static var lime_byte_array_get_native_pointer = Lib.load ("lime", "lime_byte_array_get_native_pointer", 1);
-	private static var lime_lzma_encode = Lib.load ("lime", "lime_lzma_encode", 1);
-	private static var lime_lzma_decode = Lib.load ("lime", "lime_lzma_decode", 1);
+	private static var lime_byte_array_get_native_pointer = Lib.load ("lime-legacy", "lime_legacy_byte_array_get_native_pointer", 1);
+	private static var lime_lzma_encode = Lib.load ("lime-legacy", "lime_legacy_lzma_encode", 1);
+	private static var lime_lzma_decode = Lib.load ("lime-legacy", "lime_legacy_lzma_decode", 1);
 	
 	
 }
 
 
+#else
+typedef ByteArray = openfl.utils.ByteArray;
 #end

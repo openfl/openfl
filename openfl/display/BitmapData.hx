@@ -141,6 +141,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __textureImage:Image;
 	@:noCompletion private var __framebuffer:FilterTexture;
 	@:noCompletion private var __uvData:TextureUvs;
+	@:noCompletion private var __uvFlipped:Bool = false;
 	
 	private var __spritebatch:SpriteBatch;
 	
@@ -557,6 +558,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				var mainSpritebatch = renderSession.spriteBatch;
 				var mainProjection = renderSession.projection;
+				var renderTransparent = renderSession.renderer.transparent;
 				
 				if (clipRect == null) {
 					clipRect = new Rectangle(0, 0, width, height);
@@ -564,7 +566,7 @@ class BitmapData implements IBitmapDrawable {
 				var tmpRect = clipRect.clone();
 				// Flip Y
 				tmpRect.y = height - tmpRect.bottom;
-
+				
 				var drawSelf = false;
 				if (__spritebatch == null) {
 					__spritebatch = new SpriteBatch(gl);
@@ -573,6 +575,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				renderSession.spriteBatch = __spritebatch;
 				renderSession.projection = new Point((width / 2), -(height / 2));
+				renderSession.renderer.transparent = transparent;
 				
 				if (__framebuffer == null) {
 					__framebuffer = new FilterTexture(gl, width, height, smoothing);
@@ -623,6 +626,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				renderSession.spriteBatch = mainSpritebatch;
 				renderSession.projection = mainProjection;
+				renderSession.renderer.transparent = renderTransparent;
 				
 				gl.colorMask(true, true, true, renderSession.renderer.transparent);
 				
@@ -1553,6 +1557,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
 		
+		__uvFlipped = verticalFlip;
+		
 		if (verticalFlip) {
 			__uvData.x0 = 0;
 			__uvData.y0 = 1;
@@ -1699,7 +1705,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__worldTransform == null) __worldTransform = new Matrix();
 		if (__worldColorTransform == null) __worldColorTransform = new ColorTransform();
-		renderSession.spriteBatch.renderBitmapData(this, true, __worldTransform, __worldColorTransform);
+		renderSession.spriteBatch.renderBitmapData(this, true, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, blendMode);
 		
 	}
 	

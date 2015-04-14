@@ -1,4 +1,4 @@
-package openfl._legacy.net; #if openfl_legacy
+package openfl._legacy.net; #if (openfl_legacy && !disable_legacy_networking)
 
 
 import sys.io.File;
@@ -292,17 +292,19 @@ class URLLoader extends EventDispatcher {
 	
 	
 	
-	private static var lime_curl_create = Lib.load ("lime", "lime_curl_create", 1);
-	private static var lime_curl_process_loaders = Lib.load ("lime", "lime_curl_process_loaders", 0);
-	private static var lime_curl_update_loader = Lib.load ("lime", "lime_curl_update_loader", 2);
-	private static var lime_curl_get_code = Lib.load ("lime", "lime_curl_get_code", 1);
-	private static var lime_curl_get_error_message = Lib.load ("lime", "lime_curl_get_error_message", 1);
-	private static var lime_curl_get_data = Lib.load ("lime", "lime_curl_get_data", 1);
-	private static var lime_curl_get_cookies = Lib.load ("lime", "lime_curl_get_cookies", 1);
-	private static var lime_curl_get_headers = Lib.load ("lime", "lime_curl_get_headers", 1);
-	private static var lime_curl_initialize = Lib.load ("lime", "lime_curl_initialize", 1);
+	private static var lime_curl_create = Lib.load ("lime-legacy", "lime_legacy_curl_create", 1);
+	private static var lime_curl_process_loaders = Lib.load ("lime-legacy", "lime_legacy_curl_process_loaders", 0);
+	private static var lime_curl_update_loader = Lib.load ("lime-legacy", "lime_legacy_curl_update_loader", 2);
+	private static var lime_curl_get_code = Lib.load ("lime-legacy", "lime_legacy_curl_get_code", 1);
+	private static var lime_curl_get_error_message = Lib.load ("lime-legacy", "lime_legacy_curl_get_error_message", 1);
+	private static var lime_curl_get_data = Lib.load ("lime-legacy", "lime_legacy_curl_get_data", 1);
+	private static var lime_curl_get_cookies = Lib.load ("lime-legacy", "lime_legacy_curl_get_cookies", 1);
+	private static var lime_curl_get_headers = Lib.load ("lime-legacy", "lime_legacy_curl_get_headers", 1);
+	private static var lime_curl_initialize = Lib.load ("lime-legacy", "lime_legacy_curl_initialize", 1);
 	
 }
 
 
+#else
+typedef URLLoader = openfl.net.URLLoader;
 #end
