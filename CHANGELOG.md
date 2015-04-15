@@ -1,3 +1,17 @@
+3.0.2 (04/15/2015)
+------------------
+
+* Improved handling of keyCode/charCode in keyboard events
+* Improved the frame timing when using hybrid mode
+* Improved the font lookup behavior of GL TextField
+* Added better auto-size left support to GL TextField
+* Added basic text line metrics in TextField
+* Added support for compilation with -Ddisable-cffi
+* Added dynamic DisplayObject field support for MovieClip
+* Fixed UVs when using drawTiles with bitmapData.draw (GL)
+* Fixed blendMode setting when using bitmapData.draw (GL)
+
+
 3.0.1 (04/09/2015)
 ------------------
 
