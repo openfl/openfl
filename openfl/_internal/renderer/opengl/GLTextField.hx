@@ -1,6 +1,7 @@
 package openfl._internal.renderer.opengl;
 
 
+import haxe.Utf8;
 import lime.graphics.Image;
 import lime.text.Glyph;
 import lime.text.TextLayout;
@@ -10,6 +11,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Tilesheet;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextField;
@@ -78,6 +80,8 @@ class GLTextField {
 	
 	
 	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, textWidth:Float):Void {
+		
+		var dodebug = (textField.defaultTextFormat.font.toLowerCase().indexOf("liberation") != -1);
 		
 		var font = textField.__getFontInstance (format);
 		
@@ -154,7 +158,6 @@ class GLTextField {
 					index = tilesheet.addTileRect (new Rectangle (image.offsetX, image.offsetY, image.width, image.height));
 					
 					tileID.set (key, index);
-					
 				}
 				
 				tileIDs.set (bitmapData, tileID);
@@ -169,9 +172,14 @@ class GLTextField {
 			var g = ((format.color >> 8) & 0xFF) / 0xFF;
 			var b = ((format.color) & 0xFF) / 0xFF;
 			
+			if (dodebug)
+			{
+				//trace("textField." + textField.
+			}
+			
 			var image;
 			var x:Float = offsetX;
-			var y:Float = size;
+			var y:Float = size - textField.getLineMetrics(0).descent / 2;
 			
 			if (format.align == TextFormatAlign.RIGHT) {
 				
@@ -207,7 +215,11 @@ class GLTextField {
 				
 			}
 			
-			var textLayout = textField.__textLayout;
+			var textLayout:TextLayout = textField.__textLayout;
+			
+			var line_i:Int = 0;
+			
+			var oldx = x;
 			
 			for (line in lines) {
 				
@@ -234,11 +246,21 @@ class GLTextField {
 					x += position.advance.x;
 					y -= position.advance.y;
 					
+					if (dodebug)
+					{
+						trace("y = " + y);
+					}
 				}
 				
-				x = 0;
-				y += size * 1.185;
+				x = oldx;
 				
+				var tlm = textField.getLineMetrics(line_i);
+				
+				y += tlm.height;
+				
+				//y += size + (textField.getLineMetrics(line_i).descent);// * 1.5;
+				
+				line_i++;
 			}
 			
 		}
