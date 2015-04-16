@@ -1206,8 +1206,46 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineWidth(line:Int):Float {
 		
-		var sizes = __measureText(line);
-		return sizes[0];
+		var measurements = __measureTextSub(false);
+		
+		var currWidth = 0.0;
+		var bestWidth = 0.0;
+		
+		var linebreaks = __getLineBreakIndeces();
+		
+		var currLine:Int = 0;
+		for (i in 0...measurements.length)
+		{
+			var measure = measurements[i];
+			if (linebreaks.indexOf(i) != -1)
+			{
+				if (currLine == line)
+				{
+					return currWidth;
+				}
+				else if (currWidth > bestWidth)
+				{
+					bestWidth = currWidth;
+					currWidth = 0;
+				}
+				currLine++;
+			}
+			else
+			{
+				currWidth += measurements[i];
+			}
+		}
+		
+		if (currLine == line)
+		{
+			return currWidth;
+		}
+		else if (currWidth > bestWidth)
+		{
+			bestWidth = currWidth;
+		}
+		
+		return bestWidth;
 	}
 	
 	private static inline var ASCENDER:Int = 0;
@@ -1358,7 +1396,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __measureText (specificLine:Int=-1):Array<Float> {
+	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
 		
 		#if js
 		
@@ -1391,46 +1429,7 @@ class TextField extends InteractiveObject {
 		
 		#elseif (cpp || neko)
 		
-		var measurements = __measureTextSub(false);
-		
-		var currWidth = 0.0;
-		var bestWidth = 0.0;
-		
-		var linebreaks = __getLineBreakIndeces();
-		
-		var currLine:Int = 0;
-		for (i in 0...measurements.length)
-		{
-			var measure = measurements[i];
-			if (linebreaks.indexOf(i) != -1)
-			{
-				if (currLine == specificLine)
-				{
-					return [currWidth];
-				}
-				else if (currWidth > bestWidth)
-				{
-					bestWidth = currWidth;
-					currWidth = 0;
-				}
-				currLine++;
-			}
-			else
-			{
-				currWidth += measurements[i];
-			}
-		}
-		
-		if (currLine == specificLine)
-		{
-			return [currWidth];
-		}
-		else if (currWidth > bestWidth)
-		{
-			bestWidth = currWidth;
-		}
-		
-		return [bestWidth];
+		return __measureTextSub(condense);
 		
 		#else
 		
