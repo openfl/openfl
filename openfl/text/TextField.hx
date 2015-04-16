@@ -1206,6 +1206,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineWidth(line:Int):Float {
 		
+		//Returns the width of a given line, or if -1 is supplied, the largest width
+		
 		var measurements = __measureTextSub(false);
 		
 		var currWidth = 0.0;
@@ -1223,7 +1225,7 @@ class TextField extends InteractiveObject {
 				{
 					return currWidth;
 				}
-				else if (currWidth > bestWidth)
+				else if (line == -1 && currWidth > bestWidth)
 				{
 					bestWidth = currWidth;
 					currWidth = 0;
@@ -1240,7 +1242,7 @@ class TextField extends InteractiveObject {
 		{
 			return currWidth;
 		}
-		else if (currWidth > bestWidth)
+		else if (line == -1 && currWidth > bestWidth)
 		{
 			bestWidth = currWidth;
 		}
@@ -1273,7 +1275,10 @@ class TextField extends InteractiveObject {
 			
 			return switch(metric)
 			{
-				case LINE_HEIGHT: font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNull(singleLine, LEADING);
+				case LINE_HEIGHT: __getLineMetricSubRangesNull(singleLine, ASCENDER) + 
+								  __getLineMetricSubRangesNull(singleLine, DESCENDER) + 
+								  __getLineMetricSubRangesNull(singleLine, LEADING);
+								  //font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNull(singleLine, LEADING);
 				case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
 				case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
 				case LEADING: __textFormat.leading;
@@ -1301,7 +1306,10 @@ class TextField extends InteractiveObject {
 					
 					m = switch(metric)
 					{
-						case LINE_HEIGHT: font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNotNull(specificLine, LEADING);
+						case LINE_HEIGHT: __getLineMetricSubRangesNotNull(specificLine, ASCENDER) +
+										  __getLineMetricSubRangesNotNull(specificLine, DESCENDER) + 
+										  __getLineMetricSubRangesNotNull(specificLine, LEADING);
+							//font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNotNull(specificLine, LEADING);
 						case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
 						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
 						case LEADING: __textFormat.leading;
@@ -1537,119 +1545,6 @@ class TextField extends InteractiveObject {
 		}
 		
 		return measurements;
-	}
-	
-	@:noCompletion private function __measureTextHeight():Float {
-		if (__ranges == null) {
-			
-			return __measureTextHeightSubRangesNull();
-		}
-		else {
-			
-			return __measureTextHeightSubRangesNotNull();
-		}
-	}
-	
-	@:noCompletion private function __measureTextHeightSubRangesNull(singleLine:Bool=false):Float {
-		
-		var font = __getFontInstance (__textFormat);
-		var width = 0.0;
-		var widths = [];
-		
-		var descent = __getLineMetricSubRangesNull(singleLine, DESCENDER);
-		
-		if (font != null && __textFormat.size != null && __textLayout != null) {
-			
-			__textLayout.text = null;
-			__textLayout.font = font;
-			__textLayout.size = Std.int (__textFormat.size);
-			__textLayout.text = __text;
-			
-			if (!singleLine)
-			{
-				var lbs = (__getLineBreaks() + 1);
-				return (__textFormat.size + descent) * lbs - descent;
-			}
-			else
-			{
-				return (__textFormat.size + descent);
-			}
-		}
-		
-		return 0;
-	}
-	
-	@:noCompletion private function __measureTextHeightSubRangesNotNull(specificLine:Int=-1):Float {
-		
-		var measurements = [];
-		
-		var h:Float = 0;
-		
-		var descent = __getLineMetricSubRangesNotNull(specificLine, DESCENDER);
-		
-		if (specificLine != -1)
-		{
-			var lineChars = __getLineIndeces(specificLine);
-			
-			var best_h = 0.0;
-			
-			for (range in __ranges) {
-				
-				if (range.start >= lineChars[0])
-				{
-					var font = __getFontInstance (range.format);
-					
-					if (font != null && range.format.size != null) {
-					
-						__textLayout.text = null;
-						__textLayout.font = font;
-						__textLayout.size = Std.int (range.format.size);
-						__textLayout.text = text.substring (range.start, range.end);
-						
-						h += (__textFormat.size + descent);
-					}
-				}
-				
-				if (h > best_h)
-				{
-					best_h = h;
-				}
-				h = 0;
-			}
-			
-			return best_h;
-		}
-		else
-		{
-			//TODO: I could see there being errors here if you have multiple ranges spanning endlines but partially spanning lines.
-			var r:Int = 0;
-			for (range in __ranges) {
-				
-				var font = __getFontInstance (range.format);
-				var width = 0.0;
-				
-				if (font != null && range.format.size != null) {
-				
-					__textLayout.text = null;
-					__textLayout.font = font;
-					__textLayout.size = Std.int (range.format.size);
-					__textLayout.text = text.substring (range.start, range.end);
-					
-					if (r == 0)
-					{
-						h += __textFormat.size + descent;
-					}
-					
-					var linebreaks = __getLineBreaksInRange(r);
-					h += (__textFormat.size + descent) * __getLineBreaks();
-					
-				}
-				
-				r++;
-			}
-		}
-		
-		return h;
 	}
 	
 	#end
@@ -2203,16 +2098,7 @@ class TextField extends InteractiveObject {
 		
 		#elseif (cpp || neko)
 		
-		var sizes = __measureText ();
-		var total:Float = 0;
-		
-		for (size in sizes) {
-			
-			total += size;
-			
-		}
-		
-		return total;
+		return __getLineWidth( -1);
 		
 		#else
 		
@@ -2247,11 +2133,15 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		var lines = __getLineBreaks() + 1;
+		//sum the heights of the lines, but don't count the leading of the last line
 		var th = 0.0;
-		for (i in 0...lines)
+		for (i in 0...numLines)
 		{
 			th += __getLineMetric(i, LINE_HEIGHT);
+			if (i == numLines - 1)
+			{
+				th -= __getLineMetric(i, LEADING);
+			}
 		}
 		return th;
 		
