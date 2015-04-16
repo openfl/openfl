@@ -1164,7 +1164,6 @@ class TextField extends InteractiveObject {
 				for (j in range.start...range.end + 1) {
 					var char = Utf8.charCodeAt(text, i);
 					if (char == __utf8_endline_code) {
-						
 						lines++;
 					}
 				}
@@ -1215,8 +1214,7 @@ class TextField extends InteractiveObject {
 		var linebreaks = __getLineBreakIndeces();
 		
 		var currLine:Int = 0;
-		for (i in 0...measurements.length)
-		{
+		for (i in 0...measurements.length) {
 			var measure = measurements[i];
 			if (linebreaks.indexOf(i) != -1) {		//if this character is a line break
 				if (currLine == line) {				//if we're currently on the desired line
