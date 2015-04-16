@@ -430,8 +430,10 @@ class Sound extends EventDispatcher {
 		// TODO: handle start time, loops, sound transform
 		
 		#if !html5
-		var source = new AudioSource (__buffer);
-		return new SoundChannel (source);
+		var source = new AudioSource (__buffer, loops);
+		var sc = new SoundChannel (source);
+		
+		return sc;
 		#else
 		var instance = 
 		if (loops > 1)

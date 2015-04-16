@@ -1,6 +1,7 @@
 package openfl.media; #if !flash #if (!openfl_legacy || disable_legacy_audio)
 
 
+import haxe.Timer;
 import lime.audio.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -88,7 +89,6 @@ class SoundChannel extends EventDispatcher {
 				__soundInstance = soundInstance;
 				__soundInstance.addEventListener ("complete", source_onComplete);
 				__isValid = true;
-				
 			}
 			
 		#end
@@ -111,7 +111,6 @@ class SoundChannel extends EventDispatcher {
 		#end
 		
 	}
-	
 	
 	#if html5
 	@:noCompletion private function __dispose ():Void {
@@ -213,7 +212,7 @@ class SoundChannel extends EventDispatcher {
 	
 	@:noCompletion private function source_onComplete ():Void {
 		
-		dispatchEvent (new Event (Event.SOUND_COMPLETE));
+		this.dispatchEvent (new Event (Event.SOUND_COMPLETE));
 		
 	}
 	
