@@ -1206,35 +1206,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineWidth(line:Int):Float {
 		
-		var sizes = __measureText(false);
-		
-		var total:Float = 0;
-		var breakCode:Int = __utf8_endline_code;
-		
-		var currLine:Int = 0;
-		
-		trace("__getLineWidth(" + line+") text=(" + text + ")");
-		trace("...sizes = " + sizes);
-		
-		for (i in 0...sizes.length) {
-			var size = sizes[i];
-			var charCode = Utf8.charCodeAt(text, i);
-			
-			if (charCode == breakCode)
-			{
-				currLine++;
-			}
-			else if (currLine == line)
-			{
-				total += size;
-			}
-			else if (currLine > line)
-			{
-				break;
-			}
-		}
-		
-		return total;
+		var sizes = __measureText(line);
+		return sizes[0];
 	}
 	
 	private static inline var ASCENDER:Int = 0;
@@ -1385,7 +1358,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
+	@:noCompletion private function __measureText (specificLine:Int=-1):Array<Float> {
 		
 		#if js
 		
@@ -1421,19 +1394,26 @@ class TextField extends InteractiveObject {
 		var measurements = __measureTextSub(false);
 		
 		var currWidth = 0.0;
-		var biggestWidth = 0.0;
+		var bestWidth = 0.0;
 		
+		var linebreaks = __getLineBreakIndeces();
+		
+		var currLine:Int = 0;
 		for (i in 0...measurements.length)
 		{
 			var measure = measurements[i];
-			var char = Utf8.charCodeAt(text, i);
-			if (char == __utf8_endline_code)
+			if (linebreaks.indexOf(i) != -1)
 			{
-				if (currWidth > biggestWidth)
+				if (currLine == specificLine)
 				{
-					biggestWidth = currWidth;
+					return [currWidth];
+				}
+				else if (currWidth > bestWidth)
+				{
+					bestWidth = currWidth;
 					currWidth = 0;
 				}
+				currLine++;
 			}
 			else
 			{
@@ -1441,7 +1421,16 @@ class TextField extends InteractiveObject {
 			}
 		}
 		
-		return [biggestWidth];
+		if (currLine == specificLine)
+		{
+			return [currWidth];
+		}
+		else if (currWidth > bestWidth)
+		{
+			bestWidth = currWidth;
+		}
+		
+		return [bestWidth];
 		
 		#else
 		
