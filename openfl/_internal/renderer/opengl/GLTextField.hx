@@ -181,7 +181,7 @@ class GLTextField {
 			
 			var image;
 			var x:Float = offsetX;
-			var y:Float = size;// - tlm.descent / 2;
+			var y:Float = 2 + tlm.ascent;
 			
 			var tileData;
 			
@@ -246,11 +246,6 @@ class GLTextField {
 					
 					x += position.advance.x;
 					y -= position.advance.y;
-					
-					if (dodebug)
-					{
-						trace("y = " + y);
-					}
 				}
 				
 				var tlm = textField.getLineMetrics(line_i);
