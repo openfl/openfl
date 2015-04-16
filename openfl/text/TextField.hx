@@ -2,6 +2,7 @@ package openfl.text; #if !flash #if !openfl_legacy
 
 
 import haxe.io.Path;
+import haxe.Utf8;
 import haxe.xml.Fast;
 import haxe.Timer;
 import lime.graphics.opengl.GLTexture;
@@ -577,6 +578,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private var __tilesheets:Array<Tilesheet>;
 	@:noCompletion private var __width:Float;
 	
+	@:noCompletion private static var __utf8_endline_code:Int = 10;
 	
 	#if js
 	private var __div:DivElement;
@@ -713,13 +715,23 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		//openfl.Lib.notImplemented ("TextField.getLineMetrics");
-		
 		var height = textHeight;
 		
-		return new TextLineMetrics (0, textWidth, height, height, 0, 0); 
+		var lineWidth = __getLineWidth(lineIndex);
+		var lineHeight = __getLineMetric(lineIndex, LINE_HEIGHT);
 		
-		//return new TextLineMetrics (0, 0, 0, 0, 0, 0);
+		var ascender = __getLineMetric(lineIndex, ASCENDER);
+		var descender = __getLineMetric(lineIndex, DESCENDER);
+		
+		var leading = __getLineMetric(lineIndex, LEADING);
+		
+		var margin = switch(__textFormat.align) {
+			case LEFT, JUSTIFY: 2;
+			case RIGHT: (width - lineWidth) - 2;
+			case CENTER: (width - lineWidth) / 2;
+		}
+		
+		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 
 		
 	}
 	
@@ -1117,6 +1129,199 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function __getLineBreaks():Int {
+		
+		//returns the number of line breaks in the text
+		
+		var lines:Int = 0;
+		for (i in 0...text.length) {
+			var char = Utf8.charCodeAt(text, i);
+			if (char == __utf8_endline_code) {
+				lines++;
+			}
+		}
+		return lines;
+	}
+	
+	@:noCompletion private function __getLineBreakIndeces():Array<Int> {
+		
+		//returns the exact character indeces where the line breaks occur
+		
+		var breaks = [];
+		for (i in 0...text.length) {
+			var char = Utf8.charCodeAt(text, i);
+			if (char == __utf8_endline_code) {
+				breaks.push(i);
+			}
+		}
+		return breaks;
+	}
+	
+	@:noCompletion private function __getLineBreaksInRange(i:Int):Int {
+		
+		//returns the number of line breaks that occur within a given format range
+		
+		var lines:Int = 0;
+		if (__ranges.length > i && i >= 0) {
+			var range = __ranges[i];
+			if (range.start > 0 && range.end < text.length) {
+				for (j in range.start...range.end + 1) {
+					var char = Utf8.charCodeAt(text, i);
+					if (char == __utf8_endline_code) {
+						lines++;
+					}
+				}
+			}
+		}
+		return lines;
+	}
+	
+	
+	
+	@:noCompletion private function __getLineIndeces(line:Int):Array<Int> {
+		
+		//tells you what the first and last (non-linebreak) character indeces are in a given line
+		
+		var breaks = __getLineBreakIndeces();
+		var i:Int = 0;
+		var first_char = 0;
+		var last_char = text.length - 1;
+		
+		for (br in breaks) {
+			
+			//if this is the line we care about
+			if (i == line) {
+				//the first actual character in our line is the index after this line break
+				first_char = br + 1;
+				
+				//if there's another line break left in the list
+				if (i != breaks.length-1) {
+					//the last character is the index before the next line break
+					//(otherwise it's the last character in the text field)
+					last_char = breaks[i + 1] - 1;
+				}
+			}
+			i++;
+		}
+		return [first_char, last_char];
+	}
+	
+	@:noCompletion private function __getLineWidth(line:Int):Float {
+		
+		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
+		
+		var measurements = __measureTextSub(false);
+		
+		var currWidth = 0.0;
+		var bestWidth = 0.0;
+		
+		var linebreaks = __getLineBreakIndeces();
+		
+		var currLine:Int = 0;
+		for (i in 0...measurements.length) {
+			var measure = measurements[i];
+			if (linebreaks.indexOf(i) != -1) {		//if this character is a line break
+				if (currLine == line) {				//if we're currently on the desired line
+					return currWidth;				//return the built up width immediately
+				}
+				else if (line == -1 && currWidth > bestWidth) {	//if we are looking at ALL lines, and this width is bigger than the last one
+					bestWidth = currWidth;			//this is the new best width
+				}
+				
+				currWidth = 0;			//reset current width
+				currLine++;
+			}
+			else {
+				currWidth += measurements[i];	//keep building up the width
+			}
+		}
+		
+		if (currLine == line) {			//we reached end of the loop & this is the line we want
+			bestWidth = currWidth;
+		}
+		else if (line == -1 && currWidth > bestWidth) {	//looking at ALL lines, and this one's bigger
+			bestWidth = currWidth;
+		}
+		
+		return bestWidth;
+	}
+	
+	private static inline var ASCENDER:Int = 0;
+	private static inline var DESCENDER:Int = 1;
+	private static inline var LINE_HEIGHT:Int = 2;
+	private static inline var LEADING:Int = 3;
+	
+	@:noCompletion private function __getLineMetric(line:Int,metric:Int):Float {
+		
+		//returns the specified line metric for the given line
+		
+		if (__ranges == null) {
+			return __getLineMetricSubRangesNull(true, metric);
+		}
+		else {
+			return __getLineMetricSubRangesNotNull(line, metric);
+		}
+	}
+	
+	@:noCompletion private function __getLineMetricSubRangesNull(singleLine:Bool=false, metric:Int):Float {
+		
+		//subroutine if ranges are null
+		
+		var font = __getFontInstance (__textFormat);
+		
+		if (font != null) {
+			
+			return switch(metric) {
+				case LINE_HEIGHT: __getLineMetricSubRangesNull(singleLine, ASCENDER) + 
+								  __getLineMetricSubRangesNull(singleLine, DESCENDER) + 
+								  __getLineMetricSubRangesNull(singleLine, LEADING);
+				case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
+				case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
+				case LEADING: __textFormat.leading;
+				default: 0;
+			}
+		}
+		
+		return 0;
+	}
+	
+	@:noCompletion private function __getLineMetricSubRangesNotNull(specificLine:Int, metric:Int):Float {
+		
+		//subroutine if ranges are not null
+		//TODO: test this more thoroughly
+		
+		var lineChars = __getLineIndeces(specificLine);
+		
+		var m = 0.0;
+		var best_m = 0.0;
+		
+		for (range in __ranges) {
+			
+			if (range.start >= lineChars[0]) {
+				var font = __getFontInstance (range.format);
+				
+				if (font != null) {
+					
+					m = switch(metric) {
+						case LINE_HEIGHT: __getLineMetricSubRangesNotNull(specificLine, ASCENDER) +
+										  __getLineMetricSubRangesNotNull(specificLine, DESCENDER) + 
+										  __getLineMetricSubRangesNotNull(specificLine, LEADING);
+						case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
+						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
+						case LEADING: __textFormat.leading;
+						default: 0;
+					}
+				}
+			}
+			
+			if (m > best_m) {
+				best_m = m;
+			}
+			m = 0;
+		}
+		
+		return best_m;
+	}
 	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
@@ -1145,7 +1350,6 @@ class TextField extends InteractiveObject {
 		return pos;
 		
 	}
-	
 	
 	@:noCompletion private function __getTextWidth (text:String):Float {
 		
@@ -1194,8 +1398,7 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
-	@:noCompletion private function __measureText ():Array<Float> {
+	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
 		
 		#if js
 		
@@ -1228,65 +1431,10 @@ class TextField extends InteractiveObject {
 		
 		#elseif (cpp || neko)
 		
-		if (__textLayout == null) {
-			
-			__textLayout = new TextLayout ();
-			
-		}
+		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
+		//TODO: look into whether this method and others can replace the JS stuff yet or not
 		
-		if (__ranges == null) {
-			
-			var font = __getFontInstance (__textFormat);
-			var width = 0.0;
-			
-			if (font != null && __textFormat.size != null) {
-				
-				__textLayout.text = null;
-				__textLayout.font = font;
-				__textLayout.size = Std.int (__textFormat.size);
-				__textLayout.text = __text;
-				
-				for (position in __textLayout.positions) {
-					
-					width += position.advance.x;
-					
-				}
-				
-			}
-			
-			return [ width ];
-			
-		} else {
-			
-			var measurements = [];
-			
-			for (range in __ranges) {
-				
-				var font = __getFontInstance (range.format);
-				var width = 0.0;
-				
-				if (font != null && range.format.size != null) {
-					
-					__textLayout.text = null;
-					__textLayout.font = font;
-					__textLayout.size = Std.int (range.format.size);
-					__textLayout.text = text.substring (range.start, range.end);
-					
-					for (position in __textLayout.positions) {
-						
-						width += position.advance.x;
-						
-					}
-					
-				}
-				
-				measurements.push (width);
-				
-			}
-			
-			return measurements;
-			
-		}
+		return __measureTextSub(condense);
 		
 		#else
 		
@@ -1296,6 +1444,102 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function __measureTextSub(condense:Bool):Array<Float> {
+		
+		//subroutine for measuring text (width)
+		
+		if (__textLayout == null) {
+			
+			__textLayout = new TextLayout ();
+			
+		}
+		
+		if (__ranges == null) {
+			
+			return __measureTextSubRangesNull(condense);
+			
+		} else {
+			
+			return __measureTextSubRangesNotNull(condense);
+		}
+		
+		return null;
+	}
+	
+	@:noCompletion private function __measureTextSubRangesNull(condense:Bool):Array<Float> {
+		
+		//subroutine if format ranges are null
+		
+		var font = __getFontInstance (__textFormat);
+		var width = 0.0;
+		var widths = [];
+		
+		if (font != null && __textFormat.size != null) {
+			
+			__textLayout.text = null;
+			__textLayout.font = font;
+			__textLayout.size = Std.int (__textFormat.size);
+			__textLayout.text = __text;
+			
+			for (position in __textLayout.positions) {
+				
+				if (condense) {
+					width += position.advance.x;
+				}
+				else {
+					widths.push(position.advance.x);
+				}
+				
+			}
+			
+		}
+		
+		if (condense) {
+			widths.push(width);
+		}
+		
+		return widths;
+	}
+	
+	@:noCompletion private function __measureTextSubRangesNotNull(condense:Bool):Array<Float> {
+		
+		//subroutine if format ranges are not null
+		
+		var measurements = [];
+		
+		for (range in __ranges) {
+			
+			var font = __getFontInstance (range.format);
+			var width = 0.0;
+			
+			if (font != null && range.format.size != null) {
+			
+				__textLayout.text = null;
+				__textLayout.font = font;
+				__textLayout.size = Std.int (range.format.size);
+				__textLayout.text = text.substring (range.start, range.end);
+				
+				for (position in __textLayout.positions) {
+					
+					if (condense) {
+						width += position.advance.x;
+					}
+					else {
+						measurements.push(position.advance.x);
+					}
+					
+				}
+				
+			}
+			
+			if (condense) {
+				measurements.push (width);
+			}
+			
+		}
+		
+		return measurements;
+	}
 	
 	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
@@ -1816,7 +2060,6 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
 	@:noCompletion public function get_textWidth ():Float {
 		
 		#if js
@@ -1847,16 +2090,9 @@ class TextField extends InteractiveObject {
 		
 		#elseif (cpp || neko)
 		
-		var sizes = __measureText ();
-		var total:Float = 0;
-		
-		for (size in sizes) {
-			
-			total += size;
-			
-		}
-		
-		return total;
+		//return the largest width of any given single line
+		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
+		return __getLineWidth( -1);
 		
 		#else
 		
@@ -1891,7 +2127,16 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		return __textFormat.size * 1.185;
+		//sum the heights of all the lines, but don't count the leading of the last line
+		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
+		var th = 0.0;
+		for (i in 0...numLines) {
+			th += __getLineMetric(i, LINE_HEIGHT);
+			if (i == numLines - 1) {
+				th -= __getLineMetric(i, LEADING);
+			}
+		}
+		return th;
 		
 		#end
 		
