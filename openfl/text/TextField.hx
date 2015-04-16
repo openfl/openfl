@@ -1476,12 +1476,10 @@ class TextField extends InteractiveObject {
 			
 			for (position in __textLayout.positions) {
 				
-				if (condense)
-				{
+				if (condense) {
 					width += position.advance.x;
 				}
-				else
-				{
+				else {
 					widths.push(position.advance.x);
 				}
 				
@@ -1489,8 +1487,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (condense)
-		{
+		if (condense) {
 			widths.push(width);
 		}
 		
@@ -1517,12 +1514,10 @@ class TextField extends InteractiveObject {
 				
 				for (position in __textLayout.positions) {
 					
-					if (condense)
-					{
+					if (condense) {
 						width += position.advance.x;
 					}
-					else
-					{
+					else {
 						measurements.push(position.advance.x);
 					}
 					
@@ -1530,8 +1525,7 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			if (condense)
-			{
+			if (condense) {
 				measurements.push (width);
 			}
 			
