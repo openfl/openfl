@@ -730,8 +730,8 @@ class TextField extends InteractiveObject {
 		var margin = switch(__textFormat.align)
 		{
 			case LEFT, JUSTIFY: 2;
-			case RIGHT: (width - textWidth) - 2;
-			case CENTER: (width - textWidth) / 2;
+			case RIGHT: (width - lineWidth) - 2;
+			case CENTER: (width - lineWidth) / 2;
 		}
 		
 		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 

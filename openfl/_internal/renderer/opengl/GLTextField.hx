@@ -177,19 +177,11 @@ class GLTextField {
 				//trace("textField." + textField.
 			}
 			
+			var tlm = textField.getLineMetrics(0);
+			
 			var image;
 			var x:Float = offsetX;
-			var y:Float = size - textField.getLineMetrics(0).descent / 2;
-			
-			if (format.align == TextFormatAlign.RIGHT) {
-				
-				x += textField.__width - textWidth;
-				
-			} else if (format.align == TextFormatAlign.CENTER) {
-				
-				x += (textField.__width - textWidth) / 2;
-				
-			}
+			var y:Float = size - tlm.descent / 2;
 			
 			var tileData;
 			
@@ -219,9 +211,18 @@ class GLTextField {
 			
 			var line_i:Int = 0;
 			
-			var oldx = x;
-			
 			for (line in lines) {
+				
+				tlm = textField.getLineMetrics(line_i);
+				
+				x = offsetX;
+				
+				x += switch(format.align)
+				{
+					case LEFT, JUSTIFY: 0;
+					case RIGHT: (textField.__width - tlm.width) - 4;	//not sure why -4 works, I expected -2
+					case CENTER: (textField.__width - tlm.width) / 2;
+				}
 				
 				textLayout.text = null;
 				textLayout.font = font;
@@ -251,8 +252,6 @@ class GLTextField {
 						trace("y = " + y);
 					}
 				}
-				
-				x = oldx;
 				
 				var tlm = textField.getLineMetrics(line_i);
 				
