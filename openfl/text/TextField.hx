@@ -1129,6 +1129,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineBreaks():Int {
 		
+		//returns the number of line breaks in the text
+		
 		var lines:Int = 0;
 		for (i in 0...text.length) {
 			var char = Utf8.charCodeAt(text, i);
@@ -1142,6 +1144,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineBreakIndeces():Array<Int> {
 		
+		//returns the exact character indeces where the line breaks occur
+		
 		var breaks = [];
 		for (i in 0...text.length) {
 			var char = Utf8.charCodeAt(text, i);
@@ -1154,6 +1158,9 @@ class TextField extends InteractiveObject {
 	}
 	
 	@:noCompletion private function __getLineBreaksInRange(i:Int):Int {
+		
+		//returns the number of line breaks that occur within a given format range
+		
 		var lines:Int = 0;
 		if (__ranges.length > i && i >= 0)
 		{
@@ -1176,7 +1183,8 @@ class TextField extends InteractiveObject {
 	
 	
 	@:noCompletion private function __getLineIndeces(line:Int):Array<Int> {
-		//If you want a specific line, this tells you what the first and last (non-linebreak) character indeces are
+		
+		//tells you what the first and last (non-linebreak) character indeces are in a given line
 		
 		var breaks = __getLineBreakIndeces();
 		var i:Int = 0;
@@ -1206,7 +1214,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineWidth(line:Int):Float {
 		
-		//Returns the width of a given line, or if -1 is supplied, the largest width
+		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
 		
 		var measurements = __measureTextSub(false);
 		
@@ -1256,7 +1264,9 @@ class TextField extends InteractiveObject {
 	private static inline var LEADING:Int = 3;
 	
 	@:noCompletion private function __getLineMetric(line:Int,metric:Int):Float {
-	
+		
+		//returns the specified line metric for the given line
+		
 		if (__ranges == null)
 		{
 			return __getLineMetricSubRangesNull(true, metric);
@@ -1269,6 +1279,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineMetricSubRangesNull(singleLine:Bool=false, metric:Int):Float {
 		
+		//subroutine if ranges are null
+		
 		var font = __getFontInstance (__textFormat);
 		
 		if (font != null) {
@@ -1278,7 +1290,6 @@ class TextField extends InteractiveObject {
 				case LINE_HEIGHT: __getLineMetricSubRangesNull(singleLine, ASCENDER) + 
 								  __getLineMetricSubRangesNull(singleLine, DESCENDER) + 
 								  __getLineMetricSubRangesNull(singleLine, LEADING);
-								  //font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNull(singleLine, LEADING);
 				case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
 				case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
 				case LEADING: __textFormat.leading;
@@ -1290,6 +1301,9 @@ class TextField extends InteractiveObject {
 	}
 	
 	@:noCompletion private function __getLineMetricSubRangesNotNull(specificLine:Int, metric:Int):Float {
+		
+		//subroutine if ranges are not null
+		//TODO: test this more thoroughly
 		
 		var lineChars = __getLineIndeces(specificLine);
 		
@@ -1309,7 +1323,6 @@ class TextField extends InteractiveObject {
 						case LINE_HEIGHT: __getLineMetricSubRangesNotNull(specificLine, ASCENDER) +
 										  __getLineMetricSubRangesNotNull(specificLine, DESCENDER) + 
 										  __getLineMetricSubRangesNotNull(specificLine, LEADING);
-							//font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNotNull(specificLine, LEADING);
 						case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
 						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
 						case LEADING: __textFormat.leading;
@@ -1403,7 +1416,6 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
 	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
 		
 		#if js
@@ -1437,6 +1449,9 @@ class TextField extends InteractiveObject {
 		
 		#elseif (cpp || neko)
 		
+		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
+		//TODO: look into whether this method and others can replace the JS stuff yet or not
+		
 		return __measureTextSub(condense);
 		
 		#else
@@ -1447,10 +1462,9 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
-	#if (cpp || neko)
-	
 	@:noCompletion private function __measureTextSub(condense:Bool):Array<Float> {
+		
+		//subroutine for measuring text (width)
 		
 		if (__textLayout == null) {
 			
@@ -1472,6 +1486,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __measureTextSubRangesNull(condense:Bool):Array<Float>
 	{
+		//subroutine if format ranges are null
+		
 		var font = __getFontInstance (__textFormat);
 		var width = 0.0;
 		var widths = [];
@@ -1508,6 +1524,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __measureTextSubRangesNotNull(condense:Bool):Array<Float>
 	{
+		//subroutine if format ranges are not null
+		
 		var measurements = [];
 		
 		for (range in __ranges) {
@@ -1546,8 +1564,6 @@ class TextField extends InteractiveObject {
 		
 		return measurements;
 	}
-	
-	#end
 	
 	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
@@ -2098,6 +2114,8 @@ class TextField extends InteractiveObject {
 		
 		#elseif (cpp || neko)
 		
+		//return the largest width of any given single line
+		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
 		return __getLineWidth( -1);
 		
 		#else
@@ -2133,7 +2151,8 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		//sum the heights of the lines, but don't count the leading of the last line
+		//sum the heights of all the lines, but don't count the leading of the last line
+		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
 		var th = 0.0;
 		for (i in 0...numLines)
 		{
