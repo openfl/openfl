@@ -725,8 +725,7 @@ class TextField extends InteractiveObject {
 		
 		var leading = __getLineMetric(lineIndex, LEADING);
 		
-		var margin = switch(__textFormat.align)
-		{
+		var margin = switch(__textFormat.align) {
 			case LEFT, JUSTIFY: 2;
 			case RIGHT: (width - lineWidth) - 2;
 			case CENTER: (width - lineWidth) / 2;
@@ -1462,8 +1461,8 @@ class TextField extends InteractiveObject {
 		return null;
 	}
 	
-	@:noCompletion private function __measureTextSubRangesNull(condense:Bool):Array<Float>
-	{
+	@:noCompletion private function __measureTextSubRangesNull(condense:Bool):Array<Float> {
+		
 		//subroutine if format ranges are null
 		
 		var font = __getFontInstance (__textFormat);
@@ -1500,8 +1499,8 @@ class TextField extends InteractiveObject {
 		return widths;
 	}
 	
-	@:noCompletion private function __measureTextSubRangesNotNull(condense:Bool):Array<Float>
-	{
+	@:noCompletion private function __measureTextSubRangesNotNull(condense:Bool):Array<Float> {
+		
 		//subroutine if format ranges are not null
 		
 		var measurements = [];
