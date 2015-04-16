@@ -217,9 +217,10 @@ class GLTextField {
 				x = oldX;
 				
 				x += switch(format.align) {
-					case LEFT, JUSTIFY: 0;
-					case RIGHT: (textField.__width - tlm.width) - 4;	//not sure why -4 works, I expected -2, but it seems to be correct!
-					case CENTER: (textField.__width - tlm.width) / 2;
+					case LEFT, JUSTIFY: 0;									//the renderer has already positioned the text at the right spot past the 2px left margin
+					case CENTER: ((textField.__width - 4) - tlm.width) / 2;	//subtract 4 from textfield.__width because __width includes the 2px margin on both sides, which doesn't count
+					case RIGHT:  ((textField.__width - 4) - tlm.width);		//same thing here
+					
 				}
 				
 				textLayout.text = null;
