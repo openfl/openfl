@@ -258,10 +258,6 @@ class GLTextField {
 				
 				y += tlm.height;
 				
-				y += tlm.leading;
-				
-				//y += size + (textField.getLineMetrics(line_i).descent);// * 1.5;
-				
 				line_i++;
 			}
 			

@@ -1262,7 +1262,7 @@ class TextField extends InteractiveObject {
 			
 			return switch(metric)
 			{
-				case LINE_HEIGHT: font.height / font.unitsPerEM * __textFormat.size;// + __getLineMetricSubRangesNull(singleLine, DESCENDER) / 2;
+				case LINE_HEIGHT: font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNull(singleLine, LEADING);
 				case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
 				case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
 				case LEADING: __textFormat.leading;
@@ -1290,7 +1290,7 @@ class TextField extends InteractiveObject {
 					
 					m = switch(metric)
 					{
-						case LINE_HEIGHT: font.height / font.unitsPerEM * __textFormat.size;// + __getLineMetricSubRangesNotNull(specificLine, DESCENDER) / 2;
+						case LINE_HEIGHT: font.height / font.unitsPerEM * __textFormat.size + __getLineMetricSubRangesNotNull(specificLine, LEADING);
 						case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
 						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
 						case LEADING: __textFormat.leading;
