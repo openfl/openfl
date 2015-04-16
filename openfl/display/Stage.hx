@@ -1014,9 +1014,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Void {
+	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
-		stack.push (this);
+		if (stack != null) {
+			
+			stack.push (this);
+			
+		}
+		
+		return true;
 		
 	}
 	
@@ -1138,49 +1144,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		if (Std.is (target, Sprite)) {
+		var cursor = null;
+		
+		for (target in stack) {
 			
-			var targetSprite:Sprite = cast target;
+			cursor = target.__getCursor ();
 			
-			if (targetSprite.buttonMode && targetSprite.useHandCursor) {
+			if (cursor != null) {
 				
-				Mouse.cursor = POINTER;
-				
-			} else {
-				
-				Mouse.cursor = ARROW;
+				Mouse.cursor = cursor;
+				break;
 				
 			}
 			
-		} else if (Std.is (target, SimpleButton)) {
-			
-			var targetButton:SimpleButton = cast target;
-			
-			if (targetButton.useHandCursor) {
-				
-				Mouse.cursor = POINTER;
-				
-			} else {
-				
-				Mouse.cursor = ARROW;
-				
-			}
-			
-		} else if (Std.is (target, TextField)) {
-			
-			var targetTextField:TextField = cast target;
-			
-			if (targetTextField.type == INPUT) {
-				
-				Mouse.cursor = TEXT;
-				
-			} else {
-				
-				Mouse.cursor = ARROW;
-				
-			}
-			
-		} else {
+		}
+		
+		if (cursor == null) {
 			
 			Mouse.cursor = ARROW;
 			
