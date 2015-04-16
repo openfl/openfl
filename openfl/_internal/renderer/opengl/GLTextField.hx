@@ -181,7 +181,7 @@ class GLTextField {
 			
 			var image;
 			var x:Float = offsetX;
-			var y:Float = size - tlm.descent / 2;
+			var y:Float = size;// - tlm.descent / 2;
 			
 			var tileData;
 			

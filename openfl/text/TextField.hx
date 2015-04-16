@@ -2247,7 +2247,13 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		return __measureTextHeight();
+		var lines = __getLineBreaks() + 1;
+		var th = 0.0;
+		for (i in 0...lines)
+		{
+			th += __getLineMetric(i, LINE_HEIGHT);
+		}
+		return th;
 		
 		#end
 		
