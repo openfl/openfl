@@ -207,12 +207,14 @@ class GLTextField {
 			
 			var line_i:Int = 0;
 			
+			var oldX = x;
+			
 			for (line in lines) {
 				
 				tlm = textField.getLineMetrics(line_i);
 				
 				//x position must be reset every line and recalculated 
-				x = offsetX;
+				x = oldX;
 				
 				x += switch(format.align) {
 					case LEFT, JUSTIFY: 0;

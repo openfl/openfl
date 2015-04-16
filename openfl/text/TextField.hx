@@ -715,8 +715,6 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		//openfl.Lib.notImplemented ("TextField.getLineMetrics");
-		
 		var height = textHeight;
 		
 		var lineWidth = __getLineWidth(lineIndex);
@@ -1227,30 +1225,31 @@ class TextField extends InteractiveObject {
 		for (i in 0...measurements.length)
 		{
 			var measure = measurements[i];
-			if (linebreaks.indexOf(i) != -1)
+			if (linebreaks.indexOf(i) != -1)		//if this character is a line break
 			{
-				if (currLine == line)
+				if (currLine == line)				//if we're currently on the desired line
 				{
-					return currWidth;
+					return currWidth;				//return the built up width immediately
 				}
-				else if (line == -1 && currWidth > bestWidth)
+				else if (line == -1 && currWidth > bestWidth)	//if we are looking at ALL lines, and this width is bigger than the last one
 				{
-					bestWidth = currWidth;
-					currWidth = 0;
+					bestWidth = currWidth;			//this is the new best width
 				}
+				
+				currWidth = 0;			//reset current width
 				currLine++;
 			}
 			else
 			{
-				currWidth += measurements[i];
+				currWidth += measurements[i];	//keep building up the width
 			}
 		}
 		
-		if (currLine == line)
+		if (currLine == line)			//we reached end of the loop & this is the line we want
 		{
-			return currWidth;
+			bestWidth = currWidth;
 		}
-		else if (line == -1 && currWidth > bestWidth)
+		else if (line == -1 && currWidth > bestWidth)	//looking at ALL lines, and this one's bigger
 		{
 			bestWidth = currWidth;
 		}
