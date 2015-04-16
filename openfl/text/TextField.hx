@@ -1132,8 +1132,7 @@ class TextField extends InteractiveObject {
 		var lines:Int = 0;
 		for (i in 0...text.length) {
 			var char = Utf8.charCodeAt(text, i);
-			if (char == __utf8_endline_code)
-			{
+			if (char == __utf8_endline_code) {
 				lines++;
 			}
 		}
@@ -1147,8 +1146,7 @@ class TextField extends InteractiveObject {
 		var breaks = [];
 		for (i in 0...text.length) {
 			var char = Utf8.charCodeAt(text, i);
-			if (char == __utf8_endline_code)
-			{
+			if (char == __utf8_endline_code) {
 				breaks.push(i);
 			}
 		}
@@ -1160,16 +1158,13 @@ class TextField extends InteractiveObject {
 		//returns the number of line breaks that occur within a given format range
 		
 		var lines:Int = 0;
-		if (__ranges.length > i && i >= 0)
-		{
+		if (__ranges.length > i && i >= 0) {
 			var range = __ranges[i];
-			if (range.start > 0 && range.end < text.length)
-			{
-				for (j in range.start...range.end + 1)
-				{
+			if (range.start > 0 && range.end < text.length) {
+				for (j in range.start...range.end + 1) {
 					var char = Utf8.charCodeAt(text, i);
-					if (char == __utf8_endline_code)
-					{
+					if (char == __utf8_endline_code) {
+						
 						lines++;
 					}
 				}
@@ -1192,14 +1187,12 @@ class TextField extends InteractiveObject {
 		for (br in breaks) {
 			
 			//if this is the line we care about
-			if (i == line)
-			{
+			if (i == line) {
 				//the first actual character in our line is the index after this line break
 				first_char = br + 1;
 				
 				//if there's another line break left in the list
-				if (i != breaks.length-1)
-				{
+				if (i != breaks.length-1) {
 					//the last character is the index before the next line break
 					//(otherwise it's the last character in the text field)
 					last_char = breaks[i + 1] - 1;
@@ -1225,32 +1218,26 @@ class TextField extends InteractiveObject {
 		for (i in 0...measurements.length)
 		{
 			var measure = measurements[i];
-			if (linebreaks.indexOf(i) != -1)		//if this character is a line break
-			{
-				if (currLine == line)				//if we're currently on the desired line
-				{
+			if (linebreaks.indexOf(i) != -1) {		//if this character is a line break
+				if (currLine == line) {				//if we're currently on the desired line
 					return currWidth;				//return the built up width immediately
 				}
-				else if (line == -1 && currWidth > bestWidth)	//if we are looking at ALL lines, and this width is bigger than the last one
-				{
+				else if (line == -1 && currWidth > bestWidth) {	//if we are looking at ALL lines, and this width is bigger than the last one
 					bestWidth = currWidth;			//this is the new best width
 				}
 				
 				currWidth = 0;			//reset current width
 				currLine++;
 			}
-			else
-			{
+			else {
 				currWidth += measurements[i];	//keep building up the width
 			}
 		}
 		
-		if (currLine == line)			//we reached end of the loop & this is the line we want
-		{
+		if (currLine == line) {			//we reached end of the loop & this is the line we want
 			bestWidth = currWidth;
 		}
-		else if (line == -1 && currWidth > bestWidth)	//looking at ALL lines, and this one's bigger
-		{
+		else if (line == -1 && currWidth > bestWidth) {	//looking at ALL lines, and this one's bigger
 			bestWidth = currWidth;
 		}
 		
@@ -1266,12 +1253,10 @@ class TextField extends InteractiveObject {
 		
 		//returns the specified line metric for the given line
 		
-		if (__ranges == null)
-		{
+		if (__ranges == null) {
 			return __getLineMetricSubRangesNull(true, metric);
 		}
-		else
-		{
+		else {
 			return __getLineMetricSubRangesNotNull(line, metric);
 		}
 	}
@@ -1284,8 +1269,7 @@ class TextField extends InteractiveObject {
 		
 		if (font != null) {
 			
-			return switch(metric)
-			{
+			return switch(metric) {
 				case LINE_HEIGHT: __getLineMetricSubRangesNull(singleLine, ASCENDER) + 
 								  __getLineMetricSubRangesNull(singleLine, DESCENDER) + 
 								  __getLineMetricSubRangesNull(singleLine, LEADING);
@@ -1311,14 +1295,12 @@ class TextField extends InteractiveObject {
 		
 		for (range in __ranges) {
 			
-			if (range.start >= lineChars[0])
-			{
+			if (range.start >= lineChars[0]) {
 				var font = __getFontInstance (range.format);
 				
 				if (font != null) {
 					
-					m = switch(metric)
-					{
+					m = switch(metric) {
 						case LINE_HEIGHT: __getLineMetricSubRangesNotNull(specificLine, ASCENDER) +
 										  __getLineMetricSubRangesNotNull(specificLine, DESCENDER) + 
 										  __getLineMetricSubRangesNotNull(specificLine, LEADING);
@@ -1330,8 +1312,7 @@ class TextField extends InteractiveObject {
 				}
 			}
 			
-			if (m > best_m)
-			{
+			if (m > best_m) {
 				best_m = m;
 			}
 			m = 0;
@@ -2153,11 +2134,9 @@ class TextField extends InteractiveObject {
 		//sum the heights of all the lines, but don't count the leading of the last line
 		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
 		var th = 0.0;
-		for (i in 0...numLines)
-		{
+		for (i in 0...numLines) {
 			th += __getLineMetric(i, LINE_HEIGHT);
-			if (i == numLines - 1)
-			{
+			if (i == numLines - 1) {
 				th -= __getLineMetric(i, LEADING);
 			}
 		}
