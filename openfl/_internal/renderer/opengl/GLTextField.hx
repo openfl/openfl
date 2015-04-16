@@ -81,8 +81,6 @@ class GLTextField {
 	
 	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, textWidth:Float):Void {
 		
-		var dodebug = (textField.defaultTextFormat.font.toLowerCase().indexOf("liberation") != -1);
-		
 		var font = textField.__getFontInstance (format);
 		
 		if (font != null && format.size != null) {
@@ -172,16 +170,14 @@ class GLTextField {
 			var g = ((format.color >> 8) & 0xFF) / 0xFF;
 			var b = ((format.color) & 0xFF) / 0xFF;
 			
-			if (dodebug)
-			{
-				//trace("textField." + textField.
-			}
-			
 			var tlm = textField.getLineMetrics(0);
 			
 			var image;
 			var x:Float = offsetX;
 			var y:Float = 2 + tlm.ascent;
+			
+			//If you render with y == 0, the bottom pixel of the "T" in "The Quick Brown Fox" will rest on TOP of your text field.
+			//Flash API text fields have a 2px margin on all sides, so (2 + ASCENT) puts your text right where it needs to be.
 			
 			var tileData;
 			
@@ -215,12 +211,12 @@ class GLTextField {
 				
 				tlm = textField.getLineMetrics(line_i);
 				
+				//x position must be reset every line and recalculated 
 				x = offsetX;
 				
-				x += switch(format.align)
-				{
+				x += switch(format.align) {
 					case LEFT, JUSTIFY: 0;
-					case RIGHT: (textField.__width - tlm.width) - 4;	//not sure why -4 works, I expected -2
+					case RIGHT: (textField.__width - tlm.width) - 4;	//not sure why -4 works, I expected -2, but it seems to be correct!
 					case CENTER: (textField.__width - tlm.width) / 2;
 				}
 				
@@ -248,9 +244,7 @@ class GLTextField {
 					y -= position.advance.y;
 				}
 				
-				var tlm = textField.getLineMetrics(line_i);
-				
-				y += tlm.height;
+				y += tlm.height;	//always add the line height at the end
 				
 				line_i++;
 			}
