@@ -733,8 +733,6 @@ class TextField extends InteractiveObject {
 		
 		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 
 		
-		//return new TextLineMetrics (0, 0, 0, 0, 0, 0);
-		
 	}
 	
 	
