@@ -64,11 +64,11 @@ class GLTextField {
 			
 		}
 		
-		if (textField.__tilesheets != null) {
+		if (textField.__tileData != null) {
 			
-			for (i in 0...textField.__tilesheets.length) {
+			for (tilesheet in textField.__tilesheets.keys ()) {
 				
-				graphics.drawTiles (textField.__tilesheets[i], textField.__tileData[i], true, Tilesheet.TILE_RGB, textField.__tileDataLength[i]);
+				graphics.drawTiles (tilesheet, textField.__tileData.get (tilesheet), true, Tilesheet.TILE_RGB, textField.__tileDataLength.get (tilesheet));
 				
 			}
 			
@@ -181,19 +181,17 @@ class GLTextField {
 			
 			var tileData;
 			
-			if (textField.__tilesheets.length == 0 || textField.__tilesheets[textField.__tilesheets.length - 1] != tilesheet) {
+			textField.__tilesheets.set (tilesheet, true);
+			
+			if (!textField.__tileData.exists (tilesheet)) {
 				
 				tileData = new Array ();
-				
-				textField.__tilesheets.push (tilesheet);
-				textField.__tileData.push (tileData);
-				textField.__tileDataLength.push (0);
-				
-			} else {
-				
-				tileData = textField.__tileData[textField.__tileData.length - 1];
+				textField.__tileData.set (tilesheet, tileData);
+				textField.__tileDataLength.set (tilesheet, 0);
 				
 			}
+			
+			tileData = textField.__tileData.get (tilesheet);
 			
 			var offsetY = 0;
 			var lines = text.split ("\n");
@@ -270,7 +268,7 @@ class GLTextField {
 				
 			}
 			
-			textField.__tileDataLength[textField.__tileDataLength.length - 1] = length;
+			textField.__tileDataLength.set (tilesheet, length);
 			
 		}
 		
@@ -285,15 +283,17 @@ class GLTextField {
 				
 				textField.__tilesheets = null;
 				textField.__tileData = null;
+				textField.__tileDataLength = null;
 				textField.__dirty = false;
 				
 			} else {
 				
-				if (textField.__tilesheets == null) {
+				textField.__tilesheets = new Map ();
+				
+				if (textField.__tileData == null) {
 					
-					textField.__tilesheets = new Array ();
-					textField.__tileData = new Array ();
-					textField.__tileDataLength = new Array ();
+					textField.__tileData = new Map ();
+					textField.__tileDataLength = new Map ();
 					
 				}
 				
@@ -359,6 +359,17 @@ class GLTextField {
 						
 						textField.__width = 4;
 						textField.__height = 4;
+						
+					}
+					
+				}
+				
+				for (key in textField.__tileData.keys ()) {
+					
+					if (!textField.__tilesheets.exists (key)) {
+						
+						textField.__tileData.remove (key);
+						textField.__tileDataLength.remove (key);
 						
 					}
 					
