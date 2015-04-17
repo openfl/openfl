@@ -629,6 +629,7 @@ class BitmapData implements IBitmapDrawable {
 				source.__updateChildren (true);
 				
 				__spritebatch.finish();
+				__spritebatch = null;
 				
 				gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, __image.buffer.data);
 				
