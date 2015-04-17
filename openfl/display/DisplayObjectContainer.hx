@@ -726,15 +726,35 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				var length = stack.length;
 				
+				var interactive = false;
+				var hitTest = false;
+				
 				while (--i >= 0) {
 					
-					if (__children[i].__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
+					interactive = __children[i].__getInteractive (null);
+					
+					if (interactive || !hitTest) {
 						
-						stack.insert (length, this);
-						
-						return true;
+						if (__children[i].__hitTest (x, y, shapeFlag, stack, true)) {
+							
+							hitTest = true;
+							
+							if (interactive) {
+								
+								break;
+								
+							}
+							
+						}
 						
 					}
+					
+				}
+				
+				if (hitTest) {
+					
+					stack.insert (length, this);
+					return true;
 					
 				}
 				

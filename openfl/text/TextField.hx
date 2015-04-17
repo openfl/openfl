@@ -995,6 +995,13 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private override function __getCursor ():MouseCursor {
+		
+		return type == INPUT ? TEXT : null;
+		
+	}
+	
+	
 	@:noCompletion private function __getFont (format:TextFormat):String {
 		
 		var font = format.italic ? "italic " : "normal ";

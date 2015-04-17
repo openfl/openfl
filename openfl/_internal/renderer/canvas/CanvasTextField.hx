@@ -74,7 +74,55 @@ class CanvasTextField {
 		context.textBaseline = "top";
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
 		
-		var lines = text.split("\n");
+		var lines = [];
+		
+		if (textField.wordWrap) {
+			
+			var words = text.split (" ");
+			var line = "";
+			
+			var word, newLineIndex, test;
+			
+			for (i in 0...words.length) {
+				
+				word = words[i];
+				newLineIndex = word.indexOf ("\n");
+				
+				if (newLineIndex > -1) {
+					
+					lines.push (line + word.substring (0, newLineIndex));
+					word = word.substr (newLineIndex + 1);
+					if (word == "") continue;
+					
+				}
+				
+				test = line + words[i] + " ";
+				
+				if (context.measureText (test).width > textField.__width - 4 && i > 0) {
+					
+					lines.push (line);
+					line = words[i] + " ";
+					
+				} else {
+					
+					line = test;
+					
+				}
+				
+			}
+			
+			if (line != "") {
+				
+				lines.push (line);
+				
+			}
+			
+		} else {
+			
+			lines = text.split ("\n");
+			
+		}
+		
 		var yOffset:Float = 0;
 		
 		for (line in lines) {
@@ -99,6 +147,7 @@ class CanvasTextField {
 			}
 			
 			yOffset += textField.textHeight;
+			
 		}
 		
 		#end

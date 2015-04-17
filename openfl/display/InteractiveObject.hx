@@ -1161,15 +1161,21 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Void {
+	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
-		stack.push (this);
-		
-		if (parent != null) {
+		if (stack != null) {
 			
-			parent.__getInteractive (stack);
+			stack.push (this);
+			
+			if (parent != null) {
+				
+				parent.__getInteractive (stack);
+				
+			}
 			
 		}
+		
+		return true;
 		
 	}
 	

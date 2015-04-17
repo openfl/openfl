@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
@@ -1010,9 +1011,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __getInteractive (stack:Array<DisplayObject>):Void {
+	@:noCompletion private function __getCursor ():MouseCursor {
 		
+		return null;
 		
+	}
+	
+	
+	@:noCompletion private function __getInteractive (stack:Array<DisplayObject>):Bool {
+		
+		return false;
 		
 	}
 	
