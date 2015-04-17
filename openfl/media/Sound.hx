@@ -185,6 +185,9 @@ class Sound extends EventDispatcher {
 	#if html5
 	@:noCompletion private var __sound:SoundJSInstance;
 	@:noCompletion private var __soundID:String;
+	#elseif !html5
+	@:noCompletion private var __soundSource:AudioSource;
+	@:noCompletion private var __soundChannel:SoundChannel;
 	#end
 	
 	
@@ -430,8 +433,17 @@ class Sound extends EventDispatcher {
 		// TODO: handle start time, loops, sound transform
 		
 		#if !html5
-		var source = new AudioSource (__buffer);
-		return new SoundChannel (source);
+		
+		if (__soundChannel != null) {
+			__soundSource.play(Std.int(startTime*1000));	//there might be a bug in either the documentation or the implementation as I'm getting startTime passed in as seconds, not milliseconds
+			return __soundChannel;
+		}
+		else {
+			__soundSource = new AudioSource (__buffer, Std.int(startTime*1000), loops);
+			__soundChannel = new SoundChannel (__soundSource);
+			return __soundChannel;
+		}
+		
 		#else
 		var instance = 
 		if (loops > 1)
