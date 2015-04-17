@@ -2,6 +2,7 @@ package openfl._legacy.display; #if openfl_legacy
 
 
 import haxe.io.Bytes;
+import openfl.display.BitmapDataChannel;
 import openfl._legacy.Assets;
 import openfl.display.BitmapDataChannel;
 import openfl.display.JPEGEncoderOptions;
