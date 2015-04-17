@@ -574,6 +574,7 @@ class BitmapData implements IBitmapDrawable {
 				tmpRect.y = height - tmpRect.bottom;
 				
 				var drawSelf = false;
+				//var drawSelf = true;
 				if (__spritebatch == null) {
 					__spritebatch = new SpriteBatch(gl);
 					drawSelf = true;
@@ -629,7 +630,7 @@ class BitmapData implements IBitmapDrawable {
 				source.__updateChildren (true);
 				
 				__spritebatch.finish();
-				__spritebatch = null;
+				//__spritebatch = null;
 				
 				gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, __image.buffer.data);
 				
