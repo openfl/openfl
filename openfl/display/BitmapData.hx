@@ -142,7 +142,6 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __textureImage:Image;
 	@:noCompletion private var __framebuffer:FilterTexture;
 	@:noCompletion private var __uvData:TextureUvs;
-	@:noCompletion private var __uvFlipped:Bool = false;
 	
 	private var __spritebatch:SpriteBatch;
 	
@@ -611,7 +610,22 @@ class BitmapData implements IBitmapDrawable {
 				var matrixCache = source.__worldTransform;
 				var blendModeCache = source.blendMode;
 				
-				source.__worldTransform = matrix != null ? matrix : new Matrix ();
+				if (matrix == null) {
+					matrix = new Matrix();
+				}
+				
+				//GL has inverted y coordinate space, we need to flip, but we also have to preserve transformations
+				var tx = matrix.tx;
+				var ty = matrix.ty;
+				
+				matrix.tx = 0;
+				matrix.ty = 0;
+				matrix.scale(1, -1);
+				matrix.translate(0, height);
+				matrix.tx += tx;
+				matrix.ty -= ty;			//this is negative because y has been flipped!
+				
+				source.__worldTransform = matrix;
 				source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform();
 				source.blendMode = blendMode;
 				source.__updateChildren (false);
@@ -639,9 +653,8 @@ class BitmapData implements IBitmapDrawable {
 				
 				__texture = __framebuffer.texture;
 				__image.dirty = false;
-				__createUVs(true);
 				
-				
+				__createUVs();
 				
 			default:
 				
@@ -1560,31 +1573,18 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __createUVs (?verticalFlip:Bool = false):Void {
+	@:noCompletion private function __createUVs ():Void {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
 		
-		__uvFlipped = verticalFlip;
-		
-		if (verticalFlip) {
-			__uvData.x0 = 0;
-			__uvData.y0 = 1;
-			__uvData.x1 = 1;
-			__uvData.y1 = 1;
-			__uvData.x2 = 1;
-			__uvData.y2 = 0;
-			__uvData.x3 = 0;
-			__uvData.y3 = 0;
-		} else {
-			__uvData.x0 = 0;
-			__uvData.y0 = 0;
-			__uvData.x1 = 1;
-			__uvData.y1 = 0;
-			__uvData.x2 = 1;
-			__uvData.y2 = 1;
-			__uvData.x3 = 0;
-			__uvData.y3 = 1;
-		}
+		__uvData.x0 = 0;
+		__uvData.y0 = 0;
+		__uvData.x1 = 1;
+		__uvData.y1 = 0;
+		__uvData.x2 = 1;
+		__uvData.y2 = 1;
+		__uvData.x3 = 0;
+		__uvData.y3 = 1;
 		
 	}
 	
