@@ -68,7 +68,7 @@ class GLTextField {
 			
 			for (i in 0...textField.__tilesheets.length) {
 				
-				graphics.drawTiles (textField.__tilesheets[i], textField.__tileData[i], true, Tilesheet.TILE_RGB);
+				graphics.drawTiles (textField.__tilesheets[i], textField.__tileData[i], true, Tilesheet.TILE_RGB, textField.__tileDataLength[i]);
 				
 			}
 			
@@ -187,6 +187,7 @@ class GLTextField {
 				
 				textField.__tilesheets.push (tilesheet);
 				textField.__tileData.push (tileData);
+				textField.__tileDataLength.push (0);
 				
 			} else {
 				
@@ -204,19 +205,20 @@ class GLTextField {
 			}
 			
 			var textLayout:TextLayout = textField.__textLayout;
+			var length = 0;
 			
 			var line_i:Int = 0;
-			
 			var oldX = x;
 			
 			for (line in lines) {
 				
-				tlm = textField.getLineMetrics(line_i);
+				tlm = textField.getLineMetrics (line_i);
 				
 				//x position must be reset every line and recalculated 
 				x = oldX;
 				
-				x += switch(format.align) {
+				x += switch (format.align) {
+					
 					case LEFT, JUSTIFY: 0;									//the renderer has already positioned the text at the right spot past the 2px left margin
 					case CENTER: ((textField.__width - 4) - tlm.width) / 2;	//subtract 4 from textfield.__width because __width includes the 2px margin on both sides, which doesn't count
 					case RIGHT:  ((textField.__width - 4) - tlm.width);		//same thing here
@@ -234,23 +236,41 @@ class GLTextField {
 					
 					if (image != null) {
 						
-						tileData.push (x + position.offset.x + image.x);
-						tileData.push (y + position.offset.y - image.y);
-						tileData.push (tileID.get (position.glyph));
-						tileData.push (r);
-						tileData.push (g);
-						tileData.push (b);
+						if (length >= tileData.length) {
+							
+							tileData.push (x + position.offset.x + image.x);
+							tileData.push (y + position.offset.y - image.y);
+							tileData.push (tileID.get (position.glyph));
+							tileData.push (r);
+							tileData.push (g);
+							tileData.push (b);
+							
+						} else {
+							
+							tileData[length] = x + position.offset.x + image.x;
+							tileData[length + 1] = y + position.offset.y - image.y;
+							tileData[length + 2] = tileID.get (position.glyph);
+							tileData[length + 3] = r;
+							tileData[length + 4] = g;
+							tileData[length + 5] = b;
+							
+						}
+						
+						length += 6;
 						
 					}
 					
 					x += position.advance.x;
 					y -= position.advance.y;
+					
 				}
 				
 				y += tlm.height;	//always add the line height at the end
-				
 				line_i++;
+				
 			}
+			
+			textField.__tileDataLength[textField.__tileDataLength.length - 1] = length;
 			
 		}
 		
@@ -269,12 +289,13 @@ class GLTextField {
 				
 			} else {
 				
-				//if (textField.__tilesheets == null) {
+				if (textField.__tilesheets == null) {
 					
 					textField.__tilesheets = new Array ();
 					textField.__tileData = new Array ();
+					textField.__tileDataLength = new Array ();
 					
-				//}
+				}
 				
 				if (textField.__text != null && textField.__text != "") {
 					

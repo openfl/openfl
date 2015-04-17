@@ -575,6 +575,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __tileData:Array<Array<Float>>;
+	@:noCompletion private var __tileDataLength:Array<Int>;
 	@:noCompletion private var __tilesheets:Array<Tilesheet>;
 	@:noCompletion private var __width:Float;
 	
