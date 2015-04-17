@@ -3,6 +3,7 @@ package openfl._legacy.display; #if openfl_legacy
 
 import haxe.io.Bytes;
 import openfl._legacy.Assets;
+import openfl.display.BitmapDataChannel;
 import openfl.display.JPEGEncoderOptions;
 import openfl.display.PNGEncoderOptions;
 import openfl.filters.BitmapFilter;
@@ -324,17 +325,18 @@ class BitmapData implements IBitmapDrawable {
 	
 	public inline static function getRGBAPixels (bitmapData:BitmapData):ByteArray {
 		
-		var rgbaData = new BitmapData( bitmapData.width, bitmapData.height, bitmapData.transparent );
+		var rgbaData = new BitmapData (bitmapData.width, bitmapData.height, bitmapData.transparent);
 		
-		var rect = new Rectangle( 0, 0, bitmapData.width, bitmapData.height );
-		var point = new Point( 0, 0 );
+		var rect = bitmapData.rect;
+		var point = new Point (0, 0);
 		
-		rgbaData.copyChannel( bitmapData, rect, point, BitmapDataChannel.GREEN, BitmapDataChannel.RED );
-		rgbaData.copyChannel( bitmapData, rect, point, BitmapDataChannel.BLUE, BitmapDataChannel.GREEN );
-		rgbaData.copyChannel( bitmapData, rect, point, BitmapDataChannel.ALPHA, BitmapDataChannel.BLUE );
-		rgbaData.copyChannel( bitmapData, rect, point, BitmapDataChannel.RED, BitmapDataChannel.ALPHA );
+		rgbaData.copyChannel (bitmapData, rect, point, BitmapDataChannel.GREEN, BitmapDataChannel.RED);
+		rgbaData.copyChannel (bitmapData, rect, point, BitmapDataChannel.BLUE, BitmapDataChannel.GREEN);
+		rgbaData.copyChannel (bitmapData, rect, point, BitmapDataChannel.ALPHA, BitmapDataChannel.BLUE);
+		rgbaData.copyChannel (bitmapData, rect, point, BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
 		
-		return rgbaData.getPixels( rect );
+		return rgbaData.getPixels (rect);
+		
 	}
 	
 	
