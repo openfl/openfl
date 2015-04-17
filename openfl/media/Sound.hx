@@ -434,13 +434,11 @@ class Sound extends EventDispatcher {
 		
 		#if !html5
 		
-		if (__soundChannel != null)
-		{
+		if (__soundChannel != null) {
 			__soundSource.play(Std.int(startTime*1000));	//there might be a bug in either the documentation or the implementation as I'm getting startTime passed in as seconds, not milliseconds
 			return __soundChannel;
 		}
-		else
-		{
+		else {
 			__soundSource = new AudioSource (__buffer, Std.int(startTime*1000), loops);
 			__soundChannel = new SoundChannel (__soundSource);
 			return __soundChannel;
