@@ -573,7 +573,7 @@ class BitmapData implements IBitmapDrawable {
 				// Flip Y
 				tmpRect.y = height - tmpRect.bottom;
 				
-				var drawSelf = false;
+				var drawSelf = true;
 				if (__spritebatch == null) {
 					__spritebatch = new SpriteBatch(gl);
 					drawSelf = true;
