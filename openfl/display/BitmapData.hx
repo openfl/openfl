@@ -614,16 +614,7 @@ class BitmapData implements IBitmapDrawable {
 					matrix = new Matrix();
 				}
 				
-				//GL has inverted y coordinate space, we need to flip, but we also have to preserve transformations
-				var tx = matrix.tx;
-				var ty = matrix.ty;
-				
-				matrix.tx = 0;
-				matrix.ty = 0;
-				matrix.scale(1, -1);
-				matrix.translate(0, height);
-				matrix.tx += tx;
-				matrix.ty -= ty;			//this is negative because y has been flipped!
+				invertMatrix(matrix);
 				
 				source.__worldTransform = matrix;
 				source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform();
@@ -656,6 +647,8 @@ class BitmapData implements IBitmapDrawable {
 				
 				__createUVs();
 				
+				invertMatrix(matrix);
+				
 			default:
 				
 				// TODO
@@ -664,6 +657,19 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
+	
+	private function invertMatrix(matrix:Matrix):Void
+	{
+		var tx = matrix.tx;
+		var ty = matrix.ty;
+		
+		matrix.tx = 0;
+		matrix.ty = 0;
+		matrix.scale(1, -1);
+		matrix.translate(0, height);
+		matrix.tx += tx;
+		matrix.ty -= ty;
+	}
 	
 	public function encode (rect:Rectangle, compressor:Dynamic, byteArray:ByteArray = null):ByteArray {
 		
