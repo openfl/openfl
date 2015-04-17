@@ -123,9 +123,6 @@ class SoundChannel extends EventDispatcher {
 	}
 	#end
 	
-	
-	
-	
 	// Get & Set Methods
 	
 	
