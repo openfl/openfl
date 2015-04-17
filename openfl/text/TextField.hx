@@ -1167,6 +1167,8 @@ class TextField extends InteractiveObject {
 		var lines:Int = 0;
 		if (__ranges.length > i && i >= 0) {
 			var range = __ranges[i];
+			
+			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
 			if (range.start > 0 && range.end < text.length) {
 				for (j in range.start...range.end + 1) {
 					var char = Utf8.charCodeAt(text, i);
