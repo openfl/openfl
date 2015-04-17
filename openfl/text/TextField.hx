@@ -1134,7 +1134,7 @@ class TextField extends InteractiveObject {
 		//returns the number of line breaks in the text
 		
 		var lines:Int = 0;
-		for (i in 0...text.length) {
+		for (i in 0...Utf8.length(text)) {
 			var char = Utf8.charCodeAt(text, i);
 			if (char == __utf8_endline_code) {
 				lines++;
@@ -1148,10 +1148,13 @@ class TextField extends InteractiveObject {
 		//returns the exact character indeces where the line breaks occur
 		
 		var breaks = [];
-		for (i in 0...text.length) {
-			var char = Utf8.charCodeAt(text, i);
-			if (char == __utf8_endline_code) {
-				breaks.push(i);
+		
+		for (i in 0...Utf8.length(text)) {
+			try{
+				var char = Utf8.charCodeAt(text, i);
+				if (char == __utf8_endline_code) {
+					breaks.push(i);
+				}
 			}
 		}
 		return breaks;
@@ -1164,6 +1167,8 @@ class TextField extends InteractiveObject {
 		var lines:Int = 0;
 		if (__ranges.length > i && i >= 0) {
 			var range = __ranges[i];
+			
+			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
 			if (range.start > 0 && range.end < text.length) {
 				for (j in range.start...range.end + 1) {
 					var char = Utf8.charCodeAt(text, i);
