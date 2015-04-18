@@ -5,6 +5,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
+import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.graphics.ImageChannel;
 import lime.graphics.utils.ImageCanvasUtil;
