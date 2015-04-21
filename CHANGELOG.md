@@ -1,3 +1,18 @@
+3.0.3 (04/21/2015)
+------------------
+
+* Improved hit test when there are interactive and non-interactive matches
+* Improved accuracy of text metrics
+* Improved accuracy of GL TextField glyph positioning
+* Added wordWrap support to canvas TextField
+* Added handling of stage.focus on mouse down
+* Fixed the start time and loop count for native sounds
+* Fixed the behavior of sprite.contains to loop recursively
+* Fixed upside-down BitmapData in some cases when using GL bitmapData.draw
+* Fixed layering of GL bitmapData.draw over existing BitmapData contents
+* Improved performance of getRGBAPixels (legacy)
+
+
 3.0.2 (04/15/2015)
 ------------------
 
