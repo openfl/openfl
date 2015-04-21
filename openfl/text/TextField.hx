@@ -1702,22 +1702,24 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
 		
-		var upPos:Int = __getPosition (event.localX, event.localY);
-		var leftPos:Int;
-		var rightPos:Int;
-		
-		leftPos = Std.int (Math.min (__selectionStart, upPos));
-		rightPos = Std.int (Math.max (__selectionStart, upPos));
-		
-		__selectionStart = leftPos;
-		__cursorPosition = rightPos;
-		
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
-		//stage.focus = this;
-		if (stage.focus == this)
+		if (stage.focus == this) {
+			
+			var upPos:Int = __getPosition (event.localX, event.localY);
+			var leftPos:Int;
+			var rightPos:Int;
+			
+			leftPos = Std.int (Math.min (__selectionStart, upPos));
+			rightPos = Std.int (Math.max (__selectionStart, upPos));
+			
+			__selectionStart = leftPos;
+			__cursorPosition = rightPos;
+			
 			this_onFocusIn (null);
+			
+		}
 		
 	}
 	
