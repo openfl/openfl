@@ -1009,7 +1009,7 @@ class TextField extends InteractiveObject {
 		font += "normal ";
 		font += format.bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.size + format.leading + 4) + "px ";
+		font += "/" + (format.size + format.leading) + "px ";
 		
 		font += "'" + switch (format.font) {
 			
