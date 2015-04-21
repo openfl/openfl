@@ -1,6 +1,7 @@
 package openfl._internal.renderer.opengl;
 
 
+import haxe.Utf8;
 import lime.graphics.Image;
 import lime.text.Glyph;
 import lime.text.TextLayout;
@@ -10,6 +11,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.Tilesheet;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextField;
@@ -62,11 +64,11 @@ class GLTextField {
 			
 		}
 		
-		if (textField.__tilesheets != null) {
+		if (textField.__tileData != null) {
 			
-			for (i in 0...textField.__tilesheets.length) {
+			for (tilesheet in textField.__tilesheets.keys ()) {
 				
-				graphics.drawTiles (textField.__tilesheets[i], textField.__tileData[i], true, Tilesheet.TILE_RGB);
+				graphics.drawTiles (tilesheet, textField.__tileData.get (tilesheet), true, Tilesheet.TILE_RGB, textField.__tileDataLength.get (tilesheet));
 				
 			}
 			
@@ -154,7 +156,6 @@ class GLTextField {
 					index = tilesheet.addTileRect (new Rectangle (image.offsetX, image.offsetY, image.width, image.height));
 					
 					tileID.set (key, index);
-					
 				}
 				
 				tileIDs.set (bitmapData, tileID);
@@ -169,34 +170,28 @@ class GLTextField {
 			var g = ((format.color >> 8) & 0xFF) / 0xFF;
 			var b = ((format.color) & 0xFF) / 0xFF;
 			
+			var tlm = textField.getLineMetrics(0);
+			
 			var image;
 			var x:Float = offsetX;
-			var y:Float = size;
+			var y:Float = 2 + tlm.ascent;
 			
-			if (format.align == TextFormatAlign.RIGHT) {
-				
-				x += textField.__width - textWidth;
-				
-			} else if (format.align == TextFormatAlign.CENTER) {
-				
-				x += (textField.__width - textWidth) / 2;
-				
-			}
+			//If you render with y == 0, the bottom pixel of the "T" in "The Quick Brown Fox" will rest on TOP of your text field.
+			//Flash API text fields have a 2px margin on all sides, so (2 + ASCENT) puts your text right where it needs to be.
 			
 			var tileData;
 			
-			if (textField.__tilesheets.length == 0 || textField.__tilesheets[textField.__tilesheets.length - 1] != tilesheet) {
+			textField.__tilesheets.set (tilesheet, true);
+			
+			if (!textField.__tileData.exists (tilesheet)) {
 				
 				tileData = new Array ();
-				
-				textField.__tilesheets.push (tilesheet);
-				textField.__tileData.push (tileData);
-				
-			} else {
-				
-				tileData = textField.__tileData[textField.__tileData.length - 1];
+				textField.__tileData.set (tilesheet, tileData);
+				textField.__tileDataLength.set (tilesheet, 0);
 				
 			}
+			
+			tileData = textField.__tileData.get (tilesheet);
 			
 			var offsetY = 0;
 			var lines = text.split ("\n");
@@ -207,9 +202,26 @@ class GLTextField {
 				
 			}
 			
-			var textLayout = textField.__textLayout;
+			var textLayout:TextLayout = textField.__textLayout;
+			var length = 0;
+			
+			var line_i:Int = 0;
+			var oldX = x;
 			
 			for (line in lines) {
+				
+				tlm = textField.getLineMetrics (line_i);
+				
+				//x position must be reset every line and recalculated 
+				x = oldX;
+				
+				x += switch (format.align) {
+					
+					case LEFT, JUSTIFY: 0;									//the renderer has already positioned the text at the right spot past the 2px left margin
+					case CENTER: ((textField.__width - 4) - tlm.width) / 2;	//subtract 4 from textfield.__width because __width includes the 2px margin on both sides, which doesn't count
+					case RIGHT:  ((textField.__width - 4) - tlm.width);		//same thing here
+					
+				}
 				
 				textLayout.text = null;
 				textLayout.font = font;
@@ -222,12 +234,27 @@ class GLTextField {
 					
 					if (image != null) {
 						
-						tileData.push (x + position.offset.x + image.x);
-						tileData.push (y + position.offset.y - image.y);
-						tileData.push (tileID.get (position.glyph));
-						tileData.push (r);
-						tileData.push (g);
-						tileData.push (b);
+						if (length >= tileData.length) {
+							
+							tileData.push (x + position.offset.x + image.x);
+							tileData.push (y + position.offset.y - image.y);
+							tileData.push (tileID.get (position.glyph));
+							tileData.push (r);
+							tileData.push (g);
+							tileData.push (b);
+							
+						} else {
+							
+							tileData[length] = x + position.offset.x + image.x;
+							tileData[length + 1] = y + position.offset.y - image.y;
+							tileData[length + 2] = tileID.get (position.glyph);
+							tileData[length + 3] = r;
+							tileData[length + 4] = g;
+							tileData[length + 5] = b;
+							
+						}
+						
+						length += 6;
 						
 					}
 					
@@ -236,10 +263,12 @@ class GLTextField {
 					
 				}
 				
-				x = 0;
-				y += size * 1.185;
+				y += tlm.height;	//always add the line height at the end
+				line_i++;
 				
 			}
+			
+			textField.__tileDataLength.set (tilesheet, length);
 			
 		}
 		
@@ -254,16 +283,19 @@ class GLTextField {
 				
 				textField.__tilesheets = null;
 				textField.__tileData = null;
+				textField.__tileDataLength = null;
 				textField.__dirty = false;
 				
 			} else {
 				
-				//if (textField.__tilesheets == null) {
+				textField.__tilesheets = new Map ();
+				
+				if (textField.__tileData == null) {
 					
-					textField.__tilesheets = new Array ();
-					textField.__tileData = new Array ();
+					textField.__tileData = new Map ();
+					textField.__tileDataLength = new Map ();
 					
-				//}
+				}
 				
 				if (textField.__text != null && textField.__text != "") {
 					
@@ -327,6 +359,17 @@ class GLTextField {
 						
 						textField.__width = 4;
 						textField.__height = 4;
+						
+					}
+					
+				}
+				
+				for (key in textField.__tileData.keys ()) {
+					
+					if (!textField.__tilesheets.exists (key)) {
+						
+						textField.__tileData.remove (key);
+						textField.__tileDataLength.remove (key);
 						
 					}
 					

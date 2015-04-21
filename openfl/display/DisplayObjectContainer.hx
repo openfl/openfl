@@ -287,21 +287,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public function contains (child:DisplayObject):Bool {
 		
-		#if (haxe_ver > 3.100)
-		
-		return __children.indexOf (child) > -1;
-		
-		#else
-		
-		for (i in __children) {
+		while (child != this && child != null) {
 			
-			if (i == child) return true;
+			child = child.parent;
 			
 		}
 		
-		return false;
-		
-		#end
+		return child == this;
 		
 	}
 	
@@ -726,15 +718,35 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				var length = stack.length;
 				
+				var interactive = false;
+				var hitTest = false;
+				
 				while (--i >= 0) {
 					
-					if (__children[i].__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
+					interactive = __children[i].__getInteractive (null);
+					
+					if (interactive || !hitTest) {
 						
-						stack.insert (length, this);
-						
-						return true;
+						if (__children[i].__hitTest (x, y, shapeFlag, stack, true)) {
+							
+							hitTest = true;
+							
+							if (interactive) {
+								
+								break;
+								
+							}
+							
+						}
 						
 					}
+					
+				}
+				
+				if (hitTest) {
+					
+					stack.insert (length, this);
+					return true;
 					
 				}
 				

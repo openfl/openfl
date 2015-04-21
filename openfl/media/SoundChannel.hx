@@ -137,7 +137,7 @@ class SoundChannel extends EventDispatcher {
 		if (!__isValid) return 0;
 		
 		#if !html5
-		return __source.timeOffset / 1000;
+		return (__source.currentTime + __source.offset) / 1000;
 		#else
 		return __soundInstance.getPosition ();
 		#end
@@ -150,7 +150,7 @@ class SoundChannel extends EventDispatcher {
 		if (!__isValid) return 0;
 		
 		#if !html5
-		__source.timeOffset = Std.int (value * 1000);
+		__source.currentTime = Std.int (value * 1000) - __source.offset;
 		return value;
 		#else
 		__soundInstance.setPosition (Std.int (value));

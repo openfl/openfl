@@ -431,11 +431,13 @@ class Sound extends EventDispatcher {
 		
 		#if !html5
 		var source = new AudioSource (__buffer);
+		source.offset = Std.int (startTime * 1000);
+		if (loops > 1) source.loops = loops - 1;
 		return new SoundChannel (source);
 		#else
 		var instance = 
 		if (loops > 1)
-			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops-1, sndTransform.volume, sndTransform.pan);
+			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops - 1, sndTransform.volume, sndTransform.pan);
 		else
 			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), 0, sndTransform.volume, sndTransform.pan);
 		

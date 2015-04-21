@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.ui.MouseCursor;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
 import openfl.events.MouseEvent;
@@ -159,6 +160,13 @@ class SimpleButton extends DisplayObjectContainer {
 	@:noCompletion private function __generateDefaultState ():DisplayObject {
 		
 		return new DisplayObject ();
+		
+	}
+	
+	
+	@:noCompletion private override function __getCursor ():MouseCursor {
+		
+		return useHandCursor ? POINTER : null;
 		
 	}
 	
