@@ -1,7 +1,6 @@
 package openfl._internal.renderer;
 
 
-//import haxe.Utf8;
 import lime.graphics.Image;
 import lime.text.Glyph;
 import lime.text.TextLayout;
@@ -29,7 +28,7 @@ class TextFieldGraphics {
 	private static var tileIDs = new Map<BitmapData, Map<Glyph, Int>> ();
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession) {
+	public static function render (textField:TextField) {
 		
 		update (textField);
 		

@@ -15,7 +15,7 @@ class GLTextField {
 		
 		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
 
-		TextFieldGraphics.render (textField, renderSession);
+		TextFieldGraphics.render (textField);
 		
 		GraphicsRenderer.render (textField, renderSession);
 		
