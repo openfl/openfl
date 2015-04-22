@@ -28,7 +28,7 @@ class TextFieldGraphics {
 	private static var tileIDs = new Map<BitmapData, Map<Glyph, Int>> ();
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession) {
+	public static function render (textField:TextField) {
 		
 		update (textField);
 		
