@@ -1,7 +1,6 @@
 package openfl._internal.renderer;
 
 
-//import haxe.Utf8;
 import lime.graphics.Image;
 import lime.text.Glyph;
 import lime.text.TextLayout;
