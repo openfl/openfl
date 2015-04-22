@@ -1009,7 +1009,7 @@ class TextField extends InteractiveObject {
 		font += "normal ";
 		font += format.bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.size + format.leading + 4) + "px ";
+		font += "/" + (format.size + format.leading) + "px ";
 		
 		font += "'" + switch (format.font) {
 			
@@ -1688,17 +1688,6 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function stage_onFocusOut (event:Event):Void {
-		
-		__cursorPosition = -1;
-		__hasFocus = false;
-		__stopCursorTimer ();
-		__hiddenInput.blur ();
-		__dirty = true;
-		
-	}
-	
-	
 	@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
 		
 		if (__hasFocus && __selectionStart >= 0) {
@@ -1713,20 +1702,49 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
 		
-		var upPos:Int = __getPosition (event.localX, event.localY);
-		var leftPos:Int;
-		var rightPos:Int;
-		
-		leftPos = Std.int (Math.min (__selectionStart, upPos));
-		rightPos = Std.int (Math.max (__selectionStart, upPos));
-		
-		__selectionStart = leftPos;
-		__cursorPosition = rightPos;
-		
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
-		stage.focus = this;
+		if (stage.focus == this) {
+			
+			var upPos:Int = __getPosition (event.localX, event.localY);
+			var leftPos:Int;
+			var rightPos:Int;
+			
+			leftPos = Std.int (Math.min (__selectionStart, upPos));
+			rightPos = Std.int (Math.max (__selectionStart, upPos));
+			
+			__selectionStart = leftPos;
+			__cursorPosition = rightPos;
+			
+			this_onFocusIn (null);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+		
+		addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		
+		__hiddenInput.addEventListener ('keydown', input_onKeyDown);
+		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
+		__hiddenInput.addEventListener ('input', input_onKeyUp);
+		
+		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		
+		if (stage.focus == this) {
+			
+			this_onFocusIn (null);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onFocusIn (event:Event):Void {
 		
 		if (__cursorPosition < 0) {
 			
@@ -1745,18 +1763,18 @@ class TextField extends InteractiveObject {
 		__hasFocus = true;
 		__dirty = true;
 		
+		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
 	}
 	
 	
-	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+	@:noCompletion private function this_onFocusOut (event:Event):Void {
 		
-		stage.addEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
-		
-		__hiddenInput.addEventListener ('keydown', input_onKeyDown);
-		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
-		__hiddenInput.addEventListener ('input', input_onKeyUp);
-		
-		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		__cursorPosition = -1;
+		__hasFocus = false;
+		__stopCursorTimer ();
+		__hiddenInput.blur ();
+		__dirty = true;
 		
 	}
 	
@@ -1773,7 +1791,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function this_onRemovedFromStage (event:Event):Void {
 		
-		if (stage != null) stage.removeEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
+		removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 		
 		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown);
 		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);

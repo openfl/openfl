@@ -90,22 +90,47 @@ class CanvasTextField {
 				
 				if (newLineIndex > -1) {
 					
-					lines.push (line + word.substring (0, newLineIndex));
-					word = word.substr (newLineIndex + 1);
-					if (word == "") continue;
+					while (newLineIndex > -1) {
+						
+						test = line + word.substring (0, newLineIndex) + " ";
+						
+						if (context.measureText (test).width > textField.__width - 4 && i > 0) {
+							
+							lines.push (line);
+							lines.push (word.substring (0, newLineIndex) + " ");
+							
+						} else {
+							
+							lines.push (line + word.substring (0, newLineIndex) + " ");
+							
+						}
+						
+						word = word.substr (newLineIndex + 1);
+						newLineIndex = word.indexOf ("\n");
+						line = "";
+						
+					}
 					
-				}
-				
-				test = line + words[i] + " ";
-				
-				if (context.measureText (test).width > textField.__width - 4 && i > 0) {
-					
-					lines.push (line);
-					line = words[i] + " ";
+					if (word != "") {
+						
+						line = word + " ";
+						
+					}
 					
 				} else {
 					
-					line = test;
+					test = line + words[i] + " ";
+					
+					if (context.measureText (test).width > textField.__width - 4 && i > 0) {
+						
+						lines.push (line);
+						line = words[i] + " ";
+						
+					} else {
+						
+						line = test;
+						
+					}
 					
 				}
 				
