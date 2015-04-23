@@ -1110,12 +1110,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack = [ this ];
 			
 		}
-		
+	
+		/*
 		if (type == MouseEvent.MOUSE_DOWN) {
 			
 			focus = target;
 			
 		}
+		*/
 		
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
