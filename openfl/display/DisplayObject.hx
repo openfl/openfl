@@ -741,6 +741,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __worldZ:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
+	@:noCompletion private var __cacheAsBitmap:Bool = false;
 	
 	#if js
 	@:noCompletion private var __canvas:CanvasElement;
