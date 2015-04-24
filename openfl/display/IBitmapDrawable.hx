@@ -12,6 +12,8 @@ interface IBitmapDrawable {
 	var __worldColorTransform:ColorTransform;
 	var blendMode:BlendMode;
 	
+	private var __cacheAsBitmap:Bool;
+	
 	function __renderCanvas (renderSession:RenderSession):Void;
 	function __renderGL (renderSession:RenderSession):Void;
 	function __renderMask (renderSession:RenderSession):Void;

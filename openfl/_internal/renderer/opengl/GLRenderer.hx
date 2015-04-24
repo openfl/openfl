@@ -119,6 +119,7 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.spriteBatch = this.spriteBatch;
 		renderSession.stencilManager = this.stencilManager;
 		renderSession.renderer = this;
+		renderSession.defaultFramebuffer = this.defaultFramebuffer;
 		
 		renderSession.projection = projection;
 		renderSession.offset = offset;
