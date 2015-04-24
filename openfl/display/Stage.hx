@@ -529,9 +529,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
-	@:noCompletion private var __mouseOutStack = [];
-	@:noCompletion private var __mouseX:Float = 0;
-	@:noCompletion private var __mouseY:Float = 0;
+	@:noCompletion private var __mouseOutStack:Array<DisplayObject>;
+	@:noCompletion private var __mouseX:Float;
+	@:noCompletion private var __mouseY:Float;
 	@:noCompletion private var __originalWidth:Int;
 	@:noCompletion private var __originalHeight:Int;
 	@:noCompletion private var __renderer:AbstractRenderer;
@@ -569,7 +569,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
-		
+		__lastClickTime = 0;
+
 		stageWidth = width;
 		stageHeight = height;
 		
@@ -584,6 +585,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__clearBeforeRender = true;
 		__stack = [];
+		__mouseOutStack = [];
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
