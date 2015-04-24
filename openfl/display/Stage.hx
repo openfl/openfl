@@ -817,6 +817,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowEnter ():Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowFocusIn ():Void {
 		
 		
@@ -834,6 +841,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onWindowFullscreen ():Void {
 		
 		
+		
+	}
+	
+	
+	public function onWindowLeave ():Void {
+		
+		dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	
