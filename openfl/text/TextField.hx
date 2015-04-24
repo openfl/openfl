@@ -1558,7 +1558,7 @@ class TextField extends InteractiveObject {
 			div = cast Browser.document.createElement ("div");
 			div.innerHTML = new EReg ("\n", "g").replace (__text, "<br>");
 			div.style.setProperty ("font", __getFont (__textFormat), null);
-			div.style.setProperty ("pointer-events", "none");
+			div.style.setProperty ("pointer-events", "none", null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
 			Browser.document.body.appendChild (div);
