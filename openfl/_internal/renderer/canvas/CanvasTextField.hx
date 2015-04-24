@@ -97,11 +97,11 @@ class CanvasTextField {
 						if (context.measureText (test).width > textField.__width - 4 && i > 0) {
 							
 							lines.push (line);
-							lines.push (word.substring (0, newLineIndex) + " ");
+							lines.push (word.substring (0, newLineIndex));
 							
 						} else {
 							
-							lines.push (line + word.substring (0, newLineIndex) + " ");
+							lines.push (line + word.substring (0, newLineIndex));
 							
 						}
 						
@@ -171,7 +171,7 @@ class CanvasTextField {
 					
 			}
 			
-			yOffset += textField.textHeight;
+			yOffset += textField.textHeight; // TODO: Handle format.leading
 			
 		}
 		
@@ -186,7 +186,7 @@ class CanvasTextField {
 		
 		if (textField.__dirty) {
 			
-			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.LEFT)) {
+			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border && !textField.__hasFocus) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.LEFT)) {
 				
 				textField.__canvas = null;
 				textField.__context = null;
@@ -203,7 +203,7 @@ class CanvasTextField {
 				
 				context = textField.__context;
 				
-				if (textField.__text != null && textField.__text != "") {
+				if ((textField.__text != null && textField.__text != "") || textField.__hasFocus) {
 					
 					var text = textField.text;
 					
@@ -263,9 +263,9 @@ class CanvasTextField {
 					
 					if (textField.__hasFocus && (textField.__selectionStart == textField.__cursorPosition) && textField.__showCursor) {
 						
-						var cursorOffset = textField.__getTextWidth (text.substring (0, textField.__cursorPosition));
+						var cursorOffset = textField.__getTextWidth (text.substring (0, textField.__cursorPosition)) + 3;
 						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
-						context.fillRect (cursorOffset, 5, 1, textField.__textFormat.size - 5);
+						context.fillRect (cursorOffset, 5, 1, (textField.__textFormat.size * 1.185) - 5);
 						
 					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0 && !textField.__isKeyDown) {
 						

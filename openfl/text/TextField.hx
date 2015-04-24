@@ -1558,6 +1558,7 @@ class TextField extends InteractiveObject {
 			div = cast Browser.document.createElement ("div");
 			div.innerHTML = new EReg ("\n", "g").replace (__text, "<br>");
 			div.style.setProperty ("font", __getFont (__textFormat), null);
+			div.style.setProperty ("pointer-events", "none");
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
 			Browser.document.body.appendChild (div);
@@ -1570,7 +1571,7 @@ class TextField extends InteractiveObject {
 		// function of the flow within the width bounds...
 		if (__div == null) {
 			
-			div.style.width = Std.string (__width) + "px";
+			div.style.width = Std.string (__width - 4) + "px";
 			
 		}
 		
