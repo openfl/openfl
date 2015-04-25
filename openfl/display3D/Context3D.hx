@@ -99,7 +99,7 @@ class Context3D {
 		 	
 		}
 		
-		#if (cpp || neko)
+		#if (cpp || neko || nodejs)
 		GL.depthMask (true);
 		#end
 		GL.clearColor (red, green, blue, alpha);
@@ -489,7 +489,7 @@ class Context3D {
 				
 				GL.disableVertexAttribArray (location);
 				
-				#if (cpp || neko)
+				#if (cpp || neko || nodejs)
 				GL.bindBuffer (GL.ARRAY_BUFFER, null);
 				#end
 				
@@ -777,7 +777,7 @@ class Context3D {
 		
 		if (Std.is (texture, Texture)) {
 			
-			#if (cpp || neko)
+			#if (cpp || neko || nodejs)
 			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
 			#end
 			
@@ -854,7 +854,7 @@ class Context3D {
 			
 		} else if (Std.is (texture, RectangleTexture)) {
 			
-			#if (cpp || neko)
+			#if (cpp || neko || nodejs)
 			GL.bindTexture (GL.TEXTURE_2D, cast(texture, RectangleTexture).glTexture);
 			#end
 			
@@ -901,7 +901,7 @@ class Context3D {
 			
 		} else if (Std.is (texture, CubeTexture)) {
 			
-			#if (cpp || neko)
+			#if (cpp || neko || nodejs)
 			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture);
 			#end
 			

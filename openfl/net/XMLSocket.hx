@@ -45,7 +45,7 @@ class XMLSocket extends EventDispatcher {
 	
 	public function connectWithProto (host: String, port:Int, protocol:String):Void {
 		
-		#if js
+		#if (js && html5)
 		if (protocol == null) {
             _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
         }

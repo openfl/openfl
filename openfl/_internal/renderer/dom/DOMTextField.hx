@@ -6,7 +6,7 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormatAlign;
 
-#if js
+#if (js && html5)
 import js.Browser;
 #end
 
@@ -18,7 +18,7 @@ class DOMTextField {
 	
 	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		if (textField.stage != null && textField.__worldVisible && textField.__renderable) {
 			

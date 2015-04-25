@@ -12,7 +12,7 @@ import openfl.geom.Rectangle;
 import openfl.Lib;
 import openfl.Vector;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
@@ -41,7 +41,7 @@ class CanvasGraphics {
 	private static var positionY:Float;
 	private static var setFill:Bool;
 	
-	#if js
+	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	private static var pattern:CanvasPattern;
 	#end
@@ -49,7 +49,7 @@ class CanvasGraphics {
 	
 	private static function beginPath ():Void {
 		
-		#if js
+		#if (js && html5)
 		if (!inPath) {
 			
 			context.beginPath ();
@@ -63,7 +63,7 @@ class CanvasGraphics {
 	
 	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
 		
-		#if js
+		#if (js && html5)
 		if (setFill || bitmapFill == null) return;
 		
 		if (pattern == null) {
@@ -81,7 +81,7 @@ class CanvasGraphics {
 	
 	private static function closePath (closeFill:Bool):Void {
 		
-		#if js
+		#if (js && html5)
 		if (inPath) {
 			
 			if (hasFill) {
@@ -131,7 +131,7 @@ class CanvasGraphics {
 	
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
 		
-		#if js
+		#if (js && html5)
 		if (ry == -1) ry = rx;
 		
 		rx *= 0.5;
@@ -165,7 +165,7 @@ class CanvasGraphics {
 	}
 	
 	
-	/*#if js
+	/*#if (js && html5)
 	private static inline function setFillStyle(data:DrawPath, context:CanvasRenderingContext2D, worldAlpha:Float) {
 		if (data.hasFill) {
 			
@@ -184,7 +184,7 @@ class CanvasGraphics {
 	
 	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
 
-		#if js
+		#if (js && html5)
 
 		var worldAlpha = object.__worldAlpha;
 		var graphics = object.__graphics;
@@ -358,7 +358,7 @@ class CanvasGraphics {
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		if (graphics.__dirty) {
 			
@@ -1012,7 +1012,7 @@ class CanvasGraphics {
 	
 	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Float, height:Float) {
 		
-		#if js
+		#if (js && html5)
 		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
 		var context:CanvasRenderingContext2D = canvas.getContext ("2d");
 		

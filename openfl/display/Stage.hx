@@ -36,7 +36,7 @@ import openfl.text.TextField;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.DivElement;
 import js.html.Element;
@@ -540,7 +540,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	
-	#if js
+	#if (js && html5)
 	//@:noCompletion private var __div:DivElement;
 	//@:noCompletion private var __element:HtmlElement;
 	#if stats
@@ -1512,7 +1512,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
 		
 		//__glContextLost = true;
