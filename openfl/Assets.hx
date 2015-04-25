@@ -442,7 +442,7 @@ class Assets {
 	private static function isValidSound (sound:Sound):Bool {
 		
 		#if (tools && !display)
-		#if (cpp || neko)
+		#if (cpp || neko || nodejs)
 		
 		return true;
 		//return (sound.__handle != null && sound.__handle != 0);

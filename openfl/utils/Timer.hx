@@ -6,7 +6,7 @@ import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.events.TimerEvent;
 
-#if js
+#if (js && html5)
 import js.Browser;
 #end
 
@@ -142,7 +142,7 @@ class Timer extends EventDispatcher {
 			
 			running = true;
 			
-			#if js
+			#if (js && html5)
 			__timerID = Browser.window.setInterval (timer_onTimer, Std.int (__delay));
 			#else
 			__timer = new HaxeTimer (__delay);
@@ -164,7 +164,7 @@ class Timer extends EventDispatcher {
 		
 		running = false;
 		
-		#if js
+		#if (js && html5)
 		if (__timerID != null) {
 			
 			Browser.window.clearInterval (__timerID);
