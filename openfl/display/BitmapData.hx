@@ -200,7 +200,10 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		__createUVs ();
+		__createUVs ();	
+		
+		__worldTransform = new Matrix();
+		__worldColorTransform = new ColorTransform();
 		
 	}
 	
@@ -576,7 +579,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				
 				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				__drawGL(renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, __framebuffer == null || !__usingFramebuffer, false, true);
+				__drawGL(renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
 				
 				
 			default:
@@ -1506,29 +1509,18 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __createUVs (?verticalFlip:Bool = false):Void {
+	@:noCompletion private function __createUVs ():Void {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
 		
-		if (verticalFlip) {
-			__uvData.x0 = 0;
-			__uvData.y0 = 1;
-			__uvData.x1 = 1;
-			__uvData.y1 = 1;
-			__uvData.x2 = 1;
-			__uvData.y2 = 0;
-			__uvData.x3 = 0;
-			__uvData.y3 = 0;
-		} else {
-			__uvData.x0 = 0;
-			__uvData.y0 = 0;
-			__uvData.x1 = 1;
-			__uvData.y1 = 0;
-			__uvData.x2 = 1;
-			__uvData.y2 = 1;
-			__uvData.x3 = 0;
-			__uvData.y3 = 1;
-		}
+		__uvData.x0 = 0;
+		__uvData.y0 = 0;
+		__uvData.x1 = 1;
+		__uvData.y1 = 0;
+		__uvData.x2 = 1;
+		__uvData.y2 = 1;
+		__uvData.x3 = 0;
+		__uvData.y3 = 1;
 		
 	}
 	
@@ -1654,8 +1646,6 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
-		if (__worldTransform == null) __worldTransform = new Matrix();
-		if (__worldColorTransform == null) __worldColorTransform = new ColorTransform();
 		renderSession.spriteBatch.renderBitmapData(this, true, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, blendMode);
 		
 	}
@@ -1697,8 +1687,10 @@ class BitmapData implements IBitmapDrawable {
 		if (clearBuffer || drawSelf) {
 			__framebuffer.clear();
 		}
-		
+
 		if (drawSelf) {
+			__worldTransform.identity();
+			__flipMatrix(__worldTransform);
 			this.__renderGL(renderSession);
 			spritebatch.stop();
 			gl.deleteTexture(__texture);
@@ -1711,15 +1703,8 @@ class BitmapData implements IBitmapDrawable {
 		var cached = source.__cacheAsBitmap;
 		
 		var m = matrix != null ? matrix.clone() : new Matrix ();
-		
-		var tx = m.tx;
-		var ty = m.ty;
-		m.tx = 0;
-		m.ty = 0;
-		m.scale(1, -1);
-		m.translate(0, height);
-		m.tx += tx;
-		m.ty -= ty;
+
+		__flipMatrix(m);
 		
 		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform();
@@ -1766,8 +1751,21 @@ class BitmapData implements IBitmapDrawable {
 			__image.dirty = false;
 			__image.premultiplied = true;
 		}
-		__createUVs(false);
+		__createUVs();
 		__isValid = true;
+		
+	}
+	
+	@:noCompletion @:dox(hide) private inline function __flipMatrix (m:Matrix):Void {
+		
+		var tx = m.tx;
+		var ty = m.ty;
+		m.tx = 0;
+		m.ty = 0;
+		m.scale(1, -1);
+		m.translate(0, height);
+		m.tx += tx;
+		m.ty -= ty;
 		
 	}
 	
