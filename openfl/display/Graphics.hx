@@ -911,7 +911,7 @@ class Graphics {
 	 */
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
-		__halfStrokeWidth = (thickness != null) ? thickness / 2 : 0;
+		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness : __halfStrokeWidth;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
