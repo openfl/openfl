@@ -71,8 +71,18 @@ class CanvasTextField {
 		#if (js && html5)
 		
 		context.font = textField.__getFont (format);
-		context.textBaseline = "top";
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
+		context.textBaseline = "top";
+		
+		var yOffset = 0.0;
+		
+		// Hack, baseline "top" is not consistent across browsers
+		
+		if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
+			
+			yOffset = format.size * 0.185;
+			
+		}
 		
 		var lines = [];
 		
@@ -147,8 +157,6 @@ class CanvasTextField {
 			lines = text.split ("\n");
 			
 		}
-		
-		var yOffset:Float = 0;
 		
 		for (line in lines) {
 			

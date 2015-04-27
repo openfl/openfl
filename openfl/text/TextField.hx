@@ -26,6 +26,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextFormatAlign;
+import openfl.Lib;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -920,16 +921,27 @@ class TextField extends InteractiveObject {
 			__hiddenInput.type = 'text';
 			__hiddenInput.style.position = 'absolute';
 			__hiddenInput.style.opacity = "0";
-			untyped (__hiddenInput.style).pointerEvents = 'none';
-			__hiddenInput.style.left = (x + ((__canvas != null) ? __canvas.offsetLeft : 0)) + 'px';
-			__hiddenInput.style.top = (y + ((__canvas != null) ? __canvas.offsetTop : 0)) + 'px';
-			__hiddenInput.style.width = __width + 'px';
-			__hiddenInput.style.height = __height + 'px';
-			__hiddenInput.style.zIndex = "0";
+			__hiddenInput.style.color = "transparent";
 			
-			if (this.maxChars > 0) {
+			if (~/(iPad|iPhone|iPod)/g.match (Browser.window.navigator.userAgent)) {
 				
-				__hiddenInput.maxLength = this.maxChars;
+				__hiddenInput.style.fontSize = "0px";
+				
+			}
+			
+			untyped (__hiddenInput.style).pointerEvents = 'none';
+			
+			// TODO: Position for mobile browsers better
+			
+			__hiddenInput.style.left = "0px";
+			__hiddenInput.style.top = "50%";
+			__hiddenInput.style.width = '1px';
+			__hiddenInput.style.height = '1px';
+			__hiddenInput.style.zIndex = "-10000000";
+			
+			if (maxChars > 0) {
+				
+				__hiddenInput.maxLength = maxChars;
 				
 			}
 			
@@ -1774,7 +1786,7 @@ class TextField extends InteractiveObject {
 		__cursorPosition = -1;
 		__hasFocus = false;
 		__stopCursorTimer ();
-		__hiddenInput.blur ();
+		if (__hiddenInput != null) __hiddenInput.blur ();
 		__dirty = true;
 		
 	}
@@ -1794,6 +1806,8 @@ class TextField extends InteractiveObject {
 		
 		removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 		removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		
+		this_onFocusOut (null);
 		
 		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown);
 		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);
