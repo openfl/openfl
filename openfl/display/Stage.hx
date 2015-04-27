@@ -1126,7 +1126,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack = [ this ];
 			
 		}
-		
+	
 		if (type == MouseEvent.MOUSE_DOWN) {
 			
 			focus = target;
