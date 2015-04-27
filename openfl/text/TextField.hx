@@ -27,7 +27,7 @@ import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextFormatAlign;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
@@ -581,7 +581,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private static var __utf8_endline_code:Int = 10;
 	
-	#if js
+	#if (js && html5)
 	private var __div:DivElement;
 	private var __hiddenInput:InputElement;
 	#end
@@ -1406,7 +1406,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
 		
-		#if js
+		#if (js && html5)
 		
 		if (__context == null) {
 			
@@ -1435,7 +1435,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		#elseif (cpp || neko)
+		#elseif (cpp || neko || nodejs)
 		
 		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
 		//TODO: look into whether this method and others can replace the JS stuff yet or not
@@ -1549,7 +1549,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
-	 	#if js
+	 	#if (js && html5)
 	 	
 		var div:Element = __div;
 		
@@ -2088,7 +2088,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function get_textWidth ():Float {
 		
-		#if js
+		#if (js && html5)
 		
 		if (__canvas != null) {
 			
@@ -2114,7 +2114,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		#elseif (cpp || neko)
+		#elseif (cpp || neko || nodejs)
 		
 		//return the largest width of any given single line
 		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
@@ -2131,7 +2131,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public function get_textHeight ():Float {
 		
-		#if js
+		#if (js && html5)
 		
 		if (__canvas != null) {
 			

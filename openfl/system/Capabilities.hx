@@ -3,7 +3,7 @@ package openfl.system; #if !flash #if !openfl_legacy
 
 import haxe.macro.Compiler;
 
-#if js
+#if (js && html5)
 import js.html.DivElement;
 import js.html.Element;
 import js.Browser;
@@ -439,7 +439,7 @@ class Capabilities {
 	
 	@:noCompletion private static function get_screenResolutionX ():Float { 
 		
-		#if js
+		#if (js && html5)
 		
 		return Browser.window.screen.width;
 		
@@ -454,7 +454,7 @@ class Capabilities {
 	
 	@:noCompletion private static function get_screenResolutionY ():Float {
 		
-		#if js
+		#if (js && html5)
 		
 		return Browser.window.screen.height;
 		
@@ -469,7 +469,7 @@ class Capabilities {
 	
 	@:noCompletion private static function get_language ():String {
 		
-		#if js
+		#if (js && html5)
 		
 		return untyped navigator.language;
 		

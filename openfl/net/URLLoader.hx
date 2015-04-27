@@ -10,7 +10,7 @@ import openfl.errors.IOError;
 import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
 
-#if js
+#if (js && html5)
 import js.html.EventTarget;
 import js.html.XMLHttpRequest;
 import js.Browser;
@@ -297,14 +297,14 @@ class URLLoader extends EventDispatcher {
 	 */
 	public function load (request:URLRequest):Void {
 		
-		#if js
+		#if (js && html5)
 		requestUrl (request.url, request.method, request.data, request.formatRequestHeaders ());
 		#end
 		
 	}
 	
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private function registerEvents (subject:EventTarget):Void {
 		
 		var self = this;
@@ -478,7 +478,7 @@ class URLLoader extends EventDispatcher {
 	
 	@:noCompletion private function onData (_):Void {
 		
-		#if js
+		#if (js && html5)
 		var content:Dynamic = getData ();
 		
 		switch (dataFormat) {
@@ -554,7 +554,7 @@ class URLLoader extends EventDispatcher {
 	
 	@:noCompletion private function set_dataFormat (inputVal:URLLoaderDataFormat):URLLoaderDataFormat {
 		
-		#if js
+		#if (js && html5)
 		// prevent inadvertently using typed arrays when they are unsupported
 		// @todo move these sorts of tests somewhere common in the vein of Modernizr
 		
