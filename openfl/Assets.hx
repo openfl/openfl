@@ -429,7 +429,7 @@ class Assets {
 		
 		#else
 		
-		return (bitmapData != null && bitmapData.rect != null);
+		return (bitmapData != null && bitmapData.__isValid);
 		
 		#end
 		#end
