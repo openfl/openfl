@@ -795,9 +795,8 @@ class BitmapData implements IBitmapDrawable {
 	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
 		
 		if (!__isValid) return new Rectangle (0, 0, width, height);
-		
 		var rect = __image.getColorBoundsRect (mask, color, findColor);
-		return rect.__toFlashRectangle ();
+		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 		
 	}
 	
