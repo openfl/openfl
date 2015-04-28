@@ -22,6 +22,7 @@ import lime.utils.*;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Tilesheet)
+@:access(openfl.geom.Matrix)
 class SpriteBatch {
 
 	static inline var VERTS_PER_SPRITE:Int = 4;
@@ -379,6 +380,7 @@ class SpriteBatch {
 		
 		var w0:Float, w1:Float, h0:Float, h1:Float;
 		
+		
 		if (pivot == null) {
 			w0 = width; w1 = 0;
 			h0 = height; h1 = 0;
@@ -396,25 +398,26 @@ class SpriteBatch {
 		var tx = matrix.tx;
 		var ty = matrix.ty;
 		var cOffsetIndex = 0;
+		var off = 0;
 		
-		positions[index++] = (a * w1 + c * h1 + tx);
-		positions[index++] = (d * h1 + b * w1 + ty);
+		positions[index++] = (a * w1 + c * h1 + tx) + off;
+		positions[index++] = (d * h1 + b * w1 + ty) + off;
 		positions[index++] = uvs.x0;
 		positions[index++] = uvs.y0;
 		if(enableColor) {
 			colors[index++] = color;
 		}
 		
-		positions[index++] = (a * w0 + c * h1 + tx);
-		positions[index++] = (d * h1 + b * w0 + ty);
+		positions[index++] = (a * w0 + c * h1 + tx) + off;
+		positions[index++] = (d * h1 + b * w0 + ty) + off;
 		positions[index++] = uvs.x1;
 		positions[index++] = uvs.y1;
 		if(enableColor) {
 			colors[index++] = color;
 		}
 		
-		positions[index++] = (a * w0 + c * h0 + tx);
-		positions[index++] = (d * h0 + b * w0 + ty);
+		positions[index++] = (a * w0 + c * h0 + tx) + off;
+		positions[index++] = (d * h0 + b * w0 + ty) + off;
 		positions[index++] = uvs.x2;
 		positions[index++] = uvs.y2;
 		if(enableColor) {
@@ -422,8 +425,8 @@ class SpriteBatch {
 		}
 		
 		
-		positions[index++] = (a * w1 + c * h0 + tx);
-		positions[index++] = (d * h0 + b * w1 + ty);
+		positions[index++] = (a * w1 + c * h0 + tx) + off;
+		positions[index++] = (d * h0 + b * w1 + ty) + off;
 		positions[index++] = uvs.x3;
 		positions[index++] = uvs.y3;
 		if(enableColor) {
@@ -526,8 +529,7 @@ class SpriteBatch {
 		// TODO cache this somehow?, don't do each state change?
 		shader.bindVertexArray(vertexArray);
 		
-		var projection = renderSession.projection;
-		gl.uniform2f(shader.getUniformLocation(DefUniform.ProjectionVector), projection.x, projection.y);
+		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 		
 		if (state.colorTransform != null) {
 			var ct = state.colorTransform;
@@ -544,6 +546,7 @@ class SpriteBatch {
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 		
 		if (state.textureSmooth) {
+		//if (false) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		} else {
@@ -590,6 +593,7 @@ class SpriteBatch {
 		
 		return r;
 	}
+	
 }
 
 @:access(openfl.geom.ColorTransform)

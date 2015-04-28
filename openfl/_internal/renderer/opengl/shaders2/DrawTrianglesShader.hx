@@ -14,16 +14,13 @@ class DrawTrianglesShader extends Shader {
 			'attribute vec2 ${Attrib.Position};',
 			'attribute vec2 ${Attrib.TexCoord};',
 			'attribute vec4 ${Attrib.Color};',
-			'uniform vec2 ${Uniform.ProjectionVector};',
-			'uniform vec2 ${Uniform.OffsetVector};',
+			'uniform mat3 ${Uniform.ProjectionMatrix};',
 			
 			'varying vec2 vTexCoord;',
 			'varying vec4 vColor;',
-			
-			'const vec2 center = vec2(-1.0, 1.0);',
 		
 			'void main(void) {',
-			'   gl_Position = vec4( ((${Attrib.Position} + ${Uniform.OffsetVector}) / ${Uniform.ProjectionVector}) + center , 0.0, 1.0);',
+			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
 			'   vTexCoord = ${Attrib.TexCoord};',
 			// the passed color is ARGB format
 			'   vColor = ${Attrib.Color}.bgra;',
@@ -73,14 +70,12 @@ class DrawTrianglesShader extends Shader {
 	override function init() {
 		super.init();
 		
-		// TODO Modify graphicsrenderer to draw projection -y
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.TexCoord);
 		getAttribLocation(Attrib.Color);
 		
 		getUniformLocation(Uniform.Sampler);
-		getUniformLocation(Uniform.ProjectionVector);
-		getUniformLocation(Uniform.OffsetVector);
+		getUniformLocation(Uniform.ProjectionMatrix);
 		getUniformLocation(Uniform.Color);
 		getUniformLocation(Uniform.Alpha);
 		getUniformLocation(Uniform.UseTexture);
@@ -100,8 +95,7 @@ class DrawTrianglesShader extends Shader {
 @:enum private abstract Uniform(String) from String to String {
 	var UseTexture = "uUseTexture";
 	var Sampler = DefUniform.Sampler;
-	var ProjectionVector = DefUniform.ProjectionVector;
-	var OffsetVector = DefUniform.OffsetVector;
+	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;
 	var Alpha = DefUniform.Alpha;
 	var ColorMultiplier = DefUniform.ColorMultiplier;
