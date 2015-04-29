@@ -1349,12 +1349,14 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
+		if (x <= 2) return 0;
+		
 		var value:String = text;
 		var text:String = value;
-		var totalW:Float = 0;
+		var totalW:Float = 2;
 		var pos = text.length;
 		
-		if (x < __getTextWidth (text)) {
+		if (x < __getTextWidth (text) + 2) {
 			
 			for (i in 0...text.length) {
 				
@@ -1711,7 +1713,8 @@ class TextField extends InteractiveObject {
 		
 		if (__hasFocus && __selectionStart >= 0) {
 			
-			__cursorPosition = __getPosition (event.localX, event.localY);
+			var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
+			__cursorPosition = __getPosition (localPoint.x, localPoint.y);
 			__dirty = true;
 			
 		}
@@ -1726,7 +1729,8 @@ class TextField extends InteractiveObject {
 		
 		if (stage.focus == this) {
 			
-			var upPos:Int = __getPosition (event.localX, event.localY);
+			var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
+			var upPos:Int = __getPosition (localPoint.x, localPoint.y);
 			var leftPos:Int;
 			var rightPos:Int;
 			
@@ -1802,7 +1806,9 @@ class TextField extends InteractiveObject {
 		
 		if (!selectable) return;
 		
-		__selectionStart = __getPosition (event.localX, event.localY);
+		var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
+		__selectionStart = __getPosition (localPoint.x, localPoint.y);
+		__cursorPosition = __selectionStart;
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
@@ -1957,7 +1963,17 @@ class TextField extends InteractiveObject {
 			if (segments.length == 1) {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
-				#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
+				#if (js && html5)
+				if (__text != value && __hiddenInput != null) {
+					
+					var selectionStart = __hiddenInput.selectionStart;
+					var selectionEnd = __hiddenInput.selectionEnd;
+					__hiddenInput.value = value;
+					__hiddenInput.selectionStart = selectionStart;
+					__hiddenInput.selectionEnd = selectionEnd;
+					
+				}	
+				#end
 				return __text = value;
 				
 			} else {
@@ -2028,7 +2044,17 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
+		#if (js && html5)
+		if (__text != value && __hiddenInput != null) {
+			
+			var selectionStart = __hiddenInput.selectionStart;
+			var selectionEnd = __hiddenInput.selectionEnd;
+			__hiddenInput.value = value;
+			__hiddenInput.selectionStart = selectionStart;
+			__hiddenInput.selectionEnd = selectionEnd;
+			
+		}	
+		#end
 		return __text = value;
 		
 	}
@@ -2089,7 +2115,18 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_text (value:String):String {
 		
-		#if (js && html5) if (__text != value && __hiddenInput != null) __hiddenInput.value = value; #end
+		#if (js && html5)
+		if (__text != value && __hiddenInput != null) {
+			
+			var selectionStart = __hiddenInput.selectionStart;
+			var selectionEnd = __hiddenInput.selectionEnd;
+			__hiddenInput.value = value;
+			__hiddenInput.selectionStart = selectionStart;
+			__hiddenInput.selectionEnd = selectionEnd;
+			
+		}	
+		#end
+		
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = false;

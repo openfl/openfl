@@ -273,17 +273,19 @@ class CanvasTextField {
 						
 						var cursorOffset = textField.__getTextWidth (text.substring (0, textField.__cursorPosition)) + 3;
 						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
-						context.fillRect (cursorOffset, 5, 1, (textField.__textFormat.size * 1.185) - 5);
+						context.fillRect (cursorOffset, 5, 1, (textField.__textFormat.size * 1.185) - 4);
 						
 					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0 && !textField.__isKeyDown) {
 						
 						var lowPos = Std.int (Math.min (textField.__selectionStart, textField.__cursorPosition));
 						var highPos = Std.int (Math.max (textField.__selectionStart, textField.__cursorPosition));
-						var xPos = textField.__getTextWidth (text.substring (0, lowPos));
+						var xPos = textField.__getTextWidth (text.substring (0, lowPos)) + 2;
 						var widthPos = textField.__getTextWidth (text.substring (lowPos, highPos));
 						
-						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
-						context.fillRect (xPos, 5, widthPos, textField.__textFormat.size - 5);
+						// TODO: White text
+						
+						context.fillStyle = "#000000";
+						context.fillRect (xPos, 5, widthPos, (textField.__textFormat.size * 1.185) - 4);
 						
 					}
 					
