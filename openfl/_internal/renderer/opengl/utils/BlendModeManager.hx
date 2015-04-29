@@ -27,10 +27,16 @@ class BlendModeManager {
 	}
 	
 	
-	public function setBlendMode (blendMode:BlendMode):Bool {
+	public function setBlendMode (blendMode:BlendMode, ?force:Bool = false):Bool {
 		
-		if (blendMode == null) blendMode = BlendMode.NORMAL;
-		if (currentBlendMode == blendMode) {
+		if (blendMode == null) {
+			
+			blendMode = BlendMode.NORMAL;
+			force = true;
+			
+		}
+		
+		if (!force && currentBlendMode == blendMode) {
 			
 			return false;
 			
