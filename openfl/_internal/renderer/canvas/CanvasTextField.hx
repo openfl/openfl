@@ -275,7 +275,7 @@ class CanvasTextField {
 						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
 						context.fillRect (cursorOffset, 5, 1, (textField.__textFormat.size * 1.185) - 4);
 						
-					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0 && !textField.__isKeyDown) {
+					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0) {
 						
 						var lowPos = Std.int (Math.min (textField.__selectionStart, textField.__cursorPosition));
 						var highPos = Std.int (Math.max (textField.__selectionStart, textField.__cursorPosition));

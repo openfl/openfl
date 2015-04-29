@@ -1666,8 +1666,18 @@ class TextField extends InteractiveObject {
 		__ranges = null;
 		__isHTML = false;
 		
-		__cursorPosition = __hiddenInput.selectionStart;
-		__selectionStart = __cursorPosition;
+		if (__hiddenInput.selectionDirection == "backward") {
+			
+			__cursorPosition = __hiddenInput.selectionStart;
+			__selectionStart = __hiddenInput.selectionEnd;
+			
+		} else {
+			
+			__cursorPosition = __hiddenInput.selectionEnd;
+			__selectionStart = __hiddenInput.selectionStart;
+			
+		}
+		
 		__dirty = true;
 		
 		dispatchEvent (new Event (Event.CHANGE, true));
@@ -1683,27 +1693,38 @@ class TextField extends InteractiveObject {
 		var keyCode = event.which;
 		var isShift = event.shiftKey;
 		
-		if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
-			
-			__hiddenInput.selectionStart = 0;
-			__hiddenInput.selectionEnd = text.length;
-			event.preventDefault ();
-			__dirty = true;
-			return;
-			
-		}
-		
-		if (keyCode == 17 || event.metaKey || event.ctrlKey) {
-			
-			return;
-			
-		}
+		//if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
+			//
+			//__hiddenInput.selectionStart = 0;
+			//__hiddenInput.selectionEnd = text.length;
+			//event.preventDefault ();
+			//__dirty = true;
+			//return;
+			//
+		//}
+		//
+		//if (keyCode == 17 || event.metaKey || event.ctrlKey) {
+			//
+			//return;
+			//
+		//}
 		
 		__text = __hiddenInput.value;
 		__ranges = null;
 		__isHTML = false;
 		
-		__selectionStart = __hiddenInput.selectionStart;
+		if (__hiddenInput.selectionDirection == "backward") {
+			
+			__cursorPosition = __hiddenInput.selectionStart;
+			__selectionStart = __hiddenInput.selectionEnd;
+			
+		} else {
+			
+			__cursorPosition = __hiddenInput.selectionEnd;
+			__selectionStart = __hiddenInput.selectionStart;
+			
+		}
+		
 		__dirty = true;
 		
 	}
@@ -1752,9 +1773,9 @@ class TextField extends InteractiveObject {
 		addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 		addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 		
-		__hiddenInput.addEventListener ('keydown', input_onKeyDown);
-		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
-		__hiddenInput.addEventListener ('input', input_onKeyUp);
+		__hiddenInput.addEventListener ('keydown', input_onKeyDown, true);
+		__hiddenInput.addEventListener ('keyup', input_onKeyUp, true);
+		__hiddenInput.addEventListener ('input', input_onKeyUp, true);
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		
@@ -1823,9 +1844,9 @@ class TextField extends InteractiveObject {
 		
 		this_onFocusOut (null);
 		
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown);
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown, true);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp, true);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp, true);
 		
 		removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		if (stage != null) stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
