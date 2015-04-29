@@ -193,10 +193,10 @@ class CanvasGraphics {
 						inversePendingMatrix = null;
 						
 					}
-										
+				
 				case BeginFill (rgb, alpha):
 					
-					if ( alpha <= 0.07 )
+					if ( alpha < 0.005 )
 					{
 						hasFill = false;
 					}
