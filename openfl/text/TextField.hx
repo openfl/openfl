@@ -2056,11 +2056,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_selectable (value:Bool):Bool {
 		
+		#if (js && html5)
 		if (!value && selectable && type == TextFieldType.INPUT) {
 			
 			this_onRemovedFromStage (null);
 			
 		}
+		#end
 		
 		return selectable = value;
 		
