@@ -895,8 +895,8 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 			__image.dirty = true;
 			
 		}
@@ -1648,7 +1648,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData(this, true, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, blendMode);
+		renderSession.spriteBatch.renderBitmapData(this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, blendMode);
 		
 	}
 	
