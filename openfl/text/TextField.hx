@@ -924,7 +924,7 @@ class TextField extends InteractiveObject {
 			__hiddenInput.style.opacity = "0";
 			__hiddenInput.style.color = "transparent";
 			
-			if (~/(iPad|iPhone|iPod)/g.match (Browser.window.navigator.userAgent)) {
+			if (~/(iPad|iPhone|iPod).*os 8_/g.match (Browser.window.navigator.userAgent)) {
 				
 				__hiddenInput.style.fontSize = "0px";
 				
