@@ -429,7 +429,7 @@ class Assets {
 		
 		#else
 		
-		return (bitmapData != null && bitmapData.__image != null);
+		return (bitmapData != null && #if !lime_hybrid bitmapData.__image != null #else bitmapData.__handle != null #end);
 		
 		#end
 		#end
