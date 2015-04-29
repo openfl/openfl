@@ -9,7 +9,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
-#if js
+#if (js && html5)
 import openfl._internal.renderer.dom.DOMRenderer;
 import js.html.MediaElement;
 import js.Browser;

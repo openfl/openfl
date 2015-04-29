@@ -23,7 +23,7 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.ImageData;
@@ -237,14 +237,14 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid) return;
 		
-		#if js
+		#if (js && html5)
 		ImageCanvasUtil.convertToCanvas (__image);
 		ImageCanvasUtil.createImageData (__image);
 		ImageCanvasUtil.convertToCanvas (sourceBitmapData.__image);
 		ImageCanvasUtil.createImageData (sourceBitmapData.__image);
 		#end
 		
-		#if js
+		#if (js && html5)
 		filter.__applyFilter (__image.buffer.__srcImageData, sourceBitmapData.__image.buffer.__srcImageData, sourceRect, destPoint);
 		#end
 		
@@ -542,7 +542,7 @@ class BitmapData implements IBitmapDrawable {
 				ImageCanvasUtil.convertToCanvas (__image);
 				ImageCanvasUtil.sync (__image);
 				
-				#if js
+				#if (js && html5)
 				var buffer = __image.buffer;
 				
 				var renderSession = new RenderSession ();
@@ -668,7 +668,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	#if js
+	#if (js && html5)
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
@@ -795,7 +795,8 @@ class BitmapData implements IBitmapDrawable {
 	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
 		
 		if (!__isValid) return new Rectangle (0, 0, width, height);
-		return __image.rect.__toFlashRectangle ();
+		var rect = __image.getColorBoundsRect (mask, color, findColor);
+		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 		
 	}
 	
@@ -1557,7 +1558,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (rawAlpha != null) {
 				
-				#if js
+				#if (js && html5)
 				ImageCanvasUtil.convertToCanvas (__image);
 				ImageCanvasUtil.createImageData (__image);
 				#end
@@ -1616,7 +1617,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderCanvas (renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		if (!__isValid) return;
 		
 		ImageCanvasUtil.sync (__image);
@@ -1786,7 +1787,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __sync ():Void {
 		
-		#if js
+		#if (js && html5)
 		ImageCanvasUtil.sync (__image);
 		#end
 		

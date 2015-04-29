@@ -28,7 +28,7 @@ class Texture extends TextureBase {
 		
 		super (glTexture, width, height);
 		
-		#if (cpp || neko)
+		#if (cpp || neko || nodejs)
 		if (optimizeForRenderToTexture) { 
 			
 			GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1); 

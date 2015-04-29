@@ -25,7 +25,7 @@ class RectangleTexture extends TextureBase {
 		
 		super (glTexture, width, height);
 		
-		#if (cpp || neko)
+		#if (cpp || neko || nodejs)
 		if (optimizeForRenderToTexture)
 			GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1); 
 		
@@ -67,7 +67,7 @@ class RectangleTexture extends TextureBase {
 		
 		GL.bindTexture (GL.TEXTURE_2D, glTexture);
 		
-		#if js
+		#if (js && html5)
 			
 			if (optimizeForRenderToTexture)
 				GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);

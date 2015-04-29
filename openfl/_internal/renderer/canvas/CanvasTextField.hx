@@ -7,7 +7,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 
-#if js
+#if (js && html5)
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
 #end
@@ -18,14 +18,14 @@ import js.Browser;
 class CanvasTextField {
 	
 	
-	#if js
+	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	#end
 	
 	
 	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
 		
@@ -68,11 +68,21 @@ class CanvasTextField {
 	
 	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		context.font = textField.__getFont (format);
-		context.textBaseline = "top";
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
+		context.textBaseline = "top";
+		
+		var yOffset = 0.0;
+		
+		// Hack, baseline "top" is not consistent across browsers
+		
+		if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
+			
+			yOffset = format.size * 0.185;
+			
+		}
 		
 		var lines = [];
 		
@@ -148,8 +158,6 @@ class CanvasTextField {
 			
 		}
 		
-		var yOffset:Float = 0;
-		
 		for (line in lines) {
 			
 			switch (format.align) {
@@ -182,7 +190,7 @@ class CanvasTextField {
 	
 	public static function update (textField:TextField):Bool {
 		
-		#if js
+		#if (js && html5)
 		
 		if (textField.__dirty) {
 			

@@ -12,7 +12,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 #end
@@ -58,7 +58,7 @@ class Graphics {
 	@:noCompletion private var __cachedTexture:FilterTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#end
@@ -71,7 +71,7 @@ class Graphics {
 		__positionX = 0;
 		__positionY = 0;
 		
-		#if js
+		#if (js && html5)
 		moveTo( 0, 0);
 		#end
 	}
@@ -249,7 +249,7 @@ class Graphics {
 		
 		__visible = false;
 		
-		#if js
+		#if (js && html5)
 		moveTo( 0, 0);
 		#end
 	}
@@ -911,7 +911,7 @@ class Graphics {
 	 */
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
-		__halfStrokeWidth = (thickness != null) ? thickness / 2 : 0;
+		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness : __halfStrokeWidth;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
