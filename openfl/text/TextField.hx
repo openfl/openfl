@@ -924,20 +924,25 @@ class TextField extends InteractiveObject {
 			__hiddenInput.style.opacity = "0";
 			__hiddenInput.style.color = "transparent";
 			
-			if (~/(iPad|iPhone|iPod).*os 8_/g.match (Browser.window.navigator.userAgent)) {
-				
-				__hiddenInput.style.fontSize = "0px";
-				
-			}
-			
-			untyped (__hiddenInput.style).pointerEvents = 'none';
-			
 			// TODO: Position for mobile browsers better
 			
 			__hiddenInput.style.left = "0px";
 			__hiddenInput.style.top = "50%";
-			__hiddenInput.style.width = '1px';
-			__hiddenInput.style.height = '1px';
+			
+			if (~/(iPad|iPhone|iPod).*OS 8_/gi.match (Browser.window.navigator.userAgent)) {
+				
+				__hiddenInput.style.fontSize = "0px";
+				__hiddenInput.style.width = '0px';
+				__hiddenInput.style.height = '0px';
+				
+			} else {
+				
+				__hiddenInput.style.width = '1px';
+				__hiddenInput.style.height = '1px';
+				
+			}
+			
+			untyped (__hiddenInput.style).pointerEvents = 'none';
 			__hiddenInput.style.zIndex = "-10000000";
 			
 			if (maxChars > 0) {
