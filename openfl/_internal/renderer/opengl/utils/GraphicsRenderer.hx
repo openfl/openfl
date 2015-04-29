@@ -1035,8 +1035,6 @@ class GraphicsRenderer {
 				bucket.uploadTileBuffer = true;
 				
 				//prepare the matrix
-				var tMatrix = bucket.textureMatrix;
-				tMatrix.identity();
 				var pMatrix:Matrix;
 				if (m == null) {
 					pMatrix = new Matrix();
@@ -1044,19 +1042,19 @@ class GraphicsRenderer {
 					pMatrix = m.clone();
 				}
 	
-				tMatrix.concat(pMatrix);
-				pMatrix = pMatrix.invert();
-				var tx = (pMatrix.tx) / (b.width);
-				var ty = (pMatrix.ty) / (b.height);
+				pMatrix.invert();
+				pMatrix.scale(1 / b.width, 1 / b.height);
+				var tx = pMatrix.tx;
+				var ty = pMatrix.ty;
+				pMatrix.tx = 0;
+				pMatrix.ty = 0;
 				
 				bucket.textureTL.x = tx;
 				bucket.textureTL.y = ty;
 				bucket.textureBR.x = tx + 1;
 				bucket.textureBR.y = ty + 1;
-				
-				tMatrix.scale(1 / b.width, 1 / b.height);				
-				
-				bucket.textureMatrix = tMatrix;
+
+				bucket.textureMatrix = pMatrix;
 			case _:
 				bucket = switchBucket(path.fillIndex, glStack, Line);
 				bucket.uploadTileBuffer = false;
@@ -1148,7 +1146,7 @@ class GraphicsRenderer {
 				gl.uniformMatrix3fv (shader.getUniformLocation(PatternFillUniform.TranslationMatrix), false, translationMatrix);
 				gl.uniform2f(shader.getUniformLocation(PatternFillUniform.PatternTL), bucket.textureTL.x, bucket.textureTL.y);
 				gl.uniform2f(shader.getUniformLocation(PatternFillUniform.PatternBR), bucket.textureBR.x, bucket.textureBR.y);
-				gl.uniformMatrix3fv(shader.getUniformLocation(PatternFillUniform.PatternMatrix), false, bucket.textureMatrix.toArray(false));
+				gl.uniformMatrix3fv(shader.getUniformLocation(PatternFillUniform.PatternMatrix), false, bucket.textureMatrix.toArray(true));
 			case DrawTriangles:
 				gl.uniform2f (shader.getUniformLocation(DrawTrianglesUniform.ProjectionVector), projection.x, projection.y);
 				if (bucket.texture != null) {
