@@ -241,6 +241,12 @@ class CanvasGraphics {
 							var point1 = matrix.transformPoint (new Point (0, 0));
 							var point2 = matrix.transformPoint (new Point (1638.4, 0));
 							
+							point1.x -= point2.x;
+							point1.y -= point2.y;
+							
+							point2.x -= point2.x;
+							point2.y -= point2.y;
+							
 							gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
 						
 					}
@@ -258,7 +264,6 @@ class CanvasGraphics {
 						if (ratio > 1) ratio = 1;
 						
 						gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
-						
 					}
 					
 					context.fillStyle = gradientFill;
