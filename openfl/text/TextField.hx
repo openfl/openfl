@@ -1006,8 +1006,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		var bounds = new Rectangle (0, 0, __width, __height);
-		bounds.transform (matrix != null ? matrix : __worldTransform);
+		var bounds = new Rectangle (0, 0, __width, __height).transform (matrix != null ? matrix : __worldTransform);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 	
