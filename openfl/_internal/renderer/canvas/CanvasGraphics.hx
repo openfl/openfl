@@ -264,6 +264,7 @@ class CanvasGraphics {
 						if (ratio > 1) ratio = 1;
 						
 						gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+						
 					}
 					
 					context.fillStyle = gradientFill;
