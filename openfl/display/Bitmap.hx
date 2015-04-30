@@ -113,7 +113,7 @@ class Bitmap extends DisplayObjectContainer {
 		if (bitmapData != null) {
 			
 			var bounds = new Rectangle (0, 0, bitmapData.width, bitmapData.height);
-			bounds = bounds.transform (matrix != null ? matrix : __worldTransform);
+			bounds = bounds.transform (matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 			

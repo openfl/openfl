@@ -939,9 +939,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (parent != null) {
 			
 			var bounds = new Rectangle ();
-			
-			__getTransform ();
-			__getBounds (bounds, null);
+			__getBounds (bounds, __getTransform ());
 			
 			return bounds.containsPoint (new Point (x, y));
 			
@@ -1005,9 +1003,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		if (__graphics != null) {
+		if (__graphics != null && matrix != null) {
 			
-			__graphics.__getBounds (rect, matrix != null ? matrix : __worldTransform);
+			__graphics.__getBounds (rect, matrix);
 			
 		}
 		
