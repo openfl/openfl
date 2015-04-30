@@ -13,7 +13,7 @@ package openfl._legacy.text; #if openfl_legacy
 	public var font:String;
 	public var indent:Null<Float>;
 	public var italic:Null<Bool>;
-	public var kerning:Null<Float>;
+	public var kerning:Null<Bool>;
 	public var leading:Null<Float>;
 	public var leftMargin:Null<Float>;
 	public var letterSpacing:Null<Float>;

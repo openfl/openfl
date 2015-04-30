@@ -38,7 +38,7 @@ import openfl.text.TextField;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.DivElement;
 import js.html.Element;
@@ -531,9 +531,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
-	@:noCompletion private var __mouseOutStack = [];
-	@:noCompletion private var __mouseX:Float = 0;
-	@:noCompletion private var __mouseY:Float = 0;
+	@:noCompletion private var __mouseOutStack:Array<DisplayObject>;
+	@:noCompletion private var __mouseX:Float;
+	@:noCompletion private var __mouseY:Float;
 	@:noCompletion private var __originalWidth:Int;
 	@:noCompletion private var __originalHeight:Int;
 	@:noCompletion private var __renderer:AbstractRenderer;
@@ -542,7 +542,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	
-	#if js
+	#if (js && html5)
 	//@:noCompletion private var __div:DivElement;
 	//@:noCompletion private var __element:HtmlElement;
 	#if stats
@@ -571,7 +571,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
-		
+		__lastClickTime = 0;
+
 		stageWidth = width;
 		stageHeight = height;
 		
@@ -586,6 +587,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__clearBeforeRender = true;
 		__stack = [];
+		__mouseOutStack = [];
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -823,6 +825,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowEnter ():Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowFocusIn ():Void {
 		
 		
@@ -840,6 +849,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onWindowFullscreen ():Void {
 		
 		
+		
+	}
+	
+	
+	public function onWindowLeave ():Void {
+		
+		dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	
@@ -1502,7 +1518,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
 		
 		//__glContextLost = true;

@@ -9,7 +9,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-#if js
+#if (js && html5)
 import js.html.ImageElement;
 #end
 
@@ -86,7 +86,7 @@ class Bitmap extends DisplayObjectContainer {
 	 */
 	public var smoothing:Bool;
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private var __image:ImageElement;
 	#end
 	
@@ -113,7 +113,7 @@ class Bitmap extends DisplayObjectContainer {
 		if (bitmapData != null) {
 			
 			var bounds = new Rectangle (0, 0, bitmapData.width, bitmapData.height);
-			bounds = bounds.transform (__worldTransform);
+			bounds = bounds.transform (matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 			
@@ -174,18 +174,20 @@ class Bitmap extends DisplayObjectContainer {
 
 	
 	@:noCompletion @:dox(hide) public override function __updateMask (maskGraphics:Graphics):Void {
-
-		maskGraphics.__commands.push(OverrideMatrix(this.__worldTransform));
-		maskGraphics.beginFill(0);
-		maskGraphics.drawRect(0, 0, bitmapData.width, bitmapData.height);
-
+		
+		maskGraphics.__commands.push (OverrideMatrix (this.__worldTransform));
+		maskGraphics.beginFill (0);
+		maskGraphics.drawRect (0, 0, bitmapData.width, bitmapData.height);
+		
 		if (maskGraphics.__bounds == null) {
-			maskGraphics.__bounds = new Rectangle();
+			
+			maskGraphics.__bounds = new Rectangle ();
+			
 		}
 		
-		__getBounds(maskGraphics.__bounds, @:privateAccess Matrix.__identity);
+		__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
 		
-		super.__updateMask(maskGraphics);
+		super.__updateMask (maskGraphics);
 		
 	}
 	
