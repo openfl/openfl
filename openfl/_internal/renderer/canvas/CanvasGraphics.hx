@@ -238,12 +238,6 @@ class CanvasGraphics {
 							var point1 = matrix.transformPoint (new Point (-819.2, 0));
 							var point2 = matrix.transformPoint (new Point (819.2, 0));
 							
-							point1.x -= point2.x;
-							point1.y -= point2.y;
-							
-							point2.x -= point2.x;
-							point2.y -= point2.y;
-							
 							gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
 						
 					}
