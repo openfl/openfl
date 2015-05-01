@@ -1003,7 +1003,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		if (__graphics != null && matrix != null) {
+		if (__graphics != null) {
 			
 			__graphics.__getBounds (rect, matrix);
 			

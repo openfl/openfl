@@ -977,6 +977,8 @@ class Graphics {
 	
 	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
+		if (__bounds == null) return;
+		
 		var bounds = __bounds.transform (matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
@@ -986,6 +988,8 @@ class Graphics {
 	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
 		
 		//TODO: Shape flag
+		
+		if (__bounds == null) return false;
 		
 		var bounds = __bounds.transform (matrix);
 		return (x > bounds.x && y > bounds.y && x <= bounds.right && y <= bounds.bottom);
