@@ -44,7 +44,16 @@ class ShaderManager {
 	}
 	
 	public function setShader(shader:Shader, ?force:Bool = false) {
-		if (!force && currentShader.ID == shader.ID) return false;
+		if (shader == null) {
+			// Assume we want to force, if we get called with null.
+			currentShader = null;
+			gl.useProgram(null);
+			return true;
+		}
+
+		if (currentShader != null && !force && currentShader.ID == shader.ID) {
+			return false;
+		}
 		currentShader = shader;
 		
 		gl.useProgram(shader.program);
