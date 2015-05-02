@@ -19,6 +19,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import openfl._internal.renderer.AbstractRenderer;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -618,6 +619,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				__renderer = new DOMRenderer (stageWidth, stageHeight, element);
 			
+			case CAIRO (cairo):
+				
+				__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
+			
 			default:
 			
 		}
@@ -910,6 +915,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__update (false, true);
 		
 		if (__renderer != null) {
+			
+			switch (context) {
+				
+				case CAIRO (cairo):
+					
+					cast (__renderer, CairoRenderer).cairo = cairo;
+					@:privateAccess (__renderer.renderSession).cairo = cairo;
+				
+				default:
+					
+			}
 			
 			__renderer.render (this);
 			

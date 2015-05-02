@@ -1,6 +1,7 @@
 package openfl._internal.renderer; #if !flash
 
 
+import lime.graphics.CairoRenderContext;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
@@ -19,6 +20,7 @@ import openfl.geom.Point;
 class RenderSession {
 	
 	
+	public var cairo:CairoRenderContext;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
