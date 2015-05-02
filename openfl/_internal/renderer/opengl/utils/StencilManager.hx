@@ -38,21 +38,19 @@ class StencilManager {
 		
 	}
 	
-	public inline function prepareGraphics(fill:GLBucketData, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array):Void {
-		var offset = renderSession.offset;
+	public inline function prepareGraphics(fill:GLBucketData, renderSession:RenderSession, translationMatrix:Float32Array):Void {
 		var shader = renderSession.shaderManager.fillShader;
 		
 		renderSession.shaderManager.setShader (shader);
 		gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.TranslationMatrix), false, translationMatrix);
-		gl.uniform2f (shader.getUniformLocation(FillUniform.ProjectionVector), projection.x, -projection.y);
-		gl.uniform2f (shader.getUniformLocation(FillUniform.OffsetVector), -offset.x, -offset.y);
+		gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 			
 		fill.vertexArray.bind();
 		shader.bindVertexArray(fill.vertexArray);
 		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, fill.indexBuffer);
 	}
 	
-	public function pushBucket (bucket:GLBucket, renderSession:RenderSession, projection:Point, translationMatrix:Float32Array, ?isMask:Bool = false):Void {
+	public function pushBucket (bucket:GLBucket, renderSession:RenderSession, translationMatrix:Float32Array, ?isMask:Bool = false):Void {
 		
 		if(!isMask) {
 			gl.enable(gl.STENCIL_TEST);
@@ -68,7 +66,7 @@ class StencilManager {
 		
 		for (fill in bucket.fills) {
 			if (fill.available) continue;
-			prepareGraphics(fill, renderSession, projection, translationMatrix);
+			prepareGraphics(fill, renderSession, translationMatrix);
 			gl.drawElements (fill.drawMode, fill.glIndices.length, gl.UNSIGNED_SHORT, 0);
 		}
 		
@@ -126,7 +124,7 @@ class StencilManager {
 			
 			switch(bucket.mode) {
 				case Fill, PatternFill:
-					pushBucket(bucket, renderSession, renderSession.projection, translationMatrix.toArray(true), true);
+					pushBucket(bucket, renderSession, translationMatrix.toArray(true), true);
 				case _:
 			}
 		}

@@ -235,17 +235,8 @@ class CanvasGraphics {
 						case LINEAR:
 							
 							var matrix = matrix != null ? matrix.clone () : new Matrix ();
-							matrix.tx -= matrix.a * 1638.4 / 2;
-							matrix.ty -= matrix.d * 1638.4 / 2;
-							
-							var point1 = matrix.transformPoint (new Point (0, 0));
-							var point2 = matrix.transformPoint (new Point (1638.4, 0));
-							
-							point1.x -= point2.x;
-							point1.y -= point2.y;
-							
-							point2.x -= point2.x;
-							point2.y -= point2.y;
+							var point1 = matrix.transformPoint (new Point (-819.2, 0));
+							var point2 = matrix.transformPoint (new Point (819.2, 0));
 							
 							gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
 						

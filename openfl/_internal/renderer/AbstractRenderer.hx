@@ -30,6 +30,20 @@ class AbstractRenderer {
 	}
 	
 	
+	public function renderShape (shape:Shape):Void {
+		
+		
+		
+	}
+	
+
+	public function setViewport (x:Int, y:Int, width:Int, height:Int):Void {
+		
+		
+		
+	}
+	
+	
 	public function resize (width:Int, height:Int):Void {
 		
 		

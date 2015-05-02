@@ -11,6 +11,7 @@ import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.errors.Error;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 
 @:access(lime.graphics.opengl.GL)
@@ -39,8 +40,14 @@ class GLRenderer extends AbstractRenderer {
 	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
 	public var view:Dynamic;
+	public var projectionMatrix:Matrix;
 	
 	private var __stage:Dynamic;
+	
+	private var vpX:Int = 0;
+	private var vpY:Int = 0;
+	private var vpWidth:Int = 0;
+	private var vpHeight:Int = 0;
 	
 	
 	public function new (width:Int = 800, height:Int = 600, gl:GLRenderContext /*view:Dynamic = null*/, transparent:Bool = false, antialias:Bool = false, preserveDrawingBuffer:Bool = false) {
@@ -93,6 +100,8 @@ class GLRenderer extends AbstractRenderer {
 			
 		}
 		
+		projectionMatrix = new Matrix();
+		
 		projection = new Point ();
 		projection.x =  this.width / 2;
 		projection.y =  -this.height / 2;
@@ -120,9 +129,7 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.stencilManager = this.stencilManager;
 		renderSession.renderer = this;
 		renderSession.defaultFramebuffer = this.defaultFramebuffer;
-		
-		renderSession.projection = projection;
-		renderSession.offset = offset;
+		renderSession.projectionMatrix = this.projectionMatrix;
 		
 		shaderManager.setShader(shaderManager.defaultShader);
 		
@@ -161,6 +168,25 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 	
+	public override function setViewport(x:Int, y:Int, width:Int, height:Int) {
+		if (!(vpX == x && vpY == y && vpWidth == width && vpHeight == height)) {
+			vpX = x;
+			vpY = y;
+			vpWidth = width;
+			vpHeight = height;
+			gl.viewport(x, y, width, height);
+			setOrtho(x, y, width, height);
+		}
+	}
+	
+	public function setOrtho(x:Float, y:Float, width:Float, height:Float) {
+		var o = projectionMatrix;
+		o.identity();
+		o.a = 1 / width * 2;
+		o.d = -1 / height * 2;
+		o.tx = -1 - x * o.a;
+		o.ty = 1 - y * o.d;
+	}
 	
 	/*private static function destroyTexture (texture:BaseTexture):Void {
 		
@@ -236,7 +262,7 @@ class GLRenderer extends AbstractRenderer {
 		gl.enable (gl.BLEND);
 		gl.colorMask (true, true, true, transparent);
 		
-		gl.viewport (0, 0, width, height);
+		setViewport (0, 0, width, height);
 		
 		/*for (key in Texture.TextureCache.keys ()) {
 			
@@ -257,7 +283,7 @@ class GLRenderer extends AbstractRenderer {
 		//updateTextures ();
 		
 		var gl = this.gl;
-		gl.viewport (0, 0, width, height);
+		setViewport (0, 0, width, height);
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, defaultFramebuffer);
 		
@@ -284,9 +310,6 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.drawCount = 0;
 		renderSession.currentBlendMode = null;
 		
-		renderSession.projection = projection;
-		renderSession.offset = offset;
-		
 		spriteBatch.begin (renderSession);
 		filterManager.begin (renderSession, buffer);
 		displayObject.__renderGL (renderSession);
@@ -303,7 +326,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		super.resize (width, height);
 		
-		gl.viewport (0, 0, width, height);
+		setViewport (0, 0, width, height);
 		
 		projection.x =  width / 2;
 		projection.y =  -height / 2;
