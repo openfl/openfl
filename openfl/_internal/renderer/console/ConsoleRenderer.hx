@@ -3,6 +3,7 @@ package openfl._internal.renderer.console;
 
 
 import cpp.vm.WeakRef;
+import cpp.Int8;
 import cpp.UInt8;
 import lime.graphics.console.IndexBuffer;
 import lime.graphics.console.PointerUtil;
@@ -60,11 +61,11 @@ class ConsoleRenderer extends AbstractRenderer {
 	// TODO(james4k): move to a TransientBuffers class or something.. or move to C++
 	private var indexBufferCounts:Array<Int> = [];
 	private var indexBuffers:Array<IndexBuffer> = [];
-	private var indexBufferAges:Array<UInt8> = [];
+	private var indexBufferAges:Array<Int8> = [];
 	private var vertexBufferDecls:Array<VertexDecl> = [];
 	private var vertexBufferCounts:Array<Int> = [];
 	private var vertexBuffers:Array<VertexBuffer> = [];
-	private var vertexBufferAges:Array<UInt8> = [];
+	private var vertexBufferAges:Array<Int8> = [];
 
 	private var textureImages:Array<WeakRef<Image>> = [];
 	private var textures:Array<Texture> = [];
@@ -216,12 +217,17 @@ class ConsoleRenderer extends AbstractRenderer {
 		var align = 16;
 		indexCount = (indexCount + align - 1) & ~(align - 1);
 
-		for (i in 0...vertexBuffers.length) {
+		// age of -1 to double buffer, to prevent race conditions
+		// TODO(james4k): confirm this is necessary. dynamic vertex buffers are
+		// double buffered internally, and dynamic index buffers are not..
+		var startAge = -1;
+
+		for (i in 0...indexBuffers.length) {
 
 			if (indexBufferCounts[i] == indexCount &&
 				indexBufferAges[i] > 0
 			) {
-				indexBufferAges[i] = 0;
+				indexBufferAges[i] = startAge;
 				return indexBuffers[i];
 			}
 
@@ -231,7 +237,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		indexBufferCounts.push (indexCount);
 		indexBuffers.push (ib);
-		indexBufferAges.push (0);
+		indexBufferAges.push (startAge);
 
 		return ib;
 
@@ -245,13 +251,17 @@ class ConsoleRenderer extends AbstractRenderer {
 		var align = 16;
 		vertexCount = (vertexCount + align - 1) & ~(align - 1);
 
+		// vertex buffers are double buffered internally, so can reuse every frame.
+		// (compare to transientIndexBuffer)
+		var startAge = 0;
+
 		for (i in 0...vertexBuffers.length) {
 
 			if (vertexBufferDecls[i] == decl &&
 				vertexBufferCounts[i] == vertexCount &&
 				vertexBufferAges[i] > 0
 			) {
-				vertexBufferAges[i] = 0;
+				vertexBufferAges[i] = startAge;
 				return vertexBuffers[i];
 			}
 
@@ -262,7 +272,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		vertexBufferDecls.push (decl);
 		vertexBufferCounts.push (vertexCount);
 		vertexBuffers.push (vb);
-		vertexBufferAges.push (0);
+		vertexBufferAges.push (startAge);
 
 		return vb;
 
