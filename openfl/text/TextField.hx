@@ -1101,7 +1101,9 @@ class TextField extends InteractiveObject {
 #if lime_console
 		// TODO(james4k): until we figure out our story for the above switch
 		// statement, always load arial
-		fontList = [ "arial.ttf" ];
+		if (format == null || StringTools.startsWith (format.font,  "_")) {
+			fontList = [ "arial.ttf" ];
+		}
 #end
 		
 		if (fontList == null) return null;
