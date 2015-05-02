@@ -31,50 +31,201 @@ class CanvasGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
-	private static var bounds:Rectangle;
-	private static var inversePendingMatrix:Matrix;
-	private static var pendingMatrix:Matrix;
-	
-	private static var hasStroke : Bool;
-	private static var hasFill:Bool;
-	
 	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;
-	
-	private static var graphics:Graphics;
-	
+	private static var bounds:Rectangle;
 	private static var fillCommands:Array<DrawCommand>;
+	private static var graphics:Graphics;
+	private static var hasFill:Bool;
+	private static var hasStroke:Bool;
+	private static var inversePendingMatrix:Matrix;
+	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:Array<DrawCommand>;
 	
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	private static var pattern:CanvasPattern;
 	#end
+	
+	
+	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
 		
-	private static function playCommands( commands : Array<DrawCommand>, stroke : Bool = false )
-	{
 		#if (js && html5)
+		if (hasFill || bitmapFill == null) return;
 		
+		if (pattern == null) {
+			
+			pattern = context.createPattern (bitmapFill.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
+			
+		}
+		
+		context.fillStyle = pattern;
+		hasFill = true;
+		#end
+		
+	}
+	
+	
+	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) {
+		
+		// TODO: Don't create extra canvas elements like this
+		
+		#if (js && html5)
+		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+		var context = canvas.getContext ("2d");
+		
+		canvas.width = width;
+		canvas.height = height;
+		
+		context.fillStyle = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+		context.beginPath ();
+		context.moveTo (0, 0);
+		context.lineTo (0, height);
+		context.lineTo (width, height);
+		context.lineTo (width, 0);
+		context.lineTo (0, 0);
+		context.closePath ();
+		context.fill ();
+		return canvas;
+		#end
+		
+	}
+	
+	
+	private static function endFill ():Void {
+		
+		#if (js && html5)
+		context.beginPath ();
+		playCommands (fillCommands, false);
+		fillCommands = [];
+		#end
+		
+	}
+	
+	
+	private static function endStroke ():Void {
+		
+		#if (js && html5)
+		context.beginPath ();
+		playCommands (strokeCommands, true);
+		context.closePath ();
+		strokeCommands = [];
+		#end
+		
+	}
+	
+	
+	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
+		
+		#if (js && html5)
+		if (ry == -1) ry = rx;
+		
+		rx *= 0.5;
+		ry *= 0.5;
+		
+		if (rx > width / 2) rx = width / 2;
+		if (ry > height / 2) ry = height / 2;
+		
+		var xe = x + width,
+		ye = y + height,
+		cx1 = -rx + (rx * SIN45),
+		cx2 = -rx + (rx * TAN22),
+		cy1 = -ry + (ry * SIN45),
+		cy2 = -ry + (ry * TAN22);
+		
+		context.moveTo (xe, ye - ry);
+		context.quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
+		context.quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
+		context.lineTo (x + rx, ye);
+		context.quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
+		context.quadraticCurveTo (x, ye + cy2, x, ye - ry);
+		context.lineTo (x, y + ry);
+		context.quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
+		context.quadraticCurveTo (x - cx2, y, x + rx, y);
+		context.lineTo (xe - rx, y);
+		context.quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
+		context.quadraticCurveTo (xe, y - cy2, xe, y + ry);
+		context.lineTo (xe, ye - ry);
+		#end
+		
+	}
+	
+	
+	private static inline function isCCW (x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
+		
+		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
+		
+	}
+	
+	
+	private static function normalizeUVT (uvt:Vector<Float>, skipT:Bool = false): { max:Float, uvt:Vector<Float> } {
+		
+		var max:Float = Math.NEGATIVE_INFINITY;
+		var tmp = Math.NEGATIVE_INFINITY;
+		var len = uvt.length;
+		
+		for (t in 1...len + 1) {
+			
+			if (skipT && t % 3 == 0) {
+				
+				continue;
+				
+			}
+			
+			tmp = uvt[t - 1];
+			
+			if (max < tmp) {
+				
+				max = tmp;
+				
+			}
+			
+		}
+		
+		var result = new Vector<Float> ();
+		
+		for (t in 1...len + 1) {
+			
+			if (skipT && t % 3 == 0) {
+				
+				continue;
+				
+			}
+			
+			result.push ((uvt[t - 1] / max));
+			
+		}
+		
+		return { max: max, uvt: result };
+		
+	}
+	
+	
+	private static function playCommands (commands:Array<DrawCommand>, stroke:Bool = false):Void {
+		
+		#if (js && html5)
 		bounds = graphics.__bounds;
 		
 		var offsetX = bounds.x;
 		var offsetY = bounds.y;
 		
-		var positionX : Float = 0;
-		var positionY : Float = 0;
+		var positionX = 0.0;
+		var positionY = 0.0;
 		
-		var closeGap : Bool = false;
-		var startX : Float = 0;
-		var startY : Float = 0;
-									
+		var closeGap = false;
+		var startX = 0.0;
+		var startY = 0.0;
+		
 		for (command in commands) {
-					
+			
 			switch (command) {
-									
+				
 				case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
+					
 					context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
 				
 				case CurveTo (cx, cy, x, y):
+					
 					context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 				
 				case DrawCircle (x, y, radius):
@@ -101,20 +252,20 @@ class CanvasGraphics {
 					context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
 					context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
 				
-				
 				case DrawRoundRect (x, y, width, height, rx, ry):
+					
 					drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
-								
+				
 				case LineTo (x, y):
 					
-					context.lineTo (x - offsetX, y - offsetY);	
+					context.lineTo (x - offsetX, y - offsetY);
 					
 					positionX = x;
 					positionY = y;
-					
+				
 				case MoveTo (x, y):
 					
-					context.moveTo (x - offsetX, y - offsetY);		
+					context.moveTo (x - offsetX, y - offsetY);
 					
 					positionX = x;
 					positionY = y;
@@ -122,14 +273,15 @@ class CanvasGraphics {
 					closeGap = true;
 					startX = x;
 					startY = y;
-					
+				
 				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
 					
-					if ( stroke && hasStroke )
-					{
-						context.closePath();
-						context.stroke();
-						context.beginPath();
+					if (stroke && hasStroke) {
+						
+						context.closePath ();
+						context.stroke ();
+						context.beginPath ();
+						
 					}
 					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
@@ -151,9 +303,9 @@ class CanvasGraphics {
 						context.miterLimit = (miterLimit == null ? 3 : miterLimit);
 						
 						if (alpha == 1 || alpha == null) {
-						
+							
 							context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
-						
+							
 						} else {
 							
 							var r = (color & 0xFF0000) >>> 16;
@@ -167,9 +319,9 @@ class CanvasGraphics {
 						hasStroke = true;
 						
 					}
-					
+				
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
-											
+					
 					if (bitmap != bitmapFill || repeat != bitmapRepeat) {
 						
 						bitmapFill = bitmap;
@@ -196,12 +348,12 @@ class CanvasGraphics {
 				
 				case BeginFill (rgb, alpha):
 					
-					if ( alpha < 0.005 )
-					{
+					if (alpha < 0.005) {
+						
 						hasFill = false;
-					}
-					else
-					{
+						
+					} else {
+						
 						if (alpha == 1) {
 							
 							context.fillStyle = "#" + StringTools.hex (rgb, 6);
@@ -218,10 +370,11 @@ class CanvasGraphics {
 						
 						bitmapFill = null;
 						hasFill = true;
+						
 					}
 				
 				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-
+					
 					var gradientFill = null;
 					
 					switch (type) {
@@ -314,33 +467,37 @@ class CanvasGraphics {
 						
 						context.rect (x - offsetX, y - offsetY, width, height);
 					}
-			
-						
-						
+					
+				
 				default:
 					
 			}
-
-		}	
-		
-		if ( stroke && hasStroke )
-		{
-			if ( hasFill && closeGap )
-			{
-				context.lineTo (startX - offsetX, startY - offsetY);	
-			}
 			
-			context.stroke();
 		}
 		
-		if ( !stroke )
-		{
-			if ( hasFill || bitmapFill != null )
-			{
-				if( bitmapFill != null )
-					beginPatternFill (bitmapFill, bitmapRepeat);
+		if (stroke && hasStroke) {
+			
+			if (hasFill && closeGap) {
 				
-				context.translate( -bounds.x, -bounds.y);
+				context.lineTo (startX - offsetX, startY - offsetY);
+				
+			}
+			
+			context.stroke ();
+			
+		}
+		
+		if (!stroke) {
+			
+			if (hasFill || bitmapFill != null) {
+				
+				if (bitmapFill != null) {
+					
+					beginPatternFill (bitmapFill, bitmapRepeat);
+					
+				}
+				
+				context.translate (-bounds.x, -bounds.y);
 				
 				if (pendingMatrix != null) {
 					
@@ -355,102 +512,24 @@ class CanvasGraphics {
 				}
 				
 				context.translate (bounds.x, bounds.y);
-
-				context.closePath();
+				context.closePath ();
+				
 			}
-		}
-		
-		#end
-	}
-	
-	private static function fillEnd()
-	{
-		#if (js && html5)
-		context.beginPath();
-		playCommands( fillCommands, false );		
-		fillCommands = [];
-		#end
-	}
-	
-	private static function strokeEnd()
-	{	
-		#if (js && html5)
-		context.beginPath();
-		playCommands( strokeCommands, true );
-		context.closePath();
-		strokeCommands = [];
-		#end
-	}
-	
-	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
-		
-		#if (js && html5)
-		if (hasFill || bitmapFill == null) return;
-		
-		if (pattern == null) {
-			
-			pattern = context.createPattern (bitmapFill.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
 			
 		}
-		
-		context.fillStyle = pattern;
-		hasFill = true;
 		#end
 		
 	}
-		
-	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
-		
-		#if (js && html5)
-		if (ry == -1) ry = rx;
-		
-		rx *= 0.5;
-		ry *= 0.5;
-		
-		if (rx > width / 2) rx = width / 2;
-		if (ry > height / 2) ry = height / 2;
-		
-		var xe = x + width,
-		ye = y + height,
-		cx1 = -rx + (rx * SIN45),
-		cx2 = -rx + (rx * TAN22),
-		cy1 = -ry + (ry * SIN45),
-		cy2 = -ry + (ry * TAN22);
-		
-		context.moveTo (xe, ye - ry);
-		context.quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
-		context.quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
-		context.lineTo (x + rx, ye);
-		context.quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
-		context.quadraticCurveTo (x, ye + cy2, x, ye - ry);
-		context.lineTo (x, y + ry);
-		context.quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
-		context.quadraticCurveTo (x - cx2, y, x + rx, y);
-		context.lineTo (xe - rx, y);
-		context.quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
-		context.quadraticCurveTo (xe, y - cy2, xe, y + ry);
-		context.lineTo (xe, ye - ry);
-		#end
-		
-	}
-		
+	
+	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-				
-		if (graphics.__dirty) {
 		
+		if (graphics.__dirty) {
+			
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
-			
-			strokeCommands = [];
-			fillCommands = [];
-			
-			hasFill = false;
-			hasStroke = false;
-			
-			bitmapFill = null;
-			bitmapRepeat = false;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
@@ -476,13 +555,18 @@ class CanvasGraphics {
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
 				
-				fillCommands = new Array<DrawCommand>();
-				strokeCommands = new Array<DrawCommand>();
+				fillCommands = new Array<DrawCommand> ();
+				strokeCommands = new Array<DrawCommand> ();
+				
+				hasFill = false;
+				hasStroke = false;
+				bitmapFill = null;
+				bitmapRepeat = false;
 				
 				inline function endAndPush( command : DrawCommand )
 				{
-					fillEnd();
-					strokeEnd();
+					endFill();
+					endStroke();
 					
 					strokeCommands.push( command );
 					fillCommands.push( command );
@@ -492,57 +576,41 @@ class CanvasGraphics {
 					
 					switch (command) {
 						
-						case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
-							strokeCommands.push( command );
-							fillCommands.push( command );
+						case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
 							
-						case CurveTo (cx, cy, x, y):
-							strokeCommands.push( command );
-							fillCommands.push( command );
-							
-						case LineTo (x, y):
-							strokeCommands.push( command );
-							fillCommands.push( command );
-							
+							fillCommands.push (command);
+							strokeCommands.push (command);
+						
 						case EndFill:
 							
-							fillEnd();
-							strokeEnd();
-							
+							endFill ();
+							endStroke ();
 							hasFill = false;
 						
-						case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-							strokeCommands.push( command );
+						case LineStyle (_, _, _, _, _, _, _, _):
 							
-						case BeginBitmapFill (bitmap, matrix, repeat, smooth):
-							endAndPush(command);
-													
-						case BeginFill (rgb, alpha):
-							endAndPush(command);
-													
-						case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-							endAndPush(command);						
-							
-						case DrawCircle (x, y, radius):
-							endAndPush(command);
-							
-						case DrawEllipse (x, y, width, height):
-							endAndPush(command);
-												
-						case DrawRect (x, y, width, height):
-							endAndPush( command );
+							strokeCommands.push (command);
 						
-						case DrawRoundRect (x, y, width, height, rx, ry):
-							endAndPush(command);
+						case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
 							
-						case MoveTo (x, y):
-							strokeCommands.push( command );
-							fillCommands.push( command );
+							endFill ();
+							endStroke ();
 							
+							fillCommands.push (command);
+							strokeCommands.push (command);
+						
+						case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+							
+							endFill ();
+							endStroke ();
+							
+							fillCommands.push (command);
+							strokeCommands.push (command);
+						
 						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
 						
-							fillEnd();
-							strokeEnd();
+							endFill ();
+							endStroke ();
 							
 							var v = vertices;
 							var ind = indices;
@@ -551,30 +619,44 @@ class CanvasGraphics {
 							var colorFill = bitmapFill == null;
 							
 							if (colorFill && uvt != null) {
+								
 								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
 								break;
+								
 							}
 							
-							if(!colorFill) {
+							if (!colorFill) {
+								
 								//TODO move this to Graphics?
+								
 								if (uvtData == null) {
-									uvtData = new Vector<Float>();
-									for (i in 0...(Std.int(v.length / 2))) {
-										uvtData.push(v[i * 2] / bitmapFill.width);
-										uvtData.push(v[i * 2 + 1] / bitmapFill.height);
+									
+									uvtData = new Vector<Float> ();
+									
+									for (i in 0...(Std.int (v.length / 2))) {
+										
+										uvtData.push (v[i * 2] / bitmapFill.width);
+										uvtData.push (v[i * 2 + 1] / bitmapFill.height);
+										
 									}
+									
 								}
 								
 								var skipT = uvtData.length != v.length;
-								var normalizedUvt = normalizeUvt(uvtData, skipT);
-								var maxUvt = normalizedUvt.max;
-								uvt = normalizedUvt.uvt;
+								var normalizedUVT = normalizeUVT (uvtData, skipT);
+								var maxUVT = normalizedUVT.max;
+								uvt = normalizedUVT.uvt;
 								
-								if (maxUvt > 1) {
-									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
+								if (maxUVT > 1) {
+									
+									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, Std.int (bounds.width), Std.int (bounds.height));
+									
 								} else {
-									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+									
+									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+									
 								}
+								
 							}
 							
 							var i = 0;
@@ -587,53 +669,72 @@ class CanvasGraphics {
 							var denom:Float;
 							var t1:Float, t2:Float, t3:Float, t4:Float;
 							var dx:Float, dy:Float;
-							// code from http://tulrich.com/geekstuff/canvas/perspective.html
+							
 							while (i < l) {
+								
 								a = i;
 								b = i + 1;
 								c = i + 2;
 								
-								iax = ind[a] * 2;		iay = ind[a] * 2 + 1;
-								ibx = ind[b] * 2;		iby = ind[b] * 2 + 1;
-								icx = ind[c] * 2;		icy = ind[c] * 2 + 1;
+								iax = ind[a] * 2;
+								iay = ind[a] * 2 + 1;
+								ibx = ind[b] * 2;
+								iby = ind[b] * 2 + 1;
+								icx = ind[c] * 2;
+								icy = ind[c] * 2 + 1;
 								
-								x1 = v[iax];	y1 = v[iay];
-								x2 = v[ibx];	y2 = v[iby];
-								x3 = v[icx];	y3 = v[icy];
+								x1 = v[iax];
+								y1 = v[iay];
+								x2 = v[ibx];
+								y2 = v[iby];
+								x3 = v[icx];
+								y3 = v[icy];
 								
-								switch(culling) {
+								switch (culling) {
+									
 									case POSITIVE:
-										if (!isCCW(x1, y1, x2, y2, x3, y3)) {
+										
+										if (!isCCW (x1, y1, x2, y2, x3, y3)) {
+											
 											i += 3;
 											continue;
+											
 										}
+									
 									case NEGATIVE:
-										if (isCCW(x1, y1, x2, y2, x3, y3)) {
+										
+										if (isCCW (x1, y1, x2, y2, x3, y3)) {
+											
 											i += 3;
 											continue;
+											
 										}
-									case _:
+									
+									default:
+										
 								}
 								
 								if (colorFill) {
-									context.beginPath();
-									context.moveTo(x1, y1);
-									context.lineTo(x2, y2);
-									context.lineTo(x3, y3);
-									context.closePath();
-									context.fill();
+									
+									context.beginPath ();
+									context.moveTo (x1, y1);
+									context.lineTo (x2, y2);
+									context.lineTo (x3, y3);
+									context.closePath ();
+									context.fill ();
 									i += 3;
 									continue;
+									
 								} 
 								
-								context.save();
-								context.beginPath();
-								context.moveTo(x1, y1);
-								context.lineTo(x2, y2);
-								context.lineTo(x3, y3);
-								context.closePath();
+								context.save ();
+								context.beginPath ();
+								context.moveTo (x1, y1);
+								context.lineTo (x2, y2);
+								context.lineTo (x3, y3);
+								context.closePath ();
 								
-								context.clip(); 
+								context.clip ();
 								
 								uvx1 = uvt[iax] * pattern.width;
 								uvx2 = uvt[ibx] * pattern.width;
@@ -643,9 +744,12 @@ class CanvasGraphics {
 								uvy3 = uvt[icy] * pattern.height;
 								
 								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
+								
 								if (denom == 0) {
+									
 									i += 3;
 									continue;
+									
 								}
 								
 								t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
@@ -655,15 +759,14 @@ class CanvasGraphics {
 								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
 								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 								
-								context.transform(t1, t2, t3, t4, dx, dy);
-								context.drawImage(pattern, 0, 0);
-								
-								context.restore();
+								context.transform (t1, t2, t3, t4, dx, dy);
+								context.drawImage (pattern, 0, 0);
+								context.restore ();
 								
 								i += 3;
 								
-							}	
-							
+							}
+						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
 							
 							var useScale = (flags & Graphics.TILE_SCALE) > 0;
@@ -704,9 +807,12 @@ class CanvasGraphics {
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.__image.src;
-
-							if (useBlendAdd)
+							
+							if (useBlendAdd) {
+								
 								context.globalCompositeOperation = "lighter";
+								
+							}
 							
 							while (index < totalCount) {
 								
@@ -719,20 +825,22 @@ class CanvasGraphics {
 									
 									previousTileID = tileID;
 									
-								}
-								else if (useRect)
-								{
+								} else if (useRect) {
+									
 									rect = sheet.__rectTile;
-									rect.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+									rect.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
 									center = sheet.__point;
-									if (useOrigin)
-									{
-										center.setTo(tileData[index + 6], tileData[index + 7]);
+									
+									if (useOrigin) {
+										
+										center.setTo (tileData[index + 6], tileData[index + 7]);
+										
+									} else {
+										
+										center.setTo (0, 0);
+										
 									}
-									else
-									{
-										center.setTo(0, 0);
-									}
+									
 								}
 								
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
@@ -774,12 +882,16 @@ class CanvasGraphics {
 								index += numValues;
 								
 							}
-
-							if (useBlendAdd)
-								context.globalCompositeOperation = "source-over";
 							
-						case _:
-							openfl.Lib.notImplemented("CanvasGraphics");
+							if (useBlendAdd) {
+								
+								context.globalCompositeOperation = "source-over";
+								
+							}
+						
+						default:
+							
+							openfl.Lib.notImplemented ("CanvasGraphics");
 						
 					}
 					
@@ -789,11 +901,17 @@ class CanvasGraphics {
 			
 			graphics.__dirty = false;
 			
-			if( fillCommands.length > 0 )
-				fillEnd();
+			if (fillCommands.length > 0) {
+				
+				endFill ();
+				
+			}
 			
-			if( strokeCommands.length > 0 )
-				strokeEnd();
+			if (strokeCommands.length > 0) {
+				
+				endStroke ();
+				
+			}
 			
 		}
 		
@@ -886,49 +1004,5 @@ class CanvasGraphics {
 		
 	}
 	
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Float, height:Float) {
-		
-		#if (js && html5)
-		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-		var context:CanvasRenderingContext2D = canvas.getContext ("2d");
-		
-		canvas.width = Math.ceil (width);
-		canvas.height = Math.ceil (height);
-		
-		context.fillStyle = context.createPattern(bitmap.__image.src, repeat ? "repeat" : "no-repeat");
-		context.beginPath();
-		context.moveTo(0, 0);
-		context.lineTo(0, height);
-		context.lineTo(width, height);
-		context.lineTo(width, 0);
-		context.lineTo(0, 0);
-		context.closePath();
-		context.fill();
-		return canvas;
-		#end
-	}
-	
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
-		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
-	}
-	
-	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):{max:Float, uvt:Vector<Float> } {
-		var max:Float = Math.NEGATIVE_INFINITY;
-		var tmp = Math.NEGATIVE_INFINITY;
-		var len = uvt.length;
-		for (t in 1...len+1) {
-			if (skipT && t % 3 == 0) continue;
-			tmp = uvt[t - 1];
-			if (max < tmp) max = tmp;
-		}
-		
-		var result:Vector<Float> = new Vector<Float>();
-		for (t in 1...len+1) {
-			if (skipT && t % 3 == 0) continue;
-			result.push((uvt[t - 1] / max));
-		}
-		
-		return {max:max, uvt:result};
-	}
 	
 }
