@@ -583,11 +583,6 @@ class ConsoleRenderer extends AbstractRenderer {
 					var useRect = (flags & Tilesheet.TILE_RECT) != 0;
 					var useOrigin = (flags & Tilesheet.TILE_ORIGIN) != 0;
 
-					if (useRect || useOrigin) {
-						trace ("DrawTiles not implemented for flags: " + flags);
-						break;
-					}
-
 					var blendMode:BlendMode = switch(flags & 0xF0000) {
 						case Tilesheet.TILE_BLEND_ADD:		ADD;
 						case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
@@ -611,6 +606,9 @@ class ConsoleRenderer extends AbstractRenderer {
 					var alphaIndex = 0;
 
 					var stride = 3;
+					if (useRect) {
+						stride = useOrigin ? 8 : 6;
+					}
 					if (useScale) {
 						scaleIndex = stride;
 						stride += 1;
@@ -655,6 +653,27 @@ class ConsoleRenderer extends AbstractRenderer {
 						var y = tileData[index + 1];
 
 						if (useRect) {
+
+							tileID = -1;
+
+							rect.x = tileData[index + 2];
+							rect.y = tileData[index + 3];
+							rect.width = tileData[index + 4];
+							rect.height = tileData[index + 5];
+							
+							if (useOrigin) {
+								center.x = tileData[index + 6];
+								center.y = tileData[index + 7];
+							} else {
+								center.setTo(0, 0);
+							}
+							
+							tileUV.setTo(
+								rect.left / sheet.__bitmap.width,
+								rect.top / sheet.__bitmap.height,
+								rect.right / sheet.__bitmap.width,
+								rect.bottom / sheet.__bitmap.height
+							);
 
 						} else {
 
