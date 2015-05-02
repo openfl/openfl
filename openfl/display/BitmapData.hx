@@ -11,6 +11,7 @@ import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
@@ -94,6 +95,8 @@ import js.Browser;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.Graphics)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
@@ -534,6 +537,26 @@ class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		if (!__isValid) return;
+
+		#if lime_console
+
+			if (Std.is (source, DisplayObject)) {
+				CairoRenderer.renderToBitmap (
+					this,
+					cast (source),
+					matrix,
+					colorTransform,
+					blendMode,
+					clipRect,
+					smoothing
+				);
+			} else {
+				trace ("not implemented");
+			}
+
+			return;
+
+		#end
 		
 		switch (__image.type) {
 			
