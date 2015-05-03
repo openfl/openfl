@@ -36,7 +36,7 @@ class CairoRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 		
-		cairo.transform (new Matrix3 ());
+		cairo.identityMatrix ();
 		
 		if (stage.__clearBeforeRender) {
 			

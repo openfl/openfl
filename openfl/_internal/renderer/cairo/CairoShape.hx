@@ -33,7 +33,7 @@ class CairoShape {
 				
 				//context.globalAlpha = shape.__worldAlpha;
 				var transform = shape.__worldTransform;
-				//
+				
 				//if (renderSession.roundPixels) {
 					//
 					//context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
@@ -44,9 +44,10 @@ class CairoShape {
 					//
 				//}
 				
+				cairo.identityMatrix ();
 				cairo.transform (@:privateAccess (shape.__worldTransform).__toMatrix3 ());
 				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
-				cairo.paint ();
+				cairo.paintWithAlpha (shape.__worldAlpha);
 				
 				//
 				//if (scrollRect == null) {

@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
@@ -18,6 +19,7 @@ import openfl.Vector;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Tilesheet)
+@:access(openfl.geom.Matrix)
 
 
 class CairoGraphics {
@@ -216,7 +218,7 @@ class CairoGraphics {
 				case DrawCircle (x, y, radius):
 					
 					cairo.moveTo (x - offsetX + radius, y - offsetY);
-					cairo.arcNegative (x - offsetX, y - offsetY, radius, 0, Math.PI * 2);
+					cairo.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2);
 				
 				case DrawEllipse (x, y, width, height):
 					
@@ -425,8 +427,8 @@ class CairoGraphics {
 								
 							} else {
 								
-								var stl = inversePendingMatrix.transformPoint(new Point(x, y));
-								var sbr = inversePendingMatrix.transformPoint(new Point(x + width, y + height));
+								var stl = inversePendingMatrix.transformPoint (new Point (x, y));
+								var sbr = inversePendingMatrix.transformPoint (new Point (x + width, y + height));
 								
 								st = stl.y;
 								sl = stl.x;
@@ -490,9 +492,9 @@ class CairoGraphics {
 				
 				if (pendingMatrix != null) {
 					
-					//context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
+					cairo.transform (pendingMatrix.__toMatrix3 ());
 					cairo.fill ();
-					//context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+					cairo.transform (inversePendingMatrix.__toMatrix3 ());
 					
 				} else {
 					
@@ -502,7 +504,7 @@ class CairoGraphics {
 				
 				cairo.translate (bounds.x, bounds.y);
 				cairo.closePath ();
-				cairo.paint ();
+				//cairo.paint ();
 				
 			}
 			
@@ -549,6 +551,8 @@ class CairoGraphics {
 					surface.destroy ();
 					
 				}
+				
+				cairo = graphics.__cairo;
 				
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
