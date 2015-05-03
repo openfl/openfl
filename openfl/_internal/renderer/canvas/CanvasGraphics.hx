@@ -563,15 +563,6 @@ class CanvasGraphics {
 				bitmapFill = null;
 				bitmapRepeat = false;
 				
-				inline function endAndPush( command : DrawCommand )
-				{
-					endFill();
-					endStroke();
-					
-					strokeCommands.push( command );
-					fillCommands.push( command );
-				}
-				
 				for (command in graphics.__commands) {
 					
 					switch (command) {

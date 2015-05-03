@@ -20,25 +20,19 @@ class CairoShape {
 			
 			CairoGraphics.render (graphics, renderSession);
 			
-			//#if old
-			//CanvasGraphics.render (graphics, renderSession);
-			//#else
-			//CanvasGraphics.renderObjectGraphics (shape, renderSession);
-			//#end
-			
-			//if (graphics.__canvas != null) {
-				//
+			if (graphics.__cairo != null) {
+				
 				//if (shape.__mask != null) {
 					//
 					//renderSession.maskManager.pushMask (shape.__mask);
 					//
 				//}
-				//
-				//var context = renderSession.context;
-				//var scrollRect = shape.scrollRect;
-				//
+				
+				var cairo = renderSession.cairo;
+				var scrollRect = shape.scrollRect;
+				
 				//context.globalAlpha = shape.__worldAlpha;
-				//var transform = shape.__worldTransform;
+				var transform = shape.__worldTransform;
 				//
 				//if (renderSession.roundPixels) {
 					//
@@ -49,6 +43,11 @@ class CairoShape {
 					//context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 					//
 				//}
+				
+				cairo.transform (@:privateAccess (shape.__worldTransform).__toMatrix3 ());
+				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
+				cairo.paint ();
+				
 				//
 				//if (scrollRect == null) {
 					//
@@ -65,8 +64,8 @@ class CairoShape {
 					//renderSession.maskManager.popMask ();
 					//
 				//}
-				//
-			//}
+				
+			}
 			
 		}
 		

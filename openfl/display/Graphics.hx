@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
@@ -46,6 +47,7 @@ class Graphics {
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
 	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __cairo:Cairo;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
