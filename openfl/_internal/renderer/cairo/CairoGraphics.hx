@@ -546,7 +546,7 @@ class CairoGraphics {
 				
 				if (graphics.__cairo == null) {
 					
-					var surface = new CairoSurface (ARGB32, Std.int (bounds.width), Std.int (bounds.height));
+					var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height));
 					graphics.__cairo = new Cairo (surface);
 					surface.destroy ();
 					
