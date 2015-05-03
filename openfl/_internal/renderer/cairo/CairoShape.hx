@@ -5,6 +5,7 @@ import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 
 
 class CairoShape {
@@ -44,8 +45,7 @@ class CairoShape {
 					//
 				//}
 				
-				cairo.identityMatrix ();
-				cairo.transform (@:privateAccess (shape.__worldTransform).__toMatrix3 ());
+				cairo.matrix = transform.__toMatrix3 ();
 				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
 				cairo.paintWithAlpha (shape.__worldAlpha);
 				
