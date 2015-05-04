@@ -21,6 +21,11 @@ import neko.vm.Thread;
 import neko.vm.Mutex;
 #end
 
+private enum ManagersThreadMessage {
+	GetCookiesCall (thread : Thread, handle : Dynamic);
+	GetCookiesResponse (ret : Array<String>);
+}
+
 private class URLLoadersManager {
 
 	static var instance : URLLoadersManager;
@@ -67,7 +72,20 @@ private class URLLoadersManager {
 				}
 			}
 
-			Sys.sleep(0.05);
+			var msg = Thread.readMessage(false);
+			if (msg!=null) {
+				msg = cast (msg, ManagersThreadMessage);
+				switch (msg) {
+					case GetCookiesCall (callerThread, handle): {
+						var cookies : Array<String> = lime_curl_get_cookies (handle);
+						callerThread.sendMessage (GetCookiesResponse (cookies));
+					}
+					default: {}
+				}
+			}
+
+			Sys.sleep(0.1);
+
 		}
 
 	} // mainLoop
@@ -112,14 +130,22 @@ private class URLLoadersManager {
 		return lime_curl_get_data (handle);
 	}
 
-	public function getCookies (handle : Dynamic) : Array<String> {
-		if (Thread.current()!=managersThread) throw "Wrong thread : getCookies";
-		return lime_curl_get_cookies (handle);
-	}
-
 	public function getHeaders (handle : Dynamic) : Array<String> {
 		if (Thread.current()!=managersThread) throw "Wrong thread : getHeaders";
 		return lime_curl_get_headers (handle);
+	}
+
+	public function getCookies (handle : Dynamic) : Array<String> {
+		managersThread.sendMessage (GetCookiesCall (Thread.current(), handle));
+		var msg : ManagersThreadMessage = Thread.readMessage(true);
+		switch (msg) {
+			case (GetCookiesResponse (result)): {
+				return result;
+			}
+			default: {
+				return [];
+			}
+		}
 	}
 
 	// Native Methods
@@ -207,17 +233,13 @@ class URLLoader extends EventDispatcher {
 
 
 	public function getCookies ():Array<String> {
-		trace("GET COOKIES");
-		return [];
-		/*
-		return lime_curl_get_cookies (__handle);
-		*/
+		return URLLoadersManager.getInstance().getCookies (__handle);
 	}
 
 
 	public static function hasActive ():Bool {
 
-		return !URLLoadersManager.getInstance().activeLoadersIsEmpty();
+		return !URLLoadersManager.getInstance().activeLoadersIsEmpty ();
 
 	}
 
@@ -301,7 +323,7 @@ class URLLoader extends EventDispatcher {
 	}
 
 	@:allow(openfl._legacy.net.URLLoadersManager)
-	private function update():Void {
+	private function update ():Void {
 
 		if (__handle != null) {
 
