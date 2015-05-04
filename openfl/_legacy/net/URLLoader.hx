@@ -13,15 +13,22 @@ import openfl.net.URLRequestHeader;
 import openfl.net.URLVariables;
 import openfl.utils.ByteArray;
 import openfl.Lib;
+#if cpp
 import cpp.vm.Thread;
+import cpp.vm.Mutex;
+#elseif neko
+import neko.vm.Thread;
+import neko.vm.Mutex;
+#end
 
-class URLLoadersManager {
+private class URLLoadersManager {
 
 	static var instance : URLLoadersManager;
 
 	var managersThread : Thread;
 	var activeLoaders : List<URLLoader>;
 	var loadsQueue : Array<{loader : URLLoader, request : URLRequest}>;
+	var loadsQueueMutex : Mutex;
 
 	public static function getInstance() : URLLoadersManager {
 		if (instance==null)	{
@@ -33,6 +40,7 @@ class URLLoadersManager {
 	function new() {
 		activeLoaders = new List<URLLoader>();
 		loadsQueue = [];
+		loadsQueueMutex = new Mutex();
 		managersThread = Thread.create(mainLoop);
 	}
 
@@ -40,7 +48,9 @@ class URLLoadersManager {
 
 		while (true) {
 
+			loadsQueueMutex.acquire();
 			var loadCall = loadsQueue.shift();
+			loadsQueueMutex.release();
 			if (loadCall!=null) {
 				loadCall.loader.loadInCURLThread(loadCall.request);
 			}
@@ -63,7 +73,9 @@ class URLLoadersManager {
 	} // mainLoop
 
 	public function enqueueLoad(loader : URLLoader, request : URLRequest) {
+		loadsQueueMutex.acquire();
 		loadsQueue.push({loader : loader, request : request});
+		loadsQueueMutex.release();
 	}
 
 	public function activeLoadersIsEmpty() {
