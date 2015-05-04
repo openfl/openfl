@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
@@ -141,6 +142,13 @@ class Bitmap extends DisplayObjectContainer {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public override function __renderCairo (renderSession:RenderSession):Void {
+		
+		CairoBitmap.render (this, renderSession);
 		
 	}
 	

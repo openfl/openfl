@@ -35,17 +35,19 @@ class CairoShape {
 				//context.globalAlpha = shape.__worldAlpha;
 				var transform = shape.__worldTransform;
 				
-				//if (renderSession.roundPixels) {
-					//
-					//context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-					//
-				//} else {
-					//
-					//context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-					//
-				//}
+				if (renderSession.roundPixels) {
+					
+					var matrix = transform.__toMatrix3 ();
+					matrix.tx = Math.round (matrix.tx);
+					matrix.ty = Math.round (matrix.ty);
+					cairo.matrix = matrix;
+					
+				} else {
+					
+					cairo.matrix = transform.__toMatrix3 ();
+					
+				}
 				
-				cairo.matrix = transform.__toMatrix3 ();
 				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
 				cairo.paintWithAlpha (shape.__worldAlpha);
 				
