@@ -22,8 +22,9 @@ import neko.vm.Mutex;
 #end
 
 private enum ManagersThreadMessage {
-	GetCookiesCall (thread : Thread, handle : Dynamic);
+	GetCookiesCall (callerThread : Thread, handle : Dynamic);
 	GetCookiesResponse (ret : Array<String>);
+	InitializeCall (caCertFilePath : String);
 }
 
 private class URLLoadersManager {
@@ -80,6 +81,9 @@ private class URLLoadersManager {
 						var cookies : Array<String> = lime_curl_get_cookies (handle);
 						callerThread.sendMessage (GetCookiesResponse (cookies));
 					}
+					case InitializeCall (caCertFilePath): {
+						lime_curl_initialize (caCertFilePath);
+					}
 					default: {}
 				}
 			}
@@ -133,6 +137,11 @@ private class URLLoadersManager {
 	public function getHeaders (handle : Dynamic) : Array<String> {
 		if (Thread.current()!=managersThread) throw "Wrong thread : getHeaders";
 		return lime_curl_get_headers (handle);
+	}
+
+	public function initialize (caCertFilePath : String) : Void {
+		managersThread.sendMessage (InitializeCall (caCertFilePath));
+		return;
 	}
 
 	public function getCookies (handle : Dynamic) : Array<String> {
@@ -245,10 +254,8 @@ class URLLoader extends EventDispatcher {
 
 
 	public static function initialize (caCertFilePath:String):Void {
-		trace("INITIALIZE");
-		/*
-		lime_curl_initialize (caCertFilePath);
-		*/
+		
+		URLLoadersManager.getInstance().initialize (caCertFilePath);
 
 	}
 
