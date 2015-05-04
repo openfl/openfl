@@ -7,7 +7,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 
-#if js
+#if (js && html5)
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
 #end
@@ -18,14 +18,14 @@ import js.Browser;
 class CanvasTextField {
 	
 	
-	#if js
+	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	#end
 	
 	
 	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
 		
@@ -68,11 +68,21 @@ class CanvasTextField {
 	
 	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		context.font = textField.__getFont (format);
-		context.textBaseline = "top";
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
+		context.textBaseline = "top";
+		
+		var yOffset = 0.0;
+		
+		// Hack, baseline "top" is not consistent across browsers
+		
+		if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
+			
+			yOffset = format.size * 0.185;
+			
+		}
 		
 		var lines = [];
 		
@@ -97,11 +107,11 @@ class CanvasTextField {
 						if (context.measureText (test).width > textField.__width - 4 && i > 0) {
 							
 							lines.push (line);
-							lines.push (word.substring (0, newLineIndex) + " ");
+							lines.push (word.substring (0, newLineIndex));
 							
 						} else {
 							
-							lines.push (line + word.substring (0, newLineIndex) + " ");
+							lines.push (line + word.substring (0, newLineIndex));
 							
 						}
 						
@@ -148,8 +158,6 @@ class CanvasTextField {
 			
 		}
 		
-		var yOffset:Float = 0;
-		
 		for (line in lines) {
 			
 			switch (format.align) {
@@ -171,7 +179,7 @@ class CanvasTextField {
 					
 			}
 			
-			yOffset += textField.textHeight;
+			yOffset += textField.textHeight; // TODO: Handle format.leading
 			
 		}
 		
@@ -182,11 +190,11 @@ class CanvasTextField {
 	
 	public static function update (textField:TextField):Bool {
 		
-		#if js
+		#if (js && html5)
 		
 		if (textField.__dirty) {
 			
-			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.LEFT)) {
+			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border && !textField.__hasFocus) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.LEFT)) {
 				
 				textField.__canvas = null;
 				textField.__context = null;
@@ -203,7 +211,7 @@ class CanvasTextField {
 				
 				context = textField.__context;
 				
-				if (textField.__text != null && textField.__text != "") {
+				if ((textField.__text != null && textField.__text != "") || textField.__hasFocus) {
 					
 					var text = textField.text;
 					
@@ -263,19 +271,21 @@ class CanvasTextField {
 					
 					if (textField.__hasFocus && (textField.__selectionStart == textField.__cursorPosition) && textField.__showCursor) {
 						
-						var cursorOffset = textField.__getTextWidth (text.substring (0, textField.__cursorPosition));
+						var cursorOffset = textField.__getTextWidth (text.substring (0, textField.__cursorPosition)) + 3;
 						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
-						context.fillRect (cursorOffset, 5, 1, textField.__textFormat.size - 5);
+						context.fillRect (cursorOffset, 5, 1, (textField.__textFormat.size * 1.185) - 4);
 						
-					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0 && !textField.__isKeyDown) {
+					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0) {
 						
 						var lowPos = Std.int (Math.min (textField.__selectionStart, textField.__cursorPosition));
 						var highPos = Std.int (Math.max (textField.__selectionStart, textField.__cursorPosition));
-						var xPos = textField.__getTextWidth (text.substring (0, lowPos));
+						var xPos = textField.__getTextWidth (text.substring (0, lowPos)) + 2;
 						var widthPos = textField.__getTextWidth (text.substring (lowPos, highPos));
 						
-						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
-						context.fillRect (xPos, 5, widthPos, textField.__textFormat.size - 5);
+						// TODO: White text
+						
+						context.fillStyle = "#000000";
+						context.fillRect (xPos, 5, widthPos, (textField.__textFormat.size * 1.185) - 4);
 						
 					}
 					

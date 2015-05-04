@@ -5,7 +5,7 @@ import lime.graphics.ImageBuffer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
-#if js
+#if (js && html5)
 import js.Browser;
 #end
 
@@ -19,7 +19,7 @@ class DOMBitmap {
 	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
 			if (bitmap.bitmapData.__image.buffer.__srcImage != null) {
@@ -58,7 +58,7 @@ class DOMBitmap {
 	
 	private static function renderCanvas (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		if (bitmap.__image != null) {
 			
 			renderSession.element.removeChild (bitmap.__image);
@@ -99,7 +99,7 @@ class DOMBitmap {
 	
 	private static function renderImage (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		if (bitmap.__canvas != null) {
 			
 			renderSession.element.removeChild (bitmap.__canvas);

@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
@@ -12,7 +13,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 #end
@@ -46,6 +47,7 @@ class Graphics {
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
 	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __cairo:Cairo;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
@@ -58,7 +60,7 @@ class Graphics {
 	@:noCompletion private var __cachedTexture:FilterTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#end
@@ -71,7 +73,7 @@ class Graphics {
 		__positionX = 0;
 		__positionY = 0;
 		
-		#if js
+		#if (js && html5)
 		moveTo( 0, 0);
 		#end
 	}
@@ -249,7 +251,7 @@ class Graphics {
 		
 		__visible = false;
 		
-		#if js
+		#if (js && html5)
 		moveTo( 0, 0);
 		#end
 	}
@@ -911,7 +913,7 @@ class Graphics {
 	 */
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
-		__halfStrokeWidth = (thickness != null) ? thickness / 2 : 0;
+		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness : __halfStrokeWidth;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
@@ -979,7 +981,7 @@ class Graphics {
 		
 		if (__bounds == null) return;
 		
-		var bounds = __bounds.clone ().transform (matrix);
+		var bounds = __bounds.transform (matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 	}
@@ -991,7 +993,7 @@ class Graphics {
 		
 		if (__bounds == null) return false;
 		
-		var bounds = __bounds.clone ().transform (matrix);
+		var bounds = __bounds.transform (matrix);
 		return (x > bounds.x && y > bounds.y && x <= bounds.right && y <= bounds.bottom);
 		
 	}

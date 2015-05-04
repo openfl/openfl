@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
@@ -20,7 +21,7 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Lib;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
@@ -741,8 +742,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __worldZ:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
+	@:noCompletion private var __cacheAsBitmap:Bool = false;
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	@:noCompletion private var __style:CSSStyleDeclaration;
@@ -938,7 +940,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (parent != null) {
 			
 			var bounds = new Rectangle ();
-			__getBounds (bounds, null);
+			__getBounds (bounds, __getTransform ());
 			
 			return bounds.containsPoint (new Point (x, y));
 			
@@ -1004,7 +1006,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			__graphics.__getBounds (rect, matrix != null ? matrix : __worldTransform);
+			__graphics.__getBounds (rect, matrix);
 			
 		}
 		
@@ -1099,6 +1101,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function __renderCairo (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CairoShape.render (this, renderSession);
+			
+		}
 		
 	}
 	
@@ -1402,15 +1415,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			maskGraphics.__commands.push(OverrideMatrix(this.__worldTransform));
-			maskGraphics.__commands = maskGraphics.__commands.concat(__graphics.__commands);
+			maskGraphics.__commands.push (OverrideMatrix (this.__worldTransform));
+			maskGraphics.__commands = maskGraphics.__commands.concat (__graphics.__commands);
 			maskGraphics.__dirty = true;
 			maskGraphics.__visible = true;
+			
 			if (maskGraphics.__bounds == null) {
+				
 				maskGraphics.__bounds = new Rectangle();
+				
 			}
 			
-			__graphics.__getBounds(maskGraphics.__bounds, @:privateAccess Matrix.__identity);
+			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
 			
 		}
 		

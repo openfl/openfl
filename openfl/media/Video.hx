@@ -9,7 +9,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
-#if js
+#if (js && html5)
 import openfl._internal.renderer.dom.DOMRenderer;
 import js.html.MediaElement;
 import js.Browser;
@@ -65,7 +65,7 @@ class Video extends DisplayObject {
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
-		bounds.transform (__worldTransform);
+		bounds = bounds.transform (matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		

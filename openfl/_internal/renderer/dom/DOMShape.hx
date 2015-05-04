@@ -5,7 +5,7 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
-#if js
+#if (js && html5)
 import js.Browser;
 #end
 
@@ -18,7 +18,7 @@ class DOMShape {
 	
 	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		var graphics = shape.__graphics;
 		
 		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null) {

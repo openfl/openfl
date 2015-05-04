@@ -114,6 +114,7 @@ class ApplicationMain {
 			file: "::APP_FILE::",
 			fps: Std.int (::WIN_FPS::),
 			fullscreen: ::WIN_FULLSCREEN::,
+			hardware: ::WIN_HARDWARE::,
 			height: Std.int (::WIN_HEIGHT::),
 			orientation: "::WIN_ORIENTATION::",
 			packageName: "::META_PACKAGE_NAME::",
