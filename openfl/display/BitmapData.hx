@@ -903,6 +903,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			__surfaceImage = __image.clone ();
 			__surfaceImage.format = BGRA;
+			__surfaceImage.premultiplied = true;
 			__surface = CairoSurface.fromImage (__surfaceImage);
 			__image.dirty = false;
 			

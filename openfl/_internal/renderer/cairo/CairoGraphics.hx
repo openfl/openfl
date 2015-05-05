@@ -265,9 +265,9 @@ class CairoGraphics {
 					
 					if (stroke && hasStroke) {
 						
-						//context.closePath ();
-						//context.stroke ();
-						//context.beginPath ();
+						cairo.closePath ();
+						cairo.strokePreserve ();
+						cairo.newPath ();
 						
 					}
 					
@@ -279,28 +279,36 @@ class CairoGraphics {
 						
 					} else {
 						
-						//context.lineWidth = thickness;
-						//
-						//context.lineJoin = (joints == null ? "round" : Std.string (joints).toLowerCase ());
-						//context.lineCap = (caps == null ? "round" : switch (caps) {
-							//case CapsStyle.NONE: "butt";
-							//default: Std.string (caps).toLowerCase ();
-						//});
-						//
-						//context.miterLimit = (miterLimit == null ? 3 : miterLimit);
-						//
+						cairo.lineWidth = thickness;
+						
+						cairo.lineJoin = switch (joints) {
+							case MITER: MITER;
+							case BEVEL: BEVEL;
+							default: ROUND;
+						}
+						
+						cairo.lineCap = switch (caps) {
+							case ROUND: ROUND;
+							case SQUARE: SQUARE;
+							default: BUTT;
+						}
+						
+						cairo.miterLimit = (miterLimit == null ? 3 : miterLimit);
+						
 						//if (alpha == 1 || alpha == null) {
 							//
 							//context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
 							//
 						//} else {
-							//
-							//var r = (color & 0xFF0000) >>> 16;
-							//var g = (color & 0x00FF00) >>> 8;
-							//var b = (color & 0x0000FF);
-							//
+							
+							var r = (color & 0xFF0000) >>> 16;
+							var g = (color & 0x00FF00) >>> 8;
+							var b = (color & 0x0000FF);
+							
+							cairo.setSourceRGBA (r / 0xFF, g / 0xFF, b / 0xFF, alpha);
+							
 							//context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
-							//
+							
 						//}
 						
 						hasStroke = true;
@@ -474,7 +482,7 @@ class CairoGraphics {
 				
 			}
 			
-			cairo.stroke ();
+			cairo.strokePreserve ();
 			
 		}
 		
@@ -493,12 +501,12 @@ class CairoGraphics {
 				if (pendingMatrix != null) {
 					
 					cairo.transform (pendingMatrix.__toMatrix3 ());
-					cairo.fill ();
+					cairo.fillPreserve ();
 					cairo.transform (inversePendingMatrix.__toMatrix3 ());
 					
 				} else {
 					
-					cairo.fill ();
+					cairo.fillPreserve ();
 					
 				}
 				
