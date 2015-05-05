@@ -73,8 +73,16 @@ class CairoBitmap {
 				//trace (image.width);
 				//cairo.rectangle (0, 0, image.width, image.height);
 				cairo.setSourceSurface (surface, 0, 0);
-				cairo.paintWithAlpha (bitmap.__worldAlpha);
-				//cairo.paintWithAlpha (bitmap.__worldAlpha);
+				
+				if (bitmap.__worldAlpha == 1) {
+					
+					cairo.paint ();
+					
+				} else {
+					
+					cairo.paintWithAlpha (bitmap.__worldAlpha);
+					
+				}
 				
 				//context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
 				
