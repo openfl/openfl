@@ -6,6 +6,7 @@ import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
+import lime.math.Vector2;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
@@ -35,32 +36,33 @@ class CairoGraphics {
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
 	private static var fillCommands:Array<DrawCommand>;
+	private static var fillPattern:CairoPattern;
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var inversePendingMatrix:Matrix;
-	private static var pattern:CairoPattern;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:Array<DrawCommand>;
+	private static var strokePattern:CairoPattern;
 	
 	
 	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
 		
 		if (hasFill || bitmapFill == null) return;
 		
-		if (pattern == null) {
+		if (fillPattern == null) {
 			
-			pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
+			fillPattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
 			
 			if (bitmapRepeat) {
 				
-				pattern.extend = CairoExtend.REPEAT;
+				fillPattern.extend = CairoExtend.REPEAT;
 				
 			}
 			
 		}
 		
-		cairo.source = pattern;
+		cairo.source = fillPattern;
 		hasFill = true;
 		
 	}
@@ -86,6 +88,7 @@ class CairoGraphics {
 		cairo.lineTo (0, 0);
 		cairo.closePath ();
 		cairo.fill ();
+		pattern.destroy ();
 		return surface;
 		
 		// TODO: Don't create extra canvas elements like this
@@ -133,36 +136,34 @@ class CairoGraphics {
 	
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
 		
-		//#if (js && html5)
-		//if (ry == -1) ry = rx;
-		//
-		//rx *= 0.5;
-		//ry *= 0.5;
-		//
-		//if (rx > width / 2) rx = width / 2;
-		//if (ry > height / 2) ry = height / 2;
-		//
-		//var xe = x + width,
-		//ye = y + height,
-		//cx1 = -rx + (rx * SIN45),
-		//cx2 = -rx + (rx * TAN22),
-		//cy1 = -ry + (ry * SIN45),
-		//cy2 = -ry + (ry * TAN22);
-		//
-		//context.moveTo (xe, ye - ry);
-		//context.quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
-		//context.quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
-		//context.lineTo (x + rx, ye);
-		//context.quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
-		//context.quadraticCurveTo (x, ye + cy2, x, ye - ry);
-		//context.lineTo (x, y + ry);
-		//context.quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
-		//context.quadraticCurveTo (x - cx2, y, x + rx, y);
-		//context.lineTo (xe - rx, y);
-		//context.quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
-		//context.quadraticCurveTo (xe, y - cy2, xe, y + ry);
-		//context.lineTo (xe, ye - ry);
-		//#end
+		if (ry == -1) ry = rx;
+		
+		rx *= 0.5;
+		ry *= 0.5;
+		
+		if (rx > width / 2) rx = width / 2;
+		if (ry > height / 2) ry = height / 2;
+		
+		var xe = x + width,
+		ye = y + height,
+		cx1 = -rx + (rx * SIN45),
+		cx2 = -rx + (rx * TAN22),
+		cy1 = -ry + (ry * SIN45),
+		cy2 = -ry + (ry * TAN22);
+		
+		cairo.moveTo (xe, ye - ry);
+		quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
+		quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
+		cairo.lineTo (x + rx, ye);
+		quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
+		quadraticCurveTo (x, ye + cy2, x, ye - ry);
+		cairo.lineTo (x, y + ry);
+		quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
+		quadraticCurveTo (x - cx2, y, x + rx, y);
+		cairo.lineTo (xe - rx, y);
+		quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
+		quadraticCurveTo (xe, y - cy2, xe, y + ry);
+		cairo.lineTo (xe, ye - ry);
 		
 	}
 	
@@ -241,7 +242,7 @@ class CairoGraphics {
 				
 				case CurveTo (cx, cy, x, y):
 					
-					//context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
+					quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 				
 				case DrawCircle (x, y, radius):
 					
@@ -269,7 +270,7 @@ class CairoGraphics {
 				
 				case DrawRoundRect (x, y, width, height, rx, ry):
 					
-					//drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
+					drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
 				
 				case LineTo (x, y):
 					
@@ -294,6 +295,7 @@ class CairoGraphics {
 					if (stroke && hasStroke) {
 						
 						cairo.closePath ();
+						cairo.source = strokePattern;
 						cairo.strokePreserve ();
 						cairo.newPath ();
 						
@@ -339,21 +341,25 @@ class CairoGraphics {
 						
 						cairo.miterLimit = (miterLimit == null ? 3 : miterLimit);
 						
-						//if (alpha == 1 || alpha == null) {
-							//
-							//context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
-							//
-						//} else {
+						if (strokePattern != null) {
 							
-							var r = (color & 0xFF0000) >>> 16;
-							var g = (color & 0x00FF00) >>> 8;
-							var b = (color & 0x0000FF);
+							strokePattern.destroy ();
 							
-							cairo.setSourceRGBA (r / 0xFF, g / 0xFF, b / 0xFF, alpha);
+						}
+						
+						var r = ((color & 0xFF0000) >>> 16) / 0xFF;
+						var g = ((color & 0x00FF00) >>> 8) / 0xFF;
+						var b = (color & 0x0000FF) / 0xFF;
+						
+						if (alpha == 1 || alpha == null) {
 							
-							//context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+							strokePattern = CairoPattern.createRGB (r, g, b);
 							
-						//}
+						} else {
+							
+							strokePattern = CairoPattern.createRGBA (r, g, b, alpha);
+							
+						}
 						
 						hasStroke = true;
 						
@@ -365,7 +371,14 @@ class CairoGraphics {
 						
 						bitmapFill = bitmap;
 						bitmapRepeat = repeat;
-						pattern = null;
+						
+						if (fillPattern != null) {
+							
+							fillPattern.destroy ();
+							
+						}
+						
+						fillPattern = null;
 						hasFill = false;
 						
 						//bitmap.__sync ();
@@ -393,22 +406,13 @@ class CairoGraphics {
 						
 					} else {
 						
-						cairo.setSourceRGBA (((rgb & 0xFF0000) >>> 16) / 0xFF, ((rgb & 0x00FF00) >>> 8) / 0xFF, (rgb & 0x0000FF) / 0xFF, alpha);
+						if (fillPattern != null) {
+							
+							fillPattern.destroy ();
+							
+						}
 						
-						//if (alpha == 1) {
-							//
-							////cairo.setSourceRGB (
-							////context.fillStyle = "#" + StringTools.hex (rgb, 6);
-							//
-						//} else {
-							//
-							//var r = (rgb & 0xFF0000) >>> 16;
-							//var g = (rgb & 0x00FF00) >>> 8;
-							//var b = (rgb & 0x0000FF);
-							//
-							////context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
-							//
-						//}
+						fillPattern = CairoPattern.createRGBA (((rgb & 0xFF0000) >>> 16) / 0xFF, ((rgb & 0x00FF00) >>> 8) / 0xFF, (rgb & 0x0000FF) / 0xFF, alpha);
 						
 						bitmapFill = null;
 						hasFill = true;
@@ -507,11 +511,11 @@ class CairoGraphics {
 					//
 					//if (!optimizationUsed) {
 						
-						if (pattern != null) {
+						if (fillPattern != null) {
 							
-							var matrix = pattern.matrix;
+							var matrix = fillPattern.matrix;
 							matrix.translate (x, y);
-							pattern.matrix = matrix;
+							fillPattern.matrix = matrix;
 							
 						}
 						
@@ -534,6 +538,7 @@ class CairoGraphics {
 				
 			}
 			
+			cairo.source = strokePattern;
 			cairo.strokePreserve ();
 			
 		}
@@ -545,6 +550,10 @@ class CairoGraphics {
 				if (bitmapFill != null) {
 					
 					beginPatternFill (bitmapFill, bitmapRepeat);
+					
+				} else {
+					
+					cairo.source = fillPattern;
 					
 				}
 				
@@ -569,6 +578,31 @@ class CairoGraphics {
 			}
 			
 		}
+		
+	}
+	
+	
+	private static function quadraticCurveTo (cx:Float, cy:Float, x:Float, y:Float):Void {
+		
+		var current = null;
+		
+		if (!cairo.hasCurrentPoint) {
+			
+			cairo.moveTo (cx, cy);
+			current = new Vector2 (cx, cy);
+			
+		} else {
+			
+			current = cairo.currentPoint;
+			
+		}
+		
+		var cx1 = current.x + ((2 / 3) * (cx - current.x));
+		var cy1 = current.y + ((2 / 3) * (cy - current.y));
+		var cx2 = x + ((2 / 3) * (cx - x));
+		var cy2 = y + ((2 / 3) * (cy - y));
+		
+		cairo.curveTo (cx1, cy1, cx2, cy2, x, y);
 		
 	}
 	
