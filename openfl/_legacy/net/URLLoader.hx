@@ -105,37 +105,30 @@ private class URLLoadersManager {
 	}
 
 	public function getActiveLoaders () : List<URLLoader> {
-		if (Thread.current()!=managersThread) throw "Wrong thread : getActiveLoaders";
 		return activeLoaders;
 	}
 
 	public function create (request : URLRequest) : Dynamic {
-		if (Thread.current()!=managersThread) throw "Wrong thread : create";
 		return lime_curl_create (request);
 	}
 
 	public function updateLoader (handle : Dynamic, loader : URLLoader) : Void {
-		if (Thread.current()!=managersThread) throw "Wrong thread : updateLoader";
 		lime_curl_update_loader (handle, loader);
 	}
 
 	public function getCode (handle : Dynamic) : Int {
-		if (Thread.current()!=managersThread) throw "Wrong thread : getCode";
 		return lime_curl_get_code (handle);
 	}
 
 	public function getErrorMessage (handle : Dynamic) : String {
-		if (Thread.current()!=managersThread) throw "Wrong thread : getErrorMessage";
 		return lime_curl_get_error_message (handle);
 	}
 
 	public function getData (handle : Dynamic) : ByteArray {
-		if (Thread.current()!=managersThread) throw "Wrong thread : getData";
 		return lime_curl_get_data (handle);
 	}
 
 	public function getHeaders (handle : Dynamic) : Array<String> {
-		if (Thread.current()!=managersThread) throw "Wrong thread : getHeaders";
 		return lime_curl_get_headers (handle);
 	}
 
@@ -189,6 +182,8 @@ class URLLoader extends EventDispatcher {
 
 	@:allow(openfl._legacy.net.URLLoadersManager)
 	@:noCompletion private var state:Int;
+
+	@:noCompletion static var eventsQueue : Array<{loader : URLLoader, event : Event}> = [];
 
 	@:noCompletion private var __handle:Dynamic;
 	@:noCompletion public var __onComplete:Dynamic -> Bool;
@@ -411,8 +406,6 @@ class URLLoader extends EventDispatcher {
 		return !URLLoadersManager.getInstance().activeLoadersIsEmpty();
 
 	}
-
-	static var eventsQueue : Array<{loader : URLLoader, event : Event}> = [];
 
 	static function enqueueEvent(loader : URLLoader, event : Event) {
 		eventsQueue.push({loader : loader, event : event});
