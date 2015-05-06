@@ -1716,7 +1716,10 @@ class BitmapData implements IBitmapDrawable {
 		// enable writing to all the colors and alpha
 		gl.colorMask(true, true, true, true);
 		renderSession.blendModeManager.setBlendMode(BlendMode.NORMAL);
-		
+
+		// set default shader
+		renderSession.shaderManager.setShader(renderSession.shaderManager.defaultShader, true);
+
 		if (clearBuffer || drawSelf) {
 			__framebuffer.clear();
 		}
