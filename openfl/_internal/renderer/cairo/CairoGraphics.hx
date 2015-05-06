@@ -75,7 +75,7 @@ class CairoGraphics {
 		
 		if (repeat) {
 			
-			pattern.extend = REPEAT;
+			pattern.extend = CairoExtend.REPEAT;
 			
 		}
 		
