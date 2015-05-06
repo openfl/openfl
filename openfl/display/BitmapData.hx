@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.CairoSurface;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
@@ -139,6 +140,8 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
 	@:noCompletion private var __isValid:Bool;
+	@:noCompletion private var __surface:CairoSurface;
+	@:noCompletion private var __surfaceImage:Image;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __textureImage:Image;
 	@:noCompletion private var __framebuffer:FilterTexture;
@@ -876,6 +879,37 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return null;
 		if (rect == null) rect = this.rect;
 		return __image.getPixels (rect.__toLimeRectangle (), ARGB);
+		
+	}
+	
+	
+	public function getSurface ():CairoSurface {
+		
+		if (!__isValid) return null;
+		
+		if (__surface == null) {
+			
+			__image.dirty = true;
+			
+		}
+		
+		if (__image != null && __image.dirty) {
+			
+			if (__surface != null) {
+				
+				__surface.destroy ();
+				
+			}
+			
+			__surfaceImage = __image.clone ();
+			__surfaceImage.format = BGRA;
+			__surfaceImage.premultiplied = true;
+			__surface = CairoSurface.fromImage (__surfaceImage);
+			__image.dirty = false;
+			
+		}
+		
+		return __surface;
 		
 	}
 	
@@ -1682,7 +1716,10 @@ class BitmapData implements IBitmapDrawable {
 		// enable writing to all the colors and alpha
 		gl.colorMask(true, true, true, true);
 		renderSession.blendModeManager.setBlendMode(BlendMode.NORMAL);
-		
+
+		// set default shader
+		renderSession.shaderManager.setShader(renderSession.shaderManager.defaultShader, true);
+
 		if (clearBuffer || drawSelf) {
 			__framebuffer.clear();
 		}
