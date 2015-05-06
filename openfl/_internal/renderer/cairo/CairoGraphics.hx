@@ -318,23 +318,27 @@ class CairoGraphics {
 						} else {
 							
 							cairo.lineJoin = switch (joints) {
+								
 								case MITER: MITER;
 								case BEVEL: BEVEL;
 								default: ROUND;
+								
 							}
 							
 						}
 						
 						if (caps == null) {
 							
-							cairo.lineCap = BUTT;
+							cairo.lineCap = ROUND;
 							
 						} else {
 							
 							cairo.lineCap = switch (caps) {
-								case ROUND: ROUND;
+								
+								case NONE: BUTT;
 								case SQUARE: SQUARE;
-								default: BUTT;
+								default: ROUND;
+								
 							}
 							
 						}
@@ -427,17 +431,30 @@ class CairoGraphics {
 						
 						case RADIAL:
 							
-							//if (matrix == null) matrix = new Matrix ();
-							//var point = matrix.transformPoint (new Point (1638.4, 0));
-							//gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+							if (matrix == null) matrix = new Matrix ();
+							var point = matrix.transformPoint (new Point (1638.4, 0));
+							
+							if (fillPattern != null) {
+								
+								fillPattern.destroy ();
+								
+							}
+							
+							fillPattern = CairoPattern.createRadial (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
 						
 						case LINEAR:
 							
-							//var matrix = matrix != null ? matrix.clone () : new Matrix ();
-							//var point1 = matrix.transformPoint (new Point (-819.2, 0));
-							//var point2 = matrix.transformPoint (new Point (819.2, 0));
-							//
-							//gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
+							var matrix = matrix != null ? matrix.clone () : new Matrix ();
+							var point1 = matrix.transformPoint (new Point (-819.2, 0));
+							var point2 = matrix.transformPoint (new Point (819.2, 0));
+							
+							if (fillPattern != null) {
+								
+								fillPattern.destroy ();
+								
+							}
+							
+							fillPattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
 						
 					}
 					
@@ -445,15 +462,15 @@ class CairoGraphics {
 						
 						var rgb = colors[i];
 						var alpha = alphas[i];
-						var r = (rgb & 0xFF0000) >>> 16;
-						var g = (rgb & 0x00FF00) >>> 8;
-						var b = (rgb & 0x0000FF);
+						var r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
+						var g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
+						var b = (rgb & 0x0000FF) / 0xFF;
 						
 						var ratio = ratios[i] / 0xFF;
 						if (ratio < 0) ratio = 0;
 						if (ratio > 1) ratio = 1;
 						
-						//gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+						fillPattern.addColorStopRGBA (ratio, r, g, b, alpha);
 						
 					}
 					
