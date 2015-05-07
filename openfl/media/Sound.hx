@@ -421,20 +421,21 @@ class Sound extends EventDispatcher {
 	 */
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
+		// TODO: handle pan
+		
+		#if !html5
+		var source = new AudioSource (__buffer);
+		source.offset = Std.int (startTime * 1000);
+		if (loops > 1) source.loops = loops - 1;
+		if (sndTransform != null) source.gain = sndTransform.volume;
+		return new SoundChannel (source);
+		#else
 		if (sndTransform == null) {
 			
 			sndTransform = new SoundTransform (1, 0);
 			
 		}
 		
-		// TODO: handle start time, loops, sound transform
-		
-		#if !html5
-		var source = new AudioSource (__buffer);
-		source.offset = Std.int (startTime * 1000);
-		if (loops > 1) source.loops = loops - 1;
-		return new SoundChannel (source);
-		#else
 		var instance = 
 		if (loops > 1)
 			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops - 1, sndTransform.volume, sndTransform.pan);
