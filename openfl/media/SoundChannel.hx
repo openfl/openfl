@@ -126,6 +126,8 @@ class SoundChannel extends EventDispatcher {
 		__soundInstance = null;
 		#end
 		
+		__isValid = false;
+		
 	}
 	#end
 	
