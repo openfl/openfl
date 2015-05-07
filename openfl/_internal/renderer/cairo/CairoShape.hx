@@ -23,11 +23,11 @@ class CairoShape {
 			
 			if (graphics.__cairo != null) {
 				
-				//if (shape.__mask != null) {
-					//
-					//renderSession.maskManager.pushMask (shape.__mask);
-					//
-				//}
+				if (shape.__mask != null) {
+					
+					renderSession.maskManager.pushMask (shape.__mask);
+					
+				}
 				
 				var cairo = renderSession.cairo;
 				var scrollRect = shape.scrollRect;
@@ -62,11 +62,11 @@ class CairoShape {
 					//
 				//}
 				//
-				//if (shape.__mask != null) {
-					//
-					//renderSession.maskManager.popMask ();
-					//
-				//}
+				if (shape.__mask != null) {
+					
+					renderSession.maskManager.popMask ();
+					
+				}
 				
 			}
 			
