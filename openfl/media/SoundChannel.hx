@@ -114,7 +114,6 @@ class SoundChannel extends EventDispatcher {
 	}
 	
 	
-	#if html5
 	@:noCompletion private function __dispose ():Void {
 		
 		if (!__isValid) return;
@@ -129,7 +128,6 @@ class SoundChannel extends EventDispatcher {
 		__isValid = false;
 		
 	}
-	#end
 	
 	
 	
