@@ -119,7 +119,7 @@ class SoundChannel extends EventDispatcher {
 		if (!__isValid) return;
 		
 		#if !html5
-		source.dispose ();
+		__source.dispose ();
 		#else
 		__soundInstance.stop ();
 		__soundInstance = null;
