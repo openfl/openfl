@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
@@ -1116,11 +1117,33 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
+	@:noCompletion @:dox(hide) public function __renderCairoMask (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CairoGraphics.renderMask (__graphics, renderSession);
+			
+		}
+		
+	}
+	
+	
 	@:noCompletion @:dox(hide) public function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
 			CanvasShape.render (this, renderSession);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function __renderCanvasMask (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CanvasGraphics.renderMask (__graphics, renderSession);
 			
 		}
 		
@@ -1145,17 +1168,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (__graphics != null) {
 			
 			GraphicsRenderer.render (this, renderSession);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public function __renderMask (renderSession:RenderSession):Void {
-		
-		if (__graphics != null) {
-			
-			CanvasGraphics.renderMask (__graphics, renderSession);
 			
 		}
 		

@@ -75,7 +75,7 @@ class CairoGraphics {
 		
 		if (repeat) {
 			
-			pattern.extend = REPEAT;
+			pattern.extend = CairoExtend.REPEAT;
 			
 		}
 		
@@ -1042,85 +1042,85 @@ class CairoGraphics {
 	
 	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
 		
-		//if (graphics.__commands.length != 0) {
-			//
-			//var context = renderSession.context;
-			//
-			//var positionX = 0.0;
-			//var positionY = 0.0;
-			//
-			//var offsetX = 0;
-			//var offsetY = 0;
-			//
-			//for (command in graphics.__commands) {
-				//
-				//switch (command) {
-					//
-					//case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
-						//
-						//context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
-						//positionX = x;
-						//positionY = y;
-					//
-					//case CurveTo (cx, cy, x, y):
-						//
-						//context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
-						//positionX = x;
-						//positionY = y;
-					//
-					//case DrawCircle (x, y, radius):
-						//
-						//context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
-					//
-					//case DrawEllipse (x, y, width, height):
-						//
-						//x -= offsetX;
-						//y -= offsetY;
-						//
-						//var kappa = .5522848,
-							//ox = (width / 2) * kappa, // control point offset horizontal
-							//oy = (height / 2) * kappa, // control point offset vertical
-							//xe = x + width,           // x-end
-							//ye = y + height,           // y-end
-							//xm = x + width / 2,       // x-middle
-							//ym = y + height / 2;       // y-middle
-						//
-						////closePath (false);
-						////beginPath ();
-						//context.moveTo (x, ym);
-						//context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
-						//context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
-						//context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-						//context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
-						////closePath (false);
-					//
-					//case DrawRect (x, y, width, height):
-						//
-						//context.rect (x - offsetX, y - offsetY, width, height);
-					//
-					//case DrawRoundRect (x, y, width, height, rx, ry):
-						//
-						//drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
-					//
-					//case LineTo (x, y):
-						//
-						//context.lineTo (x - offsetX, y - offsetY);
-						//positionX = x;
-						//positionY = y;
-						//
-					//case MoveTo (x, y):
-						//
-						//context.moveTo (x - offsetX, y - offsetY);
-						//positionX = x;
-						//positionY = y;
-					//
-					//default:
-					//
-				//}
-				//
-			//}
-			//
-		//}
+		if (graphics.__commands.length != 0) {
+			
+			var cairo = renderSession.cairo;
+			
+			var positionX = 0.0;
+			var positionY = 0.0;
+			
+			var offsetX = 0;
+			var offsetY = 0;
+			
+			for (command in graphics.__commands) {
+				
+				switch (command) {
+					
+					case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
+						
+						cairo.curveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+						positionX = x;
+						positionY = y;
+					
+					case CurveTo (cx, cy, x, y):
+						
+						quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
+						positionX = x;
+						positionY = y;
+					
+					case DrawCircle (x, y, radius):
+						
+						cairo.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2);
+					
+					case DrawEllipse (x, y, width, height):
+						
+						x -= offsetX;
+						y -= offsetY;
+						
+						var kappa = .5522848,
+							ox = (width / 2) * kappa, // control point offset horizontal
+							oy = (height / 2) * kappa, // control point offset vertical
+							xe = x + width,           // x-end
+							ye = y + height,           // y-end
+							xm = x + width / 2,       // x-middle
+							ym = y + height / 2;       // y-middle
+						
+						//closePath (false);
+						//beginPath ();
+						cairo.moveTo (x, ym);
+						cairo.curveTo (x, ym - oy, xm - ox, y, xm, y);
+						cairo.curveTo (xm + ox, y, xe, ym - oy, xe, ym);
+						cairo.curveTo (xe, ym + oy, xm + ox, ye, xm, ye);
+						cairo.curveTo (xm - ox, ye, x, ym + oy, x, ym);
+						//closePath (false);
+					
+					case DrawRect (x, y, width, height):
+						
+						cairo.rectangle (x - offsetX, y - offsetY, width, height);
+					
+					case DrawRoundRect (x, y, width, height, rx, ry):
+						
+						drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
+					
+					case LineTo (x, y):
+						
+						cairo.lineTo (x - offsetX, y - offsetY);
+						positionX = x;
+						positionY = y;
+						
+					case MoveTo (x, y):
+						
+						cairo.moveTo (x - offsetX, y - offsetY);
+						positionX = x;
+						positionY = y;
+					
+					default:
+					
+				}
+				
+			}
+			
+		}
 		
 	}
 	

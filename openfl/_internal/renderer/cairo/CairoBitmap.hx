@@ -27,11 +27,11 @@ class CairoBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			//if (bitmap.__mask != null) {
-				//
-				//renderSession.maskManager.pushMask (bitmap.__mask);
-				//
-			//}
+			if (bitmap.__mask != null) {
+				
+				renderSession.maskManager.pushMask (bitmap.__mask);
+				
+			}
 			
 			//bitmap.bitmapData.__sync ();
 			
@@ -102,11 +102,11 @@ class CairoBitmap {
 				//
 			//}
 			
-			//if (bitmap.__mask != null) {
-				//
-				//renderSession.maskManager.popMask ();
-				//
-			//}
+			if (bitmap.__mask != null) {
+				
+				renderSession.maskManager.popMask ();
+				
+			}
 			
 		}
 		

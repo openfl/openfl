@@ -31,7 +31,7 @@ class GLRenderer extends AbstractRenderer {
 	public var filterManager:FilterManager;
 	public var gl:GLRenderContext;
 	public var _glContextId:Int;
-	public var maskManager:MaskManager;
+	public var maskManager:GLMaskManager;
 	public var offset:Point;
 	public var options:Dynamic;
 	public var preserveDrawingBuffer:Bool;
@@ -113,7 +113,6 @@ class GLRenderer extends AbstractRenderer {
 		
 		shaderManager = new ShaderManager (gl);
 		spriteBatch = new SpriteBatch (gl);
-		maskManager = new MaskManager (gl);
 		filterManager = new FilterManager (gl, this.transparent);
 		stencilManager = new StencilManager (gl);
 		blendModeManager = new BlendModeManager (gl);
@@ -130,6 +129,9 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.renderer = this;
 		renderSession.defaultFramebuffer = this.defaultFramebuffer;
 		renderSession.projectionMatrix = this.projectionMatrix;
+		
+		maskManager = new GLMaskManager (renderSession);
+		renderSession.maskManager = maskManager;
 		
 		shaderManager.setShader(shaderManager.defaultShader);
 		

@@ -153,9 +153,23 @@ class Bitmap extends DisplayObjectContainer {
 	}
 	
 	
+	@:noCompletion @:dox(hide) public override function __renderCairoMask (renderSession:RenderSession):Void {
+		
+		renderSession.cairo.rectangle (0, 0, width, height);
+		
+	}
+	
+	
 	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasBitmap.render (this, renderSession);
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public override function __renderCanvasMask (renderSession:RenderSession):Void {
+		
+		renderSession.context.rect (0, 0, width, height);
 		
 	}
 	
@@ -170,13 +184,6 @@ class Bitmap extends DisplayObjectContainer {
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLBitmap.render (this, renderSession);
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
-		
-		renderSession.context.rect (0, 0, width, height);
 		
 	}
 

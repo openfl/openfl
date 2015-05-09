@@ -137,10 +137,10 @@ class StencilManager {
 	
 	public function popMask(object:DisplayObject, renderSession:RenderSession) {
 		
-		var maskGraphics:Graphics = object.__maskGraphics;
-		if (maskGraphics == null || maskGraphics.__commands.length <= 0) {
-			return;
-		}
+		//var maskGraphics:Graphics = object.__maskGraphics;
+		//if (maskGraphics == null || maskGraphics.__commands.length <= 0) {
+			//return;
+		//}
 		
 		stencilMask--;
 		
