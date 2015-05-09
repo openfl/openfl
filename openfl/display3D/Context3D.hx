@@ -640,6 +640,8 @@ class Context3D {
 
 		}
 
+		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+
 	}
 	
 	
