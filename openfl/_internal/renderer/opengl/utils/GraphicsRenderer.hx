@@ -1517,6 +1517,7 @@ class GLBucketData {
 		stride = 0;
 		rawVerts = false;
 		rawIndices = false;
+		drawMode = gl.TRIANGLE_STRIP;
 	}
 	
 	public function upload():Void {
