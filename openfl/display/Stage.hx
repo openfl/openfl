@@ -780,6 +780,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onTextEdit (text:String, start:Int, length:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onTextInput (text:String):Void {
+		
+		
+		
+	}
+	
+	
 	public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_MOVE, x, y, id);
