@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
@@ -768,6 +769,69 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion @:dox(hide) public override function __renderCairo (renderSession:RenderSession):Void {
+		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		super.__renderCairo (renderSession);
+		
+		//if (scrollRect != null) {
+			//
+			//renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			//
+		//}
+		//
+		if (__mask != null) {
+			
+			renderSession.maskManager.pushMask (__mask);
+			
+		}
+		
+		for (child in __children) {
+			
+			child.__renderCairo (renderSession);
+			
+		}
+		
+		__removedChildren = [];
+		
+		if (__mask != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
+		//
+		//if (scrollRect != null) {
+			//
+			//renderSession.maskManager.popMask ();
+			//
+		//}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public override function __renderCairoMask (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CairoGraphics.renderMask (__graphics, renderSession);
+			
+		}
+		
+		var bounds = new Rectangle ();
+		__getLocalBounds (bounds);
+		
+		renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
+		
+		/*for (child in __children) {
+			
+			child.__renderMask (renderSession);
+			
+		}*/
+		
+	}
+	
+	
 	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
@@ -809,6 +873,28 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		#end
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public override function __renderCanvasMask (renderSession:RenderSession):Void {
+		
+		if (__graphics != null) {
+			
+			CanvasGraphics.renderMask (__graphics, renderSession);
+			
+		}
+		
+		var bounds = new Rectangle ();
+		__getLocalBounds (bounds);
+		
+		renderSession.context.rect (0, 0, bounds.width, bounds.height);
+		
+		/*for (child in __children) {
+			
+			child.__renderMask (renderSession);
+			
+		}*/
 		
 	}
 	
@@ -867,7 +953,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (masked) {
 			
 			renderSession.spriteBatch.stop ();
-			renderSession.maskManager.pushMask (this, renderSession);
+			renderSession.maskManager.pushMask (this);
 			renderSession.spriteBatch.start ();
 			
 		}
@@ -880,35 +966,16 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if(masked) {
-			renderSession.spriteBatch.stop();
-			renderSession.maskManager.popMask(this, renderSession);
-			renderSession.spriteBatch.start();
+		if (masked) {
+			
+			renderSession.spriteBatch.stop ();
+			//renderSession.maskManager.popMask (this);
+			renderSession.maskManager.popMask ();
+			renderSession.spriteBatch.start ();
+			
 		}
 		
 		__removedChildren = [];
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public override function __renderMask (renderSession:RenderSession):Void {
-		
-		if (__graphics != null) {
-			
-			CanvasGraphics.renderMask (__graphics, renderSession);
-			
-		}
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
-		
-		/*for (child in __children) {
-			
-			child.__renderMask (renderSession);
-			
-		}*/
 		
 	}
 	

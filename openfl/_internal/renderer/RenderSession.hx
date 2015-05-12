@@ -1,13 +1,13 @@
 package openfl._internal.renderer; #if !flash
 
 
+import lime.graphics.CairoRenderContext;
 import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLFramebuffer;
 import openfl._internal.renderer.opengl.utils.BlendModeManager;
 import openfl._internal.renderer.opengl.utils.FilterManager;
-import openfl._internal.renderer.opengl.utils.MaskManager;
 import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.opengl.utils.StencilManager;
@@ -19,6 +19,7 @@ import openfl.geom.Point;
 class RenderSession {
 	
 	
+	public var cairo:CairoRenderContext;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
 	public var gl:GLRenderContext;
@@ -34,7 +35,7 @@ class RenderSession {
 	public var currentBlendMode:BlendMode;
 	
 	public var shaderManager:ShaderManager;
-	public var maskManager:#if neko MaskManager #else Dynamic #end;
+	public var maskManager:AbstractMaskManager;
 	public var filterManager:FilterManager;
 	public var blendModeManager:BlendModeManager;
 	public var spriteBatch:SpriteBatch;

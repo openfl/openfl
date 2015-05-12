@@ -1,6 +1,12 @@
-package openfl._internal.renderer.canvas;
+package openfl._internal.renderer.cairo;
 
 
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoPattern;
+import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
+import lime.math.Vector2;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
@@ -12,20 +18,14 @@ import openfl.geom.Rectangle;
 import openfl.Lib;
 import openfl.Vector;
 
-#if (js && html5)
-import js.html.CanvasElement;
-import js.html.CanvasPattern;
-import js.html.CanvasRenderingContext2D;
-import js.Browser;
-#end
-
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Tilesheet)
+@:access(openfl.geom.Matrix)
 
 
-class CanvasGraphics {
+class CairoGraphics {
 	
 	
 	private static var SIN45 = 0.70710678118654752440084436210485;
@@ -34,90 +34,108 @@ class CanvasGraphics {
 	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
+	private static var cairo:Cairo;
 	private static var fillCommands:Array<DrawCommand>;
+	private static var fillPattern:CairoPattern;
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:Array<DrawCommand>;
-	
-	#if (js && html5)
-	private static var context:CanvasRenderingContext2D;
-	private static var pattern:CanvasPattern;
-	#end
+	private static var strokePattern:CairoPattern;
 	
 	
 	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
 		
-		#if (js && html5)
 		if (hasFill || bitmapFill == null) return;
 		
-		if (pattern == null) {
+		if (fillPattern == null) {
 			
-			pattern = context.createPattern (bitmapFill.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
+			fillPattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
+			
+			if (bitmapRepeat) {
+				
+				fillPattern.extend = CairoExtend.REPEAT;
+				
+			}
 			
 		}
 		
-		context.fillStyle = pattern;
+		cairo.source = fillPattern;
 		hasFill = true;
-		#end
 		
 	}
 	
 	
 	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) {
 		
+		var surface = new CairoSurface (ARGB32, width, height);
+		var pattern = CairoPattern.createForSurface (surface);
+		
+		if (repeat) {
+			
+			pattern.extend = CairoExtend.REPEAT;
+			
+		}
+		
+		cairo.source = pattern;
+		cairo.newPath ();
+		cairo.moveTo (0, 0);
+		cairo.lineTo (0, height);
+		cairo.lineTo (width, height);
+		cairo.lineTo (width, 0);
+		cairo.lineTo (0, 0);
+		cairo.closePath ();
+		cairo.fill ();
+		pattern.destroy ();
+		return surface;
+		
 		// TODO: Don't create extra canvas elements like this
 		
-		#if (js && html5)
-		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-		var context = canvas.getContext ("2d");
-		
-		canvas.width = width;
-		canvas.height = height;
-		
-		context.fillStyle = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
-		context.beginPath ();
-		context.moveTo (0, 0);
-		context.lineTo (0, height);
-		context.lineTo (width, height);
-		context.lineTo (width, 0);
-		context.lineTo (0, 0);
-		context.closePath ();
-		context.fill ();
-		return canvas;
-		#end
+		//#if (js && html5)
+		//var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+		//var context = canvas.getContext ("2d");
+		//
+		//canvas.width = width;
+		//canvas.height = height;
+		//
+		//context.fillStyle = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+		//context.beginPath ();
+		//context.moveTo (0, 0);
+		//context.lineTo (0, height);
+		//context.lineTo (width, height);
+		//context.lineTo (width, 0);
+		//context.lineTo (0, 0);
+		//context.closePath ();
+		//context.fill ();
+		//return canvas;
+		//#end
 		
 	}
 	
 	
 	private static function endFill ():Void {
 		
-		#if (js && html5)
-		context.beginPath ();
+		cairo.newPath ();
 		playCommands (fillCommands, false);
 		fillCommands = [];
-		#end
 		
 	}
 	
 	
 	private static function endStroke ():Void {
 		
-		#if (js && html5)
-		context.beginPath ();
+		cairo.newPath ();
 		playCommands (strokeCommands, true);
-		context.closePath ();
+		cairo.closePath ();
 		strokeCommands = [];
-		#end
 		
 	}
 	
 	
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
 		
-		#if (js && html5)
 		if (ry == -1) ry = rx;
 		
 		rx *= 0.5;
@@ -133,20 +151,19 @@ class CanvasGraphics {
 		cy1 = -ry + (ry * SIN45),
 		cy2 = -ry + (ry * TAN22);
 		
-		context.moveTo (xe, ye - ry);
-		context.quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
-		context.quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
-		context.lineTo (x + rx, ye);
-		context.quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
-		context.quadraticCurveTo (x, ye + cy2, x, ye - ry);
-		context.lineTo (x, y + ry);
-		context.quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
-		context.quadraticCurveTo (x - cx2, y, x + rx, y);
-		context.lineTo (xe - rx, y);
-		context.quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
-		context.quadraticCurveTo (xe, y - cy2, xe, y + ry);
-		context.lineTo (xe, ye - ry);
-		#end
+		cairo.moveTo (xe, ye - ry);
+		quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
+		quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
+		cairo.lineTo (x + rx, ye);
+		quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
+		quadraticCurveTo (x, ye + cy2, x, ye - ry);
+		cairo.lineTo (x, y + ry);
+		quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
+		quadraticCurveTo (x - cx2, y, x + rx, y);
+		cairo.lineTo (xe - rx, y);
+		quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
+		quadraticCurveTo (xe, y - cy2, xe, y + ry);
+		cairo.lineTo (xe, ye - ry);
 		
 	}
 	
@@ -203,7 +220,6 @@ class CanvasGraphics {
 	
 	private static function playCommands (commands:Array<DrawCommand>, stroke:Bool = false):Void {
 		
-		#if (js && html5)
 		bounds = graphics.__bounds;
 		
 		var offsetX = bounds.x;
@@ -222,16 +238,16 @@ class CanvasGraphics {
 				
 				case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
 					
-					context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+					cairo.curveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
 				
 				case CurveTo (cx, cy, x, y):
 					
-					context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
+					quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 				
 				case DrawCircle (x, y, radius):
 					
-					context.moveTo (x - offsetX + radius, y - offsetY);
-					context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
+					cairo.moveTo (x - offsetX + radius, y - offsetY);
+					cairo.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2);
 				
 				case DrawEllipse (x, y, width, height):
 					
@@ -246,11 +262,11 @@ class CanvasGraphics {
 						xm = x + width / 2,       // x-middle
 						ym = y + height / 2;       // y-middle
 					
-					context.moveTo (x, ym);
-					context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
-					context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
-					context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-					context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
+					cairo.moveTo (x, ym);
+					cairo.curveTo (x, ym - oy, xm - ox, y, xm, y);
+					cairo.curveTo (xm + ox, y, xe, ym - oy, xe, ym);
+					cairo.curveTo (xe, ym + oy, xm + ox, ye, xm, ye);
+					cairo.curveTo (xm - ox, ye, x, ym + oy, x, ym);
 				
 				case DrawRoundRect (x, y, width, height, rx, ry):
 					
@@ -258,14 +274,14 @@ class CanvasGraphics {
 				
 				case LineTo (x, y):
 					
-					context.lineTo (x - offsetX, y - offsetY);
+					cairo.lineTo (x - offsetX, y - offsetY);
 					
 					positionX = x;
 					positionY = y;
 				
 				case MoveTo (x, y):
 					
-					context.moveTo (x - offsetX, y - offsetY);
+					cairo.moveTo (x - offsetX, y - offsetY);
 					
 					positionX = x;
 					positionY = y;
@@ -278,13 +294,14 @@ class CanvasGraphics {
 					
 					if (stroke && hasStroke) {
 						
-						context.closePath ();
-						context.stroke ();
-						context.beginPath ();
+						cairo.closePath ();
+						cairo.source = strokePattern;
+						cairo.strokePreserve ();
+						cairo.newPath ();
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					cairo.moveTo (positionX - offsetX, positionY - offsetY);
 					
 					if (thickness == null) {
 						
@@ -292,27 +309,59 @@ class CanvasGraphics {
 						
 					} else {
 						
-						context.lineWidth = thickness;
+						cairo.lineWidth = thickness;
 						
-						context.lineJoin = (joints == null ? "round" : Std.string (joints).toLowerCase ());
-						context.lineCap = (caps == null ? "round" : switch (caps) {
-							case CapsStyle.NONE: "butt";
-							default: Std.string (caps).toLowerCase ();
-						});
-						
-						context.miterLimit = (miterLimit == null ? 3 : miterLimit);
-						
-						if (alpha == 1 || alpha == null) {
+						if (joints == null) {
 							
-							context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
+							cairo.lineJoin = ROUND;
 							
 						} else {
 							
-							var r = (color & 0xFF0000) >>> 16;
-							var g = (color & 0x00FF00) >>> 8;
-							var b = (color & 0x0000FF);
+							cairo.lineJoin = switch (joints) {
+								
+								case MITER: MITER;
+								case BEVEL: BEVEL;
+								default: ROUND;
+								
+							}
 							
-							context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+						}
+						
+						if (caps == null) {
+							
+							cairo.lineCap = ROUND;
+							
+						} else {
+							
+							cairo.lineCap = switch (caps) {
+								
+								case NONE: BUTT;
+								case SQUARE: SQUARE;
+								default: ROUND;
+								
+							}
+							
+						}
+						
+						cairo.miterLimit = (miterLimit == null ? 3 : miterLimit);
+						
+						if (strokePattern != null) {
+							
+							strokePattern.destroy ();
+							
+						}
+						
+						var r = ((color & 0xFF0000) >>> 16) / 0xFF;
+						var g = ((color & 0x00FF00) >>> 8) / 0xFF;
+						var b = (color & 0x0000FF) / 0xFF;
+						
+						if (alpha == 1 || alpha == null) {
+							
+							strokePattern = CairoPattern.createRGB (r, g, b);
+							
+						} else {
+							
+							strokePattern = CairoPattern.createRGBA (r, g, b, alpha);
 							
 						}
 						
@@ -326,10 +375,17 @@ class CanvasGraphics {
 						
 						bitmapFill = bitmap;
 						bitmapRepeat = repeat;
-						pattern = null;
+						
+						if (fillPattern != null) {
+							
+							fillPattern.destroy ();
+							
+						}
+						
+						fillPattern = null;
 						hasFill = false;
 						
-						bitmap.__sync ();
+						//bitmap.__sync ();
 						
 					}
 					
@@ -354,19 +410,13 @@ class CanvasGraphics {
 						
 					} else {
 						
-						if (alpha == 1) {
+						if (fillPattern != null) {
 							
-							context.fillStyle = "#" + StringTools.hex (rgb, 6);
-							
-						} else {
-							
-							var r = (rgb & 0xFF0000) >>> 16;
-							var g = (rgb & 0x00FF00) >>> 8;
-							var b = (rgb & 0x0000FF);
-							
-							context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+							fillPattern.destroy ();
 							
 						}
+						
+						fillPattern = CairoPattern.createRGBA (((rgb & 0xFF0000) >>> 16) / 0xFF, ((rgb & 0x00FF00) >>> 8) / 0xFF, (rgb & 0x0000FF) / 0xFF, alpha);
 						
 						bitmapFill = null;
 						hasFill = true;
@@ -383,7 +433,14 @@ class CanvasGraphics {
 							
 							if (matrix == null) matrix = new Matrix ();
 							var point = matrix.transformPoint (new Point (1638.4, 0));
-							gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+							
+							if (fillPattern != null) {
+								
+								fillPattern.destroy ();
+								
+							}
+							
+							fillPattern = CairoPattern.createRadial (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
 						
 						case LINEAR:
 							
@@ -391,7 +448,13 @@ class CanvasGraphics {
 							var point1 = matrix.transformPoint (new Point (-819.2, 0));
 							var point2 = matrix.transformPoint (new Point (819.2, 0));
 							
-							gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
+							if (fillPattern != null) {
+								
+								fillPattern.destroy ();
+								
+							}
+							
+							fillPattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
 						
 					}
 					
@@ -399,74 +462,83 @@ class CanvasGraphics {
 						
 						var rgb = colors[i];
 						var alpha = alphas[i];
-						var r = (rgb & 0xFF0000) >>> 16;
-						var g = (rgb & 0x00FF00) >>> 8;
-						var b = (rgb & 0x0000FF);
+						var r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
+						var g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
+						var b = (rgb & 0x0000FF) / 0xFF;
 						
 						var ratio = ratios[i] / 0xFF;
 						if (ratio < 0) ratio = 0;
 						if (ratio > 1) ratio = 1;
 						
-						gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+						fillPattern.addColorStopRGBA (ratio, r, g, b, alpha);
 						
 					}
 					
-					context.fillStyle = gradientFill;
+					//context.fillStyle = gradientFill;
 					
 					bitmapFill = null;
 					hasFill = true;
 				
 				case DrawRect (x, y, width, height):
 					
-					var optimizationUsed = false;
-					
-					if (bitmapFill != null) {
+					//var optimizationUsed = false;
+					//
+					//if (bitmapFill != null) {
+						//
+						//var st:Float = 0;
+						//var sr:Float = 0;
+						//var sb:Float = 0;
+						//var sl:Float = 0;
+						//
+						//var canOptimizeMatrix = true;
+						//
+						//if (pendingMatrix != null) {
+							//
+							//if (pendingMatrix.b != 0 || pendingMatrix.c != 0) {
+								//
+								//canOptimizeMatrix = false;
+								//
+							//} else {
+								//
+								//var stl = inversePendingMatrix.transformPoint (new Point (x, y));
+								//var sbr = inversePendingMatrix.transformPoint (new Point (x + width, y + height));
+								//
+								//st = stl.y;
+								//sl = stl.x;
+								//sb = sbr.y;
+								//sr = sbr.x;
+								//
+							//}
+							//
+						//} else {
+							//
+							//st = y;
+							//sl = x;
+							//sb = y + height;
+							//sr = x + width;
+							//
+						//}
+						//
+						//if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
+							//
+							//optimizationUsed = true;
+							////context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
+						//}
+					//}
+					//
+					//if (!optimizationUsed) {
 						
-						var st:Float = 0;
-						var sr:Float = 0;
-						var sb:Float = 0;
-						var sl:Float = 0;
-						
-						var canOptimizeMatrix = true;
-						
-						if (pendingMatrix != null) {
+						if (fillPattern != null) {
 							
-							if (pendingMatrix.b != 0 || pendingMatrix.c != 0) {
-								
-								canOptimizeMatrix = false;
-								
-							} else {
-								
-								var stl = inversePendingMatrix.transformPoint(new Point(x, y));
-								var sbr = inversePendingMatrix.transformPoint(new Point(x + width, y + height));
-								
-								st = stl.y;
-								sl = stl.x;
-								sb = sbr.y;
-								sr = sbr.x;
-								
-							}
-							
-						} else {
-							
-							st = y;
-							sl = x;
-							sb = y + height;
-							sr = x + width;
+							var matrix = fillPattern.matrix;
+							matrix.translate (x, y);
+							fillPattern.matrix = matrix;
 							
 						}
 						
-						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
-							
-							optimizationUsed = true;
-							context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
-						}
-					}
-					
-					if (!optimizationUsed) {
+						cairo.rectangle (x - offsetX, y - offsetY, width, height);
 						
-						context.rect (x - offsetX, y - offsetY, width, height);
-					}
+					//}
 					
 				
 				default:
@@ -479,11 +551,12 @@ class CanvasGraphics {
 			
 			if (hasFill && closeGap) {
 				
-				context.lineTo (startX - offsetX, startY - offsetY);
+				cairo.lineTo (startX - offsetX, startY - offsetY);
 				
 			}
 			
-			context.stroke ();
+			cairo.source = strokePattern;
+			cairo.strokePreserve ();
 			
 		}
 		
@@ -495,62 +568,102 @@ class CanvasGraphics {
 					
 					beginPatternFill (bitmapFill, bitmapRepeat);
 					
+				} else {
+					
+					cairo.source = fillPattern;
+					
 				}
 				
-				context.translate (-bounds.x, -bounds.y);
+				cairo.translate (-bounds.x, -bounds.y);
 				
 				if (pendingMatrix != null) {
 					
-					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					context.fill ();
-					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+					cairo.transform (pendingMatrix.__toMatrix3 ());
+					cairo.fillPreserve ();
+					cairo.transform (inversePendingMatrix.__toMatrix3 ());
 					
 				} else {
 					
-					context.fill ();
+					cairo.fillPreserve ();
 					
 				}
 				
-				context.translate (bounds.x, bounds.y);
-				context.closePath ();
+				cairo.translate (bounds.x, bounds.y);
+				cairo.closePath ();
+				//cairo.paint ();
 				
 			}
 			
 		}
-		#end
+		
+	}
+	
+	
+	private static function quadraticCurveTo (cx:Float, cy:Float, x:Float, y:Float):Void {
+		
+		var current = null;
+		
+		if (!cairo.hasCurrentPoint) {
+			
+			cairo.moveTo (cx, cy);
+			current = new Vector2 (cx, cy);
+			
+		} else {
+			
+			current = cairo.currentPoint;
+			
+		}
+		
+		var cx1 = current.x + ((2 / 3) * (cx - current.x));
+		var cy1 = current.y + ((2 / 3) * (cy - current.y));
+		var cx2 = x + ((2 / 3) * (cx - x));
+		var cy2 = y + ((2 / 3) * (cy - y));
+		
+		cairo.curveTo (cx1, cy1, cx2, cy2, x, y);
 		
 	}
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
-		#if (js && html5)
-		
 		if (graphics.__dirty) {
 			
-			CanvasGraphics.graphics = graphics;
+			CairoGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
-				graphics.__canvas = null;
-				graphics.__context = null;
+				if (graphics.__cairo != null) {
+					
+					graphics.__cairo.destroy ();
+					graphics.__cairo = null;
+					
+				}
 				
 			} else {
 				
-				if (graphics.__canvas == null) {
+				if (graphics.__cairo != null) {
 					
-					graphics.__canvas = cast Browser.document.createElement ("canvas");
-					graphics.__context = graphics.__canvas.getContext ("2d");
-					//untyped (context).mozImageSmoothingEnabled = false;
-					//untyped (context).webkitImageSmoothingEnabled = false;
-					//context.imageSmoothingEnabled = false;
+					var surface = graphics.__cairo.target;
+					
+					if (bounds.width != surface.width || bounds.height != surface.height) {
+						
+						graphics.__cairo.destroy ();
+						graphics.__cairo = null;
+						
+					}
+					
 				}
 				
-				context = graphics.__context;
+				if (graphics.__cairo == null) {
+					
+					var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height));
+					graphics.__cairo = new Cairo (surface);
+					surface.destroy ();
+					
+				}
 				
-				graphics.__canvas.width = Math.ceil (bounds.width);
-				graphics.__canvas.height = Math.ceil (bounds.height);
+				cairo = graphics.__cairo;
 				
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
@@ -606,7 +719,7 @@ class CanvasGraphics {
 							var v = vertices;
 							var ind = indices;
 							var uvt = uvtData;
-							var pattern:CanvasElement = null;
+							var pattern:CairoSurface = null;
 							var colorFill = bitmapFill == null;
 							
 							if (colorFill && uvt != null) {
@@ -707,25 +820,25 @@ class CanvasGraphics {
 								
 								if (colorFill) {
 									
-									context.beginPath ();
-									context.moveTo (x1, y1);
-									context.lineTo (x2, y2);
-									context.lineTo (x3, y3);
-									context.closePath ();
-									context.fill ();
+									cairo.newPath ();
+									cairo.moveTo (x1, y1);
+									cairo.lineTo (x2, y2);
+									cairo.lineTo (x3, y3);
+									cairo.closePath ();
+									cairo.fillPreserve ();
 									i += 3;
 									continue;
 									
 								} 
 								
-								context.save ();
-								context.beginPath ();
-								context.moveTo (x1, y1);
-								context.lineTo (x2, y2);
-								context.lineTo (x3, y3);
-								context.closePath ();
+								cairo.save ();
+								cairo.newPath ();
+								cairo.moveTo (x1, y1);
+								cairo.lineTo (x2, y2);
+								cairo.lineTo (x3, y3);
+								cairo.closePath ();
 								
-								context.clip ();
+								cairo.clip ();
 								
 								uvx1 = uvt[iax] * pattern.width;
 								uvx2 = uvt[ibx] * pattern.width;
@@ -750,15 +863,21 @@ class CanvasGraphics {
 								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
 								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 								
-								context.transform (t1, t2, t3, t4, dx, dy);
-								context.drawImage (pattern, 0, 0);
-								context.restore ();
+								var matrix = new Matrix3 (t1, t2, t3, t4, dx, dy);
+								//cairo.transform (t1, t2, t3, t4, dx, dy);
+								cairo.transform (matrix);
+								cairo.setSourceSurface (pattern, 0, 0);
+								cairo.paint ();
+								//cairo.drawImage (pattern, 0, 0);
+								cairo.restore ();
 								
 								i += 3;
 								
 							}
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
+							
+							return;
 							
 							var useScale = (flags & Graphics.TILE_SCALE) > 0;
 							var useRotation = (flags & Graphics.TILE_ROTATION) > 0;
@@ -797,11 +916,14 @@ class CanvasGraphics {
 							
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
-							surface = sheet.__bitmap.__image.src;
+							surface = sheet.__bitmap.getSurface ();
+							
+							cairo.setSourceSurface (surface, 0, 0);
 							
 							if (useBlendAdd) {
 								
-								context.globalCompositeOperation = "lighter";
+								cairo.operator = ADD;
+								//context.globalCompositeOperation = "lighter";
 								
 							}
 							
@@ -836,12 +958,12 @@ class CanvasGraphics {
 								
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 									
-									context.save ();
-									context.translate (tileData[index], tileData[index + 1]);
+									cairo.save ();
+									cairo.translate (tileData[index], tileData[index + 1]);
 									
 									if (useRotation) {
 										
-										context.rotate (tileData[index + rotationIndex]);
+										//cairo.rotate (tileData[index + rotationIndex]);
 										
 									}
 									
@@ -855,18 +977,26 @@ class CanvasGraphics {
 									
 									if (useTransform) {
 										
-										context.transform (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
+										var matrix = new Matrix3 (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
+										cairo.transform (matrix);
 										
 									}
+									
+									//cairo.setSourceSurface (
 									
 									if (useAlpha) {
 										
-										context.globalAlpha = tileData[index + alphaIndex];
+										cairo.paintWithAlpha (tileData[index + alphaIndex]);
+										//context.globalAlpha = tileData[index + alphaIndex];
+										
+									} else {
+										
+										cairo.paint ();
 										
 									}
 									
-									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
-									context.restore ();
+									//context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
+									cairo.restore ();
 									
 								}
 								
@@ -876,13 +1006,14 @@ class CanvasGraphics {
 							
 							if (useBlendAdd) {
 								
-								context.globalCompositeOperation = "source-over";
+								cairo.operator = OVER;
+								//context.globalCompositeOperation = "source-over";
 								
 							}
 						
 						default:
 							
-							openfl.Lib.notImplemented ("CanvasGraphics");
+							openfl.Lib.notImplemented ("CairoGraphics");
 						
 					}
 					
@@ -906,8 +1037,6 @@ class CanvasGraphics {
 			
 		}
 		
-		#end
-		
 	}
 	
 	
@@ -915,7 +1044,7 @@ class CanvasGraphics {
 		
 		if (graphics.__commands.length != 0) {
 			
-			var context = renderSession.context;
+			var cairo = renderSession.cairo;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;
@@ -929,19 +1058,19 @@ class CanvasGraphics {
 					
 					case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
 						
-						context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+						cairo.curveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
 						positionX = x;
 						positionY = y;
 					
 					case CurveTo (cx, cy, x, y):
 						
-						context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
+						quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 						positionX = x;
 						positionY = y;
 					
 					case DrawCircle (x, y, radius):
 						
-						context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
+						cairo.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2);
 					
 					case DrawEllipse (x, y, width, height):
 						
@@ -958,16 +1087,16 @@ class CanvasGraphics {
 						
 						//closePath (false);
 						//beginPath ();
-						context.moveTo (x, ym);
-						context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
-						context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
-						context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-						context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
+						cairo.moveTo (x, ym);
+						cairo.curveTo (x, ym - oy, xm - ox, y, xm, y);
+						cairo.curveTo (xm + ox, y, xe, ym - oy, xe, ym);
+						cairo.curveTo (xe, ym + oy, xm + ox, ye, xm, ye);
+						cairo.curveTo (xm - ox, ye, x, ym + oy, x, ym);
 						//closePath (false);
 					
 					case DrawRect (x, y, width, height):
 						
-						context.rect (x - offsetX, y - offsetY, width, height);
+						cairo.rectangle (x - offsetX, y - offsetY, width, height);
 					
 					case DrawRoundRect (x, y, width, height, rx, ry):
 						
@@ -975,13 +1104,13 @@ class CanvasGraphics {
 					
 					case LineTo (x, y):
 						
-						context.lineTo (x - offsetX, y - offsetY);
+						cairo.lineTo (x - offsetX, y - offsetY);
 						positionX = x;
 						positionY = y;
 						
 					case MoveTo (x, y):
 						
-						context.moveTo (x - offsetX, y - offsetY);
+						cairo.moveTo (x - offsetX, y - offsetY);
 						positionX = x;
 						positionY = y;
 					
