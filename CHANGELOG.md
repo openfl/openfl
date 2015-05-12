@@ -1,3 +1,26 @@
+3.0.4 (05/12/2015)
+------------------
+
+* Improved accuracy of HTML5 canvas Graphics renderer
+* Added support for window hardware=false
+* Added initial Cairo renderer support
+* Made big improvements to HTML5 canvas TextField input
+* Added MouseEvent.MOUSE_LEAVE event support
+* Improved HTML5 canvas linear gradient support
+* Improved Stage3D texture uploads
+* Implemented BitmapData.getColorBoundsRect
+* Improved checks for invalid BitmapData in Assets
+* Improved beginBitmapFill for GL Graphics
+* Improved pixel snapping support for GL rendering
+* Improved cleanup of native sound channels
+* Improved compatibility between Stage3D and internal GL rendering
+* Fixed HTML5 canvas scrollRect
+* Fixed handling of embedded fonts in some cases
+* Fixed some issues with bounds calculations
+* Fixed support for initial SoundTransform volume on native
+* Improved non-blocking HTTPS support (legacy)
+
+
 3.0.3 (04/21/2015)
 ------------------
 
