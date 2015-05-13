@@ -190,6 +190,20 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
+	public function onTextEdit (text:String, start:Int, length:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onTextInput (text:String):Void {
+		
+		
+		
+	}
+	
+	
 	public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
 		var flags = ManagedStage.efPrimaryTouch;
