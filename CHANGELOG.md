@@ -1,3 +1,12 @@
+3.0.5 (05/13/2015)
+------------------
+
+* Improved formatting for thrown errors on HTML5
+* Separated the behavior of event preventDefault from stopPropagation
+* Fixed the event dispatch order for DisplayObjectContainer
+* Fixed support for -Dhybrid using latest Lime release
+
+
 3.0.4 (05/12/2015)
 ------------------
 
