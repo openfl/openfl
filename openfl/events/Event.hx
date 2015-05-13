@@ -341,6 +341,7 @@ class Event {
 	
 	@:noCompletion private var __isCancelled:Bool;
 	@:noCompletion private var __isCancelledNow:Bool;
+	@:noCompletion private var __preventDefault:Bool;
 	
 	
 	/**
@@ -408,7 +409,7 @@ class Event {
 	 */
 	public function isDefaultPrevented ():Bool {
 		
-		return (__isCancelled || __isCancelledNow);
+		return __preventDefault;
 		
 	}
 	
@@ -421,7 +422,11 @@ class Event {
 	 */
 	public function preventDefault ():Void {
 		
-		__isCancelled = true;
+		if (cancelable) {
+			
+			__preventDefault = true;
+			
+		}
 		
 	}
 	
