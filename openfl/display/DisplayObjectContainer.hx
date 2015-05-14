@@ -635,9 +635,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		var canceled = super.__broadcast (event, notifyChilden);
+		var result = super.__broadcast (event, notifyChilden);
 		
-		if (!canceled && notifyChilden) {
+		if (!event.__isCancelled && notifyChilden) {
 			
 			for (child in __children) {
 				
@@ -653,7 +653,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		return canceled;
+		return result;
 		
 	}
 	
