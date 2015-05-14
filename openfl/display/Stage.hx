@@ -319,7 +319,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
 	 */
-	public var frameRate:Float;
+	public var frameRate (get, set):Float;
 	
 	/**
 	 * A value from the StageQuality class that specifies which rendering quality
@@ -579,7 +579,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = false;
-		frameRate = 60;
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
@@ -1586,6 +1585,34 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	@:noCompletion private inline function get_displayState ():StageDisplayState {
+		
+		return __displayState;
+		
+	}
+	
+	
+	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
+		
+		switch (value) {
+			
+			case NORMAL:
+				
+				//Lib.application.window.minimized = false;
+				Lib.application.window.fullscreen = false;
+			
+			default:
+				
+				//Lib.application.window.minimized = false;
+				Lib.application.window.fullscreen = true;
+			
+		}
+		
+		return __displayState = value;
+		
+	}
+	
+	
 	@:noCompletion private function get_focus ():InteractiveObject {
 		
 		return __focus;
@@ -1626,30 +1653,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private inline function get_displayState ():StageDisplayState {
+	@:noCompletion private function get_frameRate ():Float {
 		
-		return __displayState;
+		return Lib.application.frameRate;
 		
 	}
 	
 	
-	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
+	@:noCompletion private function set_frameRate (value:Float):Float {
 		
-		switch (value) {
-			
-			case NORMAL:
-				
-				//Lib.application.window.minimized = false;
-				Lib.application.window.fullscreen = false;
-			
-			default:
-				
-				//Lib.application.window.minimized = false;
-				Lib.application.window.fullscreen = true;
-			
-		}
-		
-		return __displayState = value;
+		return Lib.application.frameRate = value;
 		
 	}
 	
