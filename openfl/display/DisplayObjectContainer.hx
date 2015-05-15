@@ -777,12 +777,12 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderSession);
 		
-		//if (scrollRect != null) {
-			//
-			//renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			//
-		//}
-		//
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			
+		}
+		
 		if (__mask != null) {
 			
 			renderSession.maskManager.pushMask (__mask);
@@ -802,12 +802,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			renderSession.maskManager.popMask ();
 			
 		}
-		//
-		//if (scrollRect != null) {
-			//
-			//renderSession.maskManager.popMask ();
-			//
-		//}
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
 		
 	}
 	

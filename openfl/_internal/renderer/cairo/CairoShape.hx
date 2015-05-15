@@ -49,19 +49,19 @@ class CairoShape {
 				}
 				
 				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
+				
+				if (scrollRect != null) {
+					
+					cairo.pushGroup ();
+					cairo.newPath ();
+					cairo.rectangle (graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
+					cairo.fill ();
+					cairo.popGroupToSource ();
+					
+				}
+				
 				cairo.paintWithAlpha (shape.__worldAlpha);
 				
-				//
-				//if (scrollRect == null) {
-					//
-					//context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
-					//
-				//} else {
-					//
-					//context.drawImage (graphics.__canvas, scrollRect.x - graphics.__bounds.x, scrollRect.y - graphics.__bounds.y, scrollRect.width, scrollRect.height, graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
-					//
-				//}
-				//
 				if (shape.__mask != null) {
 					
 					renderSession.maskManager.popMask ();
