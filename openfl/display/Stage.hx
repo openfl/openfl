@@ -34,6 +34,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
+import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 
@@ -163,6 +164,7 @@ import js.Browser;
  */
 
 @:access(openfl.events.Event)
+@:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 
 
@@ -667,35 +669,35 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		
+		GameInput.__onGamepadAxisMove (gamepad, axis, value);
 		
 	}
 	
 	
 	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		
+		GameInput.__onGamepadButtonDown (gamepad, button);
 		
 	}
 	
 	
 	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		
+		GameInput.__onGamepadButtonUp (gamepad, button);
 		
 	}
 	
 	
 	public function onGamepadConnect (gamepad:Gamepad):Void {
 		
-		
+		GameInput.__onGamepadConnect (gamepad);
 		
 	}
 	
 	
 	public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
-		
+		GameInput.__onGamepadDisconnect (gamepad);
 		
 	}
 	
