@@ -43,9 +43,11 @@ class GameInputDevice {
 	@:noCompletion private var __gamepad:Gamepad;
 	
 	
-	@:noCompletion private function new (gamepad:Gamepad) {
+	@:noCompletion private function new (id:String, name:String) {
 		
-		__gamepad = gamepad;
+		this.id = id;
+		this.name = name;
+		
 		var control;
 		
 		for (i in 0...6) {
