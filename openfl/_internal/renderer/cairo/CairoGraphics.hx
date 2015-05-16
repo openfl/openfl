@@ -52,47 +52,16 @@ class CairoGraphics {
 	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) : CairoPattern{
 		
 		var surface = new CairoSurface (ARGB32, width, height);
-		var pattern = CairoPattern.createForSurface (surface);
+		var pattern = CairoPattern.createForSurface (bitmap.getSurface());
 				
 		if (repeat) {
-			
 			pattern.extend = CairoExtend.REPEAT;
-			
 		}
 		
 		cairo.source = pattern;
-		cairo.newPath ();
-		cairo.moveTo (0, 0);
-		cairo.lineTo (0, height);
-		cairo.lineTo (width, height);
-		cairo.lineTo (width, 0);
-		cairo.lineTo (0, 0);
-		cairo.closePath ();
-		cairo.fill ();
+		cairo.paint ();
 		surface.destroy ();
 		return pattern;
-		
-		// TODO: Don't create extra canvas elements like this
-		
-		//#if (js && html5)
-		//var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-		//var context = canvas.getContext ("2d");
-		//
-		//canvas.width = width;
-		//canvas.height = height;
-		//
-		//context.fillStyle = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
-		//context.beginPath ();
-		//context.moveTo (0, 0);
-		//context.lineTo (0, height);
-		//context.lineTo (width, height);
-		//context.lineTo (width, 0);
-		//context.lineTo (0, 0);
-		//context.closePath ();
-		//context.fill ();
-		//return canvas;
-		//#end
-		
 	}
 	
 	
@@ -726,10 +695,8 @@ class CairoGraphics {
 									
 								}
 								
-								pattern = createImagePattern( bitmapFill, null, bitmapRepeat );
+								pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, width, height);
 								
-								//pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, width, height);
-								cairo.source = pattern;
 							}
 							
 							var i = 0;
@@ -832,9 +799,9 @@ class CairoGraphics {
 								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 								
 								var matrix = new Matrix3 (t1, t2, t3, t4, dx, dy);
-								pattern.matrix = matrix;
-								
-								//cairo.transform( matrix );
+
+								cairo.transform( matrix );
+								cairo.source = pattern;
 								
 								cairo.paint ();
 								cairo.restore ();
@@ -886,17 +853,9 @@ class CairoGraphics {
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.getSurface ();
-							
-							var pattern = CairoPattern.createForSurface( surface );
-							
-							//cairo.setSourceSurface (surface, 0, 0);
-							cairo.source = pattern;
-														
+								
 							if (useBlendAdd) {
-								
 								cairo.operator = ADD;
-								//context.globalCompositeOperation = "lighter";
-								
 							}
 							
 							while (index < totalCount) {
@@ -942,47 +901,32 @@ class CairoGraphics {
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 									
 									cairo.save ();
-									cairo.translate (tileData[index], tileData[index + 1]);
-																					
-									var matrix : Matrix3 = new Matrix3();
-																		
-									var scale = 1.0;
-									
-									if (useScale) {
-										
-										scale = tileData[index + scaleIndex];
-										
-									}
-									
+
 									if (useTransform) {
-										
-										matrix = new Matrix3 (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
-										pattern.matrix = matrix;
+										var matrix = new Matrix3 (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
+										cairo.matrix = matrix;
 									}
 									
-									matrix.translate( -tileData[index], -tileData[index + 1] );
+									cairo.translate( tileData[index], tileData[index + 1] );
+									
 									
 									if (useRotation) {
-										
-										matrix.rotate(tileData[index + rotationIndex]);
+										cairo.rotate(tileData[index + rotationIndex]);
 									}
 									
-									matrix.scale( 1/scale, 1/scale );
+									if (useScale) {
+										var scale = tileData[index + scaleIndex];
+										cairo.scale( scale, scale );
+									}
 									
-									pattern.matrix = matrix;
+									cairo.setSourceSurface( surface, 0, 0 );
 									
 									if (useAlpha) {
-										
 										cairo.paintWithAlpha (tileData[index + alphaIndex]);
-										//context.globalAlpha = tileData[index + alphaIndex];
-										
 									} else {
-										
 										cairo.paint ();
-										
 									}
 									
-									//context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
 									cairo.restore ();
 									
 								}
@@ -992,14 +936,9 @@ class CairoGraphics {
 							}
 							
 							if (useBlendAdd) {
-								
 								cairo.operator = OVER;
-								//context.globalCompositeOperation = "source-over";
-								
 							}
-						
-						
-							
+
 						default:
 							
 							openfl.Lib.notImplemented ("CairoGraphics");
