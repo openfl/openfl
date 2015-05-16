@@ -10,8 +10,10 @@ import lime.system.System;
 import lime.text.TextLayout;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
@@ -1607,6 +1609,12 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
+		
+		CairoTextField.render (this, renderSession);
+		super.__renderCairo(renderSession);
+		
+	}
 	
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
