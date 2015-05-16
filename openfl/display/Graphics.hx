@@ -66,6 +66,7 @@ class Graphics {
 	#end
 	
 	
+
 	public function new () {
 		
 		__commands = new Array ();
@@ -708,7 +709,7 @@ class Graphics {
 	 */
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.lineBitmapStyle");
+		__commands.push (LineBitmapStyle (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
 		
 	}
 	
@@ -767,7 +768,7 @@ class Graphics {
 	 */
 	public function lineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.lineGradientStyle");
+		__commands.push (LineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));	
 		
 	}
 	
@@ -913,7 +914,7 @@ class Graphics {
 	 */
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
-		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness : __halfStrokeWidth;
+		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness/2 : __halfStrokeWidth;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
@@ -1066,6 +1067,8 @@ class Graphics {
 	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
+	LineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
+	LineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>);
 	LineTo (x:Float, y:Float);
 	MoveTo (x:Float, y:Float);
 	DrawPathC(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding);
