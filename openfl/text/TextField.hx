@@ -1612,8 +1612,6 @@ class TextField extends InteractiveObject {
 	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
 		
 		CairoTextField.render (this, renderSession);
-		super.__renderCairo(renderSession);
-		
 	}
 	
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {

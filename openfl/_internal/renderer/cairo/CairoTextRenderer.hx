@@ -62,7 +62,7 @@ class CairoTextRenderer {
 		}
 	}
 	
-public static function update (textField:TextField):Bool {
+	public static function update (textField:TextField):Bool {
 		
 		if (textField.__dirty) {
 
@@ -85,7 +85,7 @@ public static function update (textField:TextField):Bool {
 					
 				}
 				
-				/*var measurements = textField.__measureText ();
+				var measurements = textField.__measureText ();
 				var textWidth = 0.0;
 				
 				for (measurement in measurements) {
@@ -99,9 +99,7 @@ public static function update (textField:TextField):Bool {
 					textField.__width = textWidth + 4;
 					textField.__height = textField.textHeight + 4;
 					
-				}*/
-				
-				var textWidth = 50;
+				}
 				
 				if (textField.__ranges == null) {
 					
@@ -118,7 +116,7 @@ public static function update (textField:TextField):Bool {
 						range = textField.__ranges[i];
 						
 						renderText (textField, text.substring (range.start, range.end), range.format, offsetX, textWidth);
-						//offsetX += measurements[i];
+						offsetX += measurements[i];
 						
 					}
 					
@@ -153,6 +151,8 @@ public static function update (textField:TextField):Bool {
 
 			var glyphs : Array<NativeGlyphData>;
 			
+			textField.__textLayout.font = font;
+			
 			if ( glyphMap.exists( font ) )
 			{
 				glyphs = glyphMap.get( font );
@@ -165,24 +165,22 @@ public static function update (textField:TextField):Bool {
 				glyphMap.set( font, glyphs );
 			}
 			
+			var tlm = textField.getLineMetrics (0);
+			
+			var x : Float = offsetX;
+			var y : Float = 2 + tlm.ascent;
+			
 			var size = Std.int (format.size);
 			
 			var denom : Float = 20 / size * 1024;
 			
 			var lines = text.split ("\n");
 			
-			var tlm = textField.getLineMetrics (0);
-			
-			var x : Float = offsetX;
-			var y : Float = 2 + tlm.ascent;
-			
 			var line_i:Int = 0;
 			var oldX = x;
 			
 			if (textField.__textLayout == null) {
-					
 				textField.__textLayout = new TextLayout ();
-				
 			}
 			
 			var textLayout:TextLayout = textField.__textLayout;
@@ -258,8 +256,22 @@ public static function update (textField:TextField):Bool {
 								tx = cx + points[i + 3]/denom;
 								ty = cy - points[i + 4]/denom;
 								
-								graphics.curveTo( tx, ty, cx, cy );
+								graphics.curveTo( cx, cy, tx, ty );
 								i += 5;
+								
+							case 4:
+
+								var c1x = tx + points[i + 1]/denom;
+								var c1y = ty - points[i + 2]/denom;
+								
+								var c2x = c1x + points[i + 3]/denom;
+								var c2y = c1y - points[i + 4]/denom;
+								
+								tx = c2x + points[i + 5]/denom;
+								ty = c2y - points[i + 6]/denom;
+								
+								graphics.cubicCurveTo( c1x, c1y, c2x, c2y, tx, ty );
+								i += 7;
 						}
 						
 					}
