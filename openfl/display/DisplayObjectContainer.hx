@@ -820,16 +820,16 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		//var bounds = new Rectangle ();
+		//__getLocalBounds (bounds);
+		//
+		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
 		
-		renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
-		
-		/*for (child in __children) {
+		for (child in __children) {
 			
-			child.__renderMask (renderSession);
+			child.__renderCairoMask (renderSession);
 			
-		}*/
+		}
 		
 	}
 	

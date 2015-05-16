@@ -34,8 +34,7 @@ class CairoMaskManager extends AbstractMaskManager {
 		
 		cairo.newPath ();
 		mask.__renderCairoMask (renderSession);
-		
-		cairo.clipPreserve ();
+		cairo.clip ();
 		
 		//mask.worldAlpha = cacheAlpha;
 		
@@ -51,7 +50,7 @@ class CairoMaskManager extends AbstractMaskManager {
 		
 		cairo.newPath ();
 		cairo.rectangle (rect.x, rect.y, rect.width, rect.height);
-		cairo.clipPreserve ();
+		cairo.clip ();
 		
 	}
 	
