@@ -11,7 +11,10 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
+import openfl.display.GradientType;
 import openfl.display.Graphics;
+import openfl.display.InterpolationMethod;
+import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -31,8 +34,6 @@ class CairoGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
-	private static var bitmapFill:BitmapData;
-	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
 	private static var fillCommands:Array<DrawCommand>;
@@ -45,34 +46,14 @@ class CairoGraphics {
 	private static var strokeCommands:Array<DrawCommand>;
 	private static var strokePattern:CairoPattern;
 	
-	
-	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
+	private static var bitmapFill:BitmapData;
+	private static var bitmapRepeat:Bool;
 		
-		if (hasFill || bitmapFill == null) return;
-		
-		if (fillPattern == null) {
-			
-			fillPattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
-			
-			if (bitmapRepeat) {
-				
-				fillPattern.extend = CairoExtend.REPEAT;
-				
-			}
-			
-		}
-		
-		cairo.source = fillPattern;
-		hasFill = true;
-		
-	}
-	
-	
-	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) {
+	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) : CairoPattern{
 		
 		var surface = new CairoSurface (ARGB32, width, height);
 		var pattern = CairoPattern.createForSurface (surface);
-		
+				
 		if (repeat) {
 			
 			pattern.extend = CairoExtend.REPEAT;
@@ -88,8 +69,8 @@ class CairoGraphics {
 		cairo.lineTo (0, 0);
 		cairo.closePath ();
 		cairo.fill ();
-		pattern.destroy ();
-		return surface;
+		surface.destroy ();
+		return pattern;
 		
 		// TODO: Don't create extra canvas elements like this
 		
@@ -120,7 +101,6 @@ class CairoGraphics {
 		cairo.newPath ();
 		playCommands (fillCommands, false);
 		fillCommands = [];
-		
 	}
 	
 	
@@ -130,7 +110,6 @@ class CairoGraphics {
 		playCommands (strokeCommands, true);
 		cairo.closePath ();
 		strokeCommands = [];
-		
 	}
 	
 	
@@ -217,6 +196,98 @@ class CairoGraphics {
 		
 	}
 	
+	private static function createGradientPattern( type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float> ): CairoPattern {
+		
+		var pattern : CairoPattern = null;
+					
+		switch (type) {
+			
+			case RADIAL:
+				
+				if (matrix == null) matrix = new Matrix ();
+				
+				var point = matrix.transformPoint (new Point (1638.4, 0));
+			
+				pattern = CairoPattern.createRadial (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+			
+			case LINEAR:
+				
+				if (matrix == null) matrix = new Matrix ();
+						
+				var point1 = matrix.transformPoint (new Point (-819.2, 0));
+				var point2 = matrix.transformPoint (new Point (819.2, 0));
+
+				pattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
+				
+		}
+		
+		for (i in 0...colors.length) {
+			
+			var rgb = colors[i];
+			var alpha = alphas[i];
+			var r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
+			var g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
+			var b = (rgb & 0x0000FF) / 0xFF;
+			
+			var ratio = ratios[i] / 0xFF;
+			if (ratio < 0) ratio = 0;
+			if (ratio > 1) ratio = 1;
+			
+			pattern.addColorStopRGBA (ratio, r, g, b, alpha);
+			
+		}
+					
+		var mat = pattern.matrix;
+
+		mat.tx = bounds.x; 
+		mat.ty = bounds.y; 
+		
+		pattern.matrix = mat;
+		
+		return pattern;
+	}
+	
+	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
+		
+		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
+					
+		if (bitmapRepeat) {
+			pattern.extend = CairoExtend.REPEAT;
+		}
+
+		var mat = pattern.matrix;
+		
+		if ( matrix != null )
+		{
+			mat.a = matrix.a;
+			mat.b = matrix.b;
+			mat.c = matrix.c;
+			mat.d = matrix.d;
+			
+			mat.tx = -matrix.tx + bounds.x; 
+			mat.ty = -matrix.ty + bounds.y;
+		}
+		else
+		{
+			mat.tx = bounds.x; 
+			mat.ty = bounds.y; 
+		}
+		
+		pattern.matrix = mat;
+		
+		return pattern;
+	}
+	
+	private static function closePath() : Void {
+		
+		if ( strokePattern == null )
+			return;
+		
+		cairo.closePath();
+		cairo.source = strokePattern;
+		cairo.strokePreserve ();
+		cairo.newPath ();
+	}
 	
 	private static function playCommands (commands:Array<DrawCommand>, stroke:Bool = false):Void {
 		
@@ -230,7 +301,9 @@ class CairoGraphics {
 		
 		var closeGap = false;
 		var startX = 0.0;
-		var startY = 0.0;
+		var startY = 0.0;	
+		
+		cairo.fillRule = EVEN_ODD;
 		
 		for (command in commands) {
 			
@@ -249,6 +322,10 @@ class CairoGraphics {
 					cairo.moveTo (x - offsetX + radius, y - offsetY);
 					cairo.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2);
 				
+				case DrawRect (x, y, width, height):
+					
+					cairo.rectangle (x - offsetX, y - offsetY, width, height);
+					
 				case DrawEllipse (x, y, width, height):
 					
 					x -= offsetX;
@@ -293,14 +370,8 @@ class CairoGraphics {
 				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
 					
 					if (stroke && hasStroke) {
-						
-						cairo.closePath ();
-						cairo.source = strokePattern;
-						cairo.strokePreserve ();
-						cairo.newPath ();
-						
+						closePath();
 					}
-					
 					cairo.moveTo (positionX - offsetX, positionY - offsetY);
 					
 					if (thickness == null) {
@@ -308,6 +379,8 @@ class CairoGraphics {
 						hasStroke = false;
 						
 					} else {
+						
+						hasStroke = true;
 						
 						cairo.lineWidth = thickness;
 						
@@ -345,63 +418,73 @@ class CairoGraphics {
 						
 						cairo.miterLimit = (miterLimit == null ? 3 : miterLimit);
 						
-						if (strokePattern != null) {
+						if ( color != null )
+						{
+							var r = ((color & 0xFF0000) >>> 16) / 0xFF;
+							var g = ((color & 0x00FF00) >>> 8) / 0xFF;
+							var b = (color & 0x0000FF) / 0xFF;
 							
-							strokePattern.destroy ();
+
+							if (strokePattern != null) {						
+								strokePattern.destroy();
+							}
 							
+							if (alpha == 1 || alpha == null) {
+								
+								strokePattern = CairoPattern.createRGB (r, g, b);
+								
+							} else {
+								
+								strokePattern = CairoPattern.createRGBA (r, g, b, alpha);
+							}
 						}
-						
-						var r = ((color & 0xFF0000) >>> 16) / 0xFF;
-						var g = ((color & 0x00FF00) >>> 8) / 0xFF;
-						var b = (color & 0x0000FF) / 0xFF;
-						
-						if (alpha == 1 || alpha == null) {
-							
-							strokePattern = CairoPattern.createRGB (r, g, b);
-							
-						} else {
-							
-							strokePattern = CairoPattern.createRGBA (r, g, b, alpha);
-							
-						}
-						
-						hasStroke = true;
-						
 					}
 				
+				case LineGradientStyle  (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+					
+					if (stroke && hasStroke) {
+						closePath();
+					}
+					
+					if (strokePattern != null) {						
+						strokePattern.destroy();
+					}
+					
+					cairo.moveTo (positionX - offsetX, positionY - offsetY);
+					
+					strokePattern = createGradientPattern( type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio );
+					
+					hasStroke = true;
+					
+				case LineBitmapStyle  (bitmap, matrix, repeat, smooth):
+					
+					if (stroke && hasStroke) {
+						closePath();
+					}
+					
+					if (strokePattern != null) {						
+						strokePattern.destroy();
+					}
+					
+					cairo.moveTo (positionX - offsetX, positionY - offsetY);
+					
+					strokePattern = createImagePattern( bitmap, matrix, repeat );
+					
+					hasStroke = true;
+					
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 					
-					if (bitmap != bitmapFill || repeat != bitmapRepeat) {
-						
-						bitmapFill = bitmap;
-						bitmapRepeat = repeat;
-						
-						if (fillPattern != null) {
-							
-							fillPattern.destroy ();
-							
-						}
-						
-						fillPattern = null;
-						hasFill = false;
-						
-						//bitmap.__sync ();
-						
+					if (fillPattern != null) {
+						fillPattern.destroy ();
 					}
 					
-					if (matrix != null) {
-						
-						pendingMatrix = matrix;
-						inversePendingMatrix = matrix.clone ();
-						inversePendingMatrix.invert ();
-						
-					} else {
-						
-						pendingMatrix = null;
-						inversePendingMatrix = null;
-						
-					}
-				
+					fillPattern = createImagePattern( bitmap, matrix, repeat );
+					
+					bitmapFill = bitmap;
+					bitmapRepeat = repeat;
+					
+					hasFill = true;
+					
 				case BeginFill (rgb, alpha):
 					
 					if (alpha < 0.005) {
@@ -409,137 +492,29 @@ class CairoGraphics {
 						hasFill = false;
 						
 					} else {
-						
+					
 						if (fillPattern != null) {
-							
 							fillPattern.destroy ();
-							
 						}
 						
 						fillPattern = CairoPattern.createRGBA (((rgb & 0xFF0000) >>> 16) / 0xFF, ((rgb & 0x00FF00) >>> 8) / 0xFF, (rgb & 0x0000FF) / 0xFF, alpha);
-						
-						bitmapFill = null;
 						hasFill = true;
-						
 					}
-				
-				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-					
-					var gradientFill = null;
-					
-					switch (type) {
-						
-						case RADIAL:
-							
-							if (matrix == null) matrix = new Matrix ();
-							var point = matrix.transformPoint (new Point (1638.4, 0));
-							
-							if (fillPattern != null) {
-								
-								fillPattern.destroy ();
-								
-							}
-							
-							fillPattern = CairoPattern.createRadial (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
-						
-						case LINEAR:
-							
-							var matrix = matrix != null ? matrix.clone () : new Matrix ();
-							var point1 = matrix.transformPoint (new Point (-819.2, 0));
-							var point2 = matrix.transformPoint (new Point (819.2, 0));
-							
-							if (fillPattern != null) {
-								
-								fillPattern.destroy ();
-								
-							}
-							
-							fillPattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
-						
-					}
-					
-					for (i in 0...colors.length) {
-						
-						var rgb = colors[i];
-						var alpha = alphas[i];
-						var r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
-						var g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
-						var b = (rgb & 0x0000FF) / 0xFF;
-						
-						var ratio = ratios[i] / 0xFF;
-						if (ratio < 0) ratio = 0;
-						if (ratio > 1) ratio = 1;
-						
-						fillPattern.addColorStopRGBA (ratio, r, g, b, alpha);
-						
-					}
-					
-					//context.fillStyle = gradientFill;
 					
 					bitmapFill = null;
-					hasFill = true;
 				
-				case DrawRect (x, y, width, height):
 					
-					//var optimizationUsed = false;
-					//
-					//if (bitmapFill != null) {
-						//
-						//var st:Float = 0;
-						//var sr:Float = 0;
-						//var sb:Float = 0;
-						//var sl:Float = 0;
-						//
-						//var canOptimizeMatrix = true;
-						//
-						//if (pendingMatrix != null) {
-							//
-							//if (pendingMatrix.b != 0 || pendingMatrix.c != 0) {
-								//
-								//canOptimizeMatrix = false;
-								//
-							//} else {
-								//
-								//var stl = inversePendingMatrix.transformPoint (new Point (x, y));
-								//var sbr = inversePendingMatrix.transformPoint (new Point (x + width, y + height));
-								//
-								//st = stl.y;
-								//sl = stl.x;
-								//sb = sbr.y;
-								//sr = sbr.x;
-								//
-							//}
-							//
-						//} else {
-							//
-							//st = y;
-							//sl = x;
-							//sb = y + height;
-							//sr = x + width;
-							//
-						//}
-						//
-						//if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
-							//
-							//optimizationUsed = true;
-							////context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
-						//}
-					//}
-					//
-					//if (!optimizationUsed) {
-						
-						if (fillPattern != null) {
-							
-							var matrix = fillPattern.matrix;
-							matrix.translate (x, y);
-							fillPattern.matrix = matrix;
-							
-						}
-						
-						cairo.rectangle (x - offsetX, y - offsetY, width, height);
-						
-					//}
+				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					
+					if (fillPattern != null) {
+						fillPattern.destroy ();
+					}
+										
+					fillPattern = createGradientPattern( type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio );
+
+					hasFill = true;
+					bitmapFill = null;
+
 				
 				default:
 					
@@ -557,43 +532,28 @@ class CairoGraphics {
 			
 			cairo.source = strokePattern;
 			cairo.strokePreserve ();
-			
+
 		}
 		
-		if (!stroke) {
+		if (!stroke && hasFill) {
 			
-			if (hasFill || bitmapFill != null) {
+			cairo.source = fillPattern;
+			cairo.translate ( -bounds.x, -bounds.y);
+			
+			if (pendingMatrix != null) {
 				
-				if (bitmapFill != null) {
-					
-					beginPatternFill (bitmapFill, bitmapRepeat);
-					
-				} else {
-					
-					cairo.source = fillPattern;
-					
-				}
+				cairo.transform (pendingMatrix.__toMatrix3 ());
+				cairo.fillPreserve ();
+				cairo.transform (inversePendingMatrix.__toMatrix3 ());
 				
-				cairo.translate (-bounds.x, -bounds.y);
+			} else {
 				
-				if (pendingMatrix != null) {
-					
-					cairo.transform (pendingMatrix.__toMatrix3 ());
-					cairo.fillPreserve ();
-					cairo.transform (inversePendingMatrix.__toMatrix3 ());
-					
-				} else {
-					
-					cairo.fillPreserve ();
-					
-				}
-				
-				cairo.translate (bounds.x, bounds.y);
-				cairo.closePath ();
-				//cairo.paint ();
+				cairo.fillPreserve ();
 				
 			}
 			
+			cairo.translate (bounds.x, bounds.y);
+			cairo.closePath ();
 		}
 		
 	}
@@ -657,7 +617,7 @@ class CairoGraphics {
 				
 				if (graphics.__cairo == null) {
 					
-					var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height));
+					var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width+2), Math.ceil (bounds.height+2));
 					graphics.__cairo = new Cairo (surface);
 					surface.destroy ();
 					
@@ -673,11 +633,12 @@ class CairoGraphics {
 				
 				hasFill = false;
 				hasStroke = false;
-				bitmapFill = null;
-				bitmapRepeat = false;
 				
+				fillPattern = null;
+				strokePattern = null;
+
 				for (command in graphics.__commands) {
-					
+				
 					switch (command) {
 						
 						case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
@@ -690,11 +651,12 @@ class CairoGraphics {
 							endFill ();
 							endStroke ();
 							hasFill = false;
+							bitmapFill = null;
 						
-						case LineStyle (_, _, _, _, _, _, _, _):
+						case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
 							
 							strokeCommands.push (command);
-						
+							
 						case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
 							
 							endFill ();
@@ -705,8 +667,8 @@ class CairoGraphics {
 						
 						case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
 							
-							endFill ();
-							endStroke ();
+							//endFill ();
+							//endStroke ();
 							
 							fillCommands.push (command);
 							strokeCommands.push (command);
@@ -719,15 +681,16 @@ class CairoGraphics {
 							var v = vertices;
 							var ind = indices;
 							var uvt = uvtData;
-							var pattern:CairoSurface = null;
+							var pattern:CairoPattern = null;
 							var colorFill = bitmapFill == null;
 							
 							if (colorFill && uvt != null) {
-								
 								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
 								break;
-								
 							}
+							
+							var width = 0;
+							var height = 0;
 							
 							if (!colorFill) {
 								
@@ -752,15 +715,21 @@ class CairoGraphics {
 								uvt = normalizedUVT.uvt;
 								
 								if (maxUVT > 1) {
+									width = Std.int (bounds.width);
+									height = Std.int (bounds.height);
 									
-									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, Std.int (bounds.width), Std.int (bounds.height));
 									
 								} else {
 									
-									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
+									width = bitmapFill.width;
+									height = bitmapFill.height;
 									
 								}
 								
+								pattern = createImagePattern( bitmapFill, null, bitmapRepeat );
+								
+								//pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, width, height);
+								cairo.source = pattern;
 							}
 							
 							var i = 0;
@@ -836,16 +805,15 @@ class CairoGraphics {
 								cairo.moveTo (x1, y1);
 								cairo.lineTo (x2, y2);
 								cairo.lineTo (x3, y3);
-								cairo.closePath ();
-								
+								cairo.closePath ();		
 								cairo.clip ();
 								
-								uvx1 = uvt[iax] * pattern.width;
-								uvx2 = uvt[ibx] * pattern.width;
-								uvx3 = uvt[icx] * pattern.width;
-								uvy1 = uvt[iay] * pattern.height;
-								uvy2 = uvt[iby] * pattern.height;
-								uvy3 = uvt[icy] * pattern.height;
+								uvx1 = uvt[iax] * width;
+								uvx2 = uvt[ibx] * width;
+								uvx3 = uvt[icx] * width;
+								uvy1 = uvt[iay] * height;
+								uvy2 = uvt[iby] * height;
+								uvy3 = uvt[icy] * height;
 								
 								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
 								
@@ -864,11 +832,11 @@ class CairoGraphics {
 								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 								
 								var matrix = new Matrix3 (t1, t2, t3, t4, dx, dy);
-								//cairo.transform (t1, t2, t3, t4, dx, dy);
-								cairo.transform (matrix);
-								cairo.setSourceSurface (pattern, 0, 0);
+								pattern.matrix = matrix;
+								
+								//cairo.transform( matrix );
+								
 								cairo.paint ();
-								//cairo.drawImage (pattern, 0, 0);
 								cairo.restore ();
 								
 								i += 3;
@@ -876,8 +844,9 @@ class CairoGraphics {
 							}
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
-							
-							return;
+											
+							endFill ();
+							endStroke ();
 							
 							var useScale = (flags & Graphics.TILE_SCALE) > 0;
 							var useRotation = (flags & Graphics.TILE_ROTATION) > 0;
@@ -918,8 +887,11 @@ class CairoGraphics {
 							sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.getSurface ();
 							
-							cairo.setSourceSurface (surface, 0, 0);
+							var pattern = CairoPattern.createForSurface( surface );
 							
+							//cairo.setSourceSurface (surface, 0, 0);
+							cairo.source = pattern;
+														
 							if (useBlendAdd) {
 								
 								cairo.operator = ADD;
@@ -929,7 +901,18 @@ class CairoGraphics {
 							
 							while (index < totalCount) {
 								
-								var tileID = (!useRect) ? Std.int (tileData[index + 2]) : -1;
+								// Std.int doesn't handle null on neko target
+								#if neko
+								var f : Float = tileData[index + 2];
+								var i = 0;
+								
+								if( f != null )
+									i = Std.int ( f );
+								#else
+									var i = Std.int( tileData[index +2] );
+								#end
+								
+								var tileID = (!useRect) ? i : -1;
 								
 								if (!useRect && tileID != previousTileID) {
 									
@@ -960,13 +943,9 @@ class CairoGraphics {
 									
 									cairo.save ();
 									cairo.translate (tileData[index], tileData[index + 1]);
-									
-									if (useRotation) {
-										
-										//cairo.rotate (tileData[index + rotationIndex]);
-										
-									}
-									
+																					
+									var matrix : Matrix3 = new Matrix3();
+																		
 									var scale = 1.0;
 									
 									if (useScale) {
@@ -977,12 +956,20 @@ class CairoGraphics {
 									
 									if (useTransform) {
 										
-										var matrix = new Matrix3 (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
-										cairo.transform (matrix);
-										
+										matrix = new Matrix3 (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
+										pattern.matrix = matrix;
 									}
 									
-									//cairo.setSourceSurface (
+									matrix.translate( -tileData[index], -tileData[index + 1] );
+									
+									if (useRotation) {
+										
+										matrix.rotate(tileData[index + rotationIndex]);
+									}
+									
+									matrix.scale( 1/scale, 1/scale );
+									
+									pattern.matrix = matrix;
 									
 									if (useAlpha) {
 										
@@ -1011,6 +998,8 @@ class CairoGraphics {
 								
 							}
 						
+						
+							
 						default:
 							
 							openfl.Lib.notImplemented ("CairoGraphics");
