@@ -76,7 +76,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public function set_overState (value:DisplayObject):DisplayObject {
+	private function set_overState (value:DisplayObject):DisplayObject {
 		
 		overState = value;
 		lime_simple_button_set_state (__handle, 2, value == null ? null : value.__handle);
@@ -106,7 +106,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public function set_upState (value:DisplayObject):DisplayObject {
+	private function set_upState (value:DisplayObject):DisplayObject {
 		
 		upState = value;
 		lime_simple_button_set_state (__handle, 0, value == null ? null : value.__handle);

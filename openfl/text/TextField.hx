@@ -2156,14 +2156,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_textColor ():Int { 
+	@:noCompletion private function get_textColor ():Int { 
 		
 		return __textFormat.color;
 		
 	}
 	
 	
-	@:noCompletion public function set_textColor (value:Int):Int {
+	@:noCompletion private function set_textColor (value:Int):Int {
 		
 		if (value != __textFormat.color) __dirty = true;
 		
@@ -2181,7 +2181,7 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	@:noCompletion public function get_textWidth ():Float {
+	@:noCompletion private function get_textWidth ():Float {
 		
 		#if (js && html5)
 		
@@ -2224,7 +2224,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_textHeight ():Float {
+	@:noCompletion private function get_textHeight ():Float {
 		
 		#if (js && html5)
 		
@@ -2264,7 +2264,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function set_type (value:TextFieldType):TextFieldType {
+	@:noCompletion private function set_type (value:TextFieldType):TextFieldType {
 		
 		if (value != type) {
 			
@@ -2289,7 +2289,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	override public function get_width ():Float {
+	override private function get_width ():Float {
 		
 		if (autoSize == TextFieldAutoSize.LEFT) {
 			
@@ -2305,7 +2305,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	override public function set_width (value:Float):Float {
+	override private function set_width (value:Float):Float {
 		
 		if (scaleX != 1 || __width != value) {
 			
@@ -2320,14 +2320,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_wordWrap ():Bool {
+	@:noCompletion private function get_wordWrap ():Bool {
 		
 		return wordWrap;
 		
 	}
 	
 	
-	@:noCompletion public function set_wordWrap (value:Bool):Bool {
+	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
 		//if (value != wordWrap) __dirty = true;
 		return wordWrap = value;
