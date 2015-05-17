@@ -38,6 +38,7 @@ class CairoGraphics {
 	private static var cairo:Cairo;
 	private static var fillCommands:Array<DrawCommand>;
 	private static var fillPattern:CairoPattern;
+	private static var fillPatternMatrix:Matrix;
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
@@ -219,30 +220,35 @@ class CairoGraphics {
 	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
 		
 		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
-					
+		
 		if (bitmapRepeat) {
-			pattern.extend = CairoExtend.REPEAT;
-		}
-
-		var mat = pattern.matrix;
-		
-		if ( matrix != null )
-		{
-			mat.a = matrix.a;
-			mat.b = matrix.b;
-			mat.c = matrix.c;
-			mat.d = matrix.d;
 			
-			mat.tx = -matrix.tx + bounds.x; 
-			mat.ty = -matrix.ty + bounds.y;
-		}
-		else
-		{
-			mat.tx = bounds.x; 
-			mat.ty = bounds.y; 
+			pattern.extend = CairoExtend.REPEAT;
+			
 		}
 		
-		pattern.matrix = mat;
+		fillPatternMatrix = matrix;
+		
+		//var mat = pattern.matrix;
+		//
+		//if ( matrix != null )
+		//{
+			//var matrix = matrix.invert ();
+			//mat.a = matrix.a;
+			//mat.b = matrix.b;
+			//mat.c = matrix.c;
+			//mat.d = matrix.d;
+			//
+			//mat.tx = matrix.tx - bounds.x; 
+			//mat.ty = matrix.ty - bounds.y;
+		//}
+		//else
+		//{
+			//mat.tx = bounds.x; 
+			//mat.ty = bounds.y; 
+		//}
+		//
+		//pattern.matrix = mat;
 		
 		return pattern;
 	}
@@ -444,10 +450,12 @@ class CairoGraphics {
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 					
 					if (fillPattern != null) {
+						
 						fillPattern.destroy ();
+						
 					}
 					
-					fillPattern = createImagePattern( bitmap, matrix, repeat );
+					fillPattern = createImagePattern (bitmap, matrix, repeat);
 					
 					bitmapFill = bitmap;
 					bitmapRepeat = repeat;
@@ -463,11 +471,15 @@ class CairoGraphics {
 					} else {
 					
 						if (fillPattern != null) {
+							
 							fillPattern.destroy ();
+							fillPatternMatrix = null;
+							
 						}
 						
 						fillPattern = CairoPattern.createRGBA (((rgb & 0xFF0000) >>> 16) / 0xFF, ((rgb & 0x00FF00) >>> 8) / 0xFF, (rgb & 0x0000FF) / 0xFF, alpha);
 						hasFill = true;
+						
 					}
 					
 					bitmapFill = null;
@@ -476,14 +488,16 @@ class CairoGraphics {
 				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					
 					if (fillPattern != null) {
+						
 						fillPattern.destroy ();
+						fillPatternMatrix = null;
+						
 					}
-										
+					
 					fillPattern = createGradientPattern( type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio );
-
+					
 					hasFill = true;
 					bitmapFill = null;
-
 				
 				default:
 					
@@ -506,8 +520,24 @@ class CairoGraphics {
 		
 		if (!stroke && hasFill) {
 			
-			cairo.source = fillPattern;
 			cairo.translate ( -bounds.x, -bounds.y);
+			
+			if (fillPatternMatrix != null) {
+				
+				var matrix = fillPatternMatrix.clone ();
+				matrix.invert ();
+				
+				if (pendingMatrix != null) {
+					
+					matrix.concat (pendingMatrix);
+					
+				}
+				
+				fillPattern.matrix = matrix.__toMatrix3 ();
+				
+			}
+			
+			cairo.source = fillPattern;
 			
 			if (pendingMatrix != null) {
 				
@@ -605,7 +635,7 @@ class CairoGraphics {
 				
 				fillPattern = null;
 				strokePattern = null;
-
+				
 				for (command in graphics.__commands) {
 				
 					switch (command) {
@@ -799,7 +829,7 @@ class CairoGraphics {
 								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
 								
 								var matrix = new Matrix3 (t1, t2, t3, t4, dx, dy);
-
+								
 								cairo.transform( matrix );
 								cairo.source = pattern;
 								
