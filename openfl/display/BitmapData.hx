@@ -133,7 +133,7 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public var width (default, null):Int;
 	
-	@:noCompletion @:dox(hide) public var blendMode:BlendMode;
+	@:noCompletion @:dox(hide) public var blendMode(default, set):BlendMode;
 	@:noCompletion @:dox(hide) public var __worldTransform:Matrix;
 	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
@@ -1942,6 +1942,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		
 		
+	}
+	
+	@:noCompletion @:dox(hide) private function set_blendMode (value:BlendMode) {
+		return blendMode = value;
 	}
 	
 	

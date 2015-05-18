@@ -10,7 +10,7 @@ interface IBitmapDrawable {
 	
 	var __worldTransform:Matrix;
 	var __worldColorTransform:ColorTransform;
-	var blendMode:BlendMode;
+	var blendMode(default, set):BlendMode;
 	
 	private var __cacheAsBitmap:Bool;
 	

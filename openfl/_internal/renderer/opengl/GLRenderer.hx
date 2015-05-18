@@ -6,6 +6,7 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.opengl.utils.*;
+import openfl._internal.renderer.opengl.utils.BlendModeManager.GLBlendMode;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
@@ -21,7 +22,6 @@ import openfl.geom.Point;
 class GLRenderer extends AbstractRenderer {
 	
 	
-	public static var blendModesWebGL:Map <BlendMode, Array<Int>> = null;
 	public static var glContextId:Int = 0;
 	public static var glContexts = [];
 	
@@ -77,28 +77,6 @@ class GLRenderer extends AbstractRenderer {
 		#end
 		
 		glContexts[_glContextId] = gl;
-		
-		if (blendModesWebGL == null) {
-			
-			blendModesWebGL = new Map ();
-			
-			blendModesWebGL.set (BlendMode.NORMAL, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.ADD, [ gl.SRC_ALPHA, gl.DST_ALPHA ]);
-			blendModesWebGL.set (BlendMode.MULTIPLY, [ gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.SCREEN, [ gl.SRC_ALPHA, gl.ONE ]);
-			
-			blendModesWebGL.set (BlendMode.ALPHA, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.DARKEN, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.DIFFERENCE, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.ERASE, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.HARDLIGHT, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.INVERT, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.LAYER, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.LIGHTEN, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.OVERLAY, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			blendModesWebGL.set (BlendMode.SUBTRACT, [ gl.ONE, gl.ONE_MINUS_SRC_ALPHA ]);
-			
-		}
 		
 		projectionMatrix = new Matrix();
 		
