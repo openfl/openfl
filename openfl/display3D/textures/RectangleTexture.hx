@@ -101,7 +101,11 @@ class RectangleTexture extends TextureBase {
 			 
 			}
 			
+			#if nodejs
+			var source = data.byteView;
+			#else
 			var source = new UInt8Array(data);
+			#end
 			
 		#end
 		
