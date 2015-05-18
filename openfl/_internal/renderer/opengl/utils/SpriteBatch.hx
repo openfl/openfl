@@ -191,6 +191,7 @@ class SpriteBatch {
 			case Tilesheet.TILE_BLEND_ADD:		ADD;
 			case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
 			case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
+			case Tilesheet.TILE_BLEND_SUBTRACT:	SUBTRACT;
 			case _:								NORMAL;
 		};
 		
