@@ -953,8 +953,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (scrollRect != null) {
 			renderSession.spriteBatch.stop();
 			var m = __worldTransform.clone();
-			m.a = m.d = 1.0;
-			m.c = m.b = 0.0;
 			var clip = scrollRect.transform(m);
 			clip.y = renderSession.renderer.height - clip.y - clip.height;
 			

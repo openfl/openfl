@@ -1235,6 +1235,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		}
 		
+		var sr = scrollRect;
+		
 		if (parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
@@ -1254,17 +1256,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.b = a00 * b01 + a01 * b11;
 			__worldTransform.c = a10 * b00 + a11 * b10;
 			__worldTransform.d = a10 * b01 + a11 * b11;
+			__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
+			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
 			
-			if (scrollRect == null) {
-				
-				__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
-				__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
-				
-			} else {
-				
-				__worldTransform.tx = (x - scrollRect.x) * b00 + (y - scrollRect.y) * b10 + parentTransform.tx;
-				__worldTransform.ty = (x - scrollRect.x) * b01 + (y - scrollRect.y) * b11 + parentTransform.ty;
-				
+			if (sr != null) {
+				sr = sr.transform(__worldTransform);
+				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
+				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
 			}
 			
 			if(__isMask) __maskCached = false;
@@ -1275,17 +1273,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.c = -__rotationSine * scaleY;
 			__worldTransform.b = __rotationSine * scaleX;
 			__worldTransform.d = __rotationCosine * scaleY;
+			__worldTransform.tx = x;
+			__worldTransform.ty = y;
 			
-			if (scrollRect == null) {
-				
-				__worldTransform.tx = x;
-				__worldTransform.ty = y;
-				
-			} else {
-				
-				__worldTransform.tx = y - scrollRect.x;
+			if (sr != null) {
+				sr = sr.transform(__worldTransform);
+				__worldTransform.tx = x - scrollRect.x;
 				__worldTransform.ty = y - scrollRect.y;
-				
 			}
 			
 		}
