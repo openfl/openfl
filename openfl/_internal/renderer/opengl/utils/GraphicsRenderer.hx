@@ -244,9 +244,9 @@ class GraphicsRenderer {
 		
 		var color = hex2rgb (path.line.color);
 		var alpha = path.line.alpha;
-		var r = color[0] * alpha;
-		var g = color[1] * alpha;
-		var b = color[2] * alpha;
+		var r = color[0];
+		var g = color[1];
+		var b = color[2];
 		
 		var px:Float, py:Float, p1x:Float, p1y:Float, p2x:Float, p2y:Float, p3x:Float, p3y:Float;
 		var perpx:Float, perpy:Float, perp2x:Float, perp2y:Float, perp3x:Float, perp3y:Float;
