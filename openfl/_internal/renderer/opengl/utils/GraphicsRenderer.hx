@@ -879,43 +879,52 @@ class GraphicsRenderer {
 		
 		renderSession.blendModeManager.setBlendMode(object.blendMode);
 		
+		var clipRect = @:privateAccess renderSession.spriteBatch.clipRect;
 		var batchDrawing = renderSession.spriteBatch.drawing;
+		
+		batchDrawing = renderSession.spriteBatch.drawing;
 		
 		for (i in 0...glStack.buckets.length) {
 			batchDrawing = renderSession.spriteBatch.drawing;
+			
+			if (batchDrawing && !localCoords) {
+				renderSession.spriteBatch.finish();
+			}
+			
+			if (clipRect != null) {
+				gl.enable(gl.SCISSOR_TEST);
+				gl.scissor(Math.floor(clipRect.x), 
+							Math.floor(clipRect.y),
+							Math.floor(clipRect.width),
+							Math.floor(clipRect.height)
+						);
+			}
+			
 			bucket = glStack.buckets[i];
 			
 			switch(bucket.mode) {
 				case Fill, PatternFill:
-					if (batchDrawing && !localCoords) {
-						renderSession.spriteBatch.finish();
-					}
 					renderSession.stencilManager.pushBucket(bucket, renderSession, translationMatrix.toArray(true));
 					var shader = prepareShader(bucket, renderSession, object, translationMatrix.toArray(true));
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
-					if (batchDrawing && !localCoords) {
-						renderSession.spriteBatch.finish();
-					}
 					var shader = prepareShader(bucket, renderSession, object, null);
 					renderDrawTriangles(bucket, shader, renderSession);
 				case DrawTiles:
 					if (!batchDrawing) {
-						renderSession.spriteBatch.begin(renderSession);
+						renderSession.spriteBatch.begin(renderSession, clipRect);
 					}
 					var args = Type.enumParameters(bucket.graphicType);		
 					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
+					
+					renderSession.spriteBatch.finish();
 				case _:
 			}
 			
 			var ct:ColorTransform = object.__worldColorTransform;
 			for (line in bucket.lines) {
 				if (line != null && line.verts.length > 0) {
-					batchDrawing = renderSession.spriteBatch.drawing;
-					if (batchDrawing && !localCoords) {
-						renderSession.spriteBatch.finish();
-					}
 					var shader = renderSession.shaderManager.primitiveShader;
 				
 					renderSession.shaderManager.setShader (shader);
@@ -935,9 +944,13 @@ class GraphicsRenderer {
 				}
 			}
 			
+			if (clipRect != null) {
+				gl.disable(gl.SCISSOR_TEST);
+			}
+			
 			batchDrawing = renderSession.spriteBatch.drawing;
 			if (!batchDrawing && !localCoords) {
-				renderSession.spriteBatch.begin(renderSession);
+				renderSession.spriteBatch.begin(renderSession, clipRect);
 			}
 		}
 	}
