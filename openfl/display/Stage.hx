@@ -848,14 +848,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowFocusIn ():Void {
 		
-		
+		var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, null, false, 0);
+		__broadcast (event, true);
 		
 	}
 	
 	
 	public function onWindowFocusOut ():Void {
 		
-		
+		var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, null, false, 0);
+		__broadcast (event, true);
 		
 	}
 	
