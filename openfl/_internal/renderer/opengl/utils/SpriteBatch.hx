@@ -133,7 +133,7 @@ class SpriteBatch {
 	}
 	
 	public function finish() {
-		flush();
+		stop();
 		clipRect = null;
 		drawing = false;
 	}
@@ -477,9 +477,7 @@ class SpriteBatch {
 	function flush() {
 		if (batchedSprites == 0) return;
 		
-		if (clipRect == null) {
-			gl.disable(gl.SCISSOR_TEST);
-		} else {
+		if (clipRect != null) {
 			gl.enable(gl.SCISSOR_TEST);
 			gl.scissor(Math.floor(clipRect.x), 
 						Math.floor(clipRect.y),
