@@ -19,6 +19,7 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse;
 import openfl._internal.renderer.AbstractRenderer;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -33,10 +34,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
+import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.DivElement;
 import js.html.Element;
@@ -162,6 +164,7 @@ import js.Browser;
  */
 
 @:access(openfl.events.Event)
+@:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 
 
@@ -318,7 +321,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
 	 */
-	public var frameRate:Float;
+	public var frameRate (get, set):Float;
 	
 	/**
 	 * A value from the StageQuality class that specifies which rendering quality
@@ -529,9 +532,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
-	@:noCompletion private var __mouseOutStack = [];
-	@:noCompletion private var __mouseX:Float = 0;
-	@:noCompletion private var __mouseY:Float = 0;
+	@:noCompletion private var __mouseOutStack:Array<DisplayObject>;
+	@:noCompletion private var __mouseX:Float;
+	@:noCompletion private var __mouseY:Float;
 	@:noCompletion private var __originalWidth:Int;
 	@:noCompletion private var __originalHeight:Int;
 	@:noCompletion private var __renderer:AbstractRenderer;
@@ -540,7 +543,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	
-	#if js
+	#if (js && html5)
 	//@:noCompletion private var __div:DivElement;
 	//@:noCompletion private var __element:HtmlElement;
 	#if stats
@@ -569,7 +572,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
-		
+		__lastClickTime = 0;
+
 		stageWidth = width;
 		stageHeight = height;
 		
@@ -577,13 +581,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = false;
-		frameRate = 60;
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
 		
 		__clearBeforeRender = true;
 		__stack = [];
+		__mouseOutStack = [];
 		
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -604,7 +608,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			case OPENGL (gl):
 				
+				#if !disable_cffi
 				__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+				#end
 			
 			case CANVAS (context):
 				
@@ -613,6 +619,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 			case DOM (element):
 				
 				__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+			
+			case CAIRO (cairo):
+				
+				__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
 			
 			default:
 			
@@ -659,35 +669,35 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		
+		GameInput.__onGamepadAxisMove (gamepad, axis, value);
 		
 	}
 	
 	
 	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		
+		GameInput.__onGamepadButtonDown (gamepad, button);
 		
 	}
 	
 	
 	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		
+		GameInput.__onGamepadButtonUp (gamepad, button);
 		
 	}
 	
 	
 	public function onGamepadConnect (gamepad:Gamepad):Void {
 		
-		
+		GameInput.__onGamepadConnect (gamepad);
 		
 	}
 	
 	
 	public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
-		
+		GameInput.__onGamepadDisconnect (gamepad);
 		
 	}
 	
@@ -771,6 +781,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onTextEdit (text:String, start:Int, length:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onTextInput (text:String):Void {
+		
+		
+		
+	}
+	
+	
 	public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_MOVE, x, y, id);
@@ -815,6 +839,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowEnter ():Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowFocusIn ():Void {
 		
 		
@@ -832,6 +863,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onWindowFullscreen ():Void {
 		
 		
+		
+	}
+	
+	
+	public function onWindowLeave ():Void {
+		
+		dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	
@@ -892,6 +930,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__update (false, true);
 		
 		if (__renderer != null) {
+			
+			switch (context) {
+				
+				case CAIRO (cairo):
+					
+					cast (__renderer, CairoRenderer).cairo = cairo;
+					@:privateAccess (__renderer.renderSession).cairo = cairo;
+				
+				default:
+					
+			}
 			
 			__renderer.render (this);
 			
@@ -1012,9 +1061,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Void {
+	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
-		stack.push (this);
+		if (stack != null) {
+			
+			stack.push (this);
+			
+		}
+		
+		return true;
 		
 	}
 	
@@ -1103,6 +1158,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		if (type == MouseEvent.MOUSE_DOWN) {
+			
+			focus = target;
+			
+		}
+		
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		var clickType = switch (type) {
@@ -1136,49 +1197,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		if (Std.is (target, Sprite)) {
+		var cursor = null;
+		
+		for (target in stack) {
 			
-			var targetSprite:Sprite = cast target;
+			cursor = target.__getCursor ();
 			
-			if (targetSprite.buttonMode && targetSprite.useHandCursor) {
+			if (cursor != null) {
 				
-				Mouse.cursor = POINTER;
-				
-			} else {
-				
-				Mouse.cursor = ARROW;
+				Mouse.cursor = cursor;
+				break;
 				
 			}
 			
-		} else if (Std.is (target, SimpleButton)) {
-			
-			var targetButton:SimpleButton = cast target;
-			
-			if (targetButton.useHandCursor) {
-				
-				Mouse.cursor = POINTER;
-				
-			} else {
-				
-				Mouse.cursor = ARROW;
-				
-			}
-			
-		} else if (Std.is (target, TextField)) {
-			
-			var targetTextField:TextField = cast target;
-			
-			if (targetTextField.type == INPUT) {
-				
-				Mouse.cursor = TEXT;
-				
-			} else {
-				
-				Mouse.cursor = ARROW;
-				
-			}
-			
-		} else {
+		}
+		
+		if (cursor == null) {
 			
 			Mouse.cursor = ARROW;
 			
@@ -1509,7 +1543,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	
-	#if js
+	#if (js && html5)
 	@:noCompletion private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
 		
 		//__glContextLost = true;
@@ -1549,6 +1583,34 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__colorString = "#" + StringTools.hex (value, 6);
 		
 		return __color = value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_displayState ():StageDisplayState {
+		
+		return __displayState;
+		
+	}
+	
+	
+	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
+		
+		switch (value) {
+			
+			case NORMAL:
+				
+				//Lib.application.window.minimized = false;
+				Lib.application.window.fullscreen = false;
+			
+			default:
+				
+				//Lib.application.window.minimized = false;
+				Lib.application.window.fullscreen = true;
+			
+		}
+		
+		return __displayState = value;
 		
 	}
 	
@@ -1593,30 +1655,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private inline function get_displayState ():StageDisplayState {
+	@:noCompletion private function get_frameRate ():Float {
 		
-		return __displayState;
+		return Lib.application.frameRate;
 		
 	}
 	
 	
-	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
+	@:noCompletion private function set_frameRate (value:Float):Float {
 		
-		switch (value) {
-			
-			case NORMAL:
-				
-				//Lib.application.window.minimized = false;
-				Lib.application.window.fullscreen = false;
-			
-			default:
-				
-				//Lib.application.window.minimized = false;
-				Lib.application.window.fullscreen = true;
-			
-		}
-		
-		return __displayState = value;
+		return Lib.application.frameRate = value;
 		
 	}
 	

@@ -12,7 +12,7 @@ import openfl.geom.Rectangle;
 import openfl.Lib;
 import openfl.Vector;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
@@ -31,40 +31,27 @@ class CanvasGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
+	private static var bitmapFill:BitmapData;
+	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
+	private static var fillCommands:Array<DrawCommand>;
+	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
-	private static var inPath:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var positionX:Float;
-	private static var positionY:Float;
-	private static var setFill:Bool;
+	private static var strokeCommands:Array<DrawCommand>;
 	
-	#if js
+	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	private static var pattern:CanvasPattern;
 	#end
 	
 	
-	private static function beginPath ():Void {
-		
-		#if js
-		if (!inPath) {
-			
-			context.beginPath ();
-			inPath = true;
-			
-		}
-		#end
-		
-	}
-	
-	
 	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
 		
-		#if js
-		if (setFill || bitmapFill == null) return;
+		#if (js && html5)
+		if (hasFill || bitmapFill == null) return;
 		
 		if (pattern == null) {
 			
@@ -73,57 +60,56 @@ class CanvasGraphics {
 		}
 		
 		context.fillStyle = pattern;
-		setFill = true;
+		hasFill = true;
 		#end
 		
 	}
 	
 	
-	private static function closePath (closeFill:Bool):Void {
+	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) {
 		
-		#if js
-		if (inPath) {
-			
-			if (hasFill) {
-				
-				context.translate( -bounds.x, -bounds.y);
-				
-				if (pendingMatrix != null) {
-					
-					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					context.fill ();
-					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
-					
-				} else {
-					
-					context.fill ();
-					
-				}
-				
-				context.translate (bounds.x, bounds.y);
-				
-			}
-			
-			context.closePath ();
-			
-			if (hasStroke) {
-				
-				context.stroke ();
-				
-			}
-			
-		}
+		// TODO: Don't create extra canvas elements like this
 		
-		inPath = false;
+		#if (js && html5)
+		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
+		var context = canvas.getContext ("2d");
 		
-		if (closeFill) {
-			
-			hasFill = false;
-			hasStroke = false;
-			pendingMatrix = null;
-			inversePendingMatrix = null;
-			
-		}
+		canvas.width = width;
+		canvas.height = height;
+		
+		context.fillStyle = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+		context.beginPath ();
+		context.moveTo (0, 0);
+		context.lineTo (0, height);
+		context.lineTo (width, height);
+		context.lineTo (width, 0);
+		context.lineTo (0, 0);
+		context.closePath ();
+		context.fill ();
+		return canvas;
+		#end
+		
+	}
+	
+	
+	private static function endFill ():Void {
+		
+		#if (js && html5)
+		context.beginPath ();
+		playCommands (fillCommands, false);
+		fillCommands = [];
+		#end
+		
+	}
+	
+	
+	private static function endStroke ():Void {
+		
+		#if (js && html5)
+		context.beginPath ();
+		playCommands (strokeCommands, true);
+		context.closePath ();
+		strokeCommands = [];
 		#end
 		
 	}
@@ -131,7 +117,7 @@ class CanvasGraphics {
 	
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
 		
-		#if js
+		#if (js && html5)
 		if (ry == -1) ry = rx;
 		
 		rx *= 0.5;
@@ -165,210 +151,385 @@ class CanvasGraphics {
 	}
 	
 	
-	/*#if js
-	private static inline function setFillStyle(data:DrawPath, context:CanvasRenderingContext2D, worldAlpha:Float) {
-		if (data.hasFill) {
-			
-			context.globalAlpha = data.fill.alpha * worldAlpha;							
-			if (data.fill.bitmap != null) {
-				var bitmap = data.fill.bitmap;
-				var repeat = data.fill.repeat;
-				var pattern = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
-				context.fillStyle = pattern;
-			} else {
-				context.fillStyle = '#' + StringTools.hex(data.fill.color, 6);
-			}
-		}
+	private static inline function isCCW (x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
+		
+		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
+		
 	}
-	#end
 	
-	public static function renderObjectGraphics(object:DisplayObject, renderSession:RenderSession):Void {
-
-		#if js
-
-		var worldAlpha = object.__worldAlpha;
-		var graphics = object.__graphics;
-
-		bounds = graphics.__bounds;
-
-		if(!graphics.__dirty) return;
-
-		graphics.__dirty = false;
-
-		if(bounds == null || bounds.width == 0 || bounds.height == 0) {
-
-			graphics.__canvas = null;
-			graphics.__context = null;			
-
-		} else {
-
-			if (graphics.__canvas == null) {
+	
+	private static function normalizeUVT (uvt:Vector<Float>, skipT:Bool = false): { max:Float, uvt:Vector<Float> } {
+		
+		var max:Float = Math.NEGATIVE_INFINITY;
+		var tmp = Math.NEGATIVE_INFINITY;
+		var len = uvt.length;
+		
+		for (t in 1...len + 1) {
+			
+			if (skipT && t % 3 == 0) {
 				
-				graphics.__canvas = cast Browser.document.createElement ("canvas");
-				graphics.__context = graphics.__canvas.getContext ("2d");
-				//untyped (context).mozImageSmoothingEnabled = false;
-				//untyped (context).webkitImageSmoothingEnabled = false;
-				//context.imageSmoothingEnabled = false;
+				continue;
 				
 			}
-
-			var context = graphics.__context;
-
-			graphics.__canvas.width = Math.ceil (bounds.width);
-			graphics.__canvas.height = Math.ceil (bounds.height);
-
-			var offsetX = bounds.x;
-			var offsetY = bounds.y;
-
-			for (i in 0...graphics.__graphicsData.length) {
-
-				var data = graphics.__graphicsData[i];
-				var points = data.points;
-
-				context.strokeStyle = '#' + StringTools.hex (data.line.color, 6);
-				context.lineWidth = data.line.width;
-				context.lineCap = Std.string(data.line.caps);
-				context.lineJoin = Std.string(data.line.joints);
-				context.miterLimit = data.line.miterLimit;
-
-				setFillStyle(data, context, worldAlpha);
+			
+			tmp = uvt[t - 1];
+			
+			if (max < tmp) {
 				
-				switch(data.type) {
-
-					case Polygon:
-						
-						context.beginPath();
-						context.moveTo(points[0] - offsetX, points[1] - offsetY);
-						for(i in 1...Std.int(points.length/2)) {
-							context.lineTo(points[i * 2] - offsetX, points[i * 2 + 1] - offsetY);
-						}
-						context.closePath();
-						
-						if(data.hasFill) {
-							context.fill();
-						}
-						
-						if(data.line.width > 0) {
-							context.globalAlpha = data.line.alpha * worldAlpha;
-							context.stroke();
-						}
-
-					case Rectangle(round):
-						
-						var rx = points[0] - offsetX;
-						var ry = points[1] - offsetY;
-						var width = points[2];
-						var height = points[3];
-
-						if(round) {
-
-							var radius = points[4];
-							var maxRadius = Math.min(width, height) / 2;
-							radius = (radius > maxRadius) ? maxRadius : radius;
-
-							context.beginPath();
-							context.moveTo(rx, ry + radius);
-							context.lineTo(rx, ry + height - radius);
-							context.quadraticCurveTo(rx, ry + height, rx + radius, ry + height);
-							context.lineTo(rx + width - radius, ry + height);
-							context.quadraticCurveTo(rx + width, ry + height, rx + width, ry + height - radius);
-							context.lineTo(rx + width, ry + radius);
-							context.quadraticCurveTo(rx + width, ry, rx + width - radius, ry);
-							context.lineTo(rx + radius, ry);
-							context.quadraticCurveTo(rx, ry, rx, ry + radius);
-							context.closePath();
-
-						} 
-						
-						if (data.hasFill) {
-							if (round) {
-								context.fill();
-							} else {
-								context.fillRect(rx, ry, width, height);
-							}
-						}
-						
-						if(data.line.width > 0) {
-							context.globalAlpha = data.line.alpha * worldAlpha;
-							if(round) {
-								context.stroke();
-							} else {
-								context.strokeRect(rx, ry, width, height);
-							}
-						}
-						
-					case Circle:
-
-						context.beginPath();
-						context.arc(points[0] - offsetX, points[1] - offsetY, points[2], 0, 2 * Math.PI, true);
-						context.closePath();
-
-						if(data.hasFill) {
-							context.fill();
-						}
-						
-						if(data.line.width > 0) {
-							context.globalAlpha = data.line.alpha * worldAlpha;
-							context.stroke();
-						}
-
-					case Ellipse:
-
-						var w = points[2];
-						var h = points[3];
-						var x = (points[0] - offsetX);
-						var y = (points[1] - offsetY);
-
-						context.beginPath();
-						var kappa = 0.5522848,
-							ox = (w / 2) * kappa, // control point offset horizontal
-							oy = (h / 2) * kappa, // control point offset vertical
-							xe = x + w, // x-end
-							ye = y + h, // y-end
-							xm = x + w / 2, // x-middle
-							ym = y + h / 2; // y-middle
-						context.moveTo(x, ym);
-						context.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-						context.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-						context.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-						context.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-						context.closePath();
-
-						if(data.hasFill) {
-							context.fill();
-						}
-						
-						if(data.line.width > 0) {
-							context.globalAlpha = data.line.alpha * worldAlpha;
-							context.stroke();
-						}
-
-					case _:
-
-				}
-
+				max = tmp;
+				
 			}
-
+			
 		}
-
+		
+		var result = new Vector<Float> ();
+		
+		for (t in 1...len + 1) {
+			
+			if (skipT && t % 3 == 0) {
+				
+				continue;
+				
+			}
+			
+			result.push ((uvt[t - 1] / max));
+			
+		}
+		
+		return { max: max, uvt: result };
+		
+	}
+	
+	
+	private static function playCommands (commands:Array<DrawCommand>, stroke:Bool = false):Void {
+		
+		#if (js && html5)
+		bounds = graphics.__bounds;
+		
+		var offsetX = bounds.x;
+		var offsetY = bounds.y;
+		
+		var positionX = 0.0;
+		var positionY = 0.0;
+		
+		var closeGap = false;
+		var startX = 0.0;
+		var startY = 0.0;
+		
+		for (command in commands) {
+			
+			switch (command) {
+				
+				case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
+					
+					context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+				
+				case CurveTo (cx, cy, x, y):
+					
+					context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
+				
+				case DrawCircle (x, y, radius):
+					
+					context.moveTo (x - offsetX + radius, y - offsetY);
+					context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
+				
+				case DrawEllipse (x, y, width, height):
+					
+					x -= offsetX;
+					y -= offsetY;
+					
+					var kappa = .5522848,
+						ox = (width / 2) * kappa, // control point offset horizontal
+						oy = (height / 2) * kappa, // control point offset vertical
+						xe = x + width,           // x-end
+						ye = y + height,           // y-end
+						xm = x + width / 2,       // x-middle
+						ym = y + height / 2;       // y-middle
+					
+					context.moveTo (x, ym);
+					context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
+					context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
+					context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
+					context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
+				
+				case DrawRoundRect (x, y, width, height, rx, ry):
+					
+					drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
+				
+				case LineTo (x, y):
+					
+					context.lineTo (x - offsetX, y - offsetY);
+					
+					positionX = x;
+					positionY = y;
+				
+				case MoveTo (x, y):
+					
+					context.moveTo (x - offsetX, y - offsetY);
+					
+					positionX = x;
+					positionY = y;
+					
+					closeGap = true;
+					startX = x;
+					startY = y;
+				
+				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+					
+					if (stroke && hasStroke) {
+						
+						context.closePath ();
+						context.stroke ();
+						context.beginPath ();
+						
+					}
+					
+					context.moveTo (positionX - offsetX, positionY - offsetY);
+					
+					if (thickness == null) {
+						
+						hasStroke = false;
+						
+					} else {
+						
+						context.lineWidth = thickness;
+						
+						context.lineJoin = (joints == null ? "round" : Std.string (joints).toLowerCase ());
+						context.lineCap = (caps == null ? "round" : switch (caps) {
+							case CapsStyle.NONE: "butt";
+							default: Std.string (caps).toLowerCase ();
+						});
+						
+						context.miterLimit = (miterLimit == null ? 3 : miterLimit);
+						
+						if (alpha == 1 || alpha == null) {
+							
+							context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
+							
+						} else {
+							
+							var r = (color & 0xFF0000) >>> 16;
+							var g = (color & 0x00FF00) >>> 8;
+							var b = (color & 0x0000FF);
+							
+							context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+							
+						}
+						
+						hasStroke = true;
+						
+					}
+				
+				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+					
+					if (bitmap != bitmapFill || repeat != bitmapRepeat) {
+						
+						bitmapFill = bitmap;
+						bitmapRepeat = repeat;
+						pattern = null;
+						hasFill = false;
+						
+						bitmap.__sync ();
+						
+					}
+					
+					if (matrix != null) {
+						
+						pendingMatrix = matrix;
+						inversePendingMatrix = matrix.clone ();
+						inversePendingMatrix.invert ();
+						
+					} else {
+						
+						pendingMatrix = null;
+						inversePendingMatrix = null;
+						
+					}
+				
+				case BeginFill (rgb, alpha):
+					
+					if (alpha < 0.005) {
+						
+						hasFill = false;
+						
+					} else {
+						
+						if (alpha == 1) {
+							
+							context.fillStyle = "#" + StringTools.hex (rgb, 6);
+							
+						} else {
+							
+							var r = (rgb & 0xFF0000) >>> 16;
+							var g = (rgb & 0x00FF00) >>> 8;
+							var b = (rgb & 0x0000FF);
+							
+							context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+							
+						}
+						
+						bitmapFill = null;
+						hasFill = true;
+						
+					}
+				
+				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+					
+					var gradientFill = null;
+					
+					switch (type) {
+						
+						case RADIAL:
+							
+							if (matrix == null) matrix = new Matrix ();
+							var point = matrix.transformPoint (new Point (1638.4, 0));
+							gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+						
+						case LINEAR:
+							
+							var matrix = matrix != null ? matrix.clone () : new Matrix ();
+							var point1 = matrix.transformPoint (new Point (-819.2, 0));
+							var point2 = matrix.transformPoint (new Point (819.2, 0));
+							
+							gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
+						
+					}
+					
+					for (i in 0...colors.length) {
+						
+						var rgb = colors[i];
+						var alpha = alphas[i];
+						var r = (rgb & 0xFF0000) >>> 16;
+						var g = (rgb & 0x00FF00) >>> 8;
+						var b = (rgb & 0x0000FF);
+						
+						var ratio = ratios[i] / 0xFF;
+						if (ratio < 0) ratio = 0;
+						if (ratio > 1) ratio = 1;
+						
+						gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+						
+					}
+					
+					context.fillStyle = gradientFill;
+					
+					bitmapFill = null;
+					hasFill = true;
+				
+				case DrawRect (x, y, width, height):
+					
+					var optimizationUsed = false;
+					
+					if (bitmapFill != null) {
+						
+						var st:Float = 0;
+						var sr:Float = 0;
+						var sb:Float = 0;
+						var sl:Float = 0;
+						
+						var canOptimizeMatrix = true;
+						
+						if (pendingMatrix != null) {
+							
+							if (pendingMatrix.b != 0 || pendingMatrix.c != 0) {
+								
+								canOptimizeMatrix = false;
+								
+							} else {
+								
+								var stl = inversePendingMatrix.transformPoint(new Point(x, y));
+								var sbr = inversePendingMatrix.transformPoint(new Point(x + width, y + height));
+								
+								st = stl.y;
+								sl = stl.x;
+								sb = sbr.y;
+								sr = sbr.x;
+								
+							}
+							
+						} else {
+							
+							st = y;
+							sl = x;
+							sb = y + height;
+							sr = x + width;
+							
+						}
+						
+						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
+							
+							optimizationUsed = true;
+							context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
+						}
+					}
+					
+					if (!optimizationUsed) {
+						
+						context.rect (x - offsetX, y - offsetY, width, height);
+					}
+					
+				
+				default:
+					
+			}
+			
+		}
+		
+		if (stroke && hasStroke) {
+			
+			if (hasFill && closeGap) {
+				
+				context.lineTo (startX - offsetX, startY - offsetY);
+				
+			}
+			
+			context.stroke ();
+			
+		}
+		
+		if (!stroke) {
+			
+			if (hasFill || bitmapFill != null) {
+				
+				if (bitmapFill != null) {
+					
+					beginPatternFill (bitmapFill, bitmapRepeat);
+					
+				}
+				
+				context.translate (-bounds.x, -bounds.y);
+				
+				if (pendingMatrix != null) {
+					
+					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
+					context.fill ();
+					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
+					
+				} else {
+					
+					context.fill ();
+					
+				}
+				
+				context.translate (bounds.x, bounds.y);
+				context.closePath ();
+				
+			}
+			
+		}
 		#end
-
-	}*/
+		
+	}
 	
 	
 	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
-		#if js
+		#if (js && html5)
 		
 		if (graphics.__dirty) {
 			
+			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
-			
-			hasFill = false;
-			hasStroke = false;
-			inPath = false;
-			positionX = 0;
-			positionY = 0;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
@@ -384,7 +545,6 @@ class CanvasGraphics {
 					//untyped (context).mozImageSmoothingEnabled = false;
 					//untyped (context).webkitImageSmoothingEnabled = false;
 					//context.imageSmoothingEnabled = false;
-					
 				}
 				
 				context = graphics.__context;
@@ -395,224 +555,210 @@ class CanvasGraphics {
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
 				
-				var bitmapFill:BitmapData = null;
-				var bitmapRepeat = false;
+				fillCommands = new Array<DrawCommand> ();
+				strokeCommands = new Array<DrawCommand> ();
+				
+				hasFill = false;
+				hasStroke = false;
+				bitmapFill = null;
+				bitmapRepeat = false;
 				
 				for (command in graphics.__commands) {
 					
 					switch (command) {
 						
-						case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+						case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
 							
-							closePath (false);
+							fillCommands.push (command);
+							strokeCommands.push (command);
+						
+						case EndFill:
 							
-							if (bitmap != bitmapFill || repeat != bitmapRepeat) {
+							endFill ();
+							endStroke ();
+							hasFill = false;
+						
+						case LineStyle (_, _, _, _, _, _, _, _):
+							
+							strokeCommands.push (command);
+						
+						case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
+							
+							endFill ();
+							endStroke ();
+							
+							fillCommands.push (command);
+							strokeCommands.push (command);
+						
+						case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+							
+							endFill ();
+							endStroke ();
+							
+							fillCommands.push (command);
+							strokeCommands.push (command);
+						
+						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
+						
+							endFill ();
+							endStroke ();
+							
+							var v = vertices;
+							var ind = indices;
+							var uvt = uvtData;
+							var pattern:CanvasElement = null;
+							var colorFill = bitmapFill == null;
+							
+							if (colorFill && uvt != null) {
 								
-								bitmapFill = bitmap;
-								bitmapRepeat = repeat;
-								pattern = null;
-								setFill = false;
-								
-								bitmap.__sync ();
+								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
+								break;
 								
 							}
 							
-							if (matrix != null) {
+							if (!colorFill) {
 								
-								pendingMatrix = matrix;
-								inversePendingMatrix = matrix.clone ();
-								inversePendingMatrix.invert ();
+								//TODO move this to Graphics?
 								
-							} else {
-								
-								pendingMatrix = null;
-								inversePendingMatrix = null;
-								
-							}
-							
-							hasFill = true;
-						
-						case BeginFill (rgb, alpha):
-							
-							closePath (false);
-							
-							if (alpha == 1) {
-								
-								context.fillStyle = "#" + StringTools.hex (rgb, 6);
-								
-							} else {
-								
-								var r = (rgb & 0xFF0000) >>> 16;
-								var g = (rgb & 0x00FF00) >>> 8;
-								var b = (rgb & 0x0000FF);
-								
-								context.fillStyle = "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
-								
-							}
-							
-							bitmapFill = null;
-							setFill = true;
-							hasFill = true;
-						
-						case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-							
-							closePath (false);
-							
-							var gradientFill = null;
-							
-							switch (type) {
-								
-								case RADIAL:
+								if (uvtData == null) {
 									
-									if (matrix == null) matrix = new Matrix ();
-									var point = matrix.transformPoint (new Point (1638.4, 0));
-									gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
-								
-								case LINEAR:
+									uvtData = new Vector<Float> ();
 									
-									var matrix = matrix != null ? matrix.clone () : new Matrix ();
-									matrix.tx -= matrix.a * 1638.4 / 2;
-									matrix.ty -= matrix.d * 1638.4 / 2;
-									
-									var point1 = matrix.transformPoint (new Point (0, 0));
-									var point2 = matrix.transformPoint (new Point (1638.4, 0));
-									
-									gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
-								
-							}
-							
-							for (i in 0...colors.length) {
-								
-								var rgb = colors[i];
-								var alpha = alphas[i];
-								var r = (rgb & 0xFF0000) >>> 16;
-								var g = (rgb & 0x00FF00) >>> 8;
-								var b = (rgb & 0x0000FF);
-								
-								var ratio = ratios[i] / 0xFF;
-								if (ratio < 0) ratio = 0;
-								if (ratio > 1) ratio = 1;
-								
-								gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
-								
-							}
-							
-							context.fillStyle = gradientFill;
-							
-							bitmapFill = null;
-							setFill = true;
-							hasFill = true;
-						
-						case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
-							
-							beginPatternFill (bitmapFill, bitmapRepeat);
-							beginPath ();
-							context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
-							positionX = x;
-							positionY = y;
-						
-						case CurveTo (cx, cy, x, y):
-							
-							beginPatternFill (bitmapFill, bitmapRepeat);
-							beginPath ();
-							context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
-							positionX = x;
-							positionY = y;
-						
-						case DrawCircle (x, y, radius):
-							
-							beginPatternFill (bitmapFill, bitmapRepeat);
-							beginPath ();
-							context.moveTo (x - offsetX + radius, y - offsetY);
-							context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
-						
-						case DrawEllipse (x, y, width, height):
-							
-							x -= offsetX;
-							y -= offsetY;
-							
-							var kappa = .5522848,
-								ox = (width / 2) * kappa, // control point offset horizontal
-								oy = (height / 2) * kappa, // control point offset vertical
-								xe = x + width,           // x-end
-								ye = y + height,           // y-end
-								xm = x + width / 2,       // x-middle
-								ym = y + height / 2;       // y-middle
-							
-							beginPatternFill (bitmapFill, bitmapRepeat);
-							beginPath ();
-							context.moveTo (x, ym);
-							context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
-							context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
-							context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-							context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
-						
-						case DrawRect (x, y, width, height):
-							
-							var optimizationUsed = false;
-							
-							if (bitmapFill != null) {
-								
-								var st:Float = 0;
-								var sr:Float = 0;
-								var sb:Float = 0;
-								var sl:Float = 0;
-								
-								var canOptimizeMatrix = true;
-								
-								if (pendingMatrix != null) {
-									
-									if (pendingMatrix.b != 0 || pendingMatrix.c != 0) {
+									for (i in 0...(Std.int (v.length / 2))) {
 										
-										canOptimizeMatrix = false;
-										
-									} else {
-										
-										var stl = inversePendingMatrix.transformPoint(new Point(x, y));
-										var sbr = inversePendingMatrix.transformPoint(new Point(x + width, y + height));
-										
-										st = stl.y;
-										sl = stl.x;
-										sb = sbr.y;
-										sr = sbr.x;
+										uvtData.push (v[i * 2] / bitmapFill.width);
+										uvtData.push (v[i * 2 + 1] / bitmapFill.height);
 										
 									}
 									
+								}
+								
+								var skipT = uvtData.length != v.length;
+								var normalizedUVT = normalizeUVT (uvtData, skipT);
+								var maxUVT = normalizedUVT.max;
+								uvt = normalizedUVT.uvt;
+								
+								if (maxUVT > 1) {
+									
+									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, Std.int (bounds.width), Std.int (bounds.height));
+									
 								} else {
 									
-									st = y;
-									sl = x;
-									sb = y + height;
-									sr = x + width;
-									
-								}
-								
-								if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
-									
-									optimizationUsed = true;
-									context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
+									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
 									
 								}
 								
 							}
 							
-							if (!optimizationUsed) {
+							var i = 0;
+							var l = ind.length;
+							
+							var a:Int, b:Int, c:Int;
+							var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
+							var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
+							var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
+							var denom:Float;
+							var t1:Float, t2:Float, t3:Float, t4:Float;
+							var dx:Float, dy:Float;
+							
+							while (i < l) {
 								
-								beginPatternFill (bitmapFill, bitmapRepeat);
-								beginPath ();
-								context.rect (x - offsetX, y - offsetY, width, height);
+								a = i;
+								b = i + 1;
+								c = i + 2;
+								
+								iax = ind[a] * 2;
+								iay = ind[a] * 2 + 1;
+								ibx = ind[b] * 2;
+								iby = ind[b] * 2 + 1;
+								icx = ind[c] * 2;
+								icy = ind[c] * 2 + 1;
+								
+								x1 = v[iax];
+								y1 = v[iay];
+								x2 = v[ibx];
+								y2 = v[iby];
+								x3 = v[icx];
+								y3 = v[icy];
+								
+								switch (culling) {
+									
+									case POSITIVE:
+										
+										if (!isCCW (x1, y1, x2, y2, x3, y3)) {
+											
+											i += 3;
+											continue;
+											
+										}
+									
+									case NEGATIVE:
+										
+										if (isCCW (x1, y1, x2, y2, x3, y3)) {
+											
+											i += 3;
+											continue;
+											
+										}
+									
+									default:
+										
+								}
+								
+								if (colorFill) {
+									
+									context.beginPath ();
+									context.moveTo (x1, y1);
+									context.lineTo (x2, y2);
+									context.lineTo (x3, y3);
+									context.closePath ();
+									context.fill ();
+									i += 3;
+									continue;
+									
+								} 
+								
+								context.save ();
+								context.beginPath ();
+								context.moveTo (x1, y1);
+								context.lineTo (x2, y2);
+								context.lineTo (x3, y3);
+								context.closePath ();
+								
+								context.clip ();
+								
+								uvx1 = uvt[iax] * pattern.width;
+								uvx2 = uvt[ibx] * pattern.width;
+								uvx3 = uvt[icx] * pattern.width;
+								uvy1 = uvt[iay] * pattern.height;
+								uvy2 = uvt[iby] * pattern.height;
+								uvy3 = uvt[icy] * pattern.height;
+								
+								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
+								
+								if (denom == 0) {
+									
+									i += 3;
+									continue;
+									
+								}
+								
+								t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
+								t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
+								t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
+								t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
+								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
+								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
+								
+								context.transform (t1, t2, t3, t4, dx, dy);
+								context.drawImage (pattern, 0, 0);
+								context.restore ();
+								
+								i += 3;
 								
 							}
-						
-						case DrawRoundRect (x, y, width, height, rx, ry):
-							
-							beginPatternFill (bitmapFill, bitmapRepeat);
-							beginPath ();
-							drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
 						
 						case DrawTiles (sheet, tileData, smooth, flags, count):
-							
-							closePath (false);
 							
 							var useScale = (flags & Graphics.TILE_SCALE) > 0;
 							var useRotation = (flags & Graphics.TILE_ROTATION) > 0;
@@ -652,9 +798,12 @@ class CanvasGraphics {
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.__image.src;
-
-							if (useBlendAdd)
+							
+							if (useBlendAdd) {
+								
 								context.globalCompositeOperation = "lighter";
+								
+							}
 							
 							while (index < totalCount) {
 								
@@ -667,20 +816,22 @@ class CanvasGraphics {
 									
 									previousTileID = tileID;
 									
-								}
-								else if (useRect)
-								{
+								} else if (useRect) {
+									
 									rect = sheet.__rectTile;
-									rect.setTo(tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+									rect.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
 									center = sheet.__point;
-									if (useOrigin)
-									{
-										center.setTo(tileData[index + 6], tileData[index + 7]);
+									
+									if (useOrigin) {
+										
+										center.setTo (tileData[index + 6], tileData[index + 7]);
+										
+									} else {
+										
+										center.setTo (0, 0);
+										
 									}
-									else
-									{
-										center.setTo(0, 0);
-									}
+									
 								}
 								
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
@@ -722,193 +873,16 @@ class CanvasGraphics {
 								index += numValues;
 								
 							}
-
-							if (useBlendAdd)
+							
+							if (useBlendAdd) {
+								
 								context.globalCompositeOperation = "source-over";
-						
-						case EndFill:
-							
-							closePath (true);
-						
-						case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-							
-							closePath (false);
-							
-							if (thickness == null) {
-								
-								hasStroke = false;
-								
-							} else {
-								
-								context.lineWidth = thickness;
-								
-								context.lineJoin = (joints == null ? "round" : Std.string (joints).toLowerCase ());
-								context.lineCap = (caps == null ? "round" : switch (caps) {
-									case CapsStyle.NONE: "butt";
-									default: Std.string (caps).toLowerCase ();
-								});
-								
-								context.miterLimit = (miterLimit == null ? 3 : miterLimit);
-								
-								if (alpha == 1 || alpha == null) {
-								
-									context.strokeStyle = (color == null ? "#000000" : "#" + StringTools.hex (color & 0x00FFFFFF, 6));
-								
-								} else {
-									
-									var r = (color & 0xFF0000) >>> 16;
-									var g = (color & 0x00FF00) >>> 8;
-									var b = (color & 0x0000FF);
-									
-									context.strokeStyle = (color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
-									
-								}
-								
-								hasStroke = true;
 								
 							}
 						
-						case LineTo (x, y):
+						default:
 							
-							beginPatternFill(bitmapFill, bitmapRepeat);
-							beginPath ();
-							context.lineTo (x - offsetX, y - offsetY);
-							positionX = x;
-							positionY = y;
-							
-						case MoveTo (x, y):
-							
-							beginPath ();
-							context.moveTo (x - offsetX, y - offsetY);
-							positionX = x;
-							positionY = y;
-							
-						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
-							
-							closePath(false);
-							
-							var v = vertices;
-							var ind = indices;
-							var uvt = uvtData;
-							var pattern:CanvasElement = null;
-							var colorFill = bitmapFill == null;
-							
-							if (colorFill && uvt != null) {
-								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
-								break;
-							}
-							
-							if(!colorFill) {
-								//TODO move this to Graphics?
-								if (uvtData == null) {
-									uvtData = new Vector<Float>();
-									for (i in 0...(Std.int(v.length / 2))) {
-										uvtData.push(v[i * 2] / bitmapFill.width);
-										uvtData.push(v[i * 2 + 1] / bitmapFill.height);
-									}
-								}
-								
-								var skipT = uvtData.length != v.length;
-								var normalizedUvt = normalizeUvt(uvtData, skipT);
-								var maxUvt = normalizedUvt.max;
-								uvt = normalizedUvt.uvt;
-								
-								if (maxUvt > 1) {
-									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bounds.width, bounds.height);
-								} else {
-									pattern = createTempPatternCanvas(bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
-								}
-							}
-							
-							var i = 0;
-							var l = ind.length;
-							
-							var a:Int, b:Int, c:Int;
-							var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
-							var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
-							var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
-							var denom:Float;
-							var t1:Float, t2:Float, t3:Float, t4:Float;
-							var dx:Float, dy:Float;
-							// code from http://tulrich.com/geekstuff/canvas/perspective.html
-							while (i < l) {
-								a = i;
-								b = i + 1;
-								c = i + 2;
-								
-								iax = ind[a] * 2;		iay = ind[a] * 2 + 1;
-								ibx = ind[b] * 2;		iby = ind[b] * 2 + 1;
-								icx = ind[c] * 2;		icy = ind[c] * 2 + 1;
-								
-								x1 = v[iax];	y1 = v[iay];
-								x2 = v[ibx];	y2 = v[iby];
-								x3 = v[icx];	y3 = v[icy];
-								
-								switch(culling) {
-									case POSITIVE:
-										if (!isCCW(x1, y1, x2, y2, x3, y3)) {
-											i += 3;
-											continue;
-										}
-									case NEGATIVE:
-										if (isCCW(x1, y1, x2, y2, x3, y3)) {
-											i += 3;
-											continue;
-										}
-									case _:
-								}
-								
-								if (colorFill) {
-									context.beginPath();
-									context.moveTo(x1, y1);
-									context.lineTo(x2, y2);
-									context.lineTo(x3, y3);
-									context.closePath();
-									context.fill();
-									i += 3;
-									continue;
-								} 
-								
-								context.save();
-								context.beginPath();
-								context.moveTo(x1, y1);
-								context.lineTo(x2, y2);
-								context.lineTo(x3, y3);
-								context.closePath();
-								
-								context.clip(); 
-								
-								uvx1 = uvt[iax] * pattern.width;
-								uvx2 = uvt[ibx] * pattern.width;
-								uvx3 = uvt[icx] * pattern.width;
-								uvy1 = uvt[iay] * pattern.height;
-								uvy2 = uvt[iby] * pattern.height;
-								uvy3 = uvt[icy] * pattern.height;
-								
-								denom = uvx1 * (uvy3 - uvy2) - uvx2 * uvy3 + uvx3 * uvy2 + (uvx2 - uvx3) * uvy1;
-								if (denom == 0) {
-									i += 3;
-									continue;
-								}
-								
-								t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
-								t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
-								t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
-								t4 = - (uvx2 * y3 + uvx1 * (y2 - y3) - uvx3 * y2 + (uvx3 - uvx2) * y1) / denom;
-								dx = (uvx1 * (uvy3 * x2 - uvy2 * x3) + uvy1 * (uvx2 * x3 - uvx3 * x2) + (uvx3 * uvy2 - uvx2 * uvy3) * x1) / denom;
-								dy = (uvx1 * (uvy3 * y2 - uvy2 * y3) + uvy1 * (uvx2 * y3 - uvx3 * y2) + (uvx3 * uvy2 - uvx2 * uvy3) * y1) / denom;
-								
-								context.transform(t1, t2, t3, t4, dx, dy);
-								context.drawImage(pattern, 0, 0);
-								
-								context.restore();
-								
-								i += 3;
-								
-							}					
-							
-						case _:
-							openfl.Lib.notImplemented("CanvasGraphics");
+							openfl.Lib.notImplemented ("CanvasGraphics");
 						
 					}
 					
@@ -917,7 +891,18 @@ class CanvasGraphics {
 			}
 			
 			graphics.__dirty = false;
-			closePath (false);
+			
+			if (fillCommands.length > 0) {
+				
+				endFill ();
+				
+			}
+			
+			if (strokeCommands.length > 0) {
+				
+				endStroke ();
+				
+			}
 			
 		}
 		
@@ -1010,49 +995,5 @@ class CanvasGraphics {
 		
 	}
 	
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Float, height:Float) {
-		
-		#if js
-		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-		var context:CanvasRenderingContext2D = canvas.getContext ("2d");
-		
-		canvas.width = Math.ceil (width);
-		canvas.height = Math.ceil (height);
-		
-		context.fillStyle = context.createPattern(bitmap.__image.src, repeat ? "repeat" : "no-repeat");
-		context.beginPath();
-		context.moveTo(0, 0);
-		context.lineTo(0, height);
-		context.lineTo(width, height);
-		context.lineTo(width, 0);
-		context.lineTo(0, 0);
-		context.closePath();
-		context.fill();
-		return canvas;
-		#end
-	}
-	
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float) {
-		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
-	}
-	
-	private static function normalizeUvt(uvt:Vector<Float>, skipT:Bool = false):{max:Float, uvt:Vector<Float> } {
-		var max:Float = Math.NEGATIVE_INFINITY;
-		var tmp = Math.NEGATIVE_INFINITY;
-		var len = uvt.length;
-		for (t in 1...len+1) {
-			if (skipT && t % 3 == 0) continue;
-			tmp = uvt[t - 1];
-			if (max < tmp) max = tmp;
-		}
-		
-		var result:Vector<Float> = new Vector<Float>();
-		for (t in 1...len+1) {
-			if (skipT && t % 3 == 0) continue;
-			result.push((uvt[t - 1] / max));
-		}
-		
-		return {max:max, uvt:result};
-	}
 	
 }

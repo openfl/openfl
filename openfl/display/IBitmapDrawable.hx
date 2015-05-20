@@ -12,9 +12,13 @@ interface IBitmapDrawable {
 	var __worldColorTransform:ColorTransform;
 	var blendMode:BlendMode;
 	
+	private var __cacheAsBitmap:Bool;
+	
+	function __renderCairo (renderSession:RenderSession):Void;
+	function __renderCairoMask (renderSession:RenderSession):Void;
 	function __renderCanvas (renderSession:RenderSession):Void;
+	function __renderCanvasMask (renderSession:RenderSession):Void;
 	function __renderGL (renderSession:RenderSession):Void;
-	function __renderMask (renderSession:RenderSession):Void;
 	function __updateChildren (transformOnly:Bool):Void;
 	
 	function __updateMask (maskGraphics:Graphics):Void;

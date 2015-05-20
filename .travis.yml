@@ -35,8 +35,12 @@ before_script:
   - haxelib run munit gen
 
 script:
-  - haxelib run lime test neko
+  #- haxelib run lime test neko
+  #- haxelib run lime test neko -Ddisable-cffi
+  - haxelib run lime build neko
+  - haxelib run lime build neko -Ddisable-cffi
   - haxelib run lime test neko -Dlegacy
+  - haxelib run lime test neko -Dhybrid
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
   - haxelib run lime test linux

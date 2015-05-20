@@ -1,6 +1,7 @@
 package openfl.geom; #if !flash #if !openfl_legacy
 
 
+import lime.math.Matrix3;
 import openfl.geom.Point;
 import lime.utils.Float32Array;
 
@@ -751,6 +752,13 @@ class Matrix {
 		d = Math.round (d * 1000) / 1000;
 		tx = Math.round (tx * 10) / 10;
 		ty = Math.round (ty * 10) / 10;
+		
+	}
+	
+	
+	@:noCompletion private function __toMatrix3 ():Matrix3 {
+		
+		return new Matrix3 (a, b, c, d, tx, ty);
 		
 	}
 	

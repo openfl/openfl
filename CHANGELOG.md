@@ -1,3 +1,70 @@
+3.0.6 (05/14/2015)
+------------------
+
+* Fix regression in event dispatch behavior
+
+
+3.0.5 (05/13/2015)
+------------------
+
+* Improved formatting for thrown errors on HTML5
+* Separated the behavior of event preventDefault from stopPropagation
+* Fixed the event dispatch order for DisplayObjectContainer
+* Fixed support for -Dhybrid using latest Lime release
+
+
+3.0.4 (05/12/2015)
+------------------
+
+* Improved accuracy of HTML5 canvas Graphics renderer
+* Added support for window hardware=false
+* Added initial Cairo renderer support
+* Made big improvements to HTML5 canvas TextField input
+* Added MouseEvent.MOUSE_LEAVE event support
+* Improved HTML5 canvas linear gradient support
+* Improved Stage3D texture uploads
+* Implemented BitmapData.getColorBoundsRect
+* Improved checks for invalid BitmapData in Assets
+* Improved beginBitmapFill for GL Graphics
+* Improved pixel snapping support for GL rendering
+* Improved cleanup of native sound channels
+* Improved compatibility between Stage3D and internal GL rendering
+* Fixed HTML5 canvas scrollRect
+* Fixed handling of embedded fonts in some cases
+* Fixed some issues with bounds calculations
+* Fixed support for initial SoundTransform volume on native
+* Improved non-blocking HTTPS support (legacy)
+
+
+3.0.3 (04/21/2015)
+------------------
+
+* Improved hit test when there are interactive and non-interactive matches
+* Improved accuracy of text metrics
+* Improved accuracy of GL TextField glyph positioning
+* Added wordWrap support to canvas TextField
+* Added handling of stage.focus on mouse down
+* Fixed the start time and loop count for native sounds
+* Fixed the behavior of sprite.contains to loop recursively
+* Fixed upside-down BitmapData in some cases when using GL bitmapData.draw
+* Fixed layering of GL bitmapData.draw over existing BitmapData contents
+* Improved performance of getRGBAPixels (legacy)
+
+
+3.0.2 (04/15/2015)
+------------------
+
+* Improved handling of keyCode/charCode in keyboard events
+* Improved the frame timing when using hybrid mode
+* Improved the font lookup behavior of GL TextField
+* Added better auto-size left support to GL TextField
+* Added basic text line metrics in TextField
+* Added support for compilation with -Ddisable-cffi
+* Added dynamic DisplayObject field support for MovieClip
+* Fixed UVs when using drawTiles with bitmapData.draw (GL)
+* Fixed blendMode setting when using bitmapData.draw (GL)
+
+
 3.0.1 (04/09/2015)
 ------------------
 

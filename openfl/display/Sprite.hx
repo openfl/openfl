@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
@@ -155,6 +156,13 @@ class Sprite extends DisplayObjectContainer {
 			stage.__stopDrag (this);
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion private override function __getCursor ():MouseCursor {
+		
+		return (buttonMode && useHandCursor) ? POINTER : null;
 		
 	}
 	

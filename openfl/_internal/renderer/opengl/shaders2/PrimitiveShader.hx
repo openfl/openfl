@@ -14,8 +14,7 @@ class PrimitiveShader extends Shader {
 			'attribute vec4 ${Attrib.Color};',
 			
 			'uniform mat3 ${Uniform.TranslationMatrix};',
-			'uniform vec2 ${Uniform.ProjectionVector};',
-			'uniform vec2 ${Uniform.OffsetVector};',
+			'uniform mat3 ${Uniform.ProjectionMatrix};',
 			'uniform vec4 ${Uniform.ColorMultiplier};',
 			'uniform vec4 ${Uniform.ColorOffset};',
 			'uniform float ${Uniform.Alpha};',
@@ -32,9 +31,7 @@ class PrimitiveShader extends Shader {
 			'}',	
 			
 			'void main(void) {',
-			'   vec3 v = ${Uniform.TranslationMatrix} * vec3(${Attrib.Position} , 1.0);',
-			'   v -= ${Uniform.OffsetVector}.xyx;',
-			'   gl_Position = vec4( v.x / ${Uniform.ProjectionVector}.x -1.0, v.y / -${Uniform.ProjectionVector}.y + 1.0 , 0.0, 1.0);',
+			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * ${Uniform.TranslationMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
 			'   vColor = colorTransform(${Attrib.Color}, ${Uniform.Alpha}, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
 			'}'
 		];
@@ -61,8 +58,7 @@ class PrimitiveShader extends Shader {
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.Color);
 		getUniformLocation(Uniform.TranslationMatrix);
-		getUniformLocation(Uniform.ProjectionVector);
-		getUniformLocation(Uniform.OffsetVector);
+		getUniformLocation(Uniform.ProjectionMatrix);
 		getUniformLocation(Uniform.Alpha);
 		getUniformLocation(Uniform.ColorMultiplier);
 		getUniformLocation(Uniform.ColorOffset);
@@ -77,8 +73,7 @@ class PrimitiveShader extends Shader {
 
 @:enum private abstract Uniform(String) from String to String {
 	var TranslationMatrix = "uTranslationMatrix";
-	var ProjectionVector = DefUniform.ProjectionVector;
-	var OffsetVector = DefUniform.OffsetVector;
+	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Alpha = DefUniform.Alpha;
 	var ColorMultiplier = DefUniform.ColorMultiplier;
 	var ColorOffset = DefUniform.ColorOffset;

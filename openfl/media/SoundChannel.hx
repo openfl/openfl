@@ -106,6 +106,7 @@ class SoundChannel extends EventDispatcher {
 		
 		#if !html5
 		__source.stop ();
+		__dispose ();
 		#else
 		__soundInstance.stop ();
 		#end
@@ -113,16 +114,20 @@ class SoundChannel extends EventDispatcher {
 	}
 	
 	
-	#if html5
 	@:noCompletion private function __dispose ():Void {
 		
 		if (!__isValid) return;
 		
+		#if !html5
+		__source.dispose ();
+		#else
 		__soundInstance.stop ();
 		__soundInstance = null;
+		#end
+		
+		__isValid = false;
 		
 	}
-	#end
 	
 	
 	
@@ -137,7 +142,7 @@ class SoundChannel extends EventDispatcher {
 		if (!__isValid) return 0;
 		
 		#if !html5
-		return __source.timeOffset / 1000;
+		return (__source.currentTime + __source.offset) / 1000;
 		#else
 		return __soundInstance.getPosition ();
 		#end
@@ -150,7 +155,7 @@ class SoundChannel extends EventDispatcher {
 		if (!__isValid) return 0;
 		
 		#if !html5
-		__source.timeOffset = Std.int (value * 1000);
+		__source.currentTime = Std.int (value * 1000) - __source.offset;
 		return value;
 		#else
 		__soundInstance.setPosition (Std.int (value));
@@ -213,6 +218,7 @@ class SoundChannel extends EventDispatcher {
 	
 	@:noCompletion private function source_onComplete ():Void {
 		
+		__dispose ();
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));
 		
 	}

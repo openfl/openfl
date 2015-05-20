@@ -8,7 +8,7 @@ import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
 
-#if js
+#if (js && html5)
 import js.Browser;
 #end
 
@@ -96,7 +96,7 @@ import js.Browser;
 			
 		}
 		
-		#if js
+		#if (js && html5)
 		Browser.window.open (request.url, target);
 		#elseif flash
 		return flash.Lib.getURL (request, target);
@@ -120,7 +120,7 @@ import js.Browser;
 	
 	public static function preventDefaultTouchMove ():Void {
 		
-		#if js
+		#if (js && html5)
 		Browser.document.addEventListener ("touchmove", function (evt:js.html.Event):Void {
 			
 			evt.preventDefault ();

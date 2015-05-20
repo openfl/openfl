@@ -74,7 +74,7 @@ class ApplicationMain {
 				#elseif linux
 				try {
 					
-					if (!sys.FileSystem.exists (Sys.getCwd () + "/lime.ndll")) {
+					if (!sys.FileSystem.exists (Sys.getCwd () + "/lime-legacy.ndll")) {
 						
 						Sys.setCwd (haxe.io.Path.directory (Sys.executablePath ()));
 						

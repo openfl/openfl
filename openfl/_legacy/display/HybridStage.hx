@@ -9,6 +9,7 @@ import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
+import openfl._legacy.events.Event;
 import openfl._legacy.Lib;
 import openfl.ui.Keyboard;
 
@@ -189,6 +190,20 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
+	public function onTextEdit (text:String, start:Int, length:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onTextInput (text:String):Void {
+		
+		
+		
+	}
+	
+	
 	public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
 		var flags = ManagedStage.efPrimaryTouch;
@@ -237,6 +252,13 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
+	public function onWindowEnter ():Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowFocusIn ():Void {
 		
 		pumpEvent ( { type: ManagedStage.etGotInputFocus } );
@@ -254,6 +276,13 @@ class HybridStage extends ManagedStage implements IModule {
 	public function onWindowFullscreen ():Void {
 		
 		
+		
+	}
+	
+	
+	public function onWindowLeave ():Void {
+		
+		dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	

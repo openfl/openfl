@@ -859,14 +859,13 @@ class GraphicsRenderer {
 		}
 		*/
 		
-		renderGraphics(object, renderSession, renderSession.projection, false);
+		renderGraphics(object, renderSession, false);
 
 	}
 	
-	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession, projection:Point, ?localCoords:Bool = false):Void {
+	public static function renderGraphics (object:DisplayObject, renderSession:RenderSession, ?localCoords:Bool = false):Void {
 		var graphics = object.__graphics;
 		var gl = renderSession.gl;
-		var offset = renderSession.offset;
 		
 		var glStack = graphics.__glStack[GLRenderer.glContextId];
 		var bucket:GLBucket;
@@ -891,15 +890,15 @@ class GraphicsRenderer {
 					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.finish();
 					}
-					renderSession.stencilManager.pushBucket(bucket, renderSession, projection, translationMatrix.toArray(true));
-					var shader = prepareShader(bucket, renderSession, object, projection, translationMatrix.toArray(true));
+					renderSession.stencilManager.pushBucket(bucket, renderSession, translationMatrix.toArray(true));
+					var shader = prepareShader(bucket, renderSession, object, translationMatrix.toArray(true));
 					renderFill(bucket, shader, renderSession);
 					renderSession.stencilManager.popBucket(object, bucket, renderSession);
 				case DrawTriangles:
 					if (batchDrawing && !localCoords) {
 						renderSession.spriteBatch.finish();
 					}
-					var shader = prepareShader(bucket, renderSession, object, projection, null);
+					var shader = prepareShader(bucket, renderSession, object, null);
 					renderDrawTriangles(bucket, shader, renderSession);
 				case DrawTiles:
 					if (!batchDrawing) {
@@ -922,8 +921,7 @@ class GraphicsRenderer {
 					renderSession.shaderManager.setShader (shader);
 					
 					gl.uniformMatrix3fv (shader.getUniformLocation(PrimitiveUniform.TranslationMatrix), false, translationMatrix.toArray(true));
-					gl.uniform2f (shader.getUniformLocation(PrimitiveUniform.ProjectionVector), projection.x, -projection.y);
-					gl.uniform2f (shader.getUniformLocation(PrimitiveUniform.OffsetVector), -offset.x, -offset.y);
+					gl.uniformMatrix3fv (shader.getUniformLocation(PrimitiveUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 					gl.uniform1f (shader.getUniformLocation(PrimitiveUniform.Alpha), 1);
 					
 					gl.uniform4f (shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier);
@@ -1035,8 +1033,6 @@ class GraphicsRenderer {
 				bucket.uploadTileBuffer = true;
 				
 				//prepare the matrix
-				var tMatrix = bucket.textureMatrix;
-				tMatrix.identity();
 				var pMatrix:Matrix;
 				if (m == null) {
 					pMatrix = new Matrix();
@@ -1044,19 +1040,19 @@ class GraphicsRenderer {
 					pMatrix = m.clone();
 				}
 	
-				tMatrix.concat(pMatrix);
-				pMatrix = pMatrix.invert();
-				var tx = (pMatrix.tx) / (b.width);
-				var ty = (pMatrix.ty) / (b.height);
+				pMatrix.invert();
+				pMatrix.scale(1 / b.width, 1 / b.height);
+				var tx = pMatrix.tx;
+				var ty = pMatrix.ty;
+				pMatrix.tx = 0;
+				pMatrix.ty = 0;
 				
 				bucket.textureTL.x = tx;
 				bucket.textureTL.y = ty;
 				bucket.textureBR.x = tx + 1;
 				bucket.textureBR.y = ty + 1;
-				
-				tMatrix.scale(1 / b.width, 1 / b.height);				
-				
-				bucket.textureMatrix = tMatrix;
+
+				bucket.textureMatrix = pMatrix;
 			case _:
 				bucket = switchBucket(path.fillIndex, glStack, Line);
 				bucket.uploadTileBuffer = false;
@@ -1109,9 +1105,8 @@ class GraphicsRenderer {
 		return bucket;
 	}
 	
-	private static function prepareShader(bucket:GLBucket, renderSession:RenderSession, object:DisplayObject, projection:Point, translationMatrix:Float32Array) {
+	private static function prepareShader(bucket:GLBucket, renderSession:RenderSession, object:DisplayObject, translationMatrix:Float32Array) {
 		var gl = renderSession.gl;
-		var offset = renderSession.offset;
 		var shader:Shader =  null;
 		
 		shader = switch(bucket.mode) {
@@ -1130,8 +1125,8 @@ class GraphicsRenderer {
 		var newShader = renderSession.shaderManager.setShader(shader);
 		
 		// common uniforms
-		gl.uniform2f (shader.getUniformLocation(DefUniform.OffsetVector), -offset.x, -offset.y);
 		gl.uniform1f (shader.getUniformLocation(DefUniform.Alpha), object.__worldAlpha);
+		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, @:privateAccess renderSession.projectionMatrix.toArray(true));
 		
 		var ct:ColorTransform = object.__worldColorTransform;
 		gl.uniform4f (shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier);
@@ -1140,17 +1135,14 @@ class GraphicsRenderer {
 		// specific uniforms
 		switch(bucket.mode) {
 			case Fill:
-				gl.uniform2f (shader.getUniformLocation(DefUniform.ProjectionVector), projection.x, -projection.y);
 				gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.TranslationMatrix), false, translationMatrix);
 				gl.uniform4fv (shader.getUniformLocation(FillUniform.Color), new Float32Array (bucket.color));
 			case PatternFill:
-				gl.uniform2f (shader.getUniformLocation(PatternFillUniform.ProjectionVector), projection.x, -projection.y);
 				gl.uniformMatrix3fv (shader.getUniformLocation(PatternFillUniform.TranslationMatrix), false, translationMatrix);
 				gl.uniform2f(shader.getUniformLocation(PatternFillUniform.PatternTL), bucket.textureTL.x, bucket.textureTL.y);
 				gl.uniform2f(shader.getUniformLocation(PatternFillUniform.PatternBR), bucket.textureBR.x, bucket.textureBR.y);
-				gl.uniformMatrix3fv(shader.getUniformLocation(PatternFillUniform.PatternMatrix), false, bucket.textureMatrix.toArray(false));
+				gl.uniformMatrix3fv(shader.getUniformLocation(PatternFillUniform.PatternMatrix), false, bucket.textureMatrix.toArray(true));
 			case DrawTriangles:
-				gl.uniform2f (shader.getUniformLocation(DrawTrianglesUniform.ProjectionVector), projection.x, projection.y);
 				if (bucket.texture != null) {
 					gl.uniform1i(shader.getUniformLocation(DrawTrianglesUniform.UseTexture), 1);
 				} else {
@@ -1194,7 +1186,7 @@ class GraphicsRenderer {
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 		
 		// TODO Fix this: webgl can only repeat textures that are power of two
-		if (bucket.textureRepeat #if js && bucket.bitmap.__image.powerOfTwo #end) {
+		if (bucket.textureRepeat #if (js && html5) && bucket.bitmap.__image.powerOfTwo #end) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 		} else {
@@ -1525,6 +1517,7 @@ class GLBucketData {
 		stride = 0;
 		rawVerts = false;
 		rawIndices = false;
+		drawMode = gl.TRIANGLE_STRIP;
 	}
 	
 	public function upload():Void {

@@ -1870,7 +1870,11 @@ class Assets {
 						
 						case EConst(CString(filePath)):
 							
-							path = Context.resolvePath (filePath);
+							path = filePath;
+							if (!sys.FileSystem.exists(filePath)) {
+								path = Context.resolvePath (filePath);
+							}
+
 							
 						default:
 						

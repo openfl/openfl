@@ -145,6 +145,7 @@ class DisplayObjectContainerTest {
 		var sprite = new Sprite ();
 		var sprite2 = new Sprite ();
 		
+		Assert.isTrue (sprite.contains (sprite));
 		Assert.isFalse (sprite.contains (sprite2));
 		
 		sprite.addChild (sprite2);
@@ -152,16 +153,22 @@ class DisplayObjectContainerTest {
 		Assert.isTrue (sprite.contains (sprite2));
 		
 		var sprite3 = new Sprite ();
+		var sprite4 = new Sprite ();
 		
+		sprite3.addChild (sprite4);
 		sprite.addChild (sprite3);
 		
 		Assert.isTrue (sprite.contains (sprite3));
+		Assert.isTrue (sprite.contains (sprite4));
+		Assert.isFalse (sprite3.contains (sprite));
+		Assert.isFalse (sprite4.contains (sprite));
 		
 		sprite.removeChild (sprite3);
 		sprite.removeChild (sprite2);
 		
 		Assert.isFalse (sprite.contains (sprite2));
 		Assert.isFalse (sprite.contains (sprite3));
+		Assert.isFalse (sprite.contains (sprite4));
 		
 	}
 	

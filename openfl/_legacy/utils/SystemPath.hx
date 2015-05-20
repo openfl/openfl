@@ -58,7 +58,7 @@ class SystemPath {
 		
 		#if lime_hybrid
 		
-		switch (which) {
+		switch (inWhich) {
 			
 			case APP: return System.applicationDirectory;
 			case STORAGE: return System.applicationStorageDirectory;

@@ -341,6 +341,7 @@ class Event {
 	
 	@:noCompletion private var __isCancelled:Bool;
 	@:noCompletion private var __isCancelledNow:Bool;
+	@:noCompletion private var __preventDefault:Bool;
 	
 	
 	/**
@@ -408,7 +409,24 @@ class Event {
 	 */
 	public function isDefaultPrevented ():Bool {
 		
-		return (__isCancelled || __isCancelledNow);
+		return __preventDefault;
+		
+	}
+	
+	
+	/**
+	 * Cancels an event's default behavior if that behavior can be canceled.
+	 * Many events have associated behaviors that are carried out by default. For example, if a user types a character into a text field, the default behavior is that the character is displayed in the text field. Because the <code>TextEvent.TEXT_INPUT</code> event's default behavior can be canceled, you can use the <code>preventDefault()</code> method to prevent the character from appearing.
+	 * An example of a behavior that is not cancelable is the default behavior associated with the Event.REMOVED event, which is generated whenever Flash Player is about to remove a display object from the display list. The default behavior (removing the element) cannot be canceled, so the <code>preventDefault()</code> method has no effect on this default behavior.
+	 * You can use the <code>Event.cancelable</code> property to check whether you can prevent the default behavior associated with a particular event. If the value of <code>Event.cancelable</code> is true, then <code>preventDefault()</code> can be used to cancel the event; otherwise, <code>preventDefault()</code> has no effect.
+	 */
+	public function preventDefault ():Void {
+		
+		if (cancelable) {
+			
+			__preventDefault = true;
+			
+		}
 		
 	}
 	

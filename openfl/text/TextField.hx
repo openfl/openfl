@@ -2,6 +2,7 @@ package openfl.text; #if !flash #if !openfl_legacy
 
 
 import haxe.io.Path;
+import haxe.Utf8;
 import haxe.xml.Fast;
 import haxe.Timer;
 import lime.graphics.opengl.GLTexture;
@@ -9,8 +10,10 @@ import lime.system.System;
 import lime.text.TextLayout;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
@@ -25,8 +28,9 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextFormatAlign;
+import openfl.Lib;
 
-#if js
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
@@ -476,7 +480,7 @@ class TextField extends InteractiveObject {
 	 * 
 	 * @default true
 	 */
-	public var selectable:Bool;
+	public var selectable (default, set):Bool;
 	
 	/**
 	 * The zero-based character index value of the first character in the current
@@ -567,18 +571,21 @@ class TextField extends InteractiveObject {
 	@:noCompletion private var __measuredHeight:Int;
 	@:noCompletion private var __measuredWidth:Int;
 	@:noCompletion private var __ranges:Array<TextFormatRange>;
+	@:noCompletion private var __selectable:Bool;
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __text:String;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
-	@:noCompletion private var __tileData:Array<Array<Float>>;
-	@:noCompletion private var __tilesheets:Array<Tilesheet>;
+	@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
+	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
+	@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	@:noCompletion private var __width:Float;
 	
+	@:noCompletion private static var __utf8_endline_code:Int = 10;
 	
-	#if js
+	#if (js && html5)
 	private var __div:DivElement;
 	private var __hiddenInput:InputElement;
 	#end
@@ -713,13 +720,23 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		//openfl.Lib.notImplemented ("TextField.getLineMetrics");
-		
 		var height = textHeight;
 		
-		return new TextLineMetrics (0, textWidth, height, height, 0, 0); 
+		var lineWidth = __getLineWidth(lineIndex);
+		var lineHeight = __getLineMetric(lineIndex, LINE_HEIGHT);
 		
-		//return new TextLineMetrics (0, 0, 0, 0, 0, 0);
+		var ascender = __getLineMetric(lineIndex, ASCENDER);
+		var descender = __getLineMetric(lineIndex, DESCENDER);
+		
+		var leading = __getLineMetric(lineIndex, LEADING);
+		
+		var margin = switch(__textFormat.align) {
+			case LEFT, JUSTIFY: 2;
+			case RIGHT: (width - lineWidth) - 2;
+			case CENTER: (width - lineWidth) / 2;
+		}
+		
+		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 
 		
 	}
 	
@@ -907,16 +924,32 @@ class TextField extends InteractiveObject {
 			__hiddenInput.type = 'text';
 			__hiddenInput.style.position = 'absolute';
 			__hiddenInput.style.opacity = "0";
-			untyped (__hiddenInput.style).pointerEvents = 'none';
-			__hiddenInput.style.left = (x + ((__canvas != null) ? __canvas.offsetLeft : 0)) + 'px';
-			__hiddenInput.style.top = (y + ((__canvas != null) ? __canvas.offsetTop : 0)) + 'px';
-			__hiddenInput.style.width = __width + 'px';
-			__hiddenInput.style.height = __height + 'px';
-			__hiddenInput.style.zIndex = "0";
+			__hiddenInput.style.color = "transparent";
 			
-			if (this.maxChars > 0) {
+			// TODO: Position for mobile browsers better
+			
+			__hiddenInput.style.left = "0px";
+			__hiddenInput.style.top = "50%";
+			
+			if (~/(iPad|iPhone|iPod).*OS 8_/gi.match (Browser.window.navigator.userAgent)) {
 				
-				__hiddenInput.maxLength = this.maxChars;
+				__hiddenInput.style.fontSize = "0px";
+				__hiddenInput.style.width = '0px';
+				__hiddenInput.style.height = '0px';
+				
+			} else {
+				
+				__hiddenInput.style.width = '1px';
+				__hiddenInput.style.height = '1px';
+				
+			}
+			
+			untyped (__hiddenInput.style).pointerEvents = 'none';
+			__hiddenInput.style.zIndex = "-10000000";
+			
+			if (maxChars > 0) {
+				
+				__hiddenInput.maxLength = maxChars;
 				
 			}
 			
@@ -976,9 +1009,16 @@ class TextField extends InteractiveObject {
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = new Rectangle (0, 0, __width, __height);
-		bounds.transform (__worldTransform);
+		bounds = bounds.transform (matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
+	}
+	
+	
+	@:noCompletion private override function __getCursor ():MouseCursor {
+		
+		return (type == INPUT && selectable) ? TEXT : null;
 		
 	}
 	
@@ -989,7 +1029,7 @@ class TextField extends InteractiveObject {
 		font += "normal ";
 		font += format.bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.size + format.leading + 4) + "px ";
+		font += "/" + (format.size + format.leading) + "px ";
 		
 		font += "'" + switch (format.font) {
 			
@@ -1110,15 +1150,215 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function __getLineBreaks():Int {
+		
+		//returns the number of line breaks in the text
+		
+		var lines:Int = 0;
+		for (i in 0...Utf8.length(text)) {
+			var char = Utf8.charCodeAt(text, i);
+			if (char == __utf8_endline_code) {
+				lines++;
+			}
+		}
+		return lines;
+	}
+	
+	@:noCompletion private function __getLineBreakIndeces():Array<Int> {
+		
+		//returns the exact character indeces where the line breaks occur
+		
+		var breaks = [];
+		
+		for (i in 0...Utf8.length(text)) {
+			try{
+				var char = Utf8.charCodeAt(text, i);
+				if (char == __utf8_endline_code) {
+					breaks.push(i);
+				}
+			}
+		}
+		return breaks;
+	}
+	
+	@:noCompletion private function __getLineBreaksInRange(i:Int):Int {
+		
+		//returns the number of line breaks that occur within a given format range
+		
+		var lines:Int = 0;
+		if (__ranges.length > i && i >= 0) {
+			var range = __ranges[i];
+			
+			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
+			if (range.start > 0 && range.end < text.length) {
+				for (j in range.start...range.end + 1) {
+					var char = Utf8.charCodeAt(text, i);
+					if (char == __utf8_endline_code) {
+						lines++;
+					}
+				}
+			}
+		}
+		return lines;
+	}
+	
+	
+	
+	@:noCompletion private function __getLineIndeces(line:Int):Array<Int> {
+		
+		//tells you what the first and last (non-linebreak) character indeces are in a given line
+		
+		var breaks = __getLineBreakIndeces();
+		var i:Int = 0;
+		var first_char = 0;
+		var last_char = text.length - 1;
+		
+		for (br in breaks) {
+			
+			//if this is the line we care about
+			if (i == line) {
+				//the first actual character in our line is the index after this line break
+				first_char = br + 1;
+				
+				//if there's another line break left in the list
+				if (i != breaks.length-1) {
+					//the last character is the index before the next line break
+					//(otherwise it's the last character in the text field)
+					last_char = breaks[i + 1] - 1;
+				}
+			}
+			i++;
+		}
+		return [first_char, last_char];
+	}
+	
+	@:noCompletion private function __getLineWidth(line:Int):Float {
+		
+		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
+		
+		var measurements = __measureTextSub(false);
+		
+		var currWidth = 0.0;
+		var bestWidth = 0.0;
+		
+		var linebreaks = __getLineBreakIndeces();
+		
+		var currLine:Int = 0;
+		for (i in 0...measurements.length) {
+			var measure = measurements[i];
+			if (linebreaks.indexOf(i) != -1) {		//if this character is a line break
+				if (currLine == line) {				//if we're currently on the desired line
+					return currWidth;				//return the built up width immediately
+				}
+				else if (line == -1 && currWidth > bestWidth) {	//if we are looking at ALL lines, and this width is bigger than the last one
+					bestWidth = currWidth;			//this is the new best width
+				}
+				
+				currWidth = 0;			//reset current width
+				currLine++;
+			}
+			else {
+				currWidth += measurements[i];	//keep building up the width
+			}
+		}
+		
+		if (currLine == line) {			//we reached end of the loop & this is the line we want
+			bestWidth = currWidth;
+		}
+		else if (line == -1 && currWidth > bestWidth) {	//looking at ALL lines, and this one's bigger
+			bestWidth = currWidth;
+		}
+		
+		return bestWidth;
+	}
+	
+	private static inline var ASCENDER:Int = 0;
+	private static inline var DESCENDER:Int = 1;
+	private static inline var LINE_HEIGHT:Int = 2;
+	private static inline var LEADING:Int = 3;
+	
+	@:noCompletion private function __getLineMetric(line:Int,metric:Int):Float {
+		
+		//returns the specified line metric for the given line
+		
+		if (__ranges == null) {
+			return __getLineMetricSubRangesNull(true, metric);
+		}
+		else {
+			return __getLineMetricSubRangesNotNull(line, metric);
+		}
+	}
+	
+	@:noCompletion private function __getLineMetricSubRangesNull(singleLine:Bool=false, metric:Int):Float {
+		
+		//subroutine if ranges are null
+		
+		var font = __getFontInstance (__textFormat);
+		
+		if (font != null) {
+			
+			return switch(metric) {
+				case LINE_HEIGHT: __getLineMetricSubRangesNull(singleLine, ASCENDER) + 
+								  __getLineMetricSubRangesNull(singleLine, DESCENDER) + 
+								  __getLineMetricSubRangesNull(singleLine, LEADING);
+				case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
+				case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
+				case LEADING: __textFormat.leading;
+				default: 0;
+			}
+		}
+		
+		return 0;
+	}
+	
+	@:noCompletion private function __getLineMetricSubRangesNotNull(specificLine:Int, metric:Int):Float {
+		
+		//subroutine if ranges are not null
+		//TODO: test this more thoroughly
+		
+		var lineChars = __getLineIndeces(specificLine);
+		
+		var m = 0.0;
+		var best_m = 0.0;
+		
+		for (range in __ranges) {
+			
+			if (range.start >= lineChars[0]) {
+				var font = __getFontInstance (range.format);
+				
+				if (font != null) {
+					
+					m = switch(metric) {
+						case LINE_HEIGHT: __getLineMetricSubRangesNotNull(specificLine, ASCENDER) +
+										  __getLineMetricSubRangesNotNull(specificLine, DESCENDER) + 
+										  __getLineMetricSubRangesNotNull(specificLine, LEADING);
+						case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
+						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
+						case LEADING: __textFormat.leading;
+						default: 0;
+					}
+				}
+			}
+			
+			if (m > best_m) {
+				best_m = m;
+			}
+			m = 0;
+		}
+		
+		return best_m;
+	}
 	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
+		if (x <= 2) return 0;
+		
 		var value:String = text;
 		var text:String = value;
-		var totalW:Float = 0;
+		var totalW:Float = 2;
 		var pos = text.length;
 		
-		if (x < __getTextWidth (text)) {
+		if (x < __getTextWidth (text) + 2) {
 			
 			for (i in 0...text.length) {
 				
@@ -1138,7 +1378,6 @@ class TextField extends InteractiveObject {
 		return pos;
 		
 	}
-	
 	
 	@:noCompletion private function __getTextWidth (text:String):Float {
 		
@@ -1187,10 +1426,9 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
-	@:noCompletion private function __measureText ():Array<Float> {
+	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
 		
-		#if js
+		#if (js && html5)
 		
 		if (__context == null) {
 			
@@ -1219,67 +1457,12 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		#elseif (cpp || neko)
+		#elseif (cpp || neko || nodejs)
 		
-		if (__textLayout == null) {
-			
-			__textLayout = new TextLayout ();
-			
-		}
+		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
+		//TODO: look into whether this method and others can replace the JS stuff yet or not
 		
-		if (__ranges == null) {
-			
-			var font = __getFontInstance (__textFormat);
-			var width = 0.0;
-			
-			if (font != null && __textFormat.size != null) {
-				
-				__textLayout.text = null;
-				__textLayout.font = font;
-				__textLayout.size = Std.int (__textFormat.size);
-				__textLayout.text = __text;
-				
-				for (position in __textLayout.positions) {
-					
-					width += position.advance.x;
-					
-				}
-				
-			}
-			
-			return [ width ];
-			
-		} else {
-			
-			var measurements = [];
-			
-			for (range in __ranges) {
-				
-				var font = __getFontInstance (range.format);
-				var width = 0.0;
-				
-				if (font != null && range.format.size != null) {
-					
-					__textLayout.text = null;
-					__textLayout.font = font;
-					__textLayout.size = Std.int (range.format.size);
-					__textLayout.text = text.substring (range.start, range.end);
-					
-					for (position in __textLayout.positions) {
-						
-						width += position.advance.x;
-						
-					}
-					
-				}
-				
-				measurements.push (width);
-				
-			}
-			
-			return measurements;
-			
-		}
+		return __measureTextSub(condense);
 		
 		#else
 		
@@ -1289,10 +1472,106 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function __measureTextSub(condense:Bool):Array<Float> {
+		
+		//subroutine for measuring text (width)
+		
+		if (__textLayout == null) {
+			
+			__textLayout = new TextLayout ();
+			
+		}
+		
+		if (__ranges == null) {
+			
+			return __measureTextSubRangesNull(condense);
+			
+		} else {
+			
+			return __measureTextSubRangesNotNull(condense);
+		}
+		
+		return null;
+	}
+	
+	@:noCompletion private function __measureTextSubRangesNull(condense:Bool):Array<Float> {
+		
+		//subroutine if format ranges are null
+		
+		var font = __getFontInstance (__textFormat);
+		var width = 0.0;
+		var widths = [];
+		
+		if (font != null && __textFormat.size != null) {
+			
+			__textLayout.text = null;
+			__textLayout.font = font;
+			__textLayout.size = Std.int (__textFormat.size);
+			__textLayout.text = __text;
+			
+			for (position in __textLayout.positions) {
+				
+				if (condense) {
+					width += position.advance.x;
+				}
+				else {
+					widths.push(position.advance.x);
+				}
+				
+			}
+			
+		}
+		
+		if (condense) {
+			widths.push(width);
+		}
+		
+		return widths;
+	}
+	
+	@:noCompletion private function __measureTextSubRangesNotNull(condense:Bool):Array<Float> {
+		
+		//subroutine if format ranges are not null
+		
+		var measurements = [];
+		
+		for (range in __ranges) {
+			
+			var font = __getFontInstance (range.format);
+			var width = 0.0;
+			
+			if (font != null && range.format.size != null) {
+			
+				__textLayout.text = null;
+				__textLayout.font = font;
+				__textLayout.size = Std.int (range.format.size);
+				__textLayout.text = text.substring (range.start, range.end);
+				
+				for (position in __textLayout.positions) {
+					
+					if (condense) {
+						width += position.advance.x;
+					}
+					else {
+						measurements.push(position.advance.x);
+					}
+					
+				}
+				
+			}
+			
+			if (condense) {
+				measurements.push (width);
+			}
+			
+		}
+		
+		return measurements;
+	}
 	
 	@:noCompletion private function __measureTextWithDOM ():Void {
 	 	
-	 	#if js
+	 	#if (js && html5)
 	 	
 		var div:Element = __div;
 		
@@ -1301,6 +1580,7 @@ class TextField extends InteractiveObject {
 			div = cast Browser.document.createElement ("div");
 			div.innerHTML = new EReg ("\n", "g").replace (__text, "<br>");
 			div.style.setProperty ("font", __getFont (__textFormat), null);
+			div.style.setProperty ("pointer-events", "none", null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
 			Browser.document.body.appendChild (div);
@@ -1313,7 +1593,7 @@ class TextField extends InteractiveObject {
 		// function of the flow within the width bounds...
 		if (__div == null) {
 			
-			div.style.width = Std.string (__width) + "px";
+			div.style.width = Std.string (__width - 4) + "px";
 			
 		}
 		
@@ -1329,6 +1609,10 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
+		
+		CairoTextField.render (this, renderSession);
+	}
 	
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
@@ -1388,8 +1672,18 @@ class TextField extends InteractiveObject {
 		__ranges = null;
 		__isHTML = false;
 		
-		__cursorPosition = __hiddenInput.selectionStart;
-		__selectionStart = __cursorPosition;
+		if (__hiddenInput.selectionDirection == "backward") {
+			
+			__cursorPosition = __hiddenInput.selectionStart;
+			__selectionStart = __hiddenInput.selectionEnd;
+			
+		} else {
+			
+			__cursorPosition = __hiddenInput.selectionEnd;
+			__selectionStart = __hiddenInput.selectionStart;
+			
+		}
+		
 		__dirty = true;
 		
 		dispatchEvent (new Event (Event.CHANGE, true));
@@ -1405,38 +1699,38 @@ class TextField extends InteractiveObject {
 		var keyCode = event.which;
 		var isShift = event.shiftKey;
 		
-		if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
-			
-			__hiddenInput.selectionStart = 0;
-			__hiddenInput.selectionEnd = text.length;
-			event.preventDefault ();
-			__dirty = true;
-			return;
-			
-		}
-		
-		if (keyCode == 17 || event.metaKey || event.ctrlKey) {
-			
-			return;
-			
-		}
+		//if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
+			//
+			//__hiddenInput.selectionStart = 0;
+			//__hiddenInput.selectionEnd = text.length;
+			//event.preventDefault ();
+			//__dirty = true;
+			//return;
+			//
+		//}
+		//
+		//if (keyCode == 17 || event.metaKey || event.ctrlKey) {
+			//
+			//return;
+			//
+		//}
 		
 		__text = __hiddenInput.value;
 		__ranges = null;
 		__isHTML = false;
 		
-		__selectionStart = __hiddenInput.selectionStart;
-		__dirty = true;
+		if (__hiddenInput.selectionDirection == "backward") {
+			
+			__cursorPosition = __hiddenInput.selectionStart;
+			__selectionStart = __hiddenInput.selectionEnd;
+			
+		} else {
+			
+			__cursorPosition = __hiddenInput.selectionEnd;
+			__selectionStart = __hiddenInput.selectionStart;
+			
+		}
 		
-	}
-	
-	
-	@:noCompletion private function stage_onFocusOut (event:Event):Void {
-		
-		__cursorPosition = -1;
-		__hasFocus = false;
-		__stopCursorTimer ();
-		__hiddenInput.blur ();
 		__dirty = true;
 		
 	}
@@ -1446,7 +1740,8 @@ class TextField extends InteractiveObject {
 		
 		if (__hasFocus && __selectionStart >= 0) {
 			
-			__cursorPosition = __getPosition (event.localX, event.localY);
+			var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
+			__cursorPosition = __getPosition (localPoint.x, localPoint.y);
 			__dirty = true;
 			
 		}
@@ -1456,20 +1751,50 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
 		
-		var upPos:Int = __getPosition (event.localX, event.localY);
-		var leftPos:Int;
-		var rightPos:Int;
-		
-		leftPos = Std.int (Math.min (__selectionStart, upPos));
-		rightPos = Std.int (Math.max (__selectionStart, upPos));
-		
-		__selectionStart = leftPos;
-		__cursorPosition = rightPos;
-		
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
-		stage.focus = this;
+		if (stage.focus == this) {
+			
+			var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
+			var upPos:Int = __getPosition (localPoint.x, localPoint.y);
+			var leftPos:Int;
+			var rightPos:Int;
+			
+			leftPos = Std.int (Math.min (__selectionStart, upPos));
+			rightPos = Std.int (Math.max (__selectionStart, upPos));
+			
+			__selectionStart = leftPos;
+			__cursorPosition = rightPos;
+			
+			this_onFocusIn (null);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+		
+		addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		
+		__hiddenInput.addEventListener ('keydown', input_onKeyDown, true);
+		__hiddenInput.addEventListener ('keyup', input_onKeyUp, true);
+		__hiddenInput.addEventListener ('input', input_onKeyUp, true);
+		
+		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		
+		if (stage.focus == this) {
+			
+			this_onFocusIn (null);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onFocusIn (event:Event):Void {
 		
 		if (__cursorPosition < 0) {
 			
@@ -1488,25 +1813,29 @@ class TextField extends InteractiveObject {
 		__hasFocus = true;
 		__dirty = true;
 		
+		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
 	}
 	
 	
-	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+	@:noCompletion private function this_onFocusOut (event:Event):Void {
 		
-		stage.addEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
-		
-		__hiddenInput.addEventListener ('keydown', input_onKeyDown);
-		__hiddenInput.addEventListener ('keyup', input_onKeyUp);
-		__hiddenInput.addEventListener ('input', input_onKeyUp);
-		
-		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		__cursorPosition = -1;
+		__hasFocus = false;
+		__stopCursorTimer ();
+		if (__hiddenInput != null) __hiddenInput.blur ();
+		__dirty = true;
 		
 	}
 	
 	
 	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
 		
-		__selectionStart = __getPosition (event.localX, event.localY);
+		if (!selectable) return;
+		
+		var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
+		__selectionStart = __getPosition (localPoint.x, localPoint.y);
+		__cursorPosition = __selectionStart;
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
@@ -1516,11 +1845,14 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function this_onRemovedFromStage (event:Event):Void {
 		
-		if (stage != null) stage.removeEventListener (FocusEvent.FOCUS_OUT, stage_onFocusOut);
+		removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 		
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown);
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp);
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp);
+		this_onFocusOut (null);
+		
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown, true);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp, true);
+		if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp, true);
 		
 		removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		if (stage != null) stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
@@ -1658,7 +1990,17 @@ class TextField extends InteractiveObject {
 			if (segments.length == 1) {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
-				#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
+				#if (js && html5)
+				if (__text != value && __hiddenInput != null) {
+					
+					var selectionStart = __hiddenInput.selectionStart;
+					var selectionEnd = __hiddenInput.selectionEnd;
+					__hiddenInput.value = value;
+					__hiddenInput.selectionStart = selectionStart;
+					__hiddenInput.selectionEnd = selectionEnd;
+					
+				}	
+				#end
 				return __text = value;
 				
 			} else {
@@ -1729,7 +2071,17 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		#if (js && html5) if (__hiddenInput != null) __hiddenInput.value = value; #end
+		#if (js && html5)
+		if (__text != value && __hiddenInput != null) {
+			
+			var selectionStart = __hiddenInput.selectionStart;
+			var selectionEnd = __hiddenInput.selectionEnd;
+			__hiddenInput.value = value;
+			__hiddenInput.selectionStart = selectionStart;
+			__hiddenInput.selectionEnd = selectionEnd;
+			
+		}	
+		#end
 		return __text = value;
 		
 	}
@@ -1760,7 +2112,22 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_text ():String {
+	@:noCompletion private function set_selectable (value:Bool):Bool {
+		
+		#if (js && html5)
+		if (!value && selectable && type == TextFieldType.INPUT) {
+			
+			this_onRemovedFromStage (null);
+			
+		}
+		#end
+		
+		return selectable = value;
+		
+	}
+	
+	
+	@:noCompletion private function get_text ():String {
 		
 		if (__isHTML) {
 			
@@ -1773,9 +2140,20 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function set_text (value:String):String {
+	@:noCompletion private function set_text (value:String):String {
 		
-		#if (js && html5) if (__text != value && __hiddenInput != null) __hiddenInput.value = value; #end
+		#if (js && html5)
+		if (__text != value && __hiddenInput != null) {
+			
+			var selectionStart = __hiddenInput.selectionStart;
+			var selectionEnd = __hiddenInput.selectionEnd;
+			__hiddenInput.value = value;
+			__hiddenInput.selectionStart = selectionStart;
+			__hiddenInput.selectionEnd = selectionEnd;
+			
+		}	
+		#end
+		
 		if (__isHTML || __text != value) __dirty = true;
 		__ranges = null;
 		__isHTML = false;
@@ -1784,14 +2162,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_textColor ():Int { 
+	@:noCompletion private function get_textColor ():Int { 
 		
 		return __textFormat.color;
 		
 	}
 	
 	
-	@:noCompletion public function set_textColor (value:Int):Int {
+	@:noCompletion private function set_textColor (value:Int):Int {
 		
 		if (value != __textFormat.color) __dirty = true;
 		
@@ -1809,10 +2187,9 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
-	@:noCompletion public function get_textWidth ():Float {
+	@:noCompletion private function get_textWidth ():Float {
 		
-		#if js
+		#if (js && html5)
 		
 		if (__canvas != null) {
 			
@@ -1838,18 +2215,11 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		#elseif (cpp || neko)
+		#elseif (cpp || neko || nodejs)
 		
-		var sizes = __measureText ();
-		var total:Float = 0;
-		
-		for (size in sizes) {
-			
-			total += size;
-			
-		}
-		
-		return total;
+		//return the largest width of any given single line
+		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
+		return __getLineWidth( -1);
 		
 		#else
 		
@@ -1860,9 +2230,9 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_textHeight ():Float {
+	@:noCompletion private function get_textHeight ():Float {
 		
-		#if js
+		#if (js && html5)
 		
 		if (__canvas != null) {
 			
@@ -1884,14 +2254,23 @@ class TextField extends InteractiveObject {
 		
 		#else
 		
-		return __textFormat.size * 1.185;
+		//sum the heights of all the lines, but don't count the leading of the last line
+		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
+		var th = 0.0;
+		for (i in 0...numLines) {
+			th += __getLineMetric(i, LINE_HEIGHT);
+			if (i == numLines - 1) {
+				th -= __getLineMetric(i, LEADING);
+			}
+		}
+		return th;
 		
 		#end
 		
 	}
 	
 	
-	@:noCompletion public function set_type (value:TextFieldType):TextFieldType {
+	@:noCompletion private function set_type (value:TextFieldType):TextFieldType {
 		
 		if (value != type) {
 			
@@ -1916,7 +2295,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	override public function get_width ():Float {
+	override private function get_width ():Float {
 		
 		if (autoSize == TextFieldAutoSize.LEFT) {
 			
@@ -1932,7 +2311,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	override public function set_width (value:Float):Float {
+	override private function set_width (value:Float):Float {
 		
 		if (scaleX != 1 || __width != value) {
 			
@@ -1947,14 +2326,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public function get_wordWrap ():Bool {
+	@:noCompletion private function get_wordWrap ():Bool {
 		
 		return wordWrap;
 		
 	}
 	
 	
-	@:noCompletion public function set_wordWrap (value:Bool):Bool {
+	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
 		//if (value != wordWrap) __dirty = true;
 		return wordWrap = value;
