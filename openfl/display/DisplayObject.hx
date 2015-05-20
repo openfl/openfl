@@ -1336,7 +1336,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__worldColorTransform.__combine(parent.__worldColorTransform);
 				
-				if ((blendMode == null || blendMode == NORMAL) && parent.__blendMode != null) {
+				if ((blendMode == null || blendMode == NORMAL)) {
 					
 					__blendMode = parent.__blendMode;
 				}
