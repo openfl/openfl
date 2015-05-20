@@ -1260,7 +1260,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
 			
 			if (sr != null) {
-				sr = sr.transform(__worldTransform);
+				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					sr = sr.transform(__worldTransform);
+				}
 				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
 				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
 			}
@@ -1277,7 +1279,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = y;
 			
 			if (sr != null) {
-				sr = sr.transform(__worldTransform);
+				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					sr = sr.transform(__worldTransform);
+				}
 				__worldTransform.tx = x - scrollRect.x;
 				__worldTransform.ty = y - scrollRect.y;
 			}
