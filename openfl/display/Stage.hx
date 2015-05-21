@@ -29,6 +29,7 @@ import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
+import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -790,7 +791,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onTextInput (text:String):Void {
 		
+		var stack = new Array <DisplayObject> ();
 		
+		if (__focus == null) {
+			
+			__getInteractive (stack);
+			
+		} else {
+			
+			__focus.__getInteractive (stack);
+			
+		}
+		
+		var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
+		if (stack.length > 0) {
+			
+			stack.reverse ();
+			__fireEvent (event, stack);
+		} else {
+			
+			__broadcast (event, true);
+		}
 		
 	}
 	
@@ -848,14 +869,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowFocusIn ():Void {
 		
-		
+		var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, null, false, 0);
+		__broadcast (event, true);
 		
 	}
 	
 	
 	public function onWindowFocusOut ():Void {
 		
-		
+		var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, null, false, 0);
+		__broadcast (event, true);
 		
 	}
 	
