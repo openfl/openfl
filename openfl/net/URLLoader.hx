@@ -597,6 +597,7 @@ class URLLoader extends EventDispatcher {
 		CURLEasy.setopt (__curl, SSL_VERIFYHOST, false);
 		CURLEasy.setopt (__curl, USERAGENT, "libcurl-agent/1.0");
 		CURLEasy.setopt (__curl, CONNECTTIMEOUT, 30);
+		CURLEasy.setopt (__curl, TRANSFERTEXT, dataFormat == BINARY ? 0 : 1);
 		
 		var result = CURLEasy.perform (__curl);
 		var responseCode = CURLEasy.getinfo (__curl, RESPONSE_CODE);
