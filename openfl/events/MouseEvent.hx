@@ -152,7 +152,7 @@ class MouseEvent extends Event {
 	public static var ROLL_OVER:String = "rollOver";
 	
 	@:noCompletion private static var __altKey:Bool;
-	@:noCompletion private static var __buttonDown = [ false, false, false ];
+	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;
 	@:noCompletion private static var __ctrlKey:Bool;
 	@:noCompletion private static var __shiftKey:Bool;
@@ -311,17 +311,19 @@ class MouseEvent extends Event {
 		
 		switch (type) {
 			
-			case MouseEvent.MOUSE_DOWN, MouseEvent.MIDDLE_MOUSE_DOWN, MouseEvent.RIGHT_MOUSE_DOWN:
+			case MouseEvent.MOUSE_DOWN:
 				
-				__buttonDown[button] = true;
+				__buttonDown = true;
 				
-			case MouseEvent.MOUSE_UP, MouseEvent.MIDDLE_MOUSE_UP, MouseEvent.RIGHT_MOUSE_UP:
+			case MouseEvent.MOUSE_UP:
 				
-				__buttonDown[button] = false;
+				__buttonDown = false;
+			
+			default:
 			
 		}
 		
-		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown[button], delta, __commandKey);
+		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;
