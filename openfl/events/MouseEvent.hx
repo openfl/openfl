@@ -321,7 +321,7 @@ class MouseEvent extends Event {
 			
 		}
 		
-		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown[button], delta, __commandKey);
+		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, Lambda.has(__buttonDown, true), delta, __commandKey);
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;
