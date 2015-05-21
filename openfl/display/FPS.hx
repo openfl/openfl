@@ -4,6 +4,7 @@ package openfl.display;
 import haxe.Timer;
 import openfl.events.Event;
 import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 
 
@@ -28,6 +29,14 @@ class FPS extends TextField {
 		mouseEnabled = false;
 		defaultTextFormat = new TextFormat ("_sans", 12, color);
 		text = "FPS: ";
+				
+		autoSize = TextFieldAutoSize.RIGHT;
+		//autoSize = TextFieldAutoSize.LEFT;
+		border = true;
+		borderColor = 0xff0000;
+		
+		background = true;
+		backgroundColor = 0xffcccc;
 		
 		cacheCount = 0;
 		times = [];
@@ -60,10 +69,10 @@ class FPS extends TextField {
 		
 		if (currentCount != cacheCount /*&& visible*/) {
 			
-			text = "FPS: " + currentFPS;
+			text = "FPS:\n" + currentFPS;
 			
 		}
-		
+				
 		cacheCount = currentCount;
 		
 	}
