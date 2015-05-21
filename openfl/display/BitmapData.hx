@@ -133,11 +133,11 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public var width (default, null):Int;
 	
-	@:noCompletion @:dox(hide) public var blendMode:BlendMode;
 	@:noCompletion @:dox(hide) public var __worldTransform:Matrix;
 	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
 	
+	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
 	@:noCompletion private var __isValid:Bool;
@@ -1615,7 +1615,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var ctCache = source.__worldColorTransform;
 		var matrixCache = source.__worldTransform;
-		var blendModeCache = source.blendMode;
+		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
 		
 		var m = matrix != null ? matrix.clone () : new Matrix ();
@@ -1624,7 +1624,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
-		source.blendMode = blendMode;
+		source.__blendMode = blendMode;
 		source.__cacheAsBitmap = false;
 		
 		source.__updateChildren (false);
@@ -1633,7 +1633,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		source.__worldColorTransform = ctCache;
 		source.__worldTransform = matrixCache;
-		source.blendMode = blendModeCache;
+		source.__blendMode = blendModeCache;
 		source.__cacheAsBitmap = cached;
 		
 		source.__updateChildren (true);
@@ -1863,7 +1863,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, blendMode);
+		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode);
 		
 	}
 	

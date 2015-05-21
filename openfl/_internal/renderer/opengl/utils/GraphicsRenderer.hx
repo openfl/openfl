@@ -877,8 +877,6 @@ class GraphicsRenderer {
 			translationMatrix = object.__worldTransform;
 		}
 		
-		renderSession.blendModeManager.setBlendMode(object.blendMode);
-		
 		var clipRect = @:privateAccess renderSession.spriteBatch.clipRect;
 		var batchDrawing = renderSession.spriteBatch.drawing;
 		
@@ -890,6 +888,8 @@ class GraphicsRenderer {
 			if (batchDrawing && !localCoords) {
 				renderSession.spriteBatch.finish();
 			}
+			
+			renderSession.blendModeManager.setBlendMode(object.__blendMode);
 			
 			if (clipRect != null) {
 				gl.enable(gl.SCISSOR_TEST);

@@ -205,7 +205,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * the table show <code>blendMode</code> values applied to a circular display
 	 * object(2) superimposed on another display object(1).</p>
 	 */
-	public var blendMode:BlendMode;
+	public var blendMode(default, set):BlendMode;
 	
 	/**
 	 * If set to <code>true</code>, NME will use the software renderer to cache
@@ -712,6 +712,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
 	
 	@:noCompletion private var __alpha:Float;
+	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
@@ -1335,6 +1336,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__worldColorTransform.__combine(parent.__worldColorTransform);
 				
+				if ((blendMode == null || blendMode == NORMAL)) {
+					
+					__blendMode = parent.__blendMode;
+				}
+				
 				#else
 				
 				var worldVisible = (parent.__worldVisible && visible);
@@ -1461,6 +1467,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (value != __alpha) __setRenderDirty ();
 		return __alpha = value;
+		
+	}
+	
+	
+	@:noCompletion private function set_blendMode (value:BlendMode):BlendMode {
+		
+		__blendMode = value;
+		return blendMode = value;
 		
 	}
 	
