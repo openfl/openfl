@@ -279,6 +279,7 @@ class CairoGraphics {
 		var startY = 0.0;	
 		
 		cairo.fillRule = EVEN_ODD;
+		cairo.antialias = SUBPIXEL;
 		
 		for (command in commands) {
 			
