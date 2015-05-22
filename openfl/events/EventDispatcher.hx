@@ -203,7 +203,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 			var list;
 			
-			if (__dispatching.exists (type)) {
+			if (__dispatching.get (type) == true) {
 				
 				if (!__newEventMap.exists (type)) {
 					
@@ -389,7 +389,7 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		if (__dispatching.exists (type)) {
+		if (__dispatching.get (type) == true) {
 			
 			if (!__newEventMap.exists (type)) {
 				
