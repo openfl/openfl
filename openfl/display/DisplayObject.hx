@@ -1666,7 +1666,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function get_scrollRect ():Rectangle {
 		
-		return __scrollRect;
+		if ( __scrollRect == null ) return null;
+		
+		return __scrollRect.clone();
 		
 	}
 	

@@ -1,7 +1,7 @@
 package openfl._internal.renderer.canvas;
 
-
 import openfl._internal.renderer.RenderSession;
+import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
@@ -40,7 +40,7 @@ class CanvasTextField {
 			var scrollRect = textField.scrollRect;
 			
 			if (renderSession.roundPixels) {
-				
+			
 				context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
 				
 			} else {
@@ -48,7 +48,7 @@ class CanvasTextField {
 				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				
 			}
-			
+						
 			if (scrollRect == null) {
 				
 				context.drawImage (textField.__canvas, 0, 0);
@@ -66,11 +66,11 @@ class CanvasTextField {
 	}
 	
 	
-	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float):Void {
+	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle ):Void {
 		
 		#if (js && html5)
 		
-		context.font = textField.__getFont (format);
+		context.font = textField.__getFont (format);		
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
 		context.textBaseline = "top";
 		
@@ -165,21 +165,22 @@ class CanvasTextField {
 				case TextFormatAlign.CENTER:
 					
 					context.textAlign = "center";
-					context.fillText (line, textField.__width / 2, 2 + yOffset, textField.__width - 4);
+					
+					context.fillText (line, offsetX + textField.width / 2, 2 + yOffset, textField.textWidth );
 					
 				case TextFormatAlign.RIGHT:
 					
 					context.textAlign = "end";
-					context.fillText (line, textField.__width - 2, 2 + yOffset, textField.__width - 4);
+					context.fillText (line, offsetX + textField.width - 2, 2 + yOffset, textField.textWidth );
 					
 				default:
 					
 					context.textAlign = "start";
-					context.fillText (line, 2 + offsetX, 2 + yOffset, textField.__width - 4);
+					context.fillText (line, 2 + offsetX, 2 + yOffset, textField.textWidth );
 					
 			}
 			
-			yOffset += textField.textHeight; // TODO: Handle format.leading
+			yOffset += format.size * 1.185 + format.leading;
 			
 		}
 		
@@ -192,9 +193,11 @@ class CanvasTextField {
 		
 		#if (js && html5)
 		
+		var bounds = textField.getBounds( null );
+		
 		if (textField.__dirty) {
 			
-			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border && !textField.__hasFocus) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.LEFT)) {
+			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border && !textField.__hasFocus) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.NONE)) {
 				
 				textField.__canvas = null;
 				textField.__context = null;
@@ -231,26 +234,13 @@ class CanvasTextField {
 					}
 					
 					var measurements = textField.__measureText ();
-					var textWidth = 0.0;
 					
-					for (measurement in measurements) {
-						
-						textWidth += measurement;
-						
-					}
-					
-					if (textField.autoSize == TextFieldAutoSize.LEFT) {
-						
-						textField.__width = textWidth + 4;
-						
-					}
-					
-					textField.__canvas.width = Math.ceil (textField.__width);
-					textField.__canvas.height = Math.ceil (textField.__height);
+					textField.__canvas.width = Math.ceil (bounds.width);
+					textField.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textField.border || textField.background) {
 						
-						textField.__context.rect (0.5, 0.5, textField.__width - 1, textField.__height - 1);
+						textField.__context.rect (0.5, 0.5, textField.width - 1, textField.height - 1);
 						
 						if (textField.background) {
 							
@@ -291,7 +281,7 @@ class CanvasTextField {
 					
 					if (textField.__ranges == null) {
 						
-						renderText (textField, text, textField.__textFormat, 0);
+						renderText (textField, text, textField.__textFormat, 0, bounds );
 						
 					} else {
 						
@@ -303,7 +293,7 @@ class CanvasTextField {
 							
 							range = textField.__ranges[i];
 							
-							renderText (textField, text.substring (range.start, range.end), range.format, offsetX);
+							renderText (textField, text.substring (range.start, range.end), range.format, offsetX, bounds );
 							offsetX += measurements[i];
 							
 						}
@@ -311,25 +301,19 @@ class CanvasTextField {
 					}
 					
 				} else {
-					
-					if (textField.autoSize == TextFieldAutoSize.LEFT) {
-						
-						textField.__width = 4;
-						
-					}
-					
-					textField.__canvas.width = Math.ceil (textField.__width);
-					textField.__canvas.height = Math.ceil (textField.__height);
+												
+					textField.__canvas.width = Math.ceil (bounds.width);
+					textField.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textField.border || textField.background) {
 						
 						if (textField.border) {
 							
-							context.rect (0.5, 0.5, textField.__width - 1, textField.__height - 1);
+							context.rect (0.5, 0.5, textField.width - 1, textField.height - 1);
 							
 						} else {
 							
-							textField.__context.rect (0, 0, textField.__width, textField.__height);
+							textField.__context.rect (0, 0, textField.width, textField.height);
 							
 						}
 						

@@ -14,6 +14,7 @@ import openfl.display.DisplayObject;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
+import openfl.display.Shape;
 import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -39,7 +40,7 @@ class CairoGraphics {
 	private static var fillCommands:Array<DrawCommand>;
 	private static var fillPattern:CairoPattern;
 	private static var fillPatternMatrix:Matrix;
-	private static var graphics:Graphics;
+	private static var graphics:Graphics;	
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var inversePendingMatrix:Matrix;
@@ -178,7 +179,10 @@ class CairoGraphics {
 				
 				var point = matrix.transformPoint (new Point (1638.4, 0));
 			
-				pattern = CairoPattern.createRadial (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+				var x = matrix.tx + graphics.__bounds.x;
+				var y = matrix.ty + graphics.__bounds.y;
+				
+				pattern = CairoPattern.createRadial ( x, y, 0, x, y, (point.x - matrix.tx) / 2);
 			
 			case LINEAR:
 				
@@ -186,7 +190,12 @@ class CairoGraphics {
 						
 				var point1 = matrix.transformPoint (new Point (-819.2, 0));
 				var point2 = matrix.transformPoint (new Point (819.2, 0));
-
+				
+				point1.x += graphics.__bounds.x;
+				point2.x += graphics.__bounds.x;
+				point1.y += graphics.__bounds.y;
+				point2.y += graphics.__bounds.y;
+				
 				pattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
 				
 		}
@@ -584,12 +593,18 @@ class CairoGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (shape:DisplayObject, renderSession:RenderSession):Void {
+		
+		CairoGraphics.graphics = shape.__graphics;
+		
+		graphics = CairoGraphics.graphics;
 		
 		if (graphics.__dirty) {
 			
-			CairoGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
+			
+			bounds.width *= shape.scaleX;
+			bounds.height *= shape.scaleY;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
@@ -617,13 +632,15 @@ class CairoGraphics {
 				
 				if (graphics.__cairo == null) {
 					
-					var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width+2), Math.ceil (bounds.height+2));
+					var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height));
 					graphics.__cairo = new Cairo (surface);
 					surface.destroy ();
 					
 				}
 				
 				cairo = graphics.__cairo;
+				
+				cairo.scale( shape.scaleX, shape.scaleY );
 				
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;

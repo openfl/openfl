@@ -19,7 +19,7 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession);
+			CairoGraphics.render (shape, renderSession);
 			
 			if (graphics.__cairo != null) {
 				
@@ -48,13 +48,15 @@ class CairoShape {
 					
 				}
 				
+				cairo.scale( 1 / shape.scaleX, 1 / shape.scaleY );
+				
 				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
 				
 				if (scrollRect != null) {
 					
 					cairo.pushGroup ();
 					cairo.newPath ();
-					cairo.rectangle (graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
+					cairo.rectangle ( Math.round( graphics.__bounds.x + scrollRect.x ), Math.round( graphics.__bounds.y + scrollRect.y ), scrollRect.width, scrollRect.height);
 					cairo.fill ();
 					cairo.popGroupToSource ();
 					

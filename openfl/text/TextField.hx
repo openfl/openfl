@@ -563,10 +563,11 @@ class TextField extends InteractiveObject {
 	 */
 	@:isVar public var wordWrap (get, set):Bool;
 	
-	@:noCompletion private var __boundsDirty:Bool;
+	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __cursorPosition:Int;
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __dirtyBounds:Bool;
 	@:noCompletion private var __hasFocus:Bool;
 	@:noCompletion private var __height:Float;
 	@:noCompletion private var __isHTML:Bool;
@@ -585,6 +586,8 @@ class TextField extends InteractiveObject {
 	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	@:noCompletion private var __width:Float;
+	
+	@:noCompletion private var bounds (get, null):Rectangle;
 	
 	@:noCompletion private static var __utf8_endline_code:Int = 10;
 	
@@ -611,7 +614,8 @@ class TextField extends InteractiveObject {
 		__width = 100;
 		__height = 100;
 		__text = "";
-		__boundsDirty = true;
+		__dirtyBounds = true;
+		__bounds = new Rectangle( 0, 0, 0, 0 );
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -895,6 +899,8 @@ class TextField extends InteractiveObject {
 		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
 		
 		__dirty = true;
+		__dirtyBounds = true;
+		
 		
 	}
 	
@@ -1011,49 +1017,9 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	@:noCompletion private function __calculateBounds():Rectangle {
-		
-		var textWidth = __getLineWidth( -1 );
-		
-		var x : Float, w : Float, h : Float;
-		
-		x = 0;
-		
-		if (autoSize == TextFieldAutoSize.LEFT) {
-			w = textWidth + 4;
-			h = textHeight + 4;
-		}
-		else if (autoSize == TextFieldAutoSize.RIGHT) {
-			
-			w = textWidth + 4;
-			h = textHeight + 4;
-			x += width - w;
-		}
-		else if (autoSize == TextFieldAutoSize.CENTER) {
-			
-			w = textWidth + 4;
-			h = textHeight + 4;
-			x += width / 2 - w / 2;
-		}
-		else
-		{
-			w = width;
-			h = height;
-		}
-		
-		if ( border )
-		{
-			w += 1;
-			h += 1;
-		}
-		
-		return new Rectangle( x, 0, w, h );
-	}
-	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		var bounds = __calculateBounds();	
-		bounds = bounds.transform (matrix);
+		var bounds = bounds.transform (matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 	
@@ -1063,7 +1029,6 @@ class TextField extends InteractiveObject {
 		return (type == INPUT && selectable) ? TEXT : null;
 		
 	}
-	
 	
 	@:noCompletion private function __getFont (format:TextFormat):String {
 		
@@ -1323,6 +1288,41 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __getLineWidth(line:Int):Float {
 		
+		#if (js && html5)
+		
+		if (__context == null) {
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			__context = __canvas.getContext ("2d");
+			
+		}
+		
+		var linebreaks = __getLineBreakIndeces();
+		
+		__context.font = __getFont (__textFormat);
+		
+		if ( line == -1 )
+		{
+			var longest : Float = 0;
+			var i = 0;
+			
+			for (i in 0...linebreaks.length) {
+				
+				longest = Math.max( longest, __context.measureText ( __text.substr( i == 0 ? 0 : (linebreaks[ i-1 ]+1), linebreaks[ i ] ) ).width );
+				
+			}
+			
+			longest = Math.max( longest, __context.measureText ( __text.substr( i == 0 ? 0 : (linebreaks[ i-1 ]+1) ) ).width );
+			
+			return longest;
+		}
+		else
+		{
+			return __context.measureText ( __text.substr( line == 0 ? 0 : (linebreaks[ line-1 ]+1) ) ).width;
+		}
+
+		#elseif (cpp || neko || nodejs)
+		
 		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
 		
 		var measurements = __measureTextSub(false);
@@ -1359,6 +1359,13 @@ class TextField extends InteractiveObject {
 		}
 		
 		return bestWidth;
+		
+				
+		#else
+		
+		return null;
+		
+		#end
 	}
 	
 	private static inline var ASCENDER:Int = 0;
@@ -1499,7 +1506,7 @@ class TextField extends InteractiveObject {
 		
 		var point = globalToLocal (new Point (x, y));
 		
-		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
+		if( bounds.containsPoint( point ) ) {
 			
 			if (stack != null) {
 				
@@ -1820,7 +1827,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		__dirty = true;
+		__dirty = true;		
 		
 	}
 	
@@ -1832,7 +1839,6 @@ class TextField extends InteractiveObject {
 			var localPoint = globalToLocal (new Point (event.stageX, event.stageY));
 			__cursorPosition = __getPosition (localPoint.x, localPoint.y);
 			__dirty = true;
-			
 		}
 		
 	}
@@ -1960,7 +1966,10 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize {
 		
-		if (value != autoSize) __dirty = true;
+		if (value != autoSize) {
+			__dirty = true;
+			__dirtyBounds = true;
+		}
 		return autoSize = value;
 		
 	}
@@ -1968,7 +1977,10 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_background (value:Bool):Bool {
 		
-		if (value != background) __dirty = true;
+		if (value != background) {
+			__dirty = true;
+			__dirtyBounds = true;
+		}
 		return background = value;
 		
 	}
@@ -1984,7 +1996,10 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_border (value:Bool):Bool {
 		
-		if (value != border) __dirty = true;
+		if (value != border) {
+			__dirty = true;
+			__dirtyBounds = true;
+		}
 		return border = value;
 		
 	}
@@ -2006,6 +2021,28 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private function get_bounds ():Rectangle {
+		
+		if ( !__dirtyBounds )
+			return __bounds;
+		
+		if (autoSize != TextFieldAutoSize.NONE) {
+			
+			__bounds.width = (textWidth + 4) + ( border ? 1 : 0 );
+			__bounds.height = (textHeight + 4) + ( border ? 1 : 0 );
+
+		} else {
+			
+			__bounds.width = __width + ( border ? 1 : 0 );
+			__bounds.height = __height + ( border ? 1 : 0 );
+			
+		}
+		
+		__dirtyBounds = false;
+		
+		return __bounds;		
+		
+	}
 	
 	@:noCompletion private function get_caretPos ():Int {
 		
@@ -2032,7 +2069,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function get_height ():Float {
 		
-		return __height * scaleY;
+		return bounds.height;
 		
 	}
 	
@@ -2043,6 +2080,7 @@ class TextField extends InteractiveObject {
 			
 			__setTransformDirty ();
 			__dirty = true;
+			__dirtyBounds = true;
 			
 		}
 		
@@ -2063,7 +2101,11 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_htmlText (value:String):String {
 		
-		if (!__isHTML || __text != value) __dirty = true;
+		if (!__isHTML || __text != value) {
+			__dirty = true;
+			__dirtyBounds = true;
+		}
+		
 		__ranges = null;
 		__isHTML = true;
 		
@@ -2243,7 +2285,10 @@ class TextField extends InteractiveObject {
 		}	
 		#end
 		
-		if (__isHTML || __text != value) __dirty = true;
+		if (__isHTML || __text != value) {
+			__dirty = true;
+			__dirtyBounds = true;
+		}
 		__ranges = null;
 		__isHTML = false;
 		return __text = value;
@@ -2278,43 +2323,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_textWidth ():Float {
 		
-		#if (js && html5)
-		
-		if (__canvas != null) {
-			
-			var sizes = __measureText ();
-			var total:Float = 0;
-			
-			for (size in sizes) {
-				
-				total += size;
-				
-			}
-			
-			return total;
-			
-		} else if (__div != null) {
-			
-			return __div.clientWidth;
-			
-		} else {
-			
-			__measureTextWithDOM ();
-			return __measuredWidth;
-			
-		}
-		
-		#elseif (cpp || neko || nodejs)
-		
 		//return the largest width of any given single line
 		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
 		return __getLineWidth( -1);
-		
-		#else
-		
-		return 0;
-		
-		#end
 		
 	}
 	
@@ -2326,7 +2337,7 @@ class TextField extends InteractiveObject {
 		if (__canvas != null) {
 			
 			// TODO: Make this more accurate
-			return __textFormat.size * 1.185;
+			return __textFormat.size * 1.185 * numLines;
 			
 		} else if (__div != null) {
 			
@@ -2386,17 +2397,7 @@ class TextField extends InteractiveObject {
 	
 	override private function get_width ():Float {
 		
-		if (autoSize == TextFieldAutoSize.LEFT) {
-			
-			//return __width * scaleX;
-			return (textWidth + 4) * scaleX;
-			
-		} else {
-			
-			return __width * scaleX;
-			
-		}
-		
+		return bounds.width;
 	}
 	
 	
@@ -2406,6 +2407,7 @@ class TextField extends InteractiveObject {
 			
 			__setTransformDirty ();
 			__dirty = true;
+			__dirtyBounds = true;
 			
 		}
 		
@@ -2428,8 +2430,6 @@ class TextField extends InteractiveObject {
 		return wordWrap = value;
 		
 	}
-	
-	
 }
 
 

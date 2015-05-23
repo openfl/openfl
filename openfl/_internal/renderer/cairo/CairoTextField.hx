@@ -4,6 +4,7 @@ import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.cairo.CairoFontOptions;
 import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
 import lime.text.Font.NativeGlyphData;
 import lime.text.TextLayout;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -13,7 +14,6 @@ import openfl.display.Graphics;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextField;
-import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 
 @:access(openfl.text.TextField)
@@ -21,39 +21,44 @@ import openfl.text.TextFormat;
 
 class CairoTextField {
 		
-	public static function render (textField:TextField, renderSession:RenderSession):Void {
+	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 				
 		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
-				
-		var bounds = textField.getBounds( null );
 		
-		__render (textField, renderSession, bounds );
+		var bounds = textField.getBounds( null );
+				
+		if ( textField.__dirty )
+		{
+			__render (textField, renderSession, bounds );
+			textField.__dirty = false;
+		}
 		
 		if (textField.__cairo != null) {
 			
 			if (textField.__mask != null) {
-				
 				renderSession.maskManager.pushMask (textField.__mask);
-				
 			}
 			
 			var cairo = renderSession.cairo;
 			var scrollRect = textField.scrollRect;
-			
-			//context.globalAlpha = shape.__worldAlpha;
 			var transform = textField.__worldTransform;
 			
 			cairo.identityMatrix();
 			
 			if (renderSession.roundPixels) {
 				
-				cairo.translate( Math.round( bounds.x ), Math.round( bounds.y ) );
+				var matrix = transform.__toMatrix3 ();
+				matrix.tx = Math.round (matrix.tx);
+				matrix.ty = Math.round (matrix.ty);
+				cairo.matrix = matrix;
 				
 			} else {
 				
-				cairo.translate( bounds.x, bounds.y );
+				cairo.matrix = transform.__toMatrix3();
 			}			
 
+			cairo.scale( 1 / textField.scaleX, 1 / textField.scaleY );
+			
 			cairo.setSourceSurface (textField.__cairo.target, 0, 0 );
 			
 			if (scrollRect != null) {
@@ -79,135 +84,136 @@ class CairoTextField {
 	}
 	
 	private static inline function __render (textField:TextField, renderSession:RenderSession, bounds:Rectangle) {
+				
+		var format = textField.getTextFormat();
+		var cairo = textField.__cairo;
 		
-		if ( textField.__dirty )
+		// See if our surface is still the correct size
+		if (cairo != null) {
+			
+			var surface = cairo.target;
+			
+			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
+									
+				cairo.destroy ();
+				cairo = null;
+			}
+		}
+		
+		// See if we need to create a new surface
+		if (cairo == null) {
+			
+			var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height) );
+			
+			cairo = new Cairo (surface);
+			textField.__cairo = cairo;
+			surface.destroy ();			
+			
+			var options = new CairoFontOptions();
+			options.hintStyle = FULL;
+			options.hintMetrics = ON;
+			options.antialias = GOOD;
+			cairo.setFontOptions( options );
+		}
+
+		var font : Font = textField.__getFontInstance ( format );
+		
+		if ( textField.__cairoFont != null )
 		{
-			var format = textField.getTextFormat();
-			var cairo = textField.__cairo;
-			
-			// See if our surface is still the correct size
-			if (cairo != null) {
-				
-				var surface = cairo.target;
-				
-				if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
-										
-					cairo.destroy ();
-					cairo = null;
-				}
-			}
-			
-			// See if we need to create a new surface
-			if (cairo == null) {
-				
-				var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height) );
-
-				cairo = new Cairo (surface);
-				textField.__cairo = cairo;
-				surface.destroy ();				
-			}
-
-			var font : Font = textField.__getFontInstance ( format );
-			
-			if ( textField.__cairoFont != null )
+			if ( textField.__cairoFont.font != font )
 			{
-				if ( textField.__cairoFont.font != font )
-				{
-					textField.__cairoFont.destroy();
-					textField.__cairoFont = null;
-				}
+				textField.__cairoFont.destroy();
+				textField.__cairoFont = null;
 			}
+		}
+		
+		if ( textField.__cairoFont == null )
+		{
+			textField.__cairoFont = new CairoFont( font );
+		}
+		
+		cairo.setFontFace( textField.__cairoFont );
+		cairo.rectangle( 0.5, 0.5, Std.int( textField.width )-1, Std.int( textField.height )-1 );
+		
+		// Clear the surface
+		if ( !textField.background )
+		{
+			cairo.operator = SOURCE;
+			cairo.setSourceRGBA( 1, 1, 1, 0 );
+			cairo.fillPreserve();
+			cairo.operator = OVER;
+		}
+		else
+		{
+			var color = textField.backgroundColor;
+		
+			var r = ((color & 0xFF0000) >>> 16) / 0xFF;
+			var g = ((color & 0x00FF00) >>> 8) / 0xFF;
+			var b = (color & 0x0000FF) / 0xFF;
 			
-			if ( textField.__cairoFont == null )
-			{
-				textField.__cairoFont = new CairoFont( font );
-			}
+			cairo.setSourceRGB( r, g, b );
+			cairo.fillPreserve();
+		}
+		
+		if ( textField.border )
+		{
+			var color = textField.borderColor;
+		
+			var r = ((color & 0xFF0000) >>> 16) / 0xFF;
+			var g = ((color & 0x00FF00) >>> 8) / 0xFF;
+			var b = (color & 0x0000FF) / 0xFF;
 			
-			cairo.setFontFace( textField.__cairoFont );
-			cairo.rectangle( 0.5, 0.5, Std.int( bounds.width )-1, Std.int( bounds.height )-1 );
+			cairo.setSourceRGB( r, g, b );
+			cairo.lineWidth = 1;
+			cairo.stroke();
+		}
+		
+		if (textField.__text != null && textField.__text != "") {
 			
-			// Clear the surface
-			if ( !textField.background )
-			{
-				cairo.operator = SOURCE;
-				cairo.setSourceRGBA( 1, 1, 1, 0 );
-				cairo.fillPreserve();
-				cairo.operator = OVER;
-			}
-			else
-			{
-				var color = textField.backgroundColor;
+			var text = textField.text;
 			
-				var r = ((color & 0xFF0000) >>> 16) / 0xFF;
-				var g = ((color & 0x00FF00) >>> 8) / 0xFF;
-				var b = (color & 0x0000FF) / 0xFF;
+			if (textField.displayAsPassword) {
 				
-				cairo.setSourceRGB( r, g, b );
-				cairo.fillPreserve();
-			}
-			
-			if ( textField.border )
-			{
-				var color = textField.borderColor;
-			
-				var r = ((color & 0xFF0000) >>> 16) / 0xFF;
-				var g = ((color & 0x00FF00) >>> 8) / 0xFF;
-				var b = (color & 0x0000FF) / 0xFF;
+				var length = text.length;
+				var mask = "";
 				
-				cairo.setSourceRGB( r, g, b );
-				cairo.lineWidth = 1;
-				cairo.stroke();
-			}
-			
-			if (textField.__text != null && textField.__text != "") {
-				
-				var text = textField.text;
-				
-				if (textField.displayAsPassword) {
+				for (i in 0...length) {
 					
-					var length = text.length;
-					var mask = "";
-					
-					for (i in 0...length) {
-						
-						mask += "*";
-						
-					}
-					
-					text = mask;
+					mask += "*";
 					
 				}
 				
-				var measurements = textField.__measureText ();
+				text = mask;
 				
-				if (textField.__ranges == null) {
+			}
+			
+			var measurements = textField.__measureText ();
+			
+			if (textField.__ranges == null) {
+				
+				renderText (textField, text, textField.__textFormat, 2, bounds );
+				
+			} else {
+				
+				var currentIndex = 0;
+				var range;
+				var offsetX = 2.0;
+				
+				for (i in 0...textField.__ranges.length) {
 					
-					renderText (textField, text, textField.__textFormat, 2 );
+					range = textField.__ranges[i];
 					
-				} else {
-					
-					var currentIndex = 0;
-					var range;
-					var offsetX = 2.0;
-					
-					for (i in 0...textField.__ranges.length) {
-						
-						range = textField.__ranges[i];
-						
-						renderText (textField, text.substring (range.start, range.end), range.format, offsetX);
-						offsetX += measurements[i];
-						
-					}
+					renderText (textField, text.substring (range.start, range.end), range.format, offsetX, bounds);
+					offsetX += measurements[i];
 					
 				}
 				
 			}
-
-			textField.__dirty = false;
+			
 		}
 	}
 	
-	private static function renderText( textField : TextField, text : String, format : TextFormat, offsetX:Float )
+	private static function renderText( textField : TextField, text : String, format : TextFormat, offsetX:Float, bounds:Rectangle )
 	{
 		var font : Font = textField.__getFontInstance ( format );
 		
@@ -234,7 +240,6 @@ class CairoTextField {
 			}
 				
 			var cairo = textField.__cairo;
-					
 			cairo.setFontSize( size );
 			
 			var color = format.color;
@@ -254,8 +259,8 @@ class CairoTextField {
 				x += switch (format.align) {
 					
 					case LEFT, JUSTIFY: 0;	
-					case CENTER: ((textField.__width - 4) - tlm.width) / 2;
-					case RIGHT:  ((textField.__width - 4) - tlm.width);
+					case CENTER: ((textField.width-4) - tlm.width) / 2;
+					case RIGHT:  ((textField.width-4) - tlm.width);
 					
 				}
 				
