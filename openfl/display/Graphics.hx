@@ -65,6 +65,9 @@ class Graphics {
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#end
 	
+	#if html5
+		@:noCompletion public var __drawTilesMode:Bool = false;
+	#end
 	
 
 	public function new () {
@@ -648,6 +651,10 @@ class Graphics {
 		
 		__inflateBounds (0, 0);
 		__inflateBounds (Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
+		
+		#if html5
+			__drawTilesMode = true;
+		#end
 		
 		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
 		

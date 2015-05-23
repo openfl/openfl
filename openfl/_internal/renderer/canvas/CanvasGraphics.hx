@@ -837,7 +837,7 @@ class CanvasGraphics {
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 									
 									context.save ();
-									context.translate (tileData[index], tileData[index + 1]);
+									context.translate (tileData[index] - offsetX, tileData[index + 1] - offsetY);
 									
 									if (useRotation) {
 										
