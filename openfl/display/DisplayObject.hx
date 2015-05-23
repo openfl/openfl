@@ -795,6 +795,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (event.bubbles && parent != null && parent != this) {
 			
 			event.eventPhase = EventPhase.BUBBLING_PHASE;
+			
+			if (event.target == null) {
+				
+				event.target = this;
+				
+			}
+			
 			parent.dispatchEvent (event);
 			
 		}

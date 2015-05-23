@@ -1,7 +1,6 @@
 package openfl.events; #if !flash #if !openfl_legacy
 
 
-import gfx.reels.Reel;
 import openfl.events.EventPhase;
 import openfl.events.IEventDispatcher;
 
@@ -254,7 +253,14 @@ class EventDispatcher implements IEventDispatcher {
 	 */
 	public function dispatchEvent (event:Event):Bool {
 		
-		if (event == null) return false;
+		if (__eventMap == null || event == null) return false;
+		
+		var type = event.type;
+		
+		var list = __eventMap.get (type);
+		if (list == null) return false;
+		
+		__dispatching.set (type, true);
 		
 		if (event.target == null) {
 			
@@ -270,14 +276,6 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (__eventMap == null) return false;
-		
-		var type = event.type;
-		
-		var list = __eventMap.get (type);
-		if (list == null) return false;
-		
-		__dispatching.set (type, true);
 		event.currentTarget = this;
 		
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
