@@ -27,6 +27,7 @@ class CairoTextField {
 	
 	public static function render ( textField:TextField, renderSession:RenderSession ) {
 							
+		#if lime_cairo
 		if ( !textField.__dirty ) return;
 
 		var bounds = textField.getBounds( null );
@@ -165,10 +166,13 @@ class CairoTextField {
 		
 		graphics.__bitmap.__image.dirty = true;
 		textField.__dirty = false;
+		
+		#end
 	}
 	
 	private static function renderText( textField : TextField, text : String, format : TextFormat, offsetX:Float, bounds:Rectangle )
 	{
+		#if lime_cairo
 		var font : Font = textField.__getFontInstance ( format );
 		
 		if (font != null && format.size != null) {
@@ -221,6 +225,6 @@ class CairoTextField {
 		
 		}
 		
-		
+		#end
 	}
 }

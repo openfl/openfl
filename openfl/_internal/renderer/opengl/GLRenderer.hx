@@ -297,6 +297,7 @@ class GLRenderer extends AbstractRenderer {
 		
 	public static function renderCairo( displayObject:DisplayObject, renderSession:RenderSession ) : Void {
 		
+		#if lime_cairo
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if ( displayObject.__graphics == null || displayObject.__graphics.__bitmap == null ) return;
@@ -312,6 +313,7 @@ class GLRenderer extends AbstractRenderer {
 		local = local.mult( displayObject.__worldTransform );
 		
 		renderSession.spriteBatch.renderBitmapData( bitmap, true, local, displayObject.__worldColorTransform, displayObject.__worldAlpha, displayObject.__blendMode, NEVER );
+		#end
 	}
 	
 	public function renderDisplayObject (displayObject:DisplayObject, projection:Point, buffer:GLFramebuffer = null):Void {

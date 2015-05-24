@@ -858,6 +858,7 @@ class CairoGraphics {
 	
 	public static function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		CairoGraphics.graphics = shape.__graphics;
 		
 		if (!graphics.__dirty) return;
@@ -981,6 +982,8 @@ class CairoGraphics {
 	
 		graphics.__bitmap.__image.dirty = true;
 		graphics.__dirty = false;
+		
+		#end
 		
 	}
 	

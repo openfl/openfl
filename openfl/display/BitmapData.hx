@@ -948,12 +948,16 @@ class BitmapData implements IBitmapDrawable {
 			var textureImage = __image;
 			
 			if ( __bgra ) {
+				
+				#if lime_cairo
 				if ( Lambda.has( gl.getSupportedExtensions(), "GL_EXT_bgra" ) )
 				{
 					format = gl.BGRA_EXT;
 				}
 				else
 				{
+				#end
+				
 					textureImage = new Image( null, 0, 0, __image.width, __image.height );
 					var rect = new lime.math.Rectangle( 0, 0, __image.width, __image.height );
 					var point = new Vector2( 0, 0 );
@@ -962,7 +966,10 @@ class BitmapData implements IBitmapDrawable {
 					textureImage.copyChannel( __image, rect, point, ImageChannel.GREEN, ImageChannel.GREEN );
 					textureImage.copyChannel( __image, rect, point, ImageChannel.BLUE, ImageChannel.RED );
 					textureImage.copyChannel( __image, rect, point, ImageChannel.ALPHA, ImageChannel.ALPHA );
+					
+				#if lime_cairo
 				}
+				#end
 			}
 			
 			if (!textureImage.premultiplied && !textureImage.transparent) {
