@@ -10,6 +10,7 @@ import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.ColorMatrix;
+import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
@@ -137,6 +138,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
 	
+	@:noCompletion private var __bgra:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
@@ -884,7 +886,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getSurface ():CairoSurface {
+	public function getSurface ( clone:Bool = true ):CairoSurface {
 		
 		if (!__isValid) return null;
 		
@@ -902,7 +904,11 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			__surfaceImage = __image.clone ();
+			if( clone )
+				__surfaceImage = __image.clone ();
+			else
+				__surfaceImage = __image;
+				
 			__surfaceImage.format = BGRA;
 			__surfaceImage.premultiplied = true;
 			__surface = CairoSurface.fromImage (__surfaceImage);
@@ -940,6 +946,24 @@ class BitmapData implements IBitmapDrawable {
 			var format = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			var textureImage = __image;
+			
+			if ( __bgra ) {
+				if ( Lambda.has( gl.getSupportedExtensions(), "GL_EXT_bgra" ) )
+				{
+					format = gl.BGRA_EXT;
+				}
+				else
+				{
+					textureImage = new Image( null, 0, 0, __image.width, __image.height );
+					var rect = new lime.math.Rectangle( 0, 0, __image.width, __image.height );
+					var point = new Vector2( 0, 0 );
+					
+					textureImage.copyChannel( __image, rect, point, ImageChannel.RED, ImageChannel.BLUE );
+					textureImage.copyChannel( __image, rect, point, ImageChannel.GREEN, ImageChannel.GREEN );
+					textureImage.copyChannel( __image, rect, point, ImageChannel.BLUE, ImageChannel.RED );
+					textureImage.copyChannel( __image, rect, point, ImageChannel.ALPHA, ImageChannel.ALPHA );
+				}
+			}
 			
 			if (!textureImage.premultiplied && !textureImage.transparent) {
 				

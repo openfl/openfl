@@ -10,6 +10,7 @@ import openfl.display.GraphicsPathCommand;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import lime.graphics.Image;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
@@ -46,13 +47,14 @@ class Graphics {
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
+	@:noCompletion public var __hardware:Bool;
 	@:noCompletion private var __bounds:Rectangle;
-	@:noCompletion private var __cairo:Cairo;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
 	@:noCompletion private var __drawPaths:Array<DrawPath>;
 	@:noCompletion private var __halfStrokeWidth:Float;
+	@:noCompletion private var __image:Image;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __transformDirty:Bool;
@@ -63,6 +65,9 @@ class Graphics {
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
+	#else
+	@:noCompletion private var __cairo:Cairo;
+	@:noCompletion private var __bitmap:BitmapData;
 	#end
 	
 	
@@ -73,6 +78,7 @@ class Graphics {
 		__halfStrokeWidth = 0;
 		__positionX = 0;
 		__positionY = 0;
+		__hardware = false;
 		
 		#if (js && html5)
 		moveTo( 0, 0);
@@ -651,6 +657,7 @@ class Graphics {
 		
 		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
 		
+		__hardware = true;
 		__dirty = true;
 		__visible = true;
 		
@@ -712,7 +719,7 @@ class Graphics {
 		__commands.push (DrawTriangles(vertices, indices, uvtData, culling, colors, blendMode));
 		__dirty = true;
 		__visible = true;
-		
+		__hardware = true;
 	}
 	
 	

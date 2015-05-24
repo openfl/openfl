@@ -10,83 +10,30 @@ import lime.text.TextLayout;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import openfl.text.TextLineMetrics;
 
+@:access(openfl.display.Graphics)
+@:access(openfl.display.BitmapData)
 @:access(openfl.text.TextField)
 @:access(openfl.geom.Matrix)
 
 class CairoTextField {
-		
-	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
-				
-		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
-		
-		var bounds = textField.getBounds( null );
-				
-		if ( textField.__dirty )
-		{
-			__render (textField, renderSession, bounds );
-			textField.__dirty = false;
-		}
-		
-		if (textField.__cairo != null) {
-			
-			if (textField.__mask != null) {
-				renderSession.maskManager.pushMask (textField.__mask);
-			}
-			
-			var cairo = renderSession.cairo;
-			var scrollRect = textField.scrollRect;
-			var transform = textField.__worldTransform;
-			
-			cairo.identityMatrix();
-			
-			if (renderSession.roundPixels) {
-				
-				var matrix = transform.__toMatrix3 ();
-				matrix.tx = Math.round (matrix.tx);
-				matrix.ty = Math.round (matrix.ty);
-				cairo.matrix = matrix;
-				
-			} else {
-				
-				cairo.matrix = transform.__toMatrix3();
-			}			
-
-			cairo.scale( 1 / textField.scaleX, 1 / textField.scaleY );
-			
-			cairo.setSourceSurface (textField.__cairo.target, 0, 0 );
-			
-			if (scrollRect != null) {
-				
-				cairo.pushGroup ();
-				cairo.newPath ();
-				cairo.rectangle (bounds.x + scrollRect.x, bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
-				cairo.fill ();
-				cairo.popGroupToSource ();
-				
-			}
-			
-			cairo.paintWithAlpha (textField.__worldAlpha);
-			
-			if (textField.__mask != null) {
-				
-				renderSession.maskManager.popMask ();
-				
-			}
-			
-		}
-		
-	}
 	
-	private static inline function __render (textField:TextField, renderSession:RenderSession, bounds:Rectangle) {
-				
+	public static function render ( textField:TextField, renderSession:RenderSession ) {
+							
+		if ( !textField.__dirty ) return;
+
+		var bounds = textField.getBounds( null );
 		var format = textField.getTextFormat();
-		var cairo = textField.__cairo;
+		
+		var graphics : Graphics = textField.__graphics;
+		var cairo : Cairo = graphics.__cairo;
 		
 		// See if our surface is still the correct size
 		if (cairo != null) {
@@ -103,11 +50,15 @@ class CairoTextField {
 		// See if we need to create a new surface
 		if (cairo == null) {
 			
-			var surface = new CairoSurface (ARGB32, Math.ceil (bounds.width), Math.ceil (bounds.height) );
+			var bitmap = new BitmapData( Math.ceil (bounds.width), Math.ceil (bounds.height), true );
+			var surface = CairoSurface.fromImage( bitmap.__image ); 
+			graphics.__cairo = new Cairo (surface);
+			surface.destroy ();
 			
-			cairo = new Cairo (surface);
-			textField.__cairo = cairo;
-			surface.destroy ();			
+			graphics.__bitmap = bitmap;		
+			graphics.__bounds = new Rectangle( 0, 0, bounds.width, bounds.height );
+			
+			cairo = graphics.__cairo;
 			
 			var options = new CairoFontOptions();
 			options.hintStyle = FULL;
@@ -140,7 +91,7 @@ class CairoTextField {
 		{
 			cairo.operator = SOURCE;
 			cairo.setSourceRGBA( 1, 1, 1, 0 );
-			cairo.fillPreserve();
+			cairo.paint();
 			cairo.operator = OVER;
 		}
 		else
@@ -211,6 +162,9 @@ class CairoTextField {
 			}
 			
 		}
+		
+		graphics.__bitmap.__image.dirty = true;
+		textField.__dirty = false;
 	}
 	
 	private static function renderText( textField : TextField, text : String, format : TextFormat, offsetX:Float, bounds:Rectangle )
@@ -220,11 +174,9 @@ class CairoTextField {
 		if (font != null && format.size != null) {
 			
 			var graphics : Graphics = textField.__graphics;
-
-			textField.__textLayout.font = font;
 						
 			var tlm = textField.getLineMetrics(0);
-			
+
 			var x : Float = offsetX;
 			var y : Float = 2 + tlm.ascent;
 			
@@ -235,11 +187,7 @@ class CairoTextField {
 			var line_i:Int = 0;
 			var oldX = x;
 			
-			if (textField.__textLayout == null) {
-				textField.__textLayout = new TextLayout ();
-			}
-				
-			var cairo = textField.__cairo;
+			var cairo = textField.__graphics.__cairo;
 			cairo.setFontSize( size );
 			
 			var color = format.color;
@@ -252,15 +200,15 @@ class CairoTextField {
 			
 			for (line in lines)
 			{
-				tlm = textField.getLineMetrics (line_i);
+				//tlm = textField.getLineMetrics (line_i);
 				
 				x = oldX;
 				
 				x += switch (format.align) {
 					
 					case LEFT, JUSTIFY: 0;	
-					case CENTER: ((textField.width-4) - tlm.width) / 2;
-					case RIGHT:  ((textField.width-4) - tlm.width);
+					case CENTER: ((textField.width-4) - textField.__getLineWidth( line_i ) ) / 2;
+					case RIGHT:  ((textField.width-4) - textField.__getLineWidth( line_i ) );
 					
 				}
 				

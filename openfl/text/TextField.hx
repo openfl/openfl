@@ -12,10 +12,11 @@ import lime.system.System;
 import lime.text.TextLayout;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
-import openfl._internal.renderer.cairo.CairoShape;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
@@ -596,7 +597,6 @@ class TextField extends InteractiveObject {
 	private var __hiddenInput:InputElement;
 	#end
 	
-	@:noCompletion public var __cairo:Cairo;
 	@:noCompletion public var __cairoFont:CairoFont;
 	
 	/**
@@ -616,6 +616,7 @@ class TextField extends InteractiveObject {
 		__text = "";
 		__dirtyBounds = true;
 		__bounds = new Rectangle( 0, 0, 0, 0 );
+		__graphics = new Graphics();
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
@@ -1707,7 +1708,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
 		
-		CairoTextField.render (this, renderSession);
+		CairoRenderer.renderTextField (this, renderSession);
 	}
 	
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
@@ -1726,7 +1727,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
-		GLTextField.render (this, renderSession);
+		CairoTextField.render( this, renderSession );
+		GLRenderer.renderCairo( this, renderSession );
 		
 	}
 	
@@ -1979,7 +1981,6 @@ class TextField extends InteractiveObject {
 		
 		if (value != background) {
 			__dirty = true;
-			__dirtyBounds = true;
 		}
 		return background = value;
 		
