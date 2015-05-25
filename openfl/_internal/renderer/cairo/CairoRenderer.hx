@@ -38,8 +38,6 @@ class CairoRenderer extends AbstractRenderer {
 		renderSession.maskManager = new CairoMaskManager (renderSession);
 	}	
 	
-	
-	
 	public override function render (stage:Stage):Void {
 		
 		cairo.identityMatrix ();

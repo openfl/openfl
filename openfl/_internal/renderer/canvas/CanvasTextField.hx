@@ -48,6 +48,8 @@ class CanvasTextField {
 				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				
 			}
+			
+			context.scale( 1 / textField.scaleX, 1 / textField.scaleY );
 						
 			if (scrollRect == null) {
 				

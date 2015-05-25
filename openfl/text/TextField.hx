@@ -731,15 +731,13 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		var height = textHeight;
-		
 		var lineWidth = __getLineWidth(lineIndex);
-		var lineHeight = __getLineMetric(lineIndex, LINE_HEIGHT);
 		
 		var ascender = __getLineMetric(lineIndex, ASCENDER);
 		var descender = __getLineMetric(lineIndex, DESCENDER);
-		
 		var leading = __getLineMetric(lineIndex, LEADING);
+		
+		var lineHeight = ascender + descender + leading;
 		
 		var margin = switch(__textFormat.align) {
 			case LEFT, JUSTIFY: 2;
@@ -1730,6 +1728,7 @@ class TextField extends InteractiveObject {
 		CairoTextField.render( this, renderSession );
 		GLRenderer.renderCairo( this, renderSession );
 		
+		// GLTextField.render( this, renderSession );
 	}
 	
 	
@@ -2034,8 +2033,8 @@ class TextField extends InteractiveObject {
 
 		} else {
 			
-			__bounds.width = __width + ( border ? 1 : 0 );
-			__bounds.height = __height + ( border ? 1 : 0 );
+			__bounds.width = __width;
+			__bounds.height = __height;
 			
 		}
 		
@@ -2359,9 +2358,9 @@ class TextField extends InteractiveObject {
 		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
 		var th = 0.0;
 		for (i in 0...numLines) {
-			th += __getLineMetric(i, LINE_HEIGHT) + __getLineMetric( i, DESCENDER );
-			if (i == numLines - 1) {
-				th -= __getLineMetric(i, LEADING);
+			th += __getLineMetric(i, ASCENDER) + __getLineMetric( i, DESCENDER );
+			if (i != numLines - 1) {
+				th += __getLineMetric(i, LEADING);
 			}
 		}
 		return th;

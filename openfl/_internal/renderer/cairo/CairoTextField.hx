@@ -204,7 +204,7 @@ class CairoTextField {
 			
 			for (line in lines)
 			{
-				//tlm = textField.getLineMetrics (line_i);
+				tlm = textField.getLineMetrics (line_i);
 				
 				x = oldX;
 				
@@ -219,7 +219,7 @@ class CairoTextField {
 				cairo.moveTo( x, y );
 				cairo.showText( line );
 				
-				y += Math.round( tlm.height + tlm.descent + format.leading - 1 );
+				y += Math.round( tlm.height );
 				line_i++;
 			}
 		
