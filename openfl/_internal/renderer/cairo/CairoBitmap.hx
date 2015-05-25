@@ -5,6 +5,7 @@ package openfl._internal.renderer.cairo;
 import cpp.Pointer;
 #end
 import lime.graphics.cairo.CairoFormat;
+import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
@@ -37,7 +38,7 @@ class CairoBitmap {
 			
 			//context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__worldTransform;
-			//var scrollRect = bitmap.scrollRect;
+			var scrollRect = bitmap.scrollRect;
 			
 			if (renderSession.roundPixels) {
 				
@@ -65,14 +66,19 @@ class CairoBitmap {
 			var surface = bitmap.bitmapData.getSurface ();
 			
 			if (surface != null) {
-			
-			//if (scrollRect == null) {
 				
-				//cairo.setSourceRGB (1, 0, 0);
-				//cairo.newPath ();
-				//trace (image.width);
-				//cairo.rectangle (0, 0, image.width, image.height);
 				cairo.setSourceSurface (surface, 0, 0);
+				
+				if (scrollRect != null) {
+					
+					cairo.pushGroup ();
+					cairo.setSourceSurface (surface, 0, 0);
+					cairo.newPath ();
+					cairo.rectangle (scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+					cairo.fill ();
+					cairo.popGroupToSource ();
+					
+				}
 				
 				if (bitmap.__worldAlpha == 1) {
 					
@@ -84,14 +90,6 @@ class CairoBitmap {
 					
 				}
 				
-				//context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
-				
-			//} else {
-				//
-				//context.drawImage (bitmap.bitmapData.__image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				//
-			//}
-			
 			}
 			
 			//if (!bitmap.smoothing) {

@@ -4,9 +4,11 @@ package openfl.errors; #if !flash
 class SecurityError extends Error {
 	
 	
-	public function new (inMessage:String = "") {
+	public function new (message:String = "") {
 		
-		super (inMessage, 0);
+		super (message, 0);
+		
+		name = "SecurityError";
 		
 	}
 	

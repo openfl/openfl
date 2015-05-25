@@ -205,7 +205,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * the table show <code>blendMode</code> values applied to a circular display
 	 * object(2) superimposed on another display object(1).</p>
 	 */
-	public var blendMode:BlendMode;
+	public var blendMode(default, set):BlendMode;
 	
 	/**
 	 * If set to <code>true</code>, NME will use the software renderer to cache
@@ -712,6 +712,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
 	
 	@:noCompletion private var __alpha:Float;
+	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
@@ -794,6 +795,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (event.bubbles && parent != null && parent != this) {
 			
 			event.eventPhase = EventPhase.BUBBLING_PHASE;
+			
+			if (event.target == null) {
+				
+				event.target = this;
+				
+			}
+			
 			parent.dispatchEvent (event);
 			
 		}
@@ -1235,6 +1243,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		}
 		
+		var sr = scrollRect;
+		
 		if (parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
@@ -1254,17 +1264,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.b = a00 * b01 + a01 * b11;
 			__worldTransform.c = a10 * b00 + a11 * b10;
 			__worldTransform.d = a10 * b01 + a11 * b11;
+			__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
+			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
 			
-			if (scrollRect == null) {
-				
-				__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
-				__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
-				
-			} else {
-				
-				__worldTransform.tx = (x - scrollRect.x) * b00 + (y - scrollRect.y) * b10 + parentTransform.tx;
-				__worldTransform.ty = (x - scrollRect.x) * b01 + (y - scrollRect.y) * b11 + parentTransform.ty;
-				
+			if (sr != null) {
+				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					sr = sr.transform(__worldTransform);
+				}
+				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
+				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
 			}
 			
 			if(__isMask) __maskCached = false;
@@ -1275,17 +1283,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.c = -__rotationSine * scaleY;
 			__worldTransform.b = __rotationSine * scaleX;
 			__worldTransform.d = __rotationCosine * scaleY;
+			__worldTransform.tx = x;
+			__worldTransform.ty = y;
 			
-			if (scrollRect == null) {
-				
-				__worldTransform.tx = x;
-				__worldTransform.ty = y;
-				
-			} else {
-				
-				__worldTransform.tx = y - scrollRect.x;
+			if (sr != null) {
+				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					sr = sr.transform(__worldTransform);
+				}
+				__worldTransform.tx = x - scrollRect.x;
 				__worldTransform.ty = y - scrollRect.y;
-				
 			}
 			
 		}
@@ -1336,6 +1342,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__worldColorTransform.__combine(parent.__worldColorTransform);
+				
+				if ((blendMode == null || blendMode == NORMAL)) {
+					
+					__blendMode = parent.__blendMode;
+				}
 				
 				#else
 				
@@ -1463,6 +1474,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (value != __alpha) __setRenderDirty ();
 		return __alpha = value;
+		
+	}
+	
+	
+	@:noCompletion private function set_blendMode (value:BlendMode):BlendMode {
+		
+		__blendMode = value;
+		return blendMode = value;
 		
 	}
 	

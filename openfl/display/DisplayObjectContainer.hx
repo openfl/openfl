@@ -635,7 +635,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (notifyChilden) {
+		var result = super.__broadcast (event, notifyChilden);
+		
+		if (!event.__isCancelled && notifyChilden) {
 			
 			for (child in __children) {
 				
@@ -651,7 +653,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		return super.__broadcast (event, notifyChilden);
+		return result;
 		
 	}
 	
@@ -775,12 +777,12 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderSession);
 		
-		//if (scrollRect != null) {
-			//
-			//renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			//
-		//}
-		//
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			
+		}
+		
 		if (__mask != null) {
 			
 			renderSession.maskManager.pushMask (__mask);
@@ -800,12 +802,12 @@ class DisplayObjectContainer extends InteractiveObject {
 			renderSession.maskManager.popMask ();
 			
 		}
-		//
-		//if (scrollRect != null) {
-			//
-			//renderSession.maskManager.popMask ();
-			//
-		//}
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
 		
 	}
 	
@@ -818,16 +820,16 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		//var bounds = new Rectangle ();
+		//__getLocalBounds (bounds);
+		//
+		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
 		
-		renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
-		
-		/*for (child in __children) {
+		for (child in __children) {
 			
-			child.__renderMask (renderSession);
+			child.__renderCairoMask (renderSession);
 			
-		}*/
+		}
 		
 	}
 	
@@ -948,6 +950,16 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		if (scrollRect != null) {
+			renderSession.spriteBatch.stop();
+			var m = __worldTransform.clone();
+			var clip = scrollRect.transform(m);
+			clip.y = renderSession.renderer.height - clip.y - clip.height;
+			
+			renderSession.spriteBatch.start(clip);
+		}
+		
+		
 		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
 		
 		if (masked) {
@@ -973,6 +985,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			renderSession.maskManager.popMask ();
 			renderSession.spriteBatch.start ();
 			
+		}
+		
+		if (scrollRect != null) {
+			renderSession.spriteBatch.stop();
+			renderSession.spriteBatch.start();
 		}
 		
 		__removedChildren = [];

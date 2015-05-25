@@ -66,6 +66,7 @@ class Graphics {
 	#end
 	
 	
+
 	public function new () {
 		
 		__commands = new Array ();
@@ -276,16 +277,54 @@ class Graphics {
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
-		// TODO: Is this the right calculation for bounds?
+		// Calculate the bounds of the bezier function 
+		var ix1, iy1, ix2, iy2;
+			
+		ix1 = anchorX;
+		ix2 = anchorX;
 		
-		__inflateBounds (controlX1, controlY1);
-		__inflateBounds (controlX2, controlY2);
+		if ( !( ( (controlX1 < anchorX && controlX1 > __positionX) || (controlX1 > anchorX && controlX1 < __positionX) ) && ( (controlX2 < anchorX && controlX2 > __positionX) || (controlX2 > anchorX && controlX2 < __positionX) ) ) )
+		{
+			var u = (2 * __positionX - 4 * controlX1 + 2 * controlX2 );
+			var v = (controlX1 - __positionX);
+			var w = ( -__positionX + 3 * controlX1 + anchorX - 3 * controlX2 );
+			
+			var t1 = ( -u + Math.sqrt( u * u - 4 * v * w)) / (2 * w);
+			var t2 = ( -u - Math.sqrt( u * u - 4 * v * w)) / (2 * w);
+			
+			if ( t1 > 0 && t1 < 1 )
+				ix1 = __calculateBezierCubicPoint( t1, __positionX, controlX1, controlX2, anchorX );
+			
+			if( t2 > 0 && t2 < 1 )
+				ix2 = __calculateBezierCubicPoint( t2, __positionX, controlX1, controlX2, anchorX );
+		}
+		
+		iy1 = anchorY;
+		iy2 = anchorY;
+		
+		if ( !( ( (controlY1 < anchorY && controlY1 > __positionX) || (controlY1 > anchorY && controlY1 < __positionX) ) && ( (controlY2 < anchorY && controlY2 > __positionX) || (controlY2 > anchorY && controlY2 < __positionX) ) ) )
+		{
+			var u = (2 * __positionX - 4 * controlY1 + 2 * controlY2 );
+			var v = (controlY1 - __positionX);
+			var w = ( -__positionX + 3 * controlY1 + anchorY - 3 * controlY2 );
+			
+			var t1 = ( -u + Math.sqrt( u * u - 4 * v * w)) / (2 * w);
+			var t2 = ( -u - Math.sqrt( u * u - 4 * v * w)) / (2 * w);
+			
+			if ( t1 > 0 && t1 < 1 )
+				iy1 = __calculateBezierCubicPoint( t1, __positionX, controlY1, controlY2, anchorY );
+			
+			if( t2 > 0 && t2 < 1 )
+				iy2 = __calculateBezierCubicPoint( t2, __positionX, controlY1, controlY2, anchorY );
+		}
+
+		__inflateBounds (ix1 - __halfStrokeWidth, iy1 - __halfStrokeWidth);
+		__inflateBounds (ix1 + __halfStrokeWidth, iy1 + __halfStrokeWidth);
+		__inflateBounds (ix2 - __halfStrokeWidth, iy2 - __halfStrokeWidth);
+		__inflateBounds (ix2 + __halfStrokeWidth, iy2 + __halfStrokeWidth);
 		
 		__positionX = anchorX;
 		__positionY = anchorY;
-		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
 		__commands.push (CubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY));
 		
@@ -329,22 +368,40 @@ class Graphics {
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
-		// TODO: Be a little less lenient in canvas size?
+		// Calculate the bounds of the bezier function 
+		var ix, iy;
 		
-		__inflateBounds (controlX, controlY);
+		if ( (controlX < anchorX && controlX > __positionX) || (controlX > anchorX && controlX < __positionX) )
+		{
+			ix = anchorX;
+		}
+		else
+		{
+			var tx = ((__positionX - controlX) / (__positionX - 2 * controlX + anchorX));
+			ix = __calculateBezierQuadPoint( tx, __positionX, controlX, anchorX );
+		}
+		
+		if ( (controlY < anchorY && controlY > __positionY) || (controlY > anchorY && controlY < __positionY) )
+		{
+			iy = anchorY;
+		}
+		else
+		{
+			var ty = ((__positionY - controlY) / (__positionY - 2*controlY + anchorY));
+			iy = __calculateBezierQuadPoint( ty, __positionY, controlY, anchorY );
+		}
+		
+		__inflateBounds (ix - __halfStrokeWidth, iy - __halfStrokeWidth);
+		__inflateBounds (ix + __halfStrokeWidth, iy + __halfStrokeWidth);
 		
 		__positionX = anchorX;
 		__positionY = anchorY;
-		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
 		__commands.push (CurveTo (controlX, controlY, anchorX, anchorY));
 		
 		__dirty = true;
 		
 	}
-	
 	
 	/**
 	 * Draws a circle. Set the line style, fill, or both before you call the
@@ -708,7 +765,7 @@ class Graphics {
 	 */
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.lineBitmapStyle");
+		__commands.push (LineBitmapStyle (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
 		
 	}
 	
@@ -767,7 +824,7 @@ class Graphics {
 	 */
 	public function lineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.lineGradientStyle");
+		__commands.push (LineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));	
 		
 	}
 	
@@ -913,7 +970,7 @@ class Graphics {
 	 */
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
-		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness : __halfStrokeWidth;
+		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness/2 : __halfStrokeWidth;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
@@ -976,6 +1033,15 @@ class Graphics {
 		
 	}
 	
+	@:noCompletion private function __calculateBezierQuadPoint( t:Float, p1:Float, p2:Float, p3:Float ) {
+		var iT = 1 - t;
+		return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
+	}
+	
+	@:noCompletion private function __calculateBezierCubicPoint( t:Float, p1:Float, p2:Float, p3:Float, p4:Float ) {
+		var iT = 1 - t;
+		return p1 * (iT * iT * iT) + 3 * p2 * t * (iT * iT) + 3 * p3 * iT * ( t * t ) + p4 * ( t * t * t );
+	}
 	
 	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
@@ -997,7 +1063,6 @@ class Graphics {
 		return (x > bounds.x && y > bounds.y && x <= bounds.right && y <= bounds.bottom);
 		
 	}
-	
 	
 	@:noCompletion private function __inflateBounds (x:Float, y:Float):Void {
 		
@@ -1066,6 +1131,8 @@ class Graphics {
 	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
+	LineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool);
+	LineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>);
 	LineTo (x:Float, y:Float);
 	MoveTo (x:Float, y:Float);
 	DrawPathC(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding);

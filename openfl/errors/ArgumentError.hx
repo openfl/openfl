@@ -4,9 +4,11 @@ package openfl.errors; #if !flash
 class ArgumentError extends Error {
 	
 	
-	public function new (inMessage:String = "") {
+	public function new (message:String = "") {
 		
-		super (inMessage);
+		super (message);
+		
+		name = "ArgumentError";
 		
 	}
 	
