@@ -1037,16 +1037,14 @@ class TextField extends InteractiveObject {
 		font += format.size + "px";
 		font += "/" + (format.size + format.leading) + "px ";
 		
-		font += "'" + switch (format.font) {
+		font += "" + switch (format.font) {
 			
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: format.font;
+			default: "'" + format.font + "'";
 			
 		}
-		
-		font += "'";
 		
 		return font;
 		

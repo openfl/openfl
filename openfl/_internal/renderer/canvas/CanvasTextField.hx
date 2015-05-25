@@ -160,6 +160,11 @@ class CanvasTextField {
 			
 		}
 		
+		var textWidth = textField.textWidth;
+		var width = textField.width;
+		
+		context.font = textField.__getFont( format );
+		
 		for (line in lines) {
 			
 			switch (format.align) {
@@ -167,18 +172,17 @@ class CanvasTextField {
 				case TextFormatAlign.CENTER:
 					
 					context.textAlign = "center";
-					
-					context.fillText (line, offsetX + textField.width / 2, 2 + yOffset, textField.textWidth );
+					context.fillText (line, offsetX + width / 2, 2 + yOffset, textWidth );
 					
 				case TextFormatAlign.RIGHT:
 					
 					context.textAlign = "end";
-					context.fillText (line, offsetX + textField.width - 2, 2 + yOffset, textField.textWidth );
+					context.fillText (line, offsetX + width - 2, 2 + yOffset, textWidth );
 					
 				default:
 					
 					context.textAlign = "start";
-					context.fillText (line, 2 + offsetX, 2 + yOffset, textField.textWidth );
+					context.fillText (line, 2 + offsetX, 2 + yOffset, textWidth );
 					
 			}
 			
