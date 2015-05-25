@@ -2347,7 +2347,7 @@ class TextField extends InteractiveObject {
 		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
 		var th = 0.0;
 		for (i in 0...numLines) {
-			th += __getLineMetric(i, LINE_HEIGHT) + __getLineMetric( i, DESCENDER );
+			th += __getLineMetric(i, ASCENDER) + __getLineMetric( i, DESCENDER );
 			if (i == numLines - 1) {
 				th -= __getLineMetric(i, LEADING);
 			}
