@@ -84,8 +84,7 @@ class PathBuiler {
 			var ey = __currentPath.points[l - 1];
 			
 			if (!(sx == ex && sy == ey)) {
-				__currentPath.points.push (sx);
-				__currentPath.points.push (sy);
+				lineTo(sx, sy);
 			}
 		}
 	}
@@ -111,8 +110,22 @@ class PathBuiler {
 	}
 	
 	private static inline function lineTo (x:Float, y:Float) {
-		__currentPath.points.push (x);
-		__currentPath.points.push (y);
+		var points = __currentPath.points;
+		var push_point:Bool = true;
+
+		// Skip duplicate point.
+		if (points.length > 1) {
+			var lastX = points[points.length-2];
+			var lastY = points[points.length-1];
+			if (lastX == x && lastY == y) {
+				push_point = false;
+			}
+		}
+
+		if (push_point == true) {
+			__currentPath.points.push (x);
+			__currentPath.points.push (y);
+		}
 	}
 	
 	private static inline function curveTo (cx:Float, cy:Float, x:Float, y:Float) {
