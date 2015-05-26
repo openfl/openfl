@@ -950,9 +950,11 @@ class BitmapData implements IBitmapDrawable {
 			var textureImage = __image;
 			
 			if ( __bgra ) {
-
+				
+				#if (neko || js)
 				if ( __supportsBgra == null )
 					__supportsBgra = Lambda.has( gl.getSupportedExtensions(), "GL_EXT_bgra" );
+				#end
 				
 				#if lime_cairo
 				if ( __supportsBgra )
