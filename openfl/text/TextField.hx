@@ -2348,8 +2348,8 @@ class TextField extends InteractiveObject {
 		var th = 0.0;
 		for (i in 0...numLines) {
 			th += __getLineMetric(i, ASCENDER) + __getLineMetric( i, DESCENDER );
-			if (i == numLines - 1) {
-				th -= __getLineMetric(i, LEADING);
+			if (i != numLines - 1) {
+				th += __getLineMetric(i, LEADING);
 			}
 		}
 		return th;
