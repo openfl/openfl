@@ -1120,7 +1120,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setVertexSource (vertexBuffer);
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
-					ctx.setTextureAddressMode (0, Clamp, Clamp);
+					// TODO(james4k): BunnyMark's usage wants wrapped textures. do we ever use clamped?
+					ctx.setTextureAddressMode (0, Wrap, Wrap);
 					if (fillBitmapSmooth) {
 						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
 					} else {
