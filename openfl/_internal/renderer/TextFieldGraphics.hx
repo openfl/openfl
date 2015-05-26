@@ -168,8 +168,8 @@ class TextFieldGraphics {
 			var tlm = textField.getLineMetrics(0);
 			
 			var image;
-			var x:Float = bounds.x + offsetX;
-			var y:Float = bounds.y + 2 + tlm.ascent;
+			var x:Float = offsetX;
+			var y:Float = 2 + tlm.ascent;
 			
 			//If you render with y == 0, the bottom pixel of the "T" in "The Quick Brown Fox" will rest on TOP of your text field.
 			//Flash API text fields have a 2px margin on all sides, so (2 + ASCENT) puts your text right where it needs to be.
