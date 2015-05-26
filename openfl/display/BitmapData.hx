@@ -1,6 +1,8 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GLBuffer;
@@ -545,15 +547,34 @@ class BitmapData implements IBitmapDrawable {
 		#if lime_console
 
 			if (Std.is (source, DisplayObject)) {
-				CairoRenderer.renderToBitmap (
-					this,
-					cast (source),
-					matrix,
-					colorTransform,
-					blendMode,
-					clipRect,
-					smoothing
+				var surface = CairoSurface.createForData (
+					this.__image.data.buffer.__getNativePointer (),
+					CairoFormat.ARGB32,
+					this.width, this.height,
+					this.width * 4
 				);
+				var cairo = new Cairo (surface);
+				var renderer = new CairoRenderer (this.width, this.height, cairo);
+				{
+					var object:DisplayObject = cast (source);
+					var prevTransform = object.__worldTransform;
+					var prevColorTransform = object.__worldColorTransform;
+
+					// TODO(james4k): blendMode, clipRect, smoothing
+
+					object.__worldTransform = matrix != null ? matrix : new Matrix ();
+					object.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
+					object.__updateChildren (false);
+
+					renderer.renderDisplayObject (object);
+
+					object.__worldTransform = prevTransform;
+					object.__worldColorTransform = prevColorTransform;
+					// TODO(james4k): can we just dirty everyone?
+					object.__updateChildren (true);
+				}
+				surface.destroy ();
+				cairo.destroy ();
 			} else {
 				trace ("not implemented");
 			}

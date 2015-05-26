@@ -80,14 +80,14 @@ class GraphicsRenderer {
 
 		var x = rectData[0];
 		var y = rectData[1];
-		var width = rectData[2];
-		var height = (rectData.length == 3) ? width : rectData[3];
+		var rx = rectData[2];
+		var ry = (rectData.length == 3) ? rx : rectData[3];
 		
 		if (path.type == Ellipse) {
-			width /= 2;
-			height /= 2;
-			x += width;
-			y += height;
+			rx /= 2;
+			ry /= 2;
+			x += rx;
+			y += ry;
 		}
 
 		if(localCoords) {
@@ -114,8 +114,8 @@ class GraphicsRenderer {
 				verts.push (x);
 				verts.push (y);
 				
-				verts.push (x + Math.sin (seg * i) * width);
-				verts.push (y + Math.cos (seg * i) * height);
+				verts.push (x + Math.sin (seg * i) * rx);
+				verts.push (y + Math.cos (seg * i) * ry);
 				
 				indices.push (vertPos++);
 				indices.push (vertPos++);
@@ -132,12 +132,7 @@ class GraphicsRenderer {
 			var tempPoints = path.points;
 			path.points = [];
 			
-			for (i in 0...totalSegs + 1) {
-				
-				path.points.push (x + Math.sin (seg * i) * width);
-				path.points.push (y + Math.cos (seg * i) * height);
-				
-			}
+			GraphicsPaths.ellipse (path.points, x, y, rx, ry, totalSegs);
 			
 			buildLine (path, bucket);
 			path.points = tempPoints;
@@ -460,7 +455,8 @@ class GraphicsRenderer {
 		var indices = fill.indices;
 		
 		if (fill != null) {
-			var triangles = PolyK.triangulate (points);
+			var triangles = new Array<Int> ();
+			PolyK.triangulate (triangles, points);
 			var vertPos = verts.length / 2;
 			
 			var i = 0;
@@ -553,33 +549,8 @@ class GraphicsRenderer {
 			y -= objectBounds.y;
 		}
 		
-		var xe = x + width,
-		ye = y + height,
-		cx1 = -rx + (rx * SIN45),
-		cx2 = -rx + (rx * TAN22),
-		cy1 = -ry + (ry * SIN45),
-		cy2 = -ry + (ry * TAN22);
-		
 		var recPoints:Array<Float> = [];
-		
-		recPoints.push(xe);
-		recPoints.push(ye -ry);
-		curveTo (recPoints, xe, ye + cy2, xe + cx1, ye + cy1);
-		curveTo (recPoints, xe + cx2, ye, xe - rx, ye);
-		recPoints.push(x + rx);
-		recPoints.push(ye); 
-		curveTo (recPoints, x - cx2, ye, x - cx1, ye + cy1);
-		curveTo (recPoints, x, ye + cy2, x, ye - ry);
-		recPoints.push(x);
-		recPoints.push(y + ry);
-		curveTo (recPoints, x, y - cy2, x - cx1, y - cy1);
-		curveTo (recPoints, x - cx2, y, x + rx, y);
-		recPoints.push(xe - rx);
-		recPoints.push(y);
-		curveTo (recPoints, xe + cx2, y, xe + cx1, y - cy1);
-		curveTo (recPoints, xe, y - cy2, xe, y + ry);
-		recPoints.push(xe);
-		recPoints.push(ye - ry);
+		GraphicsPaths.roundRectangle (recPoints, x, y, width, height, rx, ry);
 		
 		var bucket = prepareBucket(path, glStack);
 		var fill = bucket.getData(Fill);
@@ -590,11 +561,12 @@ class GraphicsRenderer {
 			
 			var vecPos = verts.length / 2;
 			
-			var triangles = PolyK.triangulate (recPoints);
+			var triangles = new Array<Int> ();
+			PolyK.triangulate (triangles, recPoints);
 			
 			var i = 0;
 			while (i < triangles.length) {
-				
+
 				indices.push (Std.int (triangles[i] + vecPos));
 				indices.push (Std.int (triangles[i] + vecPos));
 				indices.push (Std.int (triangles[i + 1] + vecPos));
@@ -742,36 +714,6 @@ class GraphicsRenderer {
 		prepareBucket(path, glStack);
 	}
 	
-	
-	private static function curveTo (points:Array<Float>, cx:Float, cy:Float, x:Float, y:Float) {
-		
-		var xa:Float = 0;
-		var ya:Float = 0;
-		var n = 20;
-		
-		var fromX = points[points.length-2];
-		var fromY = points[points.length-1];
-		
-		var px:Float = 0;
-		var py:Float = 0;
-		
-		var tmp:Float = 0;
-		
-		for (i in 1...(n + 1)) {
-			
-			tmp = i / n;
-			
-			xa = fromX + ((cx - fromX) * tmp);
-			ya = fromY + ((cy - fromY) * tmp);
-			
-			px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
-			py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
-			
-			points.push (px);
-			points.push (py);
-			
-		}
-	}
 	
 	private static function quadraticBezierCurve (fromX:Float, fromY:Float, cpX:Float, cpY:Float, toX:Float, toY:Float):Array<Float> {
 		
@@ -1641,127 +1583,6 @@ class GLGraphicsData {
 	}
 	
 	
-}
-
-
-class PolyK {
-	
-	
-	public static function triangulate (p:Array<Float>):Array<Int> {
-		
-		var sign = true;
-
-		var n = p.length >> 1;
-		if (n < 3) return [];
-		
-		var tgs:Array<Int> = [];
-		var avl:Array<Int> = [for (i in 0...n) i];
-		
-		var i = 0;
-		var al = n;
-		var earFound = false;
-		
-		while (al > 3) {
-			
-			var i0 = avl[(i + 0) % al];
-			var i1 = avl[(i + 1) % al];
-			var i2 = avl[(i + 2) % al];
-			
-			var ax = p[2* i0], ay = p[2 * i0 + 1];
-			var bx = p[2 * i1], by = p[2 * i1 + 1];
-			var cx = p[2 * i2], cy = p[2 * i2 + 1];
-			
-			earFound = false;
-			
-			if (PolyK._convex (ax, ay, bx, by, cx, cy, sign)) {
-				
-				earFound = true;
-				
-				for (j in 0...al) {
-					
-					var vi = avl[j];
-					if (vi == i0 || vi == i1 || vi == i2) continue;
-					
-					if (PolyK._PointInTriangle (p[2 * vi], p[2 * vi + 1], ax, ay, bx, by, cx, cy)) {
-						
-						earFound = false;
-						break;
-						
-					}
-					
-				}
-				
-			}
-			
-			if (earFound) {
-				
-				tgs.push (i0);
-				tgs.push (i1);
-				tgs.push (i2);
-				avl.splice ((i + 1) % al, 1);
-				al--;
-				i = 0;
-				
-			} else if (i++ > 3 * al) {
-				
-				if (sign) {
-					
-					tgs = [];
-					avl = [for (k in 0...n) k];
-					
-					i = 0;
-					al = n;
-					sign = false;
-					
-				} else {
-					
-					trace ("Warning: shape too complex to fill");
-					return [];
-					
-				}
-				
-			}
-			
-		}
-		
-		tgs.push (avl[0]);
-		tgs.push (avl[1]);
-		tgs.push (avl[2]);
-		return tgs;
-		
-	}
-	
-	
-	public static function _PointInTriangle (px:Float, py:Float, ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float) {
-		
-		var v0x = Std.int(cx-ax);
-		var v0y = Std.int(cy-ay);
-		var v1x = Std.int(bx-ax);
-		var v1y = Std.int(by-ay);
-		var v2x = Std.int(px-ax);
-		var v2y = Std.int(py-ay);
-		
-		var dot00 = (v0x * v0x) + (v0y * v0y);
-		var dot01 = (v0x * v1x) + (v0y * v1y);
-		var dot02 = (v0x * v2x) + (v0y * v2y);
-		var dot11 = (v1x * v1x) + (v1y * v1y);
-		var dot12 = (v1x * v2x) + (v1y * v2y);
-		
-		var invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-		var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-		var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-		
-		return (u >= 0) && (v >= 0) && (u + v < 1);
-		
-	}
-	
-	
-	public static function _convex (ax:Float, ay:Float, bx:Float, by:Float, cx:Float, cy:Float, sign:Bool) {
-		
-		return ((ay - by) * (cx - bx) + (bx - ax) * (cy - by) >= 0) == sign;
-		
-	}
-		
 }
 
 

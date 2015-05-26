@@ -5,6 +5,7 @@ package openfl._internal.renderer.console;
 import cpp.vm.WeakRef;
 import cpp.Int8;
 import cpp.UInt8;
+import cpp.Float32;
 import lime.graphics.console.IndexBuffer;
 import lime.graphics.console.PointerUtil;
 import lime.graphics.console.Primitive;
@@ -12,6 +13,7 @@ import lime.graphics.console.RenderState;
 import lime.graphics.console.Shader;
 import lime.graphics.console.Texture;
 import lime.graphics.console.TextureData;
+import lime.graphics.console.TextureFilter;
 import lime.graphics.console.TextureFormat;
 import lime.graphics.console.VertexDecl;
 import lime.graphics.console.VertexBuffer;
@@ -24,9 +26,12 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Graphics;
+import openfl.display.JointStyle;
+import openfl.display.LineScaleMode;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.display.Stage;
@@ -73,6 +78,33 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var viewProj:Matrix4;
 	private var transform:Matrix4;
 
+	private var hasFill = false;
+	private var fillBitmap:BitmapData = null;
+	private var fillBitmapSmooth:Bool = false;
+	private var fillColor:Array<Float32> = [1, 1, 1, 1];
+
+	private var hasStroke = false;
+	private var lineWidth = 0.0;
+	private var lineColor = 0;
+	private var lineAlpha = 1.0;
+	private var lineScaleMode = LineScaleMode.NORMAL;
+	private var lineCaps = CapsStyle.ROUND;
+	private var lineJoints = JointStyle.ROUND;
+	private var lineMiter = 3.0;
+
+	private var points = new Array<Float32> ();
+
+	private var clipRect:Rectangle = null;
+
+	#if !console_pc
+	private static var pixelOffsetX:Float = 0.0;
+	private static var pixelOffsetY:Float = 0.0;
+	#else
+	// DirectX 9 texture sampling offset
+	private static var pixelOffsetX:Float = 0.5;
+	private static var pixelOffsetY:Float = 0.5;
+	#end
+
 	
 	public function new (width:Int, height:Int, ctx:ConsoleRenderContext) {
 
@@ -112,7 +144,9 @@ class ConsoleRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 
-		viewProj = Matrix4.createOrtho (0, width, height, 0, -1, 1);
+		//viewProj = Matrix4.createOrtho (0, width, height, 0, -1, 1);
+		// TODO(james4k): only half pixel offset for DX9
+		viewProj = Matrix4.createOrtho (0 + pixelOffsetX, width + pixelOffsetY, height + pixelOffsetX, 0 + pixelOffsetY, -1, 1);
 
 		ctx.setRasterizerState (CULLNONE_SOLID);
 		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
@@ -150,18 +184,44 @@ class ConsoleRenderer extends AbstractRenderer {
 			return;
 		}
 
+		var prevClipRect = clipRect;
+		if (object.scrollRect != null) {
+			clipRect = new Rectangle (
+				object.scrollRect.x,
+				object.scrollRect.y,
+				object.scrollRect.width,
+				object.scrollRect.height
+			);
+			clipRect = object.scrollRect.transform (object.__worldTransform);
+			var bounds = object.getBounds (null);
+
+			//clipRect.x += object.__worldTransform.tx;
+			//clipRect.y += object.__worldTransform.ty;
+			//trace ("-");
+			//trace (object.__worldTransform.tx, object.__worldTransform.ty, object.width, object.height);
+			//trace (object.x, object.y, object.width, object.height);
+			//trace (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+			//trace (bounds.x, bounds.y, bounds.width, bounds.height);
+			clipRect = clipRect.intersection (bounds);
+			//trace (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+		}
+
 		if (Std.is (object, DisplayObjectContainer)) {
 
 			renderDisplayObjectContainer (cast (object));
 
 		} else if (Std.is (object, Shape)) {
 
-			renderShape (cast (object));
+			renderShape_ (cast (object));
 
 		} else if (Std.is (object, TextField)) {
 
 			renderTextField (cast (object));
 
+		}
+
+		if (object.scrollRect != null) {
+			clipRect = prevClipRect;	
 		}
 
 	}
@@ -425,7 +485,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		var w = bitmap.bitmapData.width;
 		var h = bitmap.bitmapData.height;
-		var color:Array<cpp.Float32> = [1, 1, 1, 1];
+		var color:Array<cpp.Float32> = [1, 1, 1, bitmap.__worldAlpha];
 
 		var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, 4);
 		var out = vertexBuffer.lock ();
@@ -450,14 +510,21 @@ class ConsoleRenderer extends AbstractRenderer {
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
 		ctx.setTexture (0, texture);
+		ctx.setTextureAddressMode (0, Clamp, Clamp);
 		ctx.draw (Primitive.TriangleStrip, 0, 2);
 
 	}
 
 
-	private function renderShape (shape:Shape) {
+	private function renderShape_ (shape:Shape) {
 
+		var graphics = shape.__graphics;
+		//var dirty = graphics.__dirty;
+		if (graphics.__commands.length == 0) {
+			return;
+		}
 
+		drawNaive (shape, graphics);
 
 	}
 
@@ -516,6 +583,16 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	}
 
+
+	private function closePath (object:DisplayObject) {
+
+		drawFill (object);
+		drawStroke ();
+
+		cpp.NativeArray.setSize (points, 0);
+
+	}
+
 	
 	// div divides an integer by an integer using integer math.
 	// Normally in haxe, Int divided by Int returns Float. Can't seem to be
@@ -527,14 +604,97 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
+
+
+	private function drawFill (object:DisplayObject) {
+
+		// need minimum of 3 points
+		if (!hasFill || points.length < 6) {
+			return;
+		}
+
+		//var triangles = new Array<Int> ();
+		//PolyK.triangulate (triangles, points);
+
+		setObjectTransform (object);
+		transform.append (viewProj);
+		transform.transpose ();
+
+		var vertexCount = div (points.length, 2);
+		var indexCount = (vertexCount - 2) * 3;
+
+		var vertexBuffer = transientVertexBuffer (VertexDecl.Position, vertexCount);	
+		var indexBuffer = transientIndexBuffer (indexCount);
+
+		var out = vertexBuffer.lock ();
+		for (i in 0...vertexCount) {
+			out.vec3 (points[i*2 + 0], points[i*2 + 1], 0);
+		}
+		vertexBuffer.unlock ();
+
+		var unsafeIndices = indexBuffer.lock ();
+		for (i in 0...vertexCount-2) {
+			unsafeIndices[i*3 + 0] = 0;
+			unsafeIndices[i*3 + 1] = i+1;
+			unsafeIndices[i*3 + 2] = i+2;
+		}
+		indexBuffer.unlock ();
+
+		ctx.bindShader (fillShader);
+		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+		ctx.setVertexSource (vertexBuffer);
+		//ctx.draw (Primitive.Triangle, 0, vertexCount - 2);
+		ctx.setIndexSource (indexBuffer);
+		ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indexCount, 3));
+
+	}
+
+
+	private function drawStroke () {
+
+		if (!hasStroke) {
+			return;
+		}	
+
+	}
+
+
 	private function drawNaive (object:DisplayObject, graphics:Graphics) {
 
 		graphics.__dirty = false;
 
-		var fillBitmap:BitmapData = null;
-		var fillColor:Array<cpp.Float32> = [1, 1, 1, object.__worldAlpha];
+		hasFill = false;
+		hasStroke = false;
+		fillColor[0] = 1.0;
+		fillColor[1] = 1.0;
+		fillColor[2] = 1.0;
+		fillColor[3] = object.__worldAlpha;
 
 		// TODO(james4k): set blend state based on object.blendMode
+
+		// TODO(james4k): warn on unimplemented WindingRules
+
+		if (clipRect != null) {
+
+			viewProj = Matrix4.createOrtho (
+				Math.floor (clipRect.x) + pixelOffsetX,
+				Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
+				Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
+				Math.floor (clipRect.y) + pixelOffsetY,
+				-1, 1
+			);
+
+			var viewport = new Rectangle (0, 0, this.width, this.height);
+			viewport = viewport.intersection (clipRect);
+			ctx.setViewport (
+				cast (viewport.x),
+				cast (viewport.y),
+				cast (Math.ceil (viewport.width)),
+				cast (Math.ceil (viewport.height))
+			);
+
+		}
 
 		for (cmd in graphics.__commands) {
 
@@ -542,21 +702,97 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 
+					hasFill = true;
 					fillBitmap = bitmap;
+					fillBitmapSmooth = smooth;
+					fillColor[0] = 1.0;
+					fillColor[1] = 1.0;
+					fillColor[2] = 1.0;
+					fillColor[3] = object.__worldAlpha;
 
-					// TODO(james4k): deal with matrix, repeat, smooth
+					// TODO(james4k): deal with matrix, repeat
 
 				case BeginFill (rgb, alpha):
 
 					// TODO(james4k): color transform. no sense doing that in shader for fill, right?
+					hasFill = true;
+					fillBitmap = null;
 					fillColor[0] = ((rgb >> 16) & 0xFF) / 255.0;
 					fillColor[1] = ((rgb >> 8) & 0xFF) / 255.0;
 					fillColor[2] = ((rgb >> 0) & 0xFF) / 255.0;
 					fillColor[3] = alpha * object.__worldAlpha;
 
+				// LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>,
+				//            scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
+				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+
+					//closePath (object);
+
+					if (thickness == null) {
+						hasStroke = false;
+						break;
+					}
+
+					hasStroke = true;
+
+					lineWidth = thickness;
+					lineColor = color == null ? 0 : color;
+					lineAlpha = alpha == null ? 1 : alpha;
+					lineScaleMode = scaleMode;
+					lineCaps = caps;
+					lineJoints = joints;
+					lineMiter = miterLimit == null ? 3 : miterLimit;
+					// TODO(james4k): pixelHinting
+					
+					
+				case LineTo (x, y):
+
+					points.push (x);
+					points.push (y);
+
+				case MoveTo (x, y):
+
+					closePath (object);
+
+					points.push (x);
+					points.push (y);
+
+				case EndFill:
+
+					closePath (object);
+
+					hasFill = false;
+					hasStroke = false;
+					fillBitmap = null;
+					fillColor[0] = 1.0;
+					fillColor[1] = 1.0;
+					fillColor[2] = 1.0;
+					fillColor[3] = object.__worldAlpha;
+
+				case DrawCircle (x, y, radius):
+
+					// TODO(james4k): replace with 2? curveTo calls
+
+					drawEllipse (object, x, y, radius, radius);
+
+				case DrawEllipse (x, y, width, height):
+
+					// TODO(james4k): replace with 2? curveTo calls
+
+					drawEllipse (object, x + width*0.5, y + height*0.5, width*0.5, height*0.5);
+
 				case DrawRect (x, y, width, height):
 
-					transform = viewProj.clone ();
+					if (!hasFill || fillBitmap != null) {
+						// TODO(james4k): fillBitmap, stroke
+						trace ("unsupported DrawRect");
+						break;
+					}
+
+					// TODO(james4k): replace moveTo/lineTo calls
+
+					setObjectTransform (object);
+					transform.append (viewProj);
 					transform.transpose ();
 
 					var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
@@ -572,6 +808,64 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
 					ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+				case DrawRoundRect (x, y, width, height, rx, ry):
+
+					if (!hasFill || fillBitmap != null) {
+						// TODO(james4k): fillBitmap, stroke
+						trace ("unsupported DrawRoundRect");
+						break;
+					}
+
+					// TODO(james4k): replace with lineTo/curveTo calls
+
+					if (ry == -1) ry = rx;
+					
+					rx *= 0.5;
+					ry *= 0.5;
+					
+					if (rx > width / 2) rx = width / 2;
+					if (ry > height / 2) ry = height / 2;
+
+					var points = new Array<Float> ();
+					GraphicsPaths.roundRectangle (points, x, y, width, height, rx, ry);
+
+					if (hasFill) {
+
+						var triangles = new Array<Int> ();
+						PolyK.triangulate (triangles, points);
+
+						setObjectTransform (object);
+						transform.append (viewProj);
+						transform.transpose ();
+
+						var vertexCount = div (points.length, 2);
+						var indexCount = triangles.length;
+
+						var vertexBuffer = transientVertexBuffer (VertexDecl.Position, vertexCount);	
+						var indexBuffer = transientIndexBuffer (indexCount);
+
+						var out = vertexBuffer.lock ();
+						for (i in 0...div (points.length, 2)) {
+							out.vec3 (points[i*2], points[i*2 + 1], 0);
+						}
+						vertexBuffer.unlock ();
+
+						var unsafeIndices = indexBuffer.lock ();
+						for (i in 0...triangles.length) {
+							unsafeIndices[i] = triangles[i];
+						}
+						indexBuffer.unlock ();
+
+						ctx.bindShader (fillShader);
+						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+						ctx.setVertexSource (vertexBuffer);
+						ctx.setIndexSource (indexBuffer);
+						ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (triangles.length, 3));
+						//ctx.draw (Primitive.TriangleStrip, 0, div (triangles.length, 3));
+
+					}
 
 				case DrawTiles (sheet, tileData, smooth, flags, count):
 
@@ -733,6 +1027,8 @@ class ConsoleRenderer extends AbstractRenderer {
 						var h0 = rect.height * 1.0;
 						var h1 = 0.0;
 
+						// tileUV.width, height are actually x1, y1
+
 						out.vec3 (a*w1 + c*h1 + tx, d*h1 + b*w1 + ty, 0);
 						out.vec2 (tileUV.x, tileUV.y);
 						out.color (red, green, blue, Std.int(alpha * 0xff));
@@ -777,9 +1073,20 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setVertexSource (vertexBuffer);
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
+					ctx.setTextureAddressMode (0, Clamp, Clamp);
+					if (smooth) {
+						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+					} else {
+						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
 
 				case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
+
+					if (!hasFill || fillBitmap == null) {
+						trace ("DrawTriangles without bitmap fill");
+						break;
+					}
 
 					setObjectTransform (object);
 					transform.append (viewProj);
@@ -813,19 +1120,17 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setVertexSource (vertexBuffer);
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
+					ctx.setTextureAddressMode (0, Clamp, Clamp);
+					if (fillBitmapSmooth) {
+						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+					} else {
+						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indices.length, 3));
-
-				case EndFill:
-
-					fillBitmap = null;
-					fillColor[0] = 1.0;
-					fillColor[1] = 1.0;
-					fillColor[2] = 1.0;
-					fillColor[3] = object.__worldAlpha;
 
 				default:
 
-					trace ("not implemented");
+					trace ("not implemented: " + cmd);
 
 /*
 
@@ -833,12 +1138,6 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
 	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
-	DrawCircle (x:Float, y:Float, radius:Float);
-	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
-	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
-	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
-	LineTo (x:Float, y:Float);
-	MoveTo (x:Float, y:Float);
 	DrawPathC(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding);
 	OverrideMatrix(matrix:Matrix);
 
@@ -847,8 +1146,81 @@ class ConsoleRenderer extends AbstractRenderer {
 			}
 	
 		}
-	
+
+		if (points.length > 0) {
+			closePath (object);
+		}
+
+		if (clipRect != null) {
+
+			viewProj = Matrix4.createOrtho (
+				0 + pixelOffsetX,
+				this.width + pixelOffsetX,
+				this.height + pixelOffsetY,
+				0 + pixelOffsetY,
+				-1, 1
+			);
+
+			ctx.setViewport (0, 0, this.width, this.height);
+
+		}
+
 	}
+
+	private function drawEllipse (object:DisplayObject, x:Float, y:Float, rx:Float, ry:Float) {
+
+		if (!hasFill || fillBitmap != null) {
+			// TODO(james4k): fillBitmap, stroke
+			trace ("unsupported drawEllipse");
+			return;
+		}
+
+		var segments:Int = cast (0.334 * 2 * Math.PI * Math.max (rx, ry));
+		var points = new Array<Float> ();
+		GraphicsPaths.ellipse (points, x, y, rx, ry, segments);
+
+		if (hasFill) {
+
+			//var triangles = new Array<Int> ();
+			//PolyK.triangulate (triangles, points);
+
+			setObjectTransform (object);
+			transform.append (viewProj);
+			transform.transpose ();
+
+			var vertexCount = div (points.length, 2) + 1;
+			var indexCount = (vertexCount - 2) * 3;
+
+			var vertexBuffer = transientVertexBuffer (VertexDecl.Position, vertexCount);	
+			var indexBuffer = transientIndexBuffer (indexCount);
+
+			var out = vertexBuffer.lock ();
+			out.vec3 (x, y, 0);
+			for (i in 0...vertexCount) {
+				out.vec3 (points[i*2 + 0], points[i*2 + 1], 0);
+			}
+			vertexBuffer.unlock ();
+
+			var unsafeIndices = indexBuffer.lock ();
+			for (i in 0...vertexCount-2) {
+				unsafeIndices[i*3 + 0] = 0;
+				unsafeIndices[i*3 + 1] = i+1;
+				unsafeIndices[i*3 + 2] = i+2;
+			}
+			indexBuffer.unlock ();
+
+			ctx.bindShader (fillShader);
+			ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+			ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+			ctx.setVertexSource (vertexBuffer);
+			//ctx.draw (Primitive.Triangle, 0, vertexCount - 2);
+			ctx.setIndexSource (indexBuffer);
+			ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indexCount, 3));
+
+		}
+
+	}
+
 	
 	
 }
