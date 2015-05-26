@@ -1,6 +1,5 @@
 package openfl._internal.renderer.opengl;
 
-
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.Image;
@@ -10,6 +9,7 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import lime.math.Rectangle;
 import lime.math.Vector2;
+import lime.utils.ByteArray;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoTextField;
@@ -17,6 +17,7 @@ import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.BlendModeManager.GLBlendMode;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
@@ -25,6 +26,10 @@ import openfl.errors.Error;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.text.TextField;
+
+#if (js && html5)
+import js.html.ImageData;
+#end
 
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display.Stage)
@@ -295,25 +300,22 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 		
-	public static function renderCairo( displayObject:DisplayObject, renderSession:RenderSession ) : Void {
+	public static function renderBitmap( displayObject:DisplayObject, renderSession:RenderSession ) : Void {
 		
-		#if lime_cairo
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if ( displayObject.__graphics == null || displayObject.__graphics.__bitmap == null ) return;
 		
 		var bounds = displayObject.getBounds( null );
 		var bitmap = displayObject.__graphics.__bitmap;
-			
-		bitmap.__bgra = true;
 		
 		var local = new Matrix();
 		local.scale( 1 / displayObject.scaleX, 1 / displayObject.scaleY );
 		local.translate( displayObject.__graphics.__bounds.x, displayObject.__graphics.__bounds.y );
 		local = local.mult( displayObject.__worldTransform );
 		
-		renderSession.spriteBatch.renderBitmapData( bitmap, true, local, displayObject.__worldColorTransform, displayObject.__worldAlpha, displayObject.__blendMode, NEVER );
-		#end
+		renderSession.spriteBatch.renderBitmapData( bitmap, true, local, displayObject.__worldColorTransform, displayObject.__worldAlpha, displayObject.__blendMode, ALWAYS );
+	
 	}
 	
 	public function renderDisplayObject (displayObject:DisplayObject, projection:Point, buffer:GLFramebuffer = null):Void {

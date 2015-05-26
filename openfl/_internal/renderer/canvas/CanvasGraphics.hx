@@ -2,6 +2,7 @@ package openfl._internal.renderer.canvas;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl.display.GradientType;
@@ -12,6 +13,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
+import openfl.utils.ByteArray;
 import openfl.Vector;
 
 #if (js && html5)
@@ -20,6 +22,7 @@ import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
+import js.html.ImageData;
 #end
 
 @:access(openfl.display.DisplayObject)
@@ -555,7 +558,9 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
+		
+		var graphics = displayObject.__graphics;
 		
 		#if (js && html5)
 		
@@ -563,6 +568,9 @@ class CanvasGraphics {
 			
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
+			
+			bounds.width *= displayObject.scaleX;
+			bounds.height *= displayObject.scaleY;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
@@ -584,6 +592,8 @@ class CanvasGraphics {
 				
 				graphics.__canvas.width = Math.ceil (bounds.width);
 				graphics.__canvas.height = Math.ceil (bounds.height);
+				
+				graphics.__context.scale( displayObject.scaleX, displayObject.scaleY );
 				
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
@@ -921,8 +931,6 @@ class CanvasGraphics {
 				
 			}
 			
-			graphics.__dirty = false;
-			
 			if (fillCommands.length > 0) {
 				
 				endFill ();
@@ -934,7 +942,10 @@ class CanvasGraphics {
 				endStroke ();
 				
 			}
+		
+			graphics.__bitmap = BitmapData.fromCanvas( graphics.__canvas );
 			
+			graphics.__dirty = false;
 		}
 		
 		#end

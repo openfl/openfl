@@ -1301,15 +1301,14 @@ class TextField extends InteractiveObject {
 		if ( line == -1 )
 		{
 			var longest : Float = 0;
-			var i = 0;
 			
 			for (i in 0...linebreaks.length) {
-				
+
 				longest = Math.max( longest, __context.measureText ( __text.substr( i == 0 ? 0 : (linebreaks[ i-1 ]+1), linebreaks[ i ] ) ).width );
 				
 			}
 			
-			longest = Math.max( longest, __context.measureText ( __text.substr( i == 0 ? 0 : (linebreaks[ i-1 ]+1) ) ).width );
+			longest = Math.max( longest, __context.measureText ( __text.substr( linebreaks.length == 0 ? 0 : (linebreaks[ linebreaks.length-1 ]+1) ) ).width );
 			
 			return longest;
 		}
@@ -1723,10 +1722,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
-		CairoTextField.render( this, renderSession );
-		GLRenderer.renderCairo( this, renderSession );
+		#if lime_cairo
+		CairoTextField.render( this );
+		#else
+		CanvasTextField.update( this );
+		#end
 		
-		// GLTextField.render( this, renderSession );
+		GLRenderer.renderBitmap( this, renderSession );
 	}
 	
 	

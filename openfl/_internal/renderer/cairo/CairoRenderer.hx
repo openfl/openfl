@@ -61,7 +61,7 @@ class CairoRenderer extends AbstractRenderer {
 		
 		var bounds = textField.getBounds( null );
 				
-		CairoTextField.render (textField, renderSession );
+		CairoTextField.render ( textField );
 		
 		if (textField.__graphics.__cairo != null) {
 			
@@ -85,7 +85,7 @@ class CairoRenderer extends AbstractRenderer {
 			} else {
 				
 				cairo.matrix = transform.__toMatrix3();
-			}			
+			}
 
 			cairo.scale( 1 / textField.scaleX, 1 / textField.scaleY );
 			

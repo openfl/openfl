@@ -151,6 +151,8 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __uvData:TextureUvs;
 	@:noCompletion private var __usingFramebuffer:Bool = false;
 	
+	@:noCompletion private var __supportsBgra:Bool;
+	
 	/**
 	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
 	 * the <code>fillColor</code> parameter, every pixel in the bitmap is set to that color. 
@@ -948,9 +950,12 @@ class BitmapData implements IBitmapDrawable {
 			var textureImage = __image;
 			
 			if ( __bgra ) {
+
+				if ( __supportsBgra == null )
+					__supportsBgra = Lambda.has( gl.getSupportedExtensions(), "GL_EXT_bgra" );
 				
 				#if lime_cairo
-				if ( Lambda.has( gl.getSupportedExtensions(), "GL_EXT_bgra" ) )
+				if ( __supportsBgra )
 				{
 					format = gl.BGRA_EXT;
 				}

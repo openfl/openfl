@@ -20,7 +20,7 @@ class CanvasShape {
 		if (graphics != null) {
 			
 			//#if old
-			CanvasGraphics.render (graphics, renderSession);
+			CanvasGraphics.render (shape, renderSession);
 			//#else
 			//CanvasGraphics.renderObjectGraphics (shape, renderSession);
 			//#end
@@ -48,6 +48,8 @@ class CanvasShape {
 					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 					
 				}
+				
+				context.scale( 1 / shape.scaleX, 1 / shape.scaleY );
 				
 				if (scrollRect == null) {
 					

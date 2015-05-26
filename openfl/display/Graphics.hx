@@ -67,10 +67,9 @@ class Graphics {
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#else
 	@:noCompletion private var __cairo:Cairo;
-	@:noCompletion private var __bitmap:BitmapData;
 	#end
 	
-	
+	@:noCompletion private var __bitmap:BitmapData;
 
 	public function new () {
 		

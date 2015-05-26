@@ -603,14 +603,14 @@ class CairoGraphics {
 						} 
 						
 						cairo.identityMatrix();
-						cairo.resetClip();
+						//cairo.resetClip();
 						
 						cairo.newPath ();
 						cairo.moveTo (x1, y1);
 						cairo.lineTo (x2, y2);
 						cairo.lineTo (x3, y3);
 						cairo.closePath ();		
-						cairo.clip ();
+						//cairo.clip ();
 						
 						uvx1 = uvt[iax] * width;
 						uvx2 = uvt[ibx] * width;
@@ -638,7 +638,7 @@ class CairoGraphics {
 						var matrix = new Matrix3 (t1, t2, t3, t4, dx, dy);
 						cairo.matrix = matrix;
 						cairo.source = fillPattern;
-						cairo.paint ();
+						cairo.fill ();
 
 						i += 3;
 					}
@@ -730,8 +730,10 @@ class CairoGraphics {
 						
 						if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 							
-							cairo.save ();
+							//cairo.save ();
 
+							cairo.identityMatrix();
+							
 							if (useTransform) {
 								var matrix = new Matrix3 (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
 								cairo.matrix = matrix;
@@ -757,7 +759,7 @@ class CairoGraphics {
 								cairo.paint ();
 							}
 							
-							cairo.restore ();
+							//cairo.restore ();
 							
 						}
 						
@@ -899,6 +901,8 @@ class CairoGraphics {
 				var surface = CairoSurface.fromImage( bitmap.__image ); 
 				graphics.__cairo = new Cairo (surface);
 				surface.destroy ();
+				
+				bitmap.__bgra = true;
 				
 				graphics.__bitmap = bitmap;					
 			}

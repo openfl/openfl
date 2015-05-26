@@ -25,7 +25,7 @@ import openfl.text.TextLineMetrics;
 
 class CairoTextField {
 	
-	public static function render ( textField:TextField, renderSession:RenderSession ) {
+	public static function render ( textField:TextField ) {
 							
 		#if lime_cairo
 		if ( !textField.__dirty ) return;
@@ -55,6 +55,8 @@ class CairoTextField {
 			var surface = CairoSurface.fromImage( bitmap.__image ); 
 			graphics.__cairo = new Cairo (surface);
 			surface.destroy ();
+			
+			bitmap.__bgra = true;
 			
 			graphics.__bitmap = bitmap;		
 			graphics.__bounds = new Rectangle( 0, 0, bounds.width, bounds.height );
