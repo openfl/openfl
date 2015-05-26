@@ -20,7 +20,7 @@ class CanvasShape {
 		if (graphics != null) {
 			
 			//#if old
-			CanvasGraphics.render (graphics, renderSession);
+			CanvasGraphics.render (shape, renderSession);
 			//#else
 			//CanvasGraphics.renderObjectGraphics (shape, renderSession);
 			//#end
@@ -49,13 +49,27 @@ class CanvasShape {
 					
 				}
 				
+				context.scale( 1 / shape.scaleX, 1 / shape.scaleY );
+				
 				if (scrollRect == null) {
 					
 					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
 					
 				} else {
 					
-					context.drawImage (graphics.__canvas, scrollRect.x - graphics.__bounds.x, scrollRect.y - graphics.__bounds.y, scrollRect.width, scrollRect.height, graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
+					//cairo.rectangle ( Math.round( graphics.__bounds.x + scrollRect.x ), Math.round( graphics.__bounds.y + scrollRect.y ), scrollRect.width, scrollRect.height);
+					
+					context.drawImage ( 
+						graphics.__canvas, 
+						Math.ceil( graphics.__bounds.x + scrollRect.x ), 
+						Math.ceil( graphics.__bounds.y  + scrollRect.y ), 
+						scrollRect.width, scrollRect.height,
+						Math.ceil( graphics.__bounds.x + scrollRect.x ), 
+						Math.ceil( graphics.__bounds.y + scrollRect.y ), 
+						scrollRect.width, scrollRect.height
+					);
+					
+					//context.drawImage (gra graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
 					
 				}
 				

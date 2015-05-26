@@ -24,6 +24,7 @@ import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.display.DisplayObjectContainer;
+import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
@@ -1690,8 +1691,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		return Lib.application.frameRate = value;
 		
 	}
-	
-	
+
 }
 
 

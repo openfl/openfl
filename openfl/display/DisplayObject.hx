@@ -1,12 +1,14 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoShape;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
+import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
@@ -752,6 +754,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	#end
 	
+	@:noCompletion private var __cairo:Cairo;
 	
 	private function new () {
 		
@@ -1118,7 +1121,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			CairoShape.render (this, renderSession);
+			CairoRenderer.renderDisplayObject (this, renderSession);
 			
 		}
 		
@@ -1175,7 +1178,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			GraphicsRenderer.render (this, renderSession);
+			if ( this.__graphics.__hardware ) {
+			
+				GraphicsRenderer.render (this, renderSession);
+			
+			} else {
+				
+				#if (js && html5 )
+			
+					CanvasGraphics.render( this, renderSession );
+					
+				#elseif lime_cairo
+				
+					CairoGraphics.render( this, renderSession );
+					
+				#end
+				
+				GLRenderer.renderBitmap( this, renderSession );
+			}
 			
 		}
 		
@@ -1666,7 +1686,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function get_scrollRect ():Rectangle {
 		
-		return __scrollRect;
+		if ( __scrollRect == null ) return null;
+		
+		return __scrollRect.clone();
 		
 	}
 	
