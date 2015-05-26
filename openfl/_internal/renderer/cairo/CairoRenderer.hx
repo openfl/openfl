@@ -54,13 +54,13 @@ class CairoRenderer extends AbstractRenderer {
 	}
 	
 	public static function renderTextField (textField:TextField, renderSession:RenderSession):Void {
-				
+		
 		#if lime_cairo
 		
 		if (!textField.__renderable || textField.__worldAlpha <= 0) return;
 		
 		var bounds = textField.getBounds( null );
-				
+		
 		CairoTextField.render ( textField );
 		
 		if (textField.__graphics.__cairo != null) {
@@ -123,7 +123,7 @@ class CairoRenderer extends AbstractRenderer {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render ( shape, renderSession );
+			CairoGraphics.render (graphics, renderSession);
 			
 			if (graphics.__cairo != null) {
 				

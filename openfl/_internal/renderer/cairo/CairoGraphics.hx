@@ -14,7 +14,6 @@ import openfl.display.DisplayObject;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
-import openfl.display.Shape;
 import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -199,16 +198,18 @@ class CairoGraphics {
 			pattern.addColorStopRGBA (ratio, r, g, b, alpha);
 			
 		}
-					
+		
 		var mat = pattern.matrix;
-
+		
 		mat.tx = bounds.x; 
 		mat.ty = bounds.y; 
 		
 		pattern.matrix = mat;
 		
 		return pattern;
+		
 	}
+	
 	
 	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
 		
@@ -452,7 +453,7 @@ class CairoGraphics {
 						hasFill = false;
 						
 					} else {
-					
+						
 						if (fillPattern != null) {
 							
 							fillPattern.destroy ();
@@ -858,18 +859,14 @@ class CairoGraphics {
 	}
 	
 	
-	public static function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		CairoGraphics.graphics = shape.__graphics;
+		CairoGraphics.graphics = graphics;
 		
 		if (!graphics.__dirty) return;
 		
-		
 		bounds = graphics.__bounds;
-		
-		bounds.width *= shape.scaleX;
-		bounds.height *= shape.scaleY;
 		
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 			
@@ -897,24 +894,23 @@ class CairoGraphics {
 			
 			if (graphics.__cairo == null) {
 			
-				var bitmap = new BitmapData( Math.ceil (bounds.width), Math.ceil (bounds.height), true );
-				var surface = CairoSurface.fromImage( bitmap.__image ); 
+				var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
+				var surface = CairoSurface.fromImage (bitmap.__image);
 				graphics.__cairo = new Cairo (surface);
 				surface.destroy ();
 				
 				bitmap.__bgra = true;
 				
-				graphics.__bitmap = bitmap;					
+				graphics.__bitmap = bitmap;
+				
 			}
 			
 			cairo = graphics.__cairo;
 			
 			cairo.operator = SOURCE;
-			cairo.setSourceRGBA( 1, 1, 1, 0 );
-			cairo.paint();
+			cairo.setSourceRGBA (1, 1, 1, 0);
+			cairo.paint ();
 			cairo.operator = OVER;
-
-			cairo.scale( shape.scaleX, shape.scaleY );
 			
 			fillCommands = new Array<DrawCommand> ();
 			strokeCommands = new Array<DrawCommand> ();

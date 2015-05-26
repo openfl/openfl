@@ -1178,7 +1178,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			if ( this.__graphics.__hardware ) {
+			if (__graphics.__hardware) {
 				
 				GraphicsRenderer.render (this, renderSession);
 				
@@ -1186,15 +1186,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				
 				#if (js && html5 )
 					
-					CanvasGraphics.render( this, renderSession );
+					CanvasGraphics.render (__graphics, renderSession);
 					
 				#elseif lime_cairo
-				
-					CairoGraphics.render( this, renderSession );
+					
+					CairoGraphics.render (__graphics, renderSession);
 					
 				#end
 				
-				GLRenderer.renderBitmap( this, renderSession );
+				GLRenderer.renderBitmap (this, renderSession);
 			}
 			
 		}

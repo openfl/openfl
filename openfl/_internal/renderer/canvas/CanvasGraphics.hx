@@ -558,9 +558,7 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
-		
-		var graphics = displayObject.__graphics;
+	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		
@@ -568,9 +566,6 @@ class CanvasGraphics {
 			
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
-			
-			bounds.width *= displayObject.scaleX;
-			bounds.height *= displayObject.scaleY;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 				
@@ -592,8 +587,6 @@ class CanvasGraphics {
 				
 				graphics.__canvas.width = Math.ceil (bounds.width);
 				graphics.__canvas.height = Math.ceil (bounds.height);
-				
-				graphics.__context.scale( displayObject.scaleX, displayObject.scaleY );
 				
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
