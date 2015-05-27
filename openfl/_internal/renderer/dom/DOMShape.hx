@@ -26,6 +26,21 @@ class DOMShape {
 			
 			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas == null && graphics.__canvas != null)) {
 				
+				if (graphics.__drawTilesMode) {
+					var m = shape.__worldTransform.clone();
+					var p = m.deltaTransformPoint(new openfl.geom.Point(m.tx, m.ty));
+					m.translate(-p.x, -p.y);
+					m.invert();
+					
+					p = m.transformPoint(new openfl.geom.Point(graphics.__bounds.width, graphics.__bounds.height));
+					graphics.__bounds.width = p.x;
+					graphics.__bounds.height = p.y;
+					
+					graphics.__bounds.x -= shape.__worldTransform.tx;
+					graphics.__bounds.y -= shape.__worldTransform.ty;
+					graphics.__drawTilesMode = false;
+				}
+				
 				//#if old
 				CanvasGraphics.render (graphics, renderSession);
 				//#else
