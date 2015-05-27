@@ -80,7 +80,7 @@ class CairoTextField {
 	
 	private static inline function __render (textField:TextField, renderSession:RenderSession, bounds:Rectangle) {
 		
-		if ( textField.__dirty )
+		//if ( textField.__dirty )
 		{
 			var format = textField.getTextFormat();
 			var cairo = textField.__cairo;
@@ -203,7 +203,7 @@ class CairoTextField {
 				
 			}
 
-			textField.__dirty = false;
+			//textField.__dirty = false;
 		}
 	}
 	
