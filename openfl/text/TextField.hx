@@ -1194,7 +1194,7 @@ class TextField extends InteractiveObject {
 		// statement, always load arial
 		if (format == null
 			|| StringTools.startsWith (format.font,  "_")
-			|| format.font.indexOf(".") == -1
+			|| format.font == "Times New Roman"
 		) {
 			fontList = [ "arial.ttf" ];
 		}
