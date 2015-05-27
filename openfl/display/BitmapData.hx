@@ -559,19 +559,25 @@ class BitmapData implements IBitmapDrawable {
 					var object:DisplayObject = cast (source);
 					var prevTransform = object.__worldTransform;
 					var prevColorTransform = object.__worldColorTransform;
+					var prevWorldTransformDirty = DisplayObject.__worldTransformDirty;
 
 					// TODO(james4k): blendMode, clipRect, smoothing
 
+					DisplayObject.__worldTransformDirty = 0;
 					object.__worldTransform = matrix != null ? matrix : new Matrix ();
 					object.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 					object.__updateChildren (false);
+					object.__transformDirty = false;
 
 					renderer.renderDisplayObject (object);
 
+					DisplayObject.__worldTransformDirty = prevWorldTransformDirty;
 					object.__worldTransform = prevTransform;
 					object.__worldColorTransform = prevColorTransform;
-					// TODO(james4k): can we just dirty everyone?
+					// TODO(james4k): we need to restore all of the children's
+					// dirty state to match prevWorldTransformDirty.. probably
 					object.__updateChildren (true);
+					object.__transformDirty = true;
 				}
 				surface.destroy ();
 				cairo.destroy ();
