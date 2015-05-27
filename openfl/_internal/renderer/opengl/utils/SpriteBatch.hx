@@ -9,7 +9,9 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
+import openfl.display.ShaderData;
 import openfl.display.Tilesheet;
+import openfl.display.Shader in FlashShader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -23,6 +25,7 @@ import lime.utils.*;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Tilesheet)
+@:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
 class SpriteBatch {
 
@@ -150,7 +153,7 @@ class SpriteBatch {
 		flush();
 	}
 	
-	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?pixelSnapping:PixelSnapping) {
+	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 		var texture = bitmapData.getTexture(gl);
 		
@@ -161,6 +164,14 @@ class SpriteBatch {
 		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
+		var shader:Shader = null;
+		var shaderData:ShaderData = null;
+		if (flashShader != null) {
+			flashShader.__init(this.gl);
+			shader = flashShader.__shader;
+			shaderData = flashShader.data;
+		}
+		
 		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
 		
 		//enableAttributes(color);
@@ -169,7 +180,7 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, null, color, pixelSnapping);
 		
-		setState(batchedSprites, texture, smoothing, blendMode, ct, true);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, shader, shaderData, true);
 		
 		batchedSprites++;
 	}
@@ -489,8 +500,7 @@ class SpriteBatch {
 		if (dirty) {
 			dirty = false;
 			
-			gl.activeTexture(gl.TEXTURE0);
-			
+			renderSession.activeTextures = 0;
 			vertexArray.bind();
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		}
@@ -506,7 +516,8 @@ class SpriteBatch {
 		var batchSize:Int = 0;
 		var start:Int = 0;
 		
-		currentState.shader = renderSession.shaderManager.defaultShader;
+		currentState.shader = null;
+		currentState.shaderData = null;
 		currentState.texture = null;
 		currentState.textureSmooth = false;
 		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
@@ -523,6 +534,7 @@ class SpriteBatch {
 				batchSize = 0;
 				
 				currentState.shader = nextState.shader;
+				currentState.shaderData = nextState.shaderData;
 				currentState.texture = nextState.texture;
 				currentState.textureSmooth = nextState.textureSmooth;
 				currentState.blendMode = nextState.blendMode;
@@ -566,10 +578,14 @@ class SpriteBatch {
 		}
 		
 		renderSession.blendModeManager.setBlendMode(state.blendMode);
+		
+		if (renderSession.activeTextures > 0) {
+			renderSession.activeTextures = 1;
+			gl.activeTexture(gl.TEXTURE0);
+		}
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 		
 		if (state.textureSmooth) {
-		//if (false) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		} else {
@@ -577,13 +593,16 @@ class SpriteBatch {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
 		}
 		
+		// TODO HOW TO TEXTURE UHRUHR
+		shader.applyData(state.shaderData);
+		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
 		
 		renderSession.drawCount++;
 		
 	}
 	
-	function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?skipAlpha:Bool = false) {
+	function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:Shader, ?shaderData:ShaderData, ?skipAlpha:Bool = false) {
 		var state:State = states[index];
 		if (state == null) {
 			state = states[index] = new State();
@@ -592,6 +611,8 @@ class SpriteBatch {
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
 		state.colorTransform = colorTransform;
+		state.shader = shader;
+		state.shaderData = shaderData;
 		state.skipColorTransformAlpha = skipAlpha;
 	}
 	
@@ -627,11 +648,13 @@ private class State {
 	public var colorTransform:ColorTransform;
 	public var skipColorTransformAlpha:Bool = false;
 	public var shader:Shader;
+	public var shaderData:ShaderData;
 	
 	public function new() { }
 	
 	public inline function equals(other:State) {
 		return ((shader == null || other.shader == null) || shader.ID == other.shader.ID) &&
+				// TODO shaderData equals
 				texture == other.texture &&
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&

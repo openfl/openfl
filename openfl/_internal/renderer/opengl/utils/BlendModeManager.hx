@@ -62,7 +62,7 @@ class BlendModeManager {
 		if (blendMode == null) {
 			
 			blendMode = BlendMode.NORMAL;
-			force = true;
+			//force = true;
 			
 		}
 		

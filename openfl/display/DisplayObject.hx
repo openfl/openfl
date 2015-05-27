@@ -614,6 +614,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var scrollRect (get, set):Rectangle;
 	
 	/**
+	 * TODO Documentation
+	 */
+	public var shader (default, default):Shader;
+	
+	/**
 	 * The Stage of the display object. A Flash runtime application has only one
 	 * Stage object. For example, you can create and load multiple display
 	 * objects into the display list, and the <code>stage</code> property of each

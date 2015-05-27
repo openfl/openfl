@@ -1,11 +1,17 @@
 package openfl._internal.renderer.opengl.shaders2;
 
+import haxe.ds.Either;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
+import openfl.display.BitmapData;
+import openfl.display.ShaderData;
+import openfl.display.ShaderParameter;
+import openfl.display.ShaderParameterType;
 import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
+import openfl.utils.Float32Array;
 
 class Shader {
 	
@@ -17,10 +23,13 @@ class Shader {
 	public var fragmentSrc:Array<String>;
 	public var attributes:Map<String, Int> = new Map();
 	public var uniforms:Map<String, GLUniformLocation> = new Map();
-	
+	public var compiled:Bool = false;
 	public var ID(default, null):Int;
 	
 	public var program:GLProgram;
+	
+	private var vertexString:String;
+	private var fragmentString:String;
 	
 	public function new(gl:GLRenderContext) {
 		ID = UID++;
@@ -29,17 +38,75 @@ class Shader {
 		program = null;
 	}
 	
-	private function init() {
-		program = Shader.compileProgram(gl, vertexSrc, fragmentSrc);
-		gl.useProgram(program);
+	private function init(?force:Bool = false) {
+		
+		if (compiled && !force) return;
+		
+		if (vertexSrc != null) {
+			vertexString = vertexSrc.join("\n");
+		}
+		if (fragmentSrc != null) {
+			fragmentString = fragmentSrc.join("\n");
+		}
+		
+		if (vertexString == null || fragmentString == null) {
+			throw "No vertex or fragment source provided";
+		}
+		
+		program = Shader.compileProgram(gl, vertexString, fragmentString);
+		if (program != null) {
+			compiled = true;
+			gl.useProgram(program);
+		}
 	}
 	
 	public function destroy() {
 		if (program != null) {
 			gl.deleteProgram(program);
 		}
-		
+		compiled = false;
 		attributes = null;
+	}
+	
+	public function applyData(shaderData:ShaderData) {
+		if (shaderData == null) return;
+		
+		var param:ShaderParameter;
+		var u:GLUniformLocation;
+		
+		for (key in shaderData.keys()) {
+			param = shaderData.get(key);
+			u = getUniformLocation(key);
+			//trace(key, param, u);
+			var v:Array<Float> = param.value;
+			switch(param.type) {
+				case BOOL | INT:
+					gl.uniform1i(u, Std.int(v[0]));
+				case BOOL2 | INT2:
+					gl.uniform2i(u, Std.int(v[0]), Std.int(v[1]));
+				case BOOL3 | INT3:
+					gl.uniform3i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]));
+				case BOOL4 | INT4:
+					gl.uniform4i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]), Std.int(v[3]));
+				case FLOAT:
+					gl.uniform1f(u, v[0]);
+				case FLOAT2:
+					gl.uniform2f(u, v[0], v[1]);
+				case FLOAT3:
+					gl.uniform3f(u, v[0], v[1], v[2]);
+				case FLOAT4:
+					gl.uniform4f(u, v[0], v[1], v[2], v[3]);
+				case MATRIX2X2:
+					gl.uniformMatrix2fv(u, false, new Float32Array(v.length > 4 ? v.slice(0, 3) : v));
+				case MATRIX3X3:
+					gl.uniformMatrix3fv(u, false, new Float32Array(v.length > 9 ? v.slice(0, 8) : v));
+				case MATRIX4X4:
+					gl.uniformMatrix4fv(u, false, new Float32Array(v.length > 16 ? v.slice(0, 15) : v));
+				case _:
+					trace("Unknown shaderParameter type " + param.type);
+			}
+		}
+		
 	}
 	
 	public function getAttribLocation(attribute:String):Int {
@@ -113,7 +180,7 @@ class Shader {
 	}
 	
 	
-	public static function compileProgram(gl:GLRenderContext, vertexSrc:Array<String>, fragmentSrc:Array<String>):GLProgram {
+	public static function compileProgram(gl:GLRenderContext, vertexSrc:String, fragmentSrc:String):GLProgram {
 		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
 		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
 		var program = gl.createProgram();
@@ -125,14 +192,15 @@ class Shader {
 			
 			if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0) {
 				trace ("Could not initialize shaders");
+				return null;
 			}
 		}
 		
 		return program;
 	}
 	
-	static function compileShader(gl:GLRenderContext, shaderSrc:Array<String>, type:Int):GLShader {
-		var src = shaderSrc.join("\n");
+	static function compileShader(gl:GLRenderContext, shaderSrc:String, type:Int):GLShader {
+		var src = shaderSrc;
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, src);
 		gl.compileShader(shader);

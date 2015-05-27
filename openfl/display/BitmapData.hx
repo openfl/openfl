@@ -941,7 +941,7 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			var textureImage = __image;
 			
-			if (!textureImage.premultiplied && !textureImage.transparent) {
+			if (!textureImage.premultiplied && textureImage.transparent) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.premultiplied = true;
