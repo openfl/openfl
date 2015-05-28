@@ -537,6 +537,7 @@ class CanvasTextField {
 			}
 			
 			yOffset += format.size * 1.185 + format.leading;
+			offsetX = 0;
 			
 		}
 		

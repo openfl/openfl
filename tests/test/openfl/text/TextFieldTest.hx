@@ -10,6 +10,8 @@ class TextFieldTest {
 	
 	@Test public function autoSize () {
 		
+		trace ("autoSize");
+		
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
@@ -36,14 +38,16 @@ class TextFieldTest {
 	
 	@Test public function background () {
 		
+		trace ("background");
+		
 		var textField = new TextField ();
-
+		
 		Assert.isFalse (textField.background);
-
+		
 		textField.background = true;
-
+		
 		Assert.isTrue (textField.background);
-
+		
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
@@ -56,25 +60,27 @@ class TextFieldTest {
 	
 	@Test public function backgroundColor () {
 		
+		trace ("backgroundColor");
+		
 		var textField = new TextField ();
 		
 		// Need to determine why alpha is FE in native
 		Assert.isTrue ((StringTools.hex (textField.backgroundColor, 6) == StringTools.hex (0xFFFFFF, 6)) || (StringTools.hex (textField.backgroundColor, 8) == StringTools.hex (0xFFFFFFFF, 8)));
 		//Assert.areEqual (StringTools.hex (0xFFFFFF, 6), StringTools.hex (textField.backgroundColor, 6));
-
+		
 		textField.backgroundColor = 0x00FF00;
 		
 		Assert.areEqual (StringTools.hex (0x00FF00, 6), StringTools.hex (textField.backgroundColor, 6));
-
+		
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
 		// Need to determine why alpha is FE in native
 		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFFFFFFFF, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFEFFFFFF, 8)));
 		//Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-
+		
 		textField.background = true;
-
+		
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
@@ -83,16 +89,18 @@ class TextFieldTest {
 		Assert.isTrue ((StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFF00FF00, 8)) || (StringTools.hex (bitmapData.getPixel32 (0, 0), 8) == StringTools.hex (0xFE00FF00, 8)));
 		#end
 		//Assert.areEqual (StringTools.hex (0xFF00FF00, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-
+		
 	}
 	
 	
 	@Test public function border () {
 		
+		trace ("border");
+		
 		var textField = new TextField ();
-
+		
 		Assert.isFalse (textField.border);
-
+		
 		textField.border = true;
 		
 		Assert.isTrue (textField.border);
@@ -104,26 +112,29 @@ class TextFieldTest {
 		// Looks correct, anti-aliasing is slightly different ATM
 		Assert.areEqual (StringTools.hex (0xFF000000, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
 		#end
+		
 	}
 	
 	
 	@Test public function borderColor () {
 		
+		trace ("borderColor");
+		
 		var textField = new TextField ();
-
+		
 		Assert.areEqual (StringTools.hex (0x000000, 6), StringTools.hex (textField.borderColor, 6));
-
+		
 		textField.borderColor = 0x00FF00;
-
+		
 		Assert.areEqual (StringTools.hex (0x00FF00, 6), StringTools.hex (textField.borderColor, 6));
-
+		
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
-
+		
 		Assert.areEqual (StringTools.hex (0xFFFFFFFF, 8), StringTools.hex (bitmapData.getPixel32 (0, 0), 8));
-
+		
 		textField.border = true;
-
+		
 		var bitmapData = new BitmapData (Std.int (textField.width), Std.int (textField.height));
 		bitmapData.draw (textField);
 		
@@ -136,6 +147,8 @@ class TextFieldTest {
 	
 	
 	@Test public function bottomScrollV () {
+		
+		trace ("bottomScrollV");
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -155,6 +168,8 @@ class TextFieldTest {
 	
 	@Test public function defaultTextFormat () {
 		
+		trace ("defaultTextFormat");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -166,6 +181,8 @@ class TextFieldTest {
 	
 	
 	@Test public function displayAsPassword () {
+		
+		trace ("displayAsPassword");
 		
 		// TODO: Confirm functionality
 		
@@ -179,6 +196,8 @@ class TextFieldTest {
 	
 	@Test public function embedFonts () {
 		
+		trace ("embedFonts");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -190,6 +209,8 @@ class TextFieldTest {
 	
 	
 	@Test public function gridFitType () {
+		
+		trace ("gridFitType");
 		
 		// TODO: Confirm functionality
 		
@@ -203,6 +224,8 @@ class TextFieldTest {
 	
 	@Test public function htmlText () {
 		
+		trace ("htmlText");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -214,6 +237,8 @@ class TextFieldTest {
 	
 	
 	@Test public function maxChars () {
+		
+		trace ("maxChars");
 		
 		// TODO: Confirm functionality
 		
@@ -227,6 +252,8 @@ class TextFieldTest {
 	
 	@Test public function maxScrollH () {
 		
+		trace ("maxScrollH");
+		
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
@@ -236,6 +263,8 @@ class TextFieldTest {
 	
 	
 	@Test public function maxScrollV () {
+		
+		trace ("maxScrollV");
 		
 		var textField = new TextField ();
 		
@@ -254,6 +283,8 @@ class TextFieldTest {
 	
 	@Test public function multiline () {
 		
+		trace ("multiline");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -265,6 +296,8 @@ class TextFieldTest {
 	
 	
 	@Test public function numLines () {
+		
+		trace ("numLines");
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -284,6 +317,8 @@ class TextFieldTest {
 	
 	@Test public function scrollH () {
 		
+		trace ("scrollH");
+		
 		var textField = new TextField ();
 		
 		Assert.areEqual (0, textField.scrollH);
@@ -296,6 +331,8 @@ class TextFieldTest {
 	
 	
 	@Test public function scrollV () {
+		
+		trace ("scrollV");
 		
 		var textField = new TextField ();
 		
@@ -310,6 +347,8 @@ class TextFieldTest {
 	
 	@Test public function selectable () {
 		
+		trace ("selectable");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -321,6 +360,8 @@ class TextFieldTest {
 	
 	
 	@Test public function sharpness () {
+		
+		trace ("sharpness");
 		
 		// TODO: Confirm functionality
 		
@@ -334,6 +375,8 @@ class TextFieldTest {
 	
 	@Test public function text () {
 		
+		trace ("text");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -345,6 +388,8 @@ class TextFieldTest {
 	
 	
 	@Test public function textColor () {
+		
+		trace ("textColor");
 		
 		// TODO: Confirm functionality
 		
@@ -358,6 +403,8 @@ class TextFieldTest {
 	
 	@Test public function textHeight () {
 		
+		trace ("textHeight");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -369,6 +416,8 @@ class TextFieldTest {
 	
 	
 	@Test public function textWidth () {
+		
+		trace ("textWidth");
 		
 		// TODO: Confirm functionality
 		
@@ -382,6 +431,8 @@ class TextFieldTest {
 	
 	@Test public function type () {
 		
+		trace ("type");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -393,6 +444,8 @@ class TextFieldTest {
 	
 	
 	@Test public function wordWrap () {
+		
+		trace ("wordWrap");
 		
 		// TODO: Confirm functionality
 		
@@ -406,6 +459,8 @@ class TextFieldTest {
 	
 	@Test public function new_ () {
 		
+		trace ("new");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -415,6 +470,8 @@ class TextFieldTest {
 	
 	
 	@Test public function appendText () {
+		
+		trace ("appendText");
 		
 		// TODO: Confirm functionality
 		
@@ -428,6 +485,8 @@ class TextFieldTest {
 	
 	@Test public function getLineMetrics () {
 		
+		trace ("getLineMetrics");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -439,6 +498,8 @@ class TextFieldTest {
 	
 	
 	@Test public function getLineOffset () {
+		
+		trace ("getLineOffset");
 		
 		// TODO: Confirm functionality
 		
@@ -452,6 +513,8 @@ class TextFieldTest {
 	
 	@Test public function getLineText () {
 		
+		trace ("getLineText");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -463,6 +526,8 @@ class TextFieldTest {
 	
 	
 	@Test public function getTextFormat () {
+		
+		trace ("getTextFormat");
 		
 		// TODO: Confirm functionality
 		
@@ -476,6 +541,8 @@ class TextFieldTest {
 	
 	@Test public function setSelection () {
 		
+		trace ("setSelection");
+		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -487,6 +554,8 @@ class TextFieldTest {
 	
 	
 	@Test public function setTextFormat () {
+		
+		trace ("setTextFormat");
 		
 		// TODO: Confirm functionality
 		
