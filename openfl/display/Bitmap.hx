@@ -63,6 +63,11 @@ class Bitmap extends DisplayObjectContainer {
 	public var bitmapData:BitmapData;
 	
 	/**
+	 * TODO Documentation
+	 */
+	public var glShader:GLShader;
+	
+	/**
 	 * Controls whether or not the Bitmap object is snapped to the nearest pixel.
 	 * This value is ignored in the native and HTML5 targets.
 	 * The PixelSnapping class includes possible values:

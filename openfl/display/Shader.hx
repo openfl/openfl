@@ -74,8 +74,8 @@ class Shader {
 	
 }
 
-typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
-typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
+private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
+private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
 
 #else
 typedef Shader = openfl._legacy.display.Shader;

@@ -5,6 +5,8 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
+import openfl.display.GLShader.GLShaderData;
+import openfl.display.GLShader.GLShaderParameter;
 import openfl.display.ShaderData;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
@@ -68,45 +70,51 @@ class Shader {
 		attributes = null;
 	}
 	
-	public function applyData(shaderData:ShaderData) {
+	public function applyData(shaderData:GLShaderData, renderSession:RenderSession) {
 		if (shaderData == null) return;
 		
-		var param:ShaderParameter;
+		var param:GLShaderParameter;
 		var u:GLUniformLocation;
-		
+		var v:Array<Float>;
+		var bd:BitmapData;
 		for (key in shaderData.keys()) {
-			param = shaderData.get(key);
 			u = getUniformLocation(key);
-			//trace(key, param, u);
-			var v:Array<Float> = param.value;
-			switch(param.type) {
-				case BOOL | INT:
-					gl.uniform1i(u, Std.int(v[0]));
-				case BOOL2 | INT2:
-					gl.uniform2i(u, Std.int(v[0]), Std.int(v[1]));
-				case BOOL3 | INT3:
-					gl.uniform3i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]));
-				case BOOL4 | INT4:
-					gl.uniform4i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]), Std.int(v[3]));
+			param = shaderData.get(key);
+			if (param == null) continue;
+			v = param.value;
+			bd = param.bitmap;
+			if (v == null && bd == null) continue;
+			switch(@:privateAccess param.internalType) {
+				case INT:
+					switch(param.size) {
+						case 1:	gl.uniform1i(u, Std.int(v[0]));
+						case 2:	gl.uniform2i(u, Std.int(v[0]), Std.int(v[1]));
+						case 3: gl.uniform3i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]));
+						case 4:	gl.uniform4i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]), Std.int(v[3]));
+						case _:
+					}
 				case FLOAT:
-					gl.uniform1f(u, v[0]);
-				case FLOAT2:
-					gl.uniform2f(u, v[0], v[1]);
-				case FLOAT3:
-					gl.uniform3f(u, v[0], v[1], v[2]);
-				case FLOAT4:
-					gl.uniform4f(u, v[0], v[1], v[2], v[3]);
-				case MATRIX2X2:
-					gl.uniformMatrix2fv(u, false, new Float32Array(v.length > 4 ? v.slice(0, 3) : v));
-				case MATRIX3X3:
-					gl.uniformMatrix3fv(u, false, new Float32Array(v.length > 9 ? v.slice(0, 8) : v));
-				case MATRIX4X4:
-					gl.uniformMatrix4fv(u, false, new Float32Array(v.length > 16 ? v.slice(0, 15) : v));
+					switch(param.size) {
+						case 1: gl.uniform1f(u, v[0]);
+						case 2: gl.uniform2f(u, v[0], v[1]);
+						case 3: gl.uniform3f(u, v[0], v[1], v[2]);
+						case 4: gl.uniform4f(u, v[0], v[1], v[2], v[3]);
+					}
+				case MAT:
+					switch(param.size) {
+						case 2: gl.uniformMatrix2fv(u, param.transpose, new Float32Array(param.value));
+						case 3: gl.uniformMatrix3fv(u, param.transpose, new Float32Array(param.value));
+						case 4: gl.uniformMatrix4fv(u, param.transpose, new Float32Array(param.value));
+					}
+				case SAMPLER:
+					if (bd == null ||  @:privateAccess !bd.__isValid) continue;
+					gl.activeTexture(gl.TEXTURE0 + renderSession.activeTextures);
+					gl.bindTexture(gl.TEXTURE_2D, bd.getTexture(gl));
+					gl.uniform1i(u, renderSession.activeTextures);
+					renderSession.activeTextures++;
 				case _:
-					trace("Unknown shaderParameter type " + param.type);
 			}
 		}
-		
 	}
 	
 	public function getAttribLocation(attribute:String):Int {

@@ -11,7 +11,7 @@ import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
 import openfl.display.ShaderData;
 import openfl.display.Tilesheet;
-import openfl.display.Shader in FlashShader;
+import openfl.display.GLShader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -25,7 +25,7 @@ import lime.utils.*;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Tilesheet)
-@:access(openfl.display.Shader)
+@:access(openfl.display.GLShader)
 @:access(openfl.geom.Matrix)
 class SpriteBatch {
 
@@ -153,7 +153,7 @@ class SpriteBatch {
 		flush();
 	}
 	
-	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
+	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:GLShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 		var texture = bitmapData.getTexture(gl);
 		
@@ -165,7 +165,7 @@ class SpriteBatch {
 		if (uvs == null) return;
 		
 		var shader:Shader = null;
-		var shaderData:ShaderData = null;
+		var shaderData:GLShaderData = null;
 		if (flashShader != null) {
 			flashShader.__init(this.gl);
 			shader = flashShader.__shader;
@@ -578,12 +578,13 @@ class SpriteBatch {
 		}
 		
 		renderSession.blendModeManager.setBlendMode(state.blendMode);
-		
-		if (renderSession.activeTextures > 0) {
-			renderSession.activeTextures = 1;
-			gl.activeTexture(gl.TEXTURE0);
+
+		if (renderSession.activeTextures == 0) {
+			renderSession.activeTextures++;
+			gl.activeTexture(gl.TEXTURE0 + 0);
 		}
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
+		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0);
 		
 		if (state.textureSmooth) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -593,8 +594,7 @@ class SpriteBatch {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
 		}
 		
-		// TODO HOW TO TEXTURE UHRUHR
-		shader.applyData(state.shaderData);
+		shader.applyData(state.shaderData, renderSession);
 		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
 		
@@ -602,7 +602,7 @@ class SpriteBatch {
 		
 	}
 	
-	function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:Shader, ?shaderData:ShaderData, ?skipAlpha:Bool = false) {
+	function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:Shader, ?shaderData:GLShaderData, ?skipAlpha:Bool = false) {
 		var state:State = states[index];
 		if (state == null) {
 			state = states[index] = new State();
@@ -648,7 +648,7 @@ private class State {
 	public var colorTransform:ColorTransform;
 	public var skipColorTransformAlpha:Bool = false;
 	public var shader:Shader;
-	public var shaderData:ShaderData;
+	public var shaderData:GLShaderData;
 	
 	public function new() { }
 	
