@@ -1,21 +1,17 @@
 package openfl.text; #if !flash #if !openfl_legacy
 
 
-import haxe.io.Path;
-import haxe.Utf8;
 import haxe.xml.Fast;
 import haxe.Timer;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.opengl.GLTexture;
-import lime.system.System;
 import lime.text.TextLayout;
 import lime.ui.Mouse;
 import lime.ui.MouseCursor;
-import openfl._internal.renderer.cairo.CairoRenderer;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
-import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
@@ -38,7 +34,6 @@ import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.html.DivElement;
-import js.html.Element;
 import js.html.InputElement;
 import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
@@ -126,7 +121,6 @@ import js.Browser;
  */
 
 @:access(openfl.display.Graphics)
-@:access(openfl.text.Font)
 @:access(openfl.text.TextFormat)
 
 
@@ -590,7 +584,6 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private var bounds (get, null):Rectangle;
 	
-	@:noCompletion private static var __utf8_endline_code:Int = 10;
 	
 	#if (js && html5)
 	private var __div:DivElement;
@@ -731,18 +724,30 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		var lineWidth = __getLineWidth(lineIndex);
+		#if (js && html5)
 		
-		var ascender = __getLineMetric(lineIndex, ASCENDER);
-		var descender = __getLineMetric(lineIndex, DESCENDER);
-		var leading = __getLineMetric(lineIndex, LEADING);
+		var lineWidth = CanvasTextField.getLineWidth (this, lineIndex);
+		var lineHeight = textHeight;
+		var ascender = lineHeight * 0.8;
+		var descender = lineHeight * 0.2;
+		var leading = 0;
 		
+		#else
+		
+		var lineWidth = CairoTextField.getLineWidth (this, lineIndex);
+		var ascender = CairoTextField.getLineMetric (this, lineIndex, ASCENDER);
+		var descender = CairoTextField.getLineMetric (this, lineIndex, DESCENDER);
+		var leading = CairoTextField.getLineMetric (this, lineIndex, LEADING);
 		var lineHeight = ascender + descender + leading;
 		
-		var margin = switch(__textFormat.align) {
+		#end
+		
+		var margin = switch (__textFormat.align) {
+			
 			case LEFT, JUSTIFY: 2;
 			case RIGHT: (width - lineWidth) - 2;
 			case CENTER: (width - lineWidth) / 2;
+			
 		}
 		
 		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 
@@ -904,122 +909,11 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __clipText (value:String):String {
-		
-		var textWidth = __getTextWidth (value);
-		var fillPer = textWidth / __width;
-		text = fillPer > 1 ? text.substr (-1 * Math.floor (text.length / fillPer)) : text;
-		return text + '';
-		
-	}
-	
-	
-	@:noCompletion private function __disableInputMode ():Void {
-		
-		#if (js && html5)
-		this_onRemovedFromStage (null);
-		#end
-		
-	}
-	
-	
-	@:noCompletion private function __enableInputMode ():Void {
-		
-		#if (js && html5)
-		
-		__cursorPosition = -1;
-		
-		if (__hiddenInput == null) {
-			
-			__hiddenInput = cast Browser.document.createElement ('input');
-			__hiddenInput.type = 'text';
-			__hiddenInput.style.position = 'absolute';
-			__hiddenInput.style.opacity = "0";
-			__hiddenInput.style.color = "transparent";
-			
-			// TODO: Position for mobile browsers better
-			
-			__hiddenInput.style.left = "0px";
-			__hiddenInput.style.top = "50%";
-			
-			if (~/(iPad|iPhone|iPod).*OS 8_/gi.match (Browser.window.navigator.userAgent)) {
-				
-				__hiddenInput.style.fontSize = "0px";
-				__hiddenInput.style.width = '0px';
-				__hiddenInput.style.height = '0px';
-				
-			} else {
-				
-				__hiddenInput.style.width = '1px';
-				__hiddenInput.style.height = '1px';
-				
-			}
-			
-			untyped (__hiddenInput.style).pointerEvents = 'none';
-			__hiddenInput.style.zIndex = "-10000000";
-			
-			if (maxChars > 0) {
-				
-				__hiddenInput.maxLength = maxChars;
-				
-			}
-			
-			Browser.document.body.appendChild (__hiddenInput);
-			__hiddenInput.value = __text;
-			
-		}
-		
-		if (stage != null) {
-			
-			this_onAddedToStage (null);
-			
-		} else {
-			
-			addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
-			addEventListener (Event.REMOVED_FROM_STAGE, this_onRemovedFromStage);
-			
-		}
-		
-		#end
-		
-	}
-	
-	
-	@:noCompletion private function __findFont (name:String):Font {
-		
-		#if (cpp || neko || nodejs)
-		
-		for (registeredFont in Font.__registeredFonts) {
-			
-			if (registeredFont == null) continue;
-			
-			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || Path.withoutDirectory (registeredFont.__fontPath) == name))) {
-				
-				return registeredFont;
-				
-			}
-			
-		}
-		
-		var font = Font.fromFile (name);
-		
-		if (font != null) {
-			
-			Font.__registeredFonts.push (font);
-			return font;
-			
-		}
-		
-		#end
-		
-		return null;
-		
-	}
-	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = bounds.transform (matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
 	}
 	
 	
@@ -1029,417 +923,6 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	@:noCompletion private function __getFont (format:TextFormat):String {
-		
-		var font = format.italic ? "italic " : "normal ";
-		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
-		font += format.size + "px";
-		font += "/" + (format.size + format.leading) + "px ";
-		
-		font += "" + switch (format.font) {
-			
-			case "_sans": "sans-serif";
-			case "_serif": "serif";
-			case "_typewriter": "monospace";
-			default: "'" + format.font + "'";
-			
-		}
-		
-		return font;
-		
-	}
-	
-	
-	@:noCompletion private function __getFontInstance (format:TextFormat):Font {
-		
-		#if (cpp || neko || nodejs)
-		
-		var instance = null;
-		var fontList = null;
-		
-		if (format != null && format.font != null) {
-			
-			instance = __findFont (format.font);
-			
-			if (instance != null) return instance;
-			
-			var systemFontDirectory = System.fontsDirectory;
-			
-			switch (format.font) {
-				
-				case "_sans":
-					
-					#if windows
-					if ( format.bold ) 
-					{
-						if ( format.italic ) {
-							fontList = [ systemFontDirectory + "/arialbi.ttf" ];
-						} else {
-							fontList = [ systemFontDirectory + "/arialbd.ttf" ];
-						}
-					}
-					else
-					{
-						if ( format.italic ) {
-							fontList = [ systemFontDirectory + "/ariali.ttf" ];
-						} else {
-							fontList = [ systemFontDirectory + "/arial.ttf" ];
-						}
-					}
-					#elseif (mac || ios)
-					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
-					#elseif linux
-					fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
-					#elseif android
-					fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
-					#elseif blackberry
-					fontList = [ systemFontDirectory + "/arial.ttf" ];
-					#end
-				
-				case "_serif":
-					
-					#if windows
-					if ( format.bold ) 
-					{
-						if ( format.italic ) {
-							fontList = [ systemFontDirectory + "/timesbi.ttf" ];
-						} else {
-							fontList = [ systemFontDirectory + "/timesbd.ttf" ];
-						}
-					}
-					else
-					{
-						if ( format.italic ) {
-							fontList = [ systemFontDirectory + "/timesi.ttf" ];
-						} else {
-							fontList = [ systemFontDirectory + "/times.ttf" ];
-						}
-					}
-					#end
-				
-				case "_typewriter":
-					
-					#if windows
-					if ( format.bold ) 
-					{
-						if ( format.italic ) {
-							fontList = [ systemFontDirectory + "/courbi.ttf" ];
-						} else {
-							fontList = [ systemFontDirectory + "/courbd.ttf" ];
-						}
-					}
-					else
-					{
-						if ( format.italic ) {
-							fontList = [ systemFontDirectory + "/couri.ttf" ];
-						} else {
-							fontList = [ systemFontDirectory + "/cour.ttf" ];
-						}
-					}
-					#elseif (mac || ios)
-					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
-					#elseif linux
-					fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
-					#elseif android
-					fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
-					#elseif blackberry
-					fontList = [ systemFontDirectory + "/cour.ttf" ];
-					#end
-				
-				default:
-					
-					fontList = [ systemFontDirectory + "/" + format.font ];
-				
-			}
-			
-			if (fontList != null) {
-				
-				for (font in fontList) {
-					
-					instance = __findFont (font);
-					
-					if (instance != null) return instance;
-					
-				}
-				
-			}
-			
-			instance = __findFont ("_serif");
-			
-			if (instance != null) return instance;
-			
-		}
-		
-		var systemFontDirectory = System.fontsDirectory;
-		
-		#if windows
-		fontList = [ systemFontDirectory + "/georgia.ttf" ];
-		#elseif (mac || ios)
-		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
-		#elseif linux
-		fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
-		#elseif android
-		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
-		#elseif blackberry
-		fontList = [ systemFontDirectory + "/georgia.ttf" ];
-		#else
-		fontList = [];
-		#end
-		
-		for (font in fontList) {
-			
-			instance = __findFont (font);
-			
-			if (instance != null) return instance;
-			
-		}
-		
-		#end
-		
-		return null;
-		
-	}
-	
-	@:noCompletion private function __getLineBreaks():Int {
-		
-		//returns the number of line breaks in the text
-		
-		var lines:Int = 0;
-		for (i in 0...Utf8.length(text)) {
-			var char = Utf8.charCodeAt(text, i);
-			if (char == __utf8_endline_code) {
-				lines++;
-			}
-		}
-		return lines;
-	}
-	
-	@:noCompletion private function __getLineBreakIndeces():Array<Int> {
-		
-		//returns the exact character indeces where the line breaks occur
-		
-		var breaks = [];
-		
-		for (i in 0...Utf8.length(text)) {
-			try{
-				var char = Utf8.charCodeAt(text, i);
-				if (char == __utf8_endline_code) {
-					breaks.push(i);
-				}
-			}
-		}
-		return breaks;
-	}
-	
-	@:noCompletion private function __getLineBreaksInRange(i:Int):Int {
-		
-		//returns the number of line breaks that occur within a given format range
-		
-		var lines:Int = 0;
-		if (__ranges.length > i && i >= 0) {
-			var range = __ranges[i];
-			
-			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
-			if (range.start > 0 && range.end < text.length) {
-				for (j in range.start...range.end + 1) {
-					var char = Utf8.charCodeAt(text, i);
-					if (char == __utf8_endline_code) {
-						lines++;
-					}
-				}
-			}
-		}
-		return lines;
-	}
-	
-	
-	
-	@:noCompletion private function __getLineIndeces(line:Int):Array<Int> {
-		
-		//tells you what the first and last (non-linebreak) character indeces are in a given line
-		
-		var breaks = __getLineBreakIndeces();
-		var i:Int = 0;
-		var first_char = 0;
-		var last_char = text.length - 1;
-		
-		for (br in breaks) {
-			
-			//if this is the line we care about
-			if (i == line) {
-				//the first actual character in our line is the index after this line break
-				first_char = br + 1;
-				
-				//if there's another line break left in the list
-				if (i != breaks.length-1) {
-					//the last character is the index before the next line break
-					//(otherwise it's the last character in the text field)
-					last_char = breaks[i + 1] - 1;
-				}
-			}
-			i++;
-		}
-		return [first_char, last_char];
-	}
-	
-	@:noCompletion private function __getLineWidth(line:Int):Float {
-		
-		#if (js && html5)
-		
-		if (__context == null) {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
-			__context = __canvas.getContext ("2d");
-			
-		}
-		
-		var linebreaks = __getLineBreakIndeces();
-		
-		__context.font = __getFont (__textFormat);
-		
-		if ( line == -1 )
-		{
-			var longest : Float = 0;
-			
-			for (i in 0...linebreaks.length) {
-
-				longest = Math.max( longest, __context.measureText ( __text.substr( i == 0 ? 0 : (linebreaks[ i-1 ]+1), linebreaks[ i ] ) ).width );
-				
-			}
-			
-			longest = Math.max( longest, __context.measureText ( __text.substr( linebreaks.length == 0 ? 0 : (linebreaks[ linebreaks.length-1 ]+1) ) ).width );
-			
-			return longest;
-		}
-		else
-		{
-			return __context.measureText ( __text.substr( line == 0 ? 0 : (linebreaks[ line-1 ]+1) ) ).width;
-		}
-
-		#elseif (cpp || neko || nodejs)
-		
-		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
-		
-		var measurements = __measureTextSub(false);
-		
-		var currWidth = 0.0;
-		var bestWidth = 0.0;
-		
-		var linebreaks = __getLineBreakIndeces();
-		
-		var currLine:Int = 0;
-		for (i in 0...measurements.length) {
-			var measure = measurements[i];
-			if (linebreaks.indexOf(i) != -1) {		//if this character is a line break
-				if (currLine == line) {				//if we're currently on the desired line
-					return currWidth;				//return the built up width immediately
-				}
-				else if (line == -1 && currWidth > bestWidth) {	//if we are looking at ALL lines, and this width is bigger than the last one
-					bestWidth = currWidth;			//this is the new best width
-				}
-				
-				currWidth = 0;			//reset current width
-				currLine++;
-			}
-			else {
-				currWidth += measurements[i];	//keep building up the width
-			}
-		}
-		
-		if (currLine == line) {			//we reached end of the loop & this is the line we want
-			bestWidth = currWidth;
-		}
-		else if (line == -1 && currWidth > bestWidth) {	//looking at ALL lines, and this one's bigger
-			bestWidth = currWidth;
-		}
-		
-		return bestWidth;
-		
-				
-		#else
-		
-		return null;
-		
-		#end
-	}
-	
-	private static inline var ASCENDER:Int = 0;
-	private static inline var DESCENDER:Int = 1;
-	private static inline var LINE_HEIGHT:Int = 2;
-	private static inline var LEADING:Int = 3;
-	
-	@:noCompletion private function __getLineMetric(line:Int,metric:Int):Float {
-		
-		//returns the specified line metric for the given line
-		
-		if (__ranges == null) {
-			return __getLineMetricSubRangesNull(true, metric);
-		}
-		else {
-			return __getLineMetricSubRangesNotNull(line, metric);
-		}
-	}
-	
-	@:noCompletion private function __getLineMetricSubRangesNull(singleLine:Bool=false, metric:Int):Float {
-		
-		//subroutine if ranges are null
-		
-		var font = __getFontInstance (__textFormat);
-		
-		if (font != null) {
-			
-			return switch(metric) {
-				case LINE_HEIGHT: __getLineMetricSubRangesNull(singleLine, ASCENDER) + 
-								  __getLineMetricSubRangesNull(singleLine, DESCENDER) + 
-								  __getLineMetricSubRangesNull(singleLine, LEADING);
-				case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
-				case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
-				case LEADING: __textFormat.leading;
-				default: 0;
-			}
-		}
-		
-		return 0;
-	}
-	
-	@:noCompletion private function __getLineMetricSubRangesNotNull(specificLine:Int, metric:Int):Float {
-		
-		//subroutine if ranges are not null
-		//TODO: test this more thoroughly
-		
-		var lineChars = __getLineIndeces(specificLine);
-		
-		var m = 0.0;
-		var best_m = 0.0;
-		
-		for (range in __ranges) {
-			
-			if (range.start >= lineChars[0]) {
-				var font = __getFontInstance (range.format);
-				
-				if (font != null) {
-					
-					m = switch(metric) {
-						case LINE_HEIGHT: __getLineMetricSubRangesNotNull(specificLine, ASCENDER) +
-										  __getLineMetricSubRangesNotNull(specificLine, DESCENDER) + 
-										  __getLineMetricSubRangesNotNull(specificLine, LEADING);
-						case ASCENDER: font.ascender / font.unitsPerEM * __textFormat.size;
-						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * __textFormat.size);
-						case LEADING: __textFormat.leading;
-						default: 0;
-					}
-				}
-			}
-			
-			if (m > best_m) {
-				best_m = m;
-			}
-			m = 0;
-		}
-		
-		return best_m;
-	}
 	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
@@ -1450,11 +933,19 @@ class TextField extends InteractiveObject {
 		var totalW:Float = 2;
 		var pos = text.length;
 		
-		if (x < __getTextWidth (text) + 2) {
+		#if (js && html5)
+		if (x < CanvasTextField.getTextWidth (this, text) + 2) {
+		#else
+		if (x < CairoTextField.getTextWidth (this, text) + 2) {
+		#end
 			
 			for (i in 0...text.length) {
 				
-				totalW += __getTextWidth (text.charAt (i));
+				#if (js && html5)
+				totalW += CanvasTextField.getTextWidth (this, text.charAt (i));
+				#else
+				totalW += CairoTextField.getTextWidth (this, text.charAt (i));
+				#end
 				
 				if (totalW >= x) {
 					
@@ -1468,30 +959,6 @@ class TextField extends InteractiveObject {
 		}
 		
 		return pos;
-		
-	}
-	
-	@:noCompletion private function __getTextWidth (text:String):Float {
-		
-		#if (js && html5) 
-		
-		if (__context == null) {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
-			__context = __canvas.getContext ("2d");
-			
-		}
-		
-		__context.font = __getFont (__textFormat);
-		__context.textAlign = 'left';
-		
-		return __context.measureText (text).width;
-		
-		#else
-		
-		return 0;
-		
-		#end
 		
 	}
 	
@@ -1518,197 +985,19 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	@:noCompletion private function __measureText (condense:Bool=true):Array<Float> {
-		
-		#if (js && html5)
-		
-		if (__context == null) {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
-			__context = __canvas.getContext ("2d");
-			
-		}
-		
-		if (__ranges == null) {
-			
-			__context.font = __getFont (__textFormat);
-			return [ __context.measureText (__text).width ];
-			
-		} else {
-			
-			var measurements = [];
-			
-			for (range in __ranges) {
-				
-				__context.font = __getFont (range.format);
-				measurements.push (__context.measureText (text.substring (range.start, range.end)).width);
-				
-			}
-			
-			return measurements;
-			
-		}
-		
-		#elseif (cpp || neko || nodejs)
-		
-		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
-		//TODO: look into whether this method and others can replace the JS stuff yet or not
-		
-		return __measureTextSub(condense);
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	@:noCompletion private function __measureTextSub(condense:Bool):Array<Float> {
-		
-		//subroutine for measuring text (width)
-		
-		if (__textLayout == null) {
-			
-			__textLayout = new TextLayout ();
-			
-		}
-		
-		if (__ranges == null) {
-			
-			return __measureTextSubRangesNull(condense);
-			
-		} else {
-			
-			return __measureTextSubRangesNotNull(condense);
-		}
-		
-		return null;
-	}
-	
-	@:noCompletion private function __measureTextSubRangesNull(condense:Bool):Array<Float> {
-		
-		//subroutine if format ranges are null
-		
-		var font = __getFontInstance (__textFormat);
-		var width = 0.0;
-		var widths = [];
-		
-		if (font != null && __textFormat.size != null) {
-			
-			__textLayout.text = null;
-			__textLayout.font = font;
-			__textLayout.size = Std.int (__textFormat.size);
-			__textLayout.text = __text;
-			
-			for (position in __textLayout.positions) {
-				
-				if (condense) {
-					width += position.advance.x;
-				}
-				else {
-					widths.push(position.advance.x);
-				}
-				
-			}
-			
-		}
-		
-		if (condense) {
-			widths.push(width);
-		}
-		
-		return widths;
-	}
-	
-	@:noCompletion private function __measureTextSubRangesNotNull(condense:Bool):Array<Float> {
-		
-		//subroutine if format ranges are not null
-		
-		var measurements = [];
-		
-		for (range in __ranges) {
-			
-			var font = __getFontInstance (range.format);
-			var width = 0.0;
-			
-			if (font != null && range.format.size != null) {
-			
-				__textLayout.text = null;
-				__textLayout.font = font;
-				__textLayout.size = Std.int (range.format.size);
-				__textLayout.text = text.substring (range.start, range.end);
-				
-				for (position in __textLayout.positions) {
-					
-					if (condense) {
-						width += position.advance.x;
-					}
-					else {
-						measurements.push(position.advance.x);
-					}
-					
-				}
-				
-			}
-			
-			if (condense) {
-				measurements.push (width);
-			}
-			
-		}
-		
-		return measurements;
-	}
-	
-	@:noCompletion private function __measureTextWithDOM ():Void {
-	 	
-	 	#if (js && html5)
-	 	
-		var div:Element = __div;
-		
-		if (__div == null) {
-			
-			div = cast Browser.document.createElement ("div");
-			div.innerHTML = new EReg ("\n", "g").replace (__text, "<br>");
-			div.style.setProperty ("font", __getFont (__textFormat), null);
-			div.style.setProperty ("pointer-events", "none", null);
-			div.style.position = "absolute";
-			div.style.top = "110%"; // position off-screen!
-			Browser.document.body.appendChild (div);
-			
-		}
-		
-		__measuredWidth = div.clientWidth;
-		
-		// Now set the width so that the height is accurate as a
-		// function of the flow within the width bounds...
-		if (__div == null) {
-			
-			div.style.width = Std.string (__width - 4) + "px";
-			
-		}
-		
-		__measuredHeight = div.clientHeight;
-		
-		if (__div == null) {
-			
-			Browser.document.body.removeChild (div);
-			
-		}
-		
-		#end
-		
-	}
 	
 	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
 		
-		CairoRenderer.renderTextField (this, renderSession);
+		CairoTextField.render (this, renderSession);
+		super.__renderCairo (renderSession);
+		
 	}
+	
 	
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTextField.render (this, renderSession);
+		super.__renderCanvas (renderSession);
 		
 	}
 	
@@ -1723,12 +1012,13 @@ class TextField extends InteractiveObject {
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
 		#if lime_cairo
-		CairoTextField.render( this );
+		CairoTextField.render (this, renderSession);
 		#else
-		CanvasTextField.update( this );
+		CanvasTextField.render (this, renderSession);
 		#end
 		
-		GLRenderer.renderBitmap( this, renderSession );
+		GLRenderer.renderBitmap (this, renderSession);
+		
 	}
 	
 	
@@ -1968,9 +1258,12 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize {
 		
 		if (value != autoSize) {
+			
 			__dirty = true;
 			__dirtyBounds = true;
+			
 		}
+		
 		return autoSize = value;
 		
 	}
@@ -1979,8 +1272,11 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_background (value:Bool):Bool {
 		
 		if (value != background) {
+			
 			__dirty = true;
+			
 		}
+		
 		return background = value;
 		
 	}
@@ -1997,9 +1293,12 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_border (value:Bool):Bool {
 		
 		if (value != border) {
+			
 			__dirty = true;
 			__dirtyBounds = true;
+			
 		}
+		
 		return border = value;
 		
 	}
@@ -2023,14 +1322,17 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_bounds ():Rectangle {
 		
-		if ( !__dirtyBounds )
+		if (!__dirtyBounds) {
+			
 			return __bounds;
+			
+		}
 		
 		if (autoSize != TextFieldAutoSize.NONE) {
 			
 			__bounds.width = (textWidth + 4) + ( border ? 1 : 0 );
 			__bounds.height = (textHeight + 4) + ( border ? 1 : 0 );
-
+			
 		} else {
 			
 			__bounds.width = __width;
@@ -2040,9 +1342,10 @@ class TextField extends InteractiveObject {
 		
 		__dirtyBounds = false;
 		
-		return __bounds;		
+		return __bounds;
 		
 	}
+	
 	
 	@:noCompletion private function get_caretPos ():Int {
 		
@@ -2102,8 +1405,10 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_htmlText (value:String):String {
 		
 		if (!__isHTML || __text != value) {
+			
 			__dirty = true;
 			__dirtyBounds = true;
+			
 		}
 		
 		__ranges = null;
@@ -2325,7 +1630,12 @@ class TextField extends InteractiveObject {
 		
 		//return the largest width of any given single line
 		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
-		return __getLineWidth( -1);
+		
+		#if (js && html5)
+		return CanvasTextField.getLineWidth (this, -1);
+		#else
+		return CairoTextField.getLineWidth (this, -1);
+		#end
 		
 	}
 	
@@ -2345,7 +1655,7 @@ class TextField extends InteractiveObject {
 			
 		} else {
 			
-			__measureTextWithDOM ();
+			DOMTextField.measureText (this);
 			
 			// Add a litte extra space for descenders...
 			return __measuredHeight + __textFormat.size * 0.185;
@@ -2353,18 +1663,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		#else
-		
-		//sum the heights of all the lines, but don't count the leading of the last line
-		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
-		var th = 0.0;
-		for (i in 0...numLines) {
-			th += __getLineMetric(i, ASCENDER) + __getLineMetric( i, DESCENDER );
-			if (i != numLines - 1) {
-				th += __getLineMetric(i, LEADING);
-			}
-		}
-		return th;
-		
+		return CairoTextField.getTextHeight (this);
 		#end
 		
 	}
@@ -2377,11 +1676,11 @@ class TextField extends InteractiveObject {
 			#if !dom
 			if (value == TextFieldType.INPUT) {
 				
-				__enableInputMode ();
+				CanvasTextField.enableInputMode (this);
 				
 			} else {
 				
-				__disableInputMode ();
+				CanvasTextField.disableInputMode (this);
 				
 			}
 			#end
@@ -2449,6 +1748,16 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	
+}
+
+
+@:noCompletion @:dox(hide) @:enum abstract TextFieldLineMetric(Int) from Int to Int {
+	
+	public var ASCENDER:Int = 0;
+	public var DESCENDER:Int = 1;
+	public var LINE_HEIGHT:Int = 2;
+	public var LEADING:Int = 3;
 	
 }
 

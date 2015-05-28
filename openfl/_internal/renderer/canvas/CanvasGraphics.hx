@@ -935,10 +935,10 @@ class CanvasGraphics {
 				endStroke ();
 				
 			}
-		
-			graphics.__bitmap = BitmapData.fromCanvas( graphics.__canvas );
 			
+			graphics.__bitmap = BitmapData.fromCanvas( graphics.__canvas );
 			graphics.__dirty = false;
+			
 		}
 		
 		#end

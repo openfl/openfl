@@ -4,7 +4,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoRenderer;
+import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
@@ -1121,7 +1121,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			CairoRenderer.renderDisplayObject (this, renderSession);
+			CairoShape.render (this, renderSession);
 			
 		}
 		
@@ -1184,17 +1184,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				
 			} else {
 				
-				#if (js && html5 )
-					
-					CanvasGraphics.render (__graphics, renderSession);
-					
+				#if (js && html5)
+				CanvasGraphics.render (__graphics, renderSession);
 				#elseif lime_cairo
-					
-					CairoGraphics.render (__graphics, renderSession);
-					
+				CairoGraphics.render (__graphics, renderSession);
 				#end
 				
 				GLRenderer.renderBitmap (this, renderSession);
+				
 			}
 			
 		}

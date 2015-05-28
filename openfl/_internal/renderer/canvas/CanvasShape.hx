@@ -49,8 +49,6 @@ class CanvasShape {
 					
 				}
 				
-				context.scale( 1 / shape.scaleX, 1 / shape.scaleY );
-				
 				if (scrollRect == null) {
 					
 					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);

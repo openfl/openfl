@@ -299,24 +299,24 @@ class GLRenderer extends AbstractRenderer {
 		renderDisplayObject (stage, projection);
 		
 	}
-		
-	public static function renderBitmap( displayObject:DisplayObject, renderSession:RenderSession ) : Void {
-		
-		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
-
-		if ( displayObject.__graphics == null || displayObject.__graphics.__bitmap == null ) return;
-		
-		var bounds = displayObject.getBounds( null );
-		var bitmap = displayObject.__graphics.__bitmap;
-		
-		var local = new Matrix();
-		local.scale( 1 / displayObject.scaleX, 1 / displayObject.scaleY );
-		local.translate( displayObject.__graphics.__bounds.x, displayObject.__graphics.__bounds.y );
-		local = local.mult( displayObject.__worldTransform );
-		
-		renderSession.spriteBatch.renderBitmapData( bitmap, true, local, displayObject.__worldColorTransform, displayObject.__worldAlpha, displayObject.__blendMode, ALWAYS );
 	
+	
+	public static function renderBitmap (shape:DisplayObject, renderSession:RenderSession):Void {
+		
+		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
+		
+		var bounds = shape.getBounds (null);
+		var bitmap = shape.__graphics.__bitmap;
+		
+		var local = new Matrix ();
+		local.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
+		local = local.mult (shape.__worldTransform);
+		
+		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
+		
 	}
+	
 	
 	public function renderDisplayObject (displayObject:DisplayObject, projection:Point, buffer:GLFramebuffer = null):Void {
 		

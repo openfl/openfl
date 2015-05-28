@@ -893,7 +893,7 @@ class CairoGraphics {
 			}
 			
 			if (graphics.__cairo == null) {
-			
+				
 				var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
 				var surface = CairoSurface.fromImage (bitmap.__image);
 				graphics.__cairo = new Cairo (surface);
@@ -966,20 +966,20 @@ class CairoGraphics {
 				
 			}
 			
+			if (fillCommands.length > 0) {
+				
+				endFill ();
+				
+			}
+			
+			if (strokeCommands.length > 0) {
+				
+				endStroke ();
+				
+			}
+			
 		}
 		
-		if (fillCommands.length > 0) {
-			
-			endFill ();
-			
-		}
-		
-		if (strokeCommands.length > 0) {
-			
-			endStroke ();
-			
-		}
-	
 		graphics.__bitmap.__image.dirty = true;
 		graphics.__dirty = false;
 		
