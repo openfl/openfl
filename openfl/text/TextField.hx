@@ -1754,10 +1754,10 @@ class TextField extends InteractiveObject {
 
 @:noCompletion @:dox(hide) @:enum abstract TextFieldLineMetric(Int) from Int to Int {
 	
-	public var ASCENDER:Int = 0;
-	public var DESCENDER:Int = 1;
-	public var LINE_HEIGHT:Int = 2;
-	public var LEADING:Int = 3;
+	public var ASCENDER = 0;
+	public var DESCENDER = 1;
+	public var LINE_HEIGHT = 2;
+	public var LEADING = 3;
 	
 }
 
