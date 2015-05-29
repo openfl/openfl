@@ -10,7 +10,9 @@ class TextFieldTest {
 	
 	@Test public function autoSize () {
 		
-		trace ("autoSize");
+		#if neko
+		Sys.println ("autoSize");
+		#end
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -38,7 +40,9 @@ class TextFieldTest {
 	
 	@Test public function background () {
 		
-		trace ("background");
+		#if neko
+		Sys.println ("background");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -60,7 +64,9 @@ class TextFieldTest {
 	
 	@Test public function backgroundColor () {
 		
-		trace ("backgroundColor");
+		#if neko
+		Sys.println ("backgroundColor");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -95,7 +101,9 @@ class TextFieldTest {
 	
 	@Test public function border () {
 		
-		trace ("border");
+		#if neko
+		Sys.println ("border");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -118,7 +126,9 @@ class TextFieldTest {
 	
 	@Test public function borderColor () {
 		
-		trace ("borderColor");
+		#if neko
+		Sys.println ("borderColor");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -148,7 +158,9 @@ class TextFieldTest {
 	
 	@Test public function bottomScrollV () {
 		
-		trace ("bottomScrollV");
+		#if neko
+		Sys.println ("bottomScrollV");
+		#end
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -168,7 +180,9 @@ class TextFieldTest {
 	
 	@Test public function defaultTextFormat () {
 		
-		trace ("defaultTextFormat");
+		#if neko
+		Sys.println ("defaultTextFormat");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -182,7 +196,9 @@ class TextFieldTest {
 	
 	@Test public function displayAsPassword () {
 		
-		trace ("displayAsPassword");
+		#if neko
+		Sys.println ("displayAsPassword");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -196,7 +212,9 @@ class TextFieldTest {
 	
 	@Test public function embedFonts () {
 		
-		trace ("embedFonts");
+		#if neko
+		Sys.println ("embedFonts");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -210,7 +228,9 @@ class TextFieldTest {
 	
 	@Test public function gridFitType () {
 		
-		trace ("gridFitType");
+		#if neko
+		Sys.println ("gridFitType");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -224,7 +244,9 @@ class TextFieldTest {
 	
 	@Test public function htmlText () {
 		
-		trace ("htmlText");
+		#if neko
+		Sys.println ("htmlText");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -238,7 +260,9 @@ class TextFieldTest {
 	
 	@Test public function maxChars () {
 		
-		trace ("maxChars");
+		#if neko
+		Sys.println ("maxChars");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -252,7 +276,9 @@ class TextFieldTest {
 	
 	@Test public function maxScrollH () {
 		
-		trace ("maxScrollH");
+		#if neko
+		Sys.println ("maxScrollH");
+		#end
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -264,7 +290,9 @@ class TextFieldTest {
 	
 	@Test public function maxScrollV () {
 		
-		trace ("maxScrollV");
+		#if neko
+		Sys.println ("maxScrollV");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -283,7 +311,9 @@ class TextFieldTest {
 	
 	@Test public function multiline () {
 		
-		trace ("multiline");
+		#if neko
+		Sys.println ("multiline");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -297,7 +327,9 @@ class TextFieldTest {
 	
 	@Test public function numLines () {
 		
-		trace ("numLines");
+		#if neko
+		Sys.println ("numLines");
+		#end
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -317,7 +349,9 @@ class TextFieldTest {
 	
 	@Test public function scrollH () {
 		
-		trace ("scrollH");
+		#if neko
+		Sys.println ("scrollH");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -332,7 +366,9 @@ class TextFieldTest {
 	
 	@Test public function scrollV () {
 		
-		trace ("scrollV");
+		#if neko
+		Sys.println ("scrollV");
+		#end
 		
 		var textField = new TextField ();
 		
@@ -347,7 +383,9 @@ class TextFieldTest {
 	
 	@Test public function selectable () {
 		
-		trace ("selectable");
+		#if neko
+		Sys.println ("selectable");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -361,7 +399,9 @@ class TextFieldTest {
 	
 	@Test public function sharpness () {
 		
-		trace ("sharpness");
+		#if neko
+		Sys.println ("sharpness");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -375,7 +415,9 @@ class TextFieldTest {
 	
 	@Test public function text () {
 		
-		trace ("text");
+		#if neko
+		Sys.println ("text");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -389,7 +431,9 @@ class TextFieldTest {
 	
 	@Test public function textColor () {
 		
-		trace ("textColor");
+		#if neko
+		Sys.println ("textColor");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -403,7 +447,9 @@ class TextFieldTest {
 	
 	@Test public function textHeight () {
 		
-		trace ("textHeight");
+		#if neko
+		Sys.println ("textHeight");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -417,7 +463,9 @@ class TextFieldTest {
 	
 	@Test public function textWidth () {
 		
-		trace ("textWidth");
+		#if neko
+		Sys.println ("textWidth");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -431,7 +479,9 @@ class TextFieldTest {
 	
 	@Test public function type () {
 		
-		trace ("type");
+		#if neko
+		Sys.println ("type");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -445,7 +495,9 @@ class TextFieldTest {
 	
 	@Test public function wordWrap () {
 		
-		trace ("wordWrap");
+		#if neko
+		Sys.println ("wordWrap");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -459,7 +511,9 @@ class TextFieldTest {
 	
 	@Test public function new_ () {
 		
-		trace ("new");
+		#if neko
+		Sys.println ("new");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -471,7 +525,9 @@ class TextFieldTest {
 	
 	@Test public function appendText () {
 		
-		trace ("appendText");
+		#if neko
+		Sys.println ("appendText");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -485,7 +541,9 @@ class TextFieldTest {
 	
 	@Test public function getLineMetrics () {
 		
-		trace ("getLineMetrics");
+		#if neko
+		Sys.println ("getLineMetrics");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -499,7 +557,9 @@ class TextFieldTest {
 	
 	@Test public function getLineOffset () {
 		
-		trace ("getLineOffset");
+		#if neko
+		Sys.println ("getLineOffset");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -513,7 +573,9 @@ class TextFieldTest {
 	
 	@Test public function getLineText () {
 		
-		trace ("getLineText");
+		#if neko
+		Sys.println ("getLineText");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -527,7 +589,9 @@ class TextFieldTest {
 	
 	@Test public function getTextFormat () {
 		
-		trace ("getTextFormat");
+		#if neko
+		Sys.println ("getTextFormat");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -541,7 +605,9 @@ class TextFieldTest {
 	
 	@Test public function setSelection () {
 		
-		trace ("setSelection");
+		#if neko
+		Sys.println ("setSelection");
+		#end
 		
 		// TODO: Confirm functionality
 		
@@ -555,7 +621,9 @@ class TextFieldTest {
 	
 	@Test public function setTextFormat () {
 		
-		trace ("setTextFormat");
+		#if neko
+		Sys.println ("setTextFormat");
+		#end
 		
 		// TODO: Confirm functionality
 		
