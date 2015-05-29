@@ -84,6 +84,7 @@ class Shader {
 			v = param.value;
 			bd = param.bitmap;
 			if (v == null && bd == null) continue;
+			// TODO Investigate Array support
 			switch(@:privateAccess param.internalType) {
 				case INT:
 					switch(param.size) {
@@ -91,7 +92,6 @@ class Shader {
 						case 2:	gl.uniform2i(u, Std.int(v[0]), Std.int(v[1]));
 						case 3: gl.uniform3i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]));
 						case 4:	gl.uniform4i(u, Std.int(v[0]), Std.int(v[1]), Std.int(v[2]), Std.int(v[3]));
-						case _:
 					}
 				case FLOAT:
 					switch(param.size) {

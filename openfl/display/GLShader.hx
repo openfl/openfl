@@ -161,7 +161,6 @@ class GLShaderParameter {
 				var s = Std.parseInt(type.charAt(type.length - 1));
 				size = s;
 			case "sampler2D" | "samplerCube":
-				trace("sampler");
 				internalType = SAMPLER;
 				size = 0;
 			case _: 
@@ -173,16 +172,16 @@ class GLShaderParameter {
 }
 
 @:enum abstract GLShaderPrecision(Int) {
-	var LOW = 0;
-	var MEDIUM = 1;
-	var HIGH = 2;
+	var LOW 	= 0;
+	var MEDIUM 	= 1;
+	var HIGH 	= 2;
 }
 
 @:enum private abstract GLShaderParameterInternal(Int) {
-	var NONE = 0;
-	var INT = 1;
-	var FLOAT = 2;
-	var MAT = 3;
+	var NONE 	= 0;
+	var INT 	= 1;
+	var FLOAT 	= 2;
+	var MAT 	= 3;
 	var SAMPLER = 4;
 }
 
