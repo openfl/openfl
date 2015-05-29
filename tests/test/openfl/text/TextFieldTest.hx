@@ -10,7 +10,7 @@ class TextFieldTest {
 	
 	@Test public function autoSize () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("autoSize");
 		#end
 		
@@ -40,7 +40,7 @@ class TextFieldTest {
 	
 	@Test public function background () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("background");
 		#end
 		
@@ -64,7 +64,7 @@ class TextFieldTest {
 	
 	@Test public function backgroundColor () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("backgroundColor");
 		#end
 		
@@ -101,7 +101,7 @@ class TextFieldTest {
 	
 	@Test public function border () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("border");
 		#end
 		
@@ -126,7 +126,7 @@ class TextFieldTest {
 	
 	@Test public function borderColor () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("borderColor");
 		#end
 		
@@ -158,7 +158,7 @@ class TextFieldTest {
 	
 	@Test public function bottomScrollV () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("bottomScrollV");
 		#end
 		
@@ -180,7 +180,7 @@ class TextFieldTest {
 	
 	@Test public function defaultTextFormat () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("defaultTextFormat");
 		#end
 		
@@ -196,7 +196,7 @@ class TextFieldTest {
 	
 	@Test public function displayAsPassword () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("displayAsPassword");
 		#end
 		
@@ -212,7 +212,7 @@ class TextFieldTest {
 	
 	@Test public function embedFonts () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("embedFonts");
 		#end
 		
@@ -228,7 +228,7 @@ class TextFieldTest {
 	
 	@Test public function gridFitType () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("gridFitType");
 		#end
 		
@@ -244,7 +244,7 @@ class TextFieldTest {
 	
 	@Test public function htmlText () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("htmlText");
 		#end
 		
@@ -260,7 +260,7 @@ class TextFieldTest {
 	
 	@Test public function maxChars () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("maxChars");
 		#end
 		
@@ -276,7 +276,7 @@ class TextFieldTest {
 	
 	@Test public function maxScrollH () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("maxScrollH");
 		#end
 		
@@ -290,7 +290,7 @@ class TextFieldTest {
 	
 	@Test public function maxScrollV () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("maxScrollV");
 		#end
 		
@@ -311,7 +311,7 @@ class TextFieldTest {
 	
 	@Test public function multiline () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("multiline");
 		#end
 		
@@ -327,7 +327,7 @@ class TextFieldTest {
 	
 	@Test public function numLines () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("numLines");
 		#end
 		
@@ -349,7 +349,7 @@ class TextFieldTest {
 	
 	@Test public function scrollH () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("scrollH");
 		#end
 		
@@ -366,7 +366,7 @@ class TextFieldTest {
 	
 	@Test public function scrollV () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("scrollV");
 		#end
 		
@@ -383,7 +383,7 @@ class TextFieldTest {
 	
 	@Test public function selectable () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("selectable");
 		#end
 		
@@ -399,7 +399,7 @@ class TextFieldTest {
 	
 	@Test public function sharpness () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("sharpness");
 		#end
 		
@@ -415,7 +415,7 @@ class TextFieldTest {
 	
 	@Test public function text () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("text");
 		#end
 		
@@ -431,7 +431,7 @@ class TextFieldTest {
 	
 	@Test public function textColor () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("textColor");
 		#end
 		
@@ -447,7 +447,7 @@ class TextFieldTest {
 	
 	@Test public function textHeight () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("textHeight");
 		#end
 		
@@ -463,7 +463,7 @@ class TextFieldTest {
 	
 	@Test public function textWidth () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("textWidth");
 		#end
 		
@@ -479,7 +479,7 @@ class TextFieldTest {
 	
 	@Test public function type () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("type");
 		#end
 		
@@ -495,7 +495,7 @@ class TextFieldTest {
 	
 	@Test public function wordWrap () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("wordWrap");
 		#end
 		
@@ -511,7 +511,7 @@ class TextFieldTest {
 	
 	@Test public function new_ () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("new");
 		#end
 		
@@ -525,7 +525,7 @@ class TextFieldTest {
 	
 	@Test public function appendText () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("appendText");
 		#end
 		
@@ -541,7 +541,7 @@ class TextFieldTest {
 	
 	@Test public function getLineMetrics () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("getLineMetrics");
 		#end
 		
@@ -557,7 +557,7 @@ class TextFieldTest {
 	
 	@Test public function getLineOffset () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("getLineOffset");
 		#end
 		
@@ -573,7 +573,7 @@ class TextFieldTest {
 	
 	@Test public function getLineText () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("getLineText");
 		#end
 		
@@ -589,7 +589,7 @@ class TextFieldTest {
 	
 	@Test public function getTextFormat () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("getTextFormat");
 		#end
 		
@@ -605,7 +605,7 @@ class TextFieldTest {
 	
 	@Test public function setSelection () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("setSelection");
 		#end
 		
@@ -621,7 +621,7 @@ class TextFieldTest {
 	
 	@Test public function setTextFormat () {
 		
-		#if neko
+		#if (cpp || neko)
 		Sys.println ("setTextFormat");
 		#end
 		
