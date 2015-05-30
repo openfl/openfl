@@ -30,9 +30,9 @@ install:
   - haxelib dev openfl $(pwd)
   - cd ~/munit/tool
   - haxe build.hxml
-  - if [[ $TARGET == 'cpp' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > /dev/null ; fi
-  - if [[ $TARGET == 'docs' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > /dev/null ; fi
-  - haxelib run lime rebuild tools
+  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > /dev/null ; fi
+  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > /dev/null ; fi
+  - haxelib run lime rebuild tools -nocffi
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/tests
