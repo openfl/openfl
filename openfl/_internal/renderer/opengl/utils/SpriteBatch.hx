@@ -11,7 +11,8 @@ import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
 import openfl.display.ShaderData;
 import openfl.display.Tilesheet;
-import openfl.display.GLShader;
+import openfl.display.Shader in FlashShader;
+import openfl.display.Shader.GLShaderData;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -25,7 +26,7 @@ import lime.utils.*;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Tilesheet)
-@:access(openfl.display.GLShader)
+@:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
 class SpriteBatch {
 
@@ -153,7 +154,7 @@ class SpriteBatch {
 		flush();
 	}
 	
-	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:GLShader, ?pixelSnapping:PixelSnapping) {
+	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 		var texture = bitmapData.getTexture(gl);
 		

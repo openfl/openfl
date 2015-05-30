@@ -2,11 +2,12 @@ package openfl._internal.renderer.opengl.shaders2;
 
 import haxe.ds.Either;
 import lime.graphics.GLRenderContext;
+import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
-import openfl.display.GLShader.GLShaderData;
-import openfl.display.GLShader.GLShaderParameter;
+import openfl.display.Shader.GLShaderData;
+import openfl.display.Shader.GLShaderParameter;
 import openfl.display.ShaderData;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
@@ -15,6 +16,7 @@ import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
 
+@:access(openfl._internal.renderer.opengl.utils.ShaderManager)
 class Shader {
 	
 	private static var UID:Int = 0;
@@ -189,6 +191,14 @@ class Shader {
 	
 	
 	public static function compileProgram(gl:GLRenderContext, vertexSrc:String, fragmentSrc:String):GLProgram {
+		
+		var cache = ShaderManager.compiledShadersCache;
+		var key = vertexSrc + "\n" + fragmentSrc;
+		
+		if (cache.exists(key)) {
+			return cache.get(key);
+		}
+		
 		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
 		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
 		var program = gl.createProgram();
@@ -198,12 +208,16 @@ class Shader {
 			gl.attachShader(program, fragmentShader);
 			gl.linkProgram(program);
 			
+			gl.deleteShader(vertexShader);
+			gl.deleteShader(fragmentShader);
+			
 			if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0) {
 				trace ("Could not initialize shaders");
 				return null;
 			}
 		}
 		
+		cache.set(key, program);
 		return program;
 	}
 	

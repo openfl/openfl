@@ -3,6 +3,7 @@ package openfl._internal.renderer.opengl.shaders2;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefAttrib;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefVarying;
 
 class FillShader extends Shader {
 
@@ -19,7 +20,7 @@ class FillShader extends Shader {
 			'uniform vec4 ${Uniform.ColorMultiplier};',
 			'uniform vec4 ${Uniform.ColorOffset};',
 			
-			'varying vec4 vColor;',
+			'varying vec4 ${DefVarying.Color};',
 			
 			'vec4 colorTransform(const vec4 color, const float alpha, const vec4 multiplier, const vec4 offset) {',
 			'   vec4 result = color * multiplier;',
@@ -32,7 +33,7 @@ class FillShader extends Shader {
 			
 			'void main(void) {',
 			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * ${Uniform.TranslationMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
-			'   vColor = colorTransform(${Uniform.Color}, ${Uniform.Alpha}, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
+			'   ${DefVarying.Color} = colorTransform(${Uniform.Color}, ${Uniform.Alpha}, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
 			'}'
 
 		];
@@ -42,10 +43,10 @@ class FillShader extends Shader {
 			'precision lowp float;',
 			'#endif',
 			
-			'varying vec4 vColor;',
+			'varying vec4 ${DefVarying.Color};',
 			
 			'void main(void) {',
-			'   gl_FragColor = vColor;',
+			'   gl_FragColor = ${DefVarying.Color};',
 			'}'
 		];
 		
@@ -70,7 +71,7 @@ class FillShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var TranslationMatrix = "uTranslationMatrix";
+	var TranslationMatrix = "openfl_uTranslationMatrix";
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;
 	var Alpha = DefUniform.Alpha;

@@ -614,6 +614,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var scrollRect (get, set):Rectangle;
 	
 	/**
+	 * TODO Documentation
+	 */
+	public var shader(default, set):Shader;
+	
+	/**
 	 * The Stage of the display object. A Flash runtime application has only one
 	 * Stage object. For example, you can create and load multiple display
 	 * objects into the display list, and the <code>stage</code> property of each
@@ -730,6 +735,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __scaleX:Float;
 	@:noCompletion private var __scaleY:Float;
 	@:noCompletion private var __scrollRect:Rectangle;
+	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __transform:Transform;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool;
@@ -1348,6 +1354,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					__blendMode = parent.__blendMode;
 				}
 				
+				if (shader == null) {
+					__shader = parent.__shader;
+				}
+				
 				#else
 				
 				var worldVisible = (parent.__worldVisible && visible);
@@ -1482,6 +1492,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__blendMode = value;
 		return blendMode = value;
+		
+	}
+	
+	@:noCompletion private function set_shader (value:Shader):Shader {
+		
+		__shader = value;
+		return shader = value;
 		
 	}
 	
