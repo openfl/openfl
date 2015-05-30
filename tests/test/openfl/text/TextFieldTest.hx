@@ -10,10 +10,6 @@ class TextFieldTest {
 	
 	@Test public function autoSize () {
 		
-		#if (cpp || neko)
-		Sys.println ("autoSize");
-		#end
-		
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
@@ -40,10 +36,6 @@ class TextFieldTest {
 	
 	@Test public function background () {
 		
-		#if (cpp || neko)
-		Sys.println ("background");
-		#end
-		
 		var textField = new TextField ();
 		
 		Assert.isFalse (textField.background);
@@ -63,10 +55,6 @@ class TextFieldTest {
 	
 	
 	@Test public function backgroundColor () {
-		
-		#if (cpp || neko)
-		Sys.println ("backgroundColor");
-		#end
 		
 		var textField = new TextField ();
 		
@@ -101,10 +89,6 @@ class TextFieldTest {
 	
 	@Test public function border () {
 		
-		#if (cpp || neko)
-		Sys.println ("border");
-		#end
-		
 		var textField = new TextField ();
 		
 		Assert.isFalse (textField.border);
@@ -125,10 +109,6 @@ class TextFieldTest {
 	
 	
 	@Test public function borderColor () {
-		
-		#if (cpp || neko)
-		Sys.println ("borderColor");
-		#end
 		
 		var textField = new TextField ();
 		
@@ -158,10 +138,6 @@ class TextFieldTest {
 	
 	@Test public function bottomScrollV () {
 		
-		#if (cpp || neko)
-		Sys.println ("bottomScrollV");
-		#end
-		
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
@@ -180,10 +156,6 @@ class TextFieldTest {
 	
 	@Test public function defaultTextFormat () {
 		
-		#if (cpp || neko)
-		Sys.println ("defaultTextFormat");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -195,10 +167,6 @@ class TextFieldTest {
 	
 	
 	@Test public function displayAsPassword () {
-		
-		#if (cpp || neko)
-		Sys.println ("displayAsPassword");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -212,10 +180,6 @@ class TextFieldTest {
 	
 	@Test public function embedFonts () {
 		
-		#if (cpp || neko)
-		Sys.println ("embedFonts");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -227,10 +191,6 @@ class TextFieldTest {
 	
 	
 	@Test public function gridFitType () {
-		
-		#if (cpp || neko)
-		Sys.println ("gridFitType");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -244,10 +204,6 @@ class TextFieldTest {
 	
 	@Test public function htmlText () {
 		
-		#if (cpp || neko)
-		Sys.println ("htmlText");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -259,10 +215,6 @@ class TextFieldTest {
 	
 	
 	@Test public function maxChars () {
-		
-		#if (cpp || neko)
-		Sys.println ("maxChars");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -276,10 +228,6 @@ class TextFieldTest {
 	
 	@Test public function maxScrollH () {
 		
-		#if (cpp || neko)
-		Sys.println ("maxScrollH");
-		#end
-		
 		var textField = new TextField ();
 		textField.text = "Hello";
 		
@@ -289,10 +237,6 @@ class TextFieldTest {
 	
 	
 	@Test public function maxScrollV () {
-		
-		#if (cpp || neko)
-		Sys.println ("maxScrollV");
-		#end
 		
 		var textField = new TextField ();
 		
@@ -311,10 +255,6 @@ class TextFieldTest {
 	
 	@Test public function multiline () {
 		
-		#if (cpp || neko)
-		Sys.println ("multiline");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -326,10 +266,6 @@ class TextFieldTest {
 	
 	
 	@Test public function numLines () {
-		
-		#if (cpp || neko)
-		Sys.println ("numLines");
-		#end
 		
 		var textField = new TextField ();
 		textField.text = "Hello";
@@ -349,10 +285,6 @@ class TextFieldTest {
 	
 	@Test public function scrollH () {
 		
-		#if (cpp || neko)
-		Sys.println ("scrollH");
-		#end
-		
 		var textField = new TextField ();
 		
 		Assert.areEqual (0, textField.scrollH);
@@ -365,10 +297,6 @@ class TextFieldTest {
 	
 	
 	@Test public function scrollV () {
-		
-		#if (cpp || neko)
-		Sys.println ("scrollV");
-		#end
 		
 		var textField = new TextField ();
 		
@@ -383,10 +311,6 @@ class TextFieldTest {
 	
 	@Test public function selectable () {
 		
-		#if (cpp || neko)
-		Sys.println ("selectable");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -398,10 +322,6 @@ class TextFieldTest {
 	
 	
 	@Test public function sharpness () {
-		
-		#if (cpp || neko)
-		Sys.println ("sharpness");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -415,10 +335,6 @@ class TextFieldTest {
 	
 	@Test public function text () {
 		
-		#if (cpp || neko)
-		Sys.println ("text");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -430,10 +346,6 @@ class TextFieldTest {
 	
 	
 	@Test public function textColor () {
-		
-		#if (cpp || neko)
-		Sys.println ("textColor");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -447,10 +359,6 @@ class TextFieldTest {
 	
 	@Test public function textHeight () {
 		
-		#if (cpp || neko)
-		Sys.println ("textHeight");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -462,10 +370,6 @@ class TextFieldTest {
 	
 	
 	@Test public function textWidth () {
-		
-		#if (cpp || neko)
-		Sys.println ("textWidth");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -479,10 +383,6 @@ class TextFieldTest {
 	
 	@Test public function type () {
 		
-		#if (cpp || neko)
-		Sys.println ("type");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -494,10 +394,6 @@ class TextFieldTest {
 	
 	
 	@Test public function wordWrap () {
-		
-		#if (cpp || neko)
-		Sys.println ("wordWrap");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -511,10 +407,6 @@ class TextFieldTest {
 	
 	@Test public function new_ () {
 		
-		#if (cpp || neko)
-		Sys.println ("new");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -524,10 +416,6 @@ class TextFieldTest {
 	
 	
 	@Test public function appendText () {
-		
-		#if (cpp || neko)
-		Sys.println ("appendText");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -541,10 +429,6 @@ class TextFieldTest {
 	
 	@Test public function getLineMetrics () {
 		
-		#if (cpp || neko)
-		Sys.println ("getLineMetrics");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -556,10 +440,6 @@ class TextFieldTest {
 	
 	
 	@Test public function getLineOffset () {
-		
-		#if (cpp || neko)
-		Sys.println ("getLineOffset");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -573,10 +453,6 @@ class TextFieldTest {
 	
 	@Test public function getLineText () {
 		
-		#if (cpp || neko)
-		Sys.println ("getLineText");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -588,10 +464,6 @@ class TextFieldTest {
 	
 	
 	@Test public function getTextFormat () {
-		
-		#if (cpp || neko)
-		Sys.println ("getTextFormat");
-		#end
 		
 		// TODO: Confirm functionality
 		
@@ -605,10 +477,6 @@ class TextFieldTest {
 	
 	@Test public function setSelection () {
 		
-		#if (cpp || neko)
-		Sys.println ("setSelection");
-		#end
-		
 		// TODO: Confirm functionality
 		
 		var textField = new TextField ();
@@ -620,10 +488,6 @@ class TextFieldTest {
 	
 	
 	@Test public function setTextFormat () {
-		
-		#if (cpp || neko)
-		Sys.println ("setTextFormat");
-		#end
 		
 		// TODO: Confirm functionality
 		
