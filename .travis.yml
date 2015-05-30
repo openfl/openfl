@@ -11,20 +11,20 @@ before_install:
   - export AUDIODEV=null
 
 install:
-  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1
+  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > /dev/null
   - haxelib dev lime ~/lime
-  - haxelib install hxcpp
-  - haxelib install format
-  - git clone https://github.com/openfl/dox ~/dox --depth 1
+  - haxelib install hxcpp > /dev/null
+  - haxelib install format > /dev/null
+  - git clone https://github.com/openfl/dox ~/dox --depth 1 > /dev/null
   - haxelib dev dox ~/dox
-  - haxelib install mcover
-  - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
+  - haxelib install mcover > /dev/null
+  - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > /dev/null
   - haxelib dev munit ~/munit/src
   - haxelib dev openfl $(pwd)
   - cd ~/munit/tool
   - haxe build.hxml
-  - haxelib run lime rebuild linux -release -64 -nocffi
-  - haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi
+  - haxelib run lime rebuild linux -release -64 -nocffi > /dev/null
+  - haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > /dev/null
   - haxelib run lime rebuild tools
 
 before_script:
@@ -40,7 +40,7 @@ script:
   - haxelib run lime test neko -Dhybrid
   - haxelib run munit test -as3 -norun
   - haxelib run munit test -browser phantomjs
-  - haxelib run lime test linux
+  - haxelib run lime test linux --window-hardware=false
   - haxelib run lime test linux -Dlegacy
   - cd $TRAVIS_BUILD_DIR/docs
   - haxe build.hxml
