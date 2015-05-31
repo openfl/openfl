@@ -165,7 +165,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
 			child.dispatchEvent (event);
-			
+			__setRenderDirty();
 		}
 		
 		return child;
@@ -236,7 +236,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
 			child.dispatchEvent (event);
-			
+			__setRenderDirty();
 		}
 		
 		__children.insert (index, child);
@@ -442,7 +442,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
 			child.dispatchEvent (new Event (Event.REMOVED, true));
-			
+			__setRenderDirty();
 		}
 		
 		return child;
@@ -949,6 +949,30 @@ class DisplayObjectContainer extends InteractiveObject {
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
+		
+		if (__cacheAsBitmap) {
+			
+			if (__updateCachedBitmap) {
+				var bounds = new Rectangle();
+				__getBounds(bounds, @:privateAccess Matrix.__identity);
+				
+				
+				if (__cachedBitmap == null) {
+					__cachedBitmap = new BitmapData(0, 0);
+				}
+				// we don't need an Image to be created so we will hack the values ourselves
+				@:privateAccess __cachedBitmap.width = Math.floor(bounds.width);
+				@:privateAccess __cachedBitmap.height = Math.floor(bounds.height);
+				@:privateAccess __cachedBitmap.rect = bounds;
+				
+				__cachedBitmap.__drawGL(renderSession, __cachedBitmap.width, __cachedBitmap.height, this, true, false, true, false);
+				__updateCachedBitmap = false;
+			}
+			
+            renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, __worldTransform, __worldColorTransform, __worldAlpha, blendMode, __shader);
+			
+			return;
+		}
 		
 		if (scrollRect != null) {
 			renderSession.spriteBatch.stop();

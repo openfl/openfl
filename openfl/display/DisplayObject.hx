@@ -264,7 +264,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * performance increases when the movie clip is translated(when its <i>x</i>
 	 * and <i>y</i> position is changed).</p>
 	 */
-	public var cacheAsBitmap:Bool;
+	public var cacheAsBitmap(get, set):Bool;
 	
 	/**
 	 * An indexed array that contains each filter object currently associated
@@ -751,6 +751,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
 	@:noCompletion private var __cacheAsBitmap:Bool = false;
+	@:noCompletion private var __forceCacheAsBitmap:Bool;
+	@:noCompletion private var __updateCachedBitmap:Bool;	
+	@:noCompletion private var __cachedBitmap:BitmapData;	
+	
 	
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
@@ -1215,6 +1219,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!__renderDirty) {
 			
+			__updateCachedBitmap = true;
 			__renderDirty = true;
 			__worldRenderDirty++;
 			
@@ -1499,6 +1504,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__shader = value;
 		return shader = value;
+		
+	}
+	
+	@:noCompletion private function get_cacheAsBitmap ():Bool {
+		
+		return __cacheAsBitmap;
+		
+	}
+	
+	@:noCompletion private function set_cacheAsBitmap (value:Bool):Bool {
+		
+		return __cacheAsBitmap = __forceCacheAsBitmap ? true : value;
 		
 	}
 	
