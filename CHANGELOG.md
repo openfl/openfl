@@ -1,3 +1,9 @@
+3.0.8 (05/31/2015)
+------------------
+
+* Guard hybrid Cairo + GL behavior behind #if cairo_graphics for now
+
+
 3.0.7 (05/30/2015)
 ------------------
 
