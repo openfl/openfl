@@ -841,7 +841,7 @@ class CairoGraphics {
 								
 							}
 						
-						case DrawTiles (sheet, tileData, smooth, flags, count):
+						case DrawTiles (sheet, tileData, smooth, flags, shader, count):
 											
 							endFill ();
 							endStroke ();

@@ -758,7 +758,7 @@ class CanvasGraphics {
 								
 							}
 						
-						case DrawTiles (sheet, tileData, smooth, flags, count):
+						case DrawTiles (sheet, tileData, smooth, flags, shader, count):
 							
 							var useScale = (flags & Graphics.TILE_SCALE) > 0;
 							var useRotation = (flags & Graphics.TILE_ROTATION) > 0;

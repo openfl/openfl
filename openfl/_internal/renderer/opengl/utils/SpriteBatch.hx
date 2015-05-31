@@ -165,13 +165,7 @@ class SpriteBatch {
 		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
-		var shader:Shader = null;
-		var shaderData:GLShaderData = null;
-		if (flashShader != null) {
-			flashShader.__init(this.gl);
-			shader = flashShader.__shader;
-			shaderData = flashShader.data;
-		}
+		var shaderData = getShaderData(flashShader);
 		
 		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
 		
@@ -181,12 +175,12 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, null, color, pixelSnapping);
 		
-		setState(batchedSprites, texture, smoothing, blendMode, ct, shader, shaderData, true);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, shaderData.shader, shaderData.data, true);
 		
 		batchedSprites++;
 	}
 	
-	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1) {		
+	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, ?smooth:Bool = false, ?flags:Int = 0, ?flashShader:FlashShader, ?count:Int = -1) {		
 		
 		var texture = sheet.__bitmap.getTexture(gl);
 		if (texture == null) return;
@@ -247,6 +241,8 @@ class SpriteBatch {
 		
 		//enableAttributes((useRGB || useAlpha) ? 0 : 0xFFFFFFFF);
 		enableAttributes(0);
+		
+		var shaderData = getShaderData(flashShader);
 		
 		while (iIndex < totalCount) {
 			
@@ -347,7 +343,7 @@ class SpriteBatch {
 				
 				fillVertices(bIndex, rect.width, rect.height, matrix, uvs, null, color, NEVER);
 				
-				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, false);
+				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, shaderData.shader, shaderData.data, false);
 				
 				batchedSprites++;
 			}
@@ -628,6 +624,14 @@ class SpriteBatch {
 		
 	}
 	
+	inline function getShaderData(flashShader:FlashShader) {
+		if (flashShader != null) {
+			flashShader.__init(this.gl);
+			return { shader: flashShader.__shader, data: flashShader.data };
+		}
+		return { shader: null, data: null };
+	}
+	
 	
 	inline function getElementsPerVertex() {
 		var r = 0;
@@ -655,7 +659,6 @@ private class State {
 	
 	public inline function equals(other:State) {
 		return ((shader == null || other.shader == null) || shader.ID == other.shader.ID) &&
-				// TODO shaderData equals
 				texture == other.texture &&
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&

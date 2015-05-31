@@ -21,6 +21,7 @@ import openfl._internal.renderer.opengl.utils.GraphicsRenderer.RenderMode;
 import openfl._internal.renderer.opengl.utils.VertexAttribute.ElementType;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.Shader in FlashShader;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
@@ -916,7 +917,7 @@ class GraphicsRenderer {
 						renderSession.spriteBatch.begin(renderSession, clipRect);
 					}
 					var args = Type.enumParameters(bucket.graphicType);		
-					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
+					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4], cast args[5]);
 					
 					renderSession.spriteBatch.finish();
 				case _:
@@ -1772,7 +1773,7 @@ enum GraphicType {
 	Circle;
 	Ellipse;
 	DrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
-	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
+	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, shader:FlashShader, count:Int);
 	OverrideMatrix (matrix:Matrix);
 
 }

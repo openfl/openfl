@@ -394,13 +394,13 @@ class PathBuiler {
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
 					
-					case DrawTiles (sheet, tileData, smooth, flags, count):
+					case DrawTiles (sheet, tileData, smooth, flags, shader, count):
 						graphicDataPop ();
 						
 						__fillIndex++;
 						__currentPath = new DrawPath ();
 						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
-						__currentPath.type = GraphicType.DrawTiles(sheet, tileData, smooth, flags, count);
+						__currentPath.type = GraphicType.DrawTiles(sheet, tileData, smooth, flags, shader, count);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
 							

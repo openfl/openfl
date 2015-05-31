@@ -183,9 +183,9 @@ class Tilesheet {
 	 * @param	flags
 	 * @param	count
 	 */
-	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
+	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, shader:Shader, count:Int = -1):Void {
 		
-		graphics.drawTiles (this, tileData, smooth, flags, count);
+		graphics.drawTiles (this, tileData, smooth, flags, shader, count);
 		
 	}
 	
