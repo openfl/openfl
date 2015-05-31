@@ -753,7 +753,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __cacheAsBitmap:Bool = false;
 	@:noCompletion private var __forceCacheAsBitmap:Bool;
 	@:noCompletion private var __updateCachedBitmap:Bool;	
-	@:noCompletion private var __cachedBitmap:BitmapData;	
+	@:noCompletion private var __cachedBitmap:BitmapData;
+	@:noCompletion private var __cachedBitmapBounds:Rectangle;
 	
 	
 	#if (js && html5)
@@ -1331,6 +1332,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			__updateMask(maskGraphics);
 			
+		}
+		
+		if (__cacheAsBitmap) {
+			// we need to update the bounds
+			if(__updateCachedBitmap) {
+				if (__cachedBitmapBounds == null) {
+					__cachedBitmapBounds = new Rectangle();
+				}
+				__cachedBitmapBounds.setEmpty();
+				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
+			}
+			
+			// we will position the origin of the cached bitmap to 0,0 when rendering to the cached bitmapData
+			// we need to move the rendering back to the actual position
+			if (__cachedBitmapBounds.x != 0 || __cachedBitmapBounds.y != 0) {
+				__worldTransform.__translateTransformed(new Point(__cachedBitmapBounds.x, __cachedBitmapBounds.y));
+			}
 		}
 		
 		

@@ -641,7 +641,7 @@ class Graphics {
 	}
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, shader:Shader, count:Int = -1):Void {
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, ?smooth:Bool = false, ?flags:Int = 0, ?shader:Shader, ?count:Int = -1):Void {
 		
 		// Checking each tile for extents did not include rotation or scale, and could overflow the maximum canvas
 		// size of some mobile browsers. Always use the full stage size for drawTiles instead?

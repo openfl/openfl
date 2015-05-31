@@ -951,21 +951,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		if (__cacheAsBitmap) {
-			
+
 			if (__updateCachedBitmap) {
-				var bounds = new Rectangle();
-				__getBounds(bounds, @:privateAccess Matrix.__identity);
-				
 				
 				if (__cachedBitmap == null) {
 					__cachedBitmap = new BitmapData(0, 0);
 				}
 				// we don't need an Image to be created so we will hack the values ourselves
-				@:privateAccess __cachedBitmap.width = Math.floor(bounds.width);
-				@:privateAccess __cachedBitmap.height = Math.floor(bounds.height);
-				@:privateAccess __cachedBitmap.rect = bounds;
-				
-				__cachedBitmap.__drawGL(renderSession, __cachedBitmap.width, __cachedBitmap.height, this, true, false, true, false);
+				@:privateAccess __cachedBitmap.width = Math.floor(__cachedBitmapBounds.width);
+				@:privateAccess __cachedBitmap.height = Math.floor(__cachedBitmapBounds.height);
+				@:privateAccess __cachedBitmap.rect = __cachedBitmapBounds;
+				// we need to position the drawing origin to 0,0 in the texture
+				var m = new Matrix();
+				m.translate(-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+				__cachedBitmap.__drawGL(renderSession, __cachedBitmap.width, __cachedBitmap.height, this, m, true, false, true, false);
 				__updateCachedBitmap = false;
 			}
 			

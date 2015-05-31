@@ -66,7 +66,6 @@ class GraphicsRenderer {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
-	private static var objectPosition:Point = new Point();
 	private static var objectBounds:Rectangle = new Rectangle();
 	
 	private static var lastVertsBuffer:GLBuffer;
@@ -818,49 +817,10 @@ class GraphicsRenderer {
 		}
 		
 		if (dirty) {
-			updateGraphics (object, object.__graphics, renderSession.gl, object.cacheAsBitmap);
+			updateGraphics (object, object.__graphics, renderSession.gl);
 		}
 		
-		/*
-		//TODO find a way to remove drawTiles calls
-		if (object.cacheAsBitmap) {
-			
-			if (dirty) {
-				
-				var gl = renderSession.gl;
-				var bounds = graphics.__bounds;
-				var texture = graphics.__cachedTexture;
-				
-				var w = Math.floor(bounds.width + 0.5);
-				var h = Math.floor(bounds.height+ 0.5);
-				
-				if (texture == null) {
-					texture = new FilterTexture(gl, w, h, false);
-					graphics.__cachedTexture = texture;
-				}
-				
-				texture.resize(w, h);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
-				gl.viewport (0, 0, w, h);
-				texture.clear();
-				renderGraphics(object, renderSession, new Point(w / 2, -h / 2), true);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-				
-				gl.viewport(0, 0, renderSession.renderer.width, renderSession.renderer.height);
-			}
-			
-			if (!spritebatch.drawing) {
-				spritebatch.begin(renderSession);
-			}
-			
-			spritebatch.renderCachedGraphics(object);
-			
-		} else {
-			renderGraphics(object, renderSession, renderSession.projection, false);
-		}
-		*/
-		
-		renderGraphics(object, renderSession, false);
+		renderGraphics(object, renderSession);
 
 	}
 	
@@ -871,16 +831,10 @@ class GraphicsRenderer {
 		var glStack = graphics.__glStack[GLRenderer.glContextId];
 		var bucket:GLBucket;
 		
-		var translationMatrix:Matrix;
-		if (localCoords) {
-			translationMatrix = Matrix.__identity;
-		} else {
-			translationMatrix = object.__worldTransform;
-		}
+		var translationMatrix = object.__worldTransform.clone();
 		
 		var clipRect = @:privateAccess renderSession.spriteBatch.clipRect;
 		var batchDrawing = renderSession.spriteBatch.drawing;
-		
 		batchDrawing = renderSession.spriteBatch.drawing;
 		
 		for (i in 0...glStack.buckets.length) {
@@ -957,8 +911,6 @@ class GraphicsRenderer {
 	}
 
 	public static function updateGraphics (object:DisplayObject, graphics:Graphics, gl:GLRenderContext, ?localCoords:Bool = false):Void {
-		
-		objectPosition.setTo(object.x, object.y);
 		
 		if (graphics.__bounds == null) {
 			objectBounds = new Rectangle();
