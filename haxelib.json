@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "3.0.6",
-	"releasenote": "Minor fix",
+	"version": "3.0.7",
+	"releasenote": "Added hybrid Cairo supports, graphics improvements, other fixes",
 	"contributors": [ "singmajesty" ]
 }
