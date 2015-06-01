@@ -40,6 +40,10 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 
+#if hxtelemetry
+import openfl.profiler.Telemetry;
+#end
+
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.DivElement;
@@ -556,6 +560,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function new (width:Int, height:Int, color:Null<Int> = null) {
 		
+		#if hxtelemetry
+		Telemetry.__initialize ();
+		#end
+		
 		super ();
 		
 		if (color == null) {
@@ -941,6 +949,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (__rendering) return;
 		__rendering = true;
 		
+		#if hxtelemetry
+		Telemetry.__advanceFrame ();
+		#end
+		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
 		
 		if (__invalidated) {
@@ -949,6 +961,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__broadcast (new Event (Event.RENDER), true);
 			
 		}
+		
+		#if hxtelemetry
+		var stack = Telemetry.__unwindStack ();
+		Telemetry.__startTiming (TelemetryCommandName.RENDER);
+		#end
 		
 		__renderable = true;
 		__update (false, true);
@@ -969,6 +986,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderer.render (this);
 			
 		}
+		
+		#if hxtelemetry
+		Telemetry.__endTiming (TelemetryCommandName.RENDER);
+		Telemetry.__rewindStack (stack);
+		#end
 		
 		__rendering = false;
 		

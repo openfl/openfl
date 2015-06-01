@@ -29,11 +29,19 @@ import openfl.ui.Keyboard;
 import openfl.Lib;
 import openfl.Vector;
 
+#if hxtelemetry
+import openfl.profiler.Telemetry;
+#end
+
 #if android
 import openfl._legacy.utils.JNI;
 #end
 
 @:access(openfl._legacy.gl.GL)
+
+#if hxtelemetry
+@:access(openfl.profiler.Telemetry)
+#end
 
 
 class Stage extends DisplayObjectContainer {
@@ -109,6 +117,10 @@ class Stage extends DisplayObjectContainer {
 	
 	
 	public function new (handle:Dynamic, width:Int, height:Int) {
+		
+		#if hxtelemetry
+		Telemetry.__initialize ();
+		#end
 		
 		super (handle, "Stage");
 		
@@ -364,6 +376,10 @@ class Stage extends DisplayObjectContainer {
 	#end
 	@:noCompletion private function __doProcessStageEvent (event:Dynamic):Float {
 		
+		#if hxtelemetry
+		Telemetry.__startTiming (TelemetryCommandName.EVENT);
+		#end
+		
 		var result = 0.0;
 		var type = Std.int (Reflect.field (event, "type"));
 		
@@ -539,6 +555,10 @@ class Stage extends DisplayObjectContainer {
 			Lib.rethrow (error);
 			
 		}
+		
+		#if hxtelemetry
+		Telemetry.__endTiming (TelemetryCommandName.EVENT);
+		#end
 		
 		result = __updateNextWake ();
 		return result;
@@ -1071,6 +1091,10 @@ class Stage extends DisplayObjectContainer {
 		
 		if (sendEnterFrame) {
 			
+			#if hxtelemetry
+			Telemetry.__advanceFrame ();
+			#end
+			
 			__broadcast (new Event (Event.ENTER_FRAME));
 			
 		}
@@ -1082,7 +1106,17 @@ class Stage extends DisplayObjectContainer {
 			
 		}
 		
+		#if hxtelemetry
+		var stack = Telemetry.__unwindStack ();
+		Telemetry.__startTiming (TelemetryCommandName.RENDER);
+		#end
+		
 		lime_render_stage (__handle);
+		
+		#if hxtelemetry
+		Telemetry.__endTiming (TelemetryCommandName.RENDER);
+		Telemetry.__rewindStack (stack);
+		#end
 		
 	}
 	
