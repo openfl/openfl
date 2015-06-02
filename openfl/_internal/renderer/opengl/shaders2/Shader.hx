@@ -1,6 +1,5 @@
 package openfl._internal.renderer.opengl.shaders2;
 
-import haxe.ds.Either;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.VertexArray;
@@ -8,9 +7,6 @@ import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
 import openfl.display.Shader.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
-import openfl.display.ShaderData;
-import openfl.display.ShaderParameter;
-import openfl.display.ShaderParameterType;
 import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
