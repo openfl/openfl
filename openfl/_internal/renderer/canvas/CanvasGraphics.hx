@@ -1,22 +1,28 @@
 package openfl._internal.renderer.canvas;
 
-
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
+import openfl.display.GradientType;
 import openfl.display.Graphics;
+import openfl.display.InterpolationMethod;
+import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
+import openfl.utils.ByteArray;
 import openfl.Vector;
 
 #if (js && html5)
 import js.html.CanvasElement;
+import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
+import js.html.ImageData;
 #end
 
 @:access(openfl.display.DisplayObject)
@@ -32,6 +38,7 @@ class CanvasGraphics {
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
 	private static var bitmapFill:BitmapData;
+	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var fillCommands:Array<DrawCommand>;
@@ -44,25 +51,19 @@ class CanvasGraphics {
 	
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
-	private static var pattern:CanvasPattern;
 	#end
-	
-	
-	private static function beginPatternFill (bitmapFill:BitmapData, bitmapRepeat:Bool):Void {
+
+		
+	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool) {
 		
 		#if (js && html5)
-		if (hasFill || bitmapFill == null) return;
 		
-		if (pattern == null) {
-			
-			pattern = context.createPattern (bitmapFill.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
-			
-		}
+		bitmap.__sync ();
+		return context.createPattern (bitmap.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
-		context.fillStyle = pattern;
-		hasFill = true;
 		#end
 		
+		return null;
 	}
 	
 	
@@ -112,6 +113,20 @@ class CanvasGraphics {
 		strokeCommands = [];
 		#end
 		
+	}
+	
+		
+	private static function closePath() : Void {
+		
+		#if (js && html5)
+		if ( context.strokeStyle == null )
+			return;
+		
+		context.closePath();
+		context.stroke ();
+		context.beginPath ();
+
+		#end
 	}
 	
 	
@@ -215,6 +230,7 @@ class CanvasGraphics {
 		var closeGap = false;
 		var startX = 0.0;
 		var startY = 0.0;
+		
 		
 		for (command in commands) {
 			
@@ -320,18 +336,35 @@ class CanvasGraphics {
 						
 					}
 				
+				case LineGradientStyle  (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+					
+					if (stroke && hasStroke) {
+						closePath();
+					}
+					
+					
+					context.moveTo (positionX - offsetX, positionY - offsetY);
+					
+					context.strokeStyle = createGradientPattern( type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio );
+					
+					hasStroke = true;
+					
+				case LineBitmapStyle  (bitmap, matrix, repeat, smooth):
+					
+					if (stroke && hasStroke) {
+						closePath();
+					}
+					
+					context.moveTo (positionX - offsetX, positionY - offsetY);
+					
+					context.strokeStyle = createBitmapFill( bitmap, repeat );
+					
+					hasStroke = true;
+					
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 					
-					if (bitmap != bitmapFill || repeat != bitmapRepeat) {
-						
-						bitmapFill = bitmap;
-						bitmapRepeat = repeat;
-						pattern = null;
-						hasFill = false;
-						
-						bitmap.__sync ();
-						
-					}
+					context.fillStyle = createBitmapFill( bitmap, true );
+					hasFill =  true;
 					
 					if (matrix != null) {
 						
@@ -375,43 +408,7 @@ class CanvasGraphics {
 				
 				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					
-					var gradientFill = null;
-					
-					switch (type) {
-						
-						case RADIAL:
-							
-							if (matrix == null) matrix = new Matrix ();
-							var point = matrix.transformPoint (new Point (1638.4, 0));
-							gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
-						
-						case LINEAR:
-							
-							var matrix = matrix != null ? matrix.clone () : new Matrix ();
-							var point1 = matrix.transformPoint (new Point (-819.2, 0));
-							var point2 = matrix.transformPoint (new Point (819.2, 0));
-							
-							gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
-						
-					}
-					
-					for (i in 0...colors.length) {
-						
-						var rgb = colors[i];
-						var alpha = alphas[i];
-						var r = (rgb & 0xFF0000) >>> 16;
-						var g = (rgb & 0x00FF00) >>> 8;
-						var b = (rgb & 0x0000FF);
-						
-						var ratio = ratios[i] / 0xFF;
-						if (ratio < 0) ratio = 0;
-						if (ratio > 1) ratio = 1;
-						
-						gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
-						
-					}
-					
-					context.fillStyle = gradientFill;
+					context.fillStyle = createGradientPattern( type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio );
 					
 					bitmapFill = null;
 					hasFill = true;
@@ -491,12 +488,6 @@ class CanvasGraphics {
 			
 			if (hasFill || bitmapFill != null) {
 				
-				if (bitmapFill != null) {
-					
-					beginPatternFill (bitmapFill, bitmapRepeat);
-					
-				}
-				
 				context.translate (-bounds.x, -bounds.y);
 				
 				if (pendingMatrix != null) {
@@ -519,6 +510,51 @@ class CanvasGraphics {
 		}
 		#end
 		
+	}
+	
+	private static function createGradientPattern( type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float> ) {
+	
+		#if (js && html5)
+		
+		var gradientFill = null;
+					
+		switch (type) {
+			
+			case RADIAL:
+				
+				if (matrix == null) matrix = new Matrix ();
+				var point = matrix.transformPoint (new Point (1638.4, 0));
+				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+			
+			case LINEAR:
+				
+				var matrix = matrix != null ? matrix.clone () : new Matrix ();
+				var point1 = matrix.transformPoint (new Point (-819.2, 0));
+				var point2 = matrix.transformPoint (new Point (819.2, 0));
+				
+				gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
+			
+		}
+		
+		for (i in 0...colors.length) {
+			
+			var rgb = colors[i];
+			var alpha = alphas[i];
+			var r = (rgb & 0xFF0000) >>> 16;
+			var g = (rgb & 0x00FF00) >>> 8;
+			var b = (rgb & 0x0000FF);
+			
+			var ratio = ratios[i] / 0xFF;
+			if (ratio < 0) ratio = 0;
+			if (ratio > 1) ratio = 1;
+			
+			gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+			
+		}
+		
+		return cast( gradientFill );
+		
+		#end
 	}
 	
 	
@@ -568,37 +604,35 @@ class CanvasGraphics {
 					switch (command) {
 						
 						case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
-							
-							fillCommands.push (command);
-							strokeCommands.push (command);
 						
-						case EndFill:
-							
-							endFill ();
-							endStroke ();
-							hasFill = false;
+						fillCommands.push (command);
+						strokeCommands.push (command);
+					
+					case EndFill:
 						
-						case LineStyle (_, _, _, _, _, _, _, _):
-							
-							strokeCommands.push (command);
+						endFill ();
+						endStroke ();
+						hasFill = false;
+						bitmapFill = null;
+					
+					case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
 						
-						case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
-							
-							endFill ();
-							endStroke ();
-							
-							fillCommands.push (command);
-							strokeCommands.push (command);
+						strokeCommands.push (command);
 						
-						case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
-							
-							endFill ();
-							endStroke ();
-							
-							fillCommands.push (command);
-							strokeCommands.push (command);
+					case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
 						
-						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
+						endFill ();
+						endStroke ();
+						
+						fillCommands.push (command);
+						strokeCommands.push (command);
+					
+					case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+						
+						fillCommands.push (command);
+						strokeCommands.push (command);
+						
+					case DrawTriangles (vertices, indices, uvtData, culling, _, _):
 						
 							endFill ();
 							endStroke ();
@@ -890,8 +924,6 @@ class CanvasGraphics {
 				
 			}
 			
-			graphics.__dirty = false;
-			
 			if (fillCommands.length > 0) {
 				
 				endFill ();
@@ -903,6 +935,9 @@ class CanvasGraphics {
 				endStroke ();
 				
 			}
+			
+			graphics.__bitmap = BitmapData.fromCanvas( graphics.__canvas );
+			graphics.__dirty = false;
 			
 		}
 		

@@ -11,8 +11,9 @@ import openfl.display.DisplayObject;
 class CairoShape {
 	
 	
-	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		
 		var graphics = shape.__graphics;
@@ -31,8 +32,6 @@ class CairoShape {
 				
 				var cairo = renderSession.cairo;
 				var scrollRect = shape.scrollRect;
-				
-				//context.globalAlpha = shape.__worldAlpha;
 				var transform = shape.__worldTransform;
 				
 				if (renderSession.roundPixels) {
@@ -71,6 +70,7 @@ class CairoShape {
 			}
 			
 		}
+		#end
 		
 	}
 	

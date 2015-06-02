@@ -1,3 +1,28 @@
+3.0.8 (05/31/2015)
+------------------
+
+* Guard hybrid Cairo + GL behavior behind #if cairo_graphics for now
+
+
+3.0.7 (05/30/2015)
+------------------
+
+* Added hybrid Cairo + GL renderer support for native
+* Switched to use canvas graphics when targeting WebGL/HTML5
+* Many improvements to the Cairo renderer, improved canvas rendering
+* Improved GL blend mode support
+* Improved support for scrollRect
+* Added stage focus in and out events
+* Added an initial implementation of the GameInput API
+* Improved the behavior of event.target
+* Improved add/remove event listener behavior when dispatching
+* Improved bounds check for bezier curves
+* Improved the behavior of mouse event buttonDown
+* Initial re-implementation of URLLoader for native 
+* Added handling for Lime application.frameRate
+* Fixed SystemPath (legacy)
+
+
 3.0.6 (05/14/2015)
 ------------------
 

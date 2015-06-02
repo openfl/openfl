@@ -4,9 +4,11 @@ package openfl._internal.renderer.dom;
 import openfl._internal.renderer.RenderSession;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 
 #if (js && html5)
+import js.html.Element;
 import js.Browser;
 #end
 
@@ -14,6 +16,70 @@ import js.Browser;
 
 
 class DOMTextField {
+	
+	
+	public static function getFont (format:TextFormat):String {
+		
+		var font = format.italic ? "italic " : "normal ";
+		font += "normal ";
+		font += format.bold ? "bold " : "normal ";
+		font += format.size + "px";
+		font += "/" + (format.size + format.leading) + "px ";
+		
+		font += "" + switch (format.font) {
+			
+			case "_sans": "sans-serif";
+			case "_serif": "serif";
+			case "_typewriter": "monospace";
+			default: "'" + format.font + "'";
+			
+		}
+		
+		return font;
+		
+	}
+	
+	
+	public static function measureText (textField:TextField):Void {
+		
+	 	#if (js && html5)
+	 	
+		var div:Element = textField.__div;
+		
+		if (div == null) {
+			
+			div = cast Browser.document.createElement ("div");
+			div.innerHTML = new EReg ("\n", "g").replace (textField.__text, "<br>");
+			div.style.setProperty ("font", getFont (textField.__textFormat), null);
+			div.style.setProperty ("pointer-events", "none", null);
+			div.style.position = "absolute";
+			div.style.top = "110%"; // position off-screen!
+			Browser.document.body.appendChild (div);
+			
+		}
+		
+		textField.__measuredWidth = div.clientWidth;
+		
+		// Now set the width so that the height is accurate as a
+		// function of the flow within the width bounds...
+		
+		if (textField.__div == null) {
+			
+			div.style.width = Std.string (textField.__width - 4) + "px";
+			
+		}
+		
+		textField.__measuredHeight = div.clientHeight;
+		
+		if (textField.__div == null) {
+			
+			Browser.document.body.removeChild (div);
+			
+		}
+		
+		#end
+		
+	}
 	
 	
 	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
@@ -61,7 +127,7 @@ class DOMTextField {
 						
 					}
 					
-					style.setProperty ("font", textField.__getFont (textField.__textFormat), null);
+					style.setProperty ("font", getFont (textField.__textFormat), null);
 					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color, 6), null);
 					
 					if (textField.autoSize != TextFieldAutoSize.NONE) {

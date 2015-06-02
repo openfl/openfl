@@ -1,23 +1,41 @@
 package openfl._internal.renderer.opengl;
 
-
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoSurface;
+import lime.graphics.Image;
+import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
+import lime.math.Rectangle;
+import lime.math.Vector2;
+import lime.utils.ByteArray;
 import openfl._internal.renderer.AbstractRenderer;
+import openfl._internal.renderer.cairo.CairoGraphics;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.opengl.utils.*;
 import openfl._internal.renderer.opengl.utils.BlendModeManager.GLBlendMode;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
+import openfl.display.Graphics;
 import openfl.display.Stage;
 import openfl.errors.Error;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.text.TextField;
+
+#if (js && html5)
+import js.html.ImageData;
+#end
 
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display.Stage)
-
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.Graphics)
+@:access(openfl.display.BitmapData)
 
 class GLRenderer extends AbstractRenderer {
 	
@@ -279,6 +297,23 @@ class GLRenderer extends AbstractRenderer {
 		
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		renderDisplayObject (stage, projection);
+		
+	}
+	
+	
+	public static function renderBitmap (shape:DisplayObject, renderSession:RenderSession):Void {
+		
+		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
+		
+		var bounds = shape.getBounds (null);
+		var bitmap = shape.__graphics.__bitmap;
+		
+		var local = new Matrix ();
+		local.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
+		local = local.mult (shape.__worldTransform);
+		
+		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, ALWAYS);
 		
 	}
 	

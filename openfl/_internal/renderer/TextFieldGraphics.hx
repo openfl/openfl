@@ -4,6 +4,7 @@ package openfl._internal.renderer;
 import lime.graphics.Image;
 import lime.text.Glyph;
 import lime.text.TextLayout;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
@@ -76,7 +77,7 @@ class TextFieldGraphics {
 	
 	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle):Void {
 		
-		var font = textField.__getFontInstance (format);
+		var font = CairoTextField.getFontInstance (format);
 		
 		if (font != null && format.size != null) {
 			
@@ -168,8 +169,8 @@ class TextFieldGraphics {
 			var tlm = textField.getLineMetrics(0);
 			
 			var image;
-			var x:Float = bounds.x + offsetX;
-			var y:Float = bounds.y + 2 + tlm.ascent;
+			var x:Float = offsetX;
+			var y:Float = 2 + tlm.ascent;
 			
 			//If you render with y == 0, the bottom pixel of the "T" in "The Quick Brown Fox" will rest on TOP of your text field.
 			//Flash API text fields have a 2px margin on all sides, so (2 + ASCENT) puts your text right where it needs to be.
@@ -311,7 +312,7 @@ class TextFieldGraphics {
 						
 					}
 					
-					var measurements = textField.__measureText ();
+					var measurements = CairoTextField.measureText (textField);
 					
 					if (textField.__ranges == null) {
 						
