@@ -53,6 +53,8 @@ class DOMRenderer extends AbstractRenderer {
 		renderSession.transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
 		#end
 		
+		renderSession.maskManager = new DOMMaskManager (renderSession);
+		
 		renderSession.renderer = this;
 		
 	}
