@@ -730,7 +730,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					if (thickness == null) {
 						hasStroke = false;
-						break;
+						continue;
 					}
 
 					hasStroke = true;
@@ -786,7 +786,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
 						trace ("unsupported DrawRect");
-						break;
+						continue;
 					}
 
 					// TODO(james4k): replace moveTo/lineTo calls
@@ -814,7 +814,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
 						trace ("unsupported DrawRoundRect");
-						break;
+						continue;
 					}
 
 					// TODO(james4k): replace with lineTo/curveTo calls
@@ -1085,7 +1085,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					if (!hasFill || fillBitmap == null) {
 						trace ("DrawTriangles without bitmap fill");
-						break;
+						continue;
 					}
 
 					setObjectTransform (object);
