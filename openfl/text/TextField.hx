@@ -1655,7 +1655,7 @@ class TextField extends InteractiveObject {
 		if (__canvas != null) {
 			
 			// TODO: Make this more accurate
-			return __textFormat.size * 1.185 * numLines;
+			return __textFormat.size * 1.185 * numLines + (__textFormat.leading == null ? 0 : __textFormat.leading) * numLines;
 			
 		} else if (__div != null) {
 			
