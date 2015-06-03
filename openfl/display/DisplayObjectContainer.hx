@@ -964,8 +964,12 @@ class DisplayObjectContainer extends InteractiveObject {
 				@:privateAccess __cachedBitmap.rect = __cachedBitmapBounds;
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = new Matrix();
-				m.translate(-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+				m.translate( -__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+				// we disable the container shader, it will be applied to the final texture
+				var shader = __shader;
+				__shader = null;
 				__cachedBitmap.__drawGL(renderSession, __cachedBitmap.width, __cachedBitmap.height, this, m, true, false, true, false);
+				__shader = shader;
 				__updateCachedBitmap = false;
 			}
 			

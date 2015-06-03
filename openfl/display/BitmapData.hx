@@ -1606,18 +1606,21 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __createUVs ():Void {
+	@:noCompletion private function __createUVs (	?x0:Float = 0, ?y0:Float = 0,
+													?x1:Float = 1, ?y1:Float = 0,
+													?x2:Float = 1, ?y2:Float = 1,
+													?x3:Float = 0, ?y3:Float = 1):Void {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
 		
-		__uvData.x0 = 0;
-		__uvData.y0 = 0;
-		__uvData.x1 = 1;
-		__uvData.y1 = 0;
-		__uvData.x2 = 1;
-		__uvData.y2 = 1;
-		__uvData.x3 = 0;
-		__uvData.y3 = 1;
+		__uvData.x0 = x0;
+		__uvData.y0 = y0;
+		__uvData.x1 = x1;
+		__uvData.y1 = y1;
+		__uvData.x2 = x2;
+		__uvData.y2 = y2;
+		__uvData.x3 = x3;
+		__uvData.y3 = y3;
 		
 	}
 	
@@ -1731,7 +1734,8 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		__createUVs ();
+		var uv = @:privateAccess __framebuffer.__uvData;
+		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
 		__isValid = true;
 		
 	}

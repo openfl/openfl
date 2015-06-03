@@ -7,12 +7,15 @@ import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
 import openfl.display.Shader.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
+import openfl.display.Shader.RepeatMode;
+import openfl.gl.GL;
 import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
 
 @:access(openfl._internal.renderer.opengl.utils.ShaderManager)
+@:allow(openfl.display.Shader)
 class Shader {
 	
 	private static var UID:Int = 0;
@@ -27,6 +30,10 @@ class Shader {
 	public var ID(default, null):Int;
 	
 	public var program:GLProgram;
+	
+	public var wrapS:RepeatMode = NONE;
+	public var wrapT:RepeatMode = NONE;
+	public var smooth:Null<Bool>;
 	
 	private var vertexString:String;
 	private var fragmentString:String;
@@ -109,6 +116,12 @@ class Shader {
 					gl.activeTexture(gl.TEXTURE0 + renderSession.activeTextures);
 					gl.bindTexture(gl.TEXTURE_2D, bd.getTexture(gl));
 					gl.uniform1i(u, renderSession.activeTextures);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, param.smooth ? gl.LINEAR : gl.NEAREST);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, param.smooth ? gl.LINEAR : gl.NEAREST);
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, param.repeatX);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, param.repeatY);
+					
 					renderSession.activeTextures++;
 				case _:
 			}

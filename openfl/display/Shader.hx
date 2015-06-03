@@ -4,18 +4,33 @@ package openfl.display; #if (!flash && !openfl_legacy)
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.Shader in InternalShader;
 import openfl.geom.Matrix;
+import openfl.gl.GL;
 
 using StringTools;
 
-@:access(openfl._internal.renderer.opengl.shaders2.Shader)
 class Shader {
 
 	static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
 	
+	/**
+	 * The object's texture.
+	 */
 	static public var uSampler = DefaultUniform.Sampler;
+	/**
+	 * The colorMultiplier values from the transfrom.colorTransform of the object.
+	 */
 	static public var uColorMultiplier = DefaultUniform.ColorMultiplier;
+	/**
+	 * The colorOffset values from the transfrom.colorTransform of the object.
+	 */
 	static public var uColorOffset = DefaultUniform.ColorOffset;
+	/**
+	 * The texture coordinate.
+	 */
 	static public var vTexCoord = DefaultVarying.TexCoord;
+	/**
+	 * The tint and alpha values.
+	 */
 	static public var vColor = DefaultVarying.Color;
 	
 	static var header = [
@@ -35,20 +50,42 @@ class Shader {
 		'}',
 	];
 	
+	/**
+	 * The shader precision. It can be HIGH, MEDIUM or LOW. Defaults to MEDIUM
+	 */
 	public var precision:GLShaderPrecision = MEDIUM;
+	/**
+	 * The code of the shader. It can be changed at any time.
+	 */
 	public var fragmentCode(default, set):String;
+	/**
+	 * A map of <String, GLShaderParameter>
+	 */
 	public var data(default, null):GLShaderData;
+	/**
+	 * Overrides the default repetition applied to the object's texture.
+	 * By default: NONE
+	 */
+	public var repeatX:RepeatMode = NONE;
+	/**
+	 * Overrides the default repetition applied to the object's texture.
+	 * By default: NONE
+	 */
+	public var repeatY:RepeatMode = NONE;
+	/**
+	 * Overrides the default smooth applied to the object's texture.
+	 * By default: not overriden
+	 */
+	public var smooth:Null<Bool>;
 	
 	private var __dirty:Bool = true;
-	private var __shader:InternalShader;
 	private var __fragmentCode:String;
+	private var __shader:InternalShader;
 	
 	public function new(fragmentCode:String, ?precision:GLShaderPrecision = MEDIUM) {
 		this.precision = precision;
 		data = new Map();
 		this.fragmentCode = fragmentCode;
-		
-		//trace(__fragmentCode);
 	}
 	
 	private function __init(gl:GLRenderContext) {
@@ -121,14 +158,47 @@ class Shader {
 }
 
 class GLShaderParameter {
+	/**
+	 * The raw type as expressed in the glsl code
+	 * For example: vec4 will be "vec4"
+	 */
 	public var type(default, null):String;
+	/**
+	 * The size of the value.
+	 * For example: vec4 will be 4
+	 */
 	public var size(default, null):Int = 0;
+	/**
+	 * The size of the array.
+	 * For example: uniform vec2 uExample[2]; will be 2
+	 */
 	public var arraySize(default, null):Int = 0;
-	public var value:Array<Float> = [];
-	public var bitmap:BitmapData;
+	/**
+	 * The value of the parameter when the type isn't a sampler2D
+	 */
+	public var value(default, set):Array<Float> = [];
+	/**
+	 * The BitmapData to be used when the type is a sampler2D
+	 */
+	public var bitmap(default, set):BitmapData;
+	/**
+	 * Enables linear smoothing to the BitmapData
+	 */
+	public var smooth:Bool = false;
+	/**
+	 * Controls repetition in the x axis for the BitmapData
+	 */
+	public var repeatX:RepeatMode = NONE;
+	/**
+	 * Controls repetition in the y axis for the BitmapData
+	 */
+	public var repeatY:RepeatMode = NONE;
+	/**
+	 * Enables matrices to be transposed. Only used in mat* types.
+	 */
 	public var transpose:Bool = false;
 	
-	private var internalType:GLShaderParameterInternal;
+	private var internalType:GLShaderParameterInternal = NONE;
 	
 	public function new(type:String, arraySize:Null<Int>) {
 		this.type = type;
@@ -169,6 +239,15 @@ class GLShaderParameter {
 				
 		}
 	}
+	
+	private inline function set_value(v) {
+		if (internalType == SAMPLER) throw "This parameter doesn't accept a value, use bitmap instead";
+		return value = v;
+	}
+	private inline function set_bitmap(v) {
+		if (internalType != SAMPLER) throw "This parameter doesn't accept a bitmap, use value instead";
+		return bitmap = v;
+	}
 }
 
 @:enum abstract GLShaderPrecision(Int) {
@@ -177,12 +256,19 @@ class GLShaderParameter {
 	var HIGH 	= 2;
 }
 
+
 @:enum private abstract GLShaderParameterInternal(Int) {
 	var NONE 	= 0;
 	var INT 	= 1;
 	var FLOAT 	= 2;
 	var MAT 	= 3;
 	var SAMPLER = 4;
+}
+
+@:enum abstract RepeatMode(Int) to Int {
+	var NONE 	= GL.CLAMP_TO_EDGE;
+	var REPEAT 	= GL.REPEAT;
+	var MIRROR 	= GL.MIRRORED_REPEAT;
 }
 
 typedef GLShaderData = Map<String, GLShaderParameter>;

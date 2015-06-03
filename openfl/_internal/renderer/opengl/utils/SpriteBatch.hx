@@ -522,6 +522,7 @@ class SpriteBatch {
 		
 		for (i in 0...batchedSprites) {
 			nextState = states[i];
+			
 			currentState.skipColorTransformAlpha = nextState.skipColorTransformAlpha;
 			if (!nextState.equals(currentState)) {
 				renderBatch(currentState, batchSize, start);
@@ -582,13 +583,16 @@ class SpriteBatch {
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0);
 		
-		if (state.textureSmooth) {
+		if ((shader.smooth != null && shader.smooth) || state.textureSmooth) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		} else {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
 		}
+
+		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
+		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
 		
 		shader.applyData(state.shaderData, renderSession);
 		
@@ -626,6 +630,9 @@ class SpriteBatch {
 	inline function getShaderData(flashShader:FlashShader) {
 		if (flashShader != null) {
 			flashShader.__init(this.gl);
+			flashShader.__shader.wrapS = flashShader.repeatX;
+			flashShader.__shader.wrapT = flashShader.repeatY;
+			flashShader.__shader.smooth = flashShader.smooth;
 			return { shader: flashShader.__shader, data: flashShader.data };
 		}
 		return { shader: null, data: null };
