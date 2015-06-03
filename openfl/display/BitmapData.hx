@@ -1637,6 +1637,8 @@ class BitmapData implements IBitmapDrawable {
 		var spritebatch = renderSession.spriteBatch;
 		var renderTransparent = renderSession.renderer.transparent;
 		
+		spritebatch.finish();
+		
 		var tmpRect = clipRect == null ? new Rectangle (0, 0, width, height) : clipRect.clone ();
 		
 		renderSession.renderer.transparent = transparent;
