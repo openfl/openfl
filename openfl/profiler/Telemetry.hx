@@ -3,6 +3,7 @@ package openfl.profiler; #if !flash
 
 #if (cpp && hxtelemetry)
 import hxtelemetry.HxTelemetry;
+import hxtelemetry.HxTelemetry.Config;
 #end
 
 @:allow(openfl.display.Stage)
@@ -65,15 +66,25 @@ class Telemetry {
 	}
 	
 	
+	#if (cpp && hxtelemetry)
+	private static var hxtConfig:Config = new Config();
+	public static var config(get, null):Config;
+	public static function get_config():Config
+	{
+		if (telemetry!=null) throw "Must setup Telemetry.config before Telemetry is initialized!";
+		return hxtConfig;
+	}
+	#else
+	public static var config(get, null):Dynamic;
+	public static function get_config():Dynamic return {};
+	#end
+
 	private static inline function __initialize ():Void {
 		
 		#if (cpp && hxtelemetry)
-		var config = new HxTelemetry.Config ();
-		config.allocations = true;
-		config.host = "localhost";
-		config.app_name = Lib.application.config.title;
-		config.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
-		telemetry = new HxTelemetry (config);
+		hxtConfig.app_name = Lib.application.config.title;
+		hxtConfig.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
+		telemetry = new HxTelemetry (hxtConfig);
 		#end
 		
 	}
