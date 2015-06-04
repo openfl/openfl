@@ -995,7 +995,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			if (!textureImage.premultiplied && !textureImage.transparent) {
+			if (!textureImage.premultiplied && textureImage.transparent) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.premultiplied = true;
