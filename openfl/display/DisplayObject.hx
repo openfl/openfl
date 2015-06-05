@@ -1178,7 +1178,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			if (#if cairo_graphics __graphics.__hardware #else true #end) {
+			if (#if !disable_cairo_graphics __graphics.__hardware #else true #end) {
 				
 				GraphicsRenderer.render (this, renderSession);
 				

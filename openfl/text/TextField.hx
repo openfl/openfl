@@ -1011,7 +1011,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
-		#if cairo_graphics
+		#if !disable_cairo_graphics
 		
 		#if lime_cairo
 		CairoTextField.render (this, renderSession);
