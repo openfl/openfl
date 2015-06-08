@@ -571,6 +571,7 @@ class CanvasGraphics {
 				
 				graphics.__canvas = null;
 				graphics.__context = null;
+				graphics.__bitmap = null;
 				
 			} else {
 				
@@ -922,21 +923,22 @@ class CanvasGraphics {
 					
 				}
 				
+				if (fillCommands.length > 0) {
+					
+					endFill ();
+					
+				}
+				
+				if (strokeCommands.length > 0) {
+					
+					endStroke ();
+					
+				}
+				
+				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
+				
 			}
 			
-			if (fillCommands.length > 0) {
-				
-				endFill ();
-				
-			}
-			
-			if (strokeCommands.length > 0) {
-				
-				endStroke ();
-				
-			}
-			
-			graphics.__bitmap = BitmapData.fromCanvas( graphics.__canvas );
 			graphics.__dirty = false;
 			
 		}
