@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "3.0.8",
-	"releasenote": "Guard hybrid Cairo + GL behavior behind #if cairo_graphics for now",
+	"version": "3.1.0",
+	"releasenote": "Enable Cairo graphics, add hxscout support",
 	"contributors": [ "singmajesty" ]
 }
