@@ -1,3 +1,13 @@
+3.1.0 (06/08/2015)
+------------------
+
+* Enabled Cairo graphics in GL mode by default
+* Added initial hooks for Haxe telemetry (hxscout)
+* Fixed bug in image premultiplication
+* Fixed black textures when mixing Cairo with OpenGL
+* Fixed crash in HTML5 when using sparse graphics
+
+
 3.0.8 (05/31/2015)
 ------------------
 
