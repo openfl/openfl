@@ -80,7 +80,9 @@ class Assets {
 	 * @param	useCache		(Optional) Whether to use BitmapData from the cache(Default: true)
 	 * @return		A new BitmapData object
 	 */
-	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
+	public static function getBitmapData (id:String, useCache:Bool = true, headerOnly:Bool = false):BitmapData {
+		
+		trace("getBitmapData headerOnly = " + headerOnly);
 		
 		#if (tools && !display)
 		
@@ -96,7 +98,7 @@ class Assets {
 			
 		}
 		
-		var image = LimeAssets.getImage (id, false);
+		var image = LimeAssets.getImage (id, false, headerOnly);
 		
 		if (image != null) {
 			

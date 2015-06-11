@@ -676,10 +676,10 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData {
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null, headerOnly:Bool = false):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
-		bitmapData.__fromBytes (bytes, rawAlpha, onload);
+		bitmapData.__fromBytes (bytes, rawAlpha, onload, headerOnly);
 		return bitmapData;
 		
 	}
@@ -697,7 +697,7 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
-	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
+	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null, headerOnly:Bool = false):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
 		bitmapData.__fromFile (path, onload, onerror);
@@ -1776,7 +1776,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
+	@:noCompletion private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void, headerOnly:Bool = false):Void {
 		
 		Image.fromBytes (bytes, function (image) {
 			
@@ -1807,12 +1807,12 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-		});
+		}, headerOnly);
 		
 	}
 	
 	
-	@:noCompletion private function __fromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
+	@:noCompletion private function __fromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void, headerOnly:Bool = false):Void {
 		
 		Image.fromFile (path, function (image) {
 			
@@ -1824,7 +1824,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-		}, onerror);
+		}, onerror, headerOnly);
 		
 	}
 	
