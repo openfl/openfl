@@ -166,17 +166,17 @@ class CanvasTextField {
 			
 			for (i in 0...linebreaks.length) {
 				
-				longest = Math.max (longest, context.measureText (textField.__text.substr (i == 0 ? 0 : (linebreaks[i - 1] + 1), linebreaks[i])).width);
+				longest = Math.max (longest, context.measureText (textField.__text.substring (i == 0 ? 0 : (linebreaks[i - 1] + 1), linebreaks[i])).width);
 				
 			}
 			
-			longest = Math.max (longest, context.measureText (textField.__text.substr (linebreaks.length == 0 ? 0 : (linebreaks[linebreaks.length - 1] + 1))).width);
+			longest = Math.max (longest, context.measureText (textField.__text.substring (linebreaks.length == 0 ? 0 : (linebreaks[linebreaks.length - 1] + 1))).width);
 			
 			return longest;
 			
 		} else {
 			
-			return context.measureText (textField.__text.substr (line == 0 ? 0 : (linebreaks[line - 1] + 1))).width;
+			return context.measureText (textField.__text.substring (line == 0 ? 0 : (linebreaks[line - 1] + 1))).width;
 			
 		}
 		
@@ -266,6 +266,7 @@ class CanvasTextField {
 				
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
+				textField.__graphics.__dirty = false;
 				textField.__dirty = false;
 				
 			} else {

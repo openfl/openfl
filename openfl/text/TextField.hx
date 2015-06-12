@@ -1011,7 +1011,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
-		#if cairo_graphics
+		#if !disable_cairo_graphics
 		
 		#if lime_cairo
 		CairoTextField.render (this, renderSession);
@@ -1655,7 +1655,7 @@ class TextField extends InteractiveObject {
 		if (__canvas != null) {
 			
 			// TODO: Make this more accurate
-			return __textFormat.size * 1.185 * numLines;
+			return __textFormat.size * 1.185 * numLines + (__textFormat.leading == null ? 0 : __textFormat.leading) * numLines;
 			
 		} else if (__div != null) {
 			

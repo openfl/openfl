@@ -959,7 +959,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__image != null && __image.dirty) {
 			
-			var format = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
+			var internalFormat = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
+			var format = internalFormat;
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			var textureImage = __image;
 			
@@ -995,14 +996,14 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			if (!textureImage.premultiplied && !textureImage.transparent) {
+			if (!textureImage.premultiplied && textureImage.transparent) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.premultiplied = true;
 				
 			}
 			
-			gl.texImage2D (gl.TEXTURE_2D, 0, format, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 			gl.bindTexture (gl.TEXTURE_2D, null);
 			__image.dirty = false;
 			

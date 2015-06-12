@@ -68,7 +68,7 @@ class Telemetry {
 	private static inline function __initialize ():Void {
 		
 		#if (cpp && hxtelemetry)
-		var config = new HxTelemetry.Config ();
+		var config = new hxtelemetry.Config ();
 		config.allocations = true;
 		config.host = "localhost";
 		config.app_name = Lib.application.config.title;
