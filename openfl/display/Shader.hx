@@ -8,8 +8,9 @@ import openfl.gl.GL;
 
 using StringTools;
 
+@:autoBuild(openfl._internal.macros.MacroShader.buildUniforms())
 class Shader {
-
+	
 	static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
 	
 	/**
@@ -55,11 +56,7 @@ class Shader {
 	 */
 	public var precision:GLShaderPrecision = MEDIUM;
 	/**
-	 * The code of the shader. It can be changed at any time.
-	 */
-	public var fragmentCode(default, set):String;
-	/**
-	 * A map of <String, GLShaderParameter>
+	 * A Map<String, GLShaderParameter>
 	 */
 	public var data(default, null):GLShaderData;
 	/**
@@ -82,10 +79,9 @@ class Shader {
 	private var __fragmentCode:String;
 	private var __shader:InternalShader;
 	
-	public function new(fragmentCode:String, ?precision:GLShaderPrecision = MEDIUM) {
+	public function new(?precision:GLShaderPrecision = MEDIUM) {
 		this.precision = precision;
 		data = new Map();
-		this.fragmentCode = fragmentCode;
 	}
 	
 	private function __init(gl:GLRenderContext) {
@@ -117,42 +113,9 @@ class Shader {
 		// TODO extensions
 		
 		output = output.concat(header);
-		
 		output.push(code);
 		
-		return output.join("\n");
-	}
-	
-	private function __parseUniforms(code:String) {
-		var src = code.split("\n");
-		var us:Array<String>;
-		var type:String;
-		var name:String;
-		var array:Null<Int>;
-		var skip = [uSampler, uColorMultiplier, uColorOffset];
-		for (s in src) {
-			if (uniformRegex.match(s)) {
-				name = uniformRegex.matched(2);
-				if (skip.indexOf(name) > -1) continue;
-				
-				type = uniformRegex.matched(1);
-				array = Std.parseInt(uniformRegex.matched(3));
-				data.set(name, new GLShaderParameter(type, array) );
-			}
-		}		
-	}
-	
-	private function set_fragmentCode(value:String) {
-		var code = __buildFragmentCode(value);
-		
-		if (code == __fragmentCode) {
-			return fragmentCode;
-		} else {
-			__dirty = true;
-			__fragmentCode = code;
-			__parseUniforms(code);
-			return fragmentCode = value;
-		}
+		__fragmentCode = output.join("\n");
 	}
 	
 }
