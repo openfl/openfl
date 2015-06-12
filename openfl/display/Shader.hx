@@ -139,7 +139,7 @@ class GLShaderParameter {
 	/**
 	 * The value of the parameter when the type isn't a sampler2D
 	 */
-	public var value(default, set):Array<Float> = [];
+	public var value(default, set):Array<Float>;
 	/**
 	 * The BitmapData to be used when the type is a sampler2D
 	 */
@@ -175,12 +175,21 @@ class GLShaderParameter {
 			case "bool": 
 				internalType = INT;
 				size = 1;
+				
+				value = [0.0];
+				
 			case "int": 
 				internalType = INT;
 				size = 1;
+				
+				value = [0.0];
+				
 			case "float":
 				internalType = FLOAT;
 				size = 1;
+				
+				value = [0.0];
+				
 			case v if (v.indexOf("vec") > -1):
 				if(type.startsWith("b") || type.startsWith("i"))
 					internalType = INT;
@@ -189,17 +198,40 @@ class GLShaderParameter {
 				
 				var s = Std.parseInt(type.charAt(type.length - 1));
 				size = s;
+				
+				value = [for (i in 0...size) 0.0];
+				
 			case m if (m.indexOf("mat") > -1):
 				internalType = MAT;
 				var s = Std.parseInt(type.charAt(type.length - 1));
 				size = s;
+				
+				value = switch(size) {
+					case 2:
+						[	1, 0,
+							1, 0
+						];
+					case 3:
+						[	1, 0, 0,
+							0, 1, 0,
+							0, 0, 1
+						];
+					case 4:
+						[	1, 0, 0, 0,
+							0, 1, 0, 0,
+							0, 0, 1, 0,
+							0, 0, 0, 1,
+						];
+					case _:
+						[0];
+				};
+				
 			case "sampler2D" | "samplerCube":
 				internalType = SAMPLER;
 				size = 0;
 			case _: 
 				internalType = NONE;
 				trace("Can't initialize value for type " + type);
-				
 		}
 	}
 	

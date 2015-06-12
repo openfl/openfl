@@ -26,7 +26,7 @@ using haxe.macro.MacroStringTools;
 class MacroShader
 {
 
-	static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
+	static var uniformRegex = ~/^\s*uniform\s+(?:(?:high|medium|low)p\s+)?(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
 	
 	static var currentPos;
 	
