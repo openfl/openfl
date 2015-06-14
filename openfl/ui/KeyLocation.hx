@@ -18,8 +18,8 @@ package openfl.ui; #if !flash
 	
 	STANDARD;
 	LEFT;
-	NUM_PAD;
 	RIGHT;
+	NUM_PAD;
 	
 }
 
