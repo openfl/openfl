@@ -905,7 +905,41 @@ class Keyboard {
 		
 	}
 	
-	
+	public static function getLocation (key:KeyCode):KeyLocation {
+		
+		return switch (key) {
+
+			case LEFT_CTRL: KeyLocation.LEFT;
+			case LEFT_SHIFT: KeyLocation.LEFT;
+			case LEFT_ALT: KeyLocation.LEFT;
+			case LEFT_META: KeyLocation.LEFT;
+			
+			case RIGHT_CTRL: KeyLocation.RIGHT;
+			case RIGHT_SHIFT: KeyLocation.RIGHT;
+			case RIGHT_ALT: KeyLocation.RIGHT;
+			case RIGHT_META: KeyLocation.RIGHT;
+
+			case NUMPAD_DIVIDE: KeyLocation.NUM_PAD;
+			case NUMPAD_MULTIPLY: KeyLocation.NUM_PAD;
+			case NUMPAD_MINUS: KeyLocation.NUM_PAD;
+			case NUMPAD_PLUS: KeyLocation.NUM_PAD;
+			case NUMPAD_ENTER: KeyLocation.NUM_PAD;
+			case NUMPAD_1: KeyLocation.NUM_PAD;
+			case NUMPAD_2: KeyLocation.NUM_PAD;
+			case NUMPAD_3: KeyLocation.NUM_PAD;
+			case NUMPAD_4: KeyLocation.NUM_PAD;
+			case NUMPAD_5: KeyLocation.NUM_PAD;
+			case NUMPAD_6: KeyLocation.NUM_PAD;
+			case NUMPAD_7: KeyLocation.NUM_PAD;
+			case NUMPAD_8: KeyLocation.NUM_PAD;
+			case NUMPAD_9: KeyLocation.NUM_PAD;
+			case NUMPAD_0: KeyLocation.NUM_PAD;
+			case NUMPAD_PERIOD: KeyLocation.NUM_PAD;
+			case NUMPAD_DECIMAL: KeyLocation.NUM_PAD;
+
+			default: KeyLocation.STANDARD;
+		}
+	}
 }
 
 
