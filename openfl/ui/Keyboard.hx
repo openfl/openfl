@@ -545,7 +545,25 @@ class Keyboard {
 	public static var numLock (default, null):Bool;
 	
 	
-	public static function convertKeyCode (key:KeyCode):Int {
+	/**
+	 * Specifies whether the last key pressed is accessible by other SWF files.
+	 * By default, security restrictions prevent code from a SWF file in one
+	 * domain from accessing a keystroke generated from a SWF file in another
+	 * domain.
+	 * 
+	 * @return The value <code>true</code> if the last key pressed can be
+	 *         accessed. If access is not permitted, this method returns
+	 *         <code>false</code>.
+	 */
+	public static function isAccessible ():Bool {
+		
+		// default browser security restrictions are always enforced
+		return false;
+		
+	}
+	
+	
+	@:noCompletion private static inline function __convertKeyCode (key:KeyCode):Int {
 		
 		return switch (key) {
 			
@@ -791,24 +809,6 @@ class Keyboard {
 	}
 	
 	
-	/**
-	 * Specifies whether the last key pressed is accessible by other SWF files.
-	 * By default, security restrictions prevent code from a SWF file in one
-	 * domain from accessing a keystroke generated from a SWF file in another
-	 * domain.
-	 * 
-	 * @return The value <code>true</code> if the last key pressed can be
-	 *         accessed. If access is not permitted, this method returns
-	 *         <code>false</code>.
-	 */
-	public static function isAccessible ():Bool {
-		
-		// default browser security restrictions are always enforced
-		return false;
-		
-	}
-	
-	
 	@:noCompletion private static function __getCharCode (key:Int, shift:Bool = false):Int {
 		
 		if (!shift) {
@@ -905,41 +905,21 @@ class Keyboard {
 		
 	}
 	
-	public static function getLocation (key:KeyCode):KeyLocation {
+	
+	@:noCompletion private static inline function __getKeyLocation (key:KeyCode):KeyLocation {
 		
 		return switch (key) {
-
-			case LEFT_CTRL: KeyLocation.LEFT;
-			case LEFT_SHIFT: KeyLocation.LEFT;
-			case LEFT_ALT: KeyLocation.LEFT;
-			case LEFT_META: KeyLocation.LEFT;
 			
-			case RIGHT_CTRL: KeyLocation.RIGHT;
-			case RIGHT_SHIFT: KeyLocation.RIGHT;
-			case RIGHT_ALT: KeyLocation.RIGHT;
-			case RIGHT_META: KeyLocation.RIGHT;
-
-			case NUMPAD_DIVIDE: KeyLocation.NUM_PAD;
-			case NUMPAD_MULTIPLY: KeyLocation.NUM_PAD;
-			case NUMPAD_MINUS: KeyLocation.NUM_PAD;
-			case NUMPAD_PLUS: KeyLocation.NUM_PAD;
-			case NUMPAD_ENTER: KeyLocation.NUM_PAD;
-			case NUMPAD_1: KeyLocation.NUM_PAD;
-			case NUMPAD_2: KeyLocation.NUM_PAD;
-			case NUMPAD_3: KeyLocation.NUM_PAD;
-			case NUMPAD_4: KeyLocation.NUM_PAD;
-			case NUMPAD_5: KeyLocation.NUM_PAD;
-			case NUMPAD_6: KeyLocation.NUM_PAD;
-			case NUMPAD_7: KeyLocation.NUM_PAD;
-			case NUMPAD_8: KeyLocation.NUM_PAD;
-			case NUMPAD_9: KeyLocation.NUM_PAD;
-			case NUMPAD_0: KeyLocation.NUM_PAD;
-			case NUMPAD_PERIOD: KeyLocation.NUM_PAD;
-			case NUMPAD_DECIMAL: KeyLocation.NUM_PAD;
-
+			case LEFT_CTRL, LEFT_SHIFT, LEFT_ALT, LEFT_META: KeyLocation.LEFT;
+			case RIGHT_CTRL, RIGHT_SHIFT, RIGHT_ALT, RIGHT_META: KeyLocation.RIGHT;
+			case NUMPAD_DIVIDE, NUMPAD_MULTIPLY, NUMPAD_MINUS, NUMPAD_PLUS, NUMPAD_ENTER, NUMPAD_1, NUMPAD_2, NUMPAD_3, NUMPAD_4, NUMPAD_5, NUMPAD_6, NUMPAD_7, NUMPAD_8, NUMPAD_9, NUMPAD_0, NUMPAD_PERIOD, NUMPAD_DECIMAL: KeyLocation.NUM_PAD;
 			default: KeyLocation.STANDARD;
+			
 		}
+		
 	}
+	
+	
 }
 
 
