@@ -743,7 +743,7 @@ class Stage extends DisplayObjectContainer {
 
 		    case JoystickEvent.DEVICE_REMOVED:
 
-		        joystickEvent = new JoystickEvent (type, false, false, event.id);
+				joystickEvent = new JoystickEvent (type, false, false, event.id);
 
 			case JoystickEvent.HAT_MOVE:
 				
