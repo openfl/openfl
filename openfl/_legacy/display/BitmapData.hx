@@ -241,7 +241,7 @@ class BitmapData implements IBitmapDrawable {
 	#if lime_hybrid
 	public static function fromImage (image:Image):BitmapData {
 		
-		var source = image.data.buffer;
+		var source = ByteArray.fromBytes (image.data.buffer);
 		var length = source.length;
 		var data = new ByteArray (length);
 		var count = Std.int (length / 4);
