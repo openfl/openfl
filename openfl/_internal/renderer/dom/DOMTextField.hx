@@ -24,7 +24,7 @@ class DOMTextField {
 		font += "normal ";
 		font += format.bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.size + format.leading) + "px ";
+		font += "/" + (format.size + format.leading + 6) + "px ";
 		
 		font += "" + switch (format.font) {
 			
