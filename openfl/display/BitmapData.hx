@@ -765,7 +765,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			__buffer = gl.createBuffer ();
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (cast data), gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (data), gl.STATIC_DRAW);
 			gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
 		}
