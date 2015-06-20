@@ -44,7 +44,7 @@ script:
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -nocffi ; fi
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Ddisable-cffi -nocffi ; fi
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime test neko -Dlegacy -nocffi ; fi
-  - if [[ $TARGET == 'neko' ]]; then haxelib run lime test neko -Dhybrid -nocffi ; fi
+  - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Dhybrid -nocffi ; fi
   - if [[ $TARGET == 'flash' ]]; then haxelib run munit test -as3 -norun -nocffi ; fi
   - if [[ $TARGET == 'html5' ]]; then haxelib run munit test -browser phantomjs -nocffi ; fi
   - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi
