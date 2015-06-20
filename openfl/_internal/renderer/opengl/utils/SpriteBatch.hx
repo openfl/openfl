@@ -129,7 +129,7 @@ class SpriteBatch {
 	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null):Void {
 		
 		this.renderSession = renderSession;
-		shader = renderSession.shaderManager.defaultShader;
+		renderSession.shaderManager.setShader(null);
 		drawing = true;
 		start(clipRect);
 		
@@ -555,7 +555,7 @@ class SpriteBatch {
 	function renderBatch(state:State, size:Int, start:Int) {
 		if (size == 0 || state.texture == null) return;
 		
-		var shader:Shader = state.shader == null ? renderSession.shaderManager.defaultShader : state.shader;
+		shader = state.shader == null ? renderSession.shaderManager.defaultShader : state.shader;
 		renderSession.shaderManager.setShader(shader);
 		
 		// TODO cache this somehow?, don't do each state change?
@@ -664,13 +664,15 @@ private class State {
 	public function new() { }
 	
 	public inline function equals(other:State) {
-		return ((shader == null || other.shader == null) || shader.ID == other.shader.ID) &&
+		return (
+				// if both shaders are null we are using the DefaultShader, if not, check the id
+				((shader == null && other.shader == null) || (shader != null && other.shader != null && shader.ID == other.shader.ID)) &&
 				texture == other.texture &&
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
 				(colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha))
-		;
+		);
 	}
 	
 	public function destroy() {
