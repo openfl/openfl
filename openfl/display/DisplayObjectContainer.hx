@@ -4,6 +4,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
@@ -953,26 +954,52 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		if (__cacheAsBitmap) {
-
+			
 			if (__updateCachedBitmap) {
 				
+				trace("Drawing to texture " + __cachedBitmapBounds);
 				if (__cachedBitmap == null) {
 					__cachedBitmap = new BitmapData(0, 0);
 				}
+				var x = Math.abs(__cachedBitmapBounds.x);
+				var y = Math.abs(__cachedBitmapBounds.y);
+				
 				// we don't need an Image to be created so we will hack the values ourselves
-				@:privateAccess __cachedBitmap.width = Math.floor(__cachedBitmapBounds.width);
-				@:privateAccess __cachedBitmap.height = Math.floor(__cachedBitmapBounds.height);
-				@:privateAccess __cachedBitmap.rect = __cachedBitmapBounds;
+				@:privateAccess __cachedBitmap.width  = Math.floor(x + __cachedBitmapBounds.width);
+				@:privateAccess __cachedBitmap.height = Math.floor(y + __cachedBitmapBounds.height);
+				@:privateAccess __cachedBitmap.rect = new Rectangle(0, 0, __cachedBitmap.width, __cachedBitmap.height);
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = new Matrix();
-				m.translate( -__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+				m.translate(x, y);
+				//m.translate( -__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
-				__shader = null;
-				__cachedBitmap.__drawGL(renderSession, __cachedBitmap.width, __cachedBitmap.height, this, m, true, false, true, false);
-				__shader = shader;
+				this.__shader = null;
+				
+				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m);
+				this.__shader = shader;
 				__updateCachedBitmap = false;
 			}
+			
+			if (__updateFilters) {
+				trace("Updating filters");
+				for (filter in __filters) {
+					@:privateAccess filter.__applyGL(renderSession);
+				}
+				__updateFilters = false;
+			}
+			
+			// if updateFilters
+			// 		for each filter
+			// 			apply filter
+			/*
+			if (__updateFilters) {
+				__updateFilters = false;
+				for (filter in __filters) {
+					filter.__applyGL(__cachedBitmap);
+				}
+			}
+			*/
 			
             renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, __worldTransform, __worldColorTransform, __worldAlpha, blendMode, __shader);
 			

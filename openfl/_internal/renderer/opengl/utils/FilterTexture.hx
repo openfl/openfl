@@ -23,7 +23,7 @@ class FilterTexture {
 	private var __height:Int;
 	private var __uvData:TextureUvs;
 	
-	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing = true) {
+	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true) {
 		
 		this.gl = gl;
 		
@@ -48,10 +48,10 @@ class FilterTexture {
 	}
 	
 	
-	public function clear ():Void {
-			
-		gl.clearColor (0, 0, 0, 0);
-		gl.clear (gl.COLOR_BUFFER_BIT);
+	public function clear (?r:Float = 0, ?g:Float = 0, ?b:Float = 0, ?a:Float = 0, ?mask:Null<Int>):Void {
+		
+		gl.clearColor (r, g, b, a);
+		gl.clear (mask == null ? gl.COLOR_BUFFER_BIT : mask);
 		
 	}
 	
@@ -74,8 +74,10 @@ class FilterTexture {
 		this.width = width;
 		this.height = height;
 		
-		var pow2W = powerOfTwo(width);
-		var pow2H = powerOfTwo(height);
+		//var pow2W = powerOfTwo(width);
+		//var pow2H = powerOfTwo(height);
+		var pow2W = width;
+		var pow2H = height;
 		var lastW = __width;
 		var lastH = __height;
 		

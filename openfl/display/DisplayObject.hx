@@ -757,6 +757,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __updateCachedBitmap:Bool;	
 	@:noCompletion private var __cachedBitmap:BitmapData;
 	@:noCompletion private var __cachedBitmapBounds:Rectangle;
+	@:noCompletion private var __updateFilters:Bool;
 	
 	
 	#if (js && html5)
@@ -1359,6 +1360,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				}
 				__cachedBitmapBounds.setEmpty();
 				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
+				
+			}
+			
+			if (__filters != null) {
+				@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, @:privateAccess Matrix.__identity);
 			}
 			
 			// we will position the origin of the cached bitmap to 0,0 when rendering to the cached bitmapData
@@ -1572,7 +1578,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
 		
-		// set
+		if (value != null && value.length > 0) {
+			__filters = value.copy();
+			__forceCacheAsBitmap = true;
+			__cacheAsBitmap = true;
+			__updateFilters = true;
+			trace("Setting filters");
+		} else {
+			__filters = [];
+			__forceCacheAsBitmap = false;
+			__cacheAsBitmap = false;
+			__updateFilters = false;
+		}
+		
+		__setRenderDirty();
 		
 		return value;
 		

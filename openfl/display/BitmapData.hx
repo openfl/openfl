@@ -14,6 +14,7 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
@@ -594,10 +595,8 @@ class BitmapData implements IBitmapDrawable {
 				
 			case DATA:
 				
-				
 				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				__drawGL(renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
-				
+				__drawGL (renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, true, true);
 				
 			default:
 				
@@ -1626,136 +1625,6 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public function __drawGL (renderSession:RenderSession, width:Int, height:Int, source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, drawSelf:Bool = false, clearBuffer:Bool = false, readPixels:Bool = false):Void {
-		
-		var renderer = @:privateAccess Lib.current.stage.__renderer;
-		if (renderer == null) return;
-		
-		var renderSession = @:privateAccess renderer.renderSession;
-		var gl:GLRenderContext = renderSession.gl;
-		if (gl == null) return;
-		
-		var spritebatch = renderSession.spriteBatch;
-		var renderTransparent = renderSession.renderer.transparent;
-		
-		spritebatch.finish();
-		
-		var tmpRect = clipRect == null ? new Rectangle (0, 0, width, height) : clipRect.clone ();
-		
-		renderSession.renderer.transparent = transparent;
-		
-		if (__framebuffer == null) {
-			
-			__framebuffer = new FilterTexture (gl, width, height, smoothing);
-			
-		}
-		
-		__framebuffer.resize (width, height);
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer.frameBuffer);
-		
-		renderer.setViewport (0, 0, width, height);
-		
-		spritebatch.begin (renderSession, drawSelf ? null : tmpRect);
-		
-		// enable writing to all the colors and alpha
-		gl.colorMask (true, true, true, true);
-		renderSession.blendModeManager.setBlendMode (BlendMode.NORMAL);
-		
-		if (clearBuffer || drawSelf) {
-			
-			__framebuffer.clear ();
-			
-		}
-		
-		if (drawSelf) {
-			
-			__worldTransform.identity ();
-			__flipMatrix (__worldTransform);
-			this.__renderGL (renderSession);
-			spritebatch.stop ();
-			gl.deleteTexture (__texture);
-			spritebatch.start (tmpRect);
-			
-		}
-		
-		var ctCache = source.__worldColorTransform;
-		var matrixCache = source.__worldTransform;
-		var blendModeCache = source.__blendMode;
-		var cached = source.__cacheAsBitmap;
-		
-		var m = matrix != null ? matrix.clone () : new Matrix ();
-		
-		__flipMatrix (m);
-		
-		source.__worldTransform = m;
-		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
-		source.__blendMode = blendMode;
-		source.__cacheAsBitmap = false;
-		
-		source.__updateChildren (false);
-		
-		source.__renderGL (renderSession);
-		
-		source.__worldColorTransform = ctCache;
-		source.__worldTransform = matrixCache;
-		source.__blendMode = blendModeCache;
-		source.__cacheAsBitmap = cached;
-		
-		source.__updateChildren (false);
-		
-		spritebatch.finish ();
-		
-		if (readPixels) {
-			
-			// TODO is this possible?
-			if (__image.width != width || __image.height != height) {
-				
-				__image.resize (width, height);
-				
-			}
-			
-			gl.readPixels (0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, __image.buffer.data);
-			
-		}
-		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, renderSession.defaultFramebuffer);
-		
-		renderer.setViewport (0, 0, renderSession.renderer.width, renderSession.renderer.height);
-		
-		renderSession.renderer.transparent = renderTransparent;
-		
-		gl.colorMask (true, true, true, renderSession.renderer.transparent);
-		
-		__usingFramebuffer = true;
-		
-		if (__image != null) {
-			
-			__image.dirty = false;
-			__image.premultiplied = true;
-			
-		}
-		
-		var uv = @:privateAccess __framebuffer.__uvData;
-		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
-		__isValid = true;
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) private inline function __flipMatrix (m:Matrix):Void {
-		
-		var tx = m.tx;
-		var ty = m.ty;
-		m.tx = 0;
-		m.ty = 0;
-		m.scale (1, -1);
-		m.translate (0, height);
-		m.tx += tx;
-		m.ty -= ty;
-		
-	}
-	
-	
 	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
 		
 		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
@@ -1930,6 +1799,19 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
 		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode);
+		
+	}
+	
+	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, drawSelf:Bool = false, ?readPixels:Bool = false) {
+		
+		__framebuffer = GLBitmap.pushFramebuffer(renderSession, __framebuffer, rect, smoothing, transparent, !__usingFramebuffer);
+		GLBitmap.drawInFramebuffer(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
+		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
+		
+		var uv = @:privateAccess __framebuffer.__uvData;
+		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
+		__isValid = true;
+		__usingFramebuffer = true;
 		
 	}
 	

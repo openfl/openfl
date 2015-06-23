@@ -1,4 +1,7 @@
 package openfl.filters; #if !flash #if !openfl_legacy
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
+import openfl.filters.BitmapFilter;
 
 
 /**

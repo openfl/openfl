@@ -1,8 +1,12 @@
 package openfl.filters; #if !flash #if !openfl_legacy
 
 
+import openfl.display.BitmapData;
+import openfl.display.Shader;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl._internal.renderer.RenderSession;
 
 #if (js && html5)
 import js.html.ImageData;
@@ -21,6 +25,8 @@ import js.html.ImageData;
  */
 class BitmapFilter {
 	
+	private var __dirty:Bool = true;
+	private var __shader:Shader;
 	
 	public function new () {
 		
@@ -49,6 +55,32 @@ class BitmapFilter {
 		
 	}
 	#end
+	
+	@:noCompletion private function __growBounds (rect:Rectangle) {
+		
+		
+		
+	}
+	
+	@:noCompletion private function __applyGL (renderSession:RenderSession, bitmap:BitmapData):Void {
+		
+		if (!__dirty) return;
+		
+		
+		__dirty = false;
+		
+	}
+	
+	@:noCompletion private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
+		
+		var r = new Rectangle();
+		for (filter in filters) {
+			filter.__growBounds (r);
+		}
+		
+		r = r.transform(matrix);
+		rect.__expand(r.x, r.y, r.width, r.height);
+	}
 	
 	
 }
