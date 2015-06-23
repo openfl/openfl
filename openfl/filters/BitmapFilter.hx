@@ -1,6 +1,7 @@
 package openfl.filters; #if !flash #if !openfl_legacy
 
 
+import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.geom.Matrix;
@@ -62,7 +63,7 @@ class BitmapFilter {
 		
 	}
 	
-	@:noCompletion private function __applyGL (renderSession:RenderSession, bitmap:BitmapData):Void {
+	@:noCompletion private function __applyGL (renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		if (!__dirty) return;
 		

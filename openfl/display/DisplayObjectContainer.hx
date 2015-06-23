@@ -957,21 +957,32 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (__updateCachedBitmap) {
 				
-				trace("Drawing to texture " + __cachedBitmapBounds);
+				trace("Drawing to texture " + __cachedBitmapBounds + " " + __cachedFilterBounds);
+				
+				var x = __cachedBitmapBounds.x;
+				var y = __cachedBitmapBounds.y;
+				var w = __cachedBitmapBounds.width;
+				var h = __cachedBitmapBounds.height;
+				
+				if (__cachedFilterBounds != null) {
+					w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
+					h += Math.abs(__cachedFilterBounds.y) + Math.abs(__cachedFilterBounds.height);
+				}
+				
+				trace(x, y, w, h);
+				
 				if (__cachedBitmap == null) {
 					__cachedBitmap = new BitmapData(0, 0);
 				}
-				var x = Math.abs(__cachedBitmapBounds.x);
-				var y = Math.abs(__cachedBitmapBounds.y);
-				
+
 				// we don't need an Image to be created so we will hack the values ourselves
-				@:privateAccess __cachedBitmap.width  = Math.floor(x + __cachedBitmapBounds.width);
-				@:privateAccess __cachedBitmap.height = Math.floor(y + __cachedBitmapBounds.height);
+				@:privateAccess __cachedBitmap.width  = Math.floor(w);
+				@:privateAccess __cachedBitmap.height = Math.floor(h);
 				@:privateAccess __cachedBitmap.rect = new Rectangle(0, 0, __cachedBitmap.width, __cachedBitmap.height);
+				
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = new Matrix();
-				m.translate(x, y);
-				//m.translate( -__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+				m.translate(-x, -y);
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
 				this.__shader = null;
@@ -984,7 +995,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (__updateFilters) {
 				trace("Updating filters");
 				for (filter in __filters) {
-					@:privateAccess filter.__applyGL(renderSession);
+					@:privateAccess filter.__applyGL(renderSession, __cachedBitmap, __cachedBitmap, null, null);
 				}
 				__updateFilters = false;
 			}
@@ -1000,7 +1011,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 			}
 			*/
-			
+
             renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, __worldTransform, __worldColorTransform, __worldAlpha, blendMode, __shader);
 			
 			return;

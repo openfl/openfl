@@ -688,7 +688,7 @@ class Matrix {
 	 */
 	public function transformPoint (pos:Point) {
 		
-		return new Point (__transformX (pos), __transformY (pos));
+		return new Point (__transformX (pos.x, pos.y), __transformY (pos.x, pos.y));
 		
 	}
 	
@@ -763,24 +763,24 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformX (pos:Point):Float {
+	@:noCompletion public inline function __transformX (x:Float, y:Float):Float {
 		
-		return pos.x * a + pos.y * c + tx;
-		
-	}
-	
-	
-	@:noCompletion public inline function __transformY (pos:Point):Float {
-		
-		return pos.x * b + pos.y * d + ty;
+		return x * a + y * c + tx;
 		
 	}
 	
 	
-	@:noCompletion public inline function __translateTransformed (pos:Point):Void {
+	@:noCompletion public inline function __transformY (x:Float, y:Float):Float {
 		
-		tx = __transformX (pos);
-		ty = __transformY (pos);
+		return x * b + y * d + ty;
+		
+	}
+	
+	
+	@:noCompletion public inline function __translateTransformed (x:Float, y:Float):Void {
+		
+		tx = __transformX (x, y);
+		ty = __transformY (x, y);
 		
 		//__cleanValues ();
 		

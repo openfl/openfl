@@ -352,38 +352,6 @@ class SpriteBatch {
 		}
 	}
 	
-	public function renderCachedGraphics(object:DisplayObject) {
-		var cachedTexture = object.__graphics.__cachedTexture;
-		
-		if (cachedTexture == null) return;
-		
-		if (batchedSprites >= maxSprites) {
-			flush();
-		}
-		
-		var alpha = object.__worldAlpha;
-		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
-		
-
-		var uvs = new TextureUvs();
-		uvs.x0 = 0;		uvs.y0 = 1;
-		uvs.x1 = 1;		uvs.y1 = 1;
-		uvs.x2 = 1;		uvs.y2 = 0;
-		uvs.x3 = 0;		uvs.y3 = 0;
-		
-		var worldTransform = object.__worldTransform.clone();
-		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
-		
-		enableAttributes(color);
-		
-		var index = batchedSprites * 4 * elementsPerVertex;
-		fillVertices(index, cachedTexture.width, cachedTexture.height, worldTransform, uvs, null, color);
-		
-		setState(batchedSprites, cachedTexture.texture, object.blendMode, object.__worldColorTransform);
-		
-		batchedSprites++;
-	}
-	
 	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs, ?pivot:Point,
 		?color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
 		

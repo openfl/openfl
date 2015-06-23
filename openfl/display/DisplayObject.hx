@@ -757,6 +757,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __updateCachedBitmap:Bool;	
 	@:noCompletion private var __cachedBitmap:BitmapData;
 	@:noCompletion private var __cachedBitmapBounds:Rectangle;
+	@:noCompletion private var __cachedFilterBounds:Rectangle;
 	@:noCompletion private var __updateFilters:Bool;
 	
 	
@@ -1353,6 +1354,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		}
 		
 		if (__cacheAsBitmap) {
+			
 			// we need to update the bounds
 			if(__updateCachedBitmap) {
 				if (__cachedBitmapBounds == null) {
@@ -1364,13 +1366,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			}
 			
 			if (__filters != null) {
-				@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, @:privateAccess Matrix.__identity);
+				if (__cachedFilterBounds == null) {
+					__cachedFilterBounds = new Rectangle();
+				}
+				@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedFilterBounds, @:privateAccess Matrix.__identity);
+				
+				__cachedBitmapBounds.x += __cachedFilterBounds.x;
+				__cachedBitmapBounds.y += __cachedFilterBounds.y;
 			}
 			
+			//trace(__cachedBitmapBounds);
 			// we will position the origin of the cached bitmap to 0,0 when rendering to the cached bitmapData
 			// we need to move the rendering back to the actual position
 			if (__cachedBitmapBounds.x != 0 || __cachedBitmapBounds.y != 0) {
-				__worldTransform.__translateTransformed(new Point(__cachedBitmapBounds.x, __cachedBitmapBounds.y));
+				__worldTransform.__translateTransformed(__cachedBitmapBounds.x, __cachedBitmapBounds.y);
 			}
 		}
 		
