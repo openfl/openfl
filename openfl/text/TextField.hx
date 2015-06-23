@@ -1328,6 +1328,7 @@ class TextField extends InteractiveObject {
 		
 	}
 	
+	
 	@:noCompletion private function get_bounds ():Rectangle {
 		
 		if (!__dirtyBounds) {

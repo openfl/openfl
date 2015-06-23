@@ -253,7 +253,7 @@ class SoundChannel extends EventDispatcher {
 				__dynamicSoundCount--;
 				
 			}
-
+			
 			var completeEvent = new Event (Event.SOUND_COMPLETE);
 				dispatchEvent (completeEvent);
 			

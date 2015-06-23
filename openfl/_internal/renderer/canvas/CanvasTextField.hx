@@ -308,13 +308,14 @@ class CanvasTextField {
 					}
 					
 					var measurements = measureText (textField);
+					var bounds = textField.bounds;
 					
-					graphics.__canvas.width = Math.ceil (textField.__width);
-					graphics.__canvas.height = Math.ceil (textField.__height);
+					graphics.__canvas.width = Math.ceil (bounds.width);
+					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textField.border || textField.background) {
 						
-						context.rect (0.5, 0.5, textField.width - 1, textField.height - 1);
+						context.rect (0.5, 0.5, bounds.width, bounds.height);
 						
 						if (textField.background) {
 							
@@ -383,7 +384,7 @@ class CanvasTextField {
 						
 						if (textField.border) {
 							
-							context.rect (0.5, 0.5, textField.width - 1, textField.height - 1);
+							context.rect (0.5, 0.5, textField.width, textField.height);
 							
 						} else {
 							
