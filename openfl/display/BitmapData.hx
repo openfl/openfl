@@ -2,23 +2,18 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.cairo.CairoSurface;
+import lime.graphics.GLRenderContext;
+import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
-import lime.graphics.GLRenderContext;
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
-import lime.math.ColorMatrix;
-import lime.math.Rectangle in LimeRectangle;
+import lime.math.Rectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
-import lime.utils.UInt8Array;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
-import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -26,6 +21,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+import lime.math.Rectangle in LimeRectangle;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -144,6 +140,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private var __bgra:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
 	@:noCompletion private var __isValid:Bool;
@@ -151,9 +148,13 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __surfaceImage:Image;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __textureImage:Image;
-	@:noCompletion private var __framebuffer:FilterTexture;
+	@:noCompletion private var __framebuffer(get, set):FilterTexture;
+	@:noCompletion private var __swappedFramebuffer:Bool;
+	@:noCompletion private var __framebuffer0:FilterTexture;
+	@:noCompletion private var __framebuffer1:FilterTexture;
 	@:noCompletion private var __uvData:TextureUvs;
 	@:noCompletion private var __usingFramebuffer:Bool = false;
+	@:noCompletion private var __useOldFramebuffer:Bool = false;
 	
 	/**
 	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
@@ -940,7 +941,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		
-		if (__usingFramebuffer && __framebuffer != null) {
+		if (__usingFramebuffer) {
+			if (__useOldFramebuffer) {
+				return __swappedFramebuffer ? __framebuffer0.texture : __framebuffer1.texture;
+			}
 			return __framebuffer.texture;
 		}
 		
@@ -1798,14 +1802,14 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode);
+		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader);
 		
 	}
-	
+
 	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, drawSelf:Bool = false, ?readPixels:Bool = false) {
 		
 		__framebuffer = GLBitmap.pushFramebuffer(renderSession, __framebuffer, rect, smoothing, transparent, !__usingFramebuffer);
-		GLBitmap.drawInFramebuffer(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
+		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
 		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
 		
 		var uv = @:privateAccess __framebuffer.__uvData;
@@ -1813,6 +1817,10 @@ class BitmapData implements IBitmapDrawable {
 		__isValid = true;
 		__usingFramebuffer = true;
 		
+	}
+	
+	@:noCompletion @:dox(hide) private inline function __swap() {
+		__swappedFramebuffer = !__swappedFramebuffer;
 	}
 	
 	
@@ -1892,6 +1900,29 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
+	@:noCompletion @:dox(hide) static function __asFramebuffer (width:Int, height:Int) {
+		
+		var b = new BitmapData(0, 0);
+		b.width = width;
+		b.height = height;
+		b.rect.width = width;
+		b.rect.height = height;
+		
+		return b;
+	}
+	
+	
+	function get___framebuffer() {
+		return __swappedFramebuffer ? __framebuffer1 : __framebuffer0;
+	}
+	
+	function set___framebuffer(v) {
+		if (__swappedFramebuffer) {
+			return __framebuffer1 = v;
+		} else {
+			return __framebuffer0 = v;
+		}
+	}
 }
 
 

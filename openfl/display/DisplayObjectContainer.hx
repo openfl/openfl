@@ -9,6 +9,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
+import openfl.filters.BitmapFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -955,14 +956,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__cacheAsBitmap) {
 			
+			var x = __cachedBitmapBounds.x;
+			var y = __cachedBitmapBounds.y;
+			var w = __cachedBitmapBounds.width;
+			var h = __cachedBitmapBounds.height;
+			
 			if (__updateCachedBitmap) {
 				
 				trace("Drawing to texture " + __cachedBitmapBounds + " " + __cachedFilterBounds);
-				
-				var x = __cachedBitmapBounds.x;
-				var y = __cachedBitmapBounds.y;
-				var w = __cachedBitmapBounds.width;
-				var h = __cachedBitmapBounds.height;
 				
 				if (__cachedFilterBounds != null) {
 					w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
@@ -972,13 +973,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				trace(x, y, w, h);
 				
 				if (__cachedBitmap == null) {
-					__cachedBitmap = new BitmapData(0, 0);
+					__cachedBitmap = @:privateAccess BitmapData.__asFramebuffer (Math.floor(w), Math.floor(h));
 				}
-
-				// we don't need an Image to be created so we will hack the values ourselves
-				@:privateAccess __cachedBitmap.width  = Math.floor(w);
-				@:privateAccess __cachedBitmap.height = Math.floor(h);
-				@:privateAccess __cachedBitmap.rect = new Rectangle(0, 0, __cachedBitmap.width, __cachedBitmap.height);
 				
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = new Matrix();
@@ -994,9 +990,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (__updateFilters) {
 				trace("Updating filters");
-				for (filter in __filters) {
-					@:privateAccess filter.__applyGL(renderSession, __cachedBitmap, __cachedBitmap, null, null);
-				}
+				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap, __cachedBitmap, null, null);
 				__updateFilters = false;
 			}
 			

@@ -1356,26 +1356,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (__cacheAsBitmap) {
 			
 			// we need to update the bounds
-			if(__updateCachedBitmap) {
+			if(__updateCachedBitmap || __updateFilters) {
 				if (__cachedBitmapBounds == null) {
 					__cachedBitmapBounds = new Rectangle();
 				}
 				__cachedBitmapBounds.setEmpty();
 				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
 				
-			}
-			
-			if (__filters != null) {
-				if (__cachedFilterBounds == null) {
-					__cachedFilterBounds = new Rectangle();
+				if (__filters != null) {
+					if (__cachedFilterBounds == null) {
+						__cachedFilterBounds = new Rectangle();
+					}
+					__cachedFilterBounds.setEmpty();
+					@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedFilterBounds, @:privateAccess Matrix.__identity);
+					
+					__cachedBitmapBounds.x += __cachedFilterBounds.x;
+					__cachedBitmapBounds.y += __cachedFilterBounds.y;
 				}
-				@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedFilterBounds, @:privateAccess Matrix.__identity);
 				
-				__cachedBitmapBounds.x += __cachedFilterBounds.x;
-				__cachedBitmapBounds.y += __cachedFilterBounds.y;
 			}
 			
-			//trace(__cachedBitmapBounds);
 			// we will position the origin of the cached bitmap to 0,0 when rendering to the cached bitmapData
 			// we need to move the rendering back to the actual position
 			if (__cachedBitmapBounds.x != 0 || __cachedBitmapBounds.y != 0) {

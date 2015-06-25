@@ -38,7 +38,6 @@ class GLBitmap {
 	 * @param	transparent
 	 * @param	clearBuffer
 	 */
-	static var fbI = 0;
 	public static function pushFramebuffer (renderSession:RenderSession, texture:FilterTexture, viewPort:Rectangle, smoothing:Bool, ?transparent:Bool = true, ?clearBuffer:Bool = false) {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return null;
@@ -50,20 +49,21 @@ class GLBitmap {
 		var width:Int = Std.int(viewPort.width);
 		var height:Int = Std.int(viewPort.height);
 		
-		//trace("PUSH FRAMEBUFFER " + viewPort);
+		trace("PUSH FRAMEBUFFER " + viewPort);
 		spritebatch.finish();
 		
 		// push the default framebuffer
 		if (fbData.length <= 0) {
-			//trace("\t pushing defaultFramebuffer " + ++fbI);
-			fbData.push( { texture: null, viewPort: new Rectangle(0, 0, renderer.width, renderer.height), transparent: renderer.transparent } );
+			trace("\t pushing defaultFramebuffer");
+			fbData.push( { texture: null, viewPort: null, transparent: renderer.transparent } );
 		}
-		//trace("\t Pushing framebuffer " + ++fbI);
 		
 		if (texture == null) {
-			//trace("\t Creating framebuffer");
 			texture = new FilterTexture(gl, width, height, smoothing);
+			trace("\t Creating framebuffer " + texture.frameBuffer.id);
 		}
+		
+		trace("\t Pushing framebuffer " + texture.frameBuffer.id);
 		
 		texture.resize(width, height);
 		renderer.transparent = transparent;
@@ -76,7 +76,7 @@ class GLBitmap {
 		renderSession.blendModeManager.setBlendMode (BlendMode.NORMAL);
 		
 		if (clearBuffer) {
-			//trace("\t Clearing framebuffer");
+			trace("\t Clearing framebuffer " + texture.frameBuffer.id);
 			texture.clear();
 		}
 		
@@ -95,32 +95,32 @@ class GLBitmap {
 	 * @param	blendMode
 	 * @param	clipRect
 	 */
-	public static function drawInFramebuffer (renderSession:RenderSession, self:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?colorTransform:ColorTransform, ?blendMode:BlendMode, ?clipRect:Rectangle) {
+	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?colorTransform:ColorTransform, ?blendMode:BlendMode, ?clipRect:Rectangle) {
 		var data = fbData[fbData.length - 1];
 		if (data == null) throw "No data to draw to";
 		
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return;
 		
-		//trace("\t DRAW FB " + fbI);
+		trace("\t DRAW FB " + data.texture.frameBuffer.id);
 		
 		var viewPort = data.viewPort;
 		var renderer = renderSession.renderer;
 		var spritebatch = renderSession.spriteBatch;
-		var drawSelf = self != null;
+		var drawTarget = target != null;
 		
 		var tmpRect = clipRect == null ? new Rectangle (viewPort.x, viewPort.y, viewPort.width, viewPort.height) : clipRect.clone ();
 		
-		spritebatch.begin (renderSession, drawSelf ? null : tmpRect);
+		spritebatch.begin (renderSession, drawTarget ? null : tmpRect);
 		
-		if (drawSelf) {
+		if (drawTarget) {
 			
-			//trace("\t\t Drawing self");
-			self.__worldTransform.identity ();
-			GLBitmap.flipMatrix (self.__worldTransform, viewPort.height);
-			self.__renderGL (renderSession);
+			target.__worldTransform.identity ();
+			GLBitmap.flipMatrix (target.__worldTransform, viewPort.height);
+			trace("\t\t Drawing target " + target.__worldTransform);
+			target.__renderGL (renderSession);
 			spritebatch.stop ();
-			gl.deleteTexture (self.__texture);
+			if(target.__texture != null) gl.deleteTexture (target.__texture);
 			spritebatch.start (tmpRect);
 			
 		}
@@ -134,7 +134,7 @@ class GLBitmap {
 		
 		GLBitmap.flipMatrix (m, viewPort.height);
 		
-		//trace("\t\t Drawing source " + m);
+		trace("\t\t Drawing source " + m, matrixCache);
 		
 		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
@@ -172,12 +172,20 @@ class GLBitmap {
 			throw "oh";
 		}
 		
-		var x:Int = Std.int(data.viewPort.x);
-		var y:Int = Std.int(data.viewPort.y);
-		var width:Int = Std.int(data.viewPort.width);
-		var height:Int = Std.int(data.viewPort.height);
+		var x:Int, y:Int, width:Int, height:Int;
 		
-		//trace("POP FRAMEBUFFER " + --fbI + "  " + (data.texture != null));
+		if (data.viewPort == null) {
+			x = y = 0;
+			width = renderSession.renderer.width;
+			height = renderSession.renderer.height;
+		} else {
+			x = Math.ceil(data.viewPort.x);
+			y = Math.ceil(data.viewPort.y);
+			width = Math.floor(data.viewPort.width);
+			height = Math.floor(data.viewPort.height);			
+		}
+		
+		trace("POP FRAMEBUFFER " + (data.texture != null ? data.texture.frameBuffer.id : "DEFAULT"));
 		
 		if (image != null) {
 			
@@ -195,7 +203,7 @@ class GLBitmap {
 			
 		}
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : data.texture.frameBuffer);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : renderSession.defaultFramebuffer);
 		renderSession.renderer.setViewport (x, y, width, height);
 		renderSession.renderer.transparent = data.transparent;
 	}

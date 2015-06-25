@@ -1,13 +1,12 @@
 package openfl.filters; #if !flash #if !openfl_legacy
 
 
-import openfl.display.Bitmap;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl._internal.renderer.RenderSession;
 
 #if (js && html5)
 import js.html.ImageData;
@@ -24,6 +23,8 @@ import js.html.ImageData;
  *
  * <p>You can neither directly instantiate nor extend BitmapFilter.</p>
  */
+
+ @:access(openfl.display.BitmapData)
 class BitmapFilter {
 	
 	private var __dirty:Bool = true;
@@ -65,11 +66,18 @@ class BitmapFilter {
 	
 	@:noCompletion private function __applyGL (renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
 		
+		/*
 		if (!__dirty) return;
+		
+		var same = source == target;
+		
+		if (same) {
+			
+		}
 		
 		
 		__dirty = false;
-		
+		*/
 	}
 	
 	@:noCompletion private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
@@ -81,6 +89,24 @@ class BitmapFilter {
 		
 		r = r.transform(matrix);
 		rect.__expand(r.x, r.y, r.width, r.height);
+	}
+	
+	@:noCompletion private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point) {
+
+		var same = target == source && target.__usingFramebuffer;
+		if (same) target.__useOldFramebuffer = true;
+		
+		if (sourceRect == null) sourceRect = source.rect;
+		for (filter in filters) {
+			
+			if (same) target.__swap();
+			source.__shader = filter.__shader;
+			target.__drawGL(renderSession, source, sourceRect, true, !target.__usingFramebuffer);
+			
+		}
+		
+		if (same) target.__useOldFramebuffer = false;
+		
 	}
 	
 	
