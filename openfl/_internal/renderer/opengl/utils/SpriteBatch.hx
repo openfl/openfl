@@ -529,6 +529,8 @@ class SpriteBatch {
 		// TODO cache this somehow?, don't do each state change?
 		shader.bindVertexArray(vertexArray);
 		
+		renderSession.blendModeManager.setBlendMode(state.blendMode);
+		
 		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 		
 		if (state.colorTransform != null) {
@@ -541,13 +543,12 @@ class SpriteBatch {
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
-		
-		renderSession.blendModeManager.setBlendMode(state.blendMode);
 
 		if (renderSession.activeTextures == 0) {
 			renderSession.activeTextures++;
 			gl.activeTexture(gl.TEXTURE0 + 0);
 		}
+		
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0);
 		

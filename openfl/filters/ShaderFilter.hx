@@ -45,6 +45,6 @@ class ShaderFilter extends BitmapFilter {
 	inline function set_topExtension(v) 	{ __dirty = true; return topExtension = v; }
 	inline function set_rightExtension(v) 	{ __dirty = true; return rightExtension = v; }
 	inline function set_leftExtension(v) 	{ __dirty = true; return leftExtension = v; }
-	inline function set_shader(v) 			{ __dirty = true; __shader = v; return shader = v; }
+	inline function set_shader(v) 			{ __dirty = true; __passes[0] = v; return shader = v; }
 	
 }

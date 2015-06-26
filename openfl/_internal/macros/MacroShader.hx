@@ -31,16 +31,22 @@ class MacroShader
 	static var currentPos;
 	
 	static var addToData:Array<String>;
+	static var vertexCode:Array<String>;
 	static var fragmentCode:Array<String>;
 	
 	macro public static function buildUniforms():Array<Field> {
 		var fields = Context.getBuildFields();
 		
 		addToData = [];
+		vertexCode = [];
 		fragmentCode = [];
 		
+		var isVertex = false;
+		
 		for (field in fields) {
-			if (field.meta == null || Lambda.find(field.meta, function(m) return m.name == "fragment") == null) continue;
+			if (field.meta == null || Lambda.find(field.meta, function(m) return (m.name == "fragment" || m.name == "vertex")) == null) continue;
+			
+			isVertex = Lambda.find(field.meta, function(m) return m.name == "fragment") == null;
 			
 			currentPos = field.pos;
 			switch(field.kind) {
@@ -48,12 +54,12 @@ class MacroShader
 				switch(expr.expr) {
 					
 				case EConst(CString(value)):
-					parseString(fields, value);
+					parseString(fields, value, isVertex ? vertexCode : fragmentCode);
 				case EArrayDecl(values):
 					for (v in values) {
 						switch(v.expr) {
 						case EConst(CString(value)):
-							parseString(fields, value);
+							parseString(fields, value, isVertex ? vertexCode : fragmentCode);
 						default:
 						}
 					}
@@ -90,19 +96,30 @@ class MacroShader
 			block.push(expr);
 		}
 		
-		expr = {
-			pos: currentPos,
-			expr: ECall(macro $i {'__buildFragmentCode'}, [fragmentCode.join("\n").formatString(currentPos)]),
+		if (vertexCode.length > 0) {
+			expr = {
+				pos: currentPos,
+				expr: ECall(macro $i {'__buildVertexCode'}, [vertexCode.join("\n").formatString(currentPos)]),
+			}
+			block.push(expr);
 		}
 		
-		block.push(expr);
+		if (fragmentCode.length > 0) {
+			expr = {
+				pos: currentPos,
+				expr: ECall(macro $i {'__buildFragmentCode'}, [fragmentCode.join("\n").formatString(currentPos)]),
+			}
+			block.push(expr);
+		} else {
+			throw new Error("No fragment code found!", currentPos);
+		}
 		
 		return fields;
 	}
 
-	static private function parseString(fields, string:String) {
+	static private function parseString(fields, string:String, code:Array<String>) {
 		
-		fragmentCode.push(string);
+		code.push(string);
 		
 		var strings:Array<String> = string.split("\n");
 		var name:String;

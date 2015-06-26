@@ -28,7 +28,7 @@ import js.html.ImageData;
 class BitmapFilter {
 	
 	private var __dirty:Bool = true;
-	private var __shader:Shader;
+	private var __passes:Array<Shader> = [];
 	
 	public function new () {
 		
@@ -98,10 +98,11 @@ class BitmapFilter {
 		
 		if (sourceRect == null) sourceRect = source.rect;
 		for (filter in filters) {
-			
-			if (same) target.__swap();
-			source.__shader = filter.__shader;
-			target.__drawGL(renderSession, source, sourceRect, true, !target.__usingFramebuffer);
+			for(pass in filter.__passes) {
+				if (same) target.__swap();
+				source.__shader = pass;
+				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingFramebuffer);
+			}
 			
 		}
 		

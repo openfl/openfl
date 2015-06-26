@@ -13,10 +13,18 @@ class Shader {
 	
 	static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
 	
+	
+	static public var aPosition = DefaultAttrib.Position;
+	static public var aTexCoord = DefaultAttrib.TexCoord;
+	static public var aColor = DefaultAttrib.Color;
 	/**
-	 * The object's texture.
+	 * Uniform holding the object's texture.
 	 */
 	static public var uSampler = DefaultUniform.Sampler;
+	/**
+	 * Uniform holding the projection matrix.
+	 */
+	static public var uProjectionMatrix = DefaultUniform.ProjectionMatrix;
 	/**
 	 * The colorMultiplier values from the transfrom.colorTransform of the object.
 	 */
@@ -34,10 +42,23 @@ class Shader {
 	 */
 	static public var vColor = DefaultVarying.Color;
 	
-	static var header = [
+	
+	static var vertexHeader = [
+		'attribute vec2 ${Shader.aPosition};',
+		'attribute vec2 ${Shader.aTexCoord};',
+		'attribute vec4 ${Shader.aColor};',
+		
+		'uniform mat3 ${Shader.uProjectionMatrix};',
+		
+		'varying vec2 ${Shader.vTexCoord};',
+		'varying vec4 ${Shader.vColor};',
+	];
+	
+	static var fragmentHeader = [
 		'uniform sampler2D ${Shader.uSampler};',
 		'uniform vec4 ${Shader.uColorMultiplier};',
 		'uniform vec4 ${Shader.uColorOffset};',
+		
 		'varying vec2 ${Shader.vTexCoord};',
 		'varying vec4 ${Shader.vColor};',
 		
@@ -77,6 +98,7 @@ class Shader {
 	
 	private var __dirty:Bool = true;
 	private var __fragmentCode:String;
+	private var __vertexCode:String;
 	private var __shader:InternalShader;
 	
 	public function new(?precision:GLShaderPrecision = MEDIUM) {
@@ -91,7 +113,8 @@ class Shader {
 				__shader.destroy();
 			}
 			__shader = new InternalShader(gl);
-			__shader.vertexSrc = openfl._internal.renderer.opengl.shaders2.DefaultShader.VERTEX_SRC;
+			trace(__vertexCode);
+			__shader.vertexString = __vertexCode != null ? __vertexCode : openfl._internal.renderer.opengl.shaders2.DefaultShader.VERTEX_SRC.join("\n");
 			__shader.fragmentString = __fragmentCode;
 			__dirty = false;
 		}
@@ -112,10 +135,18 @@ class Shader {
 		
 		// TODO extensions
 		
-		output = output.concat(header);
+		output = output.concat(fragmentHeader);
 		output.push(code);
 		
 		__fragmentCode = output.join("\n");
+	}
+	
+	private function __buildVertexCode(code:String) {
+		var output = [];
+		output = output.concat(vertexHeader);
+		output.push(code);
+		
+		__vertexCode = output.join("\n");
 	}
 	
 }
@@ -268,6 +299,7 @@ class GLShaderParameter {
 
 typedef GLShaderData = Map<String, GLShaderParameter>;
 
+private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders2.DefaultShader.Attrib;
 private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
 private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
 
