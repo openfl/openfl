@@ -1,4 +1,4 @@
-package openfl.filters;
+package openfl.filters; #if !flash #if !openfl_legacy
 
 import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
@@ -48,3 +48,10 @@ class ShaderFilter extends BitmapFilter {
 	inline function set_shader(v) 			{ __dirty = true; __passes[0] = v; return shader = v; }
 	
 }
+
+#else
+typedef ShaderFilter = openfl._legacy.filters.ShaderFilter;
+#end
+#else
+typedef ShaderFilter = flash.filters.ShaderFilter;
+#end

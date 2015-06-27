@@ -850,8 +850,8 @@ class GraphicsRenderer {
 				gl.enable(gl.SCISSOR_TEST);
 				gl.scissor(Math.floor(clipRect.x), 
 							Math.floor(clipRect.y),
-							Math.floor(clipRect.width),
-							Math.floor(clipRect.height)
+							Math.ceil(clipRect.width),
+							Math.ceil(clipRect.height)
 						);
 			}
 			
@@ -966,10 +966,10 @@ class GraphicsRenderer {
 			if (bucket.uploadTileBuffer) {
 				
 				bucket.uploadTile(
-					Math.ceil(objectBounds.left), 
-					Math.ceil(objectBounds.top),
-					Math.floor(objectBounds.right), 
-					Math.floor(objectBounds.bottom));
+					Math.floor(objectBounds.left), 
+					Math.floor(objectBounds.top),
+					Math.ceil(objectBounds.right), 
+					Math.ceil(objectBounds.bottom));
 					
 			}
 			

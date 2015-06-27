@@ -113,7 +113,6 @@ class Shader {
 				__shader.destroy();
 			}
 			__shader = new InternalShader(gl);
-			trace(__vertexCode);
 			__shader.vertexString = __vertexCode != null ? __vertexCode : openfl._internal.renderer.opengl.shaders2.DefaultShader.VERTEX_SRC.join("\n");
 			__shader.fragmentString = __fragmentCode;
 			__dirty = false;

@@ -179,10 +179,10 @@ class GLBitmap {
 			width = renderSession.renderer.width;
 			height = renderSession.renderer.height;
 		} else {
-			x = Math.ceil(data.viewPort.x);
-			y = Math.ceil(data.viewPort.y);
-			width = Math.floor(data.viewPort.width);
-			height = Math.floor(data.viewPort.height);			
+			x = Math.floor(data.viewPort.x);
+			y = Math.floor(data.viewPort.y);
+			width = Math.ceil(data.viewPort.width);
+			height = Math.ceil(data.viewPort.height);			
 		}
 		
 		trace("POP FRAMEBUFFER " + (data.texture != null ? data.texture.frameBuffer.id : "DEFAULT"));

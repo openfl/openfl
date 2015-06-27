@@ -43,7 +43,7 @@ class VertexAttribute {
 	}	
 	
 	private inline function get_elements():Int {
-		return Math.floor((components * getElementsBytes()) / 4);
+		return Math.ceil((components * getElementsBytes()) / 4);
 	}
 	
 }

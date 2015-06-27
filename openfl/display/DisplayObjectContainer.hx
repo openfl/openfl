@@ -973,7 +973,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				trace(x, y, w, h);
 				
 				if (__cachedBitmap == null) {
-					__cachedBitmap = @:privateAccess BitmapData.__asFramebuffer (Math.floor(w), Math.floor(h));
+					__cachedBitmap = @:privateAccess BitmapData.__asFramebuffer (Math.ceil(w), Math.ceil(h));
 				}
 				
 				// we need to position the drawing origin to 0,0 in the texture
