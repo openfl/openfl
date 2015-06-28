@@ -974,8 +974,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 				
 				// we need to position the drawing origin to 0,0 in the texture
-				var m = new Matrix();
-				m.translate(-x, -y);
+				var m = new Matrix ();
+				m.translate( -x, -y);
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
 				this.__shader = null;
@@ -990,7 +990,11 @@ class DisplayObjectContainer extends InteractiveObject {
 				__updateFilters = false;
 			}
 			
-            renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, __worldTransform, __worldColorTransform, __worldAlpha, blendMode, __shader);
+			var local = new Matrix ();
+			local.translate (x, y);
+			local.concat(__worldTransform);
+			
+            renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, local, __worldColorTransform, __worldAlpha, blendMode, __shader);
 			
 			return;
 		}

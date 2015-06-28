@@ -1376,11 +1376,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				
 			}
 			
-			// we will position the origin of the cached bitmap to 0,0 when rendering to the cached bitmapData
-			// we need to move the rendering back to the actual position
-			if (__cachedBitmapBounds.x != 0 || __cachedBitmapBounds.y != 0) {
-				__worldTransform.__translateTransformed(__cachedBitmapBounds.x, __cachedBitmapBounds.y);
-			}
 		}
 		
 		
