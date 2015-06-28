@@ -12,7 +12,7 @@ import lime.math.Rectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.GLBitmap;
-import openfl._internal.renderer.opengl.utils.FilterTexture;
+import openfl._internal.renderer.opengl.utils.PingPongTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
@@ -148,13 +148,9 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __surfaceImage:Image;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __textureImage:Image;
-	@:noCompletion private var __framebuffer(get, set):FilterTexture;
-	@:noCompletion private var __swappedFramebuffer:Bool;
-	@:noCompletion private var __framebuffer0:FilterTexture;
-	@:noCompletion private var __framebuffer1:FilterTexture;
+	@:noCompletion private var __pingPongTexture:PingPongTexture;
+	@:noCompletion private var __usingPingPongTexture:Bool = false;
 	@:noCompletion private var __uvData:TextureUvs;
-	@:noCompletion private var __usingFramebuffer:Bool = false;
-	@:noCompletion private var __useOldFramebuffer:Bool = false;
 	
 	/**
 	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
@@ -295,7 +291,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		
 		__image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -368,7 +364,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__image.copyChannel (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), sourceChannel, destChannel);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -417,7 +413,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null) return;
 		
 		__image.copyPixels (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.__image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -469,9 +465,9 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (__framebuffer != null) {
+		if (__pingPongTexture != null) {
 			
-			__framebuffer.destroy ();
+			__pingPongTexture.destroy ();
 			
 		}
 		
@@ -642,7 +638,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		__image.fillRect (rect.__toLimeRectangle (), color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -662,7 +658,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.floodFill (x, y, color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -941,11 +937,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		
-		if (__usingFramebuffer) {
-			if (__useOldFramebuffer) {
-				return __swappedFramebuffer ? __framebuffer0.texture : __framebuffer1.texture;
-			}
-			return __framebuffer.texture;
+		if (__usingPingPongTexture) {
+			return __pingPongTexture.texture;
 		}
 		
 		if (__texture == null) {
@@ -1090,7 +1083,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
 		__image.merge (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1285,7 +1278,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.setPixel (x, y, color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1325,7 +1318,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.setPixel32 (x, y, color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1353,7 +1346,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		__image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1808,19 +1801,15 @@ class BitmapData implements IBitmapDrawable {
 
 	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, drawSelf:Bool = false, ?readPixels:Bool = false) {
 		
-		__framebuffer = GLBitmap.pushFramebuffer(renderSession, __framebuffer, rect, smoothing, transparent, !__usingFramebuffer);
+		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, !__usingPingPongTexture);
 		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
 		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
 		
-		var uv = @:privateAccess __framebuffer.__uvData;
+		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
 		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
 		__isValid = true;
-		__usingFramebuffer = true;
+		__usingPingPongTexture = true;
 		
-	}
-	
-	@:noCompletion @:dox(hide) private inline function __swap() {
-		__swappedFramebuffer = !__swappedFramebuffer;
 	}
 	
 	
@@ -1911,18 +1900,6 @@ class BitmapData implements IBitmapDrawable {
 		return b;
 	}
 	
-	
-	function get___framebuffer() {
-		return __swappedFramebuffer ? __framebuffer1 : __framebuffer0;
-	}
-	
-	function set___framebuffer(v) {
-		if (__swappedFramebuffer) {
-			return __framebuffer1 = v;
-		} else {
-			return __framebuffer0 = v;
-		}
-	}
 }
 
 

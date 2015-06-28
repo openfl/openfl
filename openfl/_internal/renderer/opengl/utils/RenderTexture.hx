@@ -8,14 +8,14 @@ import lime.graphics.GLRenderContext;
 import openfl.display.BitmapData.TextureUvs;
 
 
-class FilterTexture {
+class RenderTexture {
 	
 	
-	public var frameBuffer:GLFramebuffer;
 	public var gl:GLRenderContext;
+	public var frameBuffer:GLFramebuffer;
 	public var renderBuffer:GLRenderbuffer;
-	public var smoothing:Bool;
 	public var texture:GLTexture;
+	public var smoothing:Bool;
 	public var width:Int;
 	public var height:Int;
 	
@@ -74,10 +74,10 @@ class FilterTexture {
 		this.width = width;
 		this.height = height;
 		
-		//var pow2W = powerOfTwo(width);
-		//var pow2H = powerOfTwo(height);
-		var pow2W = width;
-		var pow2H = height;
+		var pow2W = powerOfTwo(width);
+		var pow2H = powerOfTwo(height);
+		//var pow2W = width;
+		//var pow2H = height;
 		var lastW = __width;
 		var lastH = __height;
 		

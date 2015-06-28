@@ -2,7 +2,6 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.cairo.Cairo;
-import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
@@ -59,7 +58,6 @@ class Graphics {
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool = true;
-	@:noCompletion private var __cachedTexture:FilterTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	
 	#if (js && html5)

@@ -164,7 +164,7 @@ class SpriteBatch {
 		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
-		var shaderData = getShaderData(flashShader);
+		var shaderData = getShaderData(flashShader, bitmapData);
 		
 		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
 		
@@ -596,12 +596,20 @@ class SpriteBatch {
 		
 	}
 	
-	inline function getShaderData(flashShader:FlashShader) {
+	inline function getShaderData(flashShader:FlashShader, ?bd:BitmapData) {
 		if (flashShader != null) {
 			flashShader.__init(this.gl);
 			flashShader.__shader.wrapS = flashShader.repeatX;
 			flashShader.__shader.wrapT = flashShader.repeatY;
 			flashShader.__shader.smooth = flashShader.smooth;
+			if (bd != null) {
+				var objSize = flashShader.data.get(FlashShader.uObjectSize);
+				var texSize = flashShader.data.get(FlashShader.uTextureSize);
+				objSize.value[0] = bd.width;
+				objSize.value[1] = bd.height;
+				texSize.value[0] = @:privateAccess bd.__pingPongTexture.renderTexture.__width;
+				texSize.value[1] = @:privateAccess bd.__pingPongTexture.renderTexture.__height;
+			}
 			return { shader: flashShader.__shader, data: flashShader.data };
 		}
 		return { shader: null, data: null };

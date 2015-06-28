@@ -93,20 +93,20 @@ class BitmapFilter {
 	
 	@:noCompletion private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point) {
 
-		var same = target == source && target.__usingFramebuffer;
-		if (same) target.__useOldFramebuffer = true;
+		var same = target == source && target.__usingPingPongTexture;
+		if (same) target.__pingPongTexture.useOldTexture = true;
 		
 		if (sourceRect == null) sourceRect = source.rect;
 		for (filter in filters) {
 			for(pass in filter.__passes) {
-				if (same) target.__swap();
+				if (same) target.__pingPongTexture.swap();
 				source.__shader = pass;
-				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingFramebuffer);
+				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture);
 			}
 			
 		}
 		
-		if (same) target.__useOldFramebuffer = false;
+		if (same) target.__pingPongTexture.useOldTexture = false;
 		
 	}
 	

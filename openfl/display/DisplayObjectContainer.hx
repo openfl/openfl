@@ -994,18 +994,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				__updateFilters = false;
 			}
 			
-			// if updateFilters
-			// 		for each filter
-			// 			apply filter
-			/*
-			if (__updateFilters) {
-				__updateFilters = false;
-				for (filter in __filters) {
-					filter.__applyGL(__cachedBitmap);
-				}
-			}
-			*/
-
             renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, __worldTransform, __worldColorTransform, __worldAlpha, blendMode, __shader);
 			
 			return;

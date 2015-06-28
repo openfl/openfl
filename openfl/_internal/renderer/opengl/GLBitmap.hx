@@ -3,7 +3,7 @@ package openfl._internal.renderer.opengl;
 
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
-import openfl._internal.renderer.opengl.utils.FilterTexture;
+import openfl._internal.renderer.opengl.utils.PingPongTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -20,7 +20,7 @@ import openfl.geom.Rectangle;
 
 class GLBitmap {
 	
-	private static var fbData:Array<{texture:FilterTexture, viewPort:Rectangle, transparent:Bool}> = [];
+	private static var fbData:Array<{texture:PingPongTexture, viewPort:Rectangle, transparent:Bool}> = [];
 	
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 		
@@ -38,7 +38,7 @@ class GLBitmap {
 	 * @param	transparent
 	 * @param	clearBuffer
 	 */
-	public static function pushFramebuffer (renderSession:RenderSession, texture:FilterTexture, viewPort:Rectangle, smoothing:Bool, ?transparent:Bool = true, ?clearBuffer:Bool = false) {
+	public static function pushFramebuffer (renderSession:RenderSession, texture:PingPongTexture, viewPort:Rectangle, smoothing:Bool, ?transparent:Bool = true, ?clearBuffer:Bool = false) {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return null;
 		
@@ -59,16 +59,16 @@ class GLBitmap {
 		}
 		
 		if (texture == null) {
-			texture = new FilterTexture(gl, width, height, smoothing);
-			trace("\t Creating framebuffer " + texture.frameBuffer.id);
+			texture = new PingPongTexture(gl, width, height, smoothing);
+			trace("\t Creating framebuffer " + texture.framebuffer.id);
 		}
 		
-		trace("\t Pushing framebuffer " + texture.frameBuffer.id);
+		trace("\t Pushing framebuffer " + texture.framebuffer.id);
 		
 		texture.resize(width, height);
 		renderer.transparent = transparent;
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.frameBuffer);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.framebuffer);
 		renderer.setViewport (x, y, width, height);
 		
 		// enable writing to all the colors and alpha
@@ -76,7 +76,7 @@ class GLBitmap {
 		renderSession.blendModeManager.setBlendMode (BlendMode.NORMAL);
 		
 		if (clearBuffer) {
-			trace("\t Clearing framebuffer " + texture.frameBuffer.id);
+			trace("\t Clearing framebuffer " + texture.framebuffer.id);
 			texture.clear();
 		}
 		
@@ -102,7 +102,7 @@ class GLBitmap {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return;
 		
-		trace("\t DRAW FB " + data.texture.frameBuffer.id);
+		trace("\t DRAW FB " + data.texture.framebuffer.id);
 		
 		var viewPort = data.viewPort;
 		var renderer = renderSession.renderer;
@@ -185,7 +185,7 @@ class GLBitmap {
 			height = Math.ceil(data.viewPort.height);			
 		}
 		
-		trace("POP FRAMEBUFFER " + (data.texture != null ? data.texture.frameBuffer.id : "DEFAULT"));
+		trace("POP FRAMEBUFFER " + (data.texture != null ? data.texture.framebuffer.id : "DEFAULT"));
 		
 		if (image != null) {
 			
@@ -203,7 +203,7 @@ class GLBitmap {
 			
 		}
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : renderSession.defaultFramebuffer);
+		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : data.texture.framebuffer);
 		renderSession.renderer.setViewport (x, y, width, height);
 		renderSession.renderer.transparent = data.transparent;
 	}

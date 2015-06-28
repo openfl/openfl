@@ -42,6 +42,9 @@ class Shader {
 	 */
 	static public var vColor = DefaultVarying.Color;
 	
+	static public var uObjectSize = "openfl_uObjectSize";
+	static public var uTextureSize = "openfl_uTextureSize";
+	
 	
 	static var vertexHeader = [
 		'attribute vec2 ${Shader.aPosition};',
@@ -49,6 +52,9 @@ class Shader {
 		'attribute vec4 ${Shader.aColor};',
 		
 		'uniform mat3 ${Shader.uProjectionMatrix};',
+		
+		'uniform vec2 ${Shader.uObjectSize};',
+		'uniform vec2 ${Shader.uTextureSize};',
 		
 		'varying vec2 ${Shader.vTexCoord};',
 		'varying vec4 ${Shader.vColor};',
@@ -58,6 +64,9 @@ class Shader {
 		'uniform sampler2D ${Shader.uSampler};',
 		'uniform vec4 ${Shader.uColorMultiplier};',
 		'uniform vec4 ${Shader.uColorOffset};',
+		
+		'uniform vec2 ${Shader.uObjectSize};',
+		'uniform vec2 ${Shader.uTextureSize};',
 		
 		'varying vec2 ${Shader.vTexCoord};',
 		'varying vec4 ${Shader.vColor};',
@@ -104,6 +113,9 @@ class Shader {
 	public function new(?precision:GLShaderPrecision = MEDIUM) {
 		this.precision = precision;
 		data = new Map();
+		
+		data.set(Shader.uObjectSize, new GLShaderParameter("vec2"));
+		data.set(Shader.uTextureSize, new GLShaderParameter("vec2"));
 	}
 	
 	private function __init(gl:GLRenderContext) {
@@ -193,7 +205,7 @@ class GLShaderParameter {
 	
 	private var internalType:GLShaderParameterInternal = NONE;
 	
-	public function new(type:String, arraySize:Null<Int>) {
+	public function new(type:String, ?arraySize:Null<Int>) {
 		this.type = type;
 		this.arraySize = arraySize == null ? 0 : arraySize;
 		
