@@ -215,7 +215,7 @@ private class BlurShader extends Shader {
 	];
 	
 	public function new() {
-		super();
+		super(HIGH);
 	}
 }
 

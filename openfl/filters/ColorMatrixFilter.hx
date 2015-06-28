@@ -1,6 +1,7 @@
 package openfl.filters; #if !flash #if !openfl_legacy
 
 
+import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -13,12 +14,16 @@ import js.html.ImageData;
 class ColorMatrixFilter extends BitmapFilter {
 	
 	
-	public var matrix:Array<Float>;
+	public var matrix(default, set):Array<Float>;
 	
+	private var __colorMatrixShader:ColorMatrixShader;
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
+		
+		__colorMatrixShader = new ColorMatrixShader();
+		__passes = [__colorMatrixShader];
 		
 		if (matrix == null) {
 			
@@ -76,7 +81,36 @@ class ColorMatrixFilter extends BitmapFilter {
 	}
 	#end
 	
+	function set_matrix(v) {
+		__colorMatrixShader.uMultipliers = [
+											v[0], v[1], v[2], v[3],
+											v[5], v[6], v[7], v[8],
+											v[10], v[11], v[12], v[13],
+											v[15], v[16], v[17], v[18],
+											];
+		__colorMatrixShader.uOffsets = [v[4] / 255., v[9] / 255., v[14] / 255., v[19] / 255.];
+		
+		return matrix = v;
+	}
+}
+
+private class ColorMatrixShader extends Shader {
 	
+	@fragment var fragment = [
+		'uniform mat4 uMultipliers;',
+		'uniform vec4 uOffsets;',
+		'void main(void) {',
+		'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
+		'	color = vec4(color.rgb / color.a, color.a);',
+		'	color = uOffsets + color * uMultipliers;',
+		'	color = vec4(color.rgb * color.a, color.a);',
+		'	gl_FragColor = colorTransform(color, ${Shader.vColor}, ${Shader.uColorMultiplier}, ${Shader.uColorOffset});',
+		'}',
+	];
+	
+	public function new() {
+		super();
+	}
 }
 
 
