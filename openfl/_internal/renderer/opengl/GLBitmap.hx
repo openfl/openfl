@@ -49,21 +49,16 @@ class GLBitmap {
 		var width:Int = Std.int(viewPort.width);
 		var height:Int = Std.int(viewPort.height);
 		
-		trace("PUSH FRAMEBUFFER " + viewPort);
 		spritebatch.finish();
 		
 		// push the default framebuffer
 		if (fbData.length <= 0) {
-			trace("\t pushing defaultFramebuffer");
 			fbData.push( { texture: null, viewPort: null, transparent: renderer.transparent } );
 		}
 		
 		if (texture == null) {
 			texture = new PingPongTexture(gl, width, height, smoothing);
-			trace("\t Creating framebuffer " + texture.framebuffer.id);
 		}
-		
-		trace("\t Pushing framebuffer " + texture.framebuffer.id);
 		
 		texture.resize(width, height);
 		renderer.transparent = transparent;
@@ -76,7 +71,6 @@ class GLBitmap {
 		renderSession.blendModeManager.setBlendMode (BlendMode.NORMAL);
 		
 		if (clearBuffer) {
-			trace("\t Clearing framebuffer " + texture.framebuffer.id);
 			texture.clear();
 		}
 		
@@ -102,8 +96,6 @@ class GLBitmap {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return;
 		
-		trace("\t DRAW FB " + data.texture.framebuffer.id);
-		
 		var viewPort = data.viewPort;
 		var renderer = renderSession.renderer;
 		var spritebatch = renderSession.spriteBatch;
@@ -117,7 +109,6 @@ class GLBitmap {
 			
 			target.__worldTransform.identity ();
 			GLBitmap.flipMatrix (target.__worldTransform, viewPort.height);
-			trace("\t\t Drawing target " + target.__worldTransform);
 			target.__renderGL (renderSession);
 			spritebatch.stop ();
 			if(target.__texture != null) gl.deleteTexture (target.__texture);
@@ -133,8 +124,6 @@ class GLBitmap {
 		var m = matrix != null ? matrix.clone () : new Matrix ();
 		
 		GLBitmap.flipMatrix (m, viewPort.height);
-		
-		trace("\t\t Drawing source " + m, matrixCache);
 		
 		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
@@ -184,8 +173,6 @@ class GLBitmap {
 			width = Math.ceil(data.viewPort.width);
 			height = Math.ceil(data.viewPort.height);			
 		}
-		
-		trace("POP FRAMEBUFFER " + (data.texture != null ? data.texture.framebuffer.id : "DEFAULT"));
 		
 		if (image != null) {
 			

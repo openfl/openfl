@@ -963,14 +963,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (__updateCachedBitmap) {
 				
-				trace("Drawing to texture " + __cachedBitmapBounds + " " + __cachedFilterBounds);
-				
 				if (__cachedFilterBounds != null) {
 					w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
 					h += Math.abs(__cachedFilterBounds.y) + Math.abs(__cachedFilterBounds.height);
 				}
-				
-				trace(x, y, w, h);
 				
 				if (__cachedBitmap == null) {
 					__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture (Math.ceil(w), Math.ceil(h));
@@ -982,14 +978,12 @@ class DisplayObjectContainer extends InteractiveObject {
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
 				this.__shader = null;
-				
-				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m);
+				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
 				this.__shader = shader;
 				__updateCachedBitmap = false;
 			}
 			
 			if (__updateFilters) {
-				trace("Updating filters");
 				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap, __cachedBitmap, null, null);
 				__updateFilters = false;
 			}

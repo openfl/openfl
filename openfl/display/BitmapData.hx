@@ -593,7 +593,7 @@ class BitmapData implements IBitmapDrawable {
 			case DATA:
 				
 				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				__drawGL (renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, true, true);
+				__drawGL (renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, true, !__usingPingPongTexture, true);
 				
 			default:
 				
@@ -1799,9 +1799,9 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 
-	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, drawSelf:Bool = false, ?readPixels:Bool = false) {
+	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false) {
 		
-		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, !__usingPingPongTexture);
+		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer);
 		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
 		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
 		

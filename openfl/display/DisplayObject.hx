@@ -1592,7 +1592,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__forceCacheAsBitmap = true;
 			__cacheAsBitmap = true;
 			__updateFilters = true;
-			trace("Setting filters");
 		} else {
 			__filters = [];
 			__forceCacheAsBitmap = false;
