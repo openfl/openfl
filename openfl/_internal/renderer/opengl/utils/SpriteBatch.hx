@@ -607,8 +607,13 @@ class SpriteBatch {
 				var texSize = flashShader.data.get(FlashShader.uTextureSize);
 				objSize.value[0] = bd.width;
 				objSize.value[1] = bd.height;
-				texSize.value[0] = @:privateAccess bd.__pingPongTexture.renderTexture.__width;
-				texSize.value[1] = @:privateAccess bd.__pingPongTexture.renderTexture.__height;
+				if(bd.__pingPongTexture != null) {
+					texSize.value[0] = @:privateAccess bd.__pingPongTexture.renderTexture.__width;
+					texSize.value[1] = @:privateAccess bd.__pingPongTexture.renderTexture.__height;
+				} else {
+					texSize.value[0] = bd.width;
+					texSize.value[1] = bd.height;
+				}
 			}
 			return { shader: flashShader.__shader, data: flashShader.data };
 		}

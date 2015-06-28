@@ -1889,7 +1889,7 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
-	@:noCompletion @:dox(hide) static function __asFramebuffer (width:Int, height:Int) {
+	@:noCompletion @:dox(hide) static function __asRenderTexture (width:Int, height:Int) {
 		
 		var b = new BitmapData(0, 0);
 		b.width = width;
