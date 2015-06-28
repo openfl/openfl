@@ -961,7 +961,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var w = __cachedBitmapBounds.width;
 			var h = __cachedBitmapBounds.height;
 			
-			if (__updateCachedBitmap) {
+			if (__updateCachedBitmap || __updateFilters) {
 				
 				if (__cachedFilterBounds != null) {
 					w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
@@ -969,8 +969,9 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 				
 				if (__cachedBitmap == null) {
-					__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture (Math.ceil(w), Math.ceil(h));
+					__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 				}
+				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 				
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = new Matrix();
@@ -980,6 +981,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				this.__shader = null;
 				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
 				this.__shader = shader;
+				
 				__updateCachedBitmap = false;
 			}
 			
