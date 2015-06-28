@@ -1,7 +1,7 @@
 package openfl.filters; #if !flash #if !openfl_legacy
-import openfl.geom.Matrix;
-import openfl.geom.Rectangle;
+import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
+import openfl.geom.Rectangle;
 
 
 /**
@@ -62,14 +62,14 @@ class BlurFilter extends BitmapFilter {
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
-	public var blurX:Float;
+	public var blurX(get, set):Float;
 	
 	/**
 	 * The amount of vertical blur. Valid values are from 0 to 255(floating
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
-	public var blurY:Float;
+	public var blurY(get, set):Float;
 	
 	/**
 	 * The number of times to perform the blur. The default value is
@@ -96,8 +96,11 @@ class BlurFilter extends BitmapFilter {
 	 *   <li><code>BitmapFilterQuality.HIGH</code></li>
 	 * </ul>
 	 */
-	public var quality:Int;
+	public var quality(default, set):Int;
 	
+	
+	private var __blurH:BlurShader;
+	private var __blurV:BlurShader;
 	
 	/**
 	 * Initializes the filter with the specified parameters. The default values
@@ -128,6 +131,10 @@ class BlurFilter extends BitmapFilter {
 		
 		super ();
 		
+		__blurH = new BlurShader();
+		__blurV = new BlurShader();
+		__blurH.smooth = __blurV.smooth = true;
+		
 		this.blurX = blurX;
 		this.blurY = blurY;
 		this.quality = quality;
@@ -141,7 +148,75 @@ class BlurFilter extends BitmapFilter {
 		
 	}
 	
+	override function __growBounds(rect:Rectangle) {
+		rect.x += -blurX * 0.5;
+		rect.y += -blurY * 0.5;
+		rect.width += blurX * 0.5;
+		rect.height += blurY * 0.5;
+	}
 	
+	
+	inline function get_blurX() 		{	return __blurH.uRadius[0] * 1.;		}
+	inline function set_blurX(v:Float)	{	return __blurH.uRadius[0] = v / 1.;	}
+	inline function get_blurY() 		{	return __blurV.uRadius[1] * 1.;		}
+	inline function set_blurY(v:Float) 	{	return __blurV.uRadius[1] = v / 1.;	}
+	
+	function set_quality(v) {
+		__passes = [];
+		for (i in 0...v) {
+			__passes.push(__blurH);
+			__passes.push(__blurV);
+		}
+		
+		return quality = v;
+	}
+	
+}
+
+private class BlurShader extends Shader {
+	
+	@vertex var vertex = [
+		'uniform vec2 uRadius;',
+		'varying vec2 vBlurCoords[7];',
+		
+		'void main(void)',
+		'{',
+		
+			'vBlurCoords[0] = ${Shader.aTexCoord} - uRadius / ${Shader.uTextureSize} * 1.2;',
+			'vBlurCoords[1] = ${Shader.aTexCoord} - uRadius / ${Shader.uTextureSize} * 0.8;',
+			'vBlurCoords[2] = ${Shader.aTexCoord} - uRadius / ${Shader.uTextureSize} * 0.4;',
+			'vBlurCoords[3] = ${Shader.aTexCoord};',
+			'vBlurCoords[4] = ${Shader.aTexCoord} + uRadius / ${Shader.uTextureSize} * 0.4;',
+			'vBlurCoords[5] = ${Shader.aTexCoord} + uRadius / ${Shader.uTextureSize} * 0.8;',
+			'vBlurCoords[6] = ${Shader.aTexCoord} + uRadius / ${Shader.uTextureSize} * 1.2;',
+			
+			'${Shader.vTexCoord} = ${Shader.aTexCoord};',
+			'${Shader.vColor} = ${Shader.aColor};',
+			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
+		'}',
+	];
+	
+	@fragment var fragment = [
+		'varying vec2 vBlurCoords[7];',
+		
+		'void main(void)',
+		'{',
+			'vec4 sum = vec4(0.0);',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[0]) * 0.00443;',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[1]) * 0.05399;',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[2]) * 0.24197;',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[3]) * 0.39894;',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[4]) * 0.24197;',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[5]) * 0.05399;',
+			'sum += texture2D(${Shader.uSampler}, vBlurCoords[6]) * 0.00443;',
+
+		'	gl_FragColor = colorTransform(sum,${Shader.vColor},${Shader.uColorMultiplier},${Shader.uColorOffset});',
+		'}',
+	];
+	
+	public function new() {
+		super();
+	}
 }
 
 
