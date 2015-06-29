@@ -11,7 +11,7 @@ using StringTools;
 @:autoBuild(openfl._internal.macros.MacroShader.buildUniforms())
 class Shader {
 	
-	static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
+	@:noCompletion static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
 	
 	
 	static public var aPosition = DefaultAttrib.Position;
@@ -46,7 +46,7 @@ class Shader {
 	static public var uTextureSize = "openfl_uTextureSize";
 	
 	
-	static var vertexHeader = [
+	@:noCompletion static var vertexHeader = [
 		'attribute vec2 ${Shader.aPosition};',
 		'attribute vec2 ${Shader.aTexCoord};',
 		'attribute vec4 ${Shader.aColor};',
@@ -60,7 +60,7 @@ class Shader {
 		'varying vec4 ${Shader.vColor};',
 	];
 	
-	static var fragmentHeader = [
+	@:noCompletion static var fragmentHeader = [
 		'uniform sampler2D ${Shader.uSampler};',
 		'uniform vec4 ${Shader.uColorMultiplier};',
 		'uniform vec4 ${Shader.uColorOffset};',
@@ -105,10 +105,10 @@ class Shader {
 	 */
 	public var smooth:Null<Bool>;
 	
-	private var __dirty:Bool = true;
-	private var __fragmentCode:String;
-	private var __vertexCode:String;
-	private var __shader:InternalShader;
+	@:noCompletion private var __dirty:Bool = true;
+	@:noCompletion private var __fragmentCode:String;
+	@:noCompletion private var __vertexCode:String;
+	@:noCompletion private var __shader:InternalShader;
 	
 	public function new(?precision:GLShaderPrecision = MEDIUM) {
 		this.precision = precision;
@@ -118,7 +118,7 @@ class Shader {
 		data.set(Shader.uTextureSize, new GLShaderParameter("vec2"));
 	}
 	
-	private function __init(gl:GLRenderContext) {
+	@:noCompletion private function __init(gl:GLRenderContext) {
 		var dirty = __dirty;
 		if (dirty) {
 			if (__shader != null) {
@@ -133,7 +133,7 @@ class Shader {
 		__shader.init(dirty);
 	}
 	
-	private function __buildFragmentCode(code:String) {
+	@:noCompletion private function __buildFragmentCode(code:String) {
 		var output = [];
 		
 		output.push('#ifdef GL_ES');
@@ -152,7 +152,7 @@ class Shader {
 		__fragmentCode = output.join("\n");
 	}
 	
-	private function __buildVertexCode(code:String) {
+	@:noCompletion private function __buildVertexCode(code:String) {
 		var output = [];
 		output = output.concat(vertexHeader);
 		output.push(code);
@@ -209,10 +209,10 @@ class GLShaderParameter {
 		this.type = type;
 		this.arraySize = arraySize == null ? 0 : arraySize;
 		
-		init();
+		__init();
 	}
 	
-	private function init() {
+	@:noCompletion private function __init() {
 		switch(type) {
 			case "bool": 
 				internalType = INT;
@@ -277,11 +277,11 @@ class GLShaderParameter {
 		}
 	}
 	
-	private inline function set_value(v) {
+	@:noCompletion private inline function set_value(v) {
 		if (internalType == SAMPLER) throw "This parameter doesn't accept a value, use bitmap instead";
 		return value = v;
 	}
-	private inline function set_bitmap(v) {
+	@:noCompletion private inline function set_bitmap(v) {
 		if (internalType != SAMPLER) throw "This parameter doesn't accept a bitmap, use value instead";
 		return bitmap = v;
 	}

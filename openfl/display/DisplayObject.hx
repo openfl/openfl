@@ -1560,6 +1560,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function set_cacheAsBitmap (value:Bool):Bool {
 		
+		__setRenderDirty();
 		return __cacheAsBitmap = __forceCacheAsBitmap ? true : value;
 		
 	}
