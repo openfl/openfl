@@ -602,9 +602,9 @@ class SpriteBatch {
 			flashShader.__shader.wrapS = flashShader.repeatX;
 			flashShader.__shader.wrapT = flashShader.repeatY;
 			flashShader.__shader.smooth = flashShader.smooth;
+			var objSize = flashShader.data.get(FlashShader.uObjectSize);
+			var texSize = flashShader.data.get(FlashShader.uTextureSize);
 			if (bd != null) {
-				var objSize = flashShader.data.get(FlashShader.uObjectSize);
-				var texSize = flashShader.data.get(FlashShader.uTextureSize);
 				objSize.value[0] = bd.width;
 				objSize.value[1] = bd.height;
 				if(bd.__pingPongTexture != null) {
@@ -614,6 +614,11 @@ class SpriteBatch {
 					texSize.value[0] = bd.width;
 					texSize.value[1] = bd.height;
 				}
+			} else {
+				objSize.value[0] = 0;
+				objSize.value[1] = 0;
+				texSize.value[0] = 0;
+				texSize.value[1] = 0;
 			}
 			return { shader: flashShader.__shader, data: flashShader.data };
 		}
