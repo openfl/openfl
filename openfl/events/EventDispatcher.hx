@@ -418,7 +418,7 @@ class EventDispatcher implements IEventDispatcher {
 		if (list.length == 0) {
 			
 			__eventMap.remove (type);
-			
+			__newEventMap.remove (type);
 		}
 		
 		if (!__eventMap.iterator ().hasNext ()) {
