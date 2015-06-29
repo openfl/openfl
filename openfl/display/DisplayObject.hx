@@ -268,6 +268,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public var cacheAsBitmap(get, set):Bool;
 	
+	public var cacheAsBitmapMatrix:Matrix;
+	
 	/**
 	 * An indexed array that contains each filter object currently associated
 	 * with the display object. The openfl.filters package contains several
