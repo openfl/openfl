@@ -268,7 +268,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public var cacheAsBitmap(get, set):Bool;
 	
-	public var cacheAsBitmapMatrix:Matrix;
+	public var cacheAsBitmapMatrix(get, set):Matrix;
 	
 	/**
 	 * An indexed array that contains each filter object currently associated
@@ -755,6 +755,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
 	@:noCompletion private var __cacheAsBitmap:Bool = false;
+	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
 	@:noCompletion private var __forceCacheAsBitmap:Bool;
 	@:noCompletion private var __updateCachedBitmap:Bool;	
 	@:noCompletion private var __cachedBitmap:BitmapData;
@@ -1565,6 +1566,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__setRenderDirty();
 		return __cacheAsBitmap = __forceCacheAsBitmap ? true : value;
+		
+	}
+	
+	@:noCompletion private function get_cacheAsBitmapMatrix ():Matrix {
+		
+		return __cacheAsBitmapMatrix;
+		
+	}
+	
+	@:noCompletion private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
+		
+		__setRenderDirty();
+		return __cacheAsBitmapMatrix = value.clone();
 		
 	}
 	

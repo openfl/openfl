@@ -956,14 +956,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__cacheAsBitmap) {
 			
-			var hasCacheMatrix = cacheAsBitmapMatrix != null;
+			var hasCacheMatrix = __cacheAsBitmapMatrix != null;
 			var x = __cachedBitmapBounds.x;
 			var y = __cachedBitmapBounds.y;
 			var w = __cachedBitmapBounds.width;
 			var h = __cachedBitmapBounds.height;
 			
 			if (hasCacheMatrix) {
-				var bmpBounds = __cachedBitmapBounds.transform(cacheAsBitmapMatrix);
+				var bmpBounds = __cachedBitmapBounds.transform(__cacheAsBitmapMatrix);
 				x = bmpBounds.x;
 				y = bmpBounds.y;
 				w = bmpBounds.width;
@@ -983,7 +983,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 				
 				// we need to position the drawing origin to 0,0 in the texture
-				var m = hasCacheMatrix ? cacheAsBitmapMatrix.clone() : new Matrix();
+				var m = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
 				m.translate ( -x, -y);
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
@@ -999,11 +999,10 @@ class DisplayObjectContainer extends InteractiveObject {
 				__updateFilters = false;
 			}
 			
-			var local = hasCacheMatrix ? cacheAsBitmapMatrix.clone() : new Matrix();
+			var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
 			local.invert();
 			local.__translateTransformed(x, y);
 			local.concat(__worldTransform);
-			
 			
             renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 			
