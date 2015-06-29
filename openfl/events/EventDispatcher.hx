@@ -389,7 +389,9 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		if (__dispatching.get (type) == true) {
+		var dispatching = (__dispatching.get (type) == true);
+		
+		if (dispatching) {
 			
 			if (!__newEventMap.exists (type)) {
 				
@@ -417,7 +419,15 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (list.length == 0) {
 			
-			__eventMap.remove (type);
+			if (dispatching) {
+				
+				__newEventMap.remove (type);
+				
+			} else {
+				
+				__eventMap.remove (type);
+				
+			}
 			
 		}
 		

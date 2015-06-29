@@ -894,7 +894,9 @@ class CairoGraphics {
 			
 			if (graphics.__cairo == null) {
 				
-				var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
+                var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
+                // Cairo already draws the graphics with a premultiplied alpha
+                bitmap.__image.buffer.premultiplied = true;
 				var surface = CairoSurface.fromImage (bitmap.__image);
 				graphics.__cairo = new Cairo (surface);
 				surface.destroy ();
