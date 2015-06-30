@@ -41,6 +41,10 @@ class ShaderFilter extends BitmapFilter {
 		rect.height += bottomExtension;
 		
 	}
+	
+	override function __preparePass(pass:Int):Shader {
+		return shader;
+	}
 
 	inline function set_bottomExtension(v) 	{ __dirty = true; return bottomExtension = v; }
 	inline function set_topExtension(v) 	{ __dirty = true; return topExtension = v; }
