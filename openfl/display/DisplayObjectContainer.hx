@@ -1004,7 +1004,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			local.__translateTransformed(x, y);
 			local.concat(__worldTransform);
 			
-            renderSession.spriteBatch.renderBitmapData(__cachedBitmap, true, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+            renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 			
 			return;
 		}

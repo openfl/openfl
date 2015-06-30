@@ -270,6 +270,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	public var cacheAsBitmapMatrix(get, set):Matrix;
 	
+	public var cacheAsBitmapSmooth(get, set):Bool;
+	
 	/**
 	 * An indexed array that contains each filter object currently associated
 	 * with the display object. The openfl.filters package contains several
@@ -756,6 +758,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __y:Float;
 	@:noCompletion private var __cacheAsBitmap:Bool = false;
 	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
+	@:noCompletion private var __cacheAsBitmapSmooth:Bool = true;
 	@:noCompletion private var __forceCacheAsBitmap:Bool;
 	@:noCompletion private var __updateCachedBitmap:Bool;	
 	@:noCompletion private var __cachedBitmap:BitmapData;
@@ -1579,6 +1582,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__setRenderDirty();
 		return __cacheAsBitmapMatrix = value.clone();
+		
+	}
+	
+	@:noCompletion private function get_cacheAsBitmapSmooth ():Bool {
+		
+		return __cacheAsBitmapSmooth;
+		
+	}
+	
+	@:noCompletion private function set_cacheAsBitmapSmooth (value:Bool):Bool {
+		
+		return __cacheAsBitmapSmooth = value;
 		
 	}
 	
