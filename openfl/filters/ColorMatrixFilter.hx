@@ -23,7 +23,7 @@ class ColorMatrixFilter extends BitmapFilter {
 		super ();
 		
 		__colorMatrixShader = new ColorMatrixShader();
-		__passes = [__colorMatrixShader];
+		__passes = 1;
 		
 		if (matrix == null) {
 			
@@ -38,7 +38,7 @@ class ColorMatrixFilter extends BitmapFilter {
 	
 	public override function clone ():BitmapFilter {
 		
-		return new ColorMatrixFilter ();
+		return new ColorMatrixFilter (matrix);
 		
 	}
 	
@@ -80,6 +80,10 @@ class ColorMatrixFilter extends BitmapFilter {
 		
 	}
 	#end
+	
+	override function __preparePass(pass:Int):Shader {
+		return __colorMatrixShader;
+	}
 	
 	function set_matrix(v:Array<Float>) {
 		__colorMatrixShader.uMultipliers = [

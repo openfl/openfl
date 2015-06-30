@@ -28,7 +28,7 @@ import js.html.ImageData;
 class BitmapFilter {
 	
 	private var __dirty:Bool = true;
-	private var __passes:Array<Shader> = [];
+	private var __passes:Int = 0;
 	
 	public function new () {
 		
@@ -80,6 +80,10 @@ class BitmapFilter {
 		*/
 	}
 	
+	@:noCompletion private function __preparePass(pass:Int):Shader {
+		return null;
+	}
+	
 	@:noCompletion private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
 		
 		var r = new Rectangle();
@@ -101,9 +105,9 @@ class BitmapFilter {
 		var srcShader = source.__shader;
 		
 		for (filter in filters) {
-			for(pass in filter.__passes) {
+			for(pass in 0...filter.__passes) {
 				if (same) target.__pingPongTexture.swap();
-				source.__shader = pass;
+				source.__shader = filter.__preparePass(pass);
 				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, true);
 			}
 		}

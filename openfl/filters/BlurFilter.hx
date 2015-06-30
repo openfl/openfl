@@ -62,14 +62,14 @@ class BlurFilter extends BitmapFilter {
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
-	public var blurX(get, set):Float;
+	public var blurX:Float;
 	
 	/**
 	 * The amount of vertical blur. Valid values are from 0 to 255(floating
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
-	public var blurY(get, set):Float;
+	public var blurY:Float;
 	
 	/**
 	 * The number of times to perform the blur. The default value is
@@ -99,8 +99,7 @@ class BlurFilter extends BitmapFilter {
 	public var quality(default, set):Int;
 	
 	
-	private var __blurH:BlurShader;
-	private var __blurV:BlurShader;
+	private var __blurShader:BlurShader;
 	
 	/**
 	 * Initializes the filter with the specified parameters. The default values
@@ -131,13 +130,12 @@ class BlurFilter extends BitmapFilter {
 		
 		super ();
 		
-		__blurH = new BlurShader();
-		__blurV = new BlurShader();
-		__blurH.smooth = __blurV.smooth = true;
-		
 		this.blurX = blurX;
 		this.blurY = blurY;
 		this.quality = quality;
+		
+		__blurShader = new BlurShader();
+		__blurShader.smooth = true;
 		
 	}
 	
@@ -149,24 +147,25 @@ class BlurFilter extends BitmapFilter {
 	}
 	
 	override function __growBounds(rect:Rectangle) {
-		rect.x += -blurX * 0.5;
-		rect.y += -blurY * 0.5;
-		rect.width += blurX * 0.5;
-		rect.height += blurY * 0.5;
+		rect.x += -blurX * 0.5 * quality;
+		rect.y += -blurY * 0.5 * quality;
+		rect.width += blurX * 0.5 * quality;
+		rect.height += blurY * 0.5 * quality;
 	}
 	
-	
-	inline function get_blurX() 		{	return __blurH.uRadius[0] * 1.;		}
-	inline function set_blurX(v:Float)	{	return __blurH.uRadius[0] = v / 1.;	}
-	inline function get_blurY() 		{	return __blurV.uRadius[1] * 1.;		}
-	inline function set_blurY(v:Float) 	{	return __blurV.uRadius[1] = v / 1.;	}
+	override function __preparePass(pass:Int):Shader {
+		
+		var even = pass % 2 == 0;
+		var scale = Math.pow(0.5, pass >> 1);
+		__blurShader.uRadius[0] = even ? scale*blurX : 0;
+		__blurShader.uRadius[1] = even ? 0 : scale * blurY;
+		
+		return __blurShader;
+	}
 	
 	function set_quality(v) {
-		__passes = [];
-		for (i in 0...v) {
-			__passes.push(__blurH);
-			__passes.push(__blurV);
-		}
+		
+		__passes = v * 2;
 		
 		return quality = v;
 	}
@@ -182,13 +181,14 @@ private class BlurShader extends Shader {
 		'void main(void)',
 		'{',
 		
-			'vBlurCoords[0] = ${Shader.aTexCoord} - uRadius / ${Shader.uTextureSize} * 1.2;',
-			'vBlurCoords[1] = ${Shader.aTexCoord} - uRadius / ${Shader.uTextureSize} * 0.8;',
-			'vBlurCoords[2] = ${Shader.aTexCoord} - uRadius / ${Shader.uTextureSize} * 0.4;',
+			'vec2 r = uRadius / ${Shader.uTextureSize};',
+			'vBlurCoords[0] = ${Shader.aTexCoord} - r * 1.2;',
+			'vBlurCoords[1] = ${Shader.aTexCoord} - r * 0.8;',
+			'vBlurCoords[2] = ${Shader.aTexCoord} - r * 0.4;',
 			'vBlurCoords[3] = ${Shader.aTexCoord};',
-			'vBlurCoords[4] = ${Shader.aTexCoord} + uRadius / ${Shader.uTextureSize} * 0.4;',
-			'vBlurCoords[5] = ${Shader.aTexCoord} + uRadius / ${Shader.uTextureSize} * 0.8;',
-			'vBlurCoords[6] = ${Shader.aTexCoord} + uRadius / ${Shader.uTextureSize} * 1.2;',
+			'vBlurCoords[4] = ${Shader.aTexCoord} + r * 0.4;',
+			'vBlurCoords[5] = ${Shader.aTexCoord} + r * 0.8;',
+			'vBlurCoords[6] = ${Shader.aTexCoord} + r * 1.2;',
 			
 			'${Shader.vTexCoord} = ${Shader.aTexCoord};',
 			'${Shader.vColor} = ${Shader.aColor};',
@@ -210,7 +210,7 @@ private class BlurShader extends Shader {
 			'sum += texture2D(${Shader.uSampler}, vBlurCoords[5]) * 0.05399;',
 			'sum += texture2D(${Shader.uSampler}, vBlurCoords[6]) * 0.00443;',
 
-		'	gl_FragColor = colorTransform(sum,${Shader.vColor},${Shader.uColorMultiplier},${Shader.uColorOffset});',
+		'	gl_FragColor = sum;',
 		'}',
 	];
 	

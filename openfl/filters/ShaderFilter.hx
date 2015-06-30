@@ -21,6 +21,7 @@ class ShaderFilter extends BitmapFilter {
 	public function new(shader:Shader) {
 		super();
 		this.shader = shader;
+		__passes = 1;
 	}
 	
 	override public function clone():BitmapFilter {
@@ -45,7 +46,7 @@ class ShaderFilter extends BitmapFilter {
 	inline function set_topExtension(v) 	{ __dirty = true; return topExtension = v; }
 	inline function set_rightExtension(v) 	{ __dirty = true; return rightExtension = v; }
 	inline function set_leftExtension(v) 	{ __dirty = true; return leftExtension = v; }
-	inline function set_shader(v) 			{ __dirty = true; __passes[0] = v; return shader = v; }
+	inline function set_shader(v) 			{ __dirty = true; return shader = v; }
 	
 }
 
