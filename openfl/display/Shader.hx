@@ -107,20 +107,25 @@ class Shader {
 	 */
 	public var data(default, null):GLShaderData;
 	/**
-	 * Overrides the default repetition applied to the object's texture.
+	 * Overrides the default repetition applied to the object's bitmap or cached bitmap.
 	 * By default: NONE
 	 */
 	public var repeatX:RepeatMode = NONE;
 	/**
-	 * Overrides the default repetition applied to the object's texture.
+	 * Overrides the default repetition applied to the object's bitmap or cached bitmap.
 	 * By default: NONE
 	 */
 	public var repeatY:RepeatMode = NONE;
 	/**
-	 * Overrides the default smooth applied to the object's texture.
-	 * By default: not overriden
+	 * Overrides the default smooth applied to the object's bitmap or cached bitmap.
+	 * By default: Null (not overriden)
 	 */
 	public var smooth:Null<Bool>;
+	/**
+	 * Overrides the object blendMode property.
+	 * By default: Null (not overriden)
+	 */
+	public var blendMode:BlendMode;
 	
 	@:noCompletion private var __dirty:Bool = true;
 	@:noCompletion private var __fragmentCode:String;

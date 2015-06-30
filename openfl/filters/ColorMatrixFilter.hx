@@ -81,7 +81,7 @@ class ColorMatrixFilter extends BitmapFilter {
 	}
 	#end
 	
-	function set_matrix(v) {
+	function set_matrix(v:Array<Float>) {
 		__colorMatrixShader.uMultipliers = [
 											v[0], v[1], v[2], v[3],
 											v[5], v[6], v[7], v[8],

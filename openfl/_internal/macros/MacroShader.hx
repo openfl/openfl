@@ -247,7 +247,9 @@ class MacroShader
 			access: [Access.APrivate, Access.AInline],
 			pos: currentPos,
 			kind: FieldType.FFun(cast f),
-			meta: [{name: "noCompletion", pos: currentPos}],
+			#if (haxe_ver >= 3.2) 
+			meta: [ { name: "noCompletion", pos: currentPos } ], 
+			#end
 		};
 		
 		return fget;
@@ -328,7 +330,9 @@ class MacroShader
 			access: [Access.APrivate, Access.AInline],
 			pos: currentPos,
 			kind: FieldType.FFun(cast f),
-			meta: [{name: "noCompletion", pos: currentPos}],
+			#if (haxe_ver >= 3.2) 
+			meta: [ { name: "noCompletion", pos: currentPos } ], 
+			#end
 		};
 		
 		return fset;

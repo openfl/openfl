@@ -529,7 +529,7 @@ class SpriteBatch {
 		// TODO cache this somehow?, don't do each state change?
 		shader.bindVertexArray(vertexArray);
 		
-		renderSession.blendModeManager.setBlendMode(state.blendMode);
+		renderSession.blendModeManager.setBlendMode(shader.blendMode != null ? shader.blendMode : state.blendMode);
 		
 		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 		
@@ -602,6 +602,7 @@ class SpriteBatch {
 			flashShader.__shader.wrapS = flashShader.repeatX;
 			flashShader.__shader.wrapT = flashShader.repeatY;
 			flashShader.__shader.smooth = flashShader.smooth;
+			flashShader.__shader.blendMode = flashShader.blendMode;
 			var objSize = flashShader.data.get(FlashShader.uObjectSize);
 			var texSize = flashShader.data.get(FlashShader.uTextureSize);
 			if (bd != null) {

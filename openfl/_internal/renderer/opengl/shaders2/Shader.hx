@@ -5,6 +5,7 @@ import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.Shader.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
 import openfl.display.Shader.RepeatMode;
@@ -34,6 +35,7 @@ class Shader {
 	public var wrapS:RepeatMode = NONE;
 	public var wrapT:RepeatMode = NONE;
 	public var smooth:Null<Bool>;
+	public var blendMode:BlendMode;
 	
 	private var vertexString:String;
 	private var fragmentString:String;
