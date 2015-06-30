@@ -1153,7 +1153,7 @@ class Stage extends DisplayObjectContainer {
 							
 						}
 						
-					}, 100);
+					}, 30);
 					
 				}
 				#end
