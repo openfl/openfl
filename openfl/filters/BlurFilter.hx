@@ -157,7 +157,7 @@ class BlurFilter extends BitmapFilter {
 		
 		var even = pass % 2 == 0;
 		var scale = Math.pow(0.5, pass >> 1);
-		__blurShader.uRadius[0] = even ? scale*blurX : 0;
+		__blurShader.uRadius[0] = even ? scale * blurX : 0;
 		__blurShader.uRadius[1] = even ? 0 : scale * blurY;
 		
 		return __blurShader;
@@ -215,7 +215,7 @@ private class BlurShader extends Shader {
 	];
 	
 	public function new() {
-		super(HIGH);
+		super();
 	}
 }
 

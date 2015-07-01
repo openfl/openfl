@@ -29,6 +29,7 @@ class BitmapFilter {
 	
 	private var __dirty:Bool = true;
 	private var __passes:Int = 0;
+	private var __saveLastFilter:Bool = false;
 	
 	public function new () {
 		
@@ -64,24 +65,12 @@ class BitmapFilter {
 		
 	}
 	
-	@:noCompletion private function __applyGL (renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
-		
-		/*
-		if (!__dirty) return;
-		
-		var same = source == target;
-		
-		if (same) {
-			
-		}
-		
-		
-		__dirty = false;
-		*/
-	}
-	
 	@:noCompletion private function __preparePass(pass:Int):Shader {
 		return null;
+	}
+	
+	@:noCompletion private function __useLastFilter(pass:Int):Bool {
+		return false;
 	}
 	
 	@:noCompletion private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
@@ -102,14 +91,39 @@ class BitmapFilter {
 		
 		if (sourceRect == null) sourceRect = source.rect;
 		
+		var lastFilterOutput = null;
+		var useLastFilter = false;
+		
 		var srcShader = source.__shader;
 		
 		for (filter in filters) {
-			for(pass in 0...filter.__passes) {
-				if (same) target.__pingPongTexture.swap();
-				source.__shader = filter.__preparePass(pass);
+			useLastFilter = false;
+			
+			// if the filter needs the last filter output, swap and save a copy of it
+			if (filter.__saveLastFilter) {
+				target.__pingPongTexture.swap();
 				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, true);
+				lastFilterOutput = target.__pingPongTexture.oldRenderTexture;
+				target.__pingPongTexture.oldRenderTexture = null;
 			}
+			
+			for (pass in 0...filter.__passes) {
+				
+				useLastFilter = filter.__saveLastFilter && filter.__useLastFilter(pass);
+				
+				if (same && !useLastFilter) target.__pingPongTexture.swap();
+				
+				if (useLastFilter) {
+					target.__pingPongTexture.oldRenderTexture = lastFilterOutput;
+				}
+				
+				source.__shader = filter.__preparePass(pass);
+				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, !useLastFilter);
+			}
+		}
+		
+		if (lastFilterOutput != null) {
+			lastFilterOutput.destroy();
 		}
 		
 		source.__shader = srcShader;

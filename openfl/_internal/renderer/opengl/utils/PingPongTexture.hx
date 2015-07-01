@@ -12,6 +12,7 @@ class PingPongTexture
 	
 	public var gl:GLRenderContext;
 	public var renderTexture(get, set):RenderTexture;
+	public var oldRenderTexture(get, set):RenderTexture;
 	public var framebuffer(get, never):GLFramebuffer;
 	public var texture(get, never):GLTexture;
 	public var width:Int;
@@ -74,6 +75,19 @@ class PingPongTexture
 				__texture1 = v;
 			else 
 				__texture0 = v;
+		};
+	}
+	
+	inline function get_oldRenderTexture() {
+		return __swapped ? __texture0 : __texture1;
+	}
+	
+	inline function set_oldRenderTexture(v) {
+		return {
+			if (__swapped) 
+				__texture0 = v;
+			else 
+				__texture1 = v;
 		};
 	}
 	
