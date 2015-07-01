@@ -223,7 +223,8 @@ class Shader {
 			gl.deleteShader(fragmentShader);
 			
 			if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0) {
-				trace ("Could not initialize shaders");
+				trace ("Could not compile the program:\n\t" + gl.getProgramInfoLog(program));
+				trace ("VERTEX:\n" + vertexSrc + "\nFRAGMENT:\n" + fragmentSrc);
 				return null;
 			}
 		}
@@ -239,7 +240,8 @@ class Shader {
 		gl.compileShader(shader);
 		
 		if (gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0) {
-			trace (gl.getShaderInfoLog (shader));
+			trace ("Could not compile the shader:\n\t" + gl.getShaderInfoLog(shader));
+			trace (shaderSrc);
 			return null;
 		}
 		

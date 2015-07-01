@@ -176,6 +176,15 @@ class Shader {
 	
 	@:noCompletion private function __buildVertexCode(code:String) {
 		var output = [];
+		
+		output.push('#ifdef GL_ES');
+		output.push(switch(precision) {
+			case HIGH: 		'precision highp float;';
+			case MEDIUM: 	'precision mediump float;';
+			case _: 		'precision lowp float;';
+		});
+		output.push('#endif');
+		
 		output = output.concat(vertexHeader);
 		output.push(code);
 		
