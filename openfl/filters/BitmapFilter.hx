@@ -114,16 +114,16 @@ class BitmapFilter {
 				if (same && !useLastFilter) target.__pingPongTexture.swap();
 				
 				if (useLastFilter) {
+					if(target.__pingPongTexture.oldRenderTexture != null) {
+						target.__pingPongTexture.oldRenderTexture.destroy();
+					}
 					target.__pingPongTexture.oldRenderTexture = lastFilterOutput;
 				}
 				
 				source.__shader = filter.__preparePass(pass);
 				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, !useLastFilter);
 			}
-		}
-		
-		if (lastFilterOutput != null) {
-			lastFilterOutput.destroy();
+			
 		}
 		
 		source.__shader = srcShader;

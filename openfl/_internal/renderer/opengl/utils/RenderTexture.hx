@@ -58,8 +58,8 @@ class RenderTexture {
 	
 	public function destroy ():Void {
 		
-		gl.deleteFramebuffer (frameBuffer);
-		gl.deleteTexture (texture);
+		if(frameBuffer != null) gl.deleteFramebuffer (frameBuffer);
+		if(texture != null) gl.deleteTexture (texture);
 		
 		frameBuffer = null;
 		texture = null;
