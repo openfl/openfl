@@ -1,6 +1,7 @@
 package openfl.filters; #if !flash #if !openfl_legacy
 
 
+import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
@@ -30,6 +31,8 @@ class BitmapFilter {
 	private var __dirty:Bool = true;
 	private var __passes:Int = 0;
 	private var __saveLastFilter:Bool = false;
+	
+	static private var __tmpRenderTexture:RenderTexture;
 	
 	public function new () {
 		
@@ -104,7 +107,7 @@ class BitmapFilter {
 				target.__pingPongTexture.swap();
 				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, true);
 				lastFilterOutput = target.__pingPongTexture.oldRenderTexture;
-				target.__pingPongTexture.oldRenderTexture = null;
+				target.__pingPongTexture.oldRenderTexture = __tmpRenderTexture;
 			}
 			
 			for (pass in 0...filter.__passes) {
@@ -114,9 +117,7 @@ class BitmapFilter {
 				if (same && !useLastFilter) target.__pingPongTexture.swap();
 				
 				if (useLastFilter) {
-					if(target.__pingPongTexture.oldRenderTexture != null) {
-						target.__pingPongTexture.oldRenderTexture.destroy();
-					}
+					__tmpRenderTexture = target.__pingPongTexture.oldRenderTexture;
 					target.__pingPongTexture.oldRenderTexture = lastFilterOutput;
 				}
 				

@@ -183,7 +183,7 @@ class GlowFilter extends BitmapFilter {
 		
 	}
 	
-		override function __growBounds(rect:Rectangle) {
+	override function __growBounds(rect:Rectangle) {
 		rect.x += -blurX * 0.5 * quality;
 		rect.y += -blurY * 0.5 * quality;
 		rect.width += blurX * 0.5 * quality;
