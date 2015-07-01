@@ -25,12 +25,6 @@ class ColorMatrixFilter extends BitmapFilter {
 		__colorMatrixShader = new ColorMatrixShader();
 		__passes = 1;
 		
-		if (matrix == null) {
-			
-			matrix = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
-			
-		}
-		
 		this.matrix = matrix;
 		
 	}
@@ -86,6 +80,9 @@ class ColorMatrixFilter extends BitmapFilter {
 	}
 	
 	function set_matrix(v:Array<Float>) {
+		if (v == null) {
+			v = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
+		}
 		__colorMatrixShader.uMultipliers = [
 											v[0], v[1], v[2], v[3],
 											v[5], v[6], v[7], v[8],
@@ -108,7 +105,7 @@ private class ColorMatrixShader extends Shader {
 		'	color = vec4(color.rgb / color.a, color.a);',
 		'	color = uOffsets + color * uMultipliers;',
 		'	color = vec4(color.rgb * color.a, color.a);',
-		'	gl_FragColor = colorTransform(color, ${Shader.vColor}, ${Shader.uColorMultiplier}, ${Shader.uColorOffset});',
+		'	gl_FragColor = color;',
 		'}',
 	];
 	
