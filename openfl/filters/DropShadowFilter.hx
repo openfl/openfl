@@ -204,10 +204,12 @@ class DropShadowFilter extends BitmapFilter {
 	}
 	
 	override function __growBounds(rect:Rectangle) {
-		rect.x += -blurX * 0.5 * quality;
-		rect.y += -blurY * 0.5 * quality;
-		rect.width += blurX * 0.5 * quality;
-		rect.height += blurY * 0.5 * quality;
+		var sX = distance * Math.cos(angle * Math.PI / 180);
+		var sY = distance * Math.sin(angle * Math.PI / 180);
+		rect.x += -(Math.abs(sX) + (blurX * 0.5)) * quality;
+		rect.y += -(Math.abs(sY) + (blurY * 0.5)) * quality;
+		rect.width += (sX + (blurX * 0.5)) * quality;
+		rect.height += (sY + (blurY * 0.5))  * quality;
 	}
 	
 	override function __useLastFilter(pass:Int):Bool {
