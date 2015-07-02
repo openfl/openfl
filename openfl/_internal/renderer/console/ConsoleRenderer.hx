@@ -464,11 +464,6 @@ class ConsoleRenderer extends AbstractRenderer {
 				cast (cpp.Pointer.arrayElem (image.buffer.data.buffer.getData (), 0))
 			);
 
-		} else {
-
-			var texdata:TextureData = cast (image.buffer.src);
-			texture.update (texdata);
-
 		}
 
 		image.dirty = false;
