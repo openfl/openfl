@@ -1,3 +1,17 @@
+3.1.1 (07/02/2015)
+------------------
+
+* Improved the behavior of EventDispatcher
+* Changed relevant TextFormat values to be Int, not Float
+* Improved support for TextField leading values
+* Improved multi-touch support on desktop targets
+* Improved support for using NEAREST filter mode in Stage3D
+* Fixed rendering when TextField autoSize increases the width
+* Fixed some issues that occurred with too-large alpha values
+* Fixed support for sound.length on native targets
+* Fixed support for keyboardEvent.keyLocation
+
+
 3.1.0 (06/08/2015)
 ------------------
 
