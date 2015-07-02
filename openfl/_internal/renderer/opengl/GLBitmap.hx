@@ -8,6 +8,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.display.DisplayObject;
 import openfl.display.IBitmapDrawable;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -15,6 +16,7 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.IBitmapDrawable)
 
 
@@ -128,16 +130,18 @@ class GLBitmap {
 		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
-		source.__cacheAsBitmap = false;
+		DisplayObject.__cacheAsBitmapMode = true;
 		
 		source.__updateChildren (false);
 		
+		source.__cacheAsBitmap = false;
 		source.__renderGL (renderSession);
+		source.__cacheAsBitmap = cached;
 		
 		source.__worldColorTransform = ctCache;
 		source.__worldTransform = matrixCache;
 		source.__blendMode = blendModeCache;
-		source.__cacheAsBitmap = cached;
+		DisplayObject.__cacheAsBitmapMode = false;
 		
 		source.__updateChildren (false);
 	}

@@ -691,6 +691,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		if (scrollRect != null) {
+			var sr = scrollRect.transform(matrix);
+			rect.__contract(sr.x, sr.y, sr.width, sr.height);
+		}
+		
 	}
 	
 	
@@ -1009,13 +1014,15 @@ class DisplayObjectContainer extends InteractiveObject {
 			return;
 		}
 		
+		var clipRect = null;
+		
 		if (scrollRect != null) {
 			renderSession.spriteBatch.stop();
 			var m = __worldTransform.clone();
-			var clip = scrollRect.transform(m);
-			clip.y = renderSession.renderer.height - clip.y - clip.height;
+			@:privateAccess GLBitmap.flipMatrix(m, renderSession.renderer.viewPort.height);
+			clipRect = scrollRect.transform(m);
 			
-			renderSession.spriteBatch.start(clip);
+			renderSession.spriteBatch.start(clipRect);
 		}
 		
 		
@@ -1025,7 +1032,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			renderSession.spriteBatch.stop ();
 			renderSession.maskManager.pushMask (this);
-			renderSession.spriteBatch.start ();
+			renderSession.spriteBatch.start (clipRect);
 			
 		}
 		

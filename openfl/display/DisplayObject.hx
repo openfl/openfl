@@ -175,6 +175,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private static var __worldRenderDirty = 0;
 	@:noCompletion private static var __worldTransformDirty = 0;
 	
+	@:noCompletion private static var __cacheAsBitmapMode = false;
+	
 	/**
 	 * Indicates the alpha transparency value of the object specified. Valid
 	 * values are 0(fully transparent) to 1(fully opaque). The default value is
@@ -1280,7 +1282,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		}
 		
-		var sr = scrollRect;
+		var sr = __cacheAsBitmapMode ? null : scrollRect;
 		
 		if (parent != null) {
 			
@@ -1305,7 +1307,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
 			
 			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
 					sr = sr.transform(__worldTransform);
 				}
 				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
@@ -1327,8 +1329,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
 					sr = sr.transform(__worldTransform);
 				}
-				__worldTransform.tx = x - scrollRect.x;
-				__worldTransform.ty = y - scrollRect.y;
+				__worldTransform.tx = x - sr.x;
+				__worldTransform.ty = y - sr.y;
 			}
 			
 		}
