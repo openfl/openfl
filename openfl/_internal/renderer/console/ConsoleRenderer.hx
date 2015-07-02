@@ -144,13 +144,13 @@ class ConsoleRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 
-		//viewProj = Matrix4.createOrtho (0, width, height, 0, -1, 1);
-		// TODO(james4k): only half pixel offset for DX9
-		viewProj = Matrix4.createOrtho (0 + pixelOffsetX, width + pixelOffsetY, height + pixelOffsetX, 0 + pixelOffsetY, -1, 1);
-
-		ctx.setRasterizerState (CULLNONE_SOLID);
-		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
-		ctx.setBlendState (SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB);
+		viewProj = Matrix4.createOrtho (
+			0 + pixelOffsetX,
+			width + pixelOffsetY,
+			height + pixelOffsetX,
+			0 + pixelOffsetY,
+			-1, 1
+		);
 
 		ctx.setViewport (0, 0, width, height);
 		ctx.clear (
@@ -159,6 +159,10 @@ class ConsoleRenderer extends AbstractRenderer {
 			Std.int (stage.__colorSplit[2] * 0xff),
 			0xff
 		);
+
+		ctx.setRasterizerState (CULLNONE_SOLID);
+		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
+		ctx.setBlendState (SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB);
 
 		renderDisplayObject (stage);
 
