@@ -929,6 +929,9 @@ class ConsoleRenderer extends AbstractRenderer {
 						totalCount = count;
 					}
 					var itemCount = div (totalCount, stride);
+					if (itemCount <= 0) {
+						continue;
+					}
 
 					var tileID = -1;
 					var rect:Rectangle = sheet.__rectTile;
@@ -1085,6 +1088,10 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					if (!hasFill || fillBitmap == null) {
 						trace ("DrawTriangles without bitmap fill");
+						continue;
+					}
+
+					if (vertices.length <= 0 || indices.length <= 0) {
 						continue;
 					}
 
