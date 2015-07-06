@@ -404,24 +404,12 @@ class Loader extends Sprite {
 		
 		worker.doWork.add (function (_) {
 			
-			BitmapData.fromFile (request.url, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendComplete (IOErrorEvent.IO_ERROR));
+			BitmapData.fromFile (request.url, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
 			
 		});
 		
-		worker.onComplete.add (function (msg) {
-			
-			if (Std.is (msg, BitmapData)) {
-				
-				BitmapData_onLoad (cast msg);
-				
-			} else {
-				
-				BitmapData_onError ();
-				
-			}
-			
-		});
-		
+		worker.onError.add (BitmapData_onError);
+		worker.onComplete.add (BitmapData_onLoad);
 		worker.run ();
 		
 	}
@@ -523,12 +511,7 @@ class Loader extends Sprite {
 			
 		});
 		
-		worker.onComplete.add (function (bitmapData) {
-			
-			BitmapData_onLoad (cast bitmapData);
-			
-		});
-		
+		worker.onComplete.add (BitmapData_onLoad);
 		worker.run ();
 		
 	}
@@ -641,7 +624,7 @@ class Loader extends Sprite {
 	}
 	
 	
-	@:noCompletion private function BitmapData_onError ():Void {
+	@:noCompletion private function BitmapData_onError (_):Void {
 		
 		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
 		event.target = contentLoaderInfo;
