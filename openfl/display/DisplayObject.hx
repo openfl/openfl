@@ -712,6 +712,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
 	@:dox(hide) @:noCompletion public var __scrollRectMatrix:Matrix;
+	@:dox(hide) @:noCompletion public var __localMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __renderMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
 	
@@ -772,6 +773,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
+		__localMatrix = new Matrix ();
 		__scrollRectMatrix = new Matrix ();
 		__renderMatrix = new Matrix ();
 		__rotationCache = 0;
@@ -1045,12 +1047,37 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		var m = __getTransform ().clone();
+		var m = __getLocalMatrix ().clone ();
 		m.__translateTransformed( -m.tx, -m.ty);
 		__getBounds (rect, m);
 		
 	}
 	
+	@:noCompletion private function __getLocalMatrix () {
+		
+		if (__transformDirty) {
+			
+			if (rotation != __rotationCache) {
+				
+				__rotationCache = rotation;
+				var radians = rotation * (Math.PI / 180);
+				__rotationSine = Math.sin (radians);
+				__rotationCosine = Math.cos (radians);
+				
+			}
+			
+			__localMatrix.a = __rotationCosine * scaleX;
+			__localMatrix.c = -__rotationSine * scaleY;
+			__localMatrix.b = __rotationSine * scaleX;
+			__localMatrix.d = __rotationCosine * scaleY;
+			__localMatrix.tx = x;
+			__localMatrix.ty = y;
+			
+		}
+		
+		return __localMatrix;
+		
+	}
 	
 	@:noCompletion private function __getTransform ():Matrix {
 		
@@ -1256,21 +1283,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		//if (!__renderable && !__isMask) return;
 		
-		if (rotation != __rotationCache) {
-			
-			__rotationCache = rotation;
-			var radians = rotation * (Math.PI / 180);
-			__rotationSine = Math.sin (radians);
-			__rotationCosine = Math.cos (radians);
-			
-		}
-		
-		__worldTransform.a = __rotationCosine * scaleX;
-		__worldTransform.c = -__rotationSine * scaleY;
-		__worldTransform.b = __rotationSine * scaleX;
-		__worldTransform.d = __rotationCosine * scaleY;
-		__worldTransform.tx = x;
-		__worldTransform.ty = y;
+		__worldTransform.identity();
+		__worldTransform.concat(__getLocalMatrix());
 		
 		__scrollRectMatrix.identity();
 		if (__scrollRect != null) {

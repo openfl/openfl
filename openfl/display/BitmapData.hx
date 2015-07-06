@@ -136,8 +136,6 @@ class BitmapData implements IBitmapDrawable {
 	public var width (default, null):Int;
 	
 	@:noCompletion @:dox(hide) public var __worldTransform:Matrix;
-	@:noCompletion @:dox(hide) public var __scrollRectMatrix:Matrix;
-	@:noCompletion @:dox(hide) public var __renderMatrix:Matrix;
 	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
 	
@@ -214,8 +212,6 @@ class BitmapData implements IBitmapDrawable {
 		__createUVs ();	
 		
 		__worldTransform = new Matrix();
-		__scrollRectMatrix = new Matrix();
-		__renderMatrix = new Matrix();
 		__worldColorTransform = new ColorTransform();
 		
 	}
