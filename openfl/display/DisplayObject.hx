@@ -711,6 +711,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var y (get, set):Float;
 	
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
+	@:dox(hide) @:noCompletion public var __scrollRectMatrix:Matrix;
+	@:dox(hide) @:noCompletion public var __renderMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
 	
 	@:noCompletion private var __alpha:Float;
@@ -770,6 +772,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
+		__scrollRectMatrix = new Matrix ();
+		__renderMatrix = new Matrix ();
 		__rotationCache = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
@@ -840,7 +844,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix = __getTransform ();
+		var matrix = new Matrix();
 		
 		if (targetCoordinateSpace != null) {
 			
@@ -1041,8 +1045,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		__getTransform ();
-		__getBounds (rect, new Matrix ());
+		var m = __getTransform ().clone();
+		m.__translateTransformed( -m.tx, -m.ty);
+		__getBounds (rect, m);
 		
 	}
 	
@@ -1260,58 +1265,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		}
 		
-		var sr = scrollRect;
+		__worldTransform.a = __rotationCosine * scaleX;
+		__worldTransform.c = -__rotationSine * scaleY;
+		__worldTransform.b = __rotationSine * scaleX;
+		__worldTransform.d = __rotationCosine * scaleY;
+		__worldTransform.tx = x;
+		__worldTransform.ty = y;
+		
+		__scrollRectMatrix.identity();
+		if (__scrollRect != null) {
+			var m = __worldTransform.clone();
+			if (parent != null) {
+				m.concat(parent.__worldTransform);
+			}
+			m.tx = 0;
+			m.ty = 0;
+			var sr = __scrollRect.transform(m);
+			__scrollRectMatrix.__translateTransformed( -sr.x, -sr.y);
+		}
 		
 		if (parent != null) {
-			
-			var parentTransform = parent.__worldTransform;
-			
-			var a00 = __rotationCosine * scaleX;
-			var a01 = __rotationSine * scaleX;
-			var a10 = -__rotationSine * scaleY;
-			var a11 = __rotationCosine * scaleY;
-			var b00 = parentTransform.a;
-			var b01 = parentTransform.b;
-			var b10 = parentTransform.c;
-			var b11 = parentTransform.d;
-			
-			if (__worldTransform == null) __worldTransform = new Matrix ();
-			
-			__worldTransform.a = a00 * b00 + a01 * b10;
-			__worldTransform.b = a00 * b01 + a01 * b11;
-			__worldTransform.c = a10 * b00 + a11 * b10;
-			__worldTransform.d = a10 * b01 + a11 * b11;
-			__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
-			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
-			
-			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					sr = sr.transform(__worldTransform);
-				}
-				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
-				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
-			}
-			
-			if(__isMask) __maskCached = false;
-			
-		} else {
-			
-			__worldTransform.a = __rotationCosine * scaleX;
-			__worldTransform.c = -__rotationSine * scaleY;
-			__worldTransform.b = __rotationSine * scaleX;
-			__worldTransform.d = __rotationCosine * scaleY;
-			__worldTransform.tx = x;
-			__worldTransform.ty = y;
-			
-			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					sr = sr.transform(__worldTransform);
-				}
-				__worldTransform.tx = x - scrollRect.x;
-				__worldTransform.ty = y - scrollRect.y;
-			}
-			
+			__worldTransform.concat(parent.__worldTransform);
+			__scrollRectMatrix.concat(parent.__scrollRectMatrix);
 		}
+		
+		__renderMatrix = __worldTransform.mult(__scrollRectMatrix);
 		
 		if (updateChildren && __transformDirty) {
 			
@@ -1533,7 +1511,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		return bounds.height * scaleY;
+		return bounds.height;
 		
 	}
 	
@@ -1761,7 +1739,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		return bounds.width * scaleX;
+		return bounds.width;
 		
 	}
 	

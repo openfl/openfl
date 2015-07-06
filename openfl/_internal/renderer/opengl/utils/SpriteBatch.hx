@@ -365,7 +365,7 @@ class SpriteBatch {
 		uvs.x3 = 0;		uvs.y3 = 0;
 		
 		var worldTransform = object.__worldTransform.clone();
-		worldTransform.__translateTransformed(new Point(object.__graphics.__bounds.x, object.__graphics.__bounds.y));
+		worldTransform.__translateTransformed(object.__graphics.__bounds.x, object.__graphics.__bounds.y);
 		
 		enableAttributes(color);
 		

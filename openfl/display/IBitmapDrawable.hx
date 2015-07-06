@@ -10,6 +10,8 @@ interface IBitmapDrawable {
 	
 	var __worldTransform:Matrix;
 	var __worldColorTransform:ColorTransform;
+	var __scrollRectMatrix:Matrix;
+	var __renderMatrix:Matrix;
 	
 	private var __blendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
