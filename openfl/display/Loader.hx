@@ -1,7 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
-import lime.system.WorkerThread;
+import lime.system.BackgroundWorker;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
@@ -400,15 +400,15 @@ class Loader extends Sprite {
 			
 		}
 		
-		var worker = new WorkerThread ();
+		var worker = new BackgroundWorker ();
 		
-		worker.doWork = function () {
+		worker.doWork.add (function (_) {
 			
-			BitmapData.fromFile (request.url, function (bitmapData) worker.sendUpdate (bitmapData), function () worker.sendUpdate (IOErrorEvent.IO_ERROR));
+			BitmapData.fromFile (request.url, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendComplete (IOErrorEvent.IO_ERROR));
 			
-		}
+		});
 		
-		worker.onUpdate.add (function (msg) {
+		worker.onComplete.add (function (msg) {
 			
 			if (Std.is (msg, BitmapData)) {
 				
@@ -515,25 +515,17 @@ class Loader extends Sprite {
 	 */
 	public function loadBytes (buffer:ByteArray):Void {
 		
-		var worker = new WorkerThread ();
+		var worker = new BackgroundWorker ();
 		
-		worker.doWork = function () {
+		worker.doWork.add (function (_) {
 			
-			BitmapData.fromBytes (buffer, function (bitmapData) worker.sendUpdate (bitmapData));
+			BitmapData.fromBytes (buffer, function (bitmapData) worker.sendComplete (bitmapData));
 			
-		}
+		});
 		
-		worker.onUpdate.add (function (msg) {
+		worker.onComplete.add (function (bitmapData) {
 			
-			if (Std.is (msg, BitmapData)) {
-				
-				BitmapData_onLoad (cast msg);
-				
-			} else {
-				
-				BitmapData_onError ();
-				
-			}
+			BitmapData_onLoad (cast bitmapData);
 			
 		});
 		
