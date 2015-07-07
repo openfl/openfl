@@ -10,6 +10,7 @@ import openfl.display.GraphicsPathCommand;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import lime.graphics.Image;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
@@ -46,13 +47,14 @@ class Graphics {
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
 	
+	@:noCompletion public var __hardware:Bool;
 	@:noCompletion private var __bounds:Rectangle;
-	@:noCompletion private var __cairo:Cairo;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty(default, set):Bool = true;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
 	@:noCompletion private var __drawPaths:Array<DrawPath>;
 	@:noCompletion private var __halfStrokeWidth:Float;
+	@:noCompletion private var __image:Image;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __transformDirty:Bool;
@@ -63,9 +65,11 @@ class Graphics {
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
+	#else
+	@:noCompletion private var __cairo:Cairo;
 	#end
 	
-	
+	@:noCompletion private var __bitmap:BitmapData;
 
 	public function new () {
 		
@@ -73,6 +77,7 @@ class Graphics {
 		__halfStrokeWidth = 0;
 		__positionX = 0;
 		__positionY = 0;
+		__hardware = true;
 		
 		#if (js && html5)
 		moveTo( 0, 0);
@@ -217,6 +222,7 @@ class Graphics {
 	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
 		
 		__commands.push (BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));
+		__hardware = false;
 		
 		for (alpha in alphas) {
 			
@@ -251,6 +257,7 @@ class Graphics {
 		}
 		
 		__visible = false;
+		__hardware = true;
 		
 		#if (js && html5)
 		moveTo( 0, 0);
@@ -279,7 +286,7 @@ class Graphics {
 		
 		// Calculate the bounds of the bezier function 
 		var ix1, iy1, ix2, iy2;
-			
+		
 		ix1 = anchorX;
 		ix2 = anchorX;
 		
@@ -328,6 +335,7 @@ class Graphics {
 		
 		__commands.push (CubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY));
 		
+		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -399,6 +407,7 @@ class Graphics {
 		
 		__commands.push (CurveTo (controlX, controlY, anchorX, anchorY));
 		
+		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -427,6 +436,7 @@ class Graphics {
 		
 		__commands.push (DrawCircle (x, y, radius));
 		
+		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -457,6 +467,7 @@ class Graphics {
 		
 		__commands.push (DrawEllipse (x, y, width, height));
 		
+		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -629,6 +640,7 @@ class Graphics {
 		
 		__commands.push (DrawRoundRect (x, y, width, height, rx, ry));
 		
+		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -699,7 +711,7 @@ class Graphics {
 		var tmpx = Math.NEGATIVE_INFINITY;
 		var tmpy = Math.NEGATIVE_INFINITY;
 		var maxX = Math.NEGATIVE_INFINITY;
-		var maxY = Math.NEGATIVE_INFINITY;		
+		var maxY = Math.NEGATIVE_INFINITY;
 		
 		for (i in 0...vlen) {
 			tmpx = vertices[i * 2];
@@ -1009,6 +1021,7 @@ class Graphics {
 		
 		__commands.push (LineTo (x, y));
 		
+		__hardware = false;
 		__dirty = true;
 		
 	}

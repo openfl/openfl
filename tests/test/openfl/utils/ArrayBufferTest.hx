@@ -11,7 +11,7 @@ class ArrayBufferTest {
 		
 		// TODO: Confirm functionality
 		
-		var arrayBuffer = new ArrayBuffer (#if js 0 #end);
+		var arrayBuffer = new ArrayBuffer (0);
 		Assert.isNotNull (arrayBuffer);
 		
 	}

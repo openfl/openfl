@@ -326,9 +326,11 @@ class EventDispatcher implements IEventDispatcher {
 				__eventMap = null;
 				__newEventMap = null;
 				
+			} else {
+				
+				__newEventMap.remove (type);
+				
 			}
-			
-			__newEventMap.remove (type);
 			
 		}
 		
@@ -389,7 +391,9 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		if (__dispatching.get (type) == true) {
+		var dispatching = (__dispatching.get (type) == true);
+		
+		if (dispatching) {
 			
 			if (!__newEventMap.exists (type)) {
 				
@@ -415,16 +419,20 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (list.length == 0) {
+		if (!dispatching) {
 			
-			__eventMap.remove (type);
+			if (list.length == 0) {
+				
+				__eventMap.remove (type);
+				
+			}
 			
-		}
-		
-		if (!__eventMap.iterator ().hasNext ()) {
-			
-			__eventMap = null;
-			__newEventMap = null;
+			if (!__eventMap.iterator ().hasNext ()) {
+				
+				__eventMap = null;
+				__newEventMap = null;
+				
+			}
 			
 		}
 		

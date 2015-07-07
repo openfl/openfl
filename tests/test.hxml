@@ -14,7 +14,7 @@
 
 # Trick munit into building our app
 
--cmd haxelib run lime build html5
+-cmd haxelib run lime build html5 -nocffi
 #-cmd openfl build neko
 #-cmd mv build/linux64/neko/obj/ApplicationMain.n build/linux64/neko/bin/Validation.n
 #-cmd lime update linux

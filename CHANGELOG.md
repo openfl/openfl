@@ -1,3 +1,52 @@
+3.1.1 (07/02/2015)
+------------------
+
+* Improved the behavior of EventDispatcher
+* Changed relevant TextFormat values to be Int, not Float
+* Improved support for TextField leading values
+* Improved multi-touch support on desktop targets
+* Improved support for using NEAREST filter mode in Stage3D
+* Fixed rendering when TextField autoSize increases the width
+* Fixed some issues that occurred with too-large alpha values
+* Fixed support for sound.length on native targets
+* Fixed support for keyboardEvent.keyLocation
+
+
+3.1.0 (06/08/2015)
+------------------
+
+* Enabled Cairo graphics in GL mode by default
+* Added initial hooks for Haxe telemetry (hxscout)
+* Fixed bug in image premultiplication
+* Fixed black textures when mixing Cairo with OpenGL
+* Fixed crash in HTML5 when using sparse graphics
+
+
+3.0.8 (05/31/2015)
+------------------
+
+* Guard hybrid Cairo + GL behavior behind #if cairo_graphics for now
+
+
+3.0.7 (05/30/2015)
+------------------
+
+* Added hybrid Cairo + GL renderer support for native
+* Switched to use canvas graphics when targeting WebGL/HTML5
+* Many improvements to the Cairo renderer, improved canvas rendering
+* Improved GL blend mode support
+* Improved support for scrollRect
+* Added stage focus in and out events
+* Added an initial implementation of the GameInput API
+* Improved the behavior of event.target
+* Improved add/remove event listener behavior when dispatching
+* Improved bounds check for bezier curves
+* Improved the behavior of mouse event buttonDown
+* Initial re-implementation of URLLoader for native 
+* Added handling for Lime application.frameRate
+* Fixed SystemPath (legacy)
+
+
 3.0.6 (05/14/2015)
 ------------------
 

@@ -1,15 +1,3 @@
-# Generate single haxedoc.xml for haxelib
-
--xml ../haxedoc.xml
--cpp obj/docs
--D display
-ImportAll
--lib lime
--lib openfl
---no-output
-
---next
-
 # Generate platform-specific XML for documentation output
 
 -xml Flash.xml

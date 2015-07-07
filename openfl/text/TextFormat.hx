@@ -48,7 +48,7 @@ class TextFormat {
 	 * TextFormat object does not specify block indentation(block indentation is
 	 * 0).
 	 */
-	public var blockIndent:Null<Float>;
+	public var blockIndent:Null<Int>;
 	
 	/**
 	 * Specifies whether the text is boldface. The default value is
@@ -85,7 +85,7 @@ class TextFormat {
 	 * the paragraph. The default value is <code>null</code>, which indicates
 	 * that no indentation is used.
 	 */
-	public var indent:Null<Float>;
+	public var indent:Null<Int>;
 	
 	/**
 	 * Indicates whether text in this text format is italicized. The default
@@ -113,13 +113,13 @@ class TextFormat {
 	 * <i>leading</i>) between lines. The default value is <code>null</code>,
 	 * which indicates that the amount of leading used is 0.
 	 */
-	public var leading:Null<Float>;
+	public var leading:Null<Int>;
 	
 	/**
 	 * The left margin of the paragraph, in pixels. The default value is
 	 * <code>null</code>, which indicates that the left margin is 0 pixels.
 	 */
-	public var leftMargin:Null<Float>;
+	public var leftMargin:Null<Int>;
 	
 	/**
 	 * A number representing the amount of space that is uniformly distributed
@@ -134,13 +134,13 @@ class TextFormat {
 	 * The right margin of the paragraph, in pixels. The default value is
 	 * <code>null</code>, which indicates that the right margin is 0 pixels.
 	 */
-	public var rightMargin:Null<Float>;
+	public var rightMargin:Null<Int>;
 	
 	/**
 	 * The size in pixels of text in this text format. The default value is
 	 * <code>null</code>, which means that a size of 12 is used.
 	 */
-	public var size:Null<Float>;
+	public var size:Null<Int>;
 	
 	/**
 	 * Specifies custom tab stops as an array of non-negative integers. Each tab
@@ -224,7 +224,7 @@ class TextFormat {
 	 * @param leading     A number that indicates the amount of leading vertical
 	 *                    space between lines.
 	 */
-	public function new (font:String = null, size:Null<Float> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null, underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Float> = null, rightMargin:Null<Float> = null, indent:Null<Float> = null, leading:Null<Float> = null) {
+	public function new (font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null, underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null, rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null) {
 		
 		this.font = font;
 		this.size = size;

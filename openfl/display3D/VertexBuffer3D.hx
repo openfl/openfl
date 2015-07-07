@@ -62,14 +62,12 @@ class VertexBuffer3D {
 	}
 	
 	
-	#if js
 	public function uploadFromFloat32Array (data:Float32Array, startVertex:Int, numVertices:Int):Void {
 		
 		GL.bindBuffer (GL.ARRAY_BUFFER, glBuffer);
 		GL.bufferData (GL.ARRAY_BUFFER, data, GL.STATIC_DRAW);
 		
 	}
-	#end
 	
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {

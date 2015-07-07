@@ -77,7 +77,7 @@ class SystemPath {
 			
 		}
 		
-		return jni_filesystem_get_special_dir (which);
+		return jni_filesystem_get_special_dir (inWhich);
 		
 		#end
 		

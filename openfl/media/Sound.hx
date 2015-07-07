@@ -149,7 +149,7 @@ class Sound extends EventDispatcher {
 	/**
 	 * The length of the current sound in milliseconds.
 	 */
-	public var length (default, null):Float;
+	public var length (get, never):Float;
 	
 	/**
 	 * The URL from which this sound was loaded. This property is applicable only
@@ -218,7 +218,6 @@ class Sound extends EventDispatcher {
 		bytesTotal = 0;
 		id3 = null;
 		isBuffering = false;
-		length = 0;
 		url = null;
 		
 		if (stream != null) {
@@ -471,6 +470,28 @@ class Sound extends EventDispatcher {
 	@:noCompletion private function get_id3 ():ID3Info {
 		
 		return new ID3Info ();
+		
+	}
+	
+	
+	@:noCompletion private function get_length ():Int {
+		
+		if (__buffer != null) {
+			
+			#if flash
+			
+			return Std.int (__buffer.src.length);
+			
+			#elseif !html5
+			
+			var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+			return Std.int (samples / __buffer.sampleRate * 1000);
+			
+			#end
+			
+		}
+		
+		return 0;
 		
 	}
 	

@@ -52,7 +52,7 @@ class RectangleTexture extends TextureBase {
 		#elseif js
 		var p = ByteArray.__ofBuffer (@:privateAccess (bitmapData.__image).data.buffer);
 		#else
-		var p = @:privateAccess (bitmapData.__image).data.buffer;
+		var p = ByteArray.fromBytes (@:privateAccess (bitmapData.__image).data.buffer);
 		#end
 		
 		width = bitmapData.width;

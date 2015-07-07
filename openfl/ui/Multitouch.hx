@@ -155,6 +155,8 @@ class Multitouch {
 			return true;
 			
 		}
+		#elseif (cpp)
+		return true;
 		#end
 		
 		return false;

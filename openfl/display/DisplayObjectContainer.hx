@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
@@ -695,8 +696,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
 		
-		var i = __children.length;
+		if (scrollRect != null && !scrollRect.containsPoint(globalToLocal(new Point(x, y)))) return false;
 		
+		var i = __children.length;
 		if (interactiveOnly) {
 			
 			if (stack == null || !mouseChildren) {

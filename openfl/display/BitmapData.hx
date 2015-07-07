@@ -15,6 +15,8 @@ import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.math.ColorMatrix;
+import lime.math.Rectangle in LimeRectangle;
+import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl._internal.renderer.cairo.CairoRenderer;
@@ -145,6 +147,9 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
 	
+	@:noCompletion private static var __supportsBGRA:Null<Bool>;
+	
+	@:noCompletion private var __bgra:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
@@ -419,6 +424,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		__image.copyPixels (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.__image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
 		__usingFramebuffer = false;
+		
 	}
 	
 	
@@ -451,20 +457,27 @@ class BitmapData implements IBitmapDrawable {
 		__isValid = false;
 		
 		if (__texture != null) {
+			
 			var renderer = @:privateAccess Lib.current.stage.__renderer;
+			
 			if(renderer != null) {
+				
 				var renderSession = @:privateAccess renderer.renderSession;
 				var gl = renderSession.gl;
+				
 				if (gl != null) {
-					gl.deleteTexture(__texture);
+					
+					gl.deleteTexture (__texture);
+					
 				}
+				
 			}
 			
 		}
 		
 		if (__framebuffer != null) {
 			
-			__framebuffer.destroy();
+			__framebuffer.destroy ();
 			
 		}
 		
@@ -768,7 +781,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			__buffer = gl.createBuffer ();
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (cast data), gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (data), gl.STATIC_DRAW);
 			gl.bindBuffer (gl.ARRAY_BUFFER, null);
 			
 		}
@@ -816,7 +829,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return new Rectangle (0, 0, width, height);
 		var rect = __image.getColorBoundsRect (mask, color, findColor);
-		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+		return new Rectangle (rect.x, rect.y, rect.width, rect.height);
 		
 	}
 	
@@ -900,7 +913,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getSurface ():CairoSurface {
+	public function getSurface (clone:Bool = true):CairoSurface {
 		
 		if (!__isValid) return null;
 		
@@ -918,7 +931,16 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			__surfaceImage = __image.clone ();
+			if (clone) {
+				
+				__surfaceImage = __image.clone ();
+				
+			} else {
+				
+				__surfaceImage = __image;
+				
+			}
+			
 			__surfaceImage.format = BGRA;
 			__surfaceImage.premultiplied = true;
 			__surface = CairoSurface.fromImage (__surfaceImage);
@@ -953,18 +975,51 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__image != null && __image.dirty) {
 			
-			var format = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
+			var internalFormat = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
+			var format = internalFormat;
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			var textureImage = __image;
 			
-			if (!textureImage.premultiplied && !textureImage.transparent) {
+			if (__bgra) {
+				
+				// TODO: Use Lime pixel format code for this?
+				
+				if (__supportsBGRA == null) {
+					
+					__supportsBGRA = Lambda.has (gl.getSupportedExtensions (), "GL_EXT_bgra");
+					
+				}
+				
+				#if lime_cairo
+				if (__supportsBGRA) {
+					
+					format = gl.BGRA_EXT;
+					
+				} else
+				#end
+				{
+					
+					textureImage = new Image (null, 0, 0, __image.width, __image.height);
+					var rect = new LimeRectangle (0, 0, __image.width, __image.height);
+					var point = new Vector2 (0, 0);
+					
+					textureImage.copyChannel ( __image, rect, point, ImageChannel.RED, ImageChannel.BLUE);
+					textureImage.copyChannel ( __image, rect, point, ImageChannel.GREEN, ImageChannel.GREEN);
+					textureImage.copyChannel ( __image, rect, point, ImageChannel.BLUE, ImageChannel.RED);
+					textureImage.copyChannel ( __image, rect, point, ImageChannel.ALPHA, ImageChannel.ALPHA);
+					
+				}
+				
+			}
+			
+			if (!textureImage.premultiplied && textureImage.transparent) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.premultiplied = true;
 				
 			}
 			
-			gl.texImage2D (gl.TEXTURE_2D, 0, format, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 			gl.bindTexture (gl.TEXTURE_2D, null);
 			__image.dirty = false;
 			
@@ -1687,7 +1742,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var spritebatch = renderSession.spriteBatch;
 		var renderTransparent = renderSession.renderer.transparent;
-
+		
 		var tmpRect = clipRect == null ? new Rectangle (0, 0, width, height) : clipRect.clone ();
 		
 		renderSession.renderer.transparent = transparent;

@@ -4,6 +4,7 @@ package openfl._internal.renderer;
 import lime.graphics.Image;
 import lime.text.Glyph;
 import lime.text.TextLayout;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
@@ -76,7 +77,7 @@ class TextFieldGraphics {
 	
 	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle):Void {
 		
-		var font = textField.__getFontInstance (format);
+		var font = CairoTextField.getFontInstance (format);
 		
 		if (font != null && format.size != null) {
 			
@@ -311,7 +312,7 @@ class TextFieldGraphics {
 						
 					}
 					
-					var measurements = textField.__measureText ();
+					var measurements = CairoTextField.measureText (textField);
 					
 					if (textField.__ranges == null) {
 						
