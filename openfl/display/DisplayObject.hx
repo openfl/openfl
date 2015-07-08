@@ -754,8 +754,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	#end
 	
-	@:noCompletion private var __cairo:Cairo;
-	
 	private function new () {
 		
 		super ();
