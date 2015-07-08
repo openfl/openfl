@@ -807,7 +807,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -872,7 +872,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -954,23 +954,16 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		
 		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			var m = __renderMatrix.clone();
-			var clip = scrollRect.transform(m);
-			clip.y = renderSession.renderer.height - clip.y - clip.height;
 			
-			renderSession.spriteBatch.start(clip);
+			renderSession.maskManager.pushRect(scrollRect, __renderMatrix);
+			
 		}
-		
-		
 		
 		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
 		
 		if (masked) {
 			
-			renderSession.spriteBatch.stop ();
 			renderSession.maskManager.pushMask (this);
-			renderSession.spriteBatch.start ();
 			
 		}
 		
@@ -984,17 +977,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (masked) {
 			
-			renderSession.spriteBatch.stop ();
-			//renderSession.maskManager.popMask (this);
 			renderSession.maskManager.popMask ();
-			renderSession.spriteBatch.start ();
 			
 		}
 		
 		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			renderSession.spriteBatch.start();
+			
+			renderSession.maskManager.popRect ();
+			
 		}
+		
+		
 		
 		__removedChildren = [];
 		

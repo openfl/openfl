@@ -60,5 +60,11 @@ class CanvasMaskManager extends AbstractMaskManager {
 		
 	}
 	
+	override public function popRect():Void {
+		
+		renderSession.context.restore ();
+		
+	}
+	
 	
 }

@@ -86,7 +86,7 @@ class CanvasBitmap {
 			
 			if (scrollRect != null) {
 				
-				renderSession.maskManager.popMask ();
+				renderSession.maskManager.popRect ();
 				
 			}
 			
