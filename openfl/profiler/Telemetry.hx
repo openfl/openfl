@@ -71,8 +71,10 @@ class Telemetry {
 		var config = new hxtelemetry.Config ();
 		config.allocations = true;
 		config.host = "localhost";
-		#if (!openfl_legacy)
+		#if !lime_legacy
 		config.app_name = Lib.application.config.title;
+		#else
+		config.app_name = Lib.file;
 		#end
 		config.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
 		telemetry = new HxTelemetry (config);
