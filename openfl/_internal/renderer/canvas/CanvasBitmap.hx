@@ -58,18 +58,6 @@ class CanvasBitmap {
 			
 			context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
 			
-			/*
-			if (scrollRect == null) {
-				
-				context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
-				
-			} else {
-				
-				context.drawImage (bitmap.bitmapData.__image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				
-			}
-			*/
-			
 			if (!bitmap.smoothing) {
 				
 				untyped (context).mozImageSmoothingEnabled = true;

@@ -1,4 +1,5 @@
 package openfl.display; #if !flash #if !openfl_legacy
+import openfl._internal.renderer.RenderSession;
 
 
 /**
@@ -16,6 +17,7 @@ package openfl.display; #if !flash #if !openfl_legacy
  * does not.</p>
  */
 
+@:access(openfl.display.Graphics)
 
 class Shape extends DisplayObject {
 	
@@ -37,6 +39,39 @@ class Shape extends DisplayObject {
 	}
 	
 	
+	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
+		
+		if (!__renderable || __worldAlpha <= 0) return;
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.pushRect(scrollRect, __renderMatrix);
+			
+		}
+		
+		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
+		
+		if (masked) {
+			
+			renderSession.maskManager.pushMask (this);
+			
+		}
+		
+		super.__renderGL (renderSession);
+		
+		if (masked) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.popRect ();
+			
+		}
+		
+	}
 	
 	
 	// Get & Set Methods
