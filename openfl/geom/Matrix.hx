@@ -135,8 +135,6 @@ class Matrix {
 		this.tx = tx;
 		this.ty = ty;
 
-		__array = new Float32Array([a, b, c, d, tx, ty, 0, 0, 1]);
-		
 	}
 	
 	
@@ -712,6 +710,10 @@ class Matrix {
 	
 	
 	@:noCompletion private function toArray (transpose:Bool = false):Float32Array {
+
+		if (__array == null) {
+			__array = new Float32Array(9);
+		}
 		
 		if (transpose) {
 			
