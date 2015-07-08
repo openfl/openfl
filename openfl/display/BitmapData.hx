@@ -1645,38 +1645,33 @@ class BitmapData implements IBitmapDrawable {
 
 		if (Std.is (source, DisplayObject)) {
 
-			var surface = CairoSurface.createForData (
-				this.__image.data.buffer.__getNativePointer (),
-				CairoFormat.ARGB32,
-				this.width, this.height,
-				this.width * 4
-			);
+			var surface = CairoSurface.fromImage (this.__image);
 			var cairo = new Cairo (surface);
 			var renderer = new CairoRenderer (this.width, this.height, cairo);
-			{
-				var object:DisplayObject = cast (source);
-				var prevTransform = object.__worldTransform;
-				var prevColorTransform = object.__worldColorTransform;
-				var prevWorldTransformDirty = DisplayObject.__worldTransformDirty;
 
-				// TODO(james4k): blendMode, clipRect, smoothing
+			var object:DisplayObject = cast (source);
+			var prevTransform = object.__worldTransform;
+			var prevColorTransform = object.__worldColorTransform;
+			var prevWorldTransformDirty = DisplayObject.__worldTransformDirty;
 
-				DisplayObject.__worldTransformDirty = 0;
-				object.__worldTransform = matrix != null ? matrix : new Matrix ();
-				object.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
-				object.__updateChildren (false);
-				object.__transformDirty = false;
+			// TODO(james4k): blendMode, clipRect, smoothing
 
-				renderer.renderDisplayObject (object);
+			DisplayObject.__worldTransformDirty = 0;
+			object.__worldTransform = matrix != null ? matrix : new Matrix ();
+			object.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
+			object.__updateChildren (false);
+			object.__transformDirty = false;
 
-				DisplayObject.__worldTransformDirty = prevWorldTransformDirty;
-				object.__worldTransform = prevTransform;
-				object.__worldColorTransform = prevColorTransform;
-				// TODO(james4k): we need to restore all of the children's
-				// dirty state to match prevWorldTransformDirty.. probably
-				object.__updateChildren (true);
-				object.__transformDirty = true;
-			}
+			renderer.renderDisplayObject (object);
+
+			DisplayObject.__worldTransformDirty = prevWorldTransformDirty;
+			object.__worldTransform = prevTransform;
+			object.__worldColorTransform = prevColorTransform;
+			// TODO(james4k): we need to restore all of the children's
+			// dirty state to match prevWorldTransformDirty.. probably
+			object.__updateChildren (true);
+			object.__transformDirty = true;
+
 			surface.destroy ();
 			cairo.destroy ();
 
@@ -1689,19 +1684,8 @@ class BitmapData implements IBitmapDrawable {
 				return;
 			}
 
-			var surface = CairoSurface.createForData (
-				this.__image.data.buffer.__getNativePointer (),
-				CairoFormat.ARGB32,
-				this.width, this.height,
-				this.width * 4
-			);
-			
-			var sourceSurface = CairoSurface.createForData (
-				sourceBitmap.__image.data.buffer.__getNativePointer (),
-				CairoFormat.ARGB32,
-				sourceBitmap.width, sourceBitmap.height,
-				sourceBitmap.width * 4
-			);
+			var surface = CairoSurface.fromImage (this.__image);
+			var sourceSurface = CairoSurface.fromImage (sourceBitmap.__image);
 
 			var cairo = new Cairo (surface);
 
