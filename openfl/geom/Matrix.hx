@@ -701,10 +701,8 @@ class Matrix {
 	 */
 	public function translate (dx:Float, dy:Float) {
 		
-		var m = new Matrix ();
-		m.tx = dx;
-		m.ty = dy;
-		this.concat (m);
+		tx += dx;
+		ty += dy;
 		
 	}
 	
