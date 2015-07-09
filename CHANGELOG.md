@@ -1,3 +1,16 @@
+3.1.2 (07/09/2015)
+------------------
+
+* Improved Assets.load* to be asynchronous on native platforms
+* Improved URLLoader to be asynchronous on native platforms
+* Improved Loader to be asynchronous on native platforms
+* Improved scrollRect support in canvas and GL renderers
+* Fixed TextField bounds calculations in the Cairo renderer
+* Fixed over-multiplication of text in the Cairo renderer
+* Improved Loader to not be picky about file extensions (legacy)
+* Fixed support for hxscout (legacy)
+
+
 3.1.1 (07/02/2015)
 ------------------
 
