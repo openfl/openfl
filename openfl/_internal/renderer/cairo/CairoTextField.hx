@@ -674,7 +674,7 @@ class CairoTextField {
 		#if lime_cairo
 		if (!textField.__dirty) return;
 		
-		var bounds = textField.getBounds (null);
+		var bounds = textField.bounds;
 		var format = textField.getTextFormat ();
 		
 		var graphics = textField.__graphics;
@@ -703,7 +703,7 @@ class CairoTextField {
 			bitmap.__bgra = true;
 			
 			graphics.__bitmap = bitmap;
-			graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
+			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 			
 			cairo = graphics.__cairo;
 			
