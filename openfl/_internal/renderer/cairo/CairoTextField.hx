@@ -696,6 +696,7 @@ class CairoTextField {
 		if (cairo == null) {
 			
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
+			bitmap.__image.buffer.premultiplied = true;
 			var surface = CairoSurface.fromImage (bitmap.__image);
 			graphics.__cairo = new Cairo (surface);
 			surface.destroy ();
