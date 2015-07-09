@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "3.1.1",
-	"releasenote": "TextField improvements, better EventDispatcher behavior and other fixes",
+	"version": "3.1.2",
+	"releasenote": "Improved use of async actions, improved scrollRect, Cairo fixes",
 	"contributors": [ "singmajesty" ]
 }
