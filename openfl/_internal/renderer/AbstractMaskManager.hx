@@ -41,5 +41,11 @@ class AbstractMaskManager {
 		
 	}
 	
+	public function popRect ():Void {
+		
+		
+		
+	}
+	
 	
 }

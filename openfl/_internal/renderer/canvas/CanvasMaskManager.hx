@@ -28,7 +28,7 @@ class CanvasMaskManager extends AbstractMaskManager {
 		//var cacheAlpha = mask.__worldAlpha;
 		var transform = mask.__getTransform ();
 		
-		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+		context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 		
 		context.beginPath ();
 		mask.__renderCanvasMask (renderSession);
@@ -45,7 +45,7 @@ class CanvasMaskManager extends AbstractMaskManager {
 		var context = renderSession.context;
 		context.save ();
 		
-		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
+		context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 		
 		context.beginPath ();
 		context.rect (rect.x, rect.y, rect.width, rect.height);
@@ -55,6 +55,12 @@ class CanvasMaskManager extends AbstractMaskManager {
 	
 	
 	public override function popMask ():Void {
+		
+		renderSession.context.restore ();
+		
+	}
+	
+	override public function popRect():Void {
 		
 		renderSession.context.restore ();
 		

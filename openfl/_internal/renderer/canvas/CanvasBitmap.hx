@@ -20,6 +20,16 @@ class CanvasBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
+			context.globalAlpha = bitmap.__worldAlpha;
+			var transform = bitmap.__renderMatrix;
+			var scrollRect = bitmap.scrollRect;
+			
+			if (scrollRect != null) {
+				
+				renderSession.maskManager.pushRect (scrollRect, transform);
+				
+			}
+			
 			if (bitmap.__mask != null) {
 				
 				renderSession.maskManager.pushMask (bitmap.__mask);
@@ -27,10 +37,6 @@ class CanvasBitmap {
 			}
 			
 			bitmap.bitmapData.__sync ();
-			
-			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__worldTransform;
-			var scrollRect = bitmap.scrollRect;
 			
 			if (renderSession.roundPixels) {
 				
@@ -50,15 +56,7 @@ class CanvasBitmap {
 				
 			}
 			
-			if (scrollRect == null) {
-				
-				context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
-				
-			} else {
-				
-				context.drawImage (bitmap.bitmapData.__image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-				
-			}
+			context.drawImage (bitmap.bitmapData.__image.src, 0, 0);
 			
 			if (!bitmap.smoothing) {
 				
@@ -71,6 +69,12 @@ class CanvasBitmap {
 			if (bitmap.__mask != null) {
 				
 				renderSession.maskManager.popMask ();
+				
+			}
+			
+			if (scrollRect != null) {
+				
+				renderSession.maskManager.popRect ();
 				
 			}
 			
