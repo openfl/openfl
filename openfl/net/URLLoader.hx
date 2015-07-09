@@ -2,6 +2,7 @@ package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
 
 
 import lime.app.Event;
+import lime.system.BackgroundWorker;
 import lime.utils.ByteArray;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -599,30 +600,41 @@ class URLLoader extends EventDispatcher {
 		CURLEasy.setopt (__curl, CONNECTTIMEOUT, 30);
 		CURLEasy.setopt (__curl, TRANSFERTEXT, dataFormat == BINARY ? 0 : 1);
 		
-		var result = CURLEasy.perform (__curl);
-		var responseCode = CURLEasy.getinfo (__curl, RESPONSE_CODE);
-		
-		if (result == CURLCode.OK) {
+		var worker = new BackgroundWorker ();
+		worker.doWork.add (function (_) {
 			
-			/*
-			switch(dataFormat) {
-				case BINARY: this.data = __data;
-				default: this.data = __data.asString();
+			var result = CURLEasy.perform (__curl);
+			worker.onComplete.dispatch (result);
+			
+		});
+		worker.onComplete.add (function (result) {
+			
+			var responseCode = CURLEasy.getinfo (__curl, RESPONSE_CODE);
+			
+			if (result == CURLCode.OK) {
+				
+				/*
+				switch(dataFormat) {
+					case BINARY: this.data = __data;
+					default: this.data = __data.asString();
+				}
+				*/
+				this.data = __data;
+				
+				onStatus (Std.parseInt (responseCode));
+				
+				var evt = new Event (Event.COMPLETE);
+				evt.currentTarget = this;
+				dispatchEvent (evt);
+				
+			} else {
+				
+				onError ("Problem with curl: " + result);
+				
 			}
-			*/
-			this.data = __data;
 			
-			onStatus (Std.parseInt (responseCode));
-			
-			var evt = new Event (Event.COMPLETE);
-			evt.currentTarget = this;
-			dispatchEvent (evt);
-			
-		} else {
-			
-			onError ("Problem with curl: " + result);
-			
-		}
+		});
+		worker.run ();
 		
 	}
 	
