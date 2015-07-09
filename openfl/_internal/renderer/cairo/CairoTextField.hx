@@ -674,7 +674,7 @@ class CairoTextField {
 		#if lime_cairo
 		if (!textField.__dirty) return;
 		
-		var bounds = textField.getBounds (null);
+		var bounds = textField.bounds;
 		var format = textField.getTextFormat ();
 		
 		var graphics = textField.__graphics;
@@ -696,6 +696,7 @@ class CairoTextField {
 		if (cairo == null) {
 			
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
+			bitmap.__image.buffer.premultiplied = true;
 			var surface = CairoSurface.fromImage (bitmap.__image);
 			graphics.__cairo = new Cairo (surface);
 			surface.destroy ();
@@ -703,7 +704,7 @@ class CairoTextField {
 			bitmap.__bgra = true;
 			
 			graphics.__bitmap = bitmap;
-			graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
+			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 			
 			cairo = graphics.__cairo;
 			

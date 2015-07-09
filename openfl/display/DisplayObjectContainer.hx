@@ -814,7 +814,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -853,7 +853,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			renderSession.maskManager.pushRect (scrollRect, __renderMatrix);
 			
 		}
 		
@@ -879,7 +879,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -1017,22 +1017,16 @@ class DisplayObjectContainer extends InteractiveObject {
 		var clipRect = null;
 		
 		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			var m = __worldTransform.clone();
-			@:privateAccess GLBitmap.flipMatrix(m, renderSession.renderer.viewPort.height);
-			clipRect = scrollRect.transform(m);
 			
-			renderSession.spriteBatch.start(clipRect);
+			renderSession.maskManager.pushRect(scrollRect, __renderMatrix);
+			
 		}
-		
 		
 		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
 		
 		if (masked) {
 			
-			renderSession.spriteBatch.stop ();
 			renderSession.maskManager.pushMask (this);
-			renderSession.spriteBatch.start (clipRect);
 			
 		}
 		
@@ -1046,17 +1040,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (masked) {
 			
-			renderSession.spriteBatch.stop ();
-			//renderSession.maskManager.popMask (this);
 			renderSession.maskManager.popMask ();
-			renderSession.spriteBatch.start ();
 			
 		}
 		
 		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			renderSession.spriteBatch.start();
+			
+			renderSession.maskManager.popRect ();
+			
 		}
+		
+		
 		
 		__removedChildren = [];
 		

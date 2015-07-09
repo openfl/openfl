@@ -27,17 +27,23 @@ class CanvasShape {
 			
 			if (graphics.__canvas != null) {
 				
+				var context = renderSession.context;
+				var scrollRect = shape.scrollRect;
+				
+				context.globalAlpha = shape.__worldAlpha;
+				var transform = shape.__renderMatrix;
+				
+				if (scrollRect != null) {
+					
+					renderSession.maskManager.pushRect (scrollRect, transform);
+					
+				}
+				
 				if (shape.__mask != null) {
 					
 					renderSession.maskManager.pushMask (shape.__mask);
 					
 				}
-				
-				var context = renderSession.context;
-				var scrollRect = shape.scrollRect;
-				
-				context.globalAlpha = shape.__worldAlpha;
-				var transform = shape.__worldTransform;
 				
 				if (renderSession.roundPixels) {
 					
@@ -49,31 +55,17 @@ class CanvasShape {
 					
 				}
 				
-				if (scrollRect == null) {
-					
-					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
-					
-				} else {
-					
-					//cairo.rectangle ( Math.round( graphics.__bounds.x + scrollRect.x ), Math.round( graphics.__bounds.y + scrollRect.y ), scrollRect.width, scrollRect.height);
-					
-					context.drawImage ( 
-						graphics.__canvas, 
-						Math.ceil( graphics.__bounds.x + scrollRect.x ), 
-						Math.ceil( graphics.__bounds.y  + scrollRect.y ), 
-						scrollRect.width, scrollRect.height,
-						Math.ceil( graphics.__bounds.x + scrollRect.x ), 
-						Math.ceil( graphics.__bounds.y + scrollRect.y ), 
-						scrollRect.width, scrollRect.height
-					);
-					
-					//context.drawImage (gra graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
-					
-				}
+				context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
 				
 				if (shape.__mask != null) {
 					
 					renderSession.maskManager.popMask ();
+					
+				}
+				
+				if (scrollRect != null) {
+					
+					renderSession.maskManager.popRect ();
 					
 				}
 				

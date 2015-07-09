@@ -763,24 +763,24 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformX (x:Float, y:Float):Float {
+	@:noCompletion public inline function __transformX (px:Float, py:Float):Float {
 		
-		return x * a + y * c + tx;
-		
-	}
-	
-	
-	@:noCompletion public inline function __transformY (x:Float, y:Float):Float {
-		
-		return x * b + y * d + ty;
+		return px * a + py * c + tx;
 		
 	}
 	
 	
-	@:noCompletion public inline function __translateTransformed (x:Float, y:Float):Void {
+	@:noCompletion public inline function __transformY (px:Float, py:Float):Float {
 		
-		tx = __transformX (x, y);
-		ty = __transformY (x, y);
+		return px * b + py * d + ty;
+		
+	}
+	
+	
+	@:noCompletion public inline function __translateTransformed (px:Float, py:Float):Void {
+		
+		tx = __transformX (px, py);
+		ty = __transformY (px, py);
 		
 		//__cleanValues ();
 		
