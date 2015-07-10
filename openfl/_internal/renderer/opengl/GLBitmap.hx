@@ -119,7 +119,6 @@ class GLBitmap {
 		}
 		
 		var ctCache = source.__worldColorTransform;
-		var matrixCache = source.__worldTransform;
 		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
 		
@@ -127,11 +126,11 @@ class GLBitmap {
 		
 		GLBitmap.flipMatrix (m, viewPort.height);
 		
-		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
 		DisplayObject.__cacheAsBitmapMode = true;
 		
+		source.__updateMatrices(m);
 		source.__updateChildren (false);
 		
 		source.__cacheAsBitmap = false;
@@ -139,10 +138,10 @@ class GLBitmap {
 		source.__cacheAsBitmap = cached;
 		
 		source.__worldColorTransform = ctCache;
-		source.__worldTransform = matrixCache;
 		source.__blendMode = blendModeCache;
 		DisplayObject.__cacheAsBitmapMode = false;
 		
+		source.__updateMatrices();
 		source.__updateChildren (false);
 	}
 	
@@ -209,6 +208,7 @@ class GLBitmap {
 		m.translate (0, height);
 		m.tx += tx;
 		m.ty -= ty;
+		
 		
 	}
 	

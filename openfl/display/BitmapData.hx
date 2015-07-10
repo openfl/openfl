@@ -1622,6 +1622,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+		
 	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
 		
 		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
@@ -1871,6 +1872,17 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null):Void {
+		
+		if (overrideTransform == null) {
+			__worldTransform.identity();
+		} else {
+			__worldTransform = overrideTransform;
 		}
 		
 	}

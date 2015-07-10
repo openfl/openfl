@@ -39,27 +39,25 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (rect == null) return;
 		
-		
-		var clip:Rectangle = rect.transform (transform.clone());
+		var m = transform.clone();
 		// correct coords from top-left (OpenFL) to bottom-left (GL)
-		clip.y = renderSession.renderer.height - clip.y - clip.height;
+		@:privateAccess GLBitmap.flipMatrix(m, renderSession.renderer.viewPort.height);
+		var clip:Rectangle = rect.transform (m);
 		
-		var restartBatch = false;
-		
-		if (currentClip == null || currentClip.containsRect(clip)) {
-			restartBatch = true;
-		} else if (currentClip.intersects(clip)) {
-			restartBatch = true;
+		if (currentClip != null && currentClip.intersects(clip)) {
 			clip = currentClip.intersection(clip);
 		}
+		
+		var same = currentClip != null && currentClip.equals(clip);
 		
 		clips.push(clip);
 		currentClip = clip;			
 		
-		if (restartBatch) {
+		if (!same) {
 			renderSession.spriteBatch.stop ();
-			renderSession.spriteBatch.start (clip);
+			renderSession.spriteBatch.start (currentClip);			
 		}
+
 		
 	}
 	

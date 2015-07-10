@@ -1007,7 +1007,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
 			local.invert();
 			local.__translateTransformed(x, y);
-			local.concat(__worldTransform);
+			local.concat(__renderMatrix);
 			
             renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 			

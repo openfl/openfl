@@ -1076,25 +1076,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getLocalMatrix () {
 		
-		if (__transformDirty) {
+		if (rotation != __rotationCache) {
 			
-			if (rotation != __rotationCache) {
-				
-				__rotationCache = rotation;
-				var radians = rotation * (Math.PI / 180);
-				__rotationSine = Math.sin (radians);
-				__rotationCosine = Math.cos (radians);
-				
-			}
-			
-			__localMatrix.a = __rotationCosine * scaleX;
-			__localMatrix.c = -__rotationSine * scaleY;
-			__localMatrix.b = __rotationSine * scaleX;
-			__localMatrix.d = __rotationCosine * scaleY;
-			__localMatrix.tx = x;
-			__localMatrix.ty = y;
+			__rotationCache = rotation;
+			var radians = rotation * (Math.PI / 180);
+			__rotationSine = Math.sin (radians);
+			__rotationCosine = Math.cos (radians);
 			
 		}
+		
+		__localMatrix.a = __rotationCosine * scaleX;
+		__localMatrix.c = -__rotationSine * scaleY;
+		__localMatrix.b = __rotationSine * scaleX;
+		__localMatrix.d = __rotationCosine * scaleY;
+		__localMatrix.tx = x;
+		__localMatrix.ty = y;
 		
 		return __localMatrix;
 		
@@ -1299,33 +1295,56 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
-	
-	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null) {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		//if (!__renderable && !__isMask) return;
+		var overrided = overrideTransform != null;
 		
-		__worldTransform.identity();
-		__worldTransform.concat(__getLocalMatrix());
+		__getLocalMatrix();
+		
+		if (!overrided) {
+			
+			__worldTransform.identity ();
+			__worldTransform.concat (__localMatrix);
+			
+		} else {
+			
+			__worldTransform = overrideTransform;
+			
+		}
 		
 		__scrollRectMatrix.identity();
-		if (__scrollRect != null) {
-			var m = __worldTransform.clone();
-			if (parent != null) {
-				m.concat(parent.__worldTransform);
-			}
-			m.tx = 0;
-			m.ty = 0;
-			var sr = __scrollRect.transform(m);
-			__scrollRectMatrix.__translateTransformed( -sr.x, -sr.y);
-		}
 		
 		if (parent != null) {
 			__worldTransform.concat(parent.__worldTransform);
 			__scrollRectMatrix.concat(parent.__scrollRectMatrix);
 		}
 		
+		if (__scrollRect != null) {
+			
+			var m = overrided ? new Matrix() : __localMatrix.clone();
+			
+			var sr = __scrollRect.transform(m);
+			
+			if (overrided) {
+				__scrollRectMatrix.__translateTransformed( -sr.x, sr.y);
+			} else {
+				__scrollRectMatrix.__translateTransformed( -sr.x, -sr.y);
+			}
+			
+			__scrollRectMatrix.__translateTransformed( m.tx, m.ty);
+			
+		}
+		
 		__renderMatrix = __worldTransform.mult(__scrollRectMatrix);
+		
+	}
+	
+	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+		
+		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
+		//if (!__renderable && !__isMask) return;
+		
+		__updateMatrices();
 		
 		if (updateChildren && __transformDirty) {
 			
