@@ -1684,21 +1684,22 @@ class BitmapData implements IBitmapDrawable {
 		
 		__flipMatrix (m);
 		
-		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
 		source.__cacheAsBitmap = false;
 		
+		source.__updateMatrices (m);
 		source.__updateChildren (false);
 		
 		source.__renderGL (renderSession);
 		
+		
 		source.__worldColorTransform = ctCache;
-		source.__worldTransform = matrixCache;
 		source.__blendMode = blendModeCache;
 		source.__cacheAsBitmap = cached;
 		
-		source.__updateChildren (true);
+		source.__updateMatrices ();
+		source.__updateChildren (false);
 		
 		spritebatch.finish ();
 		
@@ -1988,6 +1989,17 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null):Void {
+		
+		if (overrideTransform == null) {
+			__worldTransform.identity();
+		} else {
+			__worldTransform = overrideTransform;
 		}
 		
 	}

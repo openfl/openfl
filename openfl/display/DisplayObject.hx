@@ -1055,25 +1055,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function __getLocalMatrix () {
 		
-		if (__transformDirty) {
+		if (rotation != __rotationCache) {
 			
-			if (rotation != __rotationCache) {
-				
-				__rotationCache = rotation;
-				var radians = rotation * (Math.PI / 180);
-				__rotationSine = Math.sin (radians);
-				__rotationCosine = Math.cos (radians);
-				
-			}
-			
-			__localMatrix.a = __rotationCosine * scaleX;
-			__localMatrix.c = -__rotationSine * scaleY;
-			__localMatrix.b = __rotationSine * scaleX;
-			__localMatrix.d = __rotationCosine * scaleY;
-			__localMatrix.tx = x;
-			__localMatrix.ty = y;
+			__rotationCache = rotation;
+			var radians = rotation * (Math.PI / 180);
+			__rotationSine = Math.sin (radians);
+			__rotationCosine = Math.cos (radians);
 			
 		}
+		
+		__localMatrix.a = __rotationCosine * scaleX;
+		__localMatrix.c = -__rotationSine * scaleY;
+		__localMatrix.b = __rotationSine * scaleX;
+		__localMatrix.d = __rotationCosine * scaleY;
+		__localMatrix.tx = x;
+		__localMatrix.ty = y;
 		
 		return __localMatrix;
 		
@@ -1277,14 +1273,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
-	
-	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null) {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		//if (!__renderable && !__isMask) return;
-		
-		__worldTransform.identity();
-		__worldTransform.concat(__getLocalMatrix());
+		if (overrideTransform == null) {
+			
+			__worldTransform.identity ();
+			__worldTransform.concat (__getLocalMatrix());
+			
+		} else {
+			
+			__worldTransform = overrideTransform;
+			
+		}
 		
 		__scrollRectMatrix.identity();
 		if (__scrollRect != null) {
@@ -1304,6 +1304,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		}
 		
 		__renderMatrix = __worldTransform.mult(__scrollRectMatrix);
+		
+	}
+	
+	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+		
+		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
+		//if (!__renderable && !__isMask) return;
+		
+		__updateMatrices();
 		
 		if (updateChildren && __transformDirty) {
 			
