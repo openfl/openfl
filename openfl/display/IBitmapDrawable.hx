@@ -20,6 +20,7 @@ interface IBitmapDrawable {
 	function __renderCanvasMask (renderSession:RenderSession):Void;
 	function __renderGL (renderSession:RenderSession):Void;
 	function __updateChildren (transformOnly:Bool):Void;
+	function __updateMatrices (?overrideTransform:Matrix = null):Void;
 	
 	function __updateMask (maskGraphics:Graphics):Void;
 	
