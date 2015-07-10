@@ -39,8 +39,9 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	private static var loaded = 0;
 	private static var loading = 0;
-	private static var threadQueue = new Deque<Dynamic> ();
-	private static var threadTag = "__RESULT__";
+	private static var workerIncomingQueue = new Deque<Dynamic> ();
+	private static var workerResult = new Deque<Dynamic> ();
+	private static var workerThread:Thread;
 	
 	public var className (default, null) = new Map <String, Dynamic> ();
 	public var path (default, null) = new Map <String, String> ();
@@ -381,19 +382,42 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
+	private static function __doWork ():Void {
+		
+		while (true) {
+			
+			var message = workerIncomingQueue.pop (true);
+			
+			if (message == "WORK") {
+				
+				var getMethod = workerIncomingQueue.pop (true);
+				var id = workerIncomingQueue.pop (true);
+				var handler = workerIncomingQueue.pop (true);
+				
+				var data = getMethod (id);
+				workerResult.add ("RESULT");
+				workerResult.add (data);
+				workerResult.add (handler);
+				
+			} else if (message == "EXIT") {
+				
+				break;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private inline function __load<T> (getMethod:String->T, id:String, handler:T->Void):Void {
 		
-		loading++;
+		workerIncomingQueue.add ("WORK");
+		workerIncomingQueue.add (getMethod);
+		workerIncomingQueue.add (id);
+		workerIncomingQueue.add (handler);
 		
-		var thread = Thread.create (function () {
-			
-			var data = getMethod (id);
-			
-			threadQueue.add (threadTag);
-			threadQueue.add (data);
-			threadQueue.add (handler);
-			
-		});
+		loading++;
 		
 	}
 	
@@ -402,24 +426,37 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		if (loading > loaded) {
 			
-			var message = threadQueue.pop (false);
-			
-			if (message != null) {
+			if (workerThread == null) {
 				
-				if (message == threadTag) {
+				workerThread = Thread.create (__doWork);
+				
+			}
+			
+			var message = workerResult.pop (false);
+			
+			while (message == "RESULT") {
+				
+				loaded++;
+				
+				var data = workerResult.pop (true);
+				var handler = workerResult.pop (true);
+				
+				if (handler != null) {
 					
-					loaded++;
-					
-					var data = threadQueue.pop (false);
-					var handler = threadQueue.pop (false);
-					
-					if (handler != null) {
-						
-						handler (data);
-						
-					}
+					handler (data);
 					
 				}
+				
+				message = workerResult.pop (false);
+				
+			}
+			
+		} else {
+			
+			if (workerThread != null) {
+				
+				workerIncomingQueue.add ("EXIT");
+				workerThread = null;
 				
 			}
 			
