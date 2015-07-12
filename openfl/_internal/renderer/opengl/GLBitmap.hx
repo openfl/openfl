@@ -3,6 +3,7 @@ package openfl._internal.renderer.opengl;
 
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
+import openfl._internal.renderer.opengl.utils.GLMaskManager;
 import openfl._internal.renderer.opengl.utils.PingPongTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
@@ -64,6 +65,9 @@ class GLBitmap {
 		
 		texture.resize(width, height);
 		renderer.transparent = transparent;
+		
+		// save mask state
+		renderSession.maskManager.saveState();
 		
 		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.framebuffer);
 		renderer.setViewport (x, y, width, height);
@@ -143,6 +147,7 @@ class GLBitmap {
 		
 		source.__updateMatrices();
 		source.__updateChildren (false);
+		
 	}
 	
 	/**
@@ -196,6 +201,10 @@ class GLBitmap {
 		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : data.texture.framebuffer);
 		renderSession.renderer.setViewport (x, y, width, height);
 		renderSession.renderer.transparent = data.transparent;
+		
+		// restore mask state
+		renderSession.maskManager.restoreState();
+		
 	}
 	
 	private static inline function flipMatrix (m:Matrix, height:Float):Void {

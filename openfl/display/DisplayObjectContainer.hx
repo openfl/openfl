@@ -695,12 +695,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	@:noCompletion private override function __getRenderBounds (rect:Rectangle, getChildren:Bool):Void {
 		
-		super.__getRenderBounds(rect, true);
 		if (!getChildren) return;
 		for (child in __children) {
 			if (!child.__renderable) continue;
 			child.__getRenderBounds(rect, false);
 		}
+		
+		super.__getRenderBounds(rect, true);
 		
 	}
 	

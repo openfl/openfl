@@ -1380,8 +1380,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					__cachedBitmapBounds = new Rectangle();
 				}
 				__cachedBitmapBounds.setEmpty();
-				__getLocalBounds(__cachedBitmapBounds);
+				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
 				__getRenderBounds(__cachedBitmapBounds, true);
+				
 				// limit the bounds to the width and height of the stage
 				if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
 				if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;

@@ -16,6 +16,7 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	private var clips:Array<Rectangle>;
 	private var currentClip:Rectangle;
+	private var savedClip:Rectangle;
 	
 	
 	public function new (renderSession:RenderSession) {
@@ -90,6 +91,20 @@ class GLMaskManager extends AbstractMaskManager {
 		currentClip = clips.pop ();
 		
 		renderSession.spriteBatch.start (currentClip);
+		
+	}
+	
+	override public function saveState():Void {
+		
+		savedClip = currentClip;
+		currentClip = null;
+		
+	}
+	
+	override public function restoreState():Void {
+		
+		currentClip = savedClip;
+		savedClip = null;
 		
 	}
 	
