@@ -112,6 +112,6 @@
 		
 	</section>
 	
-	<sample path="${haxelib:openfl-samples}" if="create" />
+	<include haxelib="openfl-samples" if="create" />
 	
 </extension>
