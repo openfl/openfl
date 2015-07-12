@@ -19,25 +19,27 @@ class PingPongTexture
 	public var height:Int;
 	public var smoothing:Bool;
 	public var useOldTexture:Bool = false;
+	public var powerOfTwo:Bool = true;
 
 	private var __swapped:Bool = false;
 	private var __texture0:RenderTexture;
 	private var __texture1:RenderTexture;
 	private var __otherTexture(get, never):RenderTexture;
 	
-	public function new(gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true) {
+	public function new(gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true, powerOfTwo:Bool = true) {
 		this.gl = gl;
 		this.width = width;
 		this.height = height;
 		this.smoothing = smoothing;
+		this.powerOfTwo = powerOfTwo;
 		
-		renderTexture = new RenderTexture(gl, width, height, smoothing);
+		renderTexture = new RenderTexture(gl, width, height, smoothing, powerOfTwo);
 	}
 	
 	public function swap() {
 		__swapped = !__swapped;
 		if (renderTexture == null) {
-			renderTexture = new RenderTexture(gl, width, height, smoothing);
+			renderTexture = new RenderTexture(gl, width, height, smoothing, powerOfTwo);
 		}
 	}
 	

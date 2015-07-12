@@ -40,7 +40,7 @@ class GLBitmap {
 	 * @param	transparent
 	 * @param	clearBuffer
 	 */
-	public static function pushFramebuffer (renderSession:RenderSession, texture:PingPongTexture, viewPort:Rectangle, smoothing:Bool, ?transparent:Bool = true, ?clearBuffer:Bool = false) {
+	public static function pushFramebuffer (renderSession:RenderSession, texture:PingPongTexture, viewPort:Rectangle, smoothing:Bool, ?transparent:Bool = true, ?clearBuffer:Bool = false, ?powerOfTwo:Bool = true) {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return null;
 		
@@ -59,7 +59,7 @@ class GLBitmap {
 		}
 		
 		if (texture == null) {
-			texture = new PingPongTexture(gl, width, height, smoothing);
+			texture = new PingPongTexture(gl, width, height, smoothing, powerOfTwo);
 		}
 		
 		texture.resize(width, height);

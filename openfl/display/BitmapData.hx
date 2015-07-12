@@ -593,7 +593,7 @@ class BitmapData implements IBitmapDrawable {
 			case DATA:
 				
 				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				__drawGL (renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, true, !__usingPingPongTexture, true);
+				__drawGL (renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, true, !__usingPingPongTexture, true, false);
 				
 			default:
 				
@@ -1800,14 +1800,15 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 
-	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false) {
+	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
 		
-		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer);
+		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
 		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
 		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
 		
 		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
 		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
+		
 		__isValid = true;
 		__usingPingPongTexture = true;
 		

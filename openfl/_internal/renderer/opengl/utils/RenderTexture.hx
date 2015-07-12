@@ -18,14 +18,16 @@ class RenderTexture {
 	public var smoothing:Bool;
 	public var width:Int;
 	public var height:Int;
+	public var powerOfTwo:Bool = true;
 	
 	private var __width:Int;
 	private var __height:Int;
 	private var __uvData:TextureUvs;
 	
-	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true) {
+	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true, powerOfTwo:Bool = true) {
 		
 		this.gl = gl;
+		this.powerOfTwo = powerOfTwo;
 		
 		frameBuffer = gl.createFramebuffer ();
 		texture = gl.createTexture ();
@@ -74,10 +76,14 @@ class RenderTexture {
 		this.width = width;
 		this.height = height;
 		
-		var pow2W = powerOfTwo(width);
-		var pow2H = powerOfTwo(height);
-		//var pow2W = width;
-		//var pow2H = height;
+		var pow2W = width;
+		var pow2H = height;
+		
+		if (powerOfTwo) {
+			pow2W = powOfTwo(width);
+			pow2H = powOfTwo(height);
+		}
+
 		var lastW = __width;
 		var lastH = __height;
 		
@@ -111,7 +117,7 @@ class RenderTexture {
 		
 	}
 	
-	private inline function powerOfTwo(value:Int) {
+	private inline function powOfTwo(value:Int) {
 		var n = 1;
 		while (n < value) n <<= 1;
 		return n;
