@@ -722,7 +722,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var y (get, set):Float;
 	
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
-	@:dox(hide) @:noCompletion public var __offsetPoint:Point;
+	@:dox(hide) @:noCompletion public var __worldOffset:Point;
+	@:dox(hide) @:noCompletion public var __localOffset:Point;
 	@:dox(hide) @:noCompletion public var __localMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __renderMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
@@ -795,7 +796,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__localMatrix = new Matrix ();
-		__offsetPoint = new Point ();
+		__worldOffset = new Point ();
+		__localOffset = new Point ();
 		__renderMatrix = new Matrix ();
 		__rotationCache = 0;
 		__rotationSine = 0;
@@ -1074,6 +1076,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
+	@:noCompletion private inline function __getRenderBounds (rect:Rectangle):Void {
+		
+		__getLocalBounds(rect);
+		if (__scrollRect != null) {
+			if(__scrollRect.width < rect.width) rect.width = __scrollRect.width;
+			if(__scrollRect.height < rect.height) rect.height = __scrollRect.height;
+		}
+		
+	}
+	
 	@:noCompletion private function __getLocalMatrix () {
 		
 		if (rotation != __rotationCache) {
@@ -1309,16 +1321,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!overrided && parent != null) {
 			__worldTransform.concat(parent.__worldTransform);
-			__offsetPoint.copyFrom(parent.__offsetPoint);
+			__worldOffset.copyFrom(parent.__worldOffset);
+		} else {
+			__worldOffset.setTo(0, 0);
 		}
 		
 		if (__scrollRect != null) {
-			var offset = __worldTransform.deltaTransformPoint(__scrollRect.topLeft);
-			__offsetPoint.offset(offset.x, offset.y);
+			__localOffset = __worldTransform.deltaTransformPoint(__scrollRect.topLeft);
+			__worldOffset.offset(__localOffset.x, __localOffset.y);
+		} else {
+			__localOffset.setTo(0, 0);
 		}
 		
 		__renderMatrix.copyFrom(__worldTransform);
-		__renderMatrix.translate( -__offsetPoint.x, -__offsetPoint.y);
+		__renderMatrix.translate( -__worldOffset.x, -__worldOffset.y);
 		
 	}
 	
@@ -1363,8 +1379,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					__cachedBitmapBounds = new Rectangle();
 				}
 				__cachedBitmapBounds.setEmpty();
-				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-				//__getLocalBounds(__cachedBitmapBounds);
+				__getRenderBounds(__cachedBitmapBounds);
 				
 				if (__filters != null) {
 					if (__cachedFilterBounds == null) {

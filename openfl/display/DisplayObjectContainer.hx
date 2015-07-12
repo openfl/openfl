@@ -691,11 +691,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (scrollRect != null) {
-			var sr = scrollRect.transform(matrix);
-			rect.__contract(sr.x, sr.y, sr.width, sr.height);
-		}
-		
 	}
 	
 	
@@ -1006,8 +1001,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
 			local.invert();
-			local.__translateTransformed(x, y);
+			local.translate(x, y);
 			local.concat(__renderMatrix);
+			local.translate ( __localOffset.x, __localOffset.y);
 			
             renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 			
