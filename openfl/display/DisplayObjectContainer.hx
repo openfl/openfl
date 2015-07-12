@@ -693,6 +693,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private override function __getRenderBounds (rect:Rectangle, getChildren:Bool):Void {
+		
+		super.__getRenderBounds(rect, true);
+		if (!getChildren) return;
+		for (child in __children) {
+			if (!child.__renderable) continue;
+			child.__getRenderBounds(rect, false);
+		}
+		
+	}
+	
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
@@ -984,7 +995,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
-				m.translate ( -x, -y);
+				m.translate(-x, -y);
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
 				this.__shader = null;
@@ -1001,7 +1012,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
 			local.invert();
-			local.translate(x, y);
+			local.__translateTransformed(x, y);
 			local.concat(__renderMatrix);
 			local.translate ( __localOffset.x, __localOffset.y);
 			

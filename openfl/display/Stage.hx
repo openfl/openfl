@@ -1119,6 +1119,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 	
+	@:noCompletion private override function __getRenderBounds(rect:Rectangle, getChildren:Bool):Void {
+		rect.x = 0;
+		rect.y = 0;
+		rect.width = stageWidth;
+		rect.height = stageHeight;
+	}
+	
 	
 	@:noCompletion private function __onKey (type:String, keyCode:KeyCode, modifier:KeyModifier):Void {
 		

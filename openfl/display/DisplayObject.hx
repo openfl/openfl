@@ -1076,12 +1076,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
-	@:noCompletion private inline function __getRenderBounds (rect:Rectangle):Void {
+	@:noCompletion private function __getRenderBounds (rect:Rectangle, getChildren:Bool):Void {
 		
-		__getLocalBounds(rect);
 		if (__scrollRect != null) {
-			if(__scrollRect.width < rect.width) rect.width = __scrollRect.width;
-			if(__scrollRect.height < rect.height) rect.height = __scrollRect.height;
+			if (__scrollRect.width < rect.width) 
+				rect.width = __scrollRect.width;
+			if (__scrollRect.height < rect.height) 
+				rect.height = __scrollRect.height;
 		}
 		
 	}
@@ -1379,7 +1380,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					__cachedBitmapBounds = new Rectangle();
 				}
 				__cachedBitmapBounds.setEmpty();
-				__getRenderBounds(__cachedBitmapBounds);
+				__getLocalBounds(__cachedBitmapBounds);
+				__getRenderBounds(__cachedBitmapBounds, true);
+				// limit the bounds to the width and height of the stage
+				if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
+				if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;
 				
 				if (__filters != null) {
 					if (__cachedFilterBounds == null) {
