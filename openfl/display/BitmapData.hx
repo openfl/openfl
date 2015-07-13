@@ -596,7 +596,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				
 				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				__drawGL(renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
+				__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
 				
 				
 			default:
@@ -1671,6 +1671,7 @@ class BitmapData implements IBitmapDrawable {
 			this.__renderGL (renderSession);
 			spritebatch.stop ();
 			gl.deleteTexture (__texture);
+			__texture = null;
 			spritebatch.start (tmpRect);
 			
 		}
