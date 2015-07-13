@@ -117,7 +117,8 @@ class GLBitmap {
 			GLBitmap.flipMatrix (target.__worldTransform, viewPort.height);
 			target.__renderGL (renderSession);
 			spritebatch.stop ();
-			if(target.__texture != null) gl.deleteTexture (target.__texture);
+			if (target.__texture != null) gl.deleteTexture (target.__texture);
+			target.__texture = null;
 			spritebatch.start (tmpRect);
 			
 		}

@@ -1076,14 +1076,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
-	@:noCompletion private function __getRenderBounds (rect:Rectangle, getChildren:Bool):Void {
+	@:noCompletion private function __getRenderBounds (rect:Rectangle):Bool {
 		
 		if (__scrollRect != null) {
-			if (__scrollRect.width < rect.width) 
-				rect.width = __scrollRect.width;
-			if (__scrollRect.height < rect.height) 
-				rect.height = __scrollRect.height;
+			var m = __renderMatrix.clone ();
+			m.translate( -__scrollRect.x, -__scrollRect.y);
+			var r = __scrollRect.transform(m);
+			rect.__expand(r.x, r.y, r.width, r.height);
+			return true;
 		}
+		
+		return false;
 		
 	}
 	
@@ -1375,17 +1378,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (__cacheAsBitmap) {
 			
 			// we need to update the bounds
-			if(__updateCachedBitmap || __updateFilters) {
+			if (__updateCachedBitmap || __updateFilters) {
+				
 				if (__cachedBitmapBounds == null) {
 					__cachedBitmapBounds = new Rectangle();
 				}
 				__cachedBitmapBounds.setEmpty();
 				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-				__getRenderBounds(__cachedBitmapBounds, true);
-				
-				// limit the bounds to the width and height of the stage
-				if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
-				if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;
+				var rectBounds = new Rectangle();
+				if (__getRenderBounds(rectBounds)) {
+					__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+				}
 				
 				if (__filters != null) {
 					if (__cachedFilterBounds == null) {
@@ -1396,6 +1399,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					
 					__cachedBitmapBounds.x += __cachedFilterBounds.x;
 					__cachedBitmapBounds.y += __cachedFilterBounds.y;
+					
+					// limit the bounds to the width and height of the stage
+					if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
+					if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;
 				}
 				
 			}

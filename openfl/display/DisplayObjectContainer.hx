@@ -693,7 +693,45 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
-	@:noCompletion private override function __getRenderBounds (rect:Rectangle, getChildren:Bool):Void {
+	@:noCompletion private override function __getRenderBounds (rect:Rectangle):Bool {
+		
+		if (super.__getRenderBounds(rect)) {
+			return true;
+		}
+		
+		if (__children.length == 0) return false;
+		
+		var matrixCache = null;
+		
+		matrixCache = __worldTransform;
+		__worldTransform = @:privateAccess Matrix.__identity;
+		__updateChildren (true);
+
+		var bounds = new Rectangle();
+		var rectBounds = new Rectangle();
+		var r = false;
+		for (child in __children) {
+			bounds.setEmpty();
+			child.__getBounds(bounds, child.__worldTransform);
+			
+			if(child.__renderable) {
+				rectBounds.setEmpty();
+				if (child.__getRenderBounds(rectBounds)) {
+					bounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+					r = true;
+				}
+			}
+			
+			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+			
+		}
+		
+		__worldTransform = matrixCache;
+		__updateChildren (true);
+		
+		return r;
+		
+		/*
 		
 		if (!getChildren) return;
 		for (child in __children) {
@@ -702,6 +740,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		super.__getRenderBounds(rect, true);
+		*/
 		
 	}
 	
@@ -996,7 +1035,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				// we need to position the drawing origin to 0,0 in the texture
 				var m = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
-				m.translate(-x, -y);
+				m.translate( -x, -y);
 				// we disable the container shader, it will be applied to the final texture
 				var shader = __shader;
 				this.__shader = null;
