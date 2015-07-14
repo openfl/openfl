@@ -1256,7 +1256,9 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public function scroll (x:Int, y:Int):Void {
 		
-		openfl.Lib.notImplemented ("BitmapData.scroll");
+		if (!__isValid) return;
+		__image.scroll (x, y);
+		__usingFramebuffer = false;
 		
 	}
 	
