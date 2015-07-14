@@ -1,3 +1,13 @@
+3.1.3 (07/13/2015)
+------------------
+
+* Added support for bitmapData.scroll
+* Updated to support newer openfl-samples
+* Updated to include a default project icon
+* Fixed a regression in bitmapData.draw
+* Improved Assets.load* to share one background thread (legacy)
+
+
 3.1.2 (07/09/2015)
 ------------------
 
