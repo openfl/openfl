@@ -46,7 +46,7 @@ class JoystickEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[JoystickEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " device=" + device + " id=" + id + " x=" + x + " y=" + y + " z=" + z + "]";
+		return "[JoystickEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " device=" + device + " id=" + id + " x=" + x + " y=" + y + " z=" + z + "]";
 		
 	}
 	

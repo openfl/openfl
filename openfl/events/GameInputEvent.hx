@@ -50,7 +50,7 @@ class GameInputEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[GameInputEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " device=" + device + "]";
+		return "[GameInputEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " device=" + device + "]";
 		
 	}
 	

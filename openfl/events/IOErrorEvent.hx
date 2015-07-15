@@ -61,7 +61,7 @@ class IOErrorEvent extends ErrorEvent {
 	
 	public override function toString ():String {
 		
-		return "[IOErrorEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
+		return "[IOErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
 		
 	}
 	

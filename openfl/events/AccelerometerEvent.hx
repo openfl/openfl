@@ -99,7 +99,7 @@ class AccelerometerEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[AccelerometerEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " timestamp=" + timestamp + " accelerationX=" + accelerationX + " accelerationY=" + accelerationY + " accelerationZ=" + accelerationZ + "]";
+		return "[AccelerometerEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " timestamp=" + timestamp + " accelerationX=" + accelerationX + " accelerationY=" + accelerationY + " accelerationZ=" + accelerationZ + "]";
 		
 	}
 	

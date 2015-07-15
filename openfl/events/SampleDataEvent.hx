@@ -33,7 +33,7 @@ class SampleDataEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[SampleDataEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		return "[SampleDataEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
 		
 	}
 	
