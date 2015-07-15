@@ -6,6 +6,7 @@ import haxe.Utf8;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.cairo.CairoFontOptions;
+import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
 import lime.system.System;
 import lime.text.TextLayout;
@@ -682,7 +683,7 @@ class CairoTextField {
 		
 		if (cairo != null) {
 			
-			var surface = cairo.target;
+			var surface:CairoImageSurface = cast cairo.target;
 			
 			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
 				
@@ -697,7 +698,7 @@ class CairoTextField {
 			
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
 			bitmap.__image.buffer.premultiplied = true;
-			var surface = CairoSurface.fromImage (bitmap.__image);
+			var surface = CairoImageSurface.fromImage (bitmap.__image);
 			graphics.__cairo = new Cairo (surface);
 			surface.destroy ();
 			

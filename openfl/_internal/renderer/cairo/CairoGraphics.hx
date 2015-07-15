@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
@@ -926,7 +927,7 @@ class CairoGraphics {
 			
 			if (graphics.__cairo != null) {
 				
-				var surface = graphics.__cairo.target;
+				var surface:CairoImageSurface = cast graphics.__cairo.target;
 				
 				if (bounds.width != surface.width || bounds.height != surface.height) {
 					
@@ -941,7 +942,7 @@ class CairoGraphics {
 				
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
 				bitmap.__image.buffer.premultiplied = true;
-				var surface = CairoSurface.fromImage (bitmap.__image);
+				var surface = CairoImageSurface.fromImage (bitmap.__image);
 				graphics.__cairo = new Cairo (surface);
 				surface.destroy ();
 				

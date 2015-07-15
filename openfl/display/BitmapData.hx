@@ -1,7 +1,9 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
+import lime.graphics.cairo.Cairo;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
@@ -590,13 +592,37 @@ class BitmapData implements IBitmapDrawable {
 				
 				buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 				#end
+				__image.dirty = true;
 				
 			case DATA:
 				
+				//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
+				//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
 				
-				var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
+				var buffer = __image.buffer;
+				var surface:CairoImageSurface = cast getSurface ();
+				var cairo = new Cairo (surface);
 				
+				var renderSession = new RenderSession ();
+				renderSession.cairo = cairo;
+				renderSession.roundPixels = true;
+				
+				source.__updateMatrices (matrix);
+				source.__updateChildren (false);
+				source.__renderCairo (renderSession);
+				source.__updateMatrices ();
+				source.__updateChildren (true);
+				
+				var data = ByteArray.__fromNativePointer (surface.data, surface.stride * surface.height);
+				buffer.data = new UInt8Array (data);
+				buffer.premultiplied = true;
+				buffer.format = BGRA;
+				
+				// TODO: Improve RGBA/premultiplied support so we do not need to convert
+				
+				__image.format = RGBA;
+				__image.premultiplied = false;
+				__image.dirty = true;
 				
 			default:
 				
@@ -926,7 +952,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			__surfaceImage.format = BGRA;
 			__surfaceImage.premultiplied = true;
-			__surface = CairoSurface.fromImage (__surfaceImage);
+			__surface = CairoImageSurface.fromImage (__surfaceImage);
 			__image.dirty = false;
 			
 		}
