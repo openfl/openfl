@@ -15,7 +15,7 @@ import openfl.events.GameInputEvent;
 class GameInput extends EventDispatcher {
 	
 	
-	public static var isAvailable = true;
+	public static var isSupported = true;
 	public static var numDevices (default, null) = 0;
 	
 	private static var __devices = new Map<Gamepad, GameInputDevice> ();
