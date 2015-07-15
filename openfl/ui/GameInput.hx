@@ -47,6 +47,7 @@ class GameInput extends EventDispatcher {
 	private static function __onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		var device = __devices.get (gamepad);
+		if (device == null) return;
 		
 		if (device.enabled) {
 			
