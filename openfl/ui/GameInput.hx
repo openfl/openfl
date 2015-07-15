@@ -19,6 +19,7 @@ class GameInput extends EventDispatcher {
 	public static var numDevices (default, null) = 0;
 	
 	private static var __devices = new Map<Gamepad, GameInputDevice> ();
+	private static var __devicesIndex = new Array<Int> ();
 	private static var __instances = [];
 	
 	
@@ -33,9 +34,9 @@ class GameInput extends EventDispatcher {
 	
 	public static function getDeviceAt (index:Int):GameInputDevice {
 		
-		if (Gamepad.devices.exists (index)) {
+		if (Gamepad.devices.exists (__devicesIndex[index])) {
 			
-			return __devices.get (Gamepad.devices.get (index));
+			return __devices.get (Gamepad.devices.get (__devicesIndex[index]));
 			
 		}
 		
@@ -118,6 +119,7 @@ class GameInput extends EventDispatcher {
 		
 		var device = new GameInputDevice (gamepad.guid, gamepad.name);
 		__devices.set (gamepad, device);
+		__devicesIndex.push(gamepad.id);
 		numDevices = Lambda.count (__devices);
 		
 		for (instance in __instances) {
@@ -136,6 +138,12 @@ class GameInput extends EventDispatcher {
 		if (device != null) {
 			
 			__devices.remove (gamepad);
+			for (i in 0...__devicesIndex.length) {
+				if (__devicesIndex[i] == device.id) {
+					__devicesIndex.splice(i,1);
+					break;
+				}
+			}
 			numDevices = Lambda.count (__devices);
 			
 			for (instance in __instances) {
