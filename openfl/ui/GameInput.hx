@@ -116,7 +116,7 @@ class GameInput extends EventDispatcher {
 	
 	private static function __onGamepadConnect (gamepad:Gamepad):Void {
 		
-		var device = new GameInputDevice (gamepad.guid, gamepad.name);
+		var device = new GameInputDevice (gamepad.id, gamepad.guid, gamepad.name);
 		__devices.set (gamepad, device);
 		numDevices = Lambda.count (__devices);
 		

@@ -20,7 +20,12 @@ class GameInputDevice {
 	/**
 	 * Returns the ID of this device.
 	 */
-	public var id (default, null):String;
+	public var id (default, null):Int;
+	
+	/**
+	 * Returns the GUID of this device.
+	 */
+	public var guid (default, null):String;
 	
 	/**
 	 * Returns the name of this device.
@@ -43,9 +48,10 @@ class GameInputDevice {
 	@:noCompletion private var __gamepad:Gamepad;
 	
 	
-	@:noCompletion private function new (id:String, name:String) {
+	@:noCompletion private function new (id:Int, guid:String, name:String) {
 		
 		this.id = id;
+		this.guid = guid;
 		this.name = name;
 		
 		var control;
