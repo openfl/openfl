@@ -554,83 +554,74 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		
-		switch (__image.type) {
+		#if (js && html5)
+		
+		ImageCanvasUtil.convertToCanvas (__image);
+		ImageCanvasUtil.sync (__image);
+		
+		var buffer = __image.buffer;
+		
+		var renderSession = new RenderSession ();
+		renderSession.context = cast buffer.__srcContext;
+		renderSession.roundPixels = true;
+		
+		if (!smoothing) {
 			
-			case CANVAS:
-				
-				ImageCanvasUtil.convertToCanvas (__image);
-				ImageCanvasUtil.sync (__image);
-				
-				#if (js && html5)
-				var buffer = __image.buffer;
-				
-				var renderSession = new RenderSession ();
-				renderSession.context = cast buffer.__srcContext;
-				renderSession.roundPixels = true;
-				
-				if (!smoothing) {
-					
-					untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-					untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-					untyped (buffer.__srcContext).imageSmoothingEnabled = false;
-					
-				}
-				
-				source.__updateMatrices (matrix);
-				source.__updateChildren (false);
-				source.__renderCanvas (renderSession);
-				source.__updateMatrices ();
-				source.__updateChildren (true);
-				
-				if (!smoothing) {
-					
-					untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-					untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-					untyped (buffer.__srcContext).imageSmoothingEnabled = true;
-					
-				}
-				
-				buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-				#end
-				__image.dirty = true;
-				
-			case DATA:
-				
-				#if (cpp || neko || nodejs)
-				//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-				//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
-				
-				var buffer = __image.buffer;
-				var surface:CairoImageSurface = cast getSurface ();
-				var cairo = new Cairo (surface);
-				
-				var renderSession = new RenderSession ();
-				renderSession.cairo = cairo;
-				renderSession.roundPixels = true;
-				
-				source.__updateMatrices (matrix);
-				source.__updateChildren (false);
-				source.__renderCairo (renderSession);
-				source.__updateMatrices ();
-				source.__updateChildren (true);
-				
-				var data = ByteArray.__fromNativePointer (surface.data, surface.stride * surface.height);
-				buffer.data = new UInt8Array (data);
-				buffer.premultiplied = true;
-				buffer.format = BGRA;
-				
-				// TODO: Improve RGBA/premultiplied support so we do not need to convert
-				
-				__image.format = RGBA;
-				__image.premultiplied = false;
-				__image.dirty = true;
-				#end
-				
-			default:
-				
-				// TODO
+			untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
+			untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
+			untyped (buffer.__srcContext).imageSmoothingEnabled = false;
 			
 		}
+		
+		source.__updateMatrices (matrix);
+		source.__updateChildren (false);
+		source.__renderCanvas (renderSession);
+		source.__updateMatrices ();
+		source.__updateChildren (true);
+		
+		if (!smoothing) {
+			
+			untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
+			untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
+			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
+			
+		}
+		
+		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
+		buffer.__srcImageData = null;
+		buffer.data = null;
+		
+		#else
+		
+		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
+		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
+		
+		var buffer = __image.buffer;
+		var surface:CairoImageSurface = cast getSurface ();
+		var cairo = new Cairo (surface);
+		
+		var renderSession = new RenderSession ();
+		renderSession.cairo = cairo;
+		renderSession.roundPixels = true;
+		
+		source.__updateMatrices (matrix);
+		source.__updateChildren (false);
+		source.__renderCairo (renderSession);
+		source.__updateMatrices ();
+		source.__updateChildren (true);
+		
+		var data = ByteArray.__fromNativePointer (surface.data, surface.stride * surface.height);
+		buffer.data = new UInt8Array (data);
+		buffer.premultiplied = true;
+		buffer.format = BGRA;
+		
+		// TODO: Improve RGBA/premultiplied support so we do not need to convert
+		
+		__image.format = RGBA;
+		__image.premultiplied = false;
+		__image.dirty = true;
+		
+		#end
 		
 	}
 	
