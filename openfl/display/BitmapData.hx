@@ -596,6 +596,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			case DATA:
 				
+				#if (cpp || neko || nodejs)
 				//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 				//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
 				
@@ -623,6 +624,7 @@ class BitmapData implements IBitmapDrawable {
 				__image.format = RGBA;
 				__image.premultiplied = false;
 				__image.dirty = true;
+				#end
 				
 			default:
 				
