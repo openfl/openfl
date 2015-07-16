@@ -44,10 +44,24 @@ class GameInput extends EventDispatcher {
 	}
 	
 	
+	private static function __getDevice (gamepad:Gamepad):GameInputDevice {
+		
+		if (!__devices.exists (gamepad)) {
+			
+			var device = new GameInputDevice (Std.string (gamepad.id), gamepad.name);
+			__devices.set (gamepad, device);
+			numDevices = Lambda.count (__devices);
+			
+		}
+		
+		return __devices.get (gamepad);
+		
+	}
+	
+	
 	private static function __onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		var device = __devices.get (gamepad);
-		if (device == null) return;
+		var device = __getDevice (gamepad);
 		
 		if (device.enabled) {
 			
@@ -70,7 +84,7 @@ class GameInput extends EventDispatcher {
 	
 	private static function __onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		var device = __devices.get (gamepad);
+		var device = __getDevice (gamepad);
 		
 		if (device.enabled) {
 			
@@ -93,7 +107,7 @@ class GameInput extends EventDispatcher {
 	
 	private static function __onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		var device = __devices.get (gamepad);
+		var device = __getDevice (gamepad);
 		
 		if (device.enabled) {
 			
@@ -116,9 +130,7 @@ class GameInput extends EventDispatcher {
 	
 	private static function __onGamepadConnect (gamepad:Gamepad):Void {
 		
-		var device = new GameInputDevice (gamepad.guid, gamepad.name);
-		__devices.set (gamepad, device);
-		numDevices = Lambda.count (__devices);
+		var device = __getDevice (gamepad);
 		
 		for (instance in __instances) {
 			
