@@ -4,6 +4,7 @@ package openfl._internal.renderer.cairo;
 #if cpp
 import cpp.Pointer;
 #end
+import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
@@ -68,7 +69,7 @@ class CairoBitmap {
 			if (surface != null) {
 				
 				var pattern = CairoPattern.createForSurface (surface);
-				pattern.filter = smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = bitmap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				if (scrollRect != null) {
 					
