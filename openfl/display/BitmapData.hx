@@ -575,6 +575,12 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		if (matrix != null) {
+			
+			matrix = matrix.clone ();
+			
+		}
+		
 		source.__updateMatrices (matrix);
 		source.__updateChildren (false);
 		source.__renderCanvas (renderSession);
