@@ -67,16 +67,21 @@ class CairoBitmap {
 			
 			if (surface != null) {
 				
-				cairo.setSourceSurface (surface, 0, 0);
+				var pattern = CairoPattern.createForSurface (surface);
+				pattern.filter = smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				if (scrollRect != null) {
 					
 					cairo.pushGroup ();
-					cairo.setSourceSurface (surface, 0, 0);
+					cairo.source = pattern;
 					cairo.newPath ();
 					cairo.rectangle (scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 					cairo.fill ();
 					cairo.popGroupToSource ();
+					
+				} else {
+					
+					cairo.source = pattern;
 					
 				}
 				
@@ -89,6 +94,8 @@ class CairoBitmap {
 					cairo.paintWithAlpha (bitmap.__worldAlpha);
 					
 				}
+				
+				pattern.destroy ();
 				
 			}
 			
