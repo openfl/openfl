@@ -610,7 +610,8 @@ class BitmapData implements IBitmapDrawable {
 		renderSession.cairo = cairo;
 		renderSession.roundPixels = true;
 		
-		source.__updateMatrices (matrix);
+		var m = matrix == null ? null : matrix.clone();
+		source.__updateMatrices (m);
 		source.__updateChildren (false);
 		source.__renderCairo (renderSession);
 		source.__updateMatrices ();
