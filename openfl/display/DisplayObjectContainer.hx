@@ -669,8 +669,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			matrixCache = __worldTransform;
-			__worldTransform = matrix;
+			//matrixCache = __worldTransform;
+			//__worldTransform = matrix;
+			__updateMatrices (matrix);
 			__updateChildren (true);
 			
 		}
@@ -684,7 +685,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			__worldTransform = matrixCache;
+			//__worldTransform = matrixCache;
+			__updateMatrices ();
 			__updateChildren (true);
 			
 		}
