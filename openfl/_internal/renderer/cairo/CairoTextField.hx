@@ -402,7 +402,7 @@ class CairoTextField {
 						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textField, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, LEADING);
 						case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
 						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textField.__textFormat.size);
-						case LEADING: textField.__textFormat.leading;
+						case LEADING: textField.__textFormat.leading + 4;
 						default: 0;
 						
 					}
@@ -439,7 +439,7 @@ class CairoTextField {
 				case LINE_HEIGHT: getLineMetricSubRangesNull (textField, singleLine, ASCENDER) + getLineMetricSubRangesNull (textField, singleLine, DESCENDER) + getLineMetricSubRangesNull (textField, singleLine, LEADING);
 				case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
 				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textField.__textFormat.size);
-				case LEADING: textField.__textFormat.leading;
+				case LEADING: textField.__textFormat.leading + 4;
 				default: 0;
 				
 			}
