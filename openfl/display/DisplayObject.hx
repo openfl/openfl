@@ -711,7 +711,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var y (get, set):Float;
 	
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
-	@:dox(hide) @:noCompletion public var __scrollRectMatrix:Matrix;
+	@:dox(hide) @:noCompletion public var __worldOffset:Point;
+	@:dox(hide) @:noCompletion public var __localOffset:Point;
 	@:dox(hide) @:noCompletion public var __localMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __renderMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
@@ -774,7 +775,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__localMatrix = new Matrix ();
-		__scrollRectMatrix = new Matrix ();
+		__worldOffset = new Point ();
+		__localOffset = new Point ();
 		__renderMatrix = new Matrix ();
 		__rotationCache = 0;
 		__rotationSine = 0;
@@ -1275,35 +1277,32 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null) {
 		
-		if (overrideTransform == null) {
-			
-			__worldTransform.identity ();
-			__worldTransform.concat (__getLocalMatrix());
-			
+		var overrided = overrideTransform != null;
+		
+		if (overrided) {
+			__localMatrix = overrideTransform;
 		} else {
-			
-			__worldTransform = overrideTransform;
-			
+			__getLocalMatrix();
 		}
 		
-		__scrollRectMatrix.identity();
-		if (__scrollRect != null) {
-			var m = __worldTransform.clone();
-			if (parent != null) {
-				m.concat(parent.__worldTransform);
-			}
-			m.tx = 0;
-			m.ty = 0;
-			var sr = __scrollRect.transform(m);
-			__scrollRectMatrix.__translateTransformed( -sr.x, -sr.y);
-		}
+		__worldTransform.copyFrom (__localMatrix);
 		
-		if (parent != null) {
+		if (!overrided && parent != null) {
 			__worldTransform.concat(parent.__worldTransform);
-			__scrollRectMatrix.concat(parent.__scrollRectMatrix);
+			__worldOffset.copyFrom(parent.__worldOffset);
+		} else {
+			__worldOffset.setTo(0, 0);
 		}
 		
-		__renderMatrix = __worldTransform.mult(__scrollRectMatrix);
+		if (__scrollRect != null) {
+			__localOffset = __worldTransform.deltaTransformPoint(__scrollRect.topLeft);
+			__worldOffset.offset(__localOffset.x, __localOffset.y);
+		} else {
+			__localOffset.setTo(0, 0);
+		}
+		
+		__renderMatrix.copyFrom(__worldTransform);
+		__renderMatrix.translate( -__worldOffset.x, -__worldOffset.y);
 		
 	}
 	
