@@ -600,6 +600,12 @@ class BitmapData implements IBitmapDrawable {
 		var surface:CairoImageSurface = cast getSurface ();
 		var cairo = new Cairo (surface);
 		
+		if (!smoothing) {
+			
+			cairo.antialias = NONE;
+			
+		}
+		
 		var renderSession = new RenderSession ();
 		renderSession.cairo = cairo;
 		renderSession.roundPixels = true;
