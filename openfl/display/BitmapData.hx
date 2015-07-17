@@ -1,7 +1,9 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
+import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.ImageChannel;
@@ -597,7 +599,7 @@ class BitmapData implements IBitmapDrawable {
 		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
 		
 		var buffer = __image.buffer;
-		var surface:CairoImageSurface = cast getSurface ();
+		var surface = getSurface ();
 		var cairo = new Cairo (surface);
 		
 		if (!smoothing) {
@@ -621,6 +623,8 @@ class BitmapData implements IBitmapDrawable {
 		source.__renderCairo (renderSession);
 		source.__updateMatrices ();
 		source.__updateChildren (true);
+		
+		surface.flush ();
 		
 		var data = ByteArray.__fromNativePointer (surface.data, surface.stride * surface.height);
 		buffer.data = new UInt8Array (data);
@@ -929,7 +933,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getSurface (clone:Bool = true):CairoSurface {
+	public function getSurface (clone:Bool = true):CairoImageSurface {
 		
 		if (!__isValid) return null;
 		
@@ -1907,8 +1911,21 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (surface != null) {
 			
-			cairo.setSourceSurface (surface, 0, 0);
+			var pattern = CairoPattern.createForSurface (surface);
+			
+			if (cairo.antialias == NONE) {
+				
+				pattern.filter = CairoFilter.NEAREST;
+				
+			} else {
+				
+				pattern.filter = CairoFilter.GOOD;
+				
+			}
+			
+			cairo.source = pattern;
 			cairo.paint ();
+			pattern.destroy ();
 			
 		}
 		
