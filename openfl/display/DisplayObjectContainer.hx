@@ -669,6 +669,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
+			matrix = matrix.clone ();
 			//matrixCache = __worldTransform;
 			//__worldTransform = matrix;
 			__updateMatrices (matrix);

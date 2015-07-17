@@ -610,6 +610,12 @@ class BitmapData implements IBitmapDrawable {
 		renderSession.cairo = cairo;
 		renderSession.roundPixels = true;
 		
+		if (matrix != null) {
+			
+			matrix = matrix.clone (); // TODO: Why is this being modified?
+			
+		}
+		
 		source.__updateMatrices (matrix);
 		source.__updateChildren (false);
 		source.__renderCairo (renderSession);
@@ -620,6 +626,8 @@ class BitmapData implements IBitmapDrawable {
 		buffer.data = new UInt8Array (data);
 		buffer.premultiplied = true;
 		buffer.format = BGRA;
+		
+		cairo.destroy ();
 		
 		// TODO: Improve RGBA/premultiplied support so we do not need to convert
 		
@@ -1751,7 +1759,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		gl.colorMask (true, true, true, renderSession.renderer.transparent);
 		
-		__usingFramebuffer = true;
+		__usingFramebuffer = false;
 		
 		if (__image != null) {
 			
