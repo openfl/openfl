@@ -1,3 +1,15 @@
+3.1.4 (07/17/2015)
+------------------
+
+* Updated for Lime 2.5 support
+* Changed bitmapData.draw to use Cairo/canvas instead of GL.readPixels
+* Improved support for GameInput APIs
+* Fixed some regressions in world matrix transform calculation
+* Made minor improvements to Cairo text leading
+* Fixed an issue with repeated bitmapData.draw calls using a matrix
+* Fixed a bug that could occur when using <library preload="true" />
+
+
 3.1.3 (07/13/2015)
 ------------------
 
