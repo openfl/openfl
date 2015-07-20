@@ -93,7 +93,7 @@ class ApplicationMain {
 		openfl.Assets.loadLibrary ("::name::", library_onLoad);
 		::end::::end::::end::
 		
-		if (loaded == total) {
+		if (total == 0) {
 			
 			start ();
 			

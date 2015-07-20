@@ -39,8 +39,9 @@ class DefaultAssetLibrary extends AssetLibrary {
 	
 	private static var loaded = 0;
 	private static var loading = 0;
-	private static var threadQueue = new Deque<Dynamic> ();
-	private static var threadTag = "__RESULT__";
+	private static var workerIncomingQueue = new Deque<Dynamic> ();
+	private static var workerResult = new Deque<Dynamic> ();
+	private static var workerThread:Thread;
 	
 	public var className (default, null) = new Map <String, Dynamic> ();
 	public var path (default, null) = new Map <String, String> ();
@@ -381,19 +382,42 @@ class DefaultAssetLibrary extends AssetLibrary {
 	}
 	
 	
+	private static function __doWork ():Void {
+		
+		while (true) {
+			
+			var message = workerIncomingQueue.pop (true);
+			
+			if (message == "WORK") {
+				
+				var getMethod = workerIncomingQueue.pop (true);
+				var id = workerIncomingQueue.pop (true);
+				var handler = workerIncomingQueue.pop (true);
+				
+				var data = getMethod (id);
+				workerResult.add ("RESULT");
+				workerResult.add (data);
+				workerResult.add (handler);
+				
+			} else if (message == "EXIT") {
+				
+				break;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private inline function __load<T> (getMethod:String->T, id:String, handler:T->Void):Void {
 		
-		loading++;
+		workerIncomingQueue.add ("WORK");
+		workerIncomingQueue.add (getMethod);
+		workerIncomingQueue.add (id);
+		workerIncomingQueue.add (handler);
 		
-		var thread = Thread.create (function () {
-			
-			var data = getMethod (id);
-			
-			threadQueue.add (threadTag);
-			threadQueue.add (data);
-			threadQueue.add (handler);
-			
-		});
+		loading++;
 		
 	}
 	
@@ -402,24 +426,37 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		if (loading > loaded) {
 			
-			var message = threadQueue.pop (false);
-			
-			if (message != null) {
+			if (workerThread == null) {
 				
-				if (message == threadTag) {
+				workerThread = Thread.create (__doWork);
+				
+			}
+			
+			var message = workerResult.pop (false);
+			
+			while (message == "RESULT") {
+				
+				loaded++;
+				
+				var data = workerResult.pop (true);
+				var handler = workerResult.pop (true);
+				
+				if (handler != null) {
 					
-					loaded++;
-					
-					var data = threadQueue.pop (false);
-					var handler = threadQueue.pop (false);
-					
-					if (handler != null) {
-						
-						handler (data);
-						
-					}
+					handler (data);
 					
 				}
+				
+				message = workerResult.pop (false);
+				
+			}
+			
+		} else {
+			
+			if (workerThread != null) {
+				
+				workerIncomingQueue.add ("EXIT");
+				workerThread = null;
 				
 			}
 			
@@ -467,7 +504,7 @@ import lime.audio.AudioSource;
 import lime.audio.openal.AL;
 import lime.audio.AudioBuffer;
 import lime.graphics.Image;
-import lime.system.BackgroundWorker;
+import lime.system.ThreadPool;
 import lime.text.Font;
 import lime.utils.ByteArray;
 import lime.utils.UInt8Array;
@@ -499,6 +536,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 	public var type (default, null) = new Map <String, AssetType> ();
 	
 	private var lastModified:Float;
+	private var loadHandlers:Map<String, Dynamic>;
+	private var threadPool:ThreadPool;
 	private var timer:Timer;
 	
 	
@@ -587,6 +626,24 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#end
 		#end
+		
+	}
+	
+	
+	private function createThreadPool ():Void {
+		
+		threadPool = new ThreadPool (0, 2);
+		threadPool.doWork.add (function (id, getMethod) {
+			
+			threadPool.sendComplete (id, getMethod (id));
+			
+		});
+		threadPool.onComplete.add (function (id, data) {
+			
+			var handler = loadHandlers.get (id);
+			handler (data);
+			
+		});
 		
 	}
 	
@@ -1007,16 +1064,15 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		var worker = new BackgroundWorker ();
-		
-		worker.doWork.add (function (_) {
+		if (threadPool == null) {
 			
-			worker.sendComplete (getBytes (id));
+			loadHandlers = new Map ();
+			createThreadPool ();
 			
-		});
+		}
 		
-		worker.onComplete.add (handler);
-		worker.run ();
+		loadHandlers.set (id, handler);
+		threadPool.queue (id, getBytes);
 		
 		#end
 		
@@ -1054,7 +1110,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 				handler (Image.fromImageElement (image));
 				
 			}
-			image.src = id;
+			image.src = path.get (id);
 			
 		} else {
 			
@@ -1064,16 +1120,15 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		var worker = new BackgroundWorker ();
-		
-		worker.doWork.add (function (_) {
+		if (threadPool == null) {
 			
-			worker.sendComplete (getImage (id));
+			loadHandlers = new Map ();
+			createThreadPool ();
 			
-		});
+		}
 		
-		worker.onComplete.add (handler);
-		worker.run ();
+		loadHandlers.set (id, handler);
+		threadPool.queue (id, getImage);
 		
 		#end
 		
@@ -1235,7 +1290,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 #else
 
-::if (assets != null)::::foreach assets::::if (!embed)::::if (type == "font")::@:keep #if display private #end class __ASSET__::flatName:: extends lime.text.Font { public function new () { __fontPath = "::targetPath::"; name = "::fontName::"; super (); }}
+::if (assets != null)::::foreach assets::::if (!embed)::::if (type == "font")::@:keep #if display private #end class __ASSET__::flatName:: extends lime.text.Font { public function new () { __fontPath = #if ios "assets/" + #end "::targetPath::"; name = "::fontName::"; super (); }}
 ::end::::end::::end::::end::
 
 #if (windows || mac || linux)
@@ -1252,7 +1307,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 #end
 
 #if openfl
-::if (assets != null)::::foreach assets::::if (type == "font")::@:keep #if display private #end class __ASSET__OPENFL__::flatName:: extends openfl.text.Font { public function new () { ::if (embed)::var font = new __ASSET__::flatName:: (); src = font.src; name = font.name;::else::__fontPath = "::targetPath::"; name = "::fontName::";::end:: super (); }}
+::if (assets != null)::::foreach assets::::if (type == "font")::@:keep #if display private #end class __ASSET__OPENFL__::flatName:: extends openfl.text.Font { public function new () { ::if (embed)::var font = new __ASSET__::flatName:: (); src = font.src; name = font.name;::else::__fontPath = #if ios "assets/" + #end "::targetPath::"; name = "::fontName::";::end:: super (); }}
 ::end::::end::::end::
 #end
 

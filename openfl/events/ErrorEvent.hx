@@ -77,7 +77,7 @@ class ErrorEvent extends TextEvent {
 	
 	public override function toString ():String {
 		
-		return "[ErrorEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
+		return "[ErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
 		
 	}
 	

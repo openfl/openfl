@@ -68,7 +68,7 @@ class SecurityErrorEvent extends ErrorEvent {
 	
 	public override function toString ():String {
 		
-		return "[SecurityErrorEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
+		return "[SecurityErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
 		
 	}
 	

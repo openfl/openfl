@@ -4,6 +4,7 @@ package openfl._internal.renderer.cairo;
 #if cpp
 import cpp.Pointer;
 #end
+import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
@@ -67,16 +68,21 @@ class CairoBitmap {
 			
 			if (surface != null) {
 				
-				cairo.setSourceSurface (surface, 0, 0);
+				var pattern = CairoPattern.createForSurface (surface);
+				pattern.filter = bitmap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				if (scrollRect != null) {
 					
 					cairo.pushGroup ();
-					cairo.setSourceSurface (surface, 0, 0);
+					cairo.source = pattern;
 					cairo.newPath ();
 					cairo.rectangle (scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 					cairo.fill ();
 					cairo.popGroupToSource ();
+					
+				} else {
+					
+					cairo.source = pattern;
 					
 				}
 				
@@ -89,6 +95,8 @@ class CairoBitmap {
 					cairo.paintWithAlpha (bitmap.__worldAlpha);
 					
 				}
+				
+				pattern.destroy ();
 				
 			}
 			

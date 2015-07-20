@@ -6,6 +6,7 @@ import haxe.Utf8;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.cairo.CairoFontOptions;
+import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
 import lime.system.System;
 import lime.text.TextLayout;
@@ -401,7 +402,7 @@ class CairoTextField {
 						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textField, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, LEADING);
 						case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
 						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textField.__textFormat.size);
-						case LEADING: textField.__textFormat.leading;
+						case LEADING: textField.__textFormat.leading + 4;
 						default: 0;
 						
 					}
@@ -438,7 +439,7 @@ class CairoTextField {
 				case LINE_HEIGHT: getLineMetricSubRangesNull (textField, singleLine, ASCENDER) + getLineMetricSubRangesNull (textField, singleLine, DESCENDER) + getLineMetricSubRangesNull (textField, singleLine, LEADING);
 				case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
 				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textField.__textFormat.size);
-				case LEADING: textField.__textFormat.leading;
+				case LEADING: textField.__textFormat.leading + 4;
 				default: 0;
 				
 			}
@@ -682,7 +683,7 @@ class CairoTextField {
 		
 		if (cairo != null) {
 			
-			var surface = cairo.target;
+			var surface:CairoImageSurface = cast cairo.target;
 			
 			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
 				
@@ -697,7 +698,7 @@ class CairoTextField {
 			
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
 			bitmap.__image.buffer.premultiplied = true;
-			var surface = CairoSurface.fromImage (bitmap.__image);
+			var surface = CairoImageSurface.fromImage (bitmap.__image);
 			graphics.__cairo = new Cairo (surface);
 			surface.destroy ();
 			

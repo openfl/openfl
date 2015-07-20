@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "3.1.2",
-	"releasenote": "Improved use of async actions, improved scrollRect, Cairo fixes",
+	"version": "3.1.4",
+	"releasenote": "Updated to Lime 2.5, improved Cairo renderer",
 	"contributors": [ "singmajesty" ]
 }

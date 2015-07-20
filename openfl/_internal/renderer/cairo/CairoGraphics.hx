@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
@@ -290,7 +291,7 @@ class CairoGraphics {
 					
 					hasPath = true;
 					cairo.rectangle (x - offsetX, y - offsetY, width, height);
-					
+				
 				case DrawEllipse (x, y, width, height):
 					
 					hasPath = true;
@@ -433,7 +434,7 @@ class CairoGraphics {
 					strokePattern = createGradientPattern (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 					
 					hasStroke = true;
-					
+				
 				case LineBitmapStyle  (bitmap, matrix, repeat, smooth):
 					
 					if (stroke && hasStroke) {
@@ -452,7 +453,7 @@ class CairoGraphics {
 					strokePattern = createImagePattern (bitmap, matrix, repeat);
 					
 					hasStroke = true;
-					
+				
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 					
 					if (fillPattern != null) {
@@ -467,7 +468,7 @@ class CairoGraphics {
 					bitmapRepeat = repeat;
 					
 					hasFill = true;
-					
+				
 				case BeginFill (rgb, alpha):
 					
 					if (alpha < 0.005) {
@@ -490,7 +491,6 @@ class CairoGraphics {
 					
 					bitmapFill = null;
 				
-					
 				case BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					
 					if (fillPattern != null) {
@@ -504,7 +504,7 @@ class CairoGraphics {
 					
 					hasFill = true;
 					bitmapFill = null;
-					
+				
 				case DrawTriangles (vertices, indices, uvtData, culling, _, _):
 				
 					var v = vertices;
@@ -817,6 +817,7 @@ class CairoGraphics {
 					
 				default:
 					
+				
 			}
 			
 		}
@@ -926,7 +927,7 @@ class CairoGraphics {
 			
 			if (graphics.__cairo != null) {
 				
-				var surface = graphics.__cairo.target;
+				var surface:CairoImageSurface = cast graphics.__cairo.target;
 				
 				if (bounds.width != surface.width || bounds.height != surface.height) {
 					
@@ -941,7 +942,7 @@ class CairoGraphics {
 				
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
 				bitmap.__image.buffer.premultiplied = true;
-				var surface = CairoSurface.fromImage (bitmap.__image);
+				var surface = CairoImageSurface.fromImage (bitmap.__image);
 				graphics.__cairo = new Cairo (surface);
 				surface.destroy ();
 				

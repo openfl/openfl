@@ -57,7 +57,7 @@ class TimerEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[TimerEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		return "[TimerEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
 		
 	}
 	

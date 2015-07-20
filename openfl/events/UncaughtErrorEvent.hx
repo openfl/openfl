@@ -26,7 +26,7 @@ class UncaughtErrorEvent extends ErrorEvent {
 	
 	public override function toString ():String {
 		
-		return "[UncaughtErrorEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		return "[UncaughtErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
 		
 	}
 	

@@ -129,7 +129,7 @@ class FocusEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[FocusEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " relatedObject=" + relatedObject + " shiftKey=" + shiftKey + " keyCode=" + keyCode + "]";
+		return "[FocusEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " relatedObject=" + relatedObject + " shiftKey=" + shiftKey + " keyCode=" + keyCode + "]";
 		
 	}
 	
