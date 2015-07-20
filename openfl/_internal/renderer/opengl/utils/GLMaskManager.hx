@@ -49,16 +49,15 @@ class GLMaskManager extends AbstractMaskManager {
 			clip = currentClip.intersection(clip);
 		}
 		
-		var same = currentClip != null && currentClip.equals(clip);
+		var restartBatch = currentClip == null || currentClip.containsRect(clip);
 		
 		clips.push(clip);
 		currentClip = clip;			
 		
-		if (!same) {
+		if (restartBatch) {
 			renderSession.spriteBatch.stop ();
 			renderSession.spriteBatch.start (currentClip);			
 		}
-
 		
 	}
 	
