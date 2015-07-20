@@ -143,15 +143,13 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
 	
-	@:noCompletion private static var __supportsBGRA:Null<Bool>;
+	//@:noCompletion private static var __supportsBGRA:Null<Bool>;
 	
-	@:noCompletion private var __bgra:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __surface:CairoSurface;
-	@:noCompletion private var __surfaceImage:Image;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __textureImage:Image;
 	@:noCompletion private var __framebuffer:FilterTexture;
@@ -207,7 +205,22 @@ class BitmapData implements IBitmapDrawable {
 			
 			fillColor = (fillColor << 8) | ((fillColor >> 24) & 0xFF);
 			
+			#if sys
+			var buffer = new ImageBuffer (new UInt8Array (width * height * 4), width, height);
+			buffer.format = BGRA;
+			buffer.premultiplied = true;
+			
+			__image = new Image (buffer, 0, 0, width, height);
+			
+			if (fillColor != 0) {
+				
+				__image.fillRect (__image.rect, fillColor);
+				
+			}
+			#else
 			__image = new Image (null, 0, 0, width, height, fillColor);
+			#end
+			
 			__image.transparent = transparent;
 			__isValid = true;
 			
@@ -631,18 +644,8 @@ class BitmapData implements IBitmapDrawable {
 		source.__updateChildren (true);
 		
 		surface.flush ();
-		
-		var data = ByteArray.__fromNativePointer (surface.data, surface.stride * surface.height);
-		buffer.data = new UInt8Array (data);
-		buffer.premultiplied = true;
-		buffer.format = BGRA;
-		
 		cairo.destroy ();
 		
-		// TODO: Improve RGBA/premultiplied support so we do not need to convert
-		
-		__image.format = RGBA;
-		__image.premultiplied = false;
 		__image.dirty = true;
 		
 		#end
@@ -939,38 +942,13 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getSurface (clone:Bool = true):CairoImageSurface {
+	public function getSurface ():CairoImageSurface {
 		
 		if (!__isValid) return null;
 		
 		if (__surface == null) {
 			
-			__image.dirty = true;
-			
-		}
-		
-		if (__image != null && __image.dirty) {
-			
-			if (__surface != null) {
-				
-				__surface.destroy ();
-				
-			}
-			
-			if (clone) {
-				
-				__surfaceImage = __image.clone ();
-				
-			} else {
-				
-				__surfaceImage = __image;
-				
-			}
-			
-			__surfaceImage.format = BGRA;
-			__surfaceImage.premultiplied = true;
-			__surface = CairoImageSurface.fromImage (__surfaceImage);
-			__image.dirty = false;
+			__surface = CairoImageSurface.fromImage (__image);
 			
 		}
 		
@@ -1002,41 +980,9 @@ class BitmapData implements IBitmapDrawable {
 		if (__image != null && __image.dirty) {
 			
 			var internalFormat = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
-			var format = internalFormat;
+			var format = #if sys gl.BGRA_EXT #else gl.RGBA #end;
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			var textureImage = __image;
-			
-			if (__bgra) {
-				
-				// TODO: Use Lime pixel format code for this?
-				
-				if (__supportsBGRA == null) {
-					
-					__supportsBGRA = Lambda.has (gl.getSupportedExtensions (), "GL_EXT_bgra");
-					
-				}
-				
-				#if lime_cairo
-				if (__supportsBGRA) {
-					
-					format = gl.BGRA_EXT;
-					
-				} else
-				#end
-				{
-					
-					textureImage = new Image (null, 0, 0, __image.width, __image.height);
-					var rect = new LimeRectangle (0, 0, __image.width, __image.height);
-					var point = new Vector2 (0, 0);
-					
-					textureImage.copyChannel ( __image, rect, point, ImageChannel.RED, ImageChannel.BLUE);
-					textureImage.copyChannel ( __image, rect, point, ImageChannel.GREEN, ImageChannel.GREEN);
-					textureImage.copyChannel ( __image, rect, point, ImageChannel.BLUE, ImageChannel.RED);
-					textureImage.copyChannel ( __image, rect, point, ImageChannel.ALPHA, ImageChannel.ALPHA);
-					
-				}
-				
-			}
 			
 			if (!textureImage.premultiplied && textureImage.transparent) {
 				
@@ -1882,6 +1828,12 @@ class BitmapData implements IBitmapDrawable {
 		width = image.width;
 		height = image.height;
 		rect = new Rectangle (0, 0, image.width, image.height);
+		
+		#if sys
+		image.format = BGRA;
+		image.premultiplied = true;
+		#end
+		
 		__isValid = true;
 		
 	}
