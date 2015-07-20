@@ -172,7 +172,7 @@ class SpriteBatch {
 		enableAttributes(0);
 		
 		var index = batchedSprites * 4 * elementsPerVertex;
-		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, null, color, pixelSnapping);
+		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, color, pixelSnapping);
 		
 		setState(batchedSprites, texture, smoothing, blendMode, ct, shaderData.shader, shaderData.data, true);
 		
@@ -219,7 +219,7 @@ class SpriteBatch {
 		
 		var totalCount = tileData.length;
 		if (count >= 0 && totalCount > count) totalCount = count;
-		var itemCount = Std.int (totalCount / numValues);
+		var itemCount =Math.ceil (totalCount / numValues);
 		var iIndex = 0;
 		
 		var tileID = -1;
@@ -232,13 +232,23 @@ class SpriteBatch {
 		var cosTheta = 1.0, sinTheta = 0.0;
 		var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
 		var ox = 0.0, oy = 0.0;
-		var matrix = new Matrix();
 		var oMatrix = object.__worldTransform;
-		var uvs = new TextureUvs();
 		
 		var bIndex = 0;
+		var tMa  = 1.0, tMb  = 0.0;
+		var tMc  = 0.0, tMd  = 1.0;
+		var tMtx = 0.0, tMty = 0.0;
 		
-		//enableAttributes((useRGB || useAlpha) ? 0 : 0xFFFFFFFF);
+		var oMa  = oMatrix.a;
+		var oMb  = oMatrix.b;
+		var oMc  = oMatrix.c;
+		var oMd  = oMatrix.d;
+		var oMtx = oMatrix.tx;
+		var oMty = oMatrix.ty;
+		
+		var rx = 0.0, ry = 0.0, rw = 0.0, rh = 0.0;
+		var tuvx = 0.0, tuvy = 0.0, tuvw = 0.0, tuvh = 0.0;
+		
 		enableAttributes(0);
 		
 		var shaderData = getShaderData(flashShader);
@@ -249,68 +259,77 @@ class SpriteBatch {
 				flush ();
 			}
 			
-			x = tileData[iIndex + 0];
-			y = tileData[iIndex + 1];
+			x = unsafe_get(tileData,iIndex + 0);
+			y = unsafe_get(tileData,iIndex + 1);
 			
 			if (useRect) {
 				tileID = -1;
 
-				rect.x = tileData[iIndex + 2];
-				rect.y = tileData[iIndex + 3];
-				rect.width = tileData[iIndex + 4];
-				rect.height = tileData[iIndex + 5];
+				rect.x = unsafe_get(tileData,iIndex + 2);
+				rect.y = unsafe_get(tileData,iIndex + 3);
+				rect.width = unsafe_get(tileData,iIndex + 4);
+				rect.height = unsafe_get(tileData,iIndex + 5);
 				
 				if (useOrigin) {
-					center.x = tileData[iIndex + 6];
-					center.y = tileData[iIndex + 7];
+					center.x = unsafe_get(tileData,iIndex + 6);
+					center.y = unsafe_get(tileData,iIndex + 7);
 				} else {
 					center.setTo(0, 0);
 				}
 				
-				tileUV.setTo(rect.left / sheet.__bitmap.width, rect.top / sheet.__bitmap.height, rect.right / sheet.__bitmap.width, rect.bottom / sheet.__bitmap.height);
+				rw = rect.width; rh = rect.height;
+				tuvx = rect.left / sheet.__bitmap.width;
+				tuvy = rect.top / sheet.__bitmap.height;
+				tuvw = rect.right / sheet.__bitmap.width;
+				tuvh = rect.bottom / sheet.__bitmap.height;
 			} else {
-				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
+				tileID = Std.int(unsafe_get(tileData, iIndex + 2));
+				#if (neko || js) 
+				if (tileID == null) tileID = 0;
+				#end
 				rect = sheet.getTileRect(tileID);
 				center = sheet.getTileCenter(tileID);
 				tileUV = sheet.getTileUVs(tileID);
+				
+				rw = rect.width; rh = rect.height;
+				tuvx = tileUV.x; tuvy = tileUV.y; tuvw = tileUV.width; tuvh = tileUV.height;
 			}
 			
-			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
+			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) 
+			{
 				
 				alpha = 1;
 				tint = 0xFFFFFF;
-				a = 1; b = 0; c = 0; d = 1; tx = 0; ty = 0;
 				scale = 1.0;
 				rotation = 0.0;
 				cosTheta = 1.0;
 				sinTheta = 0.0;
-				matrix.identity();
 				
 				if (useAlpha) {
-					alpha = tileData[iIndex + alphaIndex] * object.__worldAlpha;
+					alpha = unsafe_get(tileData,iIndex + alphaIndex) * object.__worldAlpha;
 				} else {
 					alpha = object.__worldAlpha;
 				}
 				
 				if (useRGB) {
-					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
+					tint = (Std.int(unsafe_get(tileData,iIndex + rgbIndex) * 255) & 0xFF) << 16 | (Std.int(unsafe_get(tileData,iIndex + rgbIndex + 1) * 255) & 0xFF) << 8 | (Std.int(unsafe_get(tileData,iIndex + rgbIndex + 2) * 255) & 0xFF);
 				}
 				
 				if (useScale) {
-					scale = tileData[iIndex + scaleIndex];
+					scale = unsafe_get(tileData,iIndex + scaleIndex);
 				}
 				
 				if (useRotation) {
-					rotation = tileData[iIndex + rotationIndex];
+					rotation = unsafe_get(tileData,iIndex + rotationIndex);
 					cosTheta = Math.cos(rotation);
 					sinTheta = Math.sin(rotation);
 				}
 				
 				if (useTransform) {
-					a = tileData[iIndex + transformIndex + 0];
-					b = tileData[iIndex + transformIndex + 1];
-					c = tileData[iIndex + transformIndex + 2];
-					d = tileData[iIndex + transformIndex + 3];
+					a = unsafe_get(tileData,iIndex + transformIndex + 0);
+					b = unsafe_get(tileData,iIndex + transformIndex + 1);
+					c = unsafe_get(tileData,iIndex + transformIndex + 2);
+					d = unsafe_get(tileData,iIndex + transformIndex + 3);
 				} else {
 					a = scale * cosTheta;
 					b = scale * sinTheta;
@@ -324,23 +343,36 @@ class SpriteBatch {
 				tx = x - ox;
 				ty = y - oy;
 				
-				matrix.a = a * oMatrix.a + b * oMatrix.c;
-				matrix.b = a * oMatrix.b + b * oMatrix.d;
-				matrix.c = c * oMatrix.a + d * oMatrix.c;
-				matrix.d = c * oMatrix.b + d * oMatrix.d;
-				matrix.tx = tx * oMatrix.a + ty * oMatrix.c + oMatrix.tx;
-				matrix.ty = tx * oMatrix.b + ty * oMatrix.d + oMatrix.ty;
-				
-				uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
-				uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;
-				uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
-				uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
-				
+				tMa = (a * oMa + b * oMc) * rw;
+				tMb = (a * oMb + b * oMd) * rw;
+				tMc = (c * oMa + d * oMc) * rh;
+				tMd = (c * oMb + d * oMd) * rh;
+				tMtx = tx * oMa + ty * oMc + oMtx;
+				tMty = tx * oMb + ty * oMd + oMty;
+
 				bIndex = batchedSprites * 4 * elementsPerVertex;
+				// POSITIONS
+				positions[bIndex + 0] 	= (tMtx);
+				positions[bIndex + 1] 	= (tMty);
+				positions[bIndex + 5] 	= (tMa + tMtx);			
+				positions[bIndex + 6] 	= (tMb + tMty);			
+				positions[bIndex + 10] 	= (tMa + tMc + tMtx);
+				positions[bIndex + 11] 	= (tMd + tMb + tMty);
+				positions[bIndex + 15] 	= (tMc + tMtx);
+				positions[bIndex + 16] 	= (tMd + tMty);
+				//COLORS
+				colors[bIndex + 4] = colors[bIndex + 9] = colors[bIndex + 14] = colors[bIndex + 19] = ((Std.int(alpha * 255)) & 0xFF) << 24 | tint;				
+				// UVS
+				positions[bIndex + 2]  = tuvx;
+				positions[bIndex + 3]  = tuvy;
+				positions[bIndex + 7]  = tuvw;
+				positions[bIndex + 8]  = tuvy;
+				positions[bIndex + 12] = tuvw;
+				positions[bIndex + 13] = tuvh;
+				positions[bIndex + 17] = tuvx;
+				positions[bIndex + 18] = tuvh;
 				
-				color = ((Std.int(alpha * 255)) & 0xFF) << 24 | (tint & 0xFF) << 16 | ((tint >> 8) & 0xFF) << 8 | ((tint >> 16) & 0xFF);
-				
-				fillVertices(bIndex, rect.width, rect.height, matrix, uvs, null, color, NEVER);
+				writtenVertexBytes = bIndex + 20;
 				
 				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, shaderData.shader, shaderData.data, false);
 				
@@ -350,90 +382,56 @@ class SpriteBatch {
 			iIndex += numValues;
 			
 		}
+		//trace(haxe.Timer.stamp() - t);
 	}
 	
-	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs, ?pivot:Point,
+	function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
 		?color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
-		
-		var w0:Float, w1:Float, h0:Float, h1:Float;
-		
-		
-		if (pivot == null) {
-			w0 = width; w1 = 0;
-			h0 = height; h1 = 0;
-		} else {
-			w0 = width * (1 - pivot.x); 
-			w1 = width * -pivot.x; 
-			h0 = height * (1 - pivot.y); 
-			h1 = height * -pivot.y; 
-		}
-		
-		if (pixelSnapping == null) {
-			pixelSnapping = PixelSnapping.NEVER;
-		}
-		
-		var snap = pixelSnapping != NEVER;
+
 		var a = matrix.a;
 		var b = matrix.b;
 		var c = matrix.c;
 		var d = matrix.d;
 		var tx = matrix.tx;
 		var ty = matrix.ty;
-		var cOffsetIndex = 0;
 		
-		if(!snap) {
-			positions[index++] = (a * w1 + c * h1 + tx);
-			positions[index++] = (d * h1 + b * w1 + ty);
+		// POSITION
+		if (pixelSnapping == null || pixelSnapping == NEVER) {
+			positions[index + 0] 	= (tx);
+			positions[index + 1] 	= (ty);
+			positions[index + 5] 	= (a * width + tx);			
+			positions[index + 6] 	= (b * width + ty);			
+			positions[index + 10] 	= (a * width + c * height + tx);
+			positions[index + 11] 	= (d * height + b * width + ty);
+			positions[index + 15] 	= (c * height + tx);
+			positions[index + 16] 	= (d * height + ty);
 		} else {
-			positions[index++] = Math.fround(a * w1 + c * h1 + tx);
-			positions[index++] = Math.fround(d * h1 + b * w1 + ty);
-		}
-		positions[index++] = uvs.x0;
-		positions[index++] = uvs.y0;
-		if(enableColor) {
-			colors[index++] = color;
-		}
-		
-		if(!snap) {
-			positions[index++] = (a * w0 + c * h1 + tx);
-			positions[index++] = (d * h1 + b * w0 + ty);
-		} else {
-			positions[index++] = Math.fround(a * w0 + c * h1 + tx);
-			positions[index++] = Math.fround(d * h1 + b * w0 + ty);
-		}
-		positions[index++] = uvs.x1;
-		positions[index++] = uvs.y1;
-		if(enableColor) {
-			colors[index++] = color;
+			positions[index + 0] 	= Math.fround(tx);
+			positions[index + 1] 	= Math.fround(ty);
+			positions[index + 5] 	= Math.fround(a * width + tx);			
+			positions[index + 6] 	= Math.fround(b * width + ty);			
+			positions[index + 10] 	= Math.fround(a * width + c * height + tx);
+			positions[index + 11] 	= Math.fround(d * height + b * width + ty);
+			positions[index + 15] 	= Math.fround(c * height + tx);
+			positions[index + 16] 	= Math.fround(d * height + ty);
 		}
 		
-		if(!snap) {
-			positions[index++] = (a * w0 + c * h0 + tx);
-			positions[index++] = (d * h0 + b * w0 + ty);
-		} else {
-			positions[index++] = Math.fround(a * w0 + c * h0 + tx);
-			positions[index++] = Math.fround(d * h0 + b * w0 + ty);
-		}
-		positions[index++] = uvs.x2;
-		positions[index++] = uvs.y2;
-		if(enableColor) {
-			colors[index++] = color;
+		// COLOR
+		if (enableColor) {
+			colors[index + 4] = colors[index + 9] = colors[index + 14] = colors[index + 19] = color;
 		}
 		
-		if(!snap) {
-			positions[index++] = (a * w1 + c * h0 + tx);
-			positions[index++] = (d * h0 + b * w1 + ty);
-		} else {
-			positions[index++] = Math.fround(a * w1 + c * h0 + tx);
-			positions[index++] = Math.fround(d * h0 + b * w1 + ty);
-		}
-		positions[index++] = uvs.x3;
-		positions[index++] = uvs.y3;
-		if(enableColor) {
-			colors[index++] = color;
-		}
+		// UVS
+		positions[index + 2] = uvs.x0;
+		positions[index + 3] = uvs.y0;
+		positions[index + 7] = uvs.x1;
+		positions[index + 8] = uvs.y1;
+		positions[index + 12] = uvs.x2;
+		positions[index + 13] = uvs.y2;
+		positions[index + 17] = uvs.x3;
+		positions[index + 18] = uvs.y3;
 		
-		writtenVertexBytes = index;
+		writtenVertexBytes = index + 20;
 	}
 	
 	inline function enableAttributes(?color:Int = 0xFFFFFFFF) {
@@ -475,6 +473,7 @@ class SpriteBatch {
 			var view = positions.subarray(0, writtenVertexBytes);
 			vertexArray.upload(view);
 		}
+		
 		
 		var nextState:State;
 		var batchSize:Int = 0;
@@ -635,6 +634,14 @@ class SpriteBatch {
 		}
 		
 		return r;
+	}
+	
+	inline function unsafe_get<T>(array:Array<T>, index:Int):T {
+		#if cpp
+		return untyped array.__unsafe_get(index);
+		#else
+		return array[index];
+		#end
 	}
 	
 }

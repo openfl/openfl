@@ -1641,12 +1641,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
 		
 		if (value != null && value.length > 0) {
-			__filters = value.copy();
+			__filters = value;
 			__forceCacheAsBitmap = true;
 			__cacheAsBitmap = true;
 			__updateFilters = true;
 		} else {
-			__filters = [];
+			__filters = null;
 			__forceCacheAsBitmap = false;
 			__cacheAsBitmap = false;
 			__updateFilters = false;

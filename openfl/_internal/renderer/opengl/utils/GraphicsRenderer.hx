@@ -870,8 +870,11 @@ class GraphicsRenderer {
 					if (!batchDrawing) {
 						renderSession.spriteBatch.begin(renderSession, clipRect);
 					}
-					var args = Type.enumParameters(bucket.graphicType);		
-					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4], cast args[5]);
+					switch(bucket.graphicType) {
+						case DrawTiles(sheet, tileData, smooth, flags, shader, count):
+							renderSession.spriteBatch.renderTiles(object, sheet, tileData, smooth, flags, shader, count);
+						case _:
+					}
 					
 					renderSession.spriteBatch.finish();
 				case _:
