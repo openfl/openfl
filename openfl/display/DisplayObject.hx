@@ -274,6 +274,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	public var cacheAsBitmapSmooth(get, set):Bool;
 	
+	public var cacheAsBitmapBounds:Rectangle;
+	
 	/**
 	 * An indexed array that contains each filter object currently associated
 	 * with the display object. The openfl.filters package contains several
@@ -1383,11 +1385,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				if (__cachedBitmapBounds == null) {
 					__cachedBitmapBounds = new Rectangle();
 				}
-				__cachedBitmapBounds.setEmpty();
-				__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-				var rectBounds = new Rectangle();
-				if (__getRenderBounds(rectBounds)) {
-					__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+				
+				if(cacheAsBitmapBounds != null) {
+					__cachedBitmapBounds.copyFrom(cacheAsBitmapBounds);
+				} else {
+					__cachedBitmapBounds.setEmpty();
+					__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
+					var rectBounds = new Rectangle();
+					if (__getRenderBounds(rectBounds)) {
+						__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+					}
 				}
 				
 				if (__filters != null) {
