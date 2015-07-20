@@ -16,6 +16,7 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	private var clips:Array<Rectangle>;
 	private var currentClip:Rectangle;
+	private var savedClip:Rectangle;
 	
 	
 	public function new (renderSession:RenderSession) {
@@ -39,26 +40,23 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (rect == null) return;
 		
-		
-		var clip:Rectangle = rect.transform (transform.clone());
+		var m = transform.clone();
 		// correct coords from top-left (OpenFL) to bottom-left (GL)
-		clip.y = renderSession.renderer.height - clip.y - clip.height;
+		@:privateAccess GLBitmap.flipMatrix(m, renderSession.renderer.viewPort.height);
+		var clip:Rectangle = rect.transform (m);
 		
-		var restartBatch = false;
-		
-		if (currentClip == null || currentClip.containsRect(clip)) {
-			restartBatch = true;
-		} else if (currentClip.intersects(clip)) {
-			restartBatch = true;
+		if (currentClip != null && currentClip.intersects(clip)) {
 			clip = currentClip.intersection(clip);
 		}
+		
+		var restartBatch = currentClip == null || currentClip.containsRect(clip);
 		
 		clips.push(clip);
 		currentClip = clip;			
 		
 		if (restartBatch) {
 			renderSession.spriteBatch.stop ();
-			renderSession.spriteBatch.start (clip);
+			renderSession.spriteBatch.start (currentClip);			
 		}
 		
 	}
@@ -92,6 +90,20 @@ class GLMaskManager extends AbstractMaskManager {
 		currentClip = clips.pop ();
 		
 		renderSession.spriteBatch.start (currentClip);
+		
+	}
+	
+	override public function saveState():Void {
+		
+		savedClip = currentClip;
+		currentClip = null;
+		
+	}
+	
+	override public function restoreState():Void {
+		
+		currentClip = savedClip;
+		savedClip = null;
 		
 	}
 	

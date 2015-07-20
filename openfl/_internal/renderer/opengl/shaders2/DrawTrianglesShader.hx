@@ -3,6 +3,7 @@ package openfl._internal.renderer.opengl.shaders2;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefAttrib;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefVarying;
 
 
 class DrawTrianglesShader extends Shader {
@@ -16,14 +17,14 @@ class DrawTrianglesShader extends Shader {
 			'attribute vec4 ${Attrib.Color};',
 			'uniform mat3 ${Uniform.ProjectionMatrix};',
 			
-			'varying vec2 vTexCoord;',
-			'varying vec4 vColor;',
+			'varying vec2 ${DefVarying.TexCoord};',
+			'varying vec4 ${DefVarying.Color};',
 		
 			'void main(void) {',
 			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
-			'   vTexCoord = ${Attrib.TexCoord};',
+			'   ${DefVarying.TexCoord} = ${Attrib.TexCoord};',
 			// the passed color is ARGB format
-			'   vColor = ${Attrib.Color}.bgra;',
+			'   ${DefVarying.Color} = ${Attrib.Color}.bgra;',
 			'}',
 
 		];
@@ -40,8 +41,8 @@ class DrawTrianglesShader extends Shader {
 			'uniform vec4 ${Uniform.ColorMultiplier};',
 			'uniform vec4 ${Uniform.ColorOffset};',
 			
-			'varying vec2 vTexCoord;',
-			'varying vec4 vColor;',
+			'varying vec2 ${DefVarying.TexCoord};',
+			'varying vec4 ${DefVarying.Color};',
 			
 			'vec4 tmp;',
 			
@@ -56,19 +57,19 @@ class DrawTrianglesShader extends Shader {
 			
 			'void main(void) {',
 			'   if(${Uniform.UseTexture}) {',
-			'       tmp = texture2D(${Uniform.Sampler}, vTexCoord);',
+			'       tmp = texture2D(${Uniform.Sampler}, ${DefVarying.TexCoord});',
 			'   } else {',
 			'       tmp = vec4(${Uniform.Color}, 1.);',
 			'   }',
-			'   gl_FragColor = colorTransform(tmp, vColor, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
+			'   gl_FragColor = colorTransform(tmp, ${DefVarying.Color}, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
 			'}'
 		];
 		
 		init ();
 	}
 	
-	override function init() {
-		super.init();
+	override private function init(?force:Bool = false) {
+		super.init(force);
 		
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.TexCoord);
@@ -93,7 +94,7 @@ class DrawTrianglesShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var UseTexture = "uUseTexture";
+	var UseTexture = "openfl_uUseTexture";
 	var Sampler = DefUniform.Sampler;
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;

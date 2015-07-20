@@ -66,7 +66,7 @@ class TextFieldGraphics {
 			
 			for (tilesheet in textField.__tilesheets.keys ()) {
 				
-				graphics.drawTiles (tilesheet, textField.__tileData.get (tilesheet), true, Tilesheet.TILE_RGB, textField.__tileDataLength.get (tilesheet));
+				graphics.drawTiles (tilesheet, textField.__tileData.get (tilesheet), true, Tilesheet.TILE_RGB, null, textField.__tileDataLength.get (tilesheet));
 				
 			}
 			

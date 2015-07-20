@@ -2,7 +2,6 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.cairo.Cairo;
-import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
@@ -59,7 +58,6 @@ class Graphics {
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool = true;
-	@:noCompletion private var __cachedTexture:FilterTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	
 	#if (js && html5)
@@ -653,7 +651,7 @@ class Graphics {
 	}
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, ?smooth:Bool = false, ?flags:Int = 0, ?shader:Shader, ?count:Int = -1):Void {
 		
 		// Checking each tile for extents did not include rotation or scale, and could overflow the maximum canvas
 		// size of some mobile browsers. Always use the full stage size for drawTiles instead?
@@ -661,7 +659,7 @@ class Graphics {
 		__inflateBounds (0, 0);
 		__inflateBounds (Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
-		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
+		__commands.push (DrawTiles (sheet, tileData, smooth, flags, shader, count));
 		
 		__dirty = true;
 		__visible = true;
@@ -1140,7 +1138,7 @@ class Graphics {
 	DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	DrawRect (x:Float, y:Float, width:Float, height:Float);
 	DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
-	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
+	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, shader:Shader, count:Int);
 	DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
@@ -1172,7 +1170,7 @@ import openfl.geom.Rectangle;
 abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.display.Graphics {
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, shader:Shader = null, count:Int = -1):Void {
 		
 		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
 		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;

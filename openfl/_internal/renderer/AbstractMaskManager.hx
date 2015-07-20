@@ -47,5 +47,17 @@ class AbstractMaskManager {
 		
 	}
 	
+	public function saveState ():Void {
+		
+		
+		
+	}
+	
+	public function restoreState ():Void {
+		
+		
+		
+	}
+	
 	
 }

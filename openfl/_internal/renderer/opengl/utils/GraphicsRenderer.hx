@@ -21,6 +21,7 @@ import openfl._internal.renderer.opengl.utils.GraphicsRenderer.RenderMode;
 import openfl._internal.renderer.opengl.utils.VertexAttribute.ElementType;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.display.Shader in FlashShader;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
@@ -65,7 +66,6 @@ class GraphicsRenderer {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
-	private static var objectPosition:Point = new Point();
 	private static var objectBounds:Rectangle = new Rectangle();
 	
 	private static var lastVertsBuffer:GLBuffer;
@@ -817,49 +817,10 @@ class GraphicsRenderer {
 		}
 		
 		if (dirty) {
-			updateGraphics (object, object.__graphics, renderSession.gl, object.cacheAsBitmap);
+			updateGraphics (object, object.__graphics, renderSession.gl);
 		}
 		
-		/*
-		//TODO find a way to remove drawTiles calls
-		if (object.cacheAsBitmap) {
-			
-			if (dirty) {
-				
-				var gl = renderSession.gl;
-				var bounds = graphics.__bounds;
-				var texture = graphics.__cachedTexture;
-				
-				var w = Math.floor(bounds.width + 0.5);
-				var h = Math.floor(bounds.height+ 0.5);
-				
-				if (texture == null) {
-					texture = new FilterTexture(gl, w, h, false);
-					graphics.__cachedTexture = texture;
-				}
-				
-				texture.resize(w, h);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, texture.frameBuffer);
-				gl.viewport (0, 0, w, h);
-				texture.clear();
-				renderGraphics(object, renderSession, new Point(w / 2, -h / 2), true);
-				gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-				
-				gl.viewport(0, 0, renderSession.renderer.width, renderSession.renderer.height);
-			}
-			
-			if (!spritebatch.drawing) {
-				spritebatch.begin(renderSession);
-			}
-			
-			spritebatch.renderCachedGraphics(object);
-			
-		} else {
-			renderGraphics(object, renderSession, renderSession.projection, false);
-		}
-		*/
-		
-		renderGraphics(object, renderSession, false);
+		renderGraphics(object, renderSession);
 
 	}
 	
@@ -870,16 +831,10 @@ class GraphicsRenderer {
 		var glStack = graphics.__glStack[GLRenderer.glContextId];
 		var bucket:GLBucket;
 		
-		var translationMatrix:Matrix;
-		if (localCoords) {
-			translationMatrix = Matrix.__identity;
-		} else {
-			translationMatrix = object.__worldTransform;
-		}
+		var translationMatrix = object.__worldTransform.clone();
 		
 		var clipRect = @:privateAccess renderSession.spriteBatch.clipRect;
 		var batchDrawing = renderSession.spriteBatch.drawing;
-		
 		batchDrawing = renderSession.spriteBatch.drawing;
 		
 		for (i in 0...glStack.buckets.length) {
@@ -895,8 +850,8 @@ class GraphicsRenderer {
 				gl.enable(gl.SCISSOR_TEST);
 				gl.scissor(Math.floor(clipRect.x), 
 							Math.floor(clipRect.y),
-							Math.floor(clipRect.width),
-							Math.floor(clipRect.height)
+							Math.ceil(clipRect.width),
+							Math.ceil(clipRect.height)
 						);
 			}
 			
@@ -915,8 +870,11 @@ class GraphicsRenderer {
 					if (!batchDrawing) {
 						renderSession.spriteBatch.begin(renderSession, clipRect);
 					}
-					var args = Type.enumParameters(bucket.graphicType);		
-					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
+					switch(bucket.graphicType) {
+						case DrawTiles(sheet, tileData, smooth, flags, shader, count):
+							renderSession.spriteBatch.renderTiles(object, sheet, tileData, smooth, flags, shader, count);
+						case _:
+					}
 					
 					renderSession.spriteBatch.finish();
 				case _:
@@ -956,8 +914,6 @@ class GraphicsRenderer {
 	}
 
 	public static function updateGraphics (object:DisplayObject, graphics:Graphics, gl:GLRenderContext, ?localCoords:Bool = false):Void {
-		
-		objectPosition.setTo(object.x, object.y);
 		
 		if (graphics.__bounds == null) {
 			objectBounds = new Rectangle();
@@ -1013,10 +969,10 @@ class GraphicsRenderer {
 			if (bucket.uploadTileBuffer) {
 				
 				bucket.uploadTile(
-					Math.ceil(objectBounds.left), 
-					Math.ceil(objectBounds.top),
-					Math.floor(objectBounds.right), 
-					Math.floor(objectBounds.bottom));
+					Math.floor(objectBounds.left), 
+					Math.floor(objectBounds.top),
+					Math.ceil(objectBounds.right), 
+					Math.ceil(objectBounds.bottom));
 					
 			}
 			
@@ -1772,7 +1728,7 @@ enum GraphicType {
 	Circle;
 	Ellipse;
 	DrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
-	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
+	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, shader:FlashShader, count:Int);
 	OverrideMatrix (matrix:Matrix);
 
 }

@@ -2,9 +2,12 @@ package openfl._internal.renderer.opengl.utils;
 
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.*;
+import openfl.gl.GLProgram;
 
 class ShaderManager {
 
+	private static var compiledShadersCache:Map<String, GLProgram>;
+	
 	public var gl:GLRenderContext;
 	public var currentShader:Shader;
 	
@@ -20,6 +23,8 @@ class ShaderManager {
 	
 	public function setContext(gl:GLRenderContext) {
 		this.gl = gl;
+		
+		ShaderManager.compiledShadersCache = new Map();
 		
 		defaultShader = new DefaultShader(gl);
 		fillShader = new FillShader(gl);
@@ -38,7 +43,6 @@ class ShaderManager {
 		patternFillShader.destroy();
 		drawTrianglesShader.destroy();
 		primitiveShader.destroy();
-		
 		gl = null;
 		
 	}

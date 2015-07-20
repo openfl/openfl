@@ -4,10 +4,12 @@ package openfl.display; #if !flash #if !openfl_legacy
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
+import openfl.filters.BitmapFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -166,7 +168,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
 			child.dispatchEvent (event);
-			
+			__setRenderDirty();
 		}
 		
 		return child;
@@ -237,7 +239,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
 			child.dispatchEvent (event);
-			
+			__setRenderDirty();
 		}
 		
 		__children.insert (index, child);
@@ -443,7 +445,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
 			child.dispatchEvent (new Event (Event.REMOVED, true));
-			
+			__setRenderDirty();
 		}
 		
 		return child;
@@ -691,6 +693,57 @@ class DisplayObjectContainer extends InteractiveObject {
 			__updateChildren (true);
 			
 		}
+		
+	}
+	
+	@:noCompletion private override function __getRenderBounds (rect:Rectangle):Bool {
+		
+		if (super.__getRenderBounds(rect)) {
+			return true;
+		}
+		
+		if (__children.length == 0) return false;
+		
+		var matrixCache = null;
+		
+		matrixCache = __worldTransform;
+		__worldTransform = @:privateAccess Matrix.__identity;
+		__updateChildren (true);
+
+		var bounds = new Rectangle();
+		var rectBounds = new Rectangle();
+		var r = false;
+		for (child in __children) {
+			bounds.setEmpty();
+			child.__getBounds(bounds, child.__worldTransform);
+			
+			if(child.__renderable) {
+				rectBounds.setEmpty();
+				if (child.__getRenderBounds(rectBounds)) {
+					bounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+					r = true;
+				}
+			}
+			
+			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+			
+		}
+		
+		__worldTransform = matrixCache;
+		__updateChildren (true);
+		
+		return r;
+		
+		/*
+		
+		if (!getChildren) return;
+		for (child in __children) {
+			if (!child.__renderable) continue;
+			child.__getRenderBounds(rect, false);
+		}
+		
+		super.__getRenderBounds(rect, true);
+		*/
 		
 	}
 	
@@ -955,6 +1008,63 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		if (__cacheAsBitmap) {
+			
+			var hasCacheMatrix = __cacheAsBitmapMatrix != null;
+			var x = __cachedBitmapBounds.x;
+			var y = __cachedBitmapBounds.y;
+			var w = __cachedBitmapBounds.width;
+			var h = __cachedBitmapBounds.height;
+			
+			if (hasCacheMatrix) {
+				var bmpBounds = __cachedBitmapBounds.transform(__cacheAsBitmapMatrix);
+				x = bmpBounds.x;
+				y = bmpBounds.y;
+				w = bmpBounds.width;
+				h = bmpBounds.height;
+			}
+			
+			if (__updateCachedBitmap || __updateFilters) {
+				
+				if (__cachedFilterBounds != null) {
+					w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
+					h += Math.abs(__cachedFilterBounds.y) + Math.abs(__cachedFilterBounds.height);
+				}
+				
+				if (__cachedBitmap == null) {
+					__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+				}
+				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
+				
+				// we need to position the drawing origin to 0,0 in the texture
+				var m = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
+				m.translate( -x, -y);
+				// we disable the container shader, it will be applied to the final texture
+				var shader = __shader;
+				this.__shader = null;
+				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
+				this.__shader = shader;
+				
+				__updateCachedBitmap = false;
+			}
+			
+			if (__updateFilters) {
+				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap, __cachedBitmap, null, null);
+				__updateFilters = false;
+			}
+			
+			var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
+			local.invert();
+			local.__translateTransformed(x, y);
+			local.concat(__renderMatrix);
+			local.translate ( __localOffset.x, __localOffset.y);
+			
+            renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+			
+			return;
+		}
+		
+		var clipRect = null;
 		
 		if (scrollRect != null) {
 			

@@ -7,7 +7,6 @@ import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
-import lime.math.Rectangle;
 import lime.math.Vector2;
 import lime.utils.ByteArray;
 import openfl._internal.renderer.AbstractRenderer;
@@ -25,6 +24,7 @@ import openfl.display.Stage;
 import openfl.errors.Error;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.text.TextField;
 
 #if (js && html5)
@@ -76,6 +76,7 @@ class GLRenderer extends AbstractRenderer {
 		this.preserveDrawingBuffer = preserveDrawingBuffer;
 		this.width = width;
 		this.height = height;
+		this.viewPort = new Rectangle();
 		
 		this.options = {
 			alpha: transparent,
@@ -174,6 +175,8 @@ class GLRenderer extends AbstractRenderer {
 			vpHeight = height;
 			gl.viewport(x, y, width, height);
 			setOrtho(x, y, width, height);
+			
+			viewPort.setTo(x, y, width, height);
 		}
 	}
 	
@@ -313,7 +316,7 @@ class GLRenderer extends AbstractRenderer {
 		local.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
 		local.concat(shape.__renderMatrix);
 		
-		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
+		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, ALWAYS);
 		
 	}
 	

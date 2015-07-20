@@ -10,7 +10,7 @@ class VertexArray {
 
 	public var gl:GLRenderContext;
 	public var glBuffer:GLBuffer;
-	public var attributes:Array<VertexAttribute> = [];
+	public var attributes:Array<VertexAttribute>;
 	public var buffer:ArrayBuffer;
 	public var size:Int = 0;
 	public var stride(get, never):Int;

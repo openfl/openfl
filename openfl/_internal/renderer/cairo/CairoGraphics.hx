@@ -667,7 +667,7 @@ class CairoGraphics {
 						
 					}
 				
-				case DrawTiles (sheet, tileData, smooth, flags, count):
+				case DrawTiles (sheet, tileData, smooth, flags, _, count):
 					
 					var useScale = (flags & Graphics.TILE_SCALE) > 0;
 					var useRotation = (flags & Graphics.TILE_ROTATION) > 0;

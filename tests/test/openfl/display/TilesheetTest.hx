@@ -33,11 +33,12 @@ class TilesheetTest {
 	@Test public function drawTiles () {
 		
 		// TODO: Confirm functionality
-		
+		#if !neko
 		var tilesheet = new Tilesheet (new BitmapData (100, 100));
 		var exists = tilesheet.drawTiles;
 		
 		Assert.isNotNull (exists);
+		#end
 		
 	}
 	

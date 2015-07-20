@@ -3,6 +3,7 @@ package openfl._internal.renderer.opengl.shaders2;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefAttrib;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefVarying;
 
 class PatternFillShader extends Shader {
 
@@ -15,11 +16,11 @@ class PatternFillShader extends Shader {
 			'uniform mat3 ${Uniform.ProjectionMatrix};',
 			'uniform mat3 ${Uniform.PatternMatrix};',
 			
-			'varying vec2 vPosition;',
+			'varying vec2 ${DefVarying.TexCoord};',
 			
 			'void main(void) {',
 			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * ${Uniform.TranslationMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
-			'   vPosition = (${Uniform.PatternMatrix} * vec3(${Attrib.Position}, 1)).xy;',
+			'   ${DefVarying.TexCoord} = (${Uniform.PatternMatrix} * vec3(${Attrib.Position}, 1)).xy;',
 			'}'
 
 		];
@@ -37,7 +38,7 @@ class PatternFillShader extends Shader {
 			'uniform vec4 ${Uniform.ColorMultiplier};',
 			'uniform vec4 ${Uniform.ColorOffset};',
 			
-			'varying vec2 vPosition;',
+			'varying vec2 ${DefVarying.TexCoord};',
 			
 			'vec4 colorTransform(const vec4 color, const float alpha, const vec4 multiplier, const vec4 offset) {',
 			'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
@@ -50,7 +51,7 @@ class PatternFillShader extends Shader {
 			'}',	
 			
 			'void main(void) {',
-			'   vec2 pos = mix(${Uniform.PatternTL}, ${Uniform.PatternBR}, vPosition);',
+			'   vec2 pos = mix(${Uniform.PatternTL}, ${Uniform.PatternBR}, ${DefVarying.TexCoord});',
 			'   vec4 tcol = texture2D(${Uniform.Sampler}, pos);',
 			'   gl_FragColor = colorTransform(tcol, ${Uniform.Alpha}, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
 			'}'
@@ -59,9 +60,8 @@ class PatternFillShader extends Shader {
 		init();
 	}
 	
-	override function init() 
-	{
-		super.init();
+	override private function init(?force:Bool = false) {
+		super.init(force);
 		
 		getAttribLocation(Attrib.Position);
 		
@@ -83,10 +83,10 @@ class PatternFillShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var TranslationMatrix = "uTranslationMatrix";
-	var PatternMatrix = "uPatternMatrix";
-	var PatternTL = "uPatternTL";
-	var PatternBR = "uPatternBR";
+	var TranslationMatrix = "openfl_uTranslationMatrix";
+	var PatternMatrix = "openfl_uPatternMatrix";
+	var PatternTL = "openfl_uPatternTL";
+	var PatternBR = "openfl_uPatternBR";
 	var Sampler = DefUniform.Sampler;
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;

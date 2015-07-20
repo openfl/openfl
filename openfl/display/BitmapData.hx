@@ -6,29 +6,27 @@ import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
+import lime.graphics.GLRenderContext;
+import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
-import lime.graphics.GLRenderContext;
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
-import lime.math.ColorMatrix;
-import lime.math.Rectangle in LimeRectangle;
+import lime.math.Rectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
-import lime.utils.UInt8Array;
-import openfl._internal.renderer.opengl.utils.FilterTexture;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.utils.PingPongTexture;
 import openfl._internal.renderer.RenderSession;
-import openfl.errors.IOError;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
+import openfl.utils.UInt8Array;
 import openfl.Vector;
+import lime.math.Rectangle in LimeRectangle;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -147,6 +145,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private var __bgra:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __image:Image;
 	@:noCompletion private var __isValid:Bool;
@@ -154,9 +153,9 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __surfaceImage:Image;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __textureImage:Image;
-	@:noCompletion private var __framebuffer:FilterTexture;
+	@:noCompletion private var __pingPongTexture:PingPongTexture;
+	@:noCompletion private var __usingPingPongTexture:Bool = false;
 	@:noCompletion private var __uvData:TextureUvs;
-	@:noCompletion private var __usingFramebuffer:Bool = false;
 	
 	/**
 	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
@@ -297,7 +296,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		
 		__image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -370,7 +369,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		__image.copyChannel (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), sourceChannel, destChannel);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -419,7 +418,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null) return;
 		
 		__image.copyPixels (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.__image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -471,9 +470,9 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (__framebuffer != null) {
+		if (__pingPongTexture != null) {
 			
-			__framebuffer.destroy ();
+			__pingPongTexture.destroy ();
 			
 		}
 		
@@ -684,7 +683,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		__image.fillRect (rect.__toLimeRectangle (), color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -704,7 +703,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.floodFill (x, y, color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -983,8 +982,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		
-		if (__usingFramebuffer && __framebuffer != null) {
-			return __framebuffer.texture;
+		if (__usingPingPongTexture) {
+			return __pingPongTexture.texture;
 		}
 		
 		if (__texture == null) {
@@ -1129,7 +1128,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
 		__image.merge (sourceBitmapData.__image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1300,7 +1299,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.scroll (x, y);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1326,7 +1325,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.setPixel (x, y, color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1366,7 +1365,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		__image.setPixel32 (x, y, color, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1394,7 +1393,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		__image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB);
-		__usingFramebuffer = false;
+		__usingPingPongTexture = false;
 		
 	}
 	
@@ -1651,153 +1650,26 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __createUVs ():Void {
+	@:noCompletion private function __createUVs (	?x0:Float = 0, ?y0:Float = 0,
+													?x1:Float = 1, ?y1:Float = 0,
+													?x2:Float = 1, ?y2:Float = 1,
+													?x3:Float = 0, ?y3:Float = 1):Void {
 		
 		if (__uvData == null) __uvData = new TextureUvs();
 		
-		__uvData.x0 = 0;
-		__uvData.y0 = 0;
-		__uvData.x1 = 1;
-		__uvData.y1 = 0;
-		__uvData.x2 = 1;
-		__uvData.y2 = 1;
-		__uvData.x3 = 0;
-		__uvData.y3 = 1;
+		__uvData.x0 = x0;
+		__uvData.y0 = y0;
+		__uvData.x1 = x1;
+		__uvData.y1 = y1;
+		__uvData.x2 = x2;
+		__uvData.y2 = y2;
+		__uvData.x3 = x3;
+		__uvData.y3 = y3;
 		
 	}
 	
 	
-	@:noCompletion @:dox(hide) public function __drawGL (renderSession:RenderSession, width:Int, height:Int, source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, drawSelf:Bool = false, clearBuffer:Bool = false, readPixels:Bool = false):Void {
 		
-		var renderer = @:privateAccess Lib.current.stage.__renderer;
-		if (renderer == null) return;
-		
-		var renderSession = @:privateAccess renderer.renderSession;
-		var gl:GLRenderContext = renderSession.gl;
-		if (gl == null) return;
-		
-		var spritebatch = renderSession.spriteBatch;
-		var renderTransparent = renderSession.renderer.transparent;
-		
-		var tmpRect = clipRect == null ? new Rectangle (0, 0, width, height) : clipRect.clone ();
-		
-		renderSession.renderer.transparent = transparent;
-		
-		if (__framebuffer == null) {
-			
-			__framebuffer = new FilterTexture (gl, width, height, smoothing);
-			
-		}
-		
-		__framebuffer.resize (width, height);
-		gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer.frameBuffer);
-		
-		renderer.setViewport (0, 0, width, height);
-		
-		spritebatch.begin (renderSession, drawSelf ? null : tmpRect);
-		
-		// enable writing to all the colors and alpha
-		gl.colorMask (true, true, true, true);
-		renderSession.blendModeManager.setBlendMode (BlendMode.NORMAL);
-		
-		renderSession.shaderManager.setShader (renderSession.shaderManager.defaultShader, true);
-		
-		if (clearBuffer || drawSelf) {
-			
-			__framebuffer.clear ();
-			
-		}
-		
-		if (drawSelf) {
-			
-			__worldTransform.identity ();
-			__flipMatrix (__worldTransform);
-			this.__renderGL (renderSession);
-			spritebatch.stop ();
-			gl.deleteTexture (__texture);
-			__texture = null;
-			spritebatch.start (tmpRect);
-			
-		}
-		
-		var ctCache = source.__worldColorTransform;
-		var matrixCache = source.__worldTransform;
-		var blendModeCache = source.__blendMode;
-		var cached = source.__cacheAsBitmap;
-		
-		var m = matrix != null ? matrix.clone () : new Matrix ();
-		
-		__flipMatrix (m);
-		
-		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
-		source.__blendMode = blendMode;
-		source.__cacheAsBitmap = false;
-		
-		source.__updateMatrices (m);
-		source.__updateChildren (false);
-		
-		source.__renderGL (renderSession);
-		
-		
-		source.__worldColorTransform = ctCache;
-		source.__blendMode = blendModeCache;
-		source.__cacheAsBitmap = cached;
-		
-		source.__updateMatrices ();
-		source.__updateChildren (false);
-		
-		spritebatch.finish ();
-		
-		if (readPixels) {
-			
-			// TODO is this possible?
-			if (__image.width != width || __image.height != height) {
-				
-				__image.resize (width, height);
-				
-			}
-			
-			gl.readPixels (0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, __image.buffer.data);
-			
-		}
-		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, renderSession.defaultFramebuffer);
-		
-		renderer.setViewport (0, 0, renderSession.renderer.width, renderSession.renderer.height);
-		
-		renderSession.renderer.transparent = renderTransparent;
-		
-		gl.colorMask (true, true, true, renderSession.renderer.transparent);
-		
-		__usingFramebuffer = false;
-		
-		if (__image != null) {
-			
-			__image.dirty = false;
-			__image.premultiplied = true;
-			
-		}
-		
-		__createUVs ();
-		__isValid = true;
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) private inline function __flipMatrix (m:Matrix):Void {
-		
-		var tx = m.tx;
-		var ty = m.ty;
-		m.tx = 0;
-		m.ty = 0;
-		m.scale (1, -1);
-		m.translate (0, height);
-		m.tx += tx;
-		m.ty -= ty;
-		
-	}
-	
-	
 	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
 		
 		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
@@ -1984,7 +1856,21 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode);
+		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader);
+		
+	}
+
+	@:noCompletion @:dox(hide) private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
+		
+		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
+		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
+		GLBitmap.popFramebuffer(renderSession, readPixels ? __image : null);
+		
+		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
+		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
+		
+		__isValid = true;
+		__usingPingPongTexture = true;
 		
 	}
 	
@@ -2075,6 +1961,24 @@ class BitmapData implements IBitmapDrawable {
 		
 		
 	}
+	
+	@:noCompletion @:dox(hide) function __resize (width:Int, height:Int) {
+		
+		this.width = width;
+		this.height = height;
+		this.rect.width = width;
+		this.rect.height = height;
+		
+	}
+	
+	@:noCompletion @:dox(hide) static function __asRenderTexture (?width:Int = 0, ?height:Int = 0) {
+		
+		var b = new BitmapData(0, 0);
+		b.__resize(width, height);
+		
+		return b;
+	}
+	
 	
 	
 }
