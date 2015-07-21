@@ -268,7 +268,7 @@ class BitmapDataTest {
 		
 		bitmapData.copyChannel (bitmapData2, bitmapData2.rect, new Point (), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
 		
-		#if (!flash && !lime_legacy)
+		#if (!flash && !openfl_legacy)
 		if (@:privateAccess bitmapData.__image.premultiplied) {
 			
 			Assert.areEqual (hex (0x22F7F7F7), hex (bitmapData.getPixel32 (0, 0)));
