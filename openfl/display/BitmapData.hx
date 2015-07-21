@@ -588,16 +588,11 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (matrix != null) {
-			
-			matrix = matrix.clone ();
-			
-		}
-		
-		source.__updateMatrices (matrix);
+		var matrixCache = source.__worldTransform;
+		source.__worldTransform = matrix != null ? matrix : new Matrix ();
 		source.__updateChildren (false);
 		source.__renderCanvas (renderSession);
-		source.__updateMatrices ();
+		source.__worldTransform = matrixCache;
 		source.__updateChildren (true);
 		
 		if (!smoothing) {
@@ -631,16 +626,11 @@ class BitmapData implements IBitmapDrawable {
 		renderSession.cairo = cairo;
 		renderSession.roundPixels = true;
 		
-		if (matrix != null) {
-			
-			matrix = matrix.clone (); // TODO: Why is this being modified?
-			
-		}
-		
-		source.__updateMatrices (matrix);
+		var matrixCache = source.__worldTransform;
+		source.__worldTransform = matrix != null ? matrix : new Matrix ();
 		source.__updateChildren (false);
-		source.__renderCairo (renderSession);
-		source.__updateMatrices ();
+		source.__renderCanvas (renderSession);
+		source.__worldTransform = matrixCache;
 		source.__updateChildren (true);
 		
 		surface.flush ();
@@ -1675,22 +1665,21 @@ class BitmapData implements IBitmapDrawable {
 		
 		__flipMatrix (m);
 		
+		source.__worldTransform = m;
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
 		source.__cacheAsBitmap = false;
 		
-		source.__updateMatrices (m);
 		source.__updateChildren (false);
 		
 		source.__renderGL (renderSession);
 		
-		
 		source.__worldColorTransform = ctCache;
+		source.__worldTransform = matrixCache;
 		source.__blendMode = blendModeCache;
 		source.__cacheAsBitmap = cached;
 		
-		source.__updateMatrices ();
-		source.__updateChildren (false);
+		source.__updateChildren (true);
 		
 		spritebatch.finish ();
 		
@@ -1999,17 +1988,6 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-		}
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null):Void {
-		
-		if (overrideTransform == null) {
-			__worldTransform.identity();
-		} else {
-			__worldTransform = overrideTransform;
 		}
 		
 	}

@@ -711,10 +711,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var y (get, set):Float;
 	
 	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
-	@:dox(hide) @:noCompletion public var __worldOffset:Point;
-	@:dox(hide) @:noCompletion public var __localOffset:Point;
-	@:dox(hide) @:noCompletion public var __localMatrix:Matrix;
-	@:dox(hide) @:noCompletion public var __renderMatrix:Matrix;
 	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
 	
 	@:noCompletion private var __alpha:Float;
@@ -774,10 +770,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
-		__localMatrix = new Matrix ();
-		__worldOffset = new Point ();
-		__localOffset = new Point ();
-		__renderMatrix = new Matrix ();
 		__rotationCache = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
@@ -848,7 +840,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix = new Matrix();
+		var matrix = __getTransform ();
 		
 		if (targetCoordinateSpace != null) {
 			
@@ -1049,33 +1041,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		var m = __getLocalMatrix ().clone ();
-		m.__translateTransformed( -m.tx, -m.ty);
-		__getBounds (rect, m);
+		__getTransform ();
+		__getBounds (rect, new Matrix ());
 		
 	}
 	
-	@:noCompletion private function __getLocalMatrix () {
-		
-		if (rotation != __rotationCache) {
-			
-			__rotationCache = rotation;
-			var radians = rotation * (Math.PI / 180);
-			__rotationSine = Math.sin (radians);
-			__rotationCosine = Math.cos (radians);
-			
-		}
-		
-		__localMatrix.a = __rotationCosine * scaleX;
-		__localMatrix.c = -__rotationSine * scaleY;
-		__localMatrix.b = __rotationSine * scaleX;
-		__localMatrix.d = __rotationCosine * scaleY;
-		__localMatrix.tx = x;
-		__localMatrix.ty = y;
-		
-		return __localMatrix;
-		
-	}
 	
 	@:noCompletion private function __getTransform ():Matrix {
 		
@@ -1275,43 +1245,73 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
-	@:noCompletion @:dox(hide) public function __updateMatrices (?overrideTransform:Matrix = null) {
-		
-		var overrided = overrideTransform != null;
-		
-		if (overrided) {
-			__localMatrix = overrideTransform;
-		} else {
-			__getLocalMatrix();
-		}
-		
-		__worldTransform.copyFrom (__localMatrix);
-		
-		if (!overrided && parent != null) {
-			__worldTransform.concat(parent.__worldTransform);
-			__worldOffset.copyFrom(parent.__worldOffset);
-		} else {
-			__worldOffset.setTo(0, 0);
-		}
-		
-		if (__scrollRect != null) {
-			__localOffset = __worldTransform.deltaTransformPoint(__scrollRect.topLeft);
-			__worldOffset.offset(__localOffset.x, __localOffset.y);
-		} else {
-			__localOffset.setTo(0, 0);
-		}
-		
-		__renderMatrix.copyFrom(__worldTransform);
-		__renderMatrix.translate( -__worldOffset.x, -__worldOffset.y);
-		
-	}
 	
 	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		//if (!__renderable && !__isMask) return;
 		
-		__updateMatrices();
+		if (rotation != __rotationCache) {
+			
+			__rotationCache = rotation;
+			var radians = rotation * (Math.PI / 180);
+			__rotationSine = Math.sin (radians);
+			__rotationCosine = Math.cos (radians);
+			
+		}
+		
+		var sr = scrollRect;
+		
+		if (parent != null) {
+			
+			var parentTransform = parent.__worldTransform;
+			
+			var a00 = __rotationCosine * scaleX;
+			var a01 = __rotationSine * scaleX;
+			var a10 = -__rotationSine * scaleY;
+			var a11 = __rotationCosine * scaleY;
+			var b00 = parentTransform.a;
+			var b01 = parentTransform.b;
+			var b10 = parentTransform.c;
+			var b11 = parentTransform.d;
+			
+			if (__worldTransform == null) __worldTransform = new Matrix ();
+			
+			__worldTransform.a = a00 * b00 + a01 * b10;
+			__worldTransform.b = a00 * b01 + a01 * b11;
+			__worldTransform.c = a10 * b00 + a11 * b10;
+			__worldTransform.d = a10 * b01 + a11 * b11;
+			__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
+			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
+			
+			if (sr != null) {
+				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					sr = sr.transform(__worldTransform);
+				}
+				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
+				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
+			}
+			
+			if(__isMask) __maskCached = false;
+			
+		} else {
+			
+			__worldTransform.a = __rotationCosine * scaleX;
+			__worldTransform.c = -__rotationSine * scaleY;
+			__worldTransform.b = __rotationSine * scaleX;
+			__worldTransform.d = __rotationCosine * scaleY;
+			__worldTransform.tx = x;
+			__worldTransform.ty = y;
+			
+			if (sr != null) {
+				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					sr = sr.transform(__worldTransform);
+				}
+				__worldTransform.tx = x - scrollRect.x;
+				__worldTransform.ty = y - scrollRect.y;
+			}
+			
+		}
 		
 		if (updateChildren && __transformDirty) {
 			
@@ -1533,7 +1533,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		return bounds.height;
+		return bounds.height * scaleY;
 		
 	}
 	
@@ -1761,7 +1761,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		return bounds.width;
+		return bounds.width * scaleX;
 		
 	}
 	

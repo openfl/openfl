@@ -311,7 +311,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		var local = new Matrix ();
 		local.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
-		local.concat(shape.__renderMatrix);
+		local = local.mult (shape.__worldTransform);
 		
 		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
 		

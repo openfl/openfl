@@ -669,10 +669,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			matrix = matrix.clone ();
-			//matrixCache = __worldTransform;
-			//__worldTransform = matrix;
-			__updateMatrices (matrix);
+			matrixCache = __worldTransform;
+			__worldTransform = matrix;
 			__updateChildren (true);
 			
 		}
@@ -686,8 +684,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			//__worldTransform = matrixCache;
-			__updateMatrices ();
+			__worldTransform = matrixCache;
 			__updateChildren (true);
 			
 		}
@@ -810,7 +807,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popRect ();
+			renderSession.maskManager.popMask ();
 			
 		}
 		
@@ -849,7 +846,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __renderMatrix);
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
 			
 		}
 		
@@ -875,7 +872,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popRect ();
+			renderSession.maskManager.popMask ();
 			
 		}
 		
@@ -955,18 +952,23 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		
 		if (scrollRect != null) {
+			renderSession.spriteBatch.stop();
+			var m = __worldTransform.clone();
+			var clip = scrollRect.transform(m);
+			clip.y = renderSession.renderer.height - clip.y - clip.height;
 			
-			renderSession.maskManager.pushRect(scrollRect, __renderMatrix);
-			
+			renderSession.spriteBatch.start(clip);
 		}
+		
 		
 		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
 		
 		if (masked) {
 			
+			renderSession.spriteBatch.stop ();
 			renderSession.maskManager.pushMask (this);
+			renderSession.spriteBatch.start ();
 			
 		}
 		
@@ -980,17 +982,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (masked) {
 			
+			renderSession.spriteBatch.stop ();
+			//renderSession.maskManager.popMask (this);
 			renderSession.maskManager.popMask ();
+			renderSession.spriteBatch.start ();
 			
 		}
 		
 		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
+			renderSession.spriteBatch.stop();
+			renderSession.spriteBatch.start();
 		}
-		
-		
 		
 		__removedChildren = [];
 		
