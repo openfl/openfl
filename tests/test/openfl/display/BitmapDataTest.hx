@@ -268,7 +268,15 @@ class BitmapDataTest {
 		
 		bitmapData.copyChannel (bitmapData2, bitmapData2.rect, new Point (), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
 		
-		Assert.areEqual (hex (0x22FFFFFF), hex (bitmapData.getPixel32 (0, 0)));
+		if (@:privateAccess bitmapData.__image.premultiplied) {
+			
+			Assert.areEqual (hex (0x22F7F7F7), hex (bitmapData.getPixel32 (0, 0)));
+			
+		} else {
+			
+			Assert.areEqual (hex (0x22FFFFFF), hex (bitmapData.getPixel32 (0, 0)));
+			
+		}
 		
 		var bitmapData = new BitmapData (100, 80, false, 0x00FF0000);
 		
@@ -324,7 +332,7 @@ class BitmapDataTest {
 	}
 	
 	
-	#if (!flash && !openfl_legacy) @Ignore #end @Test public function draw () {
+	@Test public function draw () {
 		
 		var bitmapData = new BitmapData (100, 100);
 		var bitmapData2 = new Bitmap (new BitmapData (100, 100, true, 0xFF0000FF));
@@ -686,7 +694,7 @@ class BitmapDataTest {
 		// TODO: Native targets do not match the flash behavior here.
 		//	   If the native target is changed to match flash, 
 		//	   testGetSetPixels() must be changed to match.
-		#if !neko
+		#if (!cpp && !neko)
 		testGetSetPixels(0x80112233, true, true);
 		#end
 	}
@@ -701,7 +709,7 @@ class BitmapDataTest {
 	
 	@Test public function testGetAndSetPixelsSemiARGBToRGB() {
 		// TODO
-		#if !neko
+		#if (!cpp && !neko)
 		testGetSetPixels(0x80112233, true, false);
 		#end
 	}
