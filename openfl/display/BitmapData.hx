@@ -207,7 +207,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if sys
 			var buffer = new ImageBuffer (new UInt8Array (width * height * 4), width, height);
-			buffer.format = BGRA;
+			buffer.format = BGRA32;
 			buffer.premultiplied = true;
 			
 			__image = new Image (buffer, 0, 0, width, height);
@@ -686,7 +686,7 @@ class BitmapData implements IBitmapDrawable {
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
 		if (!__isValid || rect == null) return;
-		__image.fillRect (rect.__toLimeRectangle (), color, ARGB);
+		__image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
 		__usingFramebuffer = false;
 		
 	}
@@ -706,7 +706,7 @@ class BitmapData implements IBitmapDrawable {
 	public function floodFill (x:Int, y:Int, color:Int):Void {
 		
 		if (!__isValid) return;
-		__image.floodFill (x, y, color, ARGB);
+		__image.floodFill (x, y, color, ARGB32);
 		__usingFramebuffer = false;
 		
 	}
@@ -889,7 +889,7 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixel (x:Int, y:Int):Int {
 		
 		if (!__isValid) return 0;
-		return __image.getPixel (x, y, ARGB);
+		return __image.getPixel (x, y, ARGB32);
 		
 	}
 	
@@ -919,7 +919,7 @@ class BitmapData implements IBitmapDrawable {
 	public function getPixel32 (x:Int, y:Int):Int {
 		
 		if (!__isValid) return 0;
-		return __image.getPixel32 (x, y, ARGB);
+		return __image.getPixel32 (x, y, ARGB32);
 		
 	}
 	
@@ -937,7 +937,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		if (rect == null) rect = this.rect;
-		return __image.getPixels (rect.__toLimeRectangle (), ARGB);
+		return __image.getPixels (rect.__toLimeRectangle (), ARGB32);
 		
 	}
 	
@@ -1271,7 +1271,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixel (x:Int, y:Int, color:Int):Void {
 		
 		if (!__isValid) return;
-		__image.setPixel (x, y, color, ARGB);
+		__image.setPixel (x, y, color, ARGB32);
 		__usingFramebuffer = false;
 		
 	}
@@ -1311,7 +1311,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixel32 (x:Int, y:Int, color:Int):Void {
 		
 		if (!__isValid) return;
-		__image.setPixel32 (x, y, color, ARGB);
+		__image.setPixel32 (x, y, color, ARGB32);
 		__usingFramebuffer = false;
 		
 	}
@@ -1339,7 +1339,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
 		if (!__isValid || rect == null) return;
-		__image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB);
+		__image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
 		__usingFramebuffer = false;
 		
 	}
@@ -1830,7 +1830,7 @@ class BitmapData implements IBitmapDrawable {
 		rect = new Rectangle (0, 0, image.width, image.height);
 		
 		#if sys
-		image.format = BGRA;
+		image.format = BGRA32;
 		image.premultiplied = true;
 		#end
 		
