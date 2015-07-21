@@ -268,13 +268,13 @@ class BitmapDataTest {
 		
 		bitmapData.copyChannel (bitmapData2, bitmapData2.rect, new Point (), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
 		
-		#if (!flash && !openfl_legacy)
-		if (@:privateAccess bitmapData.__image.premultiplied) {
-			
-			Assert.areEqual (hex (0x22F7F7F7), hex (bitmapData.getPixel32 (0, 0)));
-			
-		} else
-		#end
+		//#if (!flash && !openfl_legacy && !disable_cffi)
+		//if (@:privateAccess bitmapData.__image.premultiplied) {
+			//
+			//Assert.areEqual (hex (0x22F7F7F7), hex (bitmapData.getPixel32 (0, 0)));
+			//
+		//} else
+		//#end
 		{
 			
 			Assert.areEqual (hex (0x22FFFFFF), hex (bitmapData.getPixel32 (0, 0)));
