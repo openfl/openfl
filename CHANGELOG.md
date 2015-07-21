@@ -1,3 +1,12 @@
+3.2.0 (07/21/2015)
+------------------
+
+* Moved BitmapData to premultiplied BGRA instead of unmultiplied RGBA
+* Drastically improved performance of bitmapData.draw
+* Reverted scrollRect/transform change from 3.1.2
+* Improved support for both local/remote assets in Loader/URLLoader
+
+
 3.1.4 (07/17/2015)
 ------------------
 
