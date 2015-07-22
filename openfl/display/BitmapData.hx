@@ -969,9 +969,30 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__image != null && __image.dirty) {
 			
-			var internalFormat = (__image.buffer.bitsPerPixel == 1 ? gl.ALPHA : gl.RGBA);
-			var format = #if sys gl.BGRA_EXT #else gl.RGBA #end;
+			var internalFormat, format;
+			
+			if (__image.buffer.bitsPerPixel == 1) {
+				
+				internalFormat = gl.ALPHA;
+				format = gl.ALPHA;
+				
+			} else {
+				
+				#if (desktop || ios)
+				internalFormat = gl.RGBA;
+				format = gl.BGRA_EXT;
+				#elseif sys
+				internalFormat = gl.BGRA_EXT;
+				format = gl.BGRA_EXT;
+				#else
+				internalFormat = gl.RGBA;
+				format = gl.RGBA;
+				#end
+				
+			}
+			
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
+			
 			var textureImage = __image;
 			
 			if (!textureImage.premultiplied && textureImage.transparent) {
