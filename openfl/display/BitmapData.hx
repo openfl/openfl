@@ -629,7 +629,7 @@ class BitmapData implements IBitmapDrawable {
 		var matrixCache = source.__worldTransform;
 		source.__worldTransform = matrix != null ? matrix : new Matrix ();
 		source.__updateChildren (false);
-		source.__renderCanvas (renderSession);
+		source.__renderCairo (renderSession);
 		source.__worldTransform = matrixCache;
 		source.__updateChildren (true);
 		
