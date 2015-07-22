@@ -27,6 +27,7 @@ import openfl.text.TextFormat;
 class CairoTextField {
 	
 	
+	private static var __defaultFonts = new Map<String, Font> ();
 	private static var __utf8_endline_code:Int = 10;
 	
 	
@@ -71,8 +72,13 @@ class CairoTextField {
 		
 		if (format != null && format.font != null) {
 			
-			instance = findFont (format.font);
+			if (__defaultFonts.exists (format.font)) {
+				
+				return __defaultFonts.get (format.font);
+				
+			}
 			
+			instance = findFont (format.font);
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
@@ -171,14 +177,18 @@ class CairoTextField {
 					
 					instance = findFont (font);
 					
-					if (instance != null) return instance;
+					if (instance != null) {
+						
+						__defaultFonts.set (format.font, instance);
+						return instance;
+						
+					}
 					
 				}
 				
 			}
 			
 			instance = findFont ("_serif");
-			
 			if (instance != null) return instance;
 			
 		}
@@ -227,9 +237,16 @@ class CairoTextField {
 			
 			instance = findFont (font);
 			
-			if (instance != null) return instance;
+			if (instance != null) {
+				
+				__defaultFonts.set (format.font, instance);
+				return instance;
+				
+			}
 			
 		}
+		
+		__defaultFonts.set (format.font, null);
 		
 		#end
 		
@@ -854,6 +871,8 @@ class CairoTextField {
 				
 				tlm = textField.getLineMetrics (line_i);
 				x = oldX;
+				
+				// TODO: Make textField.getLineMetrics ().x match this value
 				
 				x += switch (format.align) {
 					
