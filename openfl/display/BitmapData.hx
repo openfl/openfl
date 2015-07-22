@@ -477,6 +477,7 @@ class BitmapData implements IBitmapDrawable {
 				if (gl != null) {
 					
 					gl.deleteTexture (__texture);
+					__texture = null;
 					
 				}
 				
@@ -487,6 +488,7 @@ class BitmapData implements IBitmapDrawable {
 		if (__framebuffer != null) {
 			
 			__framebuffer.destroy ();
+			__framebuffer = null;
 			
 		}
 		
