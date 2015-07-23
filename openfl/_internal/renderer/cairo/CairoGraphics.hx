@@ -1022,9 +1022,10 @@ class CairoGraphics {
 				
 			}
 			
+			graphics.__bitmap.__image.dirty = true;
+			
 		}
 		
-		graphics.__bitmap.__image.dirty = true;
 		graphics.__dirty = false;
 		
 		#end
