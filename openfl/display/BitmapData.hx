@@ -1438,16 +1438,15 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
-		if (sourceBitmapData == this && sourceRect.equals(rect) && destPoint.x == 0 && destPoint.y == 0) {
+		if (sourceBitmapData == this && sourceRect.equals (rect) && destPoint.x == 0 && destPoint.y == 0) {
 			
 			var hits = 0;
 			
-			threshold = __flipPixel (threshold);
-			color = __flipPixel (color);
-			
+			#if flash
 			var memory = new ByteArray ();
-			#if js
-			memory.length  = width * height * 4;
+			memory.length = width * height * 4;
+			#else
+			var memory = new ByteArray (width * height * 4);
 			#end
 			memory = getPixels (rect);
 			memory.position = 0;
@@ -1511,9 +1510,6 @@ class BitmapData implements IBitmapDrawable {
 			
 			var hits = 0;
 			
-			threshold = __flipPixel (threshold);
-			color = __flipPixel (color);
-			
 			var canvasMemory = (sw * sh) * 4;
 			var sourceMemory = 0;
 			
@@ -1524,9 +1520,11 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var totalMemory = (canvasMemory + sourceMemory);
+			#if flash
 			var memory = new ByteArray ();
-			#if js
 			memory.length = totalMemory;
+			#else
+			var memory = new ByteArray (totalMemory);
 			#end
 			memory.position = 0;
 			var bitmapData = sourceBitmapData.clone ();
@@ -1580,7 +1578,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			memory.position = 0;	
+			memory.position = 0;
 			bitmapData.setPixels (sourceRect, memory);
 			copyPixels (bitmapData, bitmapData.rect, destPoint);
 			Memory.select (null);
