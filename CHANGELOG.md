@@ -1,3 +1,12 @@
+3.2.1 (07/22/2015)
+------------------
+
+* Updated OpenGLView.isSupported to report false in single canvas mode 
+* Fixed a memory leak when using _sans, _serif and _typewriter fonts
+* Fixed possible black texture issue on some platforms
+* Fixed regression in bitmapData.draw
+
+
 3.2.0 (07/21/2015)
 ------------------
 
