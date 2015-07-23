@@ -973,6 +973,12 @@ class BitmapData implements IBitmapDrawable {
 			
 			var internalFormat, format;
 			
+			if (__surface != null) {
+				
+				__surface.flush ();
+				
+			}
+			
 			if (__image.buffer.bitsPerPixel == 1) {
 				
 				internalFormat = gl.ALPHA;
@@ -1750,13 +1756,6 @@ class BitmapData implements IBitmapDrawable {
 		m.translate (0, height);
 		m.tx += tx;
 		m.ty -= ty;
-		
-	}
-	
-	
-	@:noCompletion private static inline function __flipPixel (pixel:Int):Int {
-		
-		return (pixel & 0xFF) << 24 | (pixel >>  8 & 0xFF) << 16 | (pixel >> 16 & 0xFF) <<  8 | (pixel >> 24 & 0xFF);
 		
 	}
 	
