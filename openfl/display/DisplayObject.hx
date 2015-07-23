@@ -787,6 +787,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	public override function dispatchEvent (event:Event):Bool {
 		
+		if (event.type == Event.ADDED_TO_STAGE){
+			if (parent != null && parent != this) {
+				parent.__targetDispatcher = this;
+				parent.dispatchEvent(event);
+			}
+		}
+		else {
+			event.eventPhase = EventPhase.AT_TARGET;
+		}
+		
 		var result = super.dispatchEvent (event);
 		
 		if (event.__isCancelled) {
