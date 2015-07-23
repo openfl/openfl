@@ -256,11 +256,20 @@ class EventDispatcher implements IEventDispatcher {
 		if (__eventMap == null || event == null) return false;
 		
 		var type = event.type;
+		var list;
 		
-		var list = __eventMap.get (type);
+		if (__dispatching.get (type) == true) {
+			
+			list = __newEventMap.get (type).copy ();
+			
+		} else {
+			
+			list = __eventMap.get (type);
+			__dispatching.set (type, true);
+			
+		}
+		
 		if (list == null) return false;
-		
-		__dispatching.set (type, true);
 		
 		if (event.target == null) {
 			
