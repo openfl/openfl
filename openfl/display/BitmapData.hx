@@ -1444,6 +1444,8 @@ class BitmapData implements IBitmapDrawable {
 	 */
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
+		if (sourceBitmapData == null || sourceRect == null || destPoint == null || sourceRect.x > sourceBitmapData.width || sourceRect.y > sourceBitmapData.height || destPoint.x > width || destPoint.y > height) return 0;
+		
 		if (sourceBitmapData == this && sourceRect.equals (rect) && destPoint.x == 0 && destPoint.y == 0) {
 			
 			var hits = 0;
@@ -1500,10 +1502,42 @@ class BitmapData implements IBitmapDrawable {
 			
 		} else {
 			
+			sourceRect = sourceRect.clone ();
+			
+			if (sourceRect.right > sourceBitmapData.width) {
+				
+				sourceRect.width = sourceBitmapData.width - sourceRect.x;
+				
+			}
+			
+			if (sourceRect.bottom > sourceBitmapData.height) {
+				
+				sourceRect.height = sourceBitmapData.height - sourceRect.y;
+				
+			}
+			
+			var targetRect = sourceRect.clone ();
+			targetRect.offsetPoint (destPoint);
+			
+			if (targetRect.right > width) {
+				
+				targetRect.width = width - targetRect.x;
+				
+			}
+			
+			if (targetRect.bottom > height) {
+				
+				targetRect.height = height - targetRect.y;
+				
+			}
+			
+			sourceRect.width = Math.min (sourceRect.width, targetRect.width);
+			sourceRect.height = Math.min (sourceRect.height, targetRect.height);
+			
 			var sx = Std.int (sourceRect.x);
 			var sy = Std.int (sourceRect.y);
-			var sw = Std.int (sourceBitmapData.width);
-			var sh = Std.int (sourceBitmapData.height);
+			var sw = Std.int (sourceRect.width);
+			var sh = Std.int (sourceRect.height);
 			
 			var dx = Std.int (destPoint.x);
 			var dy = Std.int (destPoint.y);
@@ -1517,32 +1551,32 @@ class BitmapData implements IBitmapDrawable {
 			var hits = 0;
 			
 			var canvasMemory = (sw * sh) * 4;
-			var sourceMemory = 0;
-			
-			if (copySource) {
-				
-				sourceMemory = (sw * sh) * 4;
-				
-			}
-			
+			var sourceMemory = (sw * sh) * 4;
 			var totalMemory = (canvasMemory + sourceMemory);
+			
 			#if flash
 			var memory = new ByteArray ();
 			memory.length = totalMemory;
 			#else
 			var memory = new ByteArray (totalMemory);
 			#end
+			
 			memory.position = 0;
-			var bitmapData = sourceBitmapData.clone ();
-			var pixels = bitmapData.getPixels (sourceRect);
-			memory.writeBytes (pixels);
-			memory.position = canvasMemory;
+			
+			var pixels = sourceBitmapData.getPixels (sourceRect);
 			
 			if (copySource) {
 				
 				memory.writeBytes (pixels);
 				
+			} else {
+				
+				memory.writeBytes (getPixels (targetRect));
+				
 			}
+			
+			memory.position = canvasMemory;
+			memory.writeBytes (pixels);
 			
 			memory.position = 0;
 			Memory.select (memory);
@@ -1556,7 +1590,7 @@ class BitmapData implements IBitmapDrawable {
 				for (xx in 0...dw) {
 					
 					position = ((xx + sx) + (yy + sy) * sw) * 4;
-					pixelValue = Memory.getI32 (position);
+					pixelValue = Memory.getI32 (canvasMemory + position);
 					pixelMask = cast pixelValue & mask;
 					
 					i = __ucompare (pixelMask, thresholdMask);
@@ -1574,10 +1608,6 @@ class BitmapData implements IBitmapDrawable {
 						Memory.setI32 (position, color);
 						hits++;
 						
-					} else if (copySource) {
-						
-						Memory.setI32 (position, Memory.getI32 (canvasMemory + position));
-						
 					}
 					
 				}
@@ -1585,8 +1615,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			memory.position = 0;
-			bitmapData.setPixels (sourceRect, memory);
-			copyPixels (bitmapData, bitmapData.rect, destPoint);
+			setPixels (targetRect, memory);
 			Memory.select (null);
 			return hits;
 			
