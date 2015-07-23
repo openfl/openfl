@@ -18,6 +18,8 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.cairo.CairoMaskManager;
+import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
@@ -581,6 +583,7 @@ class BitmapData implements IBitmapDrawable {
 		var renderSession = new RenderSession ();
 		renderSession.context = cast buffer.__srcContext;
 		renderSession.roundPixels = true;
+		renderSession.maskManager = new CanvasMaskManager (renderSession);
 		
 		if (!smoothing) {
 			
@@ -627,6 +630,7 @@ class BitmapData implements IBitmapDrawable {
 		var renderSession = new RenderSession ();
 		renderSession.cairo = cairo;
 		renderSession.roundPixels = true;
+		renderSession.maskManager = new CairoMaskManager (renderSession);
 		
 		var matrixCache = source.__worldTransform;
 		source.__worldTransform = matrix != null ? matrix : new Matrix ();
