@@ -1,3 +1,12 @@
+3.2.2 (07/23/2015)
+------------------
+
+* Improved the accuracy of bitmapData.threshold
+* Minor improvements to Cairo rendering
+* Fixed an issue where Bitmap objects could stop scaling 
+* Fixed possible infinite event dispatch loop
+
+
 3.2.1 (07/22/2015)
 ------------------
 
