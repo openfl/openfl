@@ -412,6 +412,7 @@ class URLLoader extends EventDispatcher {
 	}
 
 	@:noCompletion public static function __pollData ():Void {
+		if (eventsQueue.length == 0) return;
 		var evt = eventsQueue.shift();
 		if (evt!=null) {
 			evt.loader.dispatchEvent(evt.event);
