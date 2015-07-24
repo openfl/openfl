@@ -797,7 +797,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__removedChildren = [];
+		if (__removedChildren.length > 0) __removedChildren = [];
 		
 		if (__mask != null) {
 			
@@ -862,7 +862,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__removedChildren = [];
+		if (__removedChildren.length > 0) __removedChildren = [];
 		
 		if (__mask != null) {
 			
@@ -935,7 +935,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__removedChildren = [];
+		if (__removedChildren.length > 0) __removedChildren = [];
 		
 		if (__mask != null) {
 			
@@ -994,7 +994,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			renderSession.spriteBatch.start();
 		}
 		
-		__removedChildren = [];
+		if (__removedChildren.length > 0) __removedChildren = [];
 		
 	}
 	

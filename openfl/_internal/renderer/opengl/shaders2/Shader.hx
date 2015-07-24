@@ -96,7 +96,7 @@ class Shader {
 		var offset = 0;
 		var stride = va.stride;
 		
-		for (attribute in va.attributes) {			
+		for (attribute in va.attributes) {
 			if (attribute.enabled) {
 				enableVertexAttribute(attribute, stride, offset);
 				offset += attribute.elements;
