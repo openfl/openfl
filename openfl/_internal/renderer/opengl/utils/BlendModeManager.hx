@@ -8,7 +8,6 @@ import openfl.gl.GL;
 
 class BlendModeManager {
 	
-	public static var glBlendModes:Map<BlendMode, GLBlendMode> = null;
 	public var currentBlendMode:BlendMode;
 	public var gl:GLRenderContext;
 	
@@ -17,35 +16,6 @@ class BlendModeManager {
 		
 		this.gl = gl;
 		currentBlendMode = null;
-		
-		if (glBlendModes == null) {
-			
-			glBlendModes = new Map ();
-			
-			glBlendModes.set (BlendMode.NORMAL, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			glBlendModes.set (BlendMode.ADD, { src: ONE, dest: ONE, func: ADD } );
-			glBlendModes.set (BlendMode.MULTIPLY, { src: DST_COLOR, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			glBlendModes.set (BlendMode.SCREEN, { src: ONE, dest: ONE_MINUS_SRC_COLOR, func: ADD } );
-			glBlendModes.set (BlendMode.SUBTRACT, { src: ONE, dest: ONE, func: REVERSE_SUBTRACT } );
-			
-			// it's not necessary
-			glBlendModes.set (BlendMode.LAYER, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			// possible on desktop openGL not on webGL ( func: MIN )
-			glBlendModes.set (BlendMode.DARKEN, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			// possible on desktop openGL not on webGL ( func: MAX )
-			glBlendModes.set (BlendMode.LIGHTEN, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			// doesn't work as flash (output is black) { src: ZERO, dest: ONE_MINUS_SRC_ALPHA, func: ADD }
-			glBlendModes.set (BlendMode.ERASE, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			// doesn't work as flash (output is black) { src: ZERO, dest: SRC_ALPHA, func: ADD }
-			glBlendModes.set (BlendMode.ALPHA, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			
-			// Not possible			
-			glBlendModes.set (BlendMode.INVERT, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			glBlendModes.set (BlendMode.DIFFERENCE, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );			
-			glBlendModes.set (BlendMode.HARDLIGHT, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			glBlendModes.set (BlendMode.OVERLAY, { src: ONE, dest: ONE_MINUS_SRC_ALPHA, func: ADD } );
-			
-		}
 		
 	}
 	
@@ -74,10 +44,34 @@ class BlendModeManager {
 		
 		currentBlendMode = blendMode;
 		
-		var glBlend:GLBlendMode = glBlendModes[currentBlendMode];
-		gl.blendEquation(glBlend.func);
-		gl.blendFunc(glBlend.src, glBlend.dest);
-		
+		switch (blendMode) {
+			
+			case ADD:
+				
+				gl.blendEquation (ADD);
+				gl.blendFunc (ONE, ONE);
+			
+			case MULTIPLY:
+				
+				gl.blendEquation (ADD);
+				gl.blendFunc (DST_COLOR, ONE_MINUS_SRC_ALPHA);
+			
+			case SCREEN:
+				
+				gl.blendEquation (ADD);
+				gl.blendFunc (ONE, ONE_MINUS_SRC_COLOR);
+			
+			case SUBTRACT:
+				
+				gl.blendEquation (REVERSE_SUBTRACT);
+				gl.blendFunc (ONE, ONE);
+			
+			default:
+				
+				gl.blendEquation (ADD);
+				gl.blendFunc (ONE, ONE_MINUS_SRC_ALPHA);
+			
+		}
 		
 		return true;
 		
