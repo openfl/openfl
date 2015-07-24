@@ -261,9 +261,7 @@ class CairoTextField {
 		
 		var lines = 0;
 		
-		for (i in 0...Utf8.length (textField.text)) {
-			
-			var char = Utf8.charCodeAt (textField.text, i);
+		Utf8.iter(textField.text, function(char:Int) {
 			
 			if (char == __utf8_endline_code) {
 				
@@ -271,7 +269,7 @@ class CairoTextField {
 				
 			}
 			
-		}
+		});
 		
 		return lines;
 		
@@ -284,21 +282,18 @@ class CairoTextField {
 		
 		var breaks = [];
 		
-		for (i in 0...Utf8.length (textField.text)) {
+		var i = 0;
+		
+		Utf8.iter(textField.text, function(char:Int) {
 			
-			try {
+			if (char == __utf8_endline_code) {
 				
-				var char = Utf8.charCodeAt (textField.text, i);
-				
-				if (char == __utf8_endline_code) {
-					
-					breaks.push (i);
-					
-				}
+				breaks.push (i);
+				i++;
 				
 			}
 			
-		}
+		});
 		
 		return breaks;
 		
@@ -319,9 +314,7 @@ class CairoTextField {
 			
 			if (range.start > 0 && range.end < textField.text.length) {
 				
-				for (j in range.start...range.end + 1) {
-					
-					var char = Utf8.charCodeAt (textField.text, i);
+				Utf8.iter(textField.text, function(char:Int) {
 					
 					if (char == __utf8_endline_code) {
 						
@@ -329,7 +322,7 @@ class CairoTextField {
 						
 					}
 					
-				}
+				});
 				
 			}
 			
