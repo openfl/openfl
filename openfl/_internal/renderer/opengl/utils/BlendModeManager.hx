@@ -48,28 +48,28 @@ class BlendModeManager {
 			
 			case ADD:
 				
-				gl.blendEquation (ADD);
-				gl.blendFunc (ONE, ONE);
+				gl.blendEquation (GL.ADD);
+				gl.blendFunc (GL.ONE, GL.ONE);
 			
 			case MULTIPLY:
 				
-				gl.blendEquation (ADD);
-				gl.blendFunc (DST_COLOR, ONE_MINUS_SRC_ALPHA);
+				gl.blendEquation (GL.ADD);
+				gl.blendFunc (GL.DST_COLOR, GL.ONE_MINUS_SRC_ALPHA);
 			
 			case SCREEN:
 				
-				gl.blendEquation (ADD);
-				gl.blendFunc (ONE, ONE_MINUS_SRC_COLOR);
+				gl.blendEquation (GL.ADD);
+				gl.blendFunc (GL.ONE, GL.ONE_MINUS_SRC_COLOR);
 			
 			case SUBTRACT:
 				
-				gl.blendEquation (REVERSE_SUBTRACT);
-				gl.blendFunc (ONE, ONE);
+				gl.blendEquation (GL.REVERSE_SUBTRACT);
+				gl.blendFunc (GL.ONE, GL.ONE);
 			
 			default:
 				
-				gl.blendEquation (ADD);
-				gl.blendFunc (ONE, ONE_MINUS_SRC_ALPHA);
+				gl.blendEquation (GL.ADD);
+				gl.blendFunc (GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
 			
 		}
 		
