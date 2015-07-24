@@ -294,15 +294,24 @@ class SoundChannel extends EventDispatcher {
 	}
 	
 	
-	private function set_soundTransform (value:SoundTransform):SoundTransform {
-		
-		__transform = value.clone ();
-		lime_sound_channel_set_transform (__handle, __transform);
-		
-		return value;
-		
-	}
-	
+        private function set_soundTransform (value:SoundTransform):SoundTransform {
+                if (__transform == null)
+                        __transform = value.clone ();
+                else
+                {
+                        __transform.leftToLeft = value.leftToLeft;
+                        __transform.leftToRight = value.leftToRight;
+                        __transform.pan = value.pan;
+                        __transform.rightToLeft = value.rightToLeft;
+                        __transform.rightToRight = value.rightToRight;
+                        __transform.volume = value.volume;
+                }
+ 
+                lime_sound_channel_set_transform (__handle, __transform);
+               
+                return value;
+               
+        }	
 	
 	
 	
