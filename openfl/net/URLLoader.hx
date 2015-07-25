@@ -330,7 +330,16 @@ class URLLoader extends EventDispatcher {
 			var worker = new BackgroundWorker ();
 			worker.doWork.add (function (_) {
 				
-				var bytes = ByteArray.readFile (request.url);
+				var path = request.url;
+				var index = path.indexOf ("?");
+				
+				if (index > -1) {
+					
+					path = path.substring (0, index);
+					
+				}
+				
+				var bytes = ByteArray.readFile (path);
 				worker.onComplete.dispatch (bytes);
 				
 			});
