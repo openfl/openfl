@@ -808,7 +808,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) __removedChildren = [];
+		if (__removedChildren.length > 0) {
+			
+			__removedChildren.splice (0, __removedChildren.length);
+			
+		}
 		
 		if (__mask != null) {
 			
@@ -873,7 +877,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) __removedChildren = [];
+		if (__removedChildren.length > 0) {
+			
+			__removedChildren.splice (0, __removedChildren.length);
+			
+		}
 		
 		if (__mask != null) {
 			
@@ -946,7 +954,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) __removedChildren = [];
+		if (__removedChildren.length > 0) {
+			
+			__removedChildren.splice (0, __removedChildren.length);
+			
+		}
 		
 		if (__mask != null) {
 			
@@ -1005,7 +1017,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			renderSession.spriteBatch.start();
 		}
 		
-		if (__removedChildren.length > 0) __removedChildren = [];
+		if (__removedChildren.length > 0) {
+			
+			__removedChildren.splice (0, __removedChildren.length);
+			
+		}
 		
 	}
 	
