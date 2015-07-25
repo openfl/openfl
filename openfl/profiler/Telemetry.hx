@@ -68,14 +68,14 @@ class Telemetry {
 	private static inline function __initialize ():Void {
 		
 		#if (cpp && hxtelemetry)
-		var config = new hxtelemetry.Config ();
-		config.allocations = true;
-		config.host = "localhost";
+		var config:hxtelemetry.Config;
+		
 		#if !lime_legacy
-		config.app_name = Lib.application.config.title;
+		config = (Lib.application.config:Dynamic).telemetry;
 		#else
-		config.app_name = Lib.file;
+		config = ApplicationMain.telemetryConfig;
 		#end
+		
 		config.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
 		telemetry = new HxTelemetry (config);
 		#end

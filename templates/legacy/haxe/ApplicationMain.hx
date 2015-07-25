@@ -19,6 +19,10 @@ class ApplicationMain {
 	private static var forceHeight:Int;
 	private static var forceWidth:Int;
 	
+	#if hxtelemetry
+	public static var telemetryConfig:hxtelemetry.HxTelemetry.Config;
+	#end
+	
 	
 	public static function main () {
 		
@@ -31,6 +35,13 @@ class ApplicationMain {
 			::elseif (WIN_ORIENTATION == "landscape")::return (orientation == flash.display.Stage.OrientationLandscapeLeft || orientation == flash.display.Stage.OrientationLandscapeRight);
 			::else::return true;::end::
 		}
+		#end
+		
+		#if hxtelemetry
+		telemetryConfig = new hxtelemetry.HxTelemetry.Config ();
+		telemetryConfig.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
+		telemetryConfig.host = ::if (config.hxtelemetry != null)::"::config.hxtelemetry.host::"::else::"localhost"::end::;
+		telemetryConfig.app_name = "::APP_TITLE::";
 		#end
 		
 		::if (APP_INIT != null)::::APP_INIT::::end::

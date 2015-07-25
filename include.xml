@@ -73,7 +73,12 @@
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			
-			<haxelib name="hxtelemetry" if="telemetry || advanced-telemetry" />
+			<section if="telemetry || advanced-telemetry">
+				
+				<haxelib name="hxtelemetry" />
+				<config:hxtelemetry allocations="true" host="localhost" />
+				
+			</section>
 			
 			<section if="openfl-legacy">
 				
