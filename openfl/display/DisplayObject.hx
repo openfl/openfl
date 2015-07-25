@@ -783,35 +783,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		name = "instance" + (++__instanceCount);
 		
 	}
-	
-	
-	public override function dispatchEvent (event:Event):Bool {
-		
-		var result = super.dispatchEvent (event);
-		
-		if (event.__isCancelled) {
-			
-			return true;
-			
-		}
-		
-		if (event.bubbles && parent != null && parent != this) {
-			
-			event.eventPhase = EventPhase.BUBBLING_PHASE;
-			
-			if (event.target == null) {
-				
-				event.target = this;
-				
-			}
-			
-			parent.dispatchEvent (event);
-			
-		}
-		
-		return result;
-		
-	}
 		
 		
 	/**
@@ -998,7 +969,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__eventMap != null && hasEventListener (event.type)) {
 			
-			var result = super.dispatchEvent (event);
+			var result = super.__dispatchEvent (event);
 			
 			if (event.__isCancelled) {
 				
@@ -1011,6 +982,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	@:noCompletion private override function __dispatchEvent (event:Event):Bool {
+		
+		var result = super.__dispatchEvent (event);
+		
+		if (event.__isCancelled) {
+			
+			return true;
+			
+		}
+		
+		if (event.bubbles && parent != null && parent != this) {
+			
+			event.eventPhase = EventPhase.BUBBLING_PHASE;
+			
+			if (event.target == null) {
+				
+				event.target = this;
+				
+			}
+			
+			parent.__dispatchEvent (event);
+			
+		}
+		
+		return result;
 		
 	}
 	

@@ -595,7 +595,7 @@ class Loader extends Sprite {
 			
 			var event = new Event (Event.UNLOAD);
 			event.currentTarget = this;
-			dispatchEvent (event);
+			__dispatchEvent (event);
 			
 		}
 		

@@ -165,7 +165,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
-			child.dispatchEvent (event);
+			child.__dispatchEvent (event);
 			
 		}
 		
@@ -236,7 +236,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
-			child.dispatchEvent (event);
+			child.__dispatchEvent (event);
 			
 		}
 		
@@ -442,7 +442,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			__removedChildren.push (child);
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
-			child.dispatchEvent (new Event (Event.REMOVED, true));
+			child.__dispatchEvent (new Event (Event.REMOVED, true));
 			
 		}
 		
@@ -1032,7 +1032,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (this.stage != null) {
 				
-				dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
 				
 			}
 			
@@ -1040,7 +1040,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
-				dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
 				
 			}
 			

@@ -901,7 +901,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowLeave ():Void {
 		
-		dispatchEvent (new Event (Event.MOUSE_LEAVE));
+		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	
@@ -1273,7 +1273,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__mouseOutStack.remove (target);
 				
 				var localPoint = target.globalToLocal (targetPoint);
-				target.dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OUT, false, false, localPoint.x, localPoint.y, cast target));
+				target.__dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OUT, false, false, localPoint.x, localPoint.y, cast target));
 				
 			}
 			
@@ -1286,7 +1286,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				if (target.hasEventListener (MouseEvent.MOUSE_OVER)) {
 					
 					var localPoint = target.globalToLocal (targetPoint);
-					target.dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OVER, false, false, localPoint.x, localPoint.y, cast target));
+					target.__dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OVER, false, false, localPoint.x, localPoint.y, cast target));
 					
 				}
 				
