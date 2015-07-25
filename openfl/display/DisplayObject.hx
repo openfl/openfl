@@ -1014,6 +1014,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
+	@:noCompletion private function __enterFrame ():Void {
+		
+		
+		
+	}
+	
+	
 	@:noCompletion private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__graphics != null) {

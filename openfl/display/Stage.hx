@@ -968,6 +968,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__renderable = true;
+		__enterFrame ();
 		__update (false, true);
 		
 		if (__renderer != null) {
