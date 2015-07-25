@@ -528,7 +528,7 @@ class CanvasGraphics {
 			
 			case LINEAR:
 				
-				var matrix = matrix != null ? matrix.clone () : new Matrix ();
+				var matrix = matrix != null ? matrix : new Matrix ();
 				var point1 = matrix.transformPoint (new Point (-819.2, 0));
 				var point2 = matrix.transformPoint (new Point (819.2, 0));
 				

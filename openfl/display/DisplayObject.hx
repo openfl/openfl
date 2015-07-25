@@ -1352,8 +1352,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			#if dom
 			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
-			__worldTransformCache = __worldTransform.clone ();
-			
+
+			if (__worldTransformCache == null) {
+
+				__worldTransformCache = __worldTransform.clone ();
+
+			} else {
+
+				__worldTransformCache.copyFrom(__worldTransform);
+
+			}
+
 			var worldClip:Rectangle = null;
 			#end
 			
@@ -1742,7 +1751,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		}
 		
 		__setTransformDirty ();
-		__transform.matrix = value.matrix.clone ();
+		__transform.matrix = value.matrix;
 		__transform.colorTransform = value.colorTransform.__clone();
 		
 		return __transform;
