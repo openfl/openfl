@@ -607,7 +607,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public override function globalToLocal (pos:Point):Point {
 		
-		return pos;
+		return pos.clone ();
 		
 	}
 	

@@ -707,7 +707,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
 		
-		if (scrollRect != null && !scrollRect.containsPoint(globalToLocal(new Point(x, y)))) return false;
+		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
 		var i = __children.length;
 		if (interactiveOnly) {

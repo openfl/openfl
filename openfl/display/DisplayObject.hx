@@ -902,7 +902,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function globalToLocal (pos:Point):Point {
 		
-		return __getTransform ().clone ().invert ().transformPoint (pos);
+		pos = pos.clone ();
+		var transform = __getTransform ();
+		transform.__transformInverseX (pos.x, pos.y);
+		transform.__transformInverseY (pos.x, pos.y);
+		return pos;
 		
 	}
 	
@@ -1595,7 +1599,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (stage != null) {
 			
-			return globalToLocal (new Point (stage.__mouseX, 0)).x;
+			__getTransform ().__transformInverseX (stage.__mouseX, 0);
 			
 		}
 		
@@ -1608,7 +1612,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (stage != null) {
 			
-			return globalToLocal (new Point (0, stage.__mouseY)).y;
+			__getTransform ().__transformInverseY (0, stage.__mouseY);
 			
 		}
 		

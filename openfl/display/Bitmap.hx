@@ -127,9 +127,12 @@ class Bitmap extends DisplayObjectContainer {
 		
 		if (!visible || bitmapData == null) return false;
 		
-		var point = globalToLocal (new Point (x, y));
+		__getTransform ();
 		
-		if (point.x > 0 && point.y > 0 && point.x <= bitmapData.width && point.y <= bitmapData.height) {
+		var px = __worldTransform.__transformInverseX (x, y);
+		var py = __worldTransform.__transformInverseY (x, y);
+		
+		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
 			
 			if (stack != null && !interactiveOnly) {
 				
