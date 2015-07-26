@@ -53,3 +53,7 @@ script:
 
 notifications:
   slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz
+
+cache:
+  directories:
+    - $HOME/haxe/lib
