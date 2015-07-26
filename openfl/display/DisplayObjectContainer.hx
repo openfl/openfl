@@ -705,7 +705,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
-		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
+		if (!visible) return false;
 		
 		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
@@ -777,7 +777,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 		}
-		
 		
 		return false;
 		
