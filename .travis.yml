@@ -11,6 +11,8 @@ env:
   - TARGET=html5
   - TARGET=docs
 
+sudo: false
+
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
@@ -18,20 +20,20 @@ before_install:
   - export AUDIODEV=null
 
 install:
-  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > /dev/null
+  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
   - haxelib dev lime ~/lime
-  - haxelib install hxcpp > /dev/null
-  - haxelib install format > /dev/null
-  - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > /dev/null ; fi   
+  - haxelib install hxcpp > log.txt || cat log.txt
+  - haxelib install format > log.txt || cat log.txt
+  - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
   - if [[ $TARGET == 'docs' ]]; then haxelib dev dox ~/dox ; fi
-  - haxelib install mcover > /dev/null
-  - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > /dev/null
+  - haxelib install mcover > log.txt || cat log.txt
+  - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > log.txt || cat log.txt
   - haxelib dev munit ~/munit/src
   - haxelib dev openfl $(pwd)
   - cd ~/munit/tool
   - haxe build.hxml
-  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > /dev/null ; fi
-  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > /dev/null ; fi
+  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > log.txt || cat log.txt; fi
+  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > log.txt || cat log.txt ; fi
   - haxelib run lime rebuild tools -nocffi
 
 before_script:
@@ -53,3 +55,7 @@ script:
 
 notifications:
   slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz
+
+cache:
+  directories:
+    - $HOME/haxe/lib
