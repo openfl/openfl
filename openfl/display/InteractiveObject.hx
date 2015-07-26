@@ -1180,6 +1180,14 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
+	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+		
+		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly);
+		
+	}
+	
+	
 }
 
 
