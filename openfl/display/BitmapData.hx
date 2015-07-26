@@ -1072,7 +1072,89 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return false;
 		
-		openfl.Lib.notImplemented ("BitmapData.hitTest");
+		if (Std.is (secondObject, Bitmap)) {
+			
+			secondObject = cast (secondObject, Bitmap).bitmapData;
+			
+		}
+		
+		if (Std.is (secondObject, Point)) {
+			
+			var secondPoint:Point = cast secondObject;
+			
+			var x = Std.int (secondPoint.x - firstPoint.x);
+			var y = Std.int (secondPoint.y - firstPoint.y);
+			
+			if (rect.contains (x, y)) {
+				
+				var pixel = getPixel32 (x, y);
+				
+				if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+					
+					return true;
+					
+				}
+				
+			}
+			
+		} else if (Std.is (secondObject, BitmapData)) {
+			
+			var secondBitmapData:BitmapData = cast secondObject;
+			
+			if (secondBitmapDataPoint == null) {
+				
+				secondBitmapDataPoint = firstPoint;
+				
+			}
+			
+			if (rect.containsPoint (firstPoint) && secondBitmapData.rect.containsPoint (secondBitmapDataPoint)) {
+				
+				var pixel = getPixel32 (Std.int (firstPoint.x), Std.int (firstPoint.y));
+				
+				if ((pixel >> 24) & 0xFF < firstAlphaThreshold) {
+					
+					return false;
+					
+				}
+				
+				pixel = secondBitmapData.getPixel32 (Std.int (secondBitmapDataPoint.x), Std.int (secondBitmapDataPoint.y));
+				
+				if ((pixel >> 24) & 0xFF >= secondAlphaThreshold) {
+					
+					return true;
+					
+				}
+				
+			}
+			
+		} else if (Std.is (secondObject, Rectangle)) {
+			
+			var secondRectangle:Rectangle = cast secondObject;
+			secondRectangle = secondRectangle.clone ();
+			secondRectangle.offset (-firstPoint.x, -firstPoint.y);
+			secondRectangle.__contract (0, 0, width, height);
+			
+			if (secondRectangle.width > 0 && secondRectangle.height > 0) {
+				
+				var pixels = getPixels (secondRectangle);
+				var length = Std.int (pixels.length / 4);
+				var pixel;
+				
+				for (i in 0...length) {
+					
+					pixel = pixels.readUnsignedInt ();
+					
+					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+						
+						return true;
+						
+					}
+					
+				}
+				
+			}
+			
+		}
 		
 		return false;
 		
