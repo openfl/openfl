@@ -11,6 +11,8 @@ env:
   - TARGET=html5
   - TARGET=docs
 
+sudo: false
+
 before_install:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
