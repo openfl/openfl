@@ -965,11 +965,14 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
-		if (!visible || (interactiveOnly && !mouseEnabled)) return false;
+		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		
-		var point = globalToLocal (new Point (x, y));
+		__getTransform ();
 		
-		if( bounds.containsPoint( point ) ) {
+		var px = __worldTransform.__transformInverseX (x, y);
+		var py = __worldTransform.__transformInverseY (x, y);
+		
+		if (bounds.contains (px, py)) {
 			
 			if (stack != null) {
 				

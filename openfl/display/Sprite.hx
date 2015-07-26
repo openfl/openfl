@@ -169,7 +169,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
-		if (!visible) return false;
+		if (!visible || __isMask) return false;
 		
 		if ((!interactiveOnly || mouseChildren) && super.__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
 			

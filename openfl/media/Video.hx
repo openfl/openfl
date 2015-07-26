@@ -74,7 +74,7 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
-		if (!visible) return false;
+		if (!visible || __isMask) return false;
 		
 		var point = globalToLocal (new Point (x, y));
 		

@@ -54,7 +54,7 @@ import js.html.ImageElement;
 @:access(openfl.display.Graphics)
 
 
-class Bitmap extends DisplayObjectContainer {
+class Bitmap extends DisplayObject {
 	
 	
 	/**
@@ -125,7 +125,7 @@ class Bitmap extends DisplayObjectContainer {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
-		if (!visible || bitmapData == null) return false;
+		if (!visible || __isMask || bitmapData == null) return false;
 		
 		__getTransform ();
 		
