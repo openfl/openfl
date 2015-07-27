@@ -493,64 +493,71 @@ class Graphics {
 	 */
 	public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
 
-		for(graphics in graphicsData)
-		{
-			if(Std.is(graphics, GraphicsSolidFill))
-			{
+		for(graphics in graphicsData) {
+
+			if(Std.is(graphics, GraphicsSolidFill)) {
+
 				var fill:GraphicsSolidFill = cast(graphics, GraphicsSolidFill);
 				beginFill(fill.color, fill.alpha);
+
 			}
 
-			if(Std.is(graphics, GraphicsBitmapFill))
-			{
+			if(Std.is(graphics, GraphicsBitmapFill)) {
+
 				var bitmapFill:GraphicsBitmapFill = cast(graphics, GraphicsBitmapFill);
 				beginBitmapFill(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+			
 			}
 			
-			if(Std.is(graphics, GraphicsGradientFill))
-			{
+			if(Std.is(graphics, GraphicsGradientFill)) {
+
 				var gradientFill:GraphicsGradientFill = cast(graphics, GraphicsGradientFill);
 				beginGradientFill(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, 
 					gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+			
 			}
 
-			if(Std.is(graphics, GraphicsStroke))
-			{
+			if(Std.is(graphics, GraphicsStroke)) {
+
 				var stroke:GraphicsStroke = cast(graphics, GraphicsStroke);
 
-				if(Std.is(stroke.fill, GraphicsSolidFill))
-				{
+				if(Std.is(stroke.fill, GraphicsSolidFill)) {
+
 					var fill:GraphicsSolidFill = cast(stroke.fill, GraphicsSolidFill);
 					lineStyle(stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
-				}
-				else
-				{
+				
+				} else {
+
 					lineStyle(stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+				
 				}
 
-				if(Std.is(stroke.fill, GraphicsBitmapFill))
-				{
+				if(Std.is(stroke.fill, GraphicsBitmapFill)) {
+
 					var bitmapFill:GraphicsBitmapFill = cast(stroke.fill, GraphicsBitmapFill);
 					lineBitmapStyle(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+				
 				}
 				
-				if(Std.is(stroke.fill, GraphicsGradientFill))
-				{
+				if(Std.is(stroke.fill, GraphicsGradientFill)) {
+
 					var gradientFill:GraphicsGradientFill = cast(stroke.fill, GraphicsGradientFill);
 					lineGradientStyle(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, 
 						gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+				
 				}
 			}
 			
-			if(Std.is(graphics, GraphicsPath))
-			{
+			if(Std.is(graphics, GraphicsPath)) {
+
 				drawPath(cast(graphics, GraphicsPath).commands, cast(graphics, GraphicsPath).data, cast(graphics, GraphicsPath).winding);
+			
 			}
 
-
-			if(Std.is(graphics, GraphicsEndFill))
-			{
+			if(Std.is(graphics, GraphicsEndFill)) {
+				
 				endFill();
+			
 			}
 		}		
 	}
