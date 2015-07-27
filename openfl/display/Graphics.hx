@@ -7,6 +7,12 @@ import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.display.GraphicsPathCommand;
+import openfl.display.GraphicsBitmapFill;
+import openfl.display.GraphicsEndFill;
+import openfl.display.GraphicsGradientFill;
+import openfl.display.GraphicsPath;
+import openfl.display.GraphicsSolidFill;
+import openfl.display.GraphicsStroke;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -486,9 +492,75 @@ class Graphics {
 	 * 
 	 */
 	public function drawGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
-		
-		openfl.Lib.notImplemented ("Graphics.drawGraphicsData");
-		
+
+		for(graphics in graphicsData) {
+
+			if(Std.is(graphics, GraphicsSolidFill)) {
+
+				var fill:GraphicsSolidFill = cast graphics;
+				beginFill(fill.color, fill.alpha);
+
+			}
+
+			if(Std.is(graphics, GraphicsBitmapFill)) {
+
+				var bitmapFill:GraphicsBitmapFill = cast graphics;
+				beginBitmapFill(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+			
+			}
+			
+			if(Std.is(graphics, GraphicsGradientFill)) {
+
+				var gradientFill:GraphicsGradientFill = cast graphics;
+				beginGradientFill(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, 
+					gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+			
+			}
+
+			if(Std.is(graphics, GraphicsStroke)) {
+
+				var stroke:GraphicsStroke = cast graphics;
+
+				if(Std.is(stroke.fill, GraphicsSolidFill)) {
+
+					var fill:GraphicsSolidFill = cast stroke.fill;
+					lineStyle(stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+				
+				} else {
+
+					lineStyle(stroke.thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
+				
+				}
+
+				if(Std.is(stroke.fill, GraphicsBitmapFill)) {
+
+					var bitmapFill:GraphicsBitmapFill = cast stroke.fill;
+					lineBitmapStyle(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
+				
+				}
+				
+				if(Std.is(stroke.fill, GraphicsGradientFill)) {
+
+					var gradientFill:GraphicsGradientFill = cast stroke.fill;
+					lineGradientStyle(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, 
+						gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
+				
+				}
+			}
+			
+			if(Std.is(graphics, GraphicsPath)) {
+
+				var path:GraphicsPath = cast graphics;
+				drawPath(path.commands, path.data, cast(graphics, GraphicsPath).winding);
+			
+			}
+
+			if(Std.is(graphics, GraphicsEndFill)) {
+				
+				endFill();
+			
+			}
+		}		
 	}
 	
 	
@@ -554,6 +626,16 @@ class Graphics {
 					
 					lineTo (data[dataIndex], data[dataIndex + 1]);
 					dataIndex += 2;
+
+				case GraphicsPathCommand.WIDE_MOVE_TO:
+					
+					moveTo(data[dataIndex + 2], data[dataIndex + 3]); break;
+					dataIndex += 4;
+
+				case GraphicsPathCommand.WIDE_LINE_TO:
+					
+					lineTo(data[dataIndex + 2], data[dataIndex + 3]); break;
+					dataIndex += 4;
 					
 				case GraphicsPathCommand.CURVE_TO:
 					
