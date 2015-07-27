@@ -364,7 +364,7 @@ class CanvasGraphics {
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 					
 					context.fillStyle = createBitmapFill( bitmap, true );
-					hasFill =  true;
+					hasFill = true;
 					
 					if (matrix != null) {
 						

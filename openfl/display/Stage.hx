@@ -1195,7 +1195,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var target:InteractiveObject = null;
 		var targetPoint = new Point (x, y);
 		
-		if (__hitTest (x, y, false, stack, true)) {
+		if (__hitTest (x, y, true, stack, true)) {
 			
 			target = cast stack[stack.length - 1];
 			

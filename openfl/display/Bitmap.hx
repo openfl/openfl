@@ -189,7 +189,7 @@ class Bitmap extends DisplayObject {
 		GLBitmap.render (this, renderSession);
 		
 	}
-
+	
 	
 	@:noCompletion @:dox(hide) public override function __updateMask (maskGraphics:Graphics):Void {
 		
