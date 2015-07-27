@@ -1211,8 +1211,8 @@ class Graphics {
 				
 			}
 			#elseif (cpp || neko)
-			//if (__cairo != null) {
 			if (__bitmap != null) {
+			//if (__cairo != null) {
 				
 				// TODO: This does not handle hit testing against invisible fills
 				
@@ -1222,24 +1222,14 @@ class Graphics {
 				//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
 				//if (__cairo.inStroke (x - bounds.x, y - bounds.y)) return true;
 				
-			} else {
-				
-				// TODO: This does not handle the nuances of an invisible, non-rectangular shape
-				
-				return true;
-				
 			}
-			#else
-			return true;
 			#end
 			
-			return false;
-			
-		} else {
-			
-			return true;
-			
 		}
+		
+		// TODO: This does not handle the nuances of an invisible, non-rectangular shape
+		
+		return true;
 		
 	}
 	
