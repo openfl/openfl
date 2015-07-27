@@ -1183,53 +1183,50 @@ class Graphics {
 	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool {
 		
 		if (__bounds == null) return false;
-		
 		var bounds = __bounds.transform (matrix);
 		
-		if (!bounds.contains (x, y)) {
+		if (bounds.contains (x, y)) {
 			
-			return false;
-			
-		}
-		
-		if (shapeFlag) {
-			
-			if (__dirty) {
+			if (shapeFlag) {
+				
+				if (__dirty) {
+					
+					#if (js && html5)
+					CanvasGraphics.render (this, null);
+					#elseif (cpp || neko)
+					//CairoGraphics.render (this, null);
+					#end
+					
+				}
 				
 				#if (js && html5)
-				CanvasGraphics.render (this, null);
+				if (__context != null) {
+					
+					return __context.isPointInPath (x - bounds.x, y - bounds.y);
+					
+				}
 				#elseif (cpp || neko)
-				//CairoGraphics.render (this, null);
+				if (__bitmap != null) {
+				//if (__cairo != null) {
+					
+					// TODO: This does not handle hit testing against invisible fills
+					
+					var pixel = __bitmap.getPixel32 (Std.int (x - bounds.x), Std.int (y - bounds.y));
+					return ((pixel >> 24 & 0xFF) > 0);
+					
+					//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
+					//if (__cairo.inStroke (x - bounds.x, y - bounds.y)) return true;
+					
+				}
 				#end
 				
 			}
 			
-			#if (js && html5)
-			if (__context != null) {
-				
-				return __context.isPointInPath (x - bounds.x, y - bounds.y);
-				
-			}
-			#elseif (cpp || neko)
-			if (__bitmap != null) {
-			//if (__cairo != null) {
-				
-				// TODO: This does not handle hit testing against invisible fills
-				
-				var pixel = __bitmap.getPixel32 (Std.int (x - bounds.x), Std.int (y - bounds.y));
-				return ((pixel >> 24 & 0xFF) > 0);
-				
-				//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
-				//if (__cairo.inStroke (x - bounds.x, y - bounds.y)) return true;
-				
-			}
-			#end
+			return true;
 			
 		}
 		
-		// TODO: This does not handle the nuances of an invisible, non-rectangular shape
-		
-		return true;
+		return false;
 		
 	}
 	
