@@ -497,21 +497,21 @@ class Graphics {
 
 			if(Std.is(graphics, GraphicsSolidFill)) {
 
-				var fill:GraphicsSolidFill = cast(graphics, GraphicsSolidFill);
+				var fill:GraphicsSolidFill = cast graphics;
 				beginFill(fill.color, fill.alpha);
 
 			}
 
 			if(Std.is(graphics, GraphicsBitmapFill)) {
 
-				var bitmapFill:GraphicsBitmapFill = cast(graphics, GraphicsBitmapFill);
+				var bitmapFill:GraphicsBitmapFill = cast graphics;
 				beginBitmapFill(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 			
 			}
 			
 			if(Std.is(graphics, GraphicsGradientFill)) {
 
-				var gradientFill:GraphicsGradientFill = cast(graphics, GraphicsGradientFill);
+				var gradientFill:GraphicsGradientFill = cast graphics;
 				beginGradientFill(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, 
 					gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
 			
@@ -519,11 +519,11 @@ class Graphics {
 
 			if(Std.is(graphics, GraphicsStroke)) {
 
-				var stroke:GraphicsStroke = cast(graphics, GraphicsStroke);
+				var stroke:GraphicsStroke = cast graphics;
 
 				if(Std.is(stroke.fill, GraphicsSolidFill)) {
 
-					var fill:GraphicsSolidFill = cast(stroke.fill, GraphicsSolidFill);
+					var fill:GraphicsSolidFill = cast stroke.fill;
 					lineStyle(stroke.thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 				
 				} else {
@@ -534,14 +534,14 @@ class Graphics {
 
 				if(Std.is(stroke.fill, GraphicsBitmapFill)) {
 
-					var bitmapFill:GraphicsBitmapFill = cast(stroke.fill, GraphicsBitmapFill);
+					var bitmapFill:GraphicsBitmapFill = cast stroke.fill;
 					lineBitmapStyle(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 				
 				}
 				
 				if(Std.is(stroke.fill, GraphicsGradientFill)) {
 
-					var gradientFill:GraphicsGradientFill = cast(stroke.fill, GraphicsGradientFill);
+					var gradientFill:GraphicsGradientFill = cast stroke.fill;
 					lineGradientStyle(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix, 
 						gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
 				
@@ -550,7 +550,8 @@ class Graphics {
 			
 			if(Std.is(graphics, GraphicsPath)) {
 
-				drawPath(cast(graphics, GraphicsPath).commands, cast(graphics, GraphicsPath).data, cast(graphics, GraphicsPath).winding);
+				var path:GraphicsPath = cast graphics;
+				drawPath(path.commands, path.data, cast(graphics, GraphicsPath).winding);
 			
 			}
 
