@@ -1210,13 +1210,25 @@ class Graphics {
 				return __context.isPointInPath (x - bounds.x, y - bounds.y);
 				
 			}
-			//#elseif (cpp || neko)
+			#elseif (cpp || neko)
 			//if (__cairo != null) {
-				//
+			if (__bitmap != null) {
+				
+				// TODO: This does not handle hit testing against invisible fills
+				
+				var pixel = __bitmap.getPixel32 (Std.int (x - bounds.x), Std.int (y - bounds.y));
+				return ((pixel >> 24 & 0xFF) > 0);
+				
 				//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
 				//if (__cairo.inStroke (x - bounds.x, y - bounds.y)) return true;
-				//
-			//}
+				
+			} else {
+				
+				// TODO: This does not handle the nuances of an invisible, non-rectangular shape
+				
+				return true;
+				
+			}
 			#else
 			return true;
 			#end
