@@ -200,11 +200,11 @@ class CairoTextField {
 			
 			if (format.italic) {
 				
-				fontList = [ systemFontDirectory + "/georgiaz.ttf" ];
+				fontList = [ systemFontDirectory + "/timesbi.ttf" ];
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/georgiab.ttf" ];
+				fontList = [ systemFontDirectory + "/timesbd.ttf" ];
 				
 			}
 			
@@ -212,11 +212,11 @@ class CairoTextField {
 			
 			if (format.italic) {
 				
-				fontList = [ systemFontDirectory + "/geogiai.ttf" ];
+				fontList = [ systemFontDirectory + "/timesi.ttf" ];
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
+				fontList = [ systemFontDirectory + "/times.ttf" ];
 				
 			}
 			
@@ -289,9 +289,10 @@ class CairoTextField {
 			if (char == __utf8_endline_code) {
 				
 				breaks.push (i);
-				i++;
 				
 			}
+			
+			i++;
 			
 		});
 		
@@ -409,10 +410,10 @@ class CairoTextField {
 					
 					m = switch (metric) {
 						
-						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textField, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, LEADING);
-						case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
-						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textField.__textFormat.size);
-						case LEADING: textField.__textFormat.leading + 4;
+						case LINE_HEIGHT: Math.round(getLineMetricSubRangesNotNull (textField, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, LEADING));
+						case ASCENDER: Math.round(font.ascender / font.unitsPerEM * textField.__textFormat.size);
+						case DESCENDER: Math.round(Math.abs(font.descender / font.unitsPerEM * textField.__textFormat.size));
+						case LEADING: textField.__textFormat.leading;
 						default: 0;
 						
 					}
@@ -443,13 +444,13 @@ class CairoTextField {
 		var font = getFontInstance (textField.__textFormat);
 		
 		if (font != null) {
-			
+		
 			return switch (metric) {
 				
-				case LINE_HEIGHT: getLineMetricSubRangesNull (textField, singleLine, ASCENDER) + getLineMetricSubRangesNull (textField, singleLine, DESCENDER) + getLineMetricSubRangesNull (textField, singleLine, LEADING);
-				case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
-				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textField.__textFormat.size);
-				case LEADING: textField.__textFormat.leading + 4;
+				case LINE_HEIGHT: Math.round(getLineMetricSubRangesNull (textField, singleLine, ASCENDER) + getLineMetricSubRangesNull (textField, singleLine, DESCENDER) + getLineMetricSubRangesNull (textField, singleLine, LEADING));
+				case ASCENDER: Math.round(font.ascender / font.unitsPerEM * textField.__textFormat.size);
+				case DESCENDER: Math.round(Math.abs (font.descender / font.unitsPerEM * textField.__textFormat.size));
+				case LEADING: textField.__textFormat.leading;
 				default: 0;
 				
 			}

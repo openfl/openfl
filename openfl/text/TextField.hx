@@ -738,7 +738,7 @@ class TextField extends InteractiveObject {
 		var ascender = CairoTextField.getLineMetric (this, lineIndex, ASCENDER);
 		var descender = CairoTextField.getLineMetric (this, lineIndex, DESCENDER);
 		var leading = CairoTextField.getLineMetric (this, lineIndex, LEADING);
-		var lineHeight = ascender + descender + leading;
+		var lineHeight = CairoTextField.getLineMetric(this, lineIndex, LINE_HEIGHT);
 		
 		#end
 		
