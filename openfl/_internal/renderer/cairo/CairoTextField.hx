@@ -573,7 +573,7 @@ class CairoTextField {
 		
 	}
 	
-	private static function wrapText (textField:TextField) {
+	public static function wrapText (textField:TextField) {
 	
 		//if the text does not need wrapping, return early
 		if (!textField.__dirtyWrap && !textField.__dirtyBounds) {

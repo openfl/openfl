@@ -1548,6 +1548,22 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_numLines ():Int {
 		
+		if (wordWrap && __textWrap != null && __textWrap != "") {
+			
+			trace('wordwrap!');
+			
+			var count = __textWrap.split ("\n").length;
+			
+			if (__isHTML) {
+				
+				count += __textWrap.split ("<br>").length - 1;
+				
+			}
+			
+			return count;
+			
+		}
+		
 		if (text != "" && text != null) {
 			
 			var count = text.split ("\n").length;
@@ -1750,7 +1766,12 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
 		if (value != wordWrap) __dirtyWrap = true;
-		return wordWrap = value;
+		wordWrap = value;
+		if (__textFormat != null)
+		{
+			CairoTextField.wrapText(this);
+		}
+		return wordWrap;
 		
 	}
 }
