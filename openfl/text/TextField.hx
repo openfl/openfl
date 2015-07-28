@@ -1,6 +1,7 @@
 package openfl.text; #if !flash #if !openfl_legacy
 
 
+import haxe.Utf8;
 import haxe.xml.Fast;
 import haxe.Timer;
 import lime.graphics.cairo.Cairo;
@@ -574,6 +575,8 @@ class TextField extends InteractiveObject {
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __text:String;
+	@:noCompletion private var __textWrap:String;
+	@:noCompletion private var __dirtyWrap:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
@@ -607,6 +610,8 @@ class TextField extends InteractiveObject {
 		__width = 100;
 		__height = 100;
 		__text = "";
+		__textWrap = "";
+		__dirtyWrap = true;
 		__dirtyBounds = true;
 		__bounds = new Rectangle( 0, 0, 0, 0 );
 		__graphics = new Graphics();
@@ -1449,6 +1454,7 @@ class TextField extends InteractiveObject {
 					
 				}	
 				#end
+				__dirtyWrap = true;
 				return __text = value;
 				
 			} else {
@@ -1530,6 +1536,7 @@ class TextField extends InteractiveObject {
 			
 		}	
 		#end
+		__dirtyWrap = true;
 		return __text = value;
 		
 	}
@@ -1612,6 +1619,7 @@ class TextField extends InteractiveObject {
 		__ranges = null;
 		__isHTML = false;
 		
+		__dirtyWrap = true;
 		return __text = value;
 		
 	}
@@ -1741,7 +1749,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
-		//if (value != wordWrap) __dirty = true;
+		if (value != wordWrap) __dirtyWrap = true;
 		return wordWrap = value;
 		
 	}

@@ -16,6 +16,7 @@ import openfl.geom.Rectangle;
 import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import openfl.text.TextUtil;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.BitmapData)
@@ -28,7 +29,7 @@ class CairoTextField {
 	
 	
 	private static var __defaultFonts = new Map<String, Font> ();
-	private static var __utf8_endline_code:Int = 10;
+	
 	
 	
 	private static function findFont (name:String):Font {
@@ -254,127 +255,6 @@ class CairoTextField {
 		
 	}
 	
-	
-	private static function getLineBreaks (textField:TextField):Int {
-		
-		//returns the number of line breaks in the text
-		
-		var lines = 0;
-		
-		Utf8.iter(textField.text, function(char:Int) {
-			
-			if (char == __utf8_endline_code) {
-				
-				lines++;
-				
-			}
-			
-		});
-		
-		return lines;
-		
-	}
-	
-	
-	private static function getLineBreakIndices (textField:TextField):Array<Int> {
-		
-		//returns the exact character indeces where the line breaks occur
-		
-		var breaks = [];
-		
-		var i = 0;
-		
-		Utf8.iter(textField.text, function(char:Int) {
-			
-			if (char == __utf8_endline_code) {
-				
-				breaks.push (i);
-				
-			}
-			
-			i++;
-			
-		});
-		
-		return breaks;
-		
-	}
-	
-	
-	private static function getLineBreaksInRange (textField:TextField, i:Int):Int {
-		
-		//returns the number of line breaks that occur within a given format range
-		
-		var lines = 0;
-		
-		if (textField.__ranges.length > i && i >= 0) {
-			
-			var range = textField.__ranges[i];
-			
-			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
-			
-			if (range.start > 0 && range.end < textField.text.length) {
-				
-				Utf8.iter(textField.text, function(char:Int) {
-					
-					if (char == __utf8_endline_code) {
-						
-						lines++;
-						
-					}
-					
-				});
-				
-			}
-			
-		}
-		
-		return lines;
-		
-	}
-	
-	
-	private static function getLineIndices (textField:TextField, line:Int):Array<Int> {
-		
-		//tells you what the first and last (non-linebreak) character indeces are in a given line
-		
-		var breaks = getLineBreakIndices (textField);
-		var i = 0;
-		var first_char = 0;
-		var last_char:Int = textField.text.length - 1;
-		
-		for (br in breaks) {
-			
-			//if this is the line we care about
-			
-			if (i == line) {
-				
-				//the first actual character in our line is the index after this line break
-				
-				first_char = br + 1;
-				
-				//if there's another line break left in the list
-				
-				if (i != breaks.length-1) {
-					
-					//the last character is the index before the next line break
-					//(otherwise it's the last character in the text field)
-					
-					last_char = breaks[i + 1] - 1;
-					
-				}
-				
-			}
-			
-			i++;
-			
-		}
-		
-		return [ first_char, last_char ];
-		
-	}
-	
-	
 	public static function getLineMetric (textField:TextField, line:Int, metric:TextFieldLineMetric):Float {
 		
 		if (textField.__ranges == null) {
@@ -395,7 +275,7 @@ class CairoTextField {
 		//subroutine if ranges are not null
 		//TODO: test this more thoroughly
 		
-		var lineChars = getLineIndices (textField, specificLine);
+		var lineChars = TextUtil.getLineIndices (textField, specificLine);
 		
 		var m = 0.0;
 		var best_m = 0.0;
@@ -473,7 +353,7 @@ class CairoTextField {
 		var currWidth = 0.0;
 		var bestWidth = 0.0;
 		
-		var linebreaks = getLineBreakIndices (textField);
+		var linebreaks = TextUtil.getLineBreakIndices (textField);
 		var currLine = 0;
 		
 		for (i in 0...measurements.length) {
@@ -523,6 +403,19 @@ class CairoTextField {
 		
 	}
 	
+	public static function getRenderableText (textField:TextField):String {
+		
+		if (textField.wordWrap) {
+			
+			if (textField.__textWrap != null && textField.__textWrap != "") {
+			
+				return textField.__textWrap;
+			
+			}
+		}
+		
+		return textField.text;
+	}
 	
 	public static function getTextHeight (textField:TextField):Float {
 		
@@ -607,7 +500,7 @@ class CairoTextField {
 				textLayout.text = null;
 				textLayout.font = font;
 				textLayout.size = Std.int (range.format.size);
-				textLayout.text = textField.text.substring (range.start, range.end);
+				textLayout.text = getRenderableText(textField).substring (range.start, range.end);
 				
 				for (position in textLayout.positions) {
 					
@@ -680,11 +573,91 @@ class CairoTextField {
 		
 	}
 	
+	private static function wrapText (textField:TextField) {
+	
+		//if the text does not need wrapping, return early
+		if (!textField.__dirtyWrap && !textField.__dirtyBounds) {
+			
+			return;
+			
+		}
+		
+		var width = textField.width;
+		var text = textField.text;
+		var orig = text;
+		
+		var done = false;
+		var numLines = textField.numLines;
+		var i = 0;
+		
+		while(!done) {
+			
+			//Measure the current line
+			var lineWidth = getLineWidth(textField, i);
+			var j:Int = 0;
+			
+			//Get an array of all the word boundaries
+			var words = TextUtil.getWordIndices(textField);
+			
+			//if the measured line width is wider than the text boundary:
+			while (lineWidth > width) {
+			
+				if (words.length > j) {
+					
+					//try to insert an endline just before the LAST word in the entire text field
+					var index = words[words.length - (1 + j)];
+					
+					var a = text.substr(0, index);
+					var b = text.substr(index, (text.length - index));
+					
+					var c = a + "\n" + b;
+					
+					//update text field and measure it again
+					textField.text = c;
+					
+					//if we're still too long, try the next last word, etc, steadily working back towards the start
+					lineWidth = getLineWidth(textField, i);
+					j++;
+					
+					//if we fixed it, that means we added another line:
+					if (lineWidth <= width)
+					{
+						numLines++;
+					}
+				}
+				else {
+					
+					break;
+					
+				}
+			}
+			
+			//start with the state of the text from the last line:
+			text = textField.text;
+			i++;
+			
+			//end the loop when we've gone all the way:
+			done = (i > numLines);
+		}
+		
+		//set text back to normal, but set wrapped version in __textWrap variable for later use
+		textField.__textWrap = text;
+		textField.__dirtyWrap = false;
+		textField.text = orig;
+	}
 	
 	public static function render (textField:TextField, renderSession:RenderSession) {
 		
 		#if lime_cairo
 		if (!textField.__dirty) return;
+		
+		if (textField.wordWrap && (textField.__dirtyWrap || textField.__dirtyBounds)) {
+			
+			trace("wrapping it...");
+			wrapText(textField);
+			textField.__dirtyWrap = false;
+			
+		}
 		
 		var bounds = textField.bounds;
 		var format = textField.getTextFormat ();
@@ -781,7 +754,7 @@ class CairoTextField {
 		
 		if (textField.__text != null && textField.__text != "") {
 			
-			var text = textField.text;
+			var text = getRenderableText(textField);
 			
 			if (textField.displayAsPassword) {
 				
@@ -802,7 +775,7 @@ class CairoTextField {
 			
 			if (textField.__ranges == null) {
 				
-				renderText (textField, text, textField.__textFormat, 2, bounds );
+				renderText (textField, text, textField.__textFormat, 2, bounds);
 				
 			} else {
 				
