@@ -1635,8 +1635,13 @@ class TextField extends InteractiveObject {
 		__ranges = null;
 		__isHTML = false;
 		
-		__dirtyWrap = true;
-		return __text = value;
+		__text = value;
+		if (__textFormat != null)
+		{
+			CairoTextField.wrapText(this);
+		}
+		//__dirtyWrap = true;
+		return __text;
 		
 	}
 	
@@ -1765,7 +1770,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
-		if (value != wordWrap) __dirtyWrap = true;
+		if (value != wordWrap) __dirty = true;
 		wordWrap = value;
 		if (__textFormat != null)
 		{

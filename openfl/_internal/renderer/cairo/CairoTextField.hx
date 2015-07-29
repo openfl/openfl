@@ -613,7 +613,7 @@ class CairoTextField {
 					var c = a + "\n" + b;
 					
 					//update text field and measure it again
-					textField.text = c;
+					textField.__text = c;
 					
 					//if we're still too long, try the next last word, etc, steadily working back towards the start
 					lineWidth = getLineWidth(textField, i);
@@ -643,7 +643,7 @@ class CairoTextField {
 		//set text back to normal, but set wrapped version in __textWrap variable for later use
 		textField.__textWrap = text;
 		textField.__dirtyWrap = false;
-		textField.text = orig;
+		textField.__text = orig;
 	}
 	
 	public static function render (textField:TextField, renderSession:RenderSession) {
@@ -653,7 +653,6 @@ class CairoTextField {
 		
 		if (textField.wordWrap && (textField.__dirtyWrap || textField.__dirtyBounds)) {
 			
-			trace("wrapping it...");
 			wrapText(textField);
 			textField.__dirtyWrap = false;
 			
