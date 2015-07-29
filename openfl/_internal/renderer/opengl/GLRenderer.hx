@@ -43,6 +43,9 @@ class GLRenderer extends AbstractRenderer {
 	public static var glContextId:Int = 0;
 	public static var glContexts = [];
 	
+	private static var __matrix = new Matrix ();
+	private static var __rect = new openfl.geom.Rectangle ();
+	
 	public var blendModeManager:BlendModeManager;
 	public var contextLost:Bool;
 	public var defaultFramebuffer:GLFramebuffer;
@@ -306,12 +309,17 @@ class GLRenderer extends AbstractRenderer {
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
 		
-		var bounds = shape.getBounds (null);
+		__matrix.identity ();
+		__rect.setEmpty ();
+		
+		shape.__getBounds (__rect, __matrix);
+		
+		var bounds = __rect;
 		var bitmap = shape.__graphics.__bitmap;
 		
-		var local = new Matrix ();
+		var local = __matrix;
 		local.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
-		local = local.mult (shape.__worldTransform);
+		local.concat (shape.__worldTransform);
 		
 		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
 		

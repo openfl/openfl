@@ -174,7 +174,7 @@ class Matrix {
 		var a1 = a * m.a + b * m.c;
 		b = a * m.b + b * m.d;
 		a = a1;
-
+		
 		var c1 = c * m.a + d * m.c;
 		d = c * m.b + d * m.d;
 		c = c1;
@@ -509,23 +509,6 @@ class Matrix {
 	}
 	
 	
-	public inline function mult (m:Matrix) {
-		
-		var result = new Matrix ();
-		
-		result.a = a * m.a + b * m.c;
-		result.b = a * m.b + b * m.d;
-		result.c = c * m.a + d * m.c;
-		result.d = c * m.b + d * m.d;
-		
-		result.tx = tx * m.a + ty * m.c + m.tx;
-		result.ty = tx * m.b + ty * m.d + m.ty;
-		
-		return result;
-		
-	}
-	
-	
 	/**
 	 * Applies a rotation transformation to the Matrix object.
 	 *
@@ -701,10 +684,8 @@ class Matrix {
 	 */
 	public function translate (dx:Float, dy:Float) {
 		
-		var m = new Matrix ();
-		m.tx = dx;
-		m.ty = dy;
-		this.concat (m);
+		tx += dx;
+		ty += dy;
 		
 	}
 	
