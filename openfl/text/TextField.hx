@@ -16,6 +16,7 @@ import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.text.TextUtil;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -1550,8 +1551,6 @@ class TextField extends InteractiveObject {
 		
 		if (wordWrap && __textWrap != null && __textWrap != "") {
 			
-			trace('wordwrap!');
-			
 			var count = __textWrap.split ("\n").length;
 			
 			if (__isHTML) {
@@ -1636,11 +1635,17 @@ class TextField extends InteractiveObject {
 		__isHTML = false;
 		
 		__text = value;
-		if (__textFormat != null)
-		{
-			CairoTextField.wrapText(this);
+		
+		if (__textFormat != null) {
+			
+			TextUtil.wrapText(this);
+			
+		} else {
+			
+			__dirtyWrap = true;
+			
 		}
-		//__dirtyWrap = true;
+		
 		return __text;
 		
 	}
@@ -1772,10 +1777,17 @@ class TextField extends InteractiveObject {
 		
 		if (value != wordWrap) __dirty = true;
 		wordWrap = value;
-		if (__textFormat != null)
-		{
-			CairoTextField.wrapText(this);
+		
+		if (__textFormat != null) {
+			
+			TextUtil.wrapText(this);
+			
+		} else {
+			
+			__dirtyWrap = true;
+			
 		}
+		
 		return wordWrap;
 		
 	}
