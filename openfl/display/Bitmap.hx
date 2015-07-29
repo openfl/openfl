@@ -52,6 +52,7 @@ import js.html.ImageElement;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Rectangle)
 
 
 class Bitmap extends DisplayObject {
@@ -113,8 +114,9 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			var bounds = new Rectangle (0, 0, bitmapData.width, bitmapData.height);
-			bounds = bounds.transform (matrix);
+			var bounds = Rectangle.__temp;
+			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
+			bounds.__transform (bounds, matrix);
 			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 			

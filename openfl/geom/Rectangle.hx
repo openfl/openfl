@@ -51,6 +51,8 @@ import lime.math.Rectangle in LimeRectangle;
 class Rectangle {
 	
 	
+	@:noCompletion private static var __temp = new Rectangle ();
+	
 	/**
 	 * The sum of the <code>y</code> and <code>height</code> properties.
 	 */
@@ -450,42 +452,6 @@ class Rectangle {
 	}
 	
 	
-	public function transform (m:Matrix):Rectangle {
-		
-		var tx0 = m.a * x + m.c * y;
-		var tx1 = tx0;
-		var ty0 = m.b * x + m.d * y;
-		var ty1 = ty0;
-		
-		var tx = m.a * (x + width) + m.c * y;
-		var ty = m.b * (x + width) + m.d * y;
-		
-		if (tx < tx0) tx0 = tx;
-		if (ty < ty0) ty0 = ty;
-		if (tx > tx1) tx1 = tx;
-		if (ty > ty1) ty1 = ty;
-		
-		tx = m.a * (x + width) + m.c * (y + height);
-		ty = m.b * (x + width) + m.d * (y + height);
-		
-		if (tx < tx0) tx0 = tx;
-		if (ty < ty0) ty0 = ty;
-		if (tx > tx1) tx1 = tx;
-		if (ty > ty1) ty1 = ty;
-		
-		tx = m.a * x + m.c * (y + height);
-		ty = m.b * x + m.d * (y + height);
-		
-		if (tx < tx0) tx0 = tx;
-		if (ty < ty0) ty0 = ty;
-		if (tx > tx1) tx1 = tx;
-		if (ty > ty1) ty1 = ty;
-		
-		return new Rectangle (tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
-		
-	}
-	
-	
 	/**
 	 * Adds two rectangles together to create a new Rectangle object, by filling
 	 * in the horizontal and vertical space between the two rectangles.
@@ -572,6 +538,42 @@ class Rectangle {
 	@:noCompletion private function __toLimeRectangle ():LimeRectangle {
 		
 		return new LimeRectangle (x, y, width, height);
+		
+	}
+	
+	
+	@:noCompletion private function __transform (rect:Rectangle, m:Matrix):Void {
+		
+		var tx0 = m.a * x + m.c * y;
+		var tx1 = tx0;
+		var ty0 = m.b * x + m.d * y;
+		var ty1 = ty0;
+		
+		var tx = m.a * (x + width) + m.c * y;
+		var ty = m.b * (x + width) + m.d * y;
+		
+		if (tx < tx0) tx0 = tx;
+		if (ty < ty0) ty0 = ty;
+		if (tx > tx1) tx1 = tx;
+		if (ty > ty1) ty1 = ty;
+		
+		tx = m.a * (x + width) + m.c * (y + height);
+		ty = m.b * (x + width) + m.d * (y + height);
+		
+		if (tx < tx0) tx0 = tx;
+		if (ty < ty0) ty0 = ty;
+		if (tx > tx1) tx1 = tx;
+		if (ty > ty1) ty1 = ty;
+		
+		tx = m.a * x + m.c * (y + height);
+		ty = m.b * x + m.d * (y + height);
+		
+		if (tx < tx0) tx0 = tx;
+		if (ty < ty0) ty0 = ty;
+		if (tx > tx1) tx1 = tx;
+		if (ty > ty1) ty1 = ty;
+		
+		rect.setTo (tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
 		
 	}
 	

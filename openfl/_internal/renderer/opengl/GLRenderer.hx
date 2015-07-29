@@ -36,15 +36,15 @@ import js.html.ImageData;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.BitmapData)
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
+
 
 class GLRenderer extends AbstractRenderer {
 	
 	
 	public static var glContextId:Int = 0;
 	public static var glContexts = [];
-	
-	private static var __matrix = new Matrix ();
-	private static var __rect = new openfl.geom.Rectangle ();
 	
 	public var blendModeManager:BlendModeManager;
 	public var contextLost:Bool;
@@ -309,19 +309,20 @@ class GLRenderer extends AbstractRenderer {
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
 		
-		__matrix.identity ();
-		__rect.setEmpty ();
+		var rect = openfl.geom.Rectangle.__temp;
+		var matrix = openfl.geom.Matrix.__temp;
 		
-		shape.__getBounds (__rect, __matrix);
+		rect.setEmpty ();
+		matrix.identity ();
 		
-		var bounds = __rect;
+		shape.__getBounds (rect, matrix);
+		
 		var bitmap = shape.__graphics.__bitmap;
 		
-		var local = __matrix;
-		local.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
-		local.concat (shape.__worldTransform);
+		matrix.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
+		matrix.concat (shape.__worldTransform);
 		
-		renderSession.spriteBatch.renderBitmapData (bitmap, true, local, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
+		renderSession.spriteBatch.renderBitmapData (bitmap, true, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
 		
 	}
 	

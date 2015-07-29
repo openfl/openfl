@@ -64,6 +64,8 @@ import lime.utils.Float32Array;
 class Matrix {
 	
 	
+	@:noCompletion private static var __temp = new Matrix ();
+	
 	/**
 	 * The value that affects the positioning of pixels along the <i>x</i> axis
 	 * when scaling or rotating an image.

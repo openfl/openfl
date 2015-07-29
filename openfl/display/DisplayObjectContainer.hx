@@ -37,6 +37,7 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Rectangle)
 
 
 class DisplayObjectContainer extends InteractiveObject {
@@ -982,7 +983,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (scrollRect != null) {
 			renderSession.spriteBatch.stop();
 			var m = __worldTransform.clone();
-			var clip = scrollRect.transform(m);
+			var clip = Rectangle.__temp;
+			scrollRect.__transform(clip, m);
 			clip.y = renderSession.renderer.height - clip.y - clip.height;
 			
 			renderSession.spriteBatch.start(clip);

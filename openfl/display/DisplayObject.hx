@@ -166,6 +166,7 @@ import js.html.Element;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Rectangle)
 
 
 class DisplayObject extends EventDispatcher implements IBitmapDrawable {
@@ -1294,7 +1295,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			if (sr != null) {
 				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					sr = sr.transform(__worldTransform);
+					sr.__transform(sr, __worldTransform);
 				}
 				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
 				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
@@ -1313,7 +1314,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			if (sr != null) {
 				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					sr = sr.transform(__worldTransform);
+					sr.__transform(sr, __worldTransform);
 				}
 				__worldTransform.tx = x - scrollRect.x;
 				__worldTransform.ty = y - scrollRect.y;
