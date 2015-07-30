@@ -11,6 +11,7 @@ import js.Browser;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 
 
 class DOMShape {
@@ -67,9 +68,10 @@ class DOMShape {
 					
 					graphics.__transformDirty = false;
 					
-					var transform = new Matrix ();
+					var transform = Matrix.__temp;
+					transform.identity ();
 					transform.translate (graphics.__bounds.x, graphics.__bounds.y);
-					transform = transform.mult (shape.__worldTransform);
+					transform.concat (shape.__worldTransform);
 					
 					shape.__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
 					

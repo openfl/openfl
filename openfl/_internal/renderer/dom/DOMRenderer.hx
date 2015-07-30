@@ -6,6 +6,8 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 #if (js && html5)
 import js.html.Element;
@@ -13,6 +15,8 @@ import js.html.Element;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
+@:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class DOMRenderer extends AbstractRenderer {
@@ -100,7 +104,13 @@ class DOMRenderer extends AbstractRenderer {
 				
 			} else {
 				
-				var clip = displayObject.__worldClip.transform (displayObject.__worldTransform.clone ().invert ());
+				var clip = Rectangle.__temp;
+				var matrix = Matrix.__temp;
+				
+				matrix.copyFrom (displayObject.__worldTransform);
+				matrix.invert ();
+				
+				displayObject.__worldClip.__transform (clip, matrix);
 				style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
 				
 			}

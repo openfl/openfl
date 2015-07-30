@@ -116,7 +116,7 @@ class CairoTextField {
 					#elseif (mac || ios)
 					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
 					#elseif linux
-					fontList = [ systemFontDirectory + "/freefont/FreeSans.ttf", systemFontDirectory + "/FreeSans.ttf" ];
+					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
 					#elseif android
 					fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
 					#elseif blackberry
@@ -158,7 +158,7 @@ class CairoTextField {
 					#elseif (mac || ios)
 					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
 					#elseif linux
-					fontList = [ systemFontDirectory + "/freefont/FreeMono.ttf", systemFontDirectory + "/FreeMono.ttf" ];
+					fontList = [ new sys.io.Process('fc-match', ['mono', '-f%{file}']).stdout.readLine() ];
 					#elseif android
 					fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
 					#elseif blackberry
@@ -224,7 +224,7 @@ class CairoTextField {
 		#elseif (mac || ios)
 		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
 		#elseif linux
-		fontList = [ systemFontDirectory + "/freefont/FreeSerif.ttf", systemFontDirectory + "/FreeSerif.ttf" ];
+		fontList = [ new sys.io.Process('fc-match', ['serif', '-f%{file}']).stdout.readLine() ];
 		#elseif android
 		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
 		#elseif blackberry

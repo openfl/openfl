@@ -121,6 +121,7 @@ import js.Browser;
  */
 
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Rectangle)
 @:access(openfl.text.TextFormat)
 
 
@@ -911,7 +912,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		var bounds = bounds.transform (matrix);
+		var bounds = Rectangle.__temp;
+		this.bounds.__transform (bounds, matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 	}
