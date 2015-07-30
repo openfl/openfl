@@ -7,6 +7,8 @@ import lime.system.System;
 import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.cairo.CairoTextField;
 
 /**
  * ...
@@ -362,6 +364,7 @@ class TextUtil
 	 * @param	metric	a constant from TextFieldLineMetric (ASCENDER, DESCENDER, LINE_HEIGHT etc)
 	 * @return
 	 */
+	
 	public static function getLineMetric (textField:TextField, line:Int, metric:TextFieldLineMetric):Float {
 		
 		if (textField.__ranges == null) {
@@ -376,9 +379,8 @@ class TextUtil
 		
 	}
 	
-	
 	/**
-	 * Returns the width of a given line, of if -1 is supplied, the largets width of any single line
+	 * Returns the width of a given line, of if -1 is supplied, the largest width of any single line
 	 * @param	textField
 	 * @param	line
 	 * @return
@@ -441,6 +443,40 @@ class TextUtil
 		
 		#end
 		
+	}
+	
+	/**
+	 * Gets the starting horizontal point of the leftmost character
+	 * @param	textField	textField you want to measure
+	 * @param	lineIndex	line you want to get the margin for
+	 * @param	lineWidth	if you've already know lineWidth, provide it here to skip a duplicate calculation
+	 * @return
+	 */
+	
+	public static function getMargin (textField:TextField, lineIndex:Int, lineWidth:Float=-1):Float {
+		
+		if (lineWidth < 0) {
+		
+			#if (js && html5)
+			
+			lineWidth = CanvasTextField.getLineWidth (textField, lineIndex);
+			
+			#else
+			
+			lineWidth = CairoTextField.getLineWidth (textField, lineIndex);
+			
+			#end
+		}
+		
+		var margin = switch (textField.__textFormat.align) {
+			
+			case LEFT, JUSTIFY: 2;
+			case RIGHT: (textField.width - lineWidth) - 2;
+			case CENTER: (textField.width - lineWidth) / 2;
+			
+		}
+		
+		return margin;
 	}
 	
 	/**
@@ -529,14 +565,22 @@ class TextUtil
 		while(!done) {
 			
 			//Measure the current line
-			var lineWidth = getLineWidth(textField, i);
+			
+			var lw = getLineWidth(textField, i);
+			var lineWidth:Float = Math.ceil(lw + 4);
 			var j:Int = 0;
 			
 			//Get an array of all the word boundaries
 			var words = getWordIndices(textField);
 			
+			if (text.indexOf("Alive and going") != -1) {
+				
+				trace("lineWidth = " + lineWidth + " VS " + width);
+				
+			}
+			
 			//if the measured line width is wider than the text boundary:
-			while (lineWidth > width) {
+			while (lineWidth >= width) {
 			
 				if (words.length > j) {
 					

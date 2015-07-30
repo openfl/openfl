@@ -91,7 +91,7 @@ class CairoTextField {
 	
 	public static function getTextWidth (textField:TextField, text:String):Float {
 		
-		return 0;
+		return textField.textWidth;
 		
 	}
 	
