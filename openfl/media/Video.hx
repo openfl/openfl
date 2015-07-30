@@ -15,6 +15,7 @@ import js.html.MediaElement;
 import js.Browser;
 #end
 
+@:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
 
 
