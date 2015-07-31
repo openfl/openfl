@@ -198,8 +198,9 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		if ( bLength > 0 ){
 			var newData = b.getBytes();
 			var rl = _input.length - _input.position;
+			if (rl < 0) rl = 0;
 			var newInput = new ByteArray( rl + newData.length );
-			newInput.blit( 0, _input, _input.position, rl );
+			if (rl > 0) newInput.blit( 0, _input, _input.position, rl );
 			newInput.blit( rl, newData, 0, newData.length );
 			_input = newInput;
 			dispatchEvent( new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0) );
