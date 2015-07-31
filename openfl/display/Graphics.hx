@@ -1206,10 +1206,13 @@ class Graphics {
 					
 				}
 				
+				var px = matrix.__transformInverseX (x, y);
+				var py = matrix.__transformInverseY (x, y);
+				
 				#if (js && html5)
 				if (__context != null) {
 					
-					return __context.isPointInPath (x - bounds.x, y - bounds.y);
+					return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
 					
 				}
 				#elseif (cpp || neko)
@@ -1218,7 +1221,7 @@ class Graphics {
 					
 					// TODO: This does not handle hit testing against invisible fills
 					
-					var pixel = __bitmap.getPixel32 (Std.int (x - bounds.x), Std.int (y - bounds.y));
+					var pixel = __bitmap.getPixel32 (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
 					return ((pixel >> 24 & 0xFF) > 0);
 					
 					//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
