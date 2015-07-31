@@ -1189,10 +1189,10 @@ class Graphics {
 		
 		if (__bounds == null) return false;
 		
-		var bounds = openfl.geom.Rectangle.__temp;
-		__bounds.__transform (bounds, matrix);
+		var px = matrix.__transformInverseX (x, y);
+		var py = matrix.__transformInverseY (x, y);
 		
-		if (bounds.contains (x, y)) {
+		if (__bounds.contains (px, py)) {
 			
 			if (shapeFlag) {
 				
@@ -1205,9 +1205,6 @@ class Graphics {
 					#end
 					
 				}
-				
-				var px = matrix.__transformInverseX (x, y);
-				var py = matrix.__transformInverseY (x, y);
 				
 				#if (js && html5)
 				if (__context != null) {
