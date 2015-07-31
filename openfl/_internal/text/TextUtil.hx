@@ -843,8 +843,6 @@ class TextUtil
 			textLayout.size = Std.int (textField.__textFormat.size);
 			textLayout.text = (lookAtWrap && textField.wordWrap) ? textField.__textWrap : textField.__text;
 			
-			var w:Float = 0;
-			
 			for (position in textLayout.positions) {
 				
 				if (condense) {
