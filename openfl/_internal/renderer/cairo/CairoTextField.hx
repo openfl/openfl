@@ -60,7 +60,7 @@ class CairoTextField {
 	
 	public static function getLineWidth (textField:TextField, line:Int):Float {
 	
-		return TextUtil.getLineWidth(textField, line);
+		return TextUtil.getLineWidth(textField, line, true);
 	
 	}
 	
@@ -306,8 +306,8 @@ class CairoTextField {
 				x += switch (format.align) {
 					
 					case LEFT, JUSTIFY: 0;
-					case CENTER: ((textField.width - 4) - TextUtil.getLineWidth (textField, line_i)) / 2;
-					case RIGHT: ((textField.width - 4) - TextUtil.getLineWidth (textField, line_i));
+					case CENTER: ((textField.width - 4) - TextUtil.getLineWidth (textField, line_i, true)) / 2;
+					case RIGHT: ((textField.width - 4) - TextUtil.getLineWidth (textField, line_i, true));
 					
 				}
 				

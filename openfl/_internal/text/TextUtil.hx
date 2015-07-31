@@ -230,11 +230,13 @@ class TextUtil
 	 * @return
 	 */
 	
-	public static function getLineBreaks (textField:TextField):Int {
+	public static function getLineBreaks (textField:TextField, lookAtWrap:Bool=false):Int {
 		
 		var lines = 0;
 		
-		Utf8.iter(textField.text, function(char:Int) {
+		var text = (lookAtWrap && textField.wordWrap) ? textField.__textWrap : textField.text;
+		
+		Utf8.iter(text, function(char:Int) {
 			
 			if (char == __utf8_endline_code) {
 				
@@ -291,9 +293,9 @@ class TextUtil
 	 * @return
 	 */
 	
-	public static function getLineIndices (textField:TextField, line:Int):Array<Int> {
+	public static function getLineIndices (textField:TextField, line:Int, lookAtWrap:Bool=false):Array<Int> {
 		
-		var breaks = getLineBreakIndices (textField);
+		var breaks = getLineBreakIndices (textField, lookAtWrap);
 		var i = 0;
 		var first_char = 0;
 		var last_char:Int = textField.text.length - 1;
@@ -335,13 +337,15 @@ class TextUtil
 	 * @return
 	 */
 	
-	public static function getLineBreakIndices (textField:TextField):Array<Int> {
+	public static function getLineBreakIndices (textField:TextField, lookAtWrap:Bool = false):Array<Int> {
 		
 		var breaks = [];
 		
 		var i = 0;
 		
-		Utf8.iter(textField.text, function(char:Int) {
+		var text = (lookAtWrap && textField.wordWrap) ? textField.__textWrap : textField.text;
+		
+		Utf8.iter(text, function(char:Int) {
 			
 			if (char == __utf8_endline_code) {
 				
@@ -383,10 +387,11 @@ class TextUtil
 	 * Returns the width of a given line, of if -1 is supplied, the largest width of any single line
 	 * @param	textField
 	 * @param	line
+	 * @param	lookAtWrap whether to consider the "true" version of the text, or the wrapped version with inserted endlines
 	 * @return
 	 */
 	
-	public static function getLineWidth (textField:TextField, line:Int):Float {
+	public static function getLineWidth (textField:TextField, line:Int, lookAtWrap:Bool):Float {
 		
 		#if (cpp || neko || nodejs)
 		
@@ -395,7 +400,8 @@ class TextUtil
 		var currWidth = 0.0;
 		var bestWidth = 0.0;
 		
-		var linebreaks = TextUtil.getLineBreakIndices (textField);
+		var linebreaks = TextUtil.getLineBreakIndices (textField, lookAtWrap);
+		
 		var currLine = 0;
 		
 		for (i in 0...measurements.length) {
@@ -463,7 +469,7 @@ class TextUtil
 			
 			#else
 			
-			lineWidth = CairoTextField.getLineWidth (textField, lineIndex);
+			lineWidth = getLineWidth (textField, lineIndex, true);
 			
 			#end
 		}
@@ -566,18 +572,12 @@ class TextUtil
 			
 			//Measure the current line
 			
-			var lw = getLineWidth(textField, i);
+			var lw = getLineWidth(textField, i, false);
 			var lineWidth:Float = Math.ceil(lw + 4);
 			var j:Int = 0;
 			
 			//Get an array of all the word boundaries
 			var words = getWordIndices(textField);
-			
-			if (text.indexOf("Alive and going") != -1) {
-				
-				trace("lineWidth = " + lineWidth + " VS " + width);
-				
-			}
 			
 			//if the measured line width is wider than the text boundary:
 			while (lineWidth >= width) {
@@ -596,7 +596,8 @@ class TextUtil
 					textField.__text = c;
 					
 					//if we're still too long, try the next last word, etc, steadily working back towards the start
-					lineWidth = getLineWidth(textField, i);
+					lineWidth = getLineWidth(textField, i, false);
+					
 					j++;
 					
 					//if we fixed it, that means we added another line:
@@ -624,6 +625,7 @@ class TextUtil
 		textField.__textWrap = text;
 		textField.__dirtyWrap = false;
 		textField.__text = orig;
+		
 	}
 	
 	/**
