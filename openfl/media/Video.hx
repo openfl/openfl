@@ -15,6 +15,7 @@ import js.html.MediaElement;
 import js.Browser;
 #end
 
+@:access(openfl.geom.Rectangle)
 @:access(openfl.net.NetStream)
 
 
@@ -64,8 +65,9 @@ class Video extends DisplayObject {
 	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
-		var bounds = new Rectangle (0, 0, __width, __height);
-		bounds = bounds.transform (matrix);
+		var bounds = Rectangle.__temp;
+		bounds.setTo (0, 0, __width, __height);
+		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		

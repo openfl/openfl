@@ -1212,6 +1212,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		if (target == null) target = this;
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		var clickType = switch (type) {
@@ -1369,6 +1370,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (__hitTest (x, y, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
+			if (target == null) target = this;
 			var localPoint = target.globalToLocal (point);
 			
 			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, localPoint, cast target);

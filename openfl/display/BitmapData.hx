@@ -749,6 +749,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData {
 		
+		if (image == null || image.buffer == null) return null;
+		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__fromImage (image);
 		bitmapData.__image.transparent = transparent;
@@ -1007,9 +1009,12 @@ class BitmapData implements IBitmapDrawable {
 			
 			var textureImage = __image;
 			
-			if (!textureImage.premultiplied && textureImage.transparent) {
+			if ((!textureImage.premultiplied && textureImage.transparent) #if (js && html5) || textureImage.format != RGBA32 #end) {
 				
 				textureImage = textureImage.clone ();
+				#if (js && html5)
+				textureImage.format = RGBA32;
+				#end
 				textureImage.premultiplied = true;
 				
 			}
@@ -1947,18 +1952,22 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion private function __fromImage (image:Image):Void {
 		
-		__image = image;
-		
-		width = image.width;
-		height = image.height;
-		rect = new Rectangle (0, 0, image.width, image.height);
-		
-		#if sys
-		image.format = BGRA32;
-		image.premultiplied = true;
-		#end
-		
-		__isValid = true;
+		if (image != null && image.buffer != null) {
+			
+			__image = image;
+			
+			width = image.width;
+			height = image.height;
+			rect = new Rectangle (0, 0, image.width, image.height);
+			
+			#if sys
+			image.format = BGRA32;
+			image.premultiplied = true;
+			#end
+			
+			__isValid = true;
+			
+		}
 		
 	}
 	
@@ -2045,7 +2054,7 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		context.drawImage (__image.buffer.src, 0, 0);
+		context.drawImage (__image.src, 0, 0);
 		#end
 		
 	}
