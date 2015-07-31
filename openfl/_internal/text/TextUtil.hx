@@ -395,7 +395,7 @@ class TextUtil
 		
 		#if (cpp || neko || nodejs)
 		
-		var measurements = measureTextSub (textField, false);
+		var measurements = measureTextSub (textField, false, lookAtWrap);
 		
 		var currWidth = 0.0;
 		var bestWidth = 0.0;
@@ -412,7 +412,8 @@ class TextUtil
 				
 				if (currLine == line) { //if we're currently on the desired line
 					
-					return currWidth; //return the built up width immediately
+					bestWidth = currWidth;	//return the built up width immediately
+					break;
 					
 				} else if (line == -1 && currWidth > bestWidth) { //if we are looking at ALL lines, and this width is bigger than the last one
 					
@@ -474,11 +475,13 @@ class TextUtil
 			#end
 		}
 		
+		var textWidth = textField.width;
+		
 		var margin = switch (textField.__textFormat.align) {
 			
-			case LEFT, JUSTIFY: 2;
-			case RIGHT: (textField.width - lineWidth) - 2;
-			case CENTER: (textField.width - lineWidth) / 2;
+			case LEFT, JUSTIFY: 0;
+			case RIGHT: (textWidth - lineWidth);
+			case CENTER: (textWidth - lineWidth) / 2;
 			
 		}
 		
@@ -587,7 +590,7 @@ class TextUtil
 					//try to insert an endline just before the LAST word in the entire text field
 					var index = words[words.length - (1 + j)];
 					
-					var a = text.substr(0, index);
+					var a = text.substr(0, index-1);					//index-1 removes the space, so the character length remains the same!
 					var b = text.substr(index, (text.length - index));
 					
 					var c = a + "\n" + b;
@@ -750,7 +753,7 @@ class TextUtil
 		
 	}
 	
-	private static function measureTextSub (textField:TextField, condense:Bool):Array<Float> {
+	private static function measureTextSub (textField:TextField, condense:Bool, lookAtWrap:Bool = false):Array<Float> {
 		
 		//subroutine for measuring text (width)
 		
@@ -762,11 +765,11 @@ class TextUtil
 		
 		if (textField.__ranges == null) {
 			
-			return measureTextSubRangesNull (textField, condense);
+			return measureTextSubRangesNull (textField, condense, lookAtWrap);
 			
 		} else {
 			
-			return measureTextSubRangesNotNull (textField, condense);
+			return measureTextSubRangesNotNull (textField, condense, lookAtWrap);
 			
 		}
 		
@@ -774,8 +777,7 @@ class TextUtil
 		
 	}
 	
-	
-	private static function measureTextSubRangesNotNull (textField:TextField, condense:Bool):Array<Float> {
+	private static function measureTextSubRangesNotNull (textField:TextField, condense:Bool, lookAtWrap:Bool = false):Array<Float> {
 		
 		//subroutine if format ranges are not null
 		
@@ -792,7 +794,9 @@ class TextUtil
 				textLayout.text = null;
 				textLayout.font = font;
 				textLayout.size = Std.int (range.format.size);
-				textLayout.text = getRenderableText(textField).substring (range.start, range.end);
+				var theText = (lookAtWrap && textField.wordWrap) ? textField.__textWrap : textField.__text;
+				textLayout.text = theText.substring(range.start, range.end);
+				//TODO:: acount for ranges
 				
 				for (position in textLayout.positions) {
 					
@@ -823,7 +827,7 @@ class TextUtil
 	}
 	
 	
-	private static function measureTextSubRangesNull (textField:TextField, condense:Bool):Array<Float> {
+	private static function measureTextSubRangesNull (textField:TextField, condense:Bool, lookAtWrap:Bool = false):Array<Float> {
 		
 		//subroutine if format ranges are null
 		
@@ -837,7 +841,9 @@ class TextUtil
 			textLayout.text = null;
 			textLayout.font = font;
 			textLayout.size = Std.int (textField.__textFormat.size);
-			textLayout.text = textField.__text;
+			textLayout.text = (lookAtWrap && textField.wordWrap) ? textField.__textWrap : textField.__text;
+			
+			var w:Float = 0;
 			
 			for (position in textLayout.positions) {
 				

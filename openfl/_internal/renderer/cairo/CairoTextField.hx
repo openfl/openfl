@@ -301,15 +301,7 @@ class CairoTextField {
 				tlm = textField.getLineMetrics (line_i);
 				x = oldX;
 				
-				// TODO: Make textField.getLineMetrics ().x match this value
-				
-				x += switch (format.align) {
-					
-					case LEFT, JUSTIFY: 0;
-					case CENTER: ((textField.width - 4) - TextUtil.getLineWidth (textField, line_i, true)) / 2;
-					case RIGHT: ((textField.width - 4) - TextUtil.getLineWidth (textField, line_i, true));
-					
-				}
+				x += TextUtil.getMargin(textField, line_i);
 				
 				cairo.moveTo (x, y);
 				cairo.showText (line);
