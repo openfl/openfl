@@ -1199,7 +1199,7 @@ class Graphics {
 				if (__dirty) {
 					
 					#if (js && html5)
-					CanvasGraphics.render (this, null);
+					//CanvasGraphics.render (this, null);
 					#elseif (cpp || neko)
 					//CairoGraphics.render (this, null);
 					#end
@@ -1209,7 +1209,8 @@ class Graphics {
 				#if (js && html5)
 				if (__context != null) {
 					
-					return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
+					// TODO: Need to replay each path to use isPointInPath, likely what Cairo needed, too
+					//return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
 					
 				}
 				#elseif (cpp || neko)
