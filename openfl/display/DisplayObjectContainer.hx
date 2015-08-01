@@ -742,7 +742,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					if (interactive || !hitTest) {
+					if (interactive || (mouseEnabled && !hitTest)) {
 						
 						if (__children[i].__hitTest (x, y, shapeFlag, stack, true)) {
 							
@@ -760,7 +760,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 				}
 				
-				if (hitTest && (mouseEnabled || stack.length > length)) {
+				if (hitTest) {
 					
 					stack.insert (length, this);
 					return true;
