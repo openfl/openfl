@@ -1,7 +1,10 @@
 package openfl.system; #if !flash #if !openfl_legacy
 
-
 import haxe.macro.Compiler;
+
+#if sys
+import lime.system.Display;
+#end
 
 #if (js && html5)
 import js.html.DivElement;
@@ -453,6 +456,17 @@ class Capabilities {
 			
 		}
 		
+			#if !lime_console
+				
+				var d = Display.atWindow(Lib.application.window);
+				if (d != null) {
+					
+					return d.bounds.width;
+					
+				}
+				
+			#end
+		
 		return 0;
 		
 	}
@@ -473,6 +487,17 @@ class Capabilities {
 			}
 			
 		}
+		
+			#if !lime_console
+				
+				var d = Display.atWindow(Lib.application.window);
+				if (d != null) {
+					
+					return d.bounds.height;
+					
+				}
+				
+			#end
 		
 		return 0;
 		
