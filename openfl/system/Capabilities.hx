@@ -439,30 +439,42 @@ class Capabilities {
 	
 	@:noCompletion private static function get_screenResolutionX ():Float { 
 		
-		#if (js && html5)
+		var window = Lib.application.window;
 		
-		return Browser.window.screen.width;
-		
-		#else
+		if (window != null) {
+			
+			var display = window.display;
+			
+			if (display != null) {
+				
+				return display.currentMode.width;
+				
+			}
+			
+		}
 		
 		return 0;
-		
-		#end
 		
 	}
 	
 	
 	@:noCompletion private static function get_screenResolutionY ():Float {
 		
-		#if (js && html5)
+		var window = Lib.application.window;
 		
-		return Browser.window.screen.height;
-		
-		#else
+		if (window != null) {
+			
+			var display = window.display;
+			
+			if (display != null) {
+				
+				return display.currentMode.height;
+				
+			}
+			
+		}
 		
 		return 0;
-		
-		#end
 		
 	}
 	

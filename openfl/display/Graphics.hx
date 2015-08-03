@@ -1189,30 +1189,28 @@ class Graphics {
 		
 		if (__bounds == null) return false;
 		
-		var bounds = openfl.geom.Rectangle.__temp;
-		__bounds.__transform (bounds, matrix);
+		var px = matrix.__transformInverseX (x, y);
+		var py = matrix.__transformInverseY (x, y);
 		
-		if (bounds.contains (x, y)) {
+		if (__bounds.contains (px, py)) {
 			
 			if (shapeFlag) {
 				
 				if (__dirty) {
 					
 					#if (js && html5)
-					CanvasGraphics.render (this, null);
+					//CanvasGraphics.render (this, null);
 					#elseif (cpp || neko)
 					//CairoGraphics.render (this, null);
 					#end
 					
 				}
 				
-				var px = matrix.__transformInverseX (x, y);
-				var py = matrix.__transformInverseY (x, y);
-				
 				#if (js && html5)
 				if (__context != null) {
 					
-					return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
+					// TODO: Need to replay each path to use isPointInPath, likely what Cairo needed, too
+					//return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
 					
 				}
 				#elseif (cpp || neko)

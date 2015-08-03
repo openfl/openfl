@@ -1105,37 +1105,54 @@ class BitmapData implements IBitmapDrawable {
 		} else if (Std.is (secondObject, BitmapData)) {
 			
 			var secondBitmapData:BitmapData = cast secondObject;
+			var x, y;
 			
 			if (secondBitmapDataPoint == null) {
 				
-				secondBitmapDataPoint = firstPoint;
+				x = 0;
+				y = 0;
+				
+			} else {
+				
+				x = Std.int (secondBitmapDataPoint.x - firstPoint.x);
+				y = Std.int (secondBitmapDataPoint.y - firstPoint.y);
 				
 			}
 			
-			if (rect.containsPoint (firstPoint) && secondBitmapData.rect.containsPoint (secondBitmapDataPoint)) {
+			if (rect.contains (x, y)) {
 				
-				var pixel = getPixel32 (Std.int (firstPoint.x), Std.int (firstPoint.y));
+				var hitRect = Rectangle.__temp;
+				hitRect.setTo (x, y, Math.min (secondBitmapData.width, width - x), Math.min (secondBitmapData.height, height - y));
 				
-				if ((pixel >> 24) & 0xFF < firstAlphaThreshold) {
+				var pixels = getPixels (hitRect);
+				
+				hitRect.offset (-x, -y);
+				var testPixels = secondBitmapData.getPixels (hitRect);
+				
+				var length = Std.int (hitRect.width * hitRect.height);
+				var pixel, testPixel;
+				
+				for (i in 0...length) {
 					
-					return false;
+					pixel = pixels.readUnsignedInt ();
+					testPixel = testPixels.readUnsignedInt ();
+					
+					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
+						
+						return true;
+						
+					}
 					
 				}
 				
-				pixel = secondBitmapData.getPixel32 (Std.int (secondBitmapDataPoint.x), Std.int (secondBitmapDataPoint.y));
-				
-				if ((pixel >> 24) & 0xFF >= secondAlphaThreshold) {
-					
-					return true;
-					
-				}
+				return false;
 				
 			}
 			
 		} else if (Std.is (secondObject, Rectangle)) {
 			
-			var secondRectangle:Rectangle = cast secondObject;
-			secondRectangle = secondRectangle.clone ();
+			var secondRectangle = Rectangle.__temp;
+			secondRectangle.copyFrom (cast secondObject);
 			secondRectangle.offset (-firstPoint.x, -firstPoint.y);
 			secondRectangle.__contract (0, 0, width, height);
 			
