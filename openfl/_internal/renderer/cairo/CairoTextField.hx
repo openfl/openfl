@@ -275,10 +275,11 @@ class CairoTextField {
 		if (font != null && format.size != null) {
 			
 			var graphics = textField.__graphics;
-			var tlm = textField.getLineMetrics (0);
+			
+			var ascent = getLineMetric(textField, 0, ASCENDER);
 			
 			var x = offsetX;
-			var y = 2 + tlm.ascent;
+			var y = 2 + ascent;
 			var size = Std.int (format.size);
 			
 			var lines = text.split ("\n");
@@ -297,8 +298,8 @@ class CairoTextField {
 			cairo.setSourceRGB (r, g, b);
 			
 			for (line in lines) {
-				
-				tlm = textField.getLineMetrics (line_i);
+			
+				var lineHeight = getLineMetric(textField, line_i, LINE_HEIGHT);
 				x = oldX;
 				
 				x += TextUtil.getMargin(textField, line_i);
@@ -306,7 +307,7 @@ class CairoTextField {
 				cairo.moveTo (x, y);
 				cairo.showText (line);
 				
-				y += Math.round (tlm.height);
+				y += Math.round (lineHeight);
 				line_i++;
 				
 			}
