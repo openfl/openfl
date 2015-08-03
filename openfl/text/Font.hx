@@ -58,7 +58,7 @@ class Font extends LimeFont {
 	 */
 	public static function enumerateFonts (enumerateDeviceFonts:Bool = false):Array<Font> {
 		
-		return [];
+		return __registeredFonts;
 		
 	}
 	
