@@ -1402,7 +1402,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				if (scrollRect != null) {
 					
 					var bounds = scrollRect.clone ();
-					bounds = bounds.transform (__worldTransform);
+					bounds.__transform (bounds, __worldTransform);
 					
 					if (worldClip != null) {
 						
@@ -1429,7 +1429,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				
 				if (scrollRect != null) {
 					
-					worldClip = scrollRect.clone ().transform (__worldTransform);
+					worldClip = scrollRect.clone ();
+					worldClip.__transform (worldClip, __worldTransform);
 					
 				}
 				
