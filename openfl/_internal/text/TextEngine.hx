@@ -67,6 +67,7 @@ class TextEngine {
 	public var width:Float;
 	public var wordWrap:Bool;
 	
+	private var layout:TextLayout;
 	private var textField:TextField;
 	
 	@:noCompletion private var __dirty:Bool;
@@ -82,7 +83,6 @@ class TextEngine {
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
-	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
 	@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
@@ -98,6 +98,8 @@ class TextEngine {
 	public function new (textField:TextField) {
 		
 		this.textField = textField;
+		
+		layout = new TextLayout ("", 100, 100);
 		
 		width = 100;
 		height = 100;
@@ -134,7 +136,6 @@ class TextEngine {
 		}
 		
 		__textFormat = __defaultTextFormat.clone ();
-		__textLayout = new TextLayout ();
 		
 	}
 	
@@ -254,23 +255,13 @@ class TextEngine {
 	
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		#if (js && html5)
+		updateLayout ();
 		
-		var lineWidth = __textLayout.getLineWidth (this, lineIndex);
-		var lineHeight = getTextHeight ();
-		var ascender = lineHeight * 0.8;
-		var descender = lineHeight * 0.2;
-		var leading = 0;
-		
-		#else
-		
-		var lineWidth = __textLayout.getLineWidth (this, lineIndex);
-		var ascender = __textLayout.getLineMetric (this, lineIndex, ASCENDER);
-		var descender = __textLayout.getLineMetric (this, lineIndex, DESCENDER);
-		var leading = __textLayout.getLineMetric (this, lineIndex, LEADING);
+		var lineWidth = layout.lineWidth[lineIndex];
+		var ascender = layout.lineAscent[lineIndex];
+		var descender = layout.lineDescent[lineIndex];
+		var leading = layout.lineLeading[lineIndex];
 		var lineHeight = ascender + descender + leading;
-		
-		#end
 		
 		var margin = switch (__textFormat.align) {
 			
@@ -381,39 +372,50 @@ class TextEngine {
 	
 	public function getTextHeight ():Float {
 		
-		#if (js && html5)
+		updateLayout ();
 		
-		if (textField.__canvas != null) {
+		var textHeight = 0;
+		
+		for (ascent in layout.lineAscent) {
 			
-			// TODO: Make this more accurate
-			return __textFormat.size * 1.185 * getNumLines () + (__textFormat.leading == null ? 0 : __textFormat.leading) * getNumLines ();
-			
-		} else if (__div != null) {
-			
-			return __div.clientHeight;
-			
-		} else {
-			
-			DOMTextField.measureText (this);
-			
-			// Add a litte extra space for descenders...
-			return __measuredHeight + __textFormat.size * 0.185;
+			textHeight += ascent;
 			
 		}
 		
-		#else
-		return __textLayout.getTextHeight (this);
-		#end
+		for (descent in layout.lineDescent) {
+			
+			textHeight += descent;
+			
+		}
+		
+		for (leading in layout.lineLeading) {
+			
+			textHeight += leading;
+			
+		}
+		
+		return textHeight;
 		
 	}
 	
 	
 	public function getTextWidth ():Float {
 		
-		//return the largest width of any given single line
-		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
+		updateLayout ();
 		
-		return __textLayout.getLineWidth (this, -1);
+		var textWidth = 0.0;
+		
+		for (width in layout.lineWidth) {
+			
+			if (width > textWidth) {
+				
+				textWidth = width;
+				
+			}
+			
+		}
+		
+		return textWidth;
 		
 	}
 	
@@ -962,33 +964,78 @@ class TextEngine {
 	}
 	
 	
+	private function updateLayout ():Void {
+		
+		// TODO: make automatic
+		
+		layout.text = text;
+		
+		if (__ranges != null) {
+			
+			layout.textFormat = __ranges;
+			
+		} else {
+			
+			layout.textFormat = [ new TextFormatRange (__textFormat, 0, text.length) ];
+			
+		}
+		
+		layout.update ();
+		
+	}
+	
+	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
-		if (x <= 2) return 0;
+		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return 0;
 		
-		var value:String = this.text;
-		var text:String = value;
-		var totalW:Float = 2;
-		var pos = text.length;
+		updateLayout ();
 		
-		if (x < __textLayout.getTextWidth (this, text) + 2) {
+		var currentY = 0;
+		var lineIndex = -1;
+		
+		for (i in 0...layout.lineAscent.length) {
 			
-			for (i in 0...text.length) {
+			currentY += layout.lineAscent[i] + layout.lineDescent[i] + layout.lineLeading[i];
+			
+			if (y < currentY) {
 				
-				totalW += __textLayout.getTextWidth (this, text.charAt (i));
-				
-				if (totalW >= x) {
-					
-					pos = i;
-					break;
-					
-				}
+				lineIndex = i;
+				break;
 				
 			}
 			
 		}
 		
-		return pos;
+		if (lineIndex == -1) return 0;
+		
+		// TODO: handle word wrap
+		
+		var startIndex = 0;
+		var endIndex = text.length;
+		
+		if (layout.numLines > 1) {
+			
+			endIndex = layout.lineBreaks[lineIndex];
+			
+		}
+		
+		if (lineIndex > 0) {
+			
+			startIndex = layout.lineBreaks[lineIndex - 1];
+			
+		}
+		
+		if (x >= layout.lineWidth[lineIndex]) {
+			
+			return endIndex;
+			
+		}
+		
+		// TODO: keep track of actual positions
+		
+		var length = endIndex - startIndex;
+		return Math.round ((x / layout.lineWidth[lineIndex]) * length) + startIndex;
 		
 	}
 	

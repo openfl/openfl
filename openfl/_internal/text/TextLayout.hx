@@ -7,6 +7,8 @@ import openfl._internal.renderer.dom.DOMTextField;
 import haxe.Utf8;
 
 #if (js && html5)
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
 import js.Browser;
 #end
 
@@ -17,415 +19,123 @@ import js.Browser;
 class TextLayout {
 	
 	
-	private static var __utf8_endline_code:Int = 10;
+	#if (js && html5)
+	private static var canvas:CanvasElement;
+	private static var context:CanvasRenderingContext2D;
+	#end
+	
+	public var height (get, set):Float;
+	public var lineAscent:Array<Int>;
+	public var lineBreaks:Array<Int>;
+	public var lineDescent:Array<Int>;
+	public var lineLeading:Array<Int>;
+	public var lineWidth:Array<Float>;
+	public var multiline (get, set):Bool;
+	public var numLines (get, null):Int;
+	public var text (get, set):String;
+	public var textFormat (get, set):Array<TextFormatRange>;
+	public var width (get, set):Float;
+	public var wordWrap (get, set):Bool;
 	
 	private var handle:NativeLayout;
+	private var spaces:Array<Int>;
+	
+	private var __dirty:Bool;
+	private var __height:Float;
+	private var __multiline:Bool;
+	private var __text:String;
+	private var __textFormat:Array<TextFormatRange>;
+	private var __width:Float;
+	private var __wordWrap:Bool;
 	
 	
-	public function new () {
+	public function new (text:String, width:Float, height:Float) {
 		
+		this.text = text;
+		this.width = width;
+		this.height = height;
 		
+		lineAscent = new Array ();
+		lineBreaks = new Array ();
+		lineDescent = new Array ();
+		lineLeading = new Array ();
+		lineWidth = new Array ();
 		
 	}
 	
 	
-	private function getLineBreaks (textEngine:TextEngine):Int {
+	public function getLine (index:Int):String {
 		
-		//returns the number of line breaks in the text
-		
-		var lines = 0;
-		
-		Utf8.iter(textEngine.text, function(char:Int) {
+		if (index < 0 || index > numLines) {
 			
-			if (char == __utf8_endline_code) {
-				
-				lines++;
-				
-			}
+			return null;
 			
-		});
+		}
 		
-		return lines;
+		if (lineBreaks.length == 0) {
+			
+			return __text;
+			
+		} else {
+			
+			return __text.substring (index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
+			
+		}
 		
 	}
 	
 	
-	private function getLineBreakIndices (textEngine:TextEngine):Array<Int> {
+	private function getLineBreaks ():Void {
 		
-		//returns the exact character indeces where the line breaks occur
-		
-		var breaks = [];
+		lineBreaks.splice (0, lineBreaks.length);
 		
 		var i = 0;
 		
-		Utf8.iter(textEngine.text, function(char:Int) {
+		Utf8.iter (__text, function (char:Int) {
 			
-			if (char == __utf8_endline_code) {
+			if (char == 10) {
 				
-				breaks.push (i);
+				lineBreaks.push (i);
 				i++;
 				
 			}
 			
 		});
 		
-		return breaks;
-		
 	}
 	
 	
-	private function getLineBreaksInRange (textEngine:TextEngine, i:Int):Int {
+	private function getLineMeasurements ():Void {
 		
-		//returns the number of line breaks that occur within a given format range
+		lineAscent.splice (0, lineAscent.length);
+		lineDescent.splice (0, lineDescent.length);
+		lineLeading.splice (0, lineLeading.length);
+		lineWidth.splice (0, lineWidth.length);
 		
-		var lines = 0;
+		var currentLineAscent = 0;
+		var currentLineDescent = 0;
+		var currentLineLeading = 0;
+		var currentLineWidth = 0.0;
 		
-		if (textEngine.__ranges.length > i && i >= 0) {
+		var nextLineBreak = -1;
+		var lineBreakIndex = 0;
+		
+		if (lineBreaks.length > 0) {
 			
-			var range = textEngine.__ranges[i];
-			
-			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
-			
-			if (range.start > 0 && range.end < textEngine.text.length) {
-				
-				Utf8.iter(textEngine.text, function(char:Int) {
-					
-					if (char == __utf8_endline_code) {
-						
-						lines++;
-						
-					}
-					
-				});
-				
-			}
+			nextLineBreak = lineBreaks[0];
 			
 		}
-		
-		return lines;
-		
-	}
-	
-	
-	private function getLineIndices (textEngine:TextEngine, line:Int):Array<Int> {
-		
-		//tells you what the first and last (non-linebreak) character indeces are in a given line
-		
-		var breaks = getLineBreakIndices (textEngine);
-		var i = 0;
-		var first_char = 0;
-		var last_char:Int = textEngine.text.length - 1;
-		
-		for (br in breaks) {
-			
-			//if this is the line we care about
-			
-			if (i == line) {
-				
-				//the first actual character in our line is the index after this line break
-				
-				first_char = br + 1;
-				
-				//if there's another line break left in the list
-				
-				if (i != breaks.length-1) {
-					
-					//the last character is the index before the next line break
-					//(otherwise it's the last character in the text field)
-					
-					last_char = breaks[i + 1] - 1;
-					
-				}
-				
-			}
-			
-			i++;
-			
-		}
-		
-		return [ first_char, last_char ];
-		
-	}
-	
-	
-	public function getLineMetric (textEngine:TextEngine, line:Int, metric:TextFieldLineMetric):Float {
-		
-		if (textEngine.__ranges == null) {
-			
-			return getLineMetricSubRangesNull (textEngine, true, metric);
-			
-		} else {
-			
-			return getLineMetricSubRangesNotNull (textEngine, line, metric);
-			
-		}
-		
-	}
-	
-	
-	private function getLineMetricSubRangesNotNull (textEngine:TextEngine, specificLine:Int, metric:TextFieldLineMetric):Float {
-		
-		//subroutine if ranges are not null
-		//TODO: test this more thoroughly
-		
-		var lineChars = getLineIndices (textEngine, specificLine);
-		
-		var m = 0.0;
-		var best_m = 0.0;
-		
-		for (range in textEngine.__ranges) {
-			
-			if (range.start >= lineChars[0]) {
-				
-				var font = CairoTextField.getFontInstance (range.format);
-				
-				if (font != null) {
-					
-					m = switch (metric) {
-						
-						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textEngine, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textEngine, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textEngine, specificLine, LEADING);
-						case ASCENDER: font.ascender / font.unitsPerEM * textEngine.__textFormat.size;
-						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textEngine.__textFormat.size);
-						case LEADING: textEngine.__textFormat.leading + 4;
-						default: 0;
-						
-					}
-					
-				}
-				
-			}
-			
-			if (m > best_m) {
-				
-				best_m = m;
-				
-			}
-			
-			m = 0;
-			
-		}
-		
-		return best_m;
-		
-	}
-	
-	
-	private function getLineMetricSubRangesNull (textEngine:TextEngine, singleLine:Bool = false, metric:TextFieldLineMetric):Float {
-		
-		//subroutine if ranges are null
-		
-		var font = CairoTextField.getFontInstance (textEngine.__textFormat);
-		
-		if (font != null) {
-			
-			return switch (metric) {
-				
-				case LINE_HEIGHT: getLineMetricSubRangesNull (textEngine, singleLine, ASCENDER) + getLineMetricSubRangesNull (textEngine, singleLine, DESCENDER) + getLineMetricSubRangesNull (textEngine, singleLine, LEADING);
-				case ASCENDER: font.ascender / font.unitsPerEM * textEngine.__textFormat.size;
-				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textEngine.__textFormat.size);
-				case LEADING: textEngine.__textFormat.leading + 4;
-				default: 0;
-				
-			}
-			
-		}
-		
-		return 0;
-		
-	}
-	
-	
-	public function getLineWidth (textEngine:TextEngine, line:Int):Float {
 		
 		#if (js && html5)
 		
-		if (textEngine.textField.__context == null) {
+		if (context == null) {
 			
-			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
-			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
-			
-		}
-		
-		var linebreaks = getLineBreakIndices (textEngine);
-		
-		var context = textEngine.textField.__context;
-		context.font = DOMTextField.getFont (textEngine.__textFormat);
-		
-		if (line == -1) {
-			
-			var longest = 0.0;
-			
-			for (i in 0...linebreaks.length) {
-				
-				longest = Math.max (longest, context.measureText (textEngine.text.substring (i == 0 ? 0 : (linebreaks[i - 1] + 1), linebreaks[i])).width);
-				
-			}
-			
-			longest = Math.max (longest, context.measureText (textEngine.text.substring (linebreaks.length == 0 ? 0 : (linebreaks[linebreaks.length - 1] + 1))).width);
-			
-			return longest;
-			
-		} else {
-			
-			return context.measureText (textEngine.text.substring (line == 0 ? 0 : (linebreaks[line - 1] + 1))).width;
+			canvas = cast Browser.document.createElement ("canvas");
+			context = canvas.getContext ("2d");
 			
 		}
 		
 		#elseif (cpp || neko || nodejs)
-		
-		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
-		
-		var measurements = measureTextSub (textEngine, false);
-		
-		var currWidth = 0.0;
-		var bestWidth = 0.0;
-		
-		var linebreaks = getLineBreakIndices (textEngine);
-		var currLine = 0;
-		
-		for (i in 0...measurements.length) {
-			
-			var measure = measurements[i];
-			
-			if (linebreaks.indexOf (i) != -1) { //if this character is a line break
-				
-				if (currLine == line) { //if we're currently on the desired line
-					
-					return currWidth; //return the built up width immediately
-					
-				} else if (line == -1 && currWidth > bestWidth) { //if we are looking at ALL lines, and this width is bigger than the last one
-					
-					bestWidth = currWidth; //this is the new best width
-					
-				}
-				
-				currWidth = 0; //reset current width
-				currLine++;
-				
-			} else {
-				
-				currWidth += measurements[i]; //keep building up the width
-				
-			}
-			
-		}
-		
-		if (currLine == line) { //we reached end of the loop & this is the line we want
-			
-			bestWidth = currWidth;
-			
-		} else if (line == -1 && currWidth > bestWidth) { //looking at ALL lines, and this one's bigger
-			
-			bestWidth = currWidth;
-			
-		}
-		
-		return bestWidth;
-		
-		#else
-		
-		return 0;
-		
-		#end
-		
-	}
-	
-	
-	public function getTextHeight (textEngine:TextEngine):Float {
-		
-		//sum the heights of all the lines, but don't count the leading of the last line
-		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
-		
-		var th = 0.0;
-		
-		for (i in 0...textEngine.getNumLines ()) {
-			
-			th += getLineMetric (textEngine, i, ASCENDER) + getLineMetric (textEngine, i, DESCENDER);
-			
-			if (i != textEngine.getNumLines () - 1) {
-				
-				th += getLineMetric (textEngine, i, LEADING);
-				
-			}
-			
-		}
-		
-		return th;
-		
-	}
-	
-	
-	public function getTextWidth (textEngine:TextEngine, text:String):Float {
-		
-		#if (js && html5) 
-		
-		if (textEngine.textField.__context == null) {
-			
-			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
-			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
-			
-		}
-		
-		textEngine.textField.__context.font = DOMTextField.getFont (textEngine.__textFormat);
-		textEngine.textField.__context.textAlign = 'left';
-		
-		return textEngine.textField.__context.measureText (text).width;
-		
-		#else
-		
-		return 0;
-		
-		#end
-		
-	}
-	
-	
-	public function measureText (textEngine:TextEngine, condense:Bool = true):Array<Float> {
-		
-		#if (js && html5)
-		
-		if (textEngine.textField.__context == null) {
-			
-			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
-			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
-			
-		}
-		
-		if (textEngine.__ranges == null) {
-			
-			textEngine.textField.__context.font = DOMTextField.getFont (textEngine.__textFormat);
-			return [ textEngine.textField.__context.measureText (textEngine.text).width ];
-			
-		} else {
-			
-			var measurements = [];
-			
-			for (range in textEngine.__ranges) {
-				
-				textEngine.textField.__context.font = DOMTextField.getFont (range.format);
-				measurements.push (textEngine.textField.__context.measureText (textEngine.text.substring (range.start, range.end)).width);
-				
-			}
-			
-			return measurements;
-			
-		}
-		
-		#else
-		
-		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
-		//TODO: look into whether this method and others can replace the JS stuff yet or not
-		
-		return measureTextSub (textEngine, condense);
-		
-		#end
-		
-	}
-	
-	
-	private function measureTextSub (textEngine:TextEngine, condense:Bool):Array<Float> {
-		
-		//subroutine for measuring text (width)
 		
 		if (handle == null) {
 			
@@ -433,108 +143,264 @@ class TextLayout {
 			
 		}
 		
-		if (textEngine.__ranges == null) {
-			
-			return measureTextSubRangesNull (textEngine, condense);
-			
-		} else {
-			
-			return measureTextSubRangesNotNull (textEngine, condense);
-			
-		}
+		var font;
+		#end
 		
-		return null;
+		var done = false;
+		var startIndex;
+		var endIndex;
 		
-	}
-	
-	
-	private function measureTextSubRangesNotNull (textEngine:TextEngine, condense:Bool):Array<Float> {
+		// TODO: wordWrap
 		
-		//subroutine if format ranges are not null
-		
-		var measurements = [];
-		var textLayout = handle;
-		
-		for (range in textEngine.__ranges) {
+		for (range in __textFormat) {
 			
-			var font = CairoTextField.getFontInstance (range.format);
-			var width = 0.0;
+			if (range.end <= range.start) continue;
 			
-			if (font != null && range.format.size != null) {
+			#if (js && html5)
+			context.font = DOMTextField.getFont (range.format);
+			#elseif (cpp || neko || nodejs)
+			font = CairoTextField.getFontInstance (range.format);
+			#end
+			
+			startIndex = range.start;
+			
+			while (!done) {
 				
-				textLayout.text = null;
-				textLayout.font = font;
-				textLayout.size = Std.int (range.format.size);
-				textLayout.text = textEngine.text.substring (range.start, range.end);
+				endIndex = (nextLineBreak == -1 || range.end < nextLineBreak) ? range.end : nextLineBreak;
 				
-				for (position in textLayout.positions) {
+				#if (js && html5)
+				
+				currentLineWidth += context.measureText (__text.substring (startIndex, endIndex)).width;
+				
+				currentLineAscent = Std.int (Math.max (currentLineAscent, range.format.size * 0.8));
+				currentLineDescent = Std.int (Math.max (currentLineDescent, range.format.size * 0.2));
+				currentLineLeading = Std.int (Math.max (currentLineLeading, range.format.leading + 4));
+				
+				#elseif (cpp || neko || nodejs)
+				
+				handle.text = null;
+				handle.font = font;
+				handle.size = Std.int (range.format.size);
+				handle.text = __text.substring (startIndex, endIndex);
+				
+				for (position in handle.positions) {
 					
-					if (condense) {
+					currentLineWidth += position.advance.x;
+					
+				}
+				
+				currentLineAscent = Std.int (Math.max (currentLineAscent, (font.ascender / font.unitsPerEM) * range.format.size));
+				currentLineDescent = Std.int (Math.max (currentLineDescent, (font.descender / font.unitsPerEM) * range.format.size));
+				currentLineLeading = Std.int (Math.max (currentLineLeading, range.format.leading + 4));
+				
+				#end
+				
+				if (range.end >= nextLineBreak) {
+					
+					lineAscent.push (currentLineAscent);
+					lineDescent.push (currentLineDescent);
+					lineLeading.push (currentLineLeading);
+					lineWidth.push (currentLineWidth);
+					
+					currentLineAscent = 0;
+					currentLineDescent = 0;
+					currentLineLeading = 0;
+					currentLineWidth = 0;
+					
+					startIndex = nextLineBreak + 1;
+					
+					if (lineBreakIndex < lineBreaks.length - 1) {
 						
-						width += position.advance.x;
+						lineBreakIndex++;
+						nextLineBreak = lineBreaks[lineBreakIndex];
 						
 					} else {
 						
-						measurements.push (position.advance.x);
+						nextLineBreak = -1;
+						done = true;
 						
 					}
+					
+				} else {
+					
+					done = true;
 					
 				}
 				
 			}
 			
-			if (condense) {
-				
-				measurements.push (width);
-				
-			}
+			done = false;
 			
 		}
 		
-		return measurements;
+		if (lineWidth.length < numLines) {
+			
+			lineAscent.push (currentLineAscent);
+			lineDescent.push (currentLineDescent);
+			lineLeading.push (currentLineLeading);
+			lineWidth.push (currentLineWidth);
+			
+		}
 		
 	}
 	
 	
-	private function measureTextSubRangesNull (textEngine:TextEngine, condense:Bool):Array<Float> {
+	public function update ():Void {
 		
-		//subroutine if format ranges are null
-		
-		var font = CairoTextField.getFontInstance (textEngine.__textFormat);
-		var width = 0.0;
-		var widths = [];
-		var textLayout = handle;
-		
-		if (font != null && textEngine.__textFormat.size != null) {
+		if (__dirty) {
 			
-			textLayout.text = null;
-			textLayout.font = font;
-			textLayout.size = Std.int (textEngine.__textFormat.size);
-			textLayout.text = textEngine.text;
-			
-			for (position in textLayout.positions) {
+			if (__text == null || StringTools.trim (__text) == "" && __textFormat != null && __textFormat.length > 0) {
 				
-				if (condense) {
-					
-					width += position.advance.x;
-					
-				} else {
-					
-					widths.push (position.advance.x);
-					
-				}
+				lineAscent.splice (0, lineAscent.length);
+				lineBreaks.splice (0, lineBreaks.length);
+				lineDescent.splice (0, lineDescent.length);
+				lineLeading.splice (0, lineLeading.length);
+				lineWidth.splice (0, lineWidth.length);
+				
+			} else {
+				
+				// TODO: wordWrap
+				
+				getLineBreaks ();
+				getLineMeasurements ();
 				
 			}
 			
 		}
 		
-		if (condense) {
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_height ():Float {
+		
+		return __height;
+		
+	}
+	
+	
+	private function set_height (value:Float):Float {
+		
+		if (value != __height) {
 			
-			widths.push (width);
+			__dirty = true;
 			
 		}
 		
-		return widths;
+		return __height = value;
+		
+	}
+	
+	
+	private function get_multiline ():Bool {
+		
+		return __multiline;
+		
+	}
+	
+	
+	private function set_multiline (value:Bool):Bool {
+		
+		if (value != __multiline) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __multiline = value;
+		
+	}
+	
+	
+	private function get_numLines ():Int {
+		
+		return lineBreaks.length + 1;
+		
+	}
+	
+	
+	private function get_text ():String {
+		
+		return __text;
+		
+	}
+	
+	
+	private function set_text (value:String):String {
+		
+		if (value != __text) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __text = value;
+		
+	}
+	
+	
+	private function get_textFormat ():Array<TextFormatRange> {
+		
+		return __textFormat;
+		
+	}
+	
+	
+	private function set_textFormat (value:Array<TextFormatRange>):Array<TextFormatRange> {
+		
+		if (value != __textFormat) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __textFormat = value;
+		
+	}
+	
+	
+	private function get_width ():Float {
+		
+		return __width;
+		
+	}
+	
+	
+	private function set_width (value:Float):Float {
+		
+		if (value != __width) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __width = value;
+		
+	}
+	
+	
+	private function get_wordWrap ():Bool {
+		
+		return __wordWrap;
+		
+	}
+	
+	
+	private function set_wordWrap (value:Bool):Bool {
+		
+		if (value != __wordWrap) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __wordWrap = value;
 		
 	}
 	

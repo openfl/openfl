@@ -33,18 +33,6 @@ class CanvasTextField {
 	private static var context:CanvasRenderingContext2D;
 	#end
 	
-	private static var __utf8_endline_code:Int = 10;
-	
-	
-	private static function clipText (textEngine:TextEngine, value:String):String {
-		
-		var textWidth = textEngine.__textLayout.getTextWidth (textEngine, value);
-		var fillPer = textWidth / textEngine.width;
-		textEngine.text = fillPer > 1 ? textEngine.text.substr (-1 * Math.floor (textEngine.text.length / fillPer)) : textEngine.text;
-		return textEngine.text + '';
-		
-	}
-	
 	
 	public static function disableInputMode (textEngine:TextEngine):Void {
 		
@@ -171,7 +159,9 @@ class CanvasTextField {
 						
 					}
 					
-					var measurements = textEngine.__textLayout.measureText (textEngine);
+					textEngine.updateLayout ();
+					
+					var measurements = textEngine.layout.lineWidth;
 					var bounds = textEngine.bounds;
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
@@ -198,25 +188,27 @@ class CanvasTextField {
 						
 					}
 					
-					if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
-						
-						var cursorOffset = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
-						context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
-						context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
-						
-					} else if (textEngine.__hasFocus && (Math.abs (textEngine.__selectionStart - textEngine.__cursorPosition)) > 0) {
-						
-						var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
-						var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
-						var xPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
-						var widthPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (lowPos, highPos));
-						
-						// TODO: White text
-						
-						context.fillStyle = "#000000";
-						context.fillRect (xPos, 5, widthPos, (textEngine.__textFormat.size * 1.185) - 4);
-						
-					}
+					// TODO: keep character positions?
+					
+					//if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
+						//
+						//var cursorOffset = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
+						//context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
+						//context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
+						//
+					//} else if (textEngine.__hasFocus && (Math.abs (textEngine.__selectionStart - textEngine.__cursorPosition)) > 0) {
+						//
+						//var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
+						//var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
+						//var xPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
+						//var widthPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (lowPos, highPos));
+						//
+						//// TODO: White text
+						//
+						//context.fillStyle = "#000000";
+						//context.fillRect (xPos, 5, widthPos, (textEngine.__textFormat.size * 1.185) - 4);
+						//
+					//}
 					
 					if (textEngine.__ranges == null) {
 						

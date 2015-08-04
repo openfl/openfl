@@ -372,24 +372,60 @@ class CairoTextField {
 				
 			}
 			
-			var measurements = textEngine.__textLayout.measureText (textEngine);
+			textEngine.updateLayout ();
+			var measurements = textEngine.layout.lineWidth;
 			
 			if (textEngine.__ranges == null) {
 				
-				renderText (textEngine, text, textEngine.__textFormat, 2, bounds );
+				renderText (textEngine, text, textEngine.__textFormat, 2, 0, bounds);
 				
 			} else {
 				
 				var currentIndex = 0;
 				var range;
 				var offsetX = 2.0;
+				var offsetY = 2.0;
+				
+				var nextLineBreak = -1;
+				var lineBreakIndex = 0;
+				
+				if (textEngine.layout.lineBreaks.length > 0) {
+					
+					nextLineBreak = textEngine.layout.lineBreaks[0];
+					
+				}
+				
+				var startIndex = 0;
+				var endIndex = 0;
 				
 				for (i in 0...textEngine.__ranges.length) {
 					
 					range = textEngine.__ranges[i];
 					
-					renderText (textEngine, text.substring (range.start, range.end), range.format, offsetX, bounds);
+					endIndex = (range.end > nextLineBreak || nextLineBreak == -1) ? range.end : nextLineBreak;
+					
+					renderText (textEngine, text.substring (startIndex, endIndex), range.format, offsetX, offsetY, bounds);
 					offsetX += measurements[i];
+					
+					startIndex = endIndex + 1;
+					
+					if (range.end >= nextLineBreak && nextLineBreak != -1) {
+						
+						offsetY += textEngine.layout.lineAscent[lineBreakIndex] + textEngine.layout.lineDescent[lineBreakIndex] + textEngine.layout.lineLeading[lineBreakIndex];
+						
+						lineBreakIndex++;
+						
+						if (lineBreakIndex < textEngine.layout.lineBreaks.length) {
+							
+							nextLineBreak = textEngine.layout.lineBreaks[lineBreakIndex];
+							
+						} else {
+							
+							nextLineBreak = -1;
+							
+						}
+						
+					}
 					
 				}
 				
@@ -406,7 +442,7 @@ class CairoTextField {
 	}
 	
 	
-	private static function renderText (textEngine:TextEngine, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle):Void {
+	private static function renderText (textEngine:TextEngine, text:String, format:TextFormat, offsetX:Float, offsetY:Float, bounds:Rectangle):Void {
 		
 		#if lime_cairo
 		var font = getFontInstance (format);
@@ -414,15 +450,18 @@ class CairoTextField {
 		if (font != null && format.size != null) {
 			
 			var graphics = textEngine.textField.__graphics;
-			var tlm = textEngine.getLineMetrics (0);
+			
+			textEngine.updateLayout ();
 			
 			var x = offsetX;
-			var y = 2 + tlm.ascent;
+			var y = offsetY;
 			var size = Std.int (format.size);
 			
-			var lines = text.split ("\n");
+			textEngine.updateLayout ();
 			
-			var line_i = 0;
+			//var lines = text.split ("\n");
+			
+			//var line_i = 0;
 			var oldX = x;
 			
 			var cairo = textEngine.textField.__graphics.__cairo;
@@ -435,28 +474,30 @@ class CairoTextField {
 			
 			cairo.setSourceRGB (r, g, b);
 			
-			for (line in lines) {
+			
+			
+			//for (line in layout.numLines) {
 				
-				tlm = textEngine.getLineMetrics (line_i);
+				//tlm = textEngine.getLineMetrics (line_i);
 				x = oldX;
 				
 				// TODO: Make textEngine.getLineMetrics ().x match this value
 				
-				x += switch (format.align) {
-					
-					case LEFT, JUSTIFY: 0;
-					case CENTER: ((textEngine.width - 4) - textEngine.__textLayout.getLineWidth (textEngine, line_i)) / 2;
-					case RIGHT: ((textEngine.width - 4) - textEngine.__textLayout.getLineWidth (textEngine, line_i));
-					
-				}
+				//x += switch (format.align) {
+					//
+					//case LEFT, JUSTIFY: 0;
+					//case CENTER: ((textEngine.width - 4) - textEngine.layout.lineWidth[lineIndex]) / 2;
+					//case RIGHT: ((textEngine.width - 4) - textEngine.layout.lineWidth[lineIndex]);
+					//
+				//}
 				
 				cairo.moveTo (x, y);
-				cairo.showText (line);
+				cairo.showText (text);
 				
-				y += Math.round (tlm.height);
-				line_i++;
+				//y += textEngine.layout.lineAscent[lineIndex] + textEngine.layout.lineDescent[lineIndex] + textEngine.layout.lineLeading[lineIndex];
+				//line_i++;
 				
-			}
+			//}
 			
 		}
 		
