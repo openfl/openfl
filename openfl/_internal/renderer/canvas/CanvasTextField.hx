@@ -200,7 +200,7 @@ class CanvasTextField {
 					
 					if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
 						
-						var cursorOffset = getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
+						var cursorOffset = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
 						context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
 						context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
 						
@@ -208,8 +208,8 @@ class CanvasTextField {
 						
 						var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
 						var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
-						var xPos = getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
-						var widthPos = getTextWidth (textEngine, text.substring (lowPos, highPos));
+						var xPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
+						var widthPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (lowPos, highPos));
 						
 						// TODO: White text
 						

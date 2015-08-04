@@ -3,9 +3,15 @@ package openfl._internal.text;
 
 import lime.text.TextLayout in NativeLayout;
 import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.renderer.dom.DOMTextField;
 import haxe.Utf8;
 
+#if (js && html5)
+import js.Browser;
+#end
+
 @:access(openfl._internal.text.TextEngine)
+@:access(openfl.text.TextField)
 
 
 class TextLayout {
