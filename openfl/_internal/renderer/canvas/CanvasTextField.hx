@@ -38,7 +38,7 @@ class CanvasTextField {
 	
 	private static function clipText (textEngine:TextEngine, value:String):String {
 		
-		var textWidth = getTextWidth (textEngine, value);
+		var textWidth = textEngine.__textLayout.getTextWidth (textEngine, value);
 		var fillPer = textWidth / textEngine.width;
 		textEngine.text = fillPer > 1 ? textEngine.text.substr (-1 * Math.floor (textEngine.text.length / fillPer)) : textEngine.text;
 		return textEngine.text + '';
@@ -118,143 +118,6 @@ class CanvasTextField {
 	}
 	
 	
-	private static function getLineBreakIndices (textEngine:TextEngine):Array<Int> {
-		
-		//returns the exact character indeces where the line breaks occur
-		
-		var breaks = [];
-		
-		for (i in 0...Utf8.length (textEngine.text)) {
-			
-			try {
-				
-				var char = Utf8.charCodeAt (textEngine.text, i);
-				
-				if (char == __utf8_endline_code) {
-					
-					breaks.push (i);
-					
-				}
-				
-			}
-			
-		}
-		
-		return breaks;
-		
-	}
-	
-	
-	public static function getLineWidth (textEngine:TextEngine, line:Int):Float {
-		
-		#if (js && html5)
-		
-		if (textEngine.textField.__context == null) {
-			
-			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
-			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
-			
-		}
-		
-		var linebreaks = getLineBreakIndices (textEngine);
-		
-		var context = textEngine.textField.__context;
-		context.font = DOMTextField.getFont (textEngine.__textFormat);
-		
-		if (line == -1) {
-			
-			var longest = 0.0;
-			
-			for (i in 0...linebreaks.length) {
-				
-				longest = Math.max (longest, context.measureText (textEngine.text.substring (i == 0 ? 0 : (linebreaks[i - 1] + 1), linebreaks[i])).width);
-				
-			}
-			
-			longest = Math.max (longest, context.measureText (textEngine.text.substring (linebreaks.length == 0 ? 0 : (linebreaks[linebreaks.length - 1] + 1))).width);
-			
-			return longest;
-			
-		} else {
-			
-			return context.measureText (textEngine.text.substring (line == 0 ? 0 : (linebreaks[line - 1] + 1))).width;
-			
-		}
-		
-		#else
-		
-		return 0;
-		
-		#end
-		
-	}
-	
-	
-	public static function getTextWidth (textEngine:TextEngine, text:String):Float {
-		
-		#if (js && html5) 
-		
-		if (textEngine.textField.__context == null) {
-			
-			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
-			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
-			
-		}
-		
-		textEngine.textField.__context.font = DOMTextField.getFont (textEngine.__textFormat);
-		textEngine.textField.__context.textAlign = 'left';
-		
-		return textEngine.textField.__context.measureText (text).width;
-		
-		#else
-		
-		return 0;
-		
-		#end
-		
-	}
-	
-	
-	public static function measureText (textEngine:TextEngine, condense:Bool = true):Array<Float> {
-		
-		#if (js && html5)
-		
-		if (textEngine.textField.__context == null) {
-			
-			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
-			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
-			
-		}
-		
-		if (textEngine.__ranges == null) {
-			
-			textEngine.textField.__context.font = DOMTextField.getFont (textEngine.__textFormat);
-			return [ textEngine.textField.__context.measureText (textEngine.text).width ];
-			
-		} else {
-			
-			var measurements = [];
-			
-			for (range in textEngine.__ranges) {
-				
-				textEngine.textField.__context.font = DOMTextField.getFont (range.format);
-				measurements.push (textEngine.textField.__context.measureText (textEngine.text.substring (range.start, range.end)).width);
-				
-			}
-			
-			return measurements;
-			
-		}
-		
-		#else
-		
-		return null;
-		
-		#end
-		
-	}
-	
-	
 	public static inline function render (textEngine:TextEngine, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -308,7 +171,7 @@ class CanvasTextField {
 						
 					}
 					
-					var measurements = measureText (textEngine);
+					var measurements = textEngine.__textLayout.measureText (textEngine);
 					var bounds = textEngine.bounds;
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);

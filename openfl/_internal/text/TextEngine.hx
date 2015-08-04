@@ -4,7 +4,6 @@ package openfl._internal.text;
 import haxe.Timer;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.opengl.GLTexture;
-import lime.text.TextLayout;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl._internal.renderer.dom.DOMTextField;
@@ -135,6 +134,7 @@ class TextEngine {
 		}
 		
 		__textFormat = __defaultTextFormat.clone ();
+		__textLayout = new TextLayout ();
 		
 	}
 	
@@ -256,7 +256,7 @@ class TextEngine {
 		
 		#if (js && html5)
 		
-		var lineWidth = CanvasTextField.getLineWidth (this, lineIndex);
+		var lineWidth = __textLayout.getLineWidth (this, lineIndex);
 		var lineHeight = getTextHeight ();
 		var ascender = lineHeight * 0.8;
 		var descender = lineHeight * 0.2;
@@ -264,10 +264,10 @@ class TextEngine {
 		
 		#else
 		
-		var lineWidth = CairoTextField.getLineWidth (this, lineIndex);
-		var ascender = CairoTextField.getLineMetric (this, lineIndex, ASCENDER);
-		var descender = CairoTextField.getLineMetric (this, lineIndex, DESCENDER);
-		var leading = CairoTextField.getLineMetric (this, lineIndex, LEADING);
+		var lineWidth = __textLayout.getLineWidth (this, lineIndex);
+		var ascender = __textLayout.getLineMetric (this, lineIndex, ASCENDER);
+		var descender = __textLayout.getLineMetric (this, lineIndex, DESCENDER);
+		var leading = __textLayout.getLineMetric (this, lineIndex, LEADING);
 		var lineHeight = ascender + descender + leading;
 		
 		#end
@@ -402,7 +402,7 @@ class TextEngine {
 		}
 		
 		#else
-		return CairoTextField.getTextHeight (this);
+		return __textLayout.getTextHeight (this);
 		#end
 		
 	}
@@ -413,11 +413,7 @@ class TextEngine {
 		//return the largest width of any given single line
 		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
 		
-		#if (js && html5)
-		return CanvasTextField.getLineWidth (this, -1);
-		#else
-		return CairoTextField.getLineWidth (this, -1);
-		#end
+		return __textLayout.getLineWidth (this, -1);
 		
 	}
 	
@@ -975,19 +971,11 @@ class TextEngine {
 		var totalW:Float = 2;
 		var pos = text.length;
 		
-		#if (js && html5)
-		if (x < CanvasTextField.getTextWidth (this, text) + 2) {
-		#else
-		if (x < CairoTextField.getTextWidth (this, text) + 2) {
-		#end
+		if (x < __textLayout.getTextWidth (this, text) + 2) {
 			
 			for (i in 0...text.length) {
 				
-				#if (js && html5)
-				totalW += CanvasTextField.getTextWidth (this, text.charAt (i));
-				#else
-				totalW += CairoTextField.getTextWidth (this, text.charAt (i));
-				#end
+				totalW += __textLayout.getTextWidth (this, text.charAt (i));
 				
 				if (totalW >= x) {
 					
