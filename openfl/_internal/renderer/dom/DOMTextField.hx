@@ -2,7 +2,7 @@ package openfl._internal.renderer.dom;
 
 
 import openfl._internal.renderer.RenderSession;
-import openfl.text.TextField;
+import openfl._internal.text.TextEngine;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
@@ -12,6 +12,7 @@ import js.html.Element;
 import js.Browser;
 #end
 
+@:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextField)
 
 
@@ -40,17 +41,17 @@ class DOMTextField {
 	}
 	
 	
-	public static function measureText (textField:TextField):Void {
+	public static function measureText (textEngine:TextEngine):Void {
 		
 	 	#if (js && html5)
 	 	
-		var div:Element = textField.__div;
+		var div:Element = textEngine.__div;
 		
 		if (div == null) {
 			
 			div = cast Browser.document.createElement ("div");
-			div.innerHTML = new EReg ("\n", "g").replace (textField.__text, "<br>");
-			div.style.setProperty ("font", getFont (textField.__textFormat), null);
+			div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
+			div.style.setProperty ("font", getFont (textEngine.__textFormat), null);
 			div.style.setProperty ("pointer-events", "none", null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
@@ -58,20 +59,20 @@ class DOMTextField {
 			
 		}
 		
-		textField.__measuredWidth = div.clientWidth;
+		textEngine.__measuredWidth = div.clientWidth;
 		
 		// Now set the width so that the height is accurate as a
 		// function of the flow within the width bounds...
 		
-		if (textField.__div == null) {
+		if (textEngine.__div == null) {
 			
-			div.style.width = Std.string (textField.__width - 4) + "px";
+			div.style.width = Std.string (textEngine.width - 4) + "px";
 			
 		}
 		
-		textField.__measuredHeight = div.clientHeight;
+		textEngine.__measuredHeight = div.clientHeight;
 		
-		if (textField.__div == null) {
+		if (textEngine.__div == null) {
 			
 			Browser.document.body.removeChild (div);
 			
@@ -82,34 +83,34 @@ class DOMTextField {
 	}
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
+	public static inline function render (textEngine:TextEngine, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		
-		if (textField.stage != null && textField.__worldVisible && textField.__renderable) {
+		if (textEngine.textField.stage != null && textEngine.textField.__worldVisible && textEngine.textField.__renderable) {
 			
-			if (textField.__dirty || textField.__div == null) {
+			if (textEngine.__dirty || textEngine.__div == null) {
 				
-				if (textField.__text != "" || textField.background || textField.border) {
+				if (textEngine.text != "" || textEngine.background || textEngine.border) {
 					
-					if (textField.__div == null) {
+					if (textEngine.__div == null) {
 						
-						textField.__div = cast Browser.document.createElement ("div");
-						DOMRenderer.initializeElement (textField, textField.__div, renderSession);
-						textField.__style.setProperty ("cursor", "inherit", null);
+						textEngine.__div = cast Browser.document.createElement ("div");
+						DOMRenderer.initializeElement (textEngine.textField, textEngine.__div, renderSession);
+						textEngine.textField.__style.setProperty ("cursor", "inherit", null);
 						
 					}
 					
-					var style = textField.__style;
+					var style = textEngine.textField.__style;
 					
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 					
-					textField.__div.innerHTML = textField.__text;
+					textEngine.__div.innerHTML = textEngine.text;
 					
-					if (textField.background) {
+					if (textEngine.background) {
 						
-						style.setProperty ("background-color", "#" + StringTools.hex (textField.backgroundColor, 6), null);
+						style.setProperty ("background-color", "#" + StringTools.hex (textEngine.backgroundColor, 6), null);
 						
 					} else {
 						
@@ -117,9 +118,9 @@ class DOMTextField {
 						
 					}
 					
-					if (textField.border) {
+					if (textEngine.border) {
 						
-						style.setProperty ("border", "solid 1px #" + StringTools.hex (textField.borderColor, 6), null);
+						style.setProperty ("border", "solid 1px #" + StringTools.hex (textEngine.borderColor, 6), null);
 						
 					} else {
 						
@@ -127,22 +128,22 @@ class DOMTextField {
 						
 					}
 					
-					style.setProperty ("font", getFont (textField.__textFormat), null);
-					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color, 6), null);
+					style.setProperty ("font", getFont (textEngine.__textFormat), null);
+					style.setProperty ("color", "#" + StringTools.hex (textEngine.__textFormat.color, 6), null);
 					
-					if (textField.autoSize != TextFieldAutoSize.NONE) {
+					if (textEngine.autoSize != TextFieldAutoSize.NONE) {
 						
 						style.setProperty ("width", "auto", null);
 						
 					} else {
 						
-						style.setProperty ("width", textField.__width + "px", null);
+						style.setProperty ("width", textEngine.width + "px", null);
 						
 					}
 					
-					style.setProperty ("height", textField.__height + "px", null);
+					style.setProperty ("height", textEngine.height + "px", null);
 					
-					switch (textField.__textFormat.align) {
+					switch (textEngine.__textFormat.align) {
 						
 						case TextFormatAlign.CENTER:
 							
@@ -158,14 +159,14 @@ class DOMTextField {
 						
 					}
 					
-					textField.__dirty = false;
+					textEngine.__dirty = false;
 					
 				} else {
 					
-					if (textField.__div != null) {
+					if (textEngine.__div != null) {
 						
-						renderSession.element.removeChild (textField.__div);
-						textField.__div = null;
+						renderSession.element.removeChild (textEngine.__div);
+						textEngine.__div = null;
 						
 					}
 					
@@ -173,21 +174,21 @@ class DOMTextField {
 				
 			}
 			
-			if (textField.__div != null) {
+			if (textEngine.__div != null) {
 				
 				// TODO: Enable scrollRect clipping
 				
-				DOMRenderer.applyStyle (textField, renderSession, true, true, false);
+				DOMRenderer.applyStyle (textEngine.textField, renderSession, true, true, false);
 				
 			}
 			
 		} else {
 			
-			if (textField.__div != null) {
+			if (textEngine.__div != null) {
 				
-				renderSession.element.removeChild (textField.__div);
-				textField.__div = null;
-				textField.__style = null;
+				renderSession.element.removeChild (textEngine.__div);
+				textEngine.__div = null;
+				textEngine.textField.__style = null;
 				
 			}
 			

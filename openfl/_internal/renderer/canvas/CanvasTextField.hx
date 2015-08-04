@@ -4,12 +4,12 @@ package openfl._internal.renderer.canvas;
 import haxe.Utf8;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
-import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
@@ -21,8 +21,9 @@ import js.Browser;
 import js.html.ImageData;
 #end
 
-@:access(openfl.text.TextField)
+@:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
+@:access(openfl.text.TextField)
 
 
 class CanvasTextField {
@@ -35,35 +36,35 @@ class CanvasTextField {
 	private static var __utf8_endline_code:Int = 10;
 	
 	
-	private static function clipText (textField:TextField, value:String):String {
+	private static function clipText (textEngine:TextEngine, value:String):String {
 		
-		var textWidth = getTextWidth (textField, value);
-		var fillPer = textWidth / textField.__width;
-		textField.text = fillPer > 1 ? textField.text.substr (-1 * Math.floor (textField.text.length / fillPer)) : textField.text;
-		return textField.text + '';
+		var textWidth = getTextWidth (textEngine, value);
+		var fillPer = textWidth / textEngine.width;
+		textEngine.text = fillPer > 1 ? textEngine.text.substr (-1 * Math.floor (textEngine.text.length / fillPer)) : textEngine.text;
+		return textEngine.text + '';
 		
 	}
 	
 	
-	public static function disableInputMode (textField:TextField):Void {
+	public static function disableInputMode (textEngine:TextEngine):Void {
 		
 		#if (js && html5)
-		textField.this_onRemovedFromStage (null);
+		textEngine.this_onRemovedFromStage (null);
 		#end
 		
 	}
 	
 	
-	public static function enableInputMode (textField:TextField):Void {
+	public static function enableInputMode (textEngine:TextEngine):Void {
 		
 		#if (js && html5)
 		
-		textField.__cursorPosition = -1;
+		textEngine.__cursorPosition = -1;
 		
-		if (textField.__hiddenInput == null) {
+		if (textEngine.__hiddenInput == null) {
 			
-			textField.__hiddenInput = cast Browser.document.createElement ('input');
-			var hiddenInput = textField.__hiddenInput;
+			textEngine.__hiddenInput = cast Browser.document.createElement ('input');
+			var hiddenInput = textEngine.__hiddenInput;
 			hiddenInput.type = 'text';
 			hiddenInput.style.position = 'absolute';
 			hiddenInput.style.opacity = "0";
@@ -90,25 +91,25 @@ class CanvasTextField {
 			untyped (hiddenInput.style).pointerEvents = 'none';
 			hiddenInput.style.zIndex = "-10000000";
 			
-			if (textField.maxChars > 0) {
+			if (textEngine.maxChars > 0) {
 				
-				hiddenInput.maxLength = textField.maxChars;
+				hiddenInput.maxLength = textEngine.maxChars;
 				
 			}
 			
 			Browser.document.body.appendChild (hiddenInput);
-			hiddenInput.value = textField.__text;
+			hiddenInput.value = textEngine.text;
 			
 		}
 		
-		if (textField.stage != null) {
+		if (textEngine.textField.stage != null) {
 			
-			textField.this_onAddedToStage (null);
+			textEngine.this_onAddedToStage (null);
 			
 		} else {
 			
-			textField.addEventListener (Event.ADDED_TO_STAGE, textField.this_onAddedToStage);
-			textField.addEventListener (Event.REMOVED_FROM_STAGE, textField.this_onRemovedFromStage);
+			textEngine.textField.addEventListener (Event.ADDED_TO_STAGE, textEngine.this_onAddedToStage);
+			textEngine.textField.addEventListener (Event.REMOVED_FROM_STAGE, textEngine.this_onRemovedFromStage);
 			
 		}
 		
@@ -117,17 +118,17 @@ class CanvasTextField {
 	}
 	
 	
-	private static function getLineBreakIndices (textField:TextField):Array<Int> {
+	private static function getLineBreakIndices (textEngine:TextEngine):Array<Int> {
 		
 		//returns the exact character indeces where the line breaks occur
 		
 		var breaks = [];
 		
-		for (i in 0...Utf8.length (textField.text)) {
+		for (i in 0...Utf8.length (textEngine.text)) {
 			
 			try {
 				
-				var char = Utf8.charCodeAt (textField.text, i);
+				var char = Utf8.charCodeAt (textEngine.text, i);
 				
 				if (char == __utf8_endline_code) {
 					
@@ -144,21 +145,21 @@ class CanvasTextField {
 	}
 	
 	
-	public static function getLineWidth (textField:TextField, line:Int):Float {
+	public static function getLineWidth (textEngine:TextEngine, line:Int):Float {
 		
 		#if (js && html5)
 		
-		if (textField.__context == null) {
+		if (textEngine.textField.__context == null) {
 			
-			textField.__canvas = cast Browser.document.createElement ("canvas");
-			textField.__context = textField.__canvas.getContext ("2d");
+			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
+			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
 			
 		}
 		
-		var linebreaks = getLineBreakIndices (textField);
+		var linebreaks = getLineBreakIndices (textEngine);
 		
-		var context = textField.__context;
-		context.font = DOMTextField.getFont (textField.__textFormat);
+		var context = textEngine.textField.__context;
+		context.font = DOMTextField.getFont (textEngine.__textFormat);
 		
 		if (line == -1) {
 			
@@ -166,17 +167,17 @@ class CanvasTextField {
 			
 			for (i in 0...linebreaks.length) {
 				
-				longest = Math.max (longest, context.measureText (textField.__text.substring (i == 0 ? 0 : (linebreaks[i - 1] + 1), linebreaks[i])).width);
+				longest = Math.max (longest, context.measureText (textEngine.text.substring (i == 0 ? 0 : (linebreaks[i - 1] + 1), linebreaks[i])).width);
 				
 			}
 			
-			longest = Math.max (longest, context.measureText (textField.__text.substring (linebreaks.length == 0 ? 0 : (linebreaks[linebreaks.length - 1] + 1))).width);
+			longest = Math.max (longest, context.measureText (textEngine.text.substring (linebreaks.length == 0 ? 0 : (linebreaks[linebreaks.length - 1] + 1))).width);
 			
 			return longest;
 			
 		} else {
 			
-			return context.measureText (textField.__text.substring (line == 0 ? 0 : (linebreaks[line - 1] + 1))).width;
+			return context.measureText (textEngine.text.substring (line == 0 ? 0 : (linebreaks[line - 1] + 1))).width;
 			
 		}
 		
@@ -189,21 +190,21 @@ class CanvasTextField {
 	}
 	
 	
-	public static function getTextWidth (textField:TextField, text:String):Float {
+	public static function getTextWidth (textEngine:TextEngine, text:String):Float {
 		
 		#if (js && html5) 
 		
-		if (textField.__context == null) {
+		if (textEngine.textField.__context == null) {
 			
-			textField.__canvas = cast Browser.document.createElement ("canvas");
-			textField.__context = textField.__canvas.getContext ("2d");
+			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
+			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
 			
 		}
 		
-		textField.__context.font = DOMTextField.getFont (textField.__textFormat);
-		textField.__context.textAlign = 'left';
+		textEngine.textField.__context.font = DOMTextField.getFont (textEngine.__textFormat);
+		textEngine.textField.__context.textAlign = 'left';
 		
-		return textField.__context.measureText (text).width;
+		return textEngine.textField.__context.measureText (text).width;
 		
 		#else
 		
@@ -214,30 +215,30 @@ class CanvasTextField {
 	}
 	
 	
-	public static function measureText (textField:TextField, condense:Bool = true):Array<Float> {
+	public static function measureText (textEngine:TextEngine, condense:Bool = true):Array<Float> {
 		
 		#if (js && html5)
 		
-		if (textField.__context == null) {
+		if (textEngine.textField.__context == null) {
 			
-			textField.__canvas = cast Browser.document.createElement ("canvas");
-			textField.__context = textField.__canvas.getContext ("2d");
+			textEngine.textField.__canvas = cast Browser.document.createElement ("canvas");
+			textEngine.textField.__context = textEngine.textField.__canvas.getContext ("2d");
 			
 		}
 		
-		if (textField.__ranges == null) {
+		if (textEngine.__ranges == null) {
 			
-			textField.__context.font = DOMTextField.getFont (textField.__textFormat);
-			return [ textField.__context.measureText (textField.__text).width ];
+			textEngine.textField.__context.font = DOMTextField.getFont (textEngine.__textFormat);
+			return [ textEngine.textField.__context.measureText (textEngine.text).width ];
 			
 		} else {
 			
 			var measurements = [];
 			
-			for (range in textField.__ranges) {
+			for (range in textEngine.__ranges) {
 				
-				textField.__context.font = DOMTextField.getFont (range.format);
-				measurements.push (textField.__context.measureText (textField.text.substring (range.start, range.end)).width);
+				textEngine.textField.__context.font = DOMTextField.getFont (range.format);
+				measurements.push (textEngine.textField.__context.measureText (textEngine.text.substring (range.start, range.end)).width);
 				
 			}
 			
@@ -254,45 +255,45 @@ class CanvasTextField {
 	}
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
+	public static inline function render (textEngine:TextEngine, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		
-		var bounds = textField.getBounds (null);
+		var bounds = textEngine.textField.getBounds (null);
 		
-		if (textField.__dirty) {
+		if (textEngine.__dirty) {
 			
-			if (((textField.__text == null || textField.__text == "") && !textField.background && !textField.border && !textField.__hasFocus) || ((textField.width <= 0 || textField.height <= 0) && textField.autoSize != TextFieldAutoSize.NONE)) {
+			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
-				textField.__graphics.__canvas = null;
-				textField.__graphics.__context = null;
-				textField.__graphics.__dirty = false;
-				textField.__dirty = false;
+				textEngine.textField.__graphics.__canvas = null;
+				textEngine.textField.__graphics.__context = null;
+				textEngine.textField.__graphics.__dirty = false;
+				textEngine.__dirty = false;
 				
 			} else {
 				
-				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
+				if (textEngine.textField.__graphics == null || textEngine.textField.__graphics.__canvas == null) {
 					
-					if (textField.__graphics == null) {
+					if (textEngine.textField.__graphics == null) {
 						
-						textField.__graphics = new Graphics ();
+						textEngine.textField.__graphics = new Graphics ();
 						
 					}
 					
-					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
-					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
-					textField.__graphics.__bounds = new Rectangle( 0, 0, bounds.width, bounds.height );
+					textEngine.textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
+					textEngine.textField.__graphics.__context = textEngine.textField.__graphics.__canvas.getContext ("2d");
+					textEngine.textField.__graphics.__bounds = new Rectangle( 0, 0, bounds.width, bounds.height );
 					
 				}
 				
-				var graphics = textField.__graphics;
+				var graphics = textEngine.textField.__graphics;
 				context = graphics.__context;
 				
-				if ((textField.__text != null && textField.__text != "") || textField.__hasFocus) {
+				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
 					
-					var text = textField.text;
+					var text = textEngine.text;
 					
-					if (textField.displayAsPassword) {
+					if (textEngine.displayAsPassword) {
 						
 						var length = text.length;
 						var mask = "";
@@ -307,56 +308,56 @@ class CanvasTextField {
 						
 					}
 					
-					var measurements = measureText (textField);
-					var bounds = textField.bounds;
+					var measurements = measureText (textEngine);
+					var bounds = textEngine.bounds;
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
 					
-					if (textField.border || textField.background) {
+					if (textEngine.border || textEngine.background) {
 						
 						context.rect (0.5, 0.5, bounds.width, bounds.height);
 						
-						if (textField.background) {
+						if (textEngine.background) {
 							
-							context.fillStyle = "#" + StringTools.hex (textField.backgroundColor, 6);
+							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor, 6);
 							context.fill ();
 							
 						}
 						
-						if (textField.border) {
+						if (textEngine.border) {
 							
 							context.lineWidth = 1;
-							context.strokeStyle = "#" + StringTools.hex (textField.borderColor, 6);
+							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor, 6);
 							context.stroke ();
 							
 						}
 						
 					}
 					
-					if (textField.__hasFocus && (textField.__selectionStart == textField.__cursorPosition) && textField.__showCursor) {
+					if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
 						
-						var cursorOffset = getTextWidth (textField, text.substring (0, textField.__cursorPosition)) + 3;
-						context.fillStyle = "#" + StringTools.hex (textField.__textFormat.color, 6);
-						context.fillRect (cursorOffset, 5, 1, (textField.__textFormat.size * 1.185) - 4);
+						var cursorOffset = getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
+						context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
+						context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
 						
-					} else if (textField.__hasFocus && (Math.abs (textField.__selectionStart - textField.__cursorPosition)) > 0) {
+					} else if (textEngine.__hasFocus && (Math.abs (textEngine.__selectionStart - textEngine.__cursorPosition)) > 0) {
 						
-						var lowPos = Std.int (Math.min (textField.__selectionStart, textField.__cursorPosition));
-						var highPos = Std.int (Math.max (textField.__selectionStart, textField.__cursorPosition));
-						var xPos = getTextWidth (textField, text.substring (0, lowPos)) + 2;
-						var widthPos = getTextWidth (textField, text.substring (lowPos, highPos));
+						var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
+						var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
+						var xPos = getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
+						var widthPos = getTextWidth (textEngine, text.substring (lowPos, highPos));
 						
 						// TODO: White text
 						
 						context.fillStyle = "#000000";
-						context.fillRect (xPos, 5, widthPos, (textField.__textFormat.size * 1.185) - 4);
+						context.fillRect (xPos, 5, widthPos, (textEngine.__textFormat.size * 1.185) - 4);
 						
 					}
 					
-					if (textField.__ranges == null) {
+					if (textEngine.__ranges == null) {
 						
-						renderText (textField, text, textField.__textFormat, 0, bounds );
+						renderText (textEngine, text, textEngine.__textFormat, 0, bounds );
 						
 					} else {
 						
@@ -364,11 +365,11 @@ class CanvasTextField {
 						var range;
 						var offsetX = 0.0;
 						
-						for (i in 0...textField.__ranges.length) {
+						for (i in 0...textEngine.__ranges.length) {
 							
-							range = textField.__ranges[i];
+							range = textEngine.__ranges[i];
 							
-							renderText (textField, text.substring (range.start, range.end), range.format, offsetX, bounds );
+							renderText (textEngine, text.substring (range.start, range.end), range.format, offsetX, bounds );
 							offsetX += measurements[i];
 							
 						}
@@ -377,33 +378,33 @@ class CanvasTextField {
 					
 				} else {
 					
-					graphics.__canvas.width = Math.ceil (textField.__width);
-					graphics.__canvas.height = Math.ceil (textField.__height);
+					graphics.__canvas.width = Math.ceil (textEngine.width);
+					graphics.__canvas.height = Math.ceil (textEngine.height);
 					
-					if (textField.border || textField.background) {
+					if (textEngine.border || textEngine.background) {
 						
-						if (textField.border) {
+						if (textEngine.border) {
 							
-							context.rect (0.5, 0.5, textField.width, textField.height);
+							context.rect (0.5, 0.5, textEngine.width, textEngine.height);
 							
 						} else {
 							
-							context.rect (0, 0, textField.width, textField.height);
+							context.rect (0, 0, textEngine.width, textEngine.height);
 							
 						}
 						
-						if (textField.background) {
+						if (textEngine.background) {
 							
-							context.fillStyle = "#" + StringTools.hex (textField.backgroundColor, 6);
+							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor, 6);
 							context.fill ();
 							
 						}
 						
-						if (textField.border) {
+						if (textEngine.border) {
 							
 							context.lineWidth = 1;
 							context.lineCap = "square";
-							context.strokeStyle = "#" + StringTools.hex (textField.borderColor, 6);
+							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor, 6);
 							context.stroke ();
 							
 						}
@@ -412,8 +413,8 @@ class CanvasTextField {
 					
 				}
 				
-				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
-				textField.__dirty = false;
+				graphics.__bitmap = BitmapData.fromCanvas (textEngine.textField.__canvas);
+				textEngine.__dirty = false;
 				graphics.__dirty = false;
 				
 			}
@@ -425,13 +426,15 @@ class CanvasTextField {
 	}
 	
 	
-	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle ):Void {
+	private static inline function renderText (textEngine:TextEngine, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle ):Void {
 		
 		#if (js && html5)
 		
 		context.font = DOMTextField.getFont (format);
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
 		context.textBaseline = "top";
+		
+		trace (context.font);
 		
 		var yOffset = 0.0;
 		
@@ -445,7 +448,7 @@ class CanvasTextField {
 		
 		var lines = [];
 		
-		if (textField.wordWrap) {
+		if (textEngine.wordWrap) {
 			
 			var words = text.split (" ");
 			var line = "";
@@ -463,7 +466,7 @@ class CanvasTextField {
 						
 						test = line + word.substring (0, newLineIndex) + " ";
 						
-						if (context.measureText (test).width > textField.__width - 4 && i > 0) {
+						if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
 							
 							lines.push (line);
 							lines.push (word.substring (0, newLineIndex));
@@ -490,7 +493,7 @@ class CanvasTextField {
 					
 					test = line + words[i] + " ";
 					
-					if (context.measureText (test).width > textField.__width - 4 && i > 0) {
+					if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
 						
 						lines.push (line);
 						line = words[i] + " ";
@@ -524,17 +527,17 @@ class CanvasTextField {
 				case TextFormatAlign.CENTER:
 					
 					context.textAlign = "center";
-					context.fillText (line, offsetX + textField.width / 2, 2 + yOffset, textField.textWidth);
+					context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
 					
 				case TextFormatAlign.RIGHT:
 					
 					context.textAlign = "end";
-					context.fillText (line, offsetX + textField.width - 2, 2 + yOffset, textField.textWidth);
+					context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
 					
 				default:
 					
 					context.textAlign = "start";
-					context.fillText (line, 2 + offsetX, 2 + yOffset, textField.textWidth);
+					context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
 					
 			}
 			

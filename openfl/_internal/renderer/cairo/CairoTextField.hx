@@ -11,12 +11,14 @@ import lime.graphics.cairo.CairoSurface;
 import lime.system.System;
 import lime.text.TextLayout;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.text.TextEngine;
+import openfl._internal.text.TextFieldLineMetric;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
-import openfl.text.TextField;
 import openfl.text.TextFormat;
 
+@:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.BitmapData)
 @:access(openfl.text.Font)
@@ -255,13 +257,13 @@ class CairoTextField {
 	}
 	
 	
-	private static function getLineBreaks (textField:TextField):Int {
+	private static function getLineBreaks (textEngine:TextEngine):Int {
 		
 		//returns the number of line breaks in the text
 		
 		var lines = 0;
 		
-		Utf8.iter(textField.text, function(char:Int) {
+		Utf8.iter(textEngine.text, function(char:Int) {
 			
 			if (char == __utf8_endline_code) {
 				
@@ -276,7 +278,7 @@ class CairoTextField {
 	}
 	
 	
-	private static function getLineBreakIndices (textField:TextField):Array<Int> {
+	private static function getLineBreakIndices (textEngine:TextEngine):Array<Int> {
 		
 		//returns the exact character indeces where the line breaks occur
 		
@@ -284,7 +286,7 @@ class CairoTextField {
 		
 		var i = 0;
 		
-		Utf8.iter(textField.text, function(char:Int) {
+		Utf8.iter(textEngine.text, function(char:Int) {
 			
 			if (char == __utf8_endline_code) {
 				
@@ -300,21 +302,21 @@ class CairoTextField {
 	}
 	
 	
-	private static function getLineBreaksInRange (textField:TextField, i:Int):Int {
+	private static function getLineBreaksInRange (textEngine:TextEngine, i:Int):Int {
 		
 		//returns the number of line breaks that occur within a given format range
 		
 		var lines = 0;
 		
-		if (textField.__ranges.length > i && i >= 0) {
+		if (textEngine.__ranges.length > i && i >= 0) {
 			
-			var range = textField.__ranges[i];
+			var range = textEngine.__ranges[i];
 			
 			//TODO: this could quite possibly cause crash errors if range indeces are not based on Utf8 character indeces
 			
-			if (range.start > 0 && range.end < textField.text.length) {
+			if (range.start > 0 && range.end < textEngine.text.length) {
 				
-				Utf8.iter(textField.text, function(char:Int) {
+				Utf8.iter(textEngine.text, function(char:Int) {
 					
 					if (char == __utf8_endline_code) {
 						
@@ -333,14 +335,14 @@ class CairoTextField {
 	}
 	
 	
-	private static function getLineIndices (textField:TextField, line:Int):Array<Int> {
+	private static function getLineIndices (textEngine:TextEngine, line:Int):Array<Int> {
 		
 		//tells you what the first and last (non-linebreak) character indeces are in a given line
 		
-		var breaks = getLineBreakIndices (textField);
+		var breaks = getLineBreakIndices (textEngine);
 		var i = 0;
 		var first_char = 0;
-		var last_char:Int = textField.text.length - 1;
+		var last_char:Int = textEngine.text.length - 1;
 		
 		for (br in breaks) {
 			
@@ -374,32 +376,32 @@ class CairoTextField {
 	}
 	
 	
-	public static function getLineMetric (textField:TextField, line:Int, metric:TextFieldLineMetric):Float {
+	public static function getLineMetric (textEngine:TextEngine, line:Int, metric:TextFieldLineMetric):Float {
 		
-		if (textField.__ranges == null) {
+		if (textEngine.__ranges == null) {
 			
-			return getLineMetricSubRangesNull (textField, true, metric);
+			return getLineMetricSubRangesNull (textEngine, true, metric);
 			
 		} else {
 			
-			return getLineMetricSubRangesNotNull (textField, line, metric);
+			return getLineMetricSubRangesNotNull (textEngine, line, metric);
 			
 		}
 		
 	}
 	
 	
-	private static function getLineMetricSubRangesNotNull (textField:TextField, specificLine:Int, metric:TextFieldLineMetric):Float {
+	private static function getLineMetricSubRangesNotNull (textEngine:TextEngine, specificLine:Int, metric:TextFieldLineMetric):Float {
 		
 		//subroutine if ranges are not null
 		//TODO: test this more thoroughly
 		
-		var lineChars = getLineIndices (textField, specificLine);
+		var lineChars = getLineIndices (textEngine, specificLine);
 		
 		var m = 0.0;
 		var best_m = 0.0;
 		
-		for (range in textField.__ranges) {
+		for (range in textEngine.__ranges) {
 			
 			if (range.start >= lineChars[0]) {
 				
@@ -409,10 +411,10 @@ class CairoTextField {
 					
 					m = switch (metric) {
 						
-						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textField, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, LEADING);
-						case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
-						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textField.__textFormat.size);
-						case LEADING: textField.__textFormat.leading + 4;
+						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textEngine, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textEngine, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textEngine, specificLine, LEADING);
+						case ASCENDER: font.ascender / font.unitsPerEM * textEngine.__textFormat.size;
+						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textEngine.__textFormat.size);
+						case LEADING: textEngine.__textFormat.leading + 4;
 						default: 0;
 						
 					}
@@ -436,20 +438,20 @@ class CairoTextField {
 	}
 	
 	
-	private static function getLineMetricSubRangesNull (textField:TextField, singleLine:Bool = false, metric:TextFieldLineMetric):Float {
+	private static function getLineMetricSubRangesNull (textEngine:TextEngine, singleLine:Bool = false, metric:TextFieldLineMetric):Float {
 		
 		//subroutine if ranges are null
 		
-		var font = getFontInstance (textField.__textFormat);
+		var font = getFontInstance (textEngine.__textFormat);
 		
 		if (font != null) {
 			
 			return switch (metric) {
 				
-				case LINE_HEIGHT: getLineMetricSubRangesNull (textField, singleLine, ASCENDER) + getLineMetricSubRangesNull (textField, singleLine, DESCENDER) + getLineMetricSubRangesNull (textField, singleLine, LEADING);
-				case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
-				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textField.__textFormat.size);
-				case LEADING: textField.__textFormat.leading + 4;
+				case LINE_HEIGHT: getLineMetricSubRangesNull (textEngine, singleLine, ASCENDER) + getLineMetricSubRangesNull (textEngine, singleLine, DESCENDER) + getLineMetricSubRangesNull (textEngine, singleLine, LEADING);
+				case ASCENDER: font.ascender / font.unitsPerEM * textEngine.__textFormat.size;
+				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textEngine.__textFormat.size);
+				case LEADING: textEngine.__textFormat.leading + 4;
 				default: 0;
 				
 			}
@@ -461,18 +463,18 @@ class CairoTextField {
 	}
 	
 	
-	public static function getLineWidth (textField:TextField, line:Int):Float {
+	public static function getLineWidth (textEngine:TextEngine, line:Int):Float {
 		
 		#if (cpp || neko || nodejs)
 		
 		//Returns the width of a given line, or if -1 is supplied, the largest width of any single line
 		
-		var measurements = measureTextSub (textField, false);
+		var measurements = measureTextSub (textEngine, false);
 		
 		var currWidth = 0.0;
 		var bestWidth = 0.0;
 		
-		var linebreaks = getLineBreakIndices (textField);
+		var linebreaks = getLineBreakIndices (textEngine);
 		var currLine = 0;
 		
 		for (i in 0...measurements.length) {
@@ -523,20 +525,20 @@ class CairoTextField {
 	}
 	
 	
-	public static function getTextHeight (textField:TextField):Float {
+	public static function getTextHeight (textEngine:TextEngine):Float {
 		
 		//sum the heights of all the lines, but don't count the leading of the last line
 		//TODO: might need robustness check for pathological cases (multiple format ranges) -- would need to change how line heights are calculated
 		
 		var th = 0.0;
 		
-		for (i in 0...textField.numLines) {
+		for (i in 0...textEngine.getNumLines ()) {
 			
-			th += getLineMetric (textField, i, ASCENDER) + getLineMetric (textField, i, DESCENDER);
+			th += getLineMetric (textEngine, i, ASCENDER) + getLineMetric (textEngine, i, DESCENDER);
 			
-			if (i != textField.numLines - 1) {
+			if (i != textEngine.getNumLines () - 1) {
 				
-				th += getLineMetric (textField, i, LEADING);
+				th += getLineMetric (textEngine, i, LEADING);
 				
 			}
 			
@@ -547,40 +549,40 @@ class CairoTextField {
 	}
 	
 	
-	public static function getTextWidth (textField:TextField, text:String):Float {
+	public static function getTextWidth (textEngine:TextEngine, text:String):Float {
 		
 		return 0;
 		
 	}
 	
 	
-	public static function measureText (textField:TextField, condense:Bool = true):Array<Float> {
+	public static function measureText (textEngine:TextEngine, condense:Bool = true):Array<Float> {
 		
 		//the "condense" flag, if true, will return the widths of individual text format ranges, if false will return the widths of each character
 		//TODO: look into whether this method and others can replace the JS stuff yet or not
 		
-		return measureTextSub (textField, condense);
+		return measureTextSub (textEngine, condense);
 		
 	}
 	
 	
-	private static function measureTextSub (textField:TextField, condense:Bool):Array<Float> {
+	private static function measureTextSub (textEngine:TextEngine, condense:Bool):Array<Float> {
 		
 		//subroutine for measuring text (width)
 		
-		if (textField.__textLayout == null) {
+		if (textEngine.__textLayout == null) {
 			
-			textField.__textLayout = new TextLayout ();
+			textEngine.__textLayout = new TextLayout ();
 			
 		}
 		
-		if (textField.__ranges == null) {
+		if (textEngine.__ranges == null) {
 			
-			return measureTextSubRangesNull (textField, condense);
+			return measureTextSubRangesNull (textEngine, condense);
 			
 		} else {
 			
-			return measureTextSubRangesNotNull (textField, condense);
+			return measureTextSubRangesNotNull (textEngine, condense);
 			
 		}
 		
@@ -589,14 +591,14 @@ class CairoTextField {
 	}
 	
 	
-	private static function measureTextSubRangesNotNull (textField:TextField, condense:Bool):Array<Float> {
+	private static function measureTextSubRangesNotNull (textEngine:TextEngine, condense:Bool):Array<Float> {
 		
 		//subroutine if format ranges are not null
 		
 		var measurements = [];
-		var textLayout = textField.__textLayout;
+		var textLayout = textEngine.__textLayout;
 		
-		for (range in textField.__ranges) {
+		for (range in textEngine.__ranges) {
 			
 			var font = getFontInstance (range.format);
 			var width = 0.0;
@@ -606,7 +608,7 @@ class CairoTextField {
 				textLayout.text = null;
 				textLayout.font = font;
 				textLayout.size = Std.int (range.format.size);
-				textLayout.text = textField.text.substring (range.start, range.end);
+				textLayout.text = textEngine.text.substring (range.start, range.end);
 				
 				for (position in textLayout.positions) {
 					
@@ -637,21 +639,21 @@ class CairoTextField {
 	}
 	
 	
-	private static function measureTextSubRangesNull (textField:TextField, condense:Bool):Array<Float> {
+	private static function measureTextSubRangesNull (textEngine:TextEngine, condense:Bool):Array<Float> {
 		
 		//subroutine if format ranges are null
 		
-		var font = getFontInstance (textField.__textFormat);
+		var font = getFontInstance (textEngine.__textFormat);
 		var width = 0.0;
 		var widths = [];
-		var textLayout = textField.__textLayout;
+		var textLayout = textEngine.__textLayout;
 		
-		if (font != null && textField.__textFormat.size != null) {
+		if (font != null && textEngine.__textFormat.size != null) {
 			
 			textLayout.text = null;
 			textLayout.font = font;
-			textLayout.size = Std.int (textField.__textFormat.size);
-			textLayout.text = textField.__text;
+			textLayout.size = Std.int (textEngine.__textFormat.size);
+			textLayout.text = textEngine.text;
 			
 			for (position in textLayout.positions) {
 				
@@ -680,15 +682,15 @@ class CairoTextField {
 	}
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession) {
+	public static function render (textEngine:TextEngine, renderSession:RenderSession) {
 		
 		#if lime_cairo
-		if (!textField.__dirty) return;
+		if (!textEngine.__dirty) return;
 		
-		var bounds = textField.bounds;
-		var format = textField.getTextFormat ();
+		var bounds = textEngine.bounds;
+		var format = textEngine.getTextFormat ();
 		
-		var graphics = textField.__graphics;
+		var graphics = textEngine.textField.__graphics;
 		var cairo = graphics.__cairo;
 		
 		if (cairo != null) {
@@ -726,27 +728,27 @@ class CairoTextField {
 		
 		var font = getFontInstance (format);
 		
-		if (textField.__cairoFont != null) {
+		if (textEngine.__cairoFont != null) {
 			
-			if (textField.__cairoFont.font != font) {
+			if (textEngine.__cairoFont.font != font) {
 				
-				textField.__cairoFont.destroy ();
-				textField.__cairoFont = null;
+				textEngine.__cairoFont.destroy ();
+				textEngine.__cairoFont = null;
 				
 			}
 			
 		}
 		
-		if (textField.__cairoFont == null) {
+		if (textEngine.__cairoFont == null) {
 			
-			textField.__cairoFont = new CairoFont (font);
+			textEngine.__cairoFont = new CairoFont (font);
 			
 		}
 		
-		cairo.setFontFace (textField.__cairoFont);
-		cairo.rectangle (0.5, 0.5, Std.int (textField.width) - 1, Std.int (textField.height) - 1);
+		cairo.setFontFace (textEngine.__cairoFont);
+		cairo.rectangle (0.5, 0.5, Std.int (textEngine.width) - 1, Std.int (textEngine.height) - 1);
 		
-		if (!textField.background) {
+		if (!textEngine.background) {
 			
 			cairo.operator = SOURCE;
 			cairo.setSourceRGBA (1, 1, 1, 0);
@@ -755,7 +757,7 @@ class CairoTextField {
 			
 		} else {
 			
-			var color = textField.backgroundColor;
+			var color = textEngine.backgroundColor;
 			var r = ((color & 0xFF0000) >>> 16) / 0xFF;
 			var g = ((color & 0x00FF00) >>> 8) / 0xFF;
 			var b = (color & 0x0000FF) / 0xFF;
@@ -765,9 +767,9 @@ class CairoTextField {
 			
 		}
 		
-		if (textField.border) {
+		if (textEngine.border) {
 			
-			var color = textField.borderColor;
+			var color = textEngine.borderColor;
 			var r = ((color & 0xFF0000) >>> 16) / 0xFF;
 			var g = ((color & 0x00FF00) >>> 8) / 0xFF;
 			var b = (color & 0x0000FF) / 0xFF;
@@ -778,11 +780,11 @@ class CairoTextField {
 			
 		}
 		
-		if (textField.__text != null && textField.__text != "") {
+		if (textEngine.text != null && textEngine.text != "") {
 			
-			var text = textField.text;
+			var text = textEngine.text;
 			
-			if (textField.displayAsPassword) {
+			if (textEngine.displayAsPassword) {
 				
 				var length = text.length;
 				var mask = "";
@@ -797,11 +799,11 @@ class CairoTextField {
 				
 			}
 			
-			var measurements = measureText (textField);
+			var measurements = measureText (textEngine);
 			
-			if (textField.__ranges == null) {
+			if (textEngine.__ranges == null) {
 				
-				renderText (textField, text, textField.__textFormat, 2, bounds );
+				renderText (textEngine, text, textEngine.__textFormat, 2, bounds );
 				
 			} else {
 				
@@ -809,11 +811,11 @@ class CairoTextField {
 				var range;
 				var offsetX = 2.0;
 				
-				for (i in 0...textField.__ranges.length) {
+				for (i in 0...textEngine.__ranges.length) {
 					
-					range = textField.__ranges[i];
+					range = textEngine.__ranges[i];
 					
-					renderText (textField, text.substring (range.start, range.end), range.format, offsetX, bounds);
+					renderText (textEngine, text.substring (range.start, range.end), range.format, offsetX, bounds);
 					offsetX += measurements[i];
 					
 				}
@@ -823,7 +825,7 @@ class CairoTextField {
 		}
 		
 		graphics.__bitmap.__image.dirty = true;
-		textField.__dirty = false;
+		textEngine.__dirty = false;
 		graphics.__dirty = false;
 		
 		#end
@@ -831,15 +833,15 @@ class CairoTextField {
 	}
 	
 	
-	private static function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle):Void {
+	private static function renderText (textEngine:TextEngine, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle):Void {
 		
 		#if lime_cairo
 		var font = getFontInstance (format);
 		
 		if (font != null && format.size != null) {
 			
-			var graphics = textField.__graphics;
-			var tlm = textField.getLineMetrics (0);
+			var graphics = textEngine.textField.__graphics;
+			var tlm = textEngine.getLineMetrics (0);
 			
 			var x = offsetX;
 			var y = 2 + tlm.ascent;
@@ -850,7 +852,7 @@ class CairoTextField {
 			var line_i = 0;
 			var oldX = x;
 			
-			var cairo = textField.__graphics.__cairo;
+			var cairo = textEngine.textField.__graphics.__cairo;
 			cairo.setFontSize (size);
 			
 			var color = format.color;
@@ -862,16 +864,16 @@ class CairoTextField {
 			
 			for (line in lines) {
 				
-				tlm = textField.getLineMetrics (line_i);
+				tlm = textEngine.getLineMetrics (line_i);
 				x = oldX;
 				
-				// TODO: Make textField.getLineMetrics ().x match this value
+				// TODO: Make textEngine.getLineMetrics ().x match this value
 				
 				x += switch (format.align) {
 					
 					case LEFT, JUSTIFY: 0;
-					case CENTER: ((textField.width - 4) - getLineWidth (textField, line_i)) / 2;
-					case RIGHT: ((textField.width - 4) - getLineWidth (textField, line_i));
+					case CENTER: ((textEngine.width - 4) - getLineWidth (textEngine, line_i)) / 2;
+					case RIGHT: ((textEngine.width - 4) - getLineWidth (textEngine, line_i));
 					
 				}
 				
