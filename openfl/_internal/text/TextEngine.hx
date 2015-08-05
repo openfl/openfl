@@ -45,6 +45,11 @@ class TextEngine {
 	
 	private static var __defaultFonts = new Map<String, Font> ();
 	
+	#if (js && html5)
+	private static var __canvas:CanvasElement;
+	private static var __context:CanvasRenderingContext2D;
+	#end
+	
 	public var antiAliasType:AntiAliasType;
 	public var autoSize:TextFieldAutoSize;
 	public var background:Bool;
@@ -64,6 +69,7 @@ class TextEngine {
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
+	public var renderGroups:Array<TextRenderGroup>;
 	public var restrict:String;
 	public var scrollH:Int;
 	public var scrollV:Int;
@@ -132,7 +138,13 @@ class TextEngine {
 		lineDescents = new Array ();
 		lineLeadings = new Array ();
 		lineWidths = new Array ();
+		renderGroups = new Array ();
 		textFormatRanges = new Array ();
+		
+		#if (js && html5)
+		__canvas = cast Browser.document.createElement ("canvas");
+		__context = __canvas.getContext ("2d");
+		#end
 		
 	}
 	
@@ -415,15 +427,140 @@ class TextEngine {
 		
 		lineBreaks.splice (0, lineBreaks.length);
 		
-		for (i in 0...text.length) {
+		//if (wordWrap && multiline) {
+			//
+			//// TODO: do this without string splicing
+			//
+			////var lines = [];
+			//var words = text.split (" ");
+			//var line = "";
+			//
+			//var word, newLineIndex, test;
+			//var index = 0;
+			//
+			//for (i in 0...words.length) {
+				//
+				//word = words[i];
+				////index += word.length;
+				//newLineIndex = word.indexOf ("\n");
+				//
+				//if (newLineIndex > -1) {
+					//
+					//while (newLineIndex > -1) {
+						//
+						//test = line + word.substring (0, newLineIndex) + " ";
+						//
+						//if (__context.measureText (test).width > this.width - 4 && i > 0) {
+							//
+							//lineBreaks.push (index > 0 ? index -1 : 0);
+							//index += newLineIndex;
+							//lineBreaks.push (index);
+							//
+							////lines.push (line);
+							////lines.push (word.substring (0, newLineIndex));
+							//
+						//} else {
+							//
+							//index += newLineIndex;
+							//lineBreaks.push (index);
+							//index++;
+							//
+							////lines.push (line + word.substring (0, newLineIndex));
+							//
+						//}
+						//
+						////index += newLineIndex + 1;
+						//
+						//word = word.substr (newLineIndex + 1);
+						//newLineIndex = word.indexOf ("\n");
+						//line = "";
+						//
+					//}
+					//
+					//if (word != "") {
+						//
+						//line = word + " ";
+						//
+					//}
+					//
+				//} else {
+					//
+					//test = line + words[i] + " ";
+					//
+					//if (__context.measureText (test).width > this.width - 4 && i > 0) {
+						//
+						//lineBreaks.push (index > 0 ? index -1 : 0);
+						//
+						////lines.push (line);
+						//line = words[i] + " ";
+						//
+					//} else {
+						//
+						//line = test;
+						//
+					//}
+					//
+					//index += words[i].length + 1;
+					//
+				//}
+				//
+			//}
+			//
+			//if (line != "") {
+				//
+				////lines.push (line);
+				//
+			//}
+			//
+			////var index = 1;
+			////
+			////for (line in lines) {
+				////
+				////index += line.length - 1;
+				////lineBreaks.push (index);
+				////
+			////}
+			//
+			////
+			////for (line in lines) {
+				////
+				////switch (format.align) {
+					////
+					////case TextFormatAlign.CENTER:
+						////
+						////context.textAlign = "center";
+						////context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
+						////
+					////case TextFormatAlign.RIGHT:
+						////
+						////context.textAlign = "end";
+						////context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
+						////
+					////default:
+						////
+						////context.textAlign = "start";
+						////context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
+						////
+				////}
+				////
+				////yOffset += format.size + format.leading + 4;
+				////offsetX = 0;
+				////
+			////}
+			//
+		//} else {
 			
-			if (text.charCodeAt (i) == 10) {
+			for (i in 0...text.length) {
 				
-				lineBreaks.push (i);
+				if (text.charCodeAt (i) == 10) {
+					
+					lineBreaks.push (i);
+					
+				}
 				
 			}
 			
-		}
+		//}
 		
 		//var i = 0;
 		
@@ -447,6 +584,7 @@ class TextEngine {
 		lineDescents.splice (0, lineDescents.length);
 		lineLeadings.splice (0, lineLeadings.length);
 		lineWidths.splice (0, lineWidths.length);
+		renderGroups.splice (0, renderGroups.length);
 		
 		var currentLineAscent = 0;
 		var currentLineDescent = 0;
@@ -462,16 +600,7 @@ class TextEngine {
 			
 		}
 		
-		#if (js && html5)
-		
-		if (textField.__context == null) {
-			
-			textField.__canvas = cast Browser.document.createElement ("canvas");
-			textField.__context = textField.__canvas.getContext ("2d");
-			
-		}
-		
-		#elseif (cpp || neko || nodejs)
+		#if (cpp || neko || nodejs)
 		
 		if (__textLayout == null) {
 			
@@ -482,9 +611,10 @@ class TextEngine {
 		var font;
 		#end
 		
-		var done = false;
 		var startIndex;
 		var endIndex;
+		var offsetX = 2;
+		var offsetY = 2;
 		
 		// TODO: wordWrap
 		
@@ -493,21 +623,21 @@ class TextEngine {
 			if (range.end <= range.start) continue;
 			
 			#if (js && html5)
-			textField.__context.font = getFont (range.format);
+			__context.font = getFont (range.format);
 			#elseif (cpp || neko || nodejs)
 			font = getFontInstance (range.format);
 			#end
 			
 			startIndex = range.start;
 			
-			while (!done) {
+			while (true) {
 				
 				endIndex = (nextLineBreak == -1 || range.end < nextLineBreak) ? range.end : nextLineBreak;
 				if (startIndex >= endIndex) break;
 				
 				#if (js && html5)
 				
-				currentLineWidth += textField.__context.measureText (text.substring (startIndex, endIndex)).width;
+				currentLineWidth += __context.measureText (text.substring (startIndex, endIndex)).width;
 				
 				currentLineAscent = Std.int (Math.max (currentLineAscent, range.format.size * 0.8));
 				currentLineDescent = Std.int (Math.max (currentLineDescent, range.format.size * 0.2));
@@ -534,6 +664,16 @@ class TextEngine {
 				
 				if (range.end >= nextLineBreak) {
 					
+					offsetY += currentLineAscent + currentLineDescent;
+					
+					var renderGroup = new TextRenderGroup (range.format, startIndex, endIndex);
+					renderGroup.x = offsetX;
+					renderGroup.y = offsetY;
+					renderGroups.push (renderGroup);
+					
+					offsetY += currentLineLeading;
+					offsetX = 2;
+					
 					lineAscents.push (currentLineAscent);
 					lineDescents.push (currentLineDescent);
 					lineLeadings.push (currentLineLeading);
@@ -559,13 +699,17 @@ class TextEngine {
 					
 				} else {
 					
-					done = true;
+					var renderGroup = new TextRenderGroup (range.format, startIndex, endIndex);
+					renderGroup.x = offsetX;
+					renderGroup.y = offsetY + currentLineAscent + currentLineDescent;
+					renderGroups.push (renderGroup);
+					
+					offsetX += Std.int (currentLineWidth);
+					break;
 					
 				}
 				
 			}
-			
-			done = false;
 			
 		}
 		
@@ -643,6 +787,7 @@ class TextEngine {
 			lineDescents.splice (0, lineDescents.length);
 			lineLeadings.splice (0, lineLeadings.length);
 			lineWidths.splice (0, lineWidths.length);
+			renderGroups.splice (0, renderGroups.length);
 			
 		} else {
 			

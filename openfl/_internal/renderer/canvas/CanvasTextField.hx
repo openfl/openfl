@@ -212,74 +212,13 @@ class CanvasTextField {
 						//
 					//}
 					
-					context.textBaseline = "top";
+					//context.textBaseline = "top";
+					context.textBaseline = "alphabetic";
 					context.textAlign = "start";
 					
-					var currentIndex = 0;
-					var range;
-					var offsetX = 2.0;
-					var offsetY = 2.0;
-					
-					var nextLineBreak = -1;
-					var lineBreakIndex = 0;
-					
-					if (textEngine.lineBreaks.length > 0) {
+					for (group in textEngine.renderGroups) {
 						
-						nextLineBreak = textEngine.lineBreaks[0];
-						
-					}
-					
-					var startIndex = 0;
-					var endIndex = 0;
-					var done;
-					
-					for (i in 0...textEngine.textFormatRanges.length) {
-						
-						range = textEngine.textFormatRanges[i];
-						startIndex = range.start;
-						done = false;
-						
-						while (!done) {
-							
-							endIndex = (nextLineBreak == -1 || range.end < nextLineBreak) ? range.end : nextLineBreak;
-							if (startIndex >= endIndex) break;
-							
-							renderText (textField, text.substring (startIndex, endIndex), range.format, offsetX, offsetY, bounds);
-							
-							// TODO: handle x offset within lines
-							
-							//offsetX += textEngine.lineWidths[i];
-							
-							if (range.end >= nextLineBreak) {
-								
-								startIndex = endIndex + 1;
-								
-								if (textEngine.lineAscents.length > lineBreakIndex + 1) {
-									
-									offsetY += textEngine.lineLeadings[lineBreakIndex] + textEngine.lineAscents[lineBreakIndex] + textEngine.lineDescents[lineBreakIndex];
-									
-								}
-								
-								offsetX = 2.0;
-								
-								if (lineBreakIndex < textEngine.lineBreaks.length - 1) {
-									
-									lineBreakIndex++;
-									nextLineBreak = textEngine.lineBreaks[lineBreakIndex];
-									
-								} else {
-									
-									nextLineBreak = -1;
-									
-								}
-								
-							} else {
-								
-								done = true;
-								
-							}
-							
-						}
+						renderText (textField, text.substring (group.start, group.end), group.format, group.x, group.y, bounds);
 						
 					}
 					
