@@ -729,6 +729,8 @@ class BitmapData implements IBitmapDrawable {
 	#if (js && html5)
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
 		
+		if (canvas == null) return null;
+		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__fromImage (Image.fromCanvas (canvas));
 		bitmapData.__image.transparent = transparent;
