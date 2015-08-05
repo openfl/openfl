@@ -2,13 +2,21 @@ package openfl.text; #if !flash #if !openfl_legacy
 
 
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
+import openfl._internal.text.TextFormatRange;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
+#if (js && html5)
+import js.html.DivElement;
+#end
 
 
 /**
@@ -93,11 +101,14 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Rectangle)
+@:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextFormat)
 
 
 class TextField extends InteractiveObject {
 	
+	
+	@:noCompletion private static var __defaultTextFormat:TextFormat;
 	
 	/**
 	 * The type of anti-aliasing used for this text field. Use
@@ -526,7 +537,16 @@ class TextField extends InteractiveObject {
 	 */
 	public var wordWrap (get, set):Bool;
 	
-	@:noCompletion private var engine:TextEngine;
+	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __layout:TextEngine;
+	@:noCompletion private var __isHTML:Bool;
+	@:noCompletion private var __layoutDirty:Bool;
+	@:noCompletion private var __textFormat:TextFormat;
+	
+	#if (js && html5)
+	@:noCompletion private var __div:DivElement;
+	#end
 	
 	
 	/**
@@ -542,8 +562,21 @@ class TextField extends InteractiveObject {
 		super ();
 		
 		__graphics = new Graphics ();
+		__layout = new TextEngine (this);
+		__layoutDirty = true;
 		
-		engine = new TextEngine (this);
+		if (__defaultTextFormat == null) {
+			
+			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
+			__defaultTextFormat.blockIndent = 0;
+			__defaultTextFormat.bullet = false;
+			__defaultTextFormat.letterSpacing = 0;
+			__defaultTextFormat.kerning = false;
+			
+		}
+		
+		__textFormat = __defaultTextFormat.clone ();
+		__layout.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
 		
 	}
 	
@@ -559,7 +592,11 @@ class TextField extends InteractiveObject {
 	 */
 	public function appendText (text:String):Void {
 		
-		engine.appendText (text);
+		__layout.text += text;
+		__layout.textFormatRanges[__layout.textFormatRanges.length - 1].end = text.length;
+		
+		__dirty = true;
+		__layoutDirty = true;
 		
 	}
 	
@@ -575,7 +612,9 @@ class TextField extends InteractiveObject {
 	 */
 	public function getCharBoundaries (a:Int):Rectangle {
 		
-		return engine.getCharBoundaries (a);
+		openfl.Lib.notImplemented ("TextField.getCharBoundaries");
+		
+		return null;
 		
 	}
 	
@@ -592,7 +631,9 @@ class TextField extends InteractiveObject {
 	 */
 	public function getCharIndexAtPoint (x:Float, y:Float):Int {
 		
-		return engine.getCharIndexAtPoint (x, y);
+		openfl.Lib.notImplemented ("TextField.getCharIndexAtPoint");
+		
+		return 0;
 		
 	}
 	
@@ -609,7 +650,9 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineIndexAtPoint (x:Float, y:Float):Int {
 		
-		return engine.getLineIndexAtPoint (x, y);
+		openfl.Lib.notImplemented ("TextField.getLineIndexAtPoint");
+		
+		return 0;
 		
 	}
 	
@@ -623,7 +666,23 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
 		
-		return engine.getLineMetrics (lineIndex);
+		__updateLayout ();
+		
+		var lineWidth = __layout.lineWidths[lineIndex];
+		var ascender = __layout.lineAscents[lineIndex];
+		var descender = __layout.lineDescents[lineIndex];
+		var leading = __layout.lineLeadings[lineIndex];
+		var lineHeight = ascender + descender + leading;
+		
+		var margin = switch (__textFormat.align) {
+			
+			case LEFT, JUSTIFY: 2;
+			case RIGHT: (__layout.bounds.width - lineWidth) - 2;
+			case CENTER: (__layout.bounds.width - lineWidth) / 2;
+			
+		}
+		
+		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 
 		
 	}
 	
@@ -639,7 +698,9 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineOffset (lineIndex:Int):Int {
 		
-		return engine.getLineOffset (lineIndex);
+		openfl.Lib.notImplemented ("TextField.getLineOffset");
+		
+		return 0;
 		
 	}
 	
@@ -655,7 +716,9 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineText (lineIndex:Int):String {
 		
-		return engine.getLineText (lineIndex);
+		openfl.Lib.notImplemented ("TextField.getLineText");
+		
+		return "";
 		
 	}
 	
@@ -680,7 +743,9 @@ class TextField extends InteractiveObject {
 	 */
 	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat {
 		
-		return engine.getTextFormat (beginIndex, endIndex);
+		// TODO: handle index
+		
+		return __textFormat.clone ();
 		
 	}
 	
@@ -700,7 +765,7 @@ class TextField extends InteractiveObject {
 	 */
 	public function setSelection (beginIndex:Int, endIndex:Int) {
 		
-		engine.setSelection (beginIndex, endIndex);
+		__layout.setSelection (beginIndex, endIndex);
 		
 	}
 	
@@ -752,15 +817,36 @@ class TextField extends InteractiveObject {
 	 */
 	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
 		
-		engine.setTextFormat (format, beginIndex, endIndex);
+		if (format.font != null) __textFormat.font = format.font;
+		if (format.size != null) __textFormat.size = format.size;
+		if (format.color != null) __textFormat.color = format.color;
+		if (format.bold != null) __textFormat.bold = format.bold;
+		if (format.italic != null) __textFormat.italic = format.italic;
+		if (format.underline != null) __textFormat.underline = format.underline;
+		if (format.url != null) __textFormat.url = format.url;
+		if (format.target != null) __textFormat.target = format.target;
+		if (format.align != null) __textFormat.align = format.align;
+		if (format.leftMargin != null) __textFormat.leftMargin = format.leftMargin;
+		if (format.rightMargin != null) __textFormat.rightMargin = format.rightMargin;
+		if (format.indent != null) __textFormat.indent = format.indent;
+		if (format.leading != null) __textFormat.leading = format.leading;
+		if (format.blockIndent != null) __textFormat.blockIndent = format.blockIndent;
+		if (format.bullet != null) __textFormat.bullet = format.bullet;
+		if (format.kerning != null) __textFormat.kerning = format.kerning;
+		if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
+		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
+		
+		__dirty = true;
+		__layoutDirty = true;
 		
 	}
 	
 	
 	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
+		__updateLayout ();
 		var bounds = Rectangle.__temp;
-		engine.getBounds ().__transform (bounds, matrix);
+		__layout.bounds.__transform (bounds, matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 	}
@@ -778,11 +864,12 @@ class TextField extends InteractiveObject {
 		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		
 		__getTransform ();
+		__updateLayout ();
 		
 		var px = __worldTransform.__transformInverseX (x, y);
 		var py = __worldTransform.__transformInverseY (x, y);
 		
-		if (engine.getBounds ().contains (px, py)) {
+		if (__layout.bounds.contains (px, py)) {
 			
 			if (stack != null) {
 				
@@ -801,7 +888,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
 		
-		engine.renderCairo (renderSession);
+		CairoTextField.render (this, renderSession);
 		super.__renderCairo (renderSession);
 		
 	}
@@ -809,7 +896,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		engine.renderCanvas (renderSession);
+		CanvasTextField.render (this, renderSession);
 		super.__renderCanvas (renderSession);
 		
 	}
@@ -817,14 +904,40 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
 		
-		engine.renderDOM (renderSession);
+		//DOMTextField.render (this, renderSession);
 		
 	}
 	
 	
 	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
 		
-		engine.renderGL (renderSession);
+		#if !disable_cairo_graphics
+		
+		#if lime_cairo
+		CairoTextField.render (this, renderSession);
+		#else
+		//CanvasTextField.render (this, renderSession);
+		#end
+		
+		GLRenderer.renderBitmap (this, renderSession);
+		
+		#else
+		
+		//GLTextField.render (this, renderSession);
+		
+		#end
+		
+	}
+	
+	
+	@:noCompletion private function __updateLayout ():Void {
+		
+		if (__layoutDirty) {
+			
+			__layout.updateLayout ();
+			__layoutDirty = false;
+			
+		}
 		
 	}
 	
@@ -838,405 +951,728 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_antiAliasType ():AntiAliasType {
 		
-		return engine.antiAliasType;
+		return __layout.antiAliasType;
 		
 	}
 	
 	
 	@:noCompletion private function set_antiAliasType (value:AntiAliasType):AntiAliasType {
 		
-		return engine.setAntiAliasType (value);
+		if (value != __layout.antiAliasType) {
+			
+			//__dirty = true;
+			
+		}
+		
+		return __layout.antiAliasType = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_autoSize ():TextFieldAutoSize {
 		
-		return engine.autoSize;
+		return __layout.autoSize;
 		
 	}
 	
 	
 	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize {
 		
-		return engine.setAutoSize (value);
+		if (value != __layout.autoSize) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		return __layout.autoSize = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_background ():Bool {
 		
-		return engine.background;
+		return __layout.background;
 		
 	}
 	
 	
 	@:noCompletion private function set_background (value:Bool):Bool {
 		
-		return engine.setBackground (value);
+		if (value != __layout.background) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.background = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_backgroundColor ():Int {
 		
-		return engine.backgroundColor;
+		return __layout.backgroundColor;
 		
 	}
 	
 	
 	@:noCompletion private function set_backgroundColor (value:Int):Int {
 		
-		return engine.setBackgroundColor (value);
+		if (value != __layout.backgroundColor) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.backgroundColor = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_border ():Bool {
 		
-		return engine.border;
+		return __layout.border;
 		
 	}
 	
 	
 	@:noCompletion private function set_border (value:Bool):Bool {
 		
-		return engine.setBorder (value);
+		if (value != __layout.border) {
+			
+			__dirty = true;
+			//__layoutDirty = true;
+			
+		}
+		
+		return __layout.border = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_borderColor ():Int {
 		
-		return engine.borderColor;
+		return __layout.borderColor;
 		
 	}
 	
 	
 	@:noCompletion private function set_borderColor (value:Int):Int {
 		
-		return engine.setBorderColor (value);
+		if (value != __layout.borderColor) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.borderColor = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_bottomScrollV ():Int {
 		
-		return engine.getBottomScrollV ();
+		// TODO: Only return lines that are visible
+		
+		return this.numLines;
 		
 	}
 	
 	
 	@:noCompletion private function get_caretIndex ():Int {
 		
-		return engine.getCaretIndex ();
+		return __layout.getCaretIndex ();
 		
 	}
 	
 	
 	@:noCompletion private function get_defaultTextFormat ():TextFormat {
 		
-		return engine.getDefaultTextFormat ();
+		return __textFormat.clone ();
 		
 	}
 	
 	
 	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat {
 		
-		return engine.setDefaultTextFormat (value);
+		//__textFormat = __defaultTextFormat.clone ();
+		__textFormat.__merge (value);
+		return value;
 		
 	}
 	
 	
 	@:noCompletion private function get_displayAsPassword ():Bool {
 		
-		return engine.displayAsPassword;
+		return __layout.displayAsPassword;
 		
 	}
 	
 	
 	@:noCompletion private function set_displayAsPassword (value:Bool):Bool {
 		
-		return engine.setDisplayAsPassword (value);
+		if (value != __layout.displayAsPassword) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		return __layout.displayAsPassword = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_embedFonts ():Bool {
 		
-		return engine.embedFonts;
+		return __layout.embedFonts;
 		
 	}
 	
 	
 	@:noCompletion private function set_embedFonts (value:Bool):Bool {
 		
-		return engine.setEmbedFonts (value);
+		//if (value != __layout.embedFonts) {
+			//
+			//__dirty = true;
+			//__layoutDirty = true;
+			//
+		//}
+		
+		return __layout.embedFonts = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_gridFitType ():GridFitType {
 		
-		return engine.gridFitType;
+		return __layout.gridFitType;
 		
 	}
 	
 	
 	@:noCompletion private function set_gridFitType (value:GridFitType):GridFitType {
 		
-		return engine.setGridFitType (value);
+		//if (value != __layout.gridFitType) {
+			//
+			//__dirty = true;
+			//__layoutDirty = true;
+			//
+		//}
+		
+		return __layout.gridFitType = value;
 		
 	}
 	
 	
 	@:noCompletion private override function get_height ():Float {
 		
-		return engine.getHeight ();
+		__updateLayout ();
+		return __layout.bounds.height;
 		
 	}
 	
 	
 	@:noCompletion private override function set_height (value:Float):Float {
 		
-		return engine.setHeight (value);
+		if (scaleY != 1 || value != __layout.height) {
+			
+			__setTransformDirty ();
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		scaleY = 1;
+		return __layout.height = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_htmlText ():String {
 		
-		return engine.getHTMLText ();
+		return __layout.text;
 		
 	}
 	
 	
 	@:noCompletion private function set_htmlText (value:String):String {
 		
-		return engine.setHTMLText (value);
+		if (!__isHTML || __layout.text != value) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		__isHTML = true;
+		
+		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
+			
+			value = new EReg ("<br>", "g").replace (value, "\n");
+			value = new EReg ("<br/>", "g").replace (value, "\n");
+			
+			// crude solution
+			
+			var segments = value.split ("<font");
+			
+			if (segments.length == 1) {
+				
+				value = new EReg ("<.*?>", "g").replace (value, "");
+				
+				if (__layout.textFormatRanges.length > 1) {
+					
+					__layout.textFormatRanges.splice (1, __layout.textFormatRanges.length - 1);
+					
+				}
+				
+				var range = __layout.textFormatRanges[0];
+				range.format = __textFormat;
+				range.start = 0;
+				range.end = value.length;
+				
+				//#if (js && html5)
+				//if (text != value && __hiddenInput != null) {
+					//
+					//var selectionStart = __hiddenInput.selectionStart;
+					//var selectionEnd = __hiddenInput.selectionEnd;
+					//__hiddenInput.value = value;
+					//__hiddenInput.selectionStart = selectionStart;
+					//__hiddenInput.selectionEnd = selectionEnd;
+					//
+				//}	
+				//#end
+				return __layout.text = value;
+				
+			} else {
+				
+				__layout.textFormatRanges.splice (0, __layout.textFormatRanges.length);
+				
+				value = "";
+				
+				// crude search for font
+				
+				for (segment in segments) {
+					
+					if (segment == "") continue;
+					
+					var closeFontIndex = segment.indexOf ("</font>");
+					
+					if (closeFontIndex > -1) {
+						
+						var start = segment.indexOf (">") + 1;
+						var end = closeFontIndex;
+						var format = __textFormat.clone ();
+						
+						var faceIndex = segment.indexOf ("face=");
+						var colorIndex = segment.indexOf ("color=");
+						var sizeIndex = segment.indexOf ("size=");
+						
+						if (faceIndex > -1 && faceIndex < start) {
+							
+							format.font = segment.substr (faceIndex + 6, segment.indexOf ("\"", faceIndex));
+							
+						}
+						
+						if (colorIndex > -1 && colorIndex < start) {
+							
+							format.color = Std.parseInt ("0x" + segment.substr (colorIndex + 8, 6));
+							
+						}
+						
+						if (sizeIndex > -1 && sizeIndex < start) {
+							
+							format.size = Std.parseInt (segment.substr (sizeIndex + 6, segment.indexOf ("\"", sizeIndex)));
+							
+						}
+						
+						var sub = segment.substring (start, end);
+						sub = new EReg ("<.*?>", "g").replace (sub, "");
+						
+						__layout.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
+						value += sub;
+						
+						if (closeFontIndex + 7 < segment.length) {
+							
+							sub = segment.substr (closeFontIndex + 7);
+							__layout.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
+							value += sub;
+							
+						}
+						
+					} else {
+						
+						__layout.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
+						value += segment;
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		//#if (js && html5)
+		//if (text != value && __hiddenInput != null) {
+			//
+			//var selectionStart = __hiddenInput.selectionStart;
+			//var selectionEnd = __hiddenInput.selectionEnd;
+			//__hiddenInput.value = value;
+			//__hiddenInput.selectionStart = selectionStart;
+			//__hiddenInput.selectionEnd = selectionEnd;
+			//
+		//}	
+		//#end
+		return __layout.text = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_length ():Int {
 		
-		return engine.getLength ();
+		if (__layout.text != null) {
+			
+			return __layout.text.length;
+			
+		}
+		
+		return 0;
 		
 	}
 	
 	
 	@:noCompletion private function get_maxChars ():Int {
 		
-		return engine.maxChars;
+		return __layout.maxChars;
 		
 	}
 	
 	
 	@:noCompletion private function set_maxChars (value:Int):Int {
 		
-		return engine.setMaxChars (value);
+		if (value != __layout.maxChars) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		return __layout.maxChars = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_maxScrollH ():Int { 
 		
-		return engine.getMaxScrollH ();
+		return 0;
 		
 	}
 	
 	
 	@:noCompletion private function get_maxScrollV ():Int { 
 		
-		return engine.getMaxScrollV ();
+		return 1;
 		
 	}
 	
 	
 	@:noCompletion private function get_multiline ():Bool {
 		
-		return engine.multiline;
+		return __layout.multiline;
 		
 	}
 	
 	
 	@:noCompletion private function set_multiline (value:Bool):Bool {
 		
-		return engine.setMultiline (value);
+		if (value != __layout.multiline) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		return __layout.multiline = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_numLines ():Int {
 		
-		return engine.getNumLines ();
+		__updateLayout ();
+		return __layout.lineBreaks.length + 1;
 		
 	}
 	
 	
 	@:noCompletion private function get_restrict ():String {
 		
-		return engine.restrict;
+		return __layout.restrict;
 		
 	}
 	
 	
 	@:noCompletion private function set_restrict (value:String):String {
 		
-		return engine.setRestrict (value);
+		return __layout.restrict = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_scrollH ():Int {
 		
-		return engine.scrollH;
+		return __layout.scrollH;
 		
 	}
 	
 	
 	@:noCompletion private function set_scrollH (value:Int):Int {
 		
-		return engine.setScrollH (value);
+		if (value != __layout.scrollH) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.scrollH = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_scrollV ():Int {
 		
-		return engine.scrollV;
+		return __layout.scrollV;
 		
 	}
 	
 	
 	@:noCompletion private function set_scrollV (value:Int):Int {
 		
-		return engine.setScrollV (value);
+		if (value != __layout.scrollV) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.scrollV = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_selectable ():Bool {
 		
-		return engine.selectable;
+		return __layout.selectable;
 		
 	}
 	
 	
 	@:noCompletion private function set_selectable (value:Bool):Bool {
 		
-		return engine.setSelectable (value);
+		//#if (js && html5)
+		//if (!value && selectable && type == TextFieldType.INPUT) {
+			//
+			//this_onRemovedFromStage (null);
+			//
+		//}
+		//#end
+		
+		return __layout.selectable = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_selectionBeginIndex ():Int {
 		
-		return engine.getSelectionBeginIndex ();
+		return __layout.getSelectionBeginIndex ();
 		
 	}
 	
 	
 	@:noCompletion private function get_selectionEndIndex ():Int {
 		
-		return engine.getSelectionEndIndex ();
+		return __layout.getSelectionEndIndex ();
 		
 	}
 	
 	
 	@:noCompletion private function get_sharpness ():Float {
 		
-		return engine.sharpness;
+		return __layout.sharpness;
 		
 	}
 	
 	
 	@:noCompletion private function set_sharpness (value:Float):Float {
 		
-		return engine.setSharpness (value);
+		if (value != __layout.sharpness) {
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.sharpness = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_text ():String {
 		
-		return engine.getText ();
+		return __layout.text;
 		
 	}
 	
 	
 	@:noCompletion private function set_text (value:String):String {
 		
-		return engine.setText (value);
+		//#if (js && html5)
+		//if (text != value && __hiddenInput != null) {
+			//
+			//var selectionStart = __hiddenInput.selectionStart;
+			//var selectionEnd = __hiddenInput.selectionEnd;
+			//__hiddenInput.value = value;
+			//__hiddenInput.selectionStart = selectionStart;
+			//__hiddenInput.selectionEnd = selectionEnd;
+			//
+		//}	
+		//#end
+		
+		if (__isHTML || __layout.text != value) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		if (__layout.textFormatRanges.length > 1) {
+			
+			__layout.textFormatRanges.splice (1, __layout.textFormatRanges.length - 1);
+			
+		}
+		
+		var range = __layout.textFormatRanges[0];
+		range.format = __textFormat;
+		range.start = 0;
+		range.end = value.length;
+		
+		__isHTML = false;
+		
+		return __layout.text = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_textColor ():Int { 
 		
-		return engine.getTextColor ();
+		return __textFormat.color;
 		
 	}
 	
 	
 	@:noCompletion private function set_textColor (value:Int):Int {
 		
-		return engine.setTextColor (value);
+		if (value != __textFormat.color) __dirty = true;
+		
+		for (range in __layout.textFormatRanges) {
+			
+			range.format.color = value;
+			
+		}
+		
+		return __textFormat.color = value;
 		
 	}
 	
 	@:noCompletion private function get_textWidth ():Float {
 		
-		return engine.getTextWidth ();
+		__updateLayout ();
+		return __layout.textWidth;
 		
 	}
 	
 	
 	@:noCompletion private function get_textHeight ():Float {
 		
-		return engine.getTextHeight ();
+		__updateLayout ();
+		return __layout.textHeight;
 		
 	}
 	
 	
 	@:noCompletion private function get_type ():TextFieldType {
 		
-		return engine.type;
+		return __layout.type;
 		
 	}
 	
 	
 	@:noCompletion private function set_type (value:TextFieldType):TextFieldType {
 		
-		return engine.setType (value);
+		if (value != __layout.type) {
+			
+			//#if !dom
+			//if (value == TextFieldType.INPUT) {
+				//
+				//CanvasTextField.enableInputMode (this);
+				//
+			//} else {
+				//
+				//CanvasTextField.disableInputMode (this);
+				//
+			//}
+			//#end
+			
+			__dirty = true;
+			
+		}
+		
+		return __layout.type = value;
 		
 	}
 	
 	
 	override private function get_width ():Float {
 		
-		return engine.getWidth ();
+		__updateLayout ();
+		return __layout.bounds.width;
 		
 	}
 	
 	
 	override private function set_width (value:Float):Float {
 		
-		return engine.setWidth (value);
+		if (scaleX != 1 || __layout.width != value) {
+			
+			__setTransformDirty ();
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		scaleX = 1;
+		return __layout.width = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_wordWrap ():Bool {
 		
-		return engine.getWordWrap ();
+		return __layout.wordWrap;
 		
 	}
 	
 	
 	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
-		return engine.setWordWrap (value);
+		if (value != __layout.wordWrap) {
+			
+			__dirty = true;
+			__layoutDirty = true;
+			
+		}
+		
+		return __layout.wordWrap = value;
 		
 	}
 	

@@ -10,6 +10,7 @@ import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
+import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
@@ -36,9 +37,9 @@ class CanvasTextField {
 	
 	public static function disableInputMode (textEngine:TextEngine):Void {
 		
-		#if (js && html5)
-		textEngine.this_onRemovedFromStage (null);
-		#end
+		//#if (js && html5)
+		//textEngine.this_onRemovedFromStage (null);
+		//#end
 		
 	}
 	
@@ -90,54 +91,58 @@ class CanvasTextField {
 			
 		}
 		
-		if (textEngine.textField.stage != null) {
-			
-			textEngine.this_onAddedToStage (null);
-			
-		} else {
-			
-			textEngine.textField.addEventListener (Event.ADDED_TO_STAGE, textEngine.this_onAddedToStage);
-			textEngine.textField.addEventListener (Event.REMOVED_FROM_STAGE, textEngine.this_onRemovedFromStage);
-			
-		}
+		//if (textField.stage != null) {
+			//
+			//textEngine.this_onAddedToStage (null);
+			//
+		//} else {
+			//
+			//textField.addEventListener (Event.ADDED_TO_STAGE, textEngine.this_onAddedToStage);
+			//textField.addEventListener (Event.REMOVED_FROM_STAGE, textEngine.this_onRemovedFromStage);
+			//
+		//}
 		
 		#end
 		
 	}
 	
 	
-	public static inline function render (textEngine:TextEngine, renderSession:RenderSession):Void {
+	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		
-		var bounds = textEngine.textField.getBounds (null);
+		var textEngine = textField.__layout;
+		var bounds = textField.getBounds (null);
 		
-		if (textEngine.__dirty) {
+		if (textField.__dirty) {
+			
+			var textEngine = textField.__layout;
+			textField.__updateLayout ();
 			
 			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
-				textEngine.textField.__graphics.__canvas = null;
-				textEngine.textField.__graphics.__context = null;
-				textEngine.textField.__graphics.__dirty = false;
-				textEngine.__dirty = false;
+				textField.__graphics.__canvas = null;
+				textField.__graphics.__context = null;
+				textField.__graphics.__dirty = false;
+				textField.__dirty = false;
 				
 			} else {
 				
-				if (textEngine.textField.__graphics == null || textEngine.textField.__graphics.__canvas == null) {
+				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 					
-					if (textEngine.textField.__graphics == null) {
+					if (textField.__graphics == null) {
 						
-						textEngine.textField.__graphics = new Graphics ();
+						textField.__graphics = new Graphics ();
 						
 					}
 					
-					textEngine.textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
-					textEngine.textField.__graphics.__context = textEngine.textField.__graphics.__canvas.getContext ("2d");
-					textEngine.textField.__graphics.__bounds = new Rectangle( 0, 0, bounds.width, bounds.height );
+					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
+					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
+					textField.__graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
 					
 				}
 				
-				var graphics = textEngine.textField.__graphics;
+				var graphics = textField.__graphics;
 				context = graphics.__context;
 				
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
@@ -159,9 +164,6 @@ class CanvasTextField {
 						
 					}
 					
-					textEngine.updateLayout ();
-					
-					var measurements = textEngine.layout.lineWidth;
 					var bounds = textEngine.bounds;
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
@@ -210,22 +212,72 @@ class CanvasTextField {
 						//
 					//}
 					
-					if (textEngine.__ranges == null) {
+					context.textBaseline = "top";
+					context.textAlign = "start";
+					
+					var currentIndex = 0;
+					var range;
+					var offsetX = 2.0;
+					var offsetY = 2.0;
+					
+					var nextLineBreak = -1;
+					var lineBreakIndex = 0;
+					
+					if (textEngine.lineBreaks.length > 0) {
 						
-						renderText (textEngine, text, textEngine.__textFormat, 0, bounds );
+						nextLineBreak = textEngine.lineBreaks[0];
 						
-					} else {
+					}
+					
+					var startIndex = 0;
+					var endIndex = 0;
+					var done;
+					
+					for (i in 0...textEngine.textFormatRanges.length) {
 						
-						var currentIndex = 0;
-						var range;
-						var offsetX = 0.0;
+						range = textEngine.textFormatRanges[i];
+						startIndex = range.start;
+						done = false;
 						
-						for (i in 0...textEngine.__ranges.length) {
+						while (!done) {
 							
-							range = textEngine.__ranges[i];
+							endIndex = (nextLineBreak == -1 || range.end < nextLineBreak) ? range.end : nextLineBreak;
+							if (startIndex >= endIndex) break;
 							
-							renderText (textEngine, text.substring (range.start, range.end), range.format, offsetX, bounds );
-							offsetX += measurements[i];
+							renderText (textField, text.substring (startIndex, endIndex), range.format, offsetX, offsetY, bounds);
+							
+							// TODO: handle x offset within lines
+							
+							//offsetX += textEngine.lineWidths[i];
+							
+							if (range.end >= nextLineBreak) {
+								
+								startIndex = endIndex + 1;
+								
+								if (textEngine.lineAscents.length > lineBreakIndex + 1) {
+									
+									offsetY += textEngine.lineLeadings[lineBreakIndex] + textEngine.lineAscents[lineBreakIndex] + textEngine.lineDescents[lineBreakIndex];
+									
+								}
+								
+								offsetX = 2.0;
+								
+								if (lineBreakIndex < textEngine.lineBreaks.length - 1) {
+									
+									lineBreakIndex++;
+									nextLineBreak = textEngine.lineBreaks[lineBreakIndex];
+									
+								} else {
+									
+									nextLineBreak = -1;
+									
+								}
+								
+							} else {
+								
+								done = true;
+								
+							}
 							
 						}
 						
@@ -268,8 +320,8 @@ class CanvasTextField {
 					
 				}
 				
-				graphics.__bitmap = BitmapData.fromCanvas (textEngine.textField.__canvas);
-				textEngine.__dirty = false;
+				graphics.__bitmap = BitmapData.fromCanvas (textField.__canvas);
+				textField.__dirty = false;
 				graphics.__dirty = false;
 				
 			}
@@ -281,125 +333,127 @@ class CanvasTextField {
 	}
 	
 	
-	private static inline function renderText (textEngine:TextEngine, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle ):Void {
+	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, offsetY:Float, bounds:Rectangle):Void {
 		
 		#if (js && html5)
 		
-		context.font = DOMTextField.getFont (format);
+		var textEngine = textField.__layout;
+		
+		context.font = TextEngine.getFont (format);
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
-		context.textBaseline = "top";
+		//context.textBaseline = "top";
 		
-		trace (context.font);
-		
-		var yOffset = 0.0;
+		//var yOffset = 0.0;
 		
 		// Hack, baseline "top" is not consistent across browsers
 		
 		if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
 			
-			yOffset = format.size * 0.185;
+			offsetY += format.size * 0.185;
 			
 		}
 		
-		var lines = [];
+		//var lines = [];
+		//
+		//if (textEngine.wordWrap) {
+			//
+			//var words = text.split (" ");
+			//var line = "";
+			//
+			//var word, newLineIndex, test;
+			//
+			//for (i in 0...words.length) {
+				//
+				//word = words[i];
+				//newLineIndex = word.indexOf ("\n");
+				//
+				//if (newLineIndex > -1) {
+					//
+					//while (newLineIndex > -1) {
+						//
+						//test = line + word.substring (0, newLineIndex) + " ";
+						//
+						//if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
+							//
+							//lines.push (line);
+							//lines.push (word.substring (0, newLineIndex));
+							//
+						//} else {
+							//
+							//lines.push (line + word.substring (0, newLineIndex));
+							//
+						//}
+						//
+						//word = word.substr (newLineIndex + 1);
+						//newLineIndex = word.indexOf ("\n");
+						//line = "";
+						//
+					//}
+					//
+					//if (word != "") {
+						//
+						//line = word + " ";
+						//
+					//}
+					//
+				//} else {
+					//
+					//test = line + words[i] + " ";
+					//
+					//if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
+						//
+						//lines.push (line);
+						//line = words[i] + " ";
+						//
+					//} else {
+						//
+						//line = test;
+						//
+					//}
+					//
+				//}
+				//
+			//}
+			//
+			//if (line != "") {
+				//
+				//lines.push (line);
+				//
+			//}
+			//
+		//} else {
+			//
+			//lines = text.split ("\n");
+			//
+		//}
+		//
+		//for (line in lines) {
+			//
+			//switch (format.align) {
+				//
+				//case TextFormatAlign.CENTER:
+					//
+					//context.textAlign = "center";
+					//context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
+					//
+				//case TextFormatAlign.RIGHT:
+					//
+					//context.textAlign = "end";
+					//context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
+					//
+				//default:
+					//
+					//context.textAlign = "start";
+					//context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
+					//
+			//}
+			//
+			//yOffset += format.size + format.leading + 4;
+			//offsetX = 0;
+			//
+		//}
 		
-		if (textEngine.wordWrap) {
-			
-			var words = text.split (" ");
-			var line = "";
-			
-			var word, newLineIndex, test;
-			
-			for (i in 0...words.length) {
-				
-				word = words[i];
-				newLineIndex = word.indexOf ("\n");
-				
-				if (newLineIndex > -1) {
-					
-					while (newLineIndex > -1) {
-						
-						test = line + word.substring (0, newLineIndex) + " ";
-						
-						if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
-							
-							lines.push (line);
-							lines.push (word.substring (0, newLineIndex));
-							
-						} else {
-							
-							lines.push (line + word.substring (0, newLineIndex));
-							
-						}
-						
-						word = word.substr (newLineIndex + 1);
-						newLineIndex = word.indexOf ("\n");
-						line = "";
-						
-					}
-					
-					if (word != "") {
-						
-						line = word + " ";
-						
-					}
-					
-				} else {
-					
-					test = line + words[i] + " ";
-					
-					if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
-						
-						lines.push (line);
-						line = words[i] + " ";
-						
-					} else {
-						
-						line = test;
-						
-					}
-					
-				}
-				
-			}
-			
-			if (line != "") {
-				
-				lines.push (line);
-				
-			}
-			
-		} else {
-			
-			lines = text.split ("\n");
-			
-		}
-		
-		for (line in lines) {
-			
-			switch (format.align) {
-				
-				case TextFormatAlign.CENTER:
-					
-					context.textAlign = "center";
-					context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
-					
-				case TextFormatAlign.RIGHT:
-					
-					context.textAlign = "end";
-					context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
-					
-				default:
-					
-					context.textAlign = "start";
-					context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
-					
-			}
-			
-			yOffset += format.size + format.leading + 4;
-			offsetX = 0;
-			
-		}
+		context.fillText (text, offsetX, offsetY);
 		
 		#end
 		
