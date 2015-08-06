@@ -11,13 +11,14 @@ class TextLayoutGroup {
 	public var descent:Int;
 	public var endIndex:Int;
 	public var format:TextFormat;
+	public var height:Int;
 	public var leading:Int;
 	public var lineIndex:Int;
 	public var offsetX:Int;
 	public var offsetY:Int;
 	public var startIndex:Int;
 	public var width:Int;
-	public var height:Int;
+	
 	
 	public function new (format:TextFormat, startIndex:Int, endIndex:Int) {
 		

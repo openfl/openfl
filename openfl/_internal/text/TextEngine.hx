@@ -658,17 +658,16 @@ class TextEngine {
 		
 		var rangeIndex = -1;
 		var formatRange = null;
+		var font = null;
 		
-		var ascent, descent, leading, font = null, layoutGroup;
+		var ascent, descent, leading, layoutGroup, widthValue, heightValue;
 		
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = text.indexOf ("\n");
+		
 		var offsetX = 2;
 		var offsetY = 2;
-		var widthValue;
-		var heightValue;
-		
 		var textIndex = 0;
 		var lineIndex = 0;
 		
@@ -695,7 +694,7 @@ class TextEngine {
 				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
 				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
 				leading = formatRange.format.leading;
-				heightValue = Std.int (ascent + descent + leading) + 2;
+				heightValue = Std.int (ascent + descent + leading) + 2; // TODO: is this correct?
 				
 				#end
 				
@@ -749,12 +748,14 @@ class TextEngine {
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
-				offsetY += Std.int (ascent + descent + leading);
+				// TODO: Why is this different (or necessary?)
+				
 				#if (cpp || neko || nodejs)
-					offsetY += 2;
-				#elseif (js && html5)
-					offsetY += 4;
+				offsetY += heightValue + 2;
+				#else
+				offsetY += heightValue + 4;
 				#end
+				
 				offsetX = 2;
 				
 				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
@@ -762,12 +763,14 @@ class TextEngine {
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.offsetX = offsetX;
 					
-					offsetY += Std.int (ascent + descent + leading);
+					// TODO: Why is this different (or necessary?)
+					
 					#if (cpp || neko || nodejs)
-						offsetY += 2;
-					#elseif (js && html5)
-						offsetY += 4;
+					offsetY += heightValue + 2;
+					#else
+					offsetY += heightValue + 4;
 					#end
+					
 					lineIndex++;
 					
 				}
@@ -805,12 +808,14 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						offsetY += Std.int (ascent + descent + leading);
+						// TODO: Why is this different (or necessary?)
+						
 						#if (cpp || neko || nodejs)
-							offsetY += 2;
-						#elseif (js && html5)
-							offsetY += 4;
+						offsetY += heightValue + 2;
+						#else
+						offsetY += heightValue + 4;
 						#end
+						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 						

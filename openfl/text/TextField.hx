@@ -677,7 +677,6 @@ class TextField extends InteractiveObject {
 		var descender = __textEngine.lineDescents[lineIndex];
 		var leading = __textEngine.lineLeadings[lineIndex];
 		var lineHeight = __textEngine.lineHeights[lineIndex];
-		//ascender + descender + leading;
 		
 		var margin = switch (__textFormat.align) {
 			
