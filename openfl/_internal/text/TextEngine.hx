@@ -616,7 +616,7 @@ class TextEngine {
 			currentLineAscent = Std.int (Math.max (currentLineAscent, group.ascent));
 			currentLineDescent = Std.int (Math.max (currentLineDescent, group.descent));
 			currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
-			currentLineWidth = Std.int (Math.max (currentLineLeading, group.width));
+			currentLineWidth = Std.int (Math.max (currentLineWidth, group.width));
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -876,7 +876,7 @@ class TextEngine {
 						
 					}
 					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end) {
+					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
 						
 						break;
 						
