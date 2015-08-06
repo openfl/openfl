@@ -101,6 +101,9 @@ class CairoTextField {
 		
 		if (textEngine.text != null && textEngine.text != "") {
 			
+			cairo.rectangle (2, 2, textEngine.width - 4, textEngine.height - 4);
+			cairo.clip ();
+			
 			var text = textEngine.text;
 			
 			if (textEngine.displayAsPassword) {
