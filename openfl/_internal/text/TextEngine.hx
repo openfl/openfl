@@ -83,6 +83,11 @@ class TextEngine {
 	public var width:Float;
 	public var wordWrap:Bool;
 	
+	public static inline var UTF8_TAB:Int     = 9;
+	public static inline var UTF8_ENDLINE:Int = 10;
+	public static inline var UTF8_SPACE:Int   = 32;
+	public static inline var UTF8_HYPHEN:Int  = 0x2D;
+	
 	private var textField:TextField;
 	
 	@:noCompletion private var __cursorPosition:Int;
@@ -340,11 +345,11 @@ class TextEngine {
 			
 			if (format.italic) {
 				
-				fontList = [ systemFontDirectory + "/georgiaz.ttf" ];
+				fontList = [ systemFontDirectory + "/timesbi.ttf" ];
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/georgiab.ttf" ];
+				fontList = [ systemFontDirectory + "/timesb.ttf" ];
 				
 			}
 			
@@ -352,11 +357,11 @@ class TextEngine {
 			
 			if (format.italic) {
 				
-				fontList = [ systemFontDirectory + "/geogiai.ttf" ];
+				fontList = [ systemFontDirectory + "/timesi.ttf" ];
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
+				fontList = [ systemFontDirectory + "/times.ttf" ];
 				
 			}
 			
@@ -679,7 +684,7 @@ class TextEngine {
 				
 				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
 				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
-				leading = Std.int (formatRange.format.leading + 4);
+				leading = Std.int (formatRange.format.leading);
 				
 				#end
 				
@@ -720,7 +725,7 @@ class TextEngine {
 		
 		while (textIndex < text.length) {
 			
-			if (breakIndex > -1 && breakIndex < spaceIndex && formatRange.end >= breakIndex) {
+			if ( (breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
