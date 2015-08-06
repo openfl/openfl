@@ -593,7 +593,7 @@ class TextEngine {
 		textWidth = 0;
 		textHeight = 0;
 		
-		var lineIndex = 1;
+		var lineIndex = 0;
 		
 		for (group in layoutGroups) {
 			
@@ -663,7 +663,7 @@ class TextEngine {
 		var widthValue;
 		
 		var textIndex = 0;
-		var lineIndex = 1;
+		var lineIndex = 0;
 		
 		var nextFormatRange = function () {
 			
@@ -742,6 +742,16 @@ class TextEngine {
 				offsetY += Std.int (ascent + descent + leading);
 				offsetX = 2;
 				
+				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
+					
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.offsetX = offsetX;
+					
+					offsetY += Std.int (ascent + descent + leading);
+					lineIndex++;
+					
+				}
+				
 				textIndex = breakIndex + 1;
 				breakIndex = text.indexOf ("\n", textIndex);
 				lineIndex++;
@@ -752,7 +762,7 @@ class TextEngine {
 					
 				}
 				
-			} else if (spaceIndex > -1 && formatRange.end >= spaceIndex) {
+			} else if (formatRange.end >= spaceIndex) {
 				
 				layoutGroup = null;
 				wrap = false;
@@ -922,6 +932,63 @@ class TextEngine {
 	}
 	
 	
+	private function setTextAlignment ():Void {
+		
+		var lineIndex = -1;
+		var offsetX = 0;
+		
+		for (group in layoutGroups) {
+			
+			if (group.lineIndex != lineIndex) {
+				
+				lineIndex = group.lineIndex;
+				
+				switch (group.format.align) {
+					
+					case CENTER:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							
+						} else {
+							
+							offsetX = 0;
+							
+						}
+					
+					case RIGHT:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							offsetX = Std.int (width - 2 - lineWidths[lineIndex]);
+							
+						} else {
+							
+							offsetX = 0;
+							
+						}
+						
+					
+					default:
+						
+						offsetX = 0;
+					
+				}
+				
+			}
+			
+			if (offsetX > 0) {
+				
+				group.offsetX += offsetX;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private function update ():Void {
 		
 		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
@@ -937,6 +1004,7 @@ class TextEngine {
 			
 			getRenderGroups ();
 			getLineMeasurements ();
+			setTextAlignment ();
 			
 		}
 		
