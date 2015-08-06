@@ -4,7 +4,7 @@ package openfl._internal.text;
 import openfl.text.TextFormat;
 
 
-class TextRenderGroup {
+class TextLayoutGroup {
 	
 	
 	public var ascent:Int;

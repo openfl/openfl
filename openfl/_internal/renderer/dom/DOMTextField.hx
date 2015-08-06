@@ -24,7 +24,7 @@ class DOMTextField {
 		
 	 	#if (js && html5)
 	 	
-		var textEngine = textField.__layout;
+		var textEngine = textField.__textEngine;
 		var div:Element = textField.__div;
 		
 		if (div == null) {
@@ -67,7 +67,7 @@ class DOMTextField {
 		
 		#if (js && html5)
 		
-		var textEngine = textField.__layout;
+		var textEngine = textField.__textEngine;
 		
 		if (textField.stage != null && textField.__worldVisible && textField.__renderable) {
 			

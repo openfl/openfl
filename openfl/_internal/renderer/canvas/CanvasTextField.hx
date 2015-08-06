@@ -111,12 +111,11 @@ class CanvasTextField {
 		
 		#if (js && html5)
 		
-		var textEngine = textField.__layout;
-		var bounds = textField.getBounds (null);
-		
 		if (textField.__dirty) {
 			
-			var textEngine = textField.__layout;
+			var textEngine = textField.__textEngine;
+			var bounds = textField.getBounds (null);
+			
 			textField.__updateLayout ();
 			
 			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
@@ -216,7 +215,7 @@ class CanvasTextField {
 					//context.textBaseline = "alphabetic";
 					context.textAlign = "start";
 					
-					for (group in textEngine.renderGroups) {
+					for (group in textEngine.layoutGroups) {
 						
 						renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY, bounds);
 						
@@ -276,7 +275,7 @@ class CanvasTextField {
 		
 		#if (js && html5)
 		
-		var textEngine = textField.__layout;
+		var textEngine = textField.__textEngine;
 		
 		context.font = TextEngine.getFont (format);
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);

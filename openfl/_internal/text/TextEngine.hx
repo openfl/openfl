@@ -69,7 +69,7 @@ class TextEngine {
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
-	public var renderGroups:Array<TextRenderGroup>;
+	public var layoutGroups:Array<TextLayoutGroup>;
 	public var restrict:String;
 	public var scrollH:Int;
 	public var scrollV:Int;
@@ -143,7 +143,7 @@ class TextEngine {
 		lineDescents = new Array ();
 		lineLeadings = new Array ();
 		lineWidths = new Array ();
-		renderGroups = new Array ();
+		layoutGroups = new Array ();
 		textFormatRanges = new Array ();
 		
 		#if (js && html5)
@@ -598,9 +598,9 @@ class TextEngine {
 		textWidth = 0;
 		textHeight = 0;
 		
-		var lineIndex = 1;
+		var lineIndex = 0;
 		
-		for (group in renderGroups) {
+		for (group in layoutGroups) {
 			
 			while (group.lineIndex > lineIndex) {
 				
@@ -643,7 +643,7 @@ class TextEngine {
 	}
 	
 	
-	private function getRenderGroups ():Void {
+	private function getLayoutGroups ():Void {
 		
 		#if (cpp || neko || nodejs)
 		if (__textLayout == null) {
@@ -653,12 +653,12 @@ class TextEngine {
 		}
 		#end
 		
-		renderGroups.splice (0, renderGroups.length);
+		layoutGroups.splice (0, layoutGroups.length);
 		
 		var rangeIndex = -1;
 		var formatRange = null;
 		
-		var ascent, descent, leading, font = null, renderGroup;
+		var ascent, descent, leading, font = null, layoutGroup;
 		
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
@@ -668,7 +668,7 @@ class TextEngine {
 		var widthValue;
 		
 		var textIndex = 0;
-		var lineIndex = 1;
+		var lineIndex = 0;
 		
 		var nextFormatRange = function () {
 			
@@ -691,7 +691,7 @@ class TextEngine {
 				
 				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
 				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
-				leading = Std.int (formatRange.format.leading);
+				leading = Std.int (formatRange.format.leading + 4);
 				
 				#end
 				
@@ -728,40 +728,34 @@ class TextEngine {
 			
 		}
 		
+		var wrap;
+		
 		while (textIndex < text.length) {
 			
-			if ((formatRange.end < spaceIndex || (spaceIndex == -1 && !wordWrap)) && (formatRange.end < breakIndex || breakIndex == -1)) {
+			if (breakIndex > -1 && breakIndex < spaceIndex && formatRange.end >= breakIndex) {
 				
-				renderGroup = new TextRenderGroup (formatRange.format, textIndex, formatRange.end);
-				renderGroup.offsetX = offsetX;
-				renderGroup.ascent = ascent;
-				renderGroup.descent = descent;
-				renderGroup.leading = leading;
-				renderGroup.lineIndex = lineIndex;
-				renderGroup.offsetY = offsetY;
-				renderGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
-				renderGroups.push (renderGroup);
-				
-				offsetX += renderGroup.width;
-				
-				textIndex = formatRange.end + 1;
-				
-				nextFormatRange ();
-				
-			} else if (formatRange.end >= breakIndex && breakIndex > -1) {
-				
-				renderGroup = new TextRenderGroup (formatRange.format, textIndex, breakIndex);
-				renderGroup.offsetX = offsetX;
-				renderGroup.ascent = ascent;
-				renderGroup.descent = descent;
-				renderGroup.leading = leading;
-				renderGroup.lineIndex = lineIndex;
-				renderGroup.offsetY = offsetY;
-				renderGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
-				renderGroups.push (renderGroup);
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				layoutGroups.push (layoutGroup);
 				
 				offsetY += Std.int (ascent + descent + leading);
 				offsetX = 2;
+				
+				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
+					
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.offsetX = offsetX;
+					
+					offsetY += Std.int (ascent + descent + leading);
+					lineIndex++;
+					
+				}
 				
 				textIndex = breakIndex + 1;
 				breakIndex = text.indexOf ("\n", textIndex);
@@ -773,24 +767,39 @@ class TextEngine {
 					
 				}
 				
-			} else {
+			} else if (formatRange.end >= spaceIndex) {
 				
-				if (spaceIndex == -1) spaceIndex = formatRange.end;
+				layoutGroup = null;
+				wrap = false;
 				
-				widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
-				
-				if (wordWrap) {
+				while (true) {
 					
-					if (offsetX + widthValue > width - 4) {
+					if (spaceIndex == -1) spaceIndex = formatRange.end;
+					
+					widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
+					
+					if (wordWrap) {
+						
+						if (offsetX + widthValue > width - 4) {
+							
+							wrap = true;
+							
+						}
+						
+					}
+					
+					if (wrap) {
 						
 						offsetY += Std.int (ascent + descent + leading);
 						
-						var i = renderGroups.length - 1;
+						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 						
 						while (true) {
 							
-							if (i > 0 && renderGroups[i].startIndex > previousSpaceIndex) {
+							layoutGroup = layoutGroups[i];
+							
+							if (i > 0 && layoutGroup.startIndex > previousSpaceIndex) {
 								
 								offsetCount++;
 								
@@ -807,72 +816,98 @@ class TextEngine {
 						lineIndex++;
 						
 						offsetX = 2;
-						var bumpX = renderGroups[renderGroups.length - 1 - offsetCount].offsetX;
 						
-						for (i in (renderGroups.length - offsetCount)...renderGroups.length) {
+						if (offsetCount > 0) {
 							
-							renderGroup = renderGroups[i];
-							renderGroup.offsetX -= bumpX;
-							renderGroup.offsetY = offsetY;
-							renderGroup.lineIndex = lineIndex;
-							offsetX += renderGroup.width;
+							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
+							
+							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
+								
+								layoutGroup = layoutGroups[i];
+								layoutGroup.offsetX -= bumpX;
+								layoutGroup.offsetY = offsetY;
+								layoutGroup.lineIndex = lineIndex;
+								offsetX += layoutGroup.width;
+								
+							}
 							
 						}
 						
-						renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
-						renderGroup.offsetX = offsetX;
-						renderGroup.ascent = ascent;
-						renderGroup.descent = descent;
-						renderGroup.leading = leading;
-						renderGroup.lineIndex = lineIndex;
-						renderGroup.offsetY = offsetY;
-						renderGroup.width = widthValue;
-						renderGroups.push (renderGroup);
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = widthValue;
+						layoutGroups.push (layoutGroup);
 						
-						offsetX = renderGroup.offsetX + widthValue;
+						offsetX += widthValue;
+						
+						wrap = false;
 						
 					} else {
 						
-						renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
-						renderGroup.offsetX = offsetX;
-						renderGroup.ascent = ascent;
-						renderGroup.descent = descent;
-						renderGroup.leading = leading;
-						renderGroup.lineIndex = lineIndex;
-						renderGroup.offsetY = offsetY;
-						renderGroup.width = widthValue;
-						renderGroups.push (renderGroup);
+						if (layoutGroup == null) {
+							
+							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+							layoutGroup.offsetX = offsetX;
+							layoutGroup.ascent = ascent;
+							layoutGroup.descent = descent;
+							layoutGroup.leading = leading;
+							layoutGroup.lineIndex = lineIndex;
+							layoutGroup.offsetY = offsetY;
+							layoutGroup.width = widthValue;
+							layoutGroups.push (layoutGroup);
+							
+						} else {
+							
+							layoutGroup.endIndex = spaceIndex + 1;
+							layoutGroup.width += widthValue;
+							
+						}
 						
 						offsetX += widthValue;
 						
 					}
 					
-				} else {
+					textIndex = spaceIndex + 1;
 					
-					renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
-					renderGroup.offsetX = offsetX;
-					renderGroup.ascent = ascent;
-					renderGroup.descent = descent;
-					renderGroup.leading = leading;
-					renderGroup.lineIndex = lineIndex;
-					renderGroup.offsetY = offsetY;
-					renderGroup.width = widthValue;
-					renderGroups.push (renderGroup);
+					previousSpaceIndex = spaceIndex;
+					spaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
 					
-					offsetX += widthValue;
+					if (formatRange.end <= previousSpaceIndex) {
+						
+						nextFormatRange ();
+						
+					}
 					
-				}
-				
-				textIndex = spaceIndex + 1;
-				
-				previousSpaceIndex = spaceIndex;
-				spaceIndex = text.indexOf (text, previousSpaceIndex + 1);
-				
-				if (formatRange.end <= previousSpaceIndex) {
-					
-					nextFormatRange ();
+					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end) {
+						
+						break;
+						
+					}
 					
 				}
+				
+			} else {
+				
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				layoutGroups.push (layoutGroup);
+				
+				offsetX += layoutGroup.width;
+				
+				textIndex = formatRange.end + 1;
+				
+				nextFormatRange ();
 				
 			}
 			
@@ -902,6 +937,63 @@ class TextEngine {
 	}
 	
 	
+	private function setTextAlignment ():Void {
+		
+		var lineIndex = -1;
+		var offsetX = 0;
+		
+		for (group in layoutGroups) {
+			
+			if (group.lineIndex != lineIndex) {
+				
+				lineIndex = group.lineIndex;
+				
+				switch (group.format.align) {
+					
+					case CENTER:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							
+						} else {
+							
+							offsetX = 0;
+							
+						}
+					
+					case RIGHT:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							offsetX = Std.int (width - 2 - lineWidths[lineIndex]);
+							
+						} else {
+							
+							offsetX = 0;
+							
+						}
+						
+					
+					default:
+						
+						offsetX = 0;
+					
+				}
+				
+			}
+			
+			if (offsetX > 0) {
+				
+				group.offsetX += offsetX;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private function update ():Void {
 		
 		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
@@ -911,12 +1003,13 @@ class TextEngine {
 			lineDescents.splice (0, lineDescents.length);
 			lineLeadings.splice (0, lineLeadings.length);
 			lineWidths.splice (0, lineWidths.length);
-			renderGroups.splice (0, renderGroups.length);
+			layoutGroups.splice (0, layoutGroups.length);
 			
 		} else {
 			
-			getRenderGroups ();
+			getLayoutGroups ();
 			getLineMeasurements ();
+			setTextAlignment ();
 			
 		}
 		
