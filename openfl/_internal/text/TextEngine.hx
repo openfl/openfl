@@ -725,7 +725,7 @@ class TextEngine {
 		
 		while (textIndex < text.length) {
 			
-			if (breakIndex > -1 && breakIndex < spaceIndex && formatRange.end >= breakIndex) {
+			if ( (breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
