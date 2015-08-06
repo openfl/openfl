@@ -352,11 +352,11 @@ class TextEngine {
 			
 			if (format.italic) {
 				
-				fontList = [ systemFontDirectory + "/georgiaz.ttf" ];
+				fontList = [ systemFontDirectory + "/timesbi.ttf" ];
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/georgiab.ttf" ];
+				fontList = [ systemFontDirectory + "/timesb.ttf" ];
 				
 			}
 			
@@ -364,11 +364,11 @@ class TextEngine {
 			
 			if (format.italic) {
 				
-				fontList = [ systemFontDirectory + "/geogiai.ttf" ];
+				fontList = [ systemFontDirectory + "/timesi.ttf" ];
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/georgia.ttf" ];
+				fontList = [ systemFontDirectory + "/times.ttf" ];
 				
 			}
 			
