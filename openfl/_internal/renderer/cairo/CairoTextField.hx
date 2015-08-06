@@ -27,7 +27,7 @@ class CairoTextField {
 		
 		textField.__updateLayout ();
 		
-		var textEngine = textField.__layout;
+		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
@@ -141,7 +141,7 @@ class CairoTextField {
 	private static function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, offsetY:Float, bounds:Rectangle):Void {
 		
 		#if lime_cairo
-		var textEngine = textField.__layout;
+		var textEngine = textField.__textEngine;
 		var cairo = textField.__graphics.__cairo;
 		
 		var color = format.color;

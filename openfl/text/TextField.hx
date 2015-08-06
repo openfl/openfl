@@ -539,9 +539,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __dirty:Bool;
-	@:noCompletion private var __layout:TextEngine;
 	@:noCompletion private var __isHTML:Bool;
 	@:noCompletion private var __layoutDirty:Bool;
+	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
 	
 	#if (js && html5)
@@ -562,7 +562,7 @@ class TextField extends InteractiveObject {
 		super ();
 		
 		__graphics = new Graphics ();
-		__layout = new TextEngine (this);
+		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		
 		if (__defaultTextFormat == null) {
@@ -576,7 +576,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		__textFormat = __defaultTextFormat.clone ();
-		__layout.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
+		__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
 		
 	}
 	
@@ -592,8 +592,8 @@ class TextField extends InteractiveObject {
 	 */
 	public function appendText (text:String):Void {
 		
-		__layout.text += text;
-		__layout.textFormatRanges[__layout.textFormatRanges.length - 1].end = text.length;
+		__textEngine.text += text;
+		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = text.length;
 		
 		__dirty = true;
 		__layoutDirty = true;
@@ -668,17 +668,17 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		var lineWidth = __layout.lineWidths[lineIndex];
-		var ascender = __layout.lineAscents[lineIndex];
-		var descender = __layout.lineDescents[lineIndex];
-		var leading = __layout.lineLeadings[lineIndex];
+		var lineWidth = __textEngine.lineWidths[lineIndex];
+		var ascender = __textEngine.lineAscents[lineIndex];
+		var descender = __textEngine.lineDescents[lineIndex];
+		var leading = __textEngine.lineLeadings[lineIndex];
 		var lineHeight = ascender + descender + leading;
 		
 		var margin = switch (__textFormat.align) {
 			
 			case LEFT, JUSTIFY: 2;
-			case RIGHT: (__layout.bounds.width - lineWidth) - 2;
-			case CENTER: (__layout.bounds.width - lineWidth) / 2;
+			case RIGHT: (__textEngine.bounds.width - lineWidth) - 2;
+			case CENTER: (__textEngine.bounds.width - lineWidth) / 2;
 			
 		}
 		
@@ -765,7 +765,7 @@ class TextField extends InteractiveObject {
 	 */
 	public function setSelection (beginIndex:Int, endIndex:Int) {
 		
-		__layout.setSelection (beginIndex, endIndex);
+		__textEngine.setSelection (beginIndex, endIndex);
 		
 	}
 	
@@ -846,7 +846,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		var bounds = Rectangle.__temp;
-		__layout.bounds.__transform (bounds, matrix);
+		__textEngine.bounds.__transform (bounds, matrix);
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 	}
@@ -869,7 +869,7 @@ class TextField extends InteractiveObject {
 		var px = __worldTransform.__transformInverseX (x, y);
 		var py = __worldTransform.__transformInverseY (x, y);
 		
-		if (__layout.bounds.contains (px, py)) {
+		if (__textEngine.bounds.contains (px, py)) {
 			
 			if (stack != null) {
 				
@@ -934,7 +934,7 @@ class TextField extends InteractiveObject {
 		
 		if (__layoutDirty) {
 			
-			__layout.update ();
+			__textEngine.update ();
 			__layoutDirty = false;
 			
 		}
@@ -951,122 +951,122 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_antiAliasType ():AntiAliasType {
 		
-		return __layout.antiAliasType;
+		return __textEngine.antiAliasType;
 		
 	}
 	
 	
 	@:noCompletion private function set_antiAliasType (value:AntiAliasType):AntiAliasType {
 		
-		if (value != __layout.antiAliasType) {
+		if (value != __textEngine.antiAliasType) {
 			
 			//__dirty = true;
 			
 		}
 		
-		return __layout.antiAliasType = value;
+		return __textEngine.antiAliasType = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_autoSize ():TextFieldAutoSize {
 		
-		return __layout.autoSize;
+		return __textEngine.autoSize;
 		
 	}
 	
 	
 	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize {
 		
-		if (value != __layout.autoSize) {
+		if (value != __textEngine.autoSize) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
 		}
 		
-		return __layout.autoSize = value;
+		return __textEngine.autoSize = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_background ():Bool {
 		
-		return __layout.background;
+		return __textEngine.background;
 		
 	}
 	
 	
 	@:noCompletion private function set_background (value:Bool):Bool {
 		
-		if (value != __layout.background) {
+		if (value != __textEngine.background) {
 			
 			__dirty = true;
 			
 		}
 		
-		return __layout.background = value;
+		return __textEngine.background = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_backgroundColor ():Int {
 		
-		return __layout.backgroundColor;
+		return __textEngine.backgroundColor;
 		
 	}
 	
 	
 	@:noCompletion private function set_backgroundColor (value:Int):Int {
 		
-		if (value != __layout.backgroundColor) {
+		if (value != __textEngine.backgroundColor) {
 			
 			__dirty = true;
 			
 		}
 		
-		return __layout.backgroundColor = value;
+		return __textEngine.backgroundColor = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_border ():Bool {
 		
-		return __layout.border;
+		return __textEngine.border;
 		
 	}
 	
 	
 	@:noCompletion private function set_border (value:Bool):Bool {
 		
-		if (value != __layout.border) {
+		if (value != __textEngine.border) {
 			
 			__dirty = true;
 			//__layoutDirty = true;
 			
 		}
 		
-		return __layout.border = value;
+		return __textEngine.border = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_borderColor ():Int {
 		
-		return __layout.borderColor;
+		return __textEngine.borderColor;
 		
 	}
 	
 	
 	@:noCompletion private function set_borderColor (value:Int):Int {
 		
-		if (value != __layout.borderColor) {
+		if (value != __textEngine.borderColor) {
 			
 			__dirty = true;
 			
 		}
 		
-		return __layout.borderColor = value;
+		return __textEngine.borderColor = value;
 		
 	}
 	
@@ -1082,7 +1082,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_caretIndex ():Int {
 		
-		return __layout.getCaretIndex ();
+		return __textEngine.getCaretIndex ();
 		
 	}
 	
@@ -1105,63 +1105,63 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_displayAsPassword ():Bool {
 		
-		return __layout.displayAsPassword;
+		return __textEngine.displayAsPassword;
 		
 	}
 	
 	
 	@:noCompletion private function set_displayAsPassword (value:Bool):Bool {
 		
-		if (value != __layout.displayAsPassword) {
+		if (value != __textEngine.displayAsPassword) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
 		}
 		
-		return __layout.displayAsPassword = value;
+		return __textEngine.displayAsPassword = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_embedFonts ():Bool {
 		
-		return __layout.embedFonts;
+		return __textEngine.embedFonts;
 		
 	}
 	
 	
 	@:noCompletion private function set_embedFonts (value:Bool):Bool {
 		
-		//if (value != __layout.embedFonts) {
+		//if (value != __textEngine.embedFonts) {
 			//
 			//__dirty = true;
 			//__layoutDirty = true;
 			//
 		//}
 		
-		return __layout.embedFonts = value;
+		return __textEngine.embedFonts = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_gridFitType ():GridFitType {
 		
-		return __layout.gridFitType;
+		return __textEngine.gridFitType;
 		
 	}
 	
 	
 	@:noCompletion private function set_gridFitType (value:GridFitType):GridFitType {
 		
-		//if (value != __layout.gridFitType) {
+		//if (value != __textEngine.gridFitType) {
 			//
 			//__dirty = true;
 			//__layoutDirty = true;
 			//
 		//}
 		
-		return __layout.gridFitType = value;
+		return __textEngine.gridFitType = value;
 		
 	}
 	
@@ -1169,14 +1169,14 @@ class TextField extends InteractiveObject {
 	@:noCompletion private override function get_height ():Float {
 		
 		__updateLayout ();
-		return __layout.bounds.height;
+		return __textEngine.bounds.height;
 		
 	}
 	
 	
 	@:noCompletion private override function set_height (value:Float):Float {
 		
-		if (scaleY != 1 || value != __layout.height) {
+		if (scaleY != 1 || value != __textEngine.height) {
 			
 			__setTransformDirty ();
 			__dirty = true;
@@ -1185,21 +1185,21 @@ class TextField extends InteractiveObject {
 		}
 		
 		scaleY = 1;
-		return __layout.height = value;
+		return __textEngine.height = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_htmlText ():String {
 		
-		return __layout.text;
+		return __textEngine.text;
 		
 	}
 	
 	
 	@:noCompletion private function set_htmlText (value:String):String {
 		
-		if (!__isHTML || __layout.text != value) {
+		if (!__isHTML || __textEngine.text != value) {
 			
 			__dirty = true;
 			__layoutDirty = true;
@@ -1221,13 +1221,13 @@ class TextField extends InteractiveObject {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
 				
-				if (__layout.textFormatRanges.length > 1) {
+				if (__textEngine.textFormatRanges.length > 1) {
 					
-					__layout.textFormatRanges.splice (1, __layout.textFormatRanges.length - 1);
+					__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
 					
 				}
 				
-				var range = __layout.textFormatRanges[0];
+				var range = __textEngine.textFormatRanges[0];
 				range.format = __textFormat;
 				range.start = 0;
 				range.end = value.length;
@@ -1243,11 +1243,11 @@ class TextField extends InteractiveObject {
 					//
 				//}	
 				//#end
-				return __layout.text = value;
+				return __textEngine.text = value;
 				
 			} else {
 				
-				__layout.textFormatRanges.splice (0, __layout.textFormatRanges.length);
+				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 				
 				value = "";
 				
@@ -1290,20 +1290,20 @@ class TextField extends InteractiveObject {
 						var sub = segment.substring (start, end);
 						sub = new EReg ("<.*?>", "g").replace (sub, "");
 						
-						__layout.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
+						__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
 						value += sub;
 						
 						if (closeFontIndex + 7 < segment.length) {
 							
 							sub = segment.substr (closeFontIndex + 7);
-							__layout.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
+							__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
 							value += sub;
 							
 						}
 						
 					} else {
 						
-						__layout.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
+						__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
 						value += segment;
 						
 					}
@@ -1325,16 +1325,16 @@ class TextField extends InteractiveObject {
 			//
 		//}	
 		//#end
-		return __layout.text = value;
+		return __textEngine.text = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_length ():Int {
 		
-		if (__layout.text != null) {
+		if (__textEngine.text != null) {
 			
-			return __layout.text.length;
+			return __textEngine.text.length;
 			
 		}
 		
@@ -1345,21 +1345,21 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_maxChars ():Int {
 		
-		return __layout.maxChars;
+		return __textEngine.maxChars;
 		
 	}
 	
 	
 	@:noCompletion private function set_maxChars (value:Int):Int {
 		
-		if (value != __layout.maxChars) {
+		if (value != __textEngine.maxChars) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
 		}
 		
-		return __layout.maxChars = value;
+		return __textEngine.maxChars = value;
 		
 	}
 	
@@ -1380,21 +1380,21 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_multiline ():Bool {
 		
-		return __layout.multiline;
+		return __textEngine.multiline;
 		
 	}
 	
 	
 	@:noCompletion private function set_multiline (value:Bool):Bool {
 		
-		if (value != __layout.multiline) {
+		if (value != __textEngine.multiline) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
 		}
 		
-		return __layout.multiline = value;
+		return __textEngine.multiline = value;
 		
 	}
 	
@@ -1402,68 +1402,68 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function get_numLines ():Int {
 		
 		__updateLayout ();
-		return __layout.lineBreaks.length + 1;
+		return __textEngine.lineBreaks.length + 1;
 		
 	}
 	
 	
 	@:noCompletion private function get_restrict ():String {
 		
-		return __layout.restrict;
+		return __textEngine.restrict;
 		
 	}
 	
 	
 	@:noCompletion private function set_restrict (value:String):String {
 		
-		return __layout.restrict = value;
+		return __textEngine.restrict = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_scrollH ():Int {
 		
-		return __layout.scrollH;
+		return __textEngine.scrollH;
 		
 	}
 	
 	
 	@:noCompletion private function set_scrollH (value:Int):Int {
 		
-		if (value != __layout.scrollH) {
+		if (value != __textEngine.scrollH) {
 			
 			__dirty = true;
 			
 		}
 		
-		return __layout.scrollH = value;
+		return __textEngine.scrollH = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_scrollV ():Int {
 		
-		return __layout.scrollV;
+		return __textEngine.scrollV;
 		
 	}
 	
 	
 	@:noCompletion private function set_scrollV (value:Int):Int {
 		
-		if (value != __layout.scrollV) {
+		if (value != __textEngine.scrollV) {
 			
 			__dirty = true;
 			
 		}
 		
-		return __layout.scrollV = value;
+		return __textEngine.scrollV = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_selectable ():Bool {
 		
-		return __layout.selectable;
+		return __textEngine.selectable;
 		
 	}
 	
@@ -1478,48 +1478,48 @@ class TextField extends InteractiveObject {
 		//}
 		//#end
 		
-		return __layout.selectable = value;
+		return __textEngine.selectable = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_selectionBeginIndex ():Int {
 		
-		return __layout.getSelectionBeginIndex ();
+		return __textEngine.getSelectionBeginIndex ();
 		
 	}
 	
 	
 	@:noCompletion private function get_selectionEndIndex ():Int {
 		
-		return __layout.getSelectionEndIndex ();
+		return __textEngine.getSelectionEndIndex ();
 		
 	}
 	
 	
 	@:noCompletion private function get_sharpness ():Float {
 		
-		return __layout.sharpness;
+		return __textEngine.sharpness;
 		
 	}
 	
 	
 	@:noCompletion private function set_sharpness (value:Float):Float {
 		
-		if (value != __layout.sharpness) {
+		if (value != __textEngine.sharpness) {
 			
 			__dirty = true;
 			
 		}
 		
-		return __layout.sharpness = value;
+		return __textEngine.sharpness = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_text ():String {
 		
-		return __layout.text;
+		return __textEngine.text;
 		
 	}
 	
@@ -1538,27 +1538,27 @@ class TextField extends InteractiveObject {
 		//}	
 		//#end
 		
-		if (__isHTML || __layout.text != value) {
+		if (__isHTML || __textEngine.text != value) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
 		}
 		
-		if (__layout.textFormatRanges.length > 1) {
+		if (__textEngine.textFormatRanges.length > 1) {
 			
-			__layout.textFormatRanges.splice (1, __layout.textFormatRanges.length - 1);
+			__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
 			
 		}
 		
-		var range = __layout.textFormatRanges[0];
+		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
 		range.end = value.length;
 		
 		__isHTML = false;
 		
-		return __layout.text = value;
+		return __textEngine.text = value;
 		
 	}
 	
@@ -1574,7 +1574,7 @@ class TextField extends InteractiveObject {
 		
 		if (value != __textFormat.color) __dirty = true;
 		
-		for (range in __layout.textFormatRanges) {
+		for (range in __textEngine.textFormatRanges) {
 			
 			range.format.color = value;
 			
@@ -1587,7 +1587,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function get_textWidth ():Float {
 		
 		__updateLayout ();
-		return __layout.textWidth;
+		return __textEngine.textWidth;
 		
 	}
 	
@@ -1595,21 +1595,21 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function get_textHeight ():Float {
 		
 		__updateLayout ();
-		return __layout.textHeight;
+		return __textEngine.textHeight;
 		
 	}
 	
 	
 	@:noCompletion private function get_type ():TextFieldType {
 		
-		return __layout.type;
+		return __textEngine.type;
 		
 	}
 	
 	
 	@:noCompletion private function set_type (value:TextFieldType):TextFieldType {
 		
-		if (value != __layout.type) {
+		if (value != __textEngine.type) {
 			
 			//#if !dom
 			//if (value == TextFieldType.INPUT) {
@@ -1627,7 +1627,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __layout.type = value;
+		return __textEngine.type = value;
 		
 	}
 	
@@ -1635,14 +1635,14 @@ class TextField extends InteractiveObject {
 	override private function get_width ():Float {
 		
 		__updateLayout ();
-		return __layout.bounds.width;
+		return __textEngine.bounds.width;
 		
 	}
 	
 	
 	override private function set_width (value:Float):Float {
 		
-		if (scaleX != 1 || __layout.width != value) {
+		if (scaleX != 1 || __textEngine.width != value) {
 			
 			__setTransformDirty ();
 			__dirty = true;
@@ -1651,28 +1651,28 @@ class TextField extends InteractiveObject {
 		}
 		
 		scaleX = 1;
-		return __layout.width = value;
+		return __textEngine.width = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_wordWrap ():Bool {
 		
-		return __layout.wordWrap;
+		return __textEngine.wordWrap;
 		
 	}
 	
 	
 	@:noCompletion private function set_wordWrap (value:Bool):Bool {
 		
-		if (value != __layout.wordWrap) {
+		if (value != __textEngine.wordWrap) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
 		}
 		
-		return __layout.wordWrap = value;
+		return __textEngine.wordWrap = value;
 		
 	}
 	
