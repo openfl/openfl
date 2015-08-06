@@ -686,7 +686,7 @@ class TextEngine {
 				
 				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
 				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
-				leading = Std.int (formatRange.format.leading);
+				leading = Std.int (formatRange.format.leading + 4);
 				
 				#end
 				
