@@ -83,6 +83,11 @@ class TextEngine {
 	public var width:Float;
 	public var wordWrap:Bool;
 	
+	public static inline var UTF8_TAB:Int     = 9;
+	public static inline var UTF8_ENDLINE:Int = 10;
+	public static inline var UTF8_SPACE:Int   = 32;
+	public static inline var UTF8_HYPHEN:Int  = 0x2D;
+	
 	private var textField:TextField;
 	
 	@:noCompletion private var __cursorPosition:Int;
