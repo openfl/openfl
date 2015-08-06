@@ -749,9 +749,11 @@ class TextEngine {
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
-				offsetY += Std.int (ascent + descent + leading + 4);
+				offsetY += Std.int (ascent + descent + leading);
 				#if (cpp || neko || nodejs)
 					offsetY += 2;
+				#elseif (js && html5)
+					offsetY += 4;
 				#end
 				offsetX = 2;
 				
@@ -760,9 +762,11 @@ class TextEngine {
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.offsetX = offsetX;
 					
-					offsetY += Std.int (ascent + descent + leading + 4);
+					offsetY += Std.int (ascent + descent + leading);
 					#if (cpp || neko || nodejs)
 						offsetY += 2;
+					#elseif (js && html5)
+						offsetY += 4;
 					#end
 					lineIndex++;
 					
@@ -801,11 +805,12 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						offsetY += Std.int (ascent + descent + leading + 4);
+						offsetY += Std.int (ascent + descent + leading);
 						#if (cpp || neko || nodejs)
 							offsetY += 2;
+						#elseif (js && html5)
+							offsetY += 4;
 						#end
-						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 						
