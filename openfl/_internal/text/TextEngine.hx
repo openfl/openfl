@@ -66,6 +66,7 @@ class TextEngine {
 	public var lineBreaks:Array<Int>;
 	public var lineDescents:Array<Int>;
 	public var lineLeadings:Array<Int>;
+	public var lineHeights:Array<Float>;
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
@@ -142,6 +143,7 @@ class TextEngine {
 		lineBreaks = new Array ();
 		lineDescents = new Array ();
 		lineLeadings = new Array ();
+		lineHeights = new Array ();
 		lineWidths = new Array ();
 		layoutGroups = new Array ();
 		textFormatRanges = new Array ();
@@ -581,11 +583,13 @@ class TextEngine {
 		lineAscents.splice (0, lineAscents.length);
 		lineDescents.splice (0, lineDescents.length);
 		lineLeadings.splice (0, lineLeadings.length);
+		lineHeights.splice (0, lineHeights.length);
 		lineWidths.splice (0, lineWidths.length);
 		
 		var currentLineAscent = 0;
 		var currentLineDescent = 0;
 		var currentLineLeading = 0;
+		var currentLineHeight = 0;
 		var currentLineWidth = 0;
 		
 		textWidth = 0;
@@ -600,11 +604,13 @@ class TextEngine {
 				lineAscents.push (currentLineAscent);
 				lineDescents.push (currentLineDescent);
 				lineLeadings.push (currentLineLeading);
+				lineHeights.push (currentLineHeight);
 				lineWidths.push (currentLineWidth);
 				
 				currentLineAscent = 0;
 				currentLineDescent = 0;
 				currentLineLeading = 0;
+				currentLineHeight = 0;
 				currentLineWidth = 0;
 				
 				lineIndex++;
@@ -616,6 +622,7 @@ class TextEngine {
 			currentLineAscent = Std.int (Math.max (currentLineAscent, group.ascent));
 			currentLineDescent = Std.int (Math.max (currentLineDescent, group.descent));
 			currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
+			currentLineHeight = Std.int (Math.max (currentLineHeight, group.height));
 			currentLineWidth = Std.int (Math.max (currentLineLeading, group.width));
 			
 			if (currentLineWidth > textWidth) {
@@ -631,6 +638,7 @@ class TextEngine {
 		lineAscents.push (currentLineAscent);
 		lineDescents.push (currentLineDescent);
 		lineLeadings.push (currentLineLeading);
+		lineHeights.push (currentLineHeight);
 		lineWidths.push (currentLineWidth);
 		
 	}
@@ -659,6 +667,7 @@ class TextEngine {
 		var offsetX = 2;
 		var offsetY = 2;
 		var widthValue;
+		var heightValue;
 		
 		var textIndex = 0;
 		var lineIndex = 0;
@@ -677,6 +686,7 @@ class TextEngine {
 				ascent = Std.int (formatRange.format.size * 0.8);
 				descent = Std.int (formatRange.format.size * 0.2);
 				leading = Std.int (formatRange.format.leading + 4);
+				heightValue = Std.int (ascent + descent + leading);
 				
 				#elseif (cpp || neko || nodejs)
 				
@@ -685,6 +695,7 @@ class TextEngine {
 				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
 				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
 				leading = Std.int (formatRange.format.leading);
+				heightValue = Std.int (ascent + descent + leading) + 2;
 				
 				#end
 				
@@ -735,9 +746,13 @@ class TextEngine {
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
 				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
 				offsetY += Std.int (ascent + descent + leading);
+				#if (cpp || neko || nodejs)
+					offsetY += 2;
+				#end
 				offsetX = 2;
 				
 				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
@@ -746,6 +761,9 @@ class TextEngine {
 					layoutGroup.offsetX = offsetX;
 					
 					offsetY += Std.int (ascent + descent + leading);
+					#if (cpp || neko || nodejs)
+						offsetY += 2;
+					#end
 					lineIndex++;
 					
 				}
@@ -784,6 +802,9 @@ class TextEngine {
 					if (wrap) {
 						
 						offsetY += Std.int (ascent + descent + leading);
+						#if (cpp || neko || nodejs)
+							offsetY += 2;
+						#end
 						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
@@ -834,6 +855,7 @@ class TextEngine {
 						layoutGroup.lineIndex = lineIndex;
 						layoutGroup.offsetY = offsetY;
 						layoutGroup.width = widthValue;
+						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
 						offsetX += widthValue;
@@ -852,6 +874,7 @@ class TextEngine {
 							layoutGroup.lineIndex = lineIndex;
 							layoutGroup.offsetY = offsetY;
 							layoutGroup.width = widthValue;
+							layoutGroup.height = heightValue;
 							layoutGroups.push (layoutGroup);
 							
 						} else {
@@ -894,6 +917,7 @@ class TextEngine {
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
 				layoutGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
 				offsetX += layoutGroup.width;
@@ -995,6 +1019,7 @@ class TextEngine {
 			lineBreaks.splice (0, lineBreaks.length);
 			lineDescents.splice (0, lineDescents.length);
 			lineLeadings.splice (0, lineLeadings.length);
+			lineHeights.splice (0, lineHeights.length);
 			lineWidths.splice (0, lineWidths.length);
 			layoutGroups.splice (0, layoutGroups.length);
 			
