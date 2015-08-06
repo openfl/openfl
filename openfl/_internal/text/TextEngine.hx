@@ -181,13 +181,6 @@ class TextEngine {
 	}
 	
 	
-	public function getCaretIndex ():Int {
-		
-		return __cursorPosition;
-		
-	}
-	
-	
 	public static function getFont (format:TextFormat):String {
 		
 		var font = format.italic ? "italic " : "normal ";

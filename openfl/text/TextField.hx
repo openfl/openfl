@@ -11,8 +11,10 @@ import openfl._internal.text.TextFormatRange;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.events.FocusEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.Lib;
 
 #if (js && html5)
 import js.html.DivElement;
@@ -538,6 +540,7 @@ class TextField extends InteractiveObject {
 	public var wordWrap (get, set):Bool;
 	
 	@:noCompletion private var __bounds:Rectangle;
+	@:noCompletion private var __caretIndex:Int;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __isHTML:Bool;
 	@:noCompletion private var __layoutDirty:Bool;
@@ -561,6 +564,7 @@ class TextField extends InteractiveObject {
 		
 		super ();
 		
+		__caretIndex = -1;
 		__graphics = new Graphics ();
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
@@ -930,6 +934,24 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __startTextInput ():Void {
+		
+		Lib.application.window.enableTextEvents = true;
+		Lib.application.window.onTextInput.add (window_onTextInput);
+		
+		__caretIndex = 0;
+		
+	}
+	
+	
+	@:noCompletion private function __stopTextInput ():Void {
+		
+		Lib.application.window.enableTextEvents = false;
+		Lib.application.window.onTextInput.remove (window_onTextInput);
+		
+	}
+	
+	
 	@:noCompletion private function __updateLayout ():Void {
 		
 		if (__layoutDirty) {
@@ -1082,7 +1104,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_caretIndex ():Int {
 		
-		return __textEngine.getCaretIndex ();
+		return __caretIndex;
 		
 	}
 	
@@ -1470,13 +1492,19 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_selectable (value:Bool):Bool {
 		
-		//#if (js && html5)
-		//if (!value && selectable && type == TextFieldType.INPUT) {
-			//
-			//this_onRemovedFromStage (null);
-			//
-		//}
-		//#end
+		if (value != __textEngine.selectable && type == INPUT) {
+			
+			if (stage != null && stage.focus == this) {
+				
+				__startTextInput ();
+				
+			} else if (!value) {
+				
+				__stopTextInput ();
+				
+			}
+			
+		}
 		
 		return __textEngine.selectable = value;
 		
@@ -1611,17 +1639,22 @@ class TextField extends InteractiveObject {
 		
 		if (value != __textEngine.type) {
 			
-			//#if !dom
-			//if (value == TextFieldType.INPUT) {
-				//
-				//CanvasTextField.enableInputMode (this);
-				//
-			//} else {
-				//
-				//CanvasTextField.disableInputMode (this);
-				//
-			//}
-			//#end
+			if (value == TextFieldType.INPUT) {
+				
+				addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+				
+				if (stage != null && stage.focus == this) {
+					
+					this_onFocusIn (null);
+					
+				}
+				
+			} else {
+				
+				__stopTextInput ();
+				
+			}
 			
 			__dirty = true;
 			
@@ -1673,6 +1706,51 @@ class TextField extends InteractiveObject {
 		}
 		
 		return __textEngine.wordWrap = value;
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	@:noCompletion private function this_onFocusIn (event:FocusEvent):Void {
+		
+		if (selectable && type == INPUT) {
+			
+			__startTextInput ();
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onFocusOut (event:FocusEvent):Void {
+		
+		__stopTextInput ();
+		
+	}
+	
+	
+	@:noCompletion private function window_onTextInput (value:String):Void {
+		
+		__textEngine.text = __textEngine.text.substring (0, __caretIndex) + value + __textEngine.text.substring (__caretIndex);
+		
+		for (range in __textEngine.textFormatRanges) {
+			
+			if (range.start <= __caretIndex && range.end >= __caretIndex) {
+				
+				range.end += value.length;
+				
+			}
+			
+		}
+		
+		__dirty = true;
+		__layoutDirty = true;
 		
 	}
 	
