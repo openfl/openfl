@@ -43,6 +43,11 @@ import haxe.io.Path;
 class TextEngine {
 	
 	
+	private static inline var UTF8_TAB = 9;
+	private static inline var UTF8_ENDLINE = 10;
+	private static inline var UTF8_SPACE = 32;
+	private static inline var UTF8_HYPHEN = 0x2D;
+	
 	private static var __defaultFonts = new Map<String, Font> ();
 	
 	#if (js && html5)
@@ -82,11 +87,6 @@ class TextEngine {
 	public var type:TextFieldType;
 	public var width:Float;
 	public var wordWrap:Bool;
-	
-	public static inline var UTF8_TAB:Int     = 9;
-	public static inline var UTF8_ENDLINE:Int = 10;
-	public static inline var UTF8_SPACE:Int   = 32;
-	public static inline var UTF8_HYPHEN:Int  = 0x2D;
 	
 	private var textField:TextField;
 	
@@ -676,7 +676,7 @@ class TextEngine {
 				
 				ascent = Std.int (formatRange.format.size * 0.8);
 				descent = Std.int (formatRange.format.size * 0.2);
-				leading = Std.int (formatRange.format.leading + 4);
+				leading = formatRange.format.leading;
 				
 				#elseif (cpp || neko || nodejs)
 				
@@ -684,7 +684,7 @@ class TextEngine {
 				
 				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
 				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
-				leading = Std.int (formatRange.format.leading);
+				leading = formatRange.format.leading;
 				
 				#end
 				
@@ -725,7 +725,7 @@ class TextEngine {
 		
 		while (textIndex < text.length) {
 			
-			if ( (breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
@@ -737,7 +737,7 @@ class TextEngine {
 				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
 				layoutGroups.push (layoutGroup);
 				
-				offsetY += Std.int (ascent + descent + leading);
+				offsetY += Std.int (ascent + descent + leading + 4);
 				offsetX = 2;
 				
 				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
@@ -745,7 +745,7 @@ class TextEngine {
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.offsetX = offsetX;
 					
-					offsetY += Std.int (ascent + descent + leading);
+					offsetY += Std.int (ascent + descent + leading + 4);
 					lineIndex++;
 					
 				}
@@ -783,7 +783,7 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						offsetY += Std.int (ascent + descent + leading);
+						offsetY += Std.int (ascent + descent + leading + 4);
 						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
