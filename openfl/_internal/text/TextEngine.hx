@@ -584,173 +584,292 @@ class TextEngine {
 		lineDescents.splice (0, lineDescents.length);
 		lineLeadings.splice (0, lineLeadings.length);
 		lineWidths.splice (0, lineWidths.length);
-		renderGroups.splice (0, renderGroups.length);
 		
 		var currentLineAscent = 0;
 		var currentLineDescent = 0;
 		var currentLineLeading = 0;
-		var currentLineWidth = 0.0;
+		var currentLineWidth = 0;
 		
-		var nextLineBreak = -1;
-		var lineBreakIndex = 0;
+		textWidth = 0;
+		textHeight = 0;
 		
-		if (lineBreaks.length > 0) {
+		var lineIndex = 1;
+		
+		for (group in renderGroups) {
 			
-			nextLineBreak = lineBreaks[0];
+			while (group.lineIndex > lineIndex) {
+				
+				lineAscents.push (currentLineAscent);
+				lineDescents.push (currentLineDescent);
+				lineLeadings.push (currentLineLeading);
+				lineWidths.push (currentLineWidth);
+				
+				currentLineAscent = 0;
+				currentLineDescent = 0;
+				currentLineLeading = 0;
+				currentLineWidth = 0;
+				
+				lineIndex++;
+				
+			}
+			
+			lineIndex = group.lineIndex;
+			
+			currentLineAscent = Std.int (Math.max (currentLineAscent, group.ascent));
+			currentLineDescent = Std.int (Math.max (currentLineDescent, group.descent));
+			currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
+			currentLineWidth = Std.int (Math.max (currentLineLeading, group.width));
+			
+			if (currentLineWidth > textWidth) {
+				
+				textWidth = currentLineWidth;
+				
+			}
+			
+			textHeight = group.ascent + group.descent + group.offsetY;
 			
 		}
 		
-		#if (cpp || neko || nodejs)
+		lineAscents.push (currentLineAscent);
+		lineDescents.push (currentLineDescent);
+		lineLeadings.push (currentLineLeading);
+		lineWidths.push (currentLineWidth);
 		
+	}
+	
+	
+	private function getRenderGroups ():Void {
+		
+		#if (cpp || neko || nodejs)
 		if (__textLayout == null) {
 			
 			__textLayout = new TextLayout ();
 			
 		}
-		
-		var font;
 		#end
 		
-		var startIndex;
-		var endIndex;
+		renderGroups.splice (0, renderGroups.length);
+		
+		var rangeIndex = -1;
+		var formatRange = null;
+		
+		var ascent, descent, leading, font = null, renderGroup;
+		
+		var previousSpaceIndex = 0;
+		var spaceIndex = text.indexOf (" ");
+		var breakIndex = text.indexOf ("\n");
 		var offsetX = 2;
 		var offsetY = 2;
+		var widthValue;
 		
-		// TODO: wordWrap
+		var textIndex = 0;
+		var lineIndex = 1;
 		
-		for (range in textFormatRanges) {
+		var nextFormatRange = function () {
 			
-			if (range.end <= range.start) continue;
-			
-			#if (js && html5)
-			__context.font = getFont (range.format);
-			#elseif (cpp || neko || nodejs)
-			font = getFontInstance (range.format);
-			#end
-			
-			startIndex = range.start;
-			
-			while (true) {
+			if (rangeIndex < textFormatRanges.length - 1) {
 				
-				endIndex = (nextLineBreak == -1 || range.end < nextLineBreak) ? range.end : nextLineBreak;
-				if (startIndex >= endIndex) break;
+				rangeIndex++;
+				formatRange = textFormatRanges[rangeIndex];
 				
 				#if (js && html5)
 				
-				currentLineWidth += __context.measureText (text.substring (startIndex, endIndex)).width;
+				__context.font = getFont (formatRange.format);
 				
-				currentLineAscent = Std.int (Math.max (currentLineAscent, range.format.size * 0.8));
-				currentLineDescent = Std.int (Math.max (currentLineDescent, range.format.size * 0.2));
-				currentLineLeading = Std.int (Math.max (currentLineLeading, range.format.leading + 4));
+				ascent = Std.int (formatRange.format.size * 0.8);
+				descent = Std.int (formatRange.format.size * 0.2);
+				leading = Std.int (formatRange.format.leading + 4);
 				
 				#elseif (cpp || neko || nodejs)
 				
-				__textLayout.text = null;
-				__textLayout.font = font;
-				__textLayout.size = Std.int (range.format.size);
-				__textLayout.text = text.substring (startIndex, endIndex);
+				font = getFontInstance (formatRange.format);
 				
-				for (position in __textLayout.positions) {
-					
-					currentLineWidth += position.advance.x;
-					
-				}
-				
-				currentLineAscent = Std.int (Math.max (currentLineAscent, (font.ascender / font.unitsPerEM) * range.format.size));
-				currentLineDescent = Std.int (Math.max (currentLineDescent, (font.descender / font.unitsPerEM) * range.format.size));
-				currentLineLeading = Std.int (Math.max (currentLineLeading, range.format.leading + 4));
+				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
+				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
+				leading = Std.int (formatRange.format.leading);
 				
 				#end
 				
-				if (range.end >= nextLineBreak) {
+			}
+			
+		}
+		
+		nextFormatRange ();
+		
+		var getTextWidth = function (text:String):Int {
+			
+			#if (js && html5)
+			
+			return Std.int (__context.measureText (text).width);
+			
+			#else
+			
+			var width = 0;
+			
+			__textLayout.text = null;
+			__textLayout.font = font;
+			__textLayout.size = formatRange.format.size;
+			__textLayout.text = text;
+			
+			for (position in __textLayout.positions) {
+				
+				width += Std.int (position.advance.x);
+				
+			}
+			
+			return width;
+			
+			#end
+			
+		}
+		
+		while (textIndex < text.length) {
+			
+			if ((formatRange.end < spaceIndex || (spaceIndex == -1 && !wordWrap)) && (formatRange.end < breakIndex || breakIndex == -1)) {
+				
+				renderGroup = new TextRenderGroup (formatRange.format, textIndex, formatRange.end);
+				renderGroup.offsetX = offsetX;
+				renderGroup.ascent = ascent;
+				renderGroup.descent = descent;
+				renderGroup.leading = leading;
+				renderGroup.lineIndex = lineIndex;
+				renderGroup.offsetY = offsetY;
+				renderGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				renderGroups.push (renderGroup);
+				
+				offsetX += renderGroup.width;
+				
+				textIndex = formatRange.end + 1;
+				
+				nextFormatRange ();
+				
+			} else if (formatRange.end >= breakIndex && breakIndex > -1) {
+				
+				renderGroup = new TextRenderGroup (formatRange.format, textIndex, breakIndex);
+				renderGroup.offsetX = offsetX;
+				renderGroup.ascent = ascent;
+				renderGroup.descent = descent;
+				renderGroup.leading = leading;
+				renderGroup.lineIndex = lineIndex;
+				renderGroup.offsetY = offsetY;
+				renderGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				renderGroups.push (renderGroup);
+				
+				offsetY += Std.int (ascent + descent + leading);
+				offsetX = 2;
+				
+				textIndex = breakIndex + 1;
+				breakIndex = text.indexOf ("\n", textIndex);
+				lineIndex++;
+				
+				if (formatRange.end == breakIndex) {
 					
-					offsetY += currentLineAscent + currentLineDescent;
+					nextFormatRange ();
 					
-					var renderGroup = new TextRenderGroup (range.format, startIndex, endIndex);
-					renderGroup.x = offsetX;
-					renderGroup.y = offsetY;
-					renderGroups.push (renderGroup);
+				}
+				
+			} else {
+				
+				if (spaceIndex == -1) spaceIndex = formatRange.end;
+				
+				widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
+				
+				if (wordWrap) {
 					
-					offsetY += currentLineLeading;
-					offsetX = 2;
-					
-					lineAscents.push (currentLineAscent);
-					lineDescents.push (currentLineDescent);
-					lineLeadings.push (currentLineLeading);
-					lineWidths.push (currentLineWidth);
-					
-					currentLineAscent = 0;
-					currentLineDescent = 0;
-					currentLineLeading = 0;
-					currentLineWidth = 0;
-					
-					startIndex = endIndex + 1;
-					
-					if (lineBreakIndex < lineBreaks.length - 1) {
+					if (offsetX + widthValue > width - 4) {
 						
-						lineBreakIndex++;
-						nextLineBreak = lineBreaks[lineBreakIndex];
+						offsetY += Std.int (ascent + descent + leading);
+						
+						var i = renderGroups.length - 1;
+						var offsetCount = 0;
+						
+						while (true) {
+							
+							if (i > 0 && renderGroups[i].startIndex > previousSpaceIndex) {
+								
+								offsetCount++;
+								
+							} else {
+								
+								break;
+								
+							}
+							
+							i--;
+							
+						}
+						
+						lineIndex++;
+						
+						offsetX = 2;
+						var bumpX = renderGroups[renderGroups.length - 1 - offsetCount].offsetX;
+						
+						for (i in (renderGroups.length - offsetCount)...renderGroups.length) {
+							
+							renderGroup = renderGroups[i];
+							renderGroup.offsetX -= bumpX;
+							renderGroup.offsetY = offsetY;
+							renderGroup.lineIndex = lineIndex;
+							offsetX += renderGroup.width;
+							
+						}
+						
+						renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
+						renderGroup.offsetX = offsetX;
+						renderGroup.ascent = ascent;
+						renderGroup.descent = descent;
+						renderGroup.leading = leading;
+						renderGroup.lineIndex = lineIndex;
+						renderGroup.offsetY = offsetY;
+						renderGroup.width = widthValue;
+						renderGroups.push (renderGroup);
+						
+						offsetX = renderGroup.offsetX + widthValue;
 						
 					} else {
 						
-						nextLineBreak = -1;
+						renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
+						renderGroup.offsetX = offsetX;
+						renderGroup.ascent = ascent;
+						renderGroup.descent = descent;
+						renderGroup.leading = leading;
+						renderGroup.lineIndex = lineIndex;
+						renderGroup.offsetY = offsetY;
+						renderGroup.width = widthValue;
+						renderGroups.push (renderGroup);
+						
+						offsetX += widthValue;
 						
 					}
 					
 				} else {
 					
-					var renderGroup = new TextRenderGroup (range.format, startIndex, endIndex);
-					renderGroup.x = offsetX;
-					renderGroup.y = offsetY + currentLineAscent + currentLineDescent;
+					renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
+					renderGroup.offsetX = offsetX;
+					renderGroup.ascent = ascent;
+					renderGroup.descent = descent;
+					renderGroup.leading = leading;
+					renderGroup.lineIndex = lineIndex;
+					renderGroup.offsetY = offsetY;
+					renderGroup.width = widthValue;
 					renderGroups.push (renderGroup);
 					
-					offsetX += Std.int (currentLineWidth);
-					break;
+					offsetX += widthValue;
+					
+				}
+				
+				textIndex = spaceIndex + 1;
+				
+				previousSpaceIndex = spaceIndex;
+				spaceIndex = text.indexOf (text, previousSpaceIndex + 1);
+				
+				if (formatRange.end <= previousSpaceIndex) {
+					
+					nextFormatRange ();
 					
 				}
 				
 			}
-			
-		}
-		
-		if (lineWidths.length < lineBreaks.length + 1) {
-			
-			lineAscents.push (currentLineAscent);
-			lineDescents.push (currentLineDescent);
-			lineLeadings.push (currentLineLeading);
-			lineWidths.push (currentLineWidth);
-			
-		}
-		
-		textWidth = 0;
-		
-		for (lineWidth in lineWidths) {
-			
-			if (lineWidth > textWidth) {
-				
-				textWidth = Std.int (lineWidth);
-				
-			}
-			
-		}
-		
-		textHeight = 0;
-		
-		for (lineAscent in lineAscents) {
-			
-			textHeight += lineAscent;
-			
-		}
-		
-		for (lineDescent in lineDescents) {
-			
-			textHeight += lineDescent;
-			
-		}
-		
-		for (lineLeading in lineLeadings) {
-			
-			textHeight += lineLeading;
 			
 		}
 		
@@ -778,7 +897,7 @@ class TextEngine {
 	}
 	
 	
-	private function updateLayout ():Void {
+	private function update ():Void {
 		
 		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
 			
@@ -791,9 +910,7 @@ class TextEngine {
 			
 		} else {
 			
-			// TODO: wordWrap
-			
-			getLineBreaks ();
+			getRenderGroups ();
 			getLineMeasurements ();
 			
 		}
@@ -816,8 +933,6 @@ class TextEngine {
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
 		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return 0;
-		
-		updateLayout ();
 		
 		var currentY = 0.0;
 		var lineIndex = -1;

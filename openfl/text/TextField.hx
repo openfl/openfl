@@ -934,7 +934,7 @@ class TextField extends InteractiveObject {
 		
 		if (__layoutDirty) {
 			
-			__layout.updateLayout ();
+			__layout.update ();
 			__layoutDirty = false;
 			
 		}

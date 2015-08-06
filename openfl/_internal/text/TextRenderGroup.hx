@@ -7,18 +7,23 @@ import openfl.text.TextFormat;
 class TextRenderGroup {
 	
 	
-	public var end:Int;
+	public var ascent:Int;
+	public var descent:Int;
+	public var endIndex:Int;
 	public var format:TextFormat;
-	public var start:Int;
-	public var x:Int;
-	public var y:Int;
+	public var leading:Int;
+	public var lineIndex:Int;
+	public var offsetX:Int;
+	public var offsetY:Int;
+	public var startIndex:Int;
+	public var width:Int;
 	
 	
-	public function new (format:TextFormat, start:Int, end:Int) {
+	public function new (format:TextFormat, startIndex:Int, endIndex:Int) {
 		
 		this.format = format;
-		this.start = start;
-		this.end = end;
+		this.startIndex = startIndex;
+		this.endIndex = endIndex;
 		
 	}
 	
