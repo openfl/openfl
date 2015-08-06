@@ -638,7 +638,7 @@ class TextEngine {
 	}
 	
 	
-	private function getRenderGroups ():Void {
+	private function getLayoutGroups ():Void {
 		
 		#if (cpp || neko || nodejs)
 		if (__textLayout == null) {
@@ -1002,7 +1002,7 @@ class TextEngine {
 			
 		} else {
 			
-			getRenderGroups ();
+			getLayoutGroups ();
 			getLineMeasurements ();
 			setTextAlignment ();
 			
