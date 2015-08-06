@@ -121,9 +121,11 @@ class CairoTextField {
 				
 			}
 			
+			var textFieldOffsetY:Int = 2;
+			
 			for (group in textEngine.layoutGroups) {
 				
-				renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY + group.ascent, bounds);
+				renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY + group.ascent + textFieldOffsetY, bounds);
 				
 			}
 			
