@@ -69,7 +69,7 @@ class TextEngine {
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
-	public var renderGroups:Array<TextRenderGroup>;
+	public var layoutGroups:Array<TextLayoutGroup>;
 	public var restrict:String;
 	public var scrollH:Int;
 	public var scrollV:Int;
@@ -138,7 +138,7 @@ class TextEngine {
 		lineDescents = new Array ();
 		lineLeadings = new Array ();
 		lineWidths = new Array ();
-		renderGroups = new Array ();
+		layoutGroups = new Array ();
 		textFormatRanges = new Array ();
 		
 		#if (js && html5)
@@ -595,7 +595,7 @@ class TextEngine {
 		
 		var lineIndex = 1;
 		
-		for (group in renderGroups) {
+		for (group in layoutGroups) {
 			
 			while (group.lineIndex > lineIndex) {
 				
@@ -648,12 +648,12 @@ class TextEngine {
 		}
 		#end
 		
-		renderGroups.splice (0, renderGroups.length);
+		layoutGroups.splice (0, layoutGroups.length);
 		
 		var rangeIndex = -1;
 		var formatRange = null;
 		
-		var ascent, descent, leading, font = null, renderGroup;
+		var ascent, descent, leading, font = null, layoutGroup;
 		
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
@@ -729,15 +729,15 @@ class TextEngine {
 			
 			if (breakIndex > -1 && breakIndex < spaceIndex && formatRange.end >= breakIndex) {
 				
-				renderGroup = new TextRenderGroup (formatRange.format, textIndex, breakIndex);
-				renderGroup.offsetX = offsetX;
-				renderGroup.ascent = ascent;
-				renderGroup.descent = descent;
-				renderGroup.leading = leading;
-				renderGroup.lineIndex = lineIndex;
-				renderGroup.offsetY = offsetY;
-				renderGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
-				renderGroups.push (renderGroup);
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				layoutGroups.push (layoutGroup);
 				
 				offsetY += Std.int (ascent + descent + leading);
 				offsetX = 2;
@@ -754,7 +754,7 @@ class TextEngine {
 				
 			} else if (spaceIndex > -1 && formatRange.end >= spaceIndex) {
 				
-				renderGroup = null;
+				layoutGroup = null;
 				wrap = false;
 				
 				while (true) {
@@ -777,14 +777,14 @@ class TextEngine {
 						
 						offsetY += Std.int (ascent + descent + leading);
 						
-						var i = renderGroups.length - 1;
+						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 						
 						while (true) {
 							
-							renderGroup = renderGroups[i];
+							layoutGroup = layoutGroups[i];
 							
-							if (i > 0 && renderGroup.startIndex > previousSpaceIndex) {
+							if (i > 0 && layoutGroup.startIndex > previousSpaceIndex) {
 								
 								offsetCount++;
 								
@@ -804,29 +804,29 @@ class TextEngine {
 						
 						if (offsetCount > 0) {
 							
-							var bumpX = renderGroups[renderGroups.length - offsetCount].offsetX;
+							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
 							
-							for (i in (renderGroups.length - offsetCount)...renderGroups.length) {
+							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
 								
-								renderGroup = renderGroups[i];
-								renderGroup.offsetX -= bumpX;
-								renderGroup.offsetY = offsetY;
-								renderGroup.lineIndex = lineIndex;
-								offsetX += renderGroup.width;
+								layoutGroup = layoutGroups[i];
+								layoutGroup.offsetX -= bumpX;
+								layoutGroup.offsetY = offsetY;
+								layoutGroup.lineIndex = lineIndex;
+								offsetX += layoutGroup.width;
 								
 							}
 							
 						}
 						
-						renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
-						renderGroup.offsetX = offsetX;
-						renderGroup.ascent = ascent;
-						renderGroup.descent = descent;
-						renderGroup.leading = leading;
-						renderGroup.lineIndex = lineIndex;
-						renderGroup.offsetY = offsetY;
-						renderGroup.width = widthValue;
-						renderGroups.push (renderGroup);
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = widthValue;
+						layoutGroups.push (layoutGroup);
 						
 						offsetX += widthValue;
 						
@@ -834,22 +834,22 @@ class TextEngine {
 						
 					} else {
 						
-						if (renderGroup == null) {
+						if (layoutGroup == null) {
 							
-							renderGroup = new TextRenderGroup (formatRange.format, textIndex, spaceIndex + 1);
-							renderGroup.offsetX = offsetX;
-							renderGroup.ascent = ascent;
-							renderGroup.descent = descent;
-							renderGroup.leading = leading;
-							renderGroup.lineIndex = lineIndex;
-							renderGroup.offsetY = offsetY;
-							renderGroup.width = widthValue;
-							renderGroups.push (renderGroup);
+							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+							layoutGroup.offsetX = offsetX;
+							layoutGroup.ascent = ascent;
+							layoutGroup.descent = descent;
+							layoutGroup.leading = leading;
+							layoutGroup.lineIndex = lineIndex;
+							layoutGroup.offsetY = offsetY;
+							layoutGroup.width = widthValue;
+							layoutGroups.push (layoutGroup);
 							
 						} else {
 							
-							renderGroup.endIndex = spaceIndex + 1;
-							renderGroup.width += widthValue;
+							layoutGroup.endIndex = spaceIndex + 1;
+							layoutGroup.width += widthValue;
 							
 						}
 						
@@ -878,17 +878,17 @@ class TextEngine {
 				
 			} else {
 				
-				renderGroup = new TextRenderGroup (formatRange.format, textIndex, formatRange.end);
-				renderGroup.offsetX = offsetX;
-				renderGroup.ascent = ascent;
-				renderGroup.descent = descent;
-				renderGroup.leading = leading;
-				renderGroup.lineIndex = lineIndex;
-				renderGroup.offsetY = offsetY;
-				renderGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
-				renderGroups.push (renderGroup);
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				layoutGroups.push (layoutGroup);
 				
-				offsetX += renderGroup.width;
+				offsetX += layoutGroup.width;
 				
 				textIndex = formatRange.end + 1;
 				
@@ -931,7 +931,7 @@ class TextEngine {
 			lineDescents.splice (0, lineDescents.length);
 			lineLeadings.splice (0, lineLeadings.length);
 			lineWidths.splice (0, lineWidths.length);
-			renderGroups.splice (0, renderGroups.length);
+			layoutGroups.splice (0, layoutGroups.length);
 			
 		} else {
 			

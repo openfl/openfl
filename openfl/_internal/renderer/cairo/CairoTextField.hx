@@ -118,7 +118,7 @@ class CairoTextField {
 				
 			}
 			
-			for (group in textEngine.renderGroups) {
+			for (group in textEngine.layoutGroups) {
 				
 				renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY + group.ascent, bounds);
 				
