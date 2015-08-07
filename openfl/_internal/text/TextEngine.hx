@@ -1121,6 +1121,8 @@ class TextEngine {
 			
 		}
 		
+		bounds.width += 1;
+		bounds.height += 1;
 	}
 	
 	
