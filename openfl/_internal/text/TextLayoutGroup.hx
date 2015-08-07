@@ -7,11 +7,11 @@ import openfl.text.TextFormat;
 class TextLayoutGroup {
 	
 	
-	public var ascent:Int;
-	public var descent:Int;
+	public var ascent:Float;
+	public var descent:Float;
 	public var endIndex:Int;
 	public var format:TextFormat;
-	public var height:Int;
+	public var height:Float;
 	public var leading:Int;
 	public var lineIndex:Int;
 	public var offsetX:Int;

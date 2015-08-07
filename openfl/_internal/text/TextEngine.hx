@@ -67,10 +67,10 @@ class TextEngine {
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var height:Float;
-	public var lineAscents:Array<Int>;
+	public var lineAscents:Array<Float>;
 	public var lineBreaks:Array<Int>;
-	public var lineDescents:Array<Int>;
-	public var lineLeadings:Array<Int>;
+	public var lineDescents:Array<Float>;
+	public var lineLeadings:Array<Float>;
 	public var lineHeights:Array<Float>;
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
@@ -82,9 +82,9 @@ class TextEngine {
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text:String;
-	public var textHeight:Int;
+	public var textHeight:Float;
 	public var textFormatRanges:Array<TextFormatRange>;
-	public var textWidth:Int;
+	public var textWidth:Float;
 	public var type:TextFieldType;
 	public var width:Float;
 	public var wordWrap:Bool;
@@ -586,11 +586,11 @@ class TextEngine {
 		lineHeights.splice (0, lineHeights.length);
 		lineWidths.splice (0, lineWidths.length);
 		
-		var currentLineAscent = 0;
-		var currentLineDescent = 0;
-		var currentLineLeading = 0;
-		var currentLineHeight = 0;
-		var currentLineWidth = 0;
+		var currentLineAscent = 0.0;
+		var currentLineDescent = 0.0;
+		var currentLineLeading = 0.0;
+		var currentLineHeight = 0.0;
+		var currentLineWidth = 0.0;
 		
 		textWidth = 0;
 		textHeight = 0;
@@ -607,10 +607,10 @@ class TextEngine {
 				lineHeights.push (currentLineHeight);
 				lineWidths.push (currentLineWidth);
 				
-				currentLineAscent = 0;
-				currentLineDescent = 0;
-				currentLineLeading = 0;
-				currentLineHeight = 0;
+				currentLineAscent = 0.0;
+				currentLineDescent = 0.0;
+				currentLineLeading = 0.0;
+				currentLineHeight = 0.0;
 				currentLineWidth = 0;
 				
 				lineIndex++;
@@ -619,11 +619,11 @@ class TextEngine {
 			
 			lineIndex = group.lineIndex;
 			
-			currentLineAscent = Std.int (Math.max (currentLineAscent, group.ascent));
-			currentLineDescent = Std.int (Math.max (currentLineDescent, group.descent));
-			currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
-			currentLineHeight = Std.int (Math.max (currentLineHeight, group.height));
-			currentLineWidth = Std.int (Math.max (currentLineWidth, group.width));
+			currentLineAscent = (Math.max (currentLineAscent, group.ascent));
+			currentLineDescent = (Math.max (currentLineDescent, group.descent));
+			currentLineLeading = (Math.max (currentLineLeading, group.leading));
+			currentLineHeight = (Math.max (currentLineHeight, group.height));
+			currentLineWidth = (Math.max (currentLineWidth, group.width));
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -631,7 +631,7 @@ class TextEngine {
 				
 			}
 			
-			textHeight = group.ascent + group.descent + group.offsetY;
+			textHeight = (group.ascent + group.descent + group.offsetY);
 			
 		}
 		
@@ -692,19 +692,22 @@ class TextEngine {
 				font = getFontInstance (formatRange.format);
 				
 				var ascentAdd:Float = 0;
+				var descentAdd:Float = 0;
 				
 				//TODO: does this work consistently on all targets, or is it just on windows?
 				if (formatRange.format != null && __defaultFonts.exists(formatRange.format.font) && formatRange.format.size == TextField.__defaultFontSize) {
 					
 					ascentAdd = 2;
+					descentAdd = 0;
+					offsetY -= 1;
 					
 				}
 				
 				var rawAscent  = ascentAdd + (font.ascender / font.unitsPerEM) * formatRange.format.size;
-				var rawDescent = Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size);
+				var rawDescent = descentAdd + Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size);
 				
-				ascent  = Math.round (rawAscent);
-				descent = Math.round (rawDescent);			//is ceil correct?
+				ascent  = (rawAscent);
+				descent = (rawDescent);			//is ceil correct?
 				leading = formatRange.format.leading;
 				heightValue = Std.int (rawAscent + rawDescent + leading);
 				
