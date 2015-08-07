@@ -73,6 +73,7 @@ class TextEngine {
 	public var lineLeadings:Array<Float>;
 	public var lineHeights:Array<Float>;
 	public var lineWidths:Array<Float>;
+	public var lineWidthsWithoutFinalSpace:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
 	public var layoutGroups:Array<TextLayoutGroup>;
@@ -145,6 +146,7 @@ class TextEngine {
 		lineLeadings = new Array ();
 		lineHeights = new Array ();
 		lineWidths = new Array ();
+		lineWidthsWithoutFinalSpace = new Array();
 		layoutGroups = new Array ();
 		textFormatRanges = new Array ();
 		
@@ -585,19 +587,23 @@ class TextEngine {
 		lineLeadings.splice (0, lineLeadings.length);
 		lineHeights.splice (0, lineHeights.length);
 		lineWidths.splice (0, lineWidths.length);
+		lineWidthsWithoutFinalSpace.splice (0, lineWidthsWithoutFinalSpace.length);
 		
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
 		var currentLineLeading = 0.0;
 		var currentLineHeight = 0.0;
 		var currentLineWidth = 0.0;
+		var currentLineWidthWithoutFinalSpace = 0.0;
 		
 		textWidth = 0;
 		textHeight = 0;
 		
 		var lineIndex = 0;
 		
-		for (group in layoutGroups) {
+		for (i in 0...layoutGroups.length) {
+			
+			var group = layoutGroups[i];
 			
 			while (group.lineIndex > lineIndex) {
 				
@@ -606,12 +612,14 @@ class TextEngine {
 				lineLeadings.push (currentLineLeading);
 				lineHeights.push (currentLineHeight);
 				lineWidths.push (currentLineWidth);
+				lineWidthsWithoutFinalSpace.push (currentLineWidthWithoutFinalSpace);
 				
 				currentLineAscent = 0.0;
 				currentLineDescent = 0.0;
 				currentLineLeading = 0.0;
 				currentLineHeight = 0.0;
 				currentLineWidth = 0;
+				currentLineWidthWithoutFinalSpace = 0;
 				
 				lineIndex++;
 				
@@ -623,11 +631,24 @@ class TextEngine {
 			currentLineDescent = (Math.max (currentLineDescent, group.descent));
 			currentLineLeading = (Math.max (currentLineLeading, group.leading));
 			currentLineHeight = (Math.max (currentLineHeight, group.height));
+			
 			currentLineWidth += group.width;
 			
-			if (currentLineWidth > textWidth) {
+			if (i < layoutGroups.length - 1 && layoutGroups[i + 1].lineIndex > group.lineIndex) {
 				
-				textWidth = currentLineWidth;
+				//if the next group is a line break, then don't count the final space (if there is one) as part of this line
+				currentLineWidthWithoutFinalSpace += group.widthWithoutFinalSpace;
+				
+			}else {
+				
+				//otherwise count the entire width of the group, including any trailing spaces
+				currentLineWidthWithoutFinalSpace += group.width;
+				
+			}
+			
+			if (currentLineWidthWithoutFinalSpace > textWidth) {
+				
+				textWidth = currentLineWidthWithoutFinalSpace;
 				
 			}
 			
@@ -640,6 +661,7 @@ class TextEngine {
 		lineLeadings.push (currentLineLeading);
 		lineHeights.push (currentLineHeight);
 		lineWidths.push (currentLineWidth);
+		lineWidthsWithoutFinalSpace.push (currentLineWidthWithoutFinalSpace); 
 	}
 	
 	@:access(openfl.text.TextField)
@@ -764,6 +786,7 @@ class TextEngine {
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
 				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				layoutGroup.widthWithoutFinalSpace = layoutGroup.width;
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
@@ -822,6 +845,13 @@ class TextEngine {
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
 					widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
+					var finalSpaceWidth = 0;
+					
+					if (spaceIndex != formatRange.end) {
+						
+						finalSpaceWidth = widthValue - getTextWidth (text.substring (textIndex, spaceIndex));
+						
+					}
 					
 					if (wordWrap) {
 						
@@ -892,6 +922,7 @@ class TextEngine {
 						layoutGroup.lineIndex = lineIndex;
 						layoutGroup.offsetY = offsetY;
 						layoutGroup.width = widthValue;
+						layoutGroup.widthWithoutFinalSpace = widthValue - finalSpaceWidth;
 						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
@@ -911,6 +942,7 @@ class TextEngine {
 							layoutGroup.lineIndex = lineIndex;
 							layoutGroup.offsetY = offsetY;
 							layoutGroup.width = widthValue;
+							layoutGroup.widthWithoutFinalSpace = widthValue - finalSpaceWidth;
 							layoutGroup.height = heightValue;
 							layoutGroups.push (layoutGroup);
 							
@@ -918,6 +950,7 @@ class TextEngine {
 							
 							layoutGroup.endIndex = spaceIndex + 1;
 							layoutGroup.width += widthValue;
+							layoutGroup.widthWithoutFinalSpace = layoutGroup.width - finalSpaceWidth;
 							
 						}
 						
@@ -961,6 +994,7 @@ class TextEngine {
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
 				layoutGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				layoutGroup.widthWithoutFinalSpace = layoutGroup.width;
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
@@ -1013,9 +1047,9 @@ class TextEngine {
 					
 					case CENTER:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidthsWithoutFinalSpace[lineIndex] < width - 4) {
 							
-							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							offsetX = Math.round ((width - 4 - lineWidthsWithoutFinalSpace[lineIndex]) / 2);
 							
 						} else {
 							

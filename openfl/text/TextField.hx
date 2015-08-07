@@ -674,7 +674,12 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		var lineWidth = __textEngine.lineWidths[lineIndex];
+		var lineWidth = switch (__textFormat.align) {
+			
+			case LEFT, RIGHT, JUSTIFY: __textEngine.lineWidths[lineIndex];
+			case CENTER: __textEngine.lineWidthsWithoutFinalSpace[lineIndex];
+			
+		}
 		var ascender = __textEngine.lineAscents[lineIndex];
 		var descender = __textEngine.lineDescents[lineIndex];
 		var leading = __textEngine.lineLeadings[lineIndex];
