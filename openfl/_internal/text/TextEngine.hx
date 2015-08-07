@@ -691,10 +691,13 @@ class TextEngine {
 				
 				font = getFontInstance (formatRange.format);
 				
-				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
-				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
+				var rawAscent  = 2 + (font.ascender / font.unitsPerEM) * formatRange.format.size;
+				var rawDescent = Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size);
+				
+				ascent  = Std.int (rawAscent);
+				descent = Math.ceil (rawDescent);			//is ceil correct?
 				leading = formatRange.format.leading;
-				heightValue = Std.int (ascent + descent + leading) + 2; // TODO: is this correct?
+				heightValue = Std.int (rawAscent + rawDescent + leading);
 				
 				#end
 				
@@ -756,7 +759,7 @@ class TextEngine {
 				// TODO: Why is this different (or necessary?)
 				
 				#if (cpp || neko || nodejs)
-				offsetY += heightValue + 2;
+				offsetY += heightValue;
 				#else
 				offsetY += heightValue + 4;
 				#end
@@ -771,7 +774,7 @@ class TextEngine {
 					// TODO: Why is this different (or necessary?)
 					
 					#if (cpp || neko || nodejs)
-					offsetY += heightValue + 2;
+					offsetY += heightValue;
 					#else
 					offsetY += heightValue + 4;
 					#end
@@ -824,7 +827,7 @@ class TextEngine {
 						// TODO: Why is this different (or necessary?)
 						
 						#if (cpp || neko || nodejs)
-						offsetY += heightValue + 2;
+						offsetY += heightValue;
 						#else
 						offsetY += heightValue + 4;
 						#end
