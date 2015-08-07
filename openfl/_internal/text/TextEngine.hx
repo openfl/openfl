@@ -2,13 +2,11 @@ package openfl._internal.text;
 
 
 import haxe.Timer;
+import haxe.Utf8;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.opengl.GLTexture;
-import openfl._internal.renderer.cairo.CairoTextField;
-import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl._internal.renderer.dom.DOMTextField;
-import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.RenderSession;
+import lime.system.System;
+import lime.text.TextLayout;
 import openfl.display.Tilesheet;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -16,24 +14,28 @@ import openfl.events.MouseEvent;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
+import openfl.text.Font;
 import openfl.text.GridFitType;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-import openfl.text.TextLineMetrics;
 
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
-import js.html.DivElement;
 import js.html.InputElement;
 import js.html.KeyboardEvent in HTMLKeyboardEvent;
 import js.Browser;
 #end
 
+#if sys
+import haxe.io.Path;
+#end
+
+@:access(openfl.text.Font)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)
 
@@ -41,7 +43,17 @@ import js.Browser;
 class TextEngine {
 	
 	
-	@:noCompletion private static var __defaultTextFormat:TextFormat;
+	private static inline var UTF8_TAB = 9;
+	private static inline var UTF8_ENDLINE = 10;
+	private static inline var UTF8_SPACE = 32;
+	private static inline var UTF8_HYPHEN = 0x2D;
+	
+	private static var __defaultFonts = new Map<String, Font> ();
+	
+	#if (js && html5)
+	private static var __canvas:CanvasElement;
+	private static var __context:CanvasRenderingContext2D;
+	#end
 	
 	public var antiAliasType:AntiAliasType;
 	public var autoSize:TextFieldAutoSize;
@@ -55,30 +67,36 @@ class TextEngine {
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var height:Float;
+	public var lineAscents:Array<Int>;
+	public var lineBreaks:Array<Int>;
+	public var lineDescents:Array<Int>;
+	public var lineLeadings:Array<Int>;
+	public var lineHeights:Array<Float>;
+	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
+	public var layoutGroups:Array<TextLayoutGroup>;
 	public var restrict:String;
 	public var scrollH:Int;
 	public var scrollV:Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text:String;
+	public var textHeight:Int;
+	public var textFormatRanges:Array<TextFormatRange>;
+	public var textWidth:Int;
 	public var type:TextFieldType;
 	public var width:Float;
 	public var wordWrap:Bool;
 	
 	private var textField:TextField;
 	
-	@:noCompletion private var __dirty:Bool;
-	@:noCompletion private var __dirtyBounds:Bool;
 	@:noCompletion private var __cursorPosition:Int;
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __hasFocus:Bool;
 	@:noCompletion private var __isKeyDown:Bool;
-	@:noCompletion private var __isHTML:Bool;
 	@:noCompletion private var __measuredHeight:Int;
 	@:noCompletion private var __measuredWidth:Int;
-	@:noCompletion private var __ranges:Array<TextFormatRange>;
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
@@ -90,7 +108,6 @@ class TextEngine {
 	@:noCompletion public var __cairoFont:CairoFont;
 	
 	#if (js && html5)
-	private var __div:DivElement;
 	private var __hiddenInput:InputElement;
 	#end
 	
@@ -102,7 +119,6 @@ class TextEngine {
 		width = 100;
 		height = 100;
 		text = "";
-		__dirtyBounds = true;
 		
 		bounds = new Rectangle (0, 0, 0, 0);
 		
@@ -123,217 +139,806 @@ class TextEngine {
 		scrollV = 1;
 		wordWrap = false;
 		
-		if (__defaultTextFormat == null) {
+		lineAscents = new Array ();
+		lineBreaks = new Array ();
+		lineDescents = new Array ();
+		lineLeadings = new Array ();
+		lineHeights = new Array ();
+		lineWidths = new Array ();
+		layoutGroups = new Array ();
+		textFormatRanges = new Array ();
+		
+		#if (js && html5)
+		__canvas = cast Browser.document.createElement ("canvas");
+		__context = __canvas.getContext ("2d");
+		#end
+		
+	}
+	
+	
+	private static function findFont (name:String):Font {
+		
+		#if (cpp || neko || nodejs)
+		
+		for (registeredFont in Font.__registeredFonts) {
 			
-			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
-			__defaultTextFormat.blockIndent = 0;
-			__defaultTextFormat.bullet = false;
-			__defaultTextFormat.letterSpacing = 0;
-			__defaultTextFormat.kerning = false;
+			if (registeredFont == null) continue;
+			
+			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || Path.withoutDirectory (registeredFont.__fontPath) == name))) {
+				
+				return registeredFont;
+				
+			}
 			
 		}
 		
-		__textFormat = __defaultTextFormat.clone ();
-		__textLayout = new TextLayout ();
+		var font = Font.fromFile (name);
 		
-	}
-	
-	
-	public function appendText (text:String):Void {
-		
-		this.text += text;
-		
-	}
-	
-	
-	public function getBottomScrollV ():Int {
-		
-		// TODO: Only return lines that are visible
-		
-		return getNumLines ();
-		
-	}
-	
-	
-	public function getBounds ():Rectangle {
-		
-		if (!__dirtyBounds) {
+		if (font != null) {
 			
-			return bounds;
+			Font.__registeredFonts.push (font);
+			return font;
 			
 		}
 		
-		if (autoSize != TextFieldAutoSize.NONE) {
-			
-			bounds.width = (getTextWidth () + 4) + (border ? 1 : 0);
-			bounds.height = (getTextHeight () + 4) + (border ? 1 : 0);
-			
-		} else {
-			
-			bounds.width = width;
-			bounds.height = height;
-			
-		}
-		
-		__dirtyBounds = false;
-		
-		return bounds;
-		
-	}
-	
-	
-	public function getCaretIndex ():Int {
-		
-		return __cursorPosition;
-		
-	}
-	
-	
-	public function getCharBoundaries (a:Int):Rectangle {
-		
-		openfl.Lib.notImplemented ("TextField.getCharBoundaries");
+		#end
 		
 		return null;
 		
 	}
 	
 	
-	public function getCharIndexAtPoint (x:Float, y:Float):Int {
+	public static function getFont (format:TextFormat):String {
 		
-		openfl.Lib.notImplemented ("TextField.getCharIndexAtPoint");
+		var font = format.italic ? "italic " : "normal ";
+		font += "normal ";
+		font += format.bold ? "bold " : "normal ";
+		font += format.size + "px";
+		font += "/" + (format.size + format.leading + 6) + "px ";
 		
-		return 0;
-		
-	}
-	
-	
-	public function getDefaultTextFormat ():TextFormat {
-		
-		return __textFormat.clone ();
-		
-	}
-	
-	
-	public function getHeight ():Float {
-		
-		return getBounds ().height;
-		
-	}
-	
-	
-	public function getHTMLText ():String {
-		
-		return text;
-		
-		//return mHTMLText;
-		
-	}
-	
-	
-	public function getLength ():Int {
-		
-		if (text != null) {
+		font += "" + switch (format.font) {
 			
-			return text.length;
+			case "_sans": "sans-serif";
+			case "_serif": "serif";
+			case "_typewriter": "monospace";
+			default: "'" + format.font + "'";
 			
 		}
 		
-		return 0;
+		return font;
 		
 	}
 	
 	
-	public function getLineIndexAtPoint (x:Float, y:Float):Int {
+	public static function getFontInstance (format:TextFormat):Font {
 		
-		openfl.Lib.notImplemented ("TextField.getLineIndexAtPoint");
+		#if (cpp || neko || nodejs)
 		
-		return 0;
+		var instance = null;
+		var fontList = null;
 		
-	}
-	
-	
-	public function getLineMetrics (lineIndex:Int):TextLineMetrics {
-		
-		#if (js && html5)
-		
-		var lineWidth = __textLayout.getLineWidth (this, lineIndex);
-		var lineHeight = getTextHeight ();
-		var ascender = lineHeight * 0.8;
-		var descender = lineHeight * 0.2;
-		var leading = 0;
-		
-		#else
-		
-		var lineWidth = __textLayout.getLineWidth (this, lineIndex);
-		var ascender = __textLayout.getLineMetric (this, lineIndex, ASCENDER);
-		var descender = __textLayout.getLineMetric (this, lineIndex, DESCENDER);
-		var leading = __textLayout.getLineMetric (this, lineIndex, LEADING);
-		var lineHeight = ascender + descender + leading;
-		
-		#end
-		
-		var margin = switch (__textFormat.align) {
+		if (format != null && format.font != null) {
 			
-			case LEFT, JUSTIFY: 2;
-			case RIGHT: (getWidth () - lineWidth) - 2;
-			case CENTER: (getHeight () - lineWidth) / 2;
-			
-		}
-		
-		return new TextLineMetrics (margin, lineWidth, lineHeight, ascender, descender, leading); 
-		
-	}
-	
-	
-	public function getLineOffset (lineIndex:Int):Int {
-		
-		openfl.Lib.notImplemented ("TextField.getLineOffset");
-		
-		return 0;
-		
-	}
-	
-	
-	public function getLineText (lineIndex:Int):String {
-		
-		openfl.Lib.notImplemented ("TextField.getLineText");
-		
-		return "";
-		
-	}
-	
-	
-	public function getMaxScrollH ():Int {
-		
-		return 0;
-		
-	}
-	
-	
-	public function getMaxScrollV ():Int {
-		
-		return 1;
-		
-	}
-	
-	
-	public function getNumLines ():Int {
-		
-		if (getText () != "" && getText () != null) {
-			
-			var count = getText ().split ("\n").length;
-			
-			if (__isHTML) {
+			if (__defaultFonts.exists (format.font)) {
 				
-				count += getText ().split ("<br>").length - 1;
+				return __defaultFonts.get (format.font);
 				
 			}
 			
-			return count;
+			instance = findFont (format.font);
+			if (instance != null) return instance;
+			
+			var systemFontDirectory = System.fontsDirectory;
+			
+			switch (format.font) {
+				
+				case "_sans":
+					
+					#if windows
+					if (format.bold) {
+						
+						if (format.italic) {
+							
+							fontList = [ systemFontDirectory + "/arialbi.ttf" ];
+							
+						} else {
+							
+							fontList = [ systemFontDirectory + "/arialbd.ttf" ];
+							
+						}
+						
+					} else {
+						
+						if (format.italic) {
+							
+							fontList = [ systemFontDirectory + "/ariali.ttf" ];
+							
+						} else {
+							
+							fontList = [ systemFontDirectory + "/arial.ttf" ];
+							
+						}
+						
+					}
+					#elseif (mac || ios)
+					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
+					#elseif linux
+					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
+					#elseif android
+					fontList = [ systemFontDirectory + "/DroidSans.ttf" ];
+					#elseif blackberry
+					fontList = [ systemFontDirectory + "/arial.ttf" ];
+					#end
+				
+				case "_serif":
+					
+					// pass through
+				
+				case "_typewriter":
+					
+					#if windows
+					if (format.bold) {
+						
+						if (format.italic) {
+							
+							fontList = [ systemFontDirectory + "/courbi.ttf" ];
+							
+						} else {
+							
+							fontList = [ systemFontDirectory + "/courbd.ttf" ];
+							
+						}
+						
+					} else {
+						
+						if (format.italic) {
+							
+							fontList = [ systemFontDirectory + "/couri.ttf" ];
+							
+						} else {
+							
+							fontList = [ systemFontDirectory + "/cour.ttf" ];
+							
+						}
+						
+					}
+					#elseif (mac || ios)
+					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
+					#elseif linux
+					fontList = [ new sys.io.Process('fc-match', ['mono', '-f%{file}']).stdout.readLine() ];
+					#elseif android
+					fontList = [ systemFontDirectory + "/DroidSansMono.ttf" ];
+					#elseif blackberry
+					fontList = [ systemFontDirectory + "/cour.ttf" ];
+					#end
+				
+				default:
+					
+					fontList = [ systemFontDirectory + "/" + format.font ];
+				
+			}
+			
+			if (fontList != null) {
+				
+				for (font in fontList) {
+					
+					instance = findFont (font);
+					
+					if (instance != null) {
+						
+						__defaultFonts.set (format.font, instance);
+						return instance;
+						
+					}
+					
+				}
+				
+			}
+			
+			instance = findFont ("_serif");
+			if (instance != null) return instance;
 			
 		}
 		
-		return 1;
+		var systemFontDirectory = System.fontsDirectory;
+		
+		#if windows
+		if (format.bold) {
+			
+			if (format.italic) {
+				
+				fontList = [ systemFontDirectory + "/timesbi.ttf" ];
+				
+			} else {
+				
+				fontList = [ systemFontDirectory + "/timesb.ttf" ];
+				
+			}
+			
+		} else {
+			
+			if (format.italic) {
+				
+				fontList = [ systemFontDirectory + "/timesi.ttf" ];
+				
+			} else {
+				
+				fontList = [ systemFontDirectory + "/times.ttf" ];
+				
+			}
+			
+		}
+		#elseif (mac || ios)
+		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
+		#elseif linux
+		fontList = [ new sys.io.Process('fc-match', ['serif', '-f%{file}']).stdout.readLine() ];
+		#elseif android
+		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
+		#elseif blackberry
+		fontList = [ systemFontDirectory + "/georgia.ttf" ];
+		#else
+		fontList = [];
+		#end
+		
+		for (font in fontList) {
+			
+			instance = findFont (font);
+			
+			if (instance != null) {
+				
+				__defaultFonts.set (format.font, instance);
+				return instance;
+				
+			}
+			
+		}
+		
+		__defaultFonts.set (format.font, null);
+		
+		#end
+		
+		return null;
+		
+	}
+	
+	
+	public function getLine (index:Int):String {
+		
+		if (index < 0 || index > lineBreaks.length + 1) {
+			
+			return null;
+			
+		}
+		
+		if (lineBreaks.length == 0) {
+			
+			return text;
+			
+		} else {
+			
+			return text.substring (index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
+			
+		}
+		
+	}
+	
+	
+	private function getLineBreaks ():Void {
+		
+		lineBreaks.splice (0, lineBreaks.length);
+		
+		//if (wordWrap && multiline) {
+			//
+			//// TODO: do this without string splicing
+			//
+			////var lines = [];
+			//var words = text.split (" ");
+			//var line = "";
+			//
+			//var word, newLineIndex, test;
+			//var index = 0;
+			//
+			//for (i in 0...words.length) {
+				//
+				//word = words[i];
+				////index += word.length;
+				//newLineIndex = word.indexOf ("\n");
+				//
+				//if (newLineIndex > -1) {
+					//
+					//while (newLineIndex > -1) {
+						//
+						//test = line + word.substring (0, newLineIndex) + " ";
+						//
+						//if (__context.measureText (test).width > this.width - 4 && i > 0) {
+							//
+							//lineBreaks.push (index > 0 ? index -1 : 0);
+							//index += newLineIndex;
+							//lineBreaks.push (index);
+							//
+							////lines.push (line);
+							////lines.push (word.substring (0, newLineIndex));
+							//
+						//} else {
+							//
+							//index += newLineIndex;
+							//lineBreaks.push (index);
+							//index++;
+							//
+							////lines.push (line + word.substring (0, newLineIndex));
+							//
+						//}
+						//
+						////index += newLineIndex + 1;
+						//
+						//word = word.substr (newLineIndex + 1);
+						//newLineIndex = word.indexOf ("\n");
+						//line = "";
+						//
+					//}
+					//
+					//if (word != "") {
+						//
+						//line = word + " ";
+						//
+					//}
+					//
+				//} else {
+					//
+					//test = line + words[i] + " ";
+					//
+					//if (__context.measureText (test).width > this.width - 4 && i > 0) {
+						//
+						//lineBreaks.push (index > 0 ? index -1 : 0);
+						//
+						////lines.push (line);
+						//line = words[i] + " ";
+						//
+					//} else {
+						//
+						//line = test;
+						//
+					//}
+					//
+					//index += words[i].length + 1;
+					//
+				//}
+				//
+			//}
+			//
+			//if (line != "") {
+				//
+				////lines.push (line);
+				//
+			//}
+			//
+			////var index = 1;
+			////
+			////for (line in lines) {
+				////
+				////index += line.length - 1;
+				////lineBreaks.push (index);
+				////
+			////}
+			//
+			////
+			////for (line in lines) {
+				////
+				////switch (format.align) {
+					////
+					////case TextFormatAlign.CENTER:
+						////
+						////context.textAlign = "center";
+						////context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
+						////
+					////case TextFormatAlign.RIGHT:
+						////
+						////context.textAlign = "end";
+						////context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
+						////
+					////default:
+						////
+						////context.textAlign = "start";
+						////context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
+						////
+				////}
+				////
+				////yOffset += format.size + format.leading + 4;
+				////offsetX = 0;
+				////
+			////}
+			//
+		//} else {
+			
+			for (i in 0...text.length) {
+				
+				if (text.charCodeAt (i) == 10) {
+					
+					lineBreaks.push (i);
+					
+				}
+				
+			}
+			
+		//}
+		
+		//var i = 0;
+		
+		//Utf8.iter (text, function (char:Int) {
+			//
+			//if (char == 10) {
+				//
+				//lineBreaks.push (i);
+				//i++;
+				//
+			//}
+			//
+		//});
+		
+	}
+	
+	
+	private function getLineMeasurements ():Void {
+		
+		lineAscents.splice (0, lineAscents.length);
+		lineDescents.splice (0, lineDescents.length);
+		lineLeadings.splice (0, lineLeadings.length);
+		lineHeights.splice (0, lineHeights.length);
+		lineWidths.splice (0, lineWidths.length);
+		
+		var currentLineAscent = 0;
+		var currentLineDescent = 0;
+		var currentLineLeading = 0;
+		var currentLineHeight = 0;
+		var currentLineWidth = 0;
+		
+		textWidth = 0;
+		textHeight = 0;
+		
+		var lineIndex = 0;
+		
+		for (group in layoutGroups) {
+			
+			while (group.lineIndex > lineIndex) {
+				
+				lineAscents.push (currentLineAscent);
+				lineDescents.push (currentLineDescent);
+				lineLeadings.push (currentLineLeading);
+				lineHeights.push (currentLineHeight);
+				lineWidths.push (currentLineWidth);
+				
+				currentLineAscent = 0;
+				currentLineDescent = 0;
+				currentLineLeading = 0;
+				currentLineHeight = 0;
+				currentLineWidth = 0;
+				
+				lineIndex++;
+				
+			}
+			
+			lineIndex = group.lineIndex;
+			
+			currentLineAscent = Std.int (Math.max (currentLineAscent, group.ascent));
+			currentLineDescent = Std.int (Math.max (currentLineDescent, group.descent));
+			currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
+			currentLineHeight = Std.int (Math.max (currentLineHeight, group.height));
+			currentLineWidth = Std.int (Math.max (currentLineWidth, group.width));
+			
+			if (currentLineWidth > textWidth) {
+				
+				textWidth = currentLineWidth;
+				
+			}
+			
+			textHeight = group.ascent + group.descent + group.offsetY;
+			
+		}
+		
+		lineAscents.push (currentLineAscent);
+		lineDescents.push (currentLineDescent);
+		lineLeadings.push (currentLineLeading);
+		lineHeights.push (currentLineHeight);
+		lineWidths.push (currentLineWidth);
+		
+	}
+	
+	
+	private function getLayoutGroups ():Void {
+		
+		#if (cpp || neko || nodejs)
+		if (__textLayout == null) {
+			
+			__textLayout = new TextLayout ();
+			
+		}
+		#end
+		
+		layoutGroups.splice (0, layoutGroups.length);
+		
+		var rangeIndex = -1;
+		var formatRange = null;
+		var font = null;
+		
+		var ascent, descent, leading, layoutGroup, widthValue, heightValue;
+		
+		var previousSpaceIndex = 0;
+		var spaceIndex = text.indexOf (" ");
+		var breakIndex = text.indexOf ("\n");
+		
+		var offsetX = 2;
+		var offsetY = 2;
+		var textIndex = 0;
+		var lineIndex = 0;
+		
+		var nextFormatRange = function () {
+			
+			if (rangeIndex < textFormatRanges.length - 1) {
+				
+				rangeIndex++;
+				formatRange = textFormatRanges[rangeIndex];
+				
+				#if (js && html5)
+				
+				__context.font = getFont (formatRange.format);
+				
+				ascent = Std.int (formatRange.format.size * 0.8);
+				descent = Std.int (formatRange.format.size * 0.2);
+				leading = formatRange.format.leading;
+				heightValue = Std.int (ascent + descent + leading);
+				
+				#elseif (cpp || neko || nodejs)
+				
+				font = getFontInstance (formatRange.format);
+				
+				ascent = Std.int ((font.ascender / font.unitsPerEM) * formatRange.format.size);
+				descent = Std.int (Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size));
+				leading = formatRange.format.leading;
+				heightValue = Std.int (ascent + descent + leading) + 2; // TODO: is this correct?
+				
+				#end
+				
+			}
+			
+		}
+		
+		nextFormatRange ();
+		
+		var getTextWidth = function (text:String):Int {
+			
+			#if (js && html5)
+			
+			return Std.int (__context.measureText (text).width);
+			
+			#else
+			
+			var width = 0;
+			
+			__textLayout.text = null;
+			__textLayout.font = font;
+			__textLayout.size = formatRange.format.size;
+			__textLayout.text = text;
+			
+			for (position in __textLayout.positions) {
+				
+				width += Std.int (position.advance.x);
+				
+			}
+			
+			return width;
+			
+			#end
+			
+		}
+		
+		var wrap;
+		
+		while (textIndex < text.length) {
+			
+			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+				
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				layoutGroup.height = heightValue;
+				layoutGroups.push (layoutGroup);
+				
+				// TODO: Why is this different (or necessary?)
+				
+				#if (cpp || neko || nodejs)
+				offsetY += heightValue + 2;
+				#else
+				offsetY += heightValue + 4;
+				#end
+				
+				offsetX = 2;
+				
+				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
+					
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.offsetX = offsetX;
+					
+					// TODO: Why is this different (or necessary?)
+					
+					#if (cpp || neko || nodejs)
+					offsetY += heightValue + 2;
+					#else
+					offsetY += heightValue + 4;
+					#end
+					
+					lineIndex++;
+					
+				}
+				
+				textIndex = breakIndex + 1;
+				breakIndex = text.indexOf ("\n", textIndex);
+				lineIndex++;
+				
+				if (formatRange.end == breakIndex) {
+					
+					nextFormatRange ();
+					
+				}
+				
+			} else if (formatRange.end >= spaceIndex) {
+				
+				layoutGroup = null;
+				wrap = false;
+				
+				while (true) {
+					
+					if (spaceIndex == -1) spaceIndex = formatRange.end;
+					
+					widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
+					
+					if (wordWrap) {
+						
+						if (offsetX + widthValue > width - 4) {
+							
+							wrap = true;
+							
+						}
+						
+					}
+					
+					if (wrap) {
+						
+						// TODO: Why is this different (or necessary?)
+						
+						#if (cpp || neko || nodejs)
+						offsetY += heightValue + 2;
+						#else
+						offsetY += heightValue + 4;
+						#end
+						
+						var i = layoutGroups.length - 1;
+						var offsetCount = 0;
+						
+						while (true) {
+							
+							layoutGroup = layoutGroups[i];
+							
+							if (i > 0 && layoutGroup.startIndex > previousSpaceIndex) {
+								
+								offsetCount++;
+								
+							} else {
+								
+								break;
+								
+							}
+							
+							i--;
+							
+						}
+						
+						lineIndex++;
+						
+						offsetX = 2;
+						
+						if (offsetCount > 0) {
+							
+							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
+							
+							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
+								
+								layoutGroup = layoutGroups[i];
+								layoutGroup.offsetX -= bumpX;
+								layoutGroup.offsetY = offsetY;
+								layoutGroup.lineIndex = lineIndex;
+								offsetX += layoutGroup.width;
+								
+							}
+							
+						}
+						
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = widthValue;
+						layoutGroup.height = heightValue;
+						layoutGroups.push (layoutGroup);
+						
+						offsetX += widthValue;
+						
+						wrap = false;
+						
+					} else {
+						
+						if (layoutGroup == null) {
+							
+							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+							layoutGroup.offsetX = offsetX;
+							layoutGroup.ascent = ascent;
+							layoutGroup.descent = descent;
+							layoutGroup.leading = leading;
+							layoutGroup.lineIndex = lineIndex;
+							layoutGroup.offsetY = offsetY;
+							layoutGroup.width = widthValue;
+							layoutGroup.height = heightValue;
+							layoutGroups.push (layoutGroup);
+							
+						} else {
+							
+							layoutGroup.endIndex = spaceIndex + 1;
+							layoutGroup.width += widthValue;
+							
+						}
+						
+						offsetX += widthValue;
+						
+					}
+					
+					textIndex = spaceIndex + 1;
+					
+					previousSpaceIndex = spaceIndex;
+					spaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
+					
+					if (formatRange.end <= previousSpaceIndex) {
+						
+						nextFormatRange ();
+						
+					}
+					
+					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
+						
+						break;
+						
+					}
+					
+				}
+				
+			} else {
+				
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				layoutGroup.height = heightValue;
+				layoutGroups.push (layoutGroup);
+				
+				offsetX += layoutGroup.width;
+				
+				textIndex = formatRange.end + 1;
+				
+				nextFormatRange ();
+				
+			}
+			
+		}
 		
 	}
 	
@@ -352,471 +957,6 @@ class TextEngine {
 	}
 	
 	
-	public function getText ():String {
-		
-		if (__isHTML) {
-			
-			
-			
-		}
-		
-		return text;
-		
-	}
-	
-	
-	public function getTextColor ():Int {
-		
-		return __textFormat.color;
-		
-	}
-	
-	
-	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat {
-		
-		return __textFormat.clone ();
-		
-	}
-	
-	
-	public function getTextHeight ():Float {
-		
-		#if (js && html5)
-		
-		if (textField.__canvas != null) {
-			
-			// TODO: Make this more accurate
-			return __textFormat.size * 1.185 * getNumLines () + (__textFormat.leading == null ? 0 : __textFormat.leading) * getNumLines ();
-			
-		} else if (__div != null) {
-			
-			return __div.clientHeight;
-			
-		} else {
-			
-			DOMTextField.measureText (this);
-			
-			// Add a litte extra space for descenders...
-			return __measuredHeight + __textFormat.size * 0.185;
-			
-		}
-		
-		#else
-		return __textLayout.getTextHeight (this);
-		#end
-		
-	}
-	
-	
-	public function getTextWidth ():Float {
-		
-		//return the largest width of any given single line
-		//TODO: need to check actual left/right bounding volume in case of pathological cases (multiple format ranges for instance)
-		
-		return __textLayout.getLineWidth (this, -1);
-		
-	}
-	
-	
-	public function getWidth ():Float {
-		
-		return getBounds ().width;
-		
-	}
-	
-	
-	public function getWordWrap ():Bool {
-		
-		return wordWrap;
-		
-	}
-	
-	
-	public function renderCairo (renderSession:RenderSession):Void {
-		
-		CairoTextField.render (this, renderSession);
-		
-	}
-	
-	
-	public function renderCanvas (renderSession:RenderSession):Void {
-		
-		CanvasTextField.render (this, renderSession);
-		
-	}
-	
-	
-	public function renderDOM (renderSession:RenderSession):Void {
-		
-		DOMTextField.render (this, renderSession);
-		
-	}
-	
-	
-	public function renderGL (renderSession:RenderSession):Void {
-		
-		#if !disable_cairo_graphics
-		
-		#if lime_cairo
-		CairoTextField.render (this, renderSession);
-		#else
-		CanvasTextField.render (this, renderSession);
-		#end
-		
-		GLRenderer.renderBitmap (textField, renderSession);
-		
-		#else
-		
-		GLTextField.render (this, renderSession);
-		
-		#end
-		
-	}
-	
-	
-	public function setAntiAliasType (value:AntiAliasType):AntiAliasType {
-		
-		if (value != antiAliasType) {
-			
-			__dirty = true;
-			
-		}
-		
-		return antiAliasType = value;
-		
-	}
-	
-	
-	public function setAutoSize (value:TextFieldAutoSize):TextFieldAutoSize {
-		
-		if (value != autoSize) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		return autoSize = value;
-		
-	}
-	
-	
-	public function setBackground (value:Bool):Bool {
-		
-		if (value != background) {
-			
-			__dirty = true;
-			
-		}
-		
-		return background = value;
-		
-	}
-	
-	
-	public function setBackgroundColor (value:Int):Int {
-		
-		if (value != backgroundColor) __dirty = true;
-		return backgroundColor = value;
-		
-	}
-	
-	
-	public function setBorder (value:Bool):Bool {
-		
-		if (value != border) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		return border = value;
-		
-	}
-	
-	
-	public function setBorderColor (value:Int):Int {
-		
-		if (value != borderColor) __dirty = true;
-		return borderColor = value;
-		
-	}
-	
-	
-	public function setDefaultTextFormat (value:TextFormat):TextFormat {
-		
-		//__textFormat = __defaultTextFormat.clone ();
-		__textFormat.__merge (value);
-		return value;
-		
-	}
-	
-	
-	public function setDisplayAsPassword (value:Bool):Bool {
-		
-		if (value != displayAsPassword) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		return displayAsPassword = value;
-		
-	}
-	
-	
-	public function setEmbedFonts (value:Bool):Bool {
-		
-		//if (value != embedFonts) {
-			//
-			//__dirty = true;
-			//__dirtyBounds = true;
-			//
-		//}
-		
-		return embedFonts = value;
-		
-	}
-	
-	
-	public function setGridFitType (value:GridFitType):GridFitType {
-		
-		//if (value != gridFitType) {
-			//
-			//__dirty = true;
-			//__dirtyBounds = true;
-			//
-		//}
-		
-		return gridFitType = value;
-		
-	}
-	
-	
-	public function setHeight (value:Float):Float {
-		
-		if (textField.scaleY != 1 || value != height) {
-			
-			textField.__setTransformDirty ();
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		textField.scaleY = 1;
-		return height = value;
-		
-	}
-	
-	
-	public function setHTMLText (value:String):String {
-		
-		if (!__isHTML || text != value) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		__ranges = null;
-		__isHTML = true;
-		
-		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
-			
-			value = new EReg ("<br>", "g").replace (value, "\n");
-			value = new EReg ("<br/>", "g").replace (value, "\n");
-			
-			// crude solution
-			
-			var segments = value.split ("<font");
-			
-			if (segments.length == 1) {
-				
-				value = new EReg ("<.*?>", "g").replace (value, "");
-				#if (js && html5)
-				if (text != value && __hiddenInput != null) {
-					
-					var selectionStart = __hiddenInput.selectionStart;
-					var selectionEnd = __hiddenInput.selectionEnd;
-					__hiddenInput.value = value;
-					__hiddenInput.selectionStart = selectionStart;
-					__hiddenInput.selectionEnd = selectionEnd;
-					
-				}	
-				#end
-				return text = value;
-				
-			} else {
-				
-				value = "";
-				__ranges = [];
-				
-				// crude search for font
-				
-				for (segment in segments) {
-					
-					if (segment == "") continue;
-					
-					var closeFontIndex = segment.indexOf ("</font>");
-					
-					if (closeFontIndex > -1) {
-						
-						var start = segment.indexOf (">") + 1;
-						var end = closeFontIndex;
-						var format = __textFormat.clone ();
-						
-						var faceIndex = segment.indexOf ("face=");
-						var colorIndex = segment.indexOf ("color=");
-						var sizeIndex = segment.indexOf ("size=");
-						
-						if (faceIndex > -1 && faceIndex < start) {
-							
-							format.font = segment.substr (faceIndex + 6, segment.indexOf ("\"", faceIndex));
-							
-						}
-						
-						if (colorIndex > -1 && colorIndex < start) {
-							
-							format.color = Std.parseInt ("0x" + segment.substr (colorIndex + 8, 6));
-							
-						}
-						
-						if (sizeIndex > -1 && sizeIndex < start) {
-							
-							format.size = Std.parseInt (segment.substr (sizeIndex + 6, segment.indexOf ("\"", sizeIndex)));
-							
-						}
-						
-						var sub = segment.substring (start, end);
-						sub = new EReg ("<.*?>", "g").replace (sub, "");
-						
-						__ranges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-						value += sub;
-						
-						if (closeFontIndex + 7 < segment.length) {
-							
-							sub = segment.substr (closeFontIndex + 7);
-							__ranges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
-							value += sub;
-							
-						}
-						
-					} else {
-						
-						__ranges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
-						value += segment;
-						
-					}
-					
-				}
-				
-			}
-			
-		}
-		
-		#if (js && html5)
-		if (text != value && __hiddenInput != null) {
-			
-			var selectionStart = __hiddenInput.selectionStart;
-			var selectionEnd = __hiddenInput.selectionEnd;
-			__hiddenInput.value = value;
-			__hiddenInput.selectionStart = selectionStart;
-			__hiddenInput.selectionEnd = selectionEnd;
-			
-		}	
-		#end
-		return text = value;
-		
-	}
-	
-	
-	public function setMaxChars (value:Int):Int {
-		
-		if (value != maxChars) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		return maxChars = value;
-		
-	}
-	
-	
-	public function setMultiline (value:Bool):Bool {
-		
-		if (value != multiline) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		return multiline = value;
-		
-	}
-	
-	
-	public function setRestrict (value:String):String {
-		
-		if (value != restrict) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		return restrict = value;
-		
-	}
-	
-	
-	public function setScrollH (value:Int):Int {
-		
-		//if (value != scrollH) {
-			//
-			//__dirty = true;
-			//__dirtyBounds = true;
-			//
-		//}
-		
-		return scrollH = value;
-		
-	}
-	
-	
-	public function setScrollV (value:Int):Int {
-		
-		//if (value != scrollV) {
-			//
-			//__dirty = true;
-			//__dirtyBounds = true;
-			//
-		//}
-		
-		return scrollV = value;
-		
-	}
-	
-	
-	public function setSelectable (value:Bool):Bool {
-		
-		#if (js && html5)
-		if (!value && selectable && type == TextFieldType.INPUT) {
-			
-			this_onRemovedFromStage (null);
-			
-		}
-		#end
-		
-		return selectable = value;
-		
-	}
-	
-	
 	public function setSelection (beginIndex:Int, endIndex:Int) {
 		
 		openfl.Lib.notImplemented ("TextField.setSelection");
@@ -824,171 +964,147 @@ class TextEngine {
 	}
 	
 	
-	public function setSharpness (value:Float):Float {
+	private function setTextAlignment ():Void {
 		
-		//if (value != sharpness) {
-			//
-			//__dirty = true;
-			//__dirtyBounds = true;
-			//
-		//}
+		var lineIndex = -1;
+		var offsetX = 0;
 		
-		return sharpness = value;
-		
-	}
-	
-	
-	public function setText (value:String):String {
-		
-		#if (js && html5)
-		if (text != value && __hiddenInput != null) {
+		for (group in layoutGroups) {
 			
-			var selectionStart = __hiddenInput.selectionStart;
-			var selectionEnd = __hiddenInput.selectionEnd;
-			__hiddenInput.value = value;
-			__hiddenInput.selectionStart = selectionStart;
-			__hiddenInput.selectionEnd = selectionEnd;
-			
-		}	
-		#end
-		
-		if (__isHTML || text != value) {
-			
-			__dirty = true;
-			__dirtyBounds = true;
-			
-		}
-		
-		__ranges = null;
-		__isHTML = false;
-		
-		return text = value;
-		
-	}
-	
-	
-	public function setTextColor (value:Int):Int {
-		
-		if (value != __textFormat.color) __dirty = true;
-		
-		if (__ranges != null) {
-			
-			for (range in __ranges) {
+			if (group.lineIndex != lineIndex) {
 				
-				range.format.color = value;
+				lineIndex = group.lineIndex;
+				
+				switch (group.format.align) {
+					
+					case CENTER:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							
+						} else {
+							
+							offsetX = 0;
+							
+						}
+					
+					case RIGHT:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							offsetX = Std.int (width - 2 - lineWidths[lineIndex]);
+							
+						} else {
+							
+							offsetX = 0;
+							
+						}
+						
+					
+					default:
+						
+						offsetX = 0;
+					
+				}
+				
+			}
+			
+			if (offsetX > 0) {
+				
+				group.offsetX += offsetX;
 				
 			}
 			
 		}
 		
-		return __textFormat.color = value;
-		
 	}
 	
 	
-	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
+	private function update ():Void {
 		
-		if (format.font != null) __textFormat.font = format.font;
-		if (format.size != null) __textFormat.size = format.size;
-		if (format.color != null) __textFormat.color = format.color;
-		if (format.bold != null) __textFormat.bold = format.bold;
-		if (format.italic != null) __textFormat.italic = format.italic;
-		if (format.underline != null) __textFormat.underline = format.underline;
-		if (format.url != null) __textFormat.url = format.url;
-		if (format.target != null) __textFormat.target = format.target;
-		if (format.align != null) __textFormat.align = format.align;
-		if (format.leftMargin != null) __textFormat.leftMargin = format.leftMargin;
-		if (format.rightMargin != null) __textFormat.rightMargin = format.rightMargin;
-		if (format.indent != null) __textFormat.indent = format.indent;
-		if (format.leading != null) __textFormat.leading = format.leading;
-		if (format.blockIndent != null) __textFormat.blockIndent = format.blockIndent;
-		if (format.bullet != null) __textFormat.bullet = format.bullet;
-		if (format.kerning != null) __textFormat.kerning = format.kerning;
-		if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
-		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
-		
-		__dirty = true;
-		__dirtyBounds = true;
-		
-	}
-	
-	
-	public function setType (value:TextFieldType):TextFieldType {
-		
-		if (value != type) {
+		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
 			
-			#if !dom
-			if (value == TextFieldType.INPUT) {
-				
-				CanvasTextField.enableInputMode (this);
-				
-			} else {
-				
-				CanvasTextField.disableInputMode (this);
-				
-			}
-			#end
+			lineAscents.splice (0, lineAscents.length);
+			lineBreaks.splice (0, lineBreaks.length);
+			lineDescents.splice (0, lineDescents.length);
+			lineLeadings.splice (0, lineLeadings.length);
+			lineHeights.splice (0, lineHeights.length);
+			lineWidths.splice (0, lineWidths.length);
+			layoutGroups.splice (0, layoutGroups.length);
 			
-			__dirty = true;
+		} else {
+			
+			getLayoutGroups ();
+			getLineMeasurements ();
+			setTextAlignment ();
 			
 		}
 		
-		return type = value;
-		
-	}
-	
-	
-	public function setWidth (value:Float):Float {
-		
-		if (textField.scaleX != 1 || width != value) {
+		if (autoSize != TextFieldAutoSize.NONE) {
 			
-			textField.__setTransformDirty ();
-			__dirty = true;
-			__dirtyBounds = true;
+			bounds.width = (textWidth + 4) + (border ? 1 : 0);
+			bounds.height = (textHeight + 4) + (border ? 1 : 0);
+			
+		} else {
+			
+			bounds.width = width;
+			bounds.height = height;
 			
 		}
-		
-		textField.scaleX = 1;
-		return width = value;
-		
-	}
-	
-	
-	public function setWordWrap (value:Bool):Bool {
-		
-		//if (value != wordWrap) __dirty = true;
-		return wordWrap = value;
 		
 	}
 	
 	
 	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
 		
-		if (x <= 2) return 0;
+		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return 0;
 		
-		var value:String = this.text;
-		var text:String = value;
-		var totalW:Float = 2;
-		var pos = text.length;
+		var currentY = 0.0;
+		var lineIndex = -1;
 		
-		if (x < __textLayout.getTextWidth (this, text) + 2) {
+		for (i in 0...lineAscents.length) {
 			
-			for (i in 0...text.length) {
+			currentY += lineAscents[i] + lineDescents[i] + lineLeadings[i];
+			
+			if (y < currentY) {
 				
-				totalW += __textLayout.getTextWidth (this, text.charAt (i));
-				
-				if (totalW >= x) {
-					
-					pos = i;
-					break;
-					
-				}
+				lineIndex = i;
+				break;
 				
 			}
 			
 		}
 		
-		return pos;
+		if (lineIndex == -1) return 0;
+		
+		// TODO: handle word wrap
+		
+		var startIndex = 0;
+		var endIndex = text.length;
+		
+		if (lineBreaks.length > 0) {
+			
+			endIndex = lineBreaks[lineIndex];
+			
+		}
+		
+		if (lineIndex > 0) {
+			
+			startIndex = lineBreaks[lineIndex - 1];
+			
+		}
+		
+		if (x >= lineWidths[lineIndex]) {
+			
+			return endIndex;
+			
+		}
+		
+		// TODO: keep track of actual positions
+		
+		var length = endIndex - startIndex;
+		return Math.round ((x / lineWidths[lineIndex]) * length) + startIndex;
 		
 	}
 	
@@ -997,7 +1113,7 @@ class TextEngine {
 		
 		__cursorTimer = Timer.delay (__startCursorTimer, 500);
 		__showCursor = !__showCursor;
-		__dirty = true;
+		//__dirty = true;
 		
 	}
 	
@@ -1019,204 +1135,204 @@ class TextEngine {
 	
 	
 	
-	#if (js && html5)
-	@:noCompletion private function input_onKeyUp (event:HTMLKeyboardEvent):Void {
-		
-		__isKeyDown = false;
-		if (event == null) event == untyped Browser.window.event;
-		
-		text = __hiddenInput.value;
-		__ranges = null;
-		__isHTML = false;
-		
-		if (__hiddenInput.selectionDirection == "backward") {
-			
-			__cursorPosition = __hiddenInput.selectionStart;
-			__selectionStart = __hiddenInput.selectionEnd;
-			
-		} else {
-			
-			__cursorPosition = __hiddenInput.selectionEnd;
-			__selectionStart = __hiddenInput.selectionStart;
-			
-		}
-		
-		__dirty = true;
-		
-		textField.dispatchEvent (new Event (Event.CHANGE, true));
-		
-	}
-	
-	
-	@:noCompletion private function input_onKeyDown (event:#if (js && html5) HTMLKeyboardEvent #else Dynamic #end):Void {
-		
-		__isKeyDown = true;
-		if (event == null) event == untyped Browser.window.event;
-		
-		var keyCode = event.which;
-		var isShift = event.shiftKey;
-		
-		//if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
+	//#if (js && html5)
+	//@:noCompletion private function input_onKeyUp (event:HTMLKeyboardEvent):Void {
+		//
+		//__isKeyDown = false;
+		//if (event == null) event == untyped Browser.window.event;
+		//
+		//text = __hiddenInput.value;
+		//__ranges = null;
+		//__isHTML = false;
+		//
+		//if (__hiddenInput.selectionDirection == "backward") {
 			//
-			//__hiddenInput.selectionStart = 0;
-			//__hiddenInput.selectionEnd = text.length;
-			//event.preventDefault ();
-			//__dirty = true;
-			//return;
+			//__cursorPosition = __hiddenInput.selectionStart;
+			//__selectionStart = __hiddenInput.selectionEnd;
+			//
+		//} else {
+			//
+			//__cursorPosition = __hiddenInput.selectionEnd;
+			//__selectionStart = __hiddenInput.selectionStart;
 			//
 		//}
 		//
-		//if (keyCode == 17 || event.metaKey || event.ctrlKey) {
+		//__dirty = true;
+		//
+		//textField.dispatchEvent (new Event (Event.CHANGE, true));
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function input_onKeyDown (event:#if (js && html5) HTMLKeyboardEvent #else Dynamic #end):Void {
+		//
+		//__isKeyDown = true;
+		//if (event == null) event == untyped Browser.window.event;
+		//
+		//var keyCode = event.which;
+		//var isShift = event.shiftKey;
+		//
+		////if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
+			////
+			////__hiddenInput.selectionStart = 0;
+			////__hiddenInput.selectionEnd = text.length;
+			////event.preventDefault ();
+			////__dirty = true;
+			////return;
+			////
+		////}
+		////
+		////if (keyCode == 17 || event.metaKey || event.ctrlKey) {
+			////
+			////return;
+			////
+		////}
+		//
+		//text = __hiddenInput.value;
+		//__ranges = null;
+		//__isHTML = false;
+		//
+		//if (__hiddenInput.selectionDirection == "backward") {
 			//
-			//return;
+			//__cursorPosition = __hiddenInput.selectionStart;
+			//__selectionStart = __hiddenInput.selectionEnd;
+			//
+		//} else {
+			//
+			//__cursorPosition = __hiddenInput.selectionEnd;
+			//__selectionStart = __hiddenInput.selectionStart;
 			//
 		//}
-		
-		text = __hiddenInput.value;
-		__ranges = null;
-		__isHTML = false;
-		
-		if (__hiddenInput.selectionDirection == "backward") {
-			
-			__cursorPosition = __hiddenInput.selectionStart;
-			__selectionStart = __hiddenInput.selectionEnd;
-			
-		} else {
-			
-			__cursorPosition = __hiddenInput.selectionEnd;
-			__selectionStart = __hiddenInput.selectionStart;
-			
-		}
-		
-		__dirty = true;
-		
-	}
-	
-	
-	@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
-		
-		if (__hasFocus && __selectionStart >= 0) {
-			
-			var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
-			__cursorPosition = __getPosition (localPoint.x, localPoint.y);
-			__dirty = true;
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
-		
-		Lib.current.stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		Lib.current.stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		
-		if (Lib.current.stage.focus == textField) {
-			
-			var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
-			var upPos:Int = __getPosition (localPoint.x, localPoint.y);
-			var leftPos:Int;
-			var rightPos:Int;
-			
-			leftPos = Std.int (Math.min (__selectionStart, upPos));
-			rightPos = Std.int (Math.max (__selectionStart, upPos));
-			
-			__selectionStart = leftPos;
-			__cursorPosition = rightPos;
-			
-			this_onFocusIn (null);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function this_onAddedToStage (event:Event):Void {
-		
-		textField.addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-		textField.addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
-		
-		__hiddenInput.addEventListener ('keydown', input_onKeyDown, true);
-		__hiddenInput.addEventListener ('keyup', input_onKeyUp, true);
-		__hiddenInput.addEventListener ('input', input_onKeyUp, true);
-		
-		textField.addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
-		
-		if (Lib.current.stage.focus == textField) {
-			
-			this_onFocusIn (null);
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function this_onFocusIn (event:Event):Void {
-		
-		if (__cursorPosition < 0) {
-			
-			__cursorPosition = text.length;
-			__selectionStart = __cursorPosition;
-			
-		}
-		
-		__hiddenInput.focus ();
-		__hiddenInput.selectionStart = __selectionStart;
-		__hiddenInput.selectionEnd = __cursorPosition;
-		
-		__stopCursorTimer ();
-		__startCursorTimer ();
-		
-		__hasFocus = true;
-		__dirty = true;
-		
-		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		
-	}
-	
-	
-	@:noCompletion private function this_onFocusOut (event:Event):Void {
-		
-		__cursorPosition = -1;
-		__hasFocus = false;
-		__stopCursorTimer ();
-		if (__hiddenInput != null) __hiddenInput.blur ();
-		__dirty = true;
-		
-	}
-	
-	
-	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
-		
-		if (!selectable) return;
-		
-		var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
-		__selectionStart = __getPosition (localPoint.x, localPoint.y);
-		__cursorPosition = __selectionStart;
-		
-		Lib.current.stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		
-	}
-	
-	
-	@:noCompletion private function this_onRemovedFromStage (event:Event):Void {
-		
-		textField.removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-		textField.removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
-		
-		this_onFocusOut (null);
-		
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown, true);
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp, true);
-		if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp, true);
-		
-		textField.removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
-		Lib.current.stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		Lib.current.stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		
-	}
-	#end
+		//
+		//__dirty = true;
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
+		//
+		//if (__hasFocus && __selectionStart >= 0) {
+			//
+			//var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
+			//__cursorPosition = __getPosition (localPoint.x, localPoint.y);
+			//__dirty = true;
+			//
+		//}
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
+		//
+		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		//
+		//if (Lib.current.stage.focus == textField) {
+			//
+			//var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
+			//var upPos:Int = __getPosition (localPoint.x, localPoint.y);
+			//var leftPos:Int;
+			//var rightPos:Int;
+			//
+			//leftPos = Std.int (Math.min (__selectionStart, upPos));
+			//rightPos = Std.int (Math.max (__selectionStart, upPos));
+			//
+			//__selectionStart = leftPos;
+			//__cursorPosition = rightPos;
+			//
+			//this_onFocusIn (null);
+			//
+		//}
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function this_onAddedToStage (event:Event):Void {
+		//
+		//textField.addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		//textField.addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		//
+		//__hiddenInput.addEventListener ('keydown', input_onKeyDown, true);
+		//__hiddenInput.addEventListener ('keyup', input_onKeyUp, true);
+		//__hiddenInput.addEventListener ('input', input_onKeyUp, true);
+		//
+		//textField.addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		//
+		//if (Lib.current.stage.focus == textField) {
+			//
+			//this_onFocusIn (null);
+			//
+		//}
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function this_onFocusIn (event:Event):Void {
+		//
+		//if (__cursorPosition < 0) {
+			//
+			//__cursorPosition = text.length;
+			//__selectionStart = __cursorPosition;
+			//
+		//}
+		//
+		//__hiddenInput.focus ();
+		//__hiddenInput.selectionStart = __selectionStart;
+		//__hiddenInput.selectionEnd = __cursorPosition;
+		//
+		//__stopCursorTimer ();
+		//__startCursorTimer ();
+		//
+		//__hasFocus = true;
+		//__dirty = true;
+		//
+		//Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function this_onFocusOut (event:Event):Void {
+		//
+		//__cursorPosition = -1;
+		//__hasFocus = false;
+		//__stopCursorTimer ();
+		//if (__hiddenInput != null) __hiddenInput.blur ();
+		//__dirty = true;
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
+		//
+		//if (!selectable) return;
+		//
+		//var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
+		//__selectionStart = __getPosition (localPoint.x, localPoint.y);
+		//__cursorPosition = __selectionStart;
+		//
+		//Lib.current.stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		//Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		//
+	//}
+	//
+	//
+	//@:noCompletion private function this_onRemovedFromStage (event:Event):Void {
+		//
+		//textField.removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+		//textField.removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+		//
+		//this_onFocusOut (null);
+		//
+		//if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown, true);
+		//if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp, true);
+		//if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp, true);
+		//
+		//textField.removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		//
+	//}
+	//#end
 	
 	
 }

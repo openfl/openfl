@@ -10,6 +10,7 @@ import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
+import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
@@ -33,24 +34,12 @@ class CanvasTextField {
 	private static var context:CanvasRenderingContext2D;
 	#end
 	
-	private static var __utf8_endline_code:Int = 10;
-	
-	
-	private static function clipText (textEngine:TextEngine, value:String):String {
-		
-		var textWidth = textEngine.__textLayout.getTextWidth (textEngine, value);
-		var fillPer = textWidth / textEngine.width;
-		textEngine.text = fillPer > 1 ? textEngine.text.substr (-1 * Math.floor (textEngine.text.length / fillPer)) : textEngine.text;
-		return textEngine.text + '';
-		
-	}
-	
 	
 	public static function disableInputMode (textEngine:TextEngine):Void {
 		
-		#if (js && html5)
-		textEngine.this_onRemovedFromStage (null);
-		#end
+		//#if (js && html5)
+		//textEngine.this_onRemovedFromStage (null);
+		//#end
 		
 	}
 	
@@ -102,54 +91,57 @@ class CanvasTextField {
 			
 		}
 		
-		if (textEngine.textField.stage != null) {
-			
-			textEngine.this_onAddedToStage (null);
-			
-		} else {
-			
-			textEngine.textField.addEventListener (Event.ADDED_TO_STAGE, textEngine.this_onAddedToStage);
-			textEngine.textField.addEventListener (Event.REMOVED_FROM_STAGE, textEngine.this_onRemovedFromStage);
-			
-		}
+		//if (textField.stage != null) {
+			//
+			//textEngine.this_onAddedToStage (null);
+			//
+		//} else {
+			//
+			//textField.addEventListener (Event.ADDED_TO_STAGE, textEngine.this_onAddedToStage);
+			//textField.addEventListener (Event.REMOVED_FROM_STAGE, textEngine.this_onRemovedFromStage);
+			//
+		//}
 		
 		#end
 		
 	}
 	
 	
-	public static inline function render (textEngine:TextEngine, renderSession:RenderSession):Void {
+	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		
-		var bounds = textEngine.textField.getBounds (null);
-		
-		if (textEngine.__dirty) {
+		if (textField.__dirty) {
+			
+			var textEngine = textField.__textEngine;
+			var bounds = textField.getBounds (null);
+			
+			textField.__updateLayout ();
 			
 			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
-				textEngine.textField.__graphics.__canvas = null;
-				textEngine.textField.__graphics.__context = null;
-				textEngine.textField.__graphics.__dirty = false;
-				textEngine.__dirty = false;
+				textField.__graphics.__canvas = null;
+				textField.__graphics.__context = null;
+				textField.__graphics.__dirty = false;
+				textField.__dirty = false;
 				
 			} else {
 				
-				if (textEngine.textField.__graphics == null || textEngine.textField.__graphics.__canvas == null) {
+				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 					
-					if (textEngine.textField.__graphics == null) {
+					if (textField.__graphics == null) {
 						
-						textEngine.textField.__graphics = new Graphics ();
+						textField.__graphics = new Graphics ();
 						
 					}
 					
-					textEngine.textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
-					textEngine.textField.__graphics.__context = textEngine.textField.__graphics.__canvas.getContext ("2d");
-					textEngine.textField.__graphics.__bounds = new Rectangle( 0, 0, bounds.width, bounds.height );
+					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
+					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
+					textField.__graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
 					
 				}
 				
-				var graphics = textEngine.textField.__graphics;
+				var graphics = textField.__graphics;
 				context = graphics.__context;
 				
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
@@ -171,7 +163,6 @@ class CanvasTextField {
 						
 					}
 					
-					var measurements = textEngine.__textLayout.measureText (textEngine);
 					var bounds = textEngine.bounds;
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
@@ -198,44 +189,35 @@ class CanvasTextField {
 						
 					}
 					
-					if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
-						
-						var cursorOffset = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
-						context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
-						context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
-						
-					} else if (textEngine.__hasFocus && (Math.abs (textEngine.__selectionStart - textEngine.__cursorPosition)) > 0) {
-						
-						var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
-						var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
-						var xPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
-						var widthPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (lowPos, highPos));
-						
-						// TODO: White text
-						
-						context.fillStyle = "#000000";
-						context.fillRect (xPos, 5, widthPos, (textEngine.__textFormat.size * 1.185) - 4);
-						
-					}
+					// TODO: keep character positions?
 					
-					if (textEngine.__ranges == null) {
+					//if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
+						//
+						//var cursorOffset = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
+						//context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
+						//context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
+						//
+					//} else if (textEngine.__hasFocus && (Math.abs (textEngine.__selectionStart - textEngine.__cursorPosition)) > 0) {
+						//
+						//var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
+						//var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
+						//var xPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
+						//var widthPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (lowPos, highPos));
+						//
+						//// TODO: White text
+						//
+						//context.fillStyle = "#000000";
+						//context.fillRect (xPos, 5, widthPos, (textEngine.__textFormat.size * 1.185) - 4);
+						//
+					//}
+					
+					context.textBaseline = "top";
+					//context.textBaseline = "alphabetic";
+					context.textAlign = "start";
+					
+					for (group in textEngine.layoutGroups) {
 						
-						renderText (textEngine, text, textEngine.__textFormat, 0, bounds );
-						
-					} else {
-						
-						var currentIndex = 0;
-						var range;
-						var offsetX = 0.0;
-						
-						for (i in 0...textEngine.__ranges.length) {
-							
-							range = textEngine.__ranges[i];
-							
-							renderText (textEngine, text.substring (range.start, range.end), range.format, offsetX, bounds );
-							offsetX += measurements[i];
-							
-						}
+						renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY, bounds);
 						
 					}
 					
@@ -276,8 +258,8 @@ class CanvasTextField {
 					
 				}
 				
-				graphics.__bitmap = BitmapData.fromCanvas (textEngine.textField.__canvas);
-				textEngine.__dirty = false;
+				graphics.__bitmap = BitmapData.fromCanvas (textField.__canvas);
+				textField.__dirty = false;
 				graphics.__dirty = false;
 				
 			}
@@ -289,125 +271,127 @@ class CanvasTextField {
 	}
 	
 	
-	private static inline function renderText (textEngine:TextEngine, text:String, format:TextFormat, offsetX:Float, bounds:Rectangle ):Void {
+	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, offsetY:Float, bounds:Rectangle):Void {
 		
 		#if (js && html5)
 		
-		context.font = DOMTextField.getFont (format);
+		var textEngine = textField.__textEngine;
+		
+		context.font = TextEngine.getFont (format);
 		context.fillStyle = "#" + StringTools.hex (format.color, 6);
-		context.textBaseline = "top";
+		//context.textBaseline = "top";
 		
-		trace (context.font);
-		
-		var yOffset = 0.0;
+		//var yOffset = 0.0;
 		
 		// Hack, baseline "top" is not consistent across browsers
 		
 		if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
 			
-			yOffset = format.size * 0.185;
+			offsetY += format.size * 0.185;
 			
 		}
 		
-		var lines = [];
+		//var lines = [];
+		//
+		//if (textEngine.wordWrap) {
+			//
+			//var words = text.split (" ");
+			//var line = "";
+			//
+			//var word, newLineIndex, test;
+			//
+			//for (i in 0...words.length) {
+				//
+				//word = words[i];
+				//newLineIndex = word.indexOf ("\n");
+				//
+				//if (newLineIndex > -1) {
+					//
+					//while (newLineIndex > -1) {
+						//
+						//test = line + word.substring (0, newLineIndex) + " ";
+						//
+						//if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
+							//
+							//lines.push (line);
+							//lines.push (word.substring (0, newLineIndex));
+							//
+						//} else {
+							//
+							//lines.push (line + word.substring (0, newLineIndex));
+							//
+						//}
+						//
+						//word = word.substr (newLineIndex + 1);
+						//newLineIndex = word.indexOf ("\n");
+						//line = "";
+						//
+					//}
+					//
+					//if (word != "") {
+						//
+						//line = word + " ";
+						//
+					//}
+					//
+				//} else {
+					//
+					//test = line + words[i] + " ";
+					//
+					//if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
+						//
+						//lines.push (line);
+						//line = words[i] + " ";
+						//
+					//} else {
+						//
+						//line = test;
+						//
+					//}
+					//
+				//}
+				//
+			//}
+			//
+			//if (line != "") {
+				//
+				//lines.push (line);
+				//
+			//}
+			//
+		//} else {
+			//
+			//lines = text.split ("\n");
+			//
+		//}
+		//
+		//for (line in lines) {
+			//
+			//switch (format.align) {
+				//
+				//case TextFormatAlign.CENTER:
+					//
+					//context.textAlign = "center";
+					//context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
+					//
+				//case TextFormatAlign.RIGHT:
+					//
+					//context.textAlign = "end";
+					//context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
+					//
+				//default:
+					//
+					//context.textAlign = "start";
+					//context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
+					//
+			//}
+			//
+			//yOffset += format.size + format.leading + 4;
+			//offsetX = 0;
+			//
+		//}
 		
-		if (textEngine.wordWrap) {
-			
-			var words = text.split (" ");
-			var line = "";
-			
-			var word, newLineIndex, test;
-			
-			for (i in 0...words.length) {
-				
-				word = words[i];
-				newLineIndex = word.indexOf ("\n");
-				
-				if (newLineIndex > -1) {
-					
-					while (newLineIndex > -1) {
-						
-						test = line + word.substring (0, newLineIndex) + " ";
-						
-						if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
-							
-							lines.push (line);
-							lines.push (word.substring (0, newLineIndex));
-							
-						} else {
-							
-							lines.push (line + word.substring (0, newLineIndex));
-							
-						}
-						
-						word = word.substr (newLineIndex + 1);
-						newLineIndex = word.indexOf ("\n");
-						line = "";
-						
-					}
-					
-					if (word != "") {
-						
-						line = word + " ";
-						
-					}
-					
-				} else {
-					
-					test = line + words[i] + " ";
-					
-					if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
-						
-						lines.push (line);
-						line = words[i] + " ";
-						
-					} else {
-						
-						line = test;
-						
-					}
-					
-				}
-				
-			}
-			
-			if (line != "") {
-				
-				lines.push (line);
-				
-			}
-			
-		} else {
-			
-			lines = text.split ("\n");
-			
-		}
-		
-		for (line in lines) {
-			
-			switch (format.align) {
-				
-				case TextFormatAlign.CENTER:
-					
-					context.textAlign = "center";
-					context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
-					
-				case TextFormatAlign.RIGHT:
-					
-					context.textAlign = "end";
-					context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
-					
-				default:
-					
-					context.textAlign = "start";
-					context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
-					
-			}
-			
-			yOffset += format.size + format.leading + 4;
-			offsetX = 0;
-			
-		}
+		context.fillText (text, offsetX, offsetY);
 		
 		#end
 		

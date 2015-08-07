@@ -3,6 +3,7 @@ package openfl._internal.renderer.dom;
 
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
+import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
@@ -19,39 +20,18 @@ import js.Browser;
 class DOMTextField {
 	
 	
-	public static function getFont (format:TextFormat):String {
-		
-		var font = format.italic ? "italic " : "normal ";
-		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
-		font += format.size + "px";
-		font += "/" + (format.size + format.leading + 6) + "px ";
-		
-		font += "" + switch (format.font) {
-			
-			case "_sans": "sans-serif";
-			case "_serif": "serif";
-			case "_typewriter": "monospace";
-			default: "'" + format.font + "'";
-			
-		}
-		
-		return font;
-		
-	}
-	
-	
-	public static function measureText (textEngine:TextEngine):Void {
+	public static function measureText (textField:TextField):Void {
 		
 	 	#if (js && html5)
 	 	
-		var div:Element = textEngine.__div;
+		var textEngine = textField.__textEngine;
+		var div:Element = textField.__div;
 		
 		if (div == null) {
 			
 			div = cast Browser.document.createElement ("div");
 			div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
-			div.style.setProperty ("font", getFont (textEngine.__textFormat), null);
+			div.style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
 			div.style.setProperty ("pointer-events", "none", null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
@@ -64,7 +44,7 @@ class DOMTextField {
 		// Now set the width so that the height is accurate as a
 		// function of the flow within the width bounds...
 		
-		if (textEngine.__div == null) {
+		if (textField.__div == null) {
 			
 			div.style.width = Std.string (textEngine.width - 4) + "px";
 			
@@ -72,7 +52,7 @@ class DOMTextField {
 		
 		textEngine.__measuredHeight = div.clientHeight;
 		
-		if (textEngine.__div == null) {
+		if (textField.__div == null) {
 			
 			Browser.document.body.removeChild (div);
 			
@@ -83,30 +63,32 @@ class DOMTextField {
 	}
 	
 	
-	public static inline function render (textEngine:TextEngine, renderSession:RenderSession):Void {
+	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		
-		if (textEngine.textField.stage != null && textEngine.textField.__worldVisible && textEngine.textField.__renderable) {
+		var textEngine = textField.__textEngine;
+		
+		if (textField.stage != null && textField.__worldVisible && textField.__renderable) {
 			
-			if (textEngine.__dirty || textEngine.__div == null) {
+			if (textField.__dirty || textField.__div == null) {
 				
 				if (textEngine.text != "" || textEngine.background || textEngine.border) {
 					
-					if (textEngine.__div == null) {
+					if (textField.__div == null) {
 						
-						textEngine.__div = cast Browser.document.createElement ("div");
-						DOMRenderer.initializeElement (textEngine.textField, textEngine.__div, renderSession);
-						textEngine.textField.__style.setProperty ("cursor", "inherit", null);
+						textField.__div = cast Browser.document.createElement ("div");
+						DOMRenderer.initializeElement (textField, textField.__div, renderSession);
+						textField.__style.setProperty ("cursor", "inherit", null);
 						
 					}
 					
-					var style = textEngine.textField.__style;
+					var style = textField.__style;
 					
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 					
-					textEngine.__div.innerHTML = textEngine.text;
+					textField.__div.innerHTML = textEngine.text;
 					
 					if (textEngine.background) {
 						
@@ -128,8 +110,8 @@ class DOMTextField {
 						
 					}
 					
-					style.setProperty ("font", getFont (textEngine.__textFormat), null);
-					style.setProperty ("color", "#" + StringTools.hex (textEngine.__textFormat.color, 6), null);
+					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color, 6), null);
 					
 					if (textEngine.autoSize != TextFieldAutoSize.NONE) {
 						
@@ -143,7 +125,7 @@ class DOMTextField {
 					
 					style.setProperty ("height", textEngine.height + "px", null);
 					
-					switch (textEngine.__textFormat.align) {
+					switch (textField.__textFormat.align) {
 						
 						case TextFormatAlign.CENTER:
 							
@@ -159,14 +141,14 @@ class DOMTextField {
 						
 					}
 					
-					textEngine.__dirty = false;
+					textField.__dirty = false;
 					
 				} else {
 					
-					if (textEngine.__div != null) {
+					if (textField.__div != null) {
 						
-						renderSession.element.removeChild (textEngine.__div);
-						textEngine.__div = null;
+						renderSession.element.removeChild (textField.__div);
+						textField.__div = null;
 						
 					}
 					
@@ -174,21 +156,21 @@ class DOMTextField {
 				
 			}
 			
-			if (textEngine.__div != null) {
+			if (textField.__div != null) {
 				
 				// TODO: Enable scrollRect clipping
 				
-				DOMRenderer.applyStyle (textEngine.textField, renderSession, true, true, false);
+				DOMRenderer.applyStyle (textField, renderSession, true, true, false);
 				
 			}
 			
 		} else {
 			
-			if (textEngine.__div != null) {
+			if (textField.__div != null) {
 				
-				renderSession.element.removeChild (textEngine.__div);
-				textEngine.__div = null;
-				textEngine.textField.__style = null;
+				renderSession.element.removeChild (textField.__div);
+				textField.__div = null;
+				textField.__style = null;
 				
 			}
 			
