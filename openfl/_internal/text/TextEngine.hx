@@ -719,14 +719,14 @@ class TextEngine {
 							
 						}
 						
-						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
 						layoutGroup.descent = descent;
 						layoutGroup.leading = leading;
 						layoutGroup.lineIndex = lineIndex;
 						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = widthValue;
+						layoutGroup.width = widthValue + spaceWidth;
 						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
