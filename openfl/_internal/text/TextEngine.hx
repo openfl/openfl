@@ -712,7 +712,7 @@ class TextEngine {
 			
 			#else
 			
-			var width = 0;
+			var width = 0.0;
 			
 			__textLayout.text = null;
 			__textLayout.font = font;
@@ -721,11 +721,11 @@ class TextEngine {
 			
 			for (position in __textLayout.positions) {
 				
-				width += Std.int (position.advance.x);
+				width += (position.advance.x);
 				
 			}
 			
-			return width;
+			return Std.int(width);
 			
 			#end
 			
@@ -735,7 +735,12 @@ class TextEngine {
 		
 		while (textIndex < text.length) {
 			
+			//(There's a line break) AND
+			//(There's no space OR the line break comes first) AND
+			//(The end of the format doesn't come first) 
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+			
+				//The next thing we need to break on is a line
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
@@ -787,11 +792,19 @@ class TextEngine {
 				
 			} else if (formatRange.end >= spaceIndex) {
 				
+				//(We don't need to break on a line first) AND
+				//(The end of the format doesn't come first)
+				
+				//The next thing we need to break on is a space
+				
 				layoutGroup = null;
 				wrap = false;
 				
+				//Loop continuously until we can't find the next breakable space:
+				
 				while (true) {
 					
+					//If there's no space, treat the end of the format as such
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
 					widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
@@ -909,6 +922,11 @@ class TextEngine {
 						
 					}
 					
+					//(There's a break closer than the next space) OR
+					//(I'm at the end of the text field) OR
+					//(Next space is past the end of the format range) OR
+					//(There's is no space, but there is a break) 
+					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
 						
 						break;
@@ -918,6 +936,8 @@ class TextEngine {
 				}
 				
 			} else {
+				
+				//The next thing we need to break on is the end of the format range
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
 				layoutGroup.offsetX = offsetX;
@@ -1025,12 +1045,12 @@ class TextEngine {
 		
 		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
 			
-			lineAscents.splice (0, lineAscents.length);
-			lineBreaks.splice (0, lineBreaks.length);
+			lineAscents.splice  (0, lineAscents.length);
+			lineBreaks.splice   (0, lineBreaks.length);
 			lineDescents.splice (0, lineDescents.length);
 			lineLeadings.splice (0, lineLeadings.length);
-			lineHeights.splice (0, lineHeights.length);
-			lineWidths.splice (0, lineWidths.length);
+			lineHeights.splice  (0, lineHeights.length);
+			lineWidths.splice   (0, lineWidths.length);
 			layoutGroups.splice (0, layoutGroups.length);
 			
 		} else {
@@ -1043,12 +1063,12 @@ class TextEngine {
 		
 		if (autoSize != TextFieldAutoSize.NONE) {
 			
-			bounds.width = (textWidth + 4) + (border ? 1 : 0);
+			bounds.width  = (textWidth  + 4) + (border ? 1 : 0);
 			bounds.height = (textHeight + 4) + (border ? 1 : 0);
 			
 		} else {
 			
-			bounds.width = width;
+			bounds.width  = width;
 			bounds.height = height;
 			
 		}
