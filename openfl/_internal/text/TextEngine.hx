@@ -504,9 +504,11 @@ class TextEngine {
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
 		var font = null;
+		var layoutGroup:TextLayoutGroup = null;
 		
-		var ascent, descent, leading, layoutGroup, widthValue, heightValue;
+		var ascent, descent, leading, widthValue, heightValue;
 		
+		var previousSpaceWidth = 0.0;
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
@@ -581,6 +583,8 @@ class TextEngine {
 				
 				#end
 				
+				previousSpaceWidth = spaceWidth;
+				
 				if (spaceIndex > -1) {
 					
 					spaceWidth = getTextWidth (" ");
@@ -593,11 +597,34 @@ class TextEngine {
 		
 		nextFormatRange ();
 		
-		var wrap;
+		var wrap, currentSpaceWidth;
 		
 		while (textIndex < text.length) {
 			
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+				
+				if (layoutGroup != null) {
+					
+					var i = layoutGroup.endIndex;
+					
+					if (formatRange.format == layoutGroup.format) {
+						
+						currentSpaceWidth = spaceWidth;
+						
+					} else {
+						
+						currentSpaceWidth = previousSpaceWidth;
+						
+					}
+					
+					while (i >= 0 && text.charAt (i) == " ") {
+						
+						layoutGroup.width -= currentSpaceWidth;
+						i--;
+						
+					}
+					
+				}
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
@@ -669,6 +696,29 @@ class TextEngine {
 					}
 					
 					if (wrap) {
+						
+						if (layoutGroups.length > 0) {
+							
+							var i = layoutGroups[layoutGroups.length - 1].endIndex;
+							
+							if (formatRange.format == layoutGroups[layoutGroups.length - 1].format) {
+								
+								currentSpaceWidth = spaceWidth;
+								
+							} else {
+								
+								currentSpaceWidth = previousSpaceWidth;
+								
+							}
+							
+							while (i >= 0 && text.charAt (i) == " ") {
+								
+								layoutGroups[layoutGroups.length - 1].width -= currentSpaceWidth;
+								i--;
+								
+							}
+							
+						}
 						
 						// TODO: Why is this different (or necessary?)
 						
