@@ -681,14 +681,15 @@ class TextEngine {
 		var formatRange = null;
 		var font = null;
 		
-		var ascent, descent, leading, layoutGroup, widthValue, heightValue;
+		var ascent, descent, leading, layoutGroup;
+		var widthValue, heightValue;
 		
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = text.indexOf ("\n");
 		
-		var offsetX = 2;
-		var offsetY = 2;
+		var offsetX = 2.0;
+		var offsetY = 2.0;
 		var textIndex = 0;
 		var lineIndex = 0;
 		
@@ -740,7 +741,7 @@ class TextEngine {
 		
 		nextFormatRange ();
 		
-		var getTextWidth = function (text:String):Int {
+		var getTextWidth = function (text:String) {
 			
 			#if (js && html5)
 			
@@ -748,7 +749,7 @@ class TextEngine {
 			
 			#else
 			
-			var width = 0.0;
+			var width:Float = 0.0;
 			
 			__textLayout.text = null;
 			__textLayout.font = font;
@@ -761,7 +762,7 @@ class TextEngine {
 				
 			}
 			
-			return Std.int(width);
+			return width;
 			
 			#end
 			
@@ -845,7 +846,7 @@ class TextEngine {
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
 					widthValue = getTextWidth (text.substring (textIndex, spaceIndex + 1));
-					var finalSpaceWidth = 0;
+					var finalSpaceWidth = 0.0;
 					
 					if (spaceIndex != formatRange.end) {
 						
@@ -1035,7 +1036,7 @@ class TextEngine {
 	private function setTextAlignment ():Void {
 		
 		var lineIndex = -1;
-		var offsetX = 0;
+		var offsetX:Float = 0.0;
 		
 		for (group in layoutGroups) {
 			
@@ -1059,9 +1060,9 @@ class TextEngine {
 					
 					case RIGHT:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidthsWithoutFinalSpace[lineIndex] < width) {
 							
-							offsetX = Std.int (width - 2 - lineWidths[lineIndex]);
+							offsetX = Std.int((width - 4) - lineWidthsWithoutFinalSpace[lineIndex]);
 							
 						} else {
 							

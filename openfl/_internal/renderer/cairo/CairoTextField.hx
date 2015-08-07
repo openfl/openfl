@@ -29,6 +29,7 @@ class CairoTextField {
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
+		
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
 		
@@ -65,7 +66,7 @@ class CairoTextField {
 			
 		}
 		
-		cairo.rectangle (0.5, 0.5, Std.int (textEngine.width) - 1, Std.int (textEngine.height) - 1);
+		cairo.rectangle (0.5, 0.5, Std.int (textEngine.width), Std.int (textEngine.height));
 		
 		if (!textEngine.background) {
 			
