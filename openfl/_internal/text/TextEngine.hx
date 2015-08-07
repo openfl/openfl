@@ -504,16 +504,15 @@ class TextEngine {
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
 		var font = null;
-		var layoutGroup:TextLayoutGroup = null;
 		
-		var ascent, descent, leading, widthValue, heightValue;
+		var ascent, descent, leading, layoutGroup, widthValue, heightValue;
 		
-		var previousSpaceWidth = 0.0;
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = text.indexOf ("\n");
 		
+		var marginRight = 0.0;
 		var offsetX = 2.0;
 		var offsetY = 2.0;
 		var textIndex = 0;
@@ -583,8 +582,6 @@ class TextEngine {
 				
 				#end
 				
-				previousSpaceWidth = spaceWidth;
-				
 				if (spaceIndex > -1) {
 					
 					spaceWidth = getTextWidth (" ");
@@ -597,34 +594,11 @@ class TextEngine {
 		
 		nextFormatRange ();
 		
-		var wrap, currentSpaceWidth;
+		var wrap;
 		
 		while (textIndex < text.length) {
 			
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
-				
-				if (layoutGroup != null) {
-					
-					var i = layoutGroup.endIndex;
-					
-					if (formatRange.format == layoutGroup.format) {
-						
-						currentSpaceWidth = spaceWidth;
-						
-					} else {
-						
-						currentSpaceWidth = previousSpaceWidth;
-						
-					}
-					
-					while (i >= 0 && text.charAt (i) == " ") {
-						
-						layoutGroup.width -= currentSpaceWidth;
-						i--;
-						
-					}
-					
-				}
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
@@ -697,29 +671,6 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						if (layoutGroups.length > 0) {
-							
-							var i = layoutGroups[layoutGroups.length - 1].endIndex;
-							
-							if (formatRange.format == layoutGroups[layoutGroups.length - 1].format) {
-								
-								currentSpaceWidth = spaceWidth;
-								
-							} else {
-								
-								currentSpaceWidth = previousSpaceWidth;
-								
-							}
-							
-							while (i >= 0 && text.charAt (i) == " ") {
-								
-								layoutGroups[layoutGroups.length - 1].width -= currentSpaceWidth;
-								i--;
-								
-							}
-							
-						}
-						
 						// TODO: Why is this different (or necessary?)
 						
 						#if (cpp || neko || nodejs)
@@ -769,18 +720,19 @@ class TextEngine {
 							
 						}
 						
-						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
 						layoutGroup.descent = descent;
 						layoutGroup.leading = leading;
 						layoutGroup.lineIndex = lineIndex;
 						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = widthValue + spaceWidth;
+						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
-						offsetX += widthValue;
+						offsetX += widthValue + spaceWidth;
+						marginRight = spaceWidth;
 						
 						wrap = false;
 						
@@ -788,21 +740,33 @@ class TextEngine {
 						
 						if (layoutGroup == null) {
 							
-							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex + 1);
+							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
 							layoutGroup.offsetX = offsetX;
 							layoutGroup.ascent = ascent;
 							layoutGroup.descent = descent;
 							layoutGroup.leading = leading;
 							layoutGroup.lineIndex = lineIndex;
 							layoutGroup.offsetY = offsetY;
-							layoutGroup.width = widthValue + spaceWidth;
+							layoutGroup.width = widthValue;
 							layoutGroup.height = heightValue;
 							layoutGroups.push (layoutGroup);
 							
+							marginRight = spaceWidth;
+							
 						} else {
 							
-							layoutGroup.endIndex = spaceIndex + 1;
-							layoutGroup.width += widthValue + spaceWidth;
+							layoutGroup.endIndex = spaceIndex;
+							
+							if (textIndex == spaceIndex) {
+								
+								marginRight += spaceWidth;
+								
+							} else {
+								
+								layoutGroup.width += marginRight + widthValue;
+								marginRight = spaceWidth;
+								
+							}
 							
 						}
 						
@@ -851,6 +815,9 @@ class TextEngine {
 			}
 			
 		}
+		
+		lineIndex = 0;
+		offsetX = 0;
 		
 	}
 	
