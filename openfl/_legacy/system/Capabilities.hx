@@ -65,11 +65,7 @@ class Capabilities {
 		
 		// TODO: OS version, too?
 		
-		#if firefox
-		return "Firefox";
-		#elseif (js && html5)
-		return "HTML5";
-		#elseif android
+		#if android
 		return "Android";
 		#elseif blackberry
 		return "BlackBerry";

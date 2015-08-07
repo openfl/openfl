@@ -78,7 +78,7 @@ class TextEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[TextEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + "]";
+		return "[TextEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=\"" + text + "\"]";
 		
 	}
 	

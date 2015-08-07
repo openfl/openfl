@@ -6,6 +6,7 @@ import haxe.Utf8;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoFont;
 import lime.graphics.cairo.CairoFontOptions;
+import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
 import lime.system.System;
 import lime.text.TextLayout;
@@ -26,6 +27,7 @@ import openfl.text.TextFormat;
 class CairoTextField {
 	
 	
+	private static var __defaultFonts = new Map<String, Font> ();
 	private static var __utf8_endline_code:Int = 10;
 	
 	
@@ -69,6 +71,12 @@ class CairoTextField {
 		var fontList = null;
 		
 		if (format != null && format.font != null) {
+
+			if (__defaultFonts.exists (format.font)) {
+				
+				return __defaultFonts.get (format.font);
+				
+			}
 
 			#if lime_console
 
@@ -205,14 +213,18 @@ class CairoTextField {
 					
 					instance = findFont (font);
 					
-					if (instance != null) return instance;
+					if (instance != null) {
+						
+						__defaultFonts.set (format.font, instance);
+						return instance;
+						
+					}
 					
 				}
 				
 			}
 			
 			instance = findFont ("_serif");
-			
 			if (instance != null) return instance;
 			
 		}
@@ -261,9 +273,16 @@ class CairoTextField {
 			
 			instance = findFont (font);
 			
-			if (instance != null) return instance;
+			if (instance != null) {
+				
+				__defaultFonts.set (format.font, instance);
+				return instance;
+				
+			}
 			
 		}
+		
+		__defaultFonts.set (format.font, null);
 		
 		#end
 		
@@ -436,7 +455,7 @@ class CairoTextField {
 						case LINE_HEIGHT: getLineMetricSubRangesNotNull (textField, specificLine, ASCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, DESCENDER) + getLineMetricSubRangesNotNull (textField, specificLine, LEADING);
 						case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
 						case DESCENDER: Math.abs(font.descender / font.unitsPerEM * textField.__textFormat.size);
-						case LEADING: textField.__textFormat.leading;
+						case LEADING: textField.__textFormat.leading + 4;
 						default: 0;
 						
 					}
@@ -473,7 +492,7 @@ class CairoTextField {
 				case LINE_HEIGHT: getLineMetricSubRangesNull (textField, singleLine, ASCENDER) + getLineMetricSubRangesNull (textField, singleLine, DESCENDER) + getLineMetricSubRangesNull (textField, singleLine, LEADING);
 				case ASCENDER: font.ascender / font.unitsPerEM * textField.__textFormat.size;
 				case DESCENDER: Math.abs (font.descender / font.unitsPerEM * textField.__textFormat.size);
-				case LEADING: textField.__textFormat.leading;
+				case LEADING: textField.__textFormat.leading + 4;
 				default: 0;
 				
 			}
@@ -709,7 +728,7 @@ class CairoTextField {
 		#if lime_cairo
 		if (!textField.__dirty) return;
 		
-		var bounds = textField.getBounds (null);
+		var bounds = textField.bounds;
 		var format = textField.getTextFormat ();
 		
 		var graphics = textField.__graphics;
@@ -717,7 +736,7 @@ class CairoTextField {
 		
 		if (cairo != null) {
 			
-			var surface = cairo.target;
+			var surface:CairoImageSurface = cast cairo.target;
 			
 			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
 				
@@ -731,14 +750,12 @@ class CairoTextField {
 		if (cairo == null) {
 			
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true);
-			var surface = CairoSurface.fromImage (bitmap.__image);
+			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
 			surface.destroy ();
 			
-			bitmap.__bgra = true;
-			
 			graphics.__bitmap = bitmap;
-			graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
+			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 			
 			cairo = graphics.__cairo;
 			
@@ -890,6 +907,8 @@ class CairoTextField {
 				
 				tlm = textField.getLineMetrics (line_i);
 				x = oldX;
+				
+				// TODO: Make textField.getLineMetrics ().x match this value
 				
 				x += switch (format.align) {
 					

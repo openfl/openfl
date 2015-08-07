@@ -1076,6 +1076,11 @@ class Stage extends DisplayObjectContainer {
 		#if !disable_legacy_networking
 		URLLoader.__pollData ();
 		#end
+		
+		#if (tools && lime_legacy && !lime_hybrid) 
+		DefaultAssetLibrary.__poll ();
+		#end
+		
 		__checkRender ();
 		
 	}

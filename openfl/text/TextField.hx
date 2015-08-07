@@ -1339,8 +1339,8 @@ class TextField extends InteractiveObject {
 		
 		if (autoSize != TextFieldAutoSize.NONE) {
 			
-			__bounds.width = (textWidth + 4) + ( border ? 1 : 0 );
-			__bounds.height = (textHeight + 4) + ( border ? 1 : 0 );
+			__bounds.width = (textWidth + 4) + (border ? 1 : 0);
+			__bounds.height = (textHeight + 4) + (border ? 1 : 0);
 			
 		} else {
 			

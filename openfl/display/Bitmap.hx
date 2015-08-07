@@ -230,13 +230,7 @@ class Bitmap extends DisplayObjectContainer {
 		
 		if (bitmapData != null) {
 			
-			if (value != bitmapData.height) {
-				
-				__setTransformDirty ();
-				scaleY = value / bitmapData.height;
-				
-			}
-			
+			scaleY = value / bitmapData.height;
 			return value;
 			
 		}
@@ -263,13 +257,7 @@ class Bitmap extends DisplayObjectContainer {
 		
 		if (bitmapData != null) {
 			
-			if (value != bitmapData.width) {
-				
-				__setTransformDirty ();
-				scaleX = value / bitmapData.width;
-				
-			}
-			
+			scaleX = value / bitmapData.width;
 			return value;
 			
 		}

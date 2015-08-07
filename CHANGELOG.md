@@ -1,3 +1,65 @@
+3.2.2 (07/23/2015)
+------------------
+
+* Improved the accuracy of bitmapData.threshold
+* Minor improvements to Cairo rendering
+* Fixed an issue where Bitmap objects could stop scaling 
+* Fixed possible infinite event dispatch loop
+
+
+3.2.1 (07/22/2015)
+------------------
+
+* Updated OpenGLView.isSupported to report false in single canvas mode 
+* Fixed a memory leak when using _sans, _serif and _typewriter fonts
+* Fixed possible black texture issue on some platforms
+* Fixed regression in bitmapData.draw
+
+
+3.2.0 (07/21/2015)
+------------------
+
+* Moved BitmapData to premultiplied BGRA instead of unmultiplied RGBA
+* Drastically improved performance of bitmapData.draw
+* Reverted scrollRect/transform change from 3.1.2
+* Improved support for both local/remote assets in Loader/URLLoader
+
+
+3.1.4 (07/17/2015)
+------------------
+
+* Updated for Lime 2.5 support
+* Changed bitmapData.draw to use Cairo/canvas instead of GL.readPixels
+* Improved support for GameInput APIs
+* Fixed some regressions in world matrix transform calculation
+* Made minor improvements to Cairo text leading
+* Fixed an issue with repeated bitmapData.draw calls using a matrix
+* Fixed a bug that could occur when using <library preload="true" />
+
+
+3.1.3 (07/13/2015)
+------------------
+
+* Added support for bitmapData.scroll
+* Updated to support newer openfl-samples
+* Updated to include a default project icon
+* Fixed a regression in bitmapData.draw
+* Improved Assets.load* to share one background thread (legacy)
+
+
+3.1.2 (07/09/2015)
+------------------
+
+* Improved Assets.load* to be asynchronous on native platforms
+* Improved URLLoader to be asynchronous on native platforms
+* Improved Loader to be asynchronous on native platforms
+* Improved scrollRect support in canvas and GL renderers
+* Fixed TextField bounds calculations in the Cairo renderer
+* Fixed over-multiplication of text in the Cairo renderer
+* Improved Loader to not be picky about file extensions (legacy)
+* Fixed support for hxscout (legacy)
+
+
 3.1.1 (07/02/2015)
 ------------------
 

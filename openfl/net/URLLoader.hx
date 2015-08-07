@@ -1,7 +1,9 @@
 package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
 
 
+import haxe.io.Bytes;
 import lime.app.Event;
+import lime.system.BackgroundWorker;
 import lime.utils.ByteArray;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -322,8 +324,39 @@ class URLLoader extends EventDispatcher {
 		
 		#if (js && html5)
 		requestUrl (request.url, request.method, request.data, request.formatRequestHeaders ());
-		#elseif lime_curl
-		requestUrl (request.url, request.method, request.data, request.formatRequestHeaders ());
+		#else
+		if (request.url != null && request.url.indexOf ("http://") == -1 && request.url.indexOf ("https://") == -1) {
+			
+			var worker = new BackgroundWorker ();
+			worker.doWork.add (function (_) {
+				
+				var bytes = ByteArray.readFile (request.url);
+				worker.onComplete.dispatch (bytes);
+				
+			});
+			worker.onComplete.add (function (bytes) {
+				
+				switch (dataFormat) {
+					
+					case BINARY: this.data = bytes;
+					default: this.data = bytes.readUTFBytes (bytes.length);
+					
+				}
+				
+				var evt = new Event (Event.COMPLETE);
+				evt.currentTarget = this;
+				dispatchEvent (evt);
+				
+			});
+			worker.run ();
+			
+		}
+		#if lime_curl
+		else
+		{
+			requestUrl (request.url, request.method, request.data, request.formatRequestHeaders ());
+		}
+		#end
 		#end
 		
 	}
@@ -599,30 +632,40 @@ class URLLoader extends EventDispatcher {
 		CURLEasy.setopt (__curl, CONNECTTIMEOUT, 30);
 		CURLEasy.setopt (__curl, TRANSFERTEXT, dataFormat == BINARY ? 0 : 1);
 		
-		var result = CURLEasy.perform (__curl);
-		var responseCode = CURLEasy.getinfo (__curl, RESPONSE_CODE);
-		
-		if (result == CURLCode.OK) {
+		var worker = new BackgroundWorker ();
+		worker.doWork.add (function (_) {
 			
-			/*
-			switch(dataFormat) {
-				case BINARY: this.data = __data;
-				default: this.data = __data.asString();
+			var result = CURLEasy.perform (__curl);
+			worker.onComplete.dispatch (result);
+			
+		});
+		worker.onComplete.add (function (result) {
+			
+			var responseCode = CURLEasy.getinfo (__curl, RESPONSE_CODE);
+			
+			if (result == CURLCode.OK) {
+				
+				switch(dataFormat) {
+					
+					case BINARY: this.data = ByteArray.fromBytes (Bytes.ofString (__data));
+					default: this.data = __data;
+					
+				}
+				
+				onStatus (Std.parseInt (responseCode));
+				
+				var evt = new Event (Event.COMPLETE);
+				evt.currentTarget = this;
+				dispatchEvent (evt);
+				
+			} else {
+				
+				onError ("Problem with curl: " + result);
+				
 			}
-			*/
-			this.data = __data;
 			
-			onStatus (Std.parseInt (responseCode));
-			
-			var evt = new Event (Event.COMPLETE);
-			evt.currentTarget = this;
-			dispatchEvent (evt);
-			
-		} else {
-			
-			onError ("Problem with curl: " + result);
-			
-		}
+		});
+		worker.run ();
 		
 	}
 	

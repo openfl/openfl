@@ -481,7 +481,7 @@ class Event {
 	 */
 	public function toString ():String {
 		
-		return "[Event type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		return "[Event type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
 		
 	}
 	

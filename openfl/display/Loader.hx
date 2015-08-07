@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.system.BackgroundWorker;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
@@ -10,6 +11,8 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
+import openfl.net.URLLoader;
+import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
@@ -399,7 +402,40 @@ class Loader extends Sprite {
 			
 		}
 		
-		BitmapData.fromFile (request.url, BitmapData_onLoad, BitmapData_onError);
+		#if sys
+		
+		if (request.url != null && request.url.indexOf ("http://") > -1 || request.url.indexOf ("https://") > -1) {
+			
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (e) {
+				
+				BitmapData_onLoad (BitmapData.fromBytes (loader.data));
+				
+			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+				
+				BitmapData_onError (e);
+				
+			});
+			loader.dataFormat = URLLoaderDataFormat.BINARY;
+			loader.load (request);
+			return;
+			
+		}
+		
+		#end
+		
+		var worker = new BackgroundWorker ();
+		
+		worker.doWork.add (function (_) {
+			
+			BitmapData.fromFile (request.url, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
+			
+		});
+		
+		worker.onError.add (BitmapData_onError);
+		worker.onComplete.add (BitmapData_onLoad);
+		worker.run ();
 		
 	}
 	
@@ -492,7 +528,16 @@ class Loader extends Sprite {
 	 */
 	public function loadBytes (buffer:ByteArray):Void {
 		
-		BitmapData.fromBytes (buffer, BitmapData_onLoad);
+		var worker = new BackgroundWorker ();
+		
+		worker.doWork.add (function (_) {
+			
+			BitmapData.fromBytes (buffer, function (bitmapData) worker.sendComplete (bitmapData));
+			
+		});
+		
+		worker.onComplete.add (BitmapData_onLoad);
+		worker.run ();
 		
 	}
 	
@@ -604,7 +649,7 @@ class Loader extends Sprite {
 	}
 	
 	
-	@:noCompletion private function BitmapData_onError ():Void {
+	@:noCompletion private function BitmapData_onError (_):Void {
 		
 		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
 		event.target = contentLoaderInfo;

@@ -83,7 +83,7 @@ class ProgressEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[ProgressEvent type=" + type + " bubbles=" + bubbles + " cancelable=" + cancelable + " bytesLoaded=" + bytesLoaded + " bytesTotal=" + bytesTotal + "]";
+		return "[ProgressEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " bytesLoaded=" + bytesLoaded + " bytesTotal=" + bytesTotal + "]";
 		
 	}
 	
