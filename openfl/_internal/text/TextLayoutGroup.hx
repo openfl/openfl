@@ -14,11 +14,10 @@ class TextLayoutGroup {
 	public var height:Float;
 	public var leading:Int;
 	public var lineIndex:Int;
-	public var offsetX:Int;
-	public var offsetY:Int;
+	public var offsetX:Float;
+	public var offsetY:Float;
 	public var startIndex:Int;
-	public var width:Int;
-	public var widthWithoutFinalSpace:Int;
+	public var width:Float;
 	
 	
 	public function new (format:TextFormat, startIndex:Int, endIndex:Int) {
