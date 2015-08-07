@@ -643,7 +643,7 @@ class TextEngine {
 		
 	}
 	
-	
+	@:access(openfl.text.TextField)
 	private function getLayoutGroups ():Void {
 		
 		#if (cpp || neko || nodejs)
@@ -691,11 +691,20 @@ class TextEngine {
 				
 				font = getFontInstance (formatRange.format);
 				
-				var rawAscent  = 2 + (font.ascender / font.unitsPerEM) * formatRange.format.size;
+				var ascentAdd:Float = 0;
+				
+				//TODO: does this work consistently on all targets, or is it just on windows?
+				if (formatRange.format != null && __defaultFonts.exists(formatRange.format.font) && formatRange.format.size == TextField.__defaultFontSize) {
+					
+					ascentAdd = 2;
+					
+				}
+				
+				var rawAscent  = ascentAdd + (font.ascender / font.unitsPerEM) * formatRange.format.size;
 				var rawDescent = Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size);
 				
-				ascent  = Std.int (rawAscent);
-				descent = Math.ceil (rawDescent);			//is ceil correct?
+				ascent  = Math.round (rawAscent);
+				descent = Math.round (rawDescent);			//is ceil correct?
 				leading = formatRange.format.leading;
 				heightValue = Std.int (rawAscent + rawDescent + leading);
 				
@@ -1023,7 +1032,6 @@ class TextEngine {
 							offsetX = 0;
 							
 						}
-						
 					
 					default:
 						
