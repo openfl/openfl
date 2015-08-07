@@ -872,9 +872,9 @@ class TextEngine {
 					
 					case RIGHT:
 						
-						if (lineWidthsWithoutFinalSpace[lineIndex] < width) {
+						if (lineWidths[lineIndex] < width) {
 							
-							offsetX = Std.int((width - 4) - lineWidthsWithoutFinalSpace[lineIndex]);
+							offsetX = Std.int((width - 4) - lineWidths[lineIndex]);
 							
 						} else {
 							
