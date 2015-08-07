@@ -66,7 +66,7 @@ class CairoTextField {
 			
 		}
 		
-		cairo.rectangle (0.5, 0.5, Std.int (textEngine.width), Std.int (textEngine.height));
+		cairo.rectangle (0.5, 0.5, Std.int (textEngine.width) - 1, Std.int (textEngine.height) - 1);
 		
 		if (!textEngine.background) {
 			

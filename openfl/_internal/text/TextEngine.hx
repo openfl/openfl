@@ -519,15 +519,15 @@ class TextEngine {
 		var textIndex = 0;
 		var lineIndex = 0;
 		
-		var getTextWidth = function (text:String) {
+		var getTextWidth = function (text:String):Float {
 			
 			#if (js && html5)
 			
-			return Std.int (__context.measureText (text).width);
+			return __context.measureText (text).width;
 			
 			#else
 			
-			var width:Float = 0.0;
+			var width = 0.0;
 			
 			__textLayout.text = null;
 			__textLayout.font = font;
@@ -536,7 +536,7 @@ class TextEngine {
 			
 			for (position in __textLayout.positions) {
 				
-				width += (position.advance.x);
+				width += position.advance.x;
 				
 			}
 			
@@ -546,7 +546,7 @@ class TextEngine {
 			
 		}
 		
-		var nextFormatRange = function () {
+		var nextFormatRange = function ():Void {
 			
 			if (rangeIndex < textFormatRanges.length - 1) {
 				
@@ -659,7 +659,6 @@ class TextEngine {
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
 					widthValue = getTextWidth (text.substring (textIndex, spaceIndex));
-					var finalSpaceWidth = 0.0;
 					
 					if (wordWrap) {
 						
@@ -848,7 +847,7 @@ class TextEngine {
 	private function setTextAlignment ():Void {
 		
 		var lineIndex = -1;
-		var offsetX:Float = 0.0;
+		var offsetX = 0.0;
 		
 		for (group in layoutGroups) {
 			
@@ -874,7 +873,7 @@ class TextEngine {
 						
 						if (lineWidths[lineIndex] < width) {
 							
-							offsetX = Std.int((width - 4) - lineWidths[lineIndex]);
+							offsetX = Math.round (width - 4 - lineWidths[lineIndex]);
 							
 						} else {
 							
@@ -933,8 +932,6 @@ class TextEngine {
 			
 		}
 		
-		bounds.width += 1;
-		bounds.height += 1;
 	}
 	
 	
