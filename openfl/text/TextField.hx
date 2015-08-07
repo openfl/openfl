@@ -552,8 +552,6 @@ class TextField extends InteractiveObject {
 	#end
 	
 	
-	@:noCompletion private static inline var __defaultFontSize:Int = 12;
-	
 	/**
 	 * Creates a new TextField instance. After you create the TextField instance,
 	 * call the <code>addChild()</code> or <code>addChildAt()</code> method of
@@ -573,7 +571,7 @@ class TextField extends InteractiveObject {
 		
 		if (__defaultTextFormat == null) {
 			
-			__defaultTextFormat = new TextFormat ("Times New Roman", __defaultFontSize, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
+			__defaultTextFormat = new TextFormat ("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
 			__defaultTextFormat.blockIndent = 0;
 			__defaultTextFormat.bullet = false;
 			__defaultTextFormat.letterSpacing = 0;
@@ -674,16 +672,11 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		var lineWidth = switch (__textFormat.align) {
-			
-			case LEFT, RIGHT, JUSTIFY: __textEngine.lineWidths[lineIndex];
-			case CENTER: __textEngine.lineWidthsWithoutFinalSpace[lineIndex];
-			
-		}
 		var ascender = __textEngine.lineAscents[lineIndex];
 		var descender = __textEngine.lineDescents[lineIndex];
 		var leading = __textEngine.lineLeadings[lineIndex];
 		var lineHeight = __textEngine.lineHeights[lineIndex];
+		var lineWidth = __textEngine.lineWidths[lineIndex];
 		
 		var margin = switch (__textFormat.align) {
 			

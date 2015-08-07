@@ -18,7 +18,6 @@ class TextLayoutGroup {
 	public var offsetY:Float;
 	public var startIndex:Int;
 	public var width:Float;
-	public var widthWithoutFinalSpace:Float;
 	
 	
 	public function new (format:TextFormat, startIndex:Int, endIndex:Int) {
