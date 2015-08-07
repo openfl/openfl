@@ -623,7 +623,7 @@ class TextEngine {
 			currentLineDescent = (Math.max (currentLineDescent, group.descent));
 			currentLineLeading = (Math.max (currentLineLeading, group.leading));
 			currentLineHeight = (Math.max (currentLineHeight, group.height));
-			currentLineWidth = (Math.max (currentLineWidth, group.width));
+			currentLineWidth += group.width;
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -640,7 +640,6 @@ class TextEngine {
 		lineLeadings.push (currentLineLeading);
 		lineHeights.push (currentLineHeight);
 		lineWidths.push (currentLineWidth);
-		
 	}
 	
 	@:access(openfl.text.TextField)
