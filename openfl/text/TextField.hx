@@ -804,7 +804,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
+		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return 0;
 		
 		var startIndex = -1;
 		var endIndex = -1;
