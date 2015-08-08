@@ -624,6 +624,8 @@ class TextField extends InteractiveObject {
 		
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
 		
+		__updateLayout ();
+		
 		for (group in __textEngine.layoutGroups) {
 			
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
@@ -660,6 +662,8 @@ class TextField extends InteractiveObject {
 	public function getCharIndexAtPoint (x:Float, y:Float):Int {
 		
 		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return -1;
+		
+		__updateLayout ();
 		
 		x += scrollH;
 		
@@ -721,6 +725,8 @@ class TextField extends InteractiveObject {
 	 *         point is not over any line.
 	 */
 	public function getLineIndexAtPoint (x:Float, y:Float):Int {
+		
+		__updateLayout ();
 		
 		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return -1;
 		
@@ -786,7 +792,19 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineOffset (lineIndex:Int):Int {
 		
-		openfl.Lib.notImplemented ("TextField.getLineOffset");
+		__updateLayout ();
+		
+		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (group.lineIndex == lineIndex) {
+				
+				return group.startIndex;
+				
+			}
+			
+		}
 		
 		return 0;
 		
@@ -804,9 +822,31 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineText (lineIndex:Int):String {
 		
-		openfl.Lib.notImplemented ("TextField.getLineText");
+		__updateLayout ();
 		
-		return "";
+		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
+		
+		var startIndex = -1;
+		var endIndex = -1;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (group.lineIndex == lineIndex) {
+				
+				if (startIndex == -1) startIndex = group.startIndex;
+				
+			} else if (group.lineIndex == lineIndex + 1) {
+				
+				endIndex = group.startIndex;
+				break;
+				
+			}
+			
+		}
+		
+		if (endIndex == -1) endIndex = __textEngine.text.length;
+		
+		return text.substring (startIndex, endIndex);
 		
 	}
 	
