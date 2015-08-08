@@ -7,6 +7,7 @@ import openfl.text.TextFormat;
 class TextLayoutGroup {
 	
 	
+	public var advances:Array<Float>;
 	public var ascent:Float;
 	public var descent:Float;
 	public var endIndex:Int;

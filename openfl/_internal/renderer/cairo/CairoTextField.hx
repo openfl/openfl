@@ -128,8 +128,16 @@ class CairoTextField {
 				
 				if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
 					
-					cairo.moveTo (group.offsetX + 0.5, group.offsetY + 0.5);
-					cairo.lineTo (group.offsetX + 0.5, group.offsetY + group.height - 1);
+					var advance = 0.0;
+					
+					for (i in 0...(textField.__caretIndex - group.startIndex)) {
+						
+						advance += group.advances[i];
+						
+					}
+					
+					cairo.moveTo (group.offsetX + advance + 0.5, group.offsetY + 0.5);
+					cairo.lineTo (group.offsetX + advance + 0.5, group.offsetY + group.height - 1);
 					cairo.stroke ();
 					
 				}

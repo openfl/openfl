@@ -221,7 +221,15 @@ class CanvasTextField {
 						
 						if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
 							
-							context.fillRect (group.offsetX, group.offsetY, 1, group.height);
+							var advance = 0.0;
+							
+							for (i in 0...(textField.__caretIndex - group.startIndex)) {
+								
+								advance += group.advances[i];
+								
+							}
+							
+							context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
 							
 						}
 						

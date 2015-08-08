@@ -491,14 +491,6 @@ class TextEngine {
 	
 	private function getLayoutGroups ():Void {
 		
-		#if (cpp || neko || nodejs)
-		if (__textLayout == null) {
-			
-			__textLayout = new TextLayout ();
-			
-		}
-		#end
-		
 		layoutGroups.splice (0, layoutGroups.length);
 		
 		var rangeIndex = -1;
@@ -506,7 +498,7 @@ class TextEngine {
 		var font = null;
 		
 		var ascent, descent, leading, layoutGroup;
-		var widthValue, heightValue;
+		var advances, widthValue, heightValue;
 		
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
@@ -519,6 +511,61 @@ class TextEngine {
 		var textIndex = 0;
 		var lineIndex = 0;
 		
+		var getAdvances = function (text:String, startIndex:Int, endIndex:Int):Array<Float> {
+			
+			// TODO: optimize
+			
+			var advances = [];
+			
+			#if (js && html5)
+			
+			for (i in startIndex...endIndex) {
+				
+				advances.push (__context.measureText (text.charAt (i)).width);
+				
+			}
+			
+			#else
+			
+			if (__textLayout == null) {
+				
+				__textLayout = new TextLayout ();
+				
+			}
+			
+			var width = 0.0;
+			
+			__textLayout.text = null;
+			__textLayout.font = font;
+			__textLayout.size = formatRange.format.size;
+			__textLayout.text = text.substring (startIndex, endIndex);
+			
+			for (position in __textLayout.positions) {
+				
+				advances.push (position.advance.x);
+				
+			}
+			
+			#end
+			
+			return advances;
+			
+		}
+		
+		var getAdvancesWidth = function (advances:Array<Float>):Float {
+			
+			var width = 0.0;
+			
+			for (advance in advances) {
+				
+				width += advance;
+				
+			}
+			
+			return width;
+			
+		}
+		
 		var getTextWidth = function (text:String):Float {
 			
 			#if (js && html5)
@@ -526,6 +573,12 @@ class TextEngine {
 			return __context.measureText (text).width;
 			
 			#else
+			
+			if (__textLayout == null) {
+				
+				__textLayout = new TextLayout ();
+				
+			}
 			
 			var width = 0.0;
 			
@@ -602,13 +655,14 @@ class TextEngine {
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
+				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
 				layoutGroup.ascent = ascent;
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getTextWidth (text.substring (textIndex, breakIndex));
+				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
@@ -658,7 +712,8 @@ class TextEngine {
 					
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
-					widthValue = getTextWidth (text.substring (textIndex, spaceIndex));
+					advances = getAdvances (text, textIndex, spaceIndex);
+					widthValue = getAdvancesWidth (advances);
 					
 					if (wordWrap) {
 						
@@ -722,6 +777,7 @@ class TextEngine {
 						}
 						
 						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+						layoutGroup.advances = advances;
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
 						layoutGroup.descent = descent;
@@ -742,6 +798,7 @@ class TextEngine {
 						if (layoutGroup == null) {
 							
 							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+							layoutGroup.advances = advances;
 							layoutGroup.offsetX = offsetX;
 							layoutGroup.ascent = ascent;
 							layoutGroup.descent = descent;
@@ -764,6 +821,8 @@ class TextEngine {
 								
 							} else {
 								
+								layoutGroup.advances.push (spaceWidth);
+								layoutGroup.advances = layoutGroup.advances.concat (advances);
 								layoutGroup.width += marginRight + widthValue;
 								marginRight = spaceWidth;
 								
@@ -797,13 +856,14 @@ class TextEngine {
 			} else {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+				layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
 				layoutGroup.offsetX = offsetX;
 				layoutGroup.ascent = ascent;
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getTextWidth (text.substring (textIndex, formatRange.end));
+				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
@@ -819,27 +879,6 @@ class TextEngine {
 		
 		lineIndex = 0;
 		offsetX = 0;
-		
-	}
-	
-	
-	public function getSelectionBeginIndex ():Int {
-		
-		return Std.int (Math.min (__cursorPosition, __selectionStart));
-		
-	}
-	
-	
-	public function getSelectionEndIndex ():Int {
-		
-		return Std.int (Math.max (__cursorPosition, __selectionStart));
-		
-	}
-	
-	
-	public function setSelection (beginIndex:Int, endIndex:Int) {
-		
-		openfl.Lib.notImplemented ("TextField.setSelection");
 		
 	}
 	
@@ -933,285 +972,6 @@ class TextEngine {
 		}
 		
 	}
-	
-	
-	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
-		
-		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return 0;
-		
-		var currentY = 0.0;
-		var lineIndex = -1;
-		
-		for (i in 0...lineAscents.length) {
-			
-			currentY += lineAscents[i] + lineDescents[i] + lineLeadings[i];
-			
-			if (y < currentY) {
-				
-				lineIndex = i;
-				break;
-				
-			}
-			
-		}
-		
-		if (lineIndex == -1) return 0;
-		
-		// TODO: handle word wrap
-		
-		var startIndex = 0;
-		var endIndex = text.length;
-		
-		if (lineBreaks.length > 0) {
-			
-			endIndex = lineBreaks[lineIndex];
-			
-		}
-		
-		if (lineIndex > 0) {
-			
-			startIndex = lineBreaks[lineIndex - 1];
-			
-		}
-		
-		if (x >= lineWidths[lineIndex]) {
-			
-			return endIndex;
-			
-		}
-		
-		// TODO: keep track of actual positions
-		
-		var length = endIndex - startIndex;
-		return Math.round ((x / lineWidths[lineIndex]) * length) + startIndex;
-		
-	}
-	
-	
-	@:noCompletion private function __startCursorTimer ():Void {
-		
-		__cursorTimer = Timer.delay (__startCursorTimer, 500);
-		__showCursor = !__showCursor;
-		//__dirty = true;
-		
-	}
-	
-	
-	@:noCompletion private function __stopCursorTimer ():Void {
-		
-		if (__cursorTimer != null) {
-			
-			__cursorTimer.stop ();
-			
-		}
-		
-	}
-	
-	
-	
-	// Event Handlers
-	
-	
-	
-	
-	//#if (js && html5)
-	//@:noCompletion private function input_onKeyUp (event:HTMLKeyboardEvent):Void {
-		//
-		//__isKeyDown = false;
-		//if (event == null) event == untyped Browser.window.event;
-		//
-		//text = __hiddenInput.value;
-		//__ranges = null;
-		//__isHTML = false;
-		//
-		//if (__hiddenInput.selectionDirection == "backward") {
-			//
-			//__cursorPosition = __hiddenInput.selectionStart;
-			//__selectionStart = __hiddenInput.selectionEnd;
-			//
-		//} else {
-			//
-			//__cursorPosition = __hiddenInput.selectionEnd;
-			//__selectionStart = __hiddenInput.selectionStart;
-			//
-		//}
-		//
-		//__dirty = true;
-		//
-		//textField.dispatchEvent (new Event (Event.CHANGE, true));
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function input_onKeyDown (event:#if (js && html5) HTMLKeyboardEvent #else Dynamic #end):Void {
-		//
-		//__isKeyDown = true;
-		//if (event == null) event == untyped Browser.window.event;
-		//
-		//var keyCode = event.which;
-		//var isShift = event.shiftKey;
-		//
-		////if (keyCode == 65 && (event.ctrlKey || event.metaKey)) { // Command/Ctrl + A
-			////
-			////__hiddenInput.selectionStart = 0;
-			////__hiddenInput.selectionEnd = text.length;
-			////event.preventDefault ();
-			////__dirty = true;
-			////return;
-			////
-		////}
-		////
-		////if (keyCode == 17 || event.metaKey || event.ctrlKey) {
-			////
-			////return;
-			////
-		////}
-		//
-		//text = __hiddenInput.value;
-		//__ranges = null;
-		//__isHTML = false;
-		//
-		//if (__hiddenInput.selectionDirection == "backward") {
-			//
-			//__cursorPosition = __hiddenInput.selectionStart;
-			//__selectionStart = __hiddenInput.selectionEnd;
-			//
-		//} else {
-			//
-			//__cursorPosition = __hiddenInput.selectionEnd;
-			//__selectionStart = __hiddenInput.selectionStart;
-			//
-		//}
-		//
-		//__dirty = true;
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
-		//
-		//if (__hasFocus && __selectionStart >= 0) {
-			//
-			//var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
-			//__cursorPosition = __getPosition (localPoint.x, localPoint.y);
-			//__dirty = true;
-			//
-		//}
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
-		//
-		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		//
-		//if (Lib.current.stage.focus == textField) {
-			//
-			//var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
-			//var upPos:Int = __getPosition (localPoint.x, localPoint.y);
-			//var leftPos:Int;
-			//var rightPos:Int;
-			//
-			//leftPos = Std.int (Math.min (__selectionStart, upPos));
-			//rightPos = Std.int (Math.max (__selectionStart, upPos));
-			//
-			//__selectionStart = leftPos;
-			//__cursorPosition = rightPos;
-			//
-			//this_onFocusIn (null);
-			//
-		//}
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function this_onAddedToStage (event:Event):Void {
-		//
-		//textField.addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-		//textField.addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
-		//
-		//__hiddenInput.addEventListener ('keydown', input_onKeyDown, true);
-		//__hiddenInput.addEventListener ('keyup', input_onKeyUp, true);
-		//__hiddenInput.addEventListener ('input', input_onKeyUp, true);
-		//
-		//textField.addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
-		//
-		//if (Lib.current.stage.focus == textField) {
-			//
-			//this_onFocusIn (null);
-			//
-		//}
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function this_onFocusIn (event:Event):Void {
-		//
-		//if (__cursorPosition < 0) {
-			//
-			//__cursorPosition = text.length;
-			//__selectionStart = __cursorPosition;
-			//
-		//}
-		//
-		//__hiddenInput.focus ();
-		//__hiddenInput.selectionStart = __selectionStart;
-		//__hiddenInput.selectionEnd = __cursorPosition;
-		//
-		//__stopCursorTimer ();
-		//__startCursorTimer ();
-		//
-		//__hasFocus = true;
-		//__dirty = true;
-		//
-		//Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function this_onFocusOut (event:Event):Void {
-		//
-		//__cursorPosition = -1;
-		//__hasFocus = false;
-		//__stopCursorTimer ();
-		//if (__hiddenInput != null) __hiddenInput.blur ();
-		//__dirty = true;
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
-		//
-		//if (!selectable) return;
-		//
-		//var localPoint = textField.globalToLocal (new Point (event.stageX, event.stageY));
-		//__selectionStart = __getPosition (localPoint.x, localPoint.y);
-		//__cursorPosition = __selectionStart;
-		//
-		//Lib.current.stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		//Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		//
-	//}
-	//
-	//
-	//@:noCompletion private function this_onRemovedFromStage (event:Event):Void {
-		//
-		//textField.removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
-		//textField.removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
-		//
-		//this_onFocusOut (null);
-		//
-		//if (__hiddenInput != null) __hiddenInput.removeEventListener ('keydown', input_onKeyDown, true);
-		//if (__hiddenInput != null) __hiddenInput.removeEventListener ('keyup', input_onKeyUp, true);
-		//if (__hiddenInput != null) __hiddenInput.removeEventListener ('input', input_onKeyUp, true);
-		//
-		//textField.removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
-		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		//Lib.current.stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		//
-	//}
-	//#end
 	
 	
 }

@@ -13,6 +13,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.events.FocusEvent;
+import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
@@ -774,7 +775,7 @@ class TextField extends InteractiveObject {
 	 */
 	public function setSelection (beginIndex:Int, endIndex:Int) {
 		
-		__textEngine.setSelection (beginIndex, endIndex);
+		openfl.Lib.notImplemented ("TextField.setSelection");
 		
 	}
 	
@@ -868,6 +869,49 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
+		
+		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return 0;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (y >= group.offsetY && y <= group.offsetY + group.height) {
+				
+				if (x >= group.offsetX && x <= group.offsetX + group.width) {
+					
+					var advance = 0.0;
+					
+					for (i in 0...group.advances.length) {
+						
+						advance += group.advances[i];
+						
+						if (x <= group.offsetX + advance) {
+							
+							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+								
+								return group.startIndex + i;
+								
+							} else {
+								
+								return group.startIndex + i + 1;
+								
+							}
+							
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
@@ -950,6 +994,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __startTextInput ():Void {
 		
+		if (__caretIndex < 0) {
+			
+			__caretIndex = __textEngine.text.length;
+			__selectionIndex = __caretIndex;
+			
+		}
+		
 		if (!__inputEnabled) {
 			
 			Lib.application.window.enableTextEvents = true;
@@ -960,8 +1011,6 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			__caretIndex = 0;
-			__selectionIndex = 0;
 			__inputEnabled = true;
 			__startCursorTimer ();
 			
@@ -1565,14 +1614,14 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_selectionBeginIndex ():Int {
 		
-		return __textEngine.getSelectionBeginIndex ();
+		return Std.int (Math.min (__caretIndex, __selectionIndex));
 		
 	}
 	
 	
 	@:noCompletion private function get_selectionEndIndex ():Int {
 		
-		return __textEngine.getSelectionEndIndex ();
+		return Std.int (Math.max (__caretIndex, __selectionIndex));
 		
 	}
 	
@@ -1695,6 +1744,7 @@ class TextField extends InteractiveObject {
 				
 				addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+				addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 				
 				if (stage != null && stage.focus == this) {
 					
@@ -1703,6 +1753,10 @@ class TextField extends InteractiveObject {
 				}
 				
 			} else {
+				
+				removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
+				removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+				removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 				
 				__stopTextInput ();
 				
@@ -1769,6 +1823,54 @@ class TextField extends InteractiveObject {
 	
 	
 	
+	@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
+		
+		if (stage == null) return;
+		
+		if (__inputEnabled && __selectionIndex >= 0) {
+			
+			__updateLayout ();
+			
+			__caretIndex = __getPosition (mouseX, mouseY);
+			__dirty = true;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
+		
+		if (stage == null) return;
+		
+		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
+		if (stage.focus == this) {
+			
+			__getTransform ();
+			__updateLayout ();
+			
+			var px = __worldTransform.__transformInverseX (x, y);
+			var py = __worldTransform.__transformInverseY (x, y);
+			
+			var upPos:Int = __getPosition (mouseX, mouseY);
+			var leftPos:Int;
+			var rightPos:Int;
+			
+			leftPos = Std.int (Math.min (__selectionIndex, upPos));
+			rightPos = Std.int (Math.max (__selectionIndex, upPos));
+			
+			__selectionIndex = leftPos;
+			__caretIndex = rightPos;
+			
+			this_onFocusIn (null);
+			
+		}
+		
+	}
+	
+	
 	@:noCompletion private function this_onFocusIn (event:FocusEvent):Void {
 		
 		if (selectable && type == INPUT) {
@@ -1783,6 +1885,21 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function this_onFocusOut (event:FocusEvent):Void {
 		
 		__stopTextInput ();
+		
+	}
+	
+	
+	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
+		
+		if (!selectable || type != INPUT) return;
+		
+		__updateLayout ();
+		
+		__caretIndex = __getPosition (mouseX, mouseY);
+		__selectionIndex = __caretIndex;
+		
+		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
 	}
 	
