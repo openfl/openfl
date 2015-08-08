@@ -170,7 +170,7 @@ class CanvasTextField {
 					
 					if (textEngine.border || textEngine.background) {
 						
-						context.rect (0.5, 0.5, bounds.width, bounds.height);
+						context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
 						
 						if (textEngine.background) {
 							
@@ -219,18 +219,24 @@ class CanvasTextField {
 						
 						renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY, bounds);
 						
+						if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+							
+							context.fillRect (group.offsetX, group.offsetY, 1, group.height);
+							
+						}
+						
 					}
 					
 				} else {
 					
-					graphics.__canvas.width = Math.ceil (textEngine.width);
-					graphics.__canvas.height = Math.ceil (textEngine.height);
+					graphics.__canvas.width = Math.ceil (textEngine.width + 1);
+					graphics.__canvas.height = Math.ceil (textEngine.height + 1);
 					
 					if (textEngine.border || textEngine.background) {
 						
 						if (textEngine.border) {
 							
-							context.rect (0.5, 0.5, textEngine.width, textEngine.height);
+							context.rect (0.5, 0.5, textEngine.width - 1, textEngine.height - 1);
 							
 						} else {
 							
@@ -290,106 +296,6 @@ class CanvasTextField {
 			offsetY += format.size * 0.185;
 			
 		}
-		
-		//var lines = [];
-		//
-		//if (textEngine.wordWrap) {
-			//
-			//var words = text.split (" ");
-			//var line = "";
-			//
-			//var word, newLineIndex, test;
-			//
-			//for (i in 0...words.length) {
-				//
-				//word = words[i];
-				//newLineIndex = word.indexOf ("\n");
-				//
-				//if (newLineIndex > -1) {
-					//
-					//while (newLineIndex > -1) {
-						//
-						//test = line + word.substring (0, newLineIndex) + " ";
-						//
-						//if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
-							//
-							//lines.push (line);
-							//lines.push (word.substring (0, newLineIndex));
-							//
-						//} else {
-							//
-							//lines.push (line + word.substring (0, newLineIndex));
-							//
-						//}
-						//
-						//word = word.substr (newLineIndex + 1);
-						//newLineIndex = word.indexOf ("\n");
-						//line = "";
-						//
-					//}
-					//
-					//if (word != "") {
-						//
-						//line = word + " ";
-						//
-					//}
-					//
-				//} else {
-					//
-					//test = line + words[i] + " ";
-					//
-					//if (context.measureText (test).width > textEngine.width - 4 && i > 0) {
-						//
-						//lines.push (line);
-						//line = words[i] + " ";
-						//
-					//} else {
-						//
-						//line = test;
-						//
-					//}
-					//
-				//}
-				//
-			//}
-			//
-			//if (line != "") {
-				//
-				//lines.push (line);
-				//
-			//}
-			//
-		//} else {
-			//
-			//lines = text.split ("\n");
-			//
-		//}
-		//
-		//for (line in lines) {
-			//
-			//switch (format.align) {
-				//
-				//case TextFormatAlign.CENTER:
-					//
-					//context.textAlign = "center";
-					//context.fillText (line, offsetX + textEngine.width / 2, 2 + yOffset, textEngine.getTextWidth ());
-					//
-				//case TextFormatAlign.RIGHT:
-					//
-					//context.textAlign = "end";
-					//context.fillText (line, offsetX + textEngine.width - 2, 2 + yOffset, textEngine.getTextWidth ());
-					//
-				//default:
-					//
-					//context.textAlign = "start";
-					//context.fillText (line, 2 + offsetX, 2 + yOffset, textEngine.getTextWidth ());
-					//
-			//}
-			//
-			//yOffset += format.size + format.leading + 4;
-			//offsetX = 0;
-			//
-		//}
 		
 		context.fillText (text, offsetX, offsetY);
 		

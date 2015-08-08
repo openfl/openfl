@@ -1,6 +1,7 @@
 package openfl.text; #if !flash #if !openfl_legacy
 
 
+import haxe.Timer;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
@@ -541,9 +542,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __caretIndex:Int;
+	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __dirty:Bool;
+	@:noCompletion private var __inputEnabled:Bool;
 	@:noCompletion private var __isHTML:Bool;
 	@:noCompletion private var __layoutDirty:Bool;
+	@:noCompletion private var __selectionIndex:Int;
+	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
 	
@@ -934,20 +939,67 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	@:noCompletion private function __startCursorTimer ():Void {
+		
+		__cursorTimer = Timer.delay (__startCursorTimer, 500);
+		__showCursor = !__showCursor;
+		__dirty = true;
+		
+	}
+	
+	
 	@:noCompletion private function __startTextInput ():Void {
 		
-		Lib.application.window.enableTextEvents = true;
-		Lib.application.window.onTextInput.add (window_onTextInput);
+		if (!__inputEnabled) {
+			
+			Lib.application.window.enableTextEvents = true;
+			
+			if (!Lib.application.window.onTextInput.has (window_onTextInput)) {
+				
+				Lib.application.window.onTextInput.add (window_onTextInput);
+				
+			}
+			
+			__caretIndex = 0;
+			__selectionIndex = 0;
+			__inputEnabled = true;
+			__startCursorTimer ();
+			
+		}
 		
-		__caretIndex = 0;
+	}
+	
+	
+	@:noCompletion private function __stopCursorTimer ():Void {
+		
+		if (__cursorTimer != null) {
+			
+			__cursorTimer.stop ();
+			__cursorTimer = null;
+			
+		}
+		
+		if (__showCursor) {
+			
+			__showCursor = false;
+			__dirty = true;
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion private function __stopTextInput ():Void {
 		
-		Lib.application.window.enableTextEvents = false;
-		Lib.application.window.onTextInput.remove (window_onTextInput);
+		if (__inputEnabled) {
+			
+			Lib.application.window.enableTextEvents = false;
+			Lib.application.window.onTextInput.remove (window_onTextInput);
+			
+			__inputEnabled = false;
+			__stopCursorTimer ();
+			
+		}
 		
 	}
 	
@@ -1748,6 +1800,9 @@ class TextField extends InteractiveObject {
 			}
 			
 		}
+		
+		__caretIndex += value.length;
+		__selectionIndex = __caretIndex;
 		
 		__dirty = true;
 		__layoutDirty = true;
