@@ -215,13 +215,37 @@ class CanvasTextField {
 					//context.textBaseline = "alphabetic";
 					context.textAlign = "start";
 					
+					var scrollY = 0.0;
+					
+					for (i in 0...textField.scrollV - 1) {
+						
+						scrollY -= textEngine.lineHeights[i];
+						
+					}
+					
+					var advance;
+					
 					for (group in textEngine.layoutGroups) {
 						
-						renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY, bounds);
+						if (group.lineIndex < textField.scrollV - 1) continue;
+						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
+						
+						context.font = TextEngine.getFont (group.format);
+						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
+						
+						// Hack, baseline "top" is not consistent across browsers
+						
+						//if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
+							//
+							//offsetY += format.size * 0.185;
+							//
+						//}
+						
+						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX, group.offsetY + scrollY);
 						
 						if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
 							
-							var advance = 0.0;
+							advance = 0.0;
 							
 							for (i in 0...(textField.__caretIndex - group.startIndex)) {
 								
@@ -279,33 +303,6 @@ class CanvasTextField {
 			}
 			
 		}
-		
-		#end
-		
-	}
-	
-	
-	private static inline function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, offsetY:Float, bounds:Rectangle):Void {
-		
-		#if (js && html5)
-		
-		var textEngine = textField.__textEngine;
-		
-		context.font = TextEngine.getFont (format);
-		context.fillStyle = "#" + StringTools.hex (format.color, 6);
-		//context.textBaseline = "top";
-		
-		//var yOffset = 0.0;
-		
-		// Hack, baseline "top" is not consistent across browsers
-		
-		if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
-			
-			offsetY += format.size * 0.185;
-			
-		}
-		
-		context.fillText (text, offsetX, offsetY);
 		
 		#end
 		

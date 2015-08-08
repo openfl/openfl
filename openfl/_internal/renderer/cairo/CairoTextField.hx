@@ -107,38 +107,87 @@ class CairoTextField {
 			
 			var text = textEngine.text;
 			
-			if (textEngine.displayAsPassword) {
+			//if (textEngine.displayAsPassword) {
+				//
+				//var length = text.length;
+				//var mask = "";
+				//
+				//for (i in 0...length) {
+					//
+					//mask += "*";
+					//
+				//}
+				//
+				//text = mask;
+				//
+			//}
+			
+			var scrollY = 0.0;
+			
+			for (i in 0...textField.scrollV - 1) {
 				
-				var length = text.length;
-				var mask = "";
-				
-				for (i in 0...length) {
-					
-					mask += "*";
-					
-				}
-				
-				text = mask;
+				scrollY -= textEngine.lineHeights[i];
 				
 			}
 			
+			var color, r, g, b, font, size, advance;
+			
 			for (group in textEngine.layoutGroups) {
 				
-				renderText (textField, text.substring (group.startIndex, group.endIndex), group.format, group.offsetX, group.offsetY + group.ascent, bounds);
+				if (group.lineIndex < textField.scrollV - 1) continue;
+				if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
 				
-				if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+				color = group.format.color;
+				r = ((color & 0xFF0000) >>> 16) / 0xFF;
+				g = ((color & 0x00FF00) >>> 8) / 0xFF;
+				b = (color & 0x0000FF) / 0xFF;
+				
+				cairo.setSourceRGB (r, g, b);
+				
+				font = TextEngine.getFontInstance (group.format);
+				
+				if (font != null && group.format.size != null) {
 					
-					var advance = 0.0;
-					
-					for (i in 0...(textField.__caretIndex - group.startIndex)) {
+					if (textEngine.__cairoFont != null) {
 						
-						advance += group.advances[i];
+						if (textEngine.__cairoFont.font != font) {
+							
+							textEngine.__cairoFont.destroy ();
+							textEngine.__cairoFont = null;
+							
+						}
 						
 					}
 					
-					cairo.moveTo (group.offsetX + advance + 0.5, group.offsetY + 0.5);
-					cairo.lineTo (group.offsetX + advance + 0.5, group.offsetY + group.height - 1);
-					cairo.stroke ();
+					if (textEngine.__cairoFont == null) {
+						
+						textEngine.__cairoFont = new CairoFont (font);
+						
+					}
+					
+					cairo.setFontFace (textEngine.__cairoFont);
+					
+					size = Std.int (group.format.size);
+					cairo.setFontSize (size);
+					
+					cairo.moveTo (group.offsetX, group.offsetY + group.ascent + scrollY);
+					cairo.showText (text.substring (group.startIndex, group.endIndex));
+					
+					if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+						
+						advance = 0.0;
+						
+						for (i in 0...(textField.__caretIndex - group.startIndex)) {
+							
+							advance += group.advances[i];
+							
+						}
+						
+						cairo.moveTo (group.offsetX + advance + 0.5, group.offsetY + 0.5);
+						cairo.lineTo (group.offsetX + advance + 0.5, group.offsetY + group.height - 1);
+						cairo.stroke ();
+						
+					}
 					
 				}
 				
@@ -150,54 +199,6 @@ class CairoTextField {
 		textField.__dirty = false;
 		graphics.__dirty = false;
 		
-		#end
-		
-	}
-	
-	
-	private static function renderText (textField:TextField, text:String, format:TextFormat, offsetX:Float, offsetY:Float, bounds:Rectangle):Void {
-		
-		#if lime_cairo
-		var textEngine = textField.__textEngine;
-		var cairo = textField.__graphics.__cairo;
-		
-		var color = format.color;
-		var r = ((color & 0xFF0000) >>> 16) / 0xFF;
-		var g = ((color & 0x00FF00) >>> 8) / 0xFF;
-		var b = (color & 0x0000FF) / 0xFF;
-		
-		cairo.setSourceRGB (r, g, b);
-		
-		var font = TextEngine.getFontInstance (format);
-		
-		if (font != null && format.size != null) {
-			
-			if (textEngine.__cairoFont != null) {
-				
-				if (textEngine.__cairoFont.font != font) {
-					
-					textEngine.__cairoFont.destroy ();
-					textEngine.__cairoFont = null;
-					
-				}
-				
-			}
-			
-			if (textEngine.__cairoFont == null) {
-				
-				textEngine.__cairoFont = new CairoFont (font);
-				
-			}
-			
-			cairo.setFontFace (textEngine.__cairoFont);
-			
-			var size = Std.int (format.size);
-			cairo.setFontSize (size);
-			
-			cairo.moveTo (offsetX, offsetY);
-			cairo.showText (text);
-			
-		}
 		#end
 		
 	}

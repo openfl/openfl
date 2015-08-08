@@ -1198,9 +1198,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_bottomScrollV ():Int {
 		
-		// TODO: Only return lines that are visible
+		__updateLayout ();
 		
-		return this.numLines;
+		return __textEngine.bottomScrollV;
 		
 	}
 	
@@ -1498,7 +1498,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_maxScrollV ():Int { 
 		
-		return 1;
+		__updateLayout ();
+		
+		return __textEngine.numLines;
 		
 	}
 	
@@ -1528,7 +1530,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		return (__textEngine.lineHeights.length > 0 ? __textEngine.lineHeights.length : 1);
+		return __textEngine.numLines;
 		
 	}
 	

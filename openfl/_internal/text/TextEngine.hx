@@ -61,12 +61,14 @@ class TextEngine {
 	public var backgroundColor:Int;
 	public var border:Bool;
 	public var borderColor:Int;
+	public var bottomScrollV (default, null):Int;
 	public var bounds:Rectangle;
 	public var caretIndex:Int;
 	public var displayAsPassword:Bool;
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var height:Float;
+	public var layoutGroups:Array<TextLayoutGroup>;
 	public var lineAscents:Array<Float>;
 	public var lineBreaks:Array<Int>;
 	public var lineDescents:Array<Float>;
@@ -75,7 +77,7 @@ class TextEngine {
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
 	public var multiline:Bool;
-	public var layoutGroups:Array<TextLayoutGroup>;
+	public var numLines (default, null):Int;
 	public var restrict:String;
 	public var scrollH:Int;
 	public var scrollV:Int;
@@ -439,12 +441,12 @@ class TextEngine {
 		
 		textWidth = 0;
 		textHeight = 0;
-		
-		var lineIndex = 0;
+		numLines = 1;
+		bottomScrollV = 0;
 		
 		for (group in layoutGroups) {
 			
-			while (group.lineIndex > lineIndex) {
+			while (group.lineIndex > numLines - 1) {
 				
 				lineAscents.push (currentLineAscent);
 				lineDescents.push (currentLineDescent);
@@ -458,11 +460,15 @@ class TextEngine {
 				currentLineHeight = 0;
 				currentLineWidth = 0;
 				
-				lineIndex++;
+				numLines++;
+				
+				if (textHeight <= height - 2) {
+					
+					bottomScrollV++;
+					
+				}
 				
 			}
-			
-			lineIndex = group.lineIndex;
 			
 			currentLineAscent = Math.max (currentLineAscent, group.ascent);
 			currentLineDescent = Math.max (currentLineDescent, group.descent);
@@ -485,6 +491,12 @@ class TextEngine {
 		lineLeadings.push (currentLineLeading);
 		lineHeights.push (currentLineHeight);
 		lineWidths.push (currentLineWidth);
+		
+		if (textHeight <= height - 2) {
+			
+			bottomScrollV++;
+			
+		}
 		
 	}
 	
@@ -953,6 +965,7 @@ class TextEngine {
 			
 			textWidth = 0;
 			textHeight = 0;
+			numLines = 1;
 			
 		} else {
 			
