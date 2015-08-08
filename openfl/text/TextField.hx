@@ -714,6 +714,34 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	public function getFirstCharInParagraph (charIndex:Int):Int {
+		
+		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
+		
+		var index = __textEngine.text.indexOf ("\n");
+		var startIndex = 0;
+		
+		while (index > -1) {
+			
+			if (index <= charIndex) {
+				
+				startIndex = index + 1;
+				
+			} else if (index > charIndex) {
+				
+				break;
+				
+			}
+			
+			index = __textEngine.text.indexOf ("\n", index + 1);
+			
+		}
+		
+		return startIndex;
+		
+	}
+	
+	
 	/**
 	 * Returns the zero-based index value of the line at the point specified by
 	 * the <code>x</code> and <code>y</code> parameters.
@@ -747,6 +775,57 @@ class TextField extends InteractiveObject {
 		}
 		
 		return -1;
+		
+	}
+	
+	
+	public function getLineIndexOfChar (charIndex:Int):Int {
+		
+		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return -1;
+		
+		__updateLayout ();
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (group.startIndex <= charIndex && group.endIndex >= charIndex) {
+				
+				return group.lineIndex;
+				
+			}
+			
+		}
+		
+		return -1;
+		
+	}
+	
+	
+	public function getLineLength (lineIndex:Int):Int {
+		
+		__updateLayout ();
+		
+		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
+		
+		var startIndex = -1;
+		var endIndex = -1;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (group.lineIndex == lineIndex) {
+				
+				if (startIndex == -1) startIndex = group.startIndex;
+				
+			} else if (group.lineIndex == lineIndex + 1) {
+				
+				endIndex = group.startIndex;
+				break;
+				
+			}
+			
+		}
+		
+		if (endIndex == -1) endIndex = __textEngine.text.length;
+		return endIndex - startIndex;
 		
 	}
 	
@@ -851,6 +930,19 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	public function getParagraphLength (charIndex:Int):Int {
+		
+		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
+		
+		var startIndex = getFirstCharInParagraph (charIndex);
+		var endIndex = __textEngine.text.indexOf ("\n", charIndex) + 1;
+		
+		if (endIndex == 0) endIndex = __textEngine.text.length;
+		return endIndex - startIndex;
+		
+	}
+	
+	
 	/**
 	 * Returns a TextFormat object that contains formatting information for the
 	 * range of text that the <code>beginIndex</code> and <code>endIndex</code>
@@ -909,6 +1001,59 @@ class TextField extends InteractiveObject {
 		}
 		
 		return format;
+		
+	}
+	
+	
+	public function replaceSelectedText (value:String):Void {
+		
+		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
+		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
+		
+		replaceText (startIndex, endIndex, value);
+		
+		__caretIndex += value.length - (endIndex - startIndex);
+		__selectionIndex = __caretIndex;
+		
+	}
+	
+	
+	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
+		
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length - 1 || newText == null || newText == "") return;
+		
+		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
+		
+		var offset = newText.length - (endIndex - beginIndex);
+		
+		var i = 0;
+		var range;
+		
+		while (i < __textEngine.textFormatRanges.length) {
+			
+			range = __textEngine.textFormatRanges[i];
+			
+			if (range.start <= beginIndex && range.end >= endIndex) {
+				
+				range.end += offset;
+				i++;
+				
+			} else if (range.start >= beginIndex && range.end <= endIndex) {
+				
+				__textEngine.textFormatRanges.splice (i, 1);
+				offset -= (range.end - range.start);
+				
+			} else if (range.start > beginIndex && range.start <= endIndex) {
+				
+				range.start += offset;
+				i++;
+				
+			}
+			
+		}
+		
+		__dirty = true;
+		__layoutDirty = true;
 		
 	}
 	
@@ -1276,7 +1421,6 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.border) {
 			
 			__dirty = true;
-			//__layoutDirty = true;
 			
 		}
 		
@@ -1330,7 +1474,6 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat {
 		
-		//__textFormat = __defaultTextFormat.clone ();
 		__textFormat.__merge (value);
 		return value;
 		
@@ -2031,44 +2174,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function window_onTextInput (value:String):Void {
 		
-		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
-		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
-		
-		__textEngine.text = __textEngine.text.substring (0, startIndex) + value + __textEngine.text.substring (endIndex);
-		
-		var offset = value.length - (endIndex - startIndex);
-		
-		var i = 0;
-		var range;
-		
-		while (i < __textEngine.textFormatRanges.length) {
-			
-			range = __textEngine.textFormatRanges[i];
-			
-			if (range.start <= startIndex && range.end >= endIndex) {
-				
-				range.end += offset;
-				i++;
-				
-			} else if (range.start >= startIndex && range.end <= endIndex) {
-				
-				__textEngine.textFormatRanges.splice (i, 1);
-				offset -= (range.end - range.start);
-				
-			} else if (range.start > startIndex && range.start <= endIndex) {
-				
-				range.start += offset;
-				i++;
-				
-			}
-			
-		}
-		
-		__caretIndex += offset;
-		__selectionIndex = __caretIndex;
-		
-		__dirty = true;
-		__layoutDirty = true;
+		replaceSelectedText (value);
 		
 	}
 	
