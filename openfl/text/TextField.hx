@@ -846,7 +846,7 @@ class TextField extends InteractiveObject {
 		
 		if (endIndex == -1) endIndex = __textEngine.text.length;
 		
-		return text.substring (startIndex, endIndex);
+		return __textEngine.text.substring (startIndex, endIndex);
 		
 	}
 	
@@ -871,9 +871,44 @@ class TextField extends InteractiveObject {
 	 */
 	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat {
 		
-		// TODO: handle index
+		var format = null;
 		
-		return __textFormat.clone ();
+		for (group in __textEngine.textFormatRanges) {
+			
+			if ((group.start <= beginIndex && group.end >= beginIndex) || (group.start <= endIndex && group.end >= endIndex)) {
+				
+				if (format == null) {
+					
+					format = group.format.clone ();
+					
+				} else {
+					
+					if (group.format.font != format.font) format.font = null;
+					if (group.format.size != format.size) format.size = null;
+					if (group.format.color != format.color) format.color = null;
+					if (group.format.bold != format.bold) format.bold = null;
+					if (group.format.italic != format.italic) format.italic = null;
+					if (group.format.underline != format.underline) format.underline = null;
+					if (group.format.url != format.url) format.url = null;
+					if (group.format.target != format.target) format.target = null;
+					if (group.format.align != format.align) format.align = null;
+					if (group.format.leftMargin != format.leftMargin) format.leftMargin = null;
+					if (group.format.rightMargin != format.rightMargin) format.rightMargin = null;
+					if (group.format.indent != format.indent) format.indent = null;
+					if (group.format.leading != format.leading) format.leading = null;
+					if (group.format.blockIndent != format.blockIndent) format.blockIndent = null;
+					if (group.format.bullet != format.bullet) format.bullet = null;
+					if (group.format.kerning != format.kerning) format.kerning = null;
+					if (group.format.letterSpacing != format.letterSpacing) format.letterSpacing = null;
+					if (group.format.tabStops != format.tabStops) format.tabStops = null;
+					
+				}
+				
+			}
+			
+		}
+		
+		return format;
 		
 	}
 	
@@ -893,7 +928,8 @@ class TextField extends InteractiveObject {
 	 */
 	public function setSelection (beginIndex:Int, endIndex:Int) {
 		
-		openfl.Lib.notImplemented ("TextField.setSelection");
+		__selectionIndex = beginIndex;
+		__caretIndex = endIndex;
 		
 	}
 	
