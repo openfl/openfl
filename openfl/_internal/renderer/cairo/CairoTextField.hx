@@ -122,6 +122,7 @@ class CairoTextField {
 				//
 			//}
 			
+			var scrollX = -textField.scrollH;
 			var scrollY = 0.0;
 			
 			for (i in 0...textField.scrollV - 1) {
@@ -170,7 +171,7 @@ class CairoTextField {
 					size = Std.int (group.format.size);
 					cairo.setFontSize (size);
 					
-					cairo.moveTo (group.offsetX, group.offsetY + group.ascent + scrollY);
+					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
 					cairo.showText (text.substring (group.startIndex, group.endIndex));
 					
 					if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {

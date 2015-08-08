@@ -1491,7 +1491,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function get_maxScrollH ():Int { 
 		
-		return 0;
+		__updateLayout ();
+		
+		return __textEngine.maxScrollH;
 		
 	}
 	
@@ -1500,7 +1502,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		return __textEngine.numLines;
+		return __textEngine.maxScrollV;
 		
 	}
 	
@@ -1558,6 +1560,9 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function set_scrollH (value:Int):Int {
 		
+		if (value > __textEngine.maxScrollH) value = __textEngine.maxScrollH;
+		if (value < 0) value = 0;
+		
 		if (value != __textEngine.scrollH) {
 			
 			__dirty = true;
@@ -1577,6 +1582,9 @@ class TextField extends InteractiveObject {
 	
 	
 	@:noCompletion private function set_scrollV (value:Int):Int {
+		
+		if (value > __textEngine.maxScrollV) value = __textEngine.maxScrollV;
+		if (value < 1) value = 1;
 		
 		if (value != __textEngine.scrollV) {
 			

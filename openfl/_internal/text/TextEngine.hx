@@ -76,6 +76,8 @@ class TextEngine {
 	public var lineHeights:Array<Float>;
 	public var lineWidths:Array<Float>;
 	public var maxChars:Int;
+	public var maxScrollH (default, null):Int;
+	public var maxScrollV (default, null):Int;
 	public var multiline:Bool;
 	public var numLines (default, null):Int;
 	public var restrict:String;
@@ -443,6 +445,7 @@ class TextEngine {
 		textHeight = 0;
 		numLines = 1;
 		bottomScrollV = 0;
+		maxScrollH = 0;
 		
 		for (group in layoutGroups) {
 			
@@ -497,6 +500,18 @@ class TextEngine {
 			bottomScrollV++;
 			
 		}
+		
+		if (textWidth > width - 4) {
+			
+			maxScrollH = Std.int (textWidth - width + 4);
+			
+		} else {
+			
+			maxScrollH = 0;
+			
+		}
+		
+		maxScrollV = numLines;
 		
 	}
 	
@@ -966,6 +981,8 @@ class TextEngine {
 			textWidth = 0;
 			textHeight = 0;
 			numLines = 1;
+			maxScrollH = 0;
+			maxScrollV = 1;
 			
 		} else {
 			

@@ -215,6 +215,7 @@ class CanvasTextField {
 					//context.textBaseline = "alphabetic";
 					context.textAlign = "start";
 					
+					var scrollX = -textField.scrollH;
 					var scrollY = 0.0;
 					
 					for (i in 0...textField.scrollV - 1) {
@@ -241,7 +242,7 @@ class CanvasTextField {
 							//
 						//}
 						
-						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX, group.offsetY + scrollY);
+						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + scrollY);
 						
 						if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
 							
