@@ -620,9 +620,27 @@ class TextField extends InteractiveObject {
 	 * @return A rectangle with <code>x</code> and <code>y</code> minimum and
 	 *         maximum values defining the bounding box of the character.
 	 */
-	public function getCharBoundaries (a:Int):Rectangle {
+	public function getCharBoundaries (charIndex:Int):Rectangle {
 		
-		openfl.Lib.notImplemented ("TextField.getCharBoundaries");
+		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
+				
+				var x = group.offsetX;
+				
+				for (i in 0...(charIndex - group.startIndex)) {
+					
+					x += group.advances[i];
+					
+				}
+				
+				return new Rectangle (x, group.offsetY, group.advances[charIndex - group.startIndex], group.ascent + group.descent);
+				
+			}
+			
+		}
 		
 		return null;
 		
@@ -641,9 +659,53 @@ class TextField extends InteractiveObject {
 	 */
 	public function getCharIndexAtPoint (x:Float, y:Float):Int {
 		
-		openfl.Lib.notImplemented ("TextField.getCharIndexAtPoint");
+		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return -1;
 		
-		return 0;
+		x += scrollH;
+		
+		for (i in 0...scrollV - 1) {
+			
+			y += __textEngine.lineHeights[i];
+			
+		}
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (y >= group.offsetY && y <= group.offsetY + group.height) {
+				
+				if (x >= group.offsetX && x <= group.offsetX + group.width) {
+					
+					var advance = 0.0;
+					
+					for (i in 0...group.advances.length) {
+						
+						advance += group.advances[i];
+						
+						if (x <= group.offsetX + advance) {
+							
+							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+								
+								return group.startIndex + i;
+								
+							} else {
+								
+								return group.startIndex + i + 1;
+								
+							}
+							
+						}
+						
+					}
+					
+					return group.endIndex;
+					
+				}
+				
+			}
+			
+		}
+		
+		return -1;
 		
 	}
 	
@@ -660,9 +722,25 @@ class TextField extends InteractiveObject {
 	 */
 	public function getLineIndexAtPoint (x:Float, y:Float):Int {
 		
-		openfl.Lib.notImplemented ("TextField.getLineIndexAtPoint");
+		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return -1;
 		
-		return 0;
+		for (i in 0...scrollV - 1) {
+			
+			y += __textEngine.lineHeights[i];
+			
+		}
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (y >= group.offsetY && y <= group.offsetY + group.height) {
+				
+				return group.lineIndex;
+				
+			}
+			
+		}
+		
+		return -1;
 		
 	}
 	
@@ -865,51 +943,6 @@ class TextField extends InteractiveObject {
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
 		return (type == INPUT && selectable) ? TEXT : null;
-		
-	}
-	
-	
-	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
-		
-		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return 0;
-		
-		for (group in __textEngine.layoutGroups) {
-			
-			if (y >= group.offsetY && y <= group.offsetY + group.height) {
-				
-				if (x >= group.offsetX && x <= group.offsetX + group.width) {
-					
-					var advance = 0.0;
-					
-					for (i in 0...group.advances.length) {
-						
-						advance += group.advances[i];
-						
-						if (x <= group.offsetX + advance) {
-							
-							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
-								
-								return group.startIndex + i;
-								
-							} else {
-								
-								return group.startIndex + i + 1;
-								
-							}
-							
-						}
-						
-					}
-					
-					return group.endIndex;
-					
-				}
-				
-			}
-			
-		}
-		
-		return 0;
 		
 	}
 	
@@ -1844,7 +1877,7 @@ class TextField extends InteractiveObject {
 			
 			__updateLayout ();
 			
-			__caretIndex = __getPosition (mouseX, mouseY);
+			__caretIndex = getCharIndexAtPoint (mouseX, mouseY);
 			__dirty = true;
 			
 		}
@@ -1867,7 +1900,7 @@ class TextField extends InteractiveObject {
 			var px = __worldTransform.__transformInverseX (x, y);
 			var py = __worldTransform.__transformInverseY (x, y);
 			
-			var upPos:Int = __getPosition (mouseX, mouseY);
+			var upPos:Int = getCharIndexAtPoint (mouseX, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 			
@@ -1911,7 +1944,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		__caretIndex = __getPosition (mouseX, mouseY);
+		__caretIndex = getCharIndexAtPoint (mouseX, mouseY);
 		__selectionIndex = __caretIndex;
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
