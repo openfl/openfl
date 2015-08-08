@@ -951,6 +951,9 @@ class TextEngine {
 			lineWidths.splice (0, lineWidths.length);
 			layoutGroups.splice (0, layoutGroups.length);
 			
+			textWidth = 0;
+			textHeight = 0;
+			
 		} else {
 			
 			getLayoutGroups ();

@@ -1527,7 +1527,8 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function get_numLines ():Int {
 		
 		__updateLayout ();
-		return __textEngine.lineBreaks.length + 1;
+		
+		return (__textEngine.lineHeights.length > 0 ? __textEngine.lineHeights.length : 1);
 		
 	}
 	
