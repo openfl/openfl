@@ -901,6 +901,8 @@ class TextField extends InteractiveObject {
 						
 					}
 					
+					return group.endIndex;
+					
 				}
 				
 			}
@@ -1865,6 +1867,9 @@ class TextField extends InteractiveObject {
 			__caretIndex = rightPos;
 			
 			this_onFocusIn (null);
+			
+			__stopCursorTimer ();
+			__startCursorTimer ();
 			
 		}
 		
