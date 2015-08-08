@@ -1912,19 +1912,40 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function window_onTextInput (value:String):Void {
 		
-		__textEngine.text = __textEngine.text.substring (0, __caretIndex) + value + __textEngine.text.substring (__caretIndex);
+		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
+		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
-		for (range in __textEngine.textFormatRanges) {
+		__textEngine.text = __textEngine.text.substring (0, startIndex) + value + __textEngine.text.substring (endIndex);
+		
+		var offset = value.length - (endIndex - startIndex);
+		
+		var i = 0;
+		var range;
+		
+		while (i < __textEngine.textFormatRanges.length) {
 			
-			if (range.start <= __caretIndex && range.end >= __caretIndex) {
+			range = __textEngine.textFormatRanges[i];
+			
+			if (range.start <= startIndex && range.end >= endIndex) {
 				
-				range.end += value.length;
+				range.end += offset;
+				i++;
+				
+			} else if (range.start >= startIndex && range.end <= endIndex) {
+				
+				__textEngine.textFormatRanges.splice (i, 1);
+				offset -= (range.end - range.start);
+				
+			} else if (range.start > startIndex && range.start <= endIndex) {
+				
+				range.start += offset;
+				i++;
 				
 			}
 			
 		}
 		
-		__caretIndex += value.length;
+		__caretIndex += offset;
 		__selectionIndex = __caretIndex;
 		
 		__dirty = true;
