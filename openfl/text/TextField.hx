@@ -1225,7 +1225,7 @@ class TextField extends InteractiveObject {
 		#if lime_cairo
 		CairoTextField.render (this, renderSession);
 		#else
-		//CanvasTextField.render (this, renderSession);
+		CanvasTextField.render (this, renderSession);
 		#end
 		
 		GLRenderer.renderBitmap (this, renderSession);
