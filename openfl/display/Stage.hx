@@ -1399,6 +1399,40 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		var clickType = switch (mouseType) {
+			
+			case MouseEvent.MOUSE_UP: MouseEvent.CLICK;
+			case MouseEvent.MIDDLE_MOUSE_UP: MouseEvent.MIDDLE_CLICK;
+			case MouseEvent.RIGHT_MOUSE_UP: MouseEvent.RIGHT_CLICK;
+			default: null;
+			
+		}
+		
+		if (clickType != null) {
+			
+			var target:InteractiveObject = (__stack.length > 0) ? cast __stack[__stack.length - 1] : this;
+			if (target == null) target = this;
+			
+			__fireEvent (MouseEvent.__create (clickType, 0, __mouseX, __mouseY, (target == this ? point : target.globalToLocal (point)), target), __stack);
+			
+			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
+				
+				var currentTime = Lib.getTimer ();
+				if (currentTime - __lastClickTime < 500) {
+					
+					__fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, 0, __mouseX, __mouseY, (target == this ? point : target.globalToLocal (point)), target), __stack);
+					__lastClickTime = 0;
+					
+				} else {
+					
+					__lastClickTime = currentTime;
+					
+				}
+				
+			}
+			
+		}
+		
 		if (type == TouchEvent.TOUCH_MOVE && __dragObject != null) {
 			
 			__drag (point);
