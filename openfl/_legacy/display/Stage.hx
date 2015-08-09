@@ -188,6 +188,12 @@ class Stage extends DisplayObjectContainer {
 
 	}
 
+	public function setminsize (width:Int, height:Int):Void {
+
+		lime_stage_set_min_size (__handle, width, height);
+
+	}
+
 
 	public function setResolution (width:Int, height:Int):Void {
 		lime_stage_set_resolution(__handle, width, height);
@@ -1492,6 +1498,7 @@ class Stage extends DisplayObjectContainer {
 	private static var lime_stage_set_next_wake = Lib.load ("lime-legacy", "lime_legacy_stage_set_next_wake", 2);
 	private static var lime_stage_request_render = Lib.load ("lime-legacy", "lime_legacy_stage_request_render", 0);
 	private static var lime_stage_resize_window = Lib.load ("lime-legacy", "lime_legacy_stage_resize_window", 3);
+	private static var lime_stage_set_min_size = Lib.load ("lime-legacy", "lime_legacy_stage_set_min_size", 3);
 	private static var lime_stage_set_resolution = Lib.load ("lime-legacy", "lime_legacy_stage_set_resolution", 3);
 	private static var lime_stage_set_screenmode = Lib.load ("lime-legacy", "lime_legacy_stage_set_screenmode", 5);
 	private static var lime_stage_set_fullscreen = Lib.load ("lime-legacy", "lime_legacy_stage_set_fullscreen", 2);
