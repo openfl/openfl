@@ -192,6 +192,55 @@ class TextEngine {
 	}
 	
 	
+	private function getBounds ():Void {
+		
+		var padding = border ? 1 : 0;
+		
+		switch (autoSize) {
+			
+			case LEFT, RIGHT, CENTER:
+				
+				if (wordWrap) {
+					
+					bounds.width = width + padding;
+					
+				} else {
+					
+					bounds.width = textWidth + 4 + padding;
+					
+				}
+				
+				bounds.height = textHeight + 4 + padding;
+			
+			default:
+				
+				bounds.width = width + padding;
+				bounds.height = height + padding;
+			
+		}
+		
+		switch (autoSize) {
+			
+			case RIGHT:
+				
+				bounds.x = width - (bounds.width - padding);
+				bounds.y = 0;
+			
+			case CENTER:
+				
+				bounds.x = (width - (bounds.width - padding)) / 2;
+				bounds.y = 0;
+			
+			default:
+				
+				bounds.x = 0;
+				bounds.y = 0;
+			
+		}
+		
+	}
+	
+	
 	public static function getFont (format:TextFormat):String {
 		
 		var font = format.italic ? "italic " : "normal ";
@@ -1046,17 +1095,7 @@ class TextEngine {
 			
 		}
 		
-		if (autoSize != TextFieldAutoSize.NONE) {
-			
-			bounds.width = (textWidth + 4) + (border ? 1 : 0);
-			bounds.height = (textHeight + 4) + (border ? 1 : 0);
-			
-		} else {
-			
-			bounds.width = width + (border ? 1 : 0);
-			bounds.height = height + (border ? 1 : 0);
-			
-		}
+		getBounds ();
 		
 	}
 	

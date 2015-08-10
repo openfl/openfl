@@ -169,7 +169,7 @@ class CanvasTextField {
 					
 					if (textEngine.border || textEngine.background) {
 						
-						context.rect (0.5, 0.5, textEngine.width, textEngine.height);
+						context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
 						
 						if (textEngine.background) {
 							
@@ -268,11 +268,11 @@ class CanvasTextField {
 						
 						if (textEngine.border) {
 							
-							context.rect (0.5, 0.5, textEngine.width, textEngine.height);
+							context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
 							
 						} else {
 							
-							context.rect (0, 0, textEngine.width, textEngine.height);
+							context.rect (0, 0, bounds.width, bounds.height);
 							
 						}
 						

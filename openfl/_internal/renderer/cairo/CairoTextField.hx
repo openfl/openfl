@@ -67,7 +67,7 @@ class CairoTextField {
 			
 		}
 		
-		cairo.rectangle (0.5, 0.5, Std.int (textEngine.width), Std.int (textEngine.height));
+		cairo.rectangle (0.5, 0.5, Std.int (bounds.width - 1), Std.int (bounds.height - 1));
 		
 		if (!textEngine.background) {
 			
@@ -103,7 +103,7 @@ class CairoTextField {
 		
 		if (textEngine.text != null && textEngine.text != "") {
 			
-			cairo.rectangle (0, 0, textEngine.width, textEngine.height);
+			cairo.rectangle (0, 0, bounds.width - (textField.border ? 1 : 0), bounds.height - (textField.border ? 1 : 0));
 			cairo.clip ();
 			
 			var text = textEngine.text;
