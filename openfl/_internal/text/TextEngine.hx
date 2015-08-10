@@ -1053,8 +1053,8 @@ class TextEngine {
 			
 		} else {
 			
-			bounds.width = width;
-			bounds.height = height;
+			bounds.width = width + (border ? 1 : 0);
+			bounds.height = height + (border ? 1 : 0);
 			
 		}
 		

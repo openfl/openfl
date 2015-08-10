@@ -114,7 +114,6 @@ class CanvasTextField {
 		if (textField.__dirty) {
 			
 			var textEngine = textField.__textEngine;
-			var bounds = textField.getBounds (null);
 			
 			textField.__updateLayout ();
 			
@@ -126,6 +125,8 @@ class CanvasTextField {
 				textField.__dirty = false;
 				
 			} else {
+				
+				var bounds = textEngine.bounds;
 				
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 					
@@ -163,14 +164,12 @@ class CanvasTextField {
 						
 					}
 					
-					var bounds = textEngine.bounds;
-					
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textEngine.border || textEngine.background) {
 						
-						context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);
+						context.rect (0.5, 0.5, textEngine.width, textEngine.height);
 						
 						if (textEngine.background) {
 							
@@ -262,14 +261,14 @@ class CanvasTextField {
 					
 				} else {
 					
-					graphics.__canvas.width = Math.ceil (textEngine.width + 1);
-					graphics.__canvas.height = Math.ceil (textEngine.height + 1);
+					graphics.__canvas.width = Math.ceil (bounds.width);
+					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textEngine.border || textEngine.background) {
 						
 						if (textEngine.border) {
 							
-							context.rect (0.5, 0.5, textEngine.width - 1, textEngine.height - 1);
+							context.rect (0.5, 0.5, textEngine.width, textEngine.height);
 							
 						} else {
 							
