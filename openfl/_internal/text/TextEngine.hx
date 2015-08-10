@@ -969,7 +969,16 @@ class TextEngine {
 								
 								if (layoutGroups[j].lineIndex == lineIndex) {
 									
-									lineLength++;
+									if (j == layoutGroups.length - 1) {
+										
+										lineLength = 1;
+										break;
+										
+									} else {
+										
+										lineLength++;
+										
+									}
 									
 								} else {
 									
@@ -983,10 +992,9 @@ class TextEngine {
 								
 								offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
 								
-								for (j in (i + 1)...(i + lineLength)) {
+								for (j in 1...lineLength) {
 									
-									layoutGroups[j].offsetX += offsetX;
-									offsetX += offsetX;
+									layoutGroups[i + j].offsetX += (offsetX * j);
 									
 								}
 								
