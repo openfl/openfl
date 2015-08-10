@@ -850,8 +850,8 @@ class TextField extends InteractiveObject {
 		var margin = switch (__textFormat.align) {
 			
 			case LEFT, JUSTIFY: 2;
-			case RIGHT: (__textEngine.bounds.width - lineWidth) - 2;
-			case CENTER: (__textEngine.bounds.width - lineWidth) / 2;
+			case RIGHT: (__textEngine.width - lineWidth) - 2;
+			case CENTER: (__textEngine.width - lineWidth) / 2;
 			
 		}
 		
@@ -1314,6 +1314,57 @@ class TextField extends InteractiveObject {
 		if (__layoutDirty) {
 			
 			__textEngine.update ();
+			
+			if (autoSize != NONE) {
+				
+				__layoutDirty = false;
+				
+				var cacheWidth = __textEngine.width;
+				var cacheHeight = __textEngine.height;
+				
+				switch (autoSize) {
+					
+					case LEFT, RIGHT, CENTER:
+						
+						if (!wordWrap) {
+							
+							__textEngine.width = __textEngine.textWidth + 4;
+							
+						}
+						
+						__textEngine.height = __textEngine.textHeight + 4;
+					
+					default:
+						
+					
+				}
+				
+				switch (autoSize) {
+					
+					case RIGHT:
+						
+						x += cacheWidth - __textEngine.width;
+					
+					case CENTER:
+						
+						x += (cacheWidth - __textEngine.width) / 2;
+					
+					default:
+						
+					
+				}
+				
+				if (__layoutDirty) {
+					
+					// TODO: Clean this up
+					
+					__textEngine.getLineMeasurements ();
+					__textEngine.getBounds ();
+					
+				}
+				
+			}
+			
 			__layoutDirty = false;
 			
 		}
@@ -1550,7 +1601,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private override function get_height ():Float {
 		
 		__updateLayout ();
-		return __textEngine.bounds.height;
+		return __textEngine.height;
 		
 	}
 	
@@ -2043,7 +2094,7 @@ class TextField extends InteractiveObject {
 	override private function get_width ():Float {
 		
 		__updateLayout ();
-		return __textEngine.bounds.width;
+		return __textEngine.width;
 		
 	}
 	
