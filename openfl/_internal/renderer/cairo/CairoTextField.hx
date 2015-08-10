@@ -59,8 +59,9 @@ class CairoTextField {
 			cairo = graphics.__cairo;
 			
 			var options = new CairoFontOptions ();
-			options.hintStyle = FULL;
-			options.hintMetrics = ON;
+			//options.hintStyle = DEFAULT;
+			//options.hintMetrics = ON;
+			options.hintMetrics = OFF;
 			options.antialias = GOOD;
 			cairo.setFontOptions (options);
 			
