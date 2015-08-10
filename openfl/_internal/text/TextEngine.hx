@@ -486,7 +486,7 @@ class TextEngine {
 		
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
-		var currentLineLeading = 0.0;
+		var currentLineLeading:Null<Int> = null;
 		var currentLineHeight = 0.0;
 		var currentLineWidth = 0.0;
 		
@@ -502,13 +502,13 @@ class TextEngine {
 				
 				lineAscents.push (currentLineAscent);
 				lineDescents.push (currentLineDescent);
-				lineLeadings.push (currentLineLeading);
+				lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
 				lineHeights.push (currentLineHeight);
 				lineWidths.push (currentLineWidth);
 				
 				currentLineAscent = 0;
 				currentLineDescent = 0;
-				currentLineLeading = 0;
+				currentLineLeading = null;
 				currentLineHeight = 0;
 				currentLineWidth = 0;
 				
@@ -524,7 +524,17 @@ class TextEngine {
 			
 			currentLineAscent = Math.max (currentLineAscent, group.ascent);
 			currentLineDescent = Math.max (currentLineDescent, group.descent);
-			currentLineLeading = Math.max (currentLineLeading, group.leading);
+			
+			if (currentLineLeading == null) {
+				
+				currentLineLeading = group.leading;
+				
+			} else {
+				
+				currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
+				
+			}
+			
 			currentLineHeight = Math.max (currentLineHeight, group.height);
 			currentLineWidth = group.offsetX - 2 + group.width;
 			
@@ -534,21 +544,25 @@ class TextEngine {
 				
 			}
 			
-			if (numLines > 1) {
+			textHeight = group.offsetY - 2 + group.ascent + group.descent;
+			
+		}
+		
+		if (numLines == 1) {
+			
+			if (textHeight <= height - 2) {
 				
-				textHeight = group.offsetY + group.ascent + group.descent - 2;
-				
-			} else {
-				
-				textHeight = group.offsetY + group.height - 2;
+				bottomScrollV = 1;
 				
 			}
+			
+			textHeight += currentLineLeading;
 			
 		}
 		
 		lineAscents.push (currentLineAscent);
 		lineDescents.push (currentLineDescent);
-		lineLeadings.push (currentLineLeading);
+		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
 		lineHeights.push (currentLineHeight);
 		lineWidths.push (currentLineWidth);
 		
@@ -698,6 +712,7 @@ class TextEngine {
 				ascent = formatRange.format.size * 0.8;
 				descent = formatRange.format.size * 0.2;
 				leading = formatRange.format.leading;
+				
 				heightValue = ascent + descent + leading;
 				
 				#elseif (cpp || neko || nodejs)

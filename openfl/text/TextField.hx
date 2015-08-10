@@ -1475,6 +1475,10 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat {
 		
 		__textFormat.__merge (value);
+		
+		__layoutDirty = true;
+		__dirty = true;
+		
 		return value;
 		
 	}
