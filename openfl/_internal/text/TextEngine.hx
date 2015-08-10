@@ -534,7 +534,15 @@ class TextEngine {
 				
 			}
 			
-			textHeight = group.offsetY + group.ascent + group.descent;
+			if (numLines > 1) {
+				
+				textHeight = group.offsetY + group.ascent + group.descent - 2;
+				
+			} else {
+				
+				textHeight = group.offsetY + group.height - 2;
+				
+			}
 			
 		}
 		
@@ -690,7 +698,7 @@ class TextEngine {
 				ascent = formatRange.format.size * 0.8;
 				descent = formatRange.format.size * 0.2;
 				leading = formatRange.format.leading;
-				heightValue = Std.int (ascent + descent + leading);
+				heightValue = ascent + descent + leading;
 				
 				#elseif (cpp || neko || nodejs)
 				
@@ -700,16 +708,7 @@ class TextEngine {
 				descent = Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size);
 				leading = formatRange.format.leading;
 				
-				//TODO: Why is this necessary?
-				
-				if (formatRange.format != null && __defaultFonts.exists (formatRange.format.font) && formatRange.format.size == 12) {
-					
-					ascent += 2;
-					offsetY -= 1;
-					
-				}
-				
-				heightValue = Std.int (ascent + descent + leading);
+				heightValue = ascent + descent + leading;
 				
 				#end
 				
@@ -744,14 +743,7 @@ class TextEngine {
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
-				// TODO: Why is this different (or necessary?)
-				
-				#if (cpp || neko || nodejs)
 				offsetY += heightValue;
-				#else
-				offsetY += heightValue + 4;
-				#end
-				
 				offsetX = 2;
 				
 				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
@@ -759,14 +751,7 @@ class TextEngine {
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.offsetX = offsetX;
 					
-					// TODO: Why is this different (or necessary?)
-					
-					#if (cpp || neko || nodejs)
 					offsetY += heightValue;
-					#else
-					offsetY += heightValue + 4;
-					#end
-					
 					lineIndex++;
 					
 				}
@@ -806,13 +791,7 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						// TODO: Why is this different (or necessary?)
-						
-						#if (cpp || neko || nodejs)
 						offsetY += heightValue;
-						#else
-						offsetY += heightValue + 4;
-						#end
 						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
