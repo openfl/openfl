@@ -477,7 +477,7 @@ class TextEngine {
 			currentLineDescent = Math.max (currentLineDescent, group.descent);
 			currentLineLeading = Math.max (currentLineLeading, group.leading);
 			currentLineHeight = Math.max (currentLineHeight, group.height);
-			currentLineWidth += group.width;
+			currentLineWidth = group.offsetX - 2 + group.width;
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -537,6 +537,7 @@ class TextEngine {
 		var offsetY = 2.0;
 		var textIndex = 0;
 		var lineIndex = 0;
+		var lineFormat = null;
 		
 		var getAdvances = function (text:String, startIndex:Int, endIndex:Int):Array<Float> {
 			
@@ -675,6 +676,7 @@ class TextEngine {
 		
 		nextFormatRange ();
 		
+		lineFormat = formatRange.format;
 		var wrap;
 		
 		while (textIndex < text.length) {
@@ -727,6 +729,7 @@ class TextEngine {
 				if (formatRange.end == breakIndex) {
 					
 					nextFormatRange ();
+					lineFormat = formatRange.format;
 					
 				}
 				
@@ -822,7 +825,17 @@ class TextEngine {
 						
 					} else {
 						
-						if (layoutGroup == null) {
+						if (layoutGroup != null && textIndex == spaceIndex) {
+							
+							if (formatRange.format.align != JUSTIFY) {
+								
+								layoutGroup.endIndex = spaceIndex;
+								
+							}
+							
+							marginRight += spaceWidth;
+							
+						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
 							
 							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
 							layoutGroup.advances = advances;
@@ -840,20 +853,16 @@ class TextEngine {
 							
 						} else {
 							
-							layoutGroup.endIndex = spaceIndex;
-							
-							if (textIndex == spaceIndex) {
+							for (i in 0...(textIndex - layoutGroup.endIndex)) {
 								
-								marginRight += spaceWidth;
-								
-							} else {
-								
-								layoutGroup.advances.push (spaceWidth);
-								layoutGroup.advances = layoutGroup.advances.concat (advances);
-								layoutGroup.width += marginRight + widthValue;
-								marginRight = spaceWidth;
+								layoutGroup.advances.push (marginRight / (textIndex - layoutGroup.endIndex));
 								
 							}
+							
+							layoutGroup.endIndex = spaceIndex;
+							layoutGroup.advances = layoutGroup.advances.concat (advances);
+							layoutGroup.width += marginRight + widthValue;
+							marginRight = spaceWidth;
 							
 						}
 						
@@ -914,8 +923,11 @@ class TextEngine {
 		
 		var lineIndex = -1;
 		var offsetX = 0.0;
+		var group, lineLength;
 		
-		for (group in layoutGroups) {
+		for (i in 0...layoutGroups.length) {
+			
+			group = layoutGroups[i];
 			
 			if (group.lineIndex != lineIndex) {
 				
@@ -937,7 +949,7 @@ class TextEngine {
 					
 					case RIGHT:
 						
-						if (lineWidths[lineIndex] < width) {
+						if (lineWidths[lineIndex] < width - 4) {
 							
 							offsetX = Math.round (width - 4 - lineWidths[lineIndex]);
 							
@@ -946,6 +958,43 @@ class TextEngine {
 							offsetX = 0;
 							
 						}
+					
+					case JUSTIFY:
+						
+						if (lineWidths[lineIndex] < width - 4) {
+							
+							lineLength = 1;
+							
+							for (j in (i + 1)...layoutGroups.length) {
+								
+								if (layoutGroups[j].lineIndex == lineIndex) {
+									
+									lineLength++;
+									
+								} else {
+									
+									break;
+									
+								}
+								
+							}
+							
+							if (lineLength > 1) {
+								
+								offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
+								
+								for (j in (i + 1)...(i + lineLength)) {
+									
+									layoutGroups[j].offsetX += offsetX;
+									offsetX += offsetX;
+									
+								}
+								
+							}
+							
+						}
+						
+						offsetX = 0;
 					
 					default:
 						
