@@ -1315,18 +1315,16 @@ class TextField extends InteractiveObject {
 			
 			__textEngine.update ();
 			
-			if (autoSize != NONE) {
-				
-				__layoutDirty = false;
+			if (__textEngine.autoSize != NONE) {
 				
 				var cacheWidth = __textEngine.width;
 				var cacheHeight = __textEngine.height;
 				
-				switch (autoSize) {
+				switch (__textEngine.autoSize) {
 					
 					case LEFT, RIGHT, CENTER:
 						
-						if (!wordWrap) {
+						if (!__textEngine.wordWrap) {
 							
 							__textEngine.width = __textEngine.textWidth + 4;
 							
@@ -1339,29 +1337,27 @@ class TextField extends InteractiveObject {
 					
 				}
 				
-				switch (autoSize) {
+				if (__textEngine.width != cacheWidth) {
 					
-					case RIGHT:
+					switch (__textEngine.autoSize) {
 						
-						x += cacheWidth - __textEngine.width;
+						case RIGHT:
+							
+							x += cacheWidth - __textEngine.width;
+						
+						case CENTER:
+							
+							x += (cacheWidth - __textEngine.width) / 2;
+						
+						default:
+							
+						
+					}
 					
-					case CENTER:
-						
-						x += (cacheWidth - __textEngine.width) / 2;
-					
-					default:
-						
 					
 				}
 				
-				if (__layoutDirty) {
-					
-					// TODO: Clean this up
-					
-					__textEngine.getLineMeasurements ();
-					__textEngine.getBounds ();
-					
-				}
+				__textEngine.getBounds ();
 				
 			}
 			
