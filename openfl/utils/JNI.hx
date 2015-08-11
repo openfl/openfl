@@ -6,5 +6,5 @@ package openfl.utils;
 typedef JNI = openfl._legacy.utils.JNI;
 #end
 #else
-typedef JNI = lime.utils.JNI;
+typedef JNI = lime.system.JNI;
 #end
