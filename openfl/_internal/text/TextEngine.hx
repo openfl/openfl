@@ -722,7 +722,7 @@ class TextEngine {
 				offsetY += heightValue;
 				offsetX = 2;
 				
-				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 4)) {
+				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 2)) {
 					
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.offsetX = offsetX;
@@ -757,7 +757,7 @@ class TextEngine {
 					
 					if (wordWrap) {
 						
-						if (offsetX + widthValue > width - 4) {
+						if (offsetX + widthValue > width - 2) {
 							
 							wrap = true;
 							
