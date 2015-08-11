@@ -243,17 +243,57 @@ class CanvasTextField {
 						
 						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + scrollY);
 						
-						if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+						if (textField.__caretIndex > -1 && textEngine.selectable) {
 							
-							advance = 0.0;
-							
-							for (i in 0...(textField.__caretIndex - group.startIndex)) {
+							if (textField.__selectionIndex == textField.__caretIndex) {
 								
-								advance += group.advances[i];
+								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+									
+									advance = 0.0;
+									
+									for (i in 0...(textField.__caretIndex - group.startIndex)) {
+										
+										advance += group.advances[i];
+										
+									}
+									
+									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height + 4);
+									
+								}
+								
+							} else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) || (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)) {
+								
+								var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
+								var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
+								
+								if (group.startIndex > selectionStart) {
+									
+									selectionStart = group.startIndex;
+									
+								}
+								
+								if (group.endIndex < selectionEnd) {
+									
+									selectionEnd = group.endIndex;
+									
+								}
+								
+								var start = textField.getCharBoundaries (selectionStart);
+								var end = textField.getCharBoundaries (selectionEnd - 1);
+								
+								if (start != null && end != null) {
+									
+									context.fillStyle = "#000000";
+									context.fillRect (start.x, start.y, end.right - start.x, group.height + 4);
+									context.fillStyle = "#FFFFFF";
+									
+									// TODO: fill only once
+									
+									context.fillText (text.substring (selectionStart, selectionEnd), start.x, group.offsetY + scrollY);
+									
+								}
 								
 							}
-							
-							context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
 							
 						}
 						

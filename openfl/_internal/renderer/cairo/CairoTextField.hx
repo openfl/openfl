@@ -172,6 +172,67 @@ class CairoTextField {
 					size = Std.int (group.format.size);
 					cairo.setFontSize (size);
 					
+					if (textField.__caretIndex > -1 && textEngine.selectable) {
+						
+						if (textField.__selectionIndex == textField.__caretIndex) {
+							
+							if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+								
+								advance = 0.0;
+								
+								for (i in 0...(textField.__caretIndex - group.startIndex)) {
+									
+									advance += group.advances[i];
+									
+								}
+								
+								cairo.moveTo (group.offsetX + advance + 0.5, group.offsetY + 0.5);
+								cairo.lineTo (group.offsetX + advance + 0.5, group.offsetY + group.height - 1);
+								cairo.stroke ();
+								
+							}
+							
+						} else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) || (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)) {
+							
+							var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
+							var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
+							
+							trace (selectionStart);
+							trace (selectionEnd);
+							
+							if (group.startIndex > selectionStart) {
+								
+								selectionStart = group.startIndex;
+								
+							}
+							
+							if (group.endIndex < selectionEnd) {
+								
+								selectionEnd = group.endIndex;
+								
+							}
+							
+							trace (selectionStart);
+							trace (selectionEnd);
+							
+							var start = textField.getCharBoundaries (selectionStart);
+							var end = textField.getCharBoundaries (selectionEnd);
+							
+							if (start != null && end != null) {
+								
+								//cairo.newPath ();
+								cairo.setSourceRGB (0, 0, 0);
+								//cairo.rectangle (start.x, start.y, end.right - start.x, (group.format.size * 1.185) - 4);
+								//cairo.paint ();
+								//cairo.closePath ();
+								//cairo.setSourceRGB (1, 1, 1);
+								
+							}
+							
+						}
+						
+					}
+					
 					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
 					cairo.showText (text.substring (group.startIndex, group.endIndex));
 					
