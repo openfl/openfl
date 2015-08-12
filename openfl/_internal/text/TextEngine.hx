@@ -556,6 +556,8 @@ class TextEngine {
 		var formatRange:TextFormatRange = null;
 		var font = null;
 		
+		var currentFormat = TextField.__defaultTextFormat.clone ();
+		
 		var ascent, descent, leading, layoutGroup;
 		var advances, widthValue, heightValue;
 		
@@ -597,7 +599,13 @@ class TextEngine {
 			
 			__textLayout.text = null;
 			__textLayout.font = font;
-			__textLayout.size = formatRange.format.size;
+			
+			if (formatRange.format.size != null) {
+				
+				__textLayout.size = formatRange.format.size;
+				
+			}
+			
 			__textLayout.text = text.substring (startIndex, endIndex);
 			
 			for (position in __textLayout.positions) {
@@ -644,7 +652,13 @@ class TextEngine {
 			
 			__textLayout.text = null;
 			__textLayout.font = font;
-			__textLayout.size = formatRange.format.size;
+			
+			if (formatRange.format.size != null) {
+				
+				__textLayout.size = formatRange.format.size;
+				
+			}
+			
 			__textLayout.text = text;
 			
 			for (position in __textLayout.positions) {
@@ -665,24 +679,25 @@ class TextEngine {
 				
 				rangeIndex++;
 				formatRange = textFormatRanges[rangeIndex];
+				currentFormat.__merge (formatRange.format);
 				
 				#if (js && html5)
 				
-				__context.font = getFont (formatRange.format);
+				__context.font = getFont (currentFormat);
 				
-				ascent = formatRange.format.size;
-				descent = formatRange.format.size * 0.185;
-				leading = formatRange.format.leading;
+				ascent = currentFormat.size;
+				descent = currentFormat.size * 0.185;
+				leading = currentFormat.leading;
 				
 				heightValue = ascent + descent + leading;
 				
 				#elseif (cpp || neko || nodejs)
 				
-				font = getFontInstance (formatRange.format);
+				font = getFontInstance (currentFormat);
 				
-				ascent = (font.ascender / font.unitsPerEM) * formatRange.format.size;
-				descent = Math.abs ((font.descender / font.unitsPerEM) * formatRange.format.size);
-				leading = formatRange.format.leading;
+				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
+				descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
+				leading = currentFormat.leading;
 				
 				heightValue = ascent + descent + leading;
 				
