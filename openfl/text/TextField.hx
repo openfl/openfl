@@ -1321,14 +1321,14 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (!__inputEnabled) {
+		if (!__inputEnabled && stage != null) {
 			
-			Lib.application.window.enableTextEvents = true;
+			stage.window.enableTextEvents = true;
 			
-			if (!Lib.application.window.onTextInput.has (window_onTextInput)) {
+			if (!stage.window.onTextInput.has (window_onTextInput)) {
 				
-				Lib.application.window.onTextInput.add (window_onTextInput);
-				Lib.application.window.onKeyDown.add (window_onKeyDown);
+				stage.window.onTextInput.add (window_onTextInput);
+				stage.window.onKeyDown.add (window_onKeyDown);
 				
 			}
 			
@@ -1361,11 +1361,11 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __stopTextInput ():Void {
 		
-		if (__inputEnabled) {
+		if (__inputEnabled && stage != null) {
 			
-			Lib.application.window.enableTextEvents = false;
-			Lib.application.window.onTextInput.remove (window_onTextInput);
-			Lib.application.window.onKeyDown.remove (window_onKeyDown);
+			stage.window.enableTextEvents = false;
+			stage.window.onTextInput.remove (window_onTextInput);
+			stage.window.onKeyDown.remove (window_onKeyDown);
 			
 			__inputEnabled = false;
 			__stopCursorTimer ();

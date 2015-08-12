@@ -1674,14 +1674,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function get_frameRate ():Float {
 		
-		return Lib.application.frameRate;
+		if (window != null) {
+			
+			return window.application.frameRate;
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion private function set_frameRate (value:Float):Float {
 		
-		return Lib.application.frameRate = value;
+		if (window != null) {
+			
+			return window.application.frameRate = value;
+			
+		}
 		
 	}
 
