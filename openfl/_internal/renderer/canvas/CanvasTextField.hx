@@ -253,11 +253,12 @@ class CanvasTextField {
 									
 									for (i in 0...(textField.__caretIndex - group.startIndex)) {
 										
+										if (group.advances.length <= i) break;
 										advance += group.advances[i];
 										
 									}
 									
-									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height + 4);
+									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
 									
 								}
 								
@@ -279,17 +280,17 @@ class CanvasTextField {
 								}
 								
 								var start = textField.getCharBoundaries (selectionStart);
-								var end = textField.getCharBoundaries (selectionEnd - 1);
+								var end = textField.getCharBoundaries (selectionEnd);
 								
 								if (start != null && end != null) {
 									
 									context.fillStyle = "#000000";
-									context.fillRect (start.x, start.y, end.right - start.x, group.height + 4);
+									context.fillRect (start.x, start.y, end.x - start.x, group.height);
 									context.fillStyle = "#FFFFFF";
 									
 									// TODO: fill only once
 									
-									context.fillText (text.substring (selectionStart, selectionEnd), start.x, group.offsetY + scrollY);
+									context.fillText (text.substring (selectionStart, selectionEnd), group.offsetX + scrollX + start.x, group.offsetY + scrollY);
 									
 								}
 								

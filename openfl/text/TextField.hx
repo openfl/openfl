@@ -687,15 +687,7 @@ class TextField extends InteractiveObject {
 						
 						if (x <= group.offsetX + advance) {
 							
-							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
-								
-								return group.startIndex + i;
-								
-							} else {
-								
-								return group.startIndex + i + 1;
-								
-							}
+							return group.startIndex + i;
 							
 						}
 						
@@ -1164,6 +1156,71 @@ class TextField extends InteractiveObject {
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
 		return (type == INPUT && selectable) ? TEXT : null;
+		
+	}
+	
+	
+	@:noCompletion private function __getPosition (x:Float, y:Float):Int {
+		
+		__updateLayout ();
+		
+		x += scrollH;
+		
+		for (i in 0...scrollV - 1) {
+			
+			y += __textEngine.lineHeights[i];
+			
+		}
+		
+		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
+		
+		var firstGroup = true;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (firstGroup) {
+				
+				if (y < group.offsetY) y = group.offsetY;
+				if (x < group.offsetX) x = group.offsetX;
+				firstGroup = false;
+				
+			}
+			
+			if (y >= group.offsetY && y <= group.offsetY + group.height) {
+				
+				if (x >= group.offsetX /*&& x <= group.offsetX + group.width*/) {
+					
+					var advance = 0.0;
+					
+					for (i in 0...group.advances.length) {
+						
+						advance += group.advances[i];
+						
+						if (x <= group.offsetX + advance) {
+							
+							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+								
+								return group.startIndex + i;
+								
+							} else {
+								
+								return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
+								
+							}
+							
+						}
+						
+					}
+					
+					return group.endIndex;
+					
+				}
+				
+			}
+			
+		}
+		
+		return __textEngine.text.length;
 		
 	}
 	
@@ -2147,8 +2204,14 @@ class TextField extends InteractiveObject {
 			
 			__updateLayout ();
 			
-			__caretIndex = getCharIndexAtPoint (mouseX, mouseY);
-			__dirty = true;
+			var position = __getPosition (mouseX, mouseY);
+			
+			if (position != __caretIndex) {
+				
+				__caretIndex = position;
+				__dirty = true;
+				
+			}
 			
 		}
 		
@@ -2170,7 +2233,7 @@ class TextField extends InteractiveObject {
 			var px = __worldTransform.__transformInverseX (x, y);
 			var py = __worldTransform.__transformInverseY (x, y);
 			
-			var upPos:Int = getCharIndexAtPoint (mouseX, mouseY);
+			var upPos:Int = __getPosition (mouseX, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 			
@@ -2214,7 +2277,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		__caretIndex = getCharIndexAtPoint (mouseX, mouseY);
+		__caretIndex = __getPosition (mouseX, mouseY);
 		__selectionIndex = __caretIndex;
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);

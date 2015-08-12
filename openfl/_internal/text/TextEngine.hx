@@ -670,8 +670,8 @@ class TextEngine {
 				
 				__context.font = getFont (formatRange.format);
 				
-				ascent = formatRange.format.size * 0.8;
-				descent = formatRange.format.size * 0.2;
+				ascent = formatRange.format.size;
+				descent = formatRange.format.size * 0.185;
 				leading = formatRange.format.leading;
 				
 				heightValue = ascent + descent + leading;
@@ -837,6 +837,7 @@ class TextEngine {
 								
 							}
 							
+							layoutGroup.advances.push (spaceWidth);
 							marginRight += spaceWidth;
 							
 						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
@@ -853,19 +854,16 @@ class TextEngine {
 							layoutGroup.height = heightValue;
 							layoutGroups.push (layoutGroup);
 							
+							layoutGroup.advances.push (spaceWidth);
 							marginRight = spaceWidth;
 							
 						} else {
 							
-							for (i in 0...(textIndex - layoutGroup.endIndex)) {
-								
-								layoutGroup.advances.push (marginRight / (textIndex - layoutGroup.endIndex));
-								
-							}
-							
 							layoutGroup.endIndex = spaceIndex;
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
 							layoutGroup.width += marginRight + widthValue;
+							
+							layoutGroup.advances.push (spaceWidth);
 							marginRight = spaceWidth;
 							
 						}

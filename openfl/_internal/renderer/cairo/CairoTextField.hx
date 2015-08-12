@@ -172,6 +172,9 @@ class CairoTextField {
 					size = Std.int (group.format.size);
 					cairo.setFontSize (size);
 					
+					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
+					cairo.showText (text.substring (group.startIndex, group.endIndex));
+					
 					if (textField.__caretIndex > -1 && textEngine.selectable) {
 						
 						if (textField.__selectionIndex == textField.__caretIndex) {
@@ -182,6 +185,7 @@ class CairoTextField {
 								
 								for (i in 0...(textField.__caretIndex - group.startIndex)) {
 									
+									if (group.advances.length <= i) break;
 									advance += group.advances[i];
 									
 								}
@@ -197,9 +201,6 @@ class CairoTextField {
 							var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
 							var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
 							
-							trace (selectionStart);
-							trace (selectionEnd);
-							
 							if (group.startIndex > selectionStart) {
 								
 								selectionStart = group.startIndex;
@@ -212,43 +213,24 @@ class CairoTextField {
 								
 							}
 							
-							trace (selectionStart);
-							trace (selectionEnd);
-							
 							var start = textField.getCharBoundaries (selectionStart);
 							var end = textField.getCharBoundaries (selectionEnd);
 							
 							if (start != null && end != null) {
 								
-								//cairo.newPath ();
 								cairo.setSourceRGB (0, 0, 0);
-								//cairo.rectangle (start.x, start.y, end.right - start.x, (group.format.size * 1.185) - 4);
-								//cairo.paint ();
-								//cairo.closePath ();
-								//cairo.setSourceRGB (1, 1, 1);
+								cairo.rectangle (start.x, start.y, end.x - start.x, group.height);
+								cairo.fill ();
+								cairo.setSourceRGB (1, 1, 1);
+								
+								// TODO: draw only once
+								
+								cairo.moveTo (group.offsetX + scrollX + start.x, group.offsetY + group.ascent + scrollY);
+								cairo.showText (text.substring (selectionStart, selectionEnd));
 								
 							}
 							
 						}
-						
-					}
-					
-					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
-					cairo.showText (text.substring (group.startIndex, group.endIndex));
-					
-					if (textField.__inputEnabled && textField.__showCursor && (textField.__caretIndex == textField.__selectionIndex) && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
-						
-						advance = 0.0;
-						
-						for (i in 0...(textField.__caretIndex - group.startIndex)) {
-							
-							advance += group.advances[i];
-							
-						}
-						
-						cairo.moveTo (group.offsetX + advance + 0.5, group.offsetY + 0.5);
-						cairo.lineTo (group.offsetX + advance + 0.5, group.offsetY + group.height - 1);
-						cairo.stroke ();
 						
 					}
 					
