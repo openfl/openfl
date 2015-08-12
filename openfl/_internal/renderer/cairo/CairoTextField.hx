@@ -213,8 +213,20 @@ class CairoTextField {
 								
 							}
 							
-							var start = textField.getCharBoundaries (selectionStart);
-							var end = textField.getCharBoundaries (selectionEnd);
+							var start, end;
+							
+							start = textField.getCharBoundaries (selectionStart);
+							
+							if (selectionEnd >= textEngine.text.length) {
+								
+								end = textField.getCharBoundaries (textEngine.text.length - 1);
+								end.x += end.width + 2;
+								
+							} else {
+								
+								end = textField.getCharBoundaries (selectionEnd);
+									
+							}
 							
 							if (start != null && end != null) {
 								
@@ -225,7 +237,7 @@ class CairoTextField {
 								
 								// TODO: draw only once
 								
-								cairo.moveTo (group.offsetX + scrollX + start.x, group.offsetY + group.ascent + scrollY);
+								cairo.moveTo (group.offsetX + scrollX + start.x - 2, group.offsetY + group.ascent + scrollY);
 								cairo.showText (text.substring (selectionStart, selectionEnd));
 								
 							}
