@@ -1014,7 +1014,7 @@ class TextField extends InteractiveObject {
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
 		
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length - 1 || newText == null || newText == "") return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null || newText == "") return;
 		
 		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
 		
