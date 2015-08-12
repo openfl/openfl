@@ -2,6 +2,8 @@ package openfl.text; #if !flash #if !openfl_legacy
 
 
 import haxe.Timer;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
@@ -1001,12 +1003,14 @@ class TextField extends InteractiveObject {
 	
 	public function replaceSelectedText (value:String):Void {
 		
+		if (value == "" && __selectionIndex == __caretIndex) return;
+		
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 		
 		replaceText (startIndex, endIndex, value);
 		
-		__caretIndex += value.length - (endIndex - startIndex);
+		__caretIndex = startIndex + value.length;
 		__selectionIndex = __caretIndex;
 		
 	}
@@ -1014,7 +1018,7 @@ class TextField extends InteractiveObject {
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
 		
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null || newText == "") return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return;
 		
 		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
 		
@@ -1323,6 +1327,7 @@ class TextField extends InteractiveObject {
 			if (!Lib.application.window.onTextInput.has (window_onTextInput)) {
 				
 				Lib.application.window.onTextInput.add (window_onTextInput);
+				Lib.application.window.onKeyDown.add (window_onKeyDown);
 				
 			}
 			
@@ -1359,6 +1364,7 @@ class TextField extends InteractiveObject {
 			
 			Lib.application.window.enableTextEvents = false;
 			Lib.application.window.onTextInput.remove (window_onTextInput);
+			Lib.application.window.onKeyDown.remove (window_onKeyDown);
 			
 			__inputEnabled = false;
 			__stopCursorTimer ();
@@ -2287,6 +2293,105 @@ class TextField extends InteractiveObject {
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
+	}
+	
+	
+	@:noCompletion private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
+		
+		switch (key) {
+			
+			case BACKSPACE:
+				
+				if (__selectionIndex == __caretIndex && __caretIndex > 0) {
+					
+					__selectionIndex = __caretIndex - 1;
+					
+				}
+				
+				replaceSelectedText ("");
+				__selectionIndex = __caretIndex;
+			
+			case DELETE:
+				
+				if (__selectionIndex == __caretIndex && __caretIndex < __textEngine.text.length) {
+					
+					__selectionIndex = __caretIndex + 1;
+					
+				}
+				
+				replaceSelectedText ("");
+				__selectionIndex = __caretIndex;
+			
+			case LEFT:
+				
+				if (modifier.shiftKey) {
+					
+					if (__caretIndex > 0) {
+						
+						__caretIndex--;
+						
+					}
+					
+				} else {
+					
+					if (__selectionIndex == __caretIndex) {
+						
+						if (__caretIndex > 0) {
+							
+							__caretIndex--;
+							
+						}
+						
+					} else {
+						
+						__caretIndex = Std.int (Math.min (__caretIndex, __selectionIndex));
+						
+					}
+					
+					__selectionIndex = __caretIndex;
+					
+				}
+				
+				__stopCursorTimer ();
+				__startCursorTimer ();
+			
+			case RIGHT:
+				
+				if (modifier.shiftKey) {
+					
+					if (__caretIndex < __textEngine.text.length) {
+						
+						__caretIndex++;
+						
+					}
+					
+				} else {
+					
+					if (__selectionIndex == __caretIndex) {
+						
+						if (__caretIndex < __textEngine.text.length) {
+							
+							__caretIndex++;
+							
+						}
+						
+					} else {
+						
+						__caretIndex = Std.int (Math.max (__caretIndex, __selectionIndex));
+						
+					}
+					
+					__selectionIndex = __caretIndex;
+					
+				}
+				
+				__stopCursorTimer ();
+				__startCursorTimer ();
+			
+			default:
+			
+		}
 		
 	}
 	
