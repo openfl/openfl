@@ -1304,7 +1304,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __startCursorTimer ():Void {
 		
-		__cursorTimer = Timer.delay (__startCursorTimer, 500);
+		__cursorTimer = Timer.delay (__startCursorTimer, 600);
 		__showCursor = !__showCursor;
 		__dirty = true;
 		
