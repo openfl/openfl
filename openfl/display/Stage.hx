@@ -1680,6 +1680,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		return 0;
+		
 	}
 	
 	
@@ -1690,6 +1692,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			return window.application.frameRate = value;
 			
 		}
+		
+		return value;
 		
 	}
 
