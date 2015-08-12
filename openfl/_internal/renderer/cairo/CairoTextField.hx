@@ -67,7 +67,15 @@ class CairoTextField {
 			
 		}
 		
-		cairo.rectangle (0.5, 0.5, Std.int (bounds.width - 1), Std.int (bounds.height - 1));
+		if (textEngine.border) {
+			
+			cairo.rectangle (0.5, 0.5, Std.int (bounds.width - 1), Std.int (bounds.height - 1));
+			
+		} else {
+			
+			cairo.rectangle (0, 0, bounds.width, bounds.height);
+			
+		}
 		
 		if (!textEngine.background) {
 			
