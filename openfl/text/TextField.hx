@@ -588,6 +588,8 @@ class TextField extends InteractiveObject {
 		__textFormat = __defaultTextFormat.clone ();
 		__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
 		
+		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		
 	}
 	
 	
@@ -1155,7 +1157,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __getCursor ():MouseCursor {
 		
-		return (type == INPUT && selectable) ? TEXT : null;
+		return __textEngine.selectable ? TEXT : null;
 		
 	}
 	
@@ -2117,7 +2119,6 @@ class TextField extends InteractiveObject {
 				
 				addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
-				addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 				
 				if (stage != null && stage.focus == this) {
 					
@@ -2129,7 +2130,6 @@ class TextField extends InteractiveObject {
 				
 				removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 				removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
-				removeEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 				
 				__stopTextInput ();
 				
@@ -2200,7 +2200,7 @@ class TextField extends InteractiveObject {
 		
 		if (stage == null) return;
 		
-		if (__inputEnabled && __selectionIndex >= 0) {
+		if (__textEngine.selectable && __selectionIndex >= 0) {
 			
 			__updateLayout ();
 			
@@ -2225,7 +2225,7 @@ class TextField extends InteractiveObject {
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
-		if (stage.focus == this) {
+		//if (stage.focus == this) {
 			
 			__getTransform ();
 			__updateLayout ();
@@ -2243,12 +2243,16 @@ class TextField extends InteractiveObject {
 			__selectionIndex = leftPos;
 			__caretIndex = rightPos;
 			
-			this_onFocusIn (null);
+			if (__inputEnabled) {
+				
+				this_onFocusIn (null);
+				
+				__stopCursorTimer ();
+				__startCursorTimer ();
+				
+			}
 			
-			__stopCursorTimer ();
-			__startCursorTimer ();
-			
-		}
+		//}
 		
 	}
 	
@@ -2273,12 +2277,13 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
 		
-		if (!selectable || type != INPUT) return;
+		if (!selectable) return;
 		
 		__updateLayout ();
 		
 		__caretIndex = __getPosition (mouseX, mouseY);
 		__selectionIndex = __caretIndex;
+		__dirty = true;
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
