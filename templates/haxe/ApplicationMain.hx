@@ -2,6 +2,7 @@
 
 
 @:access(lime.Assets)
+@:access(openfl.display.Stage)
 
 
 class ApplicationMain {
@@ -19,6 +20,7 @@ class ApplicationMain {
 		
 		#if !flash
 		var stage = new openfl.display.Stage (app.window.width, app.window.height, config.background);
+		stage.window = app.window;
 		stage.addChild (openfl.Lib.current);
 		app.addModule (stage);
 		#end

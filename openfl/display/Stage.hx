@@ -18,6 +18,7 @@ import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse;
+import lime.ui.Window;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
@@ -523,6 +524,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
 	 */
 	public var stageWidth (default, null):Int;
+	
+	public var window (default, null):Window;
 	
 	@:noCompletion private var __clearBeforeRender:Bool;
 	@:noCompletion private var __color:Int;
@@ -1606,17 +1609,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState {
 		
-		switch (value) {
+		if (window != null) {
 			
-			case NORMAL:
+			switch (value) {
 				
-				//Lib.application.window.minimized = false;
-				Lib.application.window.fullscreen = false;
-			
-			default:
+				case NORMAL:
+					
+					//window.minimized = false;
+					window.fullscreen = false;
 				
-				//Lib.application.window.minimized = false;
-				Lib.application.window.fullscreen = true;
+				default:
+					
+					//window.minimized = false;
+					window.fullscreen = true;
+				
+			}
 			
 		}
 		
