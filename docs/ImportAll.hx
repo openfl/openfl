@@ -371,7 +371,7 @@ import lime.utils.IMemoryRange;
 import lime.utils.Int16Array;
 import lime.utils.Int32Array;
 import lime.utils.Int8Array;
-import lime.utils.JNI;
+import lime.system.JNI;
 import lime.utils.UInt16Array;
 import lime.utils.UInt32Array;
 import lime.utils.UInt8Array;
