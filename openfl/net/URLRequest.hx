@@ -42,7 +42,7 @@ import openfl.utils.ByteArray;
  * Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
  * scope="external">Security</a>.</p>
  */
-class URLRequest {
+@:final class URLRequest {
 	
 	
 	/**

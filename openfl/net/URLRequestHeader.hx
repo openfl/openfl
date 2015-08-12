@@ -68,7 +68,7 @@ package openfl.net; #if !flash
  * supported for <code>POST</code> requests, not for <code>GET</code>
  * requests.</p>
  */
-class URLRequestHeader {
+@:final class URLRequestHeader {
 	
 	
 	/**

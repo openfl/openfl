@@ -46,7 +46,7 @@ package openfl.filters; #if !flash #if !openfl_legacy
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.</p>
  */
-class DropShadowFilter extends BitmapFilter {
+@:final class DropShadowFilter extends BitmapFilter {
 	
 	
 	/**

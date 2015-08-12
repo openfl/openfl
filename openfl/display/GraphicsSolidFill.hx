@@ -13,7 +13,7 @@ import openfl.display.IGraphicsFill;
  * GraphicsSolidFill object is the equivalent of calling the
  * <code>Graphics.beginFill()</code> method. </p>
  */
-class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill {
+@:final class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill {
 	
 	
 	/**

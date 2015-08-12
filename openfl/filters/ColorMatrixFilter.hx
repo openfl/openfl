@@ -10,7 +10,7 @@ import js.html.ImageData;
 
 
 
-class ColorMatrixFilter extends BitmapFilter {
+@:final class ColorMatrixFilter extends BitmapFilter {
 	
 	
 	public var matrix:Array<Float>;

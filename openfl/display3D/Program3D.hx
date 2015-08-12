@@ -6,7 +6,7 @@ import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 
 
-class Program3D {
+@:final class Program3D {
 	
 	
 	public var glProgram:GLProgram;

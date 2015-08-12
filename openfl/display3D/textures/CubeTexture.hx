@@ -10,7 +10,7 @@ import openfl.utils.UInt8Array;
 using openfl.display.BitmapData;
 
 
-class CubeTexture extends TextureBase {
+@:final class CubeTexture extends TextureBase {
 	
 	
 	public var size : Int;

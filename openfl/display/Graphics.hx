@@ -46,7 +46,7 @@ import js.html.CanvasRenderingContext2D;
 @:access(openfl.geom.Rectangle)
 
 
-class Graphics {
+@:final class Graphics {
 	
 	
 	public static inline var TILE_SCALE = 0x0001;

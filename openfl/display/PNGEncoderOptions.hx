@@ -1,7 +1,7 @@
 package openfl.display; #if !flash
 
 
-class PNGEncoderOptions {
+@:final class PNGEncoderOptions {
 	
 	
 	public var fastCompression:Bool;

@@ -7,7 +7,7 @@ import openfl.geom.Matrix;
 import openfl.Lib;
 
 
-class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
+@:final class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
 	
 	
 	public var bitmapData:BitmapData;

@@ -12,7 +12,7 @@ import openfl.utils.UInt8Array;
 using openfl.display.BitmapData;
 
 
-class Texture extends TextureBase {
+@:final class Texture extends TextureBase {
 	
 	
 	public var optimizeForRenderToTexture:Bool;

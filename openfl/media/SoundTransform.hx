@@ -4,7 +4,7 @@ package openfl.media; #if !flash
 /**
  * The SoundTransform class contains properties for volume and panning.
  */
-class SoundTransform {
+@:final class SoundTransform {
 	
 	
 	/**

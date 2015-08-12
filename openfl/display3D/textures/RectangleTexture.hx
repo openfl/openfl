@@ -9,7 +9,7 @@ import openfl.utils.ByteArray;
 import openfl.utils.UInt8Array;
 
 
-class RectangleTexture extends TextureBase {
+@:final class RectangleTexture extends TextureBase {
 	
 	
 	public var optimizeForRenderToTexture:Bool;

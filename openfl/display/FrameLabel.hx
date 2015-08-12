@@ -4,7 +4,7 @@ package openfl.display; #if !flash
 import openfl.events.EventDispatcher;
 
 
-class FrameLabel extends EventDispatcher {
+@:final class FrameLabel extends EventDispatcher {
 	
 	
 	public var frame (get, null):Int;

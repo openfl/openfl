@@ -17,7 +17,7 @@ import openfl.media.Sound;
  * 
  * @event soundComplete Dispatched when a sound has finished playing.
  */
-class SoundChannel extends EventDispatcher {
+@:final class SoundChannel extends EventDispatcher {
 	
 	
 	/**
