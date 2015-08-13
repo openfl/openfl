@@ -188,28 +188,6 @@ class CanvasTextField {
 						
 					}
 					
-					// TODO: keep character positions?
-					
-					//if (textEngine.__hasFocus && (textEngine.__selectionStart == textEngine.__cursorPosition) && textEngine.__showCursor) {
-						//
-						//var cursorOffset = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, textEngine.__cursorPosition)) + 3;
-						//context.fillStyle = "#" + StringTools.hex (textEngine.__textFormat.color, 6);
-						//context.fillRect (cursorOffset, 5, 1, (textEngine.__textFormat.size * 1.185) - 4);
-						//
-					//} else if (textEngine.__hasFocus && (Math.abs (textEngine.__selectionStart - textEngine.__cursorPosition)) > 0) {
-						//
-						//var lowPos = Std.int (Math.min (textEngine.__selectionStart, textEngine.__cursorPosition));
-						//var highPos = Std.int (Math.max (textEngine.__selectionStart, textEngine.__cursorPosition));
-						//var xPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (0, lowPos)) + 2;
-						//var widthPos = textEngine.__textLayout.getTextWidth (textEngine, text.substring (lowPos, highPos));
-						//
-						//// TODO: White text
-						//
-						//context.fillStyle = "#000000";
-						//context.fillRect (xPos, 5, widthPos, (textEngine.__textFormat.size * 1.185) - 4);
-						//
-					//}
-					
 					context.textBaseline = "top";
 					//context.textBaseline = "alphabetic";
 					context.textAlign = "start";
@@ -225,6 +203,11 @@ class CanvasTextField {
 					
 					var advance;
 					
+					// Hack, baseline "top" is not consistent across browsers
+					
+					var offsetY = 0.0;
+					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
+					
 					for (group in textEngine.layoutGroups) {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
@@ -233,15 +216,13 @@ class CanvasTextField {
 						context.font = TextEngine.getFont (group.format);
 						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
 						
-						// Hack, baseline "top" is not consistent across browsers
+						if (applyHack) {
+							
+							offsetY = group.format.size * 0.185;
+							
+						}
 						
-						//if (~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent)) {
-							//
-							//offsetY += format.size * 0.185;
-							//
-						//}
-						
-						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + scrollY);
+						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
 							
@@ -291,7 +272,7 @@ class CanvasTextField {
 								} else {
 									
 									end = textField.getCharBoundaries (selectionEnd);
-										
+									
 								}
 								
 								if (start != null && end != null) {
@@ -302,7 +283,7 @@ class CanvasTextField {
 									
 									// TODO: fill only once
 									
-									context.fillText (text.substring (selectionStart, selectionEnd), group.offsetX + scrollX + start.x - 2, group.offsetY + scrollY);
+									context.fillText (text.substring (selectionStart, selectionEnd), group.offsetX + scrollX + start.x - 2, group.offsetY + offsetY + scrollY);
 									
 								}
 								
