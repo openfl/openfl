@@ -31,7 +31,7 @@ import js.Browser;
  *
  * <p>All properties of the Capabilities class are read-only.</p>
  */
-class Capabilities {
+@:final class Capabilities {
 	
 	
 	/**

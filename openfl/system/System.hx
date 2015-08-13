@@ -16,7 +16,7 @@ import lime.system.System in LimeSystem;
  * <p>This class contains only static methods and properties. You cannot
  * create new instances of the System class.</p>
  */
-class System {
+@:final class System {
 	
 	
 	/**

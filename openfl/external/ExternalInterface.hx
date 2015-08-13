@@ -77,7 +77,7 @@ import openfl.Lib;
 @:access(lime.ui.Window)
 
 
-class ExternalInterface {
+@:final class ExternalInterface {
 	
 	
 	/**
