@@ -1,3 +1,25 @@
+3.3.0 (08/13/2015)
+------------------
+
+* Brand-new, heavily improved TextField implementation
+* Greatly increased the accuracy of TextField rendering
+* Implemented all missing TextField methods
+* Added text input support for native
+* Added openfl.desktop.Clipboard
+* Improved hit test support
+* Reduced allocations for better GC (thanks HxScout!)
+* Made final classes @:final to improve consistency
+* Added support for bitmapData.hitTest
+* Added support for graphics.drawGraphicsData
+* Added support for <config:hxtelemetry port="" allocations="" />
+* Added stage.window for access to the parent Lime window
+* Implemented Capabilities screenResolutionX/screenResolutionY
+* Improved default font handling on Linux
+* Fixed event.target for manual dispatchEvent calls
+* Fixed local Loader/URLLoader calls that have GET parameters
+* Fixed support for Font.enumerateFonts
+
+
 3.2.2 (07/23/2015)
 ------------------
 
