@@ -15,6 +15,7 @@ import openfl._internal.text.TextFormatRange;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
@@ -1321,19 +1322,25 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (!__inputEnabled && stage != null) {
+		if (stage != null) {
 			
 			stage.window.enableTextEvents = true;
 			
-			if (!stage.window.onTextInput.has (window_onTextInput)) {
+			if (!__inputEnabled) {
 				
-				stage.window.onTextInput.add (window_onTextInput);
-				stage.window.onKeyDown.add (window_onKeyDown);
+				stage.window.enableTextEvents = true;
+				
+				if (!stage.window.onTextInput.has (window_onTextInput)) {
+					
+					stage.window.onTextInput.add (window_onTextInput);
+					stage.window.onKeyDown.add (window_onKeyDown);
+					
+				}
+				
+				__inputEnabled = true;
+				__startCursorTimer ();
 				
 			}
-			
-			__inputEnabled = true;
-			__startCursorTimer ();
 			
 		}
 		
@@ -2126,6 +2133,7 @@ class TextField extends InteractiveObject {
 				
 				addEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+				addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				if (stage != null && stage.focus == this) {
 					
@@ -2137,6 +2145,7 @@ class TextField extends InteractiveObject {
 				
 				removeEventListener (FocusEvent.FOCUS_IN, this_onFocusIn);
 				removeEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
+				removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				__stopTextInput ();
 				
@@ -2232,7 +2241,7 @@ class TextField extends InteractiveObject {
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
-		//if (stage.focus == this) {
+		if (stage.focus == this) {
 			
 			__getTransform ();
 			__updateLayout ();
@@ -2259,7 +2268,18 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-		//}
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+		
+		if (stage != null && stage.focus == this) {
+			
+			this_onFocusIn (null);
+			
+		}
 		
 	}
 	
@@ -2310,8 +2330,14 @@ class TextField extends InteractiveObject {
 					
 				}
 				
-				replaceSelectedText ("");
-				__selectionIndex = __caretIndex;
+				if (__selectionIndex != __caretIndex) {
+					
+					replaceSelectedText ("");
+					__selectionIndex = __caretIndex;
+					
+					dispatchEvent (new Event (Event.CHANGE, true));
+					
+				}
 			
 			case DELETE:
 				
@@ -2321,8 +2347,14 @@ class TextField extends InteractiveObject {
 					
 				}
 				
-				replaceSelectedText ("");
-				__selectionIndex = __caretIndex;
+				if (__selectionIndex != __caretIndex) {
+					
+					replaceSelectedText ("");
+					__selectionIndex = __caretIndex;
+					
+					dispatchEvent (new Event (Event.CHANGE, true));
+					
+				}
 			
 			case LEFT:
 				
@@ -2403,7 +2435,13 @@ class TextField extends InteractiveObject {
 				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
 					
 					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
-					replaceSelectedText ("");
+					
+					if (__caretIndex != __selectionIndex) {
+						
+						replaceSelectedText ("");
+						dispatchEvent (new Event (Event.CHANGE, true));
+						
+					}
 					
 				}
 			
@@ -2423,6 +2461,8 @@ class TextField extends InteractiveObject {
 						
 					}
 					
+					dispatchEvent (new Event (Event.CHANGE, true));
+					
 				}
 			
 			default:
@@ -2435,6 +2475,8 @@ class TextField extends InteractiveObject {
 	@:noCompletion private function window_onTextInput (value:String):Void {
 		
 		replaceSelectedText (value);
+		
+		dispatchEvent (new Event (Event.CHANGE, true));
 		
 	}
 	
