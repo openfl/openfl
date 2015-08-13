@@ -452,6 +452,13 @@ class Rectangle {
 	}
 	
 	
+	public function toString ():String {
+		
+		return "(x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ")";
+		
+	}
+	
+	
 	/**
 	 * Adds two rectangles together to create a new Rectangle object, by filling
 	 * in the horizontal and vertical space between the two rectangles.
