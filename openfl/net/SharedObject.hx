@@ -2,8 +2,10 @@ package openfl.net; #if !flash #if !openfl_legacy
 
 
 import haxe.io.Bytes;
+import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
+import lime.system.System;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.net.SharedObjectFlushStatus;
@@ -12,6 +14,11 @@ import openfl.Lib;
 #if (js && html5)
 import js.html.Storage;
 import js.Browser;
+#end
+
+#if sys
+import sys.io.File;
+import sys.FileSystem;
 #end
 
 
@@ -182,9 +189,10 @@ class SharedObject extends EventDispatcher {
 	 */
 	public var size (get, never):Int;
 	
-	@:noCompletion private var __key:String;
+	@:noCompletion private var __localPath:String;
+	@:noCompletion private var __name:String;
 	
-
+	
 	private function new () {
 		
 		super ();
@@ -206,17 +214,40 @@ class SharedObject extends EventDispatcher {
 	 */
 	public function clear ():Void {
 		
-		data = { };
+		data = {};
 		
-		#if (js && html5)
 		try {
 			
-			__getLocalStorage ().removeItem (__key);
+			#if (js && html5)
+			
+			var storage = Browser.getLocalStorage ();
+			
+			if (storage != null) {
+				
+				storage.removeItem (__localPath + ":" + __name);
+				
+			}
+			
+			#else
+			
+			var path = System.applicationStorageDirectory + "/" + __localPath + "/" + __name + ".sol";
+			
+			if (FileSystem.exists (path)) {
+				
+				FileSystem.deleteFile (path);
+				
+			}
+			
+			#end
 			
 		} catch (e:Dynamic) {}
-		#end
 		
-		flush ();
+	}
+	
+	
+	public function close ():Void {
+		
+		
 		
 	}
 	
@@ -279,21 +310,42 @@ class SharedObject extends EventDispatcher {
 	 */
 	public function flush (minDiskSpace:Int = 0):SharedObjectFlushStatus {
 		
-		#if (js && html5)
-		var data = Serializer.run (data);
+		var encodedData = Serializer.run (data);
 		
 		try {
 			
-			__getLocalStorage ().removeItem (__key);
-			__getLocalStorage ().setItem (__key, data);
+			#if (js && html5)
+			
+			var storage = Browser.getLocalStorage ();
+			
+			if (storage != null) {
+				
+				storage.removeItem (__localPath + ":" + __name);
+				storage.setItem (__localPath + ":" + __name, encodedData);
+				
+			}
+			
+			#else
+			
+			var path = System.applicationStorageDirectory + "/" + __localPath;
+			
+			if (!FileSystem.exists (path)) {
+				
+				__mkdir (path);
+				
+			}
+			
+			var output = File.write (path + "/" + __name + ".sol", false);
+			output.writeString (encodedData);
+			output.close ();
+			
+			#end
 			
 		} catch (e:Dynamic) {
 			
-			// user may have privacy settings which prevent writing
 			return SharedObjectFlushStatus.PENDING;
 			
 		}
-		#end
 		
 		return SharedObjectFlushStatus.FLUSHED;
 		
@@ -452,40 +504,58 @@ class SharedObject extends EventDispatcher {
 	 */
 	public static function getLocal (name:String, localPath:String = null, secure:Bool = false /* note: unsupported */) {
 		
-		#if (js && html5)
 		if (localPath == null) {
 			
+			#if (js && html5)
 			localPath = Browser.window.location.href;
+			#else
+			localPath = "";
+			#end
 			
 		}
-		#end
 		
 		var so = new SharedObject ();
-		so.__key = localPath + ":" + name;
-		var rawData = null;
+		so.data = {};
+		so.__localPath = localPath;
+		so.__name = name;
 		
-		#if (js && html5)
+		var encodedData = null;
+		
 		try {
 			
-			// user may have privacy settings which prevent reading
-			rawData = __getLocalStorage ().getItem (so.__key);
+			#if (js && html5)
+			
+			var storage = Browser.getLocalStorage ();
+			
+			if (storage != null) {
+				
+				encodedData = storage.getItem (localPath + ":" + name);
+				
+			}
+			
+			#else
+			
+			var path = System.applicationStorageDirectory + "/" + localPath + "/" + name + ".sol";
+			
+			if (FileSystem.exists (path)) {
+				
+				encodedData = File.getContent (path);
+				
+			}
+			
+			#end
 			
 		} catch (e:Dynamic) { }
-		#end
 		
-		so.data = { };
-		
-		if (rawData != null && rawData != "") {
+		if (encodedData != null && encodedData != "") {
 			
-			var unserializer = new Unserializer (rawData);
-			unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass } );
-			so.data = unserializer.unserialize ();
-			
-		}
-		
-		if (so.data == null) {
-			
-			so.data = { };
+			try {
+				
+				var unserializer = new Unserializer (encodedData);
+				unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass } );
+				so.data = unserializer.unserialize ();
+				
+			} catch (e:Dynamic) {}
 			
 		}
 		
@@ -494,24 +564,98 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	#if (js && html5)
-	@:noCompletion private static function __getLocalStorage ():Storage {
+	@:noCompletion private static function __mkdir (directory:String):Void {
 		
-		var res = Browser.getLocalStorage ();
-		if (res == null) throw new Error ("SharedObject not supported");
-		return res;
+		// TODO: Move this to Lime somewhere?
+		
+		#if sys
+		
+		directory = StringTools.replace (directory, "\\", "/");
+		var total = "";
+		
+		if (directory.substr (0, 1) == "/") {
+			
+			total = "/";
+			
+		}
+		
+		var parts = directory.split("/");
+		var oldPath = "";
+		
+		if (parts.length > 0 && parts[0].indexOf (":") > -1) {
+			
+			oldPath = Sys.getCwd ();
+			Sys.setCwd (parts[0] + "\\");
+			parts.shift ();
+			
+		}
+		
+		for (part in parts) {
+			
+			if (part != "." && part != "") {
+				
+				if (total != "" && total != "/") {
+					
+					total += "/";
+					
+				}
+				
+				total += part;
+				
+				if (!FileSystem.exists (total)) {
+					
+					FileSystem.createDirectory (total);
+					
+				}
+				
+			}
+			
+		}
+		
+		if (oldPath != "") {
+			
+			Sys.setCwd (oldPath);
+			
+		}
+		
+		#end
 		
 	}
-	#end
 	
 	
-	@:noCompletion private static function resolveClass (name:String):Class <Dynamic> {
+	@:noCompletion private static function resolveClass (name:String):Class<Dynamic> {
 		
 		if (name != null) {
 			
-			name = StringTools.replace (name, "flash.", "openfl.");
-			name = StringTools.replace (name, "openfl._v2.", "openfl.");
-			name = StringTools.replace (name, "openfl._legacy.", "openfl.");
+			if (StringTools.startsWith (name, "neash.")) {
+				
+				name = StringTools.replace (name, "neash.", "openfl.");
+				
+			}
+			
+			if (StringTools.startsWith (name, "native.")) {
+				
+				name = StringTools.replace (name, "native.", "openfl.");
+				
+			}
+			
+			if (StringTools.startsWith (name, "flash.")) {
+				
+				name = StringTools.replace (name, "flash.", "openfl.");
+				
+			}
+			
+			if (StringTools.startsWith (name, "openfl._v2.")) {
+				
+				name = StringTools.replace (name, "openfl._v2.", "openfl.");
+				
+			}
+			
+			if (StringTools.startsWith (name, "openfl._legacy.")) {
+				
+				name = StringTools.replace (name, "openfl._legacy.", "openfl.");
+				
+			}
 			
 			return Type.resolveClass (name);
 			
@@ -522,7 +666,7 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	public function setProperty (propertyName:String, ?value:Dynamic):Void {
+	public function setProperty (propertyName:String, value:Dynamic = null):Void {
 		
 		if (data != null) {
 			
@@ -541,8 +685,16 @@ class SharedObject extends EventDispatcher {
 	
 	@:noCompletion private function get_size ():Int {
 		
-		var d = Serializer.run (data);
-		return Bytes.ofString (d).length;
+		try {
+			
+			var d = Serializer.run (data);
+			return Bytes.ofString (d).length;
+			
+		} catch (e:Dynamic) {
+			
+			return 0;
+			
+		}
 		
 	}
 	
