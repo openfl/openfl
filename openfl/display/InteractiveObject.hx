@@ -1107,8 +1107,10 @@ class InteractiveObject extends DisplayObject {
 	public var needsSoftKeyboard:Bool;
 	
 	public var softKeyboardInputAreaOfInterest:Rectangle;
-	public var tabEnabled:Bool;
+	public var tabEnabled (get, set):Bool;
 	public var tabIndex:Int;
+	
+	@:noCompletion private var __tabEnabled:Bool;
 	
 	
 	/**
@@ -1130,7 +1132,7 @@ class InteractiveObject extends DisplayObject {
 		doubleClickEnabled = false;
 		mouseEnabled = true;
 		needsSoftKeyboard = false;
-		tabEnabled = true;
+		__tabEnabled = false;
 		tabIndex = -1;
 		
 	}
@@ -1184,6 +1186,27 @@ class InteractiveObject extends DisplayObject {
 		
 		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly);
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	@:noCompletion private function get_tabEnabled ():Bool {
+		
+		return __tabEnabled;
+		
+	}
+	
+	
+	@:noCompletion private function set_tabEnabled (value:Bool):Bool {
+		
+		return __tabEnabled = value;
 		
 	}
 	

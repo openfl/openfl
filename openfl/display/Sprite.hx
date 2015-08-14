@@ -213,6 +213,13 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
+	@:noCompletion private override function get_tabEnabled ():Bool {
+		
+		return (__tabEnabled || buttonMode);
+		
+	}
+	
+	
 }
 
 

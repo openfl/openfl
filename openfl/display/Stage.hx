@@ -1154,7 +1154,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = new Array <DisplayObject> ();
 		
-		if (__focus == null || __focus.stage == null) {
+		if (__focus == null) {
 			
 			__getInteractive (stack);
 			
@@ -1232,7 +1232,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (type == MouseEvent.MOUSE_DOWN) {
 			
-			focus = target;
+			if (target == null) {
+				
+				focus = null;
+				
+			} else if (target.tabEnabled) {
+				
+				focus = target;
+				
+			}
 			
 		}
 		
