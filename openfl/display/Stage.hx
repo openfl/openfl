@@ -1154,7 +1154,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = new Array <DisplayObject> ();
 		
-		if (__focus == null) {
+		if (__focus == null || __focus.stage == null) {
 			
 			__getInteractive (stack);
 			
