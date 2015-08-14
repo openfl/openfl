@@ -859,7 +859,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowClose ():Void {
 		
-		
+		var event = new Event (Event.DEACTIVATE);
+		__broadcast (event, true);
 		
 	}
 	
