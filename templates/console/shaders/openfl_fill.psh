@@ -1,0 +1,16 @@
+#include "common.fxh"
+
+
+struct PS_IN {
+
+	PS_IN_POSITION
+	float4 Color : COLOR;
+
+};
+
+
+float4 main( PS_IN In ) : PS_TARGET_OUT {
+
+	return In.Color;
+
+}

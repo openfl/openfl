@@ -4,6 +4,7 @@ package openfl._internal.renderer.cairo;
 import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.DisplayObject;
 import openfl.display.Stage;
 
 @:access(openfl.display.Graphics)
@@ -45,6 +46,14 @@ class CairoRenderer extends AbstractRenderer {
 		
 		stage.__renderCairo (renderSession);
 		
+	}
+
+
+	public function renderDisplayObject (object:DisplayObject):Void {
+
+		cairo.identityMatrix ();
+		object.__renderCairo (renderSession);
+
 	}
 	
 	

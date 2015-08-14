@@ -129,82 +129,23 @@ class PathBuiler {
 	}
 	
 	private static inline function curveTo (cx:Float, cy:Float, x:Float, y:Float) {
+
 		if (__currentPath.points.length == 0) {
-			
 			moveTo (0, 0);
-			
 		}
 		
-		var xa:Float = 0;
-		var ya:Float = 0;
-		var n = 20;
-		
-		var points = __currentPath.points;
-		var fromX = points[points.length-2];
-		var fromY = points[points.length-1];
-		
-		var px:Float = 0;
-		var py:Float = 0;
-		
-		var tmp:Float = 0;
-		
-		for (i in 1...(n + 1)) {
-			
-			tmp = i / n;
-			
-			xa = fromX + ((cx - fromX) * tmp);
-			ya = fromY + ((cy - fromY) * tmp);
-			
-			px = xa + (((cx + (x - cx) * tmp)) - xa) * tmp;
-			py = ya + (((cy + (y - cy) * tmp)) - ya) * tmp;
-			
-			points.push (px);
-			points.push (py);
-			
-		}
+		GraphicsPaths.curveTo (__currentPath.points, cx, cy, x, y);
+
 	}
 	
 	private static inline function cubicCurveTo(cx:Float, cy:Float, cx2:Float, cy2:Float, x:Float, y:Float) {
+
 		if (__currentPath.points.length == 0) {
-			
 			moveTo (0, 0);
-			
 		}
+
+		GraphicsPaths.cubicCurveTo (__currentPath.points, cx, cy, cx2, cy2, x, y);
 		
-		var n = 20;
-		var dt:Float = 0;
-		var dt2:Float = 0;
-		var dt3:Float = 0;
-		var t2:Float = 0;
-		var t3:Float = 0;
-		
-		var points = __currentPath.points;
-		var fromX = points[points.length-2];
-		var fromY = points[points.length-1];
-		
-		var px:Float = 0;
-		var py:Float = 0;
-		
-		var tmp:Float = 0;
-		
-		for (i in 1...(n + 1)) {
-			
-			tmp = i / n;
-			
-			dt = 1 - tmp;
-			dt2 = dt * dt;
-			dt3 = dt2 * dt;
-			
-			t2 = tmp * tmp;
-			t3 = t2 * tmp;
-			
-			px = dt3 * fromX + 3 * dt2 * tmp * cx + 3 * dt * t2 * cx2 + t3 * x;
-			py = dt3 * fromY + 3 * dt2 * tmp * cy + 3 * dt * t2 * cy2 + t3 * y;
-			
-			points.push (px);
-			points.push (py);
-			
-		}
 	}
 
 	private inline static function graphicDataPop ():Void {
@@ -275,11 +216,11 @@ class PathBuiler {
 						}
 					
 					case CubicCurveTo (cx, cy, cx2, cy2, x, y):
-						
+
 						cubicCurveTo (cx, cy, cx2, cy2, x, y);
 					
 					case CurveTo (cx, cy, x, y):
-						
+
 						curveTo (cx, cy, x, y);
 					
 					case DrawCircle (x, y, radius):

@@ -1,6 +1,7 @@
 package openfl.display; #if !flash #if !openfl_legacy
 
 
+import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
@@ -18,6 +19,7 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
@@ -103,6 +105,8 @@ import js.Browser;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.Graphics)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
@@ -572,8 +576,12 @@ class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		if (!__isValid) return;
-		
-		#if (js && html5)
+
+		#if lime_console
+
+		__drawConsole (source, matrix, colorTransform, blendMode, clipRect, smoothing);
+
+		#elseif (js && html5)
 		
 		ImageCanvasUtil.convertToCanvas (__image);
 		ImageCanvasUtil.sync (__image);
@@ -607,7 +615,7 @@ class BitmapData implements IBitmapDrawable {
 			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
 			
 		}
-		
+
 		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 		buffer.__srcImageData = null;
 		buffer.data = null;
@@ -1767,7 +1775,87 @@ class BitmapData implements IBitmapDrawable {
 		__uvData.y3 = 1;
 		
 	}
+
+
+	#if lime_console
+
+	@:noCompletion @:dox(hide) public function __drawConsole (source:IBitmapDrawable, matrix:Matrix, colorTransform:ColorTransform, blendMode:BlendMode, clipRect:Rectangle, smoothing:Bool):Void {
+
+		if (Std.is (source, DisplayObject)) {
+
+			var surface = CairoImageSurface.fromImage (this.__image);
+			var cairo = new Cairo (surface);
+			var renderer = new CairoRenderer (this.width, this.height, cairo);
+
+			var object:DisplayObject = cast (source);
+			var prevTransform = object.__worldTransform;
+			var prevColorTransform = object.__worldColorTransform;
+			var prevWorldTransformDirty = DisplayObject.__worldTransformDirty;
+
+			// TODO(james4k): blendMode, clipRect, smoothing
+
+			DisplayObject.__worldTransformDirty = 0;
+			object.__worldTransform = matrix != null ? matrix : new Matrix ();
+			object.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
+			object.__updateChildren (false);
+			object.__transformDirty = false;
+
+			renderer.renderDisplayObject (object);
+
+			DisplayObject.__worldTransformDirty = prevWorldTransformDirty;
+			object.__worldTransform = prevTransform;
+			object.__worldColorTransform = prevColorTransform;
+			// TODO(james4k): we need to restore all of the children's
+			// dirty state to match prevWorldTransformDirty.. probably
+			object.__updateChildren (true);
+			object.__transformDirty = true;
+
+			surface.destroy ();
+			cairo.destroy ();
+
+			__image.dirty = true;
+
+		} else if (Std.is (source, BitmapData)) {
+
+			var sourceBitmap:BitmapData = cast (source);
+
+			if (colorTransform != null || blendMode != null || clipRect != null) {
+				trace ("not implemented");
+				return;
+			}
+
+			var surface = CairoImageSurface.fromImage (this.__image);
+			var sourceSurface = CairoImageSurface.fromImage (sourceBitmap.__image);
+
+			var cairo = new Cairo (surface);
+
+			var pattern = CairoPattern.createForSurface (sourceSurface);
+			pattern.filter = smoothing ? BILINEAR : NEAREST;
+			pattern.extend = NONE;
+			
+			if (matrix != null) {
+				cairo.matrix = new lime.math.Matrix3 (
+					matrix.a, matrix.b, matrix.c, matrix.d,
+					matrix.tx, matrix.ty
+				);
+			}
+			
+			cairo.antialias = NONE;
+			cairo.source = pattern;
+			cairo.paint ();
+
+			pattern.destroy ();
+			surface.destroy ();
+			cairo.destroy ();
+
+			__image.dirty = true;
+
+		}
 	
+	}
+
+	#end
+
 	
 	@:noCompletion @:dox(hide) public function __drawGL (renderSession:RenderSession, width:Int, height:Int, source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, drawSelf:Bool = false, clearBuffer:Bool = false, readPixels:Bool = false):Void {
 		
