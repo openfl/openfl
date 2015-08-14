@@ -680,6 +680,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onApplicationExit (code:Int):Void {
+		
+		var event = new Event (Event.DEACTIVATE);
+		__broadcast (event, true);
+		
+	}
+	
+	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		GameInput.__onGamepadAxisMove (gamepad, axis, value);
@@ -859,8 +867,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowClose ():Void {
 		
-		var event = new Event (Event.DEACTIVATE);
-		__broadcast (event, true);
+		
 		
 	}
 	
