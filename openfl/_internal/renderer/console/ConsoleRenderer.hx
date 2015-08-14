@@ -22,6 +22,7 @@ import lime.graphics.Image;
 import lime.math.Matrix4;
 import lime.text.Glyph;
 import lime.text.TextLayout;
+import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -53,6 +54,7 @@ import openfl.text.TextFormatAlign;
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Tilesheet)
+@:access(openfl.geom.Rectangle)
 
 
 class ConsoleRenderer extends AbstractRenderer {
@@ -196,7 +198,7 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.width,
 				object.scrollRect.height
 			);
-			clipRect = object.scrollRect.transform (object.__worldTransform);
+			object.scrollRect.__transform (clipRect, object.__worldTransform);
 			var bounds = object.getBounds (null);
 
 			//clipRect.x += object.__worldTransform.tx;
@@ -540,8 +542,9 @@ class ConsoleRenderer extends AbstractRenderer {
 	
 	
 	private function renderTextField (tf:TextField) {
-
-		TextFieldGraphics.render (tf);
+		
+		//CairoTextField.render (tf);
+		//TextFieldGraphics.render (tf);
 
 		if (tf.__graphics == null) {
 			return;
