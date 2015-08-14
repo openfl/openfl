@@ -315,6 +315,13 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
+	public function quit ():Void {
+		
+		
+		
+	}
+	
+	
 	public function render (context:RenderContext):Void {
 		
 		pumpEvent ( { type: ManagedStage.etPoll } );

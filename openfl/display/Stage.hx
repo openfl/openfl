@@ -615,7 +615,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function init (context:RenderContext):Void {
+	@:noCompletion public function init (context:RenderContext):Void {
 		
 		switch (context) {
 			
@@ -680,64 +680,56 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onApplicationExit (code:Int):Void {
-		
-		var event = new Event (Event.DEACTIVATE);
-		__broadcast (event, true);
-		
-	}
-	
-	
-	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
+	@:noCompletion public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		GameInput.__onGamepadAxisMove (gamepad, axis, value);
 		
 	}
 	
 	
-	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
+	@:noCompletion public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
 		GameInput.__onGamepadButtonDown (gamepad, button);
 		
 	}
 	
 	
-	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
+	@:noCompletion public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
 		GameInput.__onGamepadButtonUp (gamepad, button);
 		
 	}
 	
 	
-	public function onGamepadConnect (gamepad:Gamepad):Void {
+	@:noCompletion public function onGamepadConnect (gamepad:Gamepad):Void {
 		
 		GameInput.__onGamepadConnect (gamepad);
 		
 	}
 	
 	
-	public function onGamepadDisconnect (gamepad:Gamepad):Void {
+	@:noCompletion public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
 		GameInput.__onGamepadDisconnect (gamepad);
 		
 	}
 	
 	
-	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
 		
 	}
 	
 	
-	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
 		
 	}
 	
 	
-	public function onMouseDown (x:Float, y:Float, button:Int):Void {
+	@:noCompletion public function onMouseDown (x:Float, y:Float, button:Int):Void {
 		
 		var type = switch (button) {
 			
@@ -752,21 +744,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseMove (x:Float, y:Float):Void {
+	@:noCompletion public function onMouseMove (x:Float, y:Float):Void {
 		
 		__onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
 		
 	}
 	
 	
-	public function onMouseMoveRelative (x:Float, y:Float):Void {
+	@:noCompletion public function onMouseMoveRelative (x:Float, y:Float):Void {
 		
 		
 		
 	}
 	
 	
-	public function onMouseUp (x:Float, y:Float, button:Int):Void {
+	@:noCompletion public function onMouseUp (x:Float, y:Float, button:Int):Void {
 		
 		var type = switch (button) {
 			
@@ -781,35 +773,37 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onMouseWheel (deltaX:Float, deltaY:Float):Void {
+	@:noCompletion public function onMouseWheel (deltaX:Float, deltaY:Float):Void {
 		
 		__onMouseWheel (deltaX, deltaY);
 		
 	}
 	
 	
-	public function onRenderContextLost ():Void {
+	@:noCompletion public function onRenderContextLost ():Void {
 		
 		
 		
 	}
 	
 	
-	public function onRenderContextRestored (context:RenderContext):Void {
+	@:noCompletion public function onRenderContextRestored (context:RenderContext):Void {
 		
 		
 		
 	}
 	
 	
-	public function onTextEdit (text:String, start:Int, length:Int):Void {
+	@:noCompletion public function onTextEdit (text:String, start:Int, length:Int):Void {
 		
 		
 		
 	}
 	
 	
-	public function onTextInput (text:String):Void {
+	@:noCompletion public function onTextInput (text:String):Void {
+		
+		// TODO: Move to TextField
 		
 		var stack = new Array <DisplayObject> ();
 		
@@ -828,6 +822,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			stack.reverse ();
 			__fireEvent (event, stack);
+			
 		} else {
 			
 			__broadcast (event, true);
@@ -836,28 +831,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onTouchMove (x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchMove (x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_MOVE, x, y, id);
 		
 	}
 	
 	
-	public function onTouchEnd (x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchEnd (x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_END, x, y, id);
 		
 	}
 	
 	
-	public function onTouchStart (x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchStart (x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_BEGIN, x, y, id);
 		
 	}
 	
 	
-	public function onWindowActivate ():Void {
+	@:noCompletion public function onWindowActivate ():Void {
 		
 		var event = new Event (Event.ACTIVATE);
 		__broadcast (event, true);
@@ -865,14 +860,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowClose ():Void {
+	@:noCompletion public function onWindowClose ():Void {
 		
-		
+		window = null;
 		
 	}
 	
 	
-	public function onWindowDeactivate ():Void {
+	@:noCompletion public function onWindowDeactivate ():Void {
 		
 		var event = new Event (Event.DEACTIVATE);
 		__broadcast (event, true);
@@ -880,14 +875,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowEnter ():Void {
+	@:noCompletion public function onWindowEnter ():Void {
 		
 		
 		
 	}
 	
 	
-	public function onWindowFocusIn ():Void {
+	@:noCompletion public function onWindowFocusIn ():Void {
 		
 		var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, null, false, 0);
 		__broadcast (event, true);
@@ -895,7 +890,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowFocusOut ():Void {
+	@:noCompletion public function onWindowFocusOut ():Void {
 		
 		var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, null, false, 0);
 		__broadcast (event, true);
@@ -903,35 +898,35 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowFullscreen ():Void {
+	@:noCompletion public function onWindowFullscreen ():Void {
 		
 		
 		
 	}
 	
 	
-	public function onWindowLeave ():Void {
+	@:noCompletion public function onWindowLeave ():Void {
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	
 	
-	public function onWindowMinimize ():Void {
+	@:noCompletion public function onWindowMinimize ():Void {
 		
 		
 		
 	}
 	
 	
-	public function onWindowMove (x:Float, y:Float):Void {
+	@:noCompletion public function onWindowMove (x:Float, y:Float):Void {
 		
 		
 		
 	}
 	
 	
-	public function onWindowResize (width:Int, height:Int):Void {
+	@:noCompletion public function onWindowResize (width:Int, height:Int):Void {
 		
 		stageWidth = width;
 		stageHeight = height;
@@ -948,14 +943,26 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function onWindowRestore ():Void {
+	@:noCompletion public function onWindowRestore ():Void {
 		
 		
 		
 	}
 	
 	
-	public function render (context:RenderContext):Void {
+	@:noCompletion public function quit ():Void {
+		
+		if (window != null) {
+			
+			var event = new Event (Event.DEACTIVATE);
+			__broadcast (event, true);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function render (context:RenderContext):Void {
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -1009,7 +1016,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public function update (deltaTime:Int):Void {
+	@:noCompletion public function update (deltaTime:Int):Void {
 		
 		
 		
