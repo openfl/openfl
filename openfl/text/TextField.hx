@@ -2062,6 +2062,10 @@ class TextField extends InteractiveObject {
 			__dirty = true;
 			__layoutDirty = true;
 			
+		} else {
+			
+			return value;
+			
 		}
 		
 		if (__textEngine.textFormatRanges.length > 1) {
