@@ -247,7 +247,7 @@ class DisplayObjectContainerTest {
 	
 	@Test public function getObjectsUnderPoint () {
 		
-		#if (!cpp && !neko) // works on native, but sometimes suffers from a race condition when run immediately
+		#if openfl_legacy // works on legacy, but sometimes suffers from a race condition when run immediately
 		
 		var sprite = new Sprite ();
 		
