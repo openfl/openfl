@@ -1192,7 +1192,7 @@ import js.html.CanvasRenderingContext2D;
 		var px = matrix.__transformInverseX (x, y);
 		var py = matrix.__transformInverseY (x, y);
 		
-		if (__bounds.contains (px, py)) {
+		if (px > 0 && py > 0 && __bounds.contains (px, py)) {
 			
 			if (shapeFlag) {
 				
