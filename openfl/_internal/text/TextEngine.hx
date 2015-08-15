@@ -509,6 +509,12 @@ class TextEngine {
 			
 		}
 		
+		lineAscents.push (currentLineAscent);
+		lineDescents.push (currentLineDescent);
+		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
+		lineHeights.push (currentLineHeight);
+		lineWidths.push (currentLineWidth);
+		
 		if (numLines == 1) {
 			
 			if (textHeight <= height - 2) {
@@ -519,15 +525,7 @@ class TextEngine {
 			
 			textHeight += currentLineLeading;
 			
-		}
-		
-		lineAscents.push (currentLineAscent);
-		lineDescents.push (currentLineDescent);
-		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
-		lineHeights.push (currentLineHeight);
-		lineWidths.push (currentLineWidth);
-		
-		if (textHeight <= height - 2) {
+		} else if (textHeight <= height - 2) {
 			
 			bottomScrollV++;
 			
@@ -543,7 +541,7 @@ class TextEngine {
 			
 		}
 		
-		maxScrollV = numLines;
+		maxScrollV = numLines - bottomScrollV + 1;
 		
 	}
 	
@@ -1054,6 +1052,7 @@ class TextEngine {
 			numLines = 1;
 			maxScrollH = 0;
 			maxScrollV = 1;
+			bottomScrollV = 1;
 			
 		} else {
 			
