@@ -59,10 +59,23 @@ class CairoTextField {
 			cairo = graphics.__cairo;
 			
 			var options = new CairoFontOptions ();
-			//options.hintStyle = DEFAULT;
-			//options.hintMetrics = ON;
-			options.hintMetrics = ON;
-			options.antialias = GOOD;
+			
+			if (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) {
+				
+				//cairo.antialias = NONE;
+				options.hintMetrics = OFF;
+				options.antialias = NONE;
+				
+			} else {
+				
+				//cairo.antialias = GOOD;
+				//options.hintStyle = DEFAULT;
+				//options.hintMetrics = ON;
+				options.hintMetrics = ON;
+				options.antialias = GOOD;
+				
+			}
+			
 			cairo.setFontOptions (options);
 			
 		}
@@ -171,7 +184,7 @@ class CairoTextField {
 					
 					if (textEngine.__cairoFont == null) {
 						
-						textEngine.__cairoFont = new CairoFont (font);
+						textEngine.__cairoFont = new CairoFont (font, (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) ? 0 : CairoFont.FT_LOAD_FORCE_AUTOHINT);
 						
 					}
 					
@@ -234,7 +247,7 @@ class CairoTextField {
 							} else {
 								
 								end = textField.getCharBoundaries (selectionEnd);
-									
+								
 							}
 							
 							if (start != null && end != null) {

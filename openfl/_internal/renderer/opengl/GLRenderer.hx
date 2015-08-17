@@ -304,7 +304,7 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
-	public static function renderBitmap (shape:DisplayObject, renderSession:RenderSession):Void {
+	public static function renderBitmap (shape:DisplayObject, renderSession:RenderSession, smooth:Bool = true):Void {
 		
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
@@ -322,7 +322,7 @@ class GLRenderer extends AbstractRenderer {
 		matrix.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
 		matrix.concat (shape.__worldTransform);
 		
-		renderSession.spriteBatch.renderBitmapData (bitmap, true, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
+		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
 		
 	}
 	
