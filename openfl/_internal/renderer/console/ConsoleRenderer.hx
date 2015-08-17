@@ -216,6 +216,11 @@ class ConsoleRenderer extends AbstractRenderer {
 
 			renderDisplayObjectContainer (cast (object));
 
+		} else if (Std.is (object, Bitmap)) {
+
+			var b:Bitmap = cast (object);
+			drawBitmapData (b, b.bitmapData);
+
 		} else if (Std.is (object, Shape)) {
 
 			renderShape_ (cast (object));
@@ -238,11 +243,6 @@ class ConsoleRenderer extends AbstractRenderer {
 		if (Std.is (object, Sprite)) {
 
 			renderSprite (cast (object));
-
-		} else if (Std.is (object, Bitmap)) {
-
-			renderBitmap (cast (object));
-
 		}
 
 		for (child in object.__children) {
@@ -478,15 +478,15 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function renderBitmap (bitmap:Bitmap) {
+	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData) {
 
-		setObjectTransform (bitmap);
+		setObjectTransform (object);
 		transform.append (viewProj);
 		transform.transpose ();
 
-		var w = bitmap.bitmapData.width;
-		var h = bitmap.bitmapData.height;
-		var color:Array<cpp.Float32> = [1, 1, 1, bitmap.__worldAlpha];
+		var w = bitmap.width;
+		var h = bitmap.height;
+		var color:Array<cpp.Float32> = [1, 1, 1, object.__worldAlpha];
 
 		var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, 4);
 		var out = vertexBuffer.lock ();
@@ -504,7 +504,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		out.color(0xff, 0xff, 0xff, 0xff);
 		vertexBuffer.unlock ();
 
-		var texture = imageTexture (bitmap.bitmapData.__image);
+		var texture = imageTexture (bitmap.__image);
 
 		ctx.bindShader (defaultShader);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
