@@ -543,14 +543,13 @@ class ConsoleRenderer extends AbstractRenderer {
 	
 	private function renderTextField (tf:TextField) {
 		
-		//CairoTextField.render (tf);
-		//TextFieldGraphics.render (tf);
+		CairoTextField.render (tf, null);
 
-		if (tf.__graphics == null) {
+		if (tf.__graphics == null || tf.__graphics.__bitmap == null) {
 			return;
 		}
 
-		draw (tf);
+		drawBitmapData (tf, tf.__graphics.__bitmap);
 
 	}
 
