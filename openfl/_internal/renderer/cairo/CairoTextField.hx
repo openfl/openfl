@@ -71,7 +71,7 @@ class CairoTextField {
 				//cairo.antialias = GOOD;
 				//options.hintStyle = DEFAULT;
 				//options.hintMetrics = ON;
-				options.hintMetrics = ON;
+				options.hintMetrics = OFF;
 				options.antialias = GOOD;
 				
 			}
