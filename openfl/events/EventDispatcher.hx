@@ -291,7 +291,16 @@ class EventDispatcher implements IEventDispatcher {
 	public function hasEventListener (type:String):Bool {
 		
 		if (__eventMap == null) return false;
-		return __eventMap.exists (type);
+		
+		if (__dispatching.exists (type)) {
+			
+			return __newEventMap.exists (type);
+			
+		} else {
+			
+			return __eventMap.exists (type);
+			
+		}
 		
 	}
 	
