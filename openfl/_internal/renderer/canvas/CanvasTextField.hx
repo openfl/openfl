@@ -167,6 +167,8 @@ class CanvasTextField {
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
 					
+					untyped (graphics.__context).imageSmoothingEnabled = (textEngine.antiAliasType != ADVANCED || textEngine.gridFitType != PIXEL);
+					
 					if (textEngine.border || textEngine.background) {
 						
 						context.rect (0.5, 0.5, bounds.width - 1, bounds.height - 1);

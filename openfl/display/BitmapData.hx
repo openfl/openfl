@@ -576,11 +576,11 @@ class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		if (!__isValid) return;
-
+		
 		#if lime_console
-
+		
 		__drawConsole (source, matrix, colorTransform, blendMode, clipRect, smoothing);
-
+		
 		#elseif (js && html5)
 		
 		ImageCanvasUtil.convertToCanvas (__image);
@@ -595,8 +595,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!smoothing) {
 			
-			untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-			untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
 			untyped (buffer.__srcContext).imageSmoothingEnabled = false;
 			
 		}
@@ -610,12 +608,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!smoothing) {
 			
-			untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-			untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
 			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
 			
 		}
-
+		
 		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 		buffer.__srcImageData = null;
 		buffer.data = null;

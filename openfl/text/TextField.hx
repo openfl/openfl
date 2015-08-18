@@ -1272,7 +1272,21 @@ class TextField extends InteractiveObject {
 	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTextField.render (this, renderSession);
-		super.__renderCanvas (renderSession);
+		
+		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
+			
+			var smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
+			if (smoothingEnabled) untyped (renderSession.context).imageSmoothingEnabled = false;
+			
+			super.__renderCanvas (renderSession);
+			
+			if (smoothingEnabled) untyped (renderSession.context).imageSmoothingEnabled = true;
+			
+		} else {
+			
+			super.__renderCanvas (renderSession);
+			
+		}
 		
 	}
 	
