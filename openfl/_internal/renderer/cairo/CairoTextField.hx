@@ -62,15 +62,13 @@ class CairoTextField {
 			
 			if (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) {
 				
-				//cairo.antialias = NONE;
+				options.hintStyle = NONE;
 				options.hintMetrics = OFF;
 				options.antialias = NONE;
 				
 			} else {
 				
-				//cairo.antialias = GOOD;
-				//options.hintStyle = DEFAULT;
-				//options.hintMetrics = ON;
+				options.hintStyle = DEFAULT;
 				options.hintMetrics = OFF;
 				options.antialias = GOOD;
 				
@@ -184,7 +182,7 @@ class CairoTextField {
 					
 					if (textEngine.__cairoFont == null) {
 						
-						textEngine.__cairoFont = new CairoFont (font, (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) ? 0 : CairoFont.FT_LOAD_FORCE_AUTOHINT);
+						textEngine.__cairoFont = new CairoFont (font, 0);
 						
 					}
 					
