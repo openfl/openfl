@@ -331,6 +331,19 @@ class TextEngine {
 					fontList = [ systemFontDirectory + "/" + format.font ];
 				
 			}
+
+			#if lime_console
+
+				// TODO(james4k): until we figure out our story for the above switch
+				// statement, always load arial unless a file is specified.
+				if (format == null
+					|| StringTools.startsWith (format.font,  "_")
+					|| format.font.indexOf(".") == -1
+				) {
+					fontList = [ "arial.ttf" ];
+				}
+
+			#end
 			
 			if (fontList != null) {
 				
