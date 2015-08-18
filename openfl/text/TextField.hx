@@ -1340,6 +1340,8 @@ class TextField extends InteractiveObject {
 		
 		if (stage != null) {
 			
+			#if !dom
+			
 			stage.window.enableTextEvents = true;
 			
 			if (!__inputEnabled) {
@@ -1357,6 +1359,8 @@ class TextField extends InteractiveObject {
 				__startCursorTimer ();
 				
 			}
+			
+			#end
 			
 		}
 		
@@ -1384,6 +1388,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function __stopTextInput ():Void {
 		
+		#if !dom
+		
 		if (__inputEnabled && stage != null) {
 			
 			stage.window.enableTextEvents = false;
@@ -1394,6 +1400,8 @@ class TextField extends InteractiveObject {
 			__stopCursorTimer ();
 			
 		}
+		
+		#end
 		
 	}
 	
