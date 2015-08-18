@@ -85,11 +85,12 @@ class DOMTextField {
 							
 							event.preventDefault ();
 							
-							// TODO: Make this more efficient
+							// TODO: Set caret index, and replace only selection
 							
 							if (textField.htmlText != textField.__div.innerHTML) {
 								
 								textField.htmlText = textField.__div.innerHTML;
+								textField.__dirty = false;
 								
 							}
 							
@@ -99,7 +100,7 @@ class DOMTextField {
 					
 					if (textEngine.selectable) {
 						
-						textField.__style.setProperty ("cursor", "default", null);
+						textField.__style.setProperty ("cursor", "text", null);
 						
 					} else {
 						
