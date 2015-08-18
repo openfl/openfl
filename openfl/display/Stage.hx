@@ -1232,13 +1232,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (type == MouseEvent.MOUSE_DOWN) {
 			
-			if (target == null) {
-				
-				focus = null;
-				
-			} else if (target.tabEnabled) {
+			if (target.tabEnabled) {
 				
 				focus = target;
+				
+			} else {
+				
+				focus = null;
 				
 			}
 			
@@ -1672,27 +1672,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (value != __focus) {
 			
-			if (__focus != null) {
+			var oldFocus = __focus;
+			__focus = value;
+			
+			if (oldFocus != null) {
 				
-				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, value, false, 0);
+				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, __focus, false, 0);
 				__stack = [];
-				__focus.__getInteractive (__stack);
+				oldFocus.__getInteractive (__stack);
 				__stack.reverse ();
 				__fireEvent (event, __stack);
 				
 			}
 			
-			if (value != null) {
+			if (__focus != null) {
 				
-				var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, __focus, false, 0);
+				var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
 				__stack = [];
 				value.__getInteractive (__stack);
 				__stack.reverse ();
 				__fireEvent (event, __stack);
 				
 			}
-			
-			__focus = value;
 			
 		}
 		

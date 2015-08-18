@@ -579,6 +579,7 @@ class TextField extends InteractiveObject {
 		__graphics = new Graphics ();
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
+		__tabEnabled = true;
 		
 		if (__defaultTextFormat == null) {
 			
@@ -2154,11 +2155,7 @@ class TextField extends InteractiveObject {
 				addEventListener (FocusEvent.FOCUS_OUT, this_onFocusOut);
 				addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
-				if (stage != null && stage.focus == this) {
-					
-					this_onFocusIn (null);
-					
-				}
+				this_onFocusIn (null);
 				
 			} else {
 				
@@ -2294,18 +2291,14 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private function this_onAddedToStage (event:Event):Void {
 		
-		if (stage != null && stage.focus == this) {
-			
-			this_onFocusIn (null);
-			
-		}
+		this_onFocusIn (null);
 		
 	}
 	
 	
 	@:noCompletion private function this_onFocusIn (event:FocusEvent):Void {
 		
-		if (selectable && type == INPUT) {
+		if (selectable && type == INPUT && stage != null && stage.focus == this) {
 			
 			__startTextInput ();
 			
