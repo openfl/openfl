@@ -117,7 +117,7 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
-	public function onModuleExit ():Void {
+	public function onModuleExit (code:Int):Void {
 		
 		
 		
