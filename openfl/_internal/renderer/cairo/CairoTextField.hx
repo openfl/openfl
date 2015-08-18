@@ -257,7 +257,7 @@ class CairoTextField {
 								
 								// TODO: draw only once
 								
-								cairo.moveTo (group.offsetX + scrollX + start.x - 2, group.offsetY + group.ascent + scrollY);
+								cairo.moveTo (scrollX + start.x, group.offsetY + group.ascent + scrollY);
 								cairo.showText (text.substring (selectionStart, selectionEnd));
 								
 							}

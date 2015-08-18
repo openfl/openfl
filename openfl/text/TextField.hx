@@ -1185,8 +1185,21 @@ class TextField extends InteractiveObject {
 		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
 		
 		var firstGroup = true;
+		var group, nextGroup;
 		
-		for (group in __textEngine.layoutGroups) {
+		for (i in 0...__textEngine.layoutGroups.length) {
+			
+			group = __textEngine.layoutGroups[i];
+			
+			if (i < __textEngine.layoutGroups.length - 1) {
+				
+				nextGroup = __textEngine.layoutGroups[i + 1];
+				
+			} else {
+				
+				nextGroup = null;
+				
+			}
 			
 			if (firstGroup) {
 				
@@ -1196,9 +1209,9 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			if (y >= group.offsetY && y <= group.offsetY + group.height) {
+			if ((y >= group.offsetY && y <= group.offsetY + group.height) || nextGroup == null) {
 				
-				if (x >= group.offsetX /*&& x <= group.offsetX + group.width*/) {
+				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
 					
 					var advance = 0.0;
 					
@@ -1757,17 +1770,6 @@ class TextField extends InteractiveObject {
 				range.start = 0;
 				range.end = value.length;
 				
-				//#if (js && html5)
-				//if (text != value && __hiddenInput != null) {
-					//
-					//var selectionStart = __hiddenInput.selectionStart;
-					//var selectionEnd = __hiddenInput.selectionEnd;
-					//__hiddenInput.value = value;
-					//__hiddenInput.selectionStart = selectionStart;
-					//__hiddenInput.selectionEnd = selectionEnd;
-					//
-				//}	
-				//#end
 				return __textEngine.text = value;
 				
 			} else {
@@ -1839,17 +1841,6 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		//#if (js && html5)
-		//if (text != value && __hiddenInput != null) {
-			//
-			//var selectionStart = __hiddenInput.selectionStart;
-			//var selectionEnd = __hiddenInput.selectionEnd;
-			//__hiddenInput.value = value;
-			//__hiddenInput.selectionStart = selectionStart;
-			//__hiddenInput.selectionEnd = selectionEnd;
-			//
-		//}	
-		//#end
 		return __textEngine.text = value;
 		
 	}
@@ -2067,18 +2058,6 @@ class TextField extends InteractiveObject {
 	
 	
 	@:noCompletion private function set_text (value:String):String {
-		
-		//#if (js && html5)
-		//if (text != value && __hiddenInput != null) {
-			//
-			//var selectionStart = __hiddenInput.selectionStart;
-			//var selectionEnd = __hiddenInput.selectionEnd;
-			//__hiddenInput.value = value;
-			//__hiddenInput.selectionStart = selectionStart;
-			//__hiddenInput.selectionEnd = selectionEnd;
-			//
-		//}	
-		//#end
 		
 		if (__isHTML || __textEngine.text != value) {
 			

@@ -331,9 +331,9 @@ class TextEngine {
 					fontList = [ systemFontDirectory + "/" + format.font ];
 				
 			}
-
+			
 			#if lime_console
-
+				
 				// TODO(james4k): until we figure out our story for the above switch
 				// statement, always load arial unless a file is specified.
 				if (format == null
@@ -342,7 +342,7 @@ class TextEngine {
 				) {
 					fontList = [ "arial.ttf" ];
 				}
-
+				
 			#end
 			
 			if (fontList != null) {
@@ -900,6 +900,7 @@ class TextEngine {
 					
 					if (formatRange.end <= previousSpaceIndex) {
 						
+						layoutGroup = null;
 						nextFormatRange ();
 						
 					}
@@ -928,16 +929,13 @@ class TextEngine {
 				
 				offsetX += layoutGroup.width;
 				
-				textIndex = formatRange.end + 1;
+				textIndex = formatRange.end;
 				
 				nextFormatRange ();
 				
 			}
 			
 		}
-		
-		lineIndex = 0;
-		offsetX = 0;
 		
 	}
 	
