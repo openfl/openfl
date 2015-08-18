@@ -735,6 +735,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	@:noCompletion public function onModuleExit (code:Int):Void {
+		
+		if (window != null) {
+			
+			var event = new Event (Event.DEACTIVATE);
+			__broadcast (event, true);
+			
+		}
+		
+	}
+	
+	
 	@:noCompletion public function onMouseDown (x:Float, y:Float, button:Int):Void {
 		
 		var type = switch (button) {
@@ -952,18 +964,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion public function onWindowRestore ():Void {
 		
 		
-		
-	}
-	
-	
-	@:noCompletion public function quit ():Void {
-		
-		if (window != null) {
-			
-			var event = new Event (Event.DEACTIVATE);
-			__broadcast (event, true);
-			
-		}
 		
 	}
 	

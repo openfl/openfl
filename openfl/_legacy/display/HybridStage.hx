@@ -117,6 +117,13 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
+	public function onModuleExit ():Void {
+		
+		
+		
+	}
+	
+	
 	public function onMouseDown (x:Float, y:Float, button:Int):Void {
 		
 		var flags = switch (button) {
@@ -309,13 +316,6 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	
 	public function onWindowRestore ():Void {
-		
-		
-		
-	}
-	
-	
-	public function quit ():Void {
 		
 		
 		
