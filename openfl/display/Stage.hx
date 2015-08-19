@@ -2,7 +2,6 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import haxe.EnumFlags;
-import haxe.Int64;
 import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.opengl.GL;
@@ -1402,7 +1401,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var localPoint = target.globalToLocal (point);
 			
 			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, localPoint, cast target);
-			touchEvent.touchPointID = Int64.toInt (touch.id);
+			touchEvent.touchPointID = touch.id;
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
@@ -1411,7 +1410,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		} else {
 			
 			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, point, this);
-			touchEvent.touchPointID = Int64.toInt (touch.id);
+			touchEvent.touchPointID = touch.id;
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
