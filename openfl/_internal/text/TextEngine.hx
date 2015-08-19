@@ -776,7 +776,7 @@ class TextEngine {
 					
 				}
 				
-			} else if (formatRange.end >= spaceIndex) {
+			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
 				
 				layoutGroup = null;
 				wrap = false;
