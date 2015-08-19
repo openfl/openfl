@@ -401,6 +401,7 @@ class ApplicationMain {
 #if !macro
 
 
+@:access(lime.app.Application)
 @:access(lime.Assets)
 
 
@@ -426,7 +427,8 @@ class ApplicationMain {
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
 		
 		preloader = new openfl.display.Preloader (display);
-		preloader.onComplete = init;
+		app.setPreloader (preloader);
+		preloader.onComplete.add (init);
 		preloader.create (config);
 		
 		#if (js && html5)

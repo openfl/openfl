@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import haxe.EnumFlags;
+import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
@@ -11,6 +12,7 @@ import lime.graphics.ConsoleRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
+import lime.graphics.Renderer;
 import lime.math.Matrix4;
 import lime.utils.GLUtils;
 import lime.ui.Gamepad;
@@ -617,33 +619,37 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function init (context:RenderContext):Void {
+	@:noCompletion public function init (application:Application):Void {
 		
-		switch (context) {
+		if (application.renderer != null) {
 			
-			case OPENGL (gl):
+			switch (application.renderer.context) {
 				
-				#if !disable_cffi
-				__renderer = new GLRenderer (stageWidth, stageHeight, gl);
-				#end
-			
-			case CANVAS (context):
+				case OPENGL (gl):
+					
+					#if !disable_cffi
+					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+					#end
 				
-				__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-			
-			case DOM (element):
+				case CANVAS (context):
+					
+					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
 				
-				__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-			
-			case CAIRO (cairo):
+				case DOM (element):
+					
+					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
 				
-				__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
-			
-			case CONSOLE (ctx):
+				case CAIRO (cairo):
+					
+					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
 				
-				__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
-			
-			default:
+				case CONSOLE (ctx):
+					
+					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
+				
+				default:
+				
+			}
 			
 		}
 		
@@ -747,7 +753,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onMouseDown (x:Float, y:Float, button:Int):Void {
+	@:noCompletion public function onMouseDown (window:Window, x:Float, y:Float, button:Int):Void {
 		
 		var type = switch (button) {
 			
@@ -762,21 +768,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onMouseMove (x:Float, y:Float):Void {
+	@:noCompletion public function onMouseMove (window:Window, x:Float, y:Float):Void {
 		
 		__onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
 		
 	}
 	
 	
-	@:noCompletion public function onMouseMoveRelative (x:Float, y:Float):Void {
+	@:noCompletion public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onMouseUp (x:Float, y:Float, button:Int):Void {
+	@:noCompletion public function onMouseUp (window:Window, x:Float, y:Float, button:Int):Void {
 		
 		var type = switch (button) {
 			
@@ -791,35 +797,49 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onMouseWheel (deltaX:Float, deltaY:Float):Void {
+	@:noCompletion public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float):Void {
 		
 		__onMouseWheel (deltaX, deltaY);
 		
 	}
 	
 	
-	@:noCompletion public function onRenderContextLost ():Void {
+	@:noCompletion public function onPreloadComplete ():Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onRenderContextRestored (context:RenderContext):Void {
+	@:noCompletion public function onPreloadProgress (loaded:Int, total:Int):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onTextEdit (text:String, start:Int, length:Int):Void {
+	@:noCompletion public function onRenderContextLost (renderer:Renderer):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onTextInput (text:String):Void {
+	@:noCompletion public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion public function onTextEdit (window:Window, text:String, start:Int, length:Int):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion public function onTextInput (window:Window, text:String):Void {
 		
 		// TODO: Move to TextField
 		
@@ -849,28 +869,28 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onTouchMove (x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchMove (window:Window, x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_MOVE, x, y, id);
 		
 	}
 	
 	
-	@:noCompletion public function onTouchEnd (x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchEnd (window:Window, x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_END, x, y, id);
 		
 	}
 	
 	
-	@:noCompletion public function onTouchStart (x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchStart (window:Window, x:Float, y:Float, id:Int):Void {
 		
 		__onTouch (TouchEvent.TOUCH_BEGIN, x, y, id);
 		
 	}
 	
 	
-	@:noCompletion public function onWindowActivate ():Void {
+	@:noCompletion public function onWindowActivate (window:Window):Void {
 		
 		var event = new Event (Event.ACTIVATE);
 		__broadcast (event, true);
@@ -878,14 +898,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onWindowClose ():Void {
+	@:noCompletion public function onWindowClose (window:Window):Void {
 		
 		window = null;
 		
 	}
 	
 	
-	@:noCompletion public function onWindowDeactivate ():Void {
+	@:noCompletion public function onWindowDeactivate (window:Window):Void {
 		
 		var event = new Event (Event.DEACTIVATE);
 		__broadcast (event, true);
@@ -893,14 +913,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onWindowEnter ():Void {
+	@:noCompletion public function onWindowEnter (window:Window):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onWindowFocusIn ():Void {
+	@:noCompletion public function onWindowFocusIn (window:Window):Void {
 		
 		var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, null, false, 0);
 		__broadcast (event, true);
@@ -908,7 +928,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onWindowFocusOut ():Void {
+	@:noCompletion public function onWindowFocusOut (window:Window):Void {
 		
 		var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, null, false, 0);
 		__broadcast (event, true);
@@ -916,35 +936,35 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onWindowFullscreen ():Void {
+	@:noCompletion public function onWindowFullscreen (window:Window):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onWindowLeave ():Void {
+	@:noCompletion public function onWindowLeave (window:Window):Void {
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
 	}
 	
 	
-	@:noCompletion public function onWindowMinimize ():Void {
+	@:noCompletion public function onWindowMinimize (window:Window):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onWindowMove (x:Float, y:Float):Void {
+	@:noCompletion public function onWindowMove (window:Window, x:Float, y:Float):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function onWindowResize (width:Int, height:Int):Void {
+	@:noCompletion public function onWindowResize (window:Window, width:Int, height:Int):Void {
 		
 		stageWidth = width;
 		stageHeight = height;
@@ -961,14 +981,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onWindowRestore ():Void {
+	@:noCompletion public function onWindowRestore (window:Window):Void {
 		
 		
 		
 	}
 	
 	
-	@:noCompletion public function render (context:RenderContext):Void {
+	@:noCompletion public function render (renderer:Renderer):Void {
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -997,7 +1017,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			switch (context) {
+			switch (renderer.context) {
 				
 				case CAIRO (cairo):
 					
