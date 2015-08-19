@@ -729,14 +729,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion public function onKeyDown (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
 		
 	}
 	
 	
-	@:noCompletion public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion public function onKeyUp (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
 		

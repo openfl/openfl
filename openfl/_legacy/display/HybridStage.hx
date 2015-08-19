@@ -89,7 +89,7 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
-	public function onKeyDown (keyCode:KeyCode, modifier:KeyModifier):Void {
+	public function onKeyDown (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		var flags = 0;
 		if (modifier.shiftKey) flags |= ManagedStage.efShiftDown;
@@ -105,7 +105,7 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
-	public function onKeyUp (keyCode:KeyCode, modifier:KeyModifier):Void {
+	public function onKeyUp (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
 		var flags = 0;
 		if (modifier.shiftKey) flags |= ManagedStage.efShiftDown;

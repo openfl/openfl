@@ -3,7 +3,6 @@ package openfl.text; #if !flash #if !openfl_legacy
 
 import haxe.Timer;
 import lime.system.Clipboard;
-import lime.ui.Keyboard;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
@@ -1365,7 +1364,7 @@ class TextField extends InteractiveObject {
 				if (!stage.window.onTextInput.has (window_onTextInput)) {
 					
 					stage.window.onTextInput.add (window_onTextInput);
-					Keyboard.onKeyDown.add (keyboard_onKeyDown);
+					stage.window.onKeyDown.add (window_onKeyDown);
 					
 				}
 				
@@ -1408,7 +1407,7 @@ class TextField extends InteractiveObject {
 			
 			stage.window.enableTextEvents = false;
 			stage.window.onTextInput.remove (window_onTextInput);
-			Keyboard.onKeyDown.remove (keyboard_onKeyDown);
+			stage.window.onKeyDown.remove (window_onKeyDown);
 			
 			__inputEnabled = false;
 			__stopCursorTimer ();
@@ -2216,7 +2215,109 @@ class TextField extends InteractiveObject {
 	
 	
 	
-	@:noCompletion private function keyboard_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
+	@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
+		
+		if (stage == null) return;
+		
+		if (__textEngine.selectable && __selectionIndex >= 0) {
+			
+			__updateLayout ();
+			
+			var position = __getPosition (mouseX, mouseY);
+			
+			if (position != __caretIndex) {
+				
+				__caretIndex = position;
+				__dirty = true;
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
+		
+		if (stage == null) return;
+		
+		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
+		if (stage.focus == this) {
+			
+			__getTransform ();
+			__updateLayout ();
+			
+			var px = __worldTransform.__transformInverseX (x, y);
+			var py = __worldTransform.__transformInverseY (x, y);
+			
+			var upPos:Int = __getPosition (mouseX, mouseY);
+			var leftPos:Int;
+			var rightPos:Int;
+			
+			leftPos = Std.int (Math.min (__selectionIndex, upPos));
+			rightPos = Std.int (Math.max (__selectionIndex, upPos));
+			
+			__selectionIndex = leftPos;
+			__caretIndex = rightPos;
+			
+			if (__inputEnabled) {
+				
+				this_onFocusIn (null);
+				
+				__stopCursorTimer ();
+				__startCursorTimer ();
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onAddedToStage (event:Event):Void {
+		
+		this_onFocusIn (null);
+		
+	}
+	
+	
+	@:noCompletion private function this_onFocusIn (event:FocusEvent):Void {
+		
+		if (selectable && type == INPUT && stage != null && stage.focus == this) {
+			
+			__startTextInput ();
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion private function this_onFocusOut (event:FocusEvent):Void {
+		
+		__stopTextInput ();
+		
+	}
+	
+	
+	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
+		
+		if (!selectable) return;
+		
+		__updateLayout ();
+		
+		__caretIndex = __getPosition (mouseX, mouseY);
+		__selectionIndex = __caretIndex;
+		__dirty = true;
+		
+		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
+		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		
+	}
+	
+	
+	@:noCompletion private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 		
 		switch (key) {
 			
@@ -2366,108 +2467,6 @@ class TextField extends InteractiveObject {
 			default:
 			
 		}
-		
-	}
-	
-	
-	@:noCompletion private function stage_onMouseMove (event:MouseEvent) {
-		
-		if (stage == null) return;
-		
-		if (__textEngine.selectable && __selectionIndex >= 0) {
-			
-			__updateLayout ();
-			
-			var position = __getPosition (mouseX, mouseY);
-			
-			if (position != __caretIndex) {
-				
-				__caretIndex = position;
-				__dirty = true;
-				
-			}
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function stage_onMouseUp (event:MouseEvent):Void {
-		
-		if (stage == null) return;
-		
-		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
-		
-		if (stage.focus == this) {
-			
-			__getTransform ();
-			__updateLayout ();
-			
-			var px = __worldTransform.__transformInverseX (x, y);
-			var py = __worldTransform.__transformInverseY (x, y);
-			
-			var upPos:Int = __getPosition (mouseX, mouseY);
-			var leftPos:Int;
-			var rightPos:Int;
-			
-			leftPos = Std.int (Math.min (__selectionIndex, upPos));
-			rightPos = Std.int (Math.max (__selectionIndex, upPos));
-			
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
-			
-			if (__inputEnabled) {
-				
-				this_onFocusIn (null);
-				
-				__stopCursorTimer ();
-				__startCursorTimer ();
-				
-			}
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function this_onAddedToStage (event:Event):Void {
-		
-		this_onFocusIn (null);
-		
-	}
-	
-	
-	@:noCompletion private function this_onFocusIn (event:FocusEvent):Void {
-		
-		if (selectable && type == INPUT && stage != null && stage.focus == this) {
-			
-			__startTextInput ();
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function this_onFocusOut (event:FocusEvent):Void {
-		
-		__stopTextInput ();
-		
-	}
-	
-	
-	@:noCompletion private function this_onMouseDown (event:MouseEvent):Void {
-		
-		if (!selectable) return;
-		
-		__updateLayout ();
-		
-		__caretIndex = __getPosition (mouseX, mouseY);
-		__selectionIndex = __caretIndex;
-		__dirty = true;
-		
-		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
 	}
 	
