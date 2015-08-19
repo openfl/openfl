@@ -701,11 +701,23 @@ class TextEngine {
 				
 				font = getFontInstance (currentFormat);
 				
-				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
-				descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
-				leading = currentFormat.leading;
-				
-				heightValue = ascent + descent + leading;
+				if (font != null) {
+					
+					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
+					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
+					leading = currentFormat.leading;
+					
+					heightValue = ascent + descent + leading;
+					
+				} else {
+					
+					ascent = currentFormat.size;
+					descent = currentFormat.size * 0.185;
+					leading = currentFormat.leading;
+					
+					heightValue = ascent + descent + leading;
+					
+				}
 				
 				#end
 				
