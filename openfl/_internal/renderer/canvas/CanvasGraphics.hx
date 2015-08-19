@@ -48,7 +48,8 @@ class CanvasGraphics {
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:Array<DrawCommand>;
-	
+	private static var worldTransform:Matrix;
+
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	#end
@@ -310,6 +311,24 @@ class CanvasGraphics {
 						
 						context.lineWidth = thickness;
 						
+						if(scaleMode != null) {
+
+							switch(scaleMode) {
+
+								case NORMAL:
+									context.lineWidth /= 1;
+								case HORIZONTAL:
+									context.lineWidth /= worldTransform.a;
+								case VERTICAL:
+									context.lineWidth /= worldTransform.d;
+								case NONE:
+									//Will be more incorrect as a and d are farther apart
+									context.lineWidth /= ((worldTransform.a + worldTransform.d) * 0.5);
+
+							}
+
+						}
+						
 						context.lineJoin = (joints == null ? "round" : Std.string (joints).toLowerCase ());
 						context.lineCap = (caps == null ? "round" : switch (caps) {
 							case CapsStyle.NONE: "butt";
@@ -558,13 +577,15 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, worldTransform:Matrix):Void {
 		
 		#if (js && html5)
+
 		
-		if (graphics.__dirty) {
+		if (graphics.__dirty || (graphics.__owner != null && graphics.__owner.__getTransformChanged() && graphics.__isScaleSensitive)) {
 			
 			CanvasGraphics.graphics = graphics;
+			CanvasGraphics.worldTransform = worldTransform;
 			bounds = graphics.__bounds;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {

@@ -63,6 +63,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty (default, set):Bool = true;
+	@:noCompletion private var __isScaleSensitive:Bool = false;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
 	@:noCompletion private var __drawPaths:Array<DrawPath>;
 	@:noCompletion private var __halfStrokeWidth:Float;
@@ -264,6 +265,7 @@ import js.html.CanvasRenderingContext2D;
 		if (__bounds != null) {
 			
 			__dirty = true;
+			__isScaleSensitive = false;
 			__transformDirty = true;
 			__bounds = null;
 			
@@ -1096,6 +1098,7 @@ import js.html.CanvasRenderingContext2D;
 		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness/2 : __halfStrokeWidth;
 		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
+		if (scaleMode != null && scaleMode != NORMAL) __isScaleSensitive = true;
 		if (thickness != null) __visible = true;
 		
 	}

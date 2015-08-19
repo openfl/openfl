@@ -20,7 +20,7 @@ class CanvasShape {
 		if (graphics != null) {
 			
 			//#if old
-			CanvasGraphics.render (graphics, renderSession);
+			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
 			//#else
 			//CanvasGraphics.renderObjectGraphics (shape, renderSession);
 			//#end

@@ -20,7 +20,7 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession);
+			CairoGraphics.render (graphics, renderSession, shape.__worldTransform);
 			
 			if (graphics.__cairo != null) {
 				
