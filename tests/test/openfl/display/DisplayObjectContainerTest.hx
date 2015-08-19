@@ -247,7 +247,7 @@ class DisplayObjectContainerTest {
 	
 	@Test public function getObjectsUnderPoint () {
 		
-		#if (cpp || neko) // works but sometimes suffers from a race condition when run immediately
+		#if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
 		
 		var sprite = new Sprite ();
 		
