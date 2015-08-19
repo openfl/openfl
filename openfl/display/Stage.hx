@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import haxe.EnumFlags;
+import haxe.Int64;
 import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.opengl.GL;
@@ -14,6 +15,7 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
 import lime.graphics.Renderer;
 import lime.math.Matrix4;
+import lime.ui.Touch;
 import lime.utils.GLUtils;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
@@ -869,23 +871,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion public function onTouchMove (window:Window, x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchMove (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_MOVE, x, y, id);
-		
-	}
-	
-	
-	@:noCompletion public function onTouchEnd (window:Window, x:Float, y:Float, id:Int):Void {
-		
-		__onTouch (TouchEvent.TOUCH_END, x, y, id);
+		__onTouch (TouchEvent.TOUCH_MOVE, touch);
 		
 	}
 	
 	
-	@:noCompletion public function onTouchStart (window:Window, x:Float, y:Float, id:Int):Void {
+	@:noCompletion public function onTouchEnd (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_BEGIN, x, y, id);
+		__onTouch (TouchEvent.TOUCH_END, touch);
+		
+	}
+	
+	
+	@:noCompletion public function onTouchStart (touch:Touch):Void {
+		
+		__onTouch (TouchEvent.TOUCH_BEGIN, touch);
 		
 	}
 	
@@ -1384,23 +1386,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	@:noCompletion private function __onTouch (type:String, x:Float, y:Float, id:Int):Void {
+	@:noCompletion private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (x * stageWidth, y * stageHeight);
+		var point = new Point (touch.x * stageWidth, touch.y * stageHeight);
 		
 		__mouseX = point.x;
 		__mouseY = point.y;
 		
 		var __stack = [];
 		
-		if (__hitTest (x, y, false, __stack, true)) {
+		if (__hitTest (touch.x, touch.y, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
 			if (target == null) target = this;
 			var localPoint = target.globalToLocal (point);
 			
 			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, localPoint, cast target);
-			touchEvent.touchPointID = id;
+			touchEvent.touchPointID = Int64.toInt (touch.id);
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
@@ -1409,7 +1411,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		} else {
 			
 			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, point, this);
-			touchEvent.touchPointID = id;
+			touchEvent.touchPointID = Int64.toInt (touch.id);
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			

@@ -11,6 +11,7 @@ import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
+import lime.ui.Touch;
 import lime.ui.Window;
 import openfl._legacy.events.Event;
 import openfl._legacy.Lib;
@@ -228,29 +229,29 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
-	public function onTouchMove (window:Window, x:Float, y:Float, id:Int):Void {
+	public function onTouchMove (touch:Touch):Void {
 		
 		var flags = ManagedStage.efPrimaryTouch;
 		
-		pumpEvent ( { type: ManagedStage.etTouchMove, x: x, y: y, value: id, flags: flags } );
+		pumpEvent ( { type: ManagedStage.etTouchMove, x: touch.x * stageWidth, y: touch.y * stageHeight, value: touch.id, flags: flags } );
 		
 	}
 	
 	
-	public function onTouchEnd (window:Window, x:Float, y:Float, id:Int):Void {
+	public function onTouchEnd (touch:Touch):Void {
 		
 		var flags = ManagedStage.efPrimaryTouch;
 		
-		pumpEvent ( { type: ManagedStage.etTouchEnd, x: x, y: y, value: id, flags: flags } );
+		pumpEvent ( { type: ManagedStage.etTouchEnd, x: touch.x * stageWidth, y: touch.y * stageHeight, value: touch.id, flags: flags } );
 		
 	}
 	
 	
-	public function onTouchStart (window:Window, x:Float, y:Float, id:Int):Void {
+	public function onTouchStart (touch:Touch):Void {
 		
 		var flags = ManagedStage.efPrimaryTouch;
 		
-		pumpEvent ( { type: ManagedStage.etTouchBegin, x: x, y: y, value: id, flags: flags } );
+		pumpEvent ( { type: ManagedStage.etTouchBegin, x: touch.x * stageWidth, y: touch.y * stageHeight, value: touch.id, flags: flags } );
 		
 	}
 	
