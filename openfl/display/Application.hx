@@ -39,7 +39,7 @@ class Application extends LimeApplication {
 			for (windowConfig in config.windows) {
 				
 				var window = new Window (windowConfig);
-				addWindow (window);
+				createWindow (window);
 				
 				if (Lib.current.stage == null) {
 					
