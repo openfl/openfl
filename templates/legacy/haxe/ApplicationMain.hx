@@ -419,7 +419,7 @@ class ApplicationMain {
 		openfl.Lib.application = app;
 		
 		#if !flash
-		var stage = new openfl._legacy.display.HybridStage (app.window.width, app.window.height, config.background);
+		var stage = new openfl._legacy.display.HybridStage (app.window.width, app.window.height, app.window.config.background);
 		stage.addChild (openfl.Lib.current);
 		app.addModule (stage);
 		#end
@@ -508,25 +508,46 @@ class ApplicationMain {
 		
 		config = {
 			
-			antialiasing: Std.int (::WIN_ANTIALIASING::),
-			background: Std.int (::WIN_BACKGROUND::),
-			borderless: ::WIN_BORDERLESS::,
-			company: "::META_COMPANY::",
-			depthBuffer: ::WIN_DEPTH_BUFFER::,
-			file: "::APP_FILE::",
-			fps: Std.int (::WIN_FPS::),
-			fullscreen: ::WIN_FULLSCREEN::,
-			height: Std.int (::WIN_HEIGHT::),
-			orientation: "::WIN_ORIENTATION::",
-			packageName: "::META_PACKAGE_NAME::",
-			resizable: ::WIN_RESIZABLE::,
-			stencilBuffer: ::WIN_STENCIL_BUFFER::,
-			title: "::APP_TITLE::",
-			version: "::META_VERSION::",
-			vsync: ::WIN_VSYNC::,
-			width: Std.int (::WIN_WIDTH::),
+			meta: {
+				
+				buildNumber: "::meta.buildNumber::",
+				company: "::meta.company::",
+				packageName: "::meta.packageName::",
+				title: "::meta.title::",
+				version: "::meta.version::"
+				
+			},
 			
-		}
+			windows: [
+				::foreach windows::
+				{
+					
+					width: ::width::,
+					height: ::height::,
+					x: ::x::,
+					y: ::y::,
+					background: ::background::,
+					parameters: "::parameters::",
+					fps: ::fps::,
+					hardware: ::hardware::,
+					display: ::display::,
+					resizable: ::resizable::,
+					borderless: ::borderless::,
+					vsync: ::vsync::,
+					fullscreen: ::fullscreen::,
+					antialiasing: ::antialiasing::,
+					orientation: ::orientation::,
+					depthBuffer: ::depthBuffer::,
+					stencilBuffer: ::stencilBuffer::,
+					title: "::title::"
+					
+				},
+				::end::
+			],
+			
+			file: "::APP_FILE::"
+			
+		};
 		
 		#if (js && html5)
 		#if (munit || utest)
