@@ -1338,8 +1338,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tilesheet)
-
-@:forward(beginBitmapFill, beginFill, beginGradientFill, beginShaderFill, clear, copyFrom, cubicCurveTo, curveTo, drawCircle, drawEllipse, drawGraphicsData, drawPath, drawRect, drawRoundRect, drawRoundRectComplex, drawTriangles, endFill, lineBitmapStyle, lineGradientStyle, lineShaderStyle, lineStyle, lineTo, moveTo, recurse)
+@:forward()
 
 
 abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.display.Graphics {

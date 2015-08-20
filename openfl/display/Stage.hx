@@ -1785,5 +1785,25 @@ class Stage extends DisplayObjectContainer implements IModule {
 typedef Stage = openfl._legacy.display.Stage;
 #end
 #else
-typedef Stage = flash.display.Stage;
+
+
+import openfl.Lib;
+
+@:forward()
+
+
+abstract Stage(flash.display.Stage) from flash.display.Stage to flash.display.Stage {
+	
+	
+	public var window (get, never):Window;
+	
+	
+	private inline function get_window ():Window {
+		
+		return cast Lib.application.window;
+		
+	}
+	
+	
+}
 #end
