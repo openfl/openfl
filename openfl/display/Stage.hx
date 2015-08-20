@@ -1036,6 +1036,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (renderer.window == null || renderer.window != window) return;
 		
+		// TODO: Fix multiple stages more gracefully
+		
+		if (application != null && application.windows.length > 0) {
+			
+			__setTransformDirty ();
+			__setRenderDirty ();
+			
+		}
+		
 		if (__rendering) return;
 		__rendering = true;
 		
