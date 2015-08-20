@@ -28,22 +28,30 @@ class Application extends LimeApplication {
 		
 		backend.create (config);
 		
-		frameRate = config.windows[0].fps;
+		if (Reflect.hasField (config, "fps")) {
+			
+			frameRate = config.fps;
+			
+		}
 		
-		for (i in 0...config.windows.length) {
+		if (Reflect.hasField (config, "windows")) {
 			
-			var window = new openfl.display.Window (config.windows[i]);
-			addWindow (window);
-			
-			if (Lib.current.stage == null) {
+			for (windowConfig in config.windows) {
 				
-				window.stage.addChild (Lib.current);
+				var window = new Window (windowConfig);
+				addWindow (window);
+				
+				if (Lib.current.stage == null) {
+					
+					window.stage.addChild (Lib.current);
+					
+				}
+				
+				#if (flash || html5)
+				break;
+				#end
 				
 			}
-			
-			#if (flash || html5)
-			break;
-			#end
 			
 		}
 		

@@ -202,6 +202,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var allowsFullScreen:Bool;
 	
+	public var application (default, null):Application;
+	
 	/**
 	 * The window background color.
 	 */
@@ -1787,6 +1789,8 @@ typedef Stage = openfl._legacy.display.Stage;
 #else
 
 
+import lime.app.Application;
+import lime.ui.Window;
 import openfl.Lib;
 
 @:forward()
@@ -1795,12 +1799,20 @@ import openfl.Lib;
 abstract Stage(flash.display.Stage) from flash.display.Stage to flash.display.Stage {
 	
 	
+	public var application (get, never):Application;
 	public var window (get, never):Window;
+	
+	
+	private inline function get_application ():Application {
+		
+		return Lib.application;
+		
+	}
 	
 	
 	private inline function get_window ():Window {
 		
-		return cast Lib.application.window;
+		return Lib.application.window;
 		
 	}
 	

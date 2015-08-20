@@ -102,44 +102,35 @@ class ApplicationMain {
 		
 		config = {
 			
-			meta: {
-				
-				buildNumber: "::meta.buildNumber::",
-				company: "::meta.company::",
-				packageName: "::meta.packageName::",
-				title: "::meta.title::",
-				version: "::meta.version::"
-				
-			},
-			
+			build: "::meta.buildNumber::",
+			company: "::meta.company::",
+			file: "::APP_FILE::",
+			fps: ::WIN_FPS::,
+			name: "::meta.title::",
+			orientation: "::WIN_ORIENTATION::",
+			packageName: "::meta.packageName::",
+			version: "::meta.version::",
 			windows: [
 				::foreach windows::
 				{
-					
-					width: ::width::,
-					height: ::height::,
-					x: ::x::,
-					y: ::y::,
-					background: ::background::,
-					parameters: "::parameters::",
-					fps: ::fps::,
-					hardware: ::hardware::,
-					display: ::display::,
-					resizable: ::resizable::,
-					borderless: ::borderless::,
-					vsync: ::vsync::,
-					fullscreen: ::fullscreen::,
 					antialiasing: ::antialiasing::,
-					orientation: ::orientation::,
+					background: ::background::,
+					borderless: ::borderless::,
 					depthBuffer: ::depthBuffer::,
+					display: ::display::,
+					fullscreen: ::fullscreen::,
+					hardware: ::hardware::,
+					height: ::height::,
+					parameters: "::parameters::",
+					resizable: ::resizable::,
 					stencilBuffer: ::stencilBuffer::,
-					title: "::title::"
-					
-				},
-				::end::
-			],
-			
-			file: "::APP_FILE::"
+					title: "::title::",
+					vsync: ::vsync::,
+					width: ::width::,
+					x: ::x::,
+					y: ::y::
+				},::end::
+			]
 			
 		};
 		

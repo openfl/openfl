@@ -2,7 +2,7 @@ package openfl.display;
 
 
 import lime.app.Application;
-import lime.project.WindowData;
+import lime.app.Config;
 import lime.ui.Window in LimeWindow;
 import openfl.Lib;
 
@@ -12,10 +12,7 @@ import openfl.Lib;
 class Window extends LimeWindow {
 	
 	
-	public var stage:Stage;
-	
-	
-	public function new (config:WindowData) {
+	public function new (config:WindowConfig = null) {
 		
 		super (config);
 		
@@ -26,9 +23,10 @@ class Window extends LimeWindow {
 		
 		super.create (application);
 		
-		#if !flash
+		#if (!flash && !openfl_legacy)
 		
 		stage = new Stage (width, height, config.background);
+		stage.application = cast application;
 		stage.window = this;
 		application.addModule (stage);
 		
