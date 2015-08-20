@@ -927,7 +927,7 @@ class TextEngine {
 				
 			} else {
 				
-				if (textIndex == formatRange.end) {
+				if (textIndex >= formatRange.end) {
 					
 					break;
 					
