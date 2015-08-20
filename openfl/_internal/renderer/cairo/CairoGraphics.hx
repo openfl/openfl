@@ -669,14 +669,15 @@ class CairoGraphics {
 				
 				case DrawTiles (sheet, tileData, smooth, flags, count):
 					
-					var useScale = (flags & Graphics.TILE_SCALE) > 0;
-					var useRotation = (flags & Graphics.TILE_ROTATION) > 0;
-					var useTransform = (flags & Graphics.TILE_TRANS_2x2) > 0;
-					var useRGB = (flags & Graphics.TILE_RGB) > 0;
-					var useAlpha = (flags & Graphics.TILE_ALPHA) > 0;
-					var useRect = (flags & Graphics.TILE_RECT) > 0;
-					var useOrigin = (flags & Graphics.TILE_ORIGIN) > 0;
-					var useBlendAdd = (flags & Graphics.TILE_BLEND_ADD) > 0;
+					var useScale =        (flags & Graphics.TILE_SCALE) > 0;
+					var useRotation =     (flags & Graphics.TILE_ROTATION) > 0;
+					var useTransform =    (flags & Graphics.TILE_TRANS_2x2) > 0;
+					var useRGB =          (flags & Graphics.TILE_RGB) > 0;
+					var useAlpha =        (flags & Graphics.TILE_ALPHA) > 0;
+					var useRect =         (flags & Graphics.TILE_RECT) > 0;
+					var useOrigin =       (flags & Graphics.TILE_ORIGIN) > 0;
+					var useBlendAdd =     (flags & Graphics.TILE_BLEND_ADD) > 0;
+					var useBlendOverlay = (flags & Graphics.TILE_BLEND_OVERLAY) > 0;
 					
 					if (useTransform) { useScale = false; useRotation = false; }
 					
@@ -711,6 +712,12 @@ class CairoGraphics {
 					if (useBlendAdd) {
 						
 						cairo.operator = ADD;
+						
+					}
+					
+					if (useBlendOverlay) {
+						
+						cairo.operator = OVERLAY;
 						
 					}
 					
@@ -809,7 +816,7 @@ class CairoGraphics {
 						
 					}
 					
-					if (useBlendAdd) {
+					if (useBlendAdd || useBlendOverlay) {
 						
 						cairo.operator = OVER;
 						
