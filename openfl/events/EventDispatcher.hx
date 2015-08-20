@@ -292,9 +292,9 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (__eventMap == null) return false;
 		
-		if (__dispatching.get (type) == true) {
+		if (__dispatching.get (type) == true && __newEventMap.exists (type)) {
 			
-			return __newEventMap.exists (type);
+			return __newEventMap.get (type).length > 0;
 			
 		} else {
 			
