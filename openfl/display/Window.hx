@@ -34,12 +34,6 @@ class Window extends LimeWindow {
 		
 		#end
 		
-		if (Lib.current.stage == null) {
-			
-			stage.addChild (Lib.current);
-			
-		}
-		
 	}
 	
 	

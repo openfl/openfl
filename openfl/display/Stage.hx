@@ -615,6 +615,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
 		
+		if (Lib.current.stage == null) {
+			
+			stage.addChild (Lib.current);
+			
+		}
+		
 	}
 	
 	
@@ -698,7 +704,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onKeyDown (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
 		
@@ -707,7 +713,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onKeyUp (window:Window, keyCode:KeyCode, modifier:KeyModifier):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
 		
@@ -728,7 +734,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onMouseDown (window:Window, x:Float, y:Float, button:Int):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		var type = switch (button) {
 			
@@ -745,7 +751,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onMouseMove (window:Window, x:Float, y:Float):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		__onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
 		
@@ -754,14 +760,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onMouseMoveRelative (window:Window, x:Float, y:Float):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function onMouseUp (window:Window, x:Float, y:Float, button:Int):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		var type = switch (button) {
 			
@@ -778,7 +784,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onMouseWheel (window:Window, deltaX:Float, deltaY:Float):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		__onMouseWheel (deltaX, deltaY);
 		
@@ -815,14 +821,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onTextEdit (window:Window, text:String, start:Int, length:Int):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function onTextInput (window:Window, text:String):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		// TODO: Move to TextField
 		
@@ -875,7 +881,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowActivate (window:Window):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		var event = new Event (Event.ACTIVATE);
 		__broadcast (event, true);
@@ -896,7 +902,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowCreate (window:Window):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		if (window.renderer != null) {
 			
@@ -935,7 +941,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowDeactivate (window:Window):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		var event = new Event (Event.DEACTIVATE);
 		__broadcast (event, true);
@@ -945,14 +951,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowEnter (window:Window):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function onWindowFocusIn (window:Window):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, null, false, 0);
 		__broadcast (event, true);
@@ -962,7 +968,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowFocusOut (window:Window):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, null, false, 0);
 		__broadcast (event, true);
@@ -972,14 +978,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowFullscreen (window:Window):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function onWindowLeave (window:Window):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
 		
@@ -988,21 +994,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowMinimize (window:Window):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function onWindowMove (window:Window, x:Float, y:Float):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function onWindowResize (window:Window, width:Int, height:Int):Void {
 		
-		if (this.window != null && this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
 		stageWidth = width;
 		stageHeight = height;
@@ -1021,14 +1027,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowRestore (window:Window):Void {
 		
-		//if (this.window != null && this.window != window) return;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
 	
 	@:noCompletion public function render (renderer:Renderer):Void {
 		
-		if (renderer.window != null && renderer.window != window) return;
+		if (renderer.window == null || renderer.window != window) return;
 		
 		if (__rendering) return;
 		__rendering = true;
@@ -1764,9 +1770,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function get_frameRate ():Float {
 		
-		if (window != null) {
+		if (application != null) {
 			
-			return window.application.frameRate;
+			return application.frameRate;
 			
 		}
 		
@@ -1777,9 +1783,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function set_frameRate (value:Float):Float {
 		
-		if (window != null) {
+		if (application != null) {
 			
-			return window.application.frameRate = value;
+			return application.frameRate = value;
 			
 		}
 		
