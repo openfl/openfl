@@ -1,3 +1,21 @@
+3.3.1 (08/20/2015)
+------------------
+
+* Added support for multiple windows
+* Updated for Lime 2.6
+* Made continued improvements to the TextField implementation
+* Improved the rendering of pixel-based fonts
+* Fixed edge cases in text selection and replacement
+* Fixed support for multiple input text fields
+* Improved support for tabEnabled and stage.focus
+* Improved support for DOM input text
+* Restored SharedObject support
+* Added stage.application and OpenFL Application/Window classes
+* Improved hit testing for Graphics shapes
+* Made the DEACTIVATE event more consistent when exiting
+* Fixed support for eventDispatcher.hasEventListener in some cases
+
+
 3.3.0 (08/13/2015)
 ------------------
 
