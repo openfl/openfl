@@ -1354,17 +1354,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			#if dom
 			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
-
+			
 			if (__worldTransformCache == null) {
-
+				
 				__worldTransformCache = __worldTransform.clone ();
-
+				
 			} else {
-
+				
 				__worldTransformCache.copyFrom(__worldTransform);
-
+				
 			}
-
+			
 			var worldClip:Rectangle = null;
 			#end
 			

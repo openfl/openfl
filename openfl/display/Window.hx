@@ -25,9 +25,7 @@ class Window extends LimeWindow {
 		
 		#if (!flash && !openfl_legacy)
 		
-		stage = new Stage (width, height, config.background);
-		stage.application = cast application;
-		stage.window = this;
+		stage = new Stage (this, config.background);
 		application.addModule (stage);
 		
 		#else
@@ -35,6 +33,12 @@ class Window extends LimeWindow {
 		stage = Lib.current.stage;
 		
 		#end
+		
+		if (Lib.current.stage == null) {
+			
+			stage.addChild (Lib.current);
+			
+		}
 		
 	}
 	

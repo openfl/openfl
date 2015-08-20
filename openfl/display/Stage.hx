@@ -568,13 +568,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	
-	public function new (width:Int, height:Int, color:Null<Int> = null) {
+	public function new (window:Window, color:Null<Int> = null) {
 		
 		#if hxtelemetry
 		Telemetry.__initialize ();
 		#end
 		
 		super ();
+		
+		this.application = window.application;
+		this.window = window;
 		
 		if (color == null) {
 			
@@ -593,9 +596,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseX = 0;
 		__mouseY = 0;
 		__lastClickTime = 0;
-
-		stageWidth = width;
-		stageHeight = height;
+		
+		stageWidth = window.width;
+		stageHeight = window.height;
 		
 		this.stage = this;
 		
@@ -618,43 +621,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public override function globalToLocal (pos:Point):Point {
 		
 		return pos.clone ();
-		
-	}
-	
-	
-	@:noCompletion public function init (application:Application):Void {
-		
-		if (application.renderer != null) {
-			
-			switch (application.renderer.context) {
-				
-				case OPENGL (gl):
-					
-					#if !disable_cffi
-					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
-					#end
-				
-				case CANVAS (context):
-					
-					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-				
-				case DOM (element):
-					
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-				
-				case CAIRO (cairo):
-					
-					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
-				
-				case CONSOLE (ctx):
-					
-					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
-				
-				default:
-				
-			}
-			
-		}
 		
 	}
 	
@@ -919,9 +885,50 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion public function onWindowClose (window:Window):Void {
 		
+		if (this.window == window) {
+			
+			this.window = null;
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function onWindowCreate (window:Window):Void {
+		
 		if (this.window != null && this.window != window) return;
 		
-		window = null;
+		if (window.renderer != null) {
+			
+			switch (window.renderer.context) {
+				
+				case OPENGL (gl):
+					
+					#if !disable_cffi
+					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+					#end
+				
+				case CANVAS (context):
+					
+					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
+				
+				case DOM (element):
+					
+					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+				
+				case CAIRO (cairo):
+					
+					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
+				
+				case CONSOLE (ctx):
+					
+					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
+				
+				default:
+				
+			}
+			
+		}
 		
 	}
 	

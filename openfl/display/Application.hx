@@ -28,34 +28,36 @@ class Application extends LimeApplication {
 		
 		backend.create (config);
 		
-		if (Reflect.hasField (config, "fps")) {
+		if (config != null) {
 			
-			frameRate = config.fps;
-			
-		}
-		
-		if (Reflect.hasField (config, "windows")) {
-			
-			for (windowConfig in config.windows) {
+			if (Reflect.hasField (config, "fps")) {
 				
-				var window = new Window (windowConfig);
-				createWindow (window);
+				frameRate = config.fps;
 				
-				if (Lib.current.stage == null) {
+			}
+			
+			if (Reflect.hasField (config, "windows")) {
+				
+				for (windowConfig in config.windows) {
 					
-					window.stage.addChild (Lib.current);
+					var window = new Window (windowConfig);
+					createWindow (window);
+					
+					#if (flash || html5)
+					break;
+					#end
 					
 				}
 				
-				#if (flash || html5)
-				break;
-				#end
+			}
+			
+			if (preloader == null || preloader.complete) {
+				
+				onPreloadComplete ();
 				
 			}
 			
 		}
-		
-		init (this);
 		
 	}
 	

@@ -47,13 +47,6 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
-	public function init (application:Application):Void {
-		
-		
-		
-	}
-	
-	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
 		pumpEvent ( { type: ManagedStage.etJoyAxisMove, id: gamepad.id, code: axis, value: value } );
@@ -266,6 +259,13 @@ class HybridStage extends ManagedStage implements IModule {
 	public function onWindowClose (window:Window):Void {
 		
 		pumpEvent ( { type: ManagedStage.etQuit } );
+		
+	}
+	
+	
+	public function onWindowCreate (window:Window):Void {
+		
+		
 		
 	}
 	
