@@ -66,15 +66,17 @@ class BlendModeManager {
 				gl.blendEquation (GL.FUNC_REVERSE_SUBTRACT);
 				gl.blendFunc (GL.ONE, GL.ONE);
 			
+			#if desktop
 			case DARKEN:
 				
-				gl.blendEquation (GL.MIN);
+				gl.blendEquation (0x8007); // GL_MIN
 				gl.blendFunc (GL.ONE, GL.ONE);
 				
 			case LIGHTEN:
 				
-				gl.blendEquation (GL.MAX);
+				gl.blendEquation (0x8008); // GL_MAX
 				gl.blendFunc (GL.ONE, GL.ONE);
+			#end
 			
 			default:
 				
@@ -96,8 +98,6 @@ typedef GLBlendMode = {
 
 @:enum abstract GLBlendEquation(Int) from Int to Int {
 	var ADD = GL.FUNC_ADD;
-	var MIN = GL.MIN;
-	var MAX = GL.MAX;
 	var SUBTRACT = GL.FUNC_SUBTRACT;
 	var REVERSE_SUBTRACT = GL.FUNC_REVERSE_SUBTRACT;
 	
