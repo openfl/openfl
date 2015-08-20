@@ -927,6 +927,12 @@ class TextEngine {
 				
 			} else {
 				
+				if (textIndex == formatRange.end) {
+					
+					break;
+					
+				}
+				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
 				layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
 				layoutGroup.offsetX = offsetX;
