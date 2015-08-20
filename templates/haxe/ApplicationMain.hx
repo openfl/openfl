@@ -15,31 +15,8 @@ class ApplicationMain {
 	
 	public static function create ():Void {
 		
-		var app = new lime.app.Application ();
-		app.create (null);
-		openfl.Lib.application = app;
-		
-		app.config = config;
-		app.frameRate = config.windows[0].fps;
-		
-		for (i in 0...config.windows.length) {
-			
-			var window = new openfl.display.Window (config.windows[i]);
-			app.addWindow (window);
-			
-			if (i == 0) {
-				
-				window.stage.addChild (openfl.Lib.current);
-				
-			}
-			
-			#if (flash || html5)
-			break;
-			#end
-			
-		}
-		
-		app.init (app);
+		var app = new openfl.display.Application ();
+		app.create (config);
 		
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
 		
