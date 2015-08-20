@@ -37,6 +37,9 @@ class TextField extends InteractiveObject {
 	public var sharpness:Float;
 	public var text (get, set):String;
 	public var textColor (get, set):Int;
+	public var highlightedTextColor (get, set):Int;
+	public var highlightColor (get, set):Int;
+	public var caretColor (get, set):Int;
 	public var textHeight (get, null):Float;
 	public var textWidth (get, null):Float;
 	public var type (get, set):TextFieldType;
@@ -226,6 +229,12 @@ class TextField extends InteractiveObject {
 	private function set_text (value:String):String { lime_text_field_set_text (__handle, value); return value; }
 	private function get_textColor ():Int { return lime_text_field_get_text_color (__handle); }
 	private function set_textColor (value:Int):Int { lime_text_field_set_text_color (__handle, value); return value; }
+	private function get_highlightedTextColor ():Int { return lime_text_field_get_highlighted_text_color (__handle); }
+	private function set_highlightedTextColor (value:Int):Int { lime_text_field_set_highlighted_text_color (__handle, value); return value; }
+	private function get_highlightColor ():Int { return lime_text_field_get_highlight_color (__handle); }
+	private function set_highlightColor (value:Int):Int { lime_text_field_set_highlight_color (__handle, value); return value; }
+	private function get_caretColor ():Int { return lime_text_field_get_caret_color (__handle); }
+	private function set_caretColor (value:Int):Int { lime_text_field_set_caret_color (__handle, value); return value; }
 	private function get_textWidth ():Float { return lime_text_field_get_text_width (__handle); }
 	private function get_textHeight ():Float { return lime_text_field_get_text_height (__handle); }
 	private function get_type ():TextFieldType { return lime_text_field_get_type (__handle) ? TextFieldType.INPUT : TextFieldType.DYNAMIC; }
@@ -248,6 +257,8 @@ class TextField extends InteractiveObject {
 	private static var lime_text_field_set_html_text = Lib.load ("lime-legacy", "lime_legacy_text_field_set_html_text", 2);
 	private static var lime_text_field_get_text_color = Lib.load ("lime-legacy", "lime_legacy_text_field_get_text_color", 1);
 	private static var lime_text_field_set_text_color = Lib.load ("lime-legacy", "lime_legacy_text_field_set_text_color", 2);
+	private static var lime_text_field_get_highlighted_text_color = Lib.load ("lime-legacy", "lime_text_field_get_highlighted_text_color", 1);
+	private static var lime_text_field_set_highlighted_text_color = Lib.load ("lime-legacy", "lime_text_field_set_highlighted_text_color", 2);
 	private static var lime_text_field_get_selectable = Lib.load ("lime-legacy", "lime_legacy_text_field_get_selectable", 1);
 	private static var lime_text_field_set_selectable = Lib.load ("lime-legacy", "lime_legacy_text_field_set_selectable", 2);
 	private static var lime_text_field_get_display_as_password = Lib.load ("lime-legacy", "lime_legacy_text_field_get_display_as_password", 1);
@@ -272,6 +283,10 @@ class TextField extends InteractiveObject {
 	private static var lime_text_field_set_background = Lib.load ("lime-legacy", "lime_legacy_text_field_set_background", 2);
 	private static var lime_text_field_get_background_color = Lib.load ("lime-legacy", "lime_legacy_text_field_get_background_color", 1);
 	private static var lime_text_field_set_background_color = Lib.load ("lime-legacy", "lime_legacy_text_field_set_background_color", 2);
+	private static var lime_text_field_get_highlight_color = Lib.load ("lime-legacy", "lime_text_field_get_highlight_color", 1);
+	private static var lime_text_field_set_highlight_color = Lib.load ("lime-legacy", "lime_text_field_set_highlight_color", 2);
+	private static var lime_text_field_get_caret_color = Lib.load ("lime-legacy", "lime_text_field_get_caret_color", 1);
+	private static var lime_text_field_set_caret_color = Lib.load ("lime-legacy", "lime_text_field_set_caret_color", 2);
 	private static var lime_text_field_get_text_width = Lib.load ("lime-legacy", "lime_legacy_text_field_get_text_width", 1);
 	private static var lime_text_field_get_text_height = Lib.load ("lime-legacy", "lime_legacy_text_field_get_text_height", 1);
 	private static var lime_text_field_get_text_format = Lib.load ("lime-legacy", "lime_legacy_text_field_get_text_format", 4);
