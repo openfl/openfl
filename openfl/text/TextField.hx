@@ -1050,6 +1050,10 @@ class TextField extends InteractiveObject {
 				range.start += offset;
 				i++;
 				
+			} else {
+				
+				i++;
+				
 			}
 			
 		}
