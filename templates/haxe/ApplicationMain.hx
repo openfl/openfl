@@ -138,7 +138,7 @@ class ApplicationMain {
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();
 		telemetry.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
 		telemetry.host = ::if (config.hxtelemetry != null)::"::config.hxtelemetry.host::"::else::"localhost"::end::;
-		telemetry.app_name = config.title;
+		telemetry.app_name = config.name;
 		Reflect.setField (config, "telemetry", telemetry);
 		#end
 		
