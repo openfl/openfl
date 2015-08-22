@@ -875,7 +875,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function globalToLocal (pos:Point):Point {
 		
-		__getTransform ().__transformInversePoint (pos.clone ());
+		pos = pos.clone ();
+		__getTransform ().__transformInversePoint (pos);
 		return pos;
 		
 	}
