@@ -599,6 +599,12 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		if (clipRect != null) {
+			
+			renderSession.maskManager.pushRect (clipRect, new Matrix ());
+			
+		}
+		
 		var matrixCache = source.__worldTransform;
 		source.__worldTransform = matrix != null ? matrix : new Matrix ();
 		source.__updateChildren (false);
@@ -610,6 +616,12 @@ class BitmapData implements IBitmapDrawable {
 			
 			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
 			
+		}
+		
+		if (clipRect != null){
+			
+			renderSession.maskManager.popMask ();
+					
 		}
 		
 		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
@@ -636,12 +648,24 @@ class BitmapData implements IBitmapDrawable {
 		renderSession.roundPixels = true;
 		renderSession.maskManager = new CairoMaskManager (renderSession);
 		
+		if (clipRect != null) {
+			
+			renderSession.maskManager.pushRect (clipRect, new Matrix ());
+			
+		}
+		
 		var matrixCache = source.__worldTransform;
 		source.__worldTransform = matrix != null ? matrix : new Matrix ();
 		source.__updateChildren (false);
 		source.__renderCairo (renderSession);
 		source.__worldTransform = matrixCache;
 		source.__updateChildren (true);
+		
+		if (clipRect != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
 		
 		surface.flush ();
 		cairo.destroy ();
