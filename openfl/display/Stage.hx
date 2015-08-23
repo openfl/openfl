@@ -1305,6 +1305,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		if (target == null) target = this;
+		
 		if (type == MouseEvent.MOUSE_DOWN) {
 			
 			if (target.tabEnabled) {
@@ -1319,7 +1321,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		if (target == null) target = this;
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		var clickType = switch (type) {
