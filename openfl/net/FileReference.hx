@@ -6,6 +6,8 @@ import lime.system.System;
 import lime.ui.FileDialog;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.events.IOErrorEvent;
+import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 
 #if sys
@@ -55,6 +57,7 @@ class FileReference extends EventDispatcher {
 	
 	@:noCompletion private var __data:ByteArray;
 	@:noCompletion private var __path:String;
+	@:noCompletion private var __urlLoader:URLLoader;
 	
 	
 	public function new () {
@@ -67,6 +70,7 @@ class FileReference extends EventDispatcher {
 	public function browse (typeFilter:Array<FileFilter> = null):Bool {
 		
 		__data = null;
+		__path = null;
 		
 		#if desktop
 		
@@ -101,14 +105,30 @@ class FileReference extends EventDispatcher {
 	
 	public function cancel ():Void {
 		
-		
+		if (__urlLoader != null) {
+			
+			__urlLoader.close ();
+			
+		}
 		
 	}
 	
 	
 	public function download (request:URLRequest, defaultFileName:String = null):Void {
 		
-		openfl.Lib.notImplemented ("FileReference.download");
+		__data = null;
+		__path = null;
+		
+		__urlLoader = new URLLoader ();
+		__urlLoader.addEventListener (Event.COMPLETE, urlLoader_onComplete);
+		__urlLoader.addEventListener (IOErrorEvent.IO_ERROR, urlLoader_onIOError);
+		__urlLoader.addEventListener (ProgressEvent.PROGRESS, urlLoader_onProgress);
+		__urlLoader.load (request);
+		
+		var saveFileDialog = new FileDialog (SAVE);
+		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
+		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
+		saveFileDialog.browse ();
 		
 	}
 	
@@ -130,6 +150,7 @@ class FileReference extends EventDispatcher {
 	
 	public function save (data:Dynamic, defaultFileName:String = null):Void {
 		
+		__data = null;
 		__path = null;
 		
 		if (data == null) return;
@@ -207,12 +228,67 @@ class FileReference extends EventDispatcher {
 		
 		#if desktop
 		
-		File.saveBytes (path, __data);
-		__data = null;
+		if (__data != null) {
+			
+			File.saveBytes (path, __data);
+			
+			__data = null;
+			__path = null;
+			
+		} else {
+			
+			__path = path;
+			
+		}
 		
 		#end
 		
 		dispatchEvent (new Event (Event.SELECT));
+		
+	}
+	
+	
+	@:noCompletion private function urlLoader_onComplete (event:Event):Void {
+		
+		#if desktop
+		
+		if (Std.is (__urlLoader.data, ByteArray)) {
+			
+			__data = __urlLoader.data;
+			
+		} else {
+			
+			__data = new ByteArray ();
+			__data.writeUTFBytes (Std.string (__urlLoader.data));
+			
+		}
+		
+		if (__path != null) {
+			
+			File.saveBytes (__path, __data);
+			
+			__path = null;
+			__data = null;
+			
+		}
+		
+		#end
+		
+		dispatchEvent (event);
+		
+	}
+	
+	
+	@:noCompletion private function urlLoader_onIOError (event:IOErrorEvent):Void {
+		
+		dispatchEvent (event);
+		
+	}
+	
+	
+	@:noCompletion private function urlLoader_onProgress (event:ProgressEvent):Void {
+		
+		dispatchEvent (event);
 		
 	}
 	
