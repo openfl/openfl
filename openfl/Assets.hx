@@ -429,7 +429,7 @@ class Assets {
 		
 		#else
 		
-		return (bitmapData != null && #if !lime_hybrid bitmapData.__image != null #else bitmapData.__handle != null #end);
+		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
 		
 		#end
 		#end
@@ -1168,7 +1168,7 @@ class Assets {
 						
 						if (preload == null) {
 							
-							preload = b.__image;
+							preload = b.image;
 							
 						}
 						
