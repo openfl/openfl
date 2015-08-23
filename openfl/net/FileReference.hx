@@ -125,8 +125,6 @@ class FileReference extends EventDispatcher {
 		__urlLoader.addEventListener (ProgressEvent.PROGRESS, urlLoader_onProgress);
 		__urlLoader.load (request);
 		
-		name = Path.withoutDirectory (request.url);
-		
 		var saveFileDialog = new FileDialog (SAVE);
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
@@ -229,6 +227,8 @@ class FileReference extends EventDispatcher {
 	@:noCompletion private function saveFileDialog_onSelect (path:String):Void {
 		
 		#if desktop
+		
+		name = Path.withoutDirectory (path);
 		
 		if (__data != null) {
 			
