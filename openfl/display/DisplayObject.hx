@@ -1109,13 +1109,33 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			if (visible && !__isMask && __graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
+			if (!visible || __isMask) return false;
+			if (mask != null && !mask.__hitTestMask (x, y)) return false;
+			
+			if (__graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
 				
-				if (!interactiveOnly) {
+				if (stack != null && !interactiveOnly) {
 					
 					stack.push (this);
 					
 				}
+				
+				return true;
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	@:noCompletion private function __hitTestMask (x:Float, y:Float):Bool {
+		
+		if (__graphics != null) {
+			
+			if (__graphics.__hitTest (x, y, true, __getTransform ())) {
 				
 				return true;
 				

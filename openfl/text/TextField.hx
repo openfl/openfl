@@ -1255,6 +1255,7 @@ class TextField extends InteractiveObject {
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		__getTransform ();
 		__updateLayout ();
@@ -1269,6 +1270,25 @@ class TextField extends InteractiveObject {
 				stack.push (this);
 				
 			}
+			
+			return true;
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
+		
+		__getTransform ();
+		__updateLayout ();
+		
+		var px = __worldTransform.__transformInverseX (x, y);
+		var py = __worldTransform.__transformInverseY (x, y);
+		
+		if (__textEngine.bounds.contains (px, py)) {
 			
 			return true;
 			
