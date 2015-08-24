@@ -1296,14 +1296,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
 			
 			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+				
+				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					
 					sr.__transform(sr, __worldTransform);
+					
+				} else {
+					
+					__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
+					__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
+					
 				}
-				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
-				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
+				
 			}
 			
-			if(__isMask) __maskCached = false;
+			if (__isMask) __maskCached = false;
 			
 		} else {
 			
@@ -1315,11 +1322,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = y;
 			
 			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					sr.__transform(sr, __worldTransform);
+				
+				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					
+					sr.__transform (sr, __worldTransform);
+					
+				} else {
+					
+					__worldTransform.tx = x - scrollRect.x;
+					__worldTransform.ty = y - scrollRect.y;
+					
 				}
-				__worldTransform.tx = x - scrollRect.x;
-				__worldTransform.ty = y - scrollRect.y;
+				
 			}
 			
 		}
