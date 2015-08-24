@@ -41,14 +41,14 @@ class CanvasGraphics {
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
-	private static var fillCommands:Array<DrawCommand>;
+	private static var fillCommands = new Array<DrawCommand> ();
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:Array<DrawCommand>;
+	private static var strokeCommands = new Array<DrawCommand> ();
 	
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
@@ -202,7 +202,7 @@ class CanvasGraphics {
 		#if (js && html5)
 		context.beginPath ();
 		playCommands (fillCommands, false);
-		fillCommands = [];
+		fillCommands.splice (0, fillCommands.length);
 		#end
 		
 	}
@@ -214,7 +214,7 @@ class CanvasGraphics {
 		context.beginPath ();
 		playCommands (strokeCommands, true);
 		context.closePath ();
-		strokeCommands = [];
+		strokeCommands.splice (0, strokeCommands.length);
 		#end
 		
 	}
@@ -244,8 +244,8 @@ class CanvasGraphics {
 			var offsetX = bounds.x;
 			var offsetY = bounds.y;
 			
-			fillCommands = new Array<DrawCommand> ();
-			strokeCommands = new Array<DrawCommand> ();
+			fillCommands.splice (0, fillCommands.length);
+			strokeCommands.splice (0, strokeCommands.length);
 			
 			hasFill = false;
 			hasStroke = false;
@@ -736,8 +736,8 @@ class CanvasGraphics {
 				var offsetX = bounds.x;
 				var offsetY = bounds.y;
 				
-				fillCommands = new Array<DrawCommand> ();
-				strokeCommands = new Array<DrawCommand> ();
+				fillCommands.splice (0, fillCommands.length);
+				strokeCommands.splice (0, strokeCommands.length);
 				
 				hasFill = false;
 				hasStroke = false;

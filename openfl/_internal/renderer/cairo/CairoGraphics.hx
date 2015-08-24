@@ -39,7 +39,7 @@ class CairoGraphics {
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
-	private static var fillCommands:Array<DrawCommand>;
+	private static var fillCommands = new Array<DrawCommand> ();
 	private static var fillPattern:CairoPattern;
 	private static var fillPatternMatrix:Matrix;
 	private static var graphics:Graphics;
@@ -48,7 +48,7 @@ class CairoGraphics {
 	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:Array<DrawCommand>;
+	private static var strokeCommands = new Array<DrawCommand> ();
 	private static var strokePattern:CairoPattern;
 	
 	
@@ -184,7 +184,7 @@ class CairoGraphics {
 		
 		cairo.newPath ();
 		playCommands (fillCommands, false);
-		fillCommands = [];
+		fillCommands.splice (0, fillCommands.length);
 		
 	}
 	
@@ -194,7 +194,7 @@ class CairoGraphics {
 		cairo.newPath ();
 		playCommands (strokeCommands, true);
 		cairo.closePath ();
-		strokeCommands = [];
+		strokeCommands.splice (0, strokeCommands.length);
 		
 	}
 	
@@ -227,8 +227,8 @@ class CairoGraphics {
 			
 			cairo = graphics.__cairo;
 			
-			fillCommands = new Array<DrawCommand> ();
-			strokeCommands = new Array<DrawCommand> ();
+			fillCommands.splice (0, fillCommands.length);
+			strokeCommands.splice (0, strokeCommands.length);
 			
 			hasFill = false;
 			hasStroke = false;
@@ -1104,8 +1104,8 @@ class CairoGraphics {
 			cairo.paint ();
 			cairo.operator = OVER;
 			
-			fillCommands = new Array<DrawCommand> ();
-			strokeCommands = new Array<DrawCommand> ();
+			fillCommands.splice (0, fillCommands.length);
+			strokeCommands.splice (0, strokeCommands.length);
 			
 			hasFill = false;
 			hasStroke = false;
