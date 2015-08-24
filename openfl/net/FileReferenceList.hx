@@ -53,10 +53,10 @@ class FileReferenceList extends EventDispatcher {
 		
 		fileList = new Array ();
 		
-		var fileDialog = new FileDialog (OPEN_MULTIPLE);
+		var fileDialog = new FileDialog ();
 		fileDialog.onCancel.add (fileDialog_onCancel);
 		fileDialog.onSelectMultiple.add (fileDialog_onSelectMultiple);
-		fileDialog.browse (filter);
+		fileDialog.browse (OPEN_MULTIPLE, filter);
 		return true;
 		
 		#end

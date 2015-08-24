@@ -90,10 +90,10 @@ class FileReference extends EventDispatcher {
 			
 		}
 		
-		var openFileDialog = new FileDialog (OPEN);
+		var openFileDialog = new FileDialog ();
 		openFileDialog.onCancel.add (openFileDialog_onCancel);
 		openFileDialog.onSelect.add (openFileDialog_onSelect);
-		openFileDialog.browse (filter);
+		openFileDialog.browse (OPEN, filter);
 		return true;
 		
 		#end
@@ -125,10 +125,10 @@ class FileReference extends EventDispatcher {
 		__urlLoader.addEventListener (ProgressEvent.PROGRESS, urlLoader_onProgress);
 		__urlLoader.load (request);
 		
-		var saveFileDialog = new FileDialog (SAVE);
+		var saveFileDialog = new FileDialog ();
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
-		saveFileDialog.browse ();
+		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null);
 		
 	}
 	
@@ -168,10 +168,10 @@ class FileReference extends EventDispatcher {
 			
 		}
 		
-		var saveFileDialog = new FileDialog (SAVE);
+		var saveFileDialog = new FileDialog ();
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
-		saveFileDialog.browse ();
+		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null);
 		
 		#end
 		
