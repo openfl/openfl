@@ -52,6 +52,100 @@ class CairoGraphics {
 	private static var strokePattern:CairoPattern;
 	
 	
+	private static function closePath ():Void {
+		
+		if (strokePattern == null) {
+			
+			return;
+			
+		}
+		
+		cairo.closePath ();
+		cairo.source = strokePattern;
+		if (!hitTesting) cairo.strokePreserve ();
+		cairo.newPath ();
+		
+	}
+	
+	
+	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):CairoPattern {
+		
+		var pattern:CairoPattern = null;
+		
+		switch (type) {
+			
+			case RADIAL:
+				
+				if (matrix == null) matrix = new Matrix ();
+				
+				var point = matrix.transformPoint (new Point (1638.4, 0));
+				
+				var x = matrix.tx + graphics.__bounds.x;
+				var y = matrix.ty + graphics.__bounds.y;
+				
+				pattern = CairoPattern.createRadial (x, y, 0, x, y, (point.x - matrix.tx) / 2);
+			
+			case LINEAR:
+				
+				if (matrix == null) matrix = new Matrix ();
+				
+				var point1 = matrix.transformPoint (new Point (-819.2, 0));
+				var point2 = matrix.transformPoint (new Point (819.2, 0));
+				
+				point1.x += graphics.__bounds.x;
+				point2.x += graphics.__bounds.x;
+				point1.y += graphics.__bounds.y;
+				point2.y += graphics.__bounds.y;
+				
+				pattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
+			
+		}
+		
+		for (i in 0...colors.length) {
+			
+			var rgb = colors[i];
+			var alpha = alphas[i];
+			var r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
+			var g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
+			var b = (rgb & 0x0000FF) / 0xFF;
+			
+			var ratio = ratios[i] / 0xFF;
+			if (ratio < 0) ratio = 0;
+			if (ratio > 1) ratio = 1;
+			
+			pattern.addColorStopRGBA (ratio, r, g, b, alpha);
+			
+		}
+		
+		var mat = pattern.matrix;
+		
+		mat.tx = bounds.x; 
+		mat.ty = bounds.y; 
+		
+		pattern.matrix = mat;
+		
+		return pattern;
+		
+	}
+	
+	
+	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
+		
+		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
+		
+		if (bitmapRepeat) {
+			
+			pattern.extend = CairoExtend.REPEAT;
+			
+		}
+		
+		fillPatternMatrix = matrix;
+		
+		return pattern;
+		
+	}
+	
+	
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
 		
 		if (ry == -1) ry = rx;
@@ -101,100 +195,6 @@ class CairoGraphics {
 		playCommands (strokeCommands, true);
 		cairo.closePath ();
 		strokeCommands = [];
-		
-	}
-	
-	
-	private static function closePath ():Void {
-		
-		if (strokePattern == null) {
-			
-			return;
-			
-		}
-		
-		cairo.closePath ();
-		cairo.source = strokePattern;
-		if (!hitTesting) cairo.strokePreserve ();
-		cairo.newPath ();
-		
-	}
-	
-	
-	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):CairoPattern {
-		
-		var pattern:CairoPattern = null;
-		
-		switch (type) {
-			
-			case RADIAL:
-				
-				if (matrix == null) matrix = new Matrix ();
-				
-				var point = matrix.transformPoint (new Point (1638.4, 0));
-				
-				var x = matrix.tx + graphics.__bounds.x;
-				var y = matrix.ty + graphics.__bounds.y;
-				
-				pattern = CairoPattern.createRadial (x, y, 0, x, y, (point.x - matrix.tx) / 2);
-			
-			case LINEAR:
-				
-				if (matrix == null) matrix = new Matrix ();
-				
-				var point1 = matrix.transformPoint (new Point (-819.2, 0));
-				var point2 = matrix.transformPoint (new Point (819.2, 0));
-				
-				point1.x += graphics.__bounds.x;
-				point2.x += graphics.__bounds.x;
-				point1.y += graphics.__bounds.y;
-				point2.y += graphics.__bounds.y;
-				
-				pattern = CairoPattern.createLinear (point1.x, point1.y, point2.x, point2.y);
-				
-		}
-		
-		for (i in 0...colors.length) {
-			
-			var rgb = colors[i];
-			var alpha = alphas[i];
-			var r = ((rgb & 0xFF0000) >>> 16) / 0xFF;
-			var g = ((rgb & 0x00FF00) >>> 8) / 0xFF;
-			var b = (rgb & 0x0000FF) / 0xFF;
-			
-			var ratio = ratios[i] / 0xFF;
-			if (ratio < 0) ratio = 0;
-			if (ratio > 1) ratio = 1;
-			
-			pattern.addColorStopRGBA (ratio, r, g, b, alpha);
-			
-		}
-		
-		var mat = pattern.matrix;
-		
-		mat.tx = bounds.x; 
-		mat.ty = bounds.y; 
-		
-		pattern.matrix = mat;
-		
-		return pattern;
-		
-	}
-	
-	
-	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
-		
-		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
-		
-		if (bitmapRepeat) {
-			
-			pattern.extend = CairoExtend.REPEAT;
-			
-		}
-		
-		fillPatternMatrix = matrix;
-		
-		return pattern;
 		
 	}
 	
