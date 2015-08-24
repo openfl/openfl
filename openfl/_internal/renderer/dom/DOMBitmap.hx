@@ -22,7 +22,7 @@ class DOMBitmap {
 		#if (js && html5)
 		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			if (bitmap.bitmapData.__image.buffer.__srcImage != null) {
+			if (bitmap.bitmapData.image.buffer.__srcImage != null) {
 				
 				renderImage (bitmap, renderSession);
 				
@@ -89,7 +89,7 @@ class DOMBitmap {
 		bitmap.__canvas.height = bitmap.bitmapData.height;
 		
 		bitmap.__context.globalAlpha = bitmap.__worldAlpha;
-		bitmap.__context.drawImage (bitmap.bitmapData.__image.buffer.__srcCanvas, 0, 0);
+		bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
 		
 		DOMRenderer.applyStyle (bitmap, renderSession, true, false, true);
 		#end
@@ -110,7 +110,7 @@ class DOMBitmap {
 		if (bitmap.__image == null) {
 			
 			bitmap.__image = cast Browser.document.createElement ("img");
-			bitmap.__image.src = bitmap.bitmapData.__image.buffer.__srcImage.src;
+			bitmap.__image.src = bitmap.bitmapData.image.buffer.__srcImage.src;
 			DOMRenderer.initializeElement (bitmap, bitmap.__image, renderSession);
 			
 		}

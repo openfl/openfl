@@ -59,7 +59,7 @@ class CanvasGraphics {
 		#if (js && html5)
 		
 		bitmap.__sync ();
-		return context.createPattern (bitmap.__image.src, bitmapRepeat ? "repeat" : "no-repeat");
+		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
 		#end
 		
@@ -78,7 +78,7 @@ class CanvasGraphics {
 		canvas.width = width;
 		canvas.height = height;
 		
-		context.fillStyle = context.createPattern (bitmap.__image.src, repeat ? "repeat" : "no-repeat");
+		context.fillStyle = context.createPattern (bitmap.image.src, repeat ? "repeat" : "no-repeat");
 		context.beginPath ();
 		context.moveTo (0, 0);
 		context.lineTo (0, height);
@@ -456,13 +456,15 @@ class CanvasGraphics {
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
 							
 							optimizationUsed = true;
-							context.drawImage (bitmapFill.__image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
+							context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
+							
 						}
 					}
 					
 					if (!optimizationUsed) {
 						
 						context.rect (x - offsetX, y - offsetY, width, height);
+						
 					}
 					
 				
@@ -834,7 +836,7 @@ class CanvasGraphics {
 							
 							var surface:Dynamic;
 							sheet.__bitmap.__sync ();
-							surface = sheet.__bitmap.__image.src;
+							surface = sheet.__bitmap.image.src;
 							
 							if (useBlendAdd) {
 								

@@ -504,7 +504,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		out.color(0xff, 0xff, 0xff, 0xff);
 		vertexBuffer.unlock ();
 
-		var texture = imageTexture (bitmap.__image);
+		var texture = imageTexture (bitmap.image);
 
 		ctx.bindShader (defaultShader);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
@@ -1069,7 +1069,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					transform.append (viewProj);
 					transform.transpose ();
 
-					var texture = imageTexture (sheet.__bitmap.__image);
+					var texture = imageTexture (sheet.__bitmap.image);
 
 					ctx.bindShader (defaultShader);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
@@ -1100,7 +1100,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					transform.append (viewProj);
 					transform.transpose ();
 
-					var texture = imageTexture (fillBitmap.__image);
+					var texture = imageTexture (fillBitmap.image);
 
 					var vertexCount = div (vertices.length, 2);
 					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
