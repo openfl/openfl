@@ -297,7 +297,7 @@ class BitmapData implements IBitmapDrawable {
 	 * @return If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object that has the difference between the two objects (see the main discussion).If the BitmapData objects are equivalent, the method returns the number 0. If no argument is passed or if the argument is not a BitmapData object, the method returns -1. If either BitmapData object has been disposed of, the method returns -2. If the widths of the BitmapData objects are not equal, the method returns the number -3. If the heights of the BitmapData objects are not equal, the method returns the number -4.
 	 */
 	
-	@:access(BitmapData)
+	@:access(lime.graphics.Image)
 	public function compare (otherBitmapData:BitmapData):Dynamic {
 		
 		if (otherBitmapData == null) 
@@ -313,7 +313,7 @@ class BitmapData implements IBitmapDrawable {
 			return -4;
 		
 		//Fast-fail check: are they 100% equivalent at the byte level
-		if (this.image.format == otherBitmapData.image.format) {
+		if (this.image != null && otherBitmapData.image != null && this.image.format == otherBitmapData.image.format) {
 			
 			var bytes1 = this.image.data;
 			var bytes2 = otherBitmapData.image.data;
