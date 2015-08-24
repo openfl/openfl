@@ -211,6 +211,8 @@ class CairoGraphics {
 			
 		} else {
 			
+			hitTesting = true;
+			
 			x -= bounds.x;
 			y -= bounds.y;
 			
@@ -1072,6 +1074,8 @@ class CairoGraphics {
 			}
 			
 		} else {
+			
+			hitTesting = false;
 			
 			if (graphics.__cairo != null) {
 				

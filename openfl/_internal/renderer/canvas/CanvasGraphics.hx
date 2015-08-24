@@ -232,6 +232,9 @@ class CanvasGraphics {
 			
 			hitTesting = true;
 			
+			x -= bounds.x;
+			y -= bounds.y;
+			
 			if (graphics.__canvas == null) {
 				
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
@@ -241,9 +244,6 @@ class CanvasGraphics {
 			
 			context = graphics.__context;
 			
-			var offsetX = bounds.x;
-			var offsetY = bounds.y;
-			
 			fillCommands.splice (0, fillCommands.length);
 			strokeCommands.splice (0, strokeCommands.length);
 			
@@ -252,7 +252,7 @@ class CanvasGraphics {
 			bitmapFill = null;
 			bitmapRepeat = false;
 			
-			endFill ();
+			context.beginPath ();
 			
 			for (command in graphics.__commands) {
 				
@@ -526,7 +526,7 @@ class CanvasGraphics {
 					
 					if (stroke && hasStroke) {
 						
-						closePath();
+						closePath ();
 						
 					}
 					
@@ -643,7 +643,7 @@ class CanvasGraphics {
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
 							
 							optimizationUsed = true;
-							context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
+							if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, x - offsetX, y - offsetY, width, height);
 							
 						}
 					}
@@ -732,9 +732,6 @@ class CanvasGraphics {
 				
 				graphics.__canvas.width = Math.ceil (bounds.width);
 				graphics.__canvas.height = Math.ceil (bounds.height);
-				
-				var offsetX = bounds.x;
-				var offsetY = bounds.y;
 				
 				fillCommands.splice (0, fillCommands.length);
 				strokeCommands.splice (0, strokeCommands.length);
