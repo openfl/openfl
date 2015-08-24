@@ -313,10 +313,10 @@ class BitmapData implements IBitmapDrawable {
 			return -4;
 		
 		//Fast-fail check: are they 100% equivalent at the byte level
-		if (this.__image.format == otherBitmapData.__image.format) {
+		if (this.image.format == otherBitmapData.image.format) {
 			
-			var bytes1 = this.__image.data;
-			var bytes2 = otherBitmapData.__image.data;
+			var bytes1 = this.image.data;
+			var bytes2 = otherBitmapData.image.data;
 			
 			var allEqual:Bool = false;
 			for (i in 0...bytes1.length)
