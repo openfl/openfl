@@ -1202,40 +1202,14 @@ import js.html.CanvasRenderingContext2D;
 		var px = matrix.__transformInverseX (x, y);
 		var py = matrix.__transformInverseY (x, y);
 		
-		if (px > 0 && py > 0 && __bounds.contains (px, py)) {
+		if (px > __bounds.x && py > __bounds.y && __bounds.contains (px, py)) {
 			
 			if (shapeFlag) {
 				
-				if (__dirty) {
-					
-					#if (js && html5)
-					//CanvasGraphics.render (this, null);
-					#elseif (cpp || neko)
-					//CairoGraphics.render (this, null);
-					#end
-					
-				}
-				
 				#if (js && html5)
-				if (__context != null) {
-					
-					// TODO: Need to replay each path to use isPointInPath, likely what Cairo needed, too
-					//return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
-					
-				}
+				return CanvasGraphics.hitTest (this, px, py);
 				#elseif (cpp || neko)
-				if (__bitmap != null) {
-				//if (__cairo != null) {
-					
-					// TODO: This does not handle hit testing against invisible fills
-					
-					var pixel = __bitmap.getPixel32 (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
-					return ((pixel >> 24 & 0xFF) > 0);
-					
-					//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
-					//if (__cairo.inStroke (x - bounds.x, y - bounds.y)) return true;
-					
-				}
+				return CairoGraphics.hitTest (this, px, py);
 				#end
 				
 			}

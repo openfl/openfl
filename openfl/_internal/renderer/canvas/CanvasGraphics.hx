@@ -45,6 +45,7 @@ class CanvasGraphics {
 	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
+	private static var hitTesting:Bool;
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:Array<DrawCommand>;
@@ -52,8 +53,8 @@ class CanvasGraphics {
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
 	#end
-
-		
+	
+	
 	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool) {
 		
 		#if (js && html5)
@@ -86,7 +87,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		context.fill ();
+		if (!hitTesting) context.fill ();
 		return canvas;
 		#end
 		
@@ -231,7 +232,6 @@ class CanvasGraphics {
 		var startX = 0.0;
 		var startY = 0.0;
 		
-		
 		for (command in commands) {
 			
 			switch (command) {
@@ -295,7 +295,7 @@ class CanvasGraphics {
 					if (stroke && hasStroke) {
 						
 						context.closePath ();
-						context.stroke ();
+						if (!hitTesting) context.stroke ();
 						context.beginPath ();
 						
 					}
@@ -339,31 +339,32 @@ class CanvasGraphics {
 				case LineGradientStyle  (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					
 					if (stroke && hasStroke) {
+						
 						closePath();
+						
 					}
 					
-					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
-					
-					context.strokeStyle = createGradientPattern( type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio );
+					context.strokeStyle = createGradientPattern (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 					
 					hasStroke = true;
 					
 				case LineBitmapStyle  (bitmap, matrix, repeat, smooth):
 					
 					if (stroke && hasStroke) {
-						closePath();
+						
+						closePath ();
+						
 					}
 					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
-					
-					context.strokeStyle = createBitmapFill( bitmap, repeat );
+					context.strokeStyle = createBitmapFill (bitmap, repeat);
 					
 					hasStroke = true;
 					
 				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 					
-					context.fillStyle = createBitmapFill( bitmap, true );
+					context.fillStyle = createBitmapFill (bitmap, true);
 					hasFill = true;
 					
 					if (matrix != null) {
@@ -482,7 +483,7 @@ class CanvasGraphics {
 				
 			}
 			
-			context.stroke ();
+			if (!hitTesting) context.stroke ();
 			
 		}
 		
@@ -495,12 +496,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					context.fill ();
+					if (!hitTesting) context.fill ();
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					context.fill ();
+					if (!hitTesting) context.fill ();
 					
 				}
 				
@@ -557,6 +558,140 @@ class CanvasGraphics {
 		return cast( gradientFill );
 		
 		#end
+		
+	}
+	
+	
+	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
+		
+		#if (js && html5)
+		
+		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+			
+			return false;
+			
+		} else {
+			
+			hitTesting = true;
+			
+			if (graphics.__canvas == null) {
+				
+				graphics.__canvas = cast Browser.document.createElement ("canvas");
+				graphics.__context = graphics.__canvas.getContext ("2d");
+				
+			}
+			
+			context = graphics.__context;
+			
+			var offsetX = bounds.x;
+			var offsetY = bounds.y;
+			
+			fillCommands = new Array<DrawCommand> ();
+			strokeCommands = new Array<DrawCommand> ();
+			
+			hasFill = false;
+			hasStroke = false;
+			bitmapFill = null;
+			bitmapRepeat = false;
+			
+			endFill ();
+			
+			for (command in graphics.__commands) {
+				
+				switch (command) {
+					
+					case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
+						
+						fillCommands.push (command);
+						strokeCommands.push (command);
+					
+					case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
+						
+						strokeCommands.push (command);
+					
+					case EndFill:
+						
+						endFill ();
+						endStroke ();
+						
+						if (hasFill && context.isPointInPath (x, y)) {
+							
+							return true;
+							
+						}
+						
+						if (hasStroke && context.isPointInStroke (x, y)) {
+							
+							return true;
+							
+						}
+						
+						hasFill = false;
+						bitmapFill = null;
+						
+					case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
+						
+						endFill ();
+						endStroke ();
+						
+						if (hasFill && context.isPointInPath (x, y)) {
+							
+							return true;
+							
+						}
+						
+						if (hasStroke && context.isPointInStroke (x, y)) {
+							
+							return true;
+							
+						}
+						
+						fillCommands.push (command);
+						strokeCommands.push (command);
+					
+					case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+						
+						fillCommands.push (command);
+						strokeCommands.push (command);
+						
+					
+					default:
+						
+					
+				}
+				
+			}
+			
+			if (fillCommands.length > 0) {
+				
+				endFill ();
+				
+			}
+			
+			if (strokeCommands.length > 0) {
+				
+				endStroke ();
+				
+			}
+			
+			if (hasFill && context.isPointInPath (x, y)) {
+				
+				return true;
+				
+			}
+			
+			if (hasStroke && context.isPointInStroke (x, y)) {
+				
+				return true;
+				
+			}
+			
+		}
+		
+		#end
+		
+		return false;
+		
 	}
 	
 	
@@ -565,6 +700,8 @@ class CanvasGraphics {
 		#if (js && html5)
 		
 		if (graphics.__dirty) {
+			
+			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
@@ -751,7 +888,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									context.fill ();
+									if (!hitTesting) context.fill ();
 									i += 3;
 									continue;
 									
