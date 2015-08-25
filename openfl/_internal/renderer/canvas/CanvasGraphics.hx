@@ -278,7 +278,7 @@ class CanvasGraphics {
 							
 						}
 						
-						if (hasStroke && #if (haxe < 3.2) untyped #end (context).isPointInStroke (x, y)) {
+						if (hasStroke && (context:Dynamic).isPointInStroke (x, y) #) {
 							
 							return true;
 							
@@ -298,7 +298,7 @@ class CanvasGraphics {
 							
 						}
 						
-						if (hasStroke && #if (haxe < 3.2) untyped #end (context).isPointInStroke (x, y)) {
+						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
 							return true;
 							
@@ -338,7 +338,7 @@ class CanvasGraphics {
 				
 			}
 			
-			if (hasStroke && #if (haxe < 3.2) untyped #end (context).isPointInStroke (x, y)) {
+			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 				
 				return true;
 				
