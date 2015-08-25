@@ -292,7 +292,7 @@ class CanvasGraphics {
 						endFill ();
 						endStroke ();
 						
-						if (hasFill && #if (haxe < 3.2) untyped #end context.isPointInPath (x, y)) {
+						if (hasFill && context.isPointInPath (x, y)) {
 							
 							return true;
 							
@@ -338,7 +338,7 @@ class CanvasGraphics {
 				
 			}
 			
-			if (hasStroke && context.isPointInStroke (x, y)) {
+			if (hasStroke && #if (haxe < 3.2) untyped #end context.isPointInStroke (x, y)) {
 				
 				return true;
 				
