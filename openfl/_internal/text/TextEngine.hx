@@ -531,7 +531,12 @@ class TextEngine {
 		if (numLines == 1) {
 			
 			bottomScrollV = 1;
-			textHeight += currentLineLeading;
+			
+			if (currentLineLeading > 0) {
+				
+				textHeight += currentLineLeading;
+				
+			}
 			
 		} else if (textHeight <= height - 2) {
 			
