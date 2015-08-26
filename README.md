@@ -12,7 +12,7 @@ The OpenFL project is an open-source answer to the needs of game and application
 
 Using the innovative [Haxe](http://haxe.org/) programming language, OpenFL supports wildly different platforms using one codebase. Transitioning from one target type to another simple, and keeps the strengths of the target environment. OpenFL builds to native C++, Neko or Flash bytecode, or JavaScript, enabling maximum compatibility and runtime performance.
 
-OpenFL depends on [Lime](https://github.com/openfl/lime), which has easy-to-use command-line tools, and provides backend support for each target platform.
+OpenFL depends on [Lime](https://github.com/openfl/lime), which has easy-to-use command-line tools, and provides backend support.
 
 
 Platforms
