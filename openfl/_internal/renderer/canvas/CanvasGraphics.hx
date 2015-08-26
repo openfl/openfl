@@ -1092,6 +1092,8 @@ class CanvasGraphics {
 	
 	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
 		
+		#if (js && html5)
+		
 		if (graphics.__commands.length != 0) {
 			
 			context = renderSession.context;
@@ -1171,6 +1173,8 @@ class CanvasGraphics {
 			}
 			
 		}
+		
+		#end
 		
 	}
 	
