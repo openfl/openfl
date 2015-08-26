@@ -74,7 +74,8 @@ class DOMBitmap {
 			if (!bitmap.smoothing) {
 				
 				untyped (bitmap.__context).mozImageSmoothingEnabled = false;
-				untyped (bitmap.__context).webkitImageSmoothingEnabled = false;
+				//untyped (bitmap.__context).webkitImageSmoothingEnabled = false;
+				untyped (bitmap.__context).msImageSmoothingEnabled = false;
 				untyped (bitmap.__context).imageSmoothingEnabled = false;
 				
 			}

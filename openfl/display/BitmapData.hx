@@ -734,6 +734,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!smoothing) {
 			
+			untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
+			//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
+			untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
 			untyped (buffer.__srcContext).imageSmoothingEnabled = false;
 			
 		}
@@ -753,6 +756,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!smoothing) {
 			
+			untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
+			//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
+			untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
 			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
 			
 		}

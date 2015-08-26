@@ -1314,11 +1314,26 @@ class TextField extends InteractiveObject {
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
 			
 			var smoothingEnabled = untyped (renderSession.context).imageSmoothingEnabled;
-			if (smoothingEnabled) untyped (renderSession.context).imageSmoothingEnabled = false;
+			
+			if (smoothingEnabled) {
+				
+				untyped (renderSession.context).mozImageSmoothingEnabled = false;
+				//untyped (renderSession.context).webkitImageSmoothingEnabled = false;
+				untyped (renderSession.context).msImageSmoothingEnabled = false;
+				untyped (renderSession.context).imageSmoothingEnabled = false;
+				
+			}
 			
 			super.__renderCanvas (renderSession);
 			
-			if (smoothingEnabled) untyped (renderSession.context).imageSmoothingEnabled = true;
+			if (smoothingEnabled) {
+				
+				untyped (renderSession.context).mozImageSmoothingEnabled = true;
+				//untyped (renderSession.context).webkitImageSmoothingEnabled = true;
+				untyped (renderSession.context).msImageSmoothingEnabled = true;
+				untyped (renderSession.context).imageSmoothingEnabled = true;
+				
+			}
 			
 		} else {
 			

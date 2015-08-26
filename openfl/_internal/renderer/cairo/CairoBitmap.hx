@@ -56,14 +56,6 @@ class CairoBitmap {
 				
 			}
 			
-			//if (!bitmap.smoothing) {
-				//
-				//untyped (context).mozImageSmoothingEnabled = false;
-				//untyped (context).webkitImageSmoothingEnabled = false;
-				//untyped (context).imageSmoothingEnabled = false;
-				//
-			//}
-			
 			var surface = bitmap.bitmapData.getSurface ();
 			
 			if (surface != null) {
@@ -99,14 +91,6 @@ class CairoBitmap {
 				pattern.destroy ();
 				
 			}
-			
-			//if (!bitmap.smoothing) {
-				//
-				//untyped (context).mozImageSmoothingEnabled = true;
-				//untyped (context).webkitImageSmoothingEnabled = true;
-				//untyped (context).imageSmoothingEnabled = true;
-				//
-			//}
 			
 			if (bitmap.__mask != null) {
 				
