@@ -39,7 +39,7 @@ There is also a community effort to bring OpenFL to consoles, OpenFL is running 
 
 _Additional details will be available in the future_
 
-OpenFL has also been used in additional environments:
+OpenFL is also being used in additional environments:
 
  * Raspberry Pi
  * Node.js
