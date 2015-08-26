@@ -10,7 +10,7 @@ import openfl.text.TextFormat;
 class FPS extends TextField {
 	
 	
-	public var currentFPS (default, null):Float;
+	public var currentFPS (default, null):Int;
 	
 	private var cacheCount:Int;
 	private var times:Array <Float>;
