@@ -41,9 +41,9 @@ _Additional details will be available in the future_
 
 OpenFL is also being used in additional environments:
 
+ * [TiVo](http://www.tivo.com) boxes
  * Raspberry Pi
  * Node.js
- * [TiVo](http://www.tivo.com) boxes
 
 The OpenFL v2 "legacy" codebase supports:
 
