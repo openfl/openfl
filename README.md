@@ -8,15 +8,37 @@
 Introduction
 ============
 
-OpenFL (Open Flash Library) is a fast, open-source implementation of the industry-standard Flash API. Unlike the Adobe implementation, OpenFL uses hardware rendering, compiles to native C++ for target platforms and reaches many more platforms than Adobe AIR. OpenFL is also 100% compatible with Flash Player, so you can still target Flash in the browser, or even AIR if you want.
+The OpenFL project is an open-source answer to the needs of game and application developers everywhere, looking for a fast, simple approach to delivering creative masterpieces without relying on a specific implementation, such as a browser plugin.
 
-Also unlike Adobe Flash, OpenFL uses the [Haxe](http://haxe.org/) programming language. Before Adobe abandoned the "ActionScript Next" project, they detailed the pitfalls of ActionScript, and how they felt the language needed to improve. If you have a history performing ActionScript 3 development, you can almost approach Haxe as if it were ActionScript 4. It is powerful, flexible, has many more features and the first version of Haxe (with AVM2 support) was even released before Flash CS3 (with ActionScript 3 support) -- Haxe (and before it, MTASC) has a long history of supporting Flash.
+Using the innovative [Haxe](http://haxe.org/) programming language, OpenFL supports Windows, Mac, Linux, iOS, Android, Flash and HTML5 with one codebase. Transitioning from desktop, to mobile, to browser is simple, and maintains the strengths of each target environment. OpenFL compiles to native C++, Neko or Flash bytecode, or JavaScript, for maximum support across each environment.
+
+OpenFL depends on [Lime](https://github.com/openfl/lime), which provides command-line tools, and backend support for each runtime environment.
 
 
 Platforms
 =========
 
-We are in the process of moving to a portable codebase. Existing releases of OpenFL support:
+Currently, OpenFL supports the following platforms:
+
+ * Windows
+ * Mac
+ * Linux
+ * iOS
+ * Android
+ * Firefox OS
+ * HTML5
+ * Flash
+
+There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
+
+ * PS4
+ * PS Vita
+ * Xbox One
+ * Wii U
+
+_Additional details will be available in the future_
+
+The OpenFL v2 "legacy" codebase supports:
 
  * Windows
  * Mac
@@ -25,20 +47,8 @@ We are in the process of moving to a portable codebase. Existing releases of Ope
  * Android
  * BlackBerry
  * Tizen
- * Firefox OS
- * HTML5
- * Flash
 
-The new codebase supports the following:
-
- * Windows
- * Mac
- * Linux
- * HTML5
- * Flash
-
-With other platforms being added again before the final release. 
-
+You can switch to the legacy codebase by using `-Dlegacy` when you build
 
 Libraries
 =========
@@ -53,7 +63,7 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
 
 OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
 
-In order to support SWF assets, you can use the OpenFL [SWF](http://github.com/openfl/swf) library, but many developers use image assets or libraries for spritesheet/tilesheet assets instead, as they can perform faster on mobile.
+You can use the optional OpenFL [SWF](http://github.com/openfl/swf) library to use SWF assets
 
 
 Code Editors
@@ -69,17 +79,17 @@ Plugins have been written for many [code editors](http://haxe.org/com/ide), but 
 Easy Deployment
 ===============
 
-OpenFL is powered by [Lime](https://github.com/openfl/lime), which includes powerful command-line tools to make cross-platform deployment sensible.
+OpenFL includes the tools you need to build, package, install and run on each target platform.
 
-"openfl test <target>" is usually all that is required to build, package, install and run your project on the platform of your choice, assuming you have the standard target SDK installed (such as Xcode or Visual Studio C++). Lime includes "setup" commands to even help the install of these standard tools.
+For example, `openfl test html5` will generate an HTML5 project, create a local web server and open your default browser.
+
+Some platforms will require a standard SDK to build (such as Visual Studio C++ or Xcode). OpenFL includes "setup" commands to even help the install of these standard tools.
 
 
 3D Support
 ==========
 
-The Flash API is ideal for 2D development. If you would like to create original 3D content, you might enjoy using [Lime](https://github.com/openfl/lime). You can also mix OpenGL content in OpenFL using OpenGLView API.
-
-The Away Foundation is also developing an OpenFL version of [Away3D](https://github.com/away3d/away3d-core-openfl/).
+OpenFL is designed primarily for 2D development, but you can the `OpenGLView` API to write your own WebGL-style code, and mix it with the OpenFL display architecture. You can also use libraries such as [Away3D](https://github.com/away3d/away3d-core-openfl/).
 
 
 Native Extensions
@@ -99,7 +109,7 @@ Core Components
  * [lime](https://github.com/openfl/lime)
  * [hxcpp](https://github.com/HaxeFoundation/hxcpp)
 
-OpenFL relies upon [Lime](https://github.com/openfl/lime), a foundation for easy, cross-platform development.
+OpenFL relies upon [Lime](https://github.com/openfl/lime), a foundation for cross-platform project development.
 
 [hxcpp](https://github.com/HaxeFoundation/hxcpp) is used automatically by the Lime tools to manage the C++ compilation process for each platform, and to provide the Haxe standard library for C++ support.
 
@@ -130,3 +140,5 @@ Tell haxelib where your development copy of OpenFL is installed:
 To return to release builds:
 
     haxelib dev openfl
+
+You may also need a development build of Lime installed
