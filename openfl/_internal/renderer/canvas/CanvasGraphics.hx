@@ -1096,7 +1096,7 @@ class CanvasGraphics {
 		
 		if (graphics.__commands.length != 0) {
 			
-			context = renderSession.context;
+			context = cast renderSession.context;
 			
 			var positionX = 0.0;
 			var positionY = 0.0;
