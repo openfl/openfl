@@ -39,6 +39,12 @@ There is also a community effort to bring OpenFL to consoles, OpenFL is running 
 
 _Additional details will be available in the future_
 
+OpenFL has also been used in additional environments:
+
+ * Raspberry Pi
+ * Node.js
+ * [TiVo](http://www.tivo.com) boxes
+
 The OpenFL v2 "legacy" codebase supports:
 
  * Windows
