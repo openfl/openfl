@@ -224,7 +224,11 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
+			
+			graphics.__canvas = null;
+			graphics.__context = null;
+			graphics.__bitmap = null;
 			
 			return false;
 			
@@ -713,7 +717,7 @@ class CanvasGraphics {
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
 			
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 				
 				graphics.__canvas = null;
 				graphics.__context = null;
