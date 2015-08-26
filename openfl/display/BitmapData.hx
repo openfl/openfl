@@ -7,13 +7,14 @@ import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
-import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
+import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.graphics.utils.ImageCanvasUtil;
+import lime.math.color.ARGB;
 import lime.math.ColorMatrix;
 import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
@@ -286,162 +287,6 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
-	/**
-	 * Compares two BitmapData objects. If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object, in which each pixel is the "difference" between the pixels in the two source objects:
-	/* 
-	 * - If two pixels are equal, the difference pixel is 0x00000000.
-	 * - If two pixels have different RGB values (ignoring the alpha value), the difference pixel is 0xFFRRGGBB where RR/GG/BB are the individual difference values between red, green, and blue channels. Alpha channel differences are ignored in this case.
-	 * - If only the alpha channel value is different, the pixel value is 0xZZFFFFFF, where ZZ is the difference in the alpha value.
-	 * 
-	 * @param	otherBitmapData The BitmapData object to compare with the source BitmapData object.
-	 * @return If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object that has the difference between the two objects (see the main discussion).If the BitmapData objects are equivalent, the method returns the number 0. If no argument is passed or if the argument is not a BitmapData object, the method returns -1. If either BitmapData object has been disposed of, the method returns -2. If the widths of the BitmapData objects are not equal, the method returns the number -3. If the heights of the BitmapData objects are not equal, the method returns the number -4.
-	 */
-	
-	@:access(lime.graphics.Image)
-	public function compare (otherBitmapData:BitmapData):Dynamic {
-		
-		if (otherBitmapData == null) 
-			return -1;
-		
-		if (__isValid == false || otherBitmapData.__isValid == false)
-			return -2;
-		
-		if (width  != otherBitmapData.width)
-			return -3;
-		
-		if (height != otherBitmapData.height)
-			return -4;
-		
-		//Fast-fail check: are they 100% equivalent at the byte level
-		if (this.image != null && otherBitmapData.image != null && this.image.format == otherBitmapData.image.format) {
-			
-			var bytes1 = this.image.data;
-			var bytes2 = otherBitmapData.image.data;
-			
-			var allEqual:Bool = false;
-			for (i in 0...bytes1.length)
-			{
-				var b1 = bytes1[i];
-				var b2 = bytes2[i];
-				if (b1 != b2) {
-					
-					allEqual = false;
-					break;
-					
-				}
-			}
-			
-			if (allEqual) {
-				
-				//If the BitmapData objects are equivalent, the method returns the number 0.
-				return 0;
-				
-			}
-		}
-		
-		//Have to manually check each pixel
-		
-		var bmp:BitmapData = null;
-		var noHits:Bool = true;
-		var hit:Bool = false;
-		
-		for (yy in 0...height) {
-			
-			for (xx in 0...width) {
-				
-				hit = false;
-				
-				var a = getPixel32(xx, yy);//transparent ? getPixel32(xx, yy) : getPixel(xx, yy);
-				var b = otherBitmapData.getPixel32(xx, yy);// otherBitmapData.transparent ? otherBitmapData.getPixel32(xx, yy) : otherBitmapData.getPixel(xx, yy);
-				
-				var diff = -1;
-				
-				if (a == b) {
-					
-					//If two pixels are equal, the difference pixel is 0x00000000.
-					diff = 0x00000000;
-					
-				}
-				else {
-				
-					var ar = ((a >> 16) & 0xFF);
-					var ag = ((a >> 8 ) & 0xFF);
-					var ab = ((a      ) & 0xFF);
-					
-					var br = ((b >> 16) & 0xFF);
-					var bg = ((b >> 8 ) & 0xFF);
-					var bb = ((b      ) & 0xFF);
-					
-					var dr = ar - br;
-					var dg = ag - bg;
-					var db = ab - bb;
-					
-					if (dr < 0) dr *= -1;
-					if (dg < 0) dg *= -1;
-					if (db < 0) db *= -1;
-					
-					var da = 0;
-					
-					diff = 0;
-					
-					if (dr == 0 && dg == 0 && db == 0) {
-						
-						//If the colors are identical, check the alpha
-						
-						var aa = (a >> 24) & 0xFF;
-						var ba = (b >> 24) & 0xFF;
-						
-						da = aa - ba;
-						
-						if (da != 0) {
-							
-							//If only the alpha channel value is different, the pixel value is 0xZZFFFFFF, 
-							//where ZZ is the difference in the alpha value.
-							diff = ((da << 24) | 0xFFFFFF);
-							hit = true;
-							
-						}
-					}
-					else {
-						
-						//If two pixels have different RGB values (ignoring the alpha value), the difference pixel is 0xFFRRGGBB,
-						//where RR/GG/BB are the individual difference values between red, green, and blue channels. 
-						//Alpha channel differences are ignored in this case.
-						diff = ((0xFF << 24) | (dr << 16) | (dg << 8) | db);
-						hit = true;
-						
-					}
-				}
-				
-				if (hit && noHits) {
-					
-					//We only construct a new bitmap data once we've actually detected the first pixel difference
-					//We initialize it with 0x00000000 b/c that will have been the difference value of every pixel before this point
-					
-					bmp = new BitmapData(width, height, transparent || otherBitmapData.transparent, 0x00000000);
-					noHits = false;
-					
-				}
-				
-				if (!noHits) {
-					
-					bmp.setPixel32(xx, yy, diff);
-					
-				}
-				
-			}
-			
-		}
-		
-		if (noHits) {
-			
-			//If the BitmapData objects are equivalent, the method returns the number 0. 
-			return 0;
-			
-		}
-		
-		return bmp;
-	}
 	
 	/**
 	 * Returns a new BitmapData object that is a clone of the original instance with an exact copy of the contained bitmap. 
@@ -475,6 +320,142 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
 		__usingFramebuffer = false;
+		
+	}
+	
+	
+	/**
+	 * Compares two BitmapData objects. If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object, in which each pixel is the "difference" between the pixels in the two source objects:
+	 * 
+	 * - If two pixels are equal, the difference pixel is 0x00000000.
+	 * - If two pixels have different RGB values (ignoring the alpha value), the difference pixel is 0xFFRRGGBB where RR/GG/BB are the individual difference values between red, green, and blue channels. Alpha channel differences are ignored in this case.
+	 * - If only the alpha channel value is different, the pixel value is 0xZZFFFFFF, where ZZ is the difference in the alpha value.
+	 * 
+	 * @param	otherBitmapData The BitmapData object to compare with the source BitmapData object.
+	 * @return If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object that has the difference between the two objects (see the main discussion).If the BitmapData objects are equivalent, the method returns the number 0. If no argument is passed or if the argument is not a BitmapData object, the method returns -1. If either BitmapData object has been disposed of, the method returns -2. If the widths of the BitmapData objects are not equal, the method returns the number -3. If the heights of the BitmapData objects are not equal, the method returns the number -4.
+	 */
+	public function compare (otherBitmapData:BitmapData):Dynamic {
+		
+		if (otherBitmapData == this) {
+			
+			return 0;
+			
+		} else if (otherBitmapData == null) {
+			
+			return -1;
+			
+		} else if (__isValid == false || otherBitmapData.__isValid == false) {
+			
+			return -2;
+			
+		} else if (width != otherBitmapData.width) {
+			
+			return -3;
+			
+		} else if (height != otherBitmapData.height) {
+			
+			return -4;
+			
+		}
+		
+		if (image != null && otherBitmapData.image != null && image.format == otherBitmapData.image.format) {
+			
+			var bytes = image.data;
+			var otherBytes = otherBitmapData.image.data;
+			var equal = true;
+			
+			for (i in 0...bytes.length) {
+				
+				if (bytes[i] != otherBytes[i]) {
+					
+					equal = false;
+					break;
+					
+				}
+			}
+			
+			if (equal) {
+				
+				return 0;
+				
+			}
+			
+		}
+		
+		var bitmapData = null;
+		var foundDifference, pixel:ARGB, otherPixel:ARGB, comparePixel:ARGB, r, g, b, a;
+		
+		for (y in 0...height) {
+			
+			for (x in 0...width) {
+				
+				foundDifference = false;
+				
+				pixel = getPixel32 (x, y);
+				otherPixel = otherBitmapData.getPixel32 (x, y);
+				comparePixel = 0;
+				
+				if (pixel != otherPixel) {
+					
+					r = pixel.r - otherPixel.r;
+					g = pixel.g - otherPixel.g;
+					b = pixel.b - otherPixel.b;
+					
+					if (r < 0) r *= -1;
+					if (g < 0) g *= -1;
+					if (b < 0) b *= -1;
+					
+					if (r == 0 && g == 0 && b == 0) {
+						
+						a = pixel.a - otherPixel.a;
+						
+						if (a != 0) {
+							
+							comparePixel.r = 0xFF;
+							comparePixel.g = 0xFF;
+							comparePixel.b = 0xFF;
+							comparePixel.a = a;
+							
+							foundDifference = true;
+							
+						}
+						
+					} else {
+						
+						comparePixel.r = r;
+						comparePixel.g = g;
+						comparePixel.b = b;
+						comparePixel.a = 0xFF;
+						
+						foundDifference = true;
+						
+					}
+					
+				}
+				
+				if (foundDifference) {
+					
+					if (bitmapData == null) {
+						
+						bitmapData = new BitmapData (width, height, transparent || otherBitmapData.transparent, 0x00000000);
+						
+					}
+					
+					bitmapData.setPixel32 (x, y, comparePixel);
+					
+				}
+				
+			}
+			
+		}
+		
+		if (bitmapData == null) {
+			
+			return 0;
+			
+		}
+		
+		return bitmapData;
 		
 	}
 	
