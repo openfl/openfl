@@ -33,6 +33,7 @@ There is also a community effort to bring OpenFL to consoles, OpenFL is running 
 
  * PS4
  * PS Vita
+ * PS3
  * Xbox One
  * Wii U
 
