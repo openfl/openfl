@@ -885,6 +885,8 @@ class Assets {
 		
 		#end
 		
+		handler (null);
+		
 	}
 	
 	
