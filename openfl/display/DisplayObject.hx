@@ -876,7 +876,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function globalToLocal (pos:Point):Point {
 		
-		__getTransform ().__transformInversePoint (pos.clone ());
+		pos = pos.clone ();
+		__getTransform ().__transformInversePoint (pos);
 		return pos;
 		
 	}
@@ -1119,13 +1120,33 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			if (visible && !__isMask && __graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
+			if (!visible || __isMask) return false;
+			if (mask != null && !mask.__hitTestMask (x, y)) return false;
+			
+			if (__graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
 				
-				if (!interactiveOnly) {
+				if (stack != null && !interactiveOnly) {
 					
 					stack.push (this);
 					
 				}
+				
+				return true;
+				
+			}
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	@:noCompletion private function __hitTestMask (x:Float, y:Float):Bool {
+		
+		if (__graphics != null) {
+			
+			if (__graphics.__hitTest (x, y, true, __getTransform ())) {
 				
 				return true;
 				
@@ -1306,14 +1327,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
 			
 			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+				
+				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					
 					sr.__transform(sr, __worldTransform);
+					
+				} else {
+					
+					__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
+					__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
+					
 				}
-				__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
-				__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
+				
 			}
 			
-			if(__isMask) __maskCached = false;
+			if (__isMask) __maskCached = false;
 			
 		} else {
 			
@@ -1325,11 +1353,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.ty = y;
 			
 			if (sr != null) {
-				if(__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					sr.__transform(sr, __worldTransform);
+				
+				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
+					
+					sr.__transform (sr, __worldTransform);
+					
+				} else {
+					
+					__worldTransform.tx = x - scrollRect.x;
+					__worldTransform.ty = y - scrollRect.y;
+					
 				}
-				__worldTransform.tx = x - scrollRect.x;
-				__worldTransform.ty = y - scrollRect.y;
+				
 			}
 			
 		}
@@ -1372,17 +1407,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 			#if dom
 			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
-
+			
 			if (__worldTransformCache == null) {
-
+				
 				__worldTransformCache = __worldTransform.clone ();
-
+				
 			} else {
-
+				
 				__worldTransformCache.copyFrom(__worldTransform);
-
+				
 			}
-
+			
 			var worldClip:Rectangle = null;
 			#end
 			

@@ -233,9 +233,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		} else {
 			
-			child.__setParent (this);
 			__children.push (child);
 			lime_doc_add_child (__handle, child.__handle);
+			child.__setParent (this);
 			
 		}
 		

@@ -188,11 +188,21 @@ class SpriteBatch {
 		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
 		
 		var blendMode:BlendMode = switch(flags & 0xF0000) {
-			case Tilesheet.TILE_BLEND_ADD:		ADD;
-			case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
-			case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
-			case Tilesheet.TILE_BLEND_SUBTRACT:	SUBTRACT;
-			case _:								NORMAL;
+			case Tilesheet.TILE_BLEND_ADD:                ADD;
+			case Tilesheet.TILE_BLEND_MULTIPLY:           MULTIPLY;
+			case Tilesheet.TILE_BLEND_SCREEN:             SCREEN;
+			case Tilesheet.TILE_BLEND_SUBTRACT:           SUBTRACT;
+			case _: switch(flags & 0xF00000) {
+				case Tilesheet.TILE_BLEND_DARKEN:         DARKEN;
+				case Tilesheet.TILE_BLEND_LIGHTEN:        LIGHTEN;
+				case Tilesheet.TILE_BLEND_OVERLAY:        OVERLAY;
+				case Tilesheet.TILE_BLEND_HARDLIGHT:      HARDLIGHT;
+				case _: switch(flags & 0xF000000) {
+					case Tilesheet.TILE_BLEND_DIFFERENCE: DIFFERENCE;
+					case Tilesheet.TILE_BLEND_INVERT:     INVERT;
+					case _:                               NORMAL;
+				}
+			}
 		};
 		
 		if (useTransform) { useScale = false; useRotation = false; }
@@ -574,7 +584,7 @@ class SpriteBatch {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		} else {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		}
 		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);

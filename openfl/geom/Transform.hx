@@ -58,6 +58,11 @@ import openfl.display.DisplayObject;
  * projection center changes. For more control over the perspective
  * transformation, create a perspective projection Matrix3D object.</p>
  */
+
+@:access(openfl.display.DisplayObject)
+@:access(openfl.geom.ColorTransform)
+
+
 class Transform {
 	
 	
@@ -160,11 +165,17 @@ class Transform {
 	
 	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
 		
-		__colorTransform = value;
-		
-		if (value != null) {
+		if (!__colorTransform.__equals (value)) {
 			
-			__displayObject.alpha = value.alphaMultiplier;
+			__colorTransform = value;
+			
+			if (value != null) {
+				
+				__displayObject.alpha = value.alphaMultiplier;
+				
+			}
+			
+			__displayObject.__setRenderDirty ();
 			
 		}
 		
@@ -204,10 +215,13 @@ class Transform {
 		
 		if (__displayObject != null) {
 			
+			var determinant = value.a * value.d - value.b * value.c;
+			var signY = (determinant < 0 && (value.a < 0 || value.d < 0)) ? -1 : 1;
+			
 			__displayObject.x = value.tx;
 			__displayObject.y = value.ty;
 			__displayObject.scaleX = Math.sqrt ((value.a * value.a) + (value.b * value.b));
-			__displayObject.scaleY = Math.sqrt ((value.c * value.c) + (value.d * value.d));
+			__displayObject.scaleY = Math.sqrt ((value.c * value.c) + (value.d * value.d)) * signY;
 			__displayObject.rotation = Math.atan2 (value.b, value.a) * (180 / Math.PI);
 			
 		}

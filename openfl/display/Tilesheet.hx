@@ -21,11 +21,17 @@ class Tilesheet {
 	public static inline var TILE_RECT = 0x0020;
 	public static inline var TILE_ORIGIN = 0x0040;
 	
-	public static inline var TILE_BLEND_NORMAL   = 0x00000000;
-	public static inline var TILE_BLEND_ADD      = 0x00010000;
+	public static inline var TILE_BLEND_NORMAL = 0x00000000;
+	public static inline var TILE_BLEND_ADD = 0x00010000;
 	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
 	public static inline var TILE_BLEND_SCREEN = 0x00040000;
 	public static inline var TILE_BLEND_SUBTRACT = 0x00080000;
+	public static inline var TILE_BLEND_DARKEN = 0x00100000;
+	public static inline var TILE_BLEND_LIGHTEN = 0x00200000;
+	public static inline var TILE_BLEND_OVERLAY = 0x00400000;
+	public static inline var TILE_BLEND_HARDLIGHT = 0x00800000;
+	public static inline var TILE_BLEND_DIFFERENCE = 0x01000000;
+	public static inline var TILE_BLEND_INVERT = 0x02000000;
 	
 	@:noCompletion private static var __defaultPoint = new Point (0, 0);
 	

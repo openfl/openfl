@@ -63,7 +63,7 @@ using openfl.display.BitmapData;
 		
 		#else
 		
-		var image = @:privateAccess (bitmapData.__image);
+		var image = bitmapData.image;
 		
 		if (!image.premultiplied && image.transparent) {
 			

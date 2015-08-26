@@ -56,8 +56,18 @@ import js.html.CanvasRenderingContext2D;
 	public static inline var TILE_TRANS_2x2 = 0x0010;
 	public static inline var TILE_RECT = 0x0020;
 	public static inline var TILE_ORIGIN = 0x0040;
+	
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
+	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
+	public static inline var TILE_BLEND_SCREEN = 0x00040000;
+	public static inline var TILE_BLEND_SUBTRACT = 0x00080000;
+	public static inline var TILE_BLEND_DARKEN = 0x00100000;
+	public static inline var TILE_BLEND_LIGHTEN = 0x00200000;
+	public static inline var TILE_BLEND_OVERLAY = 0x00400000;
+	public static inline var TILE_BLEND_HARDLIGHT = 0x00800000;
+	public static inline var TILE_BLEND_DIFFERENCE = 0x01000000;
+	public static inline var TILE_BLEND_INVERT = 0x02000000;
 	
 	@:noCompletion public var __hardware:Bool;
 	@:noCompletion private var __bounds:Rectangle;
@@ -1195,40 +1205,14 @@ import js.html.CanvasRenderingContext2D;
 		var px = matrix.__transformInverseX (x, y);
 		var py = matrix.__transformInverseY (x, y);
 		
-		if (px > 0 && py > 0 && __bounds.contains (px, py)) {
+		if (px > __bounds.x && py > __bounds.y && __bounds.contains (px, py)) {
 			
 			if (shapeFlag) {
 				
-				if (__dirty) {
-					
-					#if (js && html5)
-					//CanvasGraphics.render (this, null);
-					#elseif (cpp || neko)
-					//CairoGraphics.render (this, null);
-					#end
-					
-				}
-				
 				#if (js && html5)
-				if (__context != null) {
-					
-					// TODO: Need to replay each path to use isPointInPath, likely what Cairo needed, too
-					//return __context.isPointInPath (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
-					
-				}
+				return CanvasGraphics.hitTest (this, px, py);
 				#elseif (cpp || neko)
-				if (__bitmap != null) {
-				//if (__cairo != null) {
-					
-					// TODO: This does not handle hit testing against invisible fills
-					
-					var pixel = __bitmap.getPixel32 (Math.round (px - __bounds.x), Math.round (py - __bounds.y));
-					return ((pixel >> 24 & 0xFF) > 0);
-					
-					//if (__cairo.inFill (x - bounds.x, y - bounds.y)) return true;
-					//if (__cairo.inStroke (x - bounds.x, y - bounds.y)) return true;
-					
-				}
+				return CairoGraphics.hitTest (this, px, py);
 				#end
 				
 			}
@@ -1341,8 +1325,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tilesheet)
-
-@:forward(beginBitmapFill, beginFill, beginGradientFill, beginShaderFill, clear, copyFrom, cubicCurveTo, curveTo, drawCircle, drawEllipse, drawGraphicsData, drawPath, drawRect, drawRoundRect, drawRoundRectComplex, drawTriangles, endFill, lineBitmapStyle, lineGradientStyle, lineShaderStyle, lineStyle, lineTo, moveTo, recurse)
+@:forward()
 
 
 abstract Graphics(flash.display.Graphics) from flash.display.Graphics to flash.display.Graphics {

@@ -77,6 +77,7 @@ class Video extends DisplayObject {
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
 		if (!visible || __isMask) return false;
+		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		var point = globalToLocal (new Point (x, y));
 		
@@ -87,6 +88,21 @@ class Video extends DisplayObject {
 				stack.push (this);
 				
 			}
+			
+			return true;
+			
+		}
+		
+		return false;
+		
+	}
+	
+	
+	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
+		
+		var point = globalToLocal (new Point (x, y));
+		
+		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
 			
 			return true;
 			

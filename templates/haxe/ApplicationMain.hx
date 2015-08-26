@@ -1,6 +1,7 @@
 #if !macro
 
 
+@:access(lime.app.Application)
 @:access(lime.Assets)
 @:access(openfl.display.Stage)
 
@@ -14,21 +15,14 @@ class ApplicationMain {
 	
 	public static function create ():Void {
 		
-		var app = new lime.app.Application ();
+		var app = new openfl.display.Application ();
 		app.create (config);
-		openfl.Lib.application = app;
-		
-		#if !flash
-		var stage = new openfl.display.Stage (app.window.width, app.window.height, config.background);
-		stage.window = app.window;
-		stage.addChild (openfl.Lib.current);
-		app.addModule (stage);
-		#end
 		
 		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
 		
 		preloader = new openfl.display.Preloader (display);
-		preloader.onComplete = init;
+		app.setPreloader (preloader);
+		preloader.onComplete.add (init);
 		preloader.create (config);
 		
 		#if (js && html5)
@@ -108,32 +102,43 @@ class ApplicationMain {
 		
 		config = {
 			
-			antialiasing: Std.int (::WIN_ANTIALIASING::),
-			background: Std.int (::WIN_BACKGROUND::),
-			borderless: ::WIN_BORDERLESS::,
-			company: "::META_COMPANY::",
-			depthBuffer: ::WIN_DEPTH_BUFFER::,
+			build: "::meta.buildNumber::",
+			company: "::meta.company::",
 			file: "::APP_FILE::",
-			fps: Std.int (::WIN_FPS::),
-			fullscreen: ::WIN_FULLSCREEN::,
-			hardware: ::WIN_HARDWARE::,
-			height: Std.int (::WIN_HEIGHT::),
+			fps: ::WIN_FPS::,
+			name: "::meta.title::",
 			orientation: "::WIN_ORIENTATION::",
-			packageName: "::META_PACKAGE_NAME::",
-			resizable: ::WIN_RESIZABLE::,
-			stencilBuffer: ::WIN_STENCIL_BUFFER::,
-			title: "::APP_TITLE::",
-			version: "::META_VERSION::",
-			vsync: ::WIN_VSYNC::,
-			width: Std.int (::WIN_WIDTH::)
+			packageName: "::meta.packageName::",
+			version: "::meta.version::",
+			windows: [
+				::foreach windows::
+				{
+					antialiasing: ::antialiasing::,
+					background: ::background::,
+					borderless: ::borderless::,
+					depthBuffer: ::depthBuffer::,
+					display: ::display::,
+					fullscreen: ::fullscreen::,
+					hardware: ::hardware::,
+					height: ::height::,
+					parameters: "::parameters::",
+					resizable: ::resizable::,
+					stencilBuffer: ::stencilBuffer::,
+					title: "::title::",
+					vsync: ::vsync::,
+					width: ::width::,
+					x: ::x::,
+					y: ::y::
+				},::end::
+			]
 			
-		}
+		};
 		
 		#if hxtelemetry
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();
 		telemetry.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
 		telemetry.host = ::if (config.hxtelemetry != null)::"::config.hxtelemetry.host::"::else::"localhost"::end::;
-		telemetry.app_name = config.title;
+		telemetry.app_name = config.name;
 		Reflect.setField (config, "telemetry", telemetry);
 		#end
 		
