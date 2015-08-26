@@ -37,7 +37,7 @@ There is also a community effort to bring OpenFL to consoles, OpenFL is running 
  * Xbox One
  * Wii U
 
-_Additional details will be available in the future_
+_Additional details on console support will be available in the future._
 
 OpenFL is also being used in additional environments:
 
@@ -55,7 +55,7 @@ The OpenFL v2 "legacy" codebase supports:
  * BlackBerry
  * Tizen
 
-You can switch to the legacy codebase by using `-Dlegacy` when you build
+You can switch to the legacy codebase by using `-Dlegacy` when you build.
 
 Libraries
 =========
@@ -70,7 +70,7 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
 
 OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/) 3.
 
-You can use the optional OpenFL [SWF](http://github.com/openfl/swf) library to use SWF assets
+You can use the optional OpenFL [SWF](http://github.com/openfl/swf) library to use SWF assets.
 
 
 Code Editors
@@ -148,4 +148,4 @@ To return to release builds:
 
     haxelib dev openfl
 
-You may also need a development build of Lime installed
+You may also need a development build of Lime installed.
