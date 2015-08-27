@@ -570,7 +570,7 @@ class Sound extends EventDispatcher {
 
 
 #if html5
-@:native("createjs.Sound") extern class SoundJS {
+@:noCompletion @:dox(hide) @:native("createjs.Sound") extern class SoundJS {
 	
 	public static function addEventListener (type:String, listener:Dynamic, ?useCapture:Bool):Dynamic;
 	public static function dispatchEvent (eventObj:Dynamic, ?target:Dynamic):Bool;
@@ -622,7 +622,7 @@ class Sound extends EventDispatcher {
 }
 
 
-@:native("createjs.SoundInstance") extern class SoundJSInstance extends SoundJSEventDispatcher {
+@:noCompletion @:dox(hide) @:native("createjs.SoundInstance") extern class SoundJSInstance extends SoundJSEventDispatcher {
 	
 	public function new (src:String, owner:Dynamic):Void;
 	public function getDuration ():Int;
@@ -659,7 +659,7 @@ class Sound extends EventDispatcher {
 }
 
 
-@:native("createjs.EventDispatcher") extern class SoundJSEventDispatcher {
+@:noCompletion @:dox(hide) @:native("createjs.EventDispatcher") extern class SoundJSEventDispatcher {
 	
 	public function addEventListener (type:String, listener:Dynamic, ?useCapture:Bool):Dynamic;
 	public function dispatchEvent (eventObj:Dynamic, ?target:Dynamic):Bool;
