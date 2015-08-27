@@ -27,6 +27,9 @@ class CanvasShape {
 			
 			if (graphics.__canvas != null) {
 				
+				if (graphics.__bounds.width <= 0 || graphics.__bounds.height <= 0) return;
+				if (scrollRect != null && (scrollRect.width <= 0 || scrollRect.height <= 0)) return;
+				
 				if (shape.__mask != null) {
 					
 					renderSession.maskManager.pushMask (shape.__mask);

@@ -1046,7 +1046,7 @@ class Stage extends DisplayObjectContainer {
 			
 			__checkInOuts (touchEvent, stack, touchInfo);
 			object.__fireEvent (touchEvent);
-				
+			
 		} else {
 			
 			var touchEvent = TouchEvent.__create (type, event, new Point (event.x, event.y), null, event.scaleX, event.scaleY);
