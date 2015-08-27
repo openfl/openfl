@@ -200,7 +200,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	/**
 	 * Specifies whether this stage allows the use of the full screen mode
 	 */
-	public var allowsFullScreen:Bool;
+	public var allowsFullScreen (default, null):Bool;
+	
+	/**
+	 * Specifies whether this stage allows the use of the full screen with text input mode
+	 */
+	public var allowsFullScreenInteractive (default, null):Bool;
 	
 	public var application (default, null):Application;
 	
@@ -603,7 +608,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		this.stage = this;
 		
 		align = StageAlign.TOP_LEFT;
+		#if html5
 		allowsFullScreen = false;
+		allowsFullScreenInteractive = false;
+		#else
+		allowsFullScreen = true;
+		allowsFullScreenInteractive = true;
+		#end
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
