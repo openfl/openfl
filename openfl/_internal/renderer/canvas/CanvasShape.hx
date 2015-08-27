@@ -30,41 +30,42 @@ class CanvasShape {
 				var context = renderSession.context;
 				var scrollRect = shape.scrollRect;
 				
-				if (graphics.__bounds.width <= 0 || graphics.__bounds.height <= 0) return;
-				if (scrollRect != null && (scrollRect.width <= 0 || scrollRect.height <= 0)) return;
-				
-				if (shape.__mask != null) {
+				if (graphics.__bounds.width > 0 && graphics.__bounds.height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					
-					renderSession.maskManager.pushMask (shape.__mask);
+					if (shape.__mask != null) {
+						
+						renderSession.maskManager.pushMask (shape.__mask);
+						
+					}
 					
-				}
-				
-				context.globalAlpha = shape.__worldAlpha;
-				var transform = shape.__worldTransform;
-				
-				if (renderSession.roundPixels) {
+					context.globalAlpha = shape.__worldAlpha;
+					var transform = shape.__worldTransform;
 					
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+					if (renderSession.roundPixels) {
+						
+						context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+						
+					} else {
+						
+						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+						
+					}
 					
-				} else {
+					if (scrollRect == null) {
+						
+						context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
+						
+					} else {
+						
+						context.drawImage (graphics.__canvas, Math.ceil (graphics.__bounds.x + scrollRect.x), Math.ceil (graphics.__bounds.y + scrollRect.y), scrollRect.width, scrollRect.height, Math.ceil (graphics.__bounds.x + scrollRect.x), Math.ceil (graphics.__bounds.y + scrollRect.y), scrollRect.width, scrollRect.height);
+						
+					}
 					
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-					
-				}
-				
-				if (scrollRect == null) {
-					
-					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
-					
-				} else {
-					
-					context.drawImage (graphics.__canvas, Math.ceil (graphics.__bounds.x + scrollRect.x), Math.ceil (graphics.__bounds.y + scrollRect.y), scrollRect.width, scrollRect.height, Math.ceil (graphics.__bounds.x + scrollRect.x), Math.ceil (graphics.__bounds.y + scrollRect.y), scrollRect.width, scrollRect.height);
-					
-				}
-				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.popMask ();
+					if (shape.__mask != null) {
+						
+						renderSession.maskManager.popMask ();
+						
+					}
 					
 				}
 				
