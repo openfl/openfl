@@ -810,6 +810,7 @@ class GraphicsRenderer {
 		var gl = renderSession.gl;
 		
 		var glStack = graphics.__glStack[GLRenderer.glContextId];
+		if (glStack == null) return;
 		var bucket:GLBucket;
 		
 		var translationMatrix:Matrix;
