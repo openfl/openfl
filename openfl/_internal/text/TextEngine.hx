@@ -109,7 +109,7 @@ class TextEngine {
 	@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
-	@:noCompletion public var __cairoFont:CairoFont;
+	@:noCompletion @:dox(hide) public var __cairoFont:CairoFont;
 	
 	#if (js && html5)
 	private var __hiddenInput:InputElement;

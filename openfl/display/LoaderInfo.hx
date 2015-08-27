@@ -394,7 +394,7 @@ class LoaderInfo extends EventDispatcher {
 	}
 	
 	
-	public static function create (loader:Loader):LoaderInfo {
+	@:noCompletion @:dox(hide) public static function create (loader:Loader):LoaderInfo {
 		
 		var loaderInfo = new LoaderInfo ();
 		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents ();

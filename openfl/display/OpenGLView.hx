@@ -74,7 +74,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		/*if (!__added) {
 			
@@ -90,7 +90,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -166,7 +166,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (stage != null && __renderable) {
 			

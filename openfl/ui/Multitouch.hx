@@ -110,7 +110,7 @@ import js.Browser;
 	public static var supportsTouchEvents (get, null):Bool;
 	
 	
-	@:noCompletion public static function __init__ () {
+	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		maxTouchPoints = 2;
 		supportedGestures = null;

@@ -193,7 +193,7 @@ class ApplicationMain {
 	
 	
 	#if neko
-	@:noCompletion public static function __init__ () {
+	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		var loader = new neko.vm.Loader (untyped $loader);
 		loader.addPath (haxe.io.Path.directory (Sys.executablePath ()));

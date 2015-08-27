@@ -43,7 +43,7 @@ class BitmapFilter {
 	
 	
 	#if (js && html5)
-	@:noCompletion public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	@:noCompletion @:dox(hide) public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		
 		

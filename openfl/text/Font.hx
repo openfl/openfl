@@ -218,7 +218,7 @@ class Font {
 	}
 	
 	
-	@:noCompletion public function __getAdvance (inGlyph:Int, height:Int):Int {
+	@:noCompletion @:dox(hide) public function __getAdvance (inGlyph:Int, height:Int):Int {
 		
 		var m = __metrics[inGlyph];
 		
@@ -242,7 +242,7 @@ class Font {
 	
 	
 	// hxswfml ttf2hash myfont.ttf -glyphs [32-126] > myfont.hash; haxe -resource myfont.hash@myfont ...; Font.registerFont( Resource.get( "myfont" ) );
-	@:noCompletion public static function __ofResource (resourceName:String, fontName:String = ""):String {
+	@:noCompletion @:dox(hide) public static function __ofResource (resourceName:String, fontName:String = ""):String {
 		
 		var data = Unserializer.run (Resource.getString(resourceName));
 		
@@ -268,7 +268,7 @@ class Font {
 	}
 	
 	
-	@:noCompletion public function __render (graphics:Graphics, inChar:Int, inX:Int, inY:Int, inOutline:Bool):Void {
+	@:noCompletion @:dox(hide) public function __render (graphics:Graphics, inChar:Int, inX:Int, inY:Int, inOutline:Bool):Void {
 		var index = 0;
 		var glyph = __glyphData.get (inChar);
 		
@@ -292,7 +292,7 @@ class Font {
 	}
 	
 	
-	@:noCompletion public function __setScale (scale:Float):Void {
+	@:noCompletion @:dox(hide) public function __setScale (scale:Float):Void {
 		
 		__fontScale = scale / 1024;
 		

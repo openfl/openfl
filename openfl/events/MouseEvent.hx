@@ -307,7 +307,7 @@ class MouseEvent extends Event {
 	}
 	
 	
-	@:noCompletion public static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
+	@:noCompletion @:dox(hide) public static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
 		
 		switch (type) {
 			

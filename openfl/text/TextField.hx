@@ -1299,7 +1299,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public override function __renderCairo (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderCairo (renderSession:RenderSession):Void {
 		
 		CairoTextField.render (this, renderSession);
 		super.__renderCairo (renderSession);
@@ -1307,7 +1307,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public override function __renderCanvas (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTextField.render (this, renderSession);
 		
@@ -1344,14 +1344,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion public override function __renderDOM (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMTextField.render (this, renderSession);
 		
 	}
 	
 	
-	@:noCompletion public override function __renderGL (renderSession:RenderSession):Void {
+	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
 		#if !disable_cairo_graphics
 		

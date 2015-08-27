@@ -309,7 +309,7 @@ class Timer {
 	}
 	
 	
-	@:noCompletion public static function __checkTimers () {
+	@:noCompletion @:dox(hide) public static function __checkTimers () {
 		
 		var now = getMS ();
 		var foundNull = false;
@@ -339,7 +339,7 @@ class Timer {
 	
 	
 	#if (lime_legacy || lime_hybrid)
-	@:noCompletion public static function __nextWake (limit:Float):Float {
+	@:noCompletion @:dox(hide) public static function __nextWake (limit:Float):Float {
 		
 		var now = getMS ();
 		var sleep;

@@ -492,7 +492,7 @@ class Rectangle {
 	}
 	
 	
-	@:noCompletion public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
+	@:noCompletion @:dox(hide) public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		if (this.width == 0 && this.height == 0) {
 			
@@ -511,7 +511,7 @@ class Rectangle {
 	}
 	
 	
-	@:noCompletion public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
+	@:noCompletion @:dox(hide) public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		if (this.width == 0 && this.height == 0) {
 			

@@ -750,7 +750,7 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformInversePoint (point:Point):Void {
+	@:noCompletion @:dox(hide) public inline function __transformInversePoint (point:Point):Void {
 		
 		var norm = a * d - b * c;
 		
@@ -770,7 +770,7 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformInverseX (px:Float, py:Float):Float {
+	@:noCompletion @:dox(hide) public inline function __transformInverseX (px:Float, py:Float):Float {
 		
 		var norm = a * d - b * c;
 		
@@ -787,7 +787,7 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformInverseY (px:Float, py:Float):Float {
+	@:noCompletion @:dox(hide) public inline function __transformInverseY (px:Float, py:Float):Float {
 		
 		var norm = a * d - b * c;
 		
@@ -804,7 +804,7 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformPoint (point:Point):Void {
+	@:noCompletion @:dox(hide) public inline function __transformPoint (point:Point):Void {
 		
 		var px = point.x;
 		var py = point.y;
@@ -815,21 +815,21 @@ class Matrix {
 	}
 	
 	
-	@:noCompletion public inline function __transformX (px:Float, py:Float):Float {
+	@:noCompletion @:dox(hide) public inline function __transformX (px:Float, py:Float):Float {
 		
 		return px * a + py * c + tx;
 		
 	}
 	
 	
-	@:noCompletion public inline function __transformY (px:Float, py:Float):Float {
+	@:noCompletion @:dox(hide) public inline function __transformY (px:Float, py:Float):Float {
 		
 		return px * b + py * d + ty;
 		
 	}
 	
 	
-	@:noCompletion public inline function __translateTransformed (px:Float, py:Float):Void {
+	@:noCompletion @:dox(hide) public inline function __translateTransformed (px:Float, py:Float):Void {
 		
 		tx = __transformX (px, py);
 		ty = __transformY (px, py);

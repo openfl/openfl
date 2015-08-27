@@ -267,7 +267,7 @@ class TouchEvent extends Event {
 	}
 	
 	
-	@:noCompletion public static function __create (type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float, local:Point, target:InteractiveObject):TouchEvent {
+	@:noCompletion @:dox(hide) public static function __create (type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float, local:Point, target:InteractiveObject):TouchEvent {
 		
 		var evt = new TouchEvent (type, true, false, local.x, local.y, 1, 1, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, false /* note: buttonDown not supported on w3c spec */, 0, false, 0);
 		evt.stageX = stageX;

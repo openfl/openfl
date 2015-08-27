@@ -711,8 +711,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public var y (get, set):Float;
 	
-	@:dox(hide) @:noCompletion public var __worldTransform:Matrix;
-	@:dox(hide) @:noCompletion public var __worldColorTransform:ColorTransform;
+	@:dox(hide) @:noCompletion @:dox(hide) public var __worldTransform:Matrix;
+	@:dox(hide) @:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
 	
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;

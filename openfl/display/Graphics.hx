@@ -69,7 +69,7 @@ import js.html.CanvasRenderingContext2D;
 	public static inline var TILE_BLEND_DIFFERENCE = 0x01000000;
 	public static inline var TILE_BLEND_INVERT = 0x02000000;
 	
-	@:noCompletion public var __hardware:Bool;
+	@:noCompletion @:dox(hide) public var __hardware:Bool;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:Array<DrawCommand> = [];
 	@:noCompletion private var __dirty (default, set):Bool = true;
