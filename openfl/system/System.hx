@@ -1,7 +1,14 @@
 package openfl.system; #if !flash #if !openfl_legacy
 
 
+import lime.system.Clipboard;
 import lime.system.System in LimeSystem;
+
+#if neko
+import neko.vm.Gc;
+#elseif cpp
+import cpp.vm.Gc;
+#end
 
 
 /**
@@ -114,7 +121,9 @@ import lime.system.System in LimeSystem;
 	 */
 	public static function gc ():Void {
 		
-		
+		#if (cpp || neko)
+		return Gc.run (true);
+		#end
 		
 	}
 	
@@ -130,7 +139,7 @@ import lime.system.System in LimeSystem;
 	 */
 	public static function pause ():Void {
 		
-		throw "System.pause is currently not supported for HTML5";
+		openfl.Lib.notImplemented ("System.pause");
 		
 	}
 	
@@ -144,7 +153,7 @@ import lime.system.System in LimeSystem;
 	 */
 	public static function resume ():Void {
 		
-		throw "System.resume is currently not supported for HTML5";
+		openfl.Lib.notImplemented ("System.resume");
 		
 	}
 	
@@ -166,7 +175,7 @@ import lime.system.System in LimeSystem;
 	 */
 	public static function setClipboard (string:String):Void {
 		
-		throw "System.setClipboard is currently not supported for HTML5";
+		Clipboard.text = string;
 		
 	}
 	
@@ -180,7 +189,13 @@ import lime.system.System in LimeSystem;
 	
 	@:noCompletion private static function get_totalMemory ():Int {
 		
-		return 0;
+		#if neko
+		return Gc.stats ().heap;
+		#elseif cpp
+		return untyped __global__.__hxcpp_gc_used_bytes ();
+		#elseif (js && html5)
+		return untyped __js__ ("window.performance.memory");
+		#end
 		
 	}
 	
