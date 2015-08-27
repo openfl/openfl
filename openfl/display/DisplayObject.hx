@@ -724,16 +724,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __maskGraphics:Graphics;
 	@:noCompletion private var __maskCached:Bool = false;
 	@:noCompletion private var __name:String;
+	@:noCompletion private var __objectTransform:Transform;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __rotation:Float;
-	@:noCompletion private var __rotationCache:Float;
 	@:noCompletion private var __rotationCosine:Float;
 	@:noCompletion private var __rotationSine:Float;
-	@:noCompletion private var __scaleX:Float;
-	@:noCompletion private var __scaleY:Float;
 	@:noCompletion private var __scrollRect:Rectangle;
-	@:noCompletion private var __transform:Transform;
+	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool;
 	@:noCompletion private var __worldAlpha:Float;
@@ -745,8 +743,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __worldVisible:Bool;
 	@:noCompletion private var __worldVisibleChanged:Bool;
 	@:noCompletion private var __worldZ:Int;
-	@:noCompletion private var __x:Float;
-	@:noCompletion private var __y:Float;
 	@:noCompletion private var __cacheAsBitmap:Bool = false;
 	
 	#if (js && html5)
@@ -763,19 +759,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		super ();
 		
 		__alpha = 1;
-		__rotation = 0;
-		__scaleX = 1;
-		__scaleY = 1;
+		__transform = new Matrix ();
 		__visible = true;
-		__x = 0;
-		__y = 0;
 		
-		__worldAlpha = 1;
-		__worldTransform = new Matrix ();
-		__rotationCache = 0;
+		__rotation = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
 		
+		__worldAlpha = 1;
+		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		
 		#if dom
@@ -785,8 +777,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		name = "instance" + (++__instanceCount);
 		
 	}
-		
-		
+	
+	
 	/**
 	 * Returns a rectangle that defines the area of the display object relative
 	 * to the coordinate system of the <code>targetCoordinateSpace</code> object.
@@ -1280,81 +1272,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		//if (!__renderable && !__isMask) return;
 		
-		if (rotation != __rotationCache) {
+		if (__worldTransform == null) {
 			
-			__rotationCache = rotation;
-			var radians = rotation * (Math.PI / 180);
-			__rotationSine = Math.sin (radians);
-			__rotationCosine = Math.cos (radians);
+			__worldTransform = new Matrix ();
 			
 		}
-		
-		var sr = scrollRect;
 		
 		if (parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
 			
-			var a00 = __rotationCosine * scaleX;
-			var a01 = __rotationSine * scaleX;
-			var a10 = -__rotationSine * scaleY;
-			var a11 = __rotationCosine * scaleY;
-			var b00 = parentTransform.a;
-			var b01 = parentTransform.b;
-			var b10 = parentTransform.c;
-			var b11 = parentTransform.d;
-			
-			if (__worldTransform == null) __worldTransform = new Matrix ();
-			
-			__worldTransform.a = a00 * b00 + a01 * b10;
-			__worldTransform.b = a00 * b01 + a01 * b11;
-			__worldTransform.c = a10 * b00 + a11 * b10;
-			__worldTransform.d = a10 * b01 + a11 * b11;
-			__worldTransform.tx = x * b00 + y * b10 + parentTransform.tx;
-			__worldTransform.ty = x * b01 + y * b11 + parentTransform.ty;
-			
-			if (sr != null) {
-				
-				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					
-					sr.__transform(sr, __worldTransform);
-					
-				} else {
-					
-					__worldTransform.tx = (x - sr.x) * b00 + (y - sr.y) * b10 + parentTransform.tx;
-					__worldTransform.ty = (x - sr.x) * b01 + (y - sr.y) * b11 + parentTransform.ty;
-					
-				}
-				
-			}
+			__worldTransform.a = __transform.a * parentTransform.a + __transform.b * parentTransform.c;
+			__worldTransform.b = __transform.a * parentTransform.b + __transform.b * parentTransform.d;
+			__worldTransform.c = __transform.c * parentTransform.a + __transform.d * parentTransform.c;
+			__worldTransform.d = __transform.c * parentTransform.b + __transform.d * parentTransform.d;
+			__worldTransform.tx = __transform.tx * parentTransform.a + __transform.ty * parentTransform.c + parentTransform.tx;
+			__worldTransform.ty = __transform.tx * parentTransform.b + __transform.ty * parentTransform.d + parentTransform.ty;
 			
 			if (__isMask) __maskCached = false;
 			
 		} else {
 			
-			__worldTransform.a = __rotationCosine * scaleX;
-			__worldTransform.c = -__rotationSine * scaleY;
-			__worldTransform.b = __rotationSine * scaleX;
-			__worldTransform.d = __rotationCosine * scaleY;
-			__worldTransform.tx = x;
-			__worldTransform.ty = y;
+			__worldTransform.copyFrom (__transform);
 			
-			if (sr != null) {
-				
-				if (__worldTransform.a != 1 || __worldTransform.b != 0 || __worldTransform.c != 0 || __worldTransform.d != 1) {
-					
-					sr.__transform (sr, __worldTransform);
-					
-				} else {
-					
-					__worldTransform.tx = x - scrollRect.x;
-					__worldTransform.ty = y - scrollRect.y;
-					
-				}
-				
-			}
+		}
+		
+		if (scrollRect != null) {
+			
+			scrollRect.__transform (scrollRect, __worldTransform);
 			
 		}
 		
@@ -1368,22 +1314,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (!transformOnly && __mask != null && !__mask.__maskCached) {
 			
 			if (__maskGraphics == null) {
-				__maskGraphics = new Graphics();
+				
+				__maskGraphics = new Graphics ();
+				
 			}
 			
-			__maskGraphics.clear();
+			__maskGraphics.clear ();
 			
-			__mask.__update(true, true, __maskGraphics);
+			__mask.__update (true, true, __maskGraphics);
 			__mask.__maskCached = true;
 			
 		}
 		
 		if (maskGraphics != null) {
 			
-			__updateMask(maskGraphics);
+			__updateMask (maskGraphics);
 			
 		}
-		
 		
 		if (!transformOnly) {
 			
@@ -1396,15 +1343,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				
 			} else {
 				
-				__worldTransformCache.copyFrom(__worldTransform);
+				__worldTransformCache.copyFrom (__worldTransform);
 				
 			}
 			
 			var worldClip:Rectangle = null;
 			#end
 			
-			if(!__worldColorTransform.__equals(transform.colorTransform)) {
-				__worldColorTransform = transform.colorTransform.__clone();
+			if (!__worldColorTransform.__equals (transform.colorTransform)) {
+				
+				__worldColorTransform = transform.colorTransform.__clone ();
+				
 			}
 			
 			if (parent != null) {
@@ -1412,11 +1361,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				#if !dom
 				
 				__worldAlpha = alpha * parent.__worldAlpha;
-				__worldColorTransform.__combine(parent.__worldColorTransform);
+				__worldColorTransform.__combine (parent.__worldColorTransform);
 				
 				if ((blendMode == null || blendMode == NORMAL)) {
 					
 					__blendMode = parent.__blendMode;
+					
 				}
 				
 				#else
@@ -1702,38 +1652,112 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function set_rotation (value:Float):Float {
 		
-		if (value != __rotation) __setTransformDirty ();
-		return __rotation = value;
+		if (value != __rotation) {
+			
+			__rotation = value;
+			var radians = __rotation * (Math.PI / 180);
+			__rotationSine = Math.sin (radians);
+			__rotationCosine = Math.cos (radians);
+			
+			var __scaleX = this.scaleX;
+			var __scaleY = this.scaleY;
+			
+			__transform.a = __rotationCosine * __scaleX;
+			__transform.b = __rotationSine * __scaleX;
+			__transform.c = -__rotationSine * __scaleY;
+			__transform.d = __rotationCosine * __scaleY;
+			
+			__setTransformDirty ();
+			
+		}
+		
+		return value;
 		
 	}
 	
 	
 	@:noCompletion private function get_scaleX ():Float {
 		
-		return __scaleX;
+		if (__transform.b == 0) {
+			
+			return __transform.a;
+			
+		} else {
+			
+			return Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion private function set_scaleX (value:Float):Float {
 		
-		if (value != __scaleX) __setTransformDirty ();
-		return __scaleX = value;
+		if (__transform.c == 0) {
+			
+			if (value != __transform.a) __setTransformDirty ();
+			__transform.a = value;
+			
+		} else {
+			
+			var a = __rotationCosine * value;
+			var b = __rotationSine * value;
+			
+			if (__transform.a != a || __transform.b != b) {
+				
+				__setTransformDirty ();
+				
+			}
+			
+			__transform.a = a;
+			__transform.b = b;
+			
+		}
+		
+		return value;
 		
 	}
 	
 	
 	@:noCompletion private function get_scaleY ():Float {
 		
-		return __scaleY;
+		if (__transform.c == 0) {
+			
+			return __transform.d;
+			
+		} else {
+			
+			return Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
+			
+		}
 		
 	}
 	
 	
 	@:noCompletion private function set_scaleY (value:Float):Float {
 		
-		if (__scaleY != value) __setTransformDirty ();
-		return __scaleY = value;
+		if (__transform.c == 0) {
+			
+			if (value != __transform.d) __setTransformDirty ();
+			__transform.d = value;
+			
+		} else {
+			
+			var c = -__rotationSine * value;
+			var d = __rotationCosine * value;
+			
+			if (__transform.d != d || __transform.c != c) {
+				
+				__setTransformDirty ();
+				
+			}
+			
+			__transform.c = c;
+			__transform.d = d;
+			
+		}
+		
+		return value;
 		
 	}
 	
@@ -1763,13 +1787,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function get_transform ():Transform {
 		
-		if (__transform == null) {
+		if (__objectTransform == null) {
 			
-			__transform = new Transform (this);
+			__objectTransform = new Transform (this);
 			
 		}
 		
-		return __transform;
+		return __objectTransform;
 		
 	}
 	
@@ -1782,17 +1806,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		}
 		
-		if (__transform == null) {
+		if (__objectTransform == null) {
 			
-			__transform = new Transform (this);
+			__objectTransform = new Transform (this);
 			
 		}
 		
 		__setTransformDirty ();
-		__transform.matrix = value.matrix;
-		__transform.colorTransform = value.colorTransform.__clone();
+		__objectTransform.matrix = value.matrix;
+		__objectTransform.colorTransform = value.colorTransform.__clone();
 		
-		return __transform;
+		return __objectTransform;
 		
 	}
 	
@@ -1844,30 +1868,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function get_x ():Float {
 		
-		return __x;
+		return __transform.tx;
 		
 	}
 	
 	
 	@:noCompletion private function set_x (value:Float):Float {
 		
-		if (value != __x) __setTransformDirty ();
-		return __x = value;
+		if (value != __transform.tx) __setTransformDirty ();
+		return __transform.tx = value;
 		
 	}
 	
 	
 	@:noCompletion private function get_y ():Float {
 		
-		return __y;
+		return __transform.ty;
 		
 	}
 	
 	
 	@:noCompletion private function set_y (value:Float):Float {
 		
-		if (value != __y) __setTransformDirty ();
-		return __y = value;
+		if (value != __transform.ty) __setTransformDirty ();
+		return __transform.ty = value;
 		
 	}
 	
