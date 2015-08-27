@@ -27,6 +27,9 @@ class CanvasShape {
 			
 			if (graphics.__canvas != null) {
 				
+				var context = renderSession.context;
+				var scrollRect = shape.scrollRect;
+				
 				if (graphics.__bounds.width <= 0 || graphics.__bounds.height <= 0) return;
 				if (scrollRect != null && (scrollRect.width <= 0 || scrollRect.height <= 0)) return;
 				
@@ -35,9 +38,6 @@ class CanvasShape {
 					renderSession.maskManager.pushMask (shape.__mask);
 					
 				}
-				
-				var context = renderSession.context;
-				var scrollRect = shape.scrollRect;
 				
 				context.globalAlpha = shape.__worldAlpha;
 				var transform = shape.__worldTransform;

@@ -679,7 +679,7 @@ abstract Vector<T>(VectorData<T>) {
 				haxe.ds.Vector.blit (this.data, 0, data, 0, Std.int (Math.min (this.data.length, value)));
 				this.data = data;
 				#end
-
+				
 			}
 			
 			this.length = value;
