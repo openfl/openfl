@@ -952,7 +952,7 @@ class TextEngine {
 				
 				offsetX += layoutGroup.width;
 				
-				textIndex = formatRange.end;
+				textIndex = formatRange.end + 1;
 				
 				nextFormatRange ();
 				
