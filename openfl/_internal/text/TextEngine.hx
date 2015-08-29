@@ -3,7 +3,7 @@ package openfl._internal.text;
 
 import haxe.Timer;
 import haxe.Utf8;
-import lime.graphics.cairo.CairoFont;
+import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 import lime.text.TextLayout;
@@ -109,7 +109,9 @@ class TextEngine {
 	@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
-	@:noCompletion @:dox(hide) public var __cairoFont:CairoFont;
+	
+	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
+	@:noCompletion @:dox(hide) public var __font:Font;
 	
 	#if (js && html5)
 	private var __hiddenInput:InputElement;

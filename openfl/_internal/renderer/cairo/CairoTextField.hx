@@ -2,8 +2,12 @@ package openfl._internal.renderer.cairo;
 
 
 import lime.graphics.cairo.Cairo;
-import lime.graphics.cairo.CairoFont;
+import lime.graphics.cairo.CairoAntialias;
+import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.cairo.CairoFontOptions;
+import lime.graphics.cairo.CairoFTFontFace;
+import lime.graphics.cairo.CairoHintMetrics;
+import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
@@ -62,19 +66,19 @@ class CairoTextField {
 			
 			if (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) {
 				
-				options.hintStyle = NONE;
-				options.hintMetrics = OFF;
-				options.antialias = NONE;
+				options.hintStyle = CairoHintStyle.NONE;
+				options.hintMetrics = CairoHintMetrics.OFF;
+				options.antialias = CairoAntialias.NONE;
 				
 			} else {
 				
-				options.hintStyle = DEFAULT;
-				options.hintMetrics = OFF;
-				options.antialias = GOOD;
+				options.hintStyle = CairoHintStyle.DEFAULT;
+				options.hintMetrics = CairoHintMetrics.OFF;
+				options.antialias = CairoAntialias.GOOD;
 				
 			}
 			
-			cairo.setFontOptions (options);
+			cairo.fontOptions = options;
 			
 		}
 		
@@ -171,7 +175,7 @@ class CairoTextField {
 					
 					if (textEngine.__cairoFont != null) {
 						
-						if (textEngine.__cairoFont.font != font) {
+						if (textEngine.__font != font) {
 							
 							textEngine.__cairoFont.destroy ();
 							textEngine.__cairoFont = null;
@@ -182,11 +186,12 @@ class CairoTextField {
 					
 					if (textEngine.__cairoFont == null) {
 						
-						textEngine.__cairoFont = new CairoFont (font, 0);
+						textEngine.__font = font;
+						textEngine.__cairoFont = CairoFTFontFace.create (font, 0);
 						
 					}
 					
-					cairo.setFontFace (textEngine.__cairoFont);
+					cairo.fontFace = textEngine.__cairoFont;
 					
 					size = Std.int (group.format.size);
 					cairo.setFontSize (size);
