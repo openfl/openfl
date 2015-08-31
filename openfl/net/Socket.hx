@@ -37,6 +37,12 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 	private var _input : ByteArray;
 	private var _output : ByteArray;
 
+	/**
+	Controls whether the Socket is a secure socket or not.
+	This value is only used in HTML5 targets (WebSockets)
+	**/
+	public var secure:Bool;
+
     public var bytesAvailable(get, null) : Int;
 	public var bytesPending(get, null) : Int;
 	public var timeout : Int;
@@ -99,7 +105,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		
 		_stamp = Sys.time();
 		#end
-		
+
 		_host = host;
 		_port = port;
 
@@ -113,7 +119,12 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		#end
 		
 		#if (js && html5)
-		_socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
+		var schema = secure ? "wss" : "ws";
+		var urlReg = ~/^(.*:\/\/)?([A-Za-z0-9\-\.]+)\/?(.*)/g;
+		urlReg.match(host);
+		var _webHost = urlReg.matched(2);
+		var _webPath = urlReg.matched(3);
+		_socket = untyped __js__("new WebSocket(schema + \"://\" + _webHost + \":\" + port + \"/\" + _webPath)");
 
 		_socket.onopen = onOpenHandler;
 		_socket.onmessage = onMessageHandler;
