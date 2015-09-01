@@ -1142,7 +1142,7 @@ class GraphicsRenderer {
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 		
 		// TODO Fix this: webgl can only repeat textures that are power of two
-		if (bucket.textureRepeat #if (js && html5) && bucket.bitmap.image.powerOfTwo #end) {
+		if (bucket.textureRepeat #if !desktop && bucket.bitmap.image.powerOfTwo #end) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 		} else {
@@ -1155,7 +1155,7 @@ class GraphicsRenderer {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		} else {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);						
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		}
 		
 	}
