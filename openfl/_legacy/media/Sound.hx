@@ -99,7 +99,7 @@ class Sound extends EventDispatcher {
 	public static function fromAudioBuffer (buffer:AudioBuffer):Sound {
 		
 		var sound = new Sound ();
-		sound.loadPCMFromByteArray (buffer.data, buffer.bitsPerSample, "short", buffer.channels > 1, buffer.sampleRate);
+		sound.loadPCMFromByteArray (ByteArray.fromBytes (buffer.data.buffer), buffer.bitsPerSample, "short", buffer.channels > 1, buffer.sampleRate);
 		return sound;
 		
 	}
