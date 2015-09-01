@@ -553,6 +553,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __fullscreen:Bool;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
+	@:noCompletion private var __macKeyboard:Bool;
 	@:noCompletion private var __mouseOutStack:Array<DisplayObject>;
 	@:noCompletion private var __mouseX:Float;
 	@:noCompletion private var __mouseY:Float;
@@ -618,6 +619,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
+		
+		#if mac
+		__macKeyboard = true;
+		#elseif (js && html5)
+		__macKeyboard = (Browser.window.navigator.platform.indexOf ("Mac") > -1);
+		#end
 		
 		__clearBeforeRender = true;
 		__stack = [];
@@ -1256,7 +1263,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var keyCode = Keyboard.__convertKeyCode (keyCode);
 			var charCode = Keyboard.__getCharCode (keyCode, modifier.shiftKey);
 			
-			var event = new KeyboardEvent (type, true, false, charCode, keyCode, keyLocation, modifier.ctrlKey #if mac || modifier.metaKey #end, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
+			var event = new KeyboardEvent (type, true, false, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 			
 			stack.reverse ();
 			__fireEvent (event, stack);
