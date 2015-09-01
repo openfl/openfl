@@ -560,7 +560,10 @@ class DefaultAssetLibrary extends AssetLibrary {
 		type.set (id, AssetType.$$upper(::type::));
 		::end::::end::
 		
-		var assetsPrefix = ApplicationMain.config.assetsPrefix;
+		var assetsPrefix = null;
+		if (ApplicationMain.config != null && Reflect.hasField (ApplicationMain.config, "assetsPrefix")) {
+			assetsPrefix = ApplicationMain.config.assetsPrefix;
+		}
 		if (assetsPrefix != null) {
 			for (k in path.keys()) {
 				path.set(k, assetsPrefix + path[k]);
