@@ -1,10 +1,10 @@
 package openfl; #if (!openfl_legacy || (openfl_legacy && lime_hybrid))
-import lime.app.Future;
-import lime.app.Promise;
 #if !macro
 
 
 import haxe.Unserializer;
+import lime.app.Future;
+import lime.app.Promise;
 import lime.text.Font in LimeFont;
 import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import lime.Assets in LimeAssets;
@@ -18,10 +18,6 @@ import openfl.net.URLRequest;
 import openfl.text.Font;
 import openfl.utils.ByteArray;
 
-@:access(lime.Assets)
-@:access(openfl.AssetLibrary)
-@:access(openfl.display.BitmapData)
-@:access(openfl.text.Font)
 
 /**
  * <p>The Assets class provides a cross-platform interface to access 
@@ -29,7 +25,7 @@ import openfl.utils.ByteArray;
  * 
  * <p>The contents are populated automatically when an application
  * is compiled using the OpenFL command-line tools, based on the
- * contents of the *.nmml project file.</p>
+ * contents of the *.xml project file.</p>
  * 
  * <p>For most platforms, the assets are included in the same directory
  * or package as the application, and the paths are handled
@@ -39,6 +35,11 @@ import openfl.utils.ByteArray;
  * and specifying a custom preloader using <window preloader="" />
  * in the project file.</p>
  */
+
+@:access(lime.Assets)
+@:access(openfl.AssetLibrary)
+@:access(openfl.display.BitmapData)
+@:access(openfl.text.Font)
 
 
 class Assets {
@@ -50,6 +51,12 @@ class Assets {
 	
 	
 	public static function addEventListener (type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
+		
+		if (!LimeAssets.onChange.has (LimeAssets_onChange)) {
+			
+			LimeAssets.onChange.add (LimeAssets_onChange);
+			
+		}
 		
 		dispatcher.addEventListener (type, listener, useCapture, priority, useWeakReference);
 		
@@ -64,9 +71,9 @@ class Assets {
 	
 	/**
 	 * Returns whether a specific asset exists
-	 * @param	id 		The ID or asset path for the file
-	 * @param	type	The type of assets AssetType.BINARY | AssetType.FONT | AssetType.IMAGE | AssetType.MOVIE_CLIP | AssetType.MUSIC | AssetType.SOUND | AssetType.TEMPLATE | AssetType.TEXT
-	 * @return	TRUE if an asset with a given id, and type exists FALSE otherwise
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	type	The asset type to match, or null to match any type
+	 * @return		Whether the requested asset ID and type exists
 	 */
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
@@ -77,9 +84,9 @@ class Assets {
 	
 	/**
 	 * Gets an instance of an embedded bitmap
-	 * @usage		var bitmap = new Bitmap(Assets.getBitmapData("image.jpg"));
+	 * @usage		var bitmap = new Bitmap (Assets.getBitmapData ("image.png"));
 	 * @param	id		The ID or asset path for the bitmap
-	 * @param	useCache		(Optional) Whether to use BitmapData from the cache(Default: true)
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @return		A new BitmapData object
 	 */
 	public static function getBitmapData (id:String, useCache:Bool = true):BitmapData {
@@ -127,8 +134,8 @@ class Assets {
 	
 	/**
 	 * Gets an instance of an embedded binary asset
-	 * @usage		var bytes = Assets.getBytes("file.zip");
-	 * @param	id		The ID or asset path for the file
+	 * @usage		var bytes = Assets.getBytes ("file.zip");
+	 * @param	id		The ID or asset path for the asset
 	 * @return		A new ByteArray object
 	 */
 	public static function getBytes (id:String):ByteArray {
@@ -140,8 +147,9 @@ class Assets {
 	
 	/**
 	 * Gets an instance of an embedded font
-	 * @usage		var fontName = Assets.getFont("font.ttf").fontName;
+	 * @usage		var fontName = Assets.getFont ("font.ttf").fontName;
 	 * @param	id		The ID or asset path for the font
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @return		A new Font object
 	 */
 	public static function getFont (id:String, useCache:Bool = true):Font {
@@ -181,15 +189,7 @@ class Assets {
 	}
 	
 	
-	private static function getLibrary (name:String):lime.Assets.AssetLibrary {
-		
-		if (name == null || name == "") {
-			
-			name = "default";
-			
-		}
-		
-		// TODO
+	private static function getLibrary (name:String):LimeAssetLibrary {
 		
 		return cast LimeAssets.libraries.get (name);
 		
@@ -197,10 +197,10 @@ class Assets {
 	
 	
 	/**
-	 * Gets an instance of a library MovieClip
-	 * @usage		var movieClip = Assets.getMovieClip("library:BouncingBall");
-	 * @param	id		The library and ID for the MovieClip
-	 * @return		A new Sound object
+	 * Gets an instance of an included MovieClip
+	 * @usage		var movieClip = Assets.getMovieClip ("library:BouncingBall");
+	 * @param	id		The ID for the MovieClip
+	 * @return		A new MovieClip object
 	 */
 	public static function getMovieClip (id:String):MovieClip {
 		
@@ -245,8 +245,9 @@ class Assets {
 	
 	/**
 	 * Gets an instance of an embedded streaming sound
-	 * @usage		var sound = Assets.getMusic("sound.ogg");
-	 * @param	id		The ID or asset path for the music track
+	 * @usage		var sound = Assets.getMusic ("sound.ogg");
+	 * @param	id		The ID or asset path for the audio stream
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @return		A new Sound object
 	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
@@ -275,9 +276,9 @@ class Assets {
 	
 	/**
 	 * Gets the file path (if available) for an asset
-	 * @usage		var path = Assets.getPath("image.jpg");
+	 * @usage		var path = Assets.getPath ("file.txt");
 	 * @param	id		The ID or asset path for the asset
-	 * @return		The path to the asset (or null)
+	 * @return		The path to the asset, or null if it does not exist
 	 */
 	public static function getPath (id:String):String {
 		
@@ -288,8 +289,9 @@ class Assets {
 	
 	/**
 	 * Gets an instance of an embedded sound
-	 * @usage		var sound = Assets.getSound("sound.wav");
+	 * @usage		var sound = Assets.getSound ("sound.wav");
 	 * @param	id		The ID or asset path for the sound
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @return		A new Sound object
 	 */
 	public static function getSound (id:String, useCache:Bool = true):Sound {
@@ -347,8 +349,8 @@ class Assets {
 	
 	/**
 	 * Gets an instance of an embedded text asset
-	 * @usage		var text = Assets.getText("text.txt");
-	 * @param	id		The ID or asset path for the file
+	 * @usage		var text = Assets.getText ("text.txt");
+	 * @param	id		The ID or asset path for the asset
 	 * @return		A new String object
 	 */
 	public static function getText (id:String):String {
@@ -364,12 +366,13 @@ class Assets {
 		
 	}
 	
+	
 	/**
-	 * Returns whether an asset with a given id and "AssetType" exists within the cache or Asset Library
-	 * @param	id 		The ID or asset path for the file
-	 * @param	type	The type of assets AssetType.BINARY | AssetType.FONT | AssetType.IMAGE | AssetType.MOVIE_CLIP | AssetType.MUSIC | AssetType.SOUND | AssetType.TEMPLATE | AssetType.TEXT
-	 * @param	useCache Whether or not to use the cache. if FALSE this function will search for the asset in any known library
-	 * @return	whether or not an asset with the given id exists within the asset cache or any asset library;
+	 * Returns whether an asset is "local", and therefore can be loaded synchronously
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	type	The asset type to match, or null to match any type
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @return	Whether the asset is local
 	 */
 	public static function isLocal (id:String, type:AssetType = null, useCache:Bool = true):Bool {
 		
@@ -456,10 +459,11 @@ class Assets {
 		
 	}
 	
+	
 	/**
-	 * Returns an array of embeded assets
-	 * @param	type	The type of assets to include AssetType.BINARY | AssetType.FONT | AssetType.IMAGE | AssetType.MOVIE_CLIP | AssetType.MUSIC | AssetType.SOUND | AssetType.TEMPLATE | AssetType.TEXT
-	 * @return an Array of embeded assets
+	 * Returns a list of all embedded assets (by type)
+	 * @param	type	The asset type to match, or null to match any type
+	 * @return	An array of asset ID values
 	 */
 	public static function list (type:AssetType = null):Array<String> {
 		
@@ -467,16 +471,25 @@ class Assets {
 		
 	}
 	
+	
 	/**
-	 * Asynchronously loads an instance of an embeded bitmap
-	 * @usage 	Asset.loadBitmapData("MyReallyBigPic.jpg", function(_loadedBitmapData):Void{
-	 * 				var myReallyBigBitmap = new Bitmap(_loadedBitmapData);
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded BitmapData
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 * Loads an included bitmap asset asynchronously
+	 * @usage		Asset.loadBitmapData ("image.png").onComplete (handleImage);
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<BitmapData>
 	 */
-	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
+	public static function loadBitmapData (id:String, useCache:Bool = true, handler:BitmapData->Void = null):Future<BitmapData> {
+		
+		var promise = new Promise<BitmapData> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -486,14 +499,12 @@ class Assets {
 			
 			if (isValidBitmapData (bitmapData)) {
 				
-				handler (bitmapData);
-				return;
+				promise.complete (bitmapData);
+				return promise.future;
 				
 			}
 			
 		}
-		
-		// TODO: Handle error
 		
 		LimeAssets.loadImage (id, false).onComplete (function (image) {
 			
@@ -511,186 +522,182 @@ class Assets {
 					
 				}
 				
-				handler (bitmapData);
-				
-			}
-			
-		}).onError (function (_) handler (null));
-		
-		#end
-		
-	}
-	
-		/**
-	 * Asynchronously loads an instance of an embedded binary file
-	 * @usage Asset.loadBytes("MyReallyBigBin.bin", function(_loadedByteArray):Void{
-	 * 				myParserFunction(_loadedByteArray)
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded ByteArray
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
-	 */
-	public static function loadBytes (id:String, handler:ByteArray -> Void):Void {
-		
-		#if (tools && !display)
-		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
-			
-			if (library.exists (symbolName, cast AssetType.BINARY)) {
-				
-				LimeAssets.loadBytes (symbolName).onComplete (handler).onError (function (_) handler (null));
-				return;
+				promise.complete (bitmapData);
 				
 			} else {
 				
-				trace ("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
+				promise.error ("[Assets] Could not load Image \"" + id + "\"");
 				
 			}
 			
-		} else {
-			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-		
-		}
+		}).onError (promise.error).onProgress (promise.progress);
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
+	
+	
 	/**
-	 * Asynchronously loads an instance of an embedded font
-	 * @usage Asset.loadFont("MyReallyLongSong.ttf", function(_loadedFont):Void{
-	 * 				myTextFortmat.font = _loadedFont.fontName;
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded font
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 * Loads an included byte asset asynchronously
+	 * @usage		Asset.loadBytes ("file.zip").onComplete (handleBytes);
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<ByteArray>
 	 */
-	public static function loadFont (id:String, handler:Font -> Void, useCache:Bool = true):Void {
+	public static function loadBytes (id:String, handler:ByteArray->Void = null):Future<ByteArray> {
+		
+		var future = LimeAssets.loadBytes (id);
+		
+		if (handler != null) {
+			
+			future.onComplete (handler);
+			future.onError (function (_) handler (null));
+			
+		}
+		
+		return future;
+		
+	}
+	
+	
+	/**
+	 * Loads an included font asset asynchronously
+	 * @usage		Asset.loadFont ("font.ttf").onComplete (handleFont);
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<Font>
+	 */
+	public static function loadFont (id:String, useCache:Bool = true, handler:Font->Void = null):Future<Font> {
+		
+		var promise = new Promise<Font> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
 		if (useCache && cache.enabled && cache.hasFont (id)) {
 			
-			handler (cache.getFont (id));
-			return;
+			promise.complete (cache.getFont (id));
+			return promise.future;
 			
 		}
 		
-		var libraryName = id.substring (0, id.indexOf (":"));
-		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library = getLibrary (libraryName);
-		
-		if (library != null) {
+		LimeAssets.loadFont (id).onComplete (function (limeFont) {
 			
-			if (library.exists (symbolName, cast AssetType.FONT)) {
+			#if flash
+			var font = limeFont.src;
+			#else
+			var font = Font.__fromLimeFont (limeFont);
+			#end
+			
+			if (useCache && cache.enabled) {
 				
-				LimeAssets.loadFont (symbolName).onComplete (function (limeFont:LimeFont):Void {
-					
-					#if flash
-					var font = limeFont.src;
-					#else
-					var font = Font.__fromLimeFont (limeFont);
-					#end
-					
-					if (useCache && cache.enabled) {
-						
-						cache.setFont (id, font);
-						
-					}
-					
-					handler (font);
-					
-				}).onError (function (_) handler (null));
-				
-				return;
-				
-			} else {
-				
-				trace ("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
+				cache.setFont (id, font);
 				
 			}
 			
-		} else {
+			promise.complete (font);
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
+		}).onError (promise.error).onProgress (promise.progress);
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
+	
 	/**
-	 * Loads an Asset Library with a given Name
-	 * @param	name the name of the library to load
-	 * @param	handler the function to handle the loaded AssetLibrary
+	 * Load an included AssetLibrary
+	 * @param	name		The name of the AssetLibrary to load
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<AssetLibrary>
 	 */
-	public static function loadLibrary (name:String, handler:LimeAssetLibrary -> Void):Void {
+	public static function loadLibrary (name:String, handler:LimeAssetLibrary->Void = null):Future<LimeAssetLibrary> {
 		
-		// TODO: Handle error
+		var future = LimeAssets.loadLibrary (name);
 		
-		LimeAssets.loadLibrary (name).onComplete (handler).onError (function (_) handler (null));
+		if (handler != null) {
+			
+			future.onComplete (handler);
+			future.onError (function (_) handler (null));
+			
+		}
+		
+		return future;
 		
 	}
 	
+	
 	/**
-	 * Asynchronously loads an instance of an embedded streaming sound
-	 * @usage Asset.loadMusic("MyReallyLongSong.ogg", function(_loadedSound):Void{
-	 * 				_loadedSound.play();
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded music
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 * Loads an included music asset asynchronously
+	 * @usage		Asset.loadMusic ("music.ogg").onComplete (handleMusic);
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<Sound>
 	 */
-	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
+	public static function loadMusic (id:String, useCache:Bool = true, handler:Sound->Void = null):Future<Sound> {
 		
 		#if !html5
 		
-		// TODO: Handle error
+		var promise = new Promise<Sound> ();
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
-			if (buffer == null) {
+			if (buffer != null) {
 				
-				handler (null);
+				#if flash
+				promise.complete (buffer.src);
+				#else
+				promise.complete (Sound.fromAudioBuffer (buffer));
+				#end
 				
 			} else {
 				
-				#if flash
-				handler (buffer.src);
-				#else
-				handler (Sound.fromAudioBuffer (buffer));
-				#end
+				promise.error ("[Assets] Could not load Sound \"" + id + "\"");
 				
 			}
 			
-		}).onError (function (_) handler (null));
+		}).onError (promise.error).onProgress (promise.progress);
+		return promise.future;
+		
 		#else
-		handler (getMusic (id, useCache));
+		
+		return new Future<Sound> (function () return getMusic (id, useCache));
+		
 		#end
 		
 	}
 	
+	
 	/**
-	 * Asynchronously loads an instance of a MovieClip from a library
-	 * @usage Asset.loadMovieClip("libary:MovieClip", function(_loadedMovieClip):Void{
-	 * 				sprite.addChild(_loadedMovieClip);
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded movieclip
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 * Loads an included MovieClip asset asynchronously
+	 * @usage		Asset.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
+	 * @param	id 		The ID for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<MovieClip>
 	 */
-	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
+	public static function loadMovieClip (id:String, handler:MovieClip->Void = null):Future<MovieClip> {
 		
 		var promise = new Promise<MovieClip> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -706,85 +713,93 @@ class Assets {
 				
 			} else {
 				
-				promise.error ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		//return promise.future;
-		promise.future.onComplete (handler);
-		promise.future.onError (function (_) handler (null));
+		return promise.future;
 		
 	}
 	
-		
+	
 	/**
-	 * Asynchronously loads an instance of a sound.
-	 * @usage Asset.loadSound("MyReallyShortSong.wav", function(_loadedSound):Void{
-	 * 				_loadedSound.play();
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded sound
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 * Loads an included sound asset asynchronously
+	 * @usage		Asset.loadSound ("sound.wav").onComplete (handleSound);
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<Sound>
 	 */
-	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
+	public static function loadSound (id:String, useCache:Bool = true, handler:Sound->Void = null):Future<Sound> {
 		
 		#if !html5
 		
-		// TODO: Handle error
+		var promise = new Promise<Sound> ();
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
-			if (buffer == null) {
+			if (buffer != null) {
 				
-				handler (null);
+				#if flash
+				promise.complete (buffer.src);
+				#else
+				promise.complete (Sound.fromAudioBuffer (buffer));
+				#end
 				
 			} else {
 				
-				#if flash
-				handler (buffer.src);
-				#else
-				handler (Sound.fromAudioBuffer (buffer));
-				#end
+				promise.error ("[Assets] Could not load Sound \"" + id + "\"");
 				
 			}
 			
-		}).onError (function (_) handler (null));
+		}).onError (promise.error).onProgress (promise.progress);
+		return promise.future;
+		
 		#else
-		handler (getSound (id, useCache));
+		
+		return new Future<Sound> (function () return getSound (id, useCache));
+		
 		#end
 		
 	}
 	
-		
+	
 	/**
-	 * Asynchronously loads an instance of an embedded text
-	 * @usage Asset.loadText("MyReallyLongText.txt", function(_loadedText):Void{
-	 * 				myTextField.text = _loadedText;
-	 * 			});
-	 * @param	id 		The ID or asset path for the file
-	 * @param	handler	a funtion to handle the loaded text
-	 * @param	useCache whether or not to add / retrieve the asset from the cache
+	 * Loads an included text asset asynchronously
+	 * @usage		Asset.loadText ("text.txt").onComplete (handleString);
+	 * @param	id 		The ID or asset path for the asset
+	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
+	 * @param	handler		(Deprecated) A callback function when the load is completed
+	 * @return		Returns a Future<String>
 	 */
-	public static function loadText (id:String, handler:String -> Void):Void {
+	public static function loadText (id:String, handler:String->Void = null):Future<String> {
 		
-		// TODO: Handle error
+		var future = LimeAssets.loadText (id);
 		
-		LimeAssets.loadText (id).onComplete (handler).onError (function (_) handler (null));
+		if (handler != null) {
+			
+			future.onComplete (handler);
+			future.onError (function (_) handler (null));
+			
+		}
+		
+		return future;
 		
 	}
 	
+	
 	/**
-	 * Registers an AssetLibrary
-	 * @param	name the name of the library
-	 * @param	library the AssetLibrary to register
+	 * Registers a new AssetLibrary with the Assets class
+	 * @param	name		The name (prefix) to use for the library
+	 * @param	library		An AssetLibrary instance to register
 	 */
 	public static function registerLibrary (name:String, library:AssetLibrary):Void {
 		
@@ -840,14 +855,9 @@ class Assets {
 	
 	
 	
-	private static function library_onEvent (library:AssetLibrary, type:String):Void {
+	private static function LimeAssets_onChange ():Void {
 		
-		if (type == "change") {
-			
-			cache.clear ();
-			dispatchEvent (new Event (Event.CHANGE));
-			
-		}
+		dispatchEvent (new Event (Event.CHANGE));
 		
 	}
 	
