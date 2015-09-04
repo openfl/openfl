@@ -705,9 +705,18 @@ class Assets {
 	}
 	
 	
-	public static function loadBitmapData (id:String, handler:BitmapData -> Void, useCache:Bool = true):Void {
+	public static function loadBitmapData (id:String, useCache:Bool = true, handler:BitmapData->Void = null):Future<BitmapData> {
 		
 		initialize ();
+		
+		var promise = new Promise<BitmapData> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -717,8 +726,8 @@ class Assets {
 			
 			if (isValidBitmapData (bitmapData)) {
 				
-				handler (bitmapData);
-				return;
+				promise.complete (bitmapData);
+				return promise.future;
 				
 			}
 			
@@ -737,40 +746,47 @@ class Assets {
 					library.loadBitmapData (symbolName, function (bitmapData:BitmapData):Void {
 						
 						cache.setBitmapData (id, bitmapData);
-						handler (bitmapData);
+						promise.complete (bitmapData);
 						
 					});
 					
 				} else {
 					
-					library.loadBitmapData (symbolName, handler);
+					library.loadBitmapData (symbolName, promise.complete);
 					
 				}
 				
-				return;
-				
 			} else {
 				
-				trace ("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no BitmapData asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadBytes (id:String, handler:ByteArray -> Void):Void {
+	public static function loadBytes (id:String, handler:ByteArray->Void = null):Future<ByteArray> {
 		
 		initialize ();
+		
+		var promise = new Promise<ByteArray> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -782,38 +798,46 @@ class Assets {
 			
 			if (library.exists (symbolName, BINARY)) {
 				
-				library.loadBytes (symbolName, handler);
-				return;
+				library.loadBytes (symbolName, promise.complete);
 				
 			} else {
 				
-				trace ("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no String or ByteArray asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadFont (id:String, handler:Font -> Void, useCache:Bool = true):Void {
+	public static function loadFont (id:String, useCache:Bool = true, handler:Font->Void = null):Future<Font> {
 		
 		initialize ();
+		
+		var promise = new Promise<Font> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
 		if (useCache && cache.enabled && cache.hasFont (id)) {
 			
-			handler (cache.getFont (id));
-			return;
+			promise.complete (cache.getFont (id));
+			return promise.future;
 			
 		}
 		
@@ -830,40 +854,47 @@ class Assets {
 					library.loadFont (symbolName, function (font:Font):Void {
 						
 						cache.setFont (id, font);
-						handler (font);
+						promise.complete (font);
 						
 					});
 					
 				} else {
 					
-					library.loadFont (symbolName, handler);
+					library.loadFont (symbolName, promise.complete);
 					
 				}
 				
-				return;
-				
 			} else {
 				
-				trace ("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no Font asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadLibrary (name:String, handler:AssetLibrary -> Void):Void {
+	public static function loadLibrary (name:String, handler:AssetLibrary->Void = null):Future<AssetLibrary> {
 		
-		initialize();
+		initialize ();
+		
+		var promise = new Promise<AssetLibrary> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -875,25 +906,33 @@ class Assets {
 			var library = Type.createInstance (Type.resolveClass (info.type), info.args);
 			libraries.set (name, library);
 			library.eventCallback = library_onEvent;
-			library.load (handler);
-			return;
+			library.load (promise.complete);
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + name + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + name + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
+	public static function loadMusic (id:String, useCache:Bool = true, handler:Sound->Void = null):Future<Sound> {
 		
 		initialize ();
+		
+		var promise = new Promise<Sound> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -903,8 +942,8 @@ class Assets {
 			
 			if (isValidSound (sound)) {
 				
-				handler (sound);
-				return;
+				promise.complete (sound);
+				return promise.future;
 				
 			}
 			
@@ -923,40 +962,47 @@ class Assets {
 					library.loadMusic (symbolName, function (sound:Sound):Void {
 						
 						cache.setSound (id, sound);
-						handler (sound);
+						promise.complete (sound);
 						
 					});
 					
 				} else {
 					
-					library.loadMusic (symbolName, handler);
+					library.loadMusic (symbolName, promise.complete);
 					
 				}
 				
-				return;
-				
 			} else {
 				
-				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
+	public static function loadMovieClip (id:String, handler:MovieClip->Void = null):Future<MovieClip> {
 		
 		initialize ();
+		
+		var promise = new Promise<MovieClip> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -968,31 +1014,39 @@ class Assets {
 			
 			if (library.exists (symbolName, MOVIE_CLIP)) {
 				
-				library.loadMovieClip (symbolName, handler);
-				return;
+				library.loadMovieClip (symbolName, promise.complete);
 				
 			} else {
 				
-				trace ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
+	public static function loadSound (id:String, useCache:Bool = true, handler:Sound->Void = null):Future<Sound> {
 		
 		initialize ();
+		
+		var promise = new Promise<Sound> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -1002,8 +1056,8 @@ class Assets {
 			
 			if (isValidSound (sound)) {
 				
-				handler (sound);
-				return;
+				promise.complete (sound);
+				return promise.future;
 				
 			}
 			
@@ -1022,40 +1076,47 @@ class Assets {
 					library.loadSound (symbolName, function (sound:Sound):Void {
 						
 						cache.setSound (id, sound);
-						handler (sound);
+						promise.complete (sound);
 						
 					});
 					
 				} else {
 					
-					library.loadSound (symbolName, handler);
+					library.loadSound (symbolName, promise.complete);
 					
 				}
 				
-				return;
-				
 			} else {
 				
-				trace ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no Sound asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
 	
-	public static function loadText (id:String, handler:String -> Void):Void {
+	public static function loadText (id:String, handler:String->Void = null):Future<String> {
 		
 		initialize ();
+		
+		var promise = new Promise<String> ();
+		
+		if (handler != null) {
+			
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+		}
 		
 		#if (tools && !display)
 		
@@ -1067,24 +1128,23 @@ class Assets {
 			
 			if (library.exists (symbolName, TEXT)) {
 				
-				library.loadText (symbolName, handler);
-				return;
+				library.loadText (symbolName, promise.complete);
 				
 			} else {
 				
-				trace ("[openfl.Assets] There is no String asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no String asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		return promise.future;
 		
 	}
 	
@@ -1615,8 +1675,289 @@ enum AssetType {
 }
 
 
+class Future<T> {
+	
+	
+	public var isCompleted (get, null):Bool;
+	public var value (default, null):T;
+	
+	private var __completed:Bool;
+	private var __completeListeners:Array<T->Void>;
+	private var __errored:Bool;
+	private var __errorListeners:Array<Dynamic->Void>;
+	private var __errorMessage:Dynamic;
+	private var __progressListeners:Array<Float->Void>;
+	
+	
+	public function new (work:Void->T = null) {
+		
+		if (work != null) {
+			
+			var promise = new Promise<T> ();
+			@:privateAccess promise.future = this;
+			
+			try {
+				
+				var result = work ();
+				promise.complete (result);
+				
+			} catch (e:Dynamic) {
+				
+				promise.error (e);
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	public function onComplete (listener:T->Void):Future<T> {
+		
+		if (listener != null) {
+			
+			if (__completed) {
+				
+				listener (value);
+				
+			} else if (!__errored) {
+				
+				if (__completeListeners == null) {
+					
+					__completeListeners = new Array ();
+					
+				}
+				
+				__completeListeners.push (listener);
+				
+			}
+			
+		}
+		
+		return this;
+		
+	}
+	
+	
+	public function onError (listener:Dynamic->Void):Future<T> {
+		
+		if (listener != null) {
+			
+			if (__errored) {
+				
+				listener (__errorMessage);
+				
+			} else if (!__completed) {
+				
+				if (__errorListeners == null) {
+					
+					__errorListeners = new Array ();
+					
+				}
+				
+				__errorListeners.push (listener);
+				
+			}
+			
+		}
+		
+		return this;
+		
+	}
+	
+	
+	public function onProgress (listener:Float->Void):Future<T> {
+		
+		if (listener != null) {
+			
+			if (__progressListeners == null) {
+				
+				__progressListeners = new Array ();
+				
+			}
+			
+			__progressListeners.push (listener);
+			
+		}
+		
+		return this;
+		
+	}
+	
+	
+	public function then<U> (next:T->Future<U>):Future<U> {
+		
+		if (__completed) {
+			
+			return next (value);
+			
+		} else if (__errored) {
+			
+			var future = new Future<U> ();
+			future.onError (__errorMessage);
+			return future;
+			
+		} else {
+			
+			var promise = new Promise<U> ();
+			
+			onError (promise.error);
+			onProgress (promise.progress);
+			
+			onComplete (function (val) {
+				
+				var future = next (val);
+				future.onError (promise.error);
+				future.onComplete (promise.complete);
+				
+			});
+			
+			return promise.future;
+			
+		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_isCompleted ():Bool {
+		
+		return (__completed || __errored);
+		
+	}
+	
+	
+}
+
+
+@:access(openfl._legacy)
+
+class Promise<T> {
+	
+	
+	public var future (default, null):Future<T>;
+	public var isCompleted (get, null):Bool;
+	
+	
+	public function new () {
+		
+		future = new Future ();
+		
+	}
+	
+	
+	public function complete (data:T):Promise<T> {
+		
+		if (!future.__errored) {
+			
+			future.__completed = true;
+			future.value = data;
+			
+			if (future.__completeListeners != null) {
+				
+				for (listener in future.__completeListeners) {
+					
+					listener (data);
+					
+				}
+				
+				future.__completeListeners = null;
+				
+			}
+			
+		}
+		
+		return this;
+		
+	}
+	
+	
+	public function completeWith (future:Future<T>):Promise<T> {
+		
+		future.onComplete (complete);
+		future.onError (error);
+		future.onProgress (progress);
+		
+		return this;
+		
+	}
+	
+	
+	
+	public function error (msg:Dynamic):Promise<T> {
+		
+		if (!future.__completed) {
+			
+			future.__errored = true;
+			future.__errorMessage = msg;
+			
+			if (future.__errorListeners != null) {
+				
+				for (listener in future.__errorListeners) {
+					
+					listener (msg);
+					
+				}
+				
+				future.__errorListeners = null;
+				
+			}
+			
+		}
+		
+		return this;
+		
+	}
+	
+	
+	public function progress (progress:Float):Promise<T> {
+		
+		if (!future.__errored && !future.__completed) {
+			
+			if (future.__progressListeners != null) {
+				
+				for (listener in future.__progressListeners) {
+					
+					listener (progress);
+					
+				}
+				
+			}
+			
+		}
+		
+		return this;
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_isCompleted ():Bool {
+		
+		return future.isCompleted;
+		
+	}
+	
+	
+}
+
+
+
 #end
 #else
+
 
 
 import haxe.crypto.BaseCode;
