@@ -1,4 +1,6 @@
 package openfl; #if (!openfl_legacy || (openfl_legacy && lime_hybrid))
+import lime.app.Future;
+import lime.app.Promise;
 #if !macro
 
 
@@ -491,7 +493,9 @@ class Assets {
 			
 		}
 		
-		LimeAssets.loadImage (id, function (image) {
+		// TODO: Handle error
+		
+		LimeAssets.loadImage (id, false).onComplete (function (image) {
 			
 			if (image != null) {
 				
@@ -511,7 +515,7 @@ class Assets {
 				
 			}
 			
-		}, false);
+		}).onError (function (_) handler (null));
 		
 		#end
 		
@@ -538,7 +542,7 @@ class Assets {
 			
 			if (library.exists (symbolName, cast AssetType.BINARY)) {
 				
-				library.loadBytes (symbolName, handler);
+				LimeAssets.loadBytes (symbolName).onComplete (handler).onError (function (_) handler (null));
 				return;
 				
 			} else {
@@ -586,7 +590,7 @@ class Assets {
 			
 			if (library.exists (symbolName, cast AssetType.FONT)) {
 				
-				library.loadFont (symbolName, function (limeFont:LimeFont):Void {
+				LimeAssets.loadFont (symbolName).onComplete (function (limeFont:LimeFont):Void {
 					
 					#if flash
 					var font = limeFont.src;
@@ -602,7 +606,7 @@ class Assets {
 					
 					handler (font);
 					
-				});
+				}).onError (function (_) handler (null));
 				
 				return;
 				
@@ -631,7 +635,9 @@ class Assets {
 	 */
 	public static function loadLibrary (name:String, handler:LimeAssetLibrary -> Void):Void {
 		
-		LimeAssets.loadLibrary (name, handler);
+		// TODO: Handle error
+		
+		LimeAssets.loadLibrary (name).onComplete (handler).onError (function (_) handler (null));
 		
 	}
 	
@@ -647,19 +653,26 @@ class Assets {
 	public static function loadMusic (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
 		#if !html5
-		LimeAssets.loadAudioBuffer (id, function (buffer) {
+		
+		// TODO: Handle error
+		
+		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
-			if (buffer != null) {
+			if (buffer == null) {
+				
+				handler (null);
+				
+			} else {
 				
 				#if flash
-				handler ((buffer != null) ? buffer.src : null);
+				handler (buffer.src);
 				#else
 				handler (Sound.fromAudioBuffer (buffer));
 				#end
 				
 			}
 			
-		}, useCache);
+		}).onError (function (_) handler (null));
 		#else
 		handler (getMusic (id, useCache));
 		#end
@@ -677,6 +690,8 @@ class Assets {
 	 */
 	public static function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
 		
+		var promise = new Promise<MovieClip> ();
+		
 		#if (tools && !display)
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
@@ -687,24 +702,25 @@ class Assets {
 			
 			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
 				
-				library.loadMovieClip (symbolName, handler);
-				return;
+				promise.completeWith (library.loadMovieClip (symbolName));
 				
 			} else {
 				
-				trace ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				promise.error ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			promise.error ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
 		#end
 		
-		handler (null);
+		//return promise.future;
+		promise.future.onComplete (handler);
+		promise.future.onError (function (_) handler (null));
 		
 	}
 	
@@ -721,19 +737,26 @@ class Assets {
 	public static function loadSound (id:String, handler:Sound -> Void, useCache:Bool = true):Void {
 		
 		#if !html5
-		LimeAssets.loadAudioBuffer (id, function (buffer) {
+		
+		// TODO: Handle error
+		
+		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
 			
-			if (buffer != null) {
+			if (buffer == null) {
+				
+				handler (null);
+				
+			} else {
 				
 				#if flash
-				handler ((buffer != null) ? buffer.src : null);
+				handler (buffer.src);
 				#else
 				handler (Sound.fromAudioBuffer (buffer));
 				#end
 				
 			}
 			
-		}, useCache);
+		}).onError (function (_) handler (null));
 		#else
 		handler (getSound (id, useCache));
 		#end
@@ -752,7 +775,9 @@ class Assets {
 	 */
 	public static function loadText (id:String, handler:String -> Void):Void {
 		
-		LimeAssets.loadText (id, handler);
+		// TODO: Handle error
+		
+		LimeAssets.loadText (id).onComplete (handler).onError (function (_) handler (null));
 		
 	}
 	
@@ -847,37 +872,9 @@ class Assets {
 	}
 	
 	
-	public function getMusic (id:String):Sound {
+	public function loadMovieClip (id:String):Future<MovieClip> {
 		
-		return getSound (id);
-		
-	}
-	
-	
-	public function getSound (id:String):Sound {
-		
-		return null;
-		
-	}
-	
-	
-	public function loadMovieClip (id:String, handler:MovieClip -> Void):Void {
-		
-		handler (getMovieClip (id));
-		
-	}
-	
-	
-	public function loadMusic (id:String, handler:Sound -> Void):Void {
-		
-		handler (getMusic (id));
-		
-	}
-	
-	
-	public function loadSound (id:String, handler:Sound -> Void):Void {
-		
-		handler (getSound (id));
+		return new Future<MovieClip> (function () return getMovieClip (id));
 		
 	}
 	
