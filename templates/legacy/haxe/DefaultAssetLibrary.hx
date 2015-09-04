@@ -506,7 +506,6 @@ import lime.audio.AudioSource;
 import lime.audio.openal.AL;
 import lime.audio.AudioBuffer;
 import lime.graphics.Image;
-import lime.system.ThreadPool;
 import lime.text.Font;
 import lime.utils.ByteArray;
 import lime.utils.UInt8Array;
@@ -540,7 +539,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 	public var type (default, null) = new Map <String, AssetType> ();
 	
 	private var lastModified:Float;
-	private var threadPool:ThreadPool;
 	private var timer:Timer;
 	
 	
@@ -628,24 +626,6 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#end
 		#end
-		
-	}
-	
-	
-	private function createThreadPool ():Void {
-		
-		threadPool = new ThreadPool (0, 2);
-		threadPool.doWork.add (function (id, data) {
-			
-			data.result = data.getMethod (id);
-			threadPool.sendComplete (data.handler, data);
-			
-		});
-		threadPool.onComplete.add (function (id, data) {
-			
-			data.handler (data.result);
-			
-		});
 		
 	}
 	
@@ -1028,7 +1008,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		promise.complete (getAudioBuffer (id));
+		promise.completeWith (new Future<AudioBuffer> (function () return getAudioBuffer (id)));
 		
 		#end
 		
@@ -1116,13 +1096,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		if (threadPool == null) {
-			
-			createThreadPool ();
-			
-		}
-		
-		threadPool.queue (id, { promise: promise, getMethod: getBytes });
+		promise.completeWith (new Future<ByteArray> (function () return getBytes (id)));
 		
 		#end
 		
@@ -1189,13 +1163,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#else
 		
-		if (threadPool == null) {
-			
-			createThreadPool ();
-			
-		}
-		
-		threadPool.queue (id, { promise: promise, getMethod: getImage });
+		promise.completeWith (new Future<Image> (function () return getImage (id)));
 		
 		#end
 		
