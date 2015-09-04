@@ -623,7 +623,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#if mac
 		__macKeyboard = true;
 		#elseif (js && html5)
-		__macKeyboard = (Browser.window.navigator.platform.indexOf ("Mac") > -1);
+		__macKeyboard = untyped __js__ ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
 		#end
 		
 		__clearBeforeRender = true;
