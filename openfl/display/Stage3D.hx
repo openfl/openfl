@@ -1,6 +1,7 @@
 package openfl.display; #if !flash
 
 
+import haxe.Timer;
 import openfl.display.OpenGLView;
 import openfl.display3D.Context3D;
 import openfl.events.ErrorEvent;
@@ -27,12 +28,20 @@ class Stage3D extends EventDispatcher {
 		
 		if (OpenGLView.isSupported) {
 			
-			context3D = new Context3D ();
-			dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+			Timer.delay(function() {
+				
+				context3D = new Context3D ();
+				dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+				
+			}, 1);
 			
 		} else {
 			
-			dispatchEvent (new ErrorEvent (ErrorEvent.ERROR));
+			Timer.delay(function() {
+				
+				dispatchEvent (new ErrorEvent (ErrorEvent.ERROR));
+				
+			}, 1);
 			
 		}
 		
