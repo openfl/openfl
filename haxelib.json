@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "3.3.2",
-	"releasenote": "Improved hit testing, bitmapData improvements, many more fixes",
+	"version": "3.3.3",
+	"releasenote": "Updated DisplayObject transform code, futures in openfl.Assets, more fixes",
 	"contributors": [ "singmajesty" ]
 }
