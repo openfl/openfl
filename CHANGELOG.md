@@ -1,3 +1,16 @@
+3.3.3 (09/08/2015)
+------------------
+
+* Updated the DisplayObject matrix transform code
+* Improved openfl.Assets load calls to return Futures
+* Updated for the current Lime release
+* Improved URI support in the Socket implementation
+* Improved support for ctrlKey/controlKey in KeyboardEvent
+* Fixed black OpenGL textures on some devices
+* Implemented Capabilities.totalMemory
+* Added guards against potential null references (legacy)
+
+
 3.3.2 (08/26/2015)
 ------------------
 
