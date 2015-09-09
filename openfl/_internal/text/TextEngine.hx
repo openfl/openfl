@@ -170,7 +170,7 @@ class TextEngine {
 			
 			if (registeredFont == null) continue;
 			
-			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || Path.withoutDirectory (registeredFont.__fontPath) == name))) {
+			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name))) {
 				
 				return registeredFont;
 				
