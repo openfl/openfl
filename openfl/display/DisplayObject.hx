@@ -1042,10 +1042,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
+	@:noCompletion private inline function __getLocalBounds (rect:Rectangle, ?withLocalTransform:Bool = true):Void {
 		
-		__getTransform ();
-		__getBounds (rect, new Matrix ());
+		var m:Matrix;
+		if (withLocalTransform) {
+			m = __localTransform.clone();
+			m.__translateTransformed ( -m.tx, -m.ty);
+		} else { 
+			m = Matrix.__temp;
+			m.identity();
+		}
+		
+		__getBounds (rect, m);
 		
 	}
 	
@@ -1552,7 +1560,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_height (value:Float):Float {
 		
 		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		__getLocalBounds (bounds, false);
 		
 		if (value != bounds.height) {
 			
@@ -1855,7 +1863,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_width (value:Float):Float {
 		
 		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		__getLocalBounds (bounds, false);
 		
 		if (value != bounds.width) {
 			
