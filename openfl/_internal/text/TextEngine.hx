@@ -571,8 +571,12 @@ class TextEngine {
 		
 		var currentFormat = TextField.__defaultTextFormat.clone ();
 		
-		var ascent, descent, leading, layoutGroup;
-		var advances, widthValue, heightValue;
+		var leading = 0;
+		var ascent = 0.0;
+		var descent = 0.0;
+		
+		var layoutGroup, advances;
+		var widthValue, heightValue = 0.0;
 		
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
@@ -586,7 +590,7 @@ class TextEngine {
 		var lineIndex = 0;
 		var lineFormat = null;
 		
-		var getAdvances = function (text:String, startIndex:Int, endIndex:Int):Array<Float> {
+		inline function getAdvances (text:String, startIndex:Int, endIndex:Int):Array<Float> {
 			
 			// TODO: optimize
 			
@@ -633,7 +637,7 @@ class TextEngine {
 			
 		}
 		
-		var getAdvancesWidth = function (advances:Array<Float>):Float {
+		inline function getAdvancesWidth (advances:Array<Float>):Float {
 			
 			var width = 0.0;
 			
@@ -647,7 +651,7 @@ class TextEngine {
 			
 		}
 		
-		var getTextWidth = function (text:String):Float {
+		inline function getTextWidth (text:String):Float {
 			
 			#if (js && html5)
 			
@@ -686,7 +690,7 @@ class TextEngine {
 			
 		}
 		
-		var nextFormatRange = function ():Void {
+		inline function nextFormatRange ():Void {
 			
 			if (rangeIndex < textFormatRanges.length - 1) {
 				
