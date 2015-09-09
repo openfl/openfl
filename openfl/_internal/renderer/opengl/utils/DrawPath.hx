@@ -30,13 +30,17 @@ class DrawPath {
 	public var isRemovable:Bool = true;
 	public var winding:WindingRule = WindingRule.EVEN_ODD;
 
-	public var points:Array<Float> = [];
+	public var points:Array<Float> = null;
 
 	public var type:GraphicType = Polygon;
 
-	public function new() {
+	public function new(makeArray:Bool=true) {
 		line = new LineStyle();
 		fill = None;
+		if (makeArray)
+		{
+			points = [];
+		}
 	}
 
 	public function update(line:LineStyle, fill:FillType, fillIndex:Int, winding:WindingRule):Void {
@@ -74,7 +78,7 @@ class PathBuiler {
 	private static var __fillIndex:Int = 0;
 
 	private static function closePath():Void {
-		var l = __currentPath.points.length;
+		var l = __currentPath.points == null ? 0 : __currentPath.points.length;
 		if (l <= 0) return;
 		// the paths are only closed when the type is a polygon and there is a fill
 		if (__currentPath.type == Polygon && __currentPath.fill != None) {
@@ -130,7 +134,7 @@ class PathBuiler {
 	
 	private static inline function curveTo (cx:Float, cy:Float, x:Float, y:Float) {
 
-		if (__currentPath.points.length == 0) {
+		if (__currentPath.points == null || __currentPath.points.length == 0) {
 			moveTo (0, 0);
 		}
 		
@@ -140,7 +144,7 @@ class PathBuiler {
 	
 	private static inline function cubicCurveTo(cx:Float, cy:Float, cx2:Float, cy2:Float, x:Float, y:Float) {
 
-		if (__currentPath.points.length == 0) {
+		if (__currentPath.points == null || __currentPath.points.length == 0) {
 			moveTo (0, 0);
 		}
 
@@ -150,7 +154,7 @@ class PathBuiler {
 
 	private inline static function graphicDataPop ():Void {
 		
-		if (__currentPath.isRemovable && __currentPath.points.length == 0) {
+		if (__currentPath.isRemovable && ( __currentPath.points == null || __currentPath.points.length == 0)) {
 			__drawPaths.pop ();
 		} else {
 			closePath();
@@ -163,7 +167,7 @@ class PathBuiler {
 		var glStack:GLStack = null;
 		var bounds = graphics.__bounds;
 		
-		__drawPaths = new Array ();
+		__drawPaths = new Array<DrawPath> ();
 		__currentPath = new DrawPath ();
 		__line = new LineStyle();
 		__fill = None;
@@ -192,7 +196,7 @@ class PathBuiler {
 						endFill();
 						__fill = bitmap != null ? Texture(bitmap, matrix, repeat, smooth) : None;
 						
-						if (__currentPath.points.length == 0) {
+						if (__currentPath.points == null || __currentPath.points.length == 0) {
 							graphicDataPop();
 							__currentPath = new DrawPath();
 							__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
@@ -206,7 +210,7 @@ class PathBuiler {
 						endFill();
 						__fill = alpha > 0 ? Color(rgb & 0xFFFFFF, alpha) : None;
 
-						if (__currentPath.points.length == 0) {
+						if (__currentPath.points == null || __currentPath.points.length == 0) {
 							graphicDataPop();
 							__currentPath = new DrawPath();
 							__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
@@ -352,7 +356,7 @@ class PathBuiler {
 						graphicDataPop ();
 						
 						__fillIndex++;
-						__currentPath = new DrawPath ();
+						__currentPath = new DrawPath (false);
 						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						__currentPath.type = GraphicType.DrawTiles(sheet, tileData, smooth, flags, count);
 						__currentPath.isRemovable = false;
