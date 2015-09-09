@@ -55,7 +55,7 @@ import js.html.ImageElement;
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObject {
+class Bitmap extends DisplayObjectContainer {
 	
 	
 	/**
@@ -208,21 +208,8 @@ class Bitmap extends DisplayObject {
 	
 	
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
-		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			var m = __worldTransform.clone();
-			var clip = Rectangle.__temp;
-			scrollRect.__transform(clip, m);
-			clip.y = renderSession.renderer.height - clip.y - clip.height;
-			renderSession.spriteBatch.start(clip);
-		}
 		
 		GLBitmap.render (this, renderSession);
-		
-		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			renderSession.spriteBatch.start();
-		}
 		
 	}
 	
@@ -269,7 +256,13 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			scaleY = value / bitmapData.height;
+			if (value != bitmapData.height) {
+				
+				__setTransformDirty ();
+				scaleY = value / bitmapData.height;
+				
+			}
+			
 			return value;
 			
 		}
@@ -296,7 +289,13 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			scaleX = value / bitmapData.width;
+			if (value != bitmapData.width) {
+				
+				__setTransformDirty ();
+				scaleX = value / bitmapData.width;
+				
+			}
+			
 			return value;
 			
 		}

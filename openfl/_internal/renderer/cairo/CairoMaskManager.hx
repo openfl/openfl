@@ -62,4 +62,11 @@ class CairoMaskManager extends AbstractMaskManager {
 	}
 	
 	
+	public override function popRect ():Void {
+		
+		renderSession.cairo.restore ();
+		
+	}
+	
+	
 }
