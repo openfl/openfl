@@ -812,13 +812,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix = Matrix.__temp;
-		matrix.identity();
+		
+		var matrix:Matrix;
 		
 		if (targetCoordinateSpace != null) {
 			
-			matrix = matrix.clone ();
-			matrix.concat (targetCoordinateSpace.__worldTransform.clone ().invert ());
+			matrix = __getTransform().clone();
+			matrix.concat (targetCoordinateSpace.__getTransform().clone().invert());
+			
+		} else {
+			
+			matrix = Matrix.__temp;
+			matrix.identity();
 			
 		}
 		
