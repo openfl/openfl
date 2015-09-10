@@ -13,13 +13,21 @@ class DrawCommandReader {
 	public var fPos:Int;
 	public var oPos:Int;
 	
-	public function new() {
+	public function new(buffer:DrawCommandBuffer) {
 		
+		this.buffer = buffer;
 		bPos = iPos = fPos = oPos = 0;
 		
 	}
 	
-	public function clear() {
+	public function destroy() {
+		
+		buffer = null;
+		clear();
+		
+	}
+	
+	public function reset() {
 		
 		bPos = iPos = fPos = oPos = 0;
 		
