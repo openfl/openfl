@@ -71,7 +71,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	@:noCompletion @:dox(hide) public var __hardware:Bool;
 	@:noCompletion private var __bounds:Rectangle;
-	@:noCompletion private var __commands:Array<DrawCommand> = [];
+	@:noCompletion private var __commands:Array<DrawCommandObject> = [];
 	@:noCompletion private var __dirty (default, set):Bool = true;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
 	@:noCompletion private var __drawPaths:Array<DrawPath>;
@@ -147,7 +147,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 		
-		__commands.push (BeginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
+		__commands.push (DrawCommandObject.BeginBitmapFill (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
 		
 		__visible = true;
 		
@@ -170,7 +170,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginFill (color:Int = 0, alpha:Float = 1):Void {
 		
-		__commands.push (BeginFill (color & 0xFFFFFF, alpha));
+		__commands.push (DrawCommandObject.BeginFill (color & 0xFFFFFF, alpha));
 		
 		if (alpha > 0) __visible = true;
 		
@@ -244,7 +244,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
 		
-		__commands.push (BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));
+		__commands.push (DrawCommandObject.BeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));
 		__hardware = false;
 		
 		for (alpha in alphas) {
@@ -370,7 +370,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 		
-		__commands.push (CubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY));
+		__commands.push (DrawCommandObject.CubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY));
 		
 		__hardware = false;
 		__dirty = true;
@@ -443,7 +443,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 		
-		__commands.push (CurveTo (controlX, controlY, anchorX, anchorY));
+		__commands.push (DrawCommandObject.CurveTo (controlX, controlY, anchorX, anchorY));
 		
 		__hardware = false;
 		__dirty = true;
@@ -472,7 +472,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - radius - __halfStrokeWidth, y - radius - __halfStrokeWidth);
 		__inflateBounds (x + radius + __halfStrokeWidth, y + radius + __halfStrokeWidth);
 		
-		__commands.push (DrawCircle (x, y, radius));
+		__commands.push (DrawCommandObject.DrawCircle (x, y, radius));
 		
 		__hardware = false;
 		__dirty = true;
@@ -503,7 +503,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
 		
-		__commands.push (DrawEllipse (x, y, width, height));
+		__commands.push (DrawCommandObject.DrawEllipse (x, y, width, height));
 		
 		__hardware = false;
 		__dirty = true;
@@ -707,7 +707,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
 		
-		__commands.push (DrawRect (x, y, width, height));
+		__commands.push (DrawCommandObject.DrawRect (x, y, width, height));
 		
 		__dirty = true;
 		
@@ -747,7 +747,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
 		
-		__commands.push (DrawRoundRect (x, y, width, height, rx, ry));
+		__commands.push (DrawCommandObject.DrawRoundRect (x, y, width, height, rx, ry));
 		
 		__hardware = false;
 		__dirty = true;
@@ -770,7 +770,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (0, 0);
 		__inflateBounds (Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
-		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
+		__commands.push (DrawCommandObject.DrawTiles (sheet, tileData, smooth, flags, count));
 		
 		__dirty = true;
 		__visible = true;
@@ -841,7 +841,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__inflateBounds (maxX, maxY);
-		__commands.push (DrawTriangles(vertices, indices, uvtData, culling, colors, blendMode));
+		__commands.push (DrawCommandObject.DrawTriangles(vertices, indices, uvtData, culling, colors, blendMode));
 		
 		__dirty = true;
 		__visible = true;
@@ -862,7 +862,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function endFill ():Void {
 		
-		__commands.push (EndFill);
+		__commands.push (DrawCommandObject.EndFill());
 		
 	}
 	
@@ -898,7 +898,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
 		
-		__commands.push (LineBitmapStyle (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
+		__commands.push (DrawCommandObject.LineBitmapStyle (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth));
 		
 	}
 	
@@ -957,7 +957,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function lineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
 		
-		__commands.push (LineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));	
+		__commands.push (DrawCommandObject.LineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio));	
 		
 	}
 	
@@ -1104,7 +1104,7 @@ import js.html.CanvasRenderingContext2D;
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
 		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness/2 : __halfStrokeWidth;
-		__commands.push (LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
+		__commands.push (DrawCommandObject.LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit));
 		
 		if (thickness != null) __visible = true;
 		
@@ -1140,7 +1140,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
-		__commands.push (LineTo (x, y));
+		__commands.push (DrawCommandObject.LineTo (x, y));
 		
 		__hardware = false;
 		__dirty = true;
@@ -1163,7 +1163,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = x;
 		__positionY = y;
 		
-		__commands.push (MoveTo (x, y));
+		__commands.push (DrawCommandObject.MoveTo (x, y));
 		
 	}
 	
