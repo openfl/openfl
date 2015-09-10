@@ -29,6 +29,33 @@ class GLMaskManager extends AbstractMaskManager {
 	}
 	
 	
+	override public function pushRect(rect:Rectangle, transform:Matrix):Void {
+		
+		if (rect == null) return;
+		
+		var m = transform.clone();
+		// correct coords from top-left (OpenFL) to bottom-left (GL)
+		@:privateAccess GLBitmap.flipMatrix(m, renderSession.renderer.viewPort.height);
+		var clip = rect.clone();
+		@:privateAccess clip.__transform(clip, m);
+		
+		if (currentClip != null /*&& currentClip.intersects(clip)*/) {
+			clip = currentClip.intersection(clip);
+		}
+		
+		var restartBatch = currentClip == null || clip.isEmpty() || currentClip.containsRect(clip);
+		
+		clips.push(clip);
+		currentClip = clip;			
+		
+		if (restartBatch) {
+			renderSession.spriteBatch.stop ();
+			renderSession.spriteBatch.start (currentClip);			
+		}
+		
+	}
+	
+	
 	public override function pushMask (mask:DisplayObject) {
 		
 		renderSession.stencilManager.pushMask (mask, renderSession);
@@ -39,6 +66,33 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function popMask () {
 		
 		renderSession.stencilManager.popMask (null, renderSession);
+		
+		renderSession.spriteBatch.start (currentClip);
+		
+	}
+	
+	override public function popRect():Void {
+		
+		renderSession.spriteBatch.stop ();
+		
+		clips.pop ();
+		currentClip = clips[clips.length - 1];
+		
+		renderSession.spriteBatch.start (currentClip);
+		
+	}
+	
+	override public function saveState():Void {
+		
+		savedClip = currentClip;
+		currentClip = null;
+		
+	}
+	
+	override public function restoreState():Void {
+		
+		currentClip = savedClip;
+		savedClip = null;
 		
 	}
 	

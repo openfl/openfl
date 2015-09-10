@@ -1353,6 +1353,8 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
+		__preRenderGL(renderSession);
+		
 		#if !disable_cairo_graphics
 		
 		#if lime_cairo
@@ -1368,6 +1370,8 @@ class TextField extends InteractiveObject {
 		//GLTextField.render (this, renderSession);
 		
 		#end
+		
+		__postRenderGL(renderSession);
 		
 	}
 	

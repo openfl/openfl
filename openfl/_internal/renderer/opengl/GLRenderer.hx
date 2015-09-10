@@ -319,7 +319,7 @@ class GLRenderer extends AbstractRenderer {
 		var bitmap = shape.__graphics.__bitmap;
 		
 		matrix.translate (shape.__graphics.__bounds.x, shape.__graphics.__bounds.y);
-		matrix.concat (shape.__worldTransform);
+		matrix.concat (shape.__renderTransform);
 		
 		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, ALWAYS);
 		
