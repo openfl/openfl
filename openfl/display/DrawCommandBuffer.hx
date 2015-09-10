@@ -24,11 +24,11 @@ class DrawCommandBuffer
 	
 	public function clear()
 	{
-		types.splice(0, types.length());
-		b.splice(0, b.length());
-		i.splice(0, i.length());
-		f.splice(0, f.length());
-		o.splice(0, o.length());
+		types.splice(0, types.length);
+		b.splice(0, b.length);
+		i.splice(0, i.length);
+		f.splice(0, f.length);
+		o.splice(0, o.length);
 	}
 	
 	public function destroy()

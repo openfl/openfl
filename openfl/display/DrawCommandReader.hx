@@ -23,7 +23,7 @@ class DrawCommandReader {
 	public function destroy() {
 		
 		buffer = null;
-		clear();
+		reset();
 		
 	}
 	
@@ -147,25 +147,25 @@ class DrawCommandReader {
 	public function readDrawPathC         ():DrawPathCView         { advance (); prev = DRAW_PATH_C;         return new DrawPathCView         (this); }
 	public function readOverrideMatrix    ():OverrideMatrixView    { advance (); prev = OVERRIDE_MATRIX;     return new OverrideMatrixView    (this); }
 	
-	private inline function float (index:Int):Float {
+	public inline function float (index:Int):Float {
 		
 		return buffer.f[fPos + index];
 		
 	}
 	
-	private inline function int (index:Int):Int {
+	public inline function int (index:Int):Int {
 		
 		return buffer.i[iPos + index];
 		
 	}
 	
-	private inline function bool (index:Int):Bool {
+	public inline function bool (index:Int):Bool {
 		
 		return buffer.b[bPos + index];
 		
 	}
 	
-	private inline function obj (index:Int):Dynamic {
+	public inline function obj (index:Int):Dynamic {
 		
 		return buffer.o[oPos + index];
 		
@@ -173,23 +173,28 @@ class DrawCommandReader {
 
 }
 
+@:forward
 abstract BeginBitmapFillView (DrawCommandReader) {
 
-	public var bitmap (get, never):BitmapData;   private function get_color():BitmapData { return cast this.obj(0); }
-	public var matrix (get, never):Matrix;       private function get_alpha():Matrix     { return cast this.obj(1); }
-	public var repeat (get, never):Bool;         private function get_repeat():Bool      { return     this.bool(0); }
-	public var smooth (get, never):Bool;         private function get_smooth():Bool      { return     this.bool(1); }
+	public function new(d:DrawCommandReader)     { this = d; }
+	public var bitmap (get, never):BitmapData;   private function get_bitmap():BitmapData { return cast this.obj(0); }
+	public var matrix (get, never):Matrix;       private function get_matrix():Matrix     { return cast this.obj(1); }
+	public var repeat (get, never):Bool;         private function get_repeat():Bool       { return     this.bool(0); }
+	public var smooth (get, never):Bool;         private function get_smooth():Bool       { return     this.bool(1); }
 }
-	
+
+@:forward
 abstract BeginFillView (DrawCommandReader) {
 
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var color (get, never):Int;   private function get_color():Int   { return   this.int(0); }
 	public var alpha (get, never):Float; private function get_alpha():Float { return this.float(0); }
 }
 
-
+@:forward
 abstract BeginGradientFillView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var type                (get, never):GradientType;              private function get_type                ():GradientType              { return cast this.obj(0); }
 	public var colors              (get, never):Array<Dynamic>;            private function get_colors              ():Array<Dynamic>            { return cast this.obj(1); }
 	public var alphas              (get, never):Array<Dynamic>;            private function get_alphas              ():Array<Dynamic>            { return cast this.obj(2); }
@@ -201,8 +206,10 @@ abstract BeginGradientFillView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract CubicCurveToView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var controlX1 (get, never):Float; private function get_controlX1():Float { return this.float(0); }
 	public var controlY1 (get, never):Float; private function get_controlY1():Float { return this.float(1); }
 	public var controlX2 (get, never):Float; private function get_controlX2():Float { return this.float(3); }
@@ -212,8 +219,10 @@ abstract CubicCurveToView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract CurveToView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var controlX (get, never):Float; private function get_controlX():Float { return this.float(0); }
 	public var controlY (get, never):Float; private function get_controlY():Float { return this.float(1); }
 	public var anchorX  (get, never):Float; private function get_anchorX ():Float { return this.float(2); }
@@ -221,16 +230,20 @@ abstract CurveToView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract DrawCircleView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var x     (get, never):Float; private function get_x     ():Float { return this.float(0); }
 	public var y     (get, never):Float; private function get_y     ():Float { return this.float(1); }
 	public var radius(get, never):Float; private function get_radius():Float { return this.float(2); }
 	
 }
 
+@:forward
 abstract DrawEllipseView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var x     (get, never):Float; private function get_x     ():Float { return this.float(0); }
 	public var y     (get, never):Float; private function get_y     ():Float { return this.float(1); }
 	public var width (get, never):Float; private function get_width ():Float { return this.float(2); }
@@ -238,8 +251,10 @@ abstract DrawEllipseView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract DrawRectView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var x     (get, never):Float; private function get_x     ():Float { return this.float(0); }
 	public var y     (get, never):Float; private function get_y     ():Float { return this.float(1); }
 	public var width (get, never):Float; private function get_width ():Float { return this.float(2); }
@@ -247,8 +262,10 @@ abstract DrawRectView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract DrawRoundRectView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var x     (get, never):Float; private function get_x     ():Float { return this.float(0); }
 	public var y     (get, never):Float; private function get_y     ():Float { return this.float(1); }
 	public var width (get, never):Float; private function get_width ():Float { return this.float(2); }
@@ -258,8 +275,10 @@ abstract DrawRoundRectView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract DrawTilesView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var sheet    (get, never):Tilesheet;    private function get_sheet    ():Tilesheet    { return cast this.obj(0); }
 	public var tileData (get, never):Array<Float>; private function get_tileData ():Array<Float> { return cast this.obj(1); }
 	public var smooth   (get, never):Bool;         private function get_smooth   ():Bool         { return     this.bool(0); }
@@ -268,8 +287,10 @@ abstract DrawTilesView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract DrawTrianglesView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var vertices  (get, never):Vector<Float>;   private function get_vertices  ():Vector<Float>   { return cast this.obj(0); }
 	public var indices   (get, never):Vector<Int>;     private function get_indices   ():Vector<Int>     { return cast this.obj(1); }
 	public var uvtData   (get, never):Vector<Float>;   private function get_uvtData   ():Vector<Float>   { return cast this.obj(2); }
@@ -279,14 +300,18 @@ abstract DrawTrianglesView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract EndFillView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	//does nothing
 	
 }
 
+@:forward
 abstract LineStyleView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var thickness    (get, never):Null<Float>;   private function get_thickness   ():Null<Float>   { return cast this.obj(0); }
 	public var color        (get, never):Null<Int>;     private function get_color       ():Null<Int>     { return cast this.obj(1); }
 	public var alpha        (get, never):Null<Float>;   private function get_alpha       ():Null<Float>   { return cast this.obj(2); }
@@ -298,8 +323,10 @@ abstract LineStyleView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract LineBitmapStyleView (DrawCommandReader) { 
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var bitmap (get, never):BitmapData; private function get_bitmap():BitmapData { return cast this.obj(0); }
 	public var matrix (get, never):Matrix;     private function get_matrix():Matrix     { return cast this.obj(1); }
 	public var repeat (get, never):Bool;       private function get_repeat():Bool       { return cast this.obj(2); }
@@ -307,8 +334,10 @@ abstract LineBitmapStyleView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract LineGradientStyleView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var type                (get, never):GradientType;              private function get_type                ():GradientType              { return cast this.obj(0); }
 	public var colors              (get, never):Array<Dynamic>;            private function get_colors              ():Array<Dynamic>            { return cast this.obj(1); }
 	public var alphas              (get, never):Array<Dynamic>;            private function get_alphas              ():Array<Dynamic>            { return cast this.obj(2); }
@@ -320,30 +349,38 @@ abstract LineGradientStyleView (DrawCommandReader) {
 	
 }
 
+@:forward
 abstract LineToView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var x (get, never):Float; private function get_x():Float { return this.float(0); }
 	public var y (get, never):Float; private function get_y():Float { return this.float(1); }
 	
 }
 
+@:forward
 abstract MoveToView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var x (get, never):Float; private function get_x():Float { return this.float(0); }
 	public var y (get, never):Float; private function get_y():Float { return this.float(1); }
 	
 }
 
+@:forward
 abstract DrawPathCView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var commands (get, never):Vector<Int>;         private function get_commands():Vector<Int>         { return cast this.obj(0); }
 	public var data     (get, never):Vector<Float>;       private function get_data    ():Vector<Float>       { return cast this.obj(1); }
 	public var winding  (get, never):GraphicsPathWinding; private function get_winding ():GraphicsPathWinding { return cast this.obj(2); }
 	
 }
 
+@:forward
 abstract OverrideMatrixView (DrawCommandReader) {
 	
+	public function new(d:DrawCommandReader)     { this = d; }
 	public var matrix (get, never):Matrix; private function get_matrix():Matrix { return cast this.obj(0); }
 	
 }

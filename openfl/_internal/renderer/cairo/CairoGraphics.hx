@@ -209,7 +209,7 @@ class CairoGraphics {
 		CairoGraphics.graphics = graphics;
 		bounds = graphics.__bounds;
 		
-		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains (x, y)) {
+		if (!graphics.__visible || graphics.__commands.types.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains (x, y)) {
 			
 			return false;
 			
@@ -471,7 +471,7 @@ class CairoGraphics {
 	
 	private static function playCommands (commands:DrawCommandBuffer, stroke:Bool = false):Void {
 		
-		if (commands.length == 0) return;
+		if (commands.types.length == 0) return;
 		
 		bounds = graphics.__bounds;
 		
@@ -500,13 +500,13 @@ class CairoGraphics {
 					
 					var c = data.readCubicCurveTo();
 					hasPath = true;
-					cairo.curveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.x - offsetX, c.y - offsetY);
+					cairo.curveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo();
 					hasPath = true;
-					quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.x - offsetX, c.y - offsetY);
+					quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case DRAW_CIRCLE:
 					
@@ -526,22 +526,27 @@ class CairoGraphics {
 					var c = data.readDrawEllipse();
 					hasPath = true;
 					
-					c.x -= offsetX;
-					c.y -= offsetY;
+					var x = c.x;
+					var y = c.y;
+					var width = c.width;
+					var height = c.height;
+					
+					x -= offsetX;
+					y -= offsetY;
 					
 					var kappa = .5522848,
-						ox = (c.width / 2) * kappa, // control point offset horizontal
-						oy = (c.height / 2) * kappa, // control point offset vertical
-						xe = c.x + c.width,           // x-end
-						ye = c.y + c.height,           // y-end
-						xm = c.x + c.width / 2,       // x-middle
-						ym = c.y + c.height / 2;       // y-middle
+						ox = (width / 2) * kappa, // control point offset horizontal
+						oy = (height / 2) * kappa, // control point offset vertical
+						xe = x + width,           // x-end
+						ye = y + height,           // y-end
+						xm = x + width / 2,       // x-middle
+						ym = y + height / 2;       // y-middle
 					
-					cairo.moveTo (c.x, ym);
-					cairo.curveTo (c.x, ym - oy, xm - ox, c.y, xm, c.y);
-					cairo.curveTo (xm + ox, c.y, xe, ym - oy, xe, ym);
+					cairo.moveTo (x, ym);
+					cairo.curveTo (x, ym - oy, xm - ox, y, xm, y);
+					cairo.curveTo (xm + ox, y, xe, ym - oy, xe, ym);
 					cairo.curveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-					cairo.curveTo (xm - ox, ye, c.x, ym + oy, c.x, ym);
+					cairo.curveTo (xm - ox, ye, x, ym + oy, x, ym);
 				
 				case DRAW_ROUND_RECT:
 					
@@ -765,21 +770,21 @@ class CairoGraphics {
 						
 						//TODO move this to Graphics?
 						
-						if (c.uvtData == null) {
+						if (uvt == null) {
 							
-							c.uvtData = new Vector<Float> ();
+							uvt = new Vector<Float> ();
 							
 							for (i in 0...(Std.int (v.length / 2))) {
 								
-								c.uvtData.push (v[i * 2] / bitmapFill.width);
-								c.uvtData.push (v[i * 2 + 1] / bitmapFill.height);
+								uvt.push (v[i * 2] / bitmapFill.width);
+								uvt.push (v[i * 2 + 1] / bitmapFill.height);
 								
 							}
 							
 						}
 						
 						var skipT = c.uvtData.length != v.length;
-						var normalizedUVT = normalizeUVT (c.uvtData, skipT);
+						var normalizedUVT = normalizeUVT (uvt, skipT);
 						var maxUVT = normalizedUVT.max;
 						uvt = normalizedUVT.uvt;
 						
