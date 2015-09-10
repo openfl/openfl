@@ -25,4 +25,5 @@ enum DrawCommandType {
 	MOVE_TO;
 	DRAW_PATH_C;
 	OVERRIDE_MATRIX;
+	UNKNOWN;
 }

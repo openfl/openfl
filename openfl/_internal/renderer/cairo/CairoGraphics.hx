@@ -384,7 +384,7 @@ class CairoGraphics {
 					case DRAW_TRIANGLES  : data.readDrawTriangles();
 					case DRAW_PATH_C     : data.readDrawPathC();
 					case OVERRIDE_MATRIX : data.readOverrideMatrix();
-					
+					case UNKNOWN         : //donothing
 				}
 				
 			}
@@ -1076,7 +1076,7 @@ class CairoGraphics {
 				case END_FILL        : data.readEndFill();
 				case DRAW_PATH_C     : data.readDrawPathC();
 				case OVERRIDE_MATRIX : data.readOverrideMatrix();
-				
+				case UNKNOWN         : //donothing
 			}
 			
 		}
@@ -1344,7 +1344,7 @@ class CairoGraphics {
 						
 					case DRAW_PATH_C:     data.skipDrawPathC     (); openfl.Lib.notImplemented ("CairoGraphics");
 					case OVERRIDE_MATRIX: data.skipOverrideMatrix(); openfl.Lib.notImplemented ("CairoGraphics");
-					
+					case UNKNOWN         : //donothing
 				}
 				
 			}
@@ -1475,7 +1475,7 @@ class CairoGraphics {
 					case LINE_GRADIENT_STYLE : data.skipLineGradientStyle();
 					case DRAW_PATH_C         : data.skipDrawPathC();
 					case OVERRIDE_MATRIX     : data.skipOverrideMatrix();
-					
+					case UNKNOWN             : //donothing
 				}
 				
 			}

@@ -477,7 +477,7 @@ class PathBuiler {
 					case LINE_GRADIENT_STYLE : data.skipLineGradientStyle();
 					case LINE_BITMAP_STYLE   : data.skipLineBitmapStyle();
 					case BEGIN_GRADIENT_FILL : data.skipBeginGradientFill();
-					
+					case UNKNOWN             : //donothing
 				}
 				
 			}

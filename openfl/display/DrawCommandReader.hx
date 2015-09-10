@@ -17,7 +17,7 @@ class DrawCommandReader {
 		
 		this.buffer = buffer;
 		bPos = iPos = fPos = oPos = 0;
-		
+		prev = UNKNOWN;
 	}
 	
 	public function destroy() {

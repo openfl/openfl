@@ -77,6 +77,7 @@ class DrawCommandBuffer
 				case MOVE_TO             : var c = data.readMoveTo();            writeMoveTo(c.x, c.y);
 				case DRAW_PATH_C         : var c = data.readDrawPathC();         writeDrawPathC(c.commands, c.data, c.winding);
 				case OVERRIDE_MATRIX     : var c = data.readOverrideMatrix();    writeOverrideMatrix(c.matrix);
+				case UNKNOWN             : //donothing
 			}
 		}
 		
@@ -104,6 +105,7 @@ class DrawCommandBuffer
 	public function writeBeginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>)
 	{
 		types.push(BEGIN_GRADIENT_FILL);
+		o.push(type);
 		o.push(colors);
 		o.push(alphas);
 		o.push(ratios);
