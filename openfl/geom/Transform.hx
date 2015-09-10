@@ -94,7 +94,7 @@ class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
-	public var concatenatedMatrix:Matrix;
+	public var concatenatedMatrix(get, never):Matrix;
 	
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
@@ -140,7 +140,6 @@ class Transform {
 		
 		__colorTransform = new ColorTransform ();
 		concatenatedColorTransform = new ColorTransform ();
-		concatenatedMatrix = new Matrix ();
 		pixelBounds = new Rectangle ();
 		
 		__displayObject = displayObject;
@@ -188,7 +187,20 @@ class Transform {
 		
 		if (__hasMatrix) {
 			
-			return __displayObject.__transform.clone ();
+			return __displayObject.__localTransform.clone ();
+			
+		}
+		
+		return null;
+		
+	}
+	
+
+	@:noCompletion private function get_concatenatedMatrix ():Matrix {
+		
+		if (__hasMatrix) {
+			
+			return __displayObject.__getTransform().clone();
 			
 		}
 		
@@ -222,7 +234,7 @@ class Transform {
 				
 			}
 			
-			__displayObject.__transform.copyFrom (value);
+			__displayObject.__localTransform.copyFrom (value);
 			__displayObject.__setTransformDirty ();
 			
 		}
@@ -236,7 +248,7 @@ class Transform {
 		
 		if (__hasMatrix3D) {
 			
-			var matrix = __displayObject.__transform;
+			var matrix = __displayObject.__localTransform;
 			return new Matrix3D ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]);
 			
 		}
@@ -271,12 +283,12 @@ class Transform {
 				
 			}
 			
-			__displayObject.__transform.a = value.rawData[0];
-			__displayObject.__transform.b = value.rawData[1];
-			__displayObject.__transform.c = value.rawData[5];
-			__displayObject.__transform.d = value.rawData[6];
-			__displayObject.__transform.tx = value.rawData[12];
-			__displayObject.__transform.ty = value.rawData[13];
+			__displayObject.__localTransform.a = value.rawData[0];
+			__displayObject.__localTransform.b = value.rawData[1];
+			__displayObject.__localTransform.c = value.rawData[5];
+			__displayObject.__localTransform.d = value.rawData[6];
+			__displayObject.__localTransform.tx = value.rawData[12];
+			__displayObject.__localTransform.ty = value.rawData[13];
 			
 			__displayObject.__setTransformDirty ();
 			
