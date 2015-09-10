@@ -187,7 +187,8 @@ class ApplicationMain {
 			
 		}
 		
-		openfl.Lib.current.stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
+		// TODO Why is this here?
+		//openfl.Lib.current.stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
 		
 	}
 	
