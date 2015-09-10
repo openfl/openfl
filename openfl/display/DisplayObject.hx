@@ -1467,7 +1467,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (__graphics != null) {
 			
 			maskGraphics.__commands.writeOverrideMatrix (this.__worldTransform);
-			maskGraphics.__commands = maskGraphics.__commands.concat (__graphics.__commands);
+			maskGraphics.__commands = maskGraphics.__commands.append (__graphics.__commands);
 			maskGraphics.__dirty = true;
 			maskGraphics.__visible = true;
 			

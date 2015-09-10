@@ -268,7 +268,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function clear ():Void {
 		
-		__commands.splice (0, __commands.length);
+		__commands.clear();
 		__halfStrokeWidth = 0;
 		
 		if (__bounds != null) {

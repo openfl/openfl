@@ -127,6 +127,26 @@ class DrawCommandReader {
 	
 	}
 	
+	public function skipBeginBitmapFill   ():Void { advance (); prev = BEGIN_BITMAP_FILL;   }
+	public function skipBeginFill         ():Void { advance (); prev = BEGIN_FILL;          }
+	public function skipBeginGradientFill ():Void { advance (); prev = BEGIN_GRADIENT_FILL; }
+	public function skipCubicCurveTo      ():Void { advance (); prev = CUBIC_CURVE_TO;      }
+	public function skipCurveTo           ():Void { advance (); prev = CURVE_TO;            }
+	public function skipDrawCircle        ():Void { advance (); prev = DRAW_CIRCLE;         }
+	public function skipDrawEllipse       ():Void { advance (); prev = DRAW_ELLIPSE;        }
+	public function skipDrawRect          ():Void { advance (); prev = DRAW_RECT;           }
+	public function skipDrawRoundRect     ():Void { advance (); prev = DRAW_ROUND_RECT;     }
+	public function skipDrawTiles         ():Void { advance (); prev = DRAW_TILES;          }
+	public function skipDrawTriangles     ():Void { advance (); prev = DRAW_TRIANGLES;      }
+	public function skipEndFill           ():Void { advance (); prev = END_FILL;            }
+	public function skipLineStyle         ():Void { advance (); prev = LINE_STYLE;          }
+	public function skipLineBitmapStyle   ():Void { advance (); prev = LINE_BITMAP_STYLE;   }
+	public function skipLineGradientStyle ():Void { advance (); prev = LINE_GRADIENT_STYLE; }
+	public function skipLineTo            ():Void { advance (); prev = LINE_TO;             }
+	public function skipMoveTo            ():Void { advance (); prev = MOVE_TO;             }
+	public function skipDrawPathC         ():Void { advance (); prev = DRAW_PATH_C;         }
+	public function skipOverrideMatrix    ():Void { advance (); prev = OVERRIDE_MATRIX;     }
+	
 	public function readBeginBitmapFill   ():BeginBitmapFillView   { advance (); prev = BEGIN_BITMAP_FILL;   return new BeginBitmapFillView   (this); }
 	public function readBeginFill         ():BeginFillView         { advance (); prev = BEGIN_FILL;          return new BeginFillView         (this); }
 	public function readBeginGradientFill ():BeginGradientFillView { advance (); prev = BEGIN_GRADIENT_FILL; return new BeginGradientFillView (this); }

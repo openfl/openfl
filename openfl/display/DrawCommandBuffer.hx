@@ -13,6 +13,8 @@ class DrawCommandBuffer
 	public var f:Array<Float>;
 	public var o:Array<Dynamic>;
 	
+	public var length(get, never):Int; private function get_length():Int { return types.length; }
+	
 	public function new() 
 	{
 		types = [];
@@ -39,6 +41,48 @@ class DrawCommandBuffer
 		i = null;
 		f = null;
 		o = null;
+	}
+	
+	public function copy():DrawCommandBuffer
+	{
+		var dupe = new DrawCommandBuffer();
+		dupe.append(this);
+		return dupe;
+	}
+	
+	public function append(other:DrawCommandBuffer):DrawCommandBuffer
+	{
+		var data = new DrawCommandReader(other);
+		
+		for (type in types)
+		{
+			switch(type)
+			{
+				case BEGIN_BITMAP_FILL   : var c = data.readBeginBitmapFill();   writeBeginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+				case BEGIN_FILL          : var c = data.readBeginFill();         writeBeginFill(c.color, c.alpha);
+				case BEGIN_GRADIENT_FILL : var c = data.readBeginGradientFill(); writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+				case CUBIC_CURVE_TO      : var c = data.readCubicCurveTo();      writeCubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+				case CURVE_TO            : var c = data.readCurveTo();           writeCurveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+				case DRAW_CIRCLE         : var c = data.readDrawCircle();        writeDrawCircle(c.x, c.y, c.radius);
+				case DRAW_ELLIPSE        : var c = data.readDrawEllipse();       writeDrawEllipse(c.x, c.y, c.width, c.height);
+				case DRAW_RECT           : var c = data.readDrawRect();          writeDrawRect(c.x, c.y, c.width, c.height);
+				case DRAW_ROUND_RECT     : var c = data.readDrawRoundRect();     writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
+				case DRAW_TILES          : var c = data.readDrawTiles();         writeDrawTiles(c.sheet, c.tileData, c.smooth, c.flags, c.count);
+				case DRAW_TRIANGLES      : var c = data.readDrawTriangles();     writeDrawTriangles(c.vertices, c.indices, c.uvtData, c.culling, c.colors, c.blendMode);
+				case END_FILL            : var c = data.readEndFill();           writeEndFill();
+				case LINE_STYLE          : var c = data.readLineStyle();         writeLineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+				case LINE_BITMAP_STYLE   : var c = data.readLineBitmapStyle();   writeLineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+				case LINE_GRADIENT_STYLE : var c = data.readLineGradientStyle(); writeLineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+				case LINE_TO             : var c = data.readLineTo();            writeLineTo(c.x, c.y);
+				case MOVE_TO             : var c = data.readMoveTo();            writeMoveTo(c.x, c.y);
+				case DRAW_PATH_C         : var c = data.readDrawPathC();         writeDrawPathC(c.commands, c.data, c.winding);
+				case OVERRIDE_MATRIX     : var c = data.readOverrideMatrix();    writeOverrideMatrix(c.matrix);
+			}
+		}
+		
+		data.destroy();
+		
+		return other;
 	}
 	
 	public function writeBeginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool)
