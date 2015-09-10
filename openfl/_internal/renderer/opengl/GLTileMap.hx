@@ -82,7 +82,7 @@ class GLTileMap {
 	}
 	
 	
-	public static function render (tileMap:TileMap, renderSession:RenderSession):Void {
+	public static inline function render (tileMap:TileMap, renderSession:RenderSession):Void {
 		
 		if (tileMap.__layers == null || tileMap.__layers.length == 0) return;
 		
@@ -185,6 +185,7 @@ class GLTileMap {
 					
 					tileWidth = Std.int (layer.tileSet.__rects[tile.id].width);
 					tileHeight = Std.int (layer.tileSet.__rects[tile.id].height);
+					cacheTileID = tile.id;
 					
 				}
 				
