@@ -94,7 +94,7 @@ class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
-	public var concatenatedMatrix:Matrix;
+	public var concatenatedMatrix(get, never):Matrix;
 	
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
@@ -140,7 +140,6 @@ class Transform {
 		
 		__colorTransform = new ColorTransform ();
 		concatenatedColorTransform = new ColorTransform ();
-		concatenatedMatrix = new Matrix ();
 		pixelBounds = new Rectangle ();
 		
 		__displayObject = displayObject;
@@ -189,6 +188,19 @@ class Transform {
 		if (__hasMatrix) {
 			
 			return __displayObject.__transform.clone ();
+			
+		}
+		
+		return null;
+		
+	}
+	
+
+	@:noCompletion private function get_concatenatedMatrix ():Matrix {
+		
+		if (__hasMatrix) {
+			
+			return __displayObject.__getTransform().clone();
 			
 		}
 		

@@ -217,7 +217,9 @@ class Bitmap extends DisplayObject {
 			renderSession.spriteBatch.start(clip);
 		}
 		
+		__preRenderGL(renderSession);
 		GLBitmap.render (this, renderSession);
+		__postRenderGL(renderSession);
 		
 		if (scrollRect != null) {
 			renderSession.spriteBatch.stop();
