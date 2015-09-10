@@ -5,6 +5,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
+import openfl.display.DrawCommandType;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -260,18 +261,21 @@ class CanvasGraphics {
 			
 			for (command in graphics.__commands) {
 				
-				switch (command) {
+				switch (command.command) {
 					
-					case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
+					//case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
+					case CUBIC_CURVE_TO, CURVE_TO, LINE_TO, MOVE_TO:
 						
 						fillCommands.push (command);
 						strokeCommands.push (command);
 					
-					case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
+					//case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
+					case LINE_STYLE, LINE_GRADIENT_STYLE, LINE_BITMAP_STYLE:
 						
 						strokeCommands.push (command);
 					
-					case EndFill:
+					//case EndFill:
+					case END_FILL:
 						
 						endFill ();
 						endStroke ();
@@ -291,7 +295,8 @@ class CanvasGraphics {
 						hasFill = false;
 						bitmapFill = null;
 						
-					case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
+					//case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
+					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
 						endStroke ();
@@ -311,7 +316,8 @@ class CanvasGraphics {
 						fillCommands.push (command);
 						strokeCommands.push (command);
 					
-					case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+					//case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+					case DRAW_CIRCLE, DRAW_ELLIPSE, DRAW_RECT, DRAW_ROUND_RECT:
 						
 						fillCommands.push (command);
 						strokeCommands.push (command);
@@ -422,15 +428,17 @@ class CanvasGraphics {
 		var startX = 0.0;
 		var startY = 0.0;
 		
-		for (command in commands) {
+		for (c in commands) {
 			
-			switch (command) {
+			switch (c.command) {
 				
-				case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
+				//case CubicCurveTo (cx1, cy1, cx2, cy2, x, y):
+				case CUBIC_CURVE_TO:
 					
-					context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.x - offsetX, c.y - offsetY);
 				
-				case CurveTo (cx, cy, x, y):
+				//case CurveTo (cx, cy, x, y):
+				case CURVE_TO:
 					
 					context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
 				
@@ -745,47 +753,53 @@ class CanvasGraphics {
 				bitmapFill = null;
 				bitmapRepeat = false;
 				
-				for (command in graphics.__commands) {
+				for (c in graphics.__commands) {
 					
-					switch (command) {
+					switch (c.command) {
 						
-						case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
+						//case CubicCurveTo (_, _, _, _, _, _), CurveTo (_, _, _, _), LineTo (_, _), MoveTo (_, _):
+						case CUBIC_CURVE_TO, CURVE_TO, LINE_TO, MOVE_TO:
 							
-							fillCommands.push (command);
-							strokeCommands.push (command);
+							fillCommands.push (c);
+							strokeCommands.push (c);
 						
-						case EndFill:
+						//case EndFill:
+						case END_FILL:
 							
 							endFill ();
 							endStroke ();
 							hasFill = false;
 							bitmapFill = null;
 						
-						case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
+						//case LineStyle (_, _, _, _, _, _, _, _), LineGradientStyle (_, _, _, _, _, _, _, _), LineBitmapStyle (_, _, _, _):
+						case LINE_STYLE, LINE_GRADIENT_STYLE, LINE_BITMAP_STYLE:
 							
-							strokeCommands.push (command);
+							strokeCommands.push (c);
 							
-						case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
+						//case BeginBitmapFill (_, _, _, _), BeginFill (_, _), BeginGradientFill (_, _, _, _, _, _, _, _):
+						case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 							
 							endFill ();
 							endStroke ();
 							
-							fillCommands.push (command);
-							strokeCommands.push (command);
+							fillCommands.push (c);
+							strokeCommands.push (c);
 						
-						case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+						//case DrawCircle (_, _, _), DrawEllipse (_, _, _, _), DrawRect (_, _, _, _), DrawRoundRect (_, _, _, _, _, _):
+						case DRAW_CIRCLE, DRAW_ELLIPSE, DRAW_RECT, DRAW_ROUND_RECT:
 							
-							fillCommands.push (command);
-							strokeCommands.push (command);
+							fillCommands.push (c);
+							strokeCommands.push (c);
 							
-						case DrawTriangles (vertices, indices, uvtData, culling, _, _):
+						//case DrawTriangles (vertices, indices, uvtData, culling, _, _):
+						case DRAW_TRIANGLES:
 							
 							endFill ();
 							endStroke ();
 							
-							var v = vertices;
-							var ind = indices;
-							var uvt = uvtData;
+							var v = c.vertices;
+							var ind = c.indices;
+							var uvt = c.uvtData;
 							var pattern:CanvasElement = null;
 							var colorFill = bitmapFill == null;
 							
@@ -813,8 +827,8 @@ class CanvasGraphics {
 									
 								}
 								
-								var skipT = uvtData.length != v.length;
-								var normalizedUVT = normalizeUVT (uvtData, skipT);
+								var skipT = c.uvtData.length != v.length;
+								var normalizedUVT = normalizeUVT (c.uvtData, skipT);
 								var maxUVT = normalizedUVT.max;
 								uvt = normalizedUVT.uvt;
 								
@@ -861,7 +875,7 @@ class CanvasGraphics {
 								x3 = v[icx];
 								y3 = v[icy];
 								
-								switch (culling) {
+								switch (c.culling) {
 									
 									case POSITIVE:
 										
@@ -939,16 +953,17 @@ class CanvasGraphics {
 								
 							}
 							
-						case DrawTiles (sheet, tileData, smooth, flags, count):
+						//case DrawTiles (sheet, tileData, smooth, flags, count):
+						case DRAW_TILES:
 							
-							var useScale = (flags & Graphics.TILE_SCALE) > 0;
-							var useRotation = (flags & Graphics.TILE_ROTATION) > 0;
-							var useTransform = (flags & Graphics.TILE_TRANS_2x2) > 0;
-							var useRGB = (flags & Graphics.TILE_RGB) > 0;
-							var useAlpha = (flags & Graphics.TILE_ALPHA) > 0;
-							var useRect = (flags & Graphics.TILE_RECT) > 0;
-							var useOrigin = (flags & Graphics.TILE_ORIGIN) > 0;
-							var useBlendAdd = (flags & Graphics.TILE_BLEND_ADD) > 0;
+							var useScale = (c.flags & Graphics.TILE_SCALE) > 0;
+							var useRotation = (c.flags & Graphics.TILE_ROTATION) > 0;
+							var useTransform = (c.flags & Graphics.TILE_TRANS_2x2) > 0;
+							var useRGB = (c.flags & Graphics.TILE_RGB) > 0;
+							var useAlpha = (c.flags & Graphics.TILE_ALPHA) > 0;
+							var useRect = (c.flags & Graphics.TILE_RECT) > 0;
+							var useOrigin = (c.flags & Graphics.TILE_ORIGIN) > 0;
+							var useBlendAdd = (c.flags & Graphics.TILE_BLEND_ADD) > 0;
 							
 							if (useTransform) { useScale = false; useRotation = false; }
 							
@@ -967,8 +982,8 @@ class CanvasGraphics {
 							if (useRGB) { rgbIndex = numValues; numValues += 3; }
 							if (useAlpha) { alphaIndex = numValues; numValues ++; }
 							
-							var totalCount = tileData.length;
-							if (count >= 0 && totalCount > count) totalCount = count;
+							var totalCount = c.tileData.length;
+							if (c.count >= 0 && totalCount > c.count) totalCount = c.count;
 							var itemCount = Std.int (totalCount / numValues);
 							var index = 0;
 							
@@ -977,7 +992,7 @@ class CanvasGraphics {
 							var previousTileID = -1;
 							
 							var surface:Dynamic;
-							sheet.__bitmap.__sync ();
+							c.sheet.__bitmap.__sync ();
 							surface = sheet.__bitmap.image.src;
 							
 							if (useBlendAdd) {
@@ -988,24 +1003,24 @@ class CanvasGraphics {
 							
 							while (index < totalCount) {
 								
-								var tileID = (!useRect) ? Std.int (tileData[index + 2]) : -1;
+								var tileID = (!useRect) ? Std.int (c.tileData[index + 2]) : -1;
 								
 								if (!useRect && tileID != previousTileID) {
 									
-									rect = sheet.__tileRects[tileID];
-									center = sheet.__centerPoints[tileID];
+									rect = c.sheet.__tileRects[tileID];
+									center = c.sheet.__centerPoints[tileID];
 									
 									previousTileID = tileID;
 									
 								} else if (useRect) {
 									
-									rect = sheet.__rectTile;
-									rect.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
-									center = sheet.__point;
+									rect = c.sheet.__rectTile;
+									rect.setTo (c.tileData[index + 2], c.tileData[index + 3], c.tileData[index + 4], c.tileData[index + 5]);
+									center = c.sheet.__point;
 									
 									if (useOrigin) {
 										
-										center.setTo (tileData[index + 6], tileData[index + 7]);
+										center.setTo (c.tileData[index + 6], c.tileData[index + 7]);
 										
 									} else {
 										
@@ -1018,11 +1033,11 @@ class CanvasGraphics {
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 									
 									context.save ();
-									context.translate (tileData[index], tileData[index + 1]);
+									context.translate (c.tileData[index], c.tileData[index + 1]);
 									
 									if (useRotation) {
 										
-										context.rotate (tileData[index + rotationIndex]);
+										context.rotate (c.tileData[index + rotationIndex]);
 										
 									}
 									
@@ -1030,19 +1045,19 @@ class CanvasGraphics {
 									
 									if (useScale) {
 										
-										scale = tileData[index + scaleIndex];
+										scale = c.tileData[index + scaleIndex];
 										
 									}
 									
 									if (useTransform) {
 										
-										context.transform (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
+										context.transform (c.tileData[index + transformIndex], c.tileData[index + transformIndex + 1], c.tileData[index + transformIndex + 2], c.tileData[index + transformIndex + 3], 0, 0);
 										
 									}
 									
 									if (useAlpha) {
 										
-										context.globalAlpha = tileData[index + alphaIndex];
+										context.globalAlpha = c.tileData[index + alphaIndex];
 										
 									}
 									
@@ -1108,67 +1123,75 @@ class CanvasGraphics {
 			var offsetX = 0;
 			var offsetY = 0;
 			
-			for (command in graphics.__commands) {
+			for (c in graphics.__commands) {
 				
-				switch (command) {
+				switch (c.command) {
 					
-					case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
+					//case CubicCurveTo (cx1, cx2, cy1, cy2, x, y):
+					case CUBIC_CURVE_TO:
 						
-						context.bezierCurveTo (cx1 - offsetX, cy1 - offsetY, cx2 - offsetX, cy2 - offsetY, x - offsetX, y - offsetY);
+						context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.x - offsetX, c.y - offsetY);
+						positionX = c.x;
+						positionY = c.y;
+					
+					//case CurveTo (cx, cy, x, y):
+					case CURVE_TO:
+						
+						context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.x - offsetX, c.y - offsetY);
 						positionX = x;
 						positionY = y;
 					
-					case CurveTo (cx, cy, x, y):
+					//case DrawCircle (x, y, radius):
+					case DRAW_CIRCLE:
 						
-						context.quadraticCurveTo (cx - offsetX, cy - offsetY, x - offsetX, y - offsetY);
-						positionX = x;
-						positionY = y;
+						context.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2, true);
 					
-					case DrawCircle (x, y, radius):
+					//case DrawEllipse (x, y, width, height):
+					case DRAW_ELLIPSE:
 						
-						context.arc (x - offsetX, y - offsetY, radius, 0, Math.PI * 2, true);
-					
-					case DrawEllipse (x, y, width, height):
-						
-						x -= offsetX;
-						y -= offsetY;
+						c.x -= offsetX;
+						c.y -= offsetY;
 						
 						var kappa = .5522848,
 							ox = (width / 2) * kappa, // control point offset horizontal
 							oy = (height / 2) * kappa, // control point offset vertical
-							xe = x + width,           // x-end
-							ye = y + height,           // y-end
-							xm = x + width / 2,       // x-middle
-							ym = y + height / 2;       // y-middle
+							xe = c.x + c.width,           // x-end
+							ye = c.y + c.height,          // y-end
+							xm = c.x + c.width / 2,       // x-middle
+							ym = c.y + c.height / 2;      // y-middle
 						
 						//closePath (false);
 						//beginPath ();
-						context.moveTo (x, ym);
-						context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
-						context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
+						context.moveTo (c.x, ym);
+						context.bezierCurveTo (c.x, ym - oy, xm - ox, c.y, xm, c.y);
+						context.bezierCurveTo (xm + ox, c.y, xe, ym - oy, xe, ym);
 						context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-						context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
+						context.bezierCurveTo (xm - ox, ye, c.x, ym + oy, c.x, ym);
 						//closePath (false);
 					
-					case DrawRect (x, y, width, height):
+					//case DrawRect (x, y, width, height):
+					case DRAW_RECT:
 						
-						context.rect (x - offsetX, y - offsetY, width, height);
+						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
 					
-					case DrawRoundRect (x, y, width, height, rx, ry):
+					//case DrawRoundRect (x, y, width, height, rx, ry):
+					case DRAW_ROUND_RECT:
 						
-						drawRoundRect (x - offsetX, y - offsetY, width, height, rx, ry);
+						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
 					
-					case LineTo (x, y):
+					//case LineTo (x, y):
+					case LINE_TO:
 						
-						context.lineTo (x - offsetX, y - offsetY);
-						positionX = x;
-						positionY = y;
+						context.lineTo (c.x - offsetX, c.y - offsetY);
+						positionX = c.x;
+						positionY = c.y;
 						
-					case MoveTo (x, y):
+					//case MoveTo (x, y):
+					case MOVE_TO:
 						
-						context.moveTo (x - offsetX, y - offsetY);
-						positionX = x;
-						positionY = y;
+						context.moveTo (c.x - offsetX, c.y - offsetY);
+						positionX = c.x;
+						positionY = c.y;
 					
 					default:
 					
