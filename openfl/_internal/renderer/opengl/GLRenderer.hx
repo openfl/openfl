@@ -121,7 +121,6 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.gl = this.gl;
 		renderSession.drawCount = 0;
 		renderSession.shaderManager = this.shaderManager;
-		renderSession.maskManager = this.maskManager;
 		renderSession.filterManager = this.filterManager;
 		renderSession.blendModeManager = this.blendModeManager;
 		renderSession.spriteBatch = this.spriteBatch;

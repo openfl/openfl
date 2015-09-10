@@ -55,7 +55,7 @@ import js.html.ImageElement;
 @:access(openfl.geom.Rectangle)
 
 
-class Bitmap extends DisplayObjectContainer {
+class Bitmap extends DisplayObject {
 	
 	
 	/**
@@ -209,7 +209,9 @@ class Bitmap extends DisplayObjectContainer {
 	
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
+		__preRenderGL(renderSession);
 		GLBitmap.render (this, renderSession);
+		__postRenderGL(renderSession);
 		
 	}
 	

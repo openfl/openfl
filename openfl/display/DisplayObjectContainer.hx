@@ -1000,40 +1000,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
-			
-		}
+		__preRenderGL(renderSession);
 		
-		
-		var masked = __mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0;
-		
-		if (masked) {
-			
-			renderSession.maskManager.pushMask (this);
-			
-		}
-		
-		super.__renderGL (renderSession);
+		__drawGraphicsGL(renderSession);
 		
 		for (child in __children) {
 			
 			child.__renderGL (renderSession);
 			
 		}
-		
-		if (masked) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+
+		__postRenderGL(renderSession);
 		
 		if (__removedChildren.length > 0) {
 			

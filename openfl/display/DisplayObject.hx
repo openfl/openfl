@@ -1220,6 +1220,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		__preRenderGL(renderSession);
+		__drawGraphicsGL(renderSession);
+		__postRenderGL(renderSession);
+		
+	}
+	
+	@:noCompletion @:dox(hide) public inline function __drawGraphicsGL (renderSession:RenderSession):Void {
+		
 		if (__graphics != null) {
 			
 			if (#if !disable_cairo_graphics __graphics.__hardware #else true #end) {
@@ -1237,6 +1245,39 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				GLRenderer.renderBitmap (this, renderSession);
 				
 			}
+			
+		}
+		
+	}
+	
+	@:noCompletion @:dox(hide) public inline function __preRenderGL (renderSession:RenderSession):Void {
+		
+		if (__scrollRect != null) {
+			
+			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
+			
+		}
+
+		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
+			
+			renderSession.maskManager.pushMask (this);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public inline function __postRenderGL (renderSession:RenderSession):Void {
+		
+		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
+		
+		if (__scrollRect != null) {
+			
+			renderSession.maskManager.popRect ();
 			
 		}
 		
