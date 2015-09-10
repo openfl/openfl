@@ -45,13 +45,13 @@ class GLMaskManager extends AbstractMaskManager {
 		// correct coords from top-left (OpenFL) to bottom-left (GL)
 		@:privateAccess GLBitmap.flipMatrix(m, renderSession.renderer.viewPort.height);
 		var clip = rect.clone();
-		@:privateAccess rect.__transform(rect, m);
+		@:privateAccess clip.__transform(clip, m);
 		
-		if (currentClip != null && currentClip.intersects(clip)) {
+		if (currentClip != null /*&& currentClip.intersects(clip)*/) {
 			clip = currentClip.intersection(clip);
 		}
 		
-		var restartBatch = currentClip == null || currentClip.containsRect(clip);
+		var restartBatch = currentClip == null || clip.isEmpty() || currentClip.containsRect(clip);
 		
 		clips.push(clip);
 		currentClip = clip;			
@@ -89,7 +89,7 @@ class GLMaskManager extends AbstractMaskManager {
 		renderSession.spriteBatch.stop ();
 		
 		clips.pop ();
-		currentClip = clips.pop ();
+		currentClip = clips[clips.length - 1];
 		
 		renderSession.spriteBatch.start (currentClip);
 		
