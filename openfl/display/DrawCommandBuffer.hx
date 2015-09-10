@@ -31,6 +31,16 @@ class DrawCommandBuffer
 		o.splice(0, o.length());
 	}
 	
+	public function destroy()
+	{
+		clear();
+		types = null;
+		b = null;
+		i = null;
+		f = null;
+		o = null;
+	}
+	
 	public function writeBeginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool)
 	{
 		types.push(BEGIN_BITMAP_FILL);

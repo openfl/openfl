@@ -275,7 +275,7 @@ abstract DrawTrianglesView (DrawCommandReader) {
 	public var uvtData   (get, never):Vector<Float>;   private function get_uvtData   ():Vector<Float>   { return cast obj(2); }
 	public var culling   (get, never):TriangleCulling; private function get_culling   ():TriangleCulling { return cast obj(3); }
 	public var colors    (get, never):Vector<Int>;     private function get_colors    ():Vector<Int>     { return cast obj(4); }
-	public var blendMode (get, never):Int;             private function blendMode     ():Int             { return      int(0); }
+	public var blendMode (get, never):Int;             private function get_blendMode ():Int             { return      int(0); }
 	
 }
 
