@@ -195,7 +195,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 * information, see the "Security" chapter in the <i>ActionScript 3.0
 	 * Developer's Guide</i>.</p>
 	 */
-	public var align:StageAlign;
+	public var align (get, set):StageAlign;
 	
 	/**
 	 * Specifies whether this stage allows the use of the full screen mode
@@ -539,10 +539,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var window (default, null):Window;
 	
+	@:noCompletion private var __align:StageAlign;
+	@:noCompletion private var __alignOffsetX:Float;
+	@:noCompletion private var __alignOffsetY:Float;
 	@:noCompletion private var __clearBeforeRender:Bool;
 	@:noCompletion private var __color:Int;
 	@:noCompletion private var __colorSplit:Array<Float>;
 	@:noCompletion private var __colorString:String;
+	@:noCompletion private var __desiredWidth:Float;
+	@:noCompletion private var __desiredHeight:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayState:StageDisplayState;
 	@:noCompletion private var __dragBounds:Rectangle;
@@ -605,6 +610,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		stageWidth = window.width;
 		stageHeight = window.height;
+		
+		__desiredWidth = 0;
+		__desiredHeight = 0;
+		if (window.config != null) {
+			
+			if (Reflect.hasField (window.config, "width")) __desiredWidth = window.config.width; // TODO Consider: getting config width directly form Lime with function call
+			if (Reflect.hasField (window.config, "height")) __desiredHeight = window.config.height; // TODO Consider: getting config height directly form Lime with function call
+			
+		}
 		
 		this.stage = this;
 		
@@ -1821,6 +1835,84 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 
+	@:noCompletion private function get_align ():StageAlign {
+		
+		return __align;
+		
+	}
+	
+	@:noCompletion private function set_align (value:StageAlign):StageAlign {
+		
+		if (__align != value)
+		{
+			__align = value;
+			updateStagePositionAndSize();
+		}
+		
+		return value;
+		
+	}
+	
+	@:noCompletion private function updateStagePositionAndSize ():Void {
+		
+		// remove current align offsets
+		x -= __alignOffsetX;
+		y -= __alignOffsetY;
+		
+		// calculate new align offsets
+		
+		__alignOffsetX = __alignOffsetY = 0;
+		
+		// TODO Consider: making next calculations rounded with function Math.round()
+		var rightX:Float = stageWidth - __desiredWidth;
+		var middleX:Float = rightX / 2;
+		var bottomY:Float = stageHeight - __desiredHeight;
+		var middleY:Float = bottomY / 2;
+		
+		switch (value)
+		{
+		
+			case StageAlign.TOP_LEFT:
+				__alignOffsetX = __alignOffsetY = 0;
+				
+			case StageAlign.TOP:
+				__alignOffsetX = middleX; 
+				__alignOffsetY = 0;
+				
+			case StageAlign.BOTTOM:
+				__alignOffsetX = middleX;
+				__alignOffsetY = bottomY;
+				
+			case StageAlign.BOTTOM_LEFT:
+				__alignOffsetX = 0;
+				__alignOffsetY = bottomY;
+				
+			case StageAlign.BOTTOM_RIGHT:
+				__alignOffsetX = rightX;
+				__alignOffsetY = bottomY;
+				
+			case StageAlign.LEFT:
+				__alignOffsetX = 0;
+				__alignOffsetY = middleY;
+			
+			case StageAlign.RIGHT:
+				__alignOffsetX = rightX;
+				__alignOffsetY = middleY;
+				
+			case StageAlign.TOP_RIGHT:
+				__alignOffsetX = rightX;
+				__alignOffsetY = 0;
+				
+		}
+		
+		// add current align offsets
+		x += __alignOffsetX;
+		y += __alignOffsetY;
+		
+		// test values
+		trace("x: " + x + " y:" + y);
+		
+	}
 }
 
 
