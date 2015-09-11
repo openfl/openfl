@@ -2438,6 +2438,9 @@ class BitmapData implements IBitmapDrawable {
 	public var y2:Float = 0;
 	public var y3:Float = 0;
 	
+	public inline function reset():Void {
+		x0 = x1 = x2 = x3 = y0 = y1 = y2 = y3 = 0;
+	}
 	
 	public function new () {
 		
