@@ -211,11 +211,11 @@ class PathBuiler {
 						}
 					
 					case BEGIN_FILL:
-
+						
 						var c = data.readBeginFill();
 						endFill();
 						__fill = c.alpha > 0 ? Color(c.color & 0xFFFFFF, c.alpha) : None;
-
+						
 						if (__currentPath.points == null || __currentPath.points.length == 0) {
 							graphicDataPop();
 							__currentPath = new DrawPath();

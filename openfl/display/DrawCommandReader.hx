@@ -12,11 +12,13 @@ class DrawCommandReader {
 	public var iPos:Int;
 	public var fPos:Int;
 	public var oPos:Int;
+	public var ffPos:Int;
+	public var tsPos:Int;
 	
 	public function new(buffer:DrawCommandBuffer) {
 		
 		this.buffer = buffer;
-		bPos = iPos = fPos = oPos = 0;
+		bPos = iPos = fPos = oPos = ffPos = tsPos = 0;
 		prev = UNKNOWN;
 	}
 	
@@ -29,7 +31,7 @@ class DrawCommandReader {
 	
 	public function reset() {
 		
-		bPos = iPos = fPos = oPos = 0;
+		bPos = iPos = fPos = oPos = ffPos = tsPos = 0;
 		
 	}
 	
@@ -77,9 +79,10 @@ class DrawCommandReader {
 				
 			case DRAW_TILES:
 				
-				oPos += 2; //sheet, tileData
-				bPos += 1; //smooth
-				iPos += 2; //flags, count
+				tsPos += 1; //sheet
+				ffPos += 1; //tileData
+				bPos  += 1; //smooth
+				iPos  += 2; //flags, count
 				
 			case DRAW_TRIANGLES:
 				
@@ -166,6 +169,18 @@ class DrawCommandReader {
 	public function readMoveTo            ():MoveToView            { advance (); prev = MOVE_TO;             return new MoveToView            (this); }
 	public function readDrawPathC         ():DrawPathCView         { advance (); prev = DRAW_PATH_C;         return new DrawPathCView         (this); }
 	public function readOverrideMatrix    ():OverrideMatrixView    { advance (); prev = OVERRIDE_MATRIX;     return new OverrideMatrixView    (this); }
+	
+	public inline function tileSheet (index:Int):Tilesheet {
+		
+		return buffer.ts[tsPos + index];
+		
+	}
+	
+	public inline function fArr (index:Int):Array<Float> {
+		
+		return buffer.ff[ffPos + index];
+		
+	}
 	
 	public inline function float (index:Int):Float {
 		
@@ -299,11 +314,11 @@ abstract DrawRoundRectView (DrawCommandReader) {
 abstract DrawTilesView (DrawCommandReader) {
 	
 	public function new(d:DrawCommandReader)     { this = d; }
-	public var sheet    (get, never):Tilesheet;    private function get_sheet    ():Tilesheet    { return cast this.obj(0); }
-	public var tileData (get, never):Array<Float>; private function get_tileData ():Array<Float> { return cast this.obj(1); }
-	public var smooth   (get, never):Bool;         private function get_smooth   ():Bool         { return     this.bool(0); }
-	public var flags    (get, never):Int;          private function get_flags    ():Int          { return      this.int(0); }
-	public var count    (get, never):Int;          private function get_count    ():Int          { return      this.int(1); }
+	public var sheet    (get, never):Tilesheet;    private function get_sheet    ():Tilesheet    { return this.tileSheet(0); }
+	public var tileData (get, never):Array<Float>; private function get_tileData ():Array<Float> { return      this.fArr(0); }
+	public var smooth   (get, never):Bool;         private function get_smooth   ():Bool         { return      this.bool(0); }
+	public var flags    (get, never):Int;          private function get_flags    ():Int          { return       this.int(0); }
+	public var count    (get, never):Int;          private function get_count    ():Int          { return       this.int(1); }
 	
 }
 

@@ -12,6 +12,8 @@ class DrawCommandBuffer
 	public var i:Array<Int>;
 	public var f:Array<Float>;
 	public var o:Array<Dynamic>;
+	public var ff:Array < Array<Float> > ;
+	public var ts:Array <Tilesheet>;
 	
 	public var length(get, never):Int; private function get_length():Int { return types.length; }
 	
@@ -22,6 +24,8 @@ class DrawCommandBuffer
 		i = [];
 		f = [];
 		o = [];
+		ff = [];
+		ts = [];
 	}
 	
 	public function clear()
@@ -31,6 +35,8 @@ class DrawCommandBuffer
 		i.splice(0, i.length);
 		f.splice(0, f.length);
 		o.splice(0, o.length);
+		ff.splice(0, ff.length);
+		ts.splice(0, ts.length);
 	}
 	
 	public function destroy()
@@ -41,6 +47,8 @@ class DrawCommandBuffer
 		i = null;
 		f = null;
 		o = null;
+		ff = null;
+		ts = null;
 	}
 	
 	public function copy():DrawCommandBuffer
@@ -175,8 +183,8 @@ class DrawCommandBuffer
 	public function writeDrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int)
 	{
 		types.push(DRAW_TILES);
-		o.push(sheet);
-		o.push(tileData);
+		ts.push(sheet);
+		ff.push(tileData);
 		b.push(smooth);
 		i.push(flags);
 		i.push(count);
