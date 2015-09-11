@@ -13,7 +13,6 @@ import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
 import openfl.display.DrawCommandBuffer;
-import openfl.display.DrawCommandObject;
 import openfl.display.DrawCommandReader;
 import openfl.display.DrawCommandType;
 import openfl.display.GradientType;
