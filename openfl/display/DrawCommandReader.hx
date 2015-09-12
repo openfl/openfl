@@ -13,12 +13,13 @@ class DrawCommandReader {
 	public var fPos:Int;
 	public var oPos:Int;
 	public var ffPos:Int;
+	public var iiPos:Int;
 	public var tsPos:Int;
 	
 	public function new(buffer:DrawCommandBuffer) {
 		
 		this.buffer = buffer;
-		bPos = iPos = fPos = oPos = ffPos = tsPos = 0;
+		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
 		prev = UNKNOWN;
 	}
 	
@@ -31,7 +32,7 @@ class DrawCommandReader {
 	
 	public function reset() {
 		
-		bPos = iPos = fPos = oPos = ffPos = tsPos = 0;
+		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
 		
 	}
 	
@@ -51,7 +52,10 @@ class DrawCommandReader {
 				
 			case BEGIN_GRADIENT_FILL:
 				
-				oPos += 8; //type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio
+				oPos  += 1; //type
+				iiPos += 1; //colors
+				ffPos += 2; //alphas, ratios
+				oPos  += 4; //matrix, spreadMethod, interpolationMethod, focalPointRatio
 				
 			case CUBIC_CURVE_TO:
 				
@@ -104,7 +108,10 @@ class DrawCommandReader {
 				
 			case LINE_GRADIENT_STYLE:
 				
-				oPos += 8; //type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio
+				oPos  += 1; //type
+				iiPos += 1; //colors
+				ffPos += 2; //alphas, ratios
+				oPos  += 4; //matrix, spreadMethod, interpolationMethod, focalPointRatio
 				
 			case LINE_TO:
 				
@@ -182,6 +189,12 @@ class DrawCommandReader {
 		
 	}
 	
+	public inline function iArr (index:Int):Array<Int> {
+		
+		return buffer.ii[iiPos + index];
+		
+	}
+	
 	public inline function float (index:Int):Float {
 		
 		return buffer.f[fPos + index];
@@ -230,14 +243,14 @@ abstract BeginFillView (DrawCommandReader) {
 abstract BeginGradientFillView (DrawCommandReader) {
 	
 	public function new(d:DrawCommandReader)     { this = d; }
-	public var type                (get, never):GradientType;              private function get_type                ():GradientType              { return cast this.obj(0); }
-	public var colors              (get, never):Array<Dynamic>;            private function get_colors              ():Array<Dynamic>            { return cast this.obj(1); }
-	public var alphas              (get, never):Array<Dynamic>;            private function get_alphas              ():Array<Dynamic>            { return cast this.obj(2); }
-	public var ratios              (get, never):Array<Dynamic>;            private function get_ratios              ():Array<Dynamic>            { return cast this.obj(3); }
-	public var matrix              (get, never):Matrix;                    private function get_matrix              ():Matrix                    { return cast this.obj(4); }
-	public var spreadMethod        (get, never):Null<SpreadMethod>;        private function get_spreadMethod        ():Null<SpreadMethod>        { return cast this.obj(5); }
-	public var interpolationMethod (get, never):Null<InterpolationMethod>; private function get_interpolationMethod ():Null<InterpolationMethod> { return cast this.obj(6); }
-	public var focalPointRatio     (get, never):Null<Float>;               private function get_focalPointRatio     ():Null<Float>               { return cast this.obj(7); }
+	public var type                (get, never):GradientType;              private function get_type                ():GradientType              { return cast   this.obj(0); }
+	public var colors              (get, never):Array<Int>;                private function get_colors              ():Array<Int>                { return       this.iArr(0); }
+	public var alphas              (get, never):Array<Float>;              private function get_alphas              ():Array<Float>              { return       this.fArr(0); }
+	public var ratios              (get, never):Array<Float>;              private function get_ratios              ():Array<Float>              { return       this.fArr(1); }
+	public var matrix              (get, never):Matrix;                    private function get_matrix              ():Matrix                    { return cast   this.obj(1); }
+	public var spreadMethod        (get, never):Null<SpreadMethod>;        private function get_spreadMethod        ():Null<SpreadMethod>        { return cast   this.obj(2); }
+	public var interpolationMethod (get, never):Null<InterpolationMethod>; private function get_interpolationMethod ():Null<InterpolationMethod> { return cast   this.obj(3); }
+	public var focalPointRatio     (get, never):Null<Float>;               private function get_focalPointRatio     ():Null<Float>               { return cast   this.obj(4); }
 	
 }
 
@@ -374,13 +387,13 @@ abstract LineGradientStyleView (DrawCommandReader) {
 	
 	public function new(d:DrawCommandReader)     { this = d; }
 	public var type                (get, never):GradientType;              private function get_type                ():GradientType              { return cast this.obj(0); }
-	public var colors              (get, never):Array<Dynamic>;            private function get_colors              ():Array<Dynamic>            { return cast this.obj(1); }
-	public var alphas              (get, never):Array<Dynamic>;            private function get_alphas              ():Array<Dynamic>            { return cast this.obj(2); }
-	public var ratios              (get, never):Array<Dynamic>;            private function get_ratios              ():Array<Dynamic>            { return cast this.obj(3); }
-	public var matrix              (get, never):Matrix;                    private function get_matrix              ():Matrix                    { return cast this.obj(4); }
-	public var spreadMethod        (get, never):Null<SpreadMethod>;        private function get_spreadMethod        ():Null<SpreadMethod>        { return cast this.obj(5); }
-	public var interpolationMethod (get, never):Null<InterpolationMethod>; private function get_interpolationMethod ():Null<InterpolationMethod> { return cast this.obj(6); }
-	public var focalPointRatio     (get, never):Null<Float>;               private function get_focalPointRatio     ():Null<Float>               { return cast this.obj(7); }
+	public var colors              (get, never):Array<Int>;                private function get_colors              ():Array<Int>                { return     this.iArr(0); }
+	public var alphas              (get, never):Array<Float>;              private function get_alphas              ():Array<Float>              { return     this.fArr(0); }
+	public var ratios              (get, never):Array<Float>;              private function get_ratios              ():Array<Float>              { return     this.fArr(1); }
+	public var matrix              (get, never):Matrix;                    private function get_matrix              ():Matrix                    { return cast this.obj(1); }
+	public var spreadMethod        (get, never):Null<SpreadMethod>;        private function get_spreadMethod        ():Null<SpreadMethod>        { return cast this.obj(2); }
+	public var interpolationMethod (get, never):Null<InterpolationMethod>; private function get_interpolationMethod ():Null<InterpolationMethod> { return cast this.obj(3); }
+	public var focalPointRatio     (get, never):Null<Float>;               private function get_focalPointRatio     ():Null<Float>               { return cast this.obj(4); }
 	
 }
 

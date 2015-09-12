@@ -91,7 +91,7 @@ class CanvasGraphics {
 	}
 	
 	
-	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>) {
+	private static function createGradientPattern (type:GradientType, colors:Array<Int>, alphas:Array<Int>, ratios:Array<Int>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>) {
 	
 		#if (js && html5)
 		
@@ -1353,17 +1353,17 @@ class CanvasGraphics {
 						positionX = c.x;
 						positionY = c.y;
 					
-					case BEGIN_BITMAP_FILL   : data.readBeginBitmapFill();
-					case BEGIN_FILL          : data.readBeginFill(); 
-					case BEGIN_GRADIENT_FILL : data.readBeginGradientFill();
-					case DRAW_TILES          : data.readDrawTiles();
-					case DRAW_TRIANGLES      : data.readDrawTriangles();
-					case END_FILL            : data.readEndFill();
-					case LINE_STYLE          : data.readLineStyle();
-					case LINE_BITMAP_STYLE   : data.readLineBitmapStyle();
-					case LINE_GRADIENT_STYLE : data.readLineGradientStyle();
-					case DRAW_PATH_C         : data.readDrawPathC();
-					case OVERRIDE_MATRIX     : data.readOverrideMatrix();
+					case BEGIN_BITMAP_FILL   : data.skipBeginBitmapFill();
+					case BEGIN_FILL          : data.skipBeginFill(); 
+					case BEGIN_GRADIENT_FILL : data.skipBeginGradientFill();
+					case DRAW_TILES          : data.skipDrawTiles();
+					case DRAW_TRIANGLES      : data.skipDrawTriangles();
+					case END_FILL            : data.skipEndFill();
+					case LINE_STYLE          : data.skipLineStyle();
+					case LINE_BITMAP_STYLE   : data.skipLineBitmapStyle();
+					case LINE_GRADIENT_STYLE : data.skipLineGradientStyle();
+					case DRAW_PATH_C         : data.skipDrawPathC();
+					case OVERRIDE_MATRIX     : data.skipOverrideMatrix();
 					
 				}
 				
