@@ -14,8 +14,8 @@ import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.TileMap;
 
+@:access(openfl.display.TileLayer)
 @:access(openfl.display.TileMap)
-@:access(openfl.display.TileMapLayer)
 @:access(openfl.display.TileSet)
 
 
@@ -214,7 +214,7 @@ class GLTileMap {
 				
 			}
 			
-			gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
+			gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
 			
 			gl.vertexAttribPointer (glVertexAttribute, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
 			gl.vertexAttribPointer (glTextureAttribute, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
