@@ -5,7 +5,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.utils.Float32Array;
 
 
-class TileMapLayer {
+class TileLayer {
 	
 	
 	// TODO: Handle dirty flag

@@ -157,6 +157,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
+				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
+				
 				child.__setStageReference (stage);
 				
 			}
@@ -227,6 +229,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.parent = this;
 			
 			if (stage != null) {
+				
+				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
 				
 				child.__setStageReference (stage);
 				
@@ -432,6 +436,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child != null && child.parent == this) {
 			
+			child.__dispatchEvent (new Event (Event.REMOVED, true));
+			
 			if (stage != null) {
 				
 				child.__setStageReference (null);
@@ -443,7 +449,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			__removedChildren.push (child);
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
-			child.__dispatchEvent (new Event (Event.REMOVED, true));
 			
 		}
 		
