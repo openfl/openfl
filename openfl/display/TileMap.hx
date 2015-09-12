@@ -6,6 +6,7 @@ import openfl._internal.renderer.flash.FlashTileMap;
 import openfl._internal.renderer.RenderSession;
 
 #if !flash
+import openfl._internal.renderer.canvas.CanvasTileMap;
 import openfl._internal.renderer.opengl.GLTileMap;
 #end
 
@@ -65,6 +66,17 @@ class TileMap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 		
 	}
+	
+	
+	#if !flash
+	public override function __renderCanvas (renderSession:RenderSession):Void {
+		
+		if (stage == null) return;
+		
+		CanvasTileMap.render (this, renderSession);
+		
+	}
+	#end
 	
 	
 	@:noCompletion @:dox(hide) public function __renderFlash ():Void {
