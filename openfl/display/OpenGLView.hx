@@ -241,7 +241,44 @@ class OpenGLView extends DirectRenderer {
 		return true;
 		
 	}
+
+	#if (html5 && dom)
 	
+	@:noCompletion private override function set_width (value:Float):Float {
+		super.set_width(value);
+
+		__canvas.width = Std.int( value );
+
+		return value;
+	}
+
+	@:noCompletion private override function set_height (value:Float):Float {
+		super.set_height(value);
+
+		__canvas.height = Std.int( value ); 
+
+		return value;
+	}
+	
+	#else
+	
+	@:noCompletion private override function set_width (value:Float):Float {
+		super.set_width(value);
+
+		scrollRect.width = value;
+
+		return value;
+	}
+
+	@:noCompletion private override function set_height (value:Float):Float {
+		super.set_height(value);
+
+		scrollRect.height = value;
+
+		return value;
+	}
+	
+	#end	
 	
 }
 
