@@ -36,7 +36,7 @@ class DOMShape {
 					
 					if (shape.__canvas == null) {
 						
-						shape.__canvas = cast Browser.document.createElement ("canvas");	
+						shape.__canvas = cast Browser.document.createElement ("canvas");
 						shape.__context = shape.__canvas.getContext ("2d");
 						DOMRenderer.initializeElement (shape, shape.__canvas, renderSession);
 						
@@ -80,7 +80,7 @@ class DOMShape {
 				DOMRenderer.applyStyle (shape, renderSession, false, false, true);
 				
 			}
-				
+			
 		} else {
 			
 			if (shape.__canvas != null) {
