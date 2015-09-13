@@ -1986,6 +1986,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 						__alignOffsetY = 0;
 				}
 			}
+			
+			__alignOffsetX = Math.round(__alignOffsetX);
+			__alignOffsetY = Math.round(__alignOffsetY);
+			
 			// add current align offsets
 			x += __alignOffsetX;
 			y += __alignOffsetY;
