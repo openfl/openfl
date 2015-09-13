@@ -345,7 +345,7 @@ abstract DrawTrianglesView (DrawCommandReader) {
 @:forward
 abstract EndFillView (DrawCommandReader) {
 	
-	public function new(d:DrawCommandReader)     { this = d; }
+	public inline function new(d:DrawCommandReader)     { this = d; }
 	//does nothing
 	
 }
