@@ -1937,7 +1937,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__alignOffsetX = __alignOffsetY = 0;
 			
-			// TODO Consider: making next calculations rounded with function Math.round()
 			var rightX:Float = stageWidth - desiredWidthScaled;
 			var middleX:Float = rightX / 2;
 			var bottomY:Float = stageHeight - desiredHeightScaled;
@@ -1993,9 +1992,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			// add current align offsets
 			x += __alignOffsetX;
 			y += __alignOffsetY;
-			
-			// test values
-			trace("x: " + x + " y:" + y);
 		}
 		
 		#end
