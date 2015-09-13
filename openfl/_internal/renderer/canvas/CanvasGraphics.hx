@@ -91,7 +91,7 @@ class CanvasGraphics {
 	}
 	
 	
-	private static function createGradientPattern (type:GradientType, colors:Array<Int>, alphas:Array<Int>, ratios:Array<Int>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>) {
+	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>) {
 	
 		#if (js && html5)
 		

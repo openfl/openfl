@@ -244,7 +244,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
 		
-		__commands.writeBeginGradientFill (type, cast colors, cast alphas, cast ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+		__commands.writeBeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		__hardware = false;
 		
 		for (alpha in alphas) {
