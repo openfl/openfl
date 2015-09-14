@@ -729,7 +729,7 @@ class CanvasGraphics {
 				
 				if (directRender) {
 					
-					context = renderSession.context;
+					context = cast renderSession.context;
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
 					
 				} else {
