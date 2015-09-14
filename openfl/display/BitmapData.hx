@@ -723,7 +723,7 @@ class BitmapData implements IBitmapDrawable {
 		#elseif (js && html5)
 		
 		ImageCanvasUtil.convertToCanvas (image);
-		ImageCanvasUtil.sync (image);
+		ImageCanvasUtil.sync (image, true);
 		
 		var buffer = image.buffer;
 		
@@ -2307,7 +2307,7 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		if (!__isValid) return;
 		
-		ImageCanvasUtil.sync (image);
+		ImageCanvasUtil.sync (image, false);
 		
 		var context = renderSession.context;
 		
@@ -2349,7 +2349,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private function __sync ():Void {
 		
 		#if (js && html5)
-		ImageCanvasUtil.sync (image);
+		ImageCanvasUtil.sync (image, false);
 		#end
 		
 	}

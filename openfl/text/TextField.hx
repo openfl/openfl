@@ -669,7 +669,7 @@ class TextField extends InteractiveObject {
 	 */
 	public function getCharIndexAtPoint (x:Float, y:Float):Int {
 		
-		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return -1;
+		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
 		
 		__updateLayout ();
 		
@@ -756,7 +756,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		if (x <= 2 || x > width + 4 || y <= 0 || y > width + 4) return -1;
+		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
 		
 		for (i in 0...scrollV - 1) {
 			
