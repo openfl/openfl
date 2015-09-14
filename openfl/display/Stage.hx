@@ -14,6 +14,7 @@ import lime.graphics.GLRenderContext;
 import lime.graphics.RenderContext;
 import lime.graphics.Renderer;
 import lime.math.Matrix4;
+import lime.system.System;
 import lime.ui.Touch;
 import lime.utils.GLUtils;
 import lime.ui.Gamepad;
@@ -1291,6 +1292,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 					default: displayState = NORMAL;
 					
 				}
+				
+			}
+			
+			#elseif android
+			
+			if (keyCode == KeyCode.APP_CONTROL_BACK && modifier == 0 && type == KeyboardEvent.KEY_UP && !event.isDefaultPrevented ()) {
+				
+				System.exit (0);
 				
 			}
 			
