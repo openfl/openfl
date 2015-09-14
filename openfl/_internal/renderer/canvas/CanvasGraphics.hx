@@ -226,9 +226,9 @@ class CanvasGraphics {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
-			graphics.__canvas = null;
-			graphics.__context = null;
-			graphics.__bitmap = null;
+			//graphics.__canvas = null;
+			//graphics.__context = null;
+			//graphics.__bitmap = null;
 			
 			return false;
 			
