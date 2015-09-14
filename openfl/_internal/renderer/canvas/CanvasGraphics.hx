@@ -710,7 +710,7 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		if (graphics.__dirty) {
+		if (graphics.__dirty || graphics.__hardware) {
 			
 			hitTesting = false;
 			
@@ -725,17 +725,26 @@ class CanvasGraphics {
 				
 			} else {
 				
-				if (graphics.__canvas == null) {
+				if (graphics.__hardware) {
 					
-					graphics.__canvas = cast Browser.document.createElement ("canvas");
-					graphics.__context = graphics.__canvas.getContext ("2d");
+					context = renderSession.context;
+					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
+					
+				} else {
+					
+					if (graphics.__canvas == null) {
+						
+						graphics.__canvas = cast Browser.document.createElement ("canvas");
+						graphics.__context = graphics.__canvas.getContext ("2d");
+						
+					}
+					
+					context = graphics.__context;
+					
+					graphics.__canvas.width = Math.ceil (bounds.width);
+					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 				}
-				
-				context = graphics.__context;
-				
-				graphics.__canvas.width = Math.ceil (bounds.width);
-				graphics.__canvas.height = Math.ceil (bounds.height);
 				
 				fillCommands.splice (0, fillCommands.length);
 				strokeCommands.splice (0, strokeCommands.length);
