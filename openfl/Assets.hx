@@ -191,7 +191,7 @@ class Assets {
 	
 	private static function getLibrary (name:String):LimeAssetLibrary {
 		
-		return cast LimeAssets.libraries.get (name);
+		return LimeAssets.getLibrary (name);
 		
 	}
 	
