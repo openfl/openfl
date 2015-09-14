@@ -710,7 +710,9 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		if (graphics.__dirty || graphics.__hardware) {
+		var directRender = (graphics.__hardware && renderSession.context != null);
+		
+		if (graphics.__dirty || directRender) {
 			
 			hitTesting = false;
 			
@@ -725,7 +727,7 @@ class CanvasGraphics {
 				
 			} else {
 				
-				if (graphics.__hardware) {
+				if (directRender) {
 					
 					context = renderSession.context;
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
