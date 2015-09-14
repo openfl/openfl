@@ -215,7 +215,6 @@ class DrawCommandReader {
 
 }
 
-@:forward
 abstract BeginBitmapFillView (DrawCommandReader) {
 
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -225,7 +224,6 @@ abstract BeginBitmapFillView (DrawCommandReader) {
 	public var smooth (get, never):Bool;         private inline function get_smooth():Bool       { return     this.bool(1); }
 }
 
-@:forward
 abstract BeginFillView (DrawCommandReader) {
 
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -233,7 +231,6 @@ abstract BeginFillView (DrawCommandReader) {
 	public var alpha (get, never):Float; private inline function get_alpha():Float { return this.float(0); }
 }
 
-@:forward
 abstract BeginGradientFillView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -248,7 +245,6 @@ abstract BeginGradientFillView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract CubicCurveToView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -261,7 +257,6 @@ abstract CubicCurveToView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract CurveToView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -272,7 +267,6 @@ abstract CurveToView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawCircleView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -282,7 +276,6 @@ abstract DrawCircleView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawEllipseView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -293,7 +286,6 @@ abstract DrawEllipseView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawRectView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -304,7 +296,6 @@ abstract DrawRectView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawRoundRectView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -317,7 +308,6 @@ abstract DrawRoundRectView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawTilesView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -329,7 +319,6 @@ abstract DrawTilesView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawTrianglesView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -342,7 +331,6 @@ abstract DrawTrianglesView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract EndFillView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -350,7 +338,6 @@ abstract EndFillView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract LineStyleView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -365,7 +352,6 @@ abstract LineStyleView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract LineBitmapStyleView (DrawCommandReader) { 
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -376,7 +362,6 @@ abstract LineBitmapStyleView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract LineGradientStyleView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -391,7 +376,6 @@ abstract LineGradientStyleView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract LineToView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -400,7 +384,6 @@ abstract LineToView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract MoveToView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -409,7 +392,6 @@ abstract MoveToView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract DrawPathCView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
@@ -419,7 +401,6 @@ abstract DrawPathCView (DrawCommandReader) {
 	
 }
 
-@:forward
 abstract OverrideMatrixView (DrawCommandReader) {
 	
 	public inline function new(d:DrawCommandReader)     { this = d; }
