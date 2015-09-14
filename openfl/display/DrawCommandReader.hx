@@ -1,5 +1,5 @@
 package openfl.display;
-import haxe.ds.Vector;
+import openfl.Vector;
 import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.geom.Matrix;
 

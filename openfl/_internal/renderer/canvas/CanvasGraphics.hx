@@ -368,6 +368,8 @@ class CanvasGraphics {
 								var c = data.readBeginGradientFill();
 								fillCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 								strokeCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+								
+							default: //donothing
 						}
 					
 					case DRAW_CIRCLE:
@@ -394,7 +396,11 @@ class CanvasGraphics {
 						fillCommands.writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
 						strokeCommands.writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
 						
-					
+					case OVERRIDE_MATRIX: data.skipOverrideMatrix();
+					case DRAW_TRIANGLES : data.skipDrawTriangles();
+					case DRAW_TILES     : data.skipDrawTiles();
+					case DRAW_PATH_C    : data.skipDrawPathC();
+					case UNKNOWN        : //donothing
 				}
 				
 			}
@@ -508,12 +514,12 @@ class CanvasGraphics {
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo();
-					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.x - offsetX, c.y - offsetY);
+					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo();
-					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.x - offsetX, c.y - offsetY);
+					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case DRAW_CIRCLE:
 					
@@ -524,22 +530,26 @@ class CanvasGraphics {
 				case DRAW_ELLIPSE:
 					
 					var c = data.readDrawEllipse();
-					c.x -= offsetX;
-					c.y -= offsetY;
+					var x = c.x;
+					var y = c.y;
+					var width = c.width;
+					var height = c.height;
+					x -= offsetX;
+					y -= offsetY;
 					
 					var kappa = .5522848,
-						ox = (c.width / 2) * kappa, // control point offset horizontal
-						oy = (c.height / 2) * kappa, // control point offset vertical
-						xe = c.x + c.width,           // x-end
-						ye = c.y + c.height,           // y-end
-						xm = c.x + c.width / 2,       // x-middle
-						ym = c.y + c.height / 2;       // y-middle
+						ox = (width / 2) * kappa, // control point offset horizontal
+						oy = (height / 2) * kappa, // control point offset vertical
+						xe = x + width,           // x-end
+						ye = y + height,           // y-end
+						xm = x + width / 2,       // x-middle
+						ym = y + height / 2;       // y-middle
 					
-					context.moveTo (c.x, ym);
-					context.bezierCurveTo (c.x, ym - oy, xm - ox, c.y, xm, y);
-					context.bezierCurveTo (xm + ox, c.y, xe, ym - oy, xe, ym);
+					context.moveTo (x, ym);
+					context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
+					context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
 					context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-					context.bezierCurveTo (xm - ox, ye, c.x, ym + oy, c.x, ym);
+					context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
 				
 				case DRAW_ROUND_RECT:
 					
@@ -732,8 +742,8 @@ class CanvasGraphics {
 							
 							st = c.y;
 							sl = c.x;
-							sb = c.y + height;
-							sr = c.x + width;
+							sb = c.y + c.height;
+							sr = c.x + c.width;
 							
 						}
 						
@@ -756,6 +766,7 @@ class CanvasGraphics {
 				case END_FILL        : data.readEndFill();
 				case DRAW_PATH_C     : data.readDrawPathC();
 				case OVERRIDE_MATRIX : data.readOverrideMatrix();
+				case UNKNOWN         : //donothing
 				
 			}
 			
@@ -920,6 +931,8 @@ class CanvasGraphics {
 									var c = data.readBeginGradientFill();
 									fillCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 									strokeCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+									
+								default: //donothing
 							}
 						
 						case DRAW_CIRCLE:
@@ -970,21 +983,21 @@ class CanvasGraphics {
 								
 								//TODO move this to Graphics?
 								
-								if (uvtData == null) {
+								if (uvt == null) {
 									
-									uvtData = new Vector<Float> ();
+									uvt = new Vector<Float> ();
 									
 									for (i in 0...(Std.int (v.length / 2))) {
 										
-										uvtData.push (v[i * 2] / bitmapFill.width);
-										uvtData.push (v[i * 2 + 1] / bitmapFill.height);
+										uvt.push (v[i * 2] / bitmapFill.width);
+										uvt.push (v[i * 2 + 1] / bitmapFill.height);
 										
 									}
 									
 								}
 								
-								var skipT = c.uvtData.length != v.length;
-								var normalizedUVT = normalizeUVT (c.uvtData, skipT);
+								var skipT = uvt.length != v.length;
+								var normalizedUVT = normalizeUVT (uvt, skipT);
 								var maxUVT = normalizedUVT.max;
 								uvt = normalizedUVT.uvt;
 								
@@ -1003,7 +1016,7 @@ class CanvasGraphics {
 							var i = 0;
 							var l = ind.length;
 							
-							var a:Int, b:Int, c:Int;
+							var a_:Int, b_:Int, c_:Int;
 							var iax:Int, iay:Int, ibx:Int, iby:Int, icx:Int, icy:Int;
 							var x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float;
 							var uvx1:Float, uvy1:Float, uvx2:Float, uvy2:Float, uvx3:Float, uvy3:Float;
@@ -1013,16 +1026,16 @@ class CanvasGraphics {
 							
 							while (i < l) {
 								
-								a = i;
-								b = i + 1;
-								c = i + 2;
+								a_ = i;
+								b_ = i + 1;
+								c_ = i + 2;
 								
-								iax = ind[a] * 2;
-								iay = ind[a] * 2 + 1;
-								ibx = ind[b] * 2;
-								iby = ind[b] * 2 + 1;
-								icx = ind[c] * 2;
-								icy = ind[c] * 2 + 1;
+								iax = ind[a_] * 2;
+								iay = ind[a_] * 2 + 1;
+								ibx = ind[b_] * 2;
+								iby = ind[b_] * 2 + 1;
+								icx = ind[c_] * 2;
+								icy = ind[c_] * 2 + 1;
 								
 								x1 = v[iax];
 								y1 = v[iay];
@@ -1150,7 +1163,7 @@ class CanvasGraphics {
 							
 							var surface:Dynamic;
 							c.sheet.__bitmap.__sync ();
-							surface = sheet.__bitmap.image.src;
+							surface = c.sheet.__bitmap.image.src;
 							
 							if (useBlendAdd) {
 								
@@ -1235,7 +1248,7 @@ class CanvasGraphics {
 						
 						case DRAW_PATH_C     : data.readDrawPathC();      openfl.Lib.notImplemented ("CanvasGraphics");
 						case OVERRIDE_MATRIX : data.readOverrideMatrix(); openfl.Lib.notImplemented ("CanvasGraphics");
-						
+						case UNKNOWN         : //donothing
 					}
 					
 				}
@@ -1290,16 +1303,16 @@ class CanvasGraphics {
 					case CUBIC_CURVE_TO:
 						
 						var c = data.readCubicCurveTo();
-						context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.x - offsetX, c.y - offsetY);
-						positionX = c.x;
-						positionY = c.y;
+						context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+						positionX = c.anchorX;
+						positionY = c.anchorY;
 					
 					case CURVE_TO:
 						
 						var c = data.readCurveTo();
-						context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.x - offsetX, c.y - offsetY);
-						positionX = x;
-						positionY = y;
+						context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+						positionX = c.anchorX;
+						positionY = c.anchorY;
 					
 					case DRAW_CIRCLE:
 						
@@ -1309,24 +1322,28 @@ class CanvasGraphics {
 					case DRAW_ELLIPSE:
 						
 						var c = data.readDrawEllipse();
-						c.x -= offsetX;
-						c.y -= offsetY;
+						var x = c.x;
+						var y = c.y;
+						var width = c.width;
+						var height = c.height;
+						x -= offsetX;
+						y -= offsetY;
 						
 						var kappa = .5522848,
 							ox = (width / 2) * kappa, // control point offset horizontal
 							oy = (height / 2) * kappa, // control point offset vertical
-							xe = c.x + c.width,           // x-end
-							ye = c.y + c.height,          // y-end
-							xm = c.x + c.width / 2,       // x-middle
-							ym = c.y + c.height / 2;      // y-middle
+							xe = x + width,           // x-end
+							ye = y + height,          // y-end
+							xm = x + width / 2,       // x-middle
+							ym = y + height / 2;      // y-middle
 						
 						//closePath (false);
 						//beginPath ();
-						context.moveTo (c.x, ym);
-						context.bezierCurveTo (c.x, ym - oy, xm - ox, c.y, xm, c.y);
-						context.bezierCurveTo (xm + ox, c.y, xe, ym - oy, xe, ym);
+						context.moveTo (x, ym);
+						context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
+						context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
 						context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-						context.bezierCurveTo (xm - ox, ye, c.x, ym + oy, c.x, ym);
+						context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
 						//closePath (false);
 					
 					case DRAW_RECT:
@@ -1364,7 +1381,7 @@ class CanvasGraphics {
 					case LINE_GRADIENT_STYLE : data.skipLineGradientStyle();
 					case DRAW_PATH_C         : data.skipDrawPathC();
 					case OVERRIDE_MATRIX     : data.skipOverrideMatrix();
-					
+					case UNKNOWN             : //donothing
 				}
 				
 			}
