@@ -733,6 +733,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __transformDirty:Bool;
+	@:noCompletion private var __transformChanged:Bool;
 	@:noCompletion private var __visible:Bool;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldAlphaChanged:Bool;
@@ -1049,6 +1050,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
+	@:noCompletion private function __getTransformChanged () : Bool {
+
+		if(parent == null || __transformChanged) {
+
+			return __transformChanged;
+
+		}
+
+		return parent.__getTransformChanged();
+	}
 	
 	@:noCompletion private function __getTransform ():Matrix {
 		
@@ -1208,9 +1219,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			} else {
 				
 				#if (js && html5)
-				CanvasGraphics.render (__graphics, renderSession);
+				CanvasGraphics.render (__graphics, renderSession, __worldTransform);
 				#elseif lime_cairo
-				CairoGraphics.render (__graphics, renderSession);
+				CairoGraphics.render (__graphics, renderSession, __worldTransform);
 				#end
 				
 				GLRenderer.renderBitmap (this, renderSession);
@@ -1309,9 +1320,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			scrollRect.__transform (scrollRect, __worldTransform);
 			
 		}
+
+		if (updateChildren && !__transformDirty) {
+
+			__transformChanged = false;
+
+		}
 		
 		if (updateChildren && __transformDirty) {
 			
+			__transformChanged = true;
 			__transformDirty = false;
 			__worldTransformDirty--;
 			

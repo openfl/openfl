@@ -50,7 +50,8 @@ class CairoGraphics {
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands = new Array<DrawCommand> ();
 	private static var strokePattern:CairoPattern;
-	
+	private static var worldTransform:Matrix;
+
 	
 	private static function closePath ():Void {
 		
@@ -498,7 +499,25 @@ class CairoGraphics {
 						hasStroke = true;
 						
 						cairo.lineWidth = thickness;
-						
+
+						if(scaleMode != null) {
+
+							switch(scaleMode) {
+
+								case NORMAL:
+									cairo.lineWidth /= 1;
+								case HORIZONTAL:
+									cairo.lineWidth /= worldTransform.a;
+								case VERTICAL:
+									cairo.lineWidth /= worldTransform.d;
+								case NONE:
+									//Will be more incorrect as a and d are farther apart
+									cairo.lineWidth /= ((worldTransform.a + worldTransform.d) * 0.5);
+
+							}
+
+						}
+
 						if (joints == null) {
 							
 							cairo.lineJoin = ROUND;
@@ -1055,12 +1074,13 @@ class CairoGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, worldTransform:Matrix):Void {
 		
 		#if lime_cairo
 		CairoGraphics.graphics = graphics;
+		CairoGraphics.worldTransform = worldTransform;
 		
-		if (!graphics.__dirty) return;
+		if (!graphics.__dirty && (graphics.__owner == null || !graphics.__owner.__getTransformChanged() || !graphics.__isScaleSensitive)) return;
 		
 		bounds = graphics.__bounds;
 		
