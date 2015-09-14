@@ -654,12 +654,12 @@ import js.html.CanvasRenderingContext2D;
 					
 					lineTo (data[dataIndex], data[dataIndex + 1]);
 					dataIndex += 2;
-
+				
 				case GraphicsPathCommand.WIDE_MOVE_TO:
 					
 					moveTo(data[dataIndex + 2], data[dataIndex + 3]); break;
 					dataIndex += 4;
-
+				
 				case GraphicsPathCommand.WIDE_LINE_TO:
 					
 					lineTo(data[dataIndex + 2], data[dataIndex + 3]); break;
@@ -853,8 +853,8 @@ import js.html.CanvasRenderingContext2D;
 				
 				if (useTransform) {
 					
-					rect.setTo (tile.x, tile.y, tile.width, tile.height);
-					matrix.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5], 0, 0);
+					rect.setTo (0, 0, tile.width, tile.height);
+					matrix.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5], x, y);
 					
 					rect.__transform (rect, matrix);
 					
