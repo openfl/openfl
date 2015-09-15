@@ -1,8 +1,5 @@
-package openfl.display;
+package openfl._internal.renderer;
 
-/**
- * @author larsiusprime
- */
 
 enum DrawCommandType {
 	
@@ -13,17 +10,18 @@ enum DrawCommandType {
 	CURVE_TO;
 	DRAW_CIRCLE;
 	DRAW_ELLIPSE;
+	DRAW_PATH;
 	DRAW_RECT;
 	DRAW_ROUND_RECT;
 	DRAW_TILES;
 	DRAW_TRIANGLES;
 	END_FILL;
-	LINE_STYLE;
 	LINE_BITMAP_STYLE;
 	LINE_GRADIENT_STYLE;
+	LINE_STYLE;
 	LINE_TO;
 	MOVE_TO;
-	DRAW_PATH_C;
 	OVERRIDE_MATRIX;
 	UNKNOWN;
+	
 }

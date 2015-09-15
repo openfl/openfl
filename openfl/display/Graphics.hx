@@ -5,6 +5,7 @@ import lime.graphics.cairo.Cairo;
 import lime.graphics.Image;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
@@ -148,7 +149,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
 		
-		__commands.writeBeginBitmapFill(bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
+		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
 		
 		__visible = true;
 		
@@ -171,7 +172,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginFill (color:Int = 0, alpha:Float = 1):Void {
 		
-		__commands.writeBeginFill (color & 0xFFFFFF, alpha);
+		__commands.beginFill (color & 0xFFFFFF, alpha);
 		
 		if (alpha > 0) __visible = true;
 		
@@ -245,7 +246,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
 		
-		__commands.writeBeginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		__hardware = false;
 		
 		for (alpha in alphas) {
@@ -371,7 +372,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 		
-		__commands.writeCubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
+		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 		
 		__hardware = false;
 		__dirty = true;
@@ -444,7 +445,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 		
-		__commands.writeCurveTo (controlX, controlY, anchorX, anchorY);
+		__commands.curveTo (controlX, controlY, anchorX, anchorY);
 		
 		__hardware = false;
 		__dirty = true;
@@ -473,7 +474,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - radius - __halfStrokeWidth, y - radius - __halfStrokeWidth);
 		__inflateBounds (x + radius + __halfStrokeWidth, y + radius + __halfStrokeWidth);
 		
-		__commands.writeDrawCircle (x, y, radius);
+		__commands.drawCircle (x, y, radius);
 		
 		__hardware = false;
 		__dirty = true;
@@ -504,7 +505,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
 		
-		__commands.writeDrawEllipse (x, y, width, height);
+		__commands.drawEllipse (x, y, width, height);
 		
 		__hardware = false;
 		__dirty = true;
@@ -708,7 +709,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
 		
-		__commands.writeDrawRect (x, y, width, height);
+		__commands.drawRect (x, y, width, height);
 		
 		__dirty = true;
 		
@@ -748,7 +749,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
 		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
 		
-		__commands.writeDrawRoundRect (x, y, width, height, rx, ry);
+		__commands.drawRoundRect (x, y, width, height, rx, ry);
 		
 		__hardware = false;
 		__dirty = true;
@@ -970,7 +971,7 @@ import js.html.CanvasRenderingContext2D;
 			}
 		}
 		
-		__commands.writeDrawTiles (sheet, tileData, smooth, flags, count);
+		__commands.drawTiles (sheet, tileData, smooth, flags, count);
 		
 		__dirty = true;
 		__visible = true;
@@ -1041,7 +1042,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__inflateBounds (maxX, maxY);
-		__commands.writeDrawTriangles(vertices, indices, uvtData, culling, colors, blendMode);
+		__commands.drawTriangles(vertices, indices, uvtData, culling, colors, blendMode);
 		
 		__dirty = true;
 		__visible = true;
@@ -1062,7 +1063,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function endFill ():Void {
 		
-		__commands.writeEndFill();
+		__commands.endFill();
 		
 	}
 	
@@ -1098,7 +1099,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void {
 		
-		__commands.writeLineBitmapStyle (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
+		__commands.lineBitmapStyle (bitmap, matrix != null ? matrix.clone () : null, repeat, smooth);
 		
 	}
 	
@@ -1157,7 +1158,7 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Float>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
 		
-		__commands.writeLineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);	
+		__commands.lineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);	
 		
 	}
 	
@@ -1304,7 +1305,7 @@ import js.html.CanvasRenderingContext2D;
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
 		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness/2 : __halfStrokeWidth;
-		__commands.writeLineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
+		__commands.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
 		
 		if (thickness != null) __visible = true;
 		
@@ -1340,7 +1341,7 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
 		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
 		
-		__commands.writeLineTo (x, y);
+		__commands.lineTo (x, y);
 		
 		__hardware = false;
 		__dirty = true;
@@ -1363,7 +1364,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = x;
 		__positionY = y;
 		
-		__commands.writeMoveTo (x, y);
+		__commands.moveTo (x, y);
 		
 	}
 	

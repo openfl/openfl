@@ -4,14 +4,14 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer.GLStack;
-import openfl.display.DrawCommandReader;
+import openfl._internal.renderer.DrawCommandReader;
 import openfl.display.Graphics;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
-import openfl.display.DrawCommandType;
+import openfl._internal.renderer.DrawCommandType;
 import openfl.display.Graphics;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsPathWinding;
@@ -189,59 +189,63 @@ class PathBuiler {
 			
 		} else {
 			
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader (graphics.__commands);
 			
-			for (t in graphics.__commands.types) {
+			for (type in graphics.__commands.types) {
 				
-				switch (t) {
+				switch (type) {
 					
 					case BEGIN_BITMAP_FILL:
 						
-						var c = data.readBeginBitmapFill();
-						endFill();
-						__fill = c.bitmap != null ? Texture(c.bitmap, c.matrix, c.repeat, c.smooth) : None;
+						var c = data.readBeginBitmapFill ();
+						endFill ();
+						__fill = c.bitmap != null ? Texture (c.bitmap, c.matrix, c.repeat, c.smooth) : None;
 						
 						if (__currentPath.points == null || __currentPath.points.length == 0) {
-							graphicDataPop();
-							__currentPath = new DrawPath();
-							__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+							
+							graphicDataPop ();
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 							__currentPath.points = [];
 							__currentPath.type = Polygon;
-							__drawPaths.push(__currentPath);
+							__drawPaths.push (__currentPath);
+							
 						}
 					
 					case BEGIN_FILL:
 						
-						var c = data.readBeginFill();
-						endFill();
-						__fill = c.alpha > 0 ? Color(c.color & 0xFFFFFF, c.alpha) : None;
+						var c = data.readBeginFill ();
+						endFill ();
+						__fill = c.alpha > 0 ? Color (c.color & 0xFFFFFF, c.alpha) : None;
 						
 						if (__currentPath.points == null || __currentPath.points.length == 0) {
-							graphicDataPop();
-							__currentPath = new DrawPath();
-							__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+							
+							graphicDataPop ();
+							__currentPath = new DrawPath ();
+							__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 							__currentPath.points = [];
 							__currentPath.type = Polygon;
-							__drawPaths.push(__currentPath);
+							__drawPaths.push (__currentPath);
+							
 						}
 					
 					case CUBIC_CURVE_TO:
-					
-						var c = data.readCubicCurveTo();
+						
+						var c = data.readCubicCurveTo ();
 						cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 					
 					case CURVE_TO:
-					
-						var c = data.readCurveTo();
+						
+						var c = data.readCurveTo ();
 						curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 					
 					case DRAW_CIRCLE:
 						
-						var c = data.readDrawCircle();
+						var c = data.readDrawCircle ();
 						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
-						__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						__currentPath.type = Circle;
 						__currentPath.points = [ c.x, c.y, c.radius ];
 						
@@ -249,11 +253,11 @@ class PathBuiler {
 					
 					case DRAW_ELLIPSE:
 						
-						var c = data.readDrawEllipse();
+						var c = data.readDrawEllipse ();
 						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
-						__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						__currentPath.type = Ellipse;
 						__currentPath.points = [ c.x, c.y, c.width, c.height ];
 						
@@ -261,11 +265,11 @@ class PathBuiler {
 					
 					case DRAW_RECT:
 						
-						var c = data.readDrawRect();
-						graphicDataPop();
+						var c = data.readDrawRect ();
+						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
-						__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						__currentPath.type = Rectangle (false);
 						__currentPath.points = [ c.x, c.y, c.width, c.height ];
 						
@@ -273,7 +277,7 @@ class PathBuiler {
 					
 					case DRAW_ROUND_RECT:
 						
-						var c = data.readDrawRoundRect();
+						var c = data.readDrawRoundRect ();
 						
 						var x = c.x;
 						var y = c.y;
@@ -293,7 +297,7 @@ class PathBuiler {
 						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
-						__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						__currentPath.type = Rectangle (true);
 						__currentPath.points = [ x, y, width, height, rx, ry ];
 						
@@ -301,15 +305,15 @@ class PathBuiler {
 					
 					case END_FILL:
 						
-						var c = data.readEndFill();
+						var c = data.readEndFill ();
 						endFill ();
 					
 					case LINE_STYLE:
 						
-						var c = data.readLineStyle();
-						__line = new LineStyle();
+						var c = data.readLineStyle ();
+						__line = new LineStyle ();
 						
-						if (c.thickness == null || Math.isNaN(c.thickness) || c.thickness < 0) {
+						if (c.thickness == null || Math.isNaN (c.thickness) || c.thickness < 0) {
 							
 							__line.width = 0;
 							
@@ -333,7 +337,7 @@ class PathBuiler {
 						__line.miterLimit = c.miterLimit;
 						
 						__currentPath = new DrawPath ();
-						__currentPath.update(__line, __fill, __fillIndex, __currentWinding);
+						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						__currentPath.points = [];
 						__currentPath.type = GraphicType.Polygon;
 						
@@ -341,17 +345,17 @@ class PathBuiler {
 					
 					case LINE_TO:
 						
-						var c = data.readLineTo();
+						var c = data.readLineTo ();
 						lineTo (c.x, c.y);
 					
 					case MOVE_TO:
 						
-						var c = data.readMoveTo();
+						var c = data.readMoveTo ();
 						moveTo(c.x, c.y);
-						
+					
 					case DRAW_TRIANGLES:
 						
-						var c = data.readDrawTriangles();
+						var c = data.readDrawTriangles ();
 						
 						var uvtData:Vector<Float> = c.uvtData;
 						var vertices = c.vertices;
@@ -360,7 +364,7 @@ class PathBuiler {
 						var colors = c.colors;
 						var blendMode = c.blendMode;
 						
-						var isColor = switch(__fill) { case Color(_, _): true; case _: false; };
+						var isColor = switch (__fill) { case Color (_, _): true; case _: false; };
 						if (isColor && uvtData != null) {
 								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
 								continue;
@@ -371,7 +375,7 @@ class PathBuiler {
 						__currentPath = new DrawPath ();
 						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
 						if (uvtData == null) {
-							uvtData = new Vector<Float>();
+							uvtData = new Vector<Float> ();
 							switch(__fill) {
 								case Texture(b, _):
 									for (i in 0...Std.int(vertices.length / 2)) {
@@ -387,23 +391,22 @@ class PathBuiler {
 					
 					case DRAW_TILES:
 						
-						var c = data.readDrawTiles();
+						var c = data.readDrawTiles ();
 						graphicDataPop ();
 						
 						__fillIndex++;
 						__currentPath = new DrawPath (false);
 						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
-						__currentPath.type = GraphicType.DrawTiles(c.sheet, c.tileData, c.smooth, c.flags, c.count);
+						__currentPath.type = GraphicType.DrawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.count);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
-							
+					
+					case DRAW_PATH:
 						
-					case DRAW_PATH_C:
-						
-						var c = data.readDrawPathC();
+						var c = data.readDrawPath ();
 						graphicDataPop ();
 						
-						switch(c.winding) {
+						switch (c.winding) {
 							case GraphicsPathWinding.EVEN_ODD:
 								__currentWinding = EVEN_ODD;
 							case GraphicsPathWinding.NON_ZERO:
@@ -465,7 +468,7 @@ class PathBuiler {
 						
 					case OVERRIDE_MATRIX:
 						
-						var c = data.readOverrideMatrix();
+						var c = data.readOverrideMatrix ();
 						graphicDataPop ();
 						
 						__currentPath = new DrawPath ();
@@ -473,26 +476,27 @@ class PathBuiler {
 						__currentPath.type = GraphicType.OverrideMatrix(c.matrix);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
+					
+					default:
 						
-					case LINE_GRADIENT_STYLE : data.skipLineGradientStyle();
-					case LINE_BITMAP_STYLE   : data.skipLineBitmapStyle();
-					case BEGIN_GRADIENT_FILL : data.skipBeginGradientFill();
-					case UNKNOWN             : //donothing
+						data.skip (type);
+					
 				}
 				
 			}
 			
-			data.destroy();
-			
-			closePath();
+			closePath ();
+			data.destroy ();
 			
 		}
 		
 		graphics.__drawPaths = __drawPaths;
 		
 		return glStack;
+		
 	}
-
+	
+	
 }
 
 class LineStyle {

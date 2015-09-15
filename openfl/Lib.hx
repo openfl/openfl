@@ -1,5 +1,4 @@
 package openfl; #if !openfl_legacy
-#if !macro
 
 
 import lime.system.System;
@@ -173,45 +172,6 @@ import js.Browser;
 }
 
 
-#else
-
-
-import haxe.macro.Compiler;
-import haxe.macro.Context;
-import sys.FileSystem;
-
-
-class Lib {
-	
-	
-	public static function includeBackend (type:String) {
-		
-		if (type == "native" || type == "legacy") {
-			
-			Compiler.define ("openfl");
-			Compiler.define ("openfl_native");
-			
-			var paths = Context.getClassPath();
-			
-			for (path in paths) {
-				
-				if (FileSystem.exists (path + "/legacy/openfl")) {
-					
-					Compiler.addClassPath (path + "/legacy");
-					
-				}
-				
-			}
-			
-		}
-		
-	}
-	
-	
-}
-
-
-#end
 #else
 typedef Lib = openfl._legacy.Lib;
 #end

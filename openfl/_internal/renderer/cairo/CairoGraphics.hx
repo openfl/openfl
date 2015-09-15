@@ -12,9 +12,9 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
-import openfl.display.DrawCommandBuffer;
-import openfl.display.DrawCommandReader;
-import openfl.display.DrawCommandType;
+import openfl._internal.renderer.DrawCommandBuffer;
+import openfl._internal.renderer.DrawCommandReader;
+import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -232,8 +232,8 @@ class CairoGraphics {
 			
 			cairo = graphics.__cairo;
 			
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.clear ();
+			strokeCommands.clear ();
 			
 			hasFill = false;
 			hasStroke = false;
@@ -243,74 +243,74 @@ class CairoGraphics {
 			
 			cairo.newPath ();
 			
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader (graphics.__commands);
 			
-			for (t in graphics.__commands.types) {
+			for (type in graphics.__commands.types) {
 				
-				switch (t) {
+				switch (type) {
 					
 					case CUBIC_CURVE_TO:
 						
-						var c = data.readCubicCurveTo();
-						fillCommands.writeCubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						strokeCommands.writeCubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						
+						var c = data.readCubicCurveTo ();
+						fillCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+						strokeCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					
 					case CURVE_TO:
 						
-						var c = data.readCurveTo();
-						fillCommands.writeCurveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						strokeCommands.writeCurveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						
+						var c = data.readCurveTo ();
+						fillCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+						strokeCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+					
 					case LINE_TO:
 						
-						var c = data.readLineTo();
-						fillCommands.writeLineTo(c.x, c.y);
-						strokeCommands.writeLineTo(c.x, c.y);
-						
+						var c = data.readLineTo ();
+						fillCommands.lineTo (c.x, c.y);
+						strokeCommands.lineTo (c.x, c.y);
+					
 					case MOVE_TO:
 						
-						var c = data.readMoveTo();
-						fillCommands.writeMoveTo(c.x, c.y);
-						strokeCommands.writeMoveTo(c.x, c.y);
+						var c = data.readMoveTo ();
+						fillCommands.moveTo (c.x, c.y);
+						strokeCommands.moveTo (c.x, c.y);
 					
 					case LINE_STYLE:
 						
-						var c = data.readLineStyle();
-						strokeCommands.writeLineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-						
+						var c = data.readLineStyle ();
+						strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					
 					case LINE_GRADIENT_STYLE:
 						
-						var c = data.readLineGradientStyle();
-						strokeCommands.writeLineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-						
+						var c = data.readLineGradientStyle ();
+						strokeCommands.lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+					
 					case LINE_BITMAP_STYLE:
 						
-						var c = data.readLineBitmapStyle();
-						strokeCommands.writeLineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+						var c = data.readLineBitmapStyle ();
+						strokeCommands.lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
 					
 					case END_FILL:
 						
-						data.readEndFill();
+						data.readEndFill ();
 						endFill ();
 						endStroke ();
 						
 						if (hasFill && cairo.inFill (x, y)) {
 							
-							data.destroy();
+							data.destroy ();
 							return true;
 							
 						}
 						
 						if (hasStroke && cairo.inStroke (x, y)) {
 							
-							data.destroy();
+							data.destroy ();
 							return true;
 							
 						}
 						
 						hasFill = false;
 						bitmapFill = null;
-						
+					
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
@@ -318,77 +318,69 @@ class CairoGraphics {
 						
 						if (hasFill && cairo.inFill (x, y)) {
 							
-							data.destroy();
+							data.destroy ();
 							return true;
 							
 						}
 						
 						if (hasStroke && cairo.inStroke (x, y)) {
 							
-							data.destroy();
+							data.destroy ();
 							return true;
 							
 						}
 						
-						switch(t)
-						{
-							case BEGIN_BITMAP_FILL:
-								
-								var c = data.readBeginBitmapFill();
-								fillCommands.writeBeginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-								strokeCommands.writeBeginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-								
-							case BEGIN_FILL:
-								
-								var c = data.readBeginFill();
-								fillCommands.writeBeginFill(c.color, c.alpha);
-								strokeCommands.writeBeginFill(c.color, c.alpha);
-								
-							case BEGIN_GRADIENT_FILL:
-								
-								var c = data.readBeginGradientFill();
-								fillCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-								strokeCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-								
-							default:
-								
-								//do nothing
+						if (type == BEGIN_BITMAP_FILL) {
+							
+							var c = data.readBeginBitmapFill ();
+							fillCommands.beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+							strokeCommands.beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+							
+						} else if (type == BEGIN_GRADIENT_FILL) {
+							
+							var c = data.readBeginGradientFill ();
+							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else {
+							
+							var c = data.readBeginFill ();
+							fillCommands.beginFill (c.color, c.alpha);
+							strokeCommands.beginFill (c.color, c.alpha);
+							
 						}
 					
 					case DRAW_CIRCLE:
 						
-						var c = data.readDrawCircle();
-						fillCommands.writeDrawCircle(c.x, c.y, c.radius);
-						strokeCommands.writeDrawCircle(c.x, c.y, c.radius);
+						var c = data.readDrawCircle ();
+						fillCommands.drawCircle (c.x, c.y, c.radius);
+						strokeCommands.drawCircle (c.x, c.y, c.radius);
 					
 					case DRAW_ELLIPSE:
 						
-						var c = data.readDrawEllipse();
-						fillCommands.writeDrawEllipse(c.x, c.y, c.width, c.height);
-						strokeCommands.writeDrawEllipse(c.x, c.y, c.width, c.height);
+						var c = data.readDrawEllipse ();
+						fillCommands.drawEllipse (c.x, c.y, c.width, c.height);
+						strokeCommands.drawEllipse (c.x, c.y, c.width, c.height);
 					
 					case DRAW_RECT:
 						
-						var c = data.readDrawRect();
-						fillCommands.writeDrawRect(c.x, c.y, c.width, c.height);
-						strokeCommands.writeDrawRect(c.x, c.y, c.width, c.height);
-						
+						var c = data.readDrawRect ();
+						fillCommands.drawRect (c.x, c.y, c.width, c.height);
+						strokeCommands.drawRect (c.x, c.y, c.width, c.height);
+					
 					case DRAW_ROUND_RECT:
 						
-						var c = data.readDrawRoundRect();
-						fillCommands.writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
-						strokeCommands.writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
+						var c = data.readDrawRoundRect ();
+						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+					
+					default:
 						
-					case DRAW_TILES      : data.readDrawTiles();
-					case DRAW_TRIANGLES  : data.readDrawTriangles();
-					case DRAW_PATH_C     : data.readDrawPathC();
-					case OVERRIDE_MATRIX : data.readOverrideMatrix();
-					case UNKNOWN         : //donothing
+						data.skip (type);
+					
 				}
 				
 			}
-			
-			data.destroy();
 			
 			if (fillCommands.length > 0) {
 				
@@ -401,6 +393,8 @@ class CairoGraphics {
 				endStroke ();
 				
 			}
+			
+			data.destroy ();
 			
 			if (hasFill && cairo.inFill (x, y)) {
 				
@@ -493,40 +487,40 @@ class CairoGraphics {
 		
 		var hasPath:Bool = false;
 		
-		var data = new DrawCommandReader(commands);
+		var data = new DrawCommandReader (commands);
 		
-		for (t in commands.types) {
+		for (type in commands.types) {
 			
-			switch (t) {
+			switch (type) {
 				
 				case CUBIC_CURVE_TO:
 					
-					var c = data.readCubicCurveTo();
+					var c = data.readCubicCurveTo ();
 					hasPath = true;
 					cairo.curveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case CURVE_TO:
 					
-					var c = data.readCurveTo();
+					var c = data.readCurveTo ();
 					hasPath = true;
 					quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 				
 				case DRAW_CIRCLE:
 					
-					var c = data.readDrawCircle();
+					var c = data.readDrawCircle ();
 					hasPath = true;
 					cairo.moveTo (c.x - offsetX + c.radius, c.y - offsetY);
 					cairo.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2);
 				
 				case DRAW_RECT:
 				
-					var c = data.readDrawRect();
+					var c = data.readDrawRect ();
 					hasPath = true;
 					cairo.rectangle (c.x - offsetX, c.y - offsetY, c.width, c.height);
 				
 				case DRAW_ELLIPSE:
 					
-					var c = data.readDrawEllipse();
+					var c = data.readDrawEllipse ();
 					hasPath = true;
 					
 					var x = c.x;
@@ -553,13 +547,13 @@ class CairoGraphics {
 				
 				case DRAW_ROUND_RECT:
 					
-					var c = data.readDrawRoundRect();
+					var c = data.readDrawRoundRect ();
 					hasPath = true;
 					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
 				
 				case LINE_TO:
 					
-					var c = data.readLineTo();
+					var c = data.readLineTo ();
 					hasPath = true;
 					cairo.lineTo (c.x - offsetX, c.y - offsetY);
 					
@@ -568,7 +562,7 @@ class CairoGraphics {
 				
 				case MOVE_TO:
 					
-					var c = data.readMoveTo();
+					var c = data.readMoveTo ();
 					cairo.moveTo (c.x - offsetX, c.y - offsetY);
 					
 					positionX = c.x;
@@ -580,7 +574,7 @@ class CairoGraphics {
 				
 				case LINE_STYLE:
 					
-					var c = data.readLineStyle();
+					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
 						
 						closePath ();
@@ -661,7 +655,7 @@ class CairoGraphics {
 				
 				case LINE_GRADIENT_STYLE:
 					
-					var c = data.readLineGradientStyle();
+					var c = data.readLineGradientStyle ();
 					if (stroke && hasStroke) {
 						
 						closePath ();
@@ -681,7 +675,7 @@ class CairoGraphics {
 				
 				case LINE_BITMAP_STYLE:
 					
-					var c = data.readLineBitmapStyle();
+					var c = data.readLineBitmapStyle ();
 					if (stroke && hasStroke) {
 						
 						closePath ();
@@ -701,7 +695,7 @@ class CairoGraphics {
 				
 				case BEGIN_BITMAP_FILL:
 					
-					var c = data.readBeginBitmapFill();
+					var c = data.readBeginBitmapFill ();
 					if (fillPattern != null) {
 						
 						fillPattern.destroy ();
@@ -717,7 +711,7 @@ class CairoGraphics {
 				
 				case BEGIN_FILL:
 					
-					var c = data.readBeginFill();
+					var c = data.readBeginFill ();
 					if (c.alpha < 0.005) {
 						
 						hasFill = false;
@@ -740,7 +734,7 @@ class CairoGraphics {
 				
 				case BEGIN_GRADIENT_FILL:
 					
-					var c = data.readBeginGradientFill();
+					var c = data.readBeginGradientFill ();
 					if (fillPattern != null) {
 						
 						fillPattern.destroy ();
@@ -748,22 +742,23 @@ class CairoGraphics {
 						
 					}
 					
-					fillPattern = createGradientPattern( c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio );
+					fillPattern = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
 					hasFill = true;
 					bitmapFill = null;
 				
 				case DRAW_TRIANGLES:
-				
-					var c = data.readDrawTriangles();
+					
+					var c = data.readDrawTriangles ();
 					var v = c.vertices;
 					var ind = c.indices;
 					var uvt:Vector<Float> = c.uvtData;
 					var colorFill = bitmapFill == null;
 					
 					if (colorFill && uvt != null) {
-						// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
+						
 						break;
+						
 					}
 					
 					var width = 0;
@@ -802,6 +797,7 @@ class CairoGraphics {
 							height = bitmapFill.height;
 							
 						}
+						
 					}
 					
 					var i = 0;
@@ -918,7 +914,7 @@ class CairoGraphics {
 				
 				case DRAW_TILES:
 					
-					var c = data.readDrawTiles();
+					var c = data.readDrawTiles ();
 					var useScale = (c.flags & Graphics.TILE_SCALE) > 0;
 					var useRotation = (c.flags & Graphics.TILE_ROTATION) > 0;
 					var offsetX = bounds.x;
@@ -978,7 +974,6 @@ class CairoGraphics {
 					
 					while (index < totalCount) {
 						
-						// Std.int doesn't handle null on neko target
 						#if neko
 						
 						var f:Float = c.tileData[index + 2];
@@ -1080,16 +1075,16 @@ class CairoGraphics {
 					}
 					
 					cairo.restore ();
+				
+				default:
 					
-				case END_FILL        : data.readEndFill();
-				case DRAW_PATH_C     : data.readDrawPathC();
-				case OVERRIDE_MATRIX : data.readOverrideMatrix();
-				case UNKNOWN         : //donothing
+					data.skip (type);
+				
 			}
 			
 		}
 		
-		data.destroy();
+		data.destroy ();
 		
 		if (hasPath) {
 			
@@ -1235,129 +1230,125 @@ class CairoGraphics {
 			fillPattern = null;
 			strokePattern = null;
 			
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader (graphics.__commands);
 			
-			for (t in graphics.__commands.types) {
+			for (type in graphics.__commands.types) {
 				
-				switch (t) {
+				switch (type) {
 					
 					case CUBIC_CURVE_TO:
 						
-						var c = data.readCubicCurveTo();
-						fillCommands.writeCubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						strokeCommands.writeCubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-						
+						var c = data.readCubicCurveTo ();
+						fillCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+						strokeCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					
 					case CURVE_TO:
 						
-						var c = data.readCurveTo();
-						fillCommands.writeCurveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						strokeCommands.writeCurveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-						
+						var c = data.readCurveTo ();
+						fillCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+						strokeCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+					
 					case LINE_TO:
 						
-						var c = data.readLineTo();
-						fillCommands.writeLineTo(c.x, c.y);
-						strokeCommands.writeLineTo(c.x, c.y);
-						
+						var c = data.readLineTo ();
+						fillCommands.lineTo (c.x, c.y);
+						strokeCommands.lineTo (c.x, c.y);
+					
 					case MOVE_TO:
 						
-						var c = data.readMoveTo();
-						fillCommands.writeMoveTo(c.x, c.y);
-						strokeCommands.writeMoveTo(c.x, c.y);
+						var c = data.readMoveTo ();
+						fillCommands.moveTo (c.x, c.y);
+						strokeCommands.moveTo (c.x, c.y);
 					
 					case END_FILL:
 						
-						data.skipEndFill();
+						data.readEndFill ();
 						endFill ();
 						endStroke ();
 						hasFill = false;
 						bitmapFill = null;
 					
-					case LINE_STYLE:
-						
-						var c = data.readLineStyle();
-						strokeCommands.writeLineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-						
 					case LINE_GRADIENT_STYLE:
 						
-						var c = data.readLineGradientStyle();
-						strokeCommands.writeLineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+						var c = data.readLineGradientStyle ();
+						strokeCommands.lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 						
 					case LINE_BITMAP_STYLE:
 						
-						var c = data.readLineBitmapStyle();
-						strokeCommands.writeLineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
+						var c = data.readLineBitmapStyle ();
+						strokeCommands.lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
+					
+					case LINE_STYLE:
 						
+						var c = data.readLineStyle ();
+						strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+					
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 						
 						endFill ();
 						endStroke ();
 						
-						switch(t)
-						{
-							case BEGIN_BITMAP_FILL:
-								
-								var c = data.readBeginBitmapFill();
-								fillCommands.writeBeginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-								strokeCommands.writeBeginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-								
-							case BEGIN_FILL:
-								
-								var c = data.readBeginFill();
-								fillCommands.writeBeginFill(c.color, c.alpha);
-								strokeCommands.writeBeginFill(c.color, c.alpha);
-								
-							case BEGIN_GRADIENT_FILL:
-								
-								var c = data.readBeginGradientFill();
-								fillCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-								strokeCommands.writeBeginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+						if (type == BEGIN_BITMAP_FILL) {
 							
-							default: //do nothing
+							var c = data.readBeginBitmapFill ();
+							fillCommands.beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+							strokeCommands.beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
+							
+						} else if (type == BEGIN_GRADIENT_FILL) {
+							
+							var c = data.readBeginGradientFill ();
+							fillCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							strokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+							
+						} else {
+							
+							var c = data.readBeginFill ();
+							fillCommands.beginFill (c.color, c.alpha);
+							strokeCommands.beginFill (c.color, c.alpha);
+							
 						}
 					
 					case DRAW_CIRCLE:
 						
-						var c = data.readDrawCircle();
-						fillCommands.writeDrawCircle(c.x, c.y, c.radius);
-						strokeCommands.writeDrawCircle(c.x, c.y, c.radius);
+						var c = data.readDrawCircle ();
+						fillCommands.drawCircle (c.x, c.y, c.radius);
+						strokeCommands.drawCircle (c.x, c.y, c.radius);
 					
 					case DRAW_ELLIPSE:
 						
-						var c = data.readDrawEllipse();
-						fillCommands.writeDrawEllipse(c.x, c.y, c.width, c.height);
-						strokeCommands.writeDrawEllipse(c.x, c.y, c.width, c.height);
+						var c = data.readDrawEllipse ();
+						fillCommands.drawEllipse (c.x, c.y, c.width, c.height);
+						strokeCommands.drawEllipse (c.x, c.y, c.width, c.height);
 					
 					case DRAW_RECT:
 						
-						var c = data.readDrawRect();
-						fillCommands.writeDrawRect(c.x, c.y, c.width, c.height);
-						strokeCommands.writeDrawRect(c.x, c.y, c.width, c.height);
-						
+						var c = data.readDrawRect ();
+						fillCommands.drawRect (c.x, c.y, c.width, c.height);
+						strokeCommands.drawRect (c.x, c.y, c.width, c.height);
+					
 					case DRAW_ROUND_RECT:
 						
-						var c = data.readDrawRoundRect();
-						fillCommands.writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
-						strokeCommands.writeDrawRoundRect(c.x, c.y, c.width, c.height, c.rx, c.ry);
+						var c = data.readDrawRoundRect ();
+						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
 					
 					case DRAW_TILES:
 						
-						var c = data.readDrawTiles();
-						fillCommands.writeDrawTiles(c.sheet, c.tileData, c.smooth, c.flags, c.count);
-						
+						var c = data.readDrawTiles ();
+						fillCommands.drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.count);
+					
 					case DRAW_TRIANGLES:
 						
-						var c = data.readDrawTriangles();
-						fillCommands.writeDrawTriangles(c.vertices, c.indices, c.uvtData, c.culling, c.colors, c.blendMode);
+						var c = data.readDrawTriangles ();
+						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling, c.colors, c.blendMode);
+					
+					default:
 						
-					case DRAW_PATH_C:     data.skipDrawPathC     (); openfl.Lib.notImplemented ("CairoGraphics");
-					case OVERRIDE_MATRIX: data.skipOverrideMatrix(); openfl.Lib.notImplemented ("CairoGraphics");
-					case UNKNOWN         : //donothing
+						data.skip (type);
+					
 				}
 				
 			}
-			
-			data.destroy();
 			
 			if (fillCommands.length > 0) {
 				
@@ -1370,6 +1361,8 @@ class CairoGraphics {
 				endStroke ();
 				
 			}
+			
+			data.destroy ();
 			
 			graphics.__bitmap.image.dirty = true;
 			
@@ -1396,32 +1389,32 @@ class CairoGraphics {
 			
 			var data = new DrawCommandReader(graphics.__commands);
 			
-			for (t in graphics.__commands.types) {
+			for (type in graphics.__commands.types) {
 				
-				switch (t) {
+				switch (type) {
 					
 					case CUBIC_CURVE_TO:
 						
-						var c = data.readCubicCurveTo();
+						var c = data.readCubicCurveTo ();
 						cairo.curveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 						positionX = c.anchorX;
 						positionY = c.anchorX;
 					
 					case CURVE_TO:
 						
-						var c = data.readCurveTo();
+						var c = data.readCurveTo ();
 						quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
 						positionX = c.anchorX;
 						positionY = c.anchorY;
 					
 					case DRAW_CIRCLE:
 					
-						var c = data.readDrawCircle();
+						var c = data.readDrawCircle ();
 						cairo.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2);
 					
 					case DRAW_ELLIPSE:
 						
-						var c = data.readDrawEllipse();
+						var c = data.readDrawEllipse ();
 						
 						var x = c.x;
 						var y = c.y;
@@ -1450,40 +1443,32 @@ class CairoGraphics {
 					
 					case DRAW_RECT:
 						
-						var c = data.readDrawRect();
+						var c = data.readDrawRect ();
 						cairo.rectangle (c.x - offsetX, c.y - offsetY, c.width, c.height);
 					
 					case DRAW_ROUND_RECT:
 						
-						var c = data.readDrawRoundRect();
+						var c = data.readDrawRoundRect ();
 						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
 					
 					case LINE_TO:
 						
-						var c = data.readLineTo();
+						var c = data.readLineTo ();
 						cairo.lineTo (c.x - offsetX, c.y - offsetY);
 						positionX = c.x;
 						positionY = c.y;
 						
 					case MOVE_TO:
 						
-						var c = data.readMoveTo();
+						var c = data.readMoveTo ();
 						cairo.moveTo (c.x - offsetX, c.y - offsetY);
 						positionX = c.x;
 						positionY = c.y;
 					
-					case BEGIN_BITMAP_FILL   : data.skipBeginBitmapFill();
-					case BEGIN_GRADIENT_FILL : data.skipBeginGradientFill();
-					case BEGIN_FILL          : data.skipBeginFill();
-					case DRAW_TILES          : data.skipDrawTiles();
-					case DRAW_TRIANGLES      : data.skipDrawTriangles();
-					case END_FILL            : data.skipEndFill();
-					case LINE_STYLE          : data.skipLineStyle();
-					case LINE_BITMAP_STYLE   : data.skipLineBitmapStyle();
-					case LINE_GRADIENT_STYLE : data.skipLineGradientStyle();
-					case DRAW_PATH_C         : data.skipDrawPathC();
-					case OVERRIDE_MATRIX     : data.skipOverrideMatrix();
-					case UNKNOWN             : //donothing
+					default:
+						
+						data.skip (type);
+					
 				}
 				
 			}

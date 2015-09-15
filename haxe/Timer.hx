@@ -1,5 +1,5 @@
 package haxe;
-#if (macro || (!neko && !cpp && !nodejs))
+#if (!neko && !cpp && !nodejs)
 
 
 // Original haxe.Timer class
@@ -41,7 +41,6 @@ package haxe;
 	the child class.
 **/
 class Timer {
-	#if (flash || js || java || python)
 
 	#if (flash || js)
 		private var id : Null<Int>;
@@ -131,8 +130,6 @@ class Timer {
 		};
 		return t;
 	}
-
-	#end
 
 	/**
 		Measures the time it takes to execute `f`, in seconds with fractions.

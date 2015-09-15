@@ -1,5 +1,5 @@
 package openfl._internal.renderer.console;
-import openfl.display.DrawCommandType;
+import openfl._internal.renderer.DrawCommandType;
 #if lime_console
 
 
