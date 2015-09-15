@@ -776,7 +776,7 @@ import js.html.CanvasRenderingContext2D;
 		var rect = openfl.geom.Rectangle.__temp;
 		var matrix = Matrix.__temp;
 		
-		var numValues = 0;
+		var numValues = 3;
 		var totalCount = count;
 		
 		if (count < 0) {
@@ -799,11 +799,10 @@ import js.html.CanvasRenderingContext2D;
 			if (useAlpha) { numValues++; }
 			
 			var itemCount = Std.int (totalCount / numValues);
-			
 			var index = 0;
 			var cacheID = -1;
 			
-			var x, y, id, scale, rotation, tileWidth, tileHeight;
+			var x, y, id, scale, rotation, tileWidth, tileHeight, originX, originY;
 			var tile = null;
 			var tilePoint = null;
 			
@@ -864,7 +863,12 @@ import js.html.CanvasRenderingContext2D;
 					if (useTransform) {
 						
 						rect.setTo (0, 0, tile.width, tile.height);
-						matrix.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5], x, y);
+						matrix.setTo (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
+						
+						originX = tilePoint.x * tile.width;
+						originY = tilePoint.y * tile.height;
+						
+						matrix.translate (x - matrix.__transformX (originX, originY), y - matrix.__transformY (originX, originY));
 						
 						rect.__transform (rect, matrix);
 						
@@ -881,10 +885,11 @@ import js.html.CanvasRenderingContext2D;
 						
 						if (rotation != 0) {
 							
-							rect.setTo (x, y, tileWidth, tileHeight);
+							rect.setTo (0, 0, tileWidth, tileHeight);
 							
 							matrix.identity ();
 							matrix.rotate (rotation);
+							matrix.translate (x, y);
 							
 							rect.__transform (rect, matrix);
 							
@@ -967,8 +972,6 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
-		//__commands.push (LineStyle (1, 0xFFFF0000, 1, null, null, null, null, null));
-		//__commands.push (DrawRect (__bounds.x, __bounds.y, __bounds.width, __bounds.height));
 		
 		__dirty = true;
 		__visible = true;

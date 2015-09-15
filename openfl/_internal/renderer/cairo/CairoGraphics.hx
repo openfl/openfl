@@ -918,6 +918,8 @@ class CairoGraphics {
 						
 						if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 							
+							// TODO: Handle rect, center, and offset X/Y properly based on matrix transform
+							
 							//cairo.save ();
 							
 							cairo.identityMatrix ();
