@@ -812,6 +812,9 @@ class CairoGraphics {
 				
 				case DrawTiles (sheet, tileData, smooth, flags, count):
 					
+					var offsetX = bounds.x;
+					var offsetY = bounds.y;
+					
 					var useScale = (flags & Graphics.TILE_SCALE) > 0;
 					var useRotation = (flags & Graphics.TILE_ROTATION) > 0;
 					var useTransform = (flags & Graphics.TILE_TRANS_2x2) > 0;
@@ -851,6 +854,8 @@ class CairoGraphics {
 					var surface:Dynamic;
 					sheet.__bitmap.__sync ();
 					surface = sheet.__bitmap.getSurface ();
+					
+					cairo.save ();
 					
 					if (useBlendAdd) {
 						
@@ -924,7 +929,7 @@ class CairoGraphics {
 								
 							}
 							
-							cairo.translate (tileData[index], tileData[index + 1]);
+							cairo.translate (tileData[index] - offsetX, tileData[index + 1] - offsetY);
 							
 							if (useRotation) {
 								
@@ -964,6 +969,8 @@ class CairoGraphics {
 						cairo.operator = OVER;
 						
 					}
+					
+					cairo.restore ();
 					
 				default:
 					
