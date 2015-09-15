@@ -722,6 +722,15 @@ class BitmapData implements IBitmapDrawable {
 		
 		#elseif (js && html5)
 		
+		if (colorTransform != null) {
+			
+			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+			copy.draw (source);
+			copy.colorTransform (copy.rect, colorTransform);
+			source = copy;
+			
+		}
+		
 		ImageCanvasUtil.convertToCanvas (image);
 		ImageCanvasUtil.sync (image, true);
 		
@@ -774,6 +783,15 @@ class BitmapData implements IBitmapDrawable {
 		buffer.data = null;
 		
 		#else
+		
+		if (colorTransform != null) {
+			
+			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+			copy.draw (source);
+			copy.colorTransform (copy.rect, colorTransform);
+			source = copy;
+			
+		}
 		
 		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);

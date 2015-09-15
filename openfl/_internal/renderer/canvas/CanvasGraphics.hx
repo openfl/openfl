@@ -229,9 +229,9 @@ class CanvasGraphics {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
-			graphics.__canvas = null;
-			graphics.__context = null;
-			graphics.__bitmap = null;
+			//graphics.__canvas = null;
+			//graphics.__context = null;
+			//graphics.__bitmap = null;
 			
 			return false;
 			
@@ -819,7 +819,9 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		if (graphics.__dirty) {
+		var directRender = (graphics.__hardware && renderSession.context != null);
+		
+		if (graphics.__dirty || directRender) {
 			
 			hitTesting = false;
 			
@@ -834,17 +836,26 @@ class CanvasGraphics {
 				
 			} else {
 				
-				if (graphics.__canvas == null) {
+				if (directRender) {
 					
-					graphics.__canvas = cast Browser.document.createElement ("canvas");
-					graphics.__context = graphics.__canvas.getContext ("2d");
+					context = cast renderSession.context;
+					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
+					
+				} else {
+					
+					if (graphics.__canvas == null) {
+						
+						graphics.__canvas = cast Browser.document.createElement ("canvas");
+						graphics.__context = graphics.__canvas.getContext ("2d");
+						
+					}
+					
+					context = graphics.__context;
+					
+					graphics.__canvas.width = Math.ceil (bounds.width);
+					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 				}
-				
-				context = graphics.__context;
-				
-				graphics.__canvas.width = Math.ceil (bounds.width);
-				graphics.__canvas.height = Math.ceil (bounds.height);
 				
 				fillCommands.clear();
 				strokeCommands.clear();

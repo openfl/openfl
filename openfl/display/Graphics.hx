@@ -2,6 +2,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 
 
 import lime.graphics.cairo.Cairo;
+import lime.graphics.Image;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.opengl.utils.FilterTexture;
@@ -18,7 +19,6 @@ import openfl.display.GraphicsStroke;
 import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
-import lime.graphics.Image;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
@@ -43,6 +43,7 @@ import js.html.CanvasRenderingContext2D;
  * <p>The Graphics class is final; it cannot be subclassed.</p>
  */
 
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 
@@ -653,12 +654,12 @@ import js.html.CanvasRenderingContext2D;
 					
 					lineTo (data[dataIndex], data[dataIndex + 1]);
 					dataIndex += 2;
-
+				
 				case GraphicsPathCommand.WIDE_MOVE_TO:
 					
 					moveTo(data[dataIndex + 2], data[dataIndex + 3]); break;
 					dataIndex += 4;
-
+				
 				case GraphicsPathCommand.WIDE_LINE_TO:
 					
 					lineTo(data[dataIndex + 2], data[dataIndex + 3]); break;
@@ -764,11 +765,178 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
 		
-		// Checking each tile for extents did not include rotation or scale, and could overflow the maximum canvas
-		// size of some mobile browsers. Always use the full stage size for drawTiles instead?
+		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
+		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
+		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
+		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
+		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
+		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
+		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
 		
-		__inflateBounds (0, 0);
-		__inflateBounds (Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
+		var rect = openfl.geom.Rectangle.__temp;
+		var matrix = Matrix.__temp;
+		
+		var numValues = 0;
+		var totalCount = count;
+		
+		if (count < 0) {
+			
+			totalCount = tileData.length;
+			
+		}
+		
+		if (useTransform || useScale || useRotation || useRGB || useAlpha) {
+			
+			var scaleIndex = 0;
+			var rotationIndex = 0;
+			var transformIndex = 0;
+			
+			if (useRect) { numValues = useOrigin ? 8 : 6; }
+			if (useScale) { scaleIndex = numValues; numValues++; }
+			if (useRotation) { rotationIndex = numValues; numValues++; }
+			if (useTransform) { transformIndex = numValues; numValues += 4; }
+			if (useRGB) { numValues += 3; }
+			if (useAlpha) { numValues++; }
+			
+			var itemCount = Std.int (totalCount / numValues);
+			
+			var index = 0;
+			var cacheID = -1;
+			
+			var x, y, id, scale, rotation, tileWidth, tileHeight;
+			var tile = null;
+			var tilePoint = null;
+			
+			while (index < totalCount) {
+				
+				x = tileData[index];
+				y = tileData[index + 1];
+				id = (!useRect) ? Std.int (tileData[index + 2]) : -1;
+				scale = 1.0;
+				rotation = 0.0;
+				
+				if (useScale) {
+					
+					scale = tileData[index + scaleIndex];
+					
+				}
+				
+				if (useRotation) {
+					
+					rotation = tileData[index + rotationIndex];
+					
+				}
+				
+				if (!useRect && cacheID != id) {
+					
+					cacheID = id;
+					tile = sheet.__tileRects[id];
+					tilePoint = sheet.__centerPoints[id];
+					
+				} else if (useRect) {
+					
+					tile = sheet.__rectTile;
+					tile.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+					tilePoint = sheet.__point;
+					
+					if (useOrigin) {
+						
+						tilePoint.setTo (tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+						
+					} else {
+						
+						tilePoint.setTo (0, 0);
+						
+					}
+					
+				}
+				
+				if (useTransform) {
+					
+					rect.setTo (0, 0, tile.width, tile.height);
+					matrix.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5], x, y);
+					
+					rect.__transform (rect, matrix);
+					
+					__inflateBounds (rect.x, rect.y);
+					__inflateBounds (rect.right, rect.bottom);
+					
+				} else {
+					
+					tileWidth = tile.width * scale;
+					tileHeight = tile.height * scale;
+					
+					x -= tilePoint.x * tileWidth;
+					y -= tilePoint.y * tileHeight;
+					
+					if (rotation != 0) {
+						
+						rect.setTo (x, y, tileWidth, tileHeight);
+						
+						matrix.identity ();
+						matrix.rotate (rotation);
+						
+						rect.__transform (rect, matrix);
+						
+						__inflateBounds (rect.x, rect.y);
+						__inflateBounds (rect.right, rect.bottom);
+						
+					} else {
+						
+						__inflateBounds (x, y);
+						__inflateBounds (x + tileWidth, x + tileHeight);
+						
+					}
+					
+				}
+				
+				index += numValues;
+				
+			}
+			
+		} else {
+			
+			var x, y, id, tile, centerPoint, originX, originY;
+			var rect = openfl.geom.Rectangle.__temp;
+			var index = 0;
+			
+			while (index < totalCount) {
+				
+				x = tileData[index++];
+				y = tileData[index++];
+				id = (!useRect) ? Std.int (tileData[index++]) : -1;
+				originX = 0.0;
+				originY = 0.0;
+				
+				if (useRect) {
+					
+					rect.setTo (tileData[index++], tileData[index++], tileData[index++], tileData[index++]);
+					
+					if (useOrigin) {
+						
+						originX = tileData[index++];
+						originY = tileData[index++];
+						
+					}
+					
+					__inflateBounds (x - originX, y - originY);
+					__inflateBounds (x - originX + rect.width, y - originY + rect.height);
+					
+				} else {
+					
+					tile = sheet.__tileRects[id];
+					centerPoint = sheet.__centerPoints[id];
+					originX = centerPoint.x * tile.width;
+					originY = centerPoint.y * tile.height;
+					
+					__inflateBounds (x - originX, y - originY);
+					__inflateBounds (x - originX + tile.width, y - originY + tile.height);
+					
+				}
+				
+			}
+			
+		}
 		
 		__commands.writeDrawTiles (sheet, tileData, smooth, flags, count);
 		
