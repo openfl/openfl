@@ -163,6 +163,10 @@ import sys.FileSystem;
 class SharedObject extends EventDispatcher {
 	
 	
+	public static var defaultObjectEncoding:Int = 3;
+	
+	public var client:Dynamic;
+	
 	/**
 	 * The collection of attributes assigned to the <code>data</code> property of
 	 * the object; these attributes can be shared and stored. Each attribute can
@@ -177,6 +181,9 @@ class SharedObject extends EventDispatcher {
 	 * new value. </p>
 	 */
 	public var data (default, null):Dynamic;
+	
+	public var fps (null, default):Float;
+	public var objectEncoding:Int;
 	
 	/**
 	 * The current size of the shared object, in bytes.
@@ -196,6 +203,11 @@ class SharedObject extends EventDispatcher {
 	private function new () {
 		
 		super ();
+		
+		client = this;
+		objectEncoding = 3;
+		
+		Lib.application.onExit.add (application_onExit);
 		
 	}
 	
@@ -248,6 +260,13 @@ class SharedObject extends EventDispatcher {
 	public function close ():Void {
 		
 		
+		
+	}
+	
+	
+	public function connect (myConnection:NetConnection, params:String = null):Void {
+		
+		openfl.Lib.notImplemented ("SharedObject.connect");
 		
 	}
 	
@@ -309,6 +328,12 @@ class SharedObject extends EventDispatcher {
 	 *               disallowed.</p>
 	 */
 	public function flush (minDiskSpace:Int = 0):SharedObjectFlushStatus {
+		
+		if (Reflect.fields (data).length == 0) {
+			
+			return SharedObjectFlushStatus.FLUSHED;
+			
+		}
 		
 		var encodedData = Serializer.run (data);
 		
@@ -552,7 +577,7 @@ class SharedObject extends EventDispatcher {
 			try {
 				
 				var unserializer = new Unserializer (encodedData);
-				unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass } );
+				unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: __resolveClass } );
 				so.data = unserializer.unserialize ();
 				
 			} catch (e:Dynamic) {}
@@ -560,6 +585,40 @@ class SharedObject extends EventDispatcher {
 		}
 		
 		return so;
+		
+	}
+	
+	
+	public static function getRemote (name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject {
+		
+		openfl.Lib.notImplemented ("SharedObject.getRemote");
+		
+		return null;
+		
+	}
+	
+	
+	public function send (arguments:Array<Dynamic>):Void {
+		
+		openfl.Lib.notImplemented ("SharedObject.send");
+		
+	}
+	
+	
+	public function setDirty (propertyName:String):Void {
+		
+		
+		
+	}
+	
+	
+	public function setProperty (propertyName:String, value:Dynamic = null):Void {
+		
+		if (data != null) {
+			
+			Reflect.setField (data, propertyName, value);
+			
+		}
 		
 	}
 	
@@ -623,7 +682,7 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private static function resolveClass (name:String):Class<Dynamic> {
+	@:noCompletion private static function __resolveClass (name:String):Class<Dynamic> {
 		
 		if (name != null) {
 			
@@ -666,12 +725,16 @@ class SharedObject extends EventDispatcher {
 	}
 	
 	
-	public function setProperty (propertyName:String, value:Dynamic = null):Void {
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	@:noCompletion private function application_onExit (_):Void {
 		
-		if (data != null) {
-			
-			Reflect.setField (data, propertyName, value);
-		}
+		flush ();
 		
 	}
 	
