@@ -27,9 +27,6 @@
 	<haxedef name="lime-hybrid" if="lime-hybrid" unless="display" />
 	<haxedef name="openfl-next" if="openfl-next" />
 	
-	<set name="webgl" if="html5" unless="dom || canvas" />
-	<haxedef name="webgl" if="webgl" />
-	
 	<section if="openfl-next || webgl">
 		
 		<window stencil-buffer="true" />
