@@ -229,7 +229,7 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion @:dox(hide) public override function __updateMask (maskGraphics:Graphics):Void {
 		
-		maskGraphics.__commands.push (OverrideMatrix (this.__worldTransform));
+		maskGraphics.__commands.writeOverrideMatrix (this.__worldTransform);
 		maskGraphics.beginFill (0);
 		maskGraphics.drawRect (0, 0, bitmapData.width, bitmapData.height);
 		

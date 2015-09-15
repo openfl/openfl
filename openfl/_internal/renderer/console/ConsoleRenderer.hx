@@ -1,4 +1,5 @@
 package openfl._internal.renderer.console;
+import openfl.display.DrawCommandType;
 #if lime_console
 
 
@@ -699,13 +700,14 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		for (cmd in graphics.__commands) {
 
-			switch (cmd) {
+			switch (cmd.command) {
 
-				case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+				//case BeginBitmapFill (bitmap, matrix, repeat, smooth):
+				case BEGIN_BITMAP_FILL:
 
 					hasFill = true;
-					fillBitmap = bitmap;
-					fillBitmapSmooth = smooth;
+					fillBitmap = cmd.bitmap;
+					fillBitmapSmooth = cmd.smooth;
 					fillColor[0] = 1.0;
 					fillColor[1] = 1.0;
 					fillColor[2] = 1.0;
@@ -713,19 +715,21 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): deal with matrix, repeat
 
-				case BeginFill (rgb, alpha):
+				//case BeginFill (rgb, alpha):
+				case BEGIN_FILL:
 
 					// TODO(james4k): color transform. no sense doing that in shader for fill, right?
 					hasFill = true;
 					fillBitmap = null;
-					fillColor[0] = ((rgb >> 16) & 0xFF) / 255.0;
-					fillColor[1] = ((rgb >> 8) & 0xFF) / 255.0;
-					fillColor[2] = ((rgb >> 0) & 0xFF) / 255.0;
-					fillColor[3] = alpha * object.__worldAlpha;
+					fillColor[0] = ((cmd.color >> 16) & 0xFF) / 255.0;
+					fillColor[1] = ((cmd.color >> 8) & 0xFF) / 255.0;
+					fillColor[2] = ((cmd.color >> 0) & 0xFF) / 255.0;
+					fillColor[3] = cmd.alpha * object.__worldAlpha;
 
 				// LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>,
 				//            scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+				//case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
+				case LINE_STYLE:
 
 					//closePath (object);
 
@@ -736,29 +740,32 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					hasStroke = true;
 
-					lineWidth = thickness;
-					lineColor = color == null ? 0 : color;
-					lineAlpha = alpha == null ? 1 : alpha;
-					lineScaleMode = scaleMode;
-					lineCaps = caps;
-					lineJoints = joints;
-					lineMiter = miterLimit == null ? 3 : miterLimit;
+					lineWidth = cmd.thickness;
+					lineColor = cmd.color == null ? 0 : cmd.color;
+					lineAlpha = cmd.alpha == null ? 1 : cmd.alpha;
+					lineScaleMode = cmd.scaleMode;
+					lineCaps = cmd.caps;
+					lineJoints = cmd.joints;
+					lineMiter = cmd.miterLimit == null ? 3 : cmd.miterLimit;
 					// TODO(james4k): pixelHinting
 					
 					
-				case LineTo (x, y):
+				//case LineTo (x, y):
+				case LINE_TO:
 
-					points.push (x);
-					points.push (y);
+					points.push (cmd.x);
+					points.push (cmd.y);
 
-				case MoveTo (x, y):
+				//case MoveTo (x, y):
+				case MOVE_TO:
 
 					closePath (object);
 
-					points.push (x);
-					points.push (y);
+					points.push (cmd.x);
+					points.push (cmd.y);
 
-				case EndFill:
+				//case EndFill:
+				case END_FILL:
 
 					closePath (object);
 
@@ -770,19 +777,22 @@ class ConsoleRenderer extends AbstractRenderer {
 					fillColor[2] = 1.0;
 					fillColor[3] = object.__worldAlpha;
 
-				case DrawCircle (x, y, radius):
+				//case DrawCircle (x, y, radius):
+				case DRAW_CIRCLE:
 
 					// TODO(james4k): replace with 2? curveTo calls
 
-					drawEllipse (object, x, y, radius, radius);
+					drawEllipse (object, cmd.x, cmd.y, cmd.radius, cmd.radius);
 
-				case DrawEllipse (x, y, width, height):
+				//case DrawEllipse (x, y, width, height):
+				case DRAW_ELLIPSE:
 
 					// TODO(james4k): replace with 2? curveTo calls
 
-					drawEllipse (object, x + width*0.5, y + height*0.5, width*0.5, height*0.5);
+					drawEllipse (object, cmd.x + cmd.width*0.5, cmd.y + cmd.height*0.5, cmd.width*0.5, cmd.height*0.5);
 
-				case DrawRect (x, y, width, height):
+				//case DrawRect (x, y, width, height):
+				case DRAW_RECT:
 
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
@@ -798,10 +808,10 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
 					var out = vertexBuffer.lock ();
-					out.vec3 (x, y, 0);
-					out.vec3 (x, y + height, 0);
-					out.vec3 (x + width, y, 0);
-					out.vec3 (x + width, y + height, 0);
+					out.vec3 (cmd.x, cmd.y, 0);
+					out.vec3 (cmd.x, cmd.y + cmd.height, 0);
+					out.vec3 (cmd.x + cmd.width, cmd.y, 0);
+					out.vec3 (cmd.x + cmd.width, cmd.y + cmd.height, 0);
 					vertexBuffer.unlock ();
 
 					ctx.bindShader (fillShader);
@@ -810,7 +820,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setVertexSource (vertexBuffer);
 					ctx.draw (Primitive.TriangleStrip, 0, 2);
 
-				case DrawRoundRect (x, y, width, height, rx, ry):
+				//case DrawRoundRect (x, y, width, height, rx, ry):
+				case DRAW_ROUND_RECT:
 
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
@@ -820,16 +831,16 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with lineTo/curveTo calls
 
-					if (ry == -1) ry = rx;
+					if (cmd.ry == -1) cmd.ry = cmd.rx;
 					
-					rx *= 0.5;
-					ry *= 0.5;
+					cmd.rx *= 0.5;
+					cmd.ry *= 0.5;
 					
-					if (rx > width / 2) rx = width / 2;
-					if (ry > height / 2) ry = height / 2;
+					if (cmd.rx > cmd.width / 2) cmd.rx = cmd.width / 2;
+					if (cmd.ry > cmd.height / 2) cmd.ry = cmd.height / 2;
 
 					var points = new Array<Float> ();
-					GraphicsPaths.roundRectangle (points, x, y, width, height, rx, ry);
+					GraphicsPaths.roundRectangle (points, cmd.x, cmd.y, cmd.width, cmd.height, cmd.rx, cmd.ry);
 
 					if (hasFill) {
 
@@ -868,17 +879,18 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					}
 
-				case DrawTiles (sheet, tileData, smooth, flags, count):
+				//case DrawTiles (sheet, tileData, smooth, flags, count):
+				case DRAW_TILES:
 
-					var useScale = (flags & Tilesheet.TILE_SCALE) != 0;
-					var useRotation = (flags & Tilesheet.TILE_ROTATION) != 0;
-					var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) != 0;
-					var useRGB = (flags & Tilesheet.TILE_RGB) != 0;
-					var useAlpha = (flags & Tilesheet.TILE_ALPHA) != 0;
-					var useRect = (flags & Tilesheet.TILE_RECT) != 0;
-					var useOrigin = (flags & Tilesheet.TILE_ORIGIN) != 0;
+					var useScale = (cmd.flags & Tilesheet.TILE_SCALE) != 0;
+					var useRotation = (cmd.flags & Tilesheet.TILE_ROTATION) != 0;
+					var useTransform = (cmd.flags & Tilesheet.TILE_TRANS_2x2) != 0;
+					var useRGB = (cmd.flags & Tilesheet.TILE_RGB) != 0;
+					var useAlpha = (cmd.flags & Tilesheet.TILE_ALPHA) != 0;
+					var useRect = (cmd.flags & Tilesheet.TILE_RECT) != 0;
+					var useOrigin = (cmd.flags & Tilesheet.TILE_ORIGIN) != 0;
 
-					var blendMode:BlendMode = switch(flags & 0xF0000) {
+					var blendMode:BlendMode = switch(cmd.flags & 0xF0000) {
 						case Tilesheet.TILE_BLEND_ADD:		ADD;
 						case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
 						case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
@@ -925,7 +937,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						stride += 1;
 					}
 
-					var totalCount = tileData.length;
+					var totalCount = cmd.tileData.length;
 					if (count >= 0 && totalCount > count) {
 						totalCount = count;
 					}
@@ -935,9 +947,9 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 
 					var tileID = -1;
-					var rect:Rectangle = sheet.__rectTile;
-					var tileUV:Rectangle = sheet.__rectUV;
-					var center:Point = sheet.__point;
+					var rect:Rectangle = cmd.sheet.__rectTile;
+					var tileUV:Rectangle = cmd.sheet.__rectUV;
+					var center:Point = cmd.sheet.__point;
 
 					var vertexCount = itemCount * 4;
 					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
@@ -947,38 +959,38 @@ class ConsoleRenderer extends AbstractRenderer {
 
 						var index = itemIndex * stride;
 
-						var x = tileData[index + 0];
-						var y = tileData[index + 1];
+						var x = cmd.tileData[index + 0];
+						var y = cmd.tileData[index + 1];
 
 						if (useRect) {
 
 							tileID = -1;
 
-							rect.x = tileData[index + 2];
-							rect.y = tileData[index + 3];
-							rect.width = tileData[index + 4];
-							rect.height = tileData[index + 5];
+							rect.x = cmd.tileData[index + 2];
+							rect.y = cmd.tileData[index + 3];
+							rect.width = cmd.tileData[index + 4];
+							rect.height = cmd.tileData[index + 5];
 							
 							if (useOrigin) {
-								center.x = tileData[index + 6];
-								center.y = tileData[index + 7];
+								center.x = cmd.tileData[index + 6];
+								center.y = cmd.tileData[index + 7];
 							} else {
 								center.setTo(0, 0);
 							}
 							
 							tileUV.setTo(
-								rect.left / sheet.__bitmap.width,
-								rect.top / sheet.__bitmap.height,
-								rect.right / sheet.__bitmap.width,
-								rect.bottom / sheet.__bitmap.height
+								rect.left / cmd.sheet.__bitmap.width,
+								rect.top / cmd.sheet.__bitmap.height,
+								rect.right / cmd.sheet.__bitmap.width,
+								rect.bottom / cmd.sheet.__bitmap.height
 							);
 
 						} else {
 
-							tileID = Std.int (tileData[index + 2]);
-							rect = sheet.getTileRect(tileID);	
-							center = sheet.getTileCenter(tileID);	
-							tileUV = sheet.getTileUVs(tileID);	
+							tileID = Std.int (cmd.tileData[index + 2]);
+							rect = cmd.sheet.getTileRect(tileID);	
+							center = cmd.sheet.getTileCenter(tileID);	
+							tileUV = cmd.sheet.getTileUVs(tileID);	
 
 						}
 
@@ -994,28 +1006,28 @@ class ConsoleRenderer extends AbstractRenderer {
 
 						if (useRGB) {
 							// TODO(james4k): premultiplied alpha?
-							red   = Std.int (tileData[index + rgbIndex + 0] * 255);
-							green = Std.int (tileData[index + rgbIndex + 1] * 255);
-							blue  = Std.int (tileData[index + rgbIndex + 2] * 255);
+							red   = Std.int (cmd.tileData[index + rgbIndex + 0] * 255);
+							green = Std.int (cmd.tileData[index + rgbIndex + 1] * 255);
+							blue  = Std.int (cmd.tileData[index + rgbIndex + 2] * 255);
 						}
 
 						if (useAlpha) {
-							alpha *= tileData[index + alphaIndex];	
+							alpha *= cmd.tileData[index + alphaIndex];	
 						}
 
 						if (useScale) {
-							scale = tileData[index + scaleIndex];
+							scale = cmd.tileData[index + scaleIndex];
 						}
 
 						if (useRotation) {
-							rotation = tileData[index + rotationIndex];
+							rotation = cmd.tileData[index + rotationIndex];
 						}
 
 						if (useTransform) {
-							a = tileData[index + transformIndex + 0];
-							b = tileData[index + transformIndex + 1];
-							c = tileData[index + transformIndex + 2];
-							d = tileData[index + transformIndex + 3];
+							a = cmd.tileData[index + transformIndex + 0];
+							b = cmd.tileData[index + transformIndex + 1];
+							c = cmd.tileData[index + transformIndex + 2];
+							d = cmd.tileData[index + transformIndex + 3];
 						} else {
 							a = scale * Math.cos (rotation);
 							b = scale * Math.sin (rotation);
@@ -1069,7 +1081,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					transform.append (viewProj);
 					transform.transpose ();
 
-					var texture = imageTexture (sheet.__bitmap.image);
+					var texture = imageTexture (cmd.sheet.__bitmap.image);
 
 					ctx.bindShader (defaultShader);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
@@ -1085,14 +1097,15 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
 
-				case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
+				//case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
+				case DRAW_TRIANGLES:
 
 					if (!hasFill || fillBitmap == null) {
 						trace ("DrawTriangles without bitmap fill");
 						continue;
 					}
 
-					if (vertices.length <= 0 || indices.length <= 0) {
+					if (cmd.vertices.length <= 0 || cmd.indices.length <= 0) {
 						continue;
 					}
 
@@ -1102,23 +1115,23 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var texture = imageTexture (fillBitmap.image);
 
-					var vertexCount = div (vertices.length, 2);
+					var vertexCount = div (cmd.vertices.length, 2);
 					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
 					var out = vertexBuffer.lock ();
 					var i = 0;
-					while (i < vertices.length) {
-						out.vec3 (vertices[i], vertices[i+1], 0);
-						out.vec2 (uvtData[i], uvtData[i+1]);
+					while (i < cmd.vertices.length) {
+						out.vec3 (cmd.vertices[i], cmd.vertices[i+1], 0);
+						out.vec2 (cmd.uvtData[i], cmd.uvtData[i+1]);
 						// TODO(james4k): color
 						out.color (0xff, 0xff, 0xff, 0xff);
 						i += 2;
 					}
 					vertexBuffer.unlock ();
 					
-					var indexBuffer = transientIndexBuffer (indices.length);
+					var indexBuffer = transientIndexBuffer (cmd.indices.length);
 					var unsafeIndices = indexBuffer.lock ();
 					for (i in 0...indices.length) {
-						unsafeIndices[i] = indices[i];
+						unsafeIndices[i] = cmd.indices[i];
 					}
 					indexBuffer.unlock ();
 
@@ -1135,7 +1148,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					} else {
 						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
 					}
-					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indices.length, 3));
+					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (cmd.indices.length, 3));
 
 				default:
 
