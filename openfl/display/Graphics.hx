@@ -963,7 +963,8 @@ import js.html.CanvasRenderingContext2D;
 				}
 				
 			}
-			
+		}
+		
 		__commands.writeDrawTiles (sheet, tileData, smooth, flags, count);
 		//__commands.push (LineStyle (1, 0xFFFF0000, 1, null, null, null, null, null));
 		//__commands.push (DrawRect (__bounds.x, __bounds.y, __bounds.width, __bounds.height));
@@ -992,7 +993,7 @@ import js.html.CanvasRenderingContext2D;
 	 *                parameter can be set to any value defined by the
 	 *                TriangleCulling class.
 	 */
-	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling = null, ?colors:Vector<Int>, blendMode:Int = 0):Void {
+	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling = null, ?colors:Vector<Int>, blendMode:Int = 0):Void{
 		
 		var vlen = Std.int (vertices.length / 2);
 		
