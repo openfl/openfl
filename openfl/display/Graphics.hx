@@ -967,6 +967,8 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__commands.push (DrawTiles (sheet, tileData, smooth, flags, count));
+		//__commands.push (LineStyle (1, 0xFFFF0000, 1, null, null, null, null, null));
+		//__commands.push (DrawRect (__bounds.x, __bounds.y, __bounds.width, __bounds.height));
 		
 		__dirty = true;
 		__visible = true;
