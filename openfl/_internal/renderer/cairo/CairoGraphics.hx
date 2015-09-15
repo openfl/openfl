@@ -921,6 +921,9 @@ class CairoGraphics {
 					var c = data.readDrawTiles();
 					var useScale = (c.flags & Graphics.TILE_SCALE) > 0;
 					var useRotation = (c.flags & Graphics.TILE_ROTATION) > 0;
+					var offsetX = bounds.x;
+					var offsetY = bounds.y;
+					
 					var useTransform = (c.flags & Graphics.TILE_TRANS_2x2) > 0;
 					var useRGB = (c.flags & Graphics.TILE_RGB) > 0;
 					var useAlpha = (c.flags & Graphics.TILE_ALPHA) > 0;
@@ -958,6 +961,8 @@ class CairoGraphics {
 					var surface:Dynamic;
 					c.sheet.__bitmap.__sync ();
 					surface = c.sheet.__bitmap.getSurface ();
+					
+					cairo.save ();
 					
 					if (useBlendAdd) {
 						
@@ -1031,7 +1036,7 @@ class CairoGraphics {
 								
 							}
 							
-							cairo.translate (c.tileData[index], c.tileData[index + 1]);
+							cairo.translate (c.tileData[index] - offsetX, c.tileData[index + 1] - offsetY);
 							
 							if (useRotation) {
 								
@@ -1071,6 +1076,8 @@ class CairoGraphics {
 						cairo.operator = OVER;
 						
 					}
+					
+					cairo.restore ();
 					
 				case END_FILL        : data.readEndFill();
 				case DRAW_PATH_C     : data.readDrawPathC();

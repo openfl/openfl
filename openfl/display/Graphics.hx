@@ -811,7 +811,7 @@ import js.html.CanvasRenderingContext2D;
 				
 				x = tileData[index];
 				y = tileData[index + 1];
-				id = (!useRect) ? Std.int (tileData[index + 2]) : -1;
+				id = (!useRect #if neko && tileData[index + 2] != null #end) ? Std.int (tileData[index + 2]) : -1;
 				scale = 1.0;
 				rotation = 0.0;
 				
@@ -827,54 +827,44 @@ import js.html.CanvasRenderingContext2D;
 					
 				}
 				
-				if (!useRect && cacheID != id) {
+				if (id < 0) {
 					
-					cacheID = id;
-					tile = sheet.__tileRects[id];
-					tilePoint = sheet.__centerPoints[id];
+					tile = null;
 					
-				} else if (useRect) {
+				} else {
 					
-					tile = sheet.__rectTile;
-					tile.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
-					tilePoint = sheet.__point;
-					
-					if (useOrigin) {
+					if (!useRect && cacheID != id) {
 						
-						tilePoint.setTo (tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+						cacheID = id;
+						tile = sheet.__tileRects[id];
+						tilePoint = sheet.__centerPoints[id];
 						
-					} else {
+					} else if (useRect) {
 						
-						tilePoint.setTo (0, 0);
+						tile = sheet.__rectTile;
+						tile.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
+						tilePoint = sheet.__point;
+						
+						if (useOrigin) {
+							
+							tilePoint.setTo (tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
+							
+						} else {
+							
+							tilePoint.setTo (0, 0);
+							
+						}
 						
 					}
 					
 				}
 				
-				if (useTransform) {
+				if (tile != null) {
 					
-					rect.setTo (0, 0, tile.width, tile.height);
-					matrix.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5], x, y);
-					
-					rect.__transform (rect, matrix);
-					
-					__inflateBounds (rect.x, rect.y);
-					__inflateBounds (rect.right, rect.bottom);
-					
-				} else {
-					
-					tileWidth = tile.width * scale;
-					tileHeight = tile.height * scale;
-					
-					x -= tilePoint.x * tileWidth;
-					y -= tilePoint.y * tileHeight;
-					
-					if (rotation != 0) {
+					if (useTransform) {
 						
-						rect.setTo (x, y, tileWidth, tileHeight);
-						
-						matrix.identity ();
-						matrix.rotate (rotation);
+						rect.setTo (0, 0, tile.width, tile.height);
+						matrix.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5], x, y);
 						
 						rect.__transform (rect, matrix);
 						
@@ -883,8 +873,30 @@ import js.html.CanvasRenderingContext2D;
 						
 					} else {
 						
-						__inflateBounds (x, y);
-						__inflateBounds (x + tileWidth, x + tileHeight);
+						tileWidth = tile.width * scale;
+						tileHeight = tile.height * scale;
+						
+						x -= tilePoint.x * tileWidth;
+						y -= tilePoint.y * tileHeight;
+						
+						if (rotation != 0) {
+							
+							rect.setTo (x, y, tileWidth, tileHeight);
+							
+							matrix.identity ();
+							matrix.rotate (rotation);
+							
+							rect.__transform (rect, matrix);
+							
+							__inflateBounds (rect.x, rect.y);
+							__inflateBounds (rect.right, rect.bottom);
+							
+						} else {
+							
+							__inflateBounds (x, y);
+							__inflateBounds (x + tileWidth, x + tileHeight);
+							
+						}
 						
 					}
 					
@@ -904,7 +916,18 @@ import js.html.CanvasRenderingContext2D;
 				
 				x = tileData[index++];
 				y = tileData[index++];
+				
+				#if neko
+				if (useRect) {
+					id = -1;
+				} else {
+					id = (tileData[index] != null) ? Std.int (tileData[index]) : 0;
+					index++;
+				}
+				#else
 				id = (!useRect) ? Std.int (tileData[index++]) : -1;
+				#end
+				
 				originX = 0.0;
 				originY = 0.0;
 				
@@ -925,20 +948,25 @@ import js.html.CanvasRenderingContext2D;
 				} else {
 					
 					tile = sheet.__tileRects[id];
-					centerPoint = sheet.__centerPoints[id];
-					originX = centerPoint.x * tile.width;
-					originY = centerPoint.y * tile.height;
 					
-					__inflateBounds (x - originX, y - originY);
-					__inflateBounds (x - originX + tile.width, y - originY + tile.height);
+					if (tile != null) {
+						
+						centerPoint = sheet.__centerPoints[id];
+						originX = centerPoint.x * tile.width;
+						originY = centerPoint.y * tile.height;
+						
+						__inflateBounds (x - originX, y - originY);
+						__inflateBounds (x - originX + tile.width, y - originY + tile.height);
+						
+					}
 					
 				}
 				
 			}
 			
-		}
-		
 		__commands.writeDrawTiles (sheet, tileData, smooth, flags, count);
+		//__commands.push (LineStyle (1, 0xFFFF0000, 1, null, null, null, null, null));
+		//__commands.push (DrawRect (__bounds.x, __bounds.y, __bounds.width, __bounds.height));
 		
 		__dirty = true;
 		__visible = true;

@@ -1138,6 +1138,9 @@ class CanvasGraphics {
 							var c = data.readDrawTiles();
 							
 							var useScale = (c.flags & Graphics.TILE_SCALE) > 0;
+							var offsetX = bounds.x;
+							var offsetY = bounds.y;
+							
 							var useRotation = (c.flags & Graphics.TILE_ROTATION) > 0;
 							var useTransform = (c.flags & Graphics.TILE_TRANS_2x2) > 0;
 							var useRGB = (c.flags & Graphics.TILE_RGB) > 0;
@@ -1242,7 +1245,7 @@ class CanvasGraphics {
 										
 									}
 									
-									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
+									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale - offsetX, -center.y * scale - offsetY, rect.width * scale, rect.height * scale);
 									context.restore ();
 									
 								}
