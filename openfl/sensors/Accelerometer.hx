@@ -2,7 +2,8 @@ package openfl.sensors; #if !flash #if !openfl_legacy
 
 
 import haxe.Timer;
-import openfl.display.Stage;
+import lime.system.Sensor;
+import lime.system.SensorType;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
@@ -71,18 +72,22 @@ class Accelerometer extends EventDispatcher {
 	 */
 	public static var isSupported (get, null):Bool;
 	
-	
 	/**
 	 * Specifies whether the user has denied access to the accelerometer
 	 * (<code>true</code>) or allowed access(<code>false</code>). When this
 	 * value changes, a <code>status</code> event is dispatched.
 	 */
-	public var muted (default, set_muted):Bool;
+	public var muted (default, set):Bool;
 	
 	private var _interval:Int;
 	private var timer:Timer;
 	
-	private static var defaultInterval:Int = 34;
+	private static var currentX = 0.0;
+	private static var currentY = 1.0;
+	private static var currentZ = 0.0;
+	private static var defaultInterval = 34;
+	private static var initialized = false;
+	private static var supported = false;
 	
 	
 	/**
@@ -91,6 +96,8 @@ class Accelerometer extends EventDispatcher {
 	public function new () {
 		
 		super ();
+		
+		initialize ();
 		
 		_interval = 0;
 		muted = false;
@@ -103,6 +110,26 @@ class Accelerometer extends EventDispatcher {
 		
 		super.addEventListener (type, listener, useCapture, priority, useWeakReference);
 		update ();
+		
+	}
+	
+	
+	@:noCompletion private static function initialize ():Void {
+		
+		if (!initialized) {
+			
+			var sensors = Sensor.getSensors (SensorType.ACCELEROMETER);
+			
+			if (sensors.length > 0) {
+				
+				sensors[0].onUpdate.add (accelerometer_onUpdate);
+				supported = true;
+				
+			}
+			
+			initialized = true;
+			
+		}
 		
 	}
 	
@@ -144,7 +171,7 @@ class Accelerometer extends EventDispatcher {
 			
 		}
 		
-		if (isSupported && !muted) {
+		if (supported && !muted) {
 			
 			timer = new Timer (_interval);
 			timer.run = update;
@@ -154,18 +181,32 @@ class Accelerometer extends EventDispatcher {
 	}
 	
 	
-	private function update ():Void {
+	@:noCompletion private function update ():Void {
 		
 		var event = new AccelerometerEvent (AccelerometerEvent.UPDATE);
-		//var data = Stage.__acceleration;
-		var data = { x: 0, y: 1, z: 0 };
 		
 		event.timestamp = Timer.stamp ();
-		event.accelerationX = data.x;
-		event.accelerationY = data.y;
-		event.accelerationZ = data.z;
+		event.accelerationX = currentX;
+		event.accelerationY = currentY;
+		event.accelerationZ = currentZ;
 		
 		dispatchEvent (event);
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	@:noCompletion private static function accelerometer_onUpdate (x:Float, y:Float, z:Float):Void {
+		
+		currentX = x;
+		currentY = y;
+		currentZ = z;
 		
 	}
 	
@@ -179,18 +220,19 @@ class Accelerometer extends EventDispatcher {
 	
 	@:noCompletion private static function get_isSupported ():Bool { 
 		
-		//var supported = Reflect.hasField (Browser.window, "on" + Lib.HTML_ACCELEROMETER_EVENT_TYPE);
-		//return supported;
-		return false;
+		initialize ();
+		
+		return supported;
 		
 	}
 	
 	
-	@:noCompletion private function set_muted (inVal:Bool):Bool {
+	@:noCompletion private function set_muted (value:Bool):Bool {
 		
-		this.muted = inVal;
+		this.muted = value;
 		setRequestedUpdateInterval (_interval);
-		return inVal;
+		
+		return value;
 		
 	}
 	
