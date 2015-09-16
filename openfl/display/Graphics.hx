@@ -900,7 +900,7 @@ import js.html.CanvasRenderingContext2D;
 						} else {
 							
 							__inflateBounds (x, y);
-							__inflateBounds (x + tileWidth, x + tileHeight);
+							__inflateBounds (x + tileWidth, y + tileHeight);
 							
 						}
 						
