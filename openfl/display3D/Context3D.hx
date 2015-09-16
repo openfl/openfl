@@ -779,10 +779,6 @@ import openfl.Lib;
 		
 		if (Std.is (texture, Texture)) {
 			
-			#if (cpp || neko || nodejs)
-			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
-			#end
-			
 			switch (wrap) {
 				
 				case Context3DWrapMode.CLAMP:
@@ -840,12 +836,10 @@ import openfl.Lib;
 				
 				case Context3DMipFilter.MIPLINEAR:
 					
-					GL.generateMipmap (GL.TEXTURE_2D);
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
 				
 				case Context3DMipFilter.MIPNEAREST:
 					
-					GL.generateMipmap (GL.TEXTURE_2D);
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST_MIPMAP_NEAREST);
 				
 				case Context3DMipFilter.MIPNONE:
@@ -853,12 +847,15 @@ import openfl.Lib;
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
 				
 			} 
+
+			var tex:Texture = cast texture;
+			if (mipfilter != Context3DMipFilter.MIPNONE && !tex.mipmapsGenerated) {
+				GL.generateMipmap (GL.TEXTURE_2D);
+				tex.mipmapsGenerated = true;
+			}
+					
 			
 		} else if (Std.is (texture, RectangleTexture)) {
-			
-			#if (cpp || neko || nodejs)
-			GL.bindTexture (GL.TEXTURE_2D, cast(texture, RectangleTexture).glTexture);
-			#end
 			
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
@@ -902,10 +899,6 @@ import openfl.Lib;
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
 			
 		} else if (Std.is (texture, CubeTexture)) {
-			
-			#if (cpp || neko || nodejs)
-			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture);
-			#end
 			
 			switch (wrap) {
 				
@@ -973,6 +966,12 @@ import openfl.Lib;
 				
 			}
 			
+			var cubetex:CubeTexture = cast texture;
+			if (mipfilter != Context3DMipFilter.MIPNONE && !cubetex.mipmapsGenerated) {
+				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
+				cubetex.mipmapsGenerated = true;
+			}
+
 		} else {
 			
 			throw "Texture of type " + Type.getClassName (Type.getClass (texture)) + " not supported yet";

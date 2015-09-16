@@ -17,10 +17,13 @@ using openfl.display.BitmapData;
 	
 	public var optimizeForRenderToTexture:Bool;
 	
+	public var mipmapsGenerated:Bool;
 	
 	public function new (glTexture:GLTexture, optimize:Bool, width:Int, height:Int) {
 		
 		optimizeForRenderToTexture = optimize;
+
+		mipmapsGenerated = false;
 		
 		#if (js || neko)
 		if (optimizeForRenderToTexture == null) optimizeForRenderToTexture = false;
