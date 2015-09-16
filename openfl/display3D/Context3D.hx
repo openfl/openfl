@@ -757,24 +757,33 @@ import openfl.Lib;
 		
 		if (!anisotropySupportTested) {
 			
-			#if openfl_legacy
+			#if !js
 			
 			supportsAnisotropy = (GL.getSupportedExtensions ().indexOf ("GL_EXT_texture_filter_anisotropic") != -1);
 			
+			if (supportsAnisotropy) {
+				// GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is not currently recongnised in Lime
+				// If supported, max anisotropic filtering of 256 is assumed.
+				// maxSupportedAnisotropy = GL.getTexParameter (GL.TEXTURE_2D, MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
+			}
+
 			#else
-			
+
 			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
-			if (ext == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
-			if (ext == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
 			supportsAnisotropy = (ext != null);
+			
+			if (supportsAnisotropy) {
+				maxSupportedAnisotropy = GL.getParameter (ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
+			}
 			
 			#end
 			
 			anisotropySupportTested = true;
-			
-			GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
-			maxSupportedAnisotropy = GL.getTexParameter (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT);
-			
+						
 		}
 		
 		if (Std.is (texture, Texture)) {
