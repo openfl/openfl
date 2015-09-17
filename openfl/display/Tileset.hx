@@ -4,7 +4,7 @@ package openfl.display;
 import openfl.geom.Rectangle;
 
 
-class TileSet {
+class Tileset {
 	
 	
 	public var bitmapData:BitmapData;

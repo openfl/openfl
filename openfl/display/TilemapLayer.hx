@@ -5,12 +5,12 @@ import lime.graphics.opengl.GLBuffer;
 import lime.utils.Float32Array;
 
 
-class TileLayer {
+class TilemapLayer {
 	
 	
 	// TODO: Handle dirty flag
 	
-	public var tileSet:TileSet;
+	public var tileset:Tileset;
 	
 	private var __buffer:GLBuffer;
 	private var __bufferData:Float32Array;
@@ -18,9 +18,9 @@ class TileLayer {
 	private var __tiles:Array<Tile>;
 	
 	
-	public function new (tileSet:TileSet) {
+	public function new (tileset:Tileset) {
 		
-		this.tileSet = tileSet;
+		this.tileset = tileset;
 		
 		__tiles = new Array ();
 		

@@ -9,17 +9,17 @@ import lime.graphics.opengl.GLUniformLocation;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import lime.utils.GLUtils;
-import openfl._internal.renderer.opengl.GLTileMap;
+import openfl._internal.renderer.opengl.GLTilemap;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.RenderSession;
-import openfl.display.TileMap;
+import openfl.display.Tilemap;
 
-@:access(openfl.display.TileLayer)
-@:access(openfl.display.TileMap)
-@:access(openfl.display.TileSet)
+@:access(openfl.display.Tilemap)
+@:access(openfl.display.TilemapLayer)
+@:access(openfl.display.Tileset)
 
 
-class GLTileMap {
+class GLTilemap {
 	
 	
 	private static var glImageUniform:GLUniformLocation;
@@ -82,9 +82,9 @@ class GLTileMap {
 	}
 	
 	
-	public static inline function render (tileMap:TileMap, renderSession:RenderSession):Void {
+	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		if (tileMap.__layers == null || tileMap.__layers.length == 0) return;
+		if (tilemap.__layers == null || tilemap.__layers.length == 0) return;
 		
 		renderSession.shaderManager.setShader (null);
 		renderSession.blendModeManager.setBlendMode (null);
@@ -110,11 +110,11 @@ class GLTileMap {
 		
 		// TODO: Support tiles that are not the full tileset size
 		
-		for (layer in tileMap.__layers) {
+		for (layer in tilemap.__layers) {
 			
-			if (layer.__tiles.length == 0 || layer.tileSet == null || layer.tileSet.bitmapData == null) continue;
+			if (layer.__tiles.length == 0 || layer.tileset == null || layer.tileset.bitmapData == null) continue;
 			
-			gl.bindTexture (gl.TEXTURE_2D, layer.tileSet.bitmapData.getTexture (gl));
+			gl.bindTexture (gl.TEXTURE_2D, layer.tileset.bitmapData.getTexture (gl));
 			
 			tiles = layer.__tiles;
 			count = tiles.length;
@@ -183,8 +183,8 @@ class GLTileMap {
 				
 				if (tile.id != cacheTileID) {
 					
-					tileWidth = Std.int (layer.tileSet.__rects[tile.id].width);
-					tileHeight = Std.int (layer.tileSet.__rects[tile.id].height);
+					tileWidth = Std.int (layer.tileset.__rects[tile.id].width);
+					tileHeight = Std.int (layer.tileset.__rects[tile.id].height);
 					cacheTileID = tile.id;
 					
 				}

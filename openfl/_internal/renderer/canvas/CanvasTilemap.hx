@@ -2,31 +2,31 @@ package openfl._internal.renderer.canvas;
 
 
 import openfl._internal.renderer.RenderSession;
-import openfl.display.TileMap;
+import openfl.display.Tilemap;
 
-@:access(openfl.display.TileLayer)
-@:access(openfl.display.TileMap)
-@:access(openfl.display.TileSet)
+@:access(openfl.display.Tilemap)
+@:access(openfl.display.TilemapLayer)
+@:access(openfl.display.Tileset)
 
 
-class CanvasTileMap {
+class CanvasTilemap {
 	
 	
-	public static inline function render (tileMap:TileMap, renderSession:RenderSession):Void {
+	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (!tileMap.__renderable || tileMap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
 		
 		var context = renderSession.context;
 		
-		if (tileMap.__mask != null) {
+		if (tilemap.__mask != null) {
 			
-			renderSession.maskManager.pushMask (tileMap.__mask);
+			renderSession.maskManager.pushMask (tilemap.__mask);
 			
 		}
 		
-		context.globalAlpha = tileMap.__worldAlpha;
-		var transform = tileMap.__worldTransform;
+		context.globalAlpha = tilemap.__worldAlpha;
+		var transform = tilemap.__worldTransform;
 		
 		if (renderSession.roundPixels) {
 			
@@ -38,7 +38,7 @@ class CanvasTileMap {
 			
 		}
 		
-		if (!tileMap.smoothing) {
+		if (!tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = false;
 			//untyped (context).webkitImageSmoothingEnabled = false;
@@ -53,11 +53,11 @@ class CanvasTileMap {
 		
 		var tiles, count, tile, source;
 		
-		for (layer in tileMap.__layers) {
+		for (layer in tilemap.__layers) {
 			
-			if (layer.__tiles.length == 0 || layer.tileSet == null || layer.tileSet.bitmapData == null) continue;
+			if (layer.__tiles.length == 0 || layer.tileset == null || layer.tileset.bitmapData == null) continue;
 			
-			source = layer.tileSet.bitmapData.image.src;
+			source = layer.tileset.bitmapData.image.src;
 			
 			tiles = layer.__tiles;
 			count = tiles.length;
@@ -68,8 +68,8 @@ class CanvasTileMap {
 				
 				if (tile.id != cacheTileID) {
 					
-					tileWidth = layer.tileSet.__rects[tile.id].width;
-					tileHeight = layer.tileSet.__rects[tile.id].height;
+					tileWidth = layer.tileset.__rects[tile.id].width;
+					tileHeight = layer.tileset.__rects[tile.id].height;
 					cacheTileID = tile.id;
 					
 				}
@@ -80,7 +80,7 @@ class CanvasTileMap {
 			
 		}
 		
-		if (!tileMap.smoothing) {
+		if (!tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = true;
 			//untyped (context).webkitImageSmoothingEnabled = true;
@@ -89,7 +89,7 @@ class CanvasTileMap {
 			
 		}
 		
-		if (tileMap.__mask != null) {
+		if (tilemap.__mask != null) {
 			
 			renderSession.maskManager.popMask ();
 			

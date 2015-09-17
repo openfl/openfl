@@ -2,21 +2,21 @@ package openfl._internal.renderer.flash;
 
 
 import openfl.display.BitmapData;
-import openfl.display.TileMap;
+import openfl.display.Tilemap;
 import openfl.geom.Point;
 
-@:access(openfl.display.TileLayer)
-@:access(openfl.display.TileMap)
-@:access(openfl.display.TileSet)
+@:access(openfl.display.Tilemap)
+@:access(openfl.display.TilemapLayer)
+@:access(openfl.display.Tileset)
 
 
-class FlashTileMap {
+class FlashTilemap {
 	
 	
-	public static inline function render (tileMap:TileMap):Void {
+	public static inline function render (tilemap:Tilemap):Void {
 		
 		#if flash
-		var bitmapData = tileMap.bitmapData;
+		var bitmapData = tilemap.bitmapData;
 		
 		bitmapData.lock ();
 		bitmapData.fillRect (bitmapData.rect, 0);
@@ -26,11 +26,11 @@ class FlashTileMap {
 		var sourceRect = null;
 		var destPoint = new Point ();
 		
-		for (layer in tileMap.__layers) {
+		for (layer in tilemap.__layers) {
 			
-			if (layer.__tiles.length == 0 || layer.tileSet == null || layer.tileSet.bitmapData == null) continue;
+			if (layer.__tiles.length == 0 || layer.tileset == null || layer.tileset.bitmapData == null) continue;
 			
-			sourceBitmapData = layer.tileSet.bitmapData;
+			sourceBitmapData = layer.tileset.bitmapData;
 			
 			tiles = layer.__tiles;
 			count = tiles.length;
@@ -41,7 +41,7 @@ class FlashTileMap {
 				
 				if (tile.id != cacheTileID) {
 					
-					sourceRect = layer.tileSet.__rects[tile.id];
+					sourceRect = layer.tileset.__rects[tile.id];
 					cacheTileID = tile.id;
 					
 				}
