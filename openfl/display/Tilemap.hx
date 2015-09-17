@@ -19,6 +19,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public var allowRotation:Bool;
 	public var allowScale:Bool;
 	public var allowTransform:Bool;
+	public var numLayers (default, null):Int;
 	
 	#if !flash
 	public var smoothing:Bool;
@@ -39,31 +40,86 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		FlashRenderer.register (this);
 		#end
 		
+		__layers = new Array ();
+		numLayers = 0;
 		smoothing = true;
 		
 	}
 	
 	
-	public function addLayer (layer:TilemapLayer):Void {
-		
-		if (__layers == null) {
-			
-			__layers = new Array ();
-			
-		}
+	public function addLayer (layer:TilemapLayer):TilemapLayer {
 		
 		__layers.push (layer);
+		numLayers++;
+		
+		return layer;
 		
 	}
 	
 	
-	public function removeLayer (layer:TilemapLayer):Void {
+	public function addLayerAt (layer:TilemapLayer, index:Int):TilemapLayer {
 		
-		if (__layers != null) {
+		__layers.remove (layer);
+		__layers.insert (index, layer);
+		numLayers = __layers.length;
+		
+		return layer;
+		
+	}
+	
+	
+	public function contains (layer:TilemapLayer):Bool {
+		
+		return (__layers.indexOf (layer) > -1);
+		
+	}
+	
+	
+	public function getLayerAt (index:Int):TilemapLayer {
+		
+		if (index >= 0 && index < numLayers) {
 			
-			__layers.remove (layer);
+			return __layers[index];
 			
 		}
+		
+		return null;
+		
+	}
+	
+	
+	public function getLayerIndex (layer:TilemapLayer):Int {
+		
+		for (i in 0...__layers.length) {
+			
+			if (__layers[i] == layer) return i;
+			
+		}
+		
+		return -1;
+		
+	}
+	
+	
+	public function removeLayer (layer:TilemapLayer):TilemapLayer {
+		
+		__layers.remove (layer);
+		numLayers = __layers.length;
+		
+		return layer;
+		
+	}
+	
+	
+	public function removeLayerAt (index:Int):TilemapLayer {
+		
+		if (index >= 0 && index < numLayers) {
+			
+			return removeLayer (__layers[index]);
+			
+		}
+		
+		return null;
 		
 	}
 	
