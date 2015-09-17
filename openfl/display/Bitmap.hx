@@ -258,7 +258,12 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			scaleY = value / bitmapData.height;
+			if (value != bitmapData.height) {
+				
+				scaleY = value / bitmapData.height;
+				
+			}
+			
 			return value;
 			
 		}
@@ -285,7 +290,12 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			scaleX = value / bitmapData.width;
+			if (value != bitmapData.width) {
+				
+				scaleX = value / bitmapData.width;
+				
+			}
+			
 			return value;
 			
 		}

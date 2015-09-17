@@ -166,6 +166,7 @@ import js.html.Element;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.geom.ColorTransform)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 
@@ -813,12 +814,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix = __getWorldTransform ();
+		var matrix;
 		
 		if (targetCoordinateSpace != null) {
 			
-			matrix = matrix.clone ();
-			matrix.concat (targetCoordinateSpace.__worldTransform.clone ().invert ());
+			matrix = __getWorldTransform ().clone ();
+			matrix.concat (targetCoordinateSpace.__getWorldTransform ().clone ().invert ());
+			
+		} else {
+			
+			matrix = Matrix.__temp;
+			matrix.identity ();
 			
 		}
 		
@@ -1052,8 +1058,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		__getWorldTransform ();
-		__getBounds (rect, new Matrix ());
+		__getBounds (rect, __transform);
 		
 	}
 	
@@ -1602,7 +1607,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		return bounds.height * scaleY;
+		return bounds.height;
 		
 	}
 	
@@ -1610,7 +1615,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_height (value:Float):Float {
 		
 		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		
+		var matrix = Matrix.__temp;
+		matrix.identity ();
+		
+		__getBounds (bounds, matrix);
 		
 		if (value != bounds.height) {
 			
@@ -1905,7 +1914,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
 		
-		return bounds.width * scaleX;
+		return bounds.width;
 		
 	}
 	
@@ -1913,7 +1922,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_width (value:Float):Float {
 		
 		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
+		
+		var matrix = Matrix.__temp;
+		matrix.identity ();
+		
+		__getBounds (bounds, matrix);
 		
 		if (value != bounds.width) {
 			
