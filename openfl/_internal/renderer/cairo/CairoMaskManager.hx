@@ -28,7 +28,7 @@ class CairoMaskManager extends AbstractMaskManager {
 		cairo.save ();
 		
 		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__getTransform ();
+		var transform = mask.__getWorldTransform ();
 		
 		cairo.matrix = transform.__toMatrix3 ();
 		
@@ -58,6 +58,13 @@ class CairoMaskManager extends AbstractMaskManager {
 	public override function popMask ():Void {
 		
 		renderSession.cairo.restore ();
+		
+	}
+	
+	
+	public override function popRect ():Void {
+		
+		renderSession.context.restore ();
 		
 	}
 	

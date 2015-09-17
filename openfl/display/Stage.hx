@@ -1040,8 +1040,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
-		// Flash dispatchs the resize event at every little change, with a minumum of 2 events when maximizing. So let's dispatch the event again.
-		__broadcast (event, false);
 		
 	}
 	

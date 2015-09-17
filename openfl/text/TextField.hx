@@ -1257,7 +1257,7 @@ class TextField extends InteractiveObject {
 		if (!visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		__getTransform ();
+		__getWorldTransform ();
 		__updateLayout ();
 		
 		var px = __worldTransform.__transformInverseX (x, y);
@@ -1282,7 +1282,7 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		__getTransform ();
+		__getWorldTransform ();
 		__updateLayout ();
 		
 		var px = __worldTransform.__transformInverseX (x, y);
@@ -2289,7 +2289,7 @@ class TextField extends InteractiveObject {
 		
 		if (stage.focus == this) {
 			
-			__getTransform ();
+			__getWorldTransform ();
 			__updateLayout ();
 			
 			var px = __worldTransform.__transformInverseX (x, y);

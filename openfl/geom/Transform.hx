@@ -94,7 +94,7 @@ class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
-	public var concatenatedMatrix(get, never):Matrix;
+	public var concatenatedMatrix (get, never):Matrix;
 	
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
@@ -200,7 +200,7 @@ class Transform {
 		
 		if (__hasMatrix) {
 			
-			return __displayObject.__getTransform().clone();
+			return __displayObject.__getWorldTransform ().clone ();
 			
 		}
 		

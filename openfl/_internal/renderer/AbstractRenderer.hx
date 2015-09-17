@@ -3,6 +3,7 @@ package openfl._internal.renderer;
 
 import openfl.display.Shape;
 import openfl.display.Stage;
+import openfl.geom.Rectangle;
 
 
 class AbstractRenderer {
@@ -11,6 +12,7 @@ class AbstractRenderer {
 	public var height:Int;
 	public var width:Int;
 	public var transparent:Bool;
+	public var viewport:Rectangle;
 	
 	private var renderSession:RenderSession;
 	

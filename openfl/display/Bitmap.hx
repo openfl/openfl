@@ -130,7 +130,7 @@ class Bitmap extends DisplayObject {
 		if (!visible || __isMask || bitmapData == null) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		__getTransform ();
+		__getWorldTransform ();
 		
 		var px = __worldTransform.__transformInverseX (x, y);
 		var py = __worldTransform.__transformInverseY (x, y);
@@ -156,7 +156,7 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData == null) return false;
 		
-		__getTransform ();
+		__getWorldTransform ();
 		
 		var px = __worldTransform.__transformInverseX (x, y);
 		var py = __worldTransform.__transformInverseY (x, y);
@@ -208,23 +208,10 @@ class Bitmap extends DisplayObject {
 	
 	
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
-		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			var m = __worldTransform.clone();
-			var clip = Rectangle.__temp;
-			scrollRect.__transform(clip, m);
-			clip.y = renderSession.renderer.height - clip.y - clip.height;
-			renderSession.spriteBatch.start(clip);
-		}
 		
-		__preRenderGL(renderSession);
+		__preRenderGL (renderSession);
 		GLBitmap.render (this, renderSession);
-		__postRenderGL(renderSession);
-		
-		if (scrollRect != null) {
-			renderSession.spriteBatch.stop();
-			renderSession.spriteBatch.start();
-		}
+		__postRenderGL (renderSession);
 		
 	}
 	

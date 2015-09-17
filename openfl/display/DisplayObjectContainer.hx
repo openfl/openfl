@@ -846,7 +846,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -915,7 +915,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.popMask ();
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -999,9 +999,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		__preRenderGL(renderSession);
-		
-		__drawGraphicsGL(renderSession);
+		__preRenderGL (renderSession);
+		__drawGraphicsGL (renderSession);
 		
 		for (child in __children) {
 			
@@ -1009,7 +1008,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__postRenderGL(renderSession);
+		__postRenderGL (renderSession);
 		
 		if (__removedChildren.length > 0) {
 			

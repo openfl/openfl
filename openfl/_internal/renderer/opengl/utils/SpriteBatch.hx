@@ -143,7 +143,7 @@ class SpriteBatch {
 	
 	public function start(?clipRect:Rectangle = null) {
 		if (!drawing) {
-			throw "Call Spritebatch.begin() before start()";
+			stop();
 		}
 		dirty = true;
 		this.clipRect = clipRect;

@@ -26,7 +26,7 @@ class DOMMaskManager extends AbstractMaskManager {
 		//context.save ();
 		//
 		////var cacheAlpha = mask.__worldAlpha;
-		//var transform = mask.__getTransform ();
+		//var transform = mask.__getWorldTransform ();
 		//
 		//context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
 		//

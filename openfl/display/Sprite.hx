@@ -176,7 +176,7 @@ class Sprite extends DisplayObjectContainer {
 			
 			return interactiveOnly;
 			
-		} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
+		} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 			
 			if (stack != null) {
 				
@@ -199,7 +199,7 @@ class Sprite extends DisplayObjectContainer {
 			
 			return true;
 			
-		} else if (__graphics != null && __graphics.__hitTest (x, y, true, __getTransform ())) {
+		} else if (__graphics != null && __graphics.__hitTest (x, y, true, __getWorldTransform ())) {
 			
 			return true;
 			

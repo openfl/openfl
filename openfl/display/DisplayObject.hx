@@ -711,8 +711,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public var y (get, set):Float;
 	
-	@:dox(hide) @:noCompletion @:dox(hide) public var __worldTransform:Matrix;
-	@:dox(hide) @:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
+	@:noCompletion @:dox(hide) public var __renderTransform:Matrix;
+	@:noCompletion @:dox(hide) public var __worldColorTransform:ColorTransform;
+	@:noCompletion @:dox(hide) public var __worldOffset:Point;
+	@:noCompletion @:dox(hide) public var __worldTransform:Matrix;
 	
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
@@ -725,6 +727,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __maskCached:Bool = false;
 	@:noCompletion private var __name:String;
 	@:noCompletion private var __objectTransform:Transform;
+	@:noCompletion private var __offset:Point;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __rotation:Float;
@@ -766,6 +769,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		__rotationSine = 0;
 		__rotationCosine = 1;
 		
+		__renderTransform = new Matrix ();
+		
+		__offset = new Point ();
+		__worldOffset = new Point ();
+		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
@@ -805,17 +813,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix:Matrix;
+		var matrix = __getTransform ();
 		
 		if (targetCoordinateSpace != null) {
 			
-			matrix = __getTransform().clone();
-			matrix.concat (targetCoordinateSpace.__getTransform().clone().invert());
-			
-		} else {
-			
-			matrix = Matrix.__temp;
-			matrix.identity();
+			matrix = matrix.clone ();
+			matrix.concat (targetCoordinateSpace.__worldTransform.clone ().invert ());
 			
 		}
 		
@@ -873,7 +876,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public function globalToLocal (pos:Point):Point {
 		
 		pos = pos.clone ();
-		__getTransform ().__transformInversePoint (pos);
+		__getWorldTransform ().__transformInversePoint (pos);
 		return pos;
 		
 	}
@@ -924,7 +927,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (parent != null) {
 			
 			var bounds = new Rectangle ();
-			__getBounds (bounds, __getTransform ());
+			__getBounds (bounds, __getWorldTransform ());
 			
 			return bounds.containsPoint (new Point (x, y));
 			
@@ -960,7 +963,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function localToGlobal (point:Point):Point {
 		
-		return __getTransform ().transformPoint (point);
+		return __getWorldTransform ().transformPoint (point);
 		
 	}
 	
@@ -1047,23 +1050,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private inline function __getLocalBounds (rect:Rectangle, ?withLocalTransform:Bool = true):Void {
+	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		var m:Matrix;
-		if (withLocalTransform) {
-			m = __localTransform.clone();
-			m.__translateTransformed ( -m.tx, -m.ty);
-		} else { 
-			m = Matrix.__temp;
-			m.identity();
-		}
-		
-		__getBounds (rect, m);
+		__getTransform ();
+		__getBounds (rect, new Matrix ());
 		
 	}
 	
 	
-	@:noCompletion private function __getTransform ():Matrix {
+	@:noCompletion private function __getWorldTransform ():Matrix {
 		
 		if (__transformDirty || __worldTransformDirty > 0) {
 			
@@ -1117,7 +1112,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			if (!visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
-			if (__graphics.__hitTest (x, y, shapeFlag, __getTransform ())) {
+			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 				
 				if (stack != null && !interactiveOnly) {
 					
@@ -1140,7 +1135,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (__graphics != null) {
 			
-			if (__graphics.__hitTest (x, y, true, __getTransform ())) {
+			if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
 				
 				return true;
 				
@@ -1212,9 +1207,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		__preRenderGL(renderSession);
-		__drawGraphicsGL(renderSession);
-		__postRenderGL(renderSession);
+		__preRenderGL (renderSession);
+		__drawGraphicsGL (renderSession);
+		__postRenderGL (renderSession);
 		
 	}
 	
@@ -1249,7 +1244,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
 			
 		}
-
+		
 		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
 			
 			renderSession.maskManager.pushMask (this);
@@ -1350,19 +1345,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__worldTransform.tx = __transform.tx * parentTransform.a + __transform.ty * parentTransform.c + parentTransform.tx;
 			__worldTransform.ty = __transform.tx * parentTransform.b + __transform.ty * parentTransform.d + parentTransform.ty;
 			
-			if (__isMask) __maskCached = false;
+			__worldOffset.copyFrom (parent.__worldOffset);
 			
 		} else {
 			
 			__worldTransform.copyFrom (__transform);
+			__worldOffset.setTo (0, 0);
 			
 		}
 		
 		if (scrollRect != null) {
 			
-			scrollRect.__transform (scrollRect, __worldTransform);
+			__offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
+			__worldOffset.offset (__offset.x, __offset.y);
+			
+		} else {
+			
+			__localOffset.setTo (0, 0);
 			
 		}
+		
+		__renderTransform.copyFrom (__worldTransform);
+		__renderTransform.translate (-__worldOffset.x, -__worldOffset.y);
 		
 		if (updateChildren && __transformDirty) {
 			
@@ -1606,7 +1610,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_height (value:Float):Float {
 		
 		var bounds = new Rectangle ();
-		__getLocalBounds (bounds, false);
+		__getLocalBounds (bounds);
 		
 		if (value != bounds.height) {
 			
@@ -1653,7 +1657,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (stage != null) {
 			
-			return __getTransform ().__transformInverseX (stage.__mouseX, stage.__mouseY);
+			return __getWorldTransform ().__transformInverseX (stage.__mouseX, stage.__mouseY);
 			
 			
 		}
@@ -1667,7 +1671,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (stage != null) {
 			
-			return __getTransform ().__transformInverseY (stage.__mouseX, stage.__mouseY);
+			return __getWorldTransform ().__transformInverseY (stage.__mouseX, stage.__mouseY);
 			
 		}
 		
@@ -1909,7 +1913,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private function set_width (value:Float):Float {
 		
 		var bounds = new Rectangle ();
-		__getLocalBounds (bounds, false);
+		__getLocalBounds (bounds);
 		
 		if (value != bounds.width) {
 			
