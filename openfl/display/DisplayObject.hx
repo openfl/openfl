@@ -813,7 +813,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 */
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
-		var matrix = __getTransform ();
+		var matrix = __getWorldTransform ();
 		
 		if (targetCoordinateSpace != null) {
 			
@@ -1052,7 +1052,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		__getTransform ();
+		__getWorldTransform ();
 		__getBounds (rect, new Matrix ());
 		
 	}
@@ -1361,7 +1361,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		} else {
 			
-			__localOffset.setTo (0, 0);
+			__offset.setTo (0, 0);
 			
 		}
 		
