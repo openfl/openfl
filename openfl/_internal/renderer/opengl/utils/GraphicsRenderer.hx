@@ -1487,7 +1487,7 @@ class GLBucketData {
 			
 			if (glVerts.length <= lastVertsSize) {
 				vertexArray.bind();
-				var end = glLength * 4 * stride;
+				var end = glLength * stride;
 				if (glLength > 0 && lastVertsSize > end) {
 					var view = glVerts.subarray(0, end);
 					vertexArray.upload(view);
