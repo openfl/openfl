@@ -51,7 +51,7 @@ class DrawCommandBuffer {
 		
 		var data = new DrawCommandReader (other);
 		
-		for (type in types) {
+		for (type in other.types) {
 			
 			switch (type) {
 				
@@ -77,6 +77,7 @@ class DrawCommandBuffer {
 				default:
 				
 			}
+			
 		}
 		
 		data.destroy ();
