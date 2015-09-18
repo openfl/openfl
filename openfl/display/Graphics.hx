@@ -77,10 +77,10 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __dirty (default, set):Bool = true;
 	@:noCompletion private var __glStack:Array<GLStack> = [];
 	@:noCompletion private var __drawPaths:Array<DrawPath>;
-	@:noCompletion private var __halfStrokeWidth:Float;
 	@:noCompletion private var __image:Image;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
+	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool;
 	@:noCompletion private var __cachedTexture:FilterTexture;
@@ -99,7 +99,7 @@ import js.html.CanvasRenderingContext2D;
 	public function new () {
 		
 		__commands = new DrawCommandBuffer ();
-		__halfStrokeWidth = 0;
+		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
 		__hardware = true;
@@ -271,7 +271,7 @@ import js.html.CanvasRenderingContext2D;
 	public function clear ():Void {
 		
 		__commands.clear();
-		__halfStrokeWidth = 0;
+		__strokePadding = 0;
 		
 		if (__bounds != null) {
 			
@@ -296,7 +296,7 @@ import js.html.CanvasRenderingContext2D;
 		__bounds = sourceGraphics.__bounds.clone ();
 		__commands = sourceGraphics.__commands.copy ();
 		__dirty = true;
-		__halfStrokeWidth = sourceGraphics.__halfStrokeWidth;
+		__strokePadding = sourceGraphics.__strokePadding;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
 		__transformDirty = true;
@@ -307,8 +307,8 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
 		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		__inflateBounds (__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds (__positionX + __strokePadding, __positionY + __strokePadding);
 		
 		var ix1, iy1, ix2, iy2;
 		
@@ -364,10 +364,10 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__inflateBounds (ix1 - __halfStrokeWidth, iy1 - __halfStrokeWidth);
-		__inflateBounds (ix1 + __halfStrokeWidth, iy1 + __halfStrokeWidth);
-		__inflateBounds (ix2 - __halfStrokeWidth, iy2 - __halfStrokeWidth);
-		__inflateBounds (ix2 + __halfStrokeWidth, iy2 + __halfStrokeWidth);
+		__inflateBounds (ix1 - __strokePadding, iy1 - __strokePadding);
+		__inflateBounds (ix1 + __strokePadding, iy1 + __strokePadding);
+		__inflateBounds (ix2 - __strokePadding, iy2 - __strokePadding);
+		__inflateBounds (ix2 + __strokePadding, iy2 + __strokePadding);
 		
 		__positionX = anchorX;
 		__positionY = anchorY;
@@ -412,8 +412,8 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float) {
 		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		__inflateBounds (__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds (__positionX + __strokePadding, __positionY + __strokePadding);
 		
 		var ix, iy;
 		
@@ -439,8 +439,8 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__inflateBounds (ix - __halfStrokeWidth, iy - __halfStrokeWidth);
-		__inflateBounds (ix + __halfStrokeWidth, iy + __halfStrokeWidth);
+		__inflateBounds (ix - __strokePadding, iy - __strokePadding);
+		__inflateBounds (ix + __strokePadding, iy + __strokePadding);
 		
 		__positionX = anchorX;
 		__positionY = anchorY;
@@ -471,8 +471,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (radius <= 0) return;
 		
-		__inflateBounds (x - radius - __halfStrokeWidth, y - radius - __halfStrokeWidth);
-		__inflateBounds (x + radius + __halfStrokeWidth, y + radius + __halfStrokeWidth);
+		__inflateBounds (x - radius - __strokePadding, y - radius - __strokePadding);
+		__inflateBounds (x + radius + __strokePadding, y + radius + __strokePadding);
 		
 		__commands.drawCircle (x, y, radius);
 		
@@ -502,8 +502,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (width <= 0 || height <= 0) return;
 		
-		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
-		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+		__inflateBounds (x - __strokePadding, y - __strokePadding);
+		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
 		
 		__commands.drawEllipse (x, y, width, height);
 		
@@ -706,8 +706,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (width <= 0 || height <= 0) return;
 		
-		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
-		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+		__inflateBounds (x - __strokePadding, y - __strokePadding);
+		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
 		
 		__commands.drawRect (x, y, width, height);
 		
@@ -746,8 +746,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (width <= 0 || height <= 0) return;
 		
-		__inflateBounds (x - __halfStrokeWidth, y - __halfStrokeWidth);
-		__inflateBounds (x + width + __halfStrokeWidth, y + height + __halfStrokeWidth);
+		__inflateBounds (x - __strokePadding, y - __strokePadding);
+		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
 		
 		__commands.drawRoundRect (x, y, width, height, rx, ry);
 		
@@ -1304,7 +1304,20 @@ import js.html.CanvasRenderingContext2D;
 	 */
 	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
 		
-		__halfStrokeWidth = thickness > __halfStrokeWidth ? thickness/2 : __halfStrokeWidth;
+		if (thickness != null) {
+			
+			if (joints == JointStyle.MITER) {
+				
+				if (thickness > __strokePadding) __strokePadding = thickness;
+				
+			} else {
+				
+				if (thickness / 2 > __strokePadding) __strokePadding = thickness / 2;
+				
+			}
+			
+		}
+		
 		__commands.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
 		
 		if (thickness != null) __visible = true;
@@ -1332,14 +1345,14 @@ import js.html.CanvasRenderingContext2D;
 		
 		// TODO: Should we consider the origin instead, instead of inflating in all directions?
 		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		__inflateBounds (__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds (__positionX + __strokePadding, __positionY + __strokePadding);
 		
 		__positionX = x;
 		__positionY = y;
 		
-		__inflateBounds (__positionX - __halfStrokeWidth, __positionY - __halfStrokeWidth);
-		__inflateBounds (__positionX + __halfStrokeWidth, __positionY + __halfStrokeWidth);
+		__inflateBounds (__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds (__positionX + __strokePadding * 2, __positionY + __strokePadding);
 		
 		__commands.lineTo (x, y);
 		
