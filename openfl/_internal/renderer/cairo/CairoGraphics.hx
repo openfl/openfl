@@ -591,7 +591,7 @@ class CairoGraphics {
 						
 						hasStroke = true;
 						
-						cairo.lineWidth = c.thickness;
+						cairo.lineWidth = (c.thickness > 0 ? c.thickness : 1);
 						
 						if (c.joints == null) {
 							

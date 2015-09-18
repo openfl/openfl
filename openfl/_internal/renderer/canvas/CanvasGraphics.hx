@@ -590,7 +590,7 @@ class CanvasGraphics {
 						
 					} else {
 						
-						context.lineWidth = c.thickness;
+						context.lineWidth = (c.thickness > 0 ? c.thickness : 1);
 						
 						context.lineJoin = (c.joints == null ? "round" : Std.string (c.joints).toLowerCase ());
 						context.lineCap = (c.caps == null ? "round" : switch (c.caps) {
