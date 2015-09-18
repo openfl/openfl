@@ -44,11 +44,14 @@ class CairoTextField {
 			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
 				
 				cairo.destroy ();
+				graphics.__cairo = null;
 				cairo = null;
 				
 			}
 			
 		}
+		
+		if (bounds.width <= 0 || bounds.height <= 0) return;
 		
 		if (cairo == null) {
 			
