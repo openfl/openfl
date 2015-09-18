@@ -208,7 +208,7 @@ class CairoGraphics {
 		CairoGraphics.graphics = graphics;
 		bounds = graphics.__bounds;
 		
-		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains (x, y)) {
+		if (graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains (x, y)) {
 			
 			return false;
 			

@@ -82,7 +82,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __transformDirty:Bool;
-	@:noCompletion private var __visible:Bool = true;
+	@:noCompletion private var __visible:Bool;
 	@:noCompletion private var __cachedTexture:FilterTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	
