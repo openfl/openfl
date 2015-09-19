@@ -614,6 +614,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		stageWidth = window.width;
 		stageHeight = window.height;
 		
+		__alignOffsetX = 0;
+		__alignOffsetY = 0;
+		
 		__desiredWidth = 0;
 		__desiredHeight = 0;
 		if (window.config != null) {
