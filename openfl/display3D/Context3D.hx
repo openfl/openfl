@@ -133,7 +133,7 @@ import openfl.Lib;
 	
 	public function createCubeTexture (size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture {
 		
-		var texture = new CubeTexture (GL.createTexture (), size); // TODO use format, optimizeForRenderToTexture and streamingLevels?
+		var texture = new CubeTexture (this, GL.createTexture (), size); // TODO use format, optimizeForRenderToTexture and streamingLevels?
 		texturesCreated.push (texture);
 		return texture;
 		
@@ -142,7 +142,7 @@ import openfl.Lib;
 	
 	public function createIndexBuffer (numIndices:Int):IndexBuffer3D {
 		
-		var indexBuffer = new IndexBuffer3D (GL.createBuffer (), numIndices);
+		var indexBuffer = new IndexBuffer3D (this, GL.createBuffer (), numIndices);
 		indexBuffersCreated.push (indexBuffer);
 		return indexBuffer;
 		
@@ -151,7 +151,7 @@ import openfl.Lib;
 	
 	public function createProgram ():Program3D {
 		
-		var program = new Program3D (GL.createProgram ());
+		var program = new Program3D (this, GL.createProgram ());
 		programsCreated.push (program);
 		return program;
 		
@@ -160,7 +160,7 @@ import openfl.Lib;
 	
 	public function createRectangleTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture {
 		
-		var texture = new RectangleTexture (GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
+		var texture = new RectangleTexture (this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
 		texturesCreated.push (texture);
 		return texture;
 		
@@ -169,7 +169,7 @@ import openfl.Lib;
 	
 	public function createTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture {
 		
-		var texture = new Texture (GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
+		var texture = new Texture (this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
 		texturesCreated.push (texture);
 		return texture;
 		
@@ -178,9 +178,57 @@ import openfl.Lib;
 	
 	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int):VertexBuffer3D {
 		
-		var vertexBuffer = new VertexBuffer3D (GL.createBuffer (), numVertices, data32PerVertex);
+		var vertexBuffer = new VertexBuffer3D (this, GL.createBuffer (), numVertices, data32PerVertex);
 		vertexBuffersCreated.push (vertexBuffer);
 		return vertexBuffer;
+		
+	}
+	
+	
+	@:noCompletion public function __deleteTexture (texture:TextureBase):Void
+	{
+		
+		if (texture.glTexture == null)
+			return;
+		texturesCreated.remove (texture);
+		GL.deleteTexture (texture.glTexture);
+		texture.glTexture = null;
+		
+	}
+	
+	
+	@:noCompletion public function __deleteVertexBuffer (buffer:VertexBuffer3D):Void
+	{
+		
+		if (buffer.glBuffer == null)
+			return;
+		vertexBuffersCreated.remove (buffer);
+		GL.deleteBuffer (buffer.glBuffer);
+		buffer.glBuffer = null;
+		
+	}
+	
+	
+	@:noCompletion public function __deleteIndexBuffer (buffer:IndexBuffer3D):Void
+	{
+		
+		if (buffer.glBuffer == null)
+			return;
+		indexBuffersCreated.remove (buffer);
+		GL.deleteBuffer (buffer.glBuffer);
+		buffer.glBuffer = null;
+		
+	}
+	
+	
+	@:noCompletion public function __deleteProgram (program:Program3D):Void
+	{
+		
+		if (program.glProgram == null)
+			return;
+		programsCreated.remove (program);
+		GL.deleteProgram (program.glProgram);
+		program.glProgram = null;
 		
 	}
 	

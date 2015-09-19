@@ -1,6 +1,7 @@
 package openfl.display3D.textures; #if !flash
 
 
+import openfl.display3D.Context3D;
 import openfl.gl.GL;
 import openfl.gl.GLTexture;
 import openfl.gl.GLFramebuffer;
@@ -19,7 +20,7 @@ using openfl.display.BitmapData;
 	
 	public var mipmapsGenerated:Bool;
 	
-	public function new (glTexture:GLTexture, optimize:Bool, width:Int, height:Int) {
+	public function new (context:Context3D, glTexture:GLTexture, optimize:Bool, width:Int, height:Int) {
 		
 		optimizeForRenderToTexture = optimize;
 
@@ -29,7 +30,7 @@ using openfl.display.BitmapData;
 		if (optimizeForRenderToTexture == null) optimizeForRenderToTexture = false;
 		#end
 		
-		super (glTexture, width, height);
+		super (context, glTexture, width, height);
 		
 		#if (cpp || neko || nodejs)
 		if (optimizeForRenderToTexture) { 
