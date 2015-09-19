@@ -177,6 +177,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private static var __worldRenderDirty = 0;
 	@:noCompletion private static var __worldTransformDirty = 0;
 	
+	@:noCompletion private static var __cacheAsBitmapMode = false;
+	
 	/**
 	 * Indicates the alpha transparency value of the object specified. Valid
 	 * values are 0(fully transparent) to 1(fully opaque). The default value is
@@ -268,7 +270,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * performance increases when the movie clip is translated(when its <i>x</i>
 	 * and <i>y</i> position is changed).</p>
 	 */
-	public var cacheAsBitmap:Bool;
+	public var cacheAsBitmap(get, set):Bool;
+	
+	public var cacheAsBitmapMatrix(get, set):Matrix;
+	
+	public var cacheAsBitmapSmooth(get, set):Bool;
+	
+	public var cacheAsBitmapBounds:Rectangle;
 	
 	/**
 	 * An indexed array that contains each filter object currently associated
@@ -618,6 +626,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var scrollRect (get, set):Rectangle;
 	
 	/**
+	 * TODO Documentation
+	 */
+	public var shader(default, set):Shader;
+	
+	/**
 	 * The Stage of the display object. A Flash runtime application has only one
 	 * Stage object. For example, you can create and load multiple display
 	 * objects into the display list, and the <code>stage</code> property of each
@@ -735,6 +748,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __rotationCosine:Float;
 	@:noCompletion private var __rotationSine:Float;
 	@:noCompletion private var __scrollRect:Rectangle;
+	@:noCompletion private var __shader:Shader;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool;
@@ -748,6 +762,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	@:noCompletion private var __worldVisibleChanged:Bool;
 	@:noCompletion private var __worldZ:Int;
 	@:noCompletion private var __cacheAsBitmap:Bool = false;
+	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
+	@:noCompletion private var __cacheAsBitmapSmooth:Bool = true;
+	@:noCompletion private var __forceCacheAsBitmap:Bool;
+	@:noCompletion private var __updateCachedBitmap:Bool;	
+	@:noCompletion private var __cachedBitmap:BitmapData;
+	@:noCompletion private var __cachedBitmapBounds:Rectangle;
+	@:noCompletion private var __cachedFilterBounds:Rectangle;
+	@:noCompletion private var __updateFilters:Bool;
 	
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
@@ -1309,6 +1331,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!__renderDirty) {
 			
+			__updateCachedBitmap = true;
 			__renderDirty = true;
 			__worldRenderDirty++;
 			
@@ -1328,50 +1351,61 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
+	// I don't know how many times I've written this function already... KEEP IT DAMN IT!
+	@:noCompletion @:dox(hide) public function __updateTransforms (?overrideTransfrom:Matrix = null) {
+		
+		var overrided = overrideTransfrom != null;
+		var local = overrided ? overrideTransfrom.clone() : __transform;
+		
+		if (!overrided && parent != null) {
+			
+			var parentTransform = parent.__worldTransform;
+			
+			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
+			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
+			__worldTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
+			__worldTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
+			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
+			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			
+			__worldOffset.copyFrom(parent.__worldOffset);
+			
+		} else {
+			
+			__worldTransform.copyFrom(local);
+			__worldOffset.setTo(0, 0);
+			
+		}
+		
+		if (__scrollRect != null) {
+			
+			__offset = __worldTransform.deltaTransformPoint(__scrollRect.topLeft);
+			__worldOffset.offset(__offset.x, __offset.y);
+			
+		} else {
+			
+			__offset.setTo(0, 0);
+			
+		}
+		
+		__renderTransform.copyFrom(__worldTransform);
+		__renderTransform.translate( -__worldOffset.x, -__worldOffset.y);
+		
+	}
+	
 	
 	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		
-		if (__worldTransform == null) {
+		__updateTransforms();
+		
+		// TODO this?
+		if (parent != null && __isMask) {
 			
-			__worldTransform = new Matrix ();
+			__maskCached = false;
 			
 		}
-		
-		if (parent != null) {
-			
-			var parentTransform = parent.__worldTransform;
-			
-			__worldTransform.a = __transform.a * parentTransform.a + __transform.b * parentTransform.c;
-			__worldTransform.b = __transform.a * parentTransform.b + __transform.b * parentTransform.d;
-			__worldTransform.c = __transform.c * parentTransform.a + __transform.d * parentTransform.c;
-			__worldTransform.d = __transform.c * parentTransform.b + __transform.d * parentTransform.d;
-			__worldTransform.tx = __transform.tx * parentTransform.a + __transform.ty * parentTransform.c + parentTransform.tx;
-			__worldTransform.ty = __transform.tx * parentTransform.b + __transform.ty * parentTransform.d + parentTransform.ty;
-			
-			__worldOffset.copyFrom (parent.__worldOffset);
-			
-		} else {
-			
-			__worldTransform.copyFrom (__transform);
-			__worldOffset.setTo (0, 0);
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			__offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
-			__worldOffset.offset (__offset.x, __offset.y);
-			
-		} else {
-			
-			__offset.setTo (0, 0);
-			
-		}
-		
-		__renderTransform.copyFrom (__worldTransform);
-		__renderTransform.translate (-__worldOffset.x, -__worldOffset.y);
 		
 		if (updateChildren && __transformDirty) {
 			
@@ -1398,6 +1432,48 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		if (maskGraphics != null) {
 			
 			__updateMask (maskGraphics);
+			
+		}
+		
+		if (__cacheAsBitmap) {
+			
+			// we need to update the bounds
+			if (__updateCachedBitmap || __updateFilters) {
+				
+				if (__cachedBitmapBounds == null) {
+					__cachedBitmapBounds = new Rectangle();
+				}
+				
+				
+				/* TODO fix this!
+				if(cacheAsBitmapBounds != null) {
+					__cachedBitmapBounds.copyFrom(cacheAsBitmapBounds);
+				} else {
+					__cachedBitmapBounds.setEmpty();
+					__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
+					var rectBounds = new Rectangle();
+					if (__getRenderBounds(rectBounds)) {
+						__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+					}
+				}
+				
+				
+				if (__filters != null) {
+					if (__cachedFilterBounds == null) {
+						__cachedFilterBounds = new Rectangle();
+					}
+					__cachedFilterBounds.setEmpty();
+					@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedFilterBounds, @:privateAccess Matrix.__identity);
+					
+					__cachedBitmapBounds.x += __cachedFilterBounds.x;
+					__cachedBitmapBounds.y += __cachedFilterBounds.y;
+					
+					// limit the bounds to the width and height of the stage
+					if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
+					if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;
+				}
+				*/
+			}
 			
 		}
 		
@@ -1577,6 +1653,50 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 	}
 	
+	@:noCompletion private function set_shader (value:Shader):Shader {
+		
+		__shader = value;
+		return shader = value;
+		
+	}
+	
+	@:noCompletion private function get_cacheAsBitmap ():Bool {
+		
+		return __cacheAsBitmap;
+		
+	}
+	
+	@:noCompletion private function set_cacheAsBitmap (value:Bool):Bool {
+		
+		__setRenderDirty();
+		return __cacheAsBitmap = __forceCacheAsBitmap ? true : value;
+		
+	}
+	
+	@:noCompletion private function get_cacheAsBitmapMatrix ():Matrix {
+		
+		return __cacheAsBitmapMatrix;
+		
+	}
+	
+	@:noCompletion private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
+		
+		__setRenderDirty();
+		return __cacheAsBitmapMatrix = value.clone();
+		
+	}
+	
+	@:noCompletion private function get_cacheAsBitmapSmooth ():Bool {
+		
+		return __cacheAsBitmapSmooth;
+		
+	}
+	
+	@:noCompletion private function set_cacheAsBitmapSmooth (value:Bool):Bool {
+		
+		return __cacheAsBitmapSmooth = value;
+		
+	}
 	
 	@:noCompletion private function get_filters ():Array<BitmapFilter> {
 		
@@ -1595,7 +1715,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
 		
-		// set
+		if (value != null && value.length > 0) {
+			__filters = value;
+			__forceCacheAsBitmap = true;
+			__cacheAsBitmap = true;
+			__updateFilters = true;
+		} else {
+			__filters = null;
+			__forceCacheAsBitmap = false;
+			__cacheAsBitmap = false;
+			__updateFilters = false;
+		}
+		
+		__setRenderDirty();
 		
 		return value;
 		

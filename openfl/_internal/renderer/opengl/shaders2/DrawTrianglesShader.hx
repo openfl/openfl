@@ -67,8 +67,8 @@ class DrawTrianglesShader extends Shader {
 		init ();
 	}
 	
-	override function init() {
-		super.init();
+	override private function init(force:Bool = false) {
+		super.init(force);
 		
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.TexCoord);

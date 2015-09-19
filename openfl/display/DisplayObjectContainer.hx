@@ -682,12 +682,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (__children.length == 0) return;
 		
-		var matrixCache = null;
-		
 		if (matrix != null) {
 			
-			matrixCache = __worldTransform;
-			__worldTransform = matrix;
+			__updateTransforms(matrix);
 			__updateChildren (true);
 			
 		}
@@ -701,7 +698,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			__worldTransform = matrixCache;
+			__updateTransforms();
 			__updateChildren (true);
 			
 		}

@@ -5,23 +5,29 @@ import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
+import openfl.display.BitmapData.TextureUvs;
 
 
-class FilterTexture {
+class RenderTexture {
 	
 	
-	public var frameBuffer:GLFramebuffer;
 	public var gl:GLRenderContext;
+	public var frameBuffer:GLFramebuffer;
 	public var renderBuffer:GLRenderbuffer;
-	public var smoothing:Bool;
 	public var texture:GLTexture;
+	public var smoothing:Bool;
 	public var width:Int;
 	public var height:Int;
+	public var powerOfTwo:Bool = true;
 	
+	private var __width:Int;
+	private var __height:Int;
+	private var __uvData:TextureUvs;
 	
-	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing = true) {
+	public function new (gl:GLRenderContext, width:Int, height:Int, smoothing:Bool = true, powerOfTwo:Bool = true) {
 		
 		this.gl = gl;
+		this.powerOfTwo = powerOfTwo;
 		
 		frameBuffer = gl.createFramebuffer ();
 		texture = gl.createTexture ();
@@ -44,18 +50,18 @@ class FilterTexture {
 	}
 	
 	
-	public function clear ():Void {
-			
-		gl.clearColor (0, 0, 0, 0);
-		gl.clear (gl.COLOR_BUFFER_BIT);
+	public function clear (?r:Float = 0, ?g:Float = 0, ?b:Float = 0, ?a:Float = 0, ?mask:Null<Int>):Void {
+		
+		gl.clearColor (r, g, b, a);
+		gl.clear (mask == null ? gl.COLOR_BUFFER_BIT : mask);
 		
 	}
 	
 	
 	public function destroy ():Void {
 		
-		gl.deleteFramebuffer (frameBuffer);
-		gl.deleteTexture (texture);
+		if(frameBuffer != null) gl.deleteFramebuffer (frameBuffer);
+		if(texture != null) gl.deleteTexture (texture);
 		
 		frameBuffer = null;
 		texture = null;
@@ -70,13 +76,50 @@ class FilterTexture {
 		this.width = width;
 		this.height = height;
 		
+		var pow2W = width;
+		var pow2H = height;
+		
+		if (powerOfTwo) {
+			pow2W = powOfTwo(width);
+			pow2H = powOfTwo(height);
+		}
+
+		var lastW = __width;
+		var lastH = __height;
+		
+		__width = pow2W;
+		__height = pow2H;
+		
+		createUVs();
+		
+		if (lastW == pow2W && lastH == pow2H) return;
+		
 		gl.bindTexture (gl.TEXTURE_2D, texture);
-		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+		gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, __width, __height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 		
 		gl.bindRenderbuffer (gl.RENDERBUFFER, renderBuffer);
-		gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_STENCIL, width, height);
+		gl.renderbufferStorage (gl.RENDERBUFFER, gl.DEPTH_STENCIL, __width, __height);
 		
 	}
 	
+	private function createUVs() {
+		if (__uvData == null) __uvData = new TextureUvs();
+		var w = width / __width;
+		var h = height / __height;
+		__uvData.x0 = 0;
+		__uvData.y0 = 0;
+		__uvData.x1 = w;
+		__uvData.y1 = 0;
+		__uvData.x2 = w;
+		__uvData.y2 = h;
+		__uvData.x3 = 0;
+		__uvData.y3 = h;
+		
+	}
 	
+	private inline function powOfTwo(value:Int) {
+		var n = 1;
+		while (n < value) n <<= 1;
+		return n;
+	}
 }

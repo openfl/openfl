@@ -6,7 +6,7 @@ import lime.graphics.Image;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
-import openfl._internal.renderer.opengl.utils.FilterTexture;
+import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
@@ -83,7 +83,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __positionY:Float;
 	@:noCompletion private var __transformDirty:Bool;
 	@:noCompletion private var __visible:Bool;
-	@:noCompletion private var __cachedTexture:FilterTexture;
+	@:noCompletion private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	
 	#if (js && html5)

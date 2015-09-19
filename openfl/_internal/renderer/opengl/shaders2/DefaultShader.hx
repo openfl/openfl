@@ -4,26 +4,28 @@ import lime.graphics.GLRenderContext;
 
 
 class DefaultShader extends Shader {
-
-	public function new(gl:GLRenderContext) {
-		super(gl);
-		
-		vertexSrc = [
+	
+	public static var VERTEX_SRC(default, null) = [
 			'attribute vec2 ${Attrib.Position};',
 			'attribute vec2 ${Attrib.TexCoord};',
 			'attribute vec4 ${Attrib.Color};',
 			
 			'uniform mat3 ${Uniform.ProjectionMatrix};',
 			
-			'varying vec2 vTexCoord;',
-			'varying vec4 vColor;',
+			'varying vec2 ${Varying.TexCoord};',
+			'varying vec4 ${Varying.Color};',
 			
 			'void main(void) {',
 			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
-			'   vTexCoord = ${Attrib.TexCoord};',
-			'   vColor = ${Attrib.Color};',
+			'   ${Varying.TexCoord} = ${Attrib.TexCoord};',
+			'   ${Varying.Color} = ${Attrib.Color};',
 			'}'
 		];
+
+	public function new(gl:GLRenderContext) {
+		super(gl);
+		
+		vertexSrc = VERTEX_SRC;
 		
 		fragmentSrc = [
 			'#ifdef GL_ES',
@@ -34,8 +36,8 @@ class DefaultShader extends Shader {
 			'uniform vec4 ${Uniform.ColorMultiplier};',
 			'uniform vec4 ${Uniform.ColorOffset};',
 			
-			'varying vec2 vTexCoord;',
-			'varying vec4 vColor;',
+			'varying vec2 ${Varying.TexCoord};',
+			'varying vec4 ${Varying.Color};',
 			
 			'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
 			'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
@@ -47,8 +49,8 @@ class DefaultShader extends Shader {
 			'}',
 			
 			'void main(void) {',
-			'   vec4 tc = texture2D(${Uniform.Sampler}, vTexCoord);',
-			'   gl_FragColor = colorTransform(tc, vColor, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
+			'   vec4 tc = texture2D(${Uniform.Sampler}, ${Varying.TexCoord});',
+			'   gl_FragColor = colorTransform(tc, ${Varying.Color}, ${Uniform.ColorMultiplier}, ${Uniform.ColorOffset});',
 			'}'
 		
 		];
@@ -57,8 +59,8 @@ class DefaultShader extends Shader {
 		
 	}
 	
-	override private function init() {
-		super.init();
+	override private function init(force:Bool = false) {
+		super.init(force);
 
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.TexCoord);
@@ -72,20 +74,26 @@ class DefaultShader extends Shader {
 }
 
 // TODO Find a way to apply these default attributes and uniforms to other shaders
-@:enum private abstract Attrib(String) from String to String {
-	var Position = "aPosition";
-	var TexCoord = "aTexCoord0";
-	var Color = "aColor";
+@:enum abstract Attrib(String) from String to String {
+	var Position = "openfl_aPosition";
+	var TexCoord = "openfl_aTexCoord0";
+	var Color = "openfl_aColor";
 }
 
-@:enum private abstract Uniform(String) from String to String {
-	var Sampler = "uSampler0";
-	var ProjectionMatrix = "uProjectionMatrix";
-	var Color = "uColor";
-	var Alpha = "uAlpha";
-	var ColorMultiplier = "uColorMultiplier";
-	var ColorOffset = "uColorOffset";
+@:enum abstract Uniform(String) from String to String {
+	var Sampler = "openfl_uSampler0";
+	var ProjectionMatrix = "openfl_uProjectionMatrix";
+	var Color = "openfl_uColor";
+	var Alpha = "openfl_uAlpha";
+	var ColorMultiplier = "openfl_uColorMultiplier";
+	var ColorOffset = "openfl_uColorOffset";
+}
+
+@:enum abstract Varying(String) from String to String {
+	var TexCoord = "openfl_vTexCoord";
+	var Color = "openfl_vColor";
 }
 
 typedef DefAttrib = Attrib;
 typedef DefUniform = Uniform;
+typedef DefVarying = Varying;
