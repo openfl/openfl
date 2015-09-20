@@ -1514,6 +1514,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					
 				}
 				
+				if (shader == null) {
+					__shader = parent.__shader;
+				}
+				
 				#else
 				
 				var worldVisible = (parent.__worldVisible && visible);

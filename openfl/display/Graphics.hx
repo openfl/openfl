@@ -7,6 +7,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.RenderTexture;
+import openfl.display.Shader;
 import openfl.errors.ArgumentError;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
@@ -764,7 +765,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?shader:Shader, count:Int = -1):Void {
 		
 		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
 		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
@@ -971,7 +972,7 @@ import js.html.CanvasRenderingContext2D;
 			}
 		}
 		
-		__commands.drawTiles (sheet, tileData, smooth, flags, count);
+		__commands.drawTiles (sheet, tileData, smooth, flags, shader, count);
 		
 		__dirty = true;
 		__visible = true;

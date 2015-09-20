@@ -8,6 +8,7 @@ import openfl.display.GraphicsPathWinding;
 import openfl.display.InterpolationMethod;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
+import openfl.display.Shader;
 import openfl.display.SpreadMethod;
 import openfl.display.Tilesheet;
 import openfl.display.TriangleCulling;
@@ -65,7 +66,7 @@ class DrawCommandBuffer {
 				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
-				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.count);
+				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.shader, c.count);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling, c.colors, c.blendMode);
 				case END_FILL: var c = data.readEndFill (); endFill ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
@@ -238,13 +239,14 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int):Void {
+	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, ?shader:Shader, count:Int):Void {
 		
 		types.push (DRAW_TILES);
 		ts.push (sheet);
 		ff.push (tileData);
 		b.push (smooth);
 		i.push (flags);
+		o.push (shader);
 		i.push (count);
 		
 	}

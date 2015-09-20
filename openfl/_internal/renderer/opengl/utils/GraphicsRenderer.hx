@@ -37,6 +37,7 @@ import openfl.geom.Rectangle;
 import openfl.gl.GLTexture;
 import openfl.utils.Int16Array;
 import openfl.Vector;
+import openfl.display.Shader as FlashShader;
 
 
 @:access(openfl.display.DisplayObject)
@@ -865,7 +866,7 @@ class GraphicsRenderer {
 						renderSession.spriteBatch.begin(renderSession, clipRect);
 					}
 					var args = Type.enumParameters(bucket.graphicType);		
-					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4]);
+					renderSession.spriteBatch.renderTiles(object, cast args[0], cast args[1], cast args[2], cast args[3], cast args[4], cast args[5]);
 					
 					renderSession.spriteBatch.finish();
 				case _:
@@ -1600,7 +1601,7 @@ enum GraphicType {
 	Circle;
 	Ellipse;
 	DrawTriangles(vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int);
-	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
+	DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, shader:FlashShader, count:Int);
 	OverrideMatrix (matrix:Matrix);
 
 }
