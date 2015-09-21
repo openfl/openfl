@@ -698,12 +698,16 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		for (cmd in graphics.__commands) {
+		var r = new DrawCommandReader (graphics.__commands);
 
-			switch (cmd.command) {
+		for (type in graphics.__commands.types) {
+
+			switch (type) {
 
 				//case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 				case BEGIN_BITMAP_FILL:
+
+					var cmd = r.readBeginBitmapFill ();
 
 					hasFill = true;
 					fillBitmap = cmd.bitmap;
@@ -719,6 +723,9 @@ class ConsoleRenderer extends AbstractRenderer {
 				case BEGIN_FILL:
 
 					// TODO(james4k): color transform. no sense doing that in shader for fill, right?
+
+					var cmd = r.readBeginFill ();
+
 					hasFill = true;
 					fillBitmap = null;
 					fillColor[0] = ((cmd.color >> 16) & 0xFF) / 255.0;
@@ -733,7 +740,9 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					//closePath (object);
 
-					if (thickness == null) {
+					var cmd = r.readLineStyle ();
+
+					if (cmd.thickness == null) {
 						hasStroke = false;
 						continue;
 					}
@@ -753,11 +762,15 @@ class ConsoleRenderer extends AbstractRenderer {
 				//case LineTo (x, y):
 				case LINE_TO:
 
+					var cmd = r.readLineTo ();
+
 					points.push (cmd.x);
 					points.push (cmd.y);
 
 				//case MoveTo (x, y):
 				case MOVE_TO:
+
+					var cmd = r.readMoveTo ();
 
 					closePath (object);
 
@@ -766,6 +779,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				//case EndFill:
 				case END_FILL:
+
+					var cmd = r.readEndFill ();
 
 					closePath (object);
 
@@ -782,6 +797,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with 2? curveTo calls
 
+					var cmd = r.readDrawCircle ();
+
 					drawEllipse (object, cmd.x, cmd.y, cmd.radius, cmd.radius);
 
 				//case DrawEllipse (x, y, width, height):
@@ -789,10 +806,14 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with 2? curveTo calls
 
+					var cmd = r.readDrawEllipse ();
+
 					drawEllipse (object, cmd.x + cmd.width*0.5, cmd.y + cmd.height*0.5, cmd.width*0.5, cmd.height*0.5);
 
 				//case DrawRect (x, y, width, height):
 				case DRAW_RECT:
+
+					var cmd = r.readDrawRect ();
 
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
@@ -823,6 +844,8 @@ class ConsoleRenderer extends AbstractRenderer {
 				//case DrawRoundRect (x, y, width, height, rx, ry):
 				case DRAW_ROUND_RECT:
 
+					var cmd = r.readDrawRoundRect ();
+
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
 						trace ("unsupported DrawRoundRect");
@@ -831,16 +854,19 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with lineTo/curveTo calls
 
-					if (cmd.ry == -1) cmd.ry = cmd.rx;
+					var rx = cmd.rx;
+					var ry = cmd.ry;
+
+					if (ry == -1) ry = rx;
 					
-					cmd.rx *= 0.5;
-					cmd.ry *= 0.5;
+					rx *= 0.5;
+					ry *= 0.5;
 					
-					if (cmd.rx > cmd.width / 2) cmd.rx = cmd.width / 2;
-					if (cmd.ry > cmd.height / 2) cmd.ry = cmd.height / 2;
+					if (rx > cmd.width / 2) rx = cmd.width / 2;
+					if (ry > cmd.height / 2) ry = cmd.height / 2;
 
 					var points = new Array<Float> ();
-					GraphicsPaths.roundRectangle (points, cmd.x, cmd.y, cmd.width, cmd.height, cmd.rx, cmd.ry);
+					GraphicsPaths.roundRectangle (points, cmd.x, cmd.y, cmd.width, cmd.height, rx, ry);
 
 					if (hasFill) {
 
@@ -881,6 +907,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				//case DrawTiles (sheet, tileData, smooth, flags, count):
 				case DRAW_TILES:
+
+					var cmd = r.readDrawTiles ();
 
 					var useScale = (cmd.flags & Tilesheet.TILE_SCALE) != 0;
 					var useRotation = (cmd.flags & Tilesheet.TILE_ROTATION) != 0;
@@ -938,8 +966,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 
 					var totalCount = cmd.tileData.length;
-					if (count >= 0 && totalCount > count) {
-						totalCount = count;
+					if (cmd.count >= 0 && totalCount > cmd.count) {
+						totalCount = cmd.count;
 					}
 					var itemCount = div (totalCount, stride);
 					if (itemCount <= 0) {
@@ -1090,7 +1118,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
 					ctx.setTextureAddressMode (0, Clamp, Clamp);
-					if (smooth) {
+					if (cmd.smooth) {
 						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
 					} else {
 						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
@@ -1099,6 +1127,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				//case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 				case DRAW_TRIANGLES:
+
+					var cmd = r.readDrawTriangles ();
 
 					if (!hasFill || fillBitmap == null) {
 						trace ("DrawTriangles without bitmap fill");
@@ -1128,9 +1158,10 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 					vertexBuffer.unlock ();
 					
-					var indexBuffer = transientIndexBuffer (cmd.indices.length);
+					var indexCount = cmd.indices.length;
+					var indexBuffer = transientIndexBuffer (indexCount);
 					var unsafeIndices = indexBuffer.lock ();
-					for (i in 0...indices.length) {
+					for (i in 0...indexCount) {
 						unsafeIndices[i] = cmd.indices[i];
 					}
 					indexBuffer.unlock ();
@@ -1150,9 +1181,35 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (cmd.indices.length, 3));
 
-				default:
+				case BEGIN_GRADIENT_FILL:
 
-					trace ("not implemented: " + cmd);
+					r.readBeginGradientFill ();
+
+				case CUBIC_CURVE_TO:
+
+					r.readCubicCurveTo ();
+
+				case CURVE_TO:
+
+					r.readCurveTo ();
+
+				case LINE_GRADIENT_STYLE:
+
+					r.readLineGradientStyle ();
+
+				case LINE_BITMAP_STYLE:
+
+					r.readLineBitmapStyle ();
+
+				case DRAW_PATH:
+
+					r.readDrawPath ();
+
+				case OVERRIDE_MATRIX:
+
+					r.readOverrideMatrix ();
+
+				case UNKNOWN:
 
 /*
 
@@ -1168,6 +1225,8 @@ class ConsoleRenderer extends AbstractRenderer {
 			}
 	
 		}
+
+		r.destroy ();
 
 		if (points.length > 0) {
 			closePath (object);
