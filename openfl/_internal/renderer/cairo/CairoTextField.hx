@@ -58,7 +58,7 @@ class CairoTextField {
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true, 0);
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
-			surface.destroy ();
+			bitmap.destroySurface ();
 			
 			graphics.__bitmap = bitmap;
 			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
