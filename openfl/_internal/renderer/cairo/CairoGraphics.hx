@@ -276,7 +276,7 @@ class CairoGraphics {
 					case LINE_STYLE:
 						
 						var c = data.readLineStyle ();
-						strokeCommands.lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
+						strokeCommands.lineStyle (c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					
 					case LINE_GRADIENT_STYLE:
 						
@@ -345,8 +345,8 @@ class CairoGraphics {
 						} else {
 							
 							var c = data.readBeginFill ();
-							fillCommands.beginFill (c.color, c.alpha);
-							strokeCommands.beginFill (c.color, c.alpha);
+							fillCommands.beginFill (c.color, 1);
+							strokeCommands.beginFill (c.color, 1);
 							
 						}
 					
