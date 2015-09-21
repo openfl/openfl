@@ -1205,7 +1205,7 @@ class CairoGraphics {
 			
 			if (graphics.__cairo == null) {
 				
-				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
+				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true, 0);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
 				surface.destroy ();
@@ -1216,13 +1216,12 @@ class CairoGraphics {
 			
 			cairo = graphics.__cairo;
 			
-			cairo.operator = SOURCE;
-			cairo.setSourceRGBA (1, 1, 1, 0);
+			cairo.operator = CLEAR;
 			cairo.paint ();
 			cairo.operator = OVER;
 			
-			fillCommands.clear();
-			strokeCommands.clear();
+			fillCommands.clear ();
+			strokeCommands.clear ();
 			
 			hasFill = false;
 			hasStroke = false;

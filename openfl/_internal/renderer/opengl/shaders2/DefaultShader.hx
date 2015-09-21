@@ -38,7 +38,12 @@ class DefaultShader extends Shader {
 			'varying vec4 vColor;',
 			
 			'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
-			'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
+			'	vec4 unmultiply;',
+			'	if (color.a == 0.0) {',
+			'		unmultiply = vec4(0.0, 0.0, 0.0, 0.0);',
+			'	} else {',
+			'   	unmultiply = vec4(color.rgb / color.a, color.a);',
+			'	}',
 			'   vec4 result = unmultiply * tint * multiplier;',
 			'   result = result + offset;',
 			'   result = clamp(result, 0., 1.);',
