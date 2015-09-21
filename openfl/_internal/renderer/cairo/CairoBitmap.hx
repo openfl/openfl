@@ -1,9 +1,6 @@
 package openfl._internal.renderer.cairo;
 
 
-#if cpp
-import cpp.Pointer;
-#end
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
