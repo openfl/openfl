@@ -996,6 +996,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		if (__cacheAsBitmap) {
+			__cacheGL(renderSession);
+			return;
+		}
+		
 		__preRenderGL (renderSession);
 		__drawGraphicsGL (renderSession);
 		

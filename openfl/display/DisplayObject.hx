@@ -1234,6 +1234,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
+		if (__cacheAsBitmap) {
+			__cacheGL(renderSession);
+			return;
+		}
+		
 		__preRenderGL (renderSession);
 		__drawGraphicsGL (renderSession);
 		__postRenderGL (renderSession);
@@ -1295,6 +1300,67 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		}
 		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public inline function __cacheGL (renderSession:RenderSession):Void {
+
+		var hasCacheMatrix = __cacheAsBitmapMatrix != null;
+		var x = __cachedBitmapBounds.x;
+		var y = __cachedBitmapBounds.y;
+		var w = __cachedBitmapBounds.width;
+		var h = __cachedBitmapBounds.height;
+		
+		x = 0;
+		y = 0;
+		w = 1024;
+		h = 1024;
+		
+		if (hasCacheMatrix) {
+			var bmpBounds = openfl.geom.Rectangle.__temp;
+			__cachedBitmapBounds.__transform(bmpBounds, __cacheAsBitmapMatrix);
+			x = bmpBounds.x;
+			y = bmpBounds.y;
+			w = bmpBounds.width;
+			h = bmpBounds.height;
+		}
+		
+		if (__updateCachedBitmap || __updateFilters) {
+			
+			if (__cachedFilterBounds != null) {
+				w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
+				h += Math.abs(__cachedFilterBounds.y) + Math.abs(__cachedFilterBounds.height);
+			}
+			
+			if (__cachedBitmap == null) {
+				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			}
+			@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
+			
+			// we need to position the drawing origin to 0,0 in the texture
+			var m = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
+			m.translate( -x, -y);
+			// we disable the container shader, it will be applied to the final texture
+			var shader = __shader;
+			this.__shader = null;
+			@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
+			this.__shader = shader;
+			
+			__updateCachedBitmap = false;
+		}
+		
+		if (__updateFilters) {
+			@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap, __cachedBitmap, null, null);
+			__updateFilters = false;
+		}
+		
+		var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
+		local.invert();
+		local.__translateTransformed(x, y);
+		local.concat(__renderTransform);
+		local.translate ( __offset.x, __offset.y);
+		
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 	
 	
@@ -1456,7 +1522,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 						__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
 					}
 				}
-				
+				*/
 				
 				if (__filters != null) {
 					if (__cachedFilterBounds == null) {
@@ -1472,7 +1538,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 					if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
 					if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;
 				}
-				*/
+				
 			}
 			
 		}
