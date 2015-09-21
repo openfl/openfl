@@ -213,6 +213,13 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	}
 	
 	
+	@:noCompletion @:dox(hide) private function resolve (fieldName:String):DisplayObject {
+		
+		return getChildByName (fieldName);
+		
+	}
+	
+	
 	/**
 	 * Stops the playhead in the movie clip.
 	 * 
