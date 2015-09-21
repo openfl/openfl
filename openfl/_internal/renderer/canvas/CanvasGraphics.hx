@@ -807,7 +807,10 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		var directRender = (graphics.__hardware && renderSession.context != null);
+		// TODO: Handle world transform if we want to use direct render
+		
+		//var directRender = (graphics.__hardware && renderSession.context != null);
+		var directRender = false;
 		
 		if (graphics.__dirty || directRender) {
 			
