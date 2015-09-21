@@ -237,9 +237,20 @@ class CairoGraphics {
 			
 			hasFill = false;
 			hasStroke = false;
-			
-			fillPattern = null;
-			strokePattern = null;
+
+			if (fillPattern != null) {
+				
+				fillPattern.destroy ();
+				fillPattern = null;
+				
+			}
+
+			if (strokePattern != null) {
+				
+				strokePattern.destroy ();
+				strokePattern = null;
+				
+			}
 			
 			cairo.newPath ();
 			
@@ -1140,6 +1151,21 @@ class CairoGraphics {
 			}
 			
 		}
+
+		if (fillPattern != null) {
+			
+			fillPattern.destroy ();
+			fillPattern = null;
+			
+		}
+
+		if (strokePattern != null) {
+			
+			strokePattern.destroy ();
+			strokePattern = null;
+			
+		}
+		
 	}
 	
 	
@@ -1225,9 +1251,20 @@ class CairoGraphics {
 			
 			hasFill = false;
 			hasStroke = false;
-			
-			fillPattern = null;
-			strokePattern = null;
+
+			if (fillPattern != null) {
+				
+				fillPattern.destroy ();
+				fillPattern = null;
+				
+			}
+
+			if (strokePattern != null) {
+				
+				strokePattern.destroy ();
+				strokePattern = null;
+				
+			}
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
