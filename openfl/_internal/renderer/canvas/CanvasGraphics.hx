@@ -84,9 +84,11 @@ class CanvasGraphics {
 		bitmap.__sync ();
 		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
-		#end
+		#else
 		
 		return null;
+		
+		#end
 		
 	}
 	

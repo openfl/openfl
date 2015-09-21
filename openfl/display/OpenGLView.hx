@@ -236,9 +236,11 @@ class OpenGLView extends DirectRenderer {
 		}
 		#end
 		
-		#end
+		#else
 		
 		return true;
+		
+		#end
 		
 	}
 

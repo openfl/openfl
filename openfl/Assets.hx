@@ -425,6 +425,7 @@ class Assets {
 		try {
 			
 			bitmapData.width;
+			return true;
 			
 		} catch (e:Dynamic) {
 			
@@ -437,25 +438,27 @@ class Assets {
 		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
 		
 		#end
-		#end
+		#else
 		
 		return true;
+		
+		#end
 		
 	}
 	
 	
 	private static function isValidSound (sound:Sound):Bool {
 		
-		#if (tools && !display)
-		#if (cpp || neko || nodejs)
+		#if ((tools && !display) && (cpp || neko || nodejs))
 		
 		return true;
 		//return (sound.__handle != null && sound.__handle != 0);
 		
-		#end
-		#end
+		#else
 		
 		return true;
+		
+		#end
 		
 	}
 	
