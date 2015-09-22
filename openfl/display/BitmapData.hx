@@ -796,7 +796,6 @@ class BitmapData implements IBitmapDrawable {
 		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingFramebuffer, false, true);
 		
-		var buffer = image.buffer;
 		var surface = getSurface ();
 		var cairo = new Cairo (surface);
 		
