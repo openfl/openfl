@@ -1066,6 +1066,10 @@ class CairoGraphics {
 					
 					cairo.lineTo (startX - offsetX, startY - offsetY);
 					
+				} else if (closeGap && positionX == startX && positionY == startY) {
+					
+					cairo.closePath ();
+					
 				}
 				
 				cairo.source = strokePattern;
