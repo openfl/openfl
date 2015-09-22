@@ -85,8 +85,6 @@ class CairoBitmap {
 					
 				}
 				
-				pattern.destroy ();
-				
 			}
 			
 			if (bitmap.__mask != null) {

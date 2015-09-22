@@ -43,7 +43,6 @@ class CairoTextField {
 			
 			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
 				
-				cairo.destroy ();
 				graphics.__cairo = null;
 				cairo = null;
 				
@@ -58,7 +57,6 @@ class CairoTextField {
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true, 0);
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
-			surface.destroy ();
 			
 			graphics.__bitmap = bitmap;
 			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
@@ -179,7 +177,6 @@ class CairoTextField {
 						
 						if (textEngine.__font != font) {
 							
-							textEngine.__cairoFont.destroy ();
 							textEngine.__cairoFont = null;
 							
 						}

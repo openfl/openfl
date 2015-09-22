@@ -224,8 +224,6 @@ class CairoGraphics {
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
-				surface.destroy ();
-				
 				graphics.__bitmap = bitmap;
 				
 			}
@@ -633,12 +631,6 @@ class CairoGraphics {
 							var g = ((c.color & 0x00FF00) >>> 8) / 0xFF;
 							var b = (c.color & 0x0000FF) / 0xFF;
 							
-							if (strokePattern != null) {
-								
-								strokePattern.destroy ();
-								
-							}
-							
 							if (c.alpha == 1 || c.alpha == null) {
 								
 								strokePattern = CairoPattern.createRGB (r, g, b);
@@ -662,12 +654,6 @@ class CairoGraphics {
 						
 					}
 					
-					if (strokePattern != null) {
-						
-						strokePattern.destroy ();
-						
-					}
-					
 					cairo.moveTo (positionX - offsetX, positionY - offsetY);
 					strokePattern = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
@@ -682,12 +668,6 @@ class CairoGraphics {
 						
 					}
 					
-					if (strokePattern != null) {
-						
-						strokePattern.destroy ();
-						
-					}
-					
 					cairo.moveTo (positionX - offsetX, positionY - offsetY);
 					strokePattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
 					
@@ -696,12 +676,6 @@ class CairoGraphics {
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
-					if (fillPattern != null) {
-						
-						fillPattern.destroy ();
-						
-					}
-					
 					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
 					
 					bitmapFill = c.bitmap;
@@ -720,7 +694,6 @@ class CairoGraphics {
 						
 						if (fillPattern != null) {
 							
-							fillPattern.destroy ();
 							fillPatternMatrix = null;
 							
 						}
@@ -737,7 +710,6 @@ class CairoGraphics {
 					var c = data.readBeginGradientFill ();
 					if (fillPattern != null) {
 						
-						fillPattern.destroy ();
 						fillPatternMatrix = null;
 						
 					}
@@ -1179,12 +1151,7 @@ class CairoGraphics {
 		
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 			
-			if (graphics.__cairo != null) {
-				
-				graphics.__cairo.destroy ();
-				graphics.__cairo = null;
-				
-			}
+			graphics.__cairo = null;
 			
 		} else {
 			
@@ -1196,7 +1163,6 @@ class CairoGraphics {
 				
 				if (bounds.width != surface.width || bounds.height != surface.height) {
 					
-					graphics.__cairo.destroy ();
 					graphics.__cairo = null;
 					
 				}
@@ -1208,8 +1174,6 @@ class CairoGraphics {
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true, 0);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
-				surface.destroy ();
-				
 				graphics.__bitmap = bitmap;
 				
 			}
