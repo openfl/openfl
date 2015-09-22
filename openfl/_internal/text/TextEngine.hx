@@ -4,6 +4,7 @@ package openfl._internal.text;
 import haxe.Timer;
 import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
+import lime.graphics.cairo.CairoFTFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 import lime.text.TextLayout;
@@ -110,8 +111,9 @@ class TextEngine {
 	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	
-	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
-	@:noCompletion @:dox(hide) public var __font:Font;
+	@:noCompletion private var __cairoFont:CairoFontFace;
+	@:noCompletion private var __font:Font;
+	@:noCompletion private var __cairoFontFinalizer:TextEngineCairoFontFinalizer;
 	
 	#if (js && html5)
 	private var __hiddenInput:InputElement;
@@ -428,6 +430,47 @@ class TextEngine {
 		
 		return null;
 		
+	}
+
+
+	public function getFontFace (font:Font):CairoFontFace {
+
+		if (__cairoFont != null) {
+			
+			if (__font != font) {
+				
+				destroyFontFace ();
+				
+			}
+			
+		}
+		
+		if (__cairoFont == null) {
+			
+			__font = font;
+			__cairoFont = CairoFTFontFace.create (font, 0);
+			__cairoFontFinalizer = new TextEngineCairoFontFinalizer (this);
+			
+		}
+
+		return __cairoFont;
+	
+	}
+
+
+	public function destroyFontFace ():Void {
+
+		__font = null;
+
+		if (__cairoFont != null) {
+			
+			__cairoFont.destroy ();
+			__cairoFont = null;
+			__cairoFontFinalizer.invalidate ();
+			__cairoFontFinalizer = null;
+			
+		}
+
 	}
 	
 	
@@ -1101,5 +1144,32 @@ class TextEngine {
 		
 	}
 	
+	
+}
+
+
+#if !macro
+@:build(lime.system.CFFI.build())
+#end
+
+@:noCompletion @:dox(hide) private class TextEngineCairoFontFinalizer {
+
+
+	var t:TextEngine;
+
+	public function new (t:TextEngine) {
+		this.t = t;
+	}
+
+	public function invalidate ():Void {
+		t = null;
+	}
+
+	@:finalizer private function finalize () {
+		if (t != null) {
+			t.destroyFontFace ();
+		}
+	}
+
 	
 }

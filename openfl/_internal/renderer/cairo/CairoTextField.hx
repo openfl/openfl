@@ -5,7 +5,7 @@ import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoAntialias;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.cairo.CairoFontOptions;
-import lime.graphics.cairo.CairoFTFontFace;
+//import lime.graphics.cairo.CairoFTFontFace;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import lime.graphics.cairo.CairoImageSurface;
@@ -58,7 +58,7 @@ class CairoTextField {
 			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true, 0);
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
-			surface.destroy ();
+			bitmap.destroySurface ();
 			
 			graphics.__bitmap = bitmap;
 			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
@@ -82,6 +82,7 @@ class CairoTextField {
 			}
 			
 			cairo.fontOptions = options;
+			options.destroy ();
 			
 		}
 		
@@ -175,25 +176,7 @@ class CairoTextField {
 				
 				if (font != null && group.format.size != null) {
 					
-					if (textEngine.__cairoFont != null) {
-						
-						if (textEngine.__font != font) {
-							
-							textEngine.__cairoFont.destroy ();
-							textEngine.__cairoFont = null;
-							
-						}
-						
-					}
-					
-					if (textEngine.__cairoFont == null) {
-						
-						textEngine.__font = font;
-						textEngine.__cairoFont = CairoFTFontFace.create (font, 0);
-						
-					}
-					
-					cairo.fontFace = textEngine.__cairoFont;
+					cairo.fontFace = textEngine.getFontFace (font);
 					
 					size = Std.int (group.format.size);
 					cairo.setFontSize (size);

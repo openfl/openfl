@@ -224,8 +224,8 @@ class CairoGraphics {
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
-				surface.destroy ();
-				
+				bitmap.destroySurface ();
+
 				graphics.__bitmap = bitmap;
 				
 			}
@@ -237,9 +237,20 @@ class CairoGraphics {
 			
 			hasFill = false;
 			hasStroke = false;
-			
-			fillPattern = null;
-			strokePattern = null;
+
+			if (fillPattern != null) {
+				
+				fillPattern.destroy ();
+				fillPattern = null;
+				
+			}
+
+			if (strokePattern != null) {
+				
+				strokePattern.destroy ();
+				strokePattern = null;
+				
+			}
 			
 			cairo.newPath ();
 			
@@ -1140,6 +1151,21 @@ class CairoGraphics {
 			}
 			
 		}
+
+		if (fillPattern != null) {
+			
+			fillPattern.destroy ();
+			fillPattern = null;
+			
+		}
+
+		if (strokePattern != null) {
+			
+			strokePattern.destroy ();
+			strokePattern = null;
+			
+		}
+		
 	}
 	
 	
@@ -1208,8 +1234,8 @@ class CairoGraphics {
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true, 0);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
-				surface.destroy ();
-				
+				bitmap.destroySurface ();
+
 				graphics.__bitmap = bitmap;
 				
 			}
@@ -1225,9 +1251,20 @@ class CairoGraphics {
 			
 			hasFill = false;
 			hasStroke = false;
-			
-			fillPattern = null;
-			strokePattern = null;
+
+			if (fillPattern != null) {
+				
+				fillPattern.destroy ();
+				fillPattern = null;
+				
+			}
+
+			if (strokePattern != null) {
+				
+				strokePattern.destroy ();
+				strokePattern = null;
+				
+			}
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
