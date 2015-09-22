@@ -105,13 +105,13 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function beginGradientFill (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):Void {
+	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):Void {
 		
 		types.push (BEGIN_GRADIENT_FILL);
 		o.push (type);
-		o.push (colors);
-		o.push (alphas);
-		o.push (ratios);
+		ii.push (colors);
+		ff.push (alphas);
+		ii.push (ratios);
 		o.push (matrix);
 		o.push (spreadMethod);
 		o.push (interpolationMethod);
@@ -281,13 +281,13 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function lineGradientStyle (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):Void {
+	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):Void {
 		
 		types.push (LINE_GRADIENT_STYLE);
 		o.push (type);
-		o.push (colors);
-		o.push (alphas);
-		o.push (ratios);
+		ii.push (colors);
+		ff.push (alphas);
+		ii.push (ratios);
 		o.push (matrix);
 		o.push (spreadMethod);
 		o.push (interpolationMethod);

@@ -14,7 +14,7 @@ import openfl.geom.Matrix;
 	public var focalPointRatio:Float;
 	public var interpolationMethod:InterpolationMethod;
 	public var matrix:Matrix;
-	public var ratios:Array<Float>;
+	public var ratios:Array<Int>;
 	public var spreadMethod:SpreadMethod;
 	public var type:GradientType;
 	
@@ -22,7 +22,7 @@ import openfl.geom.Matrix;
 	public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
-	public function new (type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Float> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0) {
+	public function new (type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Int> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0) {
 		
 		if (type == null) {
 			
