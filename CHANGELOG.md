@@ -1,3 +1,15 @@
+3.3.5 (09/21/2015)
+------------------
+
+* Improved support for native URLLoader binary data
+* Improved support for native URLLoader GET/POST
+* Improved hit testing against certain invisible shapes
+* Added a "resolve" method to MovieClip to improve dynamic use
+* Fixed some issues with improper positioning of Graphics
+* Reduced "unreachable code" warnings in Firefox
+* Fixed alpha blending on iOS
+
+
 3.3.4 (09/19/2015)
 ------------------
 
