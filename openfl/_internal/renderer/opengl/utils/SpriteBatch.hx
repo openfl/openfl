@@ -479,7 +479,7 @@ class SpriteBatch {
 		if (dirty) {
 			dirty = false;
 			
-			renderSession.activeTextures = 0;
+			renderSession.activeTextures = 1;
 			vertexArray.bind();
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		}
@@ -563,11 +563,7 @@ class SpriteBatch {
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
 		
-		if (renderSession.activeTextures == 0) {
-			renderSession.activeTextures++;
-			gl.activeTexture(gl.TEXTURE0 + 0);
-		}
-		
+		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
 		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0);
 		
