@@ -1311,18 +1311,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
 		
-		x = 0;
-		y = 0;
-		w = 1024;
-		h = 1024;
 		
+		var matrix:Matrix;
 		if (hasCacheMatrix) {
+			
+			// Transform the bounds
 			var bmpBounds = openfl.geom.Rectangle.__temp;
 			__cachedBitmapBounds.__transform(bmpBounds, __cacheAsBitmapMatrix);
 			x = bmpBounds.x;
 			y = bmpBounds.y;
 			w = bmpBounds.width;
 			h = bmpBounds.height;
+			
+			matrix = __cacheAsBitmapMatrix.clone();
+			
+		} else {
+			
+			matrix = Matrix.__temp;
+			matrix.identity();
+			
 		}
 		
 		if (__updateCachedBitmap || __updateFilters) {
@@ -1338,7 +1345,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 			
 			// we need to position the drawing origin to 0,0 in the texture
-			var m = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
+			var m = matrix.clone();
 			m.translate( -x, -y);
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
@@ -1354,13 +1361,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			__updateFilters = false;
 		}
 		
-		var local = hasCacheMatrix ? __cacheAsBitmapMatrix.clone() : new Matrix();
-		local.invert();
-		local.__translateTransformed(x, y);
-		local.concat(__renderTransform);
-		local.translate ( __offset.x, __offset.y);
+		// Calculate the correct position
+		matrix.invert();
+		matrix.__translateTransformed(x, y);
+		matrix.concat(__renderTransform);
+		matrix.translate ( __offset.x, __offset.y);
 		
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, local, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, matrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 	
 	
@@ -1511,18 +1518,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 				}
 				
 				
-				/* TODO fix this!
+				
 				if(cacheAsBitmapBounds != null) {
 					__cachedBitmapBounds.copyFrom(cacheAsBitmapBounds);
 				} else {
 					__cachedBitmapBounds.setEmpty();
 					__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-					var rectBounds = new Rectangle();
-					if (__getRenderBounds(rectBounds)) {
-						__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
-					}
+					//var rectBounds = new Rectangle();
+					//if (__getRenderBounds(rectBounds)) {
+						//__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
+					//}
 				}
-				*/
+				
 				
 				if (__filters != null) {
 					if (__cachedFilterBounds == null) {

@@ -80,6 +80,7 @@ class BitmapFilter {
 	@:noCompletion private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
 		
 		var r = Rectangle.__temp;
+		r.setEmpty();
 		for (filter in filters) {
 			filter.__growBounds (r);
 		}
