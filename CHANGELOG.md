@@ -1,3 +1,12 @@
+3.3.6 (09/23/2015)
+------------------
+
+* Updated for Lime 2.6.5 changes
+* Changed gradient style to use Array<Int> for ratio, not Float
+* Improved quality of joint style for closed paths
+* Fixed use of deprecated Assets.load syntax (without using futures)
+
+
 3.3.5 (09/21/2015)
 ------------------
 
