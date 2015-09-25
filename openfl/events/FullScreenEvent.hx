@@ -45,5 +45,5 @@ class FullScreenEvent extends Event {
 
 
 #else
-typedef FullScreenEvent = flash.events.FullscreenEvent;
+typedef FullScreenEvent = flash.events.FullScreenEvent;
 #end
