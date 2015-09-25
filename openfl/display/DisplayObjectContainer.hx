@@ -86,7 +86,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public var tabChildren:Bool;
 	
-	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __removedChildren:Array<DisplayObject>;
 	
 	
@@ -523,6 +522,25 @@ class DisplayObjectContainer extends InteractiveObject {
 			numRemovals--;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) private function resolve (fieldName:String):DisplayObject {
+		
+		if (__children == null) return null;
+		
+		for (child in __children) {
+			
+			if (child.name == fieldName) {
+				
+				return child;
+				
+			}
+			
+		}
+		
+		return null;
 		
 	}
 	

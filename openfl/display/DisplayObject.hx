@@ -170,7 +170,7 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable {
+class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
 	
 	
 	@:noCompletion private static var __instanceCount = 0;
@@ -719,6 +719,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;

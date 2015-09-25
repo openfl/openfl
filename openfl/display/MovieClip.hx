@@ -36,7 +36,7 @@ package openfl.display; #if !flash #if !openfl_legacy
  * MovieClip.opaqueBackground property for a suitable device, define
  * FEATURE_BITMAPCACHE in your project.</p>
  */
-class MovieClip extends Sprite implements Dynamic<DisplayObject> {
+class MovieClip extends Sprite {
 	
 	
 	/**
@@ -209,13 +209,6 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	public function prevFrame ():Void {
 		
 		
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) private function resolve (fieldName:String):DisplayObject {
-		
-		return getChildByName (fieldName);
 		
 	}
 	
