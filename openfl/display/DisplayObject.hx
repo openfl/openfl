@@ -1327,8 +1327,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 			
 		} else {
 			
-			matrix = Matrix.__temp;
-			matrix.identity();
+			// can't use Matrix.__temp here, it's not safe
+			matrix = new Matrix();
 			
 		}
 		
