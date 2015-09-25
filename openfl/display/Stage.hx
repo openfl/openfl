@@ -35,6 +35,7 @@ import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
+import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
@@ -1747,13 +1748,25 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case NORMAL:
 					
-					//window.minimized = false;
-					window.fullscreen = false;
+					if (window.fullscreen) {
+						
+						//window.minimized = false;
+						window.fullscreen = false;
+						
+						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
+						
+					}
 				
 				default:
 					
-					//window.minimized = false;
-					window.fullscreen = true;
+					if (!window.fullscreen) {
+						
+						//window.minimized = false;
+						window.fullscreen = true;
+						
+						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
+						
+					}
 				
 			}
 			
