@@ -2247,7 +2247,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	@:noCompletion @:dox(hide) public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode);
+		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader);
 		
 	}
 	
