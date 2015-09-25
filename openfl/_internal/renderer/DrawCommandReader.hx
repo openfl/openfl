@@ -390,8 +390,8 @@ abstract LineBitmapStyleView (DrawCommandReader) {
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.obj (0); }
 	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
-	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return cast this.obj (2); }
-	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return cast this.obj (3); }
+	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return cast this.bool (0); }
+	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return cast this.bool (1); }
 	
 }
 
