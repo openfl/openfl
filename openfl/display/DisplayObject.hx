@@ -1665,27 +1665,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	@:noCompletion private function get_mouseX ():Float {
 		
-		if (stage != null) {
-			
-			return __getWorldTransform ().__transformInverseX (stage.__mouseX, stage.__mouseY);
-			
-			
-		}
+		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
+		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return 0;
+		return __getWorldTransform ().__transformInverseX (mouseX, mouseY);
 		
 	}
 	
 	
 	@:noCompletion private function get_mouseY ():Float {
 		
-		if (stage != null) {
-			
-			return __getWorldTransform ().__transformInverseY (stage.__mouseX, stage.__mouseY);
-			
-		}
+		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
+		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return 0;
+		return __getWorldTransform ().__transformInverseY (mouseX, mouseY);
 		
 	}
 	
