@@ -197,7 +197,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 * information, see the "Security" chapter in the <i>ActionScript 3.0
 	 * Developer's Guide</i>.</p>
 	 */
-	public var align:StageAlign;
+	public var align (get, set):StageAlign;
 	
 	/**
 	 * Specifies whether this stage allows the use of the full screen mode
@@ -433,7 +433,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the <i>ActionScript 3.0 Developer's Guide</i>.
 	 */
-	public var scaleMode:StageScaleMode;
+	public var scaleMode (get, set):StageScaleMode;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	
 	/**
@@ -541,10 +541,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var window (default, null):Window;
 	
+	@:noCompletion private var __align:StageAlign;
+	@:noCompletion private var __alignOffsetX:Float;
+	@:noCompletion private var __alignOffsetY:Float;
 	@:noCompletion private var __clearBeforeRender:Bool;
 	@:noCompletion private var __color:Int;
 	@:noCompletion private var __colorSplit:Array<Float>;
 	@:noCompletion private var __colorString:String;
+	@:noCompletion private var __desiredWidth:Float;
+	@:noCompletion private var __desiredHeight:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayState:StageDisplayState;
 	@:noCompletion private var __dragBounds:Rectangle;
@@ -563,6 +568,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __originalHeight:Int;
 	@:noCompletion private var __renderer:AbstractRenderer;
 	@:noCompletion private var __rendering:Bool;
+	@:noCompletion private var __scaleMode:StageScaleMode;
+	@:noCompletion private var __scaleModeX:Float;
+	@:noCompletion private var __scaleModeY:Float;
 	@:noCompletion private var __stack:Array<DisplayObject>;
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
@@ -607,6 +615,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		stageWidth = window.width;
 		stageHeight = window.height;
+		
+		__alignOffsetX = 0;
+		__alignOffsetY = 0;
+		
+		__desiredWidth = 0;
+		__desiredHeight = 0;
+		if (window.config != null) {
+			
+			if (Reflect.hasField (window.config, "width")) __desiredWidth = window.config.width; // TODO Consider: getting config width directly from Lime with function call
+			if (Reflect.hasField (window.config, "height")) __desiredHeight = window.config.height; // TODO Consider: getting config height directly from Lime with function call
+			
+		}
+		__scaleModeX = 1;
+		__scaleModeY = 1;
 		
 		this.stage = this;
 		
@@ -1032,6 +1054,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		stageWidth = width;
 		stageHeight = height;
+		
+		__resize();
 		
 		if (__renderer != null) {
 			
@@ -1506,6 +1530,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion private function __resize ():Void {
 		
+		updateStagePositionAndSize();
+		
 		/*
 		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
 			
@@ -1843,6 +1869,159 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 
+	@:noCompletion private function get_scaleMode ():StageScaleMode {
+		
+		return __scaleMode;
+		
+	}
+	
+	@:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode {
+		
+		if (__scaleMode != value)
+		{
+			__scaleMode = value;
+			updateStagePositionAndSize();
+		}
+		
+		return __scaleMode;
+		
+	}
+	
+	@:noCompletion private function get_align ():StageAlign {
+		
+		return __align;
+		
+	}
+	
+	@:noCompletion private function set_align (value:StageAlign):StageAlign {
+		
+		if (__align != value)
+		{
+			__align = value;
+			updateStagePositionAndSize();
+		}
+		
+		return __align;
+		
+	}
+	
+	@:noCompletion private function updateStagePositionAndSize ():Void {
+		
+		#if (!flash)
+		
+		// If desired width or height is less equal to 0 than all calculations must be cancelled
+		
+		if (__desiredWidth > 0 && __desiredHeight > 0) 
+		{
+			// remove current scale multipliers
+			set_scaleX(get_scaleX() / __scaleModeX);
+			set_scaleY(get_scaleY() / __scaleModeY);
+			
+			// calculate new scale multipliers
+			if (__scaleMode == null) // null value makes it like no scale
+			{
+				__scaleModeX = __scaleModeY = 1;
+			}
+			else
+			{
+				var requiredScaleAtWidthToMakeFullscreen:Float = stage.stageWidth / __desiredWidth;
+				var requiredScaleAtHeightToMakeFullscreen:Float = stage.stageHeight / __desiredHeight;
+				
+				switch (__scaleMode)
+				{
+					case StageScaleMode.NO_SCALE:
+						__scaleModeX = __scaleModeY = 1;
+					
+					case StageScaleMode.EXACT_FIT:
+						__scaleModeX = requiredScaleAtWidthToMakeFullscreen;
+						__scaleModeY = requiredScaleAtHeightToMakeFullscreen;
+						
+					case StageScaleMode.NO_BORDER:
+						var maxRequiredScale:Float = Math.max(requiredScaleAtWidthToMakeFullscreen, requiredScaleAtHeightToMakeFullscreen);
+						__scaleModeX = __scaleModeY = maxRequiredScale;
+						
+					case StageScaleMode.SHOW_ALL:
+						var minRequiredScale:Float = Math.min(requiredScaleAtWidthToMakeFullscreen, requiredScaleAtHeightToMakeFullscreen);
+						__scaleModeX = __scaleModeY = minRequiredScale;
+				}
+			}
+			
+			// use new scale multipliers
+			set_scaleX(get_scaleX() * __scaleModeX);
+			set_scaleY(get_scaleY() * __scaleModeY);
+			
+			// our desired width and height must temporarily recalculated
+			var desiredWidthScaled:Float = __desiredWidth * __scaleModeX;
+			var desiredHeightScaled:Float = __desiredHeight * __scaleModeY;
+			
+			// remove current align offsets
+			x -= __alignOffsetX;
+			y -= __alignOffsetY;
+			
+			// calculate new align offsets
+			
+			__alignOffsetX = __alignOffsetY = 0;
+			
+			var rightX:Float = stageWidth - desiredWidthScaled;
+			var middleX:Float = rightX / 2;
+			var bottomY:Float = stageHeight - desiredHeightScaled;
+			var middleY:Float = bottomY / 2;
+			
+			// TODO: In Flash setting stage.align = "" works and makes stage centered, however Haxe can not accept "" on Enums, that must be solved. Current usable approach to make stage centered: #if flash stage.align = ""; #else stage.align = null; #end
+			if (__align == null) // null value makes it centered
+			{
+				__alignOffsetX = middleX;
+				__alignOffsetY = middleY;
+			}
+			else
+			{
+				switch (__align)
+				{
+				
+					case StageAlign.TOP_LEFT:
+						__alignOffsetX = __alignOffsetY = 0;
+						
+					case StageAlign.TOP:
+						__alignOffsetX = middleX; 
+						__alignOffsetY = 0;
+						
+					case StageAlign.BOTTOM:
+						__alignOffsetX = middleX;
+						__alignOffsetY = bottomY;
+						
+					case StageAlign.BOTTOM_LEFT:
+						__alignOffsetX = 0;
+						__alignOffsetY = bottomY;
+						
+					case StageAlign.BOTTOM_RIGHT:
+						__alignOffsetX = rightX;
+						__alignOffsetY = bottomY;
+						
+					case StageAlign.LEFT:
+						__alignOffsetX = 0;
+						__alignOffsetY = middleY;
+					
+					case StageAlign.RIGHT:
+						__alignOffsetX = rightX;
+						__alignOffsetY = middleY;
+						
+					case StageAlign.TOP_RIGHT:
+						__alignOffsetX = rightX;
+						__alignOffsetY = 0;
+				}
+			}
+			
+			__alignOffsetX = Math.round(__alignOffsetX);
+			__alignOffsetY = Math.round(__alignOffsetY);
+			
+			// add current align offsets
+			x += __alignOffsetX;
+			y += __alignOffsetY;
+		}
+		
+		#end
+		
+	}
 }
 
 
