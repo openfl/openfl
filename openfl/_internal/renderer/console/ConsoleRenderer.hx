@@ -175,6 +175,25 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
+	public function setBlendState (b:BlendMode):Void {
+
+		#if !final
+		switch (b) {
+			case NORMAL, ADD, MULTIPLY:
+			default:
+				trace ('unsupported blend mode: $b');
+		}
+		#end
+
+		// TODO(james4k): premultiplied alpha
+		ctx.setBlendState (switch (b) {
+			case ADD:       SRCALPHA_ONE_ONE_ZERO_RGB;
+			case MULTIPLY:  DESTCOLOR_INVSRCALPHA_ONE_ZERO_RGB;
+			default:        SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB;
+		});
+	}
+
+
 	public override function resize (width:Int, height:Int):Void {
 
 		super.resize (width, height);
@@ -922,12 +941,18 @@ class ConsoleRenderer extends AbstractRenderer {
 						case Tilesheet.TILE_BLEND_ADD:		ADD;
 						case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
 						case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
-						case _:								NORMAL;
+						case _: switch(cmd.flags & 0xF00000) {
+							case Tilesheet.TILE_BLEND_DARKEN:         DARKEN;
+							case Tilesheet.TILE_BLEND_LIGHTEN:        LIGHTEN;
+							case Tilesheet.TILE_BLEND_OVERLAY:        OVERLAY;
+							case Tilesheet.TILE_BLEND_HARDLIGHT:      HARDLIGHT;
+							case _: switch(cmd.flags & 0xF000000) {
+								case Tilesheet.TILE_BLEND_DIFFERENCE: DIFFERENCE;
+								case Tilesheet.TILE_BLEND_INVERT:     INVERT;
+								case _:                               NORMAL;
+							}
+						}
 					};
-
-					if (blendMode != BlendMode.NORMAL) {
-						trace ("DrawTiles not implemented for BlendMode: " + blendMode);
-					}
 
 					if (useTransform) {
 						useScale = false;
@@ -1111,6 +1136,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var texture = imageTexture (cmd.sheet.__bitmap.image);
 
+					setBlendState (blendMode);
 					ctx.bindShader (defaultShader);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
@@ -1124,6 +1150,8 @@ class ConsoleRenderer extends AbstractRenderer {
 						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
 					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
+					// TODO(james4k): setBlendState for every draw call
+					setBlendState (NORMAL);
 
 				//case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 				case DRAW_TRIANGLES:
