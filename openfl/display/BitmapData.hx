@@ -1232,43 +1232,29 @@ class BitmapData implements IBitmapDrawable {
 		var sw:Int = Std.int (sourceRect.width);
 		var sh:Int = Std.int (sourceRect.height);
 		
-		var pixels = getPixels (sourceRect);
-		pixels.position = 0;
+		var pixels = sourceBitmapData.getPixels (sourceRect);
 		
-		var pixelValue:Int, r:Int, g:Int, b:Int, a:Int, color:Int, c1:Int, c2:Int, c3:Int, c4:Int;
+		var pixelValue:Int, r:Int, g:Int, b:Int, a:Int, color:Int;
 		
 		for (i in 0...(sh * sw)) {
 			
-			pixelValue = pixels.readUnsignedInt ();
+			pixelValue = pixels.readUnsignedInt();
 			
-			c1 = (alphaArray == null) ? pixelValue & 0xFF000000 : alphaArray[(pixelValue >> 24) & 0xFF];
-			c2 = (redArray == null) ? pixelValue & 0x00FF0000 : redArray[(pixelValue >> 16) & 0xFF];
-			c3 = (greenArray == null) ? pixelValue & 0x0000FF00 : greenArray[(pixelValue >> 8) & 0xFF];
-			c4 = (blueArray == null) ? pixelValue & 0x000000FF : blueArray[(pixelValue) & 0xFF];
+			a = (alphaArray == null) ? pixelValue & 0xFF000000 : alphaArray[(pixelValue >> 24) & 0xFF];
+			r = (redArray == null) ? pixelValue & 0x00FF0000 : redArray[(pixelValue >> 16) & 0xFF];
+			g = (greenArray == null) ? pixelValue & 0x0000FF00 : greenArray[(pixelValue >> 8) & 0xFF];
+			b = (blueArray == null) ? pixelValue & 0x000000FF : blueArray[(pixelValue) & 0xFF];
 			
-			a = ((c1 >> 24) & 0xFF) + ((c2 >> 24) & 0xFF) + ((c3 >> 24) & 0xFF) + ((c4 >> 24) & 0xFF);
-			if (a > 0xFF) a == 0xFF;
-			
-			r = ((c1 >> 16) & 0xFF) + ((c2 >> 16) & 0xFF) + ((c3 >> 16) & 0xFF) + ((c4 >> 16) & 0xFF);
-			if (r > 0xFF) r == 0xFF;
-			
-			g = ((c1 >> 8) & 0xFF) + ((c2 >> 8) & 0xFF) + ((c3 >> 8) & 0xFF) + ((c4 >> 8) & 0xFF);
-			if (g > 0xFF) g == 0xFF;
-			
-			b = ((c1) & 0xFF) + ((c2) & 0xFF) + ((c3) & 0xFF) + ((c4) & 0xFF);
-			if (b > 0xFF) b == 0xFF;
-			
-			color = a << 24 | r << 16 | g << 8 | b;
+			color = a + r + g + b;
 			
 			pixels.position = i * 4;
-			pixels.writeUnsignedInt (color);
+			pixels.writeUnsignedInt(color);
 			
 		}
 		
 		pixels.position = 0;
 		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
 		setPixels (destRect, pixels);
-		
 	}
 	
 	
