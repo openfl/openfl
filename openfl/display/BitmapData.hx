@@ -165,7 +165,7 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __uvData:TextureUvs;
 	@:noCompletion private var __usingFramebuffer:Bool = false;
 	
-	#if (js && html5)
+	#if (!neko)
 	@:allow(openfl.display.DisplayObjectContainer) @:noCompletion private var __alpha:Float = 1;
 	#end
 	
