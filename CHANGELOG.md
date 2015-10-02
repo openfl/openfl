@@ -1,3 +1,18 @@
+3.3.7 (10/02/2015)
+------------------
+
+* Added support for object.FirstChild.SecondChild dynamic reference
+* Added FullScreenEvent for when the fullscreen status changes
+* Added minor tweaks to support Apple tvOS
+* Removed JoystickEvent (still available on legacy)
+* Improved the behavior of colorTransform concat
+* Improved openfl.utils.Object for better compatibility
+* Fixed a regression in reading values for graphics.lineBitmapStyle
+* Fixed displayObject mouseX/mouseY values when object not on stage
+* Fixed an edge case with bitmapData.getColorBoundsRect for 0 alpha
+* Fixed the position offset in graphics drawTiles on HTML5
+
+
 3.3.6 (09/23/2015)
 ------------------
 
