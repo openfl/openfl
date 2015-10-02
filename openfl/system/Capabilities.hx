@@ -394,6 +394,8 @@ import js.Browser;
 		return "BlackBerry";
 		#elseif ios
 		return "iOS";
+		#elseif tvos
+		return "tvOS"
 		#elseif tizen
 		return "Tizen";
 		#elseif webos
@@ -504,6 +506,8 @@ import js.Browser;
 		var value = "LNX";
 		#elseif ios
 		var value = "IOS";
+		#elseif tvos
+		var value = "TVO";
 		#elseif android
 		var value = "AND";
 		#elseif blackberry
