@@ -712,7 +712,7 @@ import openfl.Lib;
 		}
 		
 		GL.bindRenderbuffer (GL.RENDERBUFFER, renderbuffer);
-		#if ios
+		#if (ios || tvos)
 		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
 		#else
 		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);

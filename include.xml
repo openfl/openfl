@@ -49,6 +49,7 @@
 		<set name="custom-backend" value="${windows-backend}" if="windows windows-backend" />
 		<set name="custom-backend" value="${html5-backend}" if="html5 html5-backend" />
 		<set name="custom-backend" value="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
+		<set name="custom-backend" value="${tvos-backend}" if="tvos tvos-backend" />
 		
 	</section>
 	

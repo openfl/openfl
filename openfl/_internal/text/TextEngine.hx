@@ -276,7 +276,7 @@ class TextEngine {
 						}
 						
 					}
-					#elseif (mac || ios)
+					#elseif (mac || ios || tvos)
 					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
 					#elseif linux
 					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
@@ -318,7 +318,7 @@ class TextEngine {
 						}
 						
 					}
-					#elseif (mac || ios)
+					#elseif (mac || ios || tvos)
 					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
 					#elseif linux
 					fontList = [ new sys.io.Process('fc-match', ['mono', '-f%{file}']).stdout.readLine() ];
@@ -397,7 +397,7 @@ class TextEngine {
 			}
 			
 		}
-		#elseif (mac || ios)
+		#elseif (mac || ios || tvos)
 		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf" ];
 		#elseif linux
 		fontList = [ new sys.io.Process('fc-match', ['serif', '-f%{file}']).stdout.readLine() ];
