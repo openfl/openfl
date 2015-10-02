@@ -4,6 +4,7 @@ package openfl.display; #if !flash #if !openfl_legacy
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
+import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
@@ -88,6 +89,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	@:noCompletion private var __removedChildren:Array<DisplayObject>;
 	
+	#if (!neko)
+	private var bitmapLayer:Bitmap = null;
+	#end
 	
 	/**
 	 * Calling the <code>new DisplayObjectContainer()</code> constructor throws
@@ -913,9 +917,36 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		for (child in __children) {
+		if (__children.length > 0) {
 			
-			child.__renderCanvas (renderSession);
+			if (__blendMode == BlendMode.LAYER)  {
+				
+				var prevAlpha = __worldAlpha;
+				
+				__blendMode = null;
+				
+				var b = new BitmapData(Math.floor(width+x), Math.floor(height+y), true, 0);
+				var alph = __alpha;
+				__alpha = 1;
+				
+				b.draw(this);
+				
+				alpha = alph;
+				__worldAlpha = prevAlpha;
+				
+				b.__alpha = prevAlpha;
+				b.__worldTransform = __worldTransform;
+				b.__worldColorTransform = __worldColorTransform;
+				
+				b.__renderCanvas(renderSession);
+				
+				__blendMode = BlendMode.LAYER;
+				
+			} else {
+				
+				for (child in __children) child.__renderCanvas (renderSession);
+				
+			}
 			
 		}
 		
@@ -963,7 +994,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
-	
 	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if !neko
@@ -980,9 +1010,44 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		// TODO: scrollRect
 		
-		for (child in __children) {
+		if (__blendMode == BlendMode.LAYER)  {
 			
-			child.__renderDOM (renderSession);
+			if (bitmapLayer != null) {
+				renderSession.element.removeChild (bitmapLayer.__canvas);
+				bitmapLayer.__canvas = null;
+				bitmapLayer = null;
+			}
+			
+			if (__children.length > 0) {
+				
+				var prevAlpha = __worldAlpha;
+				
+				__blendMode = null;
+				
+				var b = new BitmapData(Math.floor(width + x), Math.floor(height + y), true, 0);
+				
+				var alph = __alpha;
+				__alpha = 1;
+				
+				b.draw(this);
+				
+				alpha = alph;
+				__worldAlpha = prevAlpha;
+				
+				bitmapLayer = new Bitmap(b);
+				bitmapLayer.__worldAlpha = prevAlpha;
+				bitmapLayer.__worldTransform = __worldTransform;
+				bitmapLayer.__worldColorTransform = __worldColorTransform;
+				
+				@:privateAccess DOMBitmap.renderCanvas(bitmapLayer, renderSession);
+				
+				__blendMode = BlendMode.LAYER;
+				
+			}
+			
+		} else {
+			
+			for (child in __children) child.__renderDOM (renderSession);
 			
 		}
 		
@@ -1020,11 +1085,41 @@ class DisplayObjectContainer extends InteractiveObject {
 		__preRenderGL (renderSession);
 		__drawGraphicsGL (renderSession);
 		
-		for (child in __children) {
+		
+		if (__children.length > 0) {
 			
-			child.__renderGL (renderSession);
+			if (__blendMode == BlendMode.LAYER)  {
+				
+				var prevAlpha = __worldAlpha;
+				
+				__blendMode = null;
+				
+				var b = new BitmapData(Math.floor(width+x), Math.floor(height+y), true, 0);
+				var alph = __alpha;
+				__alpha = 1;
+				
+				b.draw(this);
+				
+				__alpha = alph;
+				__worldAlpha = prevAlpha;
+				
+				renderSession.spriteBatch.renderBitmapData (b, false, __worldTransform, __worldColorTransform, __worldAlpha, null);
+				
+				__blendMode = BlendMode.LAYER;
+				
+			} else {
+				
+				for (child in __children) {
+			
+					child.__renderGL (renderSession);
+					
+				}
+				
+			}
 			
 		}
+		
+		
 		
 		__postRenderGL (renderSession);
 		

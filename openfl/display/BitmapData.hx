@@ -165,6 +165,10 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion private var __uvData:TextureUvs;
 	@:noCompletion private var __usingFramebuffer:Bool = false;
 	
+	#if (js && html5)
+	@:allow(openfl.display.DisplayObjectContainer) @:noCompletion private var __alpha:Float = 1;
+	#end
+	
 	/**
 	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
 	 * the <code>fillColor</code> parameter, every pixel in the bitmap is set to that color. 
@@ -2325,7 +2329,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__worldTransform == null) __worldTransform = new Matrix ();
 		
-		context.globalAlpha = 1;
+		context.globalAlpha = __alpha;
 		var transform = __worldTransform;
 		
 		if (renderSession.roundPixels) {
