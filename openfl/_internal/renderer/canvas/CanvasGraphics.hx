@@ -1211,7 +1211,7 @@ class CanvasGraphics {
 								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 									
 									context.save ();
-									context.translate (c.tileData[index], c.tileData[index + 1]);
+									context.translate (c.tileData[index] - offsetX, c.tileData[index + 1] - offsetY);
 									
 									if (useRotation) {
 										
@@ -1239,7 +1239,7 @@ class CanvasGraphics {
 										
 									}
 									
-									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale - offsetX, -center.y * scale - offsetY, rect.width * scale, rect.height * scale);
+									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
 									context.restore ();
 									
 								}
