@@ -1025,7 +1025,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
-	@:noCompletion private function __enterFrame ():Void {
+	@:noCompletion private function __enterFrame (deltaTime:Int):Void {
 		
 		
 		

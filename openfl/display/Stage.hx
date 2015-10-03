@@ -545,6 +545,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion private var __color:Int;
 	@:noCompletion private var __colorSplit:Array<Float>;
 	@:noCompletion private var __colorString:String;
+	@:noCompletion private var __deltaTime:Int;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayState:StageDisplayState;
 	@:noCompletion private var __dragBounds:Rectangle;
@@ -600,6 +601,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		this.name = null;
 		
+		__deltaTime = 0;
 		__displayState = NORMAL;
 		__mouseX = 0;
 		__mouseY = 0;
@@ -1087,7 +1089,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		
 		__renderable = true;
-		__enterFrame ();
+		
+		__enterFrame (__deltaTime);
+		__deltaTime = 0;
 		__update (false, true);
 		
 		if (__renderer != null) {
@@ -1119,7 +1123,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	@:noCompletion @:dox(hide) public function update (deltaTime:Int):Void {
 		
-		
+		__deltaTime = deltaTime;
 		
 	}
 	
