@@ -96,7 +96,7 @@ Some platforms will require a standard SDK to build (such as Visual Studio C++ o
 3D Support
 ==========
 
-OpenFL is designed primarily for 2D development, but you can the `OpenGLView` API to write your own WebGL-style code, and mix it with the OpenFL display architecture. You can also use libraries such as [Away3D](https://github.com/away3d/away3d-core-openfl/).
+OpenFL is designed primarily for 2D development, but you can use the `OpenGLView` API to write your own WebGL-style code, and mix it with the OpenFL display architecture. You can also use libraries such as [Away3D](https://github.com/away3d/away3d-core-openfl/).
 
 
 Native Extensions
