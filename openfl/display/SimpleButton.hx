@@ -134,7 +134,7 @@ class SimpleButton extends DisplayObjectContainer {
 		// NOTE (tienery): Over and down states can be null, check them in event handling later
 		this.overState = overState;
 		this.downState = downState;
-		this.hitTestState = (hitTestState != null) ? hitTestState : generateDefaultState ();
+		this.hitTestState = (hitTestState != null) ? hitTestState : __generateDefaultState ();
 		
 		__currentState = this.upState;
 		
