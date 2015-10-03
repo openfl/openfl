@@ -113,6 +113,7 @@ class MovieClip extends Sprite {
 	@:noCompletion private var __currentFrameLabel:String;
 	@:noCompletion private var __currentLabel:String;
 	@:noCompletion private var __currentLabels:Array<FrameLabel>;
+	@:noCompletion private var __frameScripts:Map<Int, Void->Void>;
 	@:noCompletion private var __totalFrames:Int;
 	
 	
@@ -129,6 +130,29 @@ class MovieClip extends Sprite {
 		__currentLabels = [];
 		__totalFrames = 0;
 		enabled = true;
+		
+	}
+	
+	
+	public function addFrameScript (index:Int, method:Void->Void):Void {
+		
+		if (method != null) {
+			
+			if (__frameScripts == null) {
+				
+				__frameScripts = new Map ();
+				
+			}
+			
+			__frameScripts.set (index, method);
+			
+			trace ("added script index " + index);
+			
+		} else if (__frameScripts != null) {
+			
+			__frameScripts.remove (index);
+			
+		}
 		
 	}
 	
