@@ -403,7 +403,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public function getObjectsUnderPoint (point:Point):Array<DisplayObject> {
 		
-		point = localToGlobal (point);
 		var stack = new Array<DisplayObject> ();
 		__hitTest (point.x, point.y, false, stack, false);
 		stack.reverse ();
