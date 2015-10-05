@@ -204,12 +204,12 @@ class Shader {
 		
 		var cache = ShaderManager.compiledShadersCache;
 		var key = Md5.encode(vertexSrc + fragmentSrc);
-		trace("Compiling program key: " +  key);
+		
 		if (cache.exists(key)) {
-			trace("Program already in cache");
+			
 			return cache.get(key);
+			
 		}
-		trace("Program NOT in cache");
 		
 		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
 		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);

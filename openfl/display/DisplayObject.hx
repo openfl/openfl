@@ -772,6 +772,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	@:noCompletion private var __cachedFilterBounds:Rectangle;
 	@:noCompletion private var __updateFilters:Bool;
 	
+	// helper matrix for cacheGL
+	@:noCompletion private var __cacheGLMatrix:Matrix;
+	
 	#if (js && html5)
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
@@ -1312,8 +1315,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
 		
+		if (__cacheGLMatrix == null) __cacheGLMatrix = new Matrix();
 		
-		var matrix:Matrix;
 		if (hasCacheMatrix) {
 			
 			// Transform the bounds
@@ -1324,12 +1327,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			w = bmpBounds.width;
 			h = bmpBounds.height;
 			
-			matrix = __cacheAsBitmapMatrix.clone();
+			__cacheGLMatrix = __cacheAsBitmapMatrix.clone();
 			
 		} else {
 			
 			// can't use Matrix.__temp here, it's not safe
-			matrix = new Matrix();
+			__cacheGLMatrix.identity();
 			
 		}
 		
@@ -1346,7 +1349,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 			
 			// we need to position the drawing origin to 0,0 in the texture
-			var m = matrix.clone();
+			var m = __cacheGLMatrix.clone();
 			m.translate( -x, -y);
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
@@ -1363,12 +1366,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 		// Calculate the correct position
-		matrix.invert();
-		matrix.__translateTransformed(x, y);
-		matrix.concat(__renderTransform);
-		matrix.translate ( __offset.x, __offset.y);
+		__cacheGLMatrix.invert();
+		__cacheGLMatrix.__translateTransformed(x, y);
+		__cacheGLMatrix.concat(__renderTransform);
+		__cacheGLMatrix.translate ( __offset.x, __offset.y);
 		
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, matrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 	
 	
