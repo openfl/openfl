@@ -8,12 +8,13 @@ import openfl.gl.GLShader;
 
 @:final class Program3D {
 	
-	
+	public var context:Context3D;
 	public var glProgram:GLProgram;
 	
 	
-	public function new (program:GLProgram) {
+	public function new (context:Context3D, program:GLProgram) {
 		
+		this.context = context;
 		this.glProgram = program;
 		
 	}
@@ -21,7 +22,7 @@ import openfl.gl.GLShader;
 	
 	public function dispose ():Void {
 		
-		GL.deleteProgram (glProgram);
+		context.__deleteProgram (this);
 		
 	}
 	

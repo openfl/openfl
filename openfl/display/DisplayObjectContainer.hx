@@ -86,7 +86,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public var tabChildren:Bool;
 	
-	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __removedChildren:Array<DisplayObject>;
 	
 	
@@ -406,7 +405,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public function getObjectsUnderPoint (point:Point):Array<DisplayObject> {
 		
-		point = localToGlobal (point);
 		var stack = new Array<DisplayObject> ();
 		__hitTest (point.x, point.y, false, stack, false);
 		stack.reverse ();
@@ -526,6 +524,25 @@ class DisplayObjectContainer extends InteractiveObject {
 			numRemovals--;
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) private function resolve (fieldName:String):DisplayObject {
+		
+		if (__children == null) return null;
+		
+		for (child in __children) {
+			
+			if (child.name == fieldName) {
+				
+				return child;
+				
+			}
+			
+		}
+		
+		return null;
 		
 	}
 	
@@ -668,11 +685,11 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __enterFrame ():Void {
+	@:noCompletion private override function __enterFrame (deltaTime:Int):Void {
 		
 		for (child in __children) {
 			
-			child.__enterFrame ();
+			child.__enterFrame (deltaTime);
 			
 		}
 		

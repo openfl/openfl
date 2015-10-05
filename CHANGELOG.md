@@ -1,3 +1,67 @@
+3.3.7 (10/02/2015)
+------------------
+
+* Added support for object.FirstChild.SecondChild dynamic reference
+* Added FullScreenEvent for when the fullscreen status changes
+* Added minor tweaks to support Apple tvOS
+* Removed JoystickEvent (still available on legacy)
+* Improved the behavior of colorTransform concat
+* Improved openfl.utils.Object for better compatibility
+* Fixed a regression in reading values for graphics.lineBitmapStyle
+* Fixed displayObject mouseX/mouseY values when object not on stage
+* Fixed an edge case with bitmapData.getColorBoundsRect for 0 alpha
+* Fixed the position offset in graphics drawTiles on HTML5
+
+
+3.3.6 (09/23/2015)
+------------------
+
+* Updated for Lime 2.6.5 changes
+* Changed gradient style to use Array<Int> for ratio, not Float
+* Improved quality of joint style for closed paths
+* Fixed use of deprecated Assets.load syntax (without using futures)
+
+
+3.3.5 (09/21/2015)
+------------------
+
+* Improved support for native URLLoader binary data
+* Improved support for native URLLoader GET/POST
+* Improved hit testing against certain invisible shapes
+* Added a "resolve" method to MovieClip to improve dynamic use
+* Fixed some issues with improper positioning of Graphics
+* Reduced "unreachable code" warnings in Firefox
+* Fixed alpha blending on iOS
+
+
+3.3.4 (09/19/2015)
+------------------
+
+* Improved the calculation of object bounds
+* Improved the quality of OpenGL scrollRect support
+* Added auto-saving of SharedObject instances on exit
+* Improved bounds calculations when using a miter joint
+* Improved support for TextField wordWrap
+* Fixed cases where invisible shapes took rendering time
+* Fixed support for lineStyle widths of zero
+* Added missing methods and properties for openfl.net.SharedObject
+* Added Lime 2 accelerometer compatibility
+* Integrated new improvements to the Stage3D context
+* Added bounds calculation to drawTiles calls
+* Added support for colorTransform when using bitmapData.draw
+* Improved drawTiles on HTML5 to avoid an intermediate canvas element
+* Fixed some strange issues that occurred with invisible Graphics
+* Fixed an issue that prevented SWF assets from working on Flash
+* Made the Android back button move to background by default
+* Fixed a minor issue in TextField.getLineIndexAtPoint
+* Fixed a minor issue in TextField.getCharIndexAtPoint
+* Fixed issues that caused BitmapData to cache pixels too long
+* Fixed sound transform balance on HTML5 (some browsers)
+* Improved the Event.ADDED/REMOVED events
+* Began to implement a new "Tilemap" API
+* Reduced allocations made in the Graphics and TextField classes
+
+
 3.3.3 (09/08/2015)
 ------------------
 

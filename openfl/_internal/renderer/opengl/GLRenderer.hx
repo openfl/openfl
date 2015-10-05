@@ -92,7 +92,7 @@ class GLRenderer extends AbstractRenderer {
 		_glContextId = glContextId ++;
 		this.gl = gl;
 		
-		#if ios
+		#if (ios || tvos)
 		defaultFramebuffer = new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING));
 		#else
 		defaultFramebuffer = null;
@@ -252,7 +252,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		renderSession.gl = gl;
 		
-		#if ios
+		#if (ios || tvos)
 		defaultFramebuffer = new GLFramebuffer (GL.version, GL.getParameter (GL.FRAMEBUFFER_BINDING));
 		#else
 		defaultFramebuffer = null;

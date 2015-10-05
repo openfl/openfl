@@ -170,7 +170,7 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable {
+class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
 	
 	
 	@:noCompletion private static var __instanceCount = 0;
@@ -732,6 +732,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
@@ -1046,7 +1047,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	}
 	
 	
-	@:noCompletion private function __enterFrame ():Void {
+	@:noCompletion private function __enterFrame (deltaTime:Int):Void {
 		
 		
 		
@@ -1874,27 +1875,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	@:noCompletion private function get_mouseX ():Float {
 		
-		if (stage != null) {
-			
-			return __getWorldTransform ().__transformInverseX (stage.__mouseX, stage.__mouseY);
-			
-			
-		}
+		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
+		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return 0;
+		return __getWorldTransform ().__transformInverseX (mouseX, mouseY);
 		
 	}
 	
 	
 	@:noCompletion private function get_mouseY ():Float {
 		
-		if (stage != null) {
-			
-			return __getWorldTransform ().__transformInverseY (stage.__mouseX, stage.__mouseY);
-			
-		}
+		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
+		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return 0;
+		return __getWorldTransform ().__transformInverseY (mouseX, mouseY);
 		
 	}
 	

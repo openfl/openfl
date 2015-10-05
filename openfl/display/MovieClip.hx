@@ -36,7 +36,7 @@ package openfl.display; #if !flash #if !openfl_legacy
  * MovieClip.opaqueBackground property for a suitable device, define
  * FEATURE_BITMAPCACHE in your project.</p>
  */
-class MovieClip extends Sprite implements Dynamic<DisplayObject> {
+class MovieClip extends Sprite {
 	
 	
 	/**
@@ -113,6 +113,7 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	@:noCompletion private var __currentFrameLabel:String;
 	@:noCompletion private var __currentLabel:String;
 	@:noCompletion private var __currentLabels:Array<FrameLabel>;
+	@:noCompletion private var __frameScripts:Map<Int, Void->Void>;
 	@:noCompletion private var __totalFrames:Int;
 	
 	
@@ -129,6 +130,29 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 		__currentLabels = [];
 		__totalFrames = 0;
 		enabled = true;
+		
+	}
+	
+	
+	public function addFrameScript (index:Int, method:Void->Void):Void {
+		
+		if (method != null) {
+			
+			if (__frameScripts == null) {
+				
+				__frameScripts = new Map ();
+				
+			}
+			
+			__frameScripts.set (index, method);
+			
+			trace ("added script index " + index);
+			
+		} else if (__frameScripts != null) {
+			
+			__frameScripts.remove (index);
+			
+		}
 		
 	}
 	

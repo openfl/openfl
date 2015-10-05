@@ -797,7 +797,6 @@ class BitmapData implements IBitmapDrawable {
 		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
 		
-		var buffer = image.buffer;
 		var surface = getSurface ();
 		var cairo = new Cairo (surface);
 		
@@ -831,7 +830,6 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		surface.flush ();
-		cairo.destroy ();
 		
 		image.dirty = true;
 		
@@ -1048,6 +1046,10 @@ class BitmapData implements IBitmapDrawable {
 	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
 		
 		if (!__isValid) return new Rectangle (0, 0, width, height);
+		
+		var color = (color:ARGB);
+		if (color.a == 0) color = 0;
+		
 		var rect = image.getColorBoundsRect (mask, color, findColor, ARGB32);
 		return new Rectangle (rect.x, rect.y, rect.width, rect.height);
 		
@@ -1185,7 +1187,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else {
 				
-				#if ((desktop || ios) && !rpi)
+				#if ((desktop || ios || tvos) && !rpi)
 				internalFormat = gl.RGBA;
 				format = gl.BGRA_EXT;
 				#elseif sys
@@ -1996,9 +1998,6 @@ class BitmapData implements IBitmapDrawable {
 			object.__updateChildren (true);
 			object.__transformDirty = true;
 			
-			surface.destroy ();
-			cairo.destroy ();
-			
 			image.dirty = true;
 			
 		} else if (Std.is (source, BitmapData)) {
@@ -2029,10 +2028,6 @@ class BitmapData implements IBitmapDrawable {
 			cairo.antialias = NONE;
 			cairo.source = pattern;
 			cairo.paint ();
-			
-			pattern.destroy ();
-			surface.destroy ();
-			cairo.destroy ();
 			
 			image.dirty = true;
 			
@@ -2194,7 +2189,6 @@ class BitmapData implements IBitmapDrawable {
 			
 			cairo.source = pattern;
 			cairo.paint ();
-			pattern.destroy ();
 			
 		}
 		

@@ -10,13 +10,14 @@ import openfl.Vector;
 
 @:final class IndexBuffer3D {
 	
-	
+	public var context:Context3D;
 	public var glBuffer:GLBuffer;
 	public var numIndices:Int;
 	
 	
-	public function new (glBuffer:GLBuffer, numIndices:Int) {
+	public function new (context:Context3D, glBuffer:GLBuffer, numIndices:Int) {
 		
+		this.context = context;
 		this.glBuffer = glBuffer;
 		this.numIndices = numIndices;
 		
@@ -25,7 +26,7 @@ import openfl.Vector;
 	
 	public function dispose ():Void {
 		
-		GL.deleteBuffer (glBuffer);
+		context.__deleteIndexBuffer (this);
 		
 	}
 	

@@ -9,14 +9,15 @@ import openfl.Vector;
 
 class VertexBuffer3D {
 	
-	
+	public var context:Context3D;
 	public var data32PerVertex:Int;
 	public var glBuffer:GLBuffer;
 	public var numVertices:Int;
 	
 	
-	public function new (glBuffer:GLBuffer, numVertices:Int, data32PerVertex:Int) {
+	public function new (context:Context3D, glBuffer:GLBuffer, numVertices:Int, data32PerVertex:Int) {
 		
+		this.context = context;
 		this.glBuffer = glBuffer;
 		this.numVertices = numVertices;
 		this.data32PerVertex = data32PerVertex;
@@ -26,7 +27,7 @@ class VertexBuffer3D {
 	
 	public function dispose ():Void {
 		
-		GL.deleteBuffer (glBuffer);
+		context.__deleteVertexBuffer (this);
 		
 	}
 	

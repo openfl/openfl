@@ -131,8 +131,9 @@ class SimpleButton extends DisplayObjectContainer {
 		mouseChildren = false;
 		
 		this.upState = (upState != null) ? upState : __generateDefaultState ();
-		this.overState = (overState != null) ? overState : __generateDefaultState ();
-		this.downState = (downState != null) ? downState : __generateDefaultState ();
+		// NOTE (tienery): Over and down states can be null, check them in event handling later
+		this.overState = overState;
+		this.downState = downState;
 		this.hitTestState = (hitTestState != null) ? hitTestState : __generateDefaultState ();
 		
 		__currentState = this.upState;
@@ -276,7 +277,8 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	@:noCompletion private function __this_onMouseDown (event:MouseEvent):Void {
 		
-		__currentState = downState;
+		if (downState != null)
+			__currentState = downState;
 		
 	}
 	
@@ -294,7 +296,7 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	@:noCompletion private function __this_onMouseOver (event:MouseEvent):Void {
 		
-		if (overState != __currentState) {
+		if (overState != __currentState && overState != null) {
 			
 			__currentState = overState;
 			
@@ -304,8 +306,11 @@ class SimpleButton extends DisplayObjectContainer {
 	
 	
 	@:noCompletion private function __this_onMouseUp (event:MouseEvent):Void {
-		
-		__currentState = overState;
+	
+		if (overState != null)
+			__currentState = overState;
+		else
+			__currentState = upState;
 		
 	}
 	

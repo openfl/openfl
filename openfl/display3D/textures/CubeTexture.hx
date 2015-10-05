@@ -1,6 +1,7 @@
 package openfl.display3D.textures; #if !flash
 
 
+import openfl.display3D.Context3D;
 import openfl.gl.GL;
 import openfl.gl.GLTexture;
 import openfl.geom.Rectangle;
@@ -18,9 +19,9 @@ using openfl.display.BitmapData;
 	public var mipmapsGenerated:Bool;
 	
 	
-	public function new (glTexture:GLTexture, size:Int) {
+	public function new (context:Context3D, glTexture:GLTexture, size:Int) {
 		
-		super (glTexture, size, size);
+		super (context, glTexture, size, size);
 		this.size = size;
 		this.mipmapsGenerated = false;
 		

@@ -166,15 +166,28 @@ class ColorTransform {
 	 */
 	public function concat (second:ColorTransform):Void {
 		
-		redMultiplier += second.redMultiplier;
-		greenMultiplier += second.greenMultiplier;
-		blueMultiplier += second.blueMultiplier;
-		alphaMultiplier += second.alphaMultiplier;
+		redMultiplier *= second.redMultiplier;   
+		greenMultiplier *= second.greenMultiplier;
+		blueMultiplier *= second.blueMultiplier;
+		alphaMultiplier *= second.alphaMultiplier;
+		
+		redOffset = second.redMultiplier * redOffset + second.redOffset;
+		greenOffset = second.greenMultiplier * greenOffset + second.greenOffset;
+		blueOffset = second.blueMultiplier * blueOffset + second.blueOffset;
+		alphaOffset = second.alphaMultiplier * alphaOffset + second.alphaOffset;
+		
+	}
+	
+	
+	@:noCompletion private function __clone ():ColorTransform {
+		
+		return new ColorTransform (redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
 		
 	}
 	
 	
 	@:noCompletion private function __combine (ct:ColorTransform):Void {
+		
 		redMultiplier *= ct.redMultiplier;
 		greenMultiplier *= ct.greenMultiplier;
 		blueMultiplier *= ct.blueMultiplier;
@@ -189,23 +202,12 @@ class ColorTransform {
 	
 	
 	@:noCompletion private function __equals (ct:ColorTransform, ?skipAlphaMultiplier:Bool = false):Bool {
-		return ( ct != null &&
-			redMultiplier == ct.redMultiplier &&
-			greenMultiplier == ct.greenMultiplier &&
-			blueMultiplier == ct.blueMultiplier &&
-			(skipAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) &&
-			
-			redOffset == ct.redOffset &&
-			greenOffset == ct.greenOffset &&
-			blueOffset == ct.blueOffset &&
-			alphaOffset == ct.alphaOffset
-		);
+		
+		return (ct != null && redMultiplier == ct.redMultiplier && greenMultiplier == ct.greenMultiplier && blueMultiplier == ct.blueMultiplier && (skipAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) && redOffset == ct.redOffset && greenOffset == ct.greenOffset && blueOffset == ct.blueOffset && alphaOffset == ct.alphaOffset);
+		
 	}
 	
 	
-	@:noCompletion private function __clone ():ColorTransform {
-		return new ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
-	}
 	
 	
 	// Getters & Setters

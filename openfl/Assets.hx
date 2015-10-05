@@ -425,6 +425,7 @@ class Assets {
 		try {
 			
 			bitmapData.width;
+			return true;
 			
 		} catch (e:Dynamic) {
 			
@@ -437,25 +438,27 @@ class Assets {
 		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
 		
 		#end
-		#end
+		#else
 		
 		return true;
+		
+		#end
 		
 	}
 	
 	
 	private static function isValidSound (sound:Sound):Bool {
 		
-		#if (tools && !display)
-		#if (cpp || neko || nodejs)
+		#if ((tools && !display) && (cpp || neko || nodejs))
 		
 		return true;
 		//return (sound.__handle != null && sound.__handle != 0);
 		
-		#end
-		#end
+		#else
 		
 		return true;
+		
+		#end
 		
 	}
 	
@@ -480,7 +483,9 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<BitmapData>
 	 */
-	public static function loadBitmapData (id:String, useCache:Bool = true, handler:BitmapData->Void = null):Future<BitmapData> {
+	public static function loadBitmapData (id:String, useCache:Null<Bool> = true, handler:BitmapData->Void = null):Future<BitmapData> {
+		
+		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<BitmapData> ();
 		
@@ -571,7 +576,9 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Font>
 	 */
-	public static function loadFont (id:String, useCache:Bool = true, handler:Font->Void = null):Future<Font> {
+	public static function loadFont (id:String, useCache:Null<Bool> = true, handler:Font->Void = null):Future<Font> {
+		
+		if (useCache == null) useCache = true;
 		
 		var promise = new Promise<Font> ();
 		
@@ -646,7 +653,9 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Sound>
 	 */
-	public static function loadMusic (id:String, useCache:Bool = true, handler:Sound->Void = null):Future<Sound> {
+	public static function loadMusic (id:String, useCache:Null<Bool> = true, handler:Sound->Void = null):Future<Sound> {
+		
+		if (useCache == null) useCache = true;
 		
 		#if !html5
 		
@@ -738,7 +747,9 @@ class Assets {
 	 * @param	handler		(Deprecated) A callback function when the load is completed
 	 * @return		Returns a Future<Sound>
 	 */
-	public static function loadSound (id:String, useCache:Bool = true, handler:Sound->Void = null):Future<Sound> {
+	public static function loadSound (id:String, useCache:Null<Bool> = true, handler:Sound->Void = null):Future<Sound> {
+		
+		if (useCache == null) useCache = true;
 		
 		#if !html5
 		
