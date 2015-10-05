@@ -247,12 +247,22 @@ class SpriteBatch {
 		var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
 		var ox = 0.0, oy = 0.0;
 		
-		matrix.identity();
-		
 		var oMatrix = object.__worldTransform;
-		uvs.reset();
 		
 		var bIndex = 0;
+		var tMa  = 1.0, tMb  = 0.0;
+		var tMc  = 0.0, tMd  = 1.0;
+		var tMtx = 0.0, tMty = 0.0;
+		
+		var oMa  = oMatrix.a;
+		var oMb  = oMatrix.b;
+		var oMc  = oMatrix.c;
+		var oMd  = oMatrix.d;
+		var oMtx = oMatrix.tx;
+		var oMty = oMatrix.ty;
+		
+		var rx = 0.0, ry = 0.0, rw = 0.0, rh = 0.0;
+		var tuvx = 0.0, tuvy = 0.0, tuvw = 0.0, tuvh = 0.0;
 		
 		//enableAttributes((useRGB || useAlpha) ? 0 : 0xFFFFFFFF);
 		enableAttributes(0);
@@ -283,24 +293,29 @@ class SpriteBatch {
 					center.setTo(0, 0);
 				}
 				
-				tileUV.setTo(rect.left / sheet.__bitmap.width, rect.top / sheet.__bitmap.height, rect.right / sheet.__bitmap.width, rect.bottom / sheet.__bitmap.height);
+				rw = rect.width; rh = rect.height;
+				tuvx = rect.left / sheet.__bitmap.width;
+				tuvy = rect.top / sheet.__bitmap.height;
+				tuvw = rect.right / sheet.__bitmap.width;
+				tuvh = rect.bottom / sheet.__bitmap.height;
 			} else {
 				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
 				rect = sheet.getTileRect(tileID);
 				center = sheet.getTileCenter(tileID);
 				tileUV = sheet.getTileUVs(tileID);
+				
+				rw = rect.width; rh = rect.height;
+				tuvx = tileUV.x; tuvy = tileUV.y; tuvw = tileUV.width; tuvh = tileUV.height;
 			}
 			
 			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
 				
 				alpha = 1;
 				tint = 0xFFFFFF;
-				a = 1; b = 0; c = 0; d = 1; tx = 0; ty = 0;
 				scale = 1.0;
 				rotation = 0.0;
 				cosTheta = 1.0;
 				sinTheta = 0.0;
-				matrix.identity();
 				
 				if (useAlpha) {
 					alpha = tileData[iIndex + alphaIndex] * object.__worldAlpha;
@@ -340,23 +355,38 @@ class SpriteBatch {
 				tx = x - ox;
 				ty = y - oy;
 				
-				matrix.a = a * oMatrix.a + b * oMatrix.c;
-				matrix.b = a * oMatrix.b + b * oMatrix.d;
-				matrix.c = c * oMatrix.a + d * oMatrix.c;
-				matrix.d = c * oMatrix.b + d * oMatrix.d;
-				matrix.tx = tx * oMatrix.a + ty * oMatrix.c + oMatrix.tx;
-				matrix.ty = tx * oMatrix.b + ty * oMatrix.d + oMatrix.ty;
+				// expanded fillVertices here si it doesn't need to access matrix or uvs
 				
-				uvs.x0 = tileUV.x;  uvs.y0 = tileUV.y;
-				uvs.x1 = tileUV.width; uvs.y1 = tileUV.y;
-				uvs.x2 = tileUV.width; uvs.y2 = tileUV.height;
-				uvs.x3 = tileUV.x;  uvs.y3 = tileUV.height;
+				tMa = (a * oMa + b * oMc) * rw;
+				tMb = (a * oMb + b * oMd) * rw;
+				tMc = (c * oMa + d * oMc) * rh;
+				tMd = (c * oMb + d * oMd) * rh;
+				tMtx = tx * oMa + ty * oMc + oMtx;
+				tMty = tx * oMb + ty * oMd + oMty;
 				
 				bIndex = batchedSprites * 4 * elementsPerVertex;
+				// POSITIONS
+				positions[bIndex + 0] 	= (tMtx);
+				positions[bIndex + 1] 	= (tMty);
+				positions[bIndex + 5] 	= (tMa + tMtx);			
+				positions[bIndex + 6] 	= (tMb + tMty);			
+				positions[bIndex + 10] 	= (tMa + tMc + tMtx);
+				positions[bIndex + 11] 	= (tMd + tMb + tMty);
+				positions[bIndex + 15] 	= (tMc + tMtx);
+				positions[bIndex + 16] 	= (tMd + tMty);
+				//COLORS
+				colors[bIndex + 4] = colors[bIndex + 9] = colors[bIndex + 14] = colors[bIndex + 19] = ((Std.int(alpha * 255)) & 0xFF) << 24 | tint;				
+				// UVS
+				positions[bIndex + 2]  = tuvx;
+				positions[bIndex + 3]  = tuvy;
+				positions[bIndex + 7]  = tuvw;
+				positions[bIndex + 8]  = tuvy;
+				positions[bIndex + 12] = tuvw;
+				positions[bIndex + 13] = tuvh;
+				positions[bIndex + 17] = tuvx;
+				positions[bIndex + 18] = tuvh;
 				
-				color = ((Std.int(alpha * 255)) & 0xFF) << 24 | (tint & 0xFF) << 16 | ((tint >> 8) & 0xFF) << 8 | ((tint >> 16) & 0xFF);
-				
-				fillVertices(bIndex, rect.width, rect.height, matrix, uvs, color, NEVER);
+				writtenVertexBytes = bIndex + 20;
 				
 				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, flashShader, false);
 				
@@ -519,7 +549,6 @@ class SpriteBatch {
 		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 		
 		if (state.colorTransform != null) {
-			trace("Using colortransform");
 			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 1);
 			var ct = state.colorTransform;
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier),
@@ -528,8 +557,8 @@ class SpriteBatch {
 						ct.redOffset / 255., ct.greenOffset / 255., ct.blueOffset / 255., ct.alphaOffset / 255.);
 		} else {
 			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 0);
-			//gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
-			//gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
+			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
+			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
 		
 		gl.activeTexture(gl.TEXTURE0 + 0);
@@ -647,7 +676,7 @@ private class State {
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
-				(colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha))
+				((colorTransform == null && other.colorTransform == null) || (colorTransform != null && other.colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)))
 		);
 	}
 	
