@@ -1,5 +1,6 @@
 package openfl._internal.renderer.opengl.shaders2;
 
+import haxe.crypto.Md5;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.VertexArray;
@@ -156,7 +157,6 @@ class Shader {
 	}
 	
 	public function enableVertexAttribute(attribute:VertexAttribute, stride:Int, offset:Int) {
-		//trace("Enable vertex attribute " + attribute.name);
 		var location = getAttribLocation(attribute.name);
 		gl.enableVertexAttribArray(location);
 		gl.vertexAttribPointer(location, attribute.components, attribute.type, attribute.normalized, stride, offset * 4);
@@ -203,11 +203,13 @@ class Shader {
 	public static function compileProgram(gl:GLRenderContext, vertexSrc:String, fragmentSrc:String):GLProgram {
 		
 		var cache = ShaderManager.compiledShadersCache;
-		var key = vertexSrc + "\n" + fragmentSrc;
-		
+		var key = Md5.encode(vertexSrc + fragmentSrc);
+		trace("Compiling program key: " +  key);
 		if (cache.exists(key)) {
+			trace("Program already in cache");
 			return cache.get(key);
 		}
+		trace("Program NOT in cache");
 		
 		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
 		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
@@ -229,6 +231,7 @@ class Shader {
 		}
 		
 		cache.set(key, program);
+		
 		return program;
 	}
 	

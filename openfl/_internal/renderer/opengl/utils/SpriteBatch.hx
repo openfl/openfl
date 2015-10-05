@@ -168,7 +168,7 @@ class SpriteBatch {
 		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
-		var shaderData = getShaderData(flashShader, bitmapData);
+		prepareShader(flashShader, bitmapData);
 		
 		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
 		
@@ -178,7 +178,7 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, color, pixelSnapping);
 		
-		setState(batchedSprites, texture, smoothing, blendMode, ct, shaderData.shader, shaderData.data, true);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader, true);
 		
 		batchedSprites++;
 	}
@@ -257,7 +257,7 @@ class SpriteBatch {
 		//enableAttributes((useRGB || useAlpha) ? 0 : 0xFFFFFFFF);
 		enableAttributes(0);
 		
-		var shaderData = getShaderData(flashShader);
+		prepareShader(flashShader);
 		
 		while (iIndex < totalCount) {
 			
@@ -358,7 +358,7 @@ class SpriteBatch {
 				
 				fillVertices(bIndex, rect.width, rect.height, matrix, uvs, color, NEVER);
 				
-				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, shaderData.shader, shaderData.data, false);
+				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, flashShader, false);
 				
 				batchedSprites++;
 			}
@@ -367,40 +367,6 @@ class SpriteBatch {
 			
 		}
 	}
-	
-	/* TODO remove
-	public function renderCachedGraphics(object:DisplayObject) {
-		var cachedTexture = object.__graphics.__cachedTexture;
-		
-		if (cachedTexture == null) return;
-		
-		if (batchedSprites >= maxSprites) {
-			flush();
-		}
-		
-		var alpha = object.__worldAlpha;
-		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
-		
-
-		var uvs = new TextureUvs();
-		uvs.x0 = 0;		uvs.y0 = 1;
-		uvs.x1 = 1;		uvs.y1 = 1;
-		uvs.x2 = 1;		uvs.y2 = 0;
-		uvs.x3 = 0;		uvs.y3 = 0;
-		
-		var worldTransform = object.__worldTransform.clone();
-		worldTransform.__translateTransformed(object.__graphics.__bounds.x, object.__graphics.__bounds.y);
-		
-		enableAttributes(color);
-		
-		var index = batchedSprites * 4 * elementsPerVertex;
-		fillVertices(index, cachedTexture.width, cachedTexture.height, worldTransform, uvs, null, color);
-		
-		setState(batchedSprites, cachedTexture.texture, object.blendMode, object.__worldColorTransform);
-		
-		batchedSprites++;
-	}
-	*/
 	
 	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
 		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
@@ -553,14 +519,17 @@ class SpriteBatch {
 		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
 		
 		if (state.colorTransform != null) {
+			trace("Using colortransform");
+			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 1);
 			var ct = state.colorTransform;
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier),
 						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, state.skipColorTransformAlpha ? 1 : ct.alphaMultiplier);
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset),
 						ct.redOffset / 255., ct.greenOffset / 255., ct.blueOffset / 255., ct.alphaOffset / 255.);
 		} else {
-			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
-			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
+			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 0);
+			//gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
+			//gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
 		
 		gl.activeTexture(gl.TEXTURE0 + 0);
@@ -586,7 +555,7 @@ class SpriteBatch {
 		
 	}
 	
-	function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:Shader, ?shaderData:GLShaderData, ?skipAlpha:Bool = false) {
+	inline function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:FlashShader, ?skipAlpha:Bool = false) {
 		var state:State = states[index];
 		if (state == null) {
 			state = states[index] = new State();
@@ -594,10 +563,16 @@ class SpriteBatch {
 		state.texture = texture;
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
-		state.colorTransform = colorTransform;
-		state.shader = shader;
-		state.shaderData = shaderData;
+		// colorTransform is default, skipping it
+		state.colorTransform = (colorTransform != null && @:privateAccess colorTransform.__isDefault()) ? null : colorTransform;
 		state.skipColorTransformAlpha = skipAlpha;
+		if (shader == null) {
+			state.shader = null;
+			state.shaderData = null;
+		} else {
+			state.shader = shader.__shader;
+			state.shaderData = shader.data;
+		}
 	}
 	
 	public function setContext(gl:GLRenderContext) {
@@ -611,13 +586,14 @@ class SpriteBatch {
 		
 	}
 	
-	inline function getShaderData(flashShader:FlashShader, ?bd:BitmapData) {
+	inline function prepareShader(flashShader:FlashShader, ?bd:BitmapData) {
 		if (flashShader != null) {
 			flashShader.__init(this.gl);
 			flashShader.__shader.wrapS = flashShader.repeatX;
 			flashShader.__shader.wrapT = flashShader.repeatY;
 			flashShader.__shader.smooth = flashShader.smooth;
 			flashShader.__shader.blendMode = flashShader.blendMode;
+			
 			var objSize = flashShader.data.get(FlashShader.uObjectSize);
 			var texSize = flashShader.data.get(FlashShader.uTextureSize);
 			if (bd != null) {
@@ -636,9 +612,7 @@ class SpriteBatch {
 				texSize.value[0] = 0;
 				texSize.value[1] = 0;
 			}
-			return { shader: flashShader.__shader, data: flashShader.data };
 		}
-		return { shader: null, data: null };
 	}
 	
 	inline function getElementsPerVertex() {

@@ -11,6 +11,7 @@ class DefaultShader extends Shader {
 			'attribute vec4 ${Attrib.Color};',
 			
 			'uniform mat3 ${Uniform.ProjectionMatrix};',
+			'uniform bool ${Uniform.UseColorTransform};',
 			
 			'varying vec2 ${Varying.TexCoord};',
 			'varying vec4 ${Varying.Color};',
@@ -18,7 +19,10 @@ class DefaultShader extends Shader {
 			'void main(void) {',
 			'   gl_Position = vec4((${Uniform.ProjectionMatrix} * vec3(${Attrib.Position}, 1.0)).xy, 0.0, 1.0);',
 			'   ${Varying.TexCoord} = ${Attrib.TexCoord};',
-			'   ${Varying.Color} = ${Attrib.Color};',
+			'   if(${Uniform.UseColorTransform})',
+			'   	${Varying.Color} = ${Attrib.Color};',
+			'   else',
+			'   	${Varying.Color} = vec4(${Attrib.Color}.rgb * ${Attrib.Color}.a, ${Attrib.Color}.a);',
 			'}'
 		];
 
@@ -35,11 +39,16 @@ class DefaultShader extends Shader {
 			'uniform sampler2D ${Uniform.Sampler};',
 			'uniform vec4 ${Uniform.ColorMultiplier};',
 			'uniform vec4 ${Uniform.ColorOffset};',
+			'uniform bool ${Uniform.UseColorTransform};',
 			
 			'varying vec2 ${Varying.TexCoord};',
 			'varying vec4 ${Varying.Color};',
 			
 			'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
+			'	if(!${Uniform.UseColorTransform}) {',
+			'		return color * tint;',
+			'	}',
+			
 			'	vec4 unmultiply;',
 			'	if (color.a == 0.0) {',
 			'		unmultiply = vec4(0.0, 0.0, 0.0, 0.0);',
@@ -74,6 +83,7 @@ class DefaultShader extends Shader {
 		getUniformLocation(Uniform.Sampler);
 		getUniformLocation(Uniform.ColorMultiplier);
 		getUniformLocation(Uniform.ColorOffset);
+		getUniformLocation(Uniform.UseColorTransform);
 	}
 	
 }
@@ -92,6 +102,7 @@ class DefaultShader extends Shader {
 	var Alpha = "openfl_uAlpha";
 	var ColorMultiplier = "openfl_uColorMultiplier";
 	var ColorOffset = "openfl_uColorOffset";
+	var UseColorTransform = "openfl_uUseColorTransform";
 }
 
 @:enum abstract Varying(String) from String to String {

@@ -93,7 +93,7 @@ class DrawTrianglesShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var UseTexture = "uUseTexture";
+	var UseTexture = "openfl_uUseTexture";
 	var Sampler = DefUniform.Sampler;
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;

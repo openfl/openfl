@@ -70,7 +70,7 @@ class FillShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var TranslationMatrix = "uTranslationMatrix";
+	var TranslationMatrix = "openfl_uTranslationMatrix";
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;
 	var Alpha = DefUniform.Alpha;
