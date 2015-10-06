@@ -20,6 +20,8 @@ import lime.utils.GLUtils;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
+import lime.ui.Joystick;
+import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse;
@@ -720,6 +722,55 @@ class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion @:dox(hide) public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
 		GameInput.__onGamepadDisconnect (gamepad);
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickAxisMove (joystick:Joystick, axis:Int, value:Float):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickButtonDown (joystick:Joystick, button:Int):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickButtonUp (joystick:Joystick, button:Int):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickConnect (joystick:Joystick):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickDisconnect (joystick:Joystick):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickHatMove (joystick:Joystick, hat:Int, position:JoystickHatPosition):Void {
+		
+		
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function onJoystickTrackballMove (joystick:Joystick, trackball:Int, value:Float):Void {
+		
+		
 		
 	}
 	
