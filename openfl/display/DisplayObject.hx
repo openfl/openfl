@@ -1067,6 +1067,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 	}
 	
+	@:noCompletion private function __getRenderBounds(rect:Rectangle, matrix:Matrix) {
+		
+		if (__scrollRect == null) {
+			__getBounds(rect, matrix);
+		} else {
+			var r = openfl.geom.Rectangle.__temp;
+			r.copyFrom(__scrollRect);
+			r.__transform(r, matrix);
+			rect.__expand(matrix.tx, matrix.ty, r.width, r.height);
+		}
+		
+	}
+	
 	
 	@:noCompletion private function __getCursor ():MouseCursor {
 		
@@ -1315,6 +1328,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
 		
+		// can't use Matrix.__temp here, it's not safe
 		if (__cacheGLMatrix == null) __cacheGLMatrix = new Matrix();
 		
 		if (hasCacheMatrix) {
@@ -1331,7 +1345,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		} else {
 			
-			// can't use Matrix.__temp here, it's not safe
 			__cacheGLMatrix.identity();
 			
 		}
@@ -1342,7 +1355,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
 				h += Math.abs(__cachedFilterBounds.y) + Math.abs(__cachedFilterBounds.height);
 			}
-			
+
 			if (__cachedBitmap == null) {
 				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 			}
@@ -1513,7 +1526,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
-		if (__cacheAsBitmap) {
+		if (!transformOnly && __cacheAsBitmap) {
 			
 			// we need to update the bounds
 			if (__updateCachedBitmap || __updateFilters) {
@@ -1522,21 +1535,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					__cachedBitmapBounds = new Rectangle();
 				}
 				
-				
-				
 				if(cacheAsBitmapBounds != null) {
 					__cachedBitmapBounds.copyFrom(cacheAsBitmapBounds);
 				} else {
+					
 					__cachedBitmapBounds.setEmpty();
-					__getBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-					//var rectBounds = new Rectangle();
-					//if (__getRenderBounds(rectBounds)) {
-						//__cachedBitmapBounds.__contract(rectBounds.x, rectBounds.y, rectBounds.width, rectBounds.height);
-					//}
+					__getRenderBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
+
 				}
 				
 				
 				if (__filters != null) {
+					
 					if (__cachedFilterBounds == null) {
 						__cachedFilterBounds = new Rectangle();
 					}
@@ -1546,9 +1556,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					__cachedBitmapBounds.x += __cachedFilterBounds.x;
 					__cachedBitmapBounds.y += __cachedFilterBounds.y;
 					
-					// limit the bounds to the width and height of the stage
-					if (__cachedBitmapBounds.width > stage.stageWidth) __cachedBitmapBounds.width = stage.stageWidth;
-					if (__cachedBitmapBounds.height > stage.stageHeight) __cachedBitmapBounds.height = stage.stageHeight;
 				}
 				
 			}

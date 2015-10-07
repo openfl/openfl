@@ -725,6 +725,37 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
+	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix) {
+		
+		if (__children.length == 0) return;
+		
+		if (__scrollRect != null) {
+			super.__getRenderBounds(rect, matrix);
+			return;
+		}
+		
+		if (matrix != null) {
+			
+			__updateTransforms(matrix);
+			__updateChildren (true);
+			
+		}
+		
+		for (child in __children) {
+			
+			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
+			child.__getRenderBounds (rect, child.__worldTransform);
+			
+		}
+		
+		if (matrix != null) {
+			
+			__updateTransforms();
+			__updateChildren (true);
+			
+		}
+		
+	}
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
