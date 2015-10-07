@@ -1,3 +1,13 @@
+3.3.8 (10/05/2015)
+------------------
+
+* Updated for new Lime Joystick support
+* Updated to allow SWFLite frame-rate independent MovieClips
+* Added MovieClip addFrameScript
+* Improved the behavior of SimpleButton
+* Improved the behavior of getObjectsUnderPoint
+
+
 3.3.7 (10/02/2015)
 ------------------
 

@@ -9,6 +9,8 @@ import lime.system.System;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
+import lime.ui.Joystick;
+import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Touch;
@@ -76,6 +78,55 @@ class HybridStage extends ManagedStage implements IModule {
 	
 	
 	public function onGamepadDisconnect (gamepad:Gamepad):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickAxisMove (joystick:Joystick, axis:Int, value:Float):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickButtonDown (joystick:Joystick, button:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickButtonUp (joystick:Joystick, button:Int):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickConnect (joystick:Joystick):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickDisconnect (joystick:Joystick):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickHatMove (joystick:Joystick, hat:Int, position:JoystickHatPosition):Void {
+		
+		
+		
+	}
+	
+	
+	public function onJoystickTrackballMove (joystick:Joystick, trackball:Int, value:Float):Void {
 		
 		
 		
