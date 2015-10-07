@@ -1349,6 +1349,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
+		if (w <= 0 && h <= 0) {
+			throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
+		}
+		
 		if (__updateCachedBitmap || __updateFilters) {
 			
 			if (__cachedFilterBounds != null) {
@@ -1541,7 +1545,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					
 					__cachedBitmapBounds.setEmpty();
 					__getRenderBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-
+					
 				}
 				
 				

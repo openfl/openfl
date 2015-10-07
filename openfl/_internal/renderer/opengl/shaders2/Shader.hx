@@ -65,7 +65,6 @@ class Shader {
 		program = Shader.compileProgram(gl, vertexString, fragmentString);
 		if (program != null) {
 			compiled = true;
-			gl.useProgram(program);
 		}
 	}
 	
