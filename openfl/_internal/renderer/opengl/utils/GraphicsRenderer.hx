@@ -37,7 +37,7 @@ import openfl.geom.Rectangle;
 import openfl.gl.GLTexture;
 import openfl.utils.Int16Array;
 import openfl.Vector;
-import openfl.display.Shader as FlashShader;
+import openfl.display.Shader in FlashShader;
 
 
 @:access(openfl.display.DisplayObject)

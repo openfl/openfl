@@ -9,7 +9,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
-import openfl.display.Shader as FlashShader;
+import openfl.display.Shader in FlashShader;
 import openfl.display.Shader.GLShaderData;
 import openfl.display.Tilesheet;
 import openfl.geom.ColorTransform;
