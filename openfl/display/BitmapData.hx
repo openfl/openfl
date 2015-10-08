@@ -871,6 +871,13 @@ class BitmapData implements IBitmapDrawable {
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
 		if (!__isValid || rect == null) return;
+		
+		if ((color & 0xFF000000) == 0) {
+			
+			color = 0;
+			
+		}
+		
 		image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
 		__usingFramebuffer = false;
 		
