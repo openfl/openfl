@@ -345,16 +345,26 @@ class URLLoader extends EventDispatcher {
 			});
 			worker.onComplete.add (function (bytes) {
 				
-				switch (dataFormat) {
+				if (bytes != null) {
 					
-					case BINARY: this.data = bytes;
-					default: this.data = bytes.readUTFBytes (bytes.length);
+					switch (dataFormat) {
+						
+						case BINARY: this.data = bytes;
+						default: this.data = bytes.readUTFBytes (bytes.length);
+						
+					}
+					
+					var evt = new Event (Event.COMPLETE);
+					evt.currentTarget = this;
+					dispatchEvent (evt);
+					
+				} else {
+					
+					var evt = new IOErrorEvent (IOErrorEvent.IO_ERROR);
+					evt.currentTarget = this;
+					dispatchEvent (evt);
 					
 				}
-				
-				var evt = new Event (Event.COMPLETE);
-				evt.currentTarget = this;
-				dispatchEvent (evt);
 				
 			});
 			worker.run ();
