@@ -378,32 +378,27 @@ class Loader extends Sprite {
 		
 		var transparent = true;
 		
-		untyped { contentLoaderInfo.url = request.url; }
+		contentLoaderInfo.url = request.url;
 		
 		if (request.contentType == null && request.contentType != "") {
 			
-			untyped {
+			contentLoaderInfo.contentType = switch (extension) {
 				
-				contentLoaderInfo.contentType = switch (extension) {
-					
-					case "swf": "application/x-shockwave-flash";
-					case "jpg", "jpeg": transparent = false; "image/jpeg";
-					case "png": "image/png";
-					case "gif": "image/gif";
-					default: "application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
-					
-				}
+				case "swf": "application/x-shockwave-flash";
+				case "jpg", "jpeg": transparent = false; "image/jpeg";
+				case "png": "image/png";
+				case "gif": "image/gif";
+				default: "application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
 				
 			}
 			
 		} else {
 			
-			untyped { contentLoaderInfo.contentType = request.contentType; }
+			contentLoaderInfo.contentType = request.contentType;
 			
 		}
 		
 		#if sys
-		
 		if (request.url != null && request.url.indexOf ("http://") > -1 || request.url.indexOf ("https://") > -1) {
 			
 			var loader = new URLLoader ();
@@ -421,30 +416,35 @@ class Loader extends Sprite {
 			loader.load (request);
 			return;
 			
-		}
-		
+		} else 
 		#end
-		
-		var worker = new BackgroundWorker ();
-		
-		worker.doWork.add (function (_) {
+		{
 			
-			var path = request.url;
-			var index = path.indexOf ("?");
+			var worker = new BackgroundWorker ();
 			
-			if (index > -1) {
+			worker.doWork.add (function (_) {
 				
-				path = path.substring (0, index);
+				var path = request.url;
 				
-			}
+				#if sys
+				var index = path.indexOf ("?");
+				
+				if (index > -1) {
+					
+					path = path.substring (0, index);
+					
+				}
+				#end
+				
+				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
+				
+			});
 			
-			BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
+			worker.onError.add (BitmapData_onError);
+			worker.onComplete.add (BitmapData_onLoad);
+			worker.run ();
 			
-		});
-		
-		worker.onError.add (BitmapData_onError);
-		worker.onComplete.add (BitmapData_onLoad);
-		worker.run ();
+		}
 		
 	}
 	
