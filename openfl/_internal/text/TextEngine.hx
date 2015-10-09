@@ -245,7 +245,11 @@ class TextEngine {
 			if (instance != null) return instance;
 			
 			var systemFontDirectory = System.fontsDirectory;
-			
+
+			#if (ios || tvos)
+			var appleSystemFontDirectories = [ "/System/Library/Fonts/Cache", "/System/Library/Fonts/AppFonts", "/System/Library/Fonts/Core", "/System/Library/Fonts/Extra" ];
+			#end
+
 			switch (format.font) {
 				
 				case "_sans":
@@ -278,6 +282,11 @@ class TextEngine {
 					}
 					#elseif (mac || ios || tvos)
 					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf" ];
+					#if (ios || tvos)
+					for (dir in appleSystemFontDirectories) {
+						fontList.push(dir + "/Helvetica.ttc");
+					}
+					#end
 					#elseif linux
 					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
 					#elseif android
@@ -320,6 +329,12 @@ class TextEngine {
 					}
 					#elseif (mac || ios || tvos)
 					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf" ];
+					#if (ios || tvos)
+					for (dir in appleSystemFontDirectories) {
+						fontList.push(dir + "/CourierNew.ttc");
+						fontList.push(dir + "/Courier.ttc");
+					}
+					#end
 					#elseif linux
 					fontList = [ new sys.io.Process('fc-match', ['mono', '-f%{file}']).stdout.readLine() ];
 					#elseif android
