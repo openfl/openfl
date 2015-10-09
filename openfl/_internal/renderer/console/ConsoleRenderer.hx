@@ -97,6 +97,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private var points = new Array<Float32> ();
 
+	private var blendMode:BlendMode = NORMAL;
 	private var clipRect:Rectangle = null;
 
 	#if !console_pc
@@ -165,7 +166,9 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		ctx.setRasterizerState (CULLNONE_SOLID);
 		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
-		ctx.setBlendState (SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB);
+
+		blendMode = NORMAL;
+		setBlendState (blendMode);
 
 		renderDisplayObject (stage);
 
@@ -191,6 +194,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			case MULTIPLY:  DESTCOLOR_INVSRCALPHA_ONE_ZERO_RGB;
 			default:        SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB;
 		});
+
 	}
 
 
@@ -220,16 +224,14 @@ class ConsoleRenderer extends AbstractRenderer {
 			);
 			object.scrollRect.__transform (clipRect, object.__worldTransform);
 			var bounds = object.getBounds (null);
-
-			//clipRect.x += object.__worldTransform.tx;
-			//clipRect.y += object.__worldTransform.ty;
-			//trace ("-");
-			//trace (object.__worldTransform.tx, object.__worldTransform.ty, object.width, object.height);
-			//trace (object.x, object.y, object.width, object.height);
-			//trace (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
-			//trace (bounds.x, bounds.y, bounds.width, bounds.height);
 			clipRect = clipRect.intersection (bounds);
-			//trace (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+		}
+
+		var prevBlendMode = blendMode;
+		var objBlendMode:BlendMode = (object.blendMode == null) ? NORMAL : object.blendMode;
+		if (objBlendMode != blendMode) {
+			blendMode = objBlendMode;
+			setBlendState(objBlendMode);
 		}
 
 		if (Std.is (object, DisplayObjectContainer)) {
@@ -254,6 +256,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		if (object.scrollRect != null) {
 			clipRect = prevClipRect;	
 		}
+		blendMode = prevBlendMode;
 
 	}
 
@@ -691,8 +694,6 @@ class ConsoleRenderer extends AbstractRenderer {
 		fillColor[1] = 1.0;
 		fillColor[2] = 1.0;
 		fillColor[3] = object.__worldAlpha;
-
-		// TODO(james4k): set blend state based on object.blendMode
 
 		// TODO(james4k): warn on unimplemented WindingRules
 
@@ -1150,8 +1151,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
 					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
-					// TODO(james4k): setBlendState for every draw call
-					setBlendState (NORMAL);
+					setBlendState (this.blendMode);
 
 				//case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 				case DRAW_TRIANGLES:
