@@ -925,7 +925,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				__blendMode = null;
 				
-				var b = new BitmapData(Math.floor(width), Math.floor(height), true, 0);
+				var b = new BitmapData(Math.ceil(width), Math.ceil(height), true, 0);
 				var alph = __alpha;
 				__alpha = 1;
 				
@@ -1024,7 +1024,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				__blendMode = null;
 				
-				var b = new BitmapData(Math.floor(width), Math.floor(height), true, 0);
+				var b = new BitmapData(Math.ceil(width), Math.ceil(height), true, 0);
 				
 				var alph = __alpha;
 				__alpha = 1;
@@ -1094,7 +1094,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				__blendMode = null;
 				
-				var b = new BitmapData(Math.floor(width), Math.floor(height), true, 0);
+				var b = new BitmapData(Math.ceil(width), Math.ceil(height), true, 0);
 				var alph = __alpha;
 				__alpha = 1;
 				
