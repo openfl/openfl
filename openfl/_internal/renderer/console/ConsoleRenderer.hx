@@ -1200,7 +1200,6 @@ class ConsoleRenderer extends AbstractRenderer {
 					ctx.setVertexSource (vertexBuffer);
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
-					// TODO(james4k): BunnyMark's usage wants wrapped textures. do we ever use clamped?
 					ctx.setTextureAddressMode (0, Wrap, Wrap);
 					if (fillBitmapSmooth) {
 						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
@@ -1238,17 +1237,6 @@ class ConsoleRenderer extends AbstractRenderer {
 					r.readOverrideMatrix ();
 
 				case UNKNOWN:
-
-/*
-
-	COMMANDS TODO
-
-	CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
-	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
-	DrawPathC(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding);
-	OverrideMatrix(matrix:Matrix);
-
-*/
 
 			}
 	
