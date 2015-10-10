@@ -209,6 +209,10 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
+		if (__cacheAsBitmap) {
+			__cacheGL(renderSession);
+			return;
+		}
 		__preRenderGL (renderSession);
 		GLBitmap.render (this, renderSession);
 		__postRenderGL (renderSession);

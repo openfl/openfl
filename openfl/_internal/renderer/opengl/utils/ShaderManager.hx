@@ -2,9 +2,13 @@ package openfl._internal.renderer.opengl.utils;
 
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.*;
+import openfl.gl.GLProgram;
 
 class ShaderManager {
 
+	//TODO change this
+	private static var compiledShadersCache:Map<String, GLProgram> = new Map();
+	
 	public var gl:GLRenderContext;
 	public var currentShader:Shader;
 	

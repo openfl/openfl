@@ -22,6 +22,7 @@ import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.Vector;
+import openfl.display.Shader;
 
 class DrawPath {
 
@@ -397,7 +398,7 @@ class PathBuiler {
 						__fillIndex++;
 						__currentPath = new DrawPath (false);
 						__currentPath.update (__line, __fill, __fillIndex, __currentWinding);
-						__currentPath.type = GraphicType.DrawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.count);
+						__currentPath.type = GraphicType.DrawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.shader, c.count);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
 					

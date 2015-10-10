@@ -1353,6 +1353,11 @@ class TextField extends InteractiveObject {
 	
 	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
 		
+		if (__cacheAsBitmap) {
+			__cacheGL(renderSession);
+			return;
+		}
+		
 		__preRenderGL(renderSession);
 		
 		#if !disable_cairo_graphics

@@ -33,6 +33,7 @@ class RenderSession {
 	
 	public var drawCount:Int;
 	public var currentBlendMode:BlendMode;
+	public var activeTextures:Int = 0;
 	
 	public var shaderManager:ShaderManager;
 	public var maskManager:AbstractMaskManager;

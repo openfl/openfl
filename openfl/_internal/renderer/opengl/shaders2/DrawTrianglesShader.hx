@@ -67,8 +67,8 @@ class DrawTrianglesShader extends Shader {
 		init ();
 	}
 	
-	override function init() {
-		super.init();
+	override private function init(force:Bool = false) {
+		super.init(force);
 		
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.TexCoord);
@@ -93,7 +93,7 @@ class DrawTrianglesShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var UseTexture = "uUseTexture";
+	var UseTexture = "openfl_uUseTexture";
 	var Sampler = DefUniform.Sampler;
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;

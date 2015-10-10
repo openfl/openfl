@@ -9,6 +9,7 @@ import openfl.display.GraphicsPathWinding;
 import openfl.display.InterpolationMethod;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
+import openfl.display.Shader;
 import openfl.display.SpreadMethod;
 import openfl.display.Tilesheet;
 import openfl.display.TriangleCulling;
@@ -97,6 +98,7 @@ class DrawCommandReader {
 				ffPos += 1; //tileData
 				bPos += 1; //smooth
 				iPos += 2; //flags, count
+				oPos += 1;
 			
 			case DRAW_TRIANGLES:
 				
@@ -360,6 +362,7 @@ abstract DrawTilesView (DrawCommandReader) {
 	public var tileData (get, never):Array<Float>; private inline function get_tileData ():Array<Float> { return this.fArr (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (0); }
 	public var flags (get, never):Int; private inline function get_flags ():Int { return this.int (0); }
+	public var shader (get, never):Shader; private inline function get_shader ():Shader { return cast this.obj (0); }
 	public var count (get, never):Int; private inline function get_count ():Int { return this.int (1); }
 	
 }
