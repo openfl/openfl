@@ -644,15 +644,16 @@ class URLLoader extends EventDispatcher {
 			
 		}
 		
+		CURLEasy.setopt (__curl, FOLLOWLOCATION, true);
+		CURLEasy.setopt (__curl, AUTOREFERER, true);
 		CURLEasy.setopt (__curl, HTTPHEADER, headers);
 		
 		CURLEasy.setopt (__curl, PROGRESSFUNCTION, progressFunction);
-		
 		CURLEasy.setopt (__curl, WRITEFUNCTION, writeFunction);
 		CURLEasy.setopt (__curl, HEADERFUNCTION, headerFunction);
 		
 		CURLEasy.setopt (__curl, SSL_VERIFYPEER, false);
-		CURLEasy.setopt (__curl, SSL_VERIFYHOST, false);
+		CURLEasy.setopt (__curl, SSL_VERIFYHOST, 0);
 		CURLEasy.setopt (__curl, USERAGENT, "libcurl-agent/1.0");
 		CURLEasy.setopt (__curl, CONNECTTIMEOUT, 30);
 		CURLEasy.setopt (__curl, TRANSFERTEXT, dataFormat == BINARY ? 0 : 1);
