@@ -365,7 +365,7 @@ import openfl.Lib;
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		var location:GLUniformLocation = GL.getUniformLocation (currentProgram.glProgram, "yflip");
+		var location:GLUniformLocation = currentProgram.yFlipLoc ();
 		GL.uniform1f (location, this._yFlip);
 
 		if (!drawing) {
@@ -504,32 +504,29 @@ import openfl.Lib;
 	}
 	
 	
-	public function setGLSLProgramConstantsFromByteArray (locationName:String, data:ByteArray, byteArrayOffset:Int = 0):Void {
+	public function setGLSLProgramConstantsFromByteArray (location:GLUniformLocation, data:ByteArray, byteArrayOffset:Int = 0):Void {
 		
 		data.position = byteArrayOffset;
-		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniform4f (location, data.readFloat (), data.readFloat (), data.readFloat (), data.readFloat ());
 		
 	}
 	
 	
-	public function setGLSLProgramConstantsFromMatrix (locationName:String, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
+	public function setGLSLProgramConstantsFromMatrix (location:GLUniformLocation, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 		
-		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniformMatrix4fv (location, !transposedMatrix, new Float32Array (matrix.rawData));
 		
 	}
 	
 	
-	public function setGLSLProgramConstantsFromVector4 (locationName:String, data:Array<Float>, startIndex:Int = 0):Void {
+	public function setGLSLProgramConstantsFromVector4 (location:GLUniformLocation, data:Array<Float>, startIndex:Int = 0):Void {
 		
-		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniform4f (location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
 		
 	}
 	
 	
-	public function setGLSLTextureAt (locationName:String, texture:TextureBase, textureIndex:Int):Void {
+	public function setGLSLTextureAt (location:GLUniformLocation, texture:TextureBase, textureIndex:Int):Void {
 		
 		switch (textureIndex) {
 			
@@ -552,9 +549,7 @@ import openfl.Lib;
 			GL.bindTexture (GL.TEXTURE_CUBE_MAP, null);
 			return;
 			
-		} 
-		
-		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
+		}
 		
 		if (Std.is (texture, Texture)) {
 			
@@ -592,20 +587,13 @@ import openfl.Lib;
 	}
 	
 	
-	public function setGLSLVertexBufferAt (locationName, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
-		
-		var location = (currentProgram != null && currentProgram.glProgram != null) ? GL.getAttribLocation (currentProgram.glProgram, locationName) : -1;
-		if (location == -1) return;
+	public function setGLSLVertexBufferAt (location:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
 		
 		if (buffer == null) {
 			
 			if (location > -1) {
 				
 				GL.disableVertexAttribArray (location);
-				
-				#if (cpp || neko || nodejs)
-				GL.bindBuffer (GL.ARRAY_BUFFER, null);
-				#end
 				
 			}
 			
@@ -681,8 +669,8 @@ import openfl.Lib;
 		
 		for (i in 0...numRegisters) {
 			
-			var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister + i);
-			setGLSLProgramConstantsFromByteArray (locationName, data);
+			var location = currentProgram.constUniformLocationFromAgal (programType, firstRegister + i);
+			setGLSLProgramConstantsFromByteArray (location, data);
 			
 		}
 		
@@ -714,9 +702,9 @@ import openfl.Lib;
 		
 		for (i in 0...numRegisters) {
 			
-			var currentIndex = i * 4;
-			var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister + i);
-			setGLSLProgramConstantsFromVector4 (locationName, data, currentIndex);
+			var currentIndex:Int = i * 4;
+			var location:GLUniformLocation = currentProgram.constUniformLocationFromAgal (programType, firstRegister + i);
+			setGLSLProgramConstantsFromVector4 (location, data, currentIndex);
 			
 		}
 		
@@ -885,8 +873,8 @@ import openfl.Lib;
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
-		var locationName = "fs" + sampler;
-		setGLSLTextureAt (locationName, texture, sampler);
+		var location = currentProgram.fsampUniformLocationFromAgal (sampler);
+		setGLSLTextureAt (location, texture, sampler);
 		
 	}
 	
@@ -1130,25 +1118,8 @@ import openfl.Lib;
 	
 	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
 		
-		var locationName = "va" + index;
-		setGLSLVertexBufferAt (locationName, buffer, bufferOffset, format);
-		
-	}
-	
-	
-	private function __getUniformLocationNameFromAgalRegisterIndex (programType:Context3DProgramType, firstRegister:Int):String {
-		
-		if (programType == Context3DProgramType.VERTEX) {
-			
-			return "vc" + firstRegister;
-			
-		} else if (programType == Context3DProgramType.FRAGMENT) {
-			
-			return "fc" + firstRegister;
-			
-		}
-		
-		throw "Program Type " + programType + " not supported";
+		var location = currentProgram.vaUniformLocationFromAgal (index);
+		setGLSLVertexBufferAt (location, buffer, bufferOffset, format);
 		
 	}
 	
