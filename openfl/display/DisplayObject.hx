@@ -214,12 +214,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var blendMode(default, set):BlendMode;
 	
 	/**
-	 * If set to <code>true</code>, NME will use the software renderer to cache
-	 * an internal bitmap representation of the display object. For native targets,
-	 * this is often much slower than the default hardware renderer. When you
-	 * are using the Flash target, this caching may increase performance for display 
-	 * objects that contain complex vector content.
-	 *
 	 * <p>All vector data for a display object that has a cached bitmap is drawn
 	 * to the bitmap instead of the main display. If
 	 * <code>cacheAsBitmapMatrix</code> is null or unsupported, the bitmap is

@@ -644,7 +644,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	/**
 	 * Draws the <code>source</code> display object onto the bitmap image, using
-	 * the NME software renderer. You can specify <code>matrix</code>,
+	 * the OpenFL software renderer. You can specify <code>matrix</code>,
 	 * <code>colorTransform</code>, <code>blendMode</code>, and a destination
 	 * <code>clipRect</code> parameter to control how the rendering performs.
 	 * Optionally, you can specify whether the bitmap should be smoothed when
