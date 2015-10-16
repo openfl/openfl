@@ -1083,12 +1083,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		stageWidth = width;
-		stageHeight = height;
+		stageWidth = Std.int(width * window.scale);
+		stageHeight = Std.int(height * window.scale);
 		
 		if (__renderer != null) {
 			
-			__renderer.resize (width, height);
+			__renderer.resize (stageWidth, stageHeight);
 			
 		}
 		
