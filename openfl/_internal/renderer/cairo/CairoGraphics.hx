@@ -224,7 +224,7 @@ class CairoGraphics {
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
-				graphics.__bitmap = bitmap;
+				//graphics.__bitmap = bitmap;
 				
 			}
 			
@@ -1156,6 +1156,7 @@ class CairoGraphics {
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
 			
 			graphics.__cairo = null;
+			graphics.__bitmap = null;
 			
 		} else {
 			
@@ -1173,7 +1174,7 @@ class CairoGraphics {
 				
 			}
 			
-			if (graphics.__cairo == null) {
+			if (graphics.__cairo == null || graphics.__bitmap == null) {
 				
 				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true, 0);
 				var surface = bitmap.getSurface ();

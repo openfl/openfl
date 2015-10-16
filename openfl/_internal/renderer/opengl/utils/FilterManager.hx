@@ -25,7 +25,7 @@ class FilterManager {
 	public var offsetX:Float;
 	public var offsetY:Float;
 	public var renderSession:RenderSession;
-	public var texturePool:Array<FilterTexture>;
+	public var texturePool:Array<RenderTexture>;
 	public var transparent:Bool;
 	public var uvArray:Float32Array;
 	public var uvBuffer:GLBuffer;

@@ -59,9 +59,8 @@ class PatternFillShader extends Shader {
 		init();
 	}
 	
-	override function init() 
-	{
-		super.init();
+	override private function init(force:Bool = false) {
+		super.init(force);
 		
 		getAttribLocation(Attrib.Position);
 		
@@ -83,10 +82,10 @@ class PatternFillShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var TranslationMatrix = "uTranslationMatrix";
-	var PatternMatrix = "uPatternMatrix";
-	var PatternTL = "uPatternTL";
-	var PatternBR = "uPatternBR";
+	var TranslationMatrix = "openfl_uTranslationMatrix";
+	var PatternMatrix = "openfl_uPatternMatrix";
+	var PatternTL = "openfl_uPatternTL";
+	var PatternBR = "openfl_uPatternBR";
 	var Sampler = DefUniform.Sampler;
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Color = DefUniform.Color;

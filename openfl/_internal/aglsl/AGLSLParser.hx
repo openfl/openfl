@@ -16,13 +16,14 @@ class AGLSLParser {
 	
 	public function parse (desc:Description):String {
 		
-		var header:String = "";
+		var header:String;
 		var body:String = "";
 		var i:Int = 0;
 		
-		#if !desktop
-		header += "precision " + ( desc.header.type == "vertex" ? "highp" : "mediump" ) + " float;\n";
-		#end
+		header = ""
+			+ "#ifdef GL_ES\n"
+			+ "precision " + ( desc.header.type == "vertex" ? "highp" : "mediump" ) + " float;\n"
+			+ "#endif\n";
 		
 		var tag = desc.header.type.charAt (0); //TODO
 		

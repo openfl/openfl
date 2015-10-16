@@ -1,3 +1,15 @@
+3.3.9 (10/15/2015)
+------------------
+
+* Preliminary support for custom DisplayObject shaders and filters on GL
+* Added support for netStream.close on HTML5
+* Fixed an issue where URLLoader would fail when there is no return data
+* Fixed an issue using bitmapData.fillRect and an invisible fill color
+* Fixed an issue with invisible images appearing on hit testing
+* Fixed native URLLoader requests to follow HTTP redirects
+* Fixed an issue with remote Loader requests on native
+
+
 3.3.8 (10/05/2015)
 ------------------
 

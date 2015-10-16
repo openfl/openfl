@@ -51,9 +51,8 @@ class PrimitiveShader extends Shader {
 		init();
 	}
 	
-	override function init() 
-	{
-		super.init();
+	override private function init(force:Bool = false) {
+		super.init(force);
 		
 		getAttribLocation(Attrib.Position);
 		getAttribLocation(Attrib.Color);
@@ -72,7 +71,7 @@ class PrimitiveShader extends Shader {
 }
 
 @:enum private abstract Uniform(String) from String to String {
-	var TranslationMatrix = "uTranslationMatrix";
+	var TranslationMatrix = "openfl_uTranslationMatrix";
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
 	var Alpha = DefUniform.Alpha;
 	var ColorMultiplier = DefUniform.ColorMultiplier;

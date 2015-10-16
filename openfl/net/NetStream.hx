@@ -66,6 +66,17 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
+	public function close ():Void {
+		
+		#if (js && html5)
+		__video.pause ();
+		__video.src = "";
+		time = 0;
+		#end
+		
+	}
+	
+	
 	public function pause ():Void {
 		
 		#if (js && html5)
