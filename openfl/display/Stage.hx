@@ -609,8 +609,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseY = 0;
 		__lastClickTime = 0;
 		
-		stageWidth = window.width;
-		stageHeight = window.height;
+		stageWidth = Std.int (window.width * window.scale);
+		stageHeight = Std.int (window.height * window.scale);
 		
 		this.stage = this;
 		
@@ -817,7 +817,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__onMouse (type, x, y, button);
+		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
 	}
 	
@@ -826,7 +826,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouse (MouseEvent.MOUSE_MOVE, x, y, 0);
+		__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
 		
 	}
 	
@@ -850,7 +850,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__onMouse (type, x, y, button);
+		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
 	}
 	
@@ -859,7 +859,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouseWheel (deltaX, deltaY);
+		__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
 		
 	}
 	
@@ -1083,12 +1083,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		stageWidth = width;
-		stageHeight = height;
+		stageWidth = Std.int (width * window.scale);
+		stageHeight = Std.int (height * window.scale);
 		
 		if (__renderer != null) {
 			
-			__renderer.resize (width, height);
+			__renderer.resize (stageWidth, stageHeight);
 			
 		}
 		
