@@ -402,7 +402,7 @@ class TextEngine {
 		#elseif linux
 		fontList = [ new sys.io.Process('fc-match', ['serif', '-f%{file}']).stdout.readLine() ];
 		#elseif android
-		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "NotoSerif-Regular.ttf" ];
+		fontList = [ systemFontDirectory + "/DroidSerif-Regular.ttf", systemFontDirectory + "/NotoSerif-Regular.ttf" ];
 		#elseif blackberry
 		fontList = [ systemFontDirectory + "/georgia.ttf" ];
 		#else
