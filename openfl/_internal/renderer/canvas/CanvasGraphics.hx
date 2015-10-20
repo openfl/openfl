@@ -509,11 +509,17 @@ class CanvasGraphics {
 					
 					var c = data.readCubicCurveTo ();
 					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
-				
+
+                    positionX = c.anchorX;
+                    positionY = c.anchorY;
+
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
 					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+                    positionX = c.anchorX;
+                    positionY = c.anchorY;
 				
 				case DRAW_CIRCLE:
 					
@@ -574,8 +580,7 @@ class CanvasGraphics {
 					
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
-						
-						context.closePath ();
+
 						if (!hitTesting) context.stroke ();
 						context.beginPath ();
 						
