@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+import js.html.CanvasWindingRule;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -159,7 +160,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill ();
+		if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 		return canvas;
 		#end
 		
@@ -789,12 +790,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 					
 				}
 				
@@ -1081,7 +1082,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill ();
+									if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
 									i += 3;
 									continue;
 									
