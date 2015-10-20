@@ -758,10 +758,11 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		source.__updateTransforms(matrix);
+		var matrixCache = source.__worldTransform;
+		source.__updateTransforms(matrix != null ? matrix : new Matrix ());
 		source.__updateChildren (false);
 		source.__renderCanvas (renderSession);
-		source.__updateTransforms();
+		source.__updateTransforms(matrixCache);
 		source.__updateChildren (true);
 		
 		if (!smoothing) {
@@ -817,10 +818,11 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		source.__updateTransforms(matrix);
+		var matrixCache = source.__worldTransform;
+		source.__updateTransforms(matrix != null ? matrix : new Matrix ());
 		source.__updateChildren (false);
 		source.__renderCairo (renderSession);
-		source.__updateTransforms();
+		source.__updateTransforms(matrixCache);
 		source.__updateChildren (true);
 		
 		if (clipRect != null) {

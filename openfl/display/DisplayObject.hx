@@ -1446,6 +1446,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var overrided = overrideTransfrom != null;
 		var local = overrided ? overrideTransfrom.clone() : __transform;
 		
+		if (__worldTransform == null) {
+			
+			__worldTransform = new Matrix ();
+			
+		}
+		
 		if (!overrided && parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
