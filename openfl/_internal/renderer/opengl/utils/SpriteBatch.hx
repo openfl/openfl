@@ -280,7 +280,7 @@ class SpriteBatch {
 			
 			if (useRect) {
 				tileID = -1;
-
+				
 				rect.x = tileData[iIndex + 2];
 				rect.y = tileData[iIndex + 3];
 				rect.width = tileData[iIndex + 4];
@@ -304,8 +304,10 @@ class SpriteBatch {
 				center = sheet.getTileCenter(tileID);
 				tileUV = sheet.getTileUVs(tileID);
 				
-				rw = rect.width; rh = rect.height;
-				tuvx = tileUV.x; tuvy = tileUV.y; tuvw = tileUV.width; tuvh = tileUV.height;
+				if (rect != null) {
+					rw = rect.width; rh = rect.height;
+					tuvx = tileUV.x; tuvy = tileUV.y; tuvw = tileUV.width; tuvh = tileUV.height;
+				}
 			}
 			
 			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
@@ -355,7 +357,7 @@ class SpriteBatch {
 				tx = x - ox;
 				ty = y - oy;
 				
-				// expanded fillVertices here si it doesn't need to access matrix or uvs
+				// expanded fillVertices here since it doesn't need to access matrix or uvs
 				
 				tMa = (a * oMa + b * oMc) * rw;
 				tMb = (a * oMb + b * oMd) * rw;
@@ -368,14 +370,14 @@ class SpriteBatch {
 				// POSITIONS
 				positions[bIndex + 0] 	= (tMtx);
 				positions[bIndex + 1] 	= (tMty);
-				positions[bIndex + 5] 	= (tMa + tMtx);			
-				positions[bIndex + 6] 	= (tMb + tMty);			
+				positions[bIndex + 5] 	= (tMa + tMtx);
+				positions[bIndex + 6] 	= (tMb + tMty);
 				positions[bIndex + 10] 	= (tMa + tMc + tMtx);
 				positions[bIndex + 11] 	= (tMd + tMb + tMty);
 				positions[bIndex + 15] 	= (tMc + tMtx);
 				positions[bIndex + 16] 	= (tMd + tMty);
 				//COLORS
-				colors[bIndex + 4] = colors[bIndex + 9] = colors[bIndex + 14] = colors[bIndex + 19] = ((Std.int(alpha * 255)) & 0xFF) << 24 | tint;				
+				colors[bIndex + 4] = colors[bIndex + 9] = colors[bIndex + 14] = colors[bIndex + 19] = ((Std.int(alpha * 255)) & 0xFF) << 24 | tint;
 				// UVS
 				positions[bIndex + 2]  = tuvx;
 				positions[bIndex + 3]  = tuvy;
@@ -412,8 +414,8 @@ class SpriteBatch {
 		if (pixelSnapping == null || pixelSnapping == NEVER) {
 			positions[index + 0] 	= (tx);
 			positions[index + 1] 	= (ty);
-			positions[index + 5] 	= (a * width + tx);			
-			positions[index + 6] 	= (b * width + ty);			
+			positions[index + 5] 	= (a * width + tx);
+			positions[index + 6] 	= (b * width + ty);
 			positions[index + 10] 	= (a * width + c * height + tx);
 			positions[index + 11] 	= (d * height + b * width + ty);
 			positions[index + 15] 	= (c * height + tx);
@@ -421,8 +423,8 @@ class SpriteBatch {
 		} else {
 			positions[index + 0] 	= Math.fround(tx);
 			positions[index + 1] 	= Math.fround(ty);
-			positions[index + 5] 	= Math.fround(a * width + tx);			
-			positions[index + 6] 	= Math.fround(b * width + ty);			
+			positions[index + 5] 	= Math.fround(a * width + tx);
+			positions[index + 6] 	= Math.fround(b * width + ty);
 			positions[index + 10] 	= Math.fround(a * width + c * height + tx);
 			positions[index + 11] 	= Math.fround(d * height + b * width + ty);
 			positions[index + 15] 	= Math.fround(c * height + tx);
