@@ -1153,7 +1153,7 @@ class CairoGraphics {
 		
 		bounds = graphics.__bounds;
 		
-		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0) {
+		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width < 1 || bounds.height < 1) {
 			
 			graphics.__cairo = null;
 			graphics.__bitmap = null;
