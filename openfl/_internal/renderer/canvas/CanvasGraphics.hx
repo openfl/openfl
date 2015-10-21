@@ -1,6 +1,5 @@
 package openfl._internal.renderer.canvas;
 
-import js.html.CanvasWindingRule;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -25,6 +24,9 @@ import js.html.CanvasElement;
 import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
+    #if (haxe_ver >= 3.2)
+    import js.html.CanvasWindingRule;
+    #end
 import js.Browser;
 import js.html.ImageData;
 #end
@@ -160,7 +162,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+		if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 		return canvas;
 		#end
 		
@@ -795,12 +797,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+					if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+					if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 					
 				}
 				
@@ -1087,7 +1089,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill (CanvasWindingRule.EVENODD);
+									if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 									i += 3;
 									continue;
 									
