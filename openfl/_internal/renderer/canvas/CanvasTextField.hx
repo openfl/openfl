@@ -167,6 +167,30 @@ class CanvasTextField {
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
 					
+					// On most canvas impls (but not all, see Ludei's Canvas+ as of approximately 2015-10),
+					// setting width or height above (even if same) will be enough to both reset the context
+					// and clear the canvas bitmap.
+					// 
+					// But this behavior doesn't appear to be required by either of:
+					//
+					//   http://www.w3.org/TR/2dcontext/
+					//     or
+					//   http://www.w3.org/TR/html5/scripting-1.html#attr-canvas-width
+					//
+					// ...except for a link from "set bitmap dimensions" to a dead 2dcontext2 standard.
+					//
+					// A description of this behavior *does* appear in the the WHATWG living HTML standard here:
+					//
+					//   https://html.spec.whatwg.org/#concept-canvas-set-bitmap-dimensions
+					//
+					// There's some evidence that avoiding the width/height set and only doing clearRect
+					// where appropriate may be a performance win, see:
+					//
+					//    http://simonsarris.com/blog/346-how-you-clear-your-canvas-matters
+					//
+					// Playing it safe and adding the explicit clearRect, since it fixes Canvas+.
+					context.clearRect( 0, 0, graphics.__canvas.width, graphics.__canvas.height );
+					
 					if (textEngine.antiAliasType != ADVANCED || textEngine.gridFitType != PIXEL) {
 						
 						untyped (graphics.__context).mozImageSmoothingEnabled = true;
@@ -313,6 +337,9 @@ class CanvasTextField {
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
+					
+					// See comments near clearRect call above.
+					context.clearRect( 0, 0, graphics.__canvas.width, graphics.__canvas.height );
 					
 					if (textEngine.border || textEngine.background) {
 						
