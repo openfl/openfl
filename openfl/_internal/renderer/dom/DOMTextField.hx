@@ -30,7 +30,7 @@ class DOMTextField {
 		if (div == null) {
 			
 			div = cast Browser.document.createElement ("div");
-			div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
+			div.innerHTML = formatHTMLText(textEngine.text);
 			div.style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
 			div.style.setProperty ("pointer-events", "none", null);
 			div.style.position = "absolute";
@@ -87,9 +87,10 @@ class DOMTextField {
 							
 							// TODO: Set caret index, and replace only selection
 							
-							if (textField.htmlText != textField.__div.innerHTML) {
+							var innerHTML = StringTools.replace(textField.__div.innerHTML, "\u200B", "");
+							if (textField.htmlText != innerHTML) {
 								
-								textField.htmlText = textField.__div.innerHTML;
+								textField.htmlText = innerHTML;
 								textField.__dirty = false;
 								
 							}
@@ -115,7 +116,7 @@ class DOMTextField {
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 					
-					textField.__div.innerHTML = textEngine.text;
+					textField.__div.innerHTML = formatHTMLText(textEngine.text);
 					
 					if (textEngine.background) {
 						
@@ -140,16 +141,7 @@ class DOMTextField {
 					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
 					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color, 6), null);
 					
-					if (textEngine.autoSize != TextFieldAutoSize.NONE) {
-						
-						style.setProperty ("width", "auto", null);
-						
-					} else {
-						
-						style.setProperty ("width", textEngine.width + "px", null);
-						
-					}
-					
+					style.setProperty ("width", textEngine.width + "px", null);
 					style.setProperty ("height", textEngine.height + "px", null);
 					
 					switch (textField.__textFormat.align) {
@@ -206,6 +198,13 @@ class DOMTextField {
 		#end
 		
 	}
-	
-	
+
+	static function formatHTMLText(txt:String):String  {
+		
+		// prepend a 0-length non-breaking space to enable the input caret when the text is empty
+		return "\u200B" + new EReg ("\n", "g").replace (txt, "<br/>");
+		
+	}
+
+
 }
