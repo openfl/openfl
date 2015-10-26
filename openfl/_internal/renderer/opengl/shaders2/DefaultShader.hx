@@ -22,7 +22,11 @@ class DefaultShader extends Shader {
 			'   if(${Uniform.UseColorTransform})',
 			'   	${Varying.Color} = ${Attrib.Color};',
 			'   else',
+			#if (js && html5)
+			'   	${Varying.Color} = vec4(${Attrib.Color}.rgb * ${Attrib.Color}.a, ${Attrib.Color}.a);',
+			#else
 			'   	${Varying.Color} = vec4(${Attrib.Color}.bgr * ${Attrib.Color}.a, ${Attrib.Color}.a);',
+			#end
 			'}'
 		];
 
