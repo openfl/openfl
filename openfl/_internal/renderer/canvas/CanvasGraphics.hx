@@ -1239,6 +1239,8 @@ class CanvasGraphics {
 										
 									}
 									
+									context.imageSmoothingEnabled = c.smooth;
+									
 									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
 									context.restore ();
 									
