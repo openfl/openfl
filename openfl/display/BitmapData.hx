@@ -874,7 +874,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		
-		if ((color & 0xFF000000) == 0) {
+		if (transparent && (color & 0xFF000000) == 0) {
 			
 			color = 0;
 			
@@ -1056,7 +1056,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return new Rectangle (0, 0, width, height);
 		
-		if (((mask >> 24) & 0xFF) > 0) {
+		if (!transparent || ((mask >> 24) & 0xFF) > 0) {
 			
 			var color = (color:ARGB);
 			if (color.a == 0) color = 0;
