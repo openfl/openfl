@@ -874,7 +874,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		
-		if ((color & 0x00FFFFFF) == 0) {
+		if ((color & 0xFF000000) == 0) {
 			
 			color = 0;
 			
