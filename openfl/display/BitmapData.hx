@@ -1056,8 +1056,12 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return new Rectangle (0, 0, width, height);
 		
-		var color = (color:ARGB);
-		if (color.a == 0) color = 0;
+		if (((mask >> 24) & 0xFF) > 0) {
+			
+			var color = (color:ARGB);
+			if (color.a == 0) color = 0;
+			
+		}
 		
 		var rect = image.getColorBoundsRect (mask, color, findColor, ARGB32);
 		return new Rectangle (rect.x, rect.y, rect.width, rect.height);
