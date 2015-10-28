@@ -395,7 +395,7 @@ import js.Browser;
 		#elseif ios
 		return "iOS";
 		#elseif tvos
-		return "tvOS"
+        return "tvOS";
 		#elseif tizen
 		return "Tizen";
 		#elseif webos
