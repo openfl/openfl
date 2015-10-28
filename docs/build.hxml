@@ -128,4 +128,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . -theme flambe --title Documentation
+-cmd haxelib run dox -i . -theme flambe --title "OpenFL API Documentation"
