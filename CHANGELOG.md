@@ -1,3 +1,18 @@
+3.4.0 (10/28/2015)
+------------------
+
+* Fixed behavior of fillRect without alpha on non-transparent bitmapData
+* Fixed behavior of getColorBoundsRect on non-transparent bitmapData
+* Fixed red/blue color regression in some instances
+* Fixed transforms when using bitmapData.draw
+* Fixed support for Lime window scale (used on Mac retina)
+* Fixed a crash in Cairo rendering for near-zero dimensions
+* Fixed a null rect issue in OpenGL graphics drawTiles
+* Fixed access to System.totalMemory on HTML5
+* Fixed reference for default Noto Android font
+* Minor fixes for better scrollRect support 
+
+
 3.3.9 (10/15/2015)
 ------------------
 
