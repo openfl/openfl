@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "3.3.9",
-	"releasenote": "URLLoader/Loader improvements, initial custom hardware shader/filter support",
+	"version": "3.4.0",
+	"releasenote": "Consistency fixes",
 	"contributors": [ "singmajesty" ]
 }
