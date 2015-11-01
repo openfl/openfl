@@ -1532,7 +1532,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var __stack = [];
 		
-		if (__hitTest (touch.x, touch.y, false, __stack, true)) {
+		if (__hitTest (__mouseX, __mouseY, false, __stack, true)) {
 			
 			var target = __stack[__stack.length - 1];
 			if (target == null) target = this;
