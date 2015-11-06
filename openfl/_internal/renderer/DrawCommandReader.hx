@@ -281,10 +281,10 @@ abstract CubicCurveToView (DrawCommandReader) {
 	public inline function new (d:DrawCommandReader) { this = d; }
 	public var controlX1 (get, never):Float; private inline function get_controlX1 ():Float { return this.float (0); }
 	public var controlY1 (get, never):Float; private inline function get_controlY1 ():Float { return this.float (1); }
-	public var controlX2 (get, never):Float; private inline function get_controlX2 ():Float { return this.float (3); }
-	public var controlY2 (get, never):Float; private inline function get_controlY2 ():Float { return this.float (4); }
-	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.float (5); }
-	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.float (6); }
+	public var controlX2 (get, never):Float; private inline function get_controlX2 ():Float { return this.float (2); }
+	public var controlY2 (get, never):Float; private inline function get_controlY2 ():Float { return this.float (3); }
+	public var anchorX (get, never):Float; private inline function get_anchorX ():Float { return this.float (4); }
+	public var anchorY (get, never):Float; private inline function get_anchorY ():Float { return this.float (5); }
 	
 }
 
