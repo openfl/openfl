@@ -5,6 +5,9 @@ import openfl.events.DataEvent;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.EventDispatcher;
+import openfl.events.ProgressEvent;
+
+import openfl.net.Socket;
 
 
 class XMLSocket extends EventDispatcher {
@@ -13,7 +16,7 @@ class XMLSocket extends EventDispatcher {
 	public var connected (default, null):Bool;
 	public var timeout:Int;
 	
-	private var _socket:Dynamic;
+	private var _socket:Socket;
 	
 	
 	public function new (host:String = null, port:Int = 80):Void {
@@ -30,6 +33,9 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	public function close ():Void {
+
+		_socket.removeEventListener(Event.CONNECT, onOpenHandler);
+		_socket.removeEventListener(ProgressEvent.SOCKET_DATA, onMessageHandler);
 		
 		_socket.close ();
 		
@@ -45,6 +51,8 @@ class XMLSocket extends EventDispatcher {
 	
 	public function connectWithProto (host: String, port:Int, protocol:String):Void {
 		
+		connected = false;
+
 		#if (js && html5)
 		if (protocol == null) {
             _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
@@ -52,21 +60,30 @@ class XMLSocket extends EventDispatcher {
         else {
             _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port, protocol)");
         }
-		
-		connected = false;
-		
-		_socket.onopen = onOpenHandler;
+
+        _socket.onopen = onOpenHandler;
 		_socket.onmessage = onMessageHandler;
 		_socket.onclose = onCloseHandler;
 		_socket.onerror = onErrorHandler;
+        #else
+
+        _socket = new Socket();
+		_socket.connect(host, port);
+
+		_socket.addEventListener(Event.CONNECT, onOpenHandler);
+		_socket.addEventListener(ProgressEvent.SOCKET_DATA, onMessageHandler);
+
 		#end
+
+		
 		
 	}
 	
 	
 	public function send (object:Dynamic):Void {
 		
-		_socket.send (object);
+		_socket.writeUTFBytes(object);
+		_socket.writeByte(0);
 		
 	}
 	
@@ -78,9 +95,9 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
-		
-		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, msg.data));
+	@:noCompletion private function onMessageHandler (e:ProgressEvent):Void {
+
+		dispatchEvent(new DataEvent(DataEvent.DATA, false, false, _socket.readUTFBytes(_socket.bytesAvailable)));
 		
 	}
 	
