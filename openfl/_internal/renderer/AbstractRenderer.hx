@@ -1,6 +1,7 @@
 package openfl._internal.renderer;
 
 
+import openfl.display.BitmapData;
 import openfl.display.Shape;
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
@@ -52,5 +53,11 @@ class AbstractRenderer {
 		
 	}
 	
+	
+	public function screenShot (callback:BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
+		
+		
+		
+	}
 	
 }

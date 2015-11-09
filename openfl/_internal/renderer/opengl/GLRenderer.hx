@@ -1,12 +1,15 @@
 package openfl._internal.renderer.opengl;
 
+import lime.utils.UInt8Array;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
+import lime.graphics.PixelFormat;
 import lime.math.Vector2;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -69,6 +72,10 @@ class GLRenderer extends AbstractRenderer {
 	private var vpY:Int = 0;
 	private var vpWidth:Int = 0;
 	private var vpHeight:Int = 0;
+	
+	private var __screenShotPending:Bool = false;
+	private var __screenShotCallback:BitmapData->Void = null;
+	private var __screenShotBounds: { x:Int, y:Int, width:Int, height:Int } = null;
 	
 	
 	public function new (width:Int = 800, height:Int = 600, gl:GLRenderContext /*view:Dynamic = null*/, transparent:Bool = false, antialias:Bool = false, preserveDrawingBuffer:Bool = false) {
@@ -302,6 +309,14 @@ class GLRenderer extends AbstractRenderer {
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		renderDisplayObject (stage, projection);
 		
+		if (__screenShotPending && __screenShotCallback != null) {
+			
+			__screenShotCallback(__screenShot());
+			__screenShotPending = false;
+			__screenShotCallback = null;
+			__screenShotBounds = null;
+			
+		}
 	}
 	
 	
@@ -358,6 +373,74 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 	
+	
+	public override function screenShot (callback:BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
+		
+		if (width  < 0) width  = this.width;
+		if (height < 0) height = this.height;
+		if (width  > this.width)  width = this.width;
+		if (height > this.height) height = this.height;
+		if (x < 0) x = 0;
+		if (y < 0) y = 0;
+		if (x > width)  x = width;
+		if (y > height) y = height;
+		__screenShotBounds = { x:x, y:y, width:width, height:height };
+		__screenShotCallback = callback;
+		__screenShotPending = __screenShotCallback != null;
+		
+	}
+	
+	
+	private function __screenShot():BitmapData {
+		
+		var b = new BitmapData(__screenShotBounds.width, __screenShotBounds.height);
+		var size = __screenShotBounds.width * __screenShotBounds.height * 4;
+		var pixels = new UInt8Array(size);
+		GL.pixelStorei(GL.PACK_ALIGNMENT, 1);
+		GL.readPixels(__screenShotBounds.x, __screenShotBounds.y, __screenShotBounds.width, __screenShotBounds.height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		
+		var ww = __screenShotBounds.width;
+		var hh = __screenShotBounds.height;
+		
+		var bytesFlipped = 0;
+		var numBytes = Std.int(size / 4);
+		
+		for (i in 0...numBytes) {
+			
+			var y = Std.int(i / ww);
+			var x = i % ww;
+			
+			var newy = (hh - 1) - y;
+			
+			var oldi = i * 4;
+			var newi = (newy * ww + x) * 4;
+			
+			for (j in 0...4) {
+				if(j < 3) {
+					var oldVal = pixels[oldi + j];
+					var newVal = pixels[newi + j];
+					
+					pixels[oldi + j] = newVal;
+					pixels[newi + j] = oldVal;
+				}
+				else {
+					pixels[oldi + j] = 0xFF;
+					pixels[newi + j] = 0xFF;
+				}
+				bytesFlipped += 2;
+			}
+			
+			if (bytesFlipped >= size) {
+				break;
+			}
+		}
+		
+		var imageBuffer = new ImageBuffer(pixels, __screenShotBounds.width, __screenShotBounds.height);
+		imageBuffer.transparent = false;
+		var image = new Image(imageBuffer);
+		return BitmapData.fromImage(image);
+		
+	}
 	
 	/*private static function updateTextureFrame (texture:Texture):Void {
 		
