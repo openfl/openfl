@@ -1061,19 +1061,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 	}
 	
-	@:noCompletion private function __getRenderBounds(rect:Rectangle, matrix:Matrix) {
-		
-		if (__scrollRect == null) {
-			__getBounds(rect, matrix);
-		} else {
-			var r = openfl.geom.Rectangle.__temp;
-			r.copyFrom(__scrollRect);
-			r.__transform(r, matrix);
-			rect.__expand(matrix.tx, matrix.ty, r.width, r.height);
-		}
-		
-	}
-	
 	
 	@:noCompletion private function __getCursor ():MouseCursor {
 		
@@ -1092,6 +1079,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	@:noCompletion private inline function __getLocalBounds (rect:Rectangle):Void {
 		
 		__getBounds (rect, __transform);
+		
+	}
+	
+	
+	@:noCompletion private function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		if (__scrollRect == null) {
+			
+			__getBounds (rect, matrix);
+			
+		} else {
+			
+			var r = openfl.geom.Rectangle.__temp;
+			r.copyFrom (__scrollRect);
+			r.__transform (r, matrix);
+			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
+			
+		}
 		
 	}
 	
@@ -1440,60 +1445,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 	}
 	
-	// I don't know how many times I've written this function already... KEEP IT DAMN IT!
-	@:noCompletion @:dox(hide) public function __updateTransforms (?overrideTransfrom:Matrix = null) {
-		
-		var overrided = overrideTransfrom != null;
-		var local = overrided ? overrideTransfrom.clone() : __transform;
-		
-		if (__worldTransform == null) {
-			
-			__worldTransform = new Matrix ();
-			
-		}
-		
-		if (!overrided && parent != null) {
-			
-			var parentTransform = parent.__worldTransform;
-			
-			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
-			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
-			__worldTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
-			__worldTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
-			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
-			
-			__worldOffset.copyFrom(parent.__worldOffset);
-			
-		} else {
-			
-			__worldTransform.copyFrom(local);
-			__worldOffset.setTo(0, 0);
-			
-		}
-		
-		if (__scrollRect != null) {
-			
-			__offset = __worldTransform.deltaTransformPoint(__scrollRect.topLeft);
-			__worldOffset.offset(__offset.x, __offset.y);
-			
-		} else {
-			
-			__offset.setTo(0, 0);
-			
-		}
-		
-		__renderTransform.copyFrom(__worldTransform);
-		__renderTransform.translate( -__worldOffset.x, -__worldOffset.y);
-		
-	}
-	
 	
 	@:noCompletion @:dox(hide) public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		
-		__updateTransforms();
+		__updateTransforms ();
 		
 		// TODO this?
 		if (parent != null && __isMask) {
@@ -1712,6 +1669,54 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion @:dox(hide) public function __updateTransforms (overrideTransform:Matrix = null):Void {
+		
+		var overrided = overrideTransform != null;
+		var local = overrided ? overrideTransform.clone () : __transform;
+		
+		if (__worldTransform == null) {
+			
+			__worldTransform = new Matrix ();
+			
+		}
+		
+		if (!overrided && parent != null) {
+			
+			var parentTransform = parent.__worldTransform;
+			
+			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
+			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
+			__worldTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
+			__worldTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
+			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
+			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			
+			__worldOffset.copyFrom (parent.__worldOffset);
+			
+		} else {
+			
+			__worldTransform.copyFrom (local);
+			__worldOffset.setTo (0, 0);
+			
+		}
+		
+		if (__scrollRect != null) {
+			
+			__offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
+			__worldOffset.offset (__offset.x, __offset.y);
+			
+		} else {
+			
+			__offset.setTo (0, 0);
+			
+		}
+		
+		__renderTransform.copyFrom (__worldTransform);
+		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 		
 	}
 	
