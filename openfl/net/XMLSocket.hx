@@ -126,7 +126,7 @@ class XMLSocket extends EventDispatcher {
 	@:noCompletion private function onMessageHandler (e:#if (js && html5) Dynamic #else ProgressEvent #end):Void {
 		
 		#if (js && html5)
-		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, msg.data));
+		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, e.data));
 		#else
 		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, __socket.readUTFBytes (__socket.bytesAvailable)));
 		#end
