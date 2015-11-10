@@ -16,6 +16,8 @@ package openfl.display; #if !flash #if !openfl_legacy
  * does not.</p>
  */
 
+ @:access(openfl.display.Graphics)
+ 
 
 class Shape extends DisplayObject {
 	
@@ -49,7 +51,7 @@ class Shape extends DisplayObject {
 		if (__graphics == null) {
 			
 			__graphics = new Graphics ();
-			@:privateAccess __graphics.__owner = this;
+			__graphics.__owner = this;
 			
 		}
 		

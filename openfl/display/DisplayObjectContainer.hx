@@ -704,41 +704,46 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			__updateTransforms(matrix);
+			__updateTransforms (matrix);
 			__updateChildren (true);
 			
 		}
 		
 		for (child in __children) {
 			
-			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
+			if (child.scaleX == 0 || child.scaleY == 0) continue;
 			child.__getBounds (rect, child.__worldTransform);
 			
 		}
 		
 		if (matrix != null) {
 			
-			__updateTransforms();
+			__updateTransforms ();
 			__updateChildren (true);
 			
 		}
 		
 	}
 	
-	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix) {
+	
+	@:noCompletion private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__scrollRect != null) {
-			super.__getRenderBounds(rect, matrix);
+			
+			super.__getRenderBounds (rect, matrix);
 			return;
+			
 		} else {
-			super.__getBounds(rect, matrix);
+			
+			super.__getBounds (rect, matrix);
+			
 		}
 		
 		if (__children.length == 0) return;
 		
 		if (matrix != null) {
 			
-			__updateTransforms(matrix);
+			__updateTransforms (matrix);
 			__updateChildren (true);
 			
 		}
@@ -752,12 +757,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (matrix != null) {
 			
-			__updateTransforms();
+			__updateTransforms ();
 			__updateChildren (true);
 			
 		}
 		
 	}
+	
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		

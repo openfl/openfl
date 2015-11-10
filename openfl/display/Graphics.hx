@@ -97,7 +97,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __bitmap:BitmapData;
 	
 	
-	public function new () {
+	private function new () {
 		
 		__commands = new DrawCommandBuffer ();
 		__strokePadding = 0;
