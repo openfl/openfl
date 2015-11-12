@@ -17,8 +17,9 @@ class CairoShape {
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		
 		var graphics = shape.__graphics;
+		var bounds = graphics.__bounds;
 		
-		if (graphics != null) {
+		if (graphics != null && graphics.__visible && graphics.__commands.length > 0 && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
 			
 			CairoGraphics.render (graphics, renderSession);
 			
