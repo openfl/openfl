@@ -2,6 +2,7 @@ package openfl._internal.renderer.cairo;
 
 
 import openfl.display.DisplayObject;
+import openfl.text.TextField;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -21,8 +22,9 @@ class CairoShape {
 		if (graphics != null) {
 			
 			CairoGraphics.render (graphics, renderSession);
+			var bounds = graphics.__bounds;
 			
-			if (graphics.__cairo != null) {
+			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
 				
 				if (shape.__mask != null) {
 					
