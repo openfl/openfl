@@ -13,13 +13,15 @@ import openfl.Vector;
 	public var context:Context3D;
 	public var glBuffer:GLBuffer;
 	public var numIndices:Int;
+	public var bufferUsage:Int;
 	
 	
-	public function new (context:Context3D, glBuffer:GLBuffer, numIndices:Int) {
+	public function new (context:Context3D, glBuffer:GLBuffer, numIndices:Int, bufferUsage:Int) {
 		
 		this.context = context;
 		this.glBuffer = glBuffer;
 		this.numIndices = numIndices;
+		this.bufferUsage = bufferUsage;
 		
 	}
 	
@@ -56,7 +58,7 @@ import openfl.Vector;
 		indices = new Int16Array (byteArray, offset, length);
 		#end
 		
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, bufferUsage);
 		
 	}
 	
@@ -78,7 +80,7 @@ import openfl.Vector;
 		indices = new Int16Array (data, startOffset, count);
 		#end
 		
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, bufferUsage);
 		
 	}
 	
