@@ -406,7 +406,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function getObjectsUnderPoint (point:Point):Array<DisplayObject> {
 		
 		var stack = new Array<DisplayObject> ();
-		__hitTest (point.x, point.y, false, stack, false);
+		__hitTest (point.x, point.y, false, stack, false, this);
 		stack.reverse ();
 		return stack;
 		
@@ -765,9 +765,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
 		
-		if (!visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (interactiveOnly && !hitObject.mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
@@ -778,11 +778,11 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 					
-					if (__children[i].__hitTest (x, y, shapeFlag, null, true)) {
+					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
 						
 						if (stack != null) {
 							
-							stack.push (this);
+							stack.push (hitObject);
 							
 						}
 						
@@ -803,9 +803,9 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					if (interactive || (mouseEnabled && !hitTest)) {
+					if (interactive || (hitObject.mouseEnabled && !hitTest)) {
 						
-						if (__children[i].__hitTest (x, y, shapeFlag, stack, true)) {
+						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
 							
 							hitTest = true;
 							
@@ -823,7 +823,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				if (hitTest) {
 					
-					stack.insert (length, this);
+					stack.insert (length, hitObject);
 					return true;
 					
 				}
@@ -834,7 +834,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			while (--i >= 0) {
 				
-				__children[i].__hitTest (x, y, shapeFlag, stack, false);
+				__children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]);
 				
 			}
 			

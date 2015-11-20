@@ -3,6 +3,7 @@ package openfl.media; #if !flash #if !openfl_legacy
 
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.display.InteractiveObject;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -74,9 +75,9 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
 		
-		if (!visible || __isMask) return false;
+		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		var point = globalToLocal (new Point (x, y));
@@ -85,7 +86,7 @@ class Video extends DisplayObject {
 			
 			if (stack != null) {
 				
-				stack.push (this);
+				stack.push (hitObject);
 				
 			}
 			

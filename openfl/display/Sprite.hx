@@ -169,31 +169,31 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
 		
 		if (hitArea != null) {
 			
-			if (!hitArea.mouseEnabled && hitArea.__hitTest (x, y, shapeFlag, stack, false)) {
+			if (!hitArea.mouseEnabled && hitArea.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
-				stack[stack.length - 1] = this;
+				stack[stack.length - 1] = hitObject;
 				return true;
 				
 			}
 			
 		} else {
 			
-			if (!visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+			if (!hitObject.visible || __isMask || (interactiveOnly && !hitObject.mouseEnabled && !mouseChildren)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
-			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
+			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
 				return interactiveOnly;
 				
-			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
+			} else if ((!interactiveOnly || hitObject.mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 				
 				if (stack != null) {
 					
-					stack.push (this);
+					stack.push (hitObject);
 					
 				}
 				

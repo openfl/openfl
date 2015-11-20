@@ -1148,18 +1148,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
-	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
+	@:noCompletion private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
 		
 		if (__graphics != null) {
 			
-			if (!visible || __isMask) return false;
+			if (!hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
 			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 				
 				if (stack != null && !interactiveOnly) {
 					
-					stack.push (this);
+					stack.push (hitObject);
 					
 				}
 				
