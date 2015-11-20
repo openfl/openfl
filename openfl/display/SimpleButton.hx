@@ -374,15 +374,15 @@ class SimpleButton extends InteractiveObject {
 		
 		__currentState.__renderDOM (renderSession);
 		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
-				
-				orphan.__renderDOM (renderSession);
-				
-			}
-			
-		}
+		//for (orphan in __removedChildren) {
+			//
+			//if (orphan.stage == null) {
+				//
+				//orphan.__renderDOM (renderSession);
+				//
+			//}
+			//
+		//}
 		
 		if (__mask != null) {
 			
