@@ -71,6 +71,8 @@ class Sprite extends DisplayObjectContainer {
 	 */
 	public var graphics (get, null):Graphics;
 	
+	public var hitArea:Sprite;
+	
 	/**
 	 * A Boolean value that indicates whether the pointing hand(hand cursor)
 	 * appears when the pointer rolls over a sprite in which the
@@ -169,22 +171,35 @@ class Sprite extends DisplayObjectContainer {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool):Bool {
 		
-		if (!visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
-		if (mask != null && !mask.__hitTestMask (x, y)) return false;
-		
-		if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
+		if (hitArea != null) {
 			
-			return interactiveOnly;
-			
-		} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
-			
-			if (stack != null) {
+			if (!hitArea.mouseEnabled && hitArea.__hitTest (x, y, shapeFlag, stack, false)) {
 				
-				stack.push (this);
+				stack[stack.length - 1] = this;
+				return true;
 				
 			}
 			
-			return true;
+		} else {
+			
+			if (!visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+			if (mask != null && !mask.__hitTestMask (x, y)) return false;
+			
+			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly)) {
+				
+				return interactiveOnly;
+				
+			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
+				
+				if (stack != null) {
+					
+					stack.push (this);
+					
+				}
+				
+				return true;
+				
+			}
 			
 		}
 		
