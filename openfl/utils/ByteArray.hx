@@ -1150,7 +1150,12 @@ extern class ByteArray extends haxe.io.Bytes implements IDataOutput implements I
 	
 	public var bytesAvailable (default, null):UInt;
 	//public var endian:Endian;
-	public var endian:Dynamic;
+	
+	#if flash
+	var endian:Endian;
+	#else
+	var endian (get, set):String;
+	#end
 	//public var length:UInt;
 	public var objectEncoding:UInt;
 	
