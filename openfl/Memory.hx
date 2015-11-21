@@ -28,7 +28,7 @@ class Memory {
 		
 		#if debug if (addr < 0 || addr + 1 > len) throw("Bad address"); #end
 		
-		return gcRef.__get (addr);
+		return gcRef[addr];
 		
 	}
 	
@@ -97,7 +97,7 @@ class Memory {
 		
 		#if debug if (addr < 0 || addr + 1 > len) throw ("Bad address"); #end
 		
-		gcRef.__set (addr, v);
+		gcRef[addr] = v;
 		
 	}
 	

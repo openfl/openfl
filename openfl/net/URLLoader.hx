@@ -4,6 +4,7 @@ package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
 import haxe.io.Bytes;
 import lime.app.Event;
 import lime.system.BackgroundWorker;
+import lime.system.CFFI;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
@@ -338,7 +339,7 @@ class URLLoader extends EventDispatcher {
 					
 				}
 				
-				var bytes = ByteArray.readFile (path);
+				var bytes = readFile (path);
 				worker.sendComplete (bytes);
 				
 			});
@@ -376,6 +377,17 @@ class URLLoader extends EventDispatcher {
 		}
 		#end
 		#end
+		
+	}
+	
+	
+	private function readFile (path:String):Bytes {
+		
+		#if (!flash && !html5 && !macro)
+		var data:Dynamic = lime_bytes_read_file (path);
+		if (data != null) return @:privateAccess new Bytes (data.length, data.b);
+		#end
+		return null;
 		
 	}
 	
@@ -551,7 +563,7 @@ class URLLoader extends EventDispatcher {
 		
 		var uri:ByteArray = new ByteArray ();
 		
-		if (Std.is (data, ByteArray)) {
+		if (Std.is (data, ByteArrayData)) {
 			
 			var data:ByteArray = cast data;
 			uri = data;
@@ -855,6 +867,11 @@ class URLLoader extends EventDispatcher {
 		#end
 		
 	}
+	
+	
+	#if (!flash && !html5 && !macro)
+	private static var lime_bytes_read_file = CFFI.load ("lime", "lime_bytes_read_file", 1);
+	#end
 	
 	
 }

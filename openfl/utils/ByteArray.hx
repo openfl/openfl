@@ -1,15 +1,15 @@
-package openfl.utils; #if (!display && !flash) #if !openfl_legacy
-
-
-// TODO: Turn into an abstract ByteArray(Bytes)
+package openfl.utils; #if !openfl_legacy
 
 
 import haxe.io.Bytes;
+import lime.system.Endian;
+import openfl.utils.ByteArray.ByteArrayData;
+
+#if !flash
 import haxe.io.BytesBuffer;
 import haxe.io.BytesData;
 import haxe.io.Input;
 import haxe.zip.Compress;
-//import haxe.zip.Flush;
 import haxe.zip.Uncompress;
 import lime.utils.ArrayBuffer;
 import lime.utils.LZMA;
@@ -29,6 +29,364 @@ import cpp.NativeArray;
 #if sys
 import sys.io.File;
 #end
+#end
+
+
+abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
+	
+	
+	public static var defaultObjectEncoding:UInt;
+	
+	public var bytesAvailable (get, never):Int;
+	public var endian (get, set):Endian;
+	public var length (get, set):Int;
+	public var objectEncoding (get, set):Int;
+	public var position (get, set):Int;
+	
+	
+	public inline function new (length:Int = 0):Void {
+		
+		this = new ByteArrayData (length);
+		
+	}
+	
+	
+	public inline function clear ():Void {
+		
+		this.clear ();
+		
+	}
+	
+	
+	public inline function compress (algorithm:CompressionAlgorithm = null):Void {
+		
+		this.compress (algorithm);
+		
+	}
+	
+	
+	public inline function deflate ():Void {
+		
+		this.deflate ();
+		
+	}
+	
+	
+	public inline function inflate () {
+		
+		this.inflate ();
+		
+	}
+	
+	
+	public inline function readBoolean ():Bool {
+		
+		return this.readBoolean ();
+		
+	}
+	
+	
+	public inline function readByte ():Int {
+		
+		return this.readByte ();
+		
+	}
+	
+	
+	public function readBytes (bytes:ByteArray, offset:Int = 0, length:Int = 0):Void {
+		
+		return this.readBytes (bytes, offset, length);
+		
+	}
+	
+	
+	public function readDouble ():Float {
+		
+		return this.readDouble ();
+		
+	}
+	
+	
+	public function readFloat ():Float {
+		
+		return this.readFloat ();
+		
+	}
+	
+	
+	public function readInt ():Int {
+		
+		return this.readInt ();
+		
+	}
+	
+	
+	public inline function readMultiByte (length:Int, charSet:String):String {
+		
+		return this.readMultiByte (length, charSet);
+		
+	}
+	
+	
+	public function readShort ():Int {
+		
+		return this.readShort ();
+		
+	}
+	
+	
+	public inline function readUnsignedByte ():Int {
+		
+		return this.readUnsignedByte ();
+		
+	}
+	
+	
+	public inline function readUnsignedInt ():Int {
+		
+		return this.readUnsignedInt ();
+		
+	}
+	
+	
+	public inline function readUnsignedShort ():Int {
+		
+		return this.readUnsignedShort ();
+		
+	}
+	
+	
+	public inline function readUTF ():String {
+		
+		return this.readUTF ();
+		
+	}
+	
+	
+	public inline function readUTFBytes (len:Int):String {
+		
+		return this.readUTFBytes (len);
+		
+	}
+	
+	
+	public inline function toString ():String {
+		
+		return this.toString ();
+		
+	}
+	
+	
+	public inline function uncompress (algorithm:CompressionAlgorithm = null):Void {
+		
+		return this.uncompress (algorithm);
+		
+	}
+	
+	
+	public inline function writeBoolean (value:Bool):Void {
+		
+		this.writeBoolean (value);
+		
+	}
+	
+	
+	public inline function writeByte (value:Int):Void {
+		
+		this.writeByte (value);
+		
+	}
+	
+	
+	public inline function writeBytes (bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void {
+		
+		this.writeBytes (bytes, offset, length);
+		
+	}
+	
+	
+	public inline function writeDouble (x:Float):Void {
+		
+		this.writeDouble (x);
+		
+	}
+	
+	
+	public inline function writeFloat (x:Float):Void {
+		
+		this.writeFloat (x);
+		
+	}
+	
+	
+	public inline function writeInt (value:Int):Void {
+		
+		this.writeInt (value);
+		
+	}
+	
+	
+	public inline function writeShort (value:Int):Void {
+		
+		this.writeShort (value);
+		
+	}
+	
+	
+	public inline function writeUnsignedInt (value:Int):Void {
+		
+		this.writeUnsignedInt (value);
+		
+	}
+	
+	
+	public inline function writeUnsignedShort (value:Int):Void {
+		
+		this.writeUnsignedShort (value);
+		
+	}
+	
+	
+	public inline function writeUTF (value:String):Void {
+		
+		this.writeUTF (value);
+		
+	}
+	
+	
+	public inline function writeUTFBytes (value:String):Void {
+		
+		this.writeUTFBytes (value);
+		
+	}
+	
+	
+	@:arrayAccess @:noCompletion private inline function get (index:Int):Int {
+		
+		return this.__get (index);
+		
+	}
+	
+	
+	@:arrayAccess @:noCompletion private inline function set (index:Int, value:Int):Int {
+		
+		this.__set (index, value);
+		return value;
+		
+	}
+	
+	
+	@:from public static function fromBytes (bytes:Bytes):ByteArray {
+		
+		return ByteArrayData.fromBytes (bytes);
+		
+	}
+	
+	
+	@:to @:noCompletion private static function toBytes (byteArray:ByteArray):Bytes {
+		
+		#if flash
+		return Bytes.ofData (byteArray);
+		#elseif (js && html5)
+		return Bytes.ofData (byteArray.byteView.buffer);
+		#else
+		return byteArray;
+		#end
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	@:noCompletion private inline function get_bytesAvailable ():Int {
+		
+		return this.bytesAvailable;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_endian ():Endian {
+		
+		return (this.endian == "littleEndian" ? Endian.LITTLE_ENDIAN : Endian.BIG_ENDIAN);
+		
+	}
+	
+	
+	@:noCompletion private inline function set_endian (value:Endian):Endian {
+		
+		if (value == Endian.LITTLE_ENDIAN) {
+			
+			this.endian = "littleEndian";
+			
+		} else {
+			
+			this.endian = "bigEndian";
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_length ():Int {
+		
+		return this.length;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_length (value:Int):Int {
+		
+		#if js
+		this.length = value;
+		#else
+		this.setLength (value);
+		#end
+		
+		return value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_objectEncoding ():Int {
+		
+		return this.objectEncoding;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_objectEncoding (value:Int):Int {
+		
+		return this.objectEncoding = value;
+		
+	}
+	
+	
+	@:noCompletion private inline function get_position ():Int {
+		
+		return this.position;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_position (value:Int):Int {
+		
+		return this.position = value;
+		
+	}
+	
+	
+}
+
+
+#if !flash
+
 
 #if !macro
 @:build(lime.system.CFFI.build())
@@ -37,7 +395,7 @@ import sys.io.File;
 //@:autoBuild(lime.Assets.embedFile())
 
 
-class ByteArray #if !js extends Bytes implements ArrayAccess<Int> implements IDataInput /*implements IDataOutput*/ #end {
+@:noCompletion @:dox(hide) class ByteArrayData #if !js extends Bytes implements ArrayAccess<Int> implements IDataInput /*implements IDataOutput*/ #end {
 	
 	
 	public var bytesAvailable (get, null):Int;
@@ -225,7 +583,7 @@ class ByteArray #if !js extends Bytes implements ArrayAccess<Int> implements IDa
 	public static function fromBytes (bytes:Bytes):ByteArray {
 		
 		var result = new ByteArray ();
-		result.__fromBytes (bytes);
+		(result:ByteArrayData).__fromBytes (bytes);
 		return result;
 		
 	}
@@ -296,12 +654,12 @@ class ByteArray #if !js extends Bytes implements ArrayAccess<Int> implements IDa
 		
 		if (bytes.length < offset + length) {
 			
-			bytes.ensureElem (offset + length - 1, true);
+			(bytes:ByteArrayData).ensureElem (offset + length - 1, true);
 			
 		}
 		
 		#if neko
-		bytes.blit (offset, this, position, length);
+		(bytes:ByteArrayData).blit (offset, this, position, length);
 		#else
 		var b1 = b;
 		var b2 = bytes.b;
@@ -562,7 +920,7 @@ class ByteArray #if !js extends Bytes implements ArrayAccess<Int> implements IDa
 		var result = new ByteArray (end - begin);
 		
 		var opos = position;
-		result.blit (0, this, begin, end - begin);
+		(result:ByteArrayData).blit (0, this, begin, end - begin);
 		
 		return result;
 		
@@ -1119,114 +1477,8 @@ class ByteArray #if !js extends Bytes implements ArrayAccess<Int> implements IDa
 
 
 #else
-typedef ByteArray = openfl._legacy.utils.ByteArray;
+typedef ByteArrayData = flash.utils.ByteArray;
 #end
 #else
-
-
-#if flash
-@:native("flash.utils.ByteArray")
-#end
-
-extern class ByteArray extends haxe.io.Bytes implements IDataOutput implements IDataInput implements ArrayAccess<Int> {
-	
-	
-	public static var defaultObjectEncoding:UInt;
-	
-	#if !flash
-	public static function fromBytes (bytes:haxe.io.Bytes):ByteArray;
-	public static function readFile (path:String):ByteArray;
-	#end
-	
-	#if js
-	public static function __ofBuffer (buffer:ArrayBuffer):ByteArray;
-	#end
-	
-	#if (!flash && !js)
-	public var bigEndian (get, set):Bool;
-	#elseif js
-	public var byteView:UInt8Array;
-	#end
-	
-	public var bytesAvailable (default, null):UInt;
-	//public var endian:Endian;
-	
-	#if flash
-	var endian:Endian;
-	#else
-	var endian (get, set):String;
-	#end
-	//public var length:UInt;
-	public var objectEncoding:UInt;
-	
-	public var position:UInt;
-	
-	#if flash
-	@:require(flash11_4) public var shareable:Bool;
-	#end
-	
-	
-	public function new (length:Int = 0):Void;
-	
-	#if flash
-	@:require(flash11_4) public function atomicCompareAndSwapIntAt (byteIndex:Int, expectedValue:Int, newValue:Int):Int;
-	@:require(flash11_4) public function atomicCompareAndSwapLength (expectedLength:Int, newLength:Int):Int;
-	#end
-	
-	#if !flash
-	@:noCompletion public function __get (pos:Int):Int;
-	@:noCompletion public function __set (pos:Int, v:Int):Void;
-	@:noCompletion public function writeUnsignedShort (value:Int):Void;
-	#end
-	
-	#if js
-	@:noCompletion public function __getBuffer ():Dynamic;
-	#end
-	
-	#if flash @:require(flash10) #end public function clear ():Void;
-	public function compress (?algorithm:CompressionAlgorithm):Void;
-	#if flash @:require(flash10) #end public function deflate ():Void;
-	#if flash @:require(flash10) #end public function inflate ():Void;
-	public function readBoolean ():Bool;
-	public function readByte ():Int;
-	public function readBytes (bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void;
-	public function readDouble ():Float;
-	public function readFloat ():Float;
-	public function readInt ():Int;
-	
-	public function readMultiByte (length:UInt, charSet:String):String;
-	
-	#if flash
-	public function readObject ():Dynamic;
-	#end
-	
-	public function readShort ():Int;
-	public function readUTF ():String;
-	public function readUTFBytes (length:UInt):String;
-	public function readUnsignedByte ():UInt;
-	public function readUnsignedInt ():UInt;
-	public function readUnsignedShort ():UInt;
-	//public function toString ():String;
-	public function uncompress (?algorithm:CompressionAlgorithm):Void;
-	public function writeBoolean (value:Bool):Void;
-	public function writeByte (value:Int):Void;
-	public function writeBytes (bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void;
-	public function writeDouble (value:Float):Void;
-	public function writeFloat (value:Float):Void;
-	public function writeInt (value:Int):Void;
-	public function writeMultiByte (value:String, charSet:String):Void;
-	
-	#if flash
-	public function writeObject (object:Dynamic):Void;
-	#end
-	
-	public function writeShort (value:Int):Void;
-	public function writeUTF (value:String):Void;
-	public function writeUTFBytes (value:String):Void;
-	public function writeUnsignedInt (value:UInt):Void;
-	
-	
-}
-
-
+typedef ByteArray = openfl._legacy.utils.ByteArray;
 #end
