@@ -1,8 +1,10 @@
 # Generate platform-specific XML for documentation output
 
 -xml Flash.xml
--cpp obj/docs
+-swf obj/docs
+-swf-version 17.0
 -D display
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -15,6 +17,7 @@ ImportAll
 -D display
 -D native
 -D windows
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -27,6 +30,7 @@ ImportAll
 -D display
 -D native
 -D mac
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -39,6 +43,7 @@ ImportAll
 -D display
 -D native
 -D linux
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -50,6 +55,7 @@ ImportAll
 -neko obj/docs
 -D display
 -D native
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -62,6 +68,7 @@ ImportAll
 -D display
 -D native
 -D ios
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -74,6 +81,7 @@ ImportAll
 -D display
 -D native
 -D android
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -86,6 +94,7 @@ ImportAll
 -D display
 -D native
 -D blackberry
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -110,6 +119,7 @@ ImportAll
 -D display
 -D html5
 -D firefox
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -121,6 +131,7 @@ ImportAll
 -js obj/docs
 -D display
 -D html5
+-D doc_gen
 ImportAll
 -lib lime
 -lib openfl
@@ -128,4 +139,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . -theme flambe --title "OpenFL API Documentation"
+-cmd haxelib run dox -i . --title "OpenFL API Documentation"

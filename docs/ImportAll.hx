@@ -399,13 +399,10 @@ import lime.ui.Touch;
 import lime.ui.Window;
 import lime.utils.ArrayBuffer;
 import lime.utils.ArrayBufferView;
-import lime.utils.ByteArray;
 import lime.utils.DataView;
 import lime.utils.Float32Array;
 import lime.utils.Float64Array;
 import lime.utils.GLUtils;
-import lime.utils.IDataInput;
-import lime.utils.IMemoryRange;
 import lime.utils.Int16Array;
 import lime.utils.Int32Array;
 import lime.utils.Int8Array;
@@ -586,7 +583,7 @@ import haxe.remoting.Proxy;
 import haxe.remoting.SocketConnection;
 import haxe.remoting.SocketProtocol;
 //import haxe.remoting.SocketWrapper;
-#if !html5
+#if (!html5 && !flash)
 import haxe.remoting.SyncSocketConnection;
 #end
 

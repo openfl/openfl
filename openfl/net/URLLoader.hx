@@ -4,7 +4,6 @@ package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
 import haxe.io.Bytes;
 import lime.app.Event;
 import lime.system.BackgroundWorker;
-import lime.utils.ByteArray;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
