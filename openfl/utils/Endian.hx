@@ -15,12 +15,10 @@ package openfl.utils; #if !flash
  * order that matches the protocol of the server that is sending or receiving
  * data.</p>
  */
-class Endian {
+@:enum abstract Endian(String) from String to String {
 	
-	
-	public static inline var BIG_ENDIAN:String = "bigEndian";
-	public static inline var LITTLE_ENDIAN:String = "littleEndian";
-	
+	public var BIG_ENDIAN:String = "bigEndian";
+	public var LITTLE_ENDIAN:String = "littleEndian";
 	
 }
 

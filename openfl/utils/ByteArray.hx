@@ -2,8 +2,6 @@ package openfl.utils; #if !openfl_legacy
 
 
 import haxe.io.Bytes;
-import lime.system.Endian;
-import openfl.utils.ByteArray.ByteArrayData;
 
 #if !flash
 import haxe.io.BytesBuffer;
@@ -46,7 +44,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public inline function new (length:Int = 0):Void {
 		
+		#if flash
+		this = new ByteArrayData ();
+		this.length = length;
+		#else
 		this = new ByteArrayData (length);
+		#end
 		
 	}
 	
@@ -240,13 +243,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	public inline function writeUnsignedShort (value:Int):Void {
-		
-		this.writeUnsignedShort (value);
-		
-	}
-	
-	
 	public inline function writeUTF (value:String):Void {
 		
 		this.writeUTF (value);
@@ -263,14 +259,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:arrayAccess @:noCompletion private inline function get (index:Int):Int {
 		
+		#if flash
+		return this[index];
+		#else
 		return this.__get (index);
+		#end
 		
 	}
 	
 	
 	@:arrayAccess @:noCompletion private inline function set (index:Int, value:Int):Int {
 		
+		#if flash
+		this[index] = value;
+		#else
 		this.__set (index, value);
+		#end
 		return value;
 		
 	}
@@ -278,7 +282,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from public static function fromBytes (bytes:Bytes):ByteArray {
 		
+		#if flash
+		return bytes.getData ();
+		#else
 		return ByteArrayData.fromBytes (bytes);
+		#end
 		
 	}
 	
@@ -288,7 +296,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if flash
 		return Bytes.ofData (byteArray);
 		#elseif (js && html5)
-		return Bytes.ofData (byteArray.byteView.buffer);
+		return Bytes.ofData ((byteArray:ByteArrayData).byteView.buffer);
 		#else
 		return byteArray;
 		#end
@@ -312,13 +320,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private inline function get_endian ():Endian {
 		
+		#if flash
+		return this.endian;
+		#else
 		return (this.endian == "littleEndian" ? Endian.LITTLE_ENDIAN : Endian.BIG_ENDIAN);
+		#end
 		
 	}
 	
 	
 	@:noCompletion private inline function set_endian (value:Endian):Endian {
 		
+		#if flash
+		this.endian = value;
+		#else
 		if (value == Endian.LITTLE_ENDIAN) {
 			
 			this.endian = "littleEndian";
@@ -328,6 +343,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			this.endian = "bigEndian";
 			
 		}
+		#end
 		
 		return value;
 		
@@ -343,7 +359,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private inline function set_length (value:Int):Int {
 		
-		#if js
+		#if (flash || js)
 		this.length = value;
 		#else
 		this.setLength (value);
@@ -639,9 +655,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (length == 0) length = this.bytesAvailable;
 		
-		bytes.ensureWrite (offset + length);
+		(bytes:ByteArrayData).ensureWrite (offset + length);
 		
-		bytes.byteView.set (byteView.subarray (this.position, this.position + length), offset);
+		(bytes:ByteArrayData).byteView.set (byteView.subarray (this.position, this.position + length), offset);
 		bytes.position = offset;
 		
 		this.position += length;
@@ -1055,7 +1071,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (offset < 0 || length < 0) throw ("Write error - Out of bounds");
 		if( length == 0 ) length = bytes.length;
 		ensureWrite (this.position + length);
-		byteView.set (bytes.byteView.subarray (offset, offset + length), this.position);
+		byteView.set ((bytes:ByteArrayData).byteView.subarray (offset, offset + length), this.position);
 		this.position += length;
 		#else
 		if (length == 0) length = bytes.length - offset;
@@ -1355,9 +1371,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = new ByteArray ();
 		#if !display
-		bytes.length = bytes.allocated = buffer.byteLength;
-		bytes.data = untyped __new__("DataView", buffer);
-		bytes.byteView = untyped __new__("Uint8Array", buffer);
+		bytes.length = (bytes:ByteArrayData).allocated = buffer.byteLength;
+		(bytes:ByteArrayData).data = untyped __new__("DataView", buffer);
+		(bytes:ByteArrayData).byteView = untyped __new__("Uint8Array", buffer);
 		#end
 		return bytes;
 		

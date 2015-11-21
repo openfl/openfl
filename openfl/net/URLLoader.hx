@@ -464,9 +464,9 @@ class URLLoader extends EventDispatcher {
 		registerEvents (cast xmlHttpRequest);
 		var uri:Dynamic = "";
 		
-		if (Std.is (data, ByteArray)) {
+		if (Std.is (data, ByteArrayData)) {
 			
-			var data:ByteArray = cast data;
+			var data:ByteArrayData = cast data;
 			
 			switch (dataFormat) {
 				
@@ -776,7 +776,7 @@ class URLLoader extends EventDispatcher {
 		
 		switch (dataFormat) {
 			
-			case BINARY: this.data = ByteArray.__ofBuffer (content);
+			case BINARY: this.data = ByteArrayData.__ofBuffer (content);
 			default: this.data = Std.string (content);
 			
 		}

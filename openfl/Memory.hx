@@ -134,7 +134,7 @@ class Memory {
 		
 		_setPositionTemporarily (addr, function () {
 			
-			gcRef.writeUnsignedShort (v);
+			gcRef.writeShort (v);
 			
 		});
 		
