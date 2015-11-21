@@ -300,12 +300,6 @@ import lime.net.oauth.OAuthVersion;
 //import lime.net.NetConnection;
 //import lime.net.NetConnectionManager;
 import lime.net.URIParser;
-import lime.net.URLLoader;
-import lime.net.URLLoaderDataFormat;
-import lime.net.URLRequest;
-import lime.net.URLRequestHeader;
-import lime.net.URLRequestMethod;
-import lime.net.URLVariables;
 #if (windows || mac || linux || neko)
 import lime.project.ApplicationData;
 import lime.project.Architecture;

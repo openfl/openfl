@@ -1,8 +1,9 @@
 # Generate platform-specific XML for documentation output
 
 -xml Flash.xml
--swf obj/docs
--swf-version 17.0
+-cpp obj/docs
+#-swf obj/docs
+#-swf-version 17.0
 -D display
 -D doc_gen
 ImportAll
@@ -139,4 +140,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -i . --title "OpenFL API Documentation"
+-cmd haxelib run dox -i . -theme flambe --title "OpenFL API Documentation"

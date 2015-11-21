@@ -678,7 +678,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		(bytes:ByteArrayData).blit (offset, this, position, length);
 		#else
 		var b1 = b;
-		var b2 = bytes.b;
+		var b2 = (bytes:ByteArrayData).b;
 		var p = position;
 		for (i in 0...length) b2[offset + i] = b1[p + i];
 		#end
