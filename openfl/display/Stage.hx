@@ -1377,7 +1377,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var target:InteractiveObject = null;
 		var targetPoint = new Point (x, y);
 		
-		if (__hitTest (x, y, true, stack, true)) {
+		if (__hitTest (x, y, true, stack, true, this)) {
 			
 			target = cast stack[stack.length - 1];
 			
@@ -1508,7 +1508,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = [];
 		
-		if (!__hitTest (x, y, false, stack, true)) {
+		if (!__hitTest (x, y, false, stack, true, this)) {
 			
 			stack = [ this ];
 			
@@ -1532,7 +1532,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var __stack = [];
 		
-		if (__hitTest (__mouseX, __mouseY, false, __stack, true)) {
+		if (__hitTest (__mouseX, __mouseY, false, __stack, true, this)) {
 			
 			var target = __stack[__stack.length - 1];
 			if (target == null) target = this;

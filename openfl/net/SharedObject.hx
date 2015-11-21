@@ -165,6 +165,9 @@ class SharedObject extends EventDispatcher {
 	
 	public static var defaultObjectEncoding:Int = 3;
 	
+	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
+	
+	
 	public var client:Dynamic;
 	
 	/**
@@ -206,8 +209,6 @@ class SharedObject extends EventDispatcher {
 		
 		client = this;
 		objectEncoding = 3;
-		
-		Lib.application.onExit.add (application_onExit);
 		
 	}
 	
@@ -539,52 +540,67 @@ class SharedObject extends EventDispatcher {
 			
 		}
 		
-		var so = new SharedObject ();
-		so.data = {};
-		so.__localPath = localPath;
-		so.__name = name;
-		
-		var encodedData = null;
-		
-		try {
+		if (__sharedObjects == null) {
 			
-			#if (js && html5)
-			
-			var storage = Browser.getLocalStorage ();
-			
-			if (storage != null) {
-				
-				encodedData = storage.getItem (localPath + ":" + name);
-				
-			}
-			
-			#else
-			
-			var path = System.applicationStorageDirectory + "/" + localPath + "/" + name + ".sol";
-			
-			if (FileSystem.exists (path)) {
-				
-				encodedData = File.getContent (path);
-				
-			}
-			
-			#end
-			
-		} catch (e:Dynamic) { }
-		
-		if (encodedData != null && encodedData != "") {
-			
-			try {
-				
-				var unserializer = new Unserializer (encodedData);
-				unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: __resolveClass } );
-				so.data = unserializer.unserialize ();
-				
-			} catch (e:Dynamic) {}
+			__sharedObjects = new Map ();
+			Lib.application.onExit.add (application_onExit);
 			
 		}
 		
-		return so;
+		var id = localPath + "/" + name;
+		
+		if (!__sharedObjects.exists (id)) {
+			
+			var sharedObject = new SharedObject ();
+			sharedObject.data = {};
+			sharedObject.__localPath = localPath;
+			sharedObject.__name = name;
+			
+			var encodedData = null;
+			
+			try {
+				
+				#if (js && html5)
+				
+				var storage = Browser.getLocalStorage ();
+				
+				if (storage != null) {
+					
+					encodedData = storage.getItem (localPath + ":" + name);
+					
+				}
+				
+				#else
+				
+				var path = System.applicationStorageDirectory + "/" + localPath + "/" + name + ".sol";
+				
+				if (FileSystem.exists (path)) {
+					
+					encodedData = File.getContent (path);
+					
+				}
+				
+				#end
+				
+			} catch (e:Dynamic) { }
+			
+			if (encodedData != null && encodedData != "") {
+				
+				try {
+					
+					var unserializer = new Unserializer (encodedData);
+					unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: __resolveClass } );
+					sharedObject.data = unserializer.unserialize ();
+					
+				} catch (e:Dynamic) {}
+				
+			}
+			
+			__sharedObjects.set (id, sharedObject);
+			
+		}
+		
+		return __sharedObjects.get (id);
 		
 	}
 	
@@ -732,9 +748,13 @@ class SharedObject extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function application_onExit (_):Void {
+	@:noCompletion private static function application_onExit (_):Void {
 		
-		flush ();
+		for (sharedObject in __sharedObjects) {
+			
+			sharedObject.flush ();
+			
+		}
 		
 	}
 	
