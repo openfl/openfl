@@ -210,7 +210,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 			var newData = b.getBytes();
 			var rl = _input.length - _input.position;
 			if (rl < 0) rl = 0;
-			var newInput = new ByteArray( rl + newData.length );
+			var newInput = Bytes.alloc( rl + newData.length );
 			if (rl > 0) newInput.blit( 0, _input, _input.position, rl );
 			newInput.blit( rl, newData, 0, newData.length );
 			_input = newInput;
@@ -379,7 +379,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 	}
 
 	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
-		var newData = ByteArray.__ofBuffer(msg.data);
+		var newData:ByteArray = ByteArrayData.__ofBuffer(msg.data);
 		newData.readBytes(_inputBuffer, _inputBuffer.length);
 	}
 	
@@ -403,7 +403,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		if( _output.length > 0 ){
 			try {
 				#if (js && html5)
-				_socket.send( _output.__getBuffer() );
+				_socket.send( (_output:ByteArrayData).__getBuffer() );
 				#else
 				_socket.output.write( _output );
 				#end

@@ -848,11 +848,11 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (Std.is (compressor, PNGEncoderOptions)) {
 			
-			return byteArray = image.encode ("png");
+			return byteArray = ByteArray.fromBytes (image.encode ("png"));
 			
 		} else if (Std.is (compressor, JPEGEncoderOptions)) {
 			
-			return byteArray = image.encode ("jpg", cast (compressor, JPEGEncoderOptions).quality);
+			return byteArray = ByteArray.fromBytes (image.encode ("jpg", cast (compressor, JPEGEncoderOptions).quality));
 			
 		}
 		
@@ -1143,7 +1143,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		if (rect == null) rect = this.rect;
-		return image.getPixels (rect.__toLimeRectangle (), ARGB32);
+		return ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
 		
 	}
 	
@@ -1693,7 +1693,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		var byteArray = new ByteArray ();
 		#if js
-		byteArray.length = inputVector.length * 4;
+		@:privateAccess byteArray.length = inputVector.length * 4;
 		#end
 		
 		for (color in inputVector) {
@@ -1768,7 +1768,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if flash
 			var memory = new ByteArray ();
-			memory.length = width * height * 4;
+			@:privateAccess memory.length = width * height * 4;
 			#else
 			var memory = new ByteArray (width * height * 4);
 			#end
@@ -1872,7 +1872,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if flash
 			var memory = new ByteArray ();
-			memory.length = totalMemory;
+			@:privateAccess memory.length = totalMemory;
 			#else
 			var memory = new ByteArray (totalMemory);
 			#end

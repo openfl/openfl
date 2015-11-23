@@ -554,16 +554,21 @@ class Assets {
 	 */
 	public static function loadBytes (id:String, handler:ByteArray->Void = null):Future<ByteArray> {
 		
+		var promise = new Promise<ByteArray> ();
 		var future = LimeAssets.loadBytes (id);
 		
 		if (handler != null) {
 			
-			future.onComplete (handler);
-			future.onError (function (_) handler (null));
+			promise.future.onComplete (handler);
+			promise.future.onError (function (_) handler (null));
+			
+			future.onComplete (function (bytes) promise.complete (bytes));
+			future.onProgress (function (progress) promise.progress (progress));
+			future.onError (function (msg) promise.error (msg));
 			
 		}
 		
-		return future;
+		return promise.future;
 		
 	}
 	

@@ -8,7 +8,6 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
 import lime.math.Vector2;
-import lime.utils.ByteArray;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoTextField;
@@ -26,6 +25,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
+import openfl.utils.ByteArray;
 
 #if (js && html5)
 import js.html.ImageData;

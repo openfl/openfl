@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !flash
 
 
 import openfl._internal.renderer.dom.DOMRenderer;
@@ -59,3 +59,6 @@ class DOMSprite extends Sprite {
 	
 	
 }
+
+
+#end

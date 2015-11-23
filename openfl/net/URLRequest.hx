@@ -273,7 +273,7 @@ import openfl.utils.ByteArray;
 		
 		if (method == URLRequestMethod.GET || data == null) return res;
 		
-		if (Std.is (data, String) || Std.is (data, ByteArray)) {
+		if (Std.is (data, String) || Std.is (data, ByteArrayData)) {
 			
 			res = res.copy ();
 			res.push (new URLRequestHeader ("Content-Type", contentType != null ? contentType : "application/x-www-form-urlencoded"));
