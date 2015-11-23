@@ -28,6 +28,8 @@ class Application extends LimeApplication {
 		
 		backend.create (config);
 		
+		processArgs();
+		
 		if (config != null) {
 			
 			if (Reflect.hasField (config, "fps")) {
