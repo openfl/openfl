@@ -127,7 +127,7 @@ class Bitmap extends DisplayObject {
 	
 	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
 		
-		if (hitObject == null || !hitObject.visible || __isMask || bitmapData == null) return false;
+		if (!hitObject.visible || __isMask || bitmapData == null) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		__getWorldTransform ();
