@@ -3,6 +3,7 @@ package openfl.utils; #if (!openfl_legacy || lime_hybrid)
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import lime.utils.Bytes in LimeBytes;
 import lime.utils.LZMA;
 import openfl.errors.EOFError;
 
@@ -17,6 +18,7 @@ import haxe.zip.Uncompress;
 import format.tools.Inflate;
 #end
 
+@:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
 @:forward(bytesAvailable, endian, length, objectEncoding, position, clear, compress, deflate, inflate, readBoolean, readByte, readBytes, readDouble, readFloat, readInt, readMultiByte, readShort, readUnsignedByte, readUnsignedInt, readUnsignedShort, readUTF, readUTFBytes, toString, uncompress, writeBoolean, writeByte, writeBytes, writeDouble, writeFloat, writeInt, writeMultiByte, writeShort, writeUnsignedInt, writeUTF, writeUTFBytes)
 
@@ -119,6 +121,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		return byteArray;
 		#else
 		return (byteArray:ByteArrayData).__bytes.getData ();
+		#end
+		
+	}
+	
+	
+	@:to @:noCompletion private static function toLimeBytes (byteArray:ByteArray):LimeBytes {
+		
+		#if flash
+		return LimeBytes.ofData (byteArray);
+		#else
+		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).__bytes.b);
 		#end
 		
 	}
