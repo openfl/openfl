@@ -50,10 +50,8 @@ import openfl.utils.UInt8Array;
 		
 		#if openfl_legacy
 		var p = BitmapData.getRGBAPixels (bitmapData);
-		#elseif js
-		var p = ByteArrayData.__ofBuffer (bitmapData.image.data.buffer);
 		#else
-		var p = ByteArray.fromBytes (bitmapData.image.data.buffer);
+		var p:ByteArray = bitmapData.image.data.buffer;
 		#end
 		
 		width = bitmapData.width;

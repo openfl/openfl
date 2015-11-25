@@ -15,6 +15,7 @@ import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
 
 #if (js && html5)
+import js.html.ArrayBuffer;
 import js.html.EventTarget;
 import js.html.XMLHttpRequest;
 import js.Browser;
@@ -470,7 +471,7 @@ class URLLoader extends EventDispatcher {
 			
 			switch (dataFormat) {
 				
-				case BINARY: uri = data.__getBuffer ();
+				case BINARY: uri = cast (data, ArrayBuffer);
 				default: uri = data.readUTFBytes (data.length);
 				
 			}
@@ -776,7 +777,7 @@ class URLLoader extends EventDispatcher {
 		
 		switch (dataFormat) {
 			
-			case BINARY: this.data = ByteArrayData.__ofBuffer (content);
+			case BINARY: this.data = cast ((content:ArrayBuffer), ByteArray);
 			default: this.data = Std.string (content);
 			
 		}
