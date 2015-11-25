@@ -1,6 +1,7 @@
 package openfl._legacy.media; #if (openfl_legacy && !disable_legacy_audio)
 
 
+import haxe.io.Bytes;
 import openfl._legacy.Assets;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
@@ -137,7 +138,7 @@ class Sound extends EventDispatcher {
 		bytesLoaded = length;
 		bytesTotal = length;
 		
-		__handle = lime_sound_from_data (bytes, length, forcePlayAsMusic);
+		__handle = lime_sound_from_data (cast (bytes, Bytes), length, forcePlayAsMusic);
 		
 		if (__handle == null) {
 			
