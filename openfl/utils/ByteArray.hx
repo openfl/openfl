@@ -131,7 +131,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if flash
 		return LimeBytes.ofData (byteArray);
 		#else
-		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).__bytes.b);
+		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).__bytes.getData ());
 		#end
 		
 	}
