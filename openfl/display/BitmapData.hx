@@ -7,6 +7,7 @@ import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
+import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.GLRenderContext;
@@ -155,6 +156,8 @@ class BitmapData implements IBitmapDrawable {
 	@:noCompletion @:dox(hide) public var __cacheAsBitmap:Bool;
 	
 	//@:noCompletion private static var __supportsBGRA:Null<Bool>;
+	
+	@:noCompletion private static var __usingANGLE:Null<Bool>;
 	
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __shader:Shader;
@@ -1201,7 +1204,21 @@ class BitmapData implements IBitmapDrawable {
 			} else {
 				
 				#if ((desktop || ios || tvos) && !rpi)
-				internalFormat = gl.RGBA;
+				
+				if (__usingANGLE == null) {
+					__usingANGLE = (GL.getParameter(GL.VERSION).indexOf("ANGLE") != -1);
+					#if windows
+						if (!Lib.application.forceSoftware)
+						{
+						__usingANGLE = true;
+						}
+					#end
+				}
+				if(__usingANGLE == true) {
+					internalFormat = gl.BGRA_EXT;
+				}else {
+					internalFormat = gl.RGBA;
+				}
 				format = gl.BGRA_EXT;
 				#elseif sys
 				internalFormat = gl.BGRA_EXT;
