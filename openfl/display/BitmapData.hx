@@ -1207,6 +1207,12 @@ class BitmapData implements IBitmapDrawable {
 				
 				if (__usingANGLE == null) {
 					__usingANGLE = (GL.getParameter(GL.VERSION).indexOf("ANGLE") != -1);
+					#if windows
+						if (!Lib.application.forceSoftware)
+						{
+						__usingANGLE = true;
+						}
+					#end
 				}
 				if(__usingANGLE == true) {
 					internalFormat = gl.BGRA_EXT;
