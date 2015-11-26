@@ -18,6 +18,10 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.Lib;
 
+#if (js && html5)
+import js.html.ArrayBuffer;
+#end
+
 #if sys
 import sys.net.Host;
 #end
@@ -379,7 +383,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 	}
 
 	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
-		var newData:ByteArray = ByteArrayData.__ofBuffer(msg.data);
+		var newData:ByteArray = (msg.data:ArrayBuffer);
 		newData.readBytes(_inputBuffer, _inputBuffer.length);
 	}
 	
