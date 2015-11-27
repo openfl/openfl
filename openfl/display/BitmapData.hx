@@ -1692,9 +1692,7 @@ class BitmapData implements IBitmapDrawable {
 	public function setVector (rect:Rectangle, inputVector:Vector<UInt>) {
 		
 		var byteArray = new ByteArray ();
-		#if js
-		@:privateAccess byteArray.length = inputVector.length * 4;
-		#end
+		byteArray.length = inputVector.length * 4;
 		
 		for (color in inputVector) {
 			

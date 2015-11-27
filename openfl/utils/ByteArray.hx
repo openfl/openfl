@@ -20,13 +20,15 @@ import format.tools.Inflate;
 
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
-@:forward(bytesAvailable, endian, length, objectEncoding, position, clear, compress, deflate, inflate, readBoolean, readByte, readBytes, readDouble, readFloat, readInt, readMultiByte, readShort, readUnsignedByte, readUnsignedInt, readUnsignedShort, readUTF, readUTFBytes, toString, uncompress, writeBoolean, writeByte, writeBytes, writeDouble, writeFloat, writeInt, writeMultiByte, writeShort, writeUnsignedInt, writeUTF, writeUTFBytes)
+@:forward(bytesAvailable, endian, objectEncoding, position, clear, compress, deflate, inflate, readBoolean, readByte, readBytes, readDouble, readFloat, readInt, readMultiByte, readShort, readUnsignedByte, readUnsignedInt, readUnsignedShort, readUTF, readUTFBytes, toString, uncompress, writeBoolean, writeByte, writeBytes, writeDouble, writeFloat, writeInt, writeMultiByte, writeShort, writeUnsignedInt, writeUTF, writeUTFBytes)
 
 
 abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public static var defaultObjectEncoding:UInt;
+	
+	public var length (get, set):Int;
 	
 	
 	public inline function new (length:Int = 0):Void {
@@ -75,11 +77,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from public static function fromBytes (bytes:Bytes):ByteArray {
 		
-		#if flash
-		return bytes.getData ();
-		#else
-		return ByteArrayData.fromBytes (bytes);
-		#end
+		if (Std.is (bytes, ByteArrayData)) {
+			
+			return cast bytes;
+			
+		} else {
+			
+			#if flash
+			return bytes.getData ();
+			#else
+			return ByteArrayData.fromBytes (bytes);
+			#end
+			
+		}
 		
 	}
 	
@@ -98,7 +108,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	#if js
 	@:to public static function toArrayBuffer (byteArray:ByteArray):ArrayBuffer {
 		
-		return (byteArray:ByteArrayData).__bytes.getData ();
+		return (byteArray:ByteArrayData).getData ();
 		
 	}
 	#end
@@ -109,7 +119,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if flash
 		return Bytes.ofData (byteArray);
 		#else
-		return (byteArray:ByteArrayData).__bytes;
+		return (byteArray:ByteArrayData);
 		#end
 		
 	}
@@ -120,7 +130,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if flash
 		return byteArray;
 		#else
-		return (byteArray:ByteArrayData).__bytes.getData ();
+		return (byteArray:ByteArrayData).getData ();
 		#end
 		
 	}
@@ -131,8 +141,45 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#if flash
 		return LimeBytes.ofData (byteArray);
 		#else
-		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).__bytes.getData ());
+		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).getData ());
 		#end
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	@:noCompletion private function get_length ():Int {
+		
+		#if flash
+		return this.length;
+		#else
+		return this.__length;
+		#end
+		
+	}
+	
+	
+	@:noCompletion private function set_length (value:Int):Int {
+		
+		#if flash
+		this.length = value;
+		#else
+		if (value > 0) {
+			
+			this.__resize (value);
+			
+		}
+		
+		this.__length = value;
+		#end
+		
+		return value;
 		
 	}
 	
@@ -143,26 +190,28 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if !flash
 
 
-@:access(haxe.io.Bytes)
-
-@:noCompletion @:dox(hide) class ByteArrayData implements IDataInput implements IDataOutput {
+@:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
 	
 	public var bytesAvailable (get, never):Int;
 	public var endian:Endian;
-	public var length (get, set):Int;
 	public var objectEncoding:Int;
 	public var position:Int;
 	
-	private var __bytes:Bytes;
 	private var __length:Int;
 	
 	
 	public function new (length:Int = 0) {
 		
-		__bytes = Bytes.alloc (length);
-		__length = length;
+		var bytes = Bytes.alloc (length);
 		
+		#if js
+		super (bytes.b.buffer);
+		#else
+		super (length, bytes.b);
+		#end
+		
+		__length = length;
 		endian = BIG_ENDIAN;
 		position = 0;
 		
@@ -171,7 +220,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function clear ():Void {
 		
-		this.length = 0;
+		__length = 0;
 		position = 0;
 		
 	}
@@ -189,7 +238,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (algorithm == CompressionAlgorithm.LZMA) {
 			
-			__bytes = LZMA.encode (__bytes);
+			__setData (LZMA.encode (this));
 			
 		} else {
 			
@@ -202,16 +251,16 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			}
 			
 			#if enable_deflate
-			__bytes = Compress.run (__bytes, 8, windowBits);
+			__setData (Compress.run (this, 8, windowBits));
 			#else
-			__bytes = Compress.run (__bytes, 8);
+			__setData (Compress.run (this, 8));
 			#end
 			
 		}
 		
 		#end
 		
-		__length = __bytes.length;
+		__length = this.length;
 		position = __length;
 		
 	}
@@ -229,17 +278,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		var result = new ByteArrayData ();
 		result.__fromBytes (bytes);
 		return result;
-		
-	}
-	
-	
-	public function get (pos:Int):Int {
-		
-		#if cpp
-		return untyped __bytes.b[pos];
-		#else
-		return __bytes.get (pos);
-		#end
 		
 	}
 	
@@ -300,7 +338,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		
-		(bytes:ByteArrayData).__bytes.blit (offset, __bytes, position, length);
+		(bytes:ByteArrayData).blit (offset, this, position, length);
 		position += length;
 		
 	}
@@ -315,7 +353,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		
 		position += 8;
-		return __bytes.getDouble (position - 8);
+		return getDouble (position - 8);
 		
 	}
 	
@@ -329,7 +367,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		}
 		
 		position += 4;
-		return __bytes.getFloat (position - 4);
+		return getFloat (position - 4);
 		
 	}
 	
@@ -463,25 +501,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		position += length;
 		
-		return __bytes.getString (position - length, length);
-		
-	}
-	
-	
-	public function set (pos:Int, v:Int):Void {
-		
-		#if cpp
-		untyped __bytes.b[pos] = v;
-		#else
-		__bytes.set (pos, v);
-		#end
-		
-	}
-	
-	
-	public function toString ():String {
-		
-		return Std.string (__bytes);
+		return getString (position - length, length);
 		
 	}
 	
@@ -498,7 +518,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (algorithm == CompressionAlgorithm.LZMA) {
 			
-			__bytes = LZMA.decode (__bytes);
+			__setData (LZMA.decode (this));
 			
 		} else {
 			
@@ -511,20 +531,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			}
 			
 			#if enable_deflate
-			__bytes = Uncompress.run (__bytes, null, windowBits);
+			__setData (Uncompress.run (this, null, windowBits));
 			#else
-			__bytes = Uncompress.run (__bytes, null);
+			__setData (Uncompress.run (this, null));
 			#end
 			
 		}
 		
 		#elseif format
 		
-		__bytes = Inflate.run (__bytes);
+		__setData (Inflate.run (this));
 		
 		#end
 		
-		__length = __bytes.length;
+		__length = this.length;
 		position = 0;
 		
 	}
@@ -540,7 +560,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeByte (value:Int):Void {
 		
 		__resize (position + 1);
-		__bytes.set (position++, value & 0xFF);
+		set (position++, value & 0xFF);
 		
 	}
 	
@@ -551,7 +571,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (length == 0) length = bytes.length - offset;
 		
 		__resize (position + length);
-		__bytes.blit (position, (bytes:ByteArrayData).__bytes, offset, length);
+		blit (position, (bytes:ByteArrayData), offset, length);
 		
 		position += length;
 		
@@ -561,7 +581,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeDouble (value:Float):Void {
 		
 		__resize (position + 8);
-		__bytes.setDouble (position, value);
+		setDouble (position, value);
 		position += 8;
 		
 	}
@@ -570,7 +590,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeFloat (value:Float):Void {
 		
 		__resize (position + 4);
-		__bytes.setFloat (position, value);
+		setFloat (position, value);
 		position += 4;
 		
 	}
@@ -644,6 +664,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeUTFBytes (value:String):Void {
 		
+		var bytes = Bytes.ofString (value);
 		writeBytes (Bytes.ofString (value));
 		
 	}
@@ -651,7 +672,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private function __fromBytes (bytes:Bytes):Void {
 		
-		__bytes = bytes;
+		__setData (bytes);
 		__length = bytes.length;
 		
 	}
@@ -659,11 +680,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private function __resize (size:Int) {
 		
-		if (size > __bytes.length) {
+		if (size > this.length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
-			bytes.blit (0, __bytes, 0, __bytes.length);
-			__bytes = bytes;
+			bytes.blit (0, this, 0, this.length);
+			__setData (bytes);
 			
 		}
 		
@@ -672,6 +693,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			__length = size;
 			
 		}
+		
+	}
+	
+	
+	private inline function __setData (bytes:Bytes):Void {
+		
+		b = bytes.b;
+		length = bytes.length;
+		
+		#if js
+		data = bytes.data;
+		#end
 		
 	}
 	
@@ -686,27 +719,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	@:noCompletion private inline function get_bytesAvailable ():Int {
 		
 		return length - position;
-		
-	}
-	
-	
-	@:noCompletion private inline function get_length ():Int {
-		
-		return __length;
-		
-	}
-	
-	
-	@:noCompletion private inline function set_length (value:Int):Int {
-		
-		if (value > 0) {
-			
-			__resize (value);
-			
-		}
-		
-		__length = value;
-		return value;
 		
 	}
 	
