@@ -1,10 +1,10 @@
 package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
 
 
-import haxe.io.Bytes;
 import lime.app.Event;
 import lime.system.BackgroundWorker;
 import lime.system.CFFI;
+import lime.utils.Bytes;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
@@ -15,6 +15,7 @@ import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
 
 #if (js && html5)
+import js.html.ArrayBuffer;
 import js.html.EventTarget;
 import js.html.XMLHttpRequest;
 import js.Browser;
@@ -339,7 +340,7 @@ class URLLoader extends EventDispatcher {
 					
 				}
 				
-				var bytes = readFile (path);
+				var bytes = Bytes.readFile (path);
 				worker.sendComplete (bytes);
 				
 			});
@@ -377,17 +378,6 @@ class URLLoader extends EventDispatcher {
 		}
 		#end
 		#end
-		
-	}
-	
-	
-	private function readFile (path:String):Bytes {
-		
-		#if (!flash && !html5 && !macro)
-		var data:Dynamic = lime_bytes_read_file (path);
-		if (data != null) return @:privateAccess new Bytes (data.length, data.b);
-		#end
-		return null;
 		
 	}
 	
@@ -470,7 +460,7 @@ class URLLoader extends EventDispatcher {
 			
 			switch (dataFormat) {
 				
-				case BINARY: uri = data.__getBuffer ();
+				case BINARY: uri = cast (data, ArrayBuffer);
 				default: uri = data.readUTFBytes (data.length);
 				
 			}
@@ -753,7 +743,6 @@ class URLLoader extends EventDispatcher {
 	
 	private function readFunction (max:Int, input:ByteArray):Bytes {
 		
-		
 		return input;
 		
 	}
@@ -776,7 +765,7 @@ class URLLoader extends EventDispatcher {
 		
 		switch (dataFormat) {
 			
-			case BINARY: this.data = ByteArrayData.__ofBuffer (content);
+			case BINARY: this.data = cast ((content:ArrayBuffer), ByteArray);
 			default: this.data = Std.string (content);
 			
 		}
@@ -867,11 +856,6 @@ class URLLoader extends EventDispatcher {
 		#end
 		
 	}
-	
-	
-	#if (!flash && !html5 && !macro)
-	private static var lime_bytes_read_file = CFFI.load ("lime", "lime_bytes_read_file", 1);
-	#end
 	
 	
 }
