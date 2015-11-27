@@ -407,7 +407,7 @@ class Socket extends EventDispatcher /*implements IDataInput implements IDataOut
 		if( _output.length > 0 ){
 			try {
 				#if (js && html5)
-				_socket.send( (_output:ByteArrayData).__getBuffer() );
+				_socket.send(cast (_output, ArrayBuffer));
 				#else
 				_socket.output.write( _output );
 				#end
