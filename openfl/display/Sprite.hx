@@ -222,7 +222,11 @@ extern class Sprite extends DisplayObjectContainer {
 	 * Specifies the Graphics object that belongs to this sprite where vector
 	 * drawing commands can occur.
 	 */
+	#if (flash && !display)
+	public var graphics (default, null):Graphics;
+	#else
 	public var graphics (get, null):Graphics;
+	#end
 	
 	public var hitArea:Sprite;
 	

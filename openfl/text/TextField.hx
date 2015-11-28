@@ -2015,7 +2015,11 @@ extern class TextField extends InteractiveObject {
 	 *
 	 * <p>To set values for this property, use the following string values:</p>
 	 */
+	#if (flash && !display)
+	public var antiAliasType:AntiAliasType;
+	#else
 	public var antiAliasType (get, set):AntiAliasType;
+	#end
 	
 	/**
 	 * Controls automatic sizing and alignment of text fields. Acceptable values
@@ -2059,7 +2063,11 @@ extern class TextField extends InteractiveObject {
 	 * @throws ArgumentError The <code>autoSize</code> specified is not a member
 	 *                       of flash.text.TextFieldAutoSize.
 	 */
+	#if (flash && !display)
+	public var autoSize:TextFieldAutoSize;
+	#else
 	public var autoSize (get, set):TextFieldAutoSize;
+	#end
 	
 	/**
 	 * Specifies whether the text field has a background fill. If
@@ -2070,7 +2078,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default false
 	 */
+	#if (flash && !display)
+	public var background:Bool;
+	#else
 	public var background (get, set):Bool;
+	#end
 	
 	/**
 	 * The color of the text field background. The default value is
@@ -2079,7 +2091,11 @@ extern class TextField extends InteractiveObject {
 	 * text field has the <code>background</code> property set to
 	 * <code>true</code>.
 	 */
+	#if (flash && !display)
+	public var backgroundColor:Int;
+	#else
 	public var backgroundColor (get, set):Int;
+	#end
 	
 	/**
 	 * Specifies whether the text field has a border. If <code>true</code>, the
@@ -2088,7 +2104,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default false
 	 */
+	#if (flash && !display)
+	public var border:Bool;
+	#else
 	public var border (get, set):Bool;
+	#end
 	
 	/**
 	 * The color of the text field border. The default value is
@@ -2096,7 +2116,11 @@ extern class TextField extends InteractiveObject {
 	 * if there currently is no border, but the color is visible only if the text
 	 * field has the <code>border</code> property set to <code>true</code>.
 	 */
+	#if (flash && !display)
+	public var borderColor:Int;
+	#else
 	public var borderColor (get, set):Int;
+	#end
 	
 	/**
 	 * An integer(1-based index) that indicates the bottommost line that is
@@ -2107,7 +2131,11 @@ extern class TextField extends InteractiveObject {
 	 * <p>All the text between the lines indicated by <code>scrollV</code> and
 	 * <code>bottomScrollV</code> is currently visible in the text field.</p>
 	 */
+	#if (flash && !display)
+	public var bottomScrollV (default, null):Int;
+	#else
 	public var bottomScrollV (get, null):Int;
+	#end
 	
 	/**
 	 * The index of the insertion point(caret) position. If no insertion point
@@ -2118,7 +2146,11 @@ extern class TextField extends InteractiveObject {
 	 * <p>Selection span indexes are zero-based(for example, the first position
 	 * is 0, the second position is 1, and so on).</p>
 	 */
+	#if (flash && !display)
+	public var caretIndex (default, null):Int;
+	#else
 	public var caretIndex (get, null):Int;
+	#end
 	
 	/**
 	 * Specifies the format applied to newly inserted text, such as text entered
@@ -2147,7 +2179,11 @@ extern class TextField extends InteractiveObject {
 	 * @throws Error This method cannot be used on a text field with a style
 	 *               sheet.
 	 */
+	#if (flash && !display)
+	public var defaultTextFormat:TextFormat;
+	#else
 	public var defaultTextFormat (get, set):TextFormat;
+	#end
 	
 	/**
 	 * Specifies whether the text field is a password text field. If the value of
@@ -2161,7 +2197,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default false
 	 */
+	#if (flash && !display)
+	public var displayAsPassword:Bool;
+	#else
 	public var displayAsPassword (get, set):Bool;
+	#end
 	
 	/**
 	 * Specifies whether to render by using embedded font outlines. If
@@ -2176,7 +2216,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default false
 	 */
+	#if (flash && !display)
+	public var embedFonts:Bool;
+	#else
 	public var embedFonts (get, set):Bool;
+	#end
 	
 	/**
 	 * The type of grid fitting used for this text field. This property applies
@@ -2192,7 +2236,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default pixel
 	 */
+	#if (flash && !display)
+	public var gridFitType:GridFitType;
+	#else
 	public var gridFitType (get, set):GridFitType;
+	#end
 	
 	/**
 	 * Contains the HTML representation of the text field contents.
@@ -2202,13 +2250,21 @@ extern class TextField extends InteractiveObject {
 	 * <p>Flash Player and AIR also support explicit character codes, such as
 	 * &#38;(ASCII ampersand) and &#x20AC;(Unicode € symbol). </p>
 	 */
+	#if (flash && !display)
+	public var htmlText:String;
+	#else
 	public var htmlText (get, set):String;
+	#end
 	
 	/**
 	 * The number of characters in a text field. A character such as tab
 	 * (<code>\t</code>) counts as one character.
 	 */
+	#if (flash && !display)
+	public var length (default, null):Int;
+	#else
 	public var length (get, null):Int;
+	#end
 	
 	/**
 	 * The maximum number of characters that the text field can contain, as
@@ -2219,17 +2275,29 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default 0
 	 */
+	#if (flash && !display)
+	public var maxChars:Int;
+	#else
 	public var maxChars (get, set):Int;
+	#end
 	
 	/**
 	 * The maximum value of <code>scrollH</code>.
 	 */
+	#if (flash && !display)
+	public var maxScrollH (default, null):Int;
+	#else
 	public var maxScrollH (get, null):Int;
+	#end
 	
 	/**
 	 * The maximum value of <code>scrollV</code>.
 	 */
+	#if (flash && !display)
+	public var maxScrollV (default, null):Int;
+	#else
 	public var maxScrollV (get, null):Int;
+	#end
 	
 	/**
 	 * Indicates whether field is a multiline text field. If the value is
@@ -2243,14 +2311,22 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default false
 	 */
+	#if (flash && !display)
+	public var multiline:Bool;
+	#else
 	public var multiline (get, set):Bool;
+	#end
 	
 	/**
 	 * Defines the number of text lines in a multiline text field. If
 	 * <code>wordWrap</code> property is set to <code>true</code>, the number of
 	 * lines increases when text wraps.
 	 */
+	#if (flash && !display)
+	public var numLines (default, null):Int;
+	#else
 	public var numLines (get, null):Int;
+	#end
 	
 	/**
 	 * Indicates the set of characters that a user can enter into the text field.
@@ -2298,7 +2374,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default null
 	 */
+	#if (flash && !display)
+	public var restrict:String;
+	#else
 	public var restrict (get, set):String;
+	#end
 	
 	/**
 	 * The current horizontal scrolling position. If the <code>scrollH</code>
@@ -2316,7 +2396,11 @@ extern class TextField extends InteractiveObject {
 	 * <p><b>Note: </b>The <code>scrollH</code> property is zero-based, not
 	 * 1-based like the <code>scrollV</code> vertical scrolling property.</p>
 	 */
+	#if (flash && !display)
+	public var scrollH:Int;
+	#else
 	public var scrollH (get, set):Int;
+	#end
 	
 	/**
 	 * The vertical position of text in a text field. The <code>scrollV</code>
@@ -2332,7 +2416,11 @@ extern class TextField extends InteractiveObject {
 	 * text rather than a partial line. Even if there are multiple fonts on a
 	 * line, the height of the line adjusts to fit the largest font in use.</p>
 	 */
+	#if (flash && !display)
+	public var scrollV:Int;
+	#else
 	public var scrollV (get, set):Int;
+	#end
 	
 	/**
 	 * A Boolean value that indicates whether the text field is selectable. The
@@ -2352,7 +2440,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default true
 	 */
+	#if (flash && !display)
+	public var selectable:Bool;
+	#else
 	public var selectable (get, set):Bool;
+	#end
 	
 	/**
 	 * The zero-based character index value of the first character in the current
@@ -2360,7 +2452,11 @@ extern class TextField extends InteractiveObject {
 	 * 1, and so on. If no text is selected, this property is the value of
 	 * <code>caretIndex</code>.
 	 */
+	#if (flash && !display)
+	public var selectionBeginIndex (default, null):Int;
+	#else
 	public var selectionBeginIndex (get, null):Int;
+	#end
 	
 	/**
 	 * The zero-based character index value of the last character in the current
@@ -2368,7 +2464,11 @@ extern class TextField extends InteractiveObject {
 	 * 1, and so on. If no text is selected, this property is the value of
 	 * <code>caretIndex</code>.
 	 */
+	#if (flash && !display)
+	public var selectionEndIndex:Int;
+	#else
 	public var selectionEndIndex (get, null):Int;
+	#end
 	
 	/**
 	 * The sharpness of the glyph edges in this text field. This property applies
@@ -2380,7 +2480,11 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default 0
 	 */
+	#if (flash && !display)
+	public var sharpness:Float;
+	#else
 	public var sharpness (get, set):Float;
+	#end
 	
 	/**
 	 * A string that is the current text in the text field. Lines are separated
@@ -2390,7 +2494,11 @@ extern class TextField extends InteractiveObject {
 	 * <p>To get the text in HTML form, use the <code>htmlText</code>
 	 * property.</p>
 	 */
+	#if (flash && !display)
+	public var text:String;
+	#else
 	public var text (get, set):String;
+	#end
 	
 	/**
 	 * The color of the text in a text field, in hexadecimal format. The
@@ -2401,17 +2509,29 @@ extern class TextField extends InteractiveObject {
 	 * 
 	 * @default 0(0x000000)
 	 */
+	#if (flash && !display)
+	public var textColor:Int;
+	#else
 	public var textColor (get, set):Int;
+	#end
 	
 	/**
 	 * The height of the text in pixels.
 	 */
+	#if (flash && !display)
+	public var textHeight (default, null):Float;
+	#else
 	public var textHeight (get, null):Float;
+	#end
 	
 	/**
 	 * The width of the text in pixels.
 	 */
+	#if (flash && !display)
+	public var textWidth (default, null):Float;
+	#else
 	public var textWidth (get, null):Float;
+	#end
 	
 	/**
 	 * The type of the text field. Either one of the following TextFieldType
@@ -2423,7 +2543,11 @@ extern class TextField extends InteractiveObject {
 	 * @throws ArgumentError The <code>type</code> specified is not a member of
 	 *                       flash.text.TextFieldType.
 	 */
+	#if (flash && !display)
+	public var type:TextFieldType;
+	#else
 	public var type (get, set):TextFieldType;
+	#end
 	
 	/**
 	 * A Boolean value that indicates whether the text field has word wrap. If
@@ -2431,7 +2555,11 @@ extern class TextField extends InteractiveObject {
 	 * has word wrap; if the value is <code>false</code>, the text field does not
 	 * have word wrap. The default value is <code>false</code>.
 	 */
+	#if (flash && !display)
+	public var wordWrap:Bool;
+	#else
 	public var wordWrap (get, set):Bool;
+	#end
 	
 	
 	/**

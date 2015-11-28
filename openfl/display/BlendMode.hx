@@ -40,6 +40,7 @@ typedef BlendMode = openfl._legacy.display.BlendMode;
 
 #if flash
 @:native("flash.display.BlendMode")
+@:fakeEnum(String)
 #end
 
 extern enum BlendMode {

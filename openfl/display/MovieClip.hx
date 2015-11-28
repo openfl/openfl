@@ -169,7 +169,11 @@ extern class MovieClip extends Sprite {
 	 * timeline of the MovieClip instance. If the movie clip has multiple scenes,
 	 * this value is the frame number in the current scene.
 	 */
+	#if (flash && !display)
+	public var currentFrame (default, null):Int;
+	#else
 	public var currentFrame (get, null):Int;
+	#end
 	
 	/**
 	 * The label at the current frame in the timeline of the MovieClip instance.
@@ -177,10 +181,11 @@ extern class MovieClip extends Sprite {
 	 * <code>null</code>.
 	 */
 	
-	#if flash
-	@:require(flash10)
-	#end
+	#if (flash && !display)
+	@:require(flash10) public var currentFrameLabel (default, null):String;
+	#else
 	public var currentFrameLabel (get, null):String;
+	#end
 	
 	/**
 	 * The current label in which the playhead is located in the timeline of the
@@ -189,14 +194,22 @@ extern class MovieClip extends Sprite {
 	 * includes a label. If the current frame and previous frames do not include
 	 * a label, <code>currentLabel</code> returns <code>null</code>.
 	 */
+	#if (flash && !display)
+	public var currentLabel (default, null):String;
+	#else
 	public var currentLabel (get, null):String;
+	#end
 	
 	/**
 	 * Returns an array of FrameLabel objects from the current scene. If the
 	 * MovieClip instance does not use scenes, the array includes all frame
 	 * labels from the entire MovieClip instance.
 	 */
+	#if (flash && !display)
+	public var currentLabels (default, null):Array<FrameLabel>;
+	#else
 	public var currentLabels (get, null):Array<FrameLabel>;
+	#end
 	
 	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
@@ -227,7 +240,11 @@ extern class MovieClip extends Sprite {
 	 * <code>framesLoaded</code> property returns the number of frames loaded for
 	 * <i>all</i> scenes in the movie clip.</p>
 	 */
+	#if (flash && !display)
+	public var framesLoaded (default, null):Int;
+	#else
 	public var framesLoaded (get, null):Int;
+	#end
 	
 	#if (flash && !display)
 	@:require(flash11) public var isPlaying (default, null):Bool;
@@ -244,7 +261,11 @@ extern class MovieClip extends Sprite {
 	 * <code>totalFrames</code> property returns the total number of frames in
 	 * <i>all</i> scenes in the movie clip.</p>
 	 */
+	#if (flash && !display)
+	public var totalFrames (default, null):Int;
+	#else
 	public var totalFrames (get, null):Int;
+	#end
 	
 	#if (flash && !display)
 	public var trackAsMenu:Bool;

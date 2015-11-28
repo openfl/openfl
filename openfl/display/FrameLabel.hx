@@ -51,8 +51,17 @@ import openfl.events.EventDispatcher;
 @:final extern class FrameLabel extends EventDispatcher {
 	
 	
+	#if (flash && !display)
 	public var frame (default, null):Int;
+	#else
+	public var frame (get, null):Int;
+	#end
+	
+	#if (flash && !display)
 	public var name (default, null):String;
+	#else
+	public var name (get, null):String;
+	#end
 	
 	
 	public function new (name:String, frame:Int):Void;

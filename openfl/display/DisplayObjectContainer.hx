@@ -924,7 +924,11 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	/**
 	 * Returns the number of children of this object.
 	 */
+	#if (flash && !display)
+	public var numChildren (default, null):Int;
+	#else
 	public var numChildren (get, null):Int;
+	#end
 	
 	/**
 	 * Determines whether the children of the object are tab enabled. Enables or

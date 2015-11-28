@@ -21,6 +21,7 @@ enum GradientType {
 
 #if flash
 @:native("flash.display.GradientType")
+@:fakeEnum(String)
 #end
 
 extern enum GradientType {
