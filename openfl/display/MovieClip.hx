@@ -1,4 +1,124 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+class MovieClip extends Sprite {
+	
+	
+	public var currentFrame (get, null):Int;
+	public var currentFrameLabel (get, null):String;
+	public var currentLabel (get, null):String;
+	public var currentLabels (get, null):Array<FrameLabel>;
+	public var enabled:Bool;
+	public var framesLoaded (get, null):Int;
+	public var totalFrames (get, null):Int;
+	
+	private var __currentFrame:Int;
+	private var __currentFrameLabel:String;
+	private var __currentLabel:String;
+	private var __currentLabels:Array<FrameLabel>;
+	private var __frameScripts:Map<Int, Void->Void>;
+	private var __totalFrames:Int;
+	
+	
+	public function new () {
+		
+		super ();
+		
+		__currentFrame = 0;
+		__currentLabels = [];
+		__totalFrames = 0;
+		enabled = true;
+		
+	}
+	
+	
+	public function addFrameScript (index:Int, method:Void->Void):Void {
+		
+		if (method != null) {
+			
+			if (__frameScripts == null) {
+				
+				__frameScripts = new Map ();
+				
+			}
+			
+			__frameScripts.set (index, method);
+			
+			trace ("added script index " + index);
+			
+		} else if (__frameScripts != null) {
+			
+			__frameScripts.remove (index);
+			
+		}
+		
+	}
+	
+	
+	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
+		
+		
+		
+	}
+	
+	
+	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
+		
+		
+		
+	}
+	
+	
+	public function nextFrame ():Void {
+		
+		
+		
+	}
+	
+	
+	public function play ():Void {
+		
+		
+		
+	}
+	
+	
+	public function prevFrame ():Void {
+		
+		
+		
+	}
+	
+	
+	public function stop ():Void {
+		
+		
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private function get_currentFrame ():Int { return __currentFrame; }
+	private function get_currentFrameLabel ():String { return __currentFrameLabel; }
+	private function get_currentLabel ():String { return __currentLabel; }
+	private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
+	private function get_framesLoaded ():Int { return __totalFrames; }
+	private function get_totalFrames ():Int { return __totalFrames; }
+	
+	
+}
+
+
+#else
+typedef MovieClip = openfl._legacy.display.MovieClip;
+#end
+#else
 
 
 /**
@@ -36,7 +156,12 @@ package openfl.display; #if !flash #if !openfl_legacy
  * MovieClip.opaqueBackground property for a suitable device, define
  * FEATURE_BITMAPCACHE in your project.</p>
  */
-class MovieClip extends Sprite {
+
+#if flash
+@:native("flash.display.MovieClip")
+#end
+
+extern class MovieClip extends Sprite {
 	
 	
 	/**
@@ -51,6 +176,10 @@ class MovieClip extends Sprite {
 	 * If the current frame has no label, <code>currentLabel</code> is
 	 * <code>null</code>.
 	 */
+	
+	#if flash
+	@:require(flash10)
+	#end
 	public var currentFrameLabel (get, null):String;
 	
 	/**
@@ -100,6 +229,14 @@ class MovieClip extends Sprite {
 	 */
 	public var framesLoaded (get, null):Int;
 	
+	#if (flash && !display)
+	@:require(flash11) public var isPlaying (default, null):Bool;
+	#end
+	
+	#if (flash && !display)
+	public var scenes (default, null):Array<flash.display.Scene>;
+	#end
+	
 	/**
 	 * The total number of frames in the MovieClip instance.
 	 *
@@ -109,12 +246,9 @@ class MovieClip extends Sprite {
 	 */
 	public var totalFrames (get, null):Int;
 	
-	@:noCompletion private var __currentFrame:Int;
-	@:noCompletion private var __currentFrameLabel:String;
-	@:noCompletion private var __currentLabel:String;
-	@:noCompletion private var __currentLabels:Array<FrameLabel>;
-	@:noCompletion private var __frameScripts:Map<Int, Void->Void>;
-	@:noCompletion private var __totalFrames:Int;
+	#if (flash && !display)
+	public var trackAsMenu:Bool;
+	#end
 	
 	
 	/**
@@ -122,39 +256,10 @@ class MovieClip extends Sprite {
 	 * <code>addChild()</code> or <code>addChildAt()</code> method of a display
 	 * object container that is onstage.
 	 */
-	public function new () {
-		
-		super ();
-		
-		__currentFrame = 0;
-		__currentLabels = [];
-		__totalFrames = 0;
-		enabled = true;
-		
-	}
+	public function new ();
 	
 	
-	public function addFrameScript (index:Int, method:Void->Void):Void {
-		
-		if (method != null) {
-			
-			if (__frameScripts == null) {
-				
-				__frameScripts = new Map ();
-				
-			}
-			
-			__frameScripts.set (index, method);
-			
-			trace ("added script index " + index);
-			
-		} else if (__frameScripts != null) {
-			
-			__frameScripts.remove (index);
-			
-		}
-		
-	}
+	public function addFrameScript (index:Int, method:Void->Void):Void;
 	
 	
 	/**
@@ -171,11 +276,7 @@ class MovieClip extends Sprite {
 	 *              specified scene.
 	 * @param scene The name of the scene to play. This parameter is optional.
 	 */
-	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
-		
-		
-		
-	}
+	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void;
 	
 	
 	/**
@@ -195,11 +296,7 @@ class MovieClip extends Sprite {
 	 * @throws ArgumentError If the <code>scene</code> or <code>frame</code>
 	 *                       specified are not found in this movie clip.
 	 */
-	public function gotoAndStop (frame:Dynamic, scene:String = null):Void {
-		
-		
-		
-	}
+	public function gotoAndStop (frame:Dynamic, scene:String = null):Void;
 	
 	
 	/**
@@ -207,22 +304,19 @@ class MovieClip extends Sprite {
 	 * remaining actions in the frame have finished executing.
 	 * 
 	 */
-	public function nextFrame ():Void {
-		
-		
-		
-	}
+	public function nextFrame ():Void;
+	
+	
+	#if (flash && !display)
+	public function nextScene ():Void;
+	#end
 	
 	
 	/**
 	 * Moves the playhead in the timeline of the movie clip.
 	 * 
 	 */
-	public function play ():Void {
-		
-		
-		
-	}
+	public function play ():Void;
 	
 	
 	/**
@@ -230,45 +324,22 @@ class MovieClip extends Sprite {
 	 * all remaining actions in the frame have finished executing.
 	 * 
 	 */
-	public function prevFrame ():Void {
-		
-		
-		
-	}
+	public function prevFrame ():Void;
+	
+	
+	#if (flash && !display)
+	public function prevScene ():Void;
+	#end
 	
 	
 	/**
 	 * Stops the playhead in the movie clip.
 	 * 
 	 */
-	public function stop ():Void {
-		
-		
-		
-	}
-	
-	
-	
-	
-	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private function get_currentFrame ():Int { return __currentFrame; }
-	@:noCompletion private function get_currentFrameLabel ():String { return __currentFrameLabel; }
-	@:noCompletion private function get_currentLabel ():String { return __currentLabel; }
-	@:noCompletion private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
-	@:noCompletion private function get_framesLoaded ():Int { return __totalFrames; }
-	@:noCompletion private function get_totalFrames ():Int { return __totalFrames; }
+	public function stop ():Void;
 	
 	
 }
 
 
-#else
-typedef MovieClip = openfl._legacy.display.MovieClip;
-#end
-#else
-typedef MovieClip = flash.display.MovieClip;
 #end

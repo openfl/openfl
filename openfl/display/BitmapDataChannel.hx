@@ -1,4 +1,17 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
+
+
+class BitmapDataChannel {
+	
+	public static inline var ALPHA = 8;
+	public static inline var BLUE = 4;
+	public static inline var GREEN = 2;
+	public static inline var RED = 1;
+	
+}
+
+
+#else
 
 
 /**
@@ -22,7 +35,12 @@ package openfl.display; #if !flash
  * <code>openfl.filters.DisplacementMapFilter.componentY</code> properties</li>
  * </ul>
  */
-class BitmapDataChannel {
+
+#if flash
+@:native("flash.display.BitmapDataChannel")
+#end
+
+extern class BitmapDataChannel {
 	
 	/**
 	 * The alpha channel.
@@ -47,6 +65,4 @@ class BitmapDataChannel {
 }
 
 
-#else
-typedef BitmapDataChannel = flash.display.BitmapDataChannel;
 #end

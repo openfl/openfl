@@ -11,7 +11,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 
@@ -58,14 +57,14 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	@:noCompletion private override function __getCursor ():MouseCursor {
+	private override function __getCursor ():MouseCursor {
 		
 		return (buttonMode && useHandCursor) ? POINTER : null;
 		
 	}
 	
 	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
 		
 		if (hitArea != null) {
 			
@@ -104,7 +103,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
+	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
 		if (super.__hitTestMask (x, y)) {
 			
@@ -128,7 +127,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 	
-	@:noCompletion private function get_graphics ():Graphics {
+	private function get_graphics ():Graphics {
 		
 		if (__graphics == null) {
 			
@@ -142,7 +141,7 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
-	@:noCompletion private override function get_tabEnabled ():Bool {
+	private override function get_tabEnabled ():Bool {
 		
 		return (__tabEnabled || buttonMode);
 		
@@ -181,7 +180,6 @@ import openfl.media.SoundTransform;
 @:native("flash.display.Sprite")
 #end
 
-
 extern class Sprite extends DisplayObjectContainer {
 	
 	
@@ -216,24 +214,20 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public var buttonMode:Bool;
 	
-	#if flash
-	@:noCompletion public var dropTarget (default, null):DisplayObject;
+	#if (flash && !display)
+	public var dropTarget (default, null):DisplayObject;
 	#end
 	
 	/**
 	 * Specifies the Graphics object that belongs to this sprite where vector
 	 * drawing commands can occur.
 	 */
-	#if flash
-	public var graphics (default, null):Graphics;
-	#else
 	public var graphics (get, null):Graphics;
-	#end
 	
 	public var hitArea:Sprite;
 	
-	#if flash
-	@:noCompletion public var soundTransform:SoundTransform;
+	#if (flash && !display)
+	public var soundTransform:SoundTransform;
 	#end
 	
 	/**
@@ -290,8 +284,8 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public function startDrag (lockCenter:Bool = false, bounds:Rectangle = null):Void;
 	
-	#if flash
-	@:noCompletion public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
+	#if (flash && !display)
+	public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
 	#end
 	
 	/**
@@ -303,8 +297,8 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public function stopDrag ():Void;
 	
-	#if flash
-	@:noCompletion public function stopTouchDrag (touchPointID:Int):Void;
+	#if (flash && !display)
+	public function stopTouchDrag (touchPointID:Int):Void;
 	#end
 	
 	

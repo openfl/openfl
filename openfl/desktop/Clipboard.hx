@@ -9,14 +9,14 @@ class Clipboard {
 	
 	public static var generalClipboard (get, null):Clipboard;
 	
-	@:noCompletion private static var __generalClipboard:Clipboard;
+	private static var __generalClipboard:Clipboard;
 	
 	public var formats:Array<ClipboardFormats>;
 	
-	@:noCompletion private var __htmlText:String;
-	@:noCompletion private var __richText:String;
-	@:noCompletion private var __systemClipboard:Bool;
-	@:noCompletion private var __text:String;
+	private var __htmlText:String;
+	private var __richText:String;
+	private var __systemClipboard:Bool;
+	private var __text:String;
 	
 	
 	public function new () {
@@ -204,7 +204,7 @@ class Clipboard {
 	
 	
 	
-	@:noCompletion private static function get_generalClipboard ():Clipboard {
+	private static function get_generalClipboard ():Clipboard {
 		
 		if (__generalClipboard == null) {
 			

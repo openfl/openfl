@@ -40,7 +40,7 @@ import js.Browser;
 	public static function attach (name:String):MovieClip {
 		
 		#if flash
-		return flash.Lib.attach (name);
+		return cast flash.Lib.attach (name);
 		#else
 		return new MovieClip ();
 		#end
@@ -156,14 +156,14 @@ import js.Browser;
 	#if flash
 	@:noCompletion private static function get_current ():MovieClip {
 		
-		return flash.Lib.current;
+		return cast flash.Lib.current;
 		
 	}
 	
 	
 	@:noCompletion private static function set_current (current:MovieClip):MovieClip {
 		
-		return flash.Lib.current = current;
+		return cast flash.Lib.current = cast current;
 		
 	}
 	#end
