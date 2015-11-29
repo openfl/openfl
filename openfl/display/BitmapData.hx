@@ -1772,7 +1772,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 */
 	public var height (default, null):Int;
 	
-	public var image (get, never):Image;
+	public var image (get, never):Image; #if (flash && !display) @:noCompletion private inline function get_image ():Image { return null; } #end
 	
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
@@ -2581,24 +2581,6 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                   changed.
 	 */
 	public function unlock (changeRect:Rectangle = null):Void;
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_image ():Image {
-		
-		#if flash
-		return null;
-		#else
-		return this.image;
-		#end
-		
-	}
 	
 	
 }

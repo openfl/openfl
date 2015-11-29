@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -11,7 +11,6 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
