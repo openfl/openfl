@@ -572,8 +572,8 @@ import js.html.CanvasRenderingContext2D;
 						rect.setTo (0, 0, tile.width, tile.height);
 						matrix.setTo (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
 						
-						originX = tilePoint.x * tile.width;
-						originY = tilePoint.y * tile.height;
+						originX = tilePoint.x * scale;
+						originY = tilePoint.y * scale;
 						
 						matrix.translate (x - matrix.__transformX (originX, originY), y - matrix.__transformY (originX, originY));
 						
