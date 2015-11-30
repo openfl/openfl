@@ -98,8 +98,8 @@ import js.html.ImageData;
 			
 		}
 		
-		__colorMatrixShader.uMultipliers = [ v[0], v[1], v[2], v[3], v[5], v[6], v[7], v[8], v[10], v[11], v[12], v[13], v[15], v[16], v[17], v[18] ];
-		__colorMatrixShader.uOffsets = [ v[4] / 255., v[9] / 255., v[14] / 255., v[19] / 255. ];
+		__colorMatrixShader.uMultipliers = [ value[0], value[1], value[2], value[3], value[5], value[6], value[7], value[8], value[10], value[11], value[12], value[13], value[15], value[16], value[17], value[18] ];
+		__colorMatrixShader.uOffsets = [ value[4] / 255., value[9] / 255., value[14] / 255., value[19] / 255. ];
 		
 		return matrix = value;
 		
