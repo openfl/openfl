@@ -276,7 +276,7 @@ typedef OpenGLView = openfl._legacy.display.OpenGLView;
 #elseif !flash
 
 
-class OpenGLView extends DirectRenderer {
+extern class OpenGLView extends DirectRenderer {
 	
 	
 	public static inline var CONTEXT_LOST = "glcontextlost";

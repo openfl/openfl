@@ -1700,6 +1700,10 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
 
+#if (js && html5)
+import js.html.CanvasElement;
+#end
+
 
 /**
  * The BitmapData class lets you work with the data(pixels) of a Bitmap

@@ -1,4 +1,198 @@
-package openfl.geom; #if !flash #if !openfl_legacy
+package openfl.geom; #if (!display && !flash) #if !openfl_legacy
+
+
+import openfl.display.DisplayObject;
+
+@:access(openfl.display.DisplayObject)
+@:access(openfl.geom.ColorTransform)
+
+
+class Transform {
+	
+	
+	public var colorTransform (get, set):ColorTransform;
+	public var concatenatedColorTransform (default, null):ColorTransform;
+	public var concatenatedMatrix (get, never):Matrix;
+	public var matrix (get, set):Matrix;
+	public var matrix3D (get, set):Matrix3D;
+	public var pixelBounds (default, null):Rectangle;
+	
+	private var __colorTransform:ColorTransform;
+	private var __displayObject:DisplayObject;
+	private var __hasMatrix:Bool;
+	private var __hasMatrix3D:Bool;
+	
+	
+	public function new (displayObject:DisplayObject) {
+		
+		__colorTransform = new ColorTransform ();
+		concatenatedColorTransform = new ColorTransform ();
+		pixelBounds = new Rectangle ();
+		
+		__displayObject = displayObject;
+		__hasMatrix = true;
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_colorTransform ():ColorTransform {
+		
+		return __colorTransform;
+		
+	}
+	
+	
+	private function set_colorTransform (value:ColorTransform):ColorTransform {
+		
+		if (!__colorTransform.__equals (value)) {
+			
+			__colorTransform = value;
+			
+			if (value != null) {
+				
+				__displayObject.alpha = value.alphaMultiplier;
+				
+			}
+			
+			__displayObject.__setRenderDirty ();
+			
+		}
+		
+		return __colorTransform;
+		
+	}
+	
+	
+	private function get_matrix ():Matrix {
+		
+		if (__hasMatrix) {
+			
+			return __displayObject.__transform.clone ();
+			
+		}
+		
+		return null;
+		
+	}
+	
+
+	private function get_concatenatedMatrix ():Matrix {
+		
+		if (__hasMatrix) {
+			
+			return __displayObject.__getWorldTransform ().clone ();
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
+	private function set_matrix (value:Matrix):Matrix {
+		
+		if (value == null) {
+			
+			__hasMatrix = false;
+			return null;
+			
+		}
+		
+		__hasMatrix = true;
+		__hasMatrix3D = false;
+		
+		if (__displayObject != null) {
+			
+			var rotation = (180 / Math.PI) * Math.atan2 (value.d, value.c) - 90;
+			
+			if (rotation != __displayObject.__rotation) {
+				
+				__displayObject.__rotation = rotation;
+				var radians = rotation * (Math.PI / 180);
+				__displayObject.__rotationSine = Math.sin (radians);
+				__displayObject.__rotationCosine = Math.cos (radians);
+				
+			}
+			
+			__displayObject.__transform.copyFrom (value);
+			__displayObject.__setTransformDirty ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+	private function get_matrix3D ():Matrix3D {
+		
+		if (__hasMatrix3D) {
+			
+			var matrix = __displayObject.__transform;
+			return new Matrix3D ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]);
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
+	private function set_matrix3D (value:Matrix3D):Matrix3D {
+		
+		if (value == null) {
+			
+			__hasMatrix3D = false;
+			return null;
+			
+		}
+		
+		__hasMatrix = false;
+		__hasMatrix3D = true;
+		
+		if (__displayObject != null) {
+			
+			var rotation = (180 / Math.PI) * Math.atan2 (value.rawData[5], value.rawData[4]) - 90;
+			
+			if (rotation != __displayObject.__rotation) {
+				
+				__displayObject.__rotation = rotation;
+				var radians = rotation * (Math.PI / 180);
+				__displayObject.__rotationSine = Math.sin (radians);
+				__displayObject.__rotationCosine = Math.cos (radians);
+				
+			}
+			
+			__displayObject.__transform.a = value.rawData[0];
+			__displayObject.__transform.b = value.rawData[1];
+			__displayObject.__transform.c = value.rawData[5];
+			__displayObject.__transform.d = value.rawData[6];
+			__displayObject.__transform.tx = value.rawData[12];
+			__displayObject.__transform.ty = value.rawData[13];
+			
+			__displayObject.__setTransformDirty ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef Transform = openfl._legacy.geom.Transform;
+#end
+#else
 
 
 import openfl.display.DisplayObject;
@@ -59,11 +253,11 @@ import openfl.display.DisplayObject;
  * transformation, create a perspective projection Matrix3D object.</p>
  */
 
-@:access(openfl.display.DisplayObject)
-@:access(openfl.geom.ColorTransform)
+#if flash
+@:native("flash.geom.Transform")
+#end
 
-
-class Transform {
+extern class Transform {
 	
 	
 	/**
@@ -72,7 +266,11 @@ class Transform {
 	 * 
 	 * @throws TypeError The colorTransform is null when being set
 	 */
+	#if (flash && !display)
+	public var colorTransform:ColorTransform;
+	#else
 	public var colorTransform (get, set):ColorTransform;
+	#end
 	
 	/**
 	 * A ColorTransform object representing the combined color transformations
@@ -81,7 +279,7 @@ class Transform {
 	 * different levels, all of those transformations are concatenated into one
 	 * ColorTransform object for this property.
 	 */
-	public var concatenatedColorTransform:ColorTransform;
+	public var concatenatedColorTransform (default, null):ColorTransform;
 	
 	/**
 	 * A Matrix object representing the combined transformation matrixes of the
@@ -94,7 +292,11 @@ class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
+	#if (flash && !display)
+	public var concatenatedMatrix (default, null):Matrix;
+	#else
 	public var concatenatedMatrix (get, never):Matrix;
+	#end
 	
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
@@ -108,7 +310,11 @@ class Transform {
 	 * 
 	 * @throws TypeError The matrix is null when being set
 	 */
+	#if (flash && !display)
+	public var matrix:Matrix;
+	#else
 	public var matrix (get, set):Matrix;
+	#end
 	
 	/**
 	 * Provides access to the Matrix3D object of a three-dimensional display
@@ -122,189 +328,31 @@ class Transform {
 	 * value(not <code>null</code>), the <code>matrix</code> property is
 	 * <code>null</code>.</p>
 	 */
+	#if (flash && !display)
+	@:require(flash10) public var matrix3D:Matrix3D;
+	#else
 	public var matrix3D (get, set):Matrix3D;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var perspectiveProjection:PerspectiveProjection;
+	#end
 	
 	/**
 	 * A Rectangle object that defines the bounding rectangle of the display
 	 * object on the stage.
 	 */
-	public var pixelBounds:Rectangle;
-	
-	@:noCompletion private var __colorTransform:ColorTransform;
-	@:noCompletion private var __displayObject:DisplayObject;
-	@:noCompletion private var __hasMatrix:Bool;
-	@:noCompletion private var __hasMatrix3D:Bool;
+	public var pixelBounds (default, null):Rectangle;
 	
 	
-	public function new (displayObject:DisplayObject) {
-		
-		__colorTransform = new ColorTransform ();
-		concatenatedColorTransform = new ColorTransform ();
-		pixelBounds = new Rectangle ();
-		
-		__displayObject = displayObject;
-		__hasMatrix = true;
-		
-	}
+	public function new (displayObject:DisplayObject);
 	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_colorTransform ():ColorTransform {
-		
-		return __colorTransform;
-		
-	}
-	
-	
-	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform {
-		
-		if (!__colorTransform.__equals (value)) {
-			
-			__colorTransform = value;
-			
-			if (value != null) {
-				
-				__displayObject.alpha = value.alphaMultiplier;
-				
-			}
-			
-			__displayObject.__setRenderDirty ();
-			
-		}
-		
-		return __colorTransform;
-		
-	}
-	
-	
-	@:noCompletion private function get_matrix ():Matrix {
-		
-		if (__hasMatrix) {
-			
-			return __displayObject.__transform.clone ();
-			
-		}
-		
-		return null;
-		
-	}
-	
-
-	@:noCompletion private function get_concatenatedMatrix ():Matrix {
-		
-		if (__hasMatrix) {
-			
-			return __displayObject.__getWorldTransform ().clone ();
-			
-		}
-		
-		return null;
-		
-	}
-	
-	
-	@:noCompletion private function set_matrix (value:Matrix):Matrix {
-		
-		if (value == null) {
-			
-			__hasMatrix = false;
-			return null;
-			
-		}
-		
-		__hasMatrix = true;
-		__hasMatrix3D = false;
-		
-		if (__displayObject != null) {
-			
-			var rotation = (180 / Math.PI) * Math.atan2 (value.d, value.c) - 90;
-			
-			if (rotation != __displayObject.__rotation) {
-				
-				__displayObject.__rotation = rotation;
-				var radians = rotation * (Math.PI / 180);
-				__displayObject.__rotationSine = Math.sin (radians);
-				__displayObject.__rotationCosine = Math.cos (radians);
-				
-			}
-			
-			__displayObject.__transform.copyFrom (value);
-			__displayObject.__setTransformDirty ();
-			
-		}
-		
-		return value;
-		
-	}
-	
-	
-	@:noCompletion private function get_matrix3D ():Matrix3D {
-		
-		if (__hasMatrix3D) {
-			
-			var matrix = __displayObject.__transform;
-			return new Matrix3D ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]);
-			
-		}
-		
-		return null;
-		
-	}
-	
-	
-	@:noCompletion private function set_matrix3D (value:Matrix3D):Matrix3D {
-		
-		if (value == null) {
-			
-			__hasMatrix3D = false;
-			return null;
-			
-		}
-		
-		__hasMatrix = false;
-		__hasMatrix3D = true;
-		
-		if (__displayObject != null) {
-			
-			var rotation = (180 / Math.PI) * Math.atan2 (value.rawData[5], value.rawData[4]) - 90;
-			
-			if (rotation != __displayObject.__rotation) {
-				
-				__displayObject.__rotation = rotation;
-				var radians = rotation * (Math.PI / 180);
-				__displayObject.__rotationSine = Math.sin (radians);
-				__displayObject.__rotationCosine = Math.cos (radians);
-				
-			}
-			
-			__displayObject.__transform.a = value.rawData[0];
-			__displayObject.__transform.b = value.rawData[1];
-			__displayObject.__transform.c = value.rawData[5];
-			__displayObject.__transform.d = value.rawData[6];
-			__displayObject.__transform.tx = value.rawData[12];
-			__displayObject.__transform.ty = value.rawData[13];
-			
-			__displayObject.__setTransformDirty ();
-			
-		}
-		
-		return value;
-		
-	}
+	#if (flash && !display)
+	@:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
+	#end
 	
 	
 }
 
 
-#else
-typedef Transform = openfl._legacy.geom.Transform;
-#end
-#else
-typedef Transform = flash.geom.Transform;
 #end

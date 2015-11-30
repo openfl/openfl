@@ -65,7 +65,7 @@ class DOMSprite extends Sprite {
 #else
 
 
-class DOMSprite extends Sprite {
+extern class DOMSprite extends Sprite {
 	
 	
 	public function new (element:Dynamic);
