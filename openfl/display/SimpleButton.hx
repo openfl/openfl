@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
 
 
 import lime.ui.MouseCursor;
@@ -10,122 +10,25 @@ import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 
-
-/**
- * The SimpleButton class lets you control all instances of button symbols in
- * a SWF file.
- *
- * <p>In Flash Professional, you can give a button an instance name in the
- * Property inspector. SimpleButton instance names are displayed in the Movie
- * Explorer and in the Insert Target Path dialog box in the Actions panel.
- * After you create an instance of a button in Flash Professional, you can use
- * the methods and properties of the SimpleButton class to manipulate buttons
- * with ActionScript.</p>
- *
- * <p>In ActionScript 3.0, you use the <code>new SimpleButton()</code>
- * constructor to create a SimpleButton instance.</p>
- *
- * <p>The SimpleButton class inherits from the InteractiveObject class.</p>
- */
-
 @:access(openfl.geom.Matrix)
 
 
 class SimpleButton extends InteractiveObject {
 	
 	
-	/**
-	 * Specifies a display object that is used as the visual object for the
-	 * button "Down" state  - the state that the button is in when the user
-	 * selects the <code>hitTestState</code> object.
-	 */
 	public var downState (default, set):DisplayObject;
-	
-	/**
-	 * A Boolean value that specifies whether a button is enabled. When a button
-	 * is disabled(the enabled property is set to <code>false</code>), the
-	 * button is visible but cannot be clicked. The default value is
-	 * <code>true</code>. This property is useful if you want to disable part of
-	 * your navigation; for example, you might want to disable a button in the
-	 * currently displayed page so that it can't be clicked and the page cannot
-	 * be reloaded.
-	 *
-	 * <p><b>Note:</b> To prevent mouseClicks on a button, set both the
-	 * <code>enabled</code> and <code>mouseEnabled</code> properties to
-	 * <code>false</code>.</p>
-	 */
 	public var enabled:Bool;
-	
-	/**
-	 * Specifies a display object that is used as the hit testing object for the
-	 * button. For a basic button, set the <code>hitTestState</code> property to
-	 * the same display object as the <code>overState</code> property. If you do
-	 * not set the <code>hitTestState</code> property, the SimpleButton is
-	 * inactive  -  it does not respond to user input events.
-	 */
 	public var hitTestState (default, set):DisplayObject;
-	
-	/**
-	 * Specifies a display object that is used as the visual object for the
-	 * button over state  -  the state that the button is in when the pointer is
-	 * positioned over the button.
-	 */
 	public var overState (default, set):DisplayObject;
-	
-	/**
-	 * The SoundTransform object assigned to this button. A SoundTransform object
-	 * includes properties for setting volume, panning, left speaker assignment,
-	 * and right speaker assignment. This SoundTransform object applies to all
-	 * states of the button. This SoundTransform object affects only embedded
-	 * sounds.
-	 */
 	public var soundTransform (get, set):SoundTransform;
-	
-	/**
-	 * Indicates whether other display objects that are SimpleButton or MovieClip
-	 * objects can receive user input release events. The
-	 * <code>trackAsMenu</code> property lets you create menus. You can set the
-	 * <code>trackAsMenu</code> property on any SimpleButton or MovieClip object.
-	 * If the <code>trackAsMenu</code> property does not exist, the default
-	 * behavior is <code>false</code>.
-	 *
-	 * <p>You can change the <code>trackAsMenu</code> property at any time; the
-	 * modified button immediately takes on the new behavior. </p>
-	 */
 	public var trackAsMenu:Bool;
-	
-	/**
-	 * Specifies a display object that is used as the visual object for the
-	 * button up state  -  the state that the button is in when the pointer is
-	 * not positioned over the button.
-	 */
 	public var upState (default, set):DisplayObject;
-	
-	/**
-	 * A Boolean value that, when set to <code>true</code>, indicates whether the
-	 * hand cursor is shown when the pointer rolls over a button. If this
-	 * property is set to <code>false</code>, the arrow pointer cursor is
-	 * displayed instead. The default is <code>true</code>.
-	 *
-	 * <p>You can change the <code>useHandCursor</code> property at any time; the
-	 * modified button immediately uses the new cursor behavior. </p>
-	 */
 	public var useHandCursor:Bool;
 	
-	@:noCompletion private var __currentState (default, set):DisplayObject;
-	@:noCompletion private var __soundTransform:SoundTransform;
+	private var __currentState (default, set):DisplayObject;
+	private var __soundTransform:SoundTransform;
 	
 	
-	/**
-	 * Creates a new SimpleButton instance. Any or all of the display objects
-	 * that represent the various button states can be set as parameters in the
-	 * constructor.
-	 * 
-	 * @param upState      The initial value for the SimpleButton up state.
-	 * @param overState    The initial value for the SimpleButton over state.
-	 * @param downState    The initial value for the SimpleButton down state.
-	 * @param hitTestState The initial value for the SimpleButton hitTest state.
-	 */
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
 		
 		super ();
@@ -149,7 +52,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		super.__getBounds (rect, matrix);
 		
@@ -172,7 +75,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		if (__scrollRect != null) {
 			
@@ -204,14 +107,14 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __getCursor ():MouseCursor {
+	private override function __getCursor ():MouseCursor {
 		
 		return useHandCursor ? POINTER : null;
 		
 	}
 	
 	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		var hitTest = false;
 		
@@ -230,7 +133,7 @@ class SimpleButton extends InteractiveObject {
 			
 		} else if (__currentState != null) {
 			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !hitObject.mouseEnabled)) return false;
+			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
 			var cacheTransform = __updateTransform (__currentState);
@@ -250,7 +153,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
+	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
 		var hitTest = false;
 		
@@ -269,7 +172,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderCairo (renderSession:RenderSession):Void {
+	public override function __renderCairo (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -302,14 +205,14 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderCairoMask (renderSession:RenderSession):Void {
+	public override function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		__currentState.__renderCairoMask (renderSession);
 		
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
+	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -346,7 +249,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderCanvasMask (renderSession:RenderSession):Void {
+	public override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
@@ -358,7 +261,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
+	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if !neko
 		
@@ -395,7 +298,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
+	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -414,7 +317,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __resetTransform (state:DisplayObject, cacheTransform:Matrix):Void {
+	private function __resetTransform (state:DisplayObject, cacheTransform:Matrix):Void {
 		
 		state.__updateTransforms (cacheTransform);
 		state.__updateChildren (false);
@@ -422,7 +325,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __updateTransform (state:DisplayObject):Matrix {
+	private function __updateTransform (state:DisplayObject):Matrix {
 		
 		var cacheTransform = state.__worldTransform;
 		
@@ -445,7 +348,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		super.__updateTransforms (overrideTransform);
 		
@@ -461,7 +364,7 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	
-	@:noCompletion private function set_downState (downState:DisplayObject):DisplayObject {
+	private function set_downState (downState:DisplayObject):DisplayObject {
 		
 		if (this.downState != null && __currentState == this.downState) {
 			
@@ -474,14 +377,14 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
+	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
 		
 		return this.hitTestState = hitTestState;
 		
 	}
 	
 	
-	@:noCompletion private function set_overState (overState:DisplayObject):DisplayObject {
+	private function set_overState (overState:DisplayObject):DisplayObject {
 		
 		if (this.overState != null && __currentState == this.overState) {
 			
@@ -494,7 +397,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function get_soundTransform ():SoundTransform {
+	private function get_soundTransform ():SoundTransform {
 		
 		if (__soundTransform == null) {
 			
@@ -507,7 +410,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform {
+	private function set_soundTransform (value:SoundTransform):SoundTransform {
 		
 		__soundTransform = new SoundTransform (value.volume, value.pan);
 		return value;
@@ -515,7 +418,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function set_upState (upState:DisplayObject):DisplayObject {
+	private function set_upState (upState:DisplayObject):DisplayObject {
 		
 		if (this.upState != null && __currentState == this.upState) {
 			
@@ -528,7 +431,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function set___currentState (value:DisplayObject):DisplayObject {
+	private function set___currentState (value:DisplayObject):DisplayObject {
 		
 		if (value.parent != null) {
 			
@@ -548,7 +451,7 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	
-	@:noCompletion private function __this_onMouseDown (event:MouseEvent):Void {
+	private function __this_onMouseDown (event:MouseEvent):Void {
 		
 		if (downState != null) {
 			
@@ -559,7 +462,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __this_onMouseOut (event:MouseEvent):Void {
+	private function __this_onMouseOut (event:MouseEvent):Void {
 		
 		if (upState != __currentState) {
 			
@@ -570,7 +473,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __this_onMouseOver (event:MouseEvent):Void {
+	private function __this_onMouseOver (event:MouseEvent):Void {
 		
 		if (overState != __currentState && overState != null) {
 			
@@ -581,7 +484,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	@:noCompletion private function __this_onMouseUp (event:MouseEvent):Void {
+	private function __this_onMouseUp (event:MouseEvent):Void {
 	
 		if (overState != null) {
 			
@@ -603,5 +506,148 @@ class SimpleButton extends InteractiveObject {
 typedef SimpleButton = openfl._legacy.display.SimpleButton;
 #end
 #else
-typedef SimpleButton = flash.display.SimpleButton;
+
+
+import openfl.media.SoundTransform;
+
+
+/**
+ * The SimpleButton class lets you control all instances of button symbols in
+ * a SWF file.
+ *
+ * <p>In Flash Professional, you can give a button an instance name in the
+ * Property inspector. SimpleButton instance names are displayed in the Movie
+ * Explorer and in the Insert Target Path dialog box in the Actions panel.
+ * After you create an instance of a button in Flash Professional, you can use
+ * the methods and properties of the SimpleButton class to manipulate buttons
+ * with ActionScript.</p>
+ *
+ * <p>In ActionScript 3.0, you use the <code>new SimpleButton()</code>
+ * constructor to create a SimpleButton instance.</p>
+ *
+ * <p>The SimpleButton class inherits from the InteractiveObject class.</p>
+ */
+
+#if flash
+@:native("flash.display.SimpleButton")
+#end
+
+extern class SimpleButton extends InteractiveObject {
+	
+	
+	/**
+	 * Specifies a display object that is used as the visual object for the
+	 * button "Down" state  - the state that the button is in when the user
+	 * selects the <code>hitTestState</code> object.
+	 */
+	#if (flash && !display)
+	public var downState:DisplayObject;
+	#else
+	public var downState (default, set):DisplayObject;
+	#end
+	
+	/**
+	 * A Boolean value that specifies whether a button is enabled. When a button
+	 * is disabled(the enabled property is set to <code>false</code>), the
+	 * button is visible but cannot be clicked. The default value is
+	 * <code>true</code>. This property is useful if you want to disable part of
+	 * your navigation; for example, you might want to disable a button in the
+	 * currently displayed page so that it can't be clicked and the page cannot
+	 * be reloaded.
+	 *
+	 * <p><b>Note:</b> To prevent mouseClicks on a button, set both the
+	 * <code>enabled</code> and <code>mouseEnabled</code> properties to
+	 * <code>false</code>.</p>
+	 */
+	public var enabled:Bool;
+	
+	/**
+	 * Specifies a display object that is used as the hit testing object for the
+	 * button. For a basic button, set the <code>hitTestState</code> property to
+	 * the same display object as the <code>overState</code> property. If you do
+	 * not set the <code>hitTestState</code> property, the SimpleButton is
+	 * inactive  -  it does not respond to user input events.
+	 */
+	#if (flash && !display)
+	public var hitTestState:DisplayObject;
+	#else
+	public var hitTestState (default, set):DisplayObject;
+	#end
+	
+	/**
+	 * Specifies a display object that is used as the visual object for the
+	 * button over state  -  the state that the button is in when the pointer is
+	 * positioned over the button.
+	 */
+	#if (flash && !display)
+	public var overState:DisplayObject;
+	#else
+	public var overState (default, set):DisplayObject;
+	#end
+	
+	/**
+	 * The SoundTransform object assigned to this button. A SoundTransform object
+	 * includes properties for setting volume, panning, left speaker assignment,
+	 * and right speaker assignment. This SoundTransform object applies to all
+	 * states of the button. This SoundTransform object affects only embedded
+	 * sounds.
+	 */
+	#if (flash && !display)
+	public var soundTransform:SoundTransform;
+	#else
+	public var soundTransform (get, set):SoundTransform;
+	#end
+	
+	/**
+	 * Indicates whether other display objects that are SimpleButton or MovieClip
+	 * objects can receive user input release events. The
+	 * <code>trackAsMenu</code> property lets you create menus. You can set the
+	 * <code>trackAsMenu</code> property on any SimpleButton or MovieClip object.
+	 * If the <code>trackAsMenu</code> property does not exist, the default
+	 * behavior is <code>false</code>.
+	 *
+	 * <p>You can change the <code>trackAsMenu</code> property at any time; the
+	 * modified button immediately takes on the new behavior. </p>
+	 */
+	public var trackAsMenu:Bool;
+	
+	/**
+	 * Specifies a display object that is used as the visual object for the
+	 * button up state  -  the state that the button is in when the pointer is
+	 * not positioned over the button.
+	 */
+	#if (flash && !display)
+	public var upState:DisplayObject;
+	#else
+	public var upState (default, set):DisplayObject;
+	#end
+	
+	/**
+	 * A Boolean value that, when set to <code>true</code>, indicates whether the
+	 * hand cursor is shown when the pointer rolls over a button. If this
+	 * property is set to <code>false</code>, the arrow pointer cursor is
+	 * displayed instead. The default is <code>true</code>.
+	 *
+	 * <p>You can change the <code>useHandCursor</code> property at any time; the
+	 * modified button immediately uses the new cursor behavior. </p>
+	 */
+	public var useHandCursor:Bool;
+	
+	
+	/**
+	 * Creates a new SimpleButton instance. Any or all of the display objects
+	 * that represent the various button states can be set as parameters in the
+	 * constructor.
+	 * 
+	 * @param upState      The initial value for the SimpleButton up state.
+	 * @param overState    The initial value for the SimpleButton over state.
+	 * @param downState    The initial value for the SimpleButton down state.
+	 * @param hitTestState The initial value for the SimpleButton hitTest state.
+	 */
+	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null);
+	
+	
+}
+
+
 #end

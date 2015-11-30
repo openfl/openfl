@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !openfl_legacy
+package openfl.filters; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.display.Shader;
@@ -10,19 +10,19 @@ import js.html.ImageData;
 #end
 
 
-
-class ColorMatrixFilter extends BitmapFilter {
+@:final class ColorMatrixFilter extends BitmapFilter {
 	
 	
-	public var matrix(default, set):Array<Float>;
+	public var matrix (default, set):Array<Float>;
 	
-	private var __colorMatrixShader:ColorMatrixShader;
+	//private var __colorMatrixShader:ColorMatrixShader;
+	
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
 		
-		__colorMatrixShader = new ColorMatrixShader();
+		//__colorMatrixShader = new ColorMatrixShader ();
 		__passes = 1;
 		
 		this.matrix = matrix;
@@ -38,7 +38,7 @@ class ColorMatrixFilter extends BitmapFilter {
 	
 	
 	#if (js && html5)
-	@:noCompletion @:dox(hide) public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		var source = sourceData.data;
 		var target = targetData.data;
@@ -75,49 +75,86 @@ class ColorMatrixFilter extends BitmapFilter {
 	}
 	#end
 	
-	override function __preparePass(pass:Int):Shader {
-		return __colorMatrixShader;
+	
+	//private override function __preparePass (pass:Int):Shader {
+		//
+		//return __colorMatrixShader;
+		//
+	//}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function set_matrix (value:Array<Float>):Array<Float> {
+		
+		if (value == null) {
+			
+			value = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
+			
+		}
+		
+		//__colorMatrixShader.uMultipliers = [ value[0], value[1], value[2], value[3], value[5], value[6], value[7], value[8], value[10], value[11], value[12], value[13], value[15], value[16], value[17], value[18] ];
+		//__colorMatrixShader.uOffsets = [ value[4] / 255., value[9] / 255., value[14] / 255., value[19] / 255. ];
+		
+		return matrix = value;
+		
 	}
 	
-	function set_matrix(v:Array<Float>) {
-		if (v == null) {
-			v = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
-		}
-		__colorMatrixShader.uMultipliers = [
-											v[0], v[1], v[2], v[3],
-											v[5], v[6], v[7], v[8],
-											v[10], v[11], v[12], v[13],
-											v[15], v[16], v[17], v[18],
-											];
-		__colorMatrixShader.uOffsets = [v[4] / 255., v[9] / 255., v[14] / 255., v[19] / 255.];
-		
-		return matrix = v;
-	}
+	
 }
 
-private class ColorMatrixShader extends Shader {
-	
-	@fragment var fragment = [
-		'uniform mat4 uMultipliers;',
-		'uniform vec4 uOffsets;',
-		'void main(void) {',
-		'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
-		'	color = vec4(color.rgb / color.a, color.a);',
-		'	color = uOffsets + color * uMultipliers;',
-		'	color = vec4(color.rgb * color.a, color.a);',
-		'	gl_FragColor = color;',
-		'}',
-	];
-	
-	public function new() {
-		super();
-	}
-}
+
+//private class ColorMatrixShader extends Shader {
+	//
+	//
+	//@fragment var fragment = [
+		//'uniform mat4 uMultipliers;',
+		//'uniform vec4 uOffsets;',
+		//'void main(void) {',
+		//'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
+		//'	color = vec4(color.rgb / color.a, color.a);',
+		//'	color = uOffsets + color * uMultipliers;',
+		//'	color = vec4(color.rgb * color.a, color.a);',
+		//'	gl_FragColor = color;',
+		//'}',
+	//];
+	//
+	//
+	//public function new () {
+		//
+		//super ();
+		//
+	//}
+	//
+	//
+//}
 
 
 #else
 typedef ColorMatrixFilter = openfl._legacy.filters.ColorMatrixFilter;
 #end
 #else
-typedef ColorMatrixFilter = flash.filters.ColorMatrixFilter;
+
+
+#if flash
+@:native("flash.filters.ColorMatrixFilter")
+#end
+
+@:final extern class ColorMatrixFilter extends BitmapFilter {
+	
+	
+	public var matrix (default, set):Array<Float>;
+	
+	
+	public function new (matrix:Array<Float> = null);
+	
+	
+}
+
+
 #end

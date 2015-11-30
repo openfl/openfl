@@ -1,4 +1,31 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum BlendMode {
+	
+	ADD;
+	ALPHA;
+	DARKEN;
+	DIFFERENCE;
+	ERASE;
+	HARDLIGHT;
+	INVERT;
+	LAYER;
+	LIGHTEN;
+	MULTIPLY;
+	NORMAL;
+	OVERLAY;
+	SCREEN;
+	SHADER;
+	SUBTRACT;
+	
+}
+
+
+#else
+typedef BlendMode = openfl._legacy.display.BlendMode;
+#end
+#else
 
 
 /**
@@ -11,7 +38,13 @@ package openfl.display; #if !flash #if !openfl_legacy
  * method of the openfl.display.BitmapData class</li>
  * </ul>
  */
-enum BlendMode {
+
+#if flash
+@:native("flash.display.BlendMode")
+@:fakeEnum(String)
+#end
+
+extern enum BlendMode {
 	
 	/**
 	 * Adds the values of the constituent colors of the display object to the
@@ -156,6 +189,8 @@ enum BlendMode {
 	 */
 	SCREEN;
 	
+	SHADER;
+	
 	/**
 	 * Subtracts the values of the constituent colors in the display object from
 	 * the values of the background color, applying a floor of 0. This setting is
@@ -171,9 +206,4 @@ enum BlendMode {
 }
 
 
-#else
-typedef BlendMode = openfl._legacy.display.BlendMode;
-#end
-#else
-typedef BlendMode = flash.display.BlendMode;
 #end

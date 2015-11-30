@@ -1,4 +1,101 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+import openfl.geom.Rectangle;
+
+
+class InteractiveObject extends DisplayObject {
+	
+	
+	public var doubleClickEnabled:Bool;
+	public var focusRect:Dynamic;
+	public var mouseEnabled:Bool;
+	public var needsSoftKeyboard:Bool;
+	
+	public var softKeyboardInputAreaOfInterest:Rectangle;
+	public var tabEnabled (get, set):Bool;
+	public var tabIndex:Int;
+	
+	private var __tabEnabled:Bool;
+	
+	
+	public function new () {
+		
+		super ();
+		
+		doubleClickEnabled = false;
+		mouseEnabled = true;
+		needsSoftKeyboard = false;
+		__tabEnabled = false;
+		tabIndex = -1;
+		
+	}
+	
+	
+	public function requestSoftKeyboard ():Bool {
+		
+		openfl.Lib.notImplemented ("InteractiveObject.requestSoftKeyboard");
+		
+		return false;
+		
+	}
+	
+	
+	private override function __getInteractive (stack:Array<DisplayObject>):Bool {
+		
+		if (stack != null) {
+			
+			stack.push (this);
+			
+			if (parent != null) {
+				
+				parent.__getInteractive (stack);
+				
+			}
+			
+		}
+		
+		return true;
+		
+	}
+	
+	
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+		
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_tabEnabled ():Bool {
+		
+		return __tabEnabled;
+		
+	}
+	
+	
+	private function set_tabEnabled (value:Bool):Bool {
+		
+		return __tabEnabled = value;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef InteractiveObject = openfl._legacy.display.InteractiveObject;
+#end
+#else
 
 
 import openfl.geom.Rectangle;
@@ -1043,8 +1140,21 @@ import openfl.geom.Rectangle;
  *                               <p><b>Note:</b> See the Multitouch class for
  *                               environment compatibility information.</p>
  */
-class InteractiveObject extends DisplayObject {
+
+#if flash
+@:native("flash.display.InteractiveObject")
+#end
+
+extern class InteractiveObject extends DisplayObject {
 	
+	
+	#if (flash && !display)
+	public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
+	#end
+	
+	#if (flash && !display)
+	public var contextMenu:flash.ui.ContextMenu;
+	#end
 	
 	/**
 	 * Specifies whether the object receives <code>doubleClick</code> events. The
@@ -1104,13 +1214,24 @@ class InteractiveObject extends DisplayObject {
 	 * <p><b>Note:</b> This property is not supported in AIR applications on
 	 * iOS.</p>
 	 */
+	
+	#if flash
+	@:require(flash11)
+	#end
 	public var needsSoftKeyboard:Bool;
 	
+	#if flash
+	@:require(flash11)
+	#end
 	public var softKeyboardInputAreaOfInterest:Rectangle;
-	public var tabEnabled (get, set):Bool;
-	public var tabIndex:Int;
 	
-	@:noCompletion private var __tabEnabled:Bool;
+	#if (flash && !display)
+	public var tabEnabled:Bool;
+	#else
+	public var tabEnabled (get, set):Bool;
+	#end
+	
+	public var tabIndex:Int;
 	
 	
 	/**
@@ -1125,17 +1246,7 @@ class InteractiveObject extends DisplayObject {
 	 *   <li><code>new MovieClip()</code></li>
 	 * </ul>
 	 */
-	public function new () {
-		
-		super ();
-		
-		doubleClickEnabled = false;
-		mouseEnabled = true;
-		needsSoftKeyboard = false;
-		__tabEnabled = false;
-		tabIndex = -1;
-		
-	}
+	public function new ();
 	
 	
 	/**
@@ -1154,69 +1265,14 @@ class InteractiveObject extends DisplayObject {
 	 *         was granted; <code>false</code> means that the soft keyboard was
 	 *         not raised.
 	 */
-	public function requestSoftKeyboard ():Bool {
-		
-		openfl.Lib.notImplemented ("InteractiveObject.requestSoftKeyboard");
-		
-		return false;
-		
-	}
 	
-	
-	@:noCompletion private override function __getInteractive (stack:Array<DisplayObject>):Bool {
-		
-		if (stack != null) {
-			
-			stack.push (this);
-			
-			if (parent != null) {
-				
-				parent.__getInteractive (stack);
-				
-			}
-			
-		}
-		
-		return true;
-		
-	}
-	
-	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
-		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !hitObject.mouseEnabled)) return false;
-		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject);
-		
-	}
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
-	@:noCompletion private function get_tabEnabled ():Bool {
-		
-		return __tabEnabled;
-		
-	}
-	
-	
-	@:noCompletion private function set_tabEnabled (value:Bool):Bool {
-		
-		return __tabEnabled = value;
-		
-	}
+	#if flash
+	@:require(flash11)
+	#end
+	public function requestSoftKeyboard ():Bool;
 	
 	
 }
 
 
-#else
-typedef InteractiveObject = openfl._legacy.display.InteractiveObject;
-#end
-#else
-typedef InteractiveObject = flash.display.InteractiveObject;
 #end

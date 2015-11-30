@@ -1,4 +1,19 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum CapsStyle {
+	
+	NONE;
+	ROUND;
+	SQUARE;
+	
+}
+
+
+#else
+typedef CapsStyle = openfl._legacy.display.CapsStyle;
+#end
+#else
 
 
 /**
@@ -8,7 +23,12 @@ package openfl.display; #if !flash #if !openfl_legacy
  * <code>openfl.display.Graphics.lineStyle()</code> method. You can specify the
  * following three types of caps:
  */
-enum CapsStyle {
+
+#if flash
+@:native("flash.display.CapsStyle")
+#end
+
+extern enum CapsStyle {
 	
 	/**
 	 * Used to specify no caps in the <code>caps</code> parameter of the
@@ -31,9 +51,4 @@ enum CapsStyle {
 }
 
 
-#else
-typedef CapsStyle = openfl._legacy.display.CapsStyle;
-#end
-#else
-typedef CapsStyle = flash.display.CapsStyle;
 #end

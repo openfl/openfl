@@ -1,4 +1,4 @@
-package openfl.media; #if !flash #if !openfl_legacy
+package openfl.media; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl._internal.renderer.RenderSession;
@@ -26,11 +26,11 @@ class Video extends DisplayObject {
 	public var deblocking:Int;
 	public var smoothing:Bool;
 	
-	@:noCompletion private var __active:Bool;
-	@:noCompletion private var __dirty:Bool;
-	@:noCompletion private var __height:Float;
-	@:noCompletion private var __stream:NetStream;
-	@:noCompletion private var __width:Float;
+	private var __active:Bool;
+	private var __dirty:Bool;
+	private var __height:Float;
+	private var __stream:NetStream;
+	private var __width:Float;
 	
 	
 	public function new (width:Int = 320, height:Int = 240):Void {
@@ -46,9 +46,9 @@ class Video extends DisplayObject {
 	}
 	
 	
-	public function attachNetStream (ns:NetStream):Void {
+	public function attachNetStream (netStream:NetStream):Void {
 		
-		__stream = ns;
+		__stream = netStream;
 		
 		#if (js && html5)
 		__stream.__video.play ();
@@ -64,7 +64,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		var bounds = Rectangle.__temp;
 		bounds.setTo (0, 0, __width, __height);
@@ -75,7 +75,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
@@ -99,7 +99,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private override function __hitTestMask (x:Float, y:Float):Bool {
+	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
 		var point = globalToLocal (new Point (x, y));
 		
@@ -114,7 +114,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
+	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (!__renderable || __worldAlpha <= 0) return;
@@ -182,7 +182,7 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
+	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -227,14 +227,14 @@ class Video extends DisplayObject {
 	
 	
 	
-	@:noCompletion private override function get_height ():Float {
+	private override function get_height ():Float {
 		
 		return __height * scaleY;
 		
 	}
 	
 	
-	@:noCompletion private override function set_height (value:Float):Float {
+	private override function set_height (value:Float):Float {
 		
 		if (scaleY != 1 || value != __height) {
 			
@@ -249,14 +249,14 @@ class Video extends DisplayObject {
 	}
 	
 	
-	@:noCompletion private override function get_width ():Float {
+	private override function get_width ():Float {
 		
 		return __width * scaleX;
 		
 	}
 	
 	
-	@:noCompletion private override function set_width (value:Float):Float {
+	private override function set_width (value:Float):Float {
 		
 		if (scaleX != 1 || __width != value) {
 			
@@ -295,5 +295,43 @@ class Video extends DisplayObject implements Dynamic {
 
 #end
 #else
-typedef Video = flash.media.Video;
+
+
+import openfl.display.DisplayObject;
+import openfl.net.NetStream;
+
+
+#if flash
+@:native("flash.media.Video")
+#end
+
+
+extern class Video extends DisplayObject {
+	
+	
+	public var deblocking:Int;
+	public var smoothing:Bool;
+	
+	#if (flash && !display)
+	public var videoHeight (default, null):Int;
+	#end
+	
+	#if (flash && !display)
+	public var videoWidth (default, null):Int;
+	#end
+	
+	
+	public function new (width:Int = 320, height:Int = 240):Void;
+	
+	#if (flash && !display)
+	public function attachCamera (camera:flash.media.Camera):Void;
+	#end
+	
+	public function attachNetStream (netStream:NetStream) : Void;
+	public function clear ():Void;
+	
+	
+}
+
+
 #end
