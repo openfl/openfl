@@ -15,14 +15,14 @@ import js.html.ImageData;
 	
 	public var matrix (default, set):Array<Float>;
 	
-	private var __colorMatrixShader:ColorMatrixShader;
+	//private var __colorMatrixShader:ColorMatrixShader;
 	
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
 		
-		__colorMatrixShader = new ColorMatrixShader ();
+		//__colorMatrixShader = new ColorMatrixShader ();
 		__passes = 1;
 		
 		this.matrix = matrix;
@@ -76,11 +76,11 @@ import js.html.ImageData;
 	#end
 	
 	
-	private override function __preparePass (pass:Int):Shader {
-		
-		return __colorMatrixShader;
-		
-	}
+	//private override function __preparePass (pass:Int):Shader {
+		//
+		//return __colorMatrixShader;
+		//
+	//}
 	
 	
 	
@@ -109,30 +109,30 @@ import js.html.ImageData;
 }
 
 
-private class ColorMatrixShader extends Shader {
-	
-	
-	@fragment var fragment = [
-		'uniform mat4 uMultipliers;',
-		'uniform vec4 uOffsets;',
-		'void main(void) {',
-		'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
-		'	color = vec4(color.rgb / color.a, color.a);',
-		'	color = uOffsets + color * uMultipliers;',
-		'	color = vec4(color.rgb * color.a, color.a);',
-		'	gl_FragColor = color;',
-		'}',
-	];
-	
-	
-	public function new () {
-		
-		super ();
-		
-	}
-	
-	
-}
+//private class ColorMatrixShader extends Shader {
+	//
+	//
+	//@fragment var fragment = [
+		//'uniform mat4 uMultipliers;',
+		//'uniform vec4 uOffsets;',
+		//'void main(void) {',
+		//'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
+		//'	color = vec4(color.rgb / color.a, color.a);',
+		//'	color = uOffsets + color * uMultipliers;',
+		//'	color = vec4(color.rgb * color.a, color.a);',
+		//'	gl_FragColor = color;',
+		//'}',
+	//];
+	//
+	//
+	//public function new () {
+		//
+		//super ();
+		//
+	//}
+	//
+	//
+//}
 
 
 #else
