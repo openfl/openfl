@@ -1,4 +1,4 @@
 package flash.display;
 
 
-typedef FrameLabel = openfl.display.FrameLabel;
+typedef GradientType = openfl.display.GradientType;
