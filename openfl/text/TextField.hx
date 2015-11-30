@@ -630,9 +630,9 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !hitObject.mouseEnabled)) return false;
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
 		__getWorldTransform ();

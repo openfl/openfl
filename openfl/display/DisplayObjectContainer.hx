@@ -455,9 +455,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:InteractiveObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !hitObject.mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
@@ -493,7 +493,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 					interactive = __children[i].__getInteractive (null);
 					
-					if (interactive || (hitObject.mouseEnabled && !hitTest)) {
+					if (interactive || (mouseEnabled && !hitTest)) {
 						
 						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
 							

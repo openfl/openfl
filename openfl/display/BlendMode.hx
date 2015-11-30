@@ -16,6 +16,7 @@ enum BlendMode {
 	NORMAL;
 	OVERLAY;
 	SCREEN;
+	SHADER;
 	SUBTRACT;
 	
 }
@@ -187,6 +188,8 @@ extern enum BlendMode {
 	 * display object.
 	 */
 	SCREEN;
+	
+	SHADER;
 	
 	/**
 	 * Subtracts the values of the constituent colors in the display object from
