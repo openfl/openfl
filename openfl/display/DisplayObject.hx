@@ -1073,20 +1073,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (value != null && value.length > 0) {
 			
 			__filters = value;
-			//__forceCacheAsBitmap = true;
-			//__cacheAsBitmap = true;
-			//__updateFilters = true;
+			__forceCacheAsBitmap = true;
+			__cacheAsBitmap = true;
+			__updateFilters = true;
 			
 		} else {
 			
 			__filters = null;
-			//__forceCacheAsBitmap = false;
-			//__cacheAsBitmap = false;
-			//__updateFilters = false;
+			__forceCacheAsBitmap = false;
+			__cacheAsBitmap = false;
+			__updateFilters = false;
 			
 		}
 		
-		//__setRenderDirty ();
+		__setRenderDirty ();
 		
 		return value;
 		
