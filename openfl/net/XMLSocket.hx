@@ -6,6 +6,10 @@ import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.EventDispatcher;
 import openfl.events.ProgressEvent;
+<<<<<<< HEAD
+
+=======
+>>>>>>> openfl/master
 import openfl.net.Socket;
 
 
@@ -15,6 +19,9 @@ class XMLSocket extends EventDispatcher {
 	public var connected (default, null):Bool;
 	public var timeout:Int;
 	
+<<<<<<< HEAD
+	private var _socket:Socket;
+=======
 	// TODO: Use openfl.net.Socket for all targets
 	
 	#if (js && html5)
@@ -22,6 +29,7 @@ class XMLSocket extends EventDispatcher {
 	#else
 	private var __socket:Socket;
 	#end
+>>>>>>> openfl/master
 	
 	
 	public function new (host:String = null, port:Int = 80):Void {
@@ -38,6 +46,9 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	public function close ():Void {
+
+		_socket.removeEventListener(Event.CONNECT, onOpenHandler);
+		_socket.removeEventListener(ProgressEvent.SOCKET_DATA, onMessageHandler);
 		
 		#if (!js || !html5)
 		__socket.removeEventListener (Event.CONNECT, onOpenHandler);
@@ -62,8 +73,30 @@ class XMLSocket extends EventDispatcher {
 		
 		connected = false;
 		
+		connected = false;
+
 		#if (js && html5)
 		if (protocol == null) {
+<<<<<<< HEAD
+            _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
+        }
+        else {
+            _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port, protocol)");
+        }
+
+        _socket.onopen = onOpenHandler;
+		_socket.onmessage = onMessageHandler;
+		_socket.onclose = onCloseHandler;
+		_socket.onerror = onErrorHandler;
+        #else
+
+        _socket = new Socket();
+		_socket.connect(host, port);
+
+		_socket.addEventListener(Event.CONNECT, onOpenHandler);
+		_socket.addEventListener(ProgressEvent.SOCKET_DATA, onMessageHandler);
+
+=======
 			
 			__socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
 			
@@ -85,19 +118,27 @@ class XMLSocket extends EventDispatcher {
 		__socket.addEventListener (Event.CONNECT, onOpenHandler);
 		__socket.addEventListener (ProgressEvent.SOCKET_DATA, onMessageHandler);
 		
+>>>>>>> openfl/master
 		#end
+
+		
 		
 	}
 	
 	
 	public function send (object:Dynamic):Void {
 		
+<<<<<<< HEAD
+		_socket.writeUTFBytes(object);
+		_socket.writeByte(0);
+=======
 		#if (js && html5)
 		__socket.send (object);
 		#else
 		__socket.writeUTFBytes (object);
 		__socket.writeByte (0);
 		#end
+>>>>>>> openfl/master
 		
 	}
 	
@@ -109,9 +150,15 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
+<<<<<<< HEAD
+	@:noCompletion private function onMessageHandler (e:ProgressEvent):Void {
+
+		dispatchEvent(new DataEvent(DataEvent.DATA, false, false, _socket.readUTFBytes(_socket.bytesAvailable)));
+=======
 	@:noCompletion private function onCloseHandler (_):Void {
 		
 		dispatchEvent (new Event (Event.CLOSE));
+>>>>>>> openfl/master
 		
 	}
 	
