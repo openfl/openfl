@@ -85,6 +85,14 @@ import openfl.Vector;
 	}
 	
 	
+	public function uploadFromInt16Array (data:Int16Array):Void {
+		
+		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, glBuffer);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, bufferUsage);
+		
+	}
+	
+	
 }
 
 
