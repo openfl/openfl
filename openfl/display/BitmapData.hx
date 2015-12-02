@@ -63,6 +63,8 @@ import js.Browser;
 class BitmapData implements IBitmapDrawable {
 	
 	
+	private static var __isGLES:Null<Bool> = null;
+	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
 	public var rect (default, null):Rectangle;
@@ -717,7 +719,9 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return null;
 		
 		if (__usingPingPongTexture && __pingPongTexture != null) {
+			
 			return __pingPongTexture.texture;
+			
 		}
 		
 		if (__texture == null) {
@@ -749,15 +753,28 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else {
 				
-				#if ((desktop || ios || tvos) && !rpi)
-				internalFormat = gl.RGBA;
-				format = gl.BGRA_EXT;
-				#elseif sys
-				internalFormat = gl.BGRA_EXT;
-				format = gl.BGRA_EXT;
-				#else
+				#if !sys
+				
 				internalFormat = gl.RGBA;
 				format = gl.RGBA;
+				
+				#elseif (ios || tvos)
+				
+				internalFormat = gl.RGBA;
+				format = gl.BGRA_EXT;
+				
+				#else
+				
+				if (__isGLES == null) {
+					
+					var version:String = gl.getParameter (gl.VERSION);
+					__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+					
+				}
+				
+				internalFormat = (__isGLES ? gl.BGRA_EXT : gl.RGBA);
+				format = gl.BGRA_EXT;
+				
 				#end
 				
 			}
