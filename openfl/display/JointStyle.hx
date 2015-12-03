@@ -1,4 +1,19 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum JointStyle {
+	
+	MITER;
+	ROUND;
+	BEVEL;
+	
+}
+
+
+#else
+typedef JointStyle = openfl._legacy.display.JointStyle;
+#end
+#else
 
 
 /**
@@ -9,7 +24,12 @@ package openfl.display; #if !flash #if !openfl_legacy
  * three types of joints: miter, round, and bevel, as the following example
  * shows:
  */
-enum JointStyle {
+
+#if flash
+@:native("flash.display.JointStyle")
+#end
+
+@:fakeEnum(String) extern enum JointStyle {
 	
 	/**
 	 * Specifies mitered joints in the <code>joints</code> parameter of the
@@ -32,9 +52,4 @@ enum JointStyle {
 }
 
 
-#else
-typedef JointStyle = openfl._legacy.display.JointStyle;
-#end
-#else
-typedef JointStyle = flash.display.JointStyle;
 #end

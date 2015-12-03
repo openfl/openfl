@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
 
 
 interface IGraphicsFill {
@@ -22,5 +22,13 @@ interface IGraphicsFill {
 typedef IGraphicsFill = openfl._legacy.display.IGraphicsFill;
 #end
 #else
-typedef IGraphicsFill = flash.display.IGraphicsFill;
+
+
+#if flash
+@:native("flash.display.IGraphicsFill")
+#end
+
+extern interface IGraphicsFill {}
+
+
 #end

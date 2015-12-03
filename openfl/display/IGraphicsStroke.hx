@@ -1,9 +1,17 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
 
 
-interface IGraphicsStroke { }
+interface IGraphicsStroke {}
 
 
 #else
-typedef IGraphicsStroke = flash.display.IGraphicsStroke;
+
+
+#if flash
+@:native("flash.display.IGraphicsStroke")
+#end
+
+extern interface IGraphicsStroke {}
+
+
 #end

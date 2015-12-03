@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -18,7 +18,7 @@ import openfl.geom.Matrix;
 	public var spreadMethod:SpreadMethod;
 	public var type:GradientType;
 	
-	public var __graphicsDataType (default,null):GraphicsDataType;
+	public var __graphicsDataType (default, null):GraphicsDataType;
 	public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
@@ -63,5 +63,32 @@ import openfl.geom.Matrix;
 typedef GraphicsGradientFill = openfl._legacy.display.GraphicsGradientFill;
 #end
 #else
-typedef GraphicsGradientFill = flash.display.GraphicsGradientFill;
+
+
+import openfl.geom.Matrix;
+
+#if flash
+@:native("flash.display.GraphicsGradientFill")
+#end
+
+
+@:final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill {
+	
+	
+	public var alphas:Array<Float>;
+	public var colors:Array<UInt>;
+	public var focalPointRatio:Float;
+	public var interpolationMethod:InterpolationMethod;
+	public var matrix:Matrix;
+	public var ratios:Array<UInt>;
+	public var spreadMethod:SpreadMethod;
+	public var type:GradientType;
+	
+	
+	public function new (type:GradientType = null, colors:Array<UInt> = null, alphas:Array<Float> = null, ratios:Array<UInt> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0);
+	
+	
+}
+
+
 #end

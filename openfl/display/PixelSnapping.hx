@@ -1,4 +1,16 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
+
+
+enum PixelSnapping {
+	
+	NEVER;
+	AUTO;
+	ALWAYS;
+	
+}
+
+
+#else
 
 
 /**
@@ -6,7 +18,12 @@ package openfl.display; #if !flash
  * the pixel snapping options by using the <code>pixelSnapping</code> property
  * of a Bitmap object.
  */
-enum PixelSnapping {
+
+#if flash
+@:native("flash.display.PixelSnapping")
+#end
+
+@:fakeEnum(String) extern enum PixelSnapping {
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
@@ -35,6 +52,4 @@ enum PixelSnapping {
 }
 
 
-#else
-typedef PixelSnapping = flash.display.PixelSnapping;
 #end
