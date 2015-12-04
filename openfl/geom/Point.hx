@@ -1,7 +1,151 @@
-package openfl.geom; #if !flash #if !openfl_legacy
+package openfl.geom; #if (!display && !flash) #if !openfl_legacy
 
 
 import lime.math.Vector2;
+
+
+class Point {
+	
+	
+	public var length (get, null):Float;
+	public var x:Float;
+	public var y:Float;
+	
+	
+	public function new (x:Float = 0, y:Float = 0) {
+		
+		this.x = x;
+		this.y = y;
+		
+	}
+	
+	
+	public function add (v:Point):Point {
+		
+		return new Point (v.x + x, v.y + y);
+		
+	}
+	
+	
+	public function clone ():Point {
+		
+		return new Point (x, y);
+		
+	}
+	
+	
+	public function copyFrom (sourcePoint:Point):Void {
+		
+		x = sourcePoint.x;
+		y = sourcePoint.y;
+		
+	}
+	
+	
+	public static function distance (pt1:Point, pt2:Point):Float {
+		
+		var dx = pt1.x - pt2.x;
+		var dy = pt1.y - pt2.y;
+		return Math.sqrt (dx * dx + dy * dy);
+		
+	}
+	
+	
+	public function equals (toCompare:Point):Bool {
+		
+		return toCompare != null && toCompare.x == x && toCompare.y == y;
+		
+	}
+	
+	
+	public static function interpolate (pt1:Point, pt2:Point, f:Float):Point {
+		
+		return new Point (pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y));
+		
+	}
+	
+	
+	public function normalize (thickness:Float):Void {
+		
+		if (x == 0 && y == 0) {
+			
+			return;
+			
+		} else {
+			
+			var norm = thickness / Math.sqrt (x * x + y * y);
+			x *= norm;
+			y *= norm;
+			
+		}
+		
+	}
+	
+	
+	public function offset (dx:Float, dy:Float):Void {
+		
+		x += dx;
+		y += dy;
+		
+	}
+	
+	
+	public static function polar (len:Float, angle:Float):Point {
+		
+		return new Point (len * Math.cos (angle), len * Math.sin (angle));
+		
+	}
+	
+	
+	public inline function setTo (xa:Float, ya:Float):Void {
+		
+		x = xa;
+		y = ya;
+	}
+	
+	
+	public function subtract (v:Point):Point {
+		
+		return new Point (x - v.x, y - v.y);
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return '(x=$x, y=$y)';
+		
+	}
+	
+	
+	private function __toLimeVector2 ():Vector2 {
+		
+		return new Vector2 (x, y);
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private function get_length ():Float {
+		
+		return Math.sqrt (x * x + y * y);
+		
+	}
+	
+	
+}
+
+
+#else
+typedef Point = openfl._legacy.geom.Point;
+#end
+#else
 
 
 /**
@@ -26,13 +170,22 @@ import lime.math.Vector2;
  * <p>You can use the <code>new Point()</code> constructor to create a Point
  * object.</p>
  */
-class Point {
+
+#if flash
+@:native("flash.geom.Point")
+#end
+
+extern class Point {
 	
 	
 	/**
 	 * The length of the line segment from(0,0) to this point.
 	 */
+	#if (flash && !display)
+	public var length (default, null):Float;
+	#else
 	public var length (get, null):Float;
+	#end
 	
 	/**
 	 * The horizontal coordinate of the point. The default value is 0.
@@ -52,12 +205,7 @@ class Point {
 	 * @param x The horizontal coordinate.
 	 * @param y The vertical coordinate.
 	 */
-	public function new (x:Float = 0, y:Float = 0) {
-		
-		this.x = x;
-		this.y = y;
-		
-	}
+	public function new (x:Float = 0, y:Float = 0);
 	
 	
 	/**
@@ -67,11 +215,7 @@ class Point {
 	 * @param v The point to be added.
 	 * @return The new point.
 	 */
-	public function add (v:Point):Point {
-		
-		return new Point (v.x + x, v.y + y);
-		
-	}
+	public function add (v:Point):Point;
 	
 	
 	/**
@@ -79,19 +223,13 @@ class Point {
 	 * 
 	 * @return The new Point object.
 	 */
-	public function clone ():Point {
-		
-		return new Point (x, y);
-		
-	}
+	public function clone ():Point;
 	
 	
-	public function copyFrom (sourcePoint:Point):Void {
-		
-		x = sourcePoint.x;
-		y = sourcePoint.y;
-		
-	}
+	#if flash
+	@:require(flash11)
+	#end
+	public function copyFrom (sourcePoint:Point):Void;
 	
 	
 	/**
@@ -101,13 +239,7 @@ class Point {
 	 * @param pt2 The second point.
 	 * @return The distance between the first and second points.
 	 */
-	public static function distance (pt1:Point, pt2:Point):Float {
-		
-		var dx = pt1.x - pt2.x;
-		var dy = pt1.y - pt2.y;
-		return Math.sqrt (dx * dx + dy * dy);
-		
-	}
+	public static function distance (pt1:Point, pt2:Point):Float;
 	
 	
 	/**
@@ -118,11 +250,7 @@ class Point {
 	 * @return A value of <code>true</code> if the object is equal to this Point
 	 *         object; <code>false</code> if it is not equal.
 	 */
-	public function equals (toCompare:Point):Bool {
-		
-		return toCompare != null && toCompare.x == x && toCompare.y == y;
-		
-	}
+	public function equals (toCompare:Point):Bool;
 	
 	
 	/**
@@ -144,11 +272,7 @@ class Point {
 	 *            <code>pt2</code> is returned.
 	 * @return The new, interpolated point.
 	 */
-	public static function interpolate (pt1:Point, pt2:Point, f:Float):Point {
-		
-		return new Point (pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y));
-		
-	}
+	public static function interpolate (pt1:Point, pt2:Point, f:Float):Point;
 	
 	
 	/**
@@ -160,21 +284,7 @@ class Point {
 	 *                  at(0,1).
 	 * @return The normalized point.
 	 */
-	public function normalize (thickness:Float):Void {
-		
-		if (x == 0 && y == 0) {
-			
-			return;
-			
-		} else {
-			
-			var norm = thickness / Math.sqrt (x * x + y * y);
-			x *= norm;
-			y *= norm;
-			
-		}
-		
-	}
+	public function normalize (thickness:Float):Void;
 	
 	
 	/**
@@ -187,12 +297,7 @@ class Point {
 	 *           <i>x</i>.
 	 * @param dy The amount by which to offset the vertical coordinate, <i>y</i>.
 	 */
-	public function offset (dx:Float, dy:Float):Void {
-		
-		x += dx;
-		y += dy;
-		
-	}
+	public function offset (dx:Float, dy:Float):Void;
 	
 	
 	/**
@@ -202,18 +307,14 @@ class Point {
 	 * @param angle The angle, in radians, of the polar pair.
 	 * @return The Cartesian point.
 	 */
-	public static function polar (len:Float, angle:Float):Point {
-		
-		return new Point (len * Math.cos (angle), len * Math.sin (angle));
-		
-	}
+	public static function polar (len:Float, angle:Float):Point;
 	
 	
-	public inline function setTo (xa:Float, ya:Float):Void {	
-		
-		x = xa;
-		y = ya;
-	}
+	#if flash
+	@:require(flash11)
+	#end
+	//public inline function setTo (xa:Float, ya:Float):Void;
+	public function setTo (xa:Float, ya:Float):Void;
 	
 	
 	/**
@@ -223,11 +324,7 @@ class Point {
 	 * @param v The point to be subtracted.
 	 * @return The new point.
 	 */
-	public function subtract (v:Point):Point {
-		
-		return new Point (x - v.x, y - v.y);
-		
-	}
+	public function subtract (v:Point):Point;
 	
 	
 	/**
@@ -238,40 +335,10 @@ class Point {
 	 * 
 	 * @return The string representation of the coordinates.
 	 */
-	public function toString ():String {
-		
-		return "(x=" + x + ", y=" + y + ")";
-		
-	}
-	
-	
-	@:noCompletion private function __toLimeVector2 ():Vector2 {
-		
-		return new Vector2 (x, y);
-		
-	}
-	
-	
-	
-	
-	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private function get_length ():Float {
-		
-		return Math.sqrt (x * x + y * y);
-		
-	}
+	public function toString ():String;
 	
 	
 }
 
 
-#else
-typedef Point = openfl._legacy.geom.Point;
-#end
-#else
-typedef Point = flash.geom.Point;
 #end

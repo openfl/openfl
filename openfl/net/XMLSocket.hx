@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net; #if (!display && !flash) #if (!openfl_legacy || disable_legacy_networking)
 
 
 import openfl.events.DataEvent;
@@ -24,7 +24,7 @@ class XMLSocket extends EventDispatcher {
 	#end
 	
 	
-	public function new (host:String = null, port:Int = 80):Void {
+	public function new (host:String = null, port:Int = 80) {
 		
 		super ();
 		
@@ -56,7 +56,7 @@ class XMLSocket extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public function connectWithProto (host:String, port:Int, protocol:String):Void {
+	@:dox(hide) public function connectWithProto (host:String, port:Int, protocol:String):Void {
 		
 		// TODO: Remove this method
 		
@@ -109,21 +109,21 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function onCloseHandler (_):Void {
+	private function onCloseHandler (_):Void {
 		
 		dispatchEvent (new Event (Event.CLOSE));
 		
 	}
 	
 	
-	@:noCompletion private function onErrorHandler (_):Void {
+	private function onErrorHandler (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
 	}
 	
 	
-	@:noCompletion private function onMessageHandler (e:#if (js && html5) Dynamic #else ProgressEvent #end):Void {
+	private function onMessageHandler (e:#if (js && html5) Dynamic #else ProgressEvent #end):Void {
 		
 		#if (js && html5)
 		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, e.data));
@@ -134,7 +134,7 @@ class XMLSocket extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function onOpenHandler (_):Void {
+	private function onOpenHandler (_):Void {
 		
 		connected = true;
 		dispatchEvent (new Event (Event.CONNECT));
@@ -149,5 +149,25 @@ class XMLSocket extends EventDispatcher {
 typedef XMLSocket = openfl._legacy.net.XMLSocket;
 #end
 #else
-typedef XMLSocket = flash.net.XMLSocket;
+
+
+class XMLSocket extends EventDispatcher {
+	
+	
+	public var connected (default, null):Bool;
+	
+	#if flash
+	@:require(flash10)
+	#end
+	public var timeout:Int;
+	
+	public function new (host:String = null, port:Int = 80);
+	public function close ():Void;
+	public function connect (host:String, port:Int):Void;
+	public function send (object:Dynamic):Void;
+	
+	
+}
+
+
 #end

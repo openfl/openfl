@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D; #if (!display && !flash)
 
 
 import openfl.gl.GL;
@@ -7,6 +7,7 @@ import openfl.gl.GLShader;
 
 
 @:final class Program3D {
+	
 	
 	public var context:Context3D;
 	public var glProgram:GLProgram;
@@ -49,5 +50,23 @@ import openfl.gl.GLShader;
 
 
 #else
-typedef Program3D = flash.display3D.Program3D;
+
+
+import openfl.utils.ByteArray;
+
+#if flash
+@:native("flash.display3D.Program3D")
+#end
+
+
+@:final extern class Program3D {
+	
+	
+	public function dispose () : Void;
+	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void;
+	
+	
+}
+
+
 #end

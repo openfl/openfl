@@ -1,4 +1,22 @@
-package openfl.errors; #if !flash
+package openfl.errors; #if (!display && !flash)
+
+
+class IllegalOperationError extends Error {
+	
+	
+	public function new (message:String = "") {
+		
+		super (message, 0);
+		
+		name = "IllegalOperationError";
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
@@ -23,7 +41,12 @@ package openfl.errors; #if !flash
  * object</li>
  * </ul>
  */
-class IllegalOperationError extends Error {
+
+#if flash
+@:native("flash.errors.IllegalOperationError")
+#end
+
+extern class IllegalOperationError extends Error {
 	
 	
 	/**
@@ -31,18 +54,10 @@ class IllegalOperationError extends Error {
 	 * 
 	 * @param message A string associated with the error object.
 	 */
-	public function new (message:String = "") {
-		
-		super (message, 0);
-		
-		name = "IllegalOperationError";
-		
-	}
+	public function new (message:String = "");
 	
 	
 }
 
 
-#else
-typedef IllegalOperationError = flash.errors.IllegalOperationError;
 #end

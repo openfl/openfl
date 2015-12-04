@@ -1,4 +1,46 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
+
+
+class ErrorEvent extends TextEvent {
+	
+	
+	public static var ERROR:String = "error";
+	
+	public var errorID (default, null):Int;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void {
+		
+		super (type, bubbles, cancelable, text);
+		errorID = id;
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new ErrorEvent (type, bubbles, cancelable, text, errorID);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("ErrorEvent",  [ "type", "bubbles", "cancelable", "text", "errorID" ]);
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
@@ -20,7 +62,12 @@ package openfl.events; #if !flash
  * Player or the AIR Debug Launcher(ADL) application.</p>
  * 
  */
-class ErrorEvent extends TextEvent {
+
+#if flash
+@:native("flash.events.ErrorEvent")
+#end
+
+extern class ErrorEvent extends TextEvent {
 	
 	
 	/**
@@ -37,6 +84,9 @@ class ErrorEvent extends TextEvent {
 	 * custom ErrorEvent object, this number is the value from the
 	 * <code>id</code> parameter supplied in the constructor.
 	 */
+	#if flash
+	@:require(flash10_1)
+	#end
 	public var errorID (default, null):Int;
 	
 	
@@ -60,31 +110,10 @@ class ErrorEvent extends TextEvent {
 	 * @param id         A reference number to associate with the specific error
 	 *                  (supported in Adobe AIR only).
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void {
-		
-		super (type, bubbles, cancelable, text);
-		errorID = id;
-		
-	}
-	
-	
-	public override function clone ():Event {
-		
-		return new ErrorEvent (type, bubbles, cancelable, text, errorID);
-		
-	}
-	
-	
-	public override function toString ():String {
-		
-		return "[ErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
-		
-	}
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void;
 	
 	
 }
 
 
-#else
-typedef ErrorEvent = flash.events.ErrorEvent;
 #end

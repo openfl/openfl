@@ -1,7 +1,61 @@
-package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net; #if (!display && !flash) #if (!openfl_legacy || disable_legacy_networking)
 
 
 import openfl.utils.ByteArray;
+
+
+@:final class URLRequest {
+	
+	
+	public var contentType:String;
+	public var data:Dynamic;
+	public var method:String;
+	public var requestHeaders:Array<URLRequestHeader>;
+	public var url:String;
+	public var userAgent:String;
+	
+	
+	public function new (inURL:String = null) {
+		
+		if (inURL != null) {
+			
+			url = inURL;
+			
+		}
+		
+		requestHeaders = [];
+		method = URLRequestMethod.GET;
+		contentType = null; // "application/x-www-form-urlencoded";
+		
+	}
+	
+	
+	public function formatRequestHeaders ():Array<URLRequestHeader> {
+		
+		var res = requestHeaders;
+		if (res == null) res = [];
+		
+		if (method == URLRequestMethod.GET || data == null) return res;
+		
+		if (Std.is (data, String) || Std.is (data, ByteArrayData)) {
+			
+			res = res.copy ();
+			res.push (new URLRequestHeader ("Content-Type", contentType != null ? contentType : "application/x-www-form-urlencoded"));
+			
+		}
+		
+		return res;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef URLRequest = openfl._legacy.net.URLRequest;
+#end
+#else
 
 
 /**
@@ -42,7 +96,13 @@ import openfl.utils.ByteArray;
  * Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
  * scope="external">Security</a>.</p>
  */
-@:final class URLRequest {
+
+#if flash
+@:native("flash.net.URLRequest")
+#end
+
+
+@:final extern class URLRequest {
 	
 	
 	/**
@@ -144,6 +204,10 @@ import openfl.utils.ByteArray;
 	 */
 	public var data:Dynamic;
 	
+	#if (flash && !display)
+	public var digest:String;
+	#end
+	
 	/**
 	 * Controls the HTTP form submission method.
 	 *
@@ -238,7 +302,8 @@ import openfl.utils.ByteArray;
 	 * rtmp://[2001:db8:ccc3:ffff:0:444d:555e:666f]:1935/test </pre>
 	 */
 	public var url:String;
-	public var userAgent:String;
+	
+	//public var userAgent:String;
 	
 	
 	/**
@@ -251,46 +316,15 @@ import openfl.utils.ByteArray;
 	 * @param url The URL to be requested. You can set the URL later by using the
 	 *            <code>url</code> property.
 	 */
-	public function new (inURL:String = null) {
-		
-		if (inURL != null) {
-			
-			url = inURL;
-			
-		}
-		
-		requestHeaders = [];
-		method = URLRequestMethod.GET;
-		contentType = null; // "application/x-www-form-urlencoded";
-		
-	}
+	public function new (url:String = null);
 	
 	
-	public function formatRequestHeaders ():Array<URLRequestHeader> {
-		
-		var res = requestHeaders;
-		if (res == null) res = [];
-		
-		if (method == URLRequestMethod.GET || data == null) return res;
-		
-		if (Std.is (data, String) || Std.is (data, ByteArrayData)) {
-			
-			res = res.copy ();
-			res.push (new URLRequestHeader ("Content-Type", contentType != null ? contentType : "application/x-www-form-urlencoded"));
-			
-		}
-		
-		return res;
-		
-	}
+	#if (flash && !display)
+	public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
+	#end
 	
 	
 }
 
 
-#else
-typedef URLRequest = openfl._legacy.net.URLRequest;
-#end
-#else
-typedef URLRequest = flash.net.URLRequest;
 #end

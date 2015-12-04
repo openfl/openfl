@@ -1,4 +1,4 @@
-package openfl.system; #if !flash
+package openfl.system; #if (!display && !flash)
 
 
 enum TouchscreenType {
@@ -11,5 +11,19 @@ enum TouchscreenType {
 
 
 #else
-typedef TouchscreenType = flash.system.TouchscreenType;
+
+
+#if flash
+@:native("flash.system.TouchscreenType")
+#end
+
+@:fakeEnum(String) extern enum TouchscreenType {
+	
+	FINGER;
+	NONE;
+	STYLUS;
+	
+}
+
+
 #end

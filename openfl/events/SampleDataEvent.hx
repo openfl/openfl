@@ -1,8 +1,9 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
 
 
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
+
 
 class SampleDataEvent extends Event {
 	
@@ -26,14 +27,20 @@ class SampleDataEvent extends Event {
 	
 	public override function clone ():Event {
 		
-		return new SampleDataEvent (type, bubbles, cancelable);
+		var event = new SampleDataEvent (type, bubbles, cancelable);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
 		
 	}
 	
 	
 	public override function toString ():String {
 		
-		return "[SampleDataEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		return __formatToString ("SampleDataEvent",  [ "type", "bubbles", "cancelable" ]);
 		
 	}
 	
@@ -42,5 +49,28 @@ class SampleDataEvent extends Event {
 
 
 #else
-typedef SampleDataEvent = flash.events.SampleDataEvent;
+
+
+import openfl.utils.ByteArray;
+
+#if flash
+@:native("flash.events.SampleDataEvent")
+#end
+
+
+extern class SampleDataEvent extends Event {
+	
+	
+	public static var SAMPLE_DATA:String = "sampleData";
+	
+	public var data:ByteArray;
+	public var position:Float;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false);
+	
+	
+}
+
+
 #end

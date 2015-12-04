@@ -250,7 +250,7 @@ typedef GraphicsStroke = openfl._legacy.display.GraphicsStroke;
 	 *                     <code>miterLimit</code> parameter to limit the length
 	 *                     of the miter.</p>
 	 */
-	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3, fill:IGraphicsFill = null);
+	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Float = 3, fill:IGraphicsFill = null);
 	
 	
 }

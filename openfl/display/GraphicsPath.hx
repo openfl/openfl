@@ -159,7 +159,7 @@ import openfl.Vector;
 	 * @param winding Specifies the winding rule using a value defined in the
 	 *                GraphicsPathWinding class.
 	 */
-	public function new (commands:Vector<Int> = null, data:Vector<Float> = null, winding:GraphicsPathWinding = null);
+	public function new (commands:Vector<Int> = null, data:Vector<Float> = null, ?winding:GraphicsPathWinding);
 	
 	
 	#if (flash && !display)

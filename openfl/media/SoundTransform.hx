@@ -1,10 +1,51 @@
-package openfl.media; #if !flash
+package openfl.media; #if (!display && !flash)
+
+
+@:final class SoundTransform {
+	
+	
+	public var leftToLeft:Float;
+	public var leftToRight:Float;
+	public var pan:Float;
+	public var rightToLeft:Float;
+	public var rightToRight:Float;
+	public var volume:Float;
+	
+	
+	public function new (vol:Float = 1, panning:Float = 0) {
+		
+		volume = vol;
+		pan = panning;
+		leftToLeft = 0;
+		leftToRight = 0;
+		rightToLeft = 0;
+		rightToRight = 0;
+		
+	}
+	
+	
+	public function clone ():SoundTransform {
+		
+		return new SoundTransform (volume, pan);
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
  * The SoundTransform class contains properties for volume and panning.
  */
-@:final class SoundTransform {
+
+#if flash
+@:native("flash.media.SoundTransform")
+#end
+
+@:final extern class SoundTransform {
 	
 	
 	/**
@@ -52,28 +93,13 @@ package openfl.media; #if !flash
 	 *               (full pan left) to 1(full pan right). A value of 0
 	 *                represents no panning(center).
 	 */
-	public function new (vol:Float = 1, panning:Float = 0):Void {
-		
-		volume = vol;
-		pan = panning;
-		leftToLeft = 0;
-		leftToRight = 0;
-		rightToLeft = 0;
-		rightToRight = 0;
-		
-	}
+	public function new (vol:Float = 1, panning:Float = 0);
 	
 	
-	public function clone ():SoundTransform {
-		
-		return new SoundTransform (volume, pan);
-		
-	}
+	public function clone ():SoundTransform;
 	
 	
 }
 
 
-#else
-typedef SoundTransform = flash.media.SoundTransform;
 #end

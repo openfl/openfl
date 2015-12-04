@@ -1,11 +1,27 @@
-package openfl.text; #if !flash #if !openfl_legacy
+package openfl.text; #if (!display && !flash) #if !openfl_legacy
+
+
+enum TextFormatAlign {
+	
+	LEFT;
+	RIGHT;
+	JUSTIFY;
+	CENTER;
+	
+}
+
+
+#else
+typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
+#end
+#else
 
 
 /**
  * The TextFormatAlign class provides values for text alignment in the
  * TextFormat class.
  */
-enum TextFormatAlign {
+@:fakeEnum(String) extern enum TextFormatAlign {
 	
 	/**
 	 * Constant; aligns text to the left within the text field. Use the syntax
@@ -31,12 +47,16 @@ enum TextFormatAlign {
 	 */
 	CENTER;
 	
+	#if (flash && !display)
+	END;
+	#end
+	
+	#if (flash && !display)
+	START;
+	#end
+	
+	
 }
 
 
-#else
-typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
-#end
-#else
-typedef TextFormatAlign = flash.text.TextFormatAlign;
 #end

@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash #if !openfl_legacy
+package openfl.ui; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.ui.MultitouchInputMode;
@@ -7,6 +7,79 @@ import openfl.Lib;
 #if (js && html5)
 import js.Browser;
 #end
+
+
+@:final class Multitouch {
+	
+	
+	public static var inputMode (get, set):MultitouchInputMode;
+	public static var maxTouchPoints (default, null):Int;
+	public static var supportedGestures (default, null):Array<String>;
+	public static var supportsGestureEvents (default, null):Bool;
+	public static var supportsTouchEvents (get, null):Bool;
+	
+	
+	public static function __init__ () {
+		
+		maxTouchPoints = 2;
+		supportedGestures = null;
+		supportsGestureEvents = false;
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private static function get_inputMode ():MultitouchInputMode {
+		
+		return MultitouchInputMode.TOUCH_POINT;
+		
+	}
+	
+	
+	private static function set_inputMode (inMode:MultitouchInputMode):MultitouchInputMode {
+		
+		if (inMode == MultitouchInputMode.GESTURE) {
+			
+			return inputMode;
+			
+		}
+		
+		// @todo set input mode
+		return inMode;
+		
+	}
+	
+	
+	private static function get_supportsTouchEvents ():Bool {
+		
+		#if (js && html5)
+		if (untyped __js__ ("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)")) {
+			
+			return true;
+			
+		}
+		#elseif (cpp)
+		return true;
+		#end
+		
+		return false;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef Multitouch = openfl._legacy.ui.Multitouch;
+#end
+#else
 
 
 /**
@@ -47,7 +120,13 @@ import js.Browser;
  * <p><b>Note:</b> The Multitouch feature is not supported for SWF files
  * embedded in HTML running on Mac OS.</p>
  */
-@:final class Multitouch {
+
+#if flash
+@:native("flash.ui.Multitouch")
+#end
+
+
+@:final extern class Multitouch {
 	
 	
 	/**
@@ -60,7 +139,15 @@ import js.Browser;
 	 * 
 	 * @default gesture
 	 */
+	#if (flash && !display)
+	public static var inputMode:MultitouchInputMode;
+	#else
 	public static var inputMode (get, set):MultitouchInputMode;
+	#end
+	
+	#if (flash && !display)
+	public static var mapTouchToMouse:Bool;
+	#end
 	
 	/**
 	 * The maximum number of concurrent touch points supported by the current
@@ -107,69 +194,14 @@ import js.Browser;
 	 * Indicates whether the current environment supports basic touch input, such
 	 * as a single finger tap. Touch events are listed in the TouchEvent class.
 	 */
+	#if (flash && !display)
+	public static var supportsTouchEvents (default, null):Bool;
+	#else
 	public static var supportsTouchEvents (get, null):Bool;
-	
-	
-	@:noCompletion @:dox(hide) public static function __init__ () {
-		
-		maxTouchPoints = 2;
-		supportedGestures = null;
-		supportsGestureEvents = false;
-		
-	}
-	
-	
-	
-	
-	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private static function get_inputMode ():MultitouchInputMode {
-		
-		return MultitouchInputMode.TOUCH_POINT;
-		
-	}
-	
-	
-	@:noCompletion private static function set_inputMode (inMode:MultitouchInputMode):MultitouchInputMode {
-		
-		if (inMode == MultitouchInputMode.GESTURE) {
-			
-			return inputMode;
-			
-		}
-		
-		// @todo set input mode
-		return inMode;
-		
-	}
-	
-	
-	@:noCompletion private static function get_supportsTouchEvents ():Bool {
-		
-		#if (js && html5)
-		if (untyped __js__ ("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)")) {
-			
-			return true;
-			
-		}
-		#elseif (cpp)
-		return true;
-		#end
-		
-		return false;
-		
-	}
+	#end
 	
 	
 }
 
 
-#else
-typedef Multitouch = openfl._legacy.ui.Multitouch;
-#end
-#else
-typedef Multitouch = flash.ui.Multitouch;
 #end

@@ -1,4 +1,19 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum SpreadMethod {
+	
+	REPEAT;
+	REFLECT;
+	PAD;
+	
+}
+
+
+#else
+typedef SpreadMethod = openfl._legacy.display.SpreadMethod;
+#end
+#else
 
 
 /**
@@ -9,7 +24,12 @@ package openfl.display; #if !flash #if !openfl_legacy
  * <p>The following example shows the same gradient fill using various spread
  * methods:</p>
  */
-enum SpreadMethod {
+
+#if flash
+@:native("flash.display.SpreadMethod")
+#end
+
+@:fakeEnum(String) extern enum SpreadMethod {
 	
 	/**
 	 * Specifies that the gradient use the <i>repeat</i> spread method.
@@ -29,9 +49,4 @@ enum SpreadMethod {
 }
 
 
-#else
-typedef SpreadMethod = openfl._legacy.display.SpreadMethod;
-#end
-#else
-typedef SpreadMethod = flash.display.SpreadMethod;
 #end

@@ -1,9 +1,110 @@
-package openfl.events; #if !flash #if !openfl_legacy
+package openfl.events; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
+import openfl.utils.ByteArray;
 
+
+class TouchEvent extends Event {
+	
+	
+	public static inline var TOUCH_BEGIN:String = "touchBegin";
+	public static inline var TOUCH_END:String = "touchEnd";
+	public static inline var TOUCH_MOVE:String = "touchMove";
+	public static inline var TOUCH_OUT:String = "touchOut";
+	public static inline var TOUCH_OVER:String = "touchOver";
+	public static inline var TOUCH_ROLL_OUT:String = "touchRollOut";
+	public static inline var TOUCH_ROLL_OVER:String = "touchRollOver";
+	public static inline var TOUCH_TAP:String = "touchTap";
+	
+	public var altKey:Bool;
+	public var commandKey:Bool;
+	public var controlKey:Bool;
+	public var ctrlKey:Bool;
+	public var delta:Int;
+	public var isPrimaryTouchPoint:Bool;
+	public var localX:Float;
+	public var localY:Float;
+	public var pressure:Float;
+	public var relatedObject:InteractiveObject;
+	public var shiftKey:Bool;
+	public var sizeX:Float;
+	public var sizeY:Float;
+	public var stageX:Float;
+	public var stageY:Float;
+	public var touchPointID:Int;
+	
+	
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null, samples:ByteArray = null, isTouchPointCanceled:Bool = false) {
+		
+		super (type, bubbles, cancelable);
+		
+		this.touchPointID = touchPointID;
+		this.isPrimaryTouchPoint = isPrimaryTouchPoint;
+		this.localX = localX;
+		this.localY = localY;
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
+		this.pressure = pressure;
+		this.relatedObject = relatedObject;
+		this.ctrlKey = ctrlKey;
+		this.altKey = altKey;
+		this.shiftKey = shiftKey;
+		this.commandKey = commandKey;
+		this.controlKey = controlKey;
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new TouchEvent (type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject, ctrlKey, altKey, shiftKey, commandKey, controlKey);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		event.eventPhase = eventPhase;
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("TouchEvent",  [ "type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject", "ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey" ]);
+		
+	}
+	
+	
+	public function updateAfterEvent ():Void {
+		
+		
+		
+	}
+	
+	
+	public static function __create (type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float, local:Point, target:InteractiveObject):TouchEvent {
+		
+		var evt = new TouchEvent (type, true, false, 0, true, local.x, local.y, 1, 1, 1);
+		evt.stageX = stageX;
+		evt.stageY = stageY;
+		evt.target = target;
+		
+		return evt;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef TouchEvent = openfl._legacy.events.TouchEvent;
+#end
+#else
+
+
+import openfl.display.InteractiveObject;
+import openfl.utils.ByteArray;
 
 /**
  * The TouchEvent class lets you handle events on devices that detect user
@@ -32,7 +133,41 @@ import openfl.geom.Point;
  * the type parameter set to the specific touch event you want to detect.</p>
  * 
  */
-class TouchEvent extends Event {
+
+#if flash
+@:native("flash.events.TouchEvent")
+#end
+
+extern class TouchEvent extends Event {
+	
+	
+	#if (flash && !display)
+	public static var PROXIMITY_BEGIN:String;
+	#end
+	
+	#if (flash && !display)
+	public static var PROXIMITY_END:String;
+	#end
+	
+	#if (flash && !display)
+	public static var PROXIMITY_MOVE:String;
+	#end
+	
+	#if (flash && !display)
+	public static var PROXIMITY_OUT:String;
+	#end
+	
+	#if (flash && !display)
+	public static var PROXIMITY_OVER:String;
+	#end
+	
+	#if (flash && !display)
+	public static var PROXIMITY_ROLL_OUT:String;
+	#end
+	
+	#if (flash && !display)
+	public static var PROXIMITY_ROLL_OVER:String;
+	#end
 	
 	
 	/**
@@ -106,8 +241,10 @@ class TouchEvent extends Event {
 	 * only.
 	 */
 	public var altKey:Bool;
-	public var buttonDown:Bool;
+	
 	public var commandKey:Bool;
+	
+	public var controlKey:Bool;
 	
 	/**
 	 * On Windows or Linux, indicates whether the Ctrl key is active
@@ -115,12 +252,17 @@ class TouchEvent extends Event {
 	 * indicates whether either the Control key or the Command key is activated.
 	 */
 	public var ctrlKey:Bool;
+	
 	public var delta:Int;
 	
 	/**
 	 * Indicates whether the first point of contact is mapped to mouse events.
 	 */
 	public var isPrimaryTouchPoint:Bool;
+	
+	#if (flash && !display)
+	public var isRelatedObjectInaccessible:Bool;
+	#end
 	
 	/**
 	 * The horizontal coordinate at which the event occurred relative to the
@@ -231,28 +373,7 @@ class TouchEvent extends Event {
 	 *                           (Windows or Linux only).
 	 * @param shiftKey            Indicates whether the Shift key is activated.
 	 */
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 1, sizeY:Float = 1, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
-		
-		super (type, bubbles, cancelable);
-		
-		this.shiftKey = shiftKey;
-		this.altKey = altKey;
-		this.ctrlKey = ctrlKey;
-		this.bubbles = bubbles;
-		this.relatedObject = relatedObject;
-		this.delta = delta;
-		this.localX = localX;
-		this.localY = localY;
-		this.sizeX = sizeX;
-		this.sizeY = sizeY;
-		this.buttonDown = buttonDown;
-		this.commandKey = commandKey;
-		
-		pressure = 1;
-		touchPointID = 0;
-		isPrimaryTouchPoint = true;
-		
-	}
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String, samples:ByteArray = null, isTouchPointCanceled:Bool = false);
 	
 	
 	/**
@@ -260,31 +381,10 @@ class TouchEvent extends Event {
 	 * event completes, if the display list has been modified.
 	 * 
 	 */
-	public function updateAfterEvent ():Void {
-		
-		
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public static function __create (type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float, local:Point, target:InteractiveObject):TouchEvent {
-		
-		var evt = new TouchEvent (type, true, false, local.x, local.y, 1, 1, null, false, false, false/*event.ctrlKey, event.altKey, event.shiftKey*/, false /* note: buttonDown not supported on w3c spec */, 0, false, 0);
-		evt.stageX = stageX;
-		evt.stageY = stageY;
-		evt.target = target;
-		
-		return evt;
-		
-	}
+	public function updateAfterEvent ():Void;
 	
 	
 }
 
 
-#else
-typedef TouchEvent = openfl._legacy.events.TouchEvent;
-#end
-#else
-typedef TouchEvent = flash.events.TouchEvent;
 #end

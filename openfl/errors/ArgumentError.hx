@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors; #if (!display && !flash)
 
 
 class ArgumentError extends Error {
@@ -17,5 +17,9 @@ class ArgumentError extends Error {
 
 
 #else
-typedef ArgumentError = flash.errors.ArgumentError;
+
+
+@:native("ArgumentError") extern class ArgumentError extends Error {}
+
+
 #end

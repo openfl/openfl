@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash
+package openfl.ui; #if (!display && !flash)
 
 
 import lime.ui.Gamepad;
@@ -15,7 +15,7 @@ import openfl.events.GameInputEvent;
 @:final class GameInput extends EventDispatcher {
 	
 	
-	public static var isSupported = true;
+	public static var isSupported (default, null) = true;
 	public static var numDevices (default, null) = 0;
 	
 	private static var __devices = new Map<Gamepad, GameInputDevice> ();
@@ -172,5 +172,31 @@ import openfl.events.GameInputEvent;
 
 
 #else
-typedef GameInput = flash.ui.GameInput;
+
+
+import openfl.events.EventDispatcher;
+
+#if flash
+@:native("flash.ui.GameInput")
+@:require(flash11_8)
+#end
+
+
+@:final class GameInput extends EventDispatcher {
+	
+	
+	public static var isSupported (default, null);
+	public static var numDevices (default, null);
+	
+	
+	public function new ();
+	
+	
+	public static function getDeviceAt (index:Int):GameInputDevice;
+	
+	
+	
+}
+
+
 #end

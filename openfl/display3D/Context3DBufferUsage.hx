@@ -1,4 +1,5 @@
-package openfl.display3D; #if !flash
+package openfl.display3D; #if (!display && !flash)
+
 
 enum Context3DBufferUsage {
 	
@@ -7,6 +8,21 @@ enum Context3DBufferUsage {
 	
 }
 
+
 #else
-typedef Context3DBufferUsage = flash.display3D.Context3DBufferUsage;
+
+
+#if flash
+@:native("flash.display3D.Context3DBufferUsage")
+@:require(flash12)
+#end
+
+@:fakeEnum(String) extern enum Context3DBufferUsage {
+	
+	DYNAMIC_DRAW;
+	STATIC_DRAW;
+	
+}
+
+
 #end

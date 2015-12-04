@@ -12,6 +12,7 @@ import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 
 @:access(openfl.display.LoaderInfo)
+@:access(openfl.events.Event)
 
 
 class Loader extends DisplayObjectContainer {

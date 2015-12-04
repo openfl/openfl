@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text; #if (!display && !flash)
 
 
 enum GridFitType {
@@ -11,5 +11,19 @@ enum GridFitType {
 
 
 #else
-typedef GridFitType = flash.text.GridFitType;
+
+
+#if flash
+@:native("flash.text.GridFitType")
+#end
+
+@:fakeEnum(String) extern enum GridFitType {
+	
+	NONE;
+	PIXEL;
+	SUBPIXEL;
+	
+}
+
+
 #end

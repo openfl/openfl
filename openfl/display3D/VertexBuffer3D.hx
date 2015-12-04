@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D; #if (!display && !flash)
 
 
 import openfl.gl.GL;
@@ -7,7 +7,9 @@ import openfl.utils.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+
 class VertexBuffer3D {
+	
 	
 	public var context:Context3D;
 	public var data32PerVertex:Int;
@@ -106,5 +108,24 @@ class VertexBuffer3D {
 
 
 #else
-typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;
+
+
+import openfl.utils.ByteArray;
+import openfl.Vector;
+
+#if flash
+@:native("flash.display3D.VertexBuffer3D")
+#end
+
+extern class VertexBuffer3D {
+	
+	
+	public function dispose ():Void;
+	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void;
+	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void;
+	
+	
+}
+
+
 #end

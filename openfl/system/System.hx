@@ -1,4 +1,4 @@
-package openfl.system; #if !flash #if !openfl_legacy
+package openfl.system; #if (!display && !flash) #if !openfl_legacy
 
 
 import lime.system.Clipboard;
@@ -9,6 +9,87 @@ import neko.vm.Gc;
 #elseif cpp
 import cpp.vm.Gc;
 #end
+
+
+@:final class System {
+	
+	
+	public static var totalMemory (get, null):Int;
+	public static var useCodePage:Bool = false;
+	public static var vmVersion (get, null):String;
+	
+	
+	public static function exit (code:Int):Void {
+		
+		LimeSystem.exit (code);
+		
+	}
+	
+	
+	public static function gc ():Void {
+		
+		#if (cpp || neko)
+		return Gc.run (true);
+		#end
+		
+	}
+	
+	
+	public static function pause ():Void {
+		
+		openfl.Lib.notImplemented ("System.pause");
+		
+	}
+	
+	
+	public static function resume ():Void {
+		
+		openfl.Lib.notImplemented ("System.resume");
+		
+	}
+	
+	
+	public static function setClipboard (string:String):Void {
+		
+		Clipboard.text = string;
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private static function get_totalMemory ():Int {
+		
+		#if neko
+		return Gc.stats ().heap;
+		#elseif cpp
+		return untyped __global__.__hxcpp_gc_used_bytes ();
+		#elseif (js && html5)
+		return untyped __js__ ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
+		#end
+		
+	}
+	
+	
+	private static function get_vmVersion ():String {
+		
+		return "1.0.0";
+		
+	}
+	
+	
+}
+
+
+#else
+typedef System = openfl._legacy.system.System;
+#end
+#else
 
 
 /**
@@ -23,8 +104,30 @@ import cpp.vm.Gc;
  * <p>This class contains only static methods and properties. You cannot
  * create new instances of the System class.</p>
  */
-@:final class System {
+
+#if flash
+@:native("flash.system.System")
+#end
+
+
+@:final extern class System {
 	
+	
+	#if (flash && !display)
+	@:require(flash10_1) public static var freeMemory (default, null):Float;
+	#end
+	
+	#if (flash && !display)
+	public static var ime (default, null):flash.system.IME;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10_1) public static var privateMemory (default, null):Float;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash11) public static var processCPUUsage (default, null):Float;
+	#end
 	
 	/**
 	 * The amount of memory(in bytes) currently in use that has been directly
@@ -41,7 +144,15 @@ import cpp.vm.Gc;
 	 * property is set to 0. The <code>System.totalMemoryNumber</code> property
 	 * allows larger values.</p>
 	 */
+	#if (flash && !display)
+	public static var totalMemory (default, null):Int;
+	#else
 	public static var totalMemory (get, null):Int;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
+	#end
 	
 	/**
 	 * A Boolean value that determines which code page to use to interpret
@@ -88,8 +199,18 @@ import cpp.vm.Gc;
 	 * the application(Flash Player 6 and later, or AIR) interprets the text as
 	 * Unicode.</p>
 	 */
-	public static var useCodePage:Bool = false;
+	public static var useCodePage:Bool;
+	
+	#if (flash && !display)
+	public static var vmVersion (default, null):String;
+	#else
 	public static var vmVersion (get, null):String;
+	#end
+	
+	
+	#if (flash && !display)
+	@:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
+	#end
 	
 	
 	/**
@@ -103,11 +224,7 @@ import cpp.vm.Gc;
 	 * @param code A value to pass to the operating system. Typically, if the
 	 *             process exits normally, the value is 0.
 	 */
-	public static function exit (code:Int):Void {
-		
-		LimeSystem.exit (code);
-		
-	}
+	public static function exit (code:UInt):Void;
 	
 	
 	/**
@@ -119,13 +236,7 @@ import cpp.vm.Gc;
 	 * applcation, in content in the application security sandbox.</p>
 	 * 
 	 */
-	public static function gc ():Void {
-		
-		#if (cpp || neko)
-		return Gc.run (true);
-		#end
-		
-	}
+	public static function gc ():Void;
 	
 	
 	/**
@@ -137,11 +248,12 @@ import cpp.vm.Gc;
 	 * (ADL) only.</i></p>
 	 * 
 	 */
-	public static function pause ():Void {
-		
-		openfl.Lib.notImplemented ("System.pause");
-		
-	}
+	public static function pause ():Void;
+	
+	
+	#if (flash && !display)
+	@:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
+	#end
 	
 	
 	/**
@@ -151,11 +263,7 @@ import cpp.vm.Gc;
 	 * (ADL) only.</i></p>
 	 * 
 	 */
-	public static function resume ():Void {
-		
-		openfl.Lib.notImplemented ("System.resume");
-		
-	}
+	public static function resume ():Void;
 	
 	
 	/**
@@ -173,46 +281,10 @@ import cpp.vm.Gc;
 	 * @param string A plain-text string of characters to put on the system
 	 *               Clipboard, replacing its current contents(if any).
 	 */
-	public static function setClipboard (string:String):Void {
-		
-		Clipboard.text = string;
-		
-	}
-	
-	
-	
-	
-	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private static function get_totalMemory ():Int {
-		
-		#if neko
-		return Gc.stats ().heap;
-		#elseif cpp
-		return untyped __global__.__hxcpp_gc_used_bytes ();
-		#elseif (js && html5)
-		return untyped __js__ ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
-		#end
-		
-	}
-	
-	
-	@:noCompletion private static function get_vmVersion ():String {
-		
-		return "1.0.0";
-		
-	}
+	public static function setClipboard (string:String):Void;
 	
 	
 }
 
 
-#else
-typedef System = openfl._legacy.system.System;
-#end
-#else
-typedef System = flash.system.System;
 #end

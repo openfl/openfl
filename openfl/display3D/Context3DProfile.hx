@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D; #if (!display && !flash)
 
 
 enum Context3DProfile {
@@ -11,5 +11,17 @@ enum Context3DProfile {
 
 
 #else
-typedef Context3DProfile = flash.display3D.Context3DProfile;
+
+
+@:fakeEnum(String) extern enum Context3DProfile {
+	
+	BASELINE;
+	BASELINE_CONSTRAINED;
+	BASELINE_EXTENDED;
+	STANDARD;
+	STANDARD_CONSTRAINED;
+	
+}
+
+
 #end

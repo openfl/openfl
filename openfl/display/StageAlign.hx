@@ -1,11 +1,34 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
+
+
+enum StageAlign {
+	
+	TOP_RIGHT;
+	TOP_LEFT;
+	TOP;
+	RIGHT;
+	LEFT;
+	BOTTOM_RIGHT;
+	BOTTOM_LEFT;
+	BOTTOM;
+	
+}
+
+
+#else
 
 
 /**
  * The StageAlign class provides constant values to use for the
  * <code>Stage.align</code> property.
  */
-enum StageAlign {
+
+#if flash
+@:native("flash.display.StageAlign")
+#end
+
+@:fakeEnum(String) extern enum StageAlign {
+	
 	
 	/**
 	 * Specifies that the Stage is aligned to the right.
@@ -50,6 +73,4 @@ enum StageAlign {
 }
 
 
-#else
-typedef StageAlign = flash.display.StageAlign;
 #end

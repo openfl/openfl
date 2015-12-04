@@ -1,10 +1,34 @@
-package openfl.text; #if !flash #if !openfl_legacy
+package openfl.text; #if (!display && !flash) #if !openfl_legacy
 
 
 /**
  * The FontStyle class provides values for the TextRenderer class.
  */
 enum FontStyle {
+	
+	REGULAR;
+	ITALIC;
+	BOLD_ITALIC;
+	BOLD;
+	
+}
+
+
+#else
+typedef FontStyle = openfl._legacy.text.FontStyle;
+#end
+#else
+
+
+/**
+ * The FontStyle class provides values for the TextRenderer class.
+ */
+
+#if flash
+@:native("flash.text.FontStyle")
+#end
+
+@:fakeEnum(String) extern enum FontStyle {
 	
 	/**
 	 * Defines the plain style of a font for the <code>fontStyle</code> parameter
@@ -37,9 +61,4 @@ enum FontStyle {
 }
 
 
-#else
-typedef FontStyle = openfl._legacy.text.FontStyle;
-#end
-#else
-typedef FontStyle = flash.text.FontStyle;
 #end

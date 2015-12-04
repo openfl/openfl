@@ -1,4 +1,43 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
+
+
+class SecurityErrorEvent extends ErrorEvent {
+	
+	
+	static public var SECURITY_ERROR:String = "securityError";
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0) {
+		
+		super (type, bubbles, cancelable, text, id);
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new SecurityErrorEvent (type, bubbles, cancelable, text, errorID);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("SecurityErrorEvent",  [ "type", "bubbles", "cancelable", "text", "errorID" ]);
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
@@ -19,7 +58,12 @@ package openfl.events; #if !flash
  * error.</p>
  * 
  */
-class SecurityErrorEvent extends ErrorEvent {
+
+#if flash
+@:native("flash.events.SecurityErrorEvent")
+#end
+
+extern class SecurityErrorEvent extends ErrorEvent {
 	
 	
 	/**
@@ -52,30 +96,10 @@ class SecurityErrorEvent extends ErrorEvent {
 	 *                   <code>text</code> property.
 	 * @param id         A reference number to associate with the specific error.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0) {
-		
-		super (type, bubbles, cancelable, text, id);
-		
-	}
-	
-	
-	public override function clone ():Event {
-		
-		return new SecurityErrorEvent (type, bubbles, cancelable, text, errorID);
-		
-	}
-	
-	
-	public override function toString ():String {
-		
-		return "[SecurityErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=" + text + " errorID=" + errorID + "]";
-		
-	}
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0);
 	
 	
 }
 
 
-#else
-typedef SecurityErrorEvent = flash.events.SecurityErrorEvent;
 #end

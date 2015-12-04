@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if !openfl_legacy
+package openfl.net; #if (!display && !flash) #if !openfl_legacy
 
 
 import haxe.io.Path;
@@ -20,44 +20,17 @@ import sys.FileSystem;
 class FileReference extends EventDispatcher {
 	
 	
-	/**
-	 * The creation date of the file on the local disk.
-	 */
 	public var creationDate (default, null):Date;
-	
-	/**
-	 * The Macintosh creator type of the file, which is only used in Mac OS versions prior to Mac OS X.
-	 */
 	public var creator (default, null):String;
-	
-	/**
-	 * The ByteArray object representing the data from the loaded file after a successful call to the load() method.
-	 */
 	public var data (default, null):ByteArray;
-	
-	/**
-	 * The date that the file on the local disk was last modified.
-	 */
 	public var modificationDate (default, null):Date;
-	
-	/**
-	 * The name of the file on the local disk.
-	 */
 	public var name (default, null):String;
-	
-	/**
-	 * The size of the file on the local disk in bytes.
-	 */
 	public var size (default, null):Int;
-	
-	/**
-	 * The file type.
-	 */
 	public var type (default, null):String;
 	
-	@:noCompletion private var __data:ByteArray;
-	@:noCompletion private var __path:String;
-	@:noCompletion private var __urlLoader:URLLoader;
+	private var __data:ByteArray;
+	private var __path:String;
+	private var __urlLoader:URLLoader;
 	
 	
 	public function new () {
@@ -192,14 +165,14 @@ class FileReference extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function openFileDialog_onCancel ():Void {
+	private function openFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	@:noCompletion private function openFileDialog_onSelect (path:String):Void {
+	private function openFileDialog_onSelect (path:String):Void {
 		
 		#if sys
 		var fileInfo = FileSystem.stat (path);
@@ -217,14 +190,14 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function saveFileDialog_onCancel ():Void {
+	private function saveFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	@:noCompletion private function saveFileDialog_onSelect (path:String):Void {
+	private function saveFileDialog_onSelect (path:String):Void {
 		
 		#if desktop
 		
@@ -250,7 +223,7 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function urlLoader_onComplete (event:Event):Void {
+	private function urlLoader_onComplete (event:Event):Void {
 		
 		#if desktop
 		
@@ -281,14 +254,14 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function urlLoader_onIOError (event:IOErrorEvent):Void {
+	private function urlLoader_onIOError (event:IOErrorEvent):Void {
 		
 		dispatchEvent (event);
 		
 	}
 	
 	
-	@:noCompletion private function urlLoader_onProgress (event:ProgressEvent):Void {
+	private function urlLoader_onProgress (event:ProgressEvent):Void {
 		
 		dispatchEvent (event);
 		
@@ -301,5 +274,86 @@ class FileReference extends EventDispatcher {
 #else
 #end
 #else
-typedef FileReference = flash.net.FileReference;
+
+
+import openfl.events.EventDispatcher;
+import openfl.utils.ByteArray;
+
+#if flash
+@:native("flash.net.FileReference")
+#end
+
+
+extern class FileReference extends EventDispatcher {
+	
+	
+	/**
+	 * The creation date of the file on the local disk.
+	 */
+	public var creationDate (default, null):Date;
+	
+	/**
+	 * The Macintosh creator type of the file, which is only used in Mac OS versions prior to Mac OS X.
+	 */
+	public var creator (default, null):String;
+	
+	/**
+	 * The ByteArray object representing the data from the loaded file after a successful call to the load() method.
+	 */
+	#if flash
+	@:require(flash10)
+	#end
+	public var data (default, null):ByteArray;
+	
+	/**
+	 * The date that the file on the local disk was last modified.
+	 */
+	public var modificationDate (default, null):Date;
+	
+	/**
+	 * The name of the file on the local disk.
+	 */
+	public var name (default, null):String;
+	
+	/**
+	 * The size of the file on the local disk in bytes.
+	 */
+	public var size (default, null):Int;
+	
+	/**
+	 * The file type.
+	 */
+	public var type (default, null):String;
+	
+	
+	public function new ();
+	
+	
+	public function browse (typeFilter:Array<FileFilter> = null):Bool;
+	
+	
+	public function cancel ():Void;
+	
+	
+	public function download (request:URLRequest, defaultFileName:String = null):Void;
+	
+	
+	#if flash
+	@:require(flash10)
+	#end
+	public function load ():Void;
+	
+	
+	#if flash
+	@:require(flash10)
+	#end
+	public function save (data:Dynamic, defaultFileName:String = null):Void;
+	
+	
+	public function upload (request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void;
+	
+	
+}
+
+
 #end

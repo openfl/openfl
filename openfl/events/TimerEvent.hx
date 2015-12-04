@@ -1,4 +1,51 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
+
+
+class TimerEvent extends Event {
+	
+	
+	public static var TIMER:String = "timer";
+	public static var TIMER_COMPLETE:String = "timerComplete";
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false):Void {
+		
+		super (type, bubbles, cancelable);
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new TimerEvent (type, bubbles, cancelable);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("TimerEvent",  [ "type", "bubbles", "cancelable" ]);
+		
+	}
+	
+	
+	public function updateAfterEvent ():Void {
+		
+		
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
@@ -6,7 +53,12 @@ package openfl.events; #if !flash
  * reaches the interval specified by the <code>Timer.delay</code> property.
  * 
  */
-class TimerEvent extends Event {
+
+#if flash
+@:native("flash.events.TimerEvent")
+#end
+
+extern class TimerEvent extends Event {
 	
 	
 	/**
@@ -41,25 +93,7 @@ class TimerEvent extends Event {
 	 *                   Event listeners can access this information through the
 	 *                   inherited <code>cancelable</code> property.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false):Void {
-		
-		super(type, bubbles, cancelable);
-		
-	}
-	
-	
-	public override function clone ():Event {
-		
-		return new TimerEvent (type, bubbles, cancelable);
-		
-	}
-	
-	
-	public override function toString ():String {
-		
-		return "[TimerEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
-		
-	}
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false):Void;
 	
 	
 	/**
@@ -67,16 +101,10 @@ class TimerEvent extends Event {
 	 * this event completes, if the display list has been modified.
 	 * 
 	 */
-	public function updateAfterEvent ():Void {
-		
-		
-		
-	}
+	public function updateAfterEvent ():Void;
 	
 	
 }
 
 
-#else
-typedef TimerEvent = flash.events.TimerEvent;
 #end

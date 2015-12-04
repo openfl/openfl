@@ -1,11 +1,27 @@
-package openfl.text; #if !flash
+package openfl.text; #if (!display && !flash)
+
+
+enum AntiAliasType {
+	
+	ADVANCED;
+	NORMAL;
+	
+}
+
+
+#else
 
 
 /**
  * The AntiAliasType class provides values for anti-aliasing in the
  * flash.text.TextField class.
  */
-enum AntiAliasType {
+
+#if flash
+@:native("flash.text.AntiAliasType")
+#end
+
+@:fakeEnum(String) extern enum AntiAliasType {
 	
 	/**
 	 * Sets anti-aliasing to advanced anti-aliasing. Advanced anti-aliasing
@@ -30,6 +46,4 @@ enum AntiAliasType {
 }
 
 
-#else
-typedef AntiAliasType = flash.text.AntiAliasType;
 #end

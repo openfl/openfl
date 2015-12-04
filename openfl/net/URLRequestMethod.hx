@@ -1,4 +1,40 @@
-package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net; #if (!display && !flash) #if (!openfl_legacy || disable_legacy_networking)
+
+
+@:enum abstract URLRequestMethod(String) from String to String {
+	
+	var DELETE = "DELETE";
+	var GET = "GET";
+	var HEAD = "HEAD";
+	var OPTIONS = "OPTIONS";
+	var POST = "POST";
+	var PUT = "PUT";
+	
+}
+
+
+#else
+typedef URLRequestMethod = openfl._legacy.net.URLRequestMethod;
+#end
+#else
+
+
+#if (flash && !display)
+
+@:native("flash.net.URLRequestMethod")
+
+extern class URLRequestMethod {
+	
+	@:require(flash10_1) public static var DELETE:String;
+	public static var GET:String;
+	@:require(flash10_1) public static var HEAD:String;
+	@:require(flash10_1) public static var OPTIONS:String;
+	public static var POST:String;
+	@:require(flash10_1) public static var PUT:String;
+	
+}
+
+#else
 
 
 /**
@@ -46,9 +82,5 @@ package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
 }
 
 
-#else
-typedef URLRequestMethod = openfl._legacy.net.URLRequestMethod;
 #end
-#else
-typedef URLRequestMethod = flash.net.URLRequestMethod;
 #end

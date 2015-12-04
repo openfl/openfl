@@ -1,11 +1,28 @@
-package openfl.net; #if !flash
+package openfl.net; #if (!display && !flash)
+
+
+enum URLLoaderDataFormat {
+	
+	BINARY;
+	TEXT;
+	VARIABLES;
+	
+}
+
+
+#else
 
 
 /**
  * The URLLoaderDataFormat class provides values that specify how downloaded
  * data is received.
  */
-enum URLLoaderDataFormat {
+
+#if flash
+@:native("flash.net.URLLoaderDataFormat")
+#end
+
+@:fakeEnum(String) extern enum URLLoaderDataFormat {
 	
 	/**
 	 * Specifies that downloaded data is received as raw binary data.
@@ -25,6 +42,4 @@ enum URLLoaderDataFormat {
 }
 
 
-#else
-typedef URLLoaderDataFormat = flash.net.URLLoaderDataFormat;
 #end

@@ -85,7 +85,7 @@ import openfl.geom.Matrix;
 	public var type:GradientType;
 	
 	
-	public function new (type:GradientType = null, colors:Array<UInt> = null, alphas:Array<Float> = null, ratios:Array<UInt> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0);
+	public function new (?type:GradientType, colors:Array<UInt> = null, alphas:Array<Float> = null, ratios:Array<UInt> = null, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Float = 0);
 	
 	
 }

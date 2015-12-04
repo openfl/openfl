@@ -1,10 +1,6 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
 
 
-/**
- * The EventPhase class provides values for the <code>eventPhase</code>
- * property of the Event class.
- */
 enum EventPhase {
 	
 	CAPTURING_PHASE;
@@ -15,5 +11,24 @@ enum EventPhase {
 
 
 #else
-typedef EventPhase = flash.events.EventPhase;
+
+
+/**
+ * The EventPhase class provides values for the <code>eventPhase</code>
+ * property of the Event class.
+ */
+
+#if flash
+@:native("flash.events.EventPhase")
+#end
+
+@:fakeEnum(UInt) extern enum EventPhase {
+	
+	AT_TARGET;
+	BUBBLING_PHASE;
+	CAPTURING_PHASE;
+	
+}
+
+
 #end

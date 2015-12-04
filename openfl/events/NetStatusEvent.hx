@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
 
 
 class NetStatusEvent extends Event {
@@ -18,9 +18,48 @@ class NetStatusEvent extends Event {
 	}
 	
 	
+	public override function clone ():Event {
+		
+		var event = new NetStatusEvent (type, bubbles, cancelable, info);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("NetStatusEvent",  [ "type", "bubbles", "cancelable", "info" ]);
+		
+	}
+	
+	
 }
 
 
 #else
-typedef NetStatusEvent = flash.events.NetStatusEvent;
+
+
+#if flash
+@:native("flash.events.NetStatusEvent")
+#end
+
+extern class NetStatusEvent extends Event {
+	
+	
+	public static var NET_STATUS:String = "netStatus";
+	
+	public var info:Dynamic;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, info:Dynamic = null);
+	
+	
+}
+
+
 #end

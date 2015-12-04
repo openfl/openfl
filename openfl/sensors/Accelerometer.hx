@@ -1,4 +1,4 @@
-package openfl.sensors; #if !flash #if !openfl_legacy
+package openfl.sensors; #if (!display && !flash) #if !openfl_legacy
 
 
 import haxe.Timer;
@@ -11,6 +11,160 @@ import openfl.events.EventDispatcher;
 #if (js && html5)
 import js.Browser;
 #end
+
+
+class Accelerometer extends EventDispatcher {
+	
+	
+	private static var currentX = 0.0;
+	private static var currentY = 1.0;
+	private static var currentZ = 0.0;
+	private static var defaultInterval = 34;
+	private static var initialized = false;
+	private static var supported = false;
+	
+	public static var isSupported (get, null):Bool;
+	public var muted (default, set):Bool;
+	
+	private var _interval:Int;
+	private var timer:Timer;
+	
+	
+	public function new () {
+		
+		super ();
+		
+		initialize ();
+		
+		_interval = 0;
+		muted = false;
+		setRequestedUpdateInterval (defaultInterval);
+		
+	}
+	
+	
+	override public function addEventListener (type:String, listener:Dynamic -> Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
+		
+		super.addEventListener (type, listener, useCapture, priority, useWeakReference);
+		update ();
+		
+	}
+	
+	
+	private static function initialize ():Void {
+		
+		if (!initialized) {
+			
+			var sensors = Sensor.getSensors (SensorType.ACCELEROMETER);
+			
+			if (sensors.length > 0) {
+				
+				sensors[0].onUpdate.add (accelerometer_onUpdate);
+				supported = true;
+				
+			}
+			
+			initialized = true;
+			
+		}
+		
+	}
+	
+	
+	public function setRequestedUpdateInterval (interval:Int):Void {
+		
+		_interval = interval;
+		
+		if (_interval < 0) {
+			
+			throw new ArgumentError ();
+			
+		} else if (_interval == 0) {
+			
+			_interval = defaultInterval;
+			
+		}
+		
+		if (timer != null) {
+			
+			timer.stop ();
+			timer = null;
+			
+		}
+		
+		if (supported && !muted) {
+			
+			timer = new Timer (_interval);
+			timer.run = update;
+			
+		}
+		
+	}
+	
+	
+	private function update ():Void {
+		
+		var event = new AccelerometerEvent (AccelerometerEvent.UPDATE);
+		
+		event.timestamp = Timer.stamp ();
+		event.accelerationX = currentX;
+		event.accelerationY = currentY;
+		event.accelerationZ = currentZ;
+		
+		dispatchEvent (event);
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private static function accelerometer_onUpdate (x:Float, y:Float, z:Float):Void {
+		
+		currentX = x;
+		currentY = y;
+		currentZ = z;
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private static function get_isSupported ():Bool { 
+		
+		initialize ();
+		
+		return supported;
+		
+	}
+	
+	
+	private function set_muted (value:Bool):Bool {
+		
+		this.muted = value;
+		setRequestedUpdateInterval (_interval);
+		
+		return value;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef Accelerometer = openfl._legacy.sensors.Accelerometer;
+#end
+#else
 
 
 /**
@@ -62,7 +216,14 @@ import js.Browser;
  *               </ul>
  *               </p>
  */
-class Accelerometer extends EventDispatcher {
+
+#if flash
+@:native("flash.sensors.Accelerometer")
+@:require(flash10_1)
+#end
+
+
+extern class Accelerometer extends EventDispatcher {
 	
 	
 	/**
@@ -70,68 +231,28 @@ class Accelerometer extends EventDispatcher {
 	 * accelerometer sensor is available on the device, otherwise it is set to
 	 * <code>false</code>.
 	 */
+	#if (flash && !display)
+	public static var isSupported (default, null):Bool;
+	#else
 	public static var isSupported (get, null):Bool;
+	#end
 	
 	/**
 	 * Specifies whether the user has denied access to the accelerometer
 	 * (<code>true</code>) or allowed access(<code>false</code>). When this
 	 * value changes, a <code>status</code> event is dispatched.
 	 */
+	#if (flash && !display)
+	public var muted (default, null):Bool;
+	#else
 	public var muted (default, set):Bool;
-	
-	private var _interval:Int;
-	private var timer:Timer;
-	
-	private static var currentX = 0.0;
-	private static var currentY = 1.0;
-	private static var currentZ = 0.0;
-	private static var defaultInterval = 34;
-	private static var initialized = false;
-	private static var supported = false;
+	#end
 	
 	
 	/**
 	 * Creates a new Accelerometer instance.
 	 */
-	public function new () {
-		
-		super ();
-		
-		initialize ();
-		
-		_interval = 0;
-		muted = false;
-		setRequestedUpdateInterval (defaultInterval);
-		
-	}
-	
-	
-	override public function addEventListener (type:String, listener:Dynamic -> Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
-		
-		super.addEventListener (type, listener, useCapture, priority, useWeakReference);
-		update ();
-		
-	}
-	
-	
-	@:noCompletion private static function initialize ():Void {
-		
-		if (!initialized) {
-			
-			var sensors = Sensor.getSensors (SensorType.ACCELEROMETER);
-			
-			if (sensors.length > 0) {
-				
-				sensors[0].onUpdate.add (accelerometer_onUpdate);
-				supported = true;
-				
-			}
-			
-			initialized = true;
-			
-		}
-		
-	}
+	public function new ();
 	
 	
 	/**
@@ -150,99 +271,10 @@ class Accelerometer extends EventDispatcher {
 	 * @throws ArgumentError The specified <code>interval</code> is less than
 	 *                       zero.
 	 */
-	public function setRequestedUpdateInterval (interval:Int):Void {
-		
-		_interval = interval;
-		
-		if (_interval < 0) {
-			
-			throw new ArgumentError ();
-			
-		} else if (_interval == 0) {
-			
-			_interval = defaultInterval;
-			
-		}
-		
-		if (timer != null) {
-			
-			timer.stop ();
-			timer = null;
-			
-		}
-		
-		if (supported && !muted) {
-			
-			timer = new Timer (_interval);
-			timer.run = update;
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function update ():Void {
-		
-		var event = new AccelerometerEvent (AccelerometerEvent.UPDATE);
-		
-		event.timestamp = Timer.stamp ();
-		event.accelerationX = currentX;
-		event.accelerationY = currentY;
-		event.accelerationZ = currentZ;
-		
-		dispatchEvent (event);
-		
-	}
-	
-	
-	
-	
-	// Event Handlers
-	
-	
-	
-	
-	@:noCompletion private static function accelerometer_onUpdate (x:Float, y:Float, z:Float):Void {
-		
-		currentX = x;
-		currentY = y;
-		currentZ = z;
-		
-	}
-	
-	
-	
-	
-	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private static function get_isSupported ():Bool { 
-		
-		initialize ();
-		
-		return supported;
-		
-	}
-	
-	
-	@:noCompletion private function set_muted (value:Bool):Bool {
-		
-		this.muted = value;
-		setRequestedUpdateInterval (_interval);
-		
-		return value;
-		
-	}
+	public function setRequestedUpdateInterval (interval:Int):Void;
 	
 	
 }
 
 
-#else
-typedef Accelerometer = openfl._legacy.sensors.Accelerometer;
-#end
-#else
-typedef Accelerometer = flash.sensors.Accelerometer;
 #end

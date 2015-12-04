@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom; #if (!display && !flash)
 
 
 class PerspectiveProjection {
@@ -44,7 +44,7 @@ class PerspectiveProjection {
 	
 	
 	
-	@:noCompletion private function set_fieldOfView (fieldOfView:Float):Float {
+	private function set_fieldOfView (fieldOfView:Float):Float {
 		
 		var p_nFovY = fieldOfView * TO_RADIAN;
 		this.fieldOfView = p_nFovY;
@@ -59,5 +59,31 @@ class PerspectiveProjection {
 
 
 #else
-typedef PerspectiveProjection = flash.geom.PerspectiveProjection;
+
+
+#if flash
+@:native("flash.geom.PerspectiveProjection")
+#end
+
+extern class PerspectiveProjection {
+	
+	
+	public static inline var TO_RADIAN:Float = 0.01745329251994329577; // Math.PI / 180
+	
+	public var fieldOfView (default, set_fieldOfView):Float;
+	public var focalLength:Float;
+	public var projectionCenter:Point; // FIXME: does this do anything at all?
+	
+	private var matrix3D:Matrix3D;
+	
+	
+	public function new ();
+	
+	
+	public function toMatrix3D ():Matrix3D;
+	
+	
+}
+
+
 #end

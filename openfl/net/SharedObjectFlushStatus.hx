@@ -1,4 +1,31 @@
-package openfl.net; #if !flash
+package openfl.net; #if (!display && !flash)
+
+
+@:fakeEnum(String) enum SharedObjectFlushStatus {
+	
+	FLUSHED;
+	PENDING;
+	
+}
+
+
+#else
+
+
+#if (flash && !display)
+
+
+// TODO: Is this really right on Flash? It has a constructor?
+
+@:native("flash.net.SharedObjectFlushStatus")
+extern class SharedObjectFlushStatus {
+	function new() : Void;
+	static var FLUSHED : String;
+	static var PENDING : String;
+}
+
+
+#else
 
 
 /**
@@ -21,6 +48,5 @@ package openfl.net; #if !flash
 }
 
 
-#else
-typedef SharedObjectFlushStatus = flash.net.SharedObjectFlushStatus;
+#end
 #end

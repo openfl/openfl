@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors; #if (!display && !flash)
 
 
 class IOError extends Error {
@@ -17,5 +17,19 @@ class IOError extends Error {
 
 
 #else
-typedef IOError = flash.errors.IOError;
+
+
+#if flash
+@:native("flash.errors.IOError")
+#end
+
+extern class IOError extends Error {
+	
+	
+	public function new (message:String = "");
+	
+	
+}
+
+
 #end

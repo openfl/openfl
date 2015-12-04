@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if !openfl_legacy
+package openfl.net; #if (!display && !flash) #if !openfl_legacy
 
 
 import haxe.io.Path;
@@ -114,5 +114,31 @@ class FileReferenceList extends EventDispatcher {
 #else
 #end
 #else
-typedef FileReferenceList = flash.net.FileReferenceList;
+
+
+import openfl.events.EventDispatcher;
+
+#if flash
+@:native("flash.net.FileReferenceList")
+#end
+
+
+extern class FileReferenceList extends EventDispatcher {
+	
+	
+	/**
+	 * An array of FileReference objects.
+	 */
+	public var fileList (default, null):Array<FileReference>;
+	
+	
+	public function new ();
+	
+	
+	public function browse (typeFilter:Array<FileFilter> = null):Bool;
+	
+	
+}
+
+
 #end

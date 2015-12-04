@@ -1,4 +1,55 @@
-package openfl.events; #if !flash #if !openfl_legacy
+package openfl.events; #if (!display && !flash) #if !openfl_legacy
+
+
+class HTTPStatusEvent extends Event {
+	
+	
+	public static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
+	public static var HTTP_STATUS:String = "httpStatus";
+	
+	public var redirected:Bool;
+	public var responseHeaders:Array<Dynamic>;
+	public var responseURL:String;
+	public var status (default, null):Int;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0, redirected:Bool = false):Void {
+		
+		this.status = status;
+		this.redirected = redirected;
+		
+		super (type, bubbles, cancelable);
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new HTTPStatusEvent (type, bubbles, status, redirected);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("HTTPStatusEvent",  [ "type", "bubbles", "cancelable", "status", "redirected" ]);
+		
+	}
+	
+	
+}
+
+
+#else
+typedef HTTPStatusEvent = openfl._legacy.events.HTTPStatusEvent;
+#end
+#else
 
 
 /**
@@ -20,7 +71,12 @@ package openfl.events; #if !flash #if !openfl_legacy
  * event.</p>
  * 
  */
-class HTTPStatusEvent extends Event {
+
+#if flash
+@:native("flash.events.HTTPStatusEvent")
+#end
+
+extern class HTTPStatusEvent extends Event {
 	
 	
 	/**
@@ -38,6 +94,9 @@ class HTTPStatusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash10_1)
+	#end
 	public static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
 	
 	/**
@@ -49,16 +108,24 @@ class HTTPStatusEvent extends Event {
 	public static var HTTP_STATUS:String = "httpStatus";
 	
 	
+	public var redirected:Bool;
+	
 	/**
 	 * The response headers that the response returned, as an array of
 	 * URLRequestHeader objects.
 	 */
+	#if flash
+	@:require(flash10_1)
+	#end
 	public var responseHeaders:Array<Dynamic>;
 	
 	/**
 	 * The URL that the response was returned from. In the case of redirects,
 	 * this will be different from the request URL.
 	 */
+	#if flash
+	@:require(flash10_1)
+	#end
 	public var responseURL:String;
 	
 	/**
@@ -99,21 +166,10 @@ class HTTPStatusEvent extends Event {
 	 * @param status     Numeric status. Event listeners can access this
 	 *                   information through the <code>status</code> property.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0):Void {
-		
-		this.status = status;
-		
-		super (type, bubbles, cancelable);
-		
-	}
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0, redirected:Bool = false):Void;
 	
 	
 }
 
 
-#else
-typedef HTTPStatusEvent = openfl._legacy.events.HTTPStatusEvent;
-#end
-#else
-typedef HTTPStatusEvent = flash.events.HTTPStatusEvent;
 #end

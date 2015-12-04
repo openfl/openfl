@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net; #if (!display && !flash)
 
 
 import openfl.events.EventDispatcher;
@@ -11,7 +11,7 @@ class NetConnection extends EventDispatcher {
 	public static inline var CONNECT_SUCCESS:String = "connectSuccess";
 	
 	
-	public function new ():Void {
+	public function new () {
 		
 		super ();
 		
@@ -26,7 +26,7 @@ class NetConnection extends EventDispatcher {
 			
 		}
 		
-		this.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, true, { code:NetConnection.CONNECT_SUCCESS }));
+		this.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, true, { code: NetConnection.CONNECT_SUCCESS }));
 		
 	}
 	
@@ -35,5 +35,101 @@ class NetConnection extends EventDispatcher {
 
 
 #else
-typedef NetConnection = flash.net.NetConnection;
+
+
+import openfl.events.EventDispatcher;
+import openfl.utils.Object;
+
+#if flash
+@:native("flash.net.NetConnection")
+#end
+
+
+extern class NetConnection extends EventDispatcher {
+	
+	
+	//public static inline var CONNECT_SUCCESS:String = "connectSuccess";
+	
+	#if (flash && !display)
+	public static var defaultObjectEncoding:UInt;
+	#end
+	
+	#if (flash && !display)
+	public var client:Dynamic;
+	#end
+	
+	#if (flash && !display)
+	public var connected (default, null):Bool;
+	#end
+	
+	#if (flash && !display)
+	public var connectedProxyType (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var farID (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var farNonce (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var maxPeerConnections:UInt;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var nearID (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var nearNonce (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	public var objectEncoding:UInt;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var protocol (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	public var proxyType:String;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash10) public var unconnectedPeerStreams (default, null):Array<Dynamic>;
+	#end
+	
+	#if (flash && !display)
+	public var uri (default, null):String;
+	#end
+	
+	#if (flash && !display)
+	public var usingTLS (default, null):Bool;
+	#end
+	
+	
+	public function new ();
+	
+	
+	#if (flash && !display)
+	public function addHeader (operation:String, mustUnderstand:Bool = false, ?param:Object):Void;
+	#end
+	
+	#if (flash && !display)
+	public function call (command:String, responder:flash.net.Responder, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
+	#end
+	
+	#if (flash && !display)
+	public function close ():Void;
+	#end
+	
+	public function connect (command:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
+	
+	
+}
+
+
 #end

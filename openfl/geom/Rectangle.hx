@@ -1,7 +1,341 @@
-package openfl.geom; #if !flash #if !openfl_legacy
+package openfl.geom; #if (!display && !flash) #if !openfl_legacy
 
 
 import lime.math.Rectangle in LimeRectangle;
+
+
+class Rectangle {
+	
+	
+	private static var __temp = new Rectangle ();
+	
+	public var bottom (get, set):Float;
+	public var bottomRight (get, set):Point;
+	public var height:Float;
+	public var left (get, set):Float;
+	public var right (get, set):Float;
+	public var size (get, set):Point;
+	public var top (get, set):Float;
+	public var topLeft (get, set):Point;
+	public var width:Float;
+	public var x:Float;
+	public var y:Float;
+	
+	
+	public function new (x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void {
+		
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		
+	}
+	
+	
+	public function clone ():Rectangle {
+		
+		return new Rectangle (x, y, width, height);
+		
+	}
+	
+	
+	public function contains (x:Float, y:Float):Bool {
+		
+		return x >= this.x && y >= this.y && x < right && y < bottom;
+		
+	}
+	
+	
+	public function containsPoint (point:Point):Bool {
+		
+		return contains (point.x, point.y);
+		
+	}
+	
+	
+	public function containsRect (rect:Rectangle):Bool {
+		
+		if (rect.width <= 0 || rect.height <= 0) {
+			
+			return rect.x > x && rect.y > y && rect.right < right && rect.bottom < bottom;
+			
+		} else {
+			
+			return rect.x >= x && rect.y >= y && rect.right <= right && rect.bottom <= bottom;
+			
+		}
+		
+	}
+	
+	
+	public function copyFrom (sourceRect:Rectangle):Void {
+		
+		x = sourceRect.x;
+		y = sourceRect.y;
+		width = sourceRect.width;
+		height = sourceRect.height;
+		
+	}
+	
+	
+	public function equals (toCompare:Rectangle):Bool {
+		
+		return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
+		
+	}
+	
+	
+	public function inflate (dx:Float, dy:Float):Void {
+		
+		x -= dx; width += dx * 2;
+		y -= dy; height += dy * 2;
+		
+	}
+	
+	
+	public function inflatePoint (point:Point):Void {
+		
+		inflate (point.x, point.y);
+		
+	}
+	
+	
+	public function intersection (toIntersect:Rectangle):Rectangle {
+		
+		var x0 = x < toIntersect.x ? toIntersect.x : x;
+		var x1 = right > toIntersect.right ? toIntersect.right : right;
+		
+		if (x1 <= x0) {
+			
+			return new Rectangle ();
+			
+		}
+		
+		var y0 = y < toIntersect.y ? toIntersect.y : y;
+		var y1 = bottom > toIntersect.bottom ? toIntersect.bottom : bottom;
+		
+		if (y1 <= y0) {
+			
+			return new Rectangle ();
+			
+		}
+		
+		return new Rectangle (x0, y0, x1 - x0, y1 - y0);
+		
+	}
+	
+	
+	public function intersects (toIntersect:Rectangle):Bool {
+		
+		var x0 = x < toIntersect.x ? toIntersect.x : x;
+		var x1 = right > toIntersect.right ? toIntersect.right : right;
+		
+		if (x1 <= x0) {
+			
+			return false;
+			
+		}
+		
+		var y0 = y < toIntersect.y ? toIntersect.y : y;
+		var y1 = bottom > toIntersect.bottom ? toIntersect.bottom : bottom;
+		
+		return y1 > y0;
+		
+	}
+	
+	
+	public function isEmpty ():Bool {
+		
+		return (width <= 0 || height <= 0);
+		
+	}
+	
+	
+	public function offset (dx:Float, dy:Float):Void {
+		
+		x += dx;
+		y += dy;
+		
+	}
+	
+	
+	public function offsetPoint (point:Point):Void {
+		
+		x += point.x;
+		y += point.y;
+		
+	}
+	
+	
+	public function setEmpty ():Void {
+		
+		x = y = width = height = 0;
+		
+	}
+	
+	
+	public function setTo (xa:Float, ya:Float, widtha:Float, heighta:Float):Void {
+		
+		x = xa;
+		y = ya;
+		width = widtha;
+		height = heighta;
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return '(x=$x, y=$y, width=$width, height=$height)';
+		
+	}
+	
+	
+	public function union (toUnion:Rectangle):Rectangle {
+		
+		if (width == 0 || height == 0) {
+			
+			return toUnion.clone ();
+			
+		} else if (toUnion.width == 0 || toUnion.height == 0) {
+			
+			return clone ();
+			
+		}
+		
+		var x0 = x > toUnion.x ? toUnion.x : x;
+		var x1 = right < toUnion.right ? toUnion.right : right;
+		var y0 = y > toUnion.y ? toUnion.y : y;
+		var y1 = bottom < toUnion.bottom ? toUnion.bottom : bottom;
+		
+		return new Rectangle (x0, y0, x1 - x0, y1 - y0);
+		
+	}
+	
+	
+	public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
+		
+		if (this.width == 0 && this.height == 0) {
+			
+			return;
+			
+		}
+		
+		var cacheRight = right;
+		var cacheBottom = bottom;
+		
+		if (this.x < x) this.x = x;
+		if (this.y < y) this.y = y;
+		if (this.right > x + width) this.width = x + width - this.x;
+		if (this.bottom > y + height) this.height = y + height - this.y;
+		
+	}
+	
+	
+	public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
+		
+		if (this.width == 0 && this.height == 0) {
+			
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+			return;
+			
+		}
+		
+		var cacheRight = right;
+		var cacheBottom = bottom;
+		
+		if (this.x > x)
+		{
+			this.x = x;
+			this.width = cacheRight - x;
+		}
+		if (this.y > y)
+		{
+			this.y = y;
+			this.height = cacheBottom - y;
+		}
+		if (cacheRight < x + width) this.width = x + width - this.x;
+		if (cacheBottom < y + height) this.height = y + height - this.y;
+		
+	}
+	
+	
+	private function __toLimeRectangle ():LimeRectangle {
+		
+		return new LimeRectangle (x, y, width, height);
+		
+	}
+	
+	
+	private function __transform (rect:Rectangle, m:Matrix):Void {
+		
+		var tx0 = m.a * x + m.c * y;
+		var tx1 = tx0;
+		var ty0 = m.b * x + m.d * y;
+		var ty1 = ty0;
+		
+		var tx = m.a * (x + width) + m.c * y;
+		var ty = m.b * (x + width) + m.d * y;
+		
+		if (tx < tx0) tx0 = tx;
+		if (ty < ty0) ty0 = ty;
+		if (tx > tx1) tx1 = tx;
+		if (ty > ty1) ty1 = ty;
+		
+		tx = m.a * (x + width) + m.c * (y + height);
+		ty = m.b * (x + width) + m.d * (y + height);
+		
+		if (tx < tx0) tx0 = tx;
+		if (ty < ty0) ty0 = ty;
+		if (tx > tx1) tx1 = tx;
+		if (ty > ty1) ty1 = ty;
+		
+		tx = m.a * x + m.c * (y + height);
+		ty = m.b * x + m.d * (y + height);
+		
+		if (tx < tx0) tx0 = tx;
+		if (ty < ty0) ty0 = ty;
+		if (tx > tx1) tx1 = tx;
+		if (ty > ty1) ty1 = ty;
+		
+		rect.setTo (tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
+		
+	}
+	
+	
+	
+	
+	// Getters & Setters
+	
+	
+	
+	
+	private function get_bottom ():Float { return y + height; }
+	private function set_bottom (b:Float):Float { height = b - y; return b; }
+	private function get_bottomRight ():Point { return new Point (x + width, y + height); }
+	private function set_bottomRight (p:Point):Point { width = p.x - x; height = p.y - y; return p.clone (); }
+	private function get_left ():Float { return x; }
+	private function set_left (l:Float):Float { width -= l - x; x = l; return l; }
+	private function get_right ():Float { return x + width; }
+	private function set_right (r:Float):Float { width = r - x; return r; }
+	private function get_size ():Point { return new Point (width, height); }
+	private function set_size (p:Point):Point { width = p.x; height = p.y; return p.clone (); }
+	private function get_top ():Float { return y; }
+	private function set_top (t:Float):Float { height -= t - y; y = t; return t; }
+	private function get_topLeft ():Point { return new Point (x, y); }
+	private function set_topLeft (p:Point):Point { x = p.x; y = p.y; return p.clone (); }
+	
+	
+}
+
+
+#else
+typedef Rectangle = openfl._legacy.geom.Rectangle;
+#end
+#else
 
 
 /**
@@ -48,21 +382,32 @@ import lime.math.Rectangle in LimeRectangle;
  * display object. To draw a rectangular Shape object onscreen, use the
  * <code>drawRect()</code> method of the Graphics class.</p>
  */
-class Rectangle {
+
+#if flash
+@:native("flash.geom.Rectangle")
+#end
+
+extern class Rectangle {
 	
-	
-	@:noCompletion private static var __temp = new Rectangle ();
 	
 	/**
 	 * The sum of the <code>y</code> and <code>height</code> properties.
 	 */
+	#if (flash && !display)
+	public var bottom:Float;
+	#else
 	public var bottom (get, set):Float;
+	#end
 	
 	/**
 	 * The location of the Rectangle object's bottom-right corner, determined by
 	 * the values of the <code>right</code> and <code>bottom</code> properties.
 	 */
+	#if (flash && !display)
+	public var bottomRight:Point;
+	#else
 	public var bottomRight (get, set):Point;
+	#end
 	
 	/**
 	 * The height of the rectangle, in pixels. Changing the <code>height</code>
@@ -81,18 +426,30 @@ class Rectangle {
 	 * <p>The value of the <code>left</code> property is equal to the value of
 	 * the <code>x</code> property.</p>
 	 */
+	#if (flash && !display)
+	public var left:Float;
+	#else
 	public var left (get, set):Float;
+	#end
 	
 	/**
 	 * The sum of the <code>x</code> and <code>width</code> properties.
 	 */
+	#if (flash && !display)
+	public var right:Float;
+	#else
 	public var right (get, set):Float;
+	#end
 	
 	/**
 	 * The size of the Rectangle object, expressed as a Point object with the
 	 * values of the <code>width</code> and <code>height</code> properties.
 	 */
+	#if (flash && !display)
+	public var size:Point;
+	#else
 	public var size (get, set):Point;
+	#end
 	
 	/**
 	 * The <i>y</i> coordinate of the top-left corner of the rectangle. Changing
@@ -104,13 +461,21 @@ class Rectangle {
 	 * <p>The value of the <code>top</code> property is equal to the value of the
 	 * <code>y</code> property.</p>
 	 */
+	#if (flash && !display)
+	public var top:Float;
+	#else
 	public var top (get, set):Float;
+	#end
 	
 	/**
 	 * The location of the Rectangle object's top-left corner, determined by the
 	 * <i>x</i> and <i>y</i> coordinates of the point.
 	 */
+	#if (flash && !display)
+	public var topLeft:Point;
+	#else
 	public var topLeft (get, set):Point;
+	#end
 	
 	/**
 	 * The width of the rectangle, in pixels. Changing the <code>width</code>
@@ -157,14 +522,7 @@ class Rectangle {
 	 * @param width  The width of the rectangle, in pixels.
 	 * @param height The height of the rectangle, in pixels.
 	 */
-	public function new (x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void {
-		
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		
-	}
+	public function new (x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void;
 	
 	
 	/**
@@ -176,11 +534,7 @@ class Rectangle {
 	 *         <code>x</code>, <code>y</code>, <code>width</code>, and
 	 *         <code>height</code> properties as the original Rectangle object.
 	 */
-	public function clone ():Rectangle {
-		
-		return new Rectangle (x, y, width, height);
-		
-	}
+	public function clone ():Rectangle;
 	
 	
 	/**
@@ -192,11 +546,7 @@ class Rectangle {
 	 * @return A value of <code>true</code> if the Rectangle object contains the
 	 *         specified point; otherwise <code>false</code>.
 	 */
-	public function contains (x:Float, y:Float):Bool {
-		
-		return x >= this.x && y >= this.y && x < right && y < bottom;
-		
-	}
+	public function contains (x:Float, y:Float):Bool;
 	
 	
 	/**
@@ -210,11 +560,7 @@ class Rectangle {
 	 * @return A value of <code>true</code> if the Rectangle object contains the
 	 *         specified point; otherwise <code>false</code>.
 	 */
-	public function containsPoint (point:Point):Bool {
-		
-		return contains (point.x, point.y);
-		
-	}
+	public function containsPoint (point:Point):Bool;
 	
 	
 	/**
@@ -228,29 +574,13 @@ class Rectangle {
 	 *         specify is contained by this Rectangle object; otherwise
 	 *         <code>false</code>.
 	 */
-	public function containsRect (rect:Rectangle):Bool {
-		
-		if (rect.width <= 0 || rect.height <= 0) {
-			
-			return rect.x > x && rect.y > y && rect.right < right && rect.bottom < bottom;
-			
-		} else {
-			
-			return rect.x >= x && rect.y >= y && rect.right <= right && rect.bottom <= bottom;
-			
-		}
-		
-	}
+	public function containsRect (rect:Rectangle):Bool;
 	
 	
-	public function copyFrom (sourceRect:Rectangle):Void {
-		
-		x = sourceRect.x;
-		y = sourceRect.y;
-		width = sourceRect.width;
-		height = sourceRect.height;
-		
-	}
+	#if flash
+	@:require(flash11)
+	#end
+	public function copyFrom (sourceRect:Rectangle):Void;
 	
 	
 	/**
@@ -266,11 +596,7 @@ class Rectangle {
 	 *         and <code>height</code> properties as this Rectangle object;
 	 *         otherwise <code>false</code>.
 	 */
-	public function equals (toCompare:Rectangle):Bool {
-		
-		return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
-		
-	}
+	public function equals (toCompare:Rectangle):Bool;
 	
 	
 	/**
@@ -286,12 +612,7 @@ class Rectangle {
 	 *           Rectangle. The following equation is used to calculate the new
 	 *           height and position of the rectangle:
 	 */
-	public function inflate (dx:Float, dy:Float):Void {
-		
-		x -= dx; width += dx * 2;
-		y -= dy; height += dy * 2;
-		
-	}
+	public function inflate (dx:Float, dy:Float):Void;
 	
 	
 	/**
@@ -306,11 +627,7 @@ class Rectangle {
 	 *              The <code>y</code> property is used to increase the vertical
 	 *              dimension of the Rectangle object.
 	 */
-	public function inflatePoint (point:Point):Void {
-		
-		inflate (point.x, point.y);
-		
-	}
+	public function inflatePoint (point:Point):Void;
 	
 	
 	/**
@@ -328,29 +645,7 @@ class Rectangle {
 	 *         <code>y</code>, <code>width</code>, and <code>height</code>
 	 *         properties set to 0.
 	 */
-	public function intersection (toIntersect:Rectangle):Rectangle {
-		
-		var x0 = x < toIntersect.x ? toIntersect.x : x;
-		var x1 = right > toIntersect.right ? toIntersect.right : right;
-		
-		if (x1 <= x0) {
-			
-			return new Rectangle ();
-			
-		}
-		
-		var y0 = y < toIntersect.y ? toIntersect.y : y;
-		var y1 = bottom > toIntersect.bottom ? toIntersect.bottom : bottom;
-		
-		if (y1 <= y0) {
-			
-			return new Rectangle ();
-			
-		}
-		
-		return new Rectangle (x0, y0, x1 - x0, y1 - y0);
-		
-	}
+	public function intersection (toIntersect:Rectangle):Rectangle;
 	
 	
 	/**
@@ -365,23 +660,7 @@ class Rectangle {
 	 * @return A value of <code>true</code> if the specified object intersects
 	 *         with this Rectangle object; otherwise <code>false</code>.
 	 */
-	public function intersects (toIntersect:Rectangle):Bool {
-		
-		var x0 = x < toIntersect.x ? toIntersect.x : x;
-		var x1 = right > toIntersect.right ? toIntersect.right : right;
-		
-		if (x1 <= x0) {
-			
-			return false;
-			
-		}
-		
-		var y0 = y < toIntersect.y ? toIntersect.y : y;
-		var y1 = bottom > toIntersect.bottom ? toIntersect.bottom : bottom;
-		
-		return y1 > y0;
-		
-	}
+	public function intersects (toIntersect:Rectangle):Bool;
 	
 	
 	/**
@@ -390,11 +669,7 @@ class Rectangle {
 	 * @return A value of <code>true</code> if the Rectangle object's width or
 	 *         height is less than or equal to 0; otherwise <code>false</code>.
 	 */
-	public function isEmpty ():Bool {
-		
-		return (width <= 0 || height <= 0);
-		
-	}
+	public function isEmpty ():Bool;
 	
 	
 	/**
@@ -404,12 +679,7 @@ class Rectangle {
 	 * @param dx Moves the <i>x</i> value of the Rectangle object by this amount.
 	 * @param dy Moves the <i>y</i> value of the Rectangle object by this amount.
 	 */
-	public function offset (dx:Float, dy:Float):Void {
-		
-		x += dx;
-		y += dy;
-		
-	}
+	public function offset (dx:Float, dy:Float):Void;
 	
 	
 	/**
@@ -419,12 +689,7 @@ class Rectangle {
 	 * 
 	 * @param point A Point object to use to offset this Rectangle object.
 	 */
-	public function offsetPoint (point:Point):Void {
-		
-		x += point.x;
-		y += point.y;
-		
-	}
+	public function offsetPoint (point:Point):Void;
 	
 	
 	/**
@@ -435,28 +700,16 @@ class Rectangle {
 	 * <code>width</code>, and <code>height</code> properties to 0.</p>
 	 * 
 	 */
-	public function setEmpty ():Void {
-		
-		x = y = width = height = 0;
-		
-	}
+	public function setEmpty ():Void;
 	
 	
-	public function setTo (xa:Float, ya:Float, widtha:Float, heighta:Float):Void {
-		
-		x = xa;
-		y = ya;
-		width = widtha;
-		height = heighta;
-		
-	}
+	#if flash
+	@:require(flash11)
+	#end
+	public function setTo (xa:Float, ya:Float, widtha:Float, heighta:Float):Void;
 	
 	
-	public function toString ():String {
-		
-		return "(x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ")";
-		
-	}
+	public function toString ():String;
 	
 	
 	/**
@@ -470,150 +723,9 @@ class Rectangle {
 	 * @param toUnion A Rectangle object to add to this Rectangle object.
 	 * @return A new Rectangle object that is the union of the two rectangles.
 	 */
-	public function union (toUnion:Rectangle):Rectangle {
-		
-		if (width == 0 || height == 0) {
-			
-			return toUnion.clone ();
-			
-		} else if (toUnion.width == 0 || toUnion.height == 0) {
-			
-			return clone ();
-			
-		}
-		
-		var x0 = x > toUnion.x ? toUnion.x : x;
-		var x1 = right < toUnion.right ? toUnion.right : right;
-		var y0 = y > toUnion.y ? toUnion.y : y;
-		var y1 = bottom < toUnion.bottom ? toUnion.bottom : bottom;
-		
-		return new Rectangle (x0, y0, x1 - x0, y1 - y0);
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public function __contract (x:Float, y:Float, width:Float, height:Float):Void {
-		
-		if (this.width == 0 && this.height == 0) {
-			
-			return;
-			
-		}
-		
-		var cacheRight = right;
-		var cacheBottom = bottom;
-		
-		if (this.x < x) this.x = x;
-		if (this.y < y) this.y = y;
-		if (this.right > x + width) this.width = x + width - this.x;
-		if (this.bottom > y + height) this.height = y + height - this.y;
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public function __expand (x:Float, y:Float, width:Float, height:Float):Void {
-		
-		if (this.width == 0 && this.height == 0) {
-			
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			return;
-			
-		}
-		
-		var cacheRight = right;
-		var cacheBottom = bottom;
-		
-		if (this.x > x)
-		{
-			this.x = x;
-			this.width = cacheRight - x;
-		}
-		if (this.y > y)
-		{
-			this.y = y;
-			this.height = cacheBottom - y;
-		}
-		if (cacheRight < x + width) this.width = x + width - this.x;
-		if (cacheBottom < y + height) this.height = y + height - this.y;
-		
-	}
-	
-	
-	@:noCompletion private function __toLimeRectangle ():LimeRectangle {
-		
-		return new LimeRectangle (x, y, width, height);
-		
-	}
-	
-	
-	@:noCompletion private function __transform (rect:Rectangle, m:Matrix):Void {
-		
-		var tx0 = m.a * x + m.c * y;
-		var tx1 = tx0;
-		var ty0 = m.b * x + m.d * y;
-		var ty1 = ty0;
-		
-		var tx = m.a * (x + width) + m.c * y;
-		var ty = m.b * (x + width) + m.d * y;
-		
-		if (tx < tx0) tx0 = tx;
-		if (ty < ty0) ty0 = ty;
-		if (tx > tx1) tx1 = tx;
-		if (ty > ty1) ty1 = ty;
-		
-		tx = m.a * (x + width) + m.c * (y + height);
-		ty = m.b * (x + width) + m.d * (y + height);
-		
-		if (tx < tx0) tx0 = tx;
-		if (ty < ty0) ty0 = ty;
-		if (tx > tx1) tx1 = tx;
-		if (ty > ty1) ty1 = ty;
-		
-		tx = m.a * x + m.c * (y + height);
-		ty = m.b * x + m.d * (y + height);
-		
-		if (tx < tx0) tx0 = tx;
-		if (ty < ty0) ty0 = ty;
-		if (tx > tx1) tx1 = tx;
-		if (ty > ty1) ty1 = ty;
-		
-		rect.setTo (tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
-		
-	}
-	
-	
-	
-	
-	// Getters & Setters
-	
-	
-	
-	
-	@:noCompletion private function get_bottom ():Float { return y + height; }
-	@:noCompletion private function set_bottom (b:Float):Float { height = b - y; return b; }
-	@:noCompletion private function get_bottomRight ():Point { return new Point (x + width, y + height); }
-	@:noCompletion private function set_bottomRight (p:Point):Point { width = p.x - x; height = p.y - y; return p.clone (); }
-	@:noCompletion private function get_left ():Float { return x; }
-	@:noCompletion private function set_left (l:Float):Float { width -= l - x; x = l; return l; }
-	@:noCompletion private function get_right ():Float { return x + width; }
-	@:noCompletion private function set_right (r:Float):Float { width = r - x; return r; }
-	@:noCompletion private function get_size ():Point { return new Point (width, height); }
-	@:noCompletion private function set_size (p:Point):Point { width = p.x; height = p.y; return p.clone (); }
-	@:noCompletion private function get_top ():Float { return y; }
-	@:noCompletion private function set_top (t:Float):Float { height -= t - y; y = t; return t; }
-	@:noCompletion private function get_topLeft ():Point { return new Point (x, y); }
-	@:noCompletion private function set_topLeft (p:Point):Point { x = p.x; y = p.y; return p.clone (); }
-	
+	public function union (toUnion:Rectangle):Rectangle;
 	
 }
 
 
-#else
-typedef Rectangle = openfl._legacy.geom.Rectangle;
-#end
-#else
-typedef Rectangle = flash.geom.Rectangle;
 #end

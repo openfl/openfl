@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D; #if (!display && !flash)
 
 
 enum Context3DRenderMode {
@@ -10,5 +10,18 @@ enum Context3DRenderMode {
 
 
 #else
-typedef Context3DRenderMode = flash.display3D.Context3DRenderMode;
+
+
+#if flash
+@:native("flash.display3D.Context3DRenderMode")
+#end
+
+@:fakeEnum(String) extern enum Context3DRenderMode {
+	
+	AUTO;
+	SOFTWARE;
+	
+}
+
+
 #end

@@ -2080,11 +2080,11 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                       restriction does not apply to AIR content in the
 	 *                       application security sandbox.
 	 */
-	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void;
+	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false):Void;
 	
 	
 	#if (flash && !display)
-	@:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null) : Void;
+	@:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality) : Void;
 	#end
 	
 	

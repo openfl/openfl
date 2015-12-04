@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom; #if (!display && !flash)
 
 
 enum Orientation3D {
@@ -11,5 +11,15 @@ enum Orientation3D {
 
 
 #else
-typedef Orientation3D = flash.geom.Orientation3D;
+
+
+@:fakeEnum(String) extern enum Orientation3D {
+	
+	AXIS_ANGLE;
+	EULER_ANGLES;
+	QUATERNION;
+	
+}
+
+
 #end

@@ -1,4 +1,16 @@
-package openfl.ui; #if !flash
+package openfl.ui; #if (!display && !flash)
+
+
+enum MultitouchInputMode {
+	
+	NONE;
+	TOUCH_POINT;
+	GESTURE;
+	
+}
+
+
+#else
 
 
 /**
@@ -7,7 +19,7 @@ package openfl.ui; #if !flash
  * values set the type of touch events the Flash runtime dispatches when the
  * user interacts with a touch-enabled device.
  */
-enum MultitouchInputMode {
+@:fakeEnum(String) @:require(flash10_1) extern enum MultitouchInputMode {
 	
 	/**
 	 * Specifies that all user contact with a touch-enabled device is interpreted
@@ -27,6 +39,4 @@ enum MultitouchInputMode {
 }
 
 
-#else
-typedef MultitouchInputMode = flash.ui.MultitouchInputMode;
 #end

@@ -21,10 +21,9 @@ enum GradientType {
 
 #if flash
 @:native("flash.display.GradientType")
-@:fakeEnum(String)
 #end
 
-extern enum GradientType {
+@:fakeEnum(String) extern enum GradientType {
 	
 	/**
 	 * Value used to specify a radial gradient fill.

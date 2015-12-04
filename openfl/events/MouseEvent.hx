@@ -1,8 +1,130 @@
-package openfl.events; #if !flash #if !openfl_legacy
+package openfl.events; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
+
+
+class MouseEvent extends Event {
+	
+	
+	public static var CLICK:String = "click";
+	public static var DOUBLE_CLICK:String = "doubleClick";
+	public static var MIDDLE_CLICK:String = "middleClick";
+	public static var MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
+	public static var MIDDLE_MOUSE_UP:String = "middleMouseUp";
+	public static var MOUSE_DOWN:String = "mouseDown";
+	public static var MOUSE_MOVE:String = "mouseMove";
+	public static var MOUSE_OUT:String = "mouseOut";
+	public static var MOUSE_OVER:String = "mouseOver";
+	public static var MOUSE_UP:String = "mouseUp";
+	public static var MOUSE_WHEEL:String = "mouseWheel";
+	public static var RIGHT_CLICK:String = "rightClick";
+	public static var RIGHT_MOUSE_DOWN:String = "rightMouseDown";
+	public static var RIGHT_MOUSE_UP:String = "rightMouseUp";
+	public static var ROLL_OUT:String = "rollOut";
+	public static var ROLL_OVER:String = "rollOver";
+	
+	private static var __altKey:Bool;
+	private static var __buttonDown:Bool;
+	private static var __commandKey:Bool;
+	private static var __ctrlKey:Bool;
+	private static var __shiftKey:Bool;
+	
+	public var altKey:Bool;
+	public var buttonDown:Bool;
+	public var commandKey:Bool;
+	public var clickCount:Int;
+	public var ctrlKey:Bool;
+	public var delta:Int;
+	public var localX:Float;
+	public var localY:Float;
+	public var relatedObject:InteractiveObject;
+	public var shiftKey:Bool;
+	public var stageX:Float;
+	public var stageY:Float;
+	
+	
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
+		
+		super (type, bubbles, cancelable);
+		
+		this.shiftKey = shiftKey;
+		this.altKey = altKey;
+		this.ctrlKey = ctrlKey;
+		this.bubbles = bubbles;
+		this.relatedObject = relatedObject;
+		this.delta = delta;
+		this.localX = localX;
+		this.localY = localY;
+		this.buttonDown = buttonDown;
+		this.commandKey = commandKey;
+		this.clickCount = clickCount;
+		
+	}
+	
+	
+	public static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
+		
+		switch (type) {
+			
+			case MouseEvent.MOUSE_DOWN:
+				
+				__buttonDown = true;
+				
+			case MouseEvent.MOUSE_UP:
+				
+				__buttonDown = false;
+			
+			default:
+			
+		}
+		
+		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
+		event.stageX = stageX;
+		event.stageY = stageY;
+		event.target = target;
+		
+		return event;
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new MouseEvent (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		event.eventPhase = eventPhase;
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("MouseEvent",  [ "type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta" ]);
+		
+	}
+	
+	
+	public function updateAfterEvent ():Void {
+		
+		
+		
+	}
+	
+	
+}
+
+
+#else
+typedef MouseEvent = openfl._legacy.events.MouseEvent;
+#end
+#else
+
+
+import openfl.display.InteractiveObject;
 
 
 /**
@@ -18,7 +140,12 @@ import openfl.geom.Point;
  * mouse event you want to detect.</p>
  * 
  */
-class MouseEvent extends Event {
+
+#if flash
+@:native("flash.events.MouseEvent")
+#end
+
+extern class MouseEvent extends Event {
 	
 	
 	/**
@@ -28,6 +155,10 @@ class MouseEvent extends Event {
 	 * <p>This event has the following properties:</p>
 	 */
 	public static var CLICK:String = "click";
+	
+	#if (flash && !display)
+	@:require(flash11_2) public static var CONTEXT_MENU:String;
+	#end
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -45,6 +176,9 @@ class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash11_2)
+	#end
 	public static var MIDDLE_CLICK:String = "middleClick";
 	
 	/**
@@ -53,6 +187,9 @@ class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash11_2)
+	#end
 	public static var MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
 	
 	/**
@@ -61,6 +198,9 @@ class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash11_2)
+	#end
 	public static var MIDDLE_MOUSE_UP:String = "middleMouseUp";
 	
 	/**
@@ -111,12 +251,19 @@ class MouseEvent extends Event {
 	 */
 	public static var MOUSE_WHEEL:String = "mouseWheel";
 	
+	#if (flash && !display)
+	@:require(flash11_3) public static var RELEASE_OUTSIDE:String;
+	#end
+	
 	/**
 	 * Defines the value of the <code>type</code> property of a
 	 * <code>rightClick</code> event object.
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash11_2)
+	#end
 	public static var RIGHT_CLICK:String = "rightClick";
 	
 	/**
@@ -125,6 +272,9 @@ class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash11_2)
+	#end
 	public static var RIGHT_MOUSE_DOWN:String = "rightMouseDown";
 	
 	/**
@@ -133,6 +283,9 @@ class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
+	#if flash
+	@:require(flash11_2)
+	#end
 	public static var RIGHT_MOUSE_UP:String = "rightMouseUp";
 	
 	/**
@@ -151,13 +304,6 @@ class MouseEvent extends Event {
 	 */
 	public static var ROLL_OVER:String = "rollOver";
 	
-	@:noCompletion private static var __altKey:Bool;
-	@:noCompletion private static var __buttonDown:Bool;
-	@:noCompletion private static var __commandKey:Bool;
-	@:noCompletion private static var __ctrlKey:Bool;
-	@:noCompletion private static var __shiftKey:Bool;
-	
-	
 	/**
 	 * Indicates whether the Alt key is active(<code>true</code>) or inactive
 	 * (<code>false</code>). Supported for Windows only. On other operating
@@ -170,8 +316,10 @@ class MouseEvent extends Event {
 	 * or not(<code>false</code>).
 	 */
 	public var buttonDown:Bool;
-	public var commandKey:Bool;
+	
 	public var clickCount:Int;
+	
+	public var commandKey:Bool;
 	
 	/**
 	 * On Windows or Linux, indicates whether the Ctrl key is active
@@ -190,6 +338,10 @@ class MouseEvent extends Event {
 	 */
 	public var delta:Int;
 	
+	#if (flash && !display)
+	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
+	#end
+	
 	/**
 	 * The horizontal coordinate at which the event occurred relative to the
 	 * containing sprite.
@@ -201,6 +353,14 @@ class MouseEvent extends Event {
 	 * containing sprite.
 	 */
 	public var localY:Float;
+	
+	#if (flash && !display)
+	@:require(flash11_2) public var movementX:Float;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash11_2) public var movementY:Float;
+	#end
 	
 	/**
 	 * A reference to a display list object that is related to the event. For
@@ -288,63 +448,7 @@ class MouseEvent extends Event {
 	 *                      values. This parameter is used only for the
 	 *                      <code>MouseEvent.mouseWheel</code> event.
 	 */
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
-		
-		super (type, bubbles, cancelable);
-		
-		this.shiftKey = shiftKey;
-		this.altKey = altKey;
-		this.ctrlKey = ctrlKey;
-		this.bubbles = bubbles;
-		this.relatedObject = relatedObject;
-		this.delta = delta;
-		this.localX = localX;
-		this.localY = localY;
-		this.buttonDown = buttonDown;
-		this.commandKey = commandKey;
-		this.clickCount = clickCount;
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
-		
-		switch (type) {
-			
-			case MouseEvent.MOUSE_DOWN:
-				
-				__buttonDown = true;
-				
-			case MouseEvent.MOUSE_UP:
-				
-				__buttonDown = false;
-			
-			default:
-			
-		}
-		
-		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
-		event.stageX = stageX;
-		event.stageY = stageY;
-		event.target = target;
-		
-		return event;
-		
-	}
-	
-	
-	public override function clone ():Event {
-		
-		return new MouseEvent (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
-		
-	}
-	
-	
-	public override function toString ():String {
-		
-		return "[MouseEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " localX=" + localX + " localY=" + localY + " relatedObject=" + relatedObject + " ctrlKey=" + ctrlKey + " altKey=" + altKey + " shiftKey=" + shiftKey + " buttonDown=" + buttonDown + " delta=" + delta + "]";
-		
-	}
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0);
 	
 	
 	/**
@@ -352,19 +456,10 @@ class MouseEvent extends Event {
 	 * event completes, if the display list has been modified.
 	 * 
 	 */
-	public function updateAfterEvent ():Void {
-		
-		
-		
-	}
+	public function updateAfterEvent ():Void;
 	
 	
 }
 
 
-#else
-typedef MouseEvent = openfl._legacy.events.MouseEvent;
-#end
-#else
-typedef MouseEvent = flash.events.MouseEvent;
 #end

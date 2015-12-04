@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash
+package openfl.ui; #if (!display && !flash)
 
 
 #if (haxe_ver > 3.100)
@@ -27,5 +27,24 @@ package openfl.ui; #if !flash
 
 
 #else
-typedef KeyLocation = flash.ui.KeyLocation;
+
+
+#if flash
+@:native("flash.ui.KeyLocation")
+#end
+
+@:fakeEnum(UInt) extern enum KeyLocation {
+	
+	#if (flash && !display)
+	D_PAD;
+	#end
+	
+	LEFT;
+	NUM_PAD;
+	RIGHT;
+	STANDARD;
+	
+}
+
+
 #end

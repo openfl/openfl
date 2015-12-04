@@ -1,11 +1,28 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
+
+
+enum StageDisplayState {
+	
+	NORMAL;
+	FULL_SCREEN;
+	FULL_SCREEN_INTERACTIVE;
+	
+}
+
+
+#else
 
 
 /**
  * The StageDisplayState class provides values for the
  * <code>Stage.displayState</code> property.
  */
-enum StageDisplayState {
+
+#if flash
+@:native("flash.display.StageDisplayState")
+#end
+
+@:fakeEnum(String) extern enum StageDisplayState {
 	
 	/**
 	 * Specifies that the Stage is in normal mode.
@@ -25,6 +42,4 @@ enum StageDisplayState {
 }
 
 
-#else
-typedef StageDisplayState = flash.display.StageDisplayState;
 #end

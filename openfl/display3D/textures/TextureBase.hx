@@ -1,4 +1,4 @@
-package openfl.display3D.textures; #if !flash
+package openfl.display3D.textures; #if (!display && !flash)
 
 
 import openfl.gl.GL;
@@ -39,5 +39,21 @@ class TextureBase extends EventDispatcher {
 
 
 #else
-typedef TextureBase = flash.display3D.textures.TextureBase;
+
+
+import openfl.events.EventDispatcher;
+
+#if flash
+@:native("flash.display3D.textures.TextureBase")
+#end
+
+extern class TextureBase extends EventDispatcher {
+	
+	
+	public function dispose ():Void;
+	
+	
+}
+
+
 #end

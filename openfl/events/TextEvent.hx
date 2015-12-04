@@ -1,4 +1,48 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
+
+
+class TextEvent extends Event {
+	
+	
+	public static var LINK:String = "link";
+	public static var TEXT_INPUT:String = "textInput";
+	
+	public var text:String;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "") {
+		
+		super (type, bubbles, cancelable);
+		
+		this.text = text;
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new TextEvent (type, bubbles, cancelable, text);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("TextEvent",  [ "type", "bubbles", "cancelable", "text" ]);
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
@@ -8,7 +52,12 @@ package openfl.events; #if !flash
  * <code>TextEvent.TEXT_INPUT</code>.
  * 
  */
-class TextEvent extends Event {
+
+#if flash
+@:native("flash.events.TextEvent")
+#end
+
+extern class TextEvent extends Event {
 	
 	
 	/**
@@ -60,32 +109,10 @@ class TextEvent extends Event {
 	 *                   Event listeners can access this information through the
 	 *                   <code>text</code> property.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "") {
-		
-		super (type, bubbles, cancelable);
-		
-		this.text = text;
-		
-	}
-	
-	
-	public override function clone ():Event {
-		
-		return new TextEvent (type, bubbles, cancelable, text);
-		
-	}
-	
-	
-	public override function toString ():String {
-		
-		return "[TextEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " text=\"" + text + "\"]";
-		
-	}
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "");
 	
 	
 }
 
 
-#else
-typedef TextEvent = flash.events.TextEvent;
 #end

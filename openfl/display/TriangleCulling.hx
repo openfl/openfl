@@ -1,4 +1,19 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum TriangleCulling {
+	
+	NEGATIVE;
+	NONE;
+	POSITIVE;
+	
+}
+
+
+#else
+typedef TriangleCulling = openfl._legacy.display.TriangleCulling;
+#end
+#else
 
 
 /**
@@ -22,7 +37,12 @@ package openfl.display; #if !flash #if !openfl_legacy
  * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
  * negative normals will not be rendered. </p>
  */
-enum TriangleCulling {
+
+#if flash
+@:native("flash.display.TriangleCulling")
+#end
+
+@:fakeEnum(String) extern enum TriangleCulling {
 	
 	/**
 	 * Specifies culling of all triangles facing toward the current view point.
@@ -43,9 +63,4 @@ enum TriangleCulling {
 }
 
 
-#else
-typedef TriangleCulling = openfl._legacy.display.TriangleCulling;
-#end
-#else
-typedef TriangleCulling = flash.display.TriangleCulling;
 #end

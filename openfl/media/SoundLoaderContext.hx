@@ -1,4 +1,25 @@
-package openfl.media; #if !flash
+package openfl.media; #if (!display && !flash)
+
+
+class SoundLoaderContext {
+	
+	
+	public var bufferTime:Float;
+	public var checkPolicyFile:Bool;
+	
+	
+	public function new (bufferTime:Float = 1000, checkPolicyFile:Bool = false) {
+		
+		this.bufferTime = bufferTime;
+		this.checkPolicyFile = checkPolicyFile;
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 /**
@@ -31,7 +52,12 @@ package openfl.media; #if !flash
  * Center Topic: <a href="http://www.adobe.com/go/devnet_security_en"
  * scope="external">Security</a>.</p>
  */
-class SoundLoaderContext {
+
+#if flash
+@:native("flash.media.SoundLoaderContext")
+#end
+
+extern class SoundLoaderContext {
 	
 	
 	/**
@@ -151,17 +177,10 @@ class SoundLoaderContext {
 	 *                        file should be checked upon loading the object
 	 *                       (<code>true</code>) or not.
 	 */
-	public function new (bufferTime:Float = 0, checkPolicyFile:Bool = false) {
-		
-		this.bufferTime = bufferTime;
-		this.checkPolicyFile = checkPolicyFile;
-		
-	}
+	public function new (bufferTime:Float = 1000, checkPolicyFile:Bool = false);
 	
 	
 }
 
 
-#else
-typedef SoundLoaderContext = flash.media.SoundLoaderContext;
 #end

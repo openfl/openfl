@@ -1,11 +1,32 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum StageQuality {
+	
+	BEST;
+	HIGH;
+	MEDIUM;
+	LOW;
+	
+}
+
+
+#else
+typedef StageQuality = openfl._legacy.display.StageQuality;
+#end
+#else
 
 
 /**
  * The StageQuality class provides values for the <code>Stage.quality</code>
  * property.
  */
-enum StageQuality {
+
+#if flash
+@:native("flash.display.StageQuality")
+#end
+
+@:fakeEnum(String) extern enum StageQuality {
 	
 	/**
 	 * Specifies very high rendering quality: graphics are anti-aliased using a 4
@@ -35,9 +56,4 @@ enum StageQuality {
 }
 
 
-#else
-typedef StageQuality = openfl._legacy.display.StageQuality;
-#end
-#else
-typedef StageQuality = flash.display.StageQuality;
 #end

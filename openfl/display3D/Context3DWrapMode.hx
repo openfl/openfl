@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D; #if (!display && !flash)
 
 
 enum Context3DWrapMode {
@@ -10,5 +10,27 @@ enum Context3DWrapMode {
 
 
 #else
-typedef Context3DWrapMode = flash.display3D.Context3DWrapMode;
+
+
+#if flash
+@:native("flash.display.Context3DWrapMode")
+#end
+
+@:fakeEnum(String) extern enum Context3DWrapMode {
+	
+	CLAMP;
+	
+	#if (flash && !display)
+	CLAMP_U_REPEAT_V;
+	#end
+	
+	REPEAT;
+	
+	#if (flash && !display)
+	REPEAT_U_CLAMP_V;
+	#end
+	
+}
+
+
 #end

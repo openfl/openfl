@@ -1,4 +1,4 @@
-package openfl.system; #if !flash
+package openfl.system; #if (!display && !flash)
 
 
 class LoaderContext {
@@ -27,5 +27,50 @@ class LoaderContext {
 
 
 #else
-typedef LoaderContext = flash.system.LoaderContext;
+
+
+import openfl.display.DisplayObjectContainer;
+
+#if flash
+@:native("flash.system.LoaderContext")
+#end
+
+
+extern class LoaderContext {
+	
+	
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var allowCodeImport:Bool;
+	
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var allowLoadBytesCodeExecution:Bool;
+	
+	public var applicationDomain:ApplicationDomain;
+	public var checkPolicyFile:Bool;
+	
+	#if (flash && !display)
+	@:require(flash11) public var imageDecodingPolicy:flash.system.ImageDecodingPolicy;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash11) public var parameters:Dynamic;
+	#end
+	
+	#if (flash && !display)
+	@:require(flash11) public var requestedContentParent:DisplayObjectContainer;
+	#end
+	
+	public var securityDomain:SecurityDomain;
+	
+	
+	public function new (checkPolicyFile:Bool = false, applicationDomain:ApplicationDomain = null, securityDomain:SecurityDomain = null):Void;
+	
+	
+}
+
+
 #end

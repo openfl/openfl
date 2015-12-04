@@ -330,7 +330,7 @@ extern class Bitmap extends DisplayObject {
 	public var smoothing:Bool;
 	
 	
-	public function new (bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false);
+	public function new (bitmapData:BitmapData = null, ?pixelSnapping:PixelSnapping, smoothing:Bool = false);
 	
 	
 }

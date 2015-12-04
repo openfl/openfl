@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors; #if (!display && !flash)
 
 
 class SecurityError extends Error {
@@ -17,5 +17,19 @@ class SecurityError extends Error {
 
 
 #else
-typedef SecurityError = flash.errors.SecurityError;
+
+
+#if flash
+@:native("SecurityError")
+#end
+
+extern class SecurityError extends Error {
+	
+	
+	public function new (message:String = "");
+	
+
+}
+
+
 #end

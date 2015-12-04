@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
 
 
 import haxe.Timer;
@@ -52,5 +52,38 @@ class Stage3D extends EventDispatcher {
 
 
 #else
-typedef Stage3D = flash.display.Stage3D;
+
+
+import openfl.display3D.Context3D;
+import openfl.display3D.Context3DProfile;
+import openfl.display3D.Context3DRenderMode;
+import openfl.events.EventDispatcher;
+import openfl.Vector;
+
+#if flash
+@:native("flash.display.Stage3D")
+@:require(flash11)
+#end
+
+extern class Stage3D extends EventDispatcher {
+	
+	
+	public var context3D (default, null):Context3D;
+	public var visible:Bool;
+	public var x:Float;
+	public var y:Float;
+	
+	
+	public function requestContext3D (?context3DRenderMode:Context3DRenderMode, ?profile:Context3DProfile):Void;
+	
+	#if flash
+	@:require(flash12)
+	#end
+	public function requestContext3DMatchingProfiles (profiles:Vector<String>):Void;
+	
+	
+}
+
+
+
 #end

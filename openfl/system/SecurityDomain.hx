@@ -1,4 +1,4 @@
-package openfl.system; #if !flash
+package openfl.system; #if (!display && !flash)
 
 
 class SecurityDomain {
@@ -18,5 +18,31 @@ class SecurityDomain {
 
 
 #else
-typedef SecurityDomain = flash.system.SecurityDomain;
+
+
+#if flash
+@:native("flash.system.SecurityDomain")
+#end
+
+
+extern class SecurityDomain {
+	
+	
+	public static var currentDomain (default, null) = new SecurityDomain ();
+	
+	#if (flash && !display)
+	@:require(flash11_3) public var domainID (default, null):String;
+	#end
+	
+	
+	private function new () {
+		
+		
+		
+	}
+	
+	
+}
+
+
 #end

@@ -1,4 +1,19 @@
-package openfl.text; #if !flash #if !openfl_legacy
+package openfl.text; #if (!display && !flash) #if !openfl_legacy
+
+
+enum FontType {
+	
+	DEVICE;
+	EMBEDDED;
+	EMBEDDED_CFF;
+	
+}
+
+
+#else
+typedef FontType = openfl._legacy.text.FontType;
+#end
+#else
 
 
 /**
@@ -6,7 +21,12 @@ package openfl.text; #if !flash #if !openfl_legacy
  * <code>"embedded"</code> and <code>"device"</code> for the
  * <code>fontType</code> property of the Font class.
  */
-enum FontType {
+
+#if flash
+@:native("flash.text.FontType")
+#end
+
+@:fakeEnum(String) extern enum FontType {
 	
 	/**
 	 * Indicates that this is a device font. The SWF file renders fonts with
@@ -48,9 +68,4 @@ enum FontType {
 }
 
 
-#else
-typedef FontType = openfl._legacy.text.FontType;
-#end
-#else
-typedef FontType = flash.text.FontType;
 #end

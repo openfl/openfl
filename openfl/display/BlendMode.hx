@@ -41,10 +41,9 @@ typedef BlendMode = openfl._legacy.display.BlendMode;
 
 #if flash
 @:native("flash.display.BlendMode")
-@:fakeEnum(String)
 #end
 
-extern enum BlendMode {
+@:fakeEnum(String) extern enum BlendMode {
 	
 	/**
 	 * Adds the values of the constituent colors of the display object to the

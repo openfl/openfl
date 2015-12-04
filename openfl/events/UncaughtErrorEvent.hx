@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
 
 
 class UncaughtErrorEvent extends ErrorEvent {
@@ -6,12 +6,13 @@ class UncaughtErrorEvent extends ErrorEvent {
 	
 	public static var UNCAUGHT_ERROR = "uncaughtError";
 	
-	public var error:Dynamic;
+	public var error (default, null):Dynamic;
 	
 	
 	public function new (type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null) {
 		
 		super (type, bubbles, cancelable);
+		
 		this.error = error;
 		
 	}
@@ -19,14 +20,20 @@ class UncaughtErrorEvent extends ErrorEvent {
 	
 	public override function clone ():Event {
 		
-		return new UncaughtErrorEvent (type, bubbles, cancelable, error);
+		var event = new UncaughtErrorEvent (type, bubbles, cancelable, error);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
 		
 	}
 	
 	
 	public override function toString ():String {
 		
-		return "[UncaughtErrorEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + "]";
+		return __formatToString ("UncaughtErrorEvent",  [ "type", "bubbles", "cancelable", "error" ]);
 		
 	}
 	
@@ -35,5 +42,24 @@ class UncaughtErrorEvent extends ErrorEvent {
 
 
 #else
-typedef UncaughtErrorEvent = flash.events.UncaughtErrorEvent;
+
+
+#if flash
+@:native("flash.events.UncaughtErrorEvent")
+#end
+
+extern class UncaughtErrorEvent extends ErrorEvent {
+	
+	
+	public static var UNCAUGHT_ERROR = "uncaughtError";
+	
+	public var error (default, null):Dynamic;
+	
+	
+	public function new (type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null);
+	
+	
+}
+
+
 #end

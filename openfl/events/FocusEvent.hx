@@ -1,4 +1,57 @@
-package openfl.events; #if !flash
+package openfl.events; #if (!display && !flash)
+
+
+import openfl.display.InteractiveObject;
+
+
+class FocusEvent extends Event {
+	
+	
+	public static var FOCUS_IN = "focusIn";
+	public static var FOCUS_OUT = "focusOut";
+	public static var KEY_FOCUS_CHANGE = "keyFocusChange";
+	public static var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
+	
+	public var keyCode:Int;
+	public var relatedObject:InteractiveObject;
+	public var shiftKey:Bool;
+	
+	
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, relatedObject:InteractiveObject = null, shiftKey:Bool = false, keyCode:Int = 0) {
+		
+		super (type, bubbles, cancelable);
+		
+		this.keyCode = keyCode;
+		this.shiftKey = shiftKey;
+		this.relatedObject = relatedObject;
+		
+	}
+	
+	
+	public override function clone ():Event {
+		
+		var event = new FocusEvent (type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("FocusEvent",  [ "type", "bubbles", "cancelable", "relatedObject", "shiftKey", "keyCode" ]);
+		
+	}
+	
+	
+}
+
+
+#else
 
 
 import openfl.display.InteractiveObject;
@@ -16,7 +69,12 @@ import openfl.display.InteractiveObject;
  * </ul>
  * 
  */
-class FocusEvent extends Event {
+
+#if flash
+@:native("flash.events.FocusEvent")
+#end
+
+extern class FocusEvent extends Event {
 	
 	
 	/**
@@ -51,6 +109,10 @@ class FocusEvent extends Event {
 	 */
 	public static var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
 	
+	
+	#if (flash && !display)
+	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
+	#end
 	
 	/**
 	 * The key code value of the key pressed to trigger a
@@ -103,40 +165,10 @@ class FocusEvent extends Event {
 	 * @param keyCode       Indicates the code of the key pressed to trigger a
 	 *                      <code>keyFocusChange</code> event.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, relatedObject:InteractiveObject = null, shiftKey:Bool = false, keyCode:Int = 0) {
-		
-		super (type, bubbles, cancelable);
-		
-		this.keyCode = keyCode;
-		this.shiftKey = shiftKey;
-		this.relatedObject = relatedObject;
-		
-	}
-	
-	
-	public override function clone ():Event {
-		
-		var event = new FocusEvent (type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		#if !openfl_legacy
-		event.eventPhase = eventPhase;
-		#end
-		return event;
-		
-	}
-	
-	
-	public override function toString ():String {
-		
-		return "[FocusEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " relatedObject=" + relatedObject + " shiftKey=" + shiftKey + " keyCode=" + keyCode + "]";
-		
-	}
+	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, relatedObject:InteractiveObject = null, shiftKey:Bool = false, keyCode:Int = 0);
 	
 	
 }
 
 
-#else
-typedef FocusEvent = flash.events.FocusEvent;
 #end
