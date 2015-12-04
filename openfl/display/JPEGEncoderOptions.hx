@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
 
 
 @:final class JPEGEncoderOptions {
@@ -18,5 +18,22 @@ package openfl.display; #if !flash
 
 
 #else
-typedef JPEGEncoderOptions = flash.display.JPEGEncoderOptions;
+
+
+#if flash
+@:native("flash.display.JPEGEncoderOptions")
+#end
+
+@:final extern class JPEGEncoderOptions {
+	
+	
+	public var quality:UInt;
+	
+	
+	public function new (quality:UInt = 80);
+	
+	
+}
+
+
 #end

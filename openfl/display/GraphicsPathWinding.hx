@@ -1,4 +1,15 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
+
+
+@:fakeEnum(String) enum GraphicsPathWinding {
+	
+	EVEN_ODD;
+	NON_ZERO;
+	
+}
+
+
+#else
 
 
 /**
@@ -11,7 +22,12 @@ package openfl.display; #if !flash
  * <p> When paths intersect or overlap, the winding direction determines the
  * rules for filling the areas created by the intersection or overlap:</p>
  */
-@:fakeEnum(String) enum GraphicsPathWinding {
+
+#if flash
+@:native("flash.display.GraphicsPathWinding")
+#end
+
+@:fakeEnum(String) extern enum GraphicsPathWinding {
 	
 	EVEN_ODD;
 	NON_ZERO;
@@ -19,6 +35,4 @@ package openfl.display; #if !flash
 }
 
 
-#else
-typedef GraphicsPathWinding = flash.display.GraphicsPathWinding;
 #end

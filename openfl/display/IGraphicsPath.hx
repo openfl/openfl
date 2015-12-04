@@ -1,9 +1,17 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
 
 
-interface IGraphicsPath { }
+interface IGraphicsPath {}
 
 
 #else
-typedef IGraphicsPath = flash.display.IGraphicsPath;
+
+
+#if flash
+@:native("flash.display.IGraphicsPath")
+#end
+
+extern interface IGraphicsPath {}
+
+
 #end

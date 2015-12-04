@@ -28,7 +28,7 @@ typedef CapsStyle = openfl._legacy.display.CapsStyle;
 @:native("flash.display.CapsStyle")
 #end
 
-extern enum CapsStyle {
+@:fakeEnum(String) extern enum CapsStyle {
 	
 	/**
 	 * Used to specify no caps in the <code>caps</code> parameter of the

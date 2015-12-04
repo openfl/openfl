@@ -49,7 +49,7 @@ import openfl.Lib;
 	private var samplerParameters:Array<SamplerState>; //TODO : use Tupple3
 	private var scrollRect:Rectangle;
 	private var stencilbuffer:GLRenderbuffer;
-	private var stencilCompareMode:Int;
+	private var stencilCompareMode:Context3DCompareMode;
 	private var stencilRef:Int;
 	private var stencilReadMask:Int;
 	private var texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
@@ -60,8 +60,12 @@ import openfl.Lib;
 		
 		disposed = false;
 		
+		stencilCompareMode = Context3DCompareMode.ALWAYS;
+		stencilRef = 0;
+		stencilReadMask = 0xFF;
+		
 		_yFlip = 1;
-
+		
 		vertexBuffersCreated = new Array ();
 		indexBuffersCreated = new Array ();
 		programsCreated = new Array ();

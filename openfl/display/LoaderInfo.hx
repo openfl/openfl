@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.events.EventDispatcher;
@@ -9,6 +9,80 @@ import openfl.utils.ByteArray;
 #if (js && html5)
 import js.Browser;
 #end
+
+
+class LoaderInfo extends EventDispatcher {
+	
+	
+	private static var __rootURL = #if (js && html5) Browser.document.URL #else "" #end;
+	
+	public var applicationDomain (default, null):ApplicationDomain;
+	public var bytes (default, null):ByteArray;
+	public var bytesLoaded (default, null):Int;
+	public var bytesTotal (default, null):Int;
+	public var childAllowsParent (default, null):Bool;
+	public var content (default, null):DisplayObject;
+	public var contentType (default, null):String;
+	public var frameRate (default, null):Float;
+	public var height (default, null):Int;
+	public var loader (default, null):Loader;
+	public var loaderURL (default, null):String;
+	public var parameters (default, null):Dynamic<String>;
+	public var parentAllowsChild (default, null):Bool;
+	public var sameDomain (default, null):Bool;
+	public var sharedEvents (default, null):EventDispatcher;
+	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
+	public var url (default, null):String;
+	public var width (default, null):Int;
+	//static function getLoaderInfoByDefinition(object : Dynamic) : LoaderInfo;
+	
+	
+	private function new () {
+		
+		super ();
+		
+		applicationDomain = ApplicationDomain.currentDomain;
+		bytesLoaded = 0;
+		bytesTotal = 0;
+		childAllowsParent = true;
+		parameters = {};
+		
+	}
+	
+	
+	public static function create (loader:Loader):LoaderInfo {
+		
+		var loaderInfo = new LoaderInfo ();
+		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents ();
+		
+		if (loader != null) {
+			
+			loaderInfo.loader = loader;
+			
+		} else {
+			
+			loaderInfo.url = __rootURL;
+			
+		}
+		
+		return loaderInfo;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef LoaderInfo = openfl._legacy.display.LoaderInfo;
+#end
+#else
+
+
+import openfl.events.EventDispatcher;
+import openfl.events.UncaughtErrorEvents;
+import openfl.system.ApplicationDomain;
+import openfl.utils.ByteArray;
 
 
 /**
@@ -108,10 +182,17 @@ import js.Browser;
  *                   performed by the same Loader object and the original
  *                   content is removed prior to the load beginning.
  */
-class LoaderInfo extends EventDispatcher {
+
+#if flash
+@:native("flash.display.LoaderInfo")
+#end
+
+extern class LoaderInfo extends EventDispatcher {
 	
 	
-	private static var __rootURL = #if (js && html5) Browser.document.URL #else "" #end;
+	#if (flash && !display)
+	public var actionScriptVersion (default, null):flash.display.ActionScriptVersion;
+	#end
 	
 	/**
 	 * When an external SWF file is loaded, all ActionScript 3.0 definitions
@@ -135,7 +216,7 @@ class LoaderInfo extends EventDispatcher {
 	 * @throws SecurityError This security sandbox of the caller is not allowed
 	 *                       to access this ApplicationDomain.
 	 */
-	public var applicationDomain:ApplicationDomain;
+	public var applicationDomain (default, null):ApplicationDomain;
 	
 	/**
 	 * The bytes associated with a LoaderInfo object.
@@ -190,6 +271,10 @@ class LoaderInfo extends EventDispatcher {
 	 *               retrieve the requested information.
 	 */
 	public var childAllowsParent (default, null):Bool;
+	
+	#if (flash && !display)
+	@:require(flash11_4) public var childSandboxBridge:Dynamic;
+	#end
 	
 	/**
 	 * The loaded object associated with this LoaderInfo object.
@@ -248,6 +333,10 @@ class LoaderInfo extends EventDispatcher {
 	 *               requested information.
 	 */
 	public var height (default, null):Int;
+	
+	#if (flash && !display)
+	@:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	#end
 	
 	/**
 	 * The Loader object associated with this LoaderInfo object. If this
@@ -317,6 +406,10 @@ class LoaderInfo extends EventDispatcher {
 	 */
 	public var parentAllowsChild (default, null):Bool;
 	
+	#if (flash && !display)
+	@:require(flash11_4) public var parentSandboxBridge:Dynamic;
+	#end
+	
 	/**
 	 * Expresses the domain relationship between the loader and the content:
 	 * <code>true</code> if they have the same origin domain; <code>false</code>
@@ -335,6 +428,10 @@ class LoaderInfo extends EventDispatcher {
 	 * object.
 	 */
 	public var sharedEvents (default, null):EventDispatcher;
+	
+	#if (flash && !display)
+	public var swfVersion (default, null):UInt;
+	#end
 	
 	/**
 	 * An object that dispatches an <code>uncaughtError</code> event when an
@@ -378,48 +475,17 @@ class LoaderInfo extends EventDispatcher {
 	 *               requested information.
 	 */
 	public var width (default, null):Int;
-	//static function getLoaderInfoByDefinition(object : Dynamic) : LoaderInfo;
 	
 	
-	private function new () {
-		
-		super ();
-		
-		applicationDomain = ApplicationDomain.currentDomain;
-		bytesLoaded = 0;
-		bytesTotal = 0;
-		childAllowsParent = true;
-		parameters = {};
-		
-	}
+	private function new ();
 	
 	
-	@:noCompletion @:dox(hide) public static function create (loader:Loader):LoaderInfo {
-		
-		var loaderInfo = new LoaderInfo ();
-		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents ();
-		
-		if (loader != null) {
-			
-			loaderInfo.loader = loader;
-			
-		} else {
-			
-			loaderInfo.url = __rootURL;
-			
-		}
-		
-		return loaderInfo;
-		
-	}
+	#if (flash && !display)
+	public static function getLoaderInfoByDefinition (object:Dynamic):LoaderInfo;
+	#end
 	
 	
 }
 
 
-#else
-typedef LoaderInfo = openfl._legacy.display.LoaderInfo;
-#end
-#else
-typedef LoaderInfo = flash.display.LoaderInfo;
 #end

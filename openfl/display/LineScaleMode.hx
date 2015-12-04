@@ -1,11 +1,32 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
+
+
+enum LineScaleMode {
+	
+	HORIZONTAL;
+	NONE;
+	NORMAL;
+	VERTICAL;
+	
+}
+
+
+#else
+typedef LineScaleMode = openfl._legacy.display.LineScaleMode;
+#end
+#else
 
 
 /**
  * The LineScaleMode class provides values for the <code>scaleMode</code>
  * parameter in the <code>Graphics.lineStyle()</code> method.
  */
-enum LineScaleMode {
+
+#if flash
+@:native("flash.display.LineScaleMode")
+#end
+
+@:fakeEnum(String) extern enum LineScaleMode {
 	
 	/**
 	 * With this setting used as the <code>scaleMode</code> parameter of the
@@ -45,9 +66,4 @@ enum LineScaleMode {
 }
 
 
-#else
-typedef LineScaleMode = openfl._legacy.display.LineScaleMode;
-#end
-#else
-typedef LineScaleMode = flash.display.LineScaleMode;
 #end

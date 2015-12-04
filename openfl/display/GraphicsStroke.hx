@@ -1,7 +1,44 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if (!display && !flash) #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
+
+
+@:final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
+	
+	
+	public var caps:CapsStyle;
+	public var fill:IGraphicsFill;
+	public var joints:JointStyle;
+	public var miterLimit:Float;
+	public var pixelHinting:Bool;
+	public var scaleMode:LineScaleMode;
+	public var thickness:Float;
+	
+	public var __graphicsDataType (default, null):GraphicsDataType;
+	
+	
+	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3, fill:IGraphicsFill = null) {
+		
+		this.caps = caps != null ? caps : CapsStyle.NONE;
+		this.fill = fill;
+		this.joints = joints != null ? joints : JointStyle.ROUND;
+		this.miterLimit = miterLimit;
+		this.pixelHinting = pixelHinting;
+		this.scaleMode = scaleMode != null ? scaleMode : LineScaleMode.NORMAL;
+		this.thickness = thickness;
+		this.__graphicsDataType = STROKE;
+		
+	}
+	
+	
+}
+
+
+#else
+typedef GraphicsStroke = openfl._legacy.display.GraphicsStroke;
+#end
+#else
 
 
 /**
@@ -15,7 +52,12 @@ import openfl.display.IGraphicsData;
  * <code>Graphics.lineBitmapStyle()</code> method, or the
  * <code>Graphics.lineGradientStyle()</code> method. </p>
  */
-@:final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
+
+#if flash
+@:native("flash.display.GraphicsStroke")
+#end
+
+@:final extern class GraphicsStroke implements IGraphicsData implements IGraphicsStroke {
 	
 	
 	/**
@@ -126,8 +168,6 @@ import openfl.display.IGraphicsData;
 	 */
 	public var thickness:Float;
 	
-	@:noCompletion @:dox(hide) public var __graphicsDataType (default, null):GraphicsDataType;
-	
 	
 	/**
 	 * Creates a new GraphicsStroke object.
@@ -210,26 +250,10 @@ import openfl.display.IGraphicsData;
 	 *                     <code>miterLimit</code> parameter to limit the length
 	 *                     of the miter.</p>
 	 */
-	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3, fill:IGraphicsFill = null) {
-		
-		this.caps = caps != null ? caps : CapsStyle.NONE;
-		this.fill = fill;
-		this.joints = joints != null ? joints : JointStyle.ROUND;
-		this.miterLimit = miterLimit;
-		this.pixelHinting = pixelHinting;
-		this.scaleMode = scaleMode != null ? scaleMode : LineScaleMode.NORMAL;
-		this.thickness = thickness;
-		this.__graphicsDataType = STROKE;
-		
-	}
+	public function new (thickness:Float = 0.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3, fill:IGraphicsFill = null);
 	
 	
 }
 
 
-#else
-typedef GraphicsStroke = openfl._legacy.display.GraphicsStroke;
-#end
-#else
-typedef GraphicsStroke = flash.display.GraphicsStroke;
 #end

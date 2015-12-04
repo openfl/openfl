@@ -1,4 +1,15 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
+
+
+enum InterpolationMethod {
+	
+	RGB;
+	LINEAR_RGB;
+	
+}
+
+
+#else
 
 
 /**
@@ -8,7 +19,12 @@ package openfl.display; #if !flash
  * <code>Graphics.lineGradientStyle()</code> methods. This parameter
  * determines the RGB space to use when rendering the gradient.
  */
-enum InterpolationMethod {
+
+#if flash
+@:native("flash.display.InterpolationMethod")
+#end
+
+@:fakeEnum(String) extern enum InterpolationMethod {
 	
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
@@ -41,6 +57,4 @@ enum InterpolationMethod {
 }
 
 
-#else
-typedef InterpolationMethod = flash.display.InterpolationMethod;
 #end
