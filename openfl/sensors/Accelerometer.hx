@@ -167,6 +167,8 @@ typedef Accelerometer = openfl._legacy.sensors.Accelerometer;
 #else
 
 
+import openfl.events.EventDispatcher;
+
 /**
  * The Accelerometer class dispatches events based on activity detected by the
  * device's motion sensor. This data represents the device's location or

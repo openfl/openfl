@@ -231,7 +231,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ACTIVATE = "activate";
+	public static var ACTIVATE:String;
 	
 	/**
 	 * The <code>Event.ADDED</code> constant defines the value of the
@@ -239,7 +239,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ADDED = "added";
+	public static var ADDED:String;
 	
 	/**
 	 * The <code>Event.ADDED_TO_STAGE</code> constant defines the value of the
@@ -247,7 +247,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ADDED_TO_STAGE = "addedToStage";
+	public static var ADDED_TO_STAGE:String;
 	
 	#if (flash && !display)
 	@:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
@@ -259,7 +259,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var CANCEL = "cancel";
+	public static var CANCEL:String;
 	
 	/**
 	 * The <code>Event.CHANGE</code> constant defines the value of the
@@ -267,7 +267,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var CHANGE = "change";
+	public static var CHANGE:String;
 	
 	#if (flash && !display)
 	public static var CHANNEL_MESSAGE:String;
@@ -287,7 +287,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var CLOSE = "close";
+	public static var CLOSE:String;
 	
 	/**
 	 * The <code>Event.COMPLETE</code> constant defines the value of the
@@ -295,7 +295,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var COMPLETE = "complete";
+	public static var COMPLETE:String;
 	
 	/**
 	 * The <code>Event.CONNECT</code> constant defines the value of the
@@ -303,12 +303,12 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var CONNECT = "connect";
+	public static var CONNECT:String;
 	
 	#if flash
 	@:require(flash11)
 	#end
-	public static var CONTEXT3D_CREATE = "context3DCreate";
+	public static var CONTEXT3D_CREATE:String;
 	
 	#if (flash && !display)
 	@:require(flash10) public static var COPY:String;
@@ -331,7 +331,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var DEACTIVATE = "deactivate";
+	public static var DEACTIVATE:String;
 	
 	/**
 	 * The <code>Event.ENTER_FRAME</code> constant defines the value of the
@@ -343,7 +343,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ENTER_FRAME = "enterFrame";
+	public static var ENTER_FRAME:String;
 	
 	#if (flash && !display)
 	@:require(flash10) public static var EXIT_FRAME:String;
@@ -367,7 +367,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ID3 = "id3";
+	public static var ID3:String;
 	
 	/**
 	 * The <code>Event.INIT</code> constant defines the value of the
@@ -375,7 +375,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var INIT = "init";
+	public static var INIT:String;
 	
 	/**
 	 * The <code>Event.MOUSE_LEAVE</code> constant defines the value of the
@@ -383,7 +383,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_LEAVE = "mouseLeave";
+	public static var MOUSE_LEAVE:String;
 	
 	/**
 	 * The <code>Event.OPEN</code> constant defines the value of the
@@ -391,7 +391,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var OPEN = "open";
+	public static var OPEN:String;
 	
 	#if (flash && !display)
 	@:require(flash10) public static var PASTE:String;
@@ -403,7 +403,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var REMOVED = "removed";
+	public static var REMOVED:String;
 	
 	/**
 	 * The <code>Event.REMOVED_FROM_STAGE</code> constant defines the value of
@@ -412,7 +412,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var REMOVED_FROM_STAGE = "removedFromStage";
+	public static var REMOVED_FROM_STAGE:String;
 	
 	/**
 	 * The <code>Event.RENDER</code> constant defines the value of the
@@ -424,7 +424,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var RENDER = "render";
+	public static var RENDER:String;
 	
 	/**
 	 * The <code>Event.RESIZE</code> constant defines the value of the
@@ -432,7 +432,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var RESIZE = "resize";
+	public static var RESIZE:String;
 	
 	/**
 	 * The <code>Event.SCROLL</code> constant defines the value of the
@@ -440,7 +440,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var SCROLL = "scroll";
+	public static var SCROLL:String;
 	
 	/**
 	 * The <code>Event.SELECT</code> constant defines the value of the
@@ -448,7 +448,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var SELECT = "select";
+	public static var SELECT:String;
 	
 	#if (flash && !display)
 	@:require(flash10) public static var SELECT_ALL:String;
@@ -460,7 +460,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var SOUND_COMPLETE = "soundComplete";
+	public static var SOUND_COMPLETE:String;
 	
 	#if (flash && !display)
 	@:require(flash11_3) public static var SUSPEND:String;
@@ -473,7 +473,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TAB_CHILDREN_CHANGE = "tabChildrenChange";
+	public static var TAB_CHILDREN_CHANGE:String;
 	
 	/**
 	 * The <code>Event.TAB_ENABLED_CHANGE</code> constant defines the value of
@@ -482,7 +482,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TAB_ENABLED_CHANGE = "tabEnabledChange";
+	public static var TAB_ENABLED_CHANGE:String;
 	
 	/**
 	 * The <code>Event.TAB_INDEX_CHANGE</code> constant defines the value of the
@@ -490,7 +490,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TAB_INDEX_CHANGE = "tabIndexChange";
+	public static var TAB_INDEX_CHANGE:String;
 	
 	#if (flash && !display)
 	@:require(flash11_3) public static var TEXTURE_READY:String;
@@ -506,7 +506,7 @@ extern class Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var UNLOAD = "unload";
+	public static var UNLOAD:String;
 	
 	#if (flash && !display)
 	public static var VIDEO_FRAME:String;

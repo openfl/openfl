@@ -4,8 +4,8 @@ package openfl.events; #if (!display && !flash)
 class TextEvent extends Event {
 	
 	
-	public static var LINK:String = "link";
-	public static var TEXT_INPUT:String = "textInput";
+	public static var LINK = "link";
+	public static var TEXT_INPUT = "textInput";
 	
 	public var text:String;
 	
@@ -66,7 +66,7 @@ extern class TextEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var LINK:String = "link";
+	public static var LINK:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -77,7 +77,7 @@ extern class TextEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TEXT_INPUT:String = "textInput";
+	public static var TEXT_INPUT:String;
 	
 	
 	/**

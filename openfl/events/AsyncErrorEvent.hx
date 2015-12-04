@@ -7,7 +7,7 @@ import haxe.io.Error;
 class AsyncErrorEvent extends ErrorEvent {
 	
 	
-	public static var ASYNC_ERROR:String = "asyncError";
+	public static var ASYNC_ERROR = "asyncError";
 	
 	public var error:Error;
 	
@@ -48,14 +48,17 @@ class AsyncErrorEvent extends ErrorEvent {
 #else
 
 
+import haxe.io.Error;
+
 #if flash
 @:native("flash.events.AsyncErrorEvent")
 #end
 
+
 extern class AsyncErrorEvent extends ErrorEvent {
 	
 	
-	public static var ASYNC_ERROR:String = "asyncError";
+	public static var ASYNC_ERROR:String;
 	
 	public var error:Error;
 	

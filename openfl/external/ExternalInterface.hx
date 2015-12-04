@@ -154,6 +154,7 @@ typedef ExternalInterface = openfl._legacy.external.ExternalInterface;
 @:native("flash.external.ExternalInterface")
 #end
 
+
 @:final extern class ExternalInterface {
 	
 	
@@ -166,7 +167,7 @@ typedef ExternalInterface = openfl._legacy.external.ExternalInterface;
 	 * the HTML has finished loading before you attempt to call any JavaScript
 	 * methods.</p>
 	 */
-	public static var available (default, null) = true;
+	public static var available (default, null):Bool;
 	
 	/**
 	 * Indicates whether the external interface should attempt to pass
@@ -175,7 +176,7 @@ typedef ExternalInterface = openfl._legacy.external.ExternalInterface;
 	 * to catch JavaScript exceptions in ActionScript and to catch ActionScript
 	 * exceptions in JavaScript.
 	 */
-	public static var marshallExceptions = false;
+	public static var marshallExceptions:Bool;
 	
 	/**
 	 * Returns the <code>id</code> attribute of the <code>object</code> tag in

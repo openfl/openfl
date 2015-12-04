@@ -4,8 +4,8 @@ package openfl.events; #if (!display && !flash)
 class ProgressEvent extends Event {
 	
 	
-	public static var PROGRESS:String = "progress";
-	public static var SOCKET_DATA:String = "socketData";
+	public static var PROGRESS = "progress";
+	public static var SOCKET_DATA = "socketData";
 	
 	public var bytesLoaded:Float;
 	public var bytesTotal:Float;
@@ -71,7 +71,7 @@ extern class ProgressEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var PROGRESS:String = "progress";
+	public static var PROGRESS:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -79,7 +79,7 @@ extern class ProgressEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var SOCKET_DATA:String = "socketData";
+	public static var SOCKET_DATA:String;
 	
 	
 	/**

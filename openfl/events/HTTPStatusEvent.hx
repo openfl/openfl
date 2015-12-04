@@ -4,8 +4,8 @@ package openfl.events; #if (!display && !flash) #if !openfl_legacy
 class HTTPStatusEvent extends Event {
 	
 	
-	public static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
-	public static var HTTP_STATUS:String = "httpStatus";
+	public static var HTTP_RESPONSE_STATUS = "httpResponseStatus";
+	public static var HTTP_STATUS = "httpStatus";
 	
 	public var redirected:Bool;
 	public var responseHeaders:Array<Dynamic>;
@@ -97,7 +97,7 @@ extern class HTTPStatusEvent extends Event {
 	#if flash
 	@:require(flash10_1)
 	#end
-	public static var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
+	public static var HTTP_RESPONSE_STATUS:String;
 	
 	/**
 	 * The <code>HTTPStatusEvent.HTTP_STATUS</code> constant defines the value of
@@ -105,7 +105,7 @@ extern class HTTPStatusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var HTTP_STATUS:String = "httpStatus";
+	public static var HTTP_STATUS:String;
 	
 	
 	public var redirected:Bool;

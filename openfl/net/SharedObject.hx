@@ -557,10 +557,11 @@ import openfl.utils.Object;
 @:native("flash.net.SharedObject")
 #end
 
+
 extern class SharedObject extends EventDispatcher {
 	
 	
-	public static var defaultObjectEncoding:Int = 3;
+	public static var defaultObjectEncoding:Int;
 	
 	#if (flash && !display)
 	@:require(flash11_7) public static var preventBackup:Bool;

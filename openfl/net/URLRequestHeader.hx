@@ -95,7 +95,7 @@ package openfl.net; #if (!display && !flash)
 #end
 
 
-@:final class URLRequestHeader {
+@:final extern class URLRequestHeader {
 	
 	
 	/**

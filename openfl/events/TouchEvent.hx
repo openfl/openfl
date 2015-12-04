@@ -9,14 +9,14 @@ import openfl.utils.ByteArray;
 class TouchEvent extends Event {
 	
 	
-	public static inline var TOUCH_BEGIN:String = "touchBegin";
-	public static inline var TOUCH_END:String = "touchEnd";
-	public static inline var TOUCH_MOVE:String = "touchMove";
-	public static inline var TOUCH_OUT:String = "touchOut";
-	public static inline var TOUCH_OVER:String = "touchOver";
-	public static inline var TOUCH_ROLL_OUT:String = "touchRollOut";
-	public static inline var TOUCH_ROLL_OVER:String = "touchRollOver";
-	public static inline var TOUCH_TAP:String = "touchTap";
+	public static inline var TOUCH_BEGIN = "touchBegin";
+	public static inline var TOUCH_END = "touchEnd";
+	public static inline var TOUCH_MOVE = "touchMove";
+	public static inline var TOUCH_OUT = "touchOut";
+	public static inline var TOUCH_OVER = "touchOver";
+	public static inline var TOUCH_ROLL_OUT = "touchRollOut";
+	public static inline var TOUCH_ROLL_OVER = "touchRollOver";
+	public static inline var TOUCH_TAP = "touchTap";
 	
 	public var altKey:Bool;
 	public var commandKey:Bool;
@@ -176,7 +176,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_BEGIN:String = "touchBegin";
+	public static var TOUCH_BEGIN:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -184,7 +184,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_END:String = "touchEnd";
+	public static var TOUCH_END:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -192,7 +192,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_MOVE:String = "touchMove";
+	public static var TOUCH_MOVE:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -200,7 +200,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_OUT:String = "touchOut";
+	public static var TOUCH_OUT:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -208,7 +208,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_OVER:String = "touchOver";
+	public static var TOUCH_OVER:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -216,7 +216,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_ROLL_OUT:String = "touchRollOut";
+	public static var TOUCH_ROLL_OUT:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -224,7 +224,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_ROLL_OVER:String = "touchRollOver";
+	public static var TOUCH_ROLL_OVER:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -232,7 +232,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static inline var TOUCH_TAP:String = "touchTap";
+	public static var TOUCH_TAP:String;
 	
 	
 	/**

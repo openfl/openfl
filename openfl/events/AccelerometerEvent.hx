@@ -7,7 +7,7 @@ import openfl.events.Event;
 class AccelerometerEvent extends Event {
 	
 	
-	public static var UPDATE:String;
+	public static var UPDATE = "update";
 	
 	public var accelerationX:Float;
 	public var accelerationY:Float;
@@ -65,7 +65,8 @@ class AccelerometerEvent extends Event {
 @:require(flash10_1)
 #end
 
-class AccelerometerEvent extends Event {
+
+extern class AccelerometerEvent extends Event {
 	
 	
 	/**

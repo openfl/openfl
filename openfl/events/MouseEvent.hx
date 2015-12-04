@@ -8,22 +8,22 @@ import openfl.geom.Point;
 class MouseEvent extends Event {
 	
 	
-	public static var CLICK:String = "click";
-	public static var DOUBLE_CLICK:String = "doubleClick";
-	public static var MIDDLE_CLICK:String = "middleClick";
-	public static var MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
-	public static var MIDDLE_MOUSE_UP:String = "middleMouseUp";
-	public static var MOUSE_DOWN:String = "mouseDown";
-	public static var MOUSE_MOVE:String = "mouseMove";
-	public static var MOUSE_OUT:String = "mouseOut";
-	public static var MOUSE_OVER:String = "mouseOver";
-	public static var MOUSE_UP:String = "mouseUp";
-	public static var MOUSE_WHEEL:String = "mouseWheel";
-	public static var RIGHT_CLICK:String = "rightClick";
-	public static var RIGHT_MOUSE_DOWN:String = "rightMouseDown";
-	public static var RIGHT_MOUSE_UP:String = "rightMouseUp";
-	public static var ROLL_OUT:String = "rollOut";
-	public static var ROLL_OVER:String = "rollOver";
+	public static var CLICK = "click";
+	public static var DOUBLE_CLICK = "doubleClick";
+	public static var MIDDLE_CLICK = "middleClick";
+	public static var MIDDLE_MOUSE_DOWN = "middleMouseDown";
+	public static var MIDDLE_MOUSE_UP = "middleMouseUp";
+	public static var MOUSE_DOWN = "mouseDown";
+	public static var MOUSE_MOVE = "mouseMove";
+	public static var MOUSE_OUT = "mouseOut";
+	public static var MOUSE_OVER = "mouseOver";
+	public static var MOUSE_UP = "mouseUp";
+	public static var MOUSE_WHEEL = "mouseWheel";
+	public static var RIGHT_CLICK = "rightClick";
+	public static var RIGHT_MOUSE_DOWN = "rightMouseDown";
+	public static var RIGHT_MOUSE_UP = "rightMouseUp";
+	public static var ROLL_OUT = "rollOut";
+	public static var ROLL_OVER = "rollOver";
 	
 	private static var __altKey:Bool;
 	private static var __buttonDown:Bool;
@@ -154,7 +154,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var CLICK:String = "click";
+	public static var CLICK:String;
 	
 	#if (flash && !display)
 	@:require(flash11_2) public static var CONTEXT_MENU:String;
@@ -168,7 +168,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var DOUBLE_CLICK:String = "doubleClick";
+	public static var DOUBLE_CLICK:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -179,7 +179,7 @@ extern class MouseEvent extends Event {
 	#if flash
 	@:require(flash11_2)
 	#end
-	public static var MIDDLE_CLICK:String = "middleClick";
+	public static var MIDDLE_CLICK:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -190,7 +190,7 @@ extern class MouseEvent extends Event {
 	#if flash
 	@:require(flash11_2)
 	#end
-	public static var MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
+	public static var MIDDLE_MOUSE_DOWN:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -201,7 +201,7 @@ extern class MouseEvent extends Event {
 	#if flash
 	@:require(flash11_2)
 	#end
-	public static var MIDDLE_MOUSE_UP:String = "middleMouseUp";
+	public static var MIDDLE_MOUSE_UP:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -209,7 +209,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_DOWN:String = "mouseDown";
+	public static var MOUSE_DOWN:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -217,7 +217,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_MOVE:String = "mouseMove";
+	public static var MOUSE_MOVE:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -225,7 +225,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_OUT:String = "mouseOut";
+	public static var MOUSE_OUT:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -233,7 +233,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_OVER:String = "mouseOver";
+	public static var MOUSE_OVER:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -241,7 +241,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_UP:String = "mouseUp";
+	public static var MOUSE_UP:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -249,7 +249,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_WHEEL:String = "mouseWheel";
+	public static var MOUSE_WHEEL:String;
 	
 	#if (flash && !display)
 	@:require(flash11_3) public static var RELEASE_OUTSIDE:String;
@@ -264,7 +264,7 @@ extern class MouseEvent extends Event {
 	#if flash
 	@:require(flash11_2)
 	#end
-	public static var RIGHT_CLICK:String = "rightClick";
+	public static var RIGHT_CLICK:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -275,7 +275,7 @@ extern class MouseEvent extends Event {
 	#if flash
 	@:require(flash11_2)
 	#end
-	public static var RIGHT_MOUSE_DOWN:String = "rightMouseDown";
+	public static var RIGHT_MOUSE_DOWN:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -286,7 +286,7 @@ extern class MouseEvent extends Event {
 	#if flash
 	@:require(flash11_2)
 	#end
-	public static var RIGHT_MOUSE_UP:String = "rightMouseUp";
+	public static var RIGHT_MOUSE_UP:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -294,7 +294,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ROLL_OUT:String = "rollOut";
+	public static var ROLL_OUT:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -302,7 +302,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ROLL_OVER:String = "rollOver";
+	public static var ROLL_OVER:String;
 	
 	/**
 	 * Indicates whether the Alt key is active(<code>true</code>) or inactive

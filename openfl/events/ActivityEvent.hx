@@ -51,7 +51,7 @@ class ActivityEvent extends Event {
 extern class ActivityEvent extends Event {
 	
 	
-	public static var ACTIVITY = "activity";
+	public static var ACTIVITY:String;
 	
 	public var activating:Bool;
 	

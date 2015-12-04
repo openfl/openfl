@@ -182,11 +182,11 @@ import openfl.events.EventDispatcher;
 #end
 
 
-@:final class GameInput extends EventDispatcher {
+@:final extern class GameInput extends EventDispatcher {
 	
 	
-	public static var isSupported (default, null);
-	public static var numDevices (default, null);
+	public static var isSupported (default, null):Bool;
+	public static var numDevices (default, null):Int;
 	
 	
 	public function new ();

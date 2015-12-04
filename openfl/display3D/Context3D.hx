@@ -1119,11 +1119,13 @@ import openfl.display3D.textures.TextureBase;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
+import openfl.utils.ByteArray;
 import openfl.Vector;
 
 #if flash
 @:native("flash.display3D.Context3D")
 #end
+
 
 @:final extern class Context3D extends EventDispatcher {
 	
@@ -1192,7 +1194,7 @@ import openfl.Vector;
 	#if flash
 	@:require(flash11_2)
 	#end
-	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:flash.utils.ByteArray, byteArrayOffset:UInt):Void;
+	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void;
 	
 	public function setProgramConstantsFromMatrix (programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void;
 	public function setProgramConstantsFromVector (programType:Context3DProgramType, firstRegister:Int, data:Vector<Float>, numRegisters:Int = -1):Void;

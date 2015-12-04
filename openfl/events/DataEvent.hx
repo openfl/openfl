@@ -4,8 +4,8 @@ package openfl.events; #if (!display && !flash)
 class DataEvent extends TextEvent {
 	
 	
-	public static var DATA:String = "data";
-	public static var UPLOAD_COMPLETE_DATA:String = "uploadCompleteData";
+	public static var DATA = "data";
+	public static var UPLOAD_COMPLETE_DATA = "uploadCompleteData";
 	
 	public var data:String;
 	
@@ -52,8 +52,8 @@ class DataEvent extends TextEvent {
 extern class DataEvent extends TextEvent {
 	
 	
-	public static var DATA:String = "data";
-	public static var UPLOAD_COMPLETE_DATA:String = "uploadCompleteData";
+	public static var DATA:String;
+	public static var UPLOAD_COMPLETE_DATA:String;
 	
 	public var data:String;
 	

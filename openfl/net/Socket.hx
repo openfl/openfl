@@ -11,10 +11,10 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
-import openfl.utils.IDataInput;
-import openfl.utils.IDataOutput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
+import openfl.utils.IDataInput;
+import openfl.utils.IDataOutput;
 import openfl.Lib;
 
 #if (js && html5)
@@ -776,6 +776,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 import openfl.events.EventDispatcher;
 import openfl.utils.ByteArray;
+import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
 
@@ -792,6 +793,8 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	#else
 	public var bytesAvailable (get, null):UInt;
 	#end
+	
+	private function get_bytesAvailable ():UInt;
 	
 	#if (flash && !display)
 	@:require(flash11) public var bytesPending (default, null):UInt;
@@ -810,6 +813,9 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	#else
 	public var endian (get, set):Endian;
 	#end
+	
+	private function get_endian ():Endian;
+	private function set_endian (value:Endian):Endian;
 	
 	public var objectEncoding:UInt;
 	

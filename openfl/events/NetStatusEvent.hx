@@ -4,7 +4,7 @@ package openfl.events; #if (!display && !flash)
 class NetStatusEvent extends Event {
 	
 	
-	public static var NET_STATUS:String = "netStatus";
+	public static var NET_STATUS = "netStatus";
 	
 	public var info:Dynamic;
 	
@@ -51,7 +51,7 @@ class NetStatusEvent extends Event {
 extern class NetStatusEvent extends Event {
 	
 	
-	public static var NET_STATUS:String = "netStatus";
+	public static var NET_STATUS:String;
 	
 	public var info:Dynamic;
 	

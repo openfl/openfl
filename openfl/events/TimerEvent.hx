@@ -4,8 +4,8 @@ package openfl.events; #if (!display && !flash)
 class TimerEvent extends Event {
 	
 	
-	public static var TIMER:String = "timer";
-	public static var TIMER_COMPLETE:String = "timerComplete";
+	public static var TIMER = "timer";
+	public static var TIMER_COMPLETE = "timerComplete";
 	
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false):Void {
@@ -67,7 +67,7 @@ extern class TimerEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TIMER:String = "timer";
+	public static var TIMER:String;
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -75,7 +75,7 @@ extern class TimerEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TIMER_COMPLETE:String = "timerComplete";
+	public static var TIMER_COMPLETE:String;
 	
 	
 	/**

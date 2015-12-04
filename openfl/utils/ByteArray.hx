@@ -228,10 +228,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public var bytesAvailable (get, never):UInt;
-	public var endian:Endian;
+	public var endian (get, set):Endian;
 	public var objectEncoding:UInt;
 	public var position:Int;
 	
+	private var __endian:Endian;
 	private var __length:Int;
 	
 	
@@ -757,6 +758,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
+	@:noCompletion private inline function get_endian ():Endian {
+		
+		return __endian;
+		
+	}
+	
+	
+	@:noCompletion private inline function set_endian (value:Endian):Endian {
+		
+		return __endian = value;
+		
+	}
+	
+	
 }
 
 
@@ -828,7 +843,10 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Changes or reads the byte order for the data; either
 	 * <code>Endian.BIG_ENDIAN</code> or <code>Endian.LITTLE_ENDIAN</code>.
 	 */
-	public var endian:Endian;
+	public var endian (get, set):Endian;
+	
+	private function get_endian ():Endian;
+	private function set_endian (value:Endian):Endian;
 	
 	/**
 	 * The length of the ByteArray object, in bytes.

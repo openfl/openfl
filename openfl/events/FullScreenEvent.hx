@@ -56,12 +56,12 @@ class FullScreenEvent extends ActivityEvent {
 extern class FullScreenEvent extends ActivityEvent {
 	
 	
-	public static var FULL_SCREEN = "fullScreen";
+	public static var FULL_SCREEN:String;
 	
 	#if flash
 	@:require(flash11_3)
 	#end
-	public static var FULL_SCREEN_INTERACTIVE_ACCEPTED = "fullScreenInteractiveAccepted";
+	public static var FULL_SCREEN_INTERACTIVE_ACCEPTED:String;
 	
 	public var fullScreen:Bool;
 	

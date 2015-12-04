@@ -51,7 +51,7 @@ class UncaughtErrorEvent extends ErrorEvent {
 extern class UncaughtErrorEvent extends ErrorEvent {
 	
 	
-	public static var UNCAUGHT_ERROR = "uncaughtError";
+	public static var UNCAUGHT_ERROR:String;
 	
 	public var error (default, null):Dynamic;
 	

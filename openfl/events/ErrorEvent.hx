@@ -4,7 +4,7 @@ package openfl.events; #if (!display && !flash)
 class ErrorEvent extends TextEvent {
 	
 	
-	public static var ERROR:String = "error";
+	public static var ERROR = "error";
 	
 	public var errorID (default, null):Int;
 	
@@ -76,7 +76,7 @@ extern class ErrorEvent extends TextEvent {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ERROR:String = "error";
+	public static var ERROR:String;
 	
 	
 	/**

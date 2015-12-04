@@ -151,7 +151,14 @@ typedef XMLSocket = openfl._legacy.net.XMLSocket;
 #else
 
 
-class XMLSocket extends EventDispatcher {
+import openfl.events.EventDispatcher;
+
+#if flash
+@:native("flash.net.XMLSocket")
+#end
+
+
+extern class XMLSocket extends EventDispatcher {
 	
 	
 	public var connected (default, null):Bool;

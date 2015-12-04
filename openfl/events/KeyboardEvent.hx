@@ -95,7 +95,7 @@ extern class KeyboardEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var KEY_DOWN = "keyDown";
+	public static var KEY_DOWN:String;
 	
 	/**
 	 * The <code>KeyboardEvent.KEY_UP</code> constant defines the value of the
@@ -103,7 +103,7 @@ extern class KeyboardEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var KEY_UP = "keyUp";
+	public static var KEY_UP:String;
 	
 	
 	/**

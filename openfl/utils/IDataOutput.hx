@@ -3,7 +3,7 @@ package openfl.utils; #if (!display && !flash) #if !openfl_legacy
 
 interface IDataOutput {
 	
-	public var endian:Endian;
+	public var endian (get, set):Endian;
 	public var objectEncoding:UInt;
 	
 	public function writeBoolean (value:Bool):Void;
@@ -34,7 +34,12 @@ typedef IDataOutput = openfl._legacy.utils.IDataOutput;
 
 extern interface IDataOutput {
 	
-	public var endian:Endian;
+	//#if (flash && !display)
+	//public var endian:Endian;
+	//#else
+	public var endian (get, set):Endian;
+	//#end
+	
 	public var objectEncoding:UInt;
 	
 	public function writeBoolean (value:Bool):Void;
@@ -44,7 +49,11 @@ extern interface IDataOutput {
 	public function writeFloat (value:Float):Void;
 	public function writeInt (value:Int):Void;
 	public function writeMultiByte (value:String, charSet:String):Void;
+	
+	//#if (flash && !display)
 	//public function writeObject (object:Dynamic):Void;
+	//#end
+	
 	public function writeShort (value:Int):Void;
 	public function writeUTF (value:String):Void;
 	public function writeUTFBytes (value:String):Void;

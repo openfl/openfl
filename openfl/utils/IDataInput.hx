@@ -4,7 +4,7 @@ package openfl.utils; #if (!display && !flash) #if !openfl_legacy
 interface IDataInput {
 	
 	public var bytesAvailable (get, never):UInt;
-	public var endian:Endian;
+	public var endian (get, set):Endian;
 	public var objectEncoding:UInt;
 	
 	public function readBoolean ():Bool;
@@ -37,8 +37,18 @@ typedef IDataInput = openfl._legacy.utils.IDataInput;
 
 extern interface IDataInput {
 	
+	//#if (flash && !display)
+	//public var bytesAvailable:UInt;
+	//#else
 	public var bytesAvailable (get, never):UInt;
-	public var endian:Endian;
+	//#end
+	
+	//#if (flash && !display)
+	//public var endian:Endian;
+	//#else
+	public var endian (get, set):Endian;
+	//#end
+	
 	public var objectEncoding:UInt;
 	
 	public function readBoolean ():Bool;
@@ -48,7 +58,11 @@ extern interface IDataInput {
 	public function readFloat ():Float;
 	public function readInt ():Int;
 	public function readMultiByte (length:UInt, charSet:String):String;
-	//function readObject ():Dynamic;
+	
+	//#if (flash && !display)
+	//public function readObject ():Dynamic;
+	//#end
+	
 	public function readShort ():Int;
 	public function readUnsignedByte ():Int;
 	public function readUnsignedInt ():Int;

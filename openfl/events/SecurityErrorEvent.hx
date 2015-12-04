@@ -4,7 +4,7 @@ package openfl.events; #if (!display && !flash)
 class SecurityErrorEvent extends ErrorEvent {
 	
 	
-	static public var SECURITY_ERROR:String = "securityError";
+	static public var SECURITY_ERROR = "securityError";
 	
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0) {
@@ -73,7 +73,7 @@ extern class SecurityErrorEvent extends ErrorEvent {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	static public var SECURITY_ERROR:String = "securityError";
+	static public var SECURITY_ERROR:String;
 	
 	
 	/**

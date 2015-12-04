@@ -40,7 +40,7 @@ import openfl.events.EventDispatcher;
 #end
 
 
-extern GameInputControl extends EventDispatcher implements Dynamic {
+extern class GameInputControl extends EventDispatcher implements Dynamic {
 	
 	
 	/**
@@ -67,6 +67,9 @@ extern GameInputControl extends EventDispatcher implements Dynamic {
 	 * Returns the value for this control.
 	 */
 	public var value (default, null):Float;
+	
+	
+	private function new (device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0);
 	
 	
 }

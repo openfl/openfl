@@ -23,7 +23,7 @@ class TypeError extends Error {
 @:native("TypeError")
 #end
 
-class TypeError extends Error {
+extern class TypeError extends Error {
 	
 	
 	public function new (message:String = "");
