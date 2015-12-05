@@ -20,14 +20,14 @@ enum Context3DWrapMode {
 	
 	CLAMP;
 	
-	#if (flash && !display)
-	CLAMP_U_REPEAT_V;
+	#if (flash && !doc_gen)
+	@:noCompletion @:dox(hide) CLAMP_U_REPEAT_V;
 	#end
 	
 	REPEAT;
 	
-	#if (flash && !display)
-	REPEAT_U_CLAMP_V;
+	#if (flash && !doc_gen)
+	@:noCompletion @:dox(hide) REPEAT_U_CLAMP_V;
 	#end
 	
 }

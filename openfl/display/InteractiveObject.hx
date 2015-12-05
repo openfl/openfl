@@ -1148,12 +1148,12 @@ import openfl.geom.Rectangle;
 extern class InteractiveObject extends DisplayObject {
 	
 	
-	#if (flash && !display)
-	public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
+	#if flash
+	@:noCompletion @:dox(hide) public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
 	#end
 	
-	#if (flash && !display)
-	public var contextMenu:flash.ui.ContextMenu;
+	#if flash
+	@:noCompletion @:dox(hide) public var contextMenu:flash.ui.ContextMenu;
 	#end
 	
 	/**

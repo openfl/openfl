@@ -1,4 +1,15 @@
-package openfl.utils; #if !flash
+package openfl.utils; #if (!display && !flash)
+
+
+@:enum abstract Endian(String) from String to String {
+	
+	public var BIG_ENDIAN:String = "bigEndian";
+	public var LITTLE_ENDIAN:String = "littleEndian";
+	
+}
+
+
+#else
 
 
 /**
@@ -15,14 +26,18 @@ package openfl.utils; #if !flash
  * order that matches the protocol of the server that is sending or receiving
  * data.</p>
  */
-@:enum abstract Endian(String) from String to String {
+
+#if flash
+@:native("flash.utils.Endian")
+#end
+
+
+@:fakeEnum(String) extern enum Endian {
 	
-	public var BIG_ENDIAN:String = "bigEndian";
-	public var LITTLE_ENDIAN:String = "littleEndian";
+	BIG_ENDIAN;
+	LITTLE_ENDIAN;
 	
 }
 
 
-#else
-typedef Endian = flash.utils.Endian;
 #end

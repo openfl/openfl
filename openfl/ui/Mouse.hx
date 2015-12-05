@@ -49,16 +49,16 @@ typedef Mouse = openfl._legacy.ui.Mouse;
 @:final extern class Mouse {
 	
 	
-	#if (flash && !display)
-	@:require(flash10) public static var cursor:Dynamic;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var cursor:Dynamic;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10_1) public static var supportsCursor (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var supportsCursor (default, null):Bool;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11) public static var supportsNativeCursor (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public static var supportsNativeCursor (default, null):Bool;
 	#end
 	
 	
@@ -73,8 +73,8 @@ typedef Mouse = openfl._legacy.ui.Mouse;
 	public static function hide ():Void;
 	
 	
-	#if (flash && !display)
-	@:require(flash10_2) public static function registerCursor (name:String, cursor:flash.ui.MouseCursorData):Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor (name:String, cursor:flash.ui.MouseCursorData):Void;
 	#end
 	
 	
@@ -89,8 +89,8 @@ typedef Mouse = openfl._legacy.ui.Mouse;
 	public static function show ():Void;
 	
 	
-	#if (flash && !display)
-	@:require(flash11) public static function unregisterCursor (name:String):Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public static function unregisterCursor (name:String):Void;
 	#end
 	
 	

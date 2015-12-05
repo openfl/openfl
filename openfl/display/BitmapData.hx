@@ -1981,8 +1981,8 @@ extern class BitmapData implements IBitmapDrawable {
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void;
 	
 	
-	#if (flash && !display)
-	@:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
 	#end
 	
 	
@@ -2083,8 +2083,8 @@ extern class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false):Void;
 	
 	
-	#if (flash && !display)
-	@:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality) : Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality) : Void;
 	#end
 	
 	
@@ -2429,8 +2429,8 @@ extern class BitmapData implements IBitmapDrawable {
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void;
 	
 	
-	#if (flash && !display)
-	public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
+	#if flash
+	@:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
 	#end
 	
 	

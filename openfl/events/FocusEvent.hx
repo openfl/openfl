@@ -110,8 +110,8 @@ extern class FocusEvent extends Event {
 	public static var MOUSE_FOCUS_CHANGE:String;
 	
 	
-	#if (flash && !display)
-	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
 	#end
 	
 	/**

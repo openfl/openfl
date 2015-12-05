@@ -156,8 +156,8 @@ extern class MouseEvent extends Event {
 	 */
 	public static var CLICK:String;
 	
-	#if (flash && !display)
-	@:require(flash11_2) public static var CONTEXT_MENU:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
 	#end
 	
 	/**
@@ -251,8 +251,8 @@ extern class MouseEvent extends Event {
 	 */
 	public static var MOUSE_WHEEL:String;
 	
-	#if (flash && !display)
-	@:require(flash11_3) public static var RELEASE_OUTSIDE:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_3) public static var RELEASE_OUTSIDE:String;
 	#end
 	
 	/**
@@ -338,8 +338,8 @@ extern class MouseEvent extends Event {
 	 */
 	public var delta:Int;
 	
-	#if (flash && !display)
-	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
 	#end
 	
 	/**
@@ -354,12 +354,12 @@ extern class MouseEvent extends Event {
 	 */
 	public var localY:Float;
 	
-	#if (flash && !display)
-	@:require(flash11_2) public var movementX:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11_2) public var movementY:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
 	#end
 	
 	/**

@@ -58,14 +58,14 @@ import openfl.utils.Object;
 @:final extern class ApplicationDomain {
 	
 	
-	#if (flash && !display)
-	@:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH (default, null):UInt;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH (default, null):UInt;
 	#end
 	
 	public static var currentDomain (default, null):ApplicationDomain;
 	
-	#if (flash && !display)
-	@:require(flash10) public var domainMemory:ByteArray;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var domainMemory:ByteArray;
 	#end
 	
 	public var parentDomain (default, null):ApplicationDomain;
@@ -74,8 +74,8 @@ import openfl.utils.Object;
 	public function new (parentDomain:ApplicationDomain = null);
 	public function getDefinition (name:String):Object;
 	
-	#if (flash && !display)
-	@:require(flash11_3) function getQualifiedDefinitionNames() : flash.Vector<String>;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : flash.Vector<String>;
 	#end
 	
 	public function hasDefinition (name:String):Bool;

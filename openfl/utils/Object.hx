@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash
+package openfl.utils; #if (!flash || display)
 
 
 @:forward() abstract Object(Dynamic) from Dynamic to Dynamic {

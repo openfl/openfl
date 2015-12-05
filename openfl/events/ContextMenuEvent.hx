@@ -62,8 +62,8 @@ extern class ContextMenuEvent extends Event {
 	
 	public var contextMenuOwner:InteractiveObject;
 	
-	#if (flash && !display)
-	@:require(flash10) public var isMouseTargetInaccessible:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var isMouseTargetInaccessible:Bool;
 	#end
 	
 	public var mouseTarget:InteractiveObject;

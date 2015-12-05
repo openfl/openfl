@@ -873,8 +873,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 */
 	public var position:UInt;
 	
-	#if (flash && !display)
-	@:require(flash11_4) public var shareable:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public var shareable:Bool;
 	#end
 	
 	
@@ -886,13 +886,13 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	public function new ();
 	
 	
-	#if (flash && !display)
-	@:require(flash11_4) public function atomicCompareAndSwapIntAt (byteIndex:Int, expectedValue:Int, newValue:Int):Int;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public function atomicCompareAndSwapIntAt (byteIndex:Int, expectedValue:Int, newValue:Int):Int;
 	#end
 	
 	
-	#if (flash && !display)
-	@:require(flash11_4) public function atomicCompareAndSwapLength (expectedLength:Int, newLength:Int):Int;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public function atomicCompareAndSwapLength (expectedLength:Int, newLength:Int):Int;
 	#end
 	
 	
@@ -1123,8 +1123,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * @return The deserialized object.
 	 * @throws EOFError There is not sufficient data available to read.
 	 */
-	#if (flash && !display)
-	public function readObject ():Dynamic;
+	#if flash
+	@:noCompletion @:dox(hide) public function readObject ():Dynamic;
 	#end
 	
 	
@@ -1330,8 +1330,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * 
 	 * @param object The object to serialize.
 	 */
-	#if (flash && !display)
-	public function writeObject (object:Dynamic):Void;
+	#if flash
+	@:noCompletion @:dox(hide) public function writeObject (object:Dynamic):Void;
 	#end
 	
 	

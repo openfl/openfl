@@ -204,8 +204,8 @@ typedef URLRequest = openfl._legacy.net.URLRequest;
 	 */
 	public var data:Dynamic;
 	
-	#if (flash && !display)
-	public var digest:String;
+	#if flash
+	@:noCompletion @:dox(hide) public var digest:String;
 	#end
 	
 	/**
@@ -319,8 +319,8 @@ typedef URLRequest = openfl._legacy.net.URLRequest;
 	public function new (url:String = null);
 	
 	
-	#if (flash && !display)
-	public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
+	#if flash
+	@:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
 	#end
 	
 	

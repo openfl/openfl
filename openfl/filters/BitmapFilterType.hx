@@ -1,26 +1,11 @@
-package openfl.filters; #if !flash
+package openfl.filters; #if (!display && !flash)
 
 
-/**
- * The BitmapFilterType class contains values to set the type of a
- * BitmapFilter.
- */
 class BitmapFilterType {
 	
 	
-	/**
-	 * Defines the setting that applies a filter to the entire area of an object.
-	 */
 	public static var FULL = "full";
-	
-	/**
-	 * Defines the setting that applies a filter to the inner area of an object.
-	 */
 	public static var INNER = "inner";
-	
-	/**
-	 * Defines the setting that applies a filter to the outer area of an object.
-	 */
 	public static var OUTER = "outer";
 	
 	
@@ -28,5 +13,38 @@ class BitmapFilterType {
 
 
 #else
-typedef BitmapFilterType = flash.filters.BitmapFilterType;
+
+
+/**
+ * The BitmapFilterType class contains values to set the type of a
+ * BitmapFilter.
+ */
+
+#if flash
+@:native("flash.filters.BitmapFilterType")
+#end
+
+
+@:fakeEnum(String) extern enum BitmapFilterType {
+	
+	
+	/**
+	 * Defines the setting that applies a filter to the entire area of an object.
+	 */
+	FULL;
+	
+	/**
+	 * Defines the setting that applies a filter to the inner area of an object.
+	 */
+	INNER;
+	
+	/**
+	 * Defines the setting that applies a filter to the outer area of an object.
+	 */
+	OUTER;
+	
+	
+}
+
+
 #end

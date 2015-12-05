@@ -563,8 +563,8 @@ extern class SharedObject extends EventDispatcher {
 	
 	public static var defaultObjectEncoding:Int;
 	
-	#if (flash && !display)
-	@:require(flash11_7) public static var preventBackup:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
 	#end
 	
 	public var client:Dynamic;
@@ -623,8 +623,8 @@ extern class SharedObject extends EventDispatcher {
 	public function connect (myConnection:NetConnection, params:String = null):Void;
 	
 	
-	#if (flash && !display)
-	public static function deleteAll (url:String):Int;
+	#if flash
+	@:noCompletion @:dox(hide) public static function deleteAll (url:String):Int;
 	#end
 	
 	
@@ -687,8 +687,8 @@ extern class SharedObject extends EventDispatcher {
 	public function flush (minDiskSpace:Int = 0):SharedObjectFlushStatus;
 	
 	
-	#if (flash && !display)
-	public static function getDiskUsage (url:String):Int;
+	#if flash
+	@:noCompletion @:dox(hide) public static function getDiskUsage (url:String):Int;
 	#end
 	
 	

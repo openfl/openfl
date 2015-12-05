@@ -141,32 +141,32 @@ import openfl.utils.ByteArray;
 extern class TouchEvent extends Event {
 	
 	
-	#if (flash && !display)
-	public static var PROXIMITY_BEGIN:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_BEGIN:String;
 	#end
 	
-	#if (flash && !display)
-	public static var PROXIMITY_END:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_END:String;
 	#end
 	
-	#if (flash && !display)
-	public static var PROXIMITY_MOVE:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_MOVE:String;
 	#end
 	
-	#if (flash && !display)
-	public static var PROXIMITY_OUT:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_OUT:String;
 	#end
 	
-	#if (flash && !display)
-	public static var PROXIMITY_OVER:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_OVER:String;
 	#end
 	
-	#if (flash && !display)
-	public static var PROXIMITY_ROLL_OUT:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OUT:String;
 	#end
 	
-	#if (flash && !display)
-	public static var PROXIMITY_ROLL_OVER:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER:String;
 	#end
 	
 	
@@ -260,8 +260,8 @@ extern class TouchEvent extends Event {
 	 */
 	public var isPrimaryTouchPoint:Bool;
 	
-	#if (flash && !display)
-	public var isRelatedObjectInaccessible:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
 	#end
 	
 	/**

@@ -246,12 +246,12 @@ extern class MovieClip extends Sprite {
 	public var framesLoaded (get, null):Int;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11) public var isPlaying (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public var isPlaying (default, null):Bool;
 	#end
 	
-	#if (flash && !display)
-	public var scenes (default, null):Array<flash.display.Scene>;
+	#if flash
+	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
 	#end
 	
 	/**
@@ -267,8 +267,8 @@ extern class MovieClip extends Sprite {
 	public var totalFrames (get, null):Int;
 	#end
 	
-	#if (flash && !display)
-	public var trackAsMenu:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	#end
 	
 	
@@ -328,8 +328,8 @@ extern class MovieClip extends Sprite {
 	public function nextFrame ():Void;
 	
 	
-	#if (flash && !display)
-	public function nextScene ():Void;
+	#if flash
+	@:noCompletion @:dox(hide) public function nextScene ():Void;
 	#end
 	
 	
@@ -348,8 +348,8 @@ extern class MovieClip extends Sprite {
 	public function prevFrame ():Void;
 	
 	
-	#if (flash && !display)
-	public function prevScene ():Void;
+	#if flash
+	@:noCompletion @:dox(hide) public function prevScene ():Void;
 	#end
 	
 	

@@ -1608,11 +1608,11 @@ import openfl.geom.Vector3D;
 @:native("flash.display.DisplayObject")
 #end
 
-extern class DisplayObject extends EventDispatcher implements IBitmapDrawable implements #if (flash && !display) Dynamic #else Dynamic<DisplayObject> #end {
+extern class DisplayObject extends EventDispatcher implements IBitmapDrawable implements #if flash Dynamic #else Dynamic<DisplayObject> #end {
 	
 	
-	#if (flash && !display)
-	public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
+	#if flash
+	@:noCompletion @:dox(hide) public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
 	#end
 	
 	/**
@@ -1657,8 +1657,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 	public var blendMode (default, set):BlendMode;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var blendShader (null, default):Shader;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var blendShader (null, default):Shader;
 	#end
 	
 	/**
@@ -2001,16 +2001,16 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 	public var rotation (get, set):Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var rotationX:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var rotationY:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var rotationZ:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var rotationZ:Float;
 	#end
 	
 	/**
@@ -2093,8 +2093,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 	public var scaleY (get, set):Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var scaleZ:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
 	#end
 	
 	/**
@@ -2240,8 +2240,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 	public var y (get, set):Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) var z:Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) var z:Float;
 	#end
 	
 	/**
@@ -2312,8 +2312,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 	public function globalToLocal (pos:Point):Point;
 	
 	
-	#if (flash && !display)
-	@:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
 	#end
 	
 	
@@ -2373,8 +2373,8 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 	public function localToGlobal (point:Point):Point;
 	
 	
-	#if (flash && !display)
-	@:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
 	#end
 	
 	

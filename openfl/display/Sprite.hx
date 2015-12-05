@@ -214,8 +214,8 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public var buttonMode:Bool;
 	
-	#if (flash && !display)
-	public var dropTarget (default, null):DisplayObject;
+	#if flash
+	@:noCompletion @:dox(hide) public var dropTarget (default, null):DisplayObject;
 	#end
 	
 	/**
@@ -230,8 +230,8 @@ extern class Sprite extends DisplayObjectContainer {
 	
 	public var hitArea:Sprite;
 	
-	#if (flash && !display)
-	public var soundTransform:SoundTransform;
+	#if flash
+	@:noCompletion @:dox(hide) public var soundTransform:SoundTransform;
 	#end
 	
 	/**
@@ -288,8 +288,8 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public function startDrag (lockCenter:Bool = false, bounds:Rectangle = null):Void;
 	
-	#if (flash && !display)
-	public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
+	#if flash
+	@:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
 	#end
 	
 	/**
@@ -301,8 +301,8 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public function stopDrag ():Void;
 	
-	#if (flash && !display)
-	public function stopTouchDrag (touchPointID:Int):Void;
+	#if flash
+	@:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
 	#end
 	
 	

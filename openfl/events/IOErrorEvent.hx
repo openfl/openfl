@@ -58,8 +58,8 @@ class IOErrorEvent extends ErrorEvent {
 extern class IOErrorEvent extends ErrorEvent {
 	
 	
-	#if (flash && !display)
-	public static var DISK_ERROR:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var DISK_ERROR:String;
 	#end
 	
 	/**
@@ -70,12 +70,12 @@ extern class IOErrorEvent extends ErrorEvent {
 	 */
 	public static var IO_ERROR:String;
 	
-	#if (flash && !display)
-	public static var NETWORK_ERROR:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	#end
 	
-	#if (flash && !display)
-	public static var VERIFY_ERROR:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
 	#end
 	
 	

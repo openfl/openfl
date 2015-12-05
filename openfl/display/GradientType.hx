@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display; #if (!display && !flash)
 
 
 enum GradientType {

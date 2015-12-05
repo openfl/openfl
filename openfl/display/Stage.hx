@@ -1625,8 +1625,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var application (default, null):Application;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash15) public var browserZoomFactor (default, null):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
 	#end
 	
 	/**
@@ -1638,20 +1638,20 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var color (get, set):UInt;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11_4) public var contentsScaleFactor (default, null):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public var contentsScaleFactor (default, null):Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11) public var displayContextInfo (default, null):String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
 	#end
 	
 	/**
@@ -1794,20 +1794,20 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var frameRate (get, set):Float;
 	#end
 	
-	#if (flash && !display)
-	public var fullScreenHeight (default, null):UInt;
+	#if flash
+	@:noCompletion @:dox(hide) public var fullScreenHeight (default, null):UInt;
 	#end
 	
-	#if (flash && !display)
-	public var fullScreenSourceRect:Rectangle;
+	#if flash
+	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	#if (flash && !display)
-	public var fullScreenWidth (default, null):UInt;
+	#if flash
+	@:noCompletion @:dox(hide) public var fullScreenWidth (default, null):UInt;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11_2) public var mouseLock:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 	#end
 	
 	/**
@@ -1901,12 +1901,12 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var scaleMode:StageScaleMode;
 	
-	#if (flash && !display)
-	public var showDefaultContextMenu:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) public var showDefaultContextMenu:Bool;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11) public var softKeyboardRect (default, null):Rectangle;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect (default, null):Rectangle;
 	#end
 	
 	public var stage3Ds (default, null):Vector<Stage3D>;
@@ -1975,8 +1975,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var stageHeight (default, null):Int;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
 	#end
 	
 	/**
@@ -2032,8 +2032,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var window (default, null):Window;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10_1) public var wmodeGPU (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
 	#end
 	
 	
@@ -2067,8 +2067,8 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public function invalidate ():Void;
 	
 	
-	#if (flash && !display)
-	public function isFocusInaccessible ():Bool;
+	#if flash
+	@:noCompletion @:dox(hide) public function isFocusInaccessible ():Bool;
 	#end
 	
 	

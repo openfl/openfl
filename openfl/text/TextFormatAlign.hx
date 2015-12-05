@@ -47,12 +47,12 @@ typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
 	 */
 	CENTER;
 	
-	#if (flash && !display)
-	END;
+	#if (flash && !doc_gen)
+	@:noCompletion @:dox(hide) END;
 	#end
 	
-	#if (flash && !display)
-	START;
+	#if (flash && !doc_gen)
+	@:noCompletion @:dox(hide) START;
 	#end
 	
 	

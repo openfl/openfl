@@ -360,16 +360,16 @@ import openfl.utils.ByteArray;
 extern class Shader {
 	
 	
-	#if (flash && !display)
-	public var byteCode (null, default):ByteArray;
+	#if flash
+	@:noCompletion @:dox(hide) public var byteCode (null, default):ByteArray;
 	#end
 	
-	#if (flash && !display)
-	public var data:flash.display.ShaderData;
+	#if flash
+	@:noCompletion @:dox(hide) public var data:flash.display.ShaderData;
 	#end
 	
-	#if (flash && !display)
-	public var precisionHint:flash.display.ShaderPrecision;
+	#if flash
+	@:noCompletion @:dox(hide) public var precisionHint:flash.display.ShaderPrecision;
 	#end
 	
 	

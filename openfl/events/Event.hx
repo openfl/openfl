@@ -249,8 +249,8 @@ extern class Event {
 	 */
 	public static var ADDED_TO_STAGE:String;
 	
-	#if (flash && !display)
-	@:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 	#end
 	
 	/**
@@ -269,16 +269,16 @@ extern class Event {
 	 */
 	public static var CHANGE:String;
 	
-	#if (flash && !display)
-	public static var CHANNEL_MESSAGE:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	#end
 	
-	#if (flash && !display)
-	public static var CHANNEL_STATE:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var CHANNEL_STATE:String;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public static var CLEAR:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var CLEAR:String;
 	#end
 	
 	/**
@@ -310,12 +310,12 @@ extern class Event {
 	#end
 	public static var CONTEXT3D_CREATE:String;
 	
-	#if (flash && !display)
-	@:require(flash10) public static var COPY:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var COPY:String;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public static var CUT:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var CUT:String;
 	#end
 	
 	/**
@@ -345,20 +345,20 @@ extern class Event {
 	 */
 	public static var ENTER_FRAME:String;
 	
-	#if (flash && !display)
-	@:require(flash10) public static var EXIT_FRAME:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var EXIT_FRAME:String;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10) public static var FRAME_CONSTRUCTED:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var FRAME_CONSTRUCTED:String;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11_3) public static var FRAME_LABEL:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_3) public static var FRAME_LABEL:String;
 	#end
 	
-	#if (flash && !display)
-	public static var FULLSCREEN:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var FULLSCREEN:String;
 	#end
 	
 	/**
@@ -393,8 +393,8 @@ extern class Event {
 	 */
 	public static var OPEN:String;
 	
-	#if (flash && !display)
-	@:require(flash10) public static var PASTE:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var PASTE:String;
 	#end
 	
 	/**
@@ -450,8 +450,8 @@ extern class Event {
 	 */
 	public static var SELECT:String;
 	
-	#if (flash && !display)
-	@:require(flash10) public static var SELECT_ALL:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public static var SELECT_ALL:String;
 	#end
 	
 	/**
@@ -462,8 +462,8 @@ extern class Event {
 	 */
 	public static var SOUND_COMPLETE:String;
 	
-	#if (flash && !display)
-	@:require(flash11_3) public static var SUSPEND:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_3) public static var SUSPEND:String;
 	#end
 	
 	/**
@@ -492,12 +492,12 @@ extern class Event {
 	 */
 	public static var TAB_INDEX_CHANGE:String;
 	
-	#if (flash && !display)
-	@:require(flash11_3) public static var TEXTURE_READY:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_3) public static var TEXTURE_READY:String;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
 	#end
 	
 	/**
@@ -508,12 +508,12 @@ extern class Event {
 	 */
 	public static var UNLOAD:String;
 	
-	#if (flash && !display)
-	public static var VIDEO_FRAME:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var VIDEO_FRAME:String;
 	#end
 	
-	#if (flash && !display)
-	public static var WORKER_STATE:String;
+	#if flash
+	@:noCompletion @:dox(hide) public static var WORKER_STATE:String;
 	#end
 	
 	

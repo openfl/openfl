@@ -1130,31 +1130,31 @@ import openfl.Vector;
 @:final extern class Context3D extends EventDispatcher {
 	
 	
-	#if (flash && display)
-	@:require(flash15) public static var supportsVideoTexture (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public static var supportsVideoTexture (default, null):Bool;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash15) public var backBufferHeight (default, null):Int;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public var backBufferHeight (default, null):Int;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash15) public var backBufferWidth (default, null):Int;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public var backBufferWidth (default, null):Int;
 	#end
 	
 	public var driverInfo (default, null):String;
 	public var enableErrorChecking:Bool;
 	
-	#if (flash && !display)
-	@:require(flash15) public var maxBackBufferHeight:Int;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public var maxBackBufferHeight:Int;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash15) public var maxBackBufferWidth:Int;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public var maxBackBufferWidth:Int;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash12) public var profile (default, null):String;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash12) public var profile (default, null):String;
 	#end
 	
 	
@@ -1172,8 +1172,8 @@ import openfl.Vector;
 	public function createTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture;
 	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, ?bufferUsage:Context3DBufferUsage):VertexBuffer3D;
 	
-	#if (flash && !display)
-	@:require(flash15) public function createVideoTexture ():flash.display3D.textures.VideoTexture;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash15) public function createVideoTexture ():flash.display3D.textures.VideoTexture;
 	#end
 	
 	public function dispose (recreate:Bool = true):Void;
@@ -1185,8 +1185,8 @@ import openfl.Vector;
 	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void;
 	public function setDepthTest (depthMask:Bool, passCompareMode:Context3DCompareMode):Void;
 	
-	#if (flash && !display)
-	@:require(flash16) public function setFillMode (fillMode:flash.display3D.Context3DFillMode):Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash16) public function setFillMode (fillMode:flash.display3D.Context3DFillMode):Void;
 	#end
 	
 	public function setProgram (program:Program3D):Void;

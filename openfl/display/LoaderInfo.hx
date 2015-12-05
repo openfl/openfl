@@ -190,8 +190,8 @@ import openfl.utils.ByteArray;
 extern class LoaderInfo extends EventDispatcher {
 	
 	
-	#if (flash && !display)
-	public var actionScriptVersion (default, null):flash.display.ActionScriptVersion;
+	#if flash
+	@:noCompletion @:dox(hide) public var actionScriptVersion (default, null):flash.display.ActionScriptVersion;
 	#end
 	
 	/**
@@ -272,8 +272,8 @@ extern class LoaderInfo extends EventDispatcher {
 	 */
 	public var childAllowsParent (default, null):Bool;
 	
-	#if (flash && !display)
-	@:require(flash11_4) public var childSandboxBridge:Dynamic;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public var childSandboxBridge:Dynamic;
 	#end
 	
 	/**
@@ -334,8 +334,8 @@ extern class LoaderInfo extends EventDispatcher {
 	 */
 	public var height (default, null):Int;
 	
-	#if (flash && !display)
-	@:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 	#end
 	
 	/**
@@ -406,8 +406,8 @@ extern class LoaderInfo extends EventDispatcher {
 	 */
 	public var parentAllowsChild (default, null):Bool;
 	
-	#if (flash && !display)
-	@:require(flash11_4) public var parentSandboxBridge:Dynamic;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11_4) public var parentSandboxBridge:Dynamic;
 	#end
 	
 	/**
@@ -429,8 +429,8 @@ extern class LoaderInfo extends EventDispatcher {
 	 */
 	public var sharedEvents (default, null):EventDispatcher;
 	
-	#if (flash && !display)
-	public var swfVersion (default, null):UInt;
+	#if flash
+	@:noCompletion @:dox(hide) public var swfVersion (default, null):UInt;
 	#end
 	
 	/**
@@ -480,8 +480,8 @@ extern class LoaderInfo extends EventDispatcher {
 	private function new ();
 	
 	
-	#if (flash && !display)
-	public static function getLoaderInfoByDefinition (object:Dynamic):LoaderInfo;
+	#if flash
+	@:noCompletion @:dox(hide) public static function getLoaderInfoByDefinition (object:Dynamic):LoaderInfo;
 	#end
 	
 	

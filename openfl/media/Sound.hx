@@ -551,8 +551,8 @@ extern class Sound extends EventDispatcher {
 	 */
 	public var isBuffering (default, null):Bool;
 	
-	#if (flash && !display)
-	@:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 	#end
 	
 	/**
@@ -629,8 +629,8 @@ extern class Sound extends EventDispatcher {
 	public function close ():Void;
 	
 	
-	#if (flash && !display)
-	@:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
 	
 	

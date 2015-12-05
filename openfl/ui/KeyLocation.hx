@@ -35,8 +35,8 @@ package openfl.ui; #if (!display && !flash)
 
 @:fakeEnum(UInt) extern enum KeyLocation {
 	
-	#if (flash && !display)
-	D_PAD;
+	#if (flash && !doc_gen)
+	@:noCompletion @:dox(hide) D_PAD;
 	#end
 	
 	LEFT;

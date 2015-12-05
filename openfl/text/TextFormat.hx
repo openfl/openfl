@@ -174,8 +174,8 @@ extern class TextFormat {
 	 */
 	public var color:Null<Int>;
 	
-	#if (flash && !display)
-	public var display:flash.text.TextFormatDisplay;
+	#if flash
+	@:noCompletion @:dox(hide) public var display:flash.text.TextFormatDisplay;
 	#end
 	
 	/**

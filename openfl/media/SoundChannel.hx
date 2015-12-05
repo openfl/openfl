@@ -258,8 +258,8 @@ import openfl.events.EventDispatcher;
 	#end
 	
 	
-	#if (flash && !display)
-	public function new ();
+	#if flash
+	@:noCompletion @:dox(hide) public function new ();
 	#end
 	
 	

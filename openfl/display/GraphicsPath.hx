@@ -162,8 +162,8 @@ import openfl.Vector;
 	public function new (commands:Vector<Int> = null, data:Vector<Float> = null, ?winding:GraphicsPathWinding);
 	
 	
-	#if (flash && !display)
-	@:require(flash11) public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float): Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float): Void;
 	#end
 	
 	/**

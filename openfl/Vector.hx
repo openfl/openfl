@@ -1,4 +1,4 @@
-package openfl; #if !flash
+package openfl; #if (!flash || display)
 
 
 // Haxe abstracts resolve to Dynamic types, which are slower on C++
