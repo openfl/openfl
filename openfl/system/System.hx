@@ -113,20 +113,20 @@ typedef System = openfl._legacy.system.System;
 @:final extern class System {
 	
 	
-	#if (flash && !display)
-	@:require(flash10_1) public static var freeMemory (default, null):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
 	#end
 	
-	#if (flash && !display)
-	public static var ime (default, null):flash.system.IME;
+	#if flash
+	@:noCompletion @:dox(hide) public static var ime (default, null):flash.system.IME;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10_1) public static var privateMemory (default, null):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory (default, null):Float;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash11) public static var processCPUUsage (default, null):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
 	#end
 	
 	/**
@@ -150,8 +150,8 @@ typedef System = openfl._legacy.system.System;
 	public static var totalMemory (get, null):Int;
 	#end
 	
-	#if (flash && !display)
-	@:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
 	#end
 	
 	/**
@@ -208,8 +208,8 @@ typedef System = openfl._legacy.system.System;
 	#end
 	
 	
-	#if (flash && !display)
-	@:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
 	#end
 	
 	
@@ -251,8 +251,8 @@ typedef System = openfl._legacy.system.System;
 	public static function pause ():Void;
 	
 	
-	#if (flash && !display)
-	@:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
+	#if flash
+	@:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
 	#end
 	
 	

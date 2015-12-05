@@ -145,8 +145,8 @@ typedef Multitouch = openfl._legacy.ui.Multitouch;
 	public static var inputMode (get, set):MultitouchInputMode;
 	#end
 	
-	#if (flash && !display)
-	public static var mapTouchToMouse:Bool;
+	#if flash
+	@:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
 	#end
 	
 	/**

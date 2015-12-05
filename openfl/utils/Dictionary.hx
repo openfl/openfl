@@ -1,4 +1,4 @@
-package openfl.utils; #if !flash
+package openfl.utils; #if (!flash || display)
 
 
 import haxe.ds.StringMap;
@@ -68,21 +68,21 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
-	@:from static inline function fromStringMap<V> (map:StringMap<V>):Map<String, V> {
+	@:from static inline function fromStringMap<V> (map:StringMap<V>):Dictionary<String, V> {
 		
 		return cast map;
 		
 	}
 	
 	
-	@:from static inline function fromIntMap<V> (map:IntMap<V>):Map<Int, V> {
+	@:from static inline function fromIntMap<V> (map:IntMap<V>):Dictionary<Int, V> {
 		
 		return cast map;
 		
 	}
 	
 	
-	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Map<K, V> {
+	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Dictionary<K, V> {
 		
 		return cast map;
 		
