@@ -27,6 +27,7 @@ install:
   - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
   - if [[ $TARGET == 'docs' ]]; then haxelib dev dox ~/dox ; fi
   - haxelib install mcover > log.txt || cat log.txt
+  - haxelib install hamcrest > log.txt || cat log.txt
   - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > log.txt || cat log.txt
   - haxelib dev munit ~/munit/src
   - haxelib dev openfl $(pwd)
