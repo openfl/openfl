@@ -30,7 +30,7 @@ class NetStream extends EventDispatcher {
 	public var soundTransform:SoundTransform;
 	public var speed (get, set):Float;
 	public var time (default, null):Float;
-	public var videoCode (default, null)c:Int;
+	public var videoCode (default, null):Int;
 	
 	private var __connection:NetConnection;
 	private var __timer:Timer;

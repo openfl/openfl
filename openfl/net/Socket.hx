@@ -33,7 +33,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	public var bytesAvailable (get, null) : Int;
 	public var bytesPending (get, null) : Int;
 	public var connected (get, null): Bool;
-	public var objectEncoding:Int;
+	public var objectEncoding:UInt;
 	public var secure:Bool;
 	public var timeout:Int;
 	public var endian (get, set):Endian;
@@ -46,7 +46,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private var __inputBuffer:ByteArray;
 	private var __output:ByteArray;
 	private var __port:Int;
-	private var ___socket:#if sys SysSocket #else Dynamic #end;
+	private var __socket:#if sys SysSocket #else Dynamic #end;
 	private var __timestamp:Float;
 	
 	
@@ -57,7 +57,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		endian = Endian.BIG_ENDIAN;
 		timeout = 20000;
 		
-		___bufferfer = Bytes.alloc (4096);
+		__buffer = Bytes.alloc (4096);
 		
 		if (port > 0 && port < 65535) {
 			
@@ -70,7 +70,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	public function connect (host:String = null, port:Int = 0):Void {
 		
-		if ( __socket != null) {
+		if (__socket != null) {
 			
 			close ();
 			
