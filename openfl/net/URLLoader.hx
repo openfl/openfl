@@ -354,7 +354,7 @@ class URLLoader extends EventDispatcher {
 	
 	private function requestUrl (url:String, method:URLRequestMethod, data:Dynamic, requestHeaders:Array<URLRequestHeader>):Void {
 		
-		var uri = prepareData(data);
+		var uri = prepareData (data);
 		uri.position = 0;
 		
 		__data = new ByteArray ();
@@ -447,6 +447,7 @@ class URLLoader extends EventDispatcher {
 						
 						__data.position = 0;
 						this.data = __data.readUTFBytes (__data.length);
+						this.data.position = 0;
 					
 				}
 				
