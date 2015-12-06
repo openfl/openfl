@@ -987,9 +987,9 @@ class BitmapData implements IBitmapDrawable {
 		var blueChannel:Bool = ((channelOptions & ( 1 << 2 )) >> 2) == 1;
 		var alphaChannel:Bool = ((channelOptions & ( 1 << 3 )) >> 3) == 1;
 		
-		for (y in 0...noiseTestData.height)
+		for (y in 0...height)
 		{
-			for (x in 0...noiseTestData.width)
+			for (x in 0...width)
 			{
 				//Default channel colours if all channel options are false.
 				var red:Int = 0;
