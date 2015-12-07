@@ -19,6 +19,12 @@ enum MultitouchInputMode {
  * values set the type of touch events the Flash runtime dispatches when the
  * user interacts with a touch-enabled device.
  */
+
+#if flash
+@:native("flash.ui.MultitouchInputMode")
+#end
+
+
 @:fakeEnum(String) @:require(flash10_1) extern enum MultitouchInputMode {
 	
 	/**

@@ -2,6 +2,7 @@ package openfl.desktop; #if (!display && !flash) #if !openfl_legacy
 
 
 import lime.system.Clipboard in LimeClipboard;
+import openfl.utils.Object;
 
 
 class Clipboard {
@@ -82,7 +83,7 @@ class Clipboard {
 	}
 	
 	
-	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Dynamic {
+	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object {
 		
 		if (transferMode == null) {
 			
@@ -142,7 +143,7 @@ class Clipboard {
 	}
 	
 	
-	public function setData (format:ClipboardFormats, data:Dynamic, serializable:Bool = true):Bool {
+	public function setData (format:ClipboardFormats, data:Object, serializable:Bool = true):Bool {
 		
 		if (!__systemClipboard) {
 			

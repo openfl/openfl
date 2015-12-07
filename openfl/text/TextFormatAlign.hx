@@ -21,6 +21,12 @@ typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
  * The TextFormatAlign class provides values for text alignment in the
  * TextFormat class.
  */
+
+#if flash
+@:native("flash.text.TextFormatAlign")
+#end
+
+
 @:fakeEnum(String) extern enum TextFormatAlign {
 	
 	/**

@@ -57,7 +57,7 @@ package openfl.utils; #if (!flash || display)
 	}
 	
 	
-	public inline function toString ():String {
+	@:to public inline function toString ():String {
 		
 		return Std.string (this);
 		

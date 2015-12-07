@@ -131,7 +131,7 @@ class Loader extends DisplayObjectContainer {
 	}
 	
 	
-	public function loadBytes (buffer:ByteArray):Void {
+	public function loadBytes (buffer:ByteArray, context:LoaderContext = null):Void {
 		
 		var worker = new BackgroundWorker ();
 		
@@ -651,7 +651,7 @@ extern class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the <code>contentLoaderInfo</code>
 	 *                      object when a loaded object is removed.
 	 */
-	public function loadBytes (buffer:ByteArray):Void;
+	public function loadBytes (buffer:ByteArray, context:LoaderContext = null):Void;
 	
 	
 	/**
