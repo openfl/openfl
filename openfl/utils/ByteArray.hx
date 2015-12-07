@@ -223,6 +223,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
+@:autoBuild(lime.Assets.embedByteArray())
+
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
 	
