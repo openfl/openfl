@@ -1,7 +1,7 @@
-package openfl.utils; #if (!flash || display)
+package openfl.utils;
 
 
-@:forward() abstract Object(Dynamic) from Dynamic {
+@:forward() abstract Object(ObjectType) from ObjectType {
 	
 	
 	public inline function new () {
@@ -104,6 +104,8 @@ package openfl.utils; #if (!flash || display)
 }
 
 
+#if !flash
+typedef ObjectType = Dynamic;
 #else
-typedef Object = flash.utils.Object;
+typedef ObjectType = flash.utils.Object;
 #end
