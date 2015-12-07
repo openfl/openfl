@@ -62,6 +62,21 @@ package openfl.utils; #if (!flash || display)
 	}
 	
 	
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get (key:String):Dynamic {
+		
+		return Reflect.field (this, key);
+		
+	}
+	
+	
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set (key:String, value:Dynamic):Dynamic {
+		
+		Reflect.setField (this, key, value);
+		return value;
+		
+	}
+	
+	
 }
 
 
