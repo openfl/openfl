@@ -220,8 +220,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 }
 
 
-#if !display
-#if !flash
+#if (!display && !flash)
 
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
@@ -776,9 +775,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 
 #else
-typedef ByteArrayData = flash.utils.ByteArray;
-#end
-#else
 
 
 /**
@@ -808,6 +804,11 @@ typedef ByteArrayData = flash.utils.ByteArray;
  * </ul>
  * </p>
  */
+
+#if flash
+@:native("flash.utils.ByteArray")
+#end
+
 extern class ByteArrayData implements IDataOutput implements IDataInput implements ArrayAccess<Int> {
 	
 	
@@ -843,10 +844,14 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	 * Changes or reads the byte order for the data; either
 	 * <code>Endian.BIG_ENDIAN</code> or <code>Endian.LITTLE_ENDIAN</code>.
 	 */
+	#if (flash && !display)
+	public var endian:Endian;
+	#else
 	public var endian (get, set):Endian;
 	
 	private function get_endian ():Endian;
 	private function set_endian (value:Endian):Endian;
+	#end
 	
 	/**
 	 * The length of the ByteArray object, in bytes.

@@ -37,17 +37,17 @@ typedef IDataInput = openfl._legacy.utils.IDataInput;
 
 extern interface IDataInput {
 	
-	//#if (flash && !display)
-	//public var bytesAvailable:UInt;
-	//#else
+	#if (flash && !display)
+	public var bytesAvailable (default, null):UInt;
+	#else
 	public var bytesAvailable (get, never):UInt;
-	//#end
+	#end
 	
-	//#if (flash && !display)
-	//public var endian:Endian;
-	//#else
+	#if (flash && !display)
+	public var endian:Endian;
+	#else
 	public var endian (get, set):Endian;
-	//#end
+	#end
 	
 	public var objectEncoding:UInt;
 	
@@ -59,9 +59,9 @@ extern interface IDataInput {
 	public function readInt ():Int;
 	public function readMultiByte (length:UInt, charSet:String):String;
 	
-	//#if (flash && !display)
-	//public function readObject ():Dynamic;
-	//#end
+	#if (flash && !display)
+	public function readObject ():Dynamic;
+	#end
 	
 	public function readShort ():Int;
 	public function readUnsignedByte ():Int;

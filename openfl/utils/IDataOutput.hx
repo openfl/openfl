@@ -34,11 +34,11 @@ typedef IDataOutput = openfl._legacy.utils.IDataOutput;
 
 extern interface IDataOutput {
 	
-	//#if (flash && !display)
-	//public var endian:Endian;
-	//#else
+	#if (flash && !display)
+	public var endian:Endian;
+	#else
 	public var endian (get, set):Endian;
-	//#end
+	#end
 	
 	public var objectEncoding:UInt;
 	
@@ -50,9 +50,9 @@ extern interface IDataOutput {
 	public function writeInt (value:Int):Void;
 	public function writeMultiByte (value:String, charSet:String):Void;
 	
-	//#if (flash && !display)
-	//public function writeObject (object:Dynamic):Void;
-	//#end
+	#if (flash && !display)
+	public function writeObject (object:Dynamic):Void;
+	#end
 	
 	public function writeShort (value:Int):Void;
 	public function writeUTF (value:String):Void;
