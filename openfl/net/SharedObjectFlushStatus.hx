@@ -12,26 +12,16 @@ package openfl.net; #if (!display && !flash)
 #else
 
 
-#if (flash && !display)
-
-
-// TODO: Is this really right on Flash? It has a constructor?
-
-@:native("flash.net.SharedObjectFlushStatus")
-extern class SharedObjectFlushStatus {
-	function new() : Void;
-	static var FLUSHED : String;
-	static var PENDING : String;
-}
-
-
-#else
-
-
 /**
  * The SharedObjectFlushStatus class provides values for the code returned
  * from a call to the <code>SharedObject.flush()</code> method.
  */
+
+#if flash
+@:native("flash.net.SharedObjectFlushStatus")
+#end
+
+
 @:fakeEnum(String) enum SharedObjectFlushStatus {
 	
 	/**
@@ -48,5 +38,4 @@ extern class SharedObjectFlushStatus {
 }
 
 
-#end
 #end
