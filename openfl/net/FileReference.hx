@@ -4,6 +4,7 @@ package openfl.net; #if (!display && !flash) #if !openfl_legacy
 import haxe.io.Path;
 import lime.system.System;
 import lime.ui.FileDialog;
+import lime.utils.Bytes;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
@@ -112,7 +113,7 @@ class FileReference extends EventDispatcher {
 		
 		if (__path != null) {
 			
-			data = ByteArray.readFile (__path);
+			data = Bytes.readFile (__path);
 			
 		}
 		
@@ -130,7 +131,7 @@ class FileReference extends EventDispatcher {
 		
 		#if desktop
 		
-		if (Std.is (data, ByteArray)) {
+		if (Std.is (data, ByteArrayData)) {
 			
 			__data = data;
 			
@@ -227,7 +228,7 @@ class FileReference extends EventDispatcher {
 		
 		#if desktop
 		
-		if (Std.is (__urlLoader.data, ByteArray)) {
+		if (Std.is (__urlLoader.data, ByteArrayData)) {
 			
 			__data = __urlLoader.data;
 			
