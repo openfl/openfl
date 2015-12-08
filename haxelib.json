@@ -5,6 +5,6 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "3.5.0",
-	"releasenote": "Consistency fixes",
+	"releasenote": "Improved openfl.utils.Object, included Flash externs and new abstract ByteArray",
 	"contributors": [ "singmajesty" ]
 }

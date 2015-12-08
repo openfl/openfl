@@ -1,3 +1,22 @@
+3.5.0 (12/07/2015)
+------------------
+
+* ByteArray is now abstract -- supports array access and to/from Bytes
+* Improved openfl.utils.Object to support array access and for loops
+* The Haxe externs for Flash target classes are now integrated/unified
+* Multiple inconsistencies with Flash have been resolved
+* Implemented initial support for sprite.hitArea
+* Re-wrote SimpleButton with more accurate API support
+* Repeated SharedObject "get" calls now return the same instance
+* Minor improvements to the Stage3D compatibility layer
+* Fixed incorrect hit testing with touch events
+* Fixed a premature start in projects that use only SWF libraries
+* Fixed a regression with graphics.cubicCurveTo support
+* Fixed the Tilesheet bounds calculation when TILE_TRANS_2x2 is used
+* -Dtelemetry now enables HxScout support on Neko as well
+* Ported behavior from legacy for native XMLSocket support
+
+
 3.4.0 (10/28/2015)
 ------------------
 
