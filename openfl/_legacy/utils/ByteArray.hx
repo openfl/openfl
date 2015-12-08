@@ -821,3 +821,6 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 #else
 typedef ByteArray = openfl.utils.ByteArray;
 #end
+
+
+typedef ByteArrayData = ByteArray;
