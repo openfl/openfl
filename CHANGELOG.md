@@ -1,3 +1,12 @@
+3.5.1 (12/09/2015)
+------------------
+
+* Improved the behavior of GameInput.getDeviceAt
+* Updated GameInputDevice.id to be a GUID, not an internal index value
+* Fixed a minor issue in ApplicationDomain.getDefinition
+* Fixed "haxelib run openfl setup" when Lime is not installed
+
+
 3.5.0 (12/07/2015)
 ------------------
 
