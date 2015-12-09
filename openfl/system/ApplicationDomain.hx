@@ -27,7 +27,7 @@ import openfl.utils.Object;
 	}
 	
 	
-	public function getDefinition (name:String):Object {
+	public function getDefinition (name:String):Class<Dynamic> {
 		
 		return Type.resolveClass (name);
 		
@@ -72,7 +72,7 @@ import openfl.utils.Object;
 	
 	
 	public function new (parentDomain:ApplicationDomain = null);
-	public function getDefinition (name:String):Object;
+	public function getDefinition (name:String):Class<Dynamic>;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : flash.Vector<String>;
