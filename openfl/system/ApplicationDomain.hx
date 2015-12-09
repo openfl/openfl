@@ -72,7 +72,7 @@ import openfl.utils.Object;
 	
 	
 	public function new (parentDomain:ApplicationDomain = null);
-	public function getDefinition (name:String):Class<Dynamic>;
+	public function getDefinition (name:String):Dynamic;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : flash.Vector<String>;
