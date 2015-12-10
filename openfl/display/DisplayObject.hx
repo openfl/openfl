@@ -1464,6 +1464,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 typedef DisplayObject = openfl._legacy.display.DisplayObject;
 #end
 #else
+#if (flash && !display)
+typedef DisplayObject = flash.display.DisplayObject;
+#else
 
 
 import openfl.events.EventDispatcher;
@@ -2381,4 +2384,5 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable im
 }
 
 
+#end
 #end
