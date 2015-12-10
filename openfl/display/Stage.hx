@@ -868,33 +868,39 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack.reverse ();
 			__fireEvent (event, stack);
 			
-			#if (windows || linux)
+			if(window.config.fullscreenHotkey) {
 			
-			if (keyCode == KeyCode.RETURN && modifier.altKey && type == KeyboardEvent.KEY_DOWN && !modifier.ctrlKey && !modifier.shiftKey && !modifier.metaKey && !event.isDefaultPrevented ()) {
+				#if (windows || linux)
 				
-				switch (displayState) {
+				if (keyCode == KeyCode.RETURN && modifier.altKey && type == KeyboardEvent.KEY_DOWN && !modifier.ctrlKey && !modifier.shiftKey && !modifier.metaKey && !event.isDefaultPrevented ()) {
 					
-					case NORMAL: displayState = FULL_SCREEN;
-					default: displayState = NORMAL;
-					
-				}
-				
-			}
-			
-			#elseif mac
-			
-			if (keyCode == KeyCode.F && modifier.ctrlKey && modifier.metaKey && type == KeyboardEvent.KEY_DOWN && !modifier.altKey && !modifier.shiftKey && !event.isDefaultPrevented ()) {
-				
-				switch (displayState) {
-					
-					case NORMAL: displayState = FULL_SCREEN;
-					default: displayState = NORMAL;
+					switch (displayState) {
+						
+						case NORMAL: displayState = FULL_SCREEN;
+						default: displayState = NORMAL;
+						
+					}
 					
 				}
 				
+				#elseif mac
+				
+				if (keyCode == KeyCode.F && modifier.ctrlKey && modifier.metaKey && type == KeyboardEvent.KEY_DOWN && !modifier.altKey && !modifier.shiftKey && !event.isDefaultPrevented ()) {
+					
+					switch (displayState) {
+						
+						case NORMAL: displayState = FULL_SCREEN;
+						default: displayState = NORMAL;
+						
+					}
+					
+				}
+				
+				#end
+				
 			}
 			
-			#elseif android
+			#if android
 			
 			if (keyCode == KeyCode.APP_CONTROL_BACK && modifier == 0 && type == KeyboardEvent.KEY_UP && !event.isDefaultPrevented ()) {
 				
