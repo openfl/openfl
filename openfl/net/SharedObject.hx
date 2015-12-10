@@ -596,7 +596,11 @@ extern class SharedObject extends EventDispatcher {
 	 * processing time, so you may want to avoid using this method unless you
 	 * have a specific need for it.</p>
 	 */
+	#if (flash && !display)
+	public var size (default, null):UInt;
+	#else
 	public var size (get, never):UInt;
+	#end
 	
 	
 	private function new ();
