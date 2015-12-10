@@ -531,7 +531,7 @@ class URLLoader extends EventDispatcher {
 		
 		switch (dataFormat) {
 			
-			case BINARY: this.data = cast ((content:ArrayBuffer), ByteArray);
+			case BINARY: this.data = ByteArray.fromArrayBuffer ((content:ArrayBuffer));
 			default: this.data = Std.string (content);
 			
 		}
