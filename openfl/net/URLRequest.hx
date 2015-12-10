@@ -13,7 +13,10 @@ import openfl.utils.ByteArray;
 	public var requestHeaders:Array<URLRequestHeader>;
 	public var url:String;
 	public var userAgent:String;
-	
+
+	#if (js && html5)
+	public var withCredentials:Bool = false;
+	#end
 	
 	public function new (inURL:String = null) {
 		

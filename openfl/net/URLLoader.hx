@@ -89,7 +89,7 @@ class URLLoader extends EventDispatcher {
 	public function load (request:URLRequest):Void {
 		
 		#if (js && html5)
-		requestUrl (request.url, request.method, request.data, request.formatRequestHeaders ());
+		requestUrl (request.url, request.method, request.data, request.formatRequestHeaders (), request.withCredentials);
 		#else
 		if (request.url != null && request.url.indexOf ("http://") == -1 && request.url.indexOf ("https://") == -1) {
 			
@@ -213,9 +213,10 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function requestUrl (url:String, method:String, data:Dynamic, requestHeaders:Array<URLRequestHeader>):Void {
+	private function requestUrl (url:String, method:String, data:Dynamic, requestHeaders:Array<URLRequestHeader>, withCredentials:Bool):Void {
 		
 		var xmlHttpRequest:XMLHttpRequest = untyped __new__("XMLHttpRequest");
+		xmlHttpRequest.withCredentials = withCredentials;
 		registerEvents (cast xmlHttpRequest);
 		var uri:Dynamic = "";
 		
