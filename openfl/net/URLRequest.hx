@@ -50,3 +50,8 @@ import openfl.utils.ByteArray;
 	
 	
 }
+
+
+#else
+typedef URLRequest = openfl._legacy.net.URLRequest;
+#end

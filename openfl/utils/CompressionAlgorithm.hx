@@ -9,3 +9,8 @@ enum CompressionAlgorithm {
 	GZIP;
 	
 }
+
+
+#else
+typedef CompressionAlgorithm = openfl._legacy.utils.CompressionAlgorithm;
+#end
