@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && !flash) #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -37,30 +37,4 @@ import openfl.Lib;
 
 #else
 typedef GraphicsBitmapFill = openfl._legacy.display.GraphicsBitmapFill;
-#end
-#else
-
-
-import openfl.geom.Matrix;
-
-#if flash
-@:native("flash.display.GraphicsBitmapFill")
-#end
-
-
-@:final extern class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
-	
-	
-	public var bitmapData:BitmapData;
-	public var matrix:Matrix;
-	public var repeat:Bool;
-	public var smooth:Bool;
-	
-	
-	public function new (bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false);
-	
-	
-}
-
-
 #end

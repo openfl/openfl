@@ -1,4 +1,4 @@
-package openfl.desktop; #if (!display && !flash) #if !openfl_legacy
+package openfl.desktop; #if !openfl_legacy
 
 
 import lime.system.Clipboard in LimeClipboard;
@@ -217,36 +217,6 @@ class Clipboard {
 		return __generalClipboard;
 		
 	}
-	
-	
-}
-
-
-#end
-#else
-
-
-import openfl.utils.Object;
-
-
-#if flash
-@:require(flash10)
-@:native("flash.desktop.Clipboard")
-#end
-
-extern class Clipboard {
-	
-	
-	public static var generalClipboard (default, null):Clipboard;
-	
-	public var formats (default, null):Array<ClipboardFormats>;
-	
-	public function clear ():Void;
-	public function clearData (format:ClipboardFormats):Void;
-	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object;
-	public function hasFormat (format:ClipboardFormats):Bool;
-	public function setData (format:ClipboardFormats, data:Object, serializable:Bool = true):Bool;
-	public function setDataHandler (format:ClipboardFormats, handler:Dynamic, serializable:Bool = true):Bool;
 	
 	
 }

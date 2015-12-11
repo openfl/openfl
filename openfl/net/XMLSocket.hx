@@ -1,4 +1,4 @@
-package openfl.net; #if (!display && !flash) #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 
 
 import openfl.events.DataEvent;
@@ -147,34 +147,4 @@ class XMLSocket extends EventDispatcher {
 
 #else
 typedef XMLSocket = openfl._legacy.net.XMLSocket;
-#end
-#else
-
-
-import openfl.events.EventDispatcher;
-
-#if flash
-@:native("flash.net.XMLSocket")
-#end
-
-
-extern class XMLSocket extends EventDispatcher {
-	
-	
-	public var connected (default, null):Bool;
-	
-	#if flash
-	@:require(flash10)
-	#end
-	public var timeout:Int;
-	
-	public function new (host:String = null, port:Int = 80);
-	public function close ():Void;
-	public function connect (host:String, port:Int):Void;
-	public function send (object:Dynamic):Void;
-	
-	
-}
-
-
 #end

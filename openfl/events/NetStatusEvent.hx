@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 class NetStatusEvent extends Event {
@@ -39,27 +39,3 @@ class NetStatusEvent extends Event {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.events.NetStatusEvent")
-#end
-
-extern class NetStatusEvent extends Event {
-	
-	
-	public static var NET_STATUS:String;
-	
-	public var info:Dynamic;
-	
-	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, info:Dynamic = null);
-	
-	
-}
-
-
-#end

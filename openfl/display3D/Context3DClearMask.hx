@@ -1,4 +1,4 @@
-package openfl.display3D; #if (!display && !flash)
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -14,23 +14,3 @@ class Context3DClearMask {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.display3D.Context3DClearMask")
-#end
-
-extern class Context3DClearMask {
-	
-	public static var ALL:Int;
-	public static var COLOR:Int;
-	public static var DEPTH:Int;
-	public static var STENCIL:Int;
-	
-}
-
-
-#end

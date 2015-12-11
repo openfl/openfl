@@ -1,4 +1,4 @@
-package openfl.display3D; #if (!display && !flash)
+package openfl.display3D;
 
 
 enum Context3DTextureFilter {
@@ -11,25 +11,3 @@ enum Context3DTextureFilter {
 	NEAREST;
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.display3D.Context3DTextureFilter")
-#end
-
-@:fakeEnum(String) extern enum Context3DTextureFilter {
-	
-	ANISOTROPIC16X;
-	ANISOTROPIC2X;
-	ANISOTROPIC4X;
-	ANISOTROPIC8X;
-	LINEAR;
-	NEAREST;
-	
-}
-
-
-#end

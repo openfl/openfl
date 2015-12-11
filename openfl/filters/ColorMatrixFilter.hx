@@ -1,4 +1,4 @@
-package openfl.filters; #if (!display && !flash) #if !openfl_legacy
+package openfl.filters; #if !openfl_legacy
 
 
 import openfl.display.Shader;
@@ -137,24 +137,4 @@ private class ColorMatrixShader extends Shader {
 
 #else
 typedef ColorMatrixFilter = openfl._legacy.filters.ColorMatrixFilter;
-#end
-#else
-
-
-#if flash
-@:native("flash.filters.ColorMatrixFilter")
-#end
-
-@:final extern class ColorMatrixFilter extends BitmapFilter {
-	
-	
-	public var matrix (default, set):Array<Float>;
-	
-	
-	public function new (matrix:Array<Float> = null);
-	
-	
-}
-
-
 #end

@@ -1,4 +1,4 @@
-package openfl.errors; #if (!display && !flash)
+package openfl.errors;
 
 
 class ArgumentError extends Error {
@@ -14,12 +14,3 @@ class ArgumentError extends Error {
 	
 	
 }
-
-
-#else
-
-
-@:native("ArgumentError") extern class ArgumentError extends Error {}
-
-
-#end

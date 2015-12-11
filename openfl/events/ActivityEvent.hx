@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 class ActivityEvent extends Event {
@@ -39,27 +39,3 @@ class ActivityEvent extends Event {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.events.ActivityEvent")
-#end
-
-extern class ActivityEvent extends Event {
-	
-	
-	public static var ACTIVITY:String;
-	
-	public var activating:Bool;
-	
-	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, activating:Bool = false);
-	
-	
-}
-
-
-#end

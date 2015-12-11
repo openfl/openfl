@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && !flash) #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
 import lime.graphics.GLRenderContext;
@@ -344,39 +344,6 @@ typedef GLShaderData = Map<String, GLShaderParameter>;
 private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders2.DefaultShader.Attrib;
 private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
 private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
-
-
-#end
-#else
-
-
-import openfl.utils.ByteArray;
-
-#if flash
-@:native("flash.display.Shader")
-@:require(flash10)
-#end
-
-extern class Shader {
-	
-	
-	#if flash
-	@:noCompletion @:dox(hide) public var byteCode (null, default):ByteArray;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) public var data:flash.display.ShaderData;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) public var precisionHint:flash.display.ShaderPrecision;
-	#end
-	
-	
-	public function new (code:ByteArray = null):Void;
-	
-	
-}
 
 
 #end

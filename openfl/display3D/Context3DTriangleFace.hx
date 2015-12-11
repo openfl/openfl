@@ -1,4 +1,4 @@
-package openfl.display3D; #if (!display && !flash)
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -35,23 +35,3 @@ abstract Context3DTriangleFace(Int) {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:display("flash.display.Context3DTriangleFace")
-#end
-
-@:fakeEnum(String) extern enum Context3DTriangleFace {
-	
-	BACK;
-	FRONT;
-	FRONT_AND_BACK;
-	NONE;
-	
-}
-
-
-#end

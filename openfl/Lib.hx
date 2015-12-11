@@ -185,10 +185,14 @@ import haxe.macro.Context;
 class Lib {
 	
 	
-	public static function includeFlashTypes ():Void {
+	public static function includeExterns ():Void {
 		
-		var path = Context.resolvePath ("openfl/_internal");
-		Compiler.addClassPath (path);
+		var childPath = Context.resolvePath ("extern/openfl");
+		
+		var parts = StringTools.replace (childPath, "\\", "/").split ("/");
+		parts.pop ();
+		
+		Compiler.addClassPath (parts.join ("/"));
 		
 	}
 	

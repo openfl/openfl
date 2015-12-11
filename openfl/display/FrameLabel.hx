@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && !flash)
+package openfl.display;
 
 
 import openfl.events.EventDispatcher;
@@ -31,43 +31,8 @@ import openfl.events.EventDispatcher;
 	
 	
 	
-	@:noCompletion private function get_frame ():Int { return __frame; }
-	@:noCompletion private function get_name ():String { return __name; }
+	private function get_frame ():Int { return __frame; }
+	private function get_name ():String { return __name; }
 	
 	
 }
-
-
-#else
-
-
-import openfl.events.EventDispatcher;
-
-
-#if flash
-@:native("flash.display.FrameLabel")
-#end
-
-@:final extern class FrameLabel extends EventDispatcher {
-	
-	
-	#if (flash && !display)
-	public var frame (default, null):Int;
-	#else
-	public var frame (get, null):Int;
-	#end
-	
-	#if (flash && !display)
-	public var name (default, null):String;
-	#else
-	public var name (get, null):String;
-	#end
-	
-	
-	public function new (name:String, frame:Int):Void;
-	
-	
-}
-
-
-#end

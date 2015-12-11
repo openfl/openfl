@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 import haxe.io.Error;
@@ -43,30 +43,3 @@ class AsyncErrorEvent extends ErrorEvent {
 	
 	
 }
-
-
-#else
-
-
-import haxe.io.Error;
-
-#if flash
-@:native("flash.events.AsyncErrorEvent")
-#end
-
-
-extern class AsyncErrorEvent extends ErrorEvent {
-	
-	
-	public static var ASYNC_ERROR:String;
-	
-	public var error:Error;
-	
-	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", error:Error = null);
-	
-	
-}
-
-
-#end

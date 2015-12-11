@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 class FullScreenEvent extends ActivityEvent {
@@ -44,37 +44,3 @@ class FullScreenEvent extends ActivityEvent {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.events.FullScreenEvent")
-#end
-
-extern class FullScreenEvent extends ActivityEvent {
-	
-	
-	public static var FULL_SCREEN:String;
-	
-	#if flash
-	@:require(flash11_3)
-	#end
-	public static var FULL_SCREEN_INTERACTIVE_ACCEPTED:String;
-	
-	public var fullScreen:Bool;
-	
-	#if flash
-	@:require(flash11_3)
-	#end
-	public var interactive:Bool;
-	
-	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, fullScreen:Bool = false, interactive:Bool = false);
-	
-	
-}
-
-
-#end

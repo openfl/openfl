@@ -1,7 +1,4 @@
-package openfl.display3D; #if (!display && !flash)
-
-
-import openfl.gl.GL;
+package openfl.display3D;
 
 
 enum Context3DProgramType {
@@ -10,21 +7,3 @@ enum Context3DProgramType {
 	FRAGMENT;
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.display3D.Context3DProgramType")
-#end
-
-@:fakeEnum(String) extern enum Context3DProgramType {
-	
-	FRAGMENT;
-	VERTEX;
-	
-}
-
-
-#end

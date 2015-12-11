@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 class DataEvent extends TextEvent {
@@ -40,28 +40,3 @@ class DataEvent extends TextEvent {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.events.DataEvent")
-#end
-
-extern class DataEvent extends TextEvent {
-	
-	
-	public static var DATA:String;
-	public static var UPLOAD_COMPLETE_DATA:String;
-	
-	public var data:String;
-	
-	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, data:String = "");
-	
-	
-}
-
-
-#end

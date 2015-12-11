@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && !flash) #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
 import openfl._internal.renderer.RenderSession;
@@ -29,15 +29,4 @@ interface IBitmapDrawable {
 
 #else
 typedef IBitmapDrawable = openfl._legacy.display.IBitmapDrawable;
-#end
-#else
-
-
-#if flash
-@:native("flash.display.IBitmapDrawable")
-#end
-
-extern interface IBitmapDrawable {}
-
-
 #end

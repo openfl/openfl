@@ -1,17 +1,4 @@
-package openfl.display; #if (!display && !flash)
+package openfl.display;
 
 
 interface IGraphicsStroke {}
-
-
-#else
-
-
-#if flash
-@:native("flash.display.IGraphicsStroke")
-#end
-
-extern interface IGraphicsStroke {}
-
-
-#end

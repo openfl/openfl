@@ -1,4 +1,4 @@
-package openfl.errors; #if (!display && !flash)
+package openfl.errors;
 
 
 class TypeError extends Error {
@@ -14,22 +14,3 @@ class TypeError extends Error {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("TypeError")
-#end
-
-extern class TypeError extends Error {
-	
-	
-	public function new (message:String = "");
-	
-	
-}
-
-
-#end

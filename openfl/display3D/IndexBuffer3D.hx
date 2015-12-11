@@ -1,4 +1,4 @@
-package openfl.display3D; #if (!display && !flash)
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -95,28 +95,3 @@ import openfl.Vector;
 	
 	
 }
-
-
-#else
-
-
-import openfl.utils.ByteArray;
-import openfl.Vector;
-
-#if flash
-@:native("flash.display3D.IndexBuffer3D")
-#end
-
-
-@:final extern class IndexBuffer3D {
-	
-	
-	public function dispose ():Void;
-	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void;
-	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void;
-	
-	
-}
-
-
-#end

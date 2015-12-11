@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 import openfl.utils.ByteArray;
@@ -46,31 +46,3 @@ class SampleDataEvent extends Event {
 	
 	
 }
-
-
-#else
-
-
-import openfl.utils.ByteArray;
-
-#if flash
-@:native("flash.events.SampleDataEvent")
-#end
-
-
-extern class SampleDataEvent extends Event {
-	
-	
-	public static var SAMPLE_DATA:String;
-	
-	public var data:ByteArray;
-	public var position:Float;
-	
-	
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false);
-	
-	
-}
-
-
-#end

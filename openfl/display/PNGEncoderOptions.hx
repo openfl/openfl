@@ -1,4 +1,4 @@
-package openfl.display; #if (!display && !flash)
+package openfl.display;
 
 
 @:final class PNGEncoderOptions {
@@ -15,25 +15,3 @@ package openfl.display; #if (!display && !flash)
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.display.PNGEncoderOptions")
-#end
-
-@:final extern class PNGEncoderOptions {
-	
-	
-	public var fastCompression:Bool;
-	
-	
-	public function new (fastCompression:Bool = false):Void;
-	
-	
-}
-
-
-#end

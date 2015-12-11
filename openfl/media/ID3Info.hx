@@ -1,4 +1,4 @@
-package openfl.media; #if (!display && !flash)
+package openfl.media;
 
 
 @:final class ID3Info {
@@ -21,31 +21,3 @@ package openfl.media; #if (!display && !flash)
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.media.ID3Info")
-#end
-
-@:final extern class ID3Info implements Dynamic {
-	
-	
-	public var album:String;
-	public var artist:String;
-	public var comment:String;
-	public var genre:String;
-	public var songName:String;
-	public var track:String;
-	public var year:String;
-	
-	
-	public function new ():Void;
-	
-	
-}
-
-
-#end

@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 class UncaughtErrorEvent extends ErrorEvent {
@@ -39,27 +39,3 @@ class UncaughtErrorEvent extends ErrorEvent {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.events.UncaughtErrorEvent")
-#end
-
-extern class UncaughtErrorEvent extends ErrorEvent {
-	
-	
-	public static var UNCAUGHT_ERROR:String;
-	
-	public var error (default, null):Dynamic;
-	
-	
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null);
-	
-	
-}
-
-
-#end

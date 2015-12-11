@@ -1,4 +1,4 @@
-package openfl.events; #if (!display && !flash)
+package openfl.events;
 
 
 class UncaughtErrorEvents extends EventDispatcher {
@@ -12,23 +12,3 @@ class UncaughtErrorEvents extends EventDispatcher {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.events.UncaughtErrorEvents")
-@:require(flash10_1)
-#end
-
-extern class UncaughtErrorEvents extends EventDispatcher {
-	
-	
-	public function new ();
-	
-	
-}
-
-
-#end

@@ -1,4 +1,4 @@
-package openfl.display3D; #if (!display && !flash)
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -39,27 +39,3 @@ abstract Context3DStencilAction(Int) {
 	
 	
 }
-
-
-#else
-
-
-#if flash
-@:native("flash.display3D.Context3DStencilAction")
-#end
-
-@:fakeEnum(String) extern enum Context3DStencilAction {
-	
-	DECREMENT_SATURATE;
-	DECREMENT_WRAP;
-	INCREMENT_SATURATE;
-	INCREMENT_WRAP;
-	INVERT;
-	KEEP;
-	SET;
-	ZERO;
-	
-}
-
-
-#end

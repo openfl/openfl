@@ -62,6 +62,8 @@
 		
 	</section>
 	
+	<haxeflag name="--macro" value="openfl.Lib.includeExterns()" if="display || flash" />
+	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
 	
