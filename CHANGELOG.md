@@ -1,3 +1,12 @@
+3.5.2 (12/11/2015)
+------------------
+
+* Formalized the extern classes more, fixed some Flash behaviors
+* Improved the standard HTML5 template for <window resizable="false" />
+* Fixed the use of binary request data in HTML5 URLLoaders
+* Improved compatibility for ByteArrayData (legacy)
+
+
 3.5.1 (12/09/2015)
 ------------------
 
