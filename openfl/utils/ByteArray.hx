@@ -1387,4 +1387,5 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 #end
 #else
 typedef ByteArray = openfl._legacy.utils.ByteArray;
+typedef ByteArrayData = openfl._legacy.utils.ByteArray.ByteArrayData;
 #end
