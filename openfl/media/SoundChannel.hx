@@ -7,7 +7,7 @@ import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 
 
-@:final class SoundChannel extends EventDispatcher {
+@:final @:keep class SoundChannel extends EventDispatcher {
 	
 	
 	public var leftPeak (default, null):Float;
