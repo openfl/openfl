@@ -2,7 +2,7 @@ package openfl.display3D;
 
 
 #if flash
-@:native("flash.display.Context3DWrapMode")
+@:native("flash.display3D.Context3DWrapMode")
 #end
 
 
