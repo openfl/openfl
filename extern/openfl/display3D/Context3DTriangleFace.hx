@@ -2,7 +2,7 @@ package openfl.display3D;
 
 
 #if flash
-@:display("flash.display.Context3DTriangleFace")
+@:native("flash.display3D.Context3DTriangleFace")
 #end
 
 

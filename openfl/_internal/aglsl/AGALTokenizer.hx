@@ -55,8 +55,9 @@ class AGALTokenizer {
 		var desc = new Description();
 		var tokens = new Array<Dynamic>();
 		var agal2glsllut:Array<Dynamic> = Mapping.agal2glsllut;
+		var bytesLength:UInt = bytes.length;
 		
-		while (bytes.position < bytes.length) {
+		while (bytes.position < bytesLength) {
 			
 			var token = new Token ();
 			token.opcode = bytes.readUnsignedInt ();
