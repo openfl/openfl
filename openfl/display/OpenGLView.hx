@@ -9,6 +9,8 @@ import openfl.display.Stage;
 import openfl.geom.Rectangle;
 import openfl.gl.GL;
 import openfl.Lib;
+import lime.app.Application;
+import lime.ui.Window;
 
 #if (js && html5)
 import js.html.CanvasElement;
