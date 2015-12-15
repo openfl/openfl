@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom;
 
 
 class PerspectiveProjection {
@@ -44,7 +44,7 @@ class PerspectiveProjection {
 	
 	
 	
-	@:noCompletion private function set_fieldOfView (fieldOfView:Float):Float {
+	private function set_fieldOfView (fieldOfView:Float):Float {
 		
 		var p_nFovY = fieldOfView * TO_RADIAN;
 		this.fieldOfView = p_nFovY;
@@ -56,8 +56,3 @@ class PerspectiveProjection {
 	
 	
 }
-
-
-#else
-typedef PerspectiveProjection = flash.geom.PerspectiveProjection;
-#end

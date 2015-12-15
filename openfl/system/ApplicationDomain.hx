@@ -1,4 +1,7 @@
-package openfl.system; #if !flash
+package openfl.system;
+
+
+import openfl.utils.Object;
 
 
 @:final class ApplicationDomain {
@@ -24,7 +27,7 @@ package openfl.system; #if !flash
 	}
 	
 	
-	public function getDefinition (name:String):Dynamic {
+	public function getDefinition (name:String):Class<Dynamic> {
 		
 		return Type.resolveClass (name);
 		
@@ -39,8 +42,3 @@ package openfl.system; #if !flash
 	
 	
 }
-
-
-#else
-typedef ApplicationDomain = flash.system.ApplicationDomain;
-#end

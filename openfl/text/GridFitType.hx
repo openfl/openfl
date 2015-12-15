@@ -1,4 +1,4 @@
-package openfl.text; #if !flash
+package openfl.text;
 
 
 enum GridFitType {
@@ -8,8 +8,3 @@ enum GridFitType {
 	SUBPIXEL;
 	
 }
-
-
-#else
-typedef GridFitType = flash.text.GridFitType;
-#end

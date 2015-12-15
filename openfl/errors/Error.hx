@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors;
 
 
 import haxe.CallStack;
@@ -9,7 +9,7 @@ class Error {
 	
 	private static inline var DEFAULT_TO_STRING = "Error";
 	
-	public var errorID:Int;
+	public var errorID (default, null):Int;
 	public var message:String;
 	public var name:String;
 	
@@ -46,8 +46,3 @@ class Error {
 	
 	
 }
-
-
-#else
-typedef Error = flash.errors.Error;
-#end

@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -18,7 +18,7 @@ import openfl.geom.Matrix;
 	public var spreadMethod:SpreadMethod;
 	public var type:GradientType;
 	
-	public var __graphicsDataType (default,null):GraphicsDataType;
+	public var __graphicsDataType (default, null):GraphicsDataType;
 	public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
@@ -61,7 +61,4 @@ import openfl.geom.Matrix;
 
 #else
 typedef GraphicsGradientFill = openfl._legacy.display.GraphicsGradientFill;
-#end
-#else
-typedef GraphicsGradientFill = flash.display.GraphicsGradientFill;
 #end

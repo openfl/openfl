@@ -1,33 +1,30 @@
-package openfl.utils; #if !flash #if !openfl_legacy
+package openfl.utils; #if !openfl_legacy
 
 
 interface IDataInput {
 	
-	var bytesAvailable (default, null):Int;
-	var endian:Endian;
-	var objectEncoding:Int;
+	public var bytesAvailable (get, never):UInt;
+	public var endian (get, set):Endian;
+	public var objectEncoding:UInt;
 	
-	function readBoolean ():Bool;
-	function readByte ():Int;
-	function readBytes (bytes:ByteArray, offset:UInt = 0, length:Int = 0):Void;
-	function readDouble ():Float;
-	function readFloat ():Float;
-	function readInt ():Int;
-	function readMultiByte (length:UInt, charSet:String):String;
-	function readObject ():Dynamic;
-	function readShort ():Int;
-	function readUTF ():String;
-	function readUTFBytes (length:Int):String;
-	function readUnsignedByte ():Int;
-	function readUnsignedInt ():Int;
-	function readUnsignedShort ():Int;
+	public function readBoolean ():Bool;
+	public function readByte ():Int;
+	public function readBytes (bytes:ByteArray, offset:UInt = 0, length:Int = 0):Void;
+	public function readDouble ():Float;
+	public function readFloat ():Float;
+	public function readInt ():Int;
+	public function readMultiByte (length:UInt, charSet:String):String;
+	//function readObject ():Dynamic;
+	public function readShort ():Int;
+	public function readUnsignedByte ():Int;
+	public function readUnsignedInt ():Int;
+	public function readUnsignedShort ():Int;
+	public function readUTF ():String;
+	public function readUTFBytes (length:Int):String;
 	
 }
 
 
 #else
 typedef IDataInput = openfl._legacy.utils.IDataInput;
-#end
-#else
-typedef IDataInput = flash.utils.IDataInput;
 #end

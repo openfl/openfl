@@ -1,4 +1,4 @@
-package openfl; #if !openfl_legacy
+package openfl; #if !macro #if !openfl_legacy
 
 
 import lime.system.System;
@@ -42,7 +42,7 @@ import js.Browser;
 	public static function attach (name:String):MovieClip {
 		
 		#if flash
-		return flash.Lib.attach (name);
+		return cast flash.Lib.attach (name);
 		#else
 		return new MovieClip ();
 		#end
@@ -198,14 +198,14 @@ import js.Browser;
 	#if flash
 	@:noCompletion private static function get_current ():MovieClip {
 		
-		return flash.Lib.current;
+		return cast flash.Lib.current;
 		
 	}
 	
 	
 	@:noCompletion private static function set_current (current:MovieClip):MovieClip {
 		
-		return flash.Lib.current = current;
+		return cast flash.Lib.current = cast current;
 		
 	}
 	#end
@@ -216,4 +216,30 @@ import js.Browser;
 
 #else
 typedef Lib = openfl._legacy.Lib;
+#end
+#else
+
+
+import haxe.macro.Compiler;
+import haxe.macro.Context;
+
+
+class Lib {
+	
+	
+	public static function includeExterns ():Void {
+		
+		var childPath = Context.resolvePath ("extern/openfl");
+		
+		var parts = StringTools.replace (childPath, "\\", "/").split ("/");
+		parts.pop ();
+		
+		Compiler.addClassPath (parts.join ("/"));
+		
+	}
+	
+	
+}
+
+
 #end

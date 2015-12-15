@@ -1,10 +1,6 @@
-package openfl.events; #if !flash
+package openfl.events;
 
 
-/**
- * The EventPhase class provides values for the <code>eventPhase</code>
- * property of the Event class.
- */
 enum EventPhase {
 	
 	CAPTURING_PHASE;
@@ -12,8 +8,3 @@ enum EventPhase {
 	BUBBLING_PHASE;
 	
 }
-
-
-#else
-typedef EventPhase = flash.events.EventPhase;
-#end

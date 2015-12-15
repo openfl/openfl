@@ -1,4 +1,4 @@
-package openfl; #if !flash #if !openfl_legacy
+package openfl; #if !openfl_legacy
 
 
 import haxe.io.BytesData;
@@ -12,7 +12,7 @@ class Memory {
 	private static var len:Int;
 	
 	
-	@:noCompletion static private function _setPositionTemporarily<T> (position:Int, action:Void -> T):T {
+	private static function _setPositionTemporarily<T> (position:Int, action:Void -> T):T {
 		
 		var oldPosition:Int = gcRef.position;
 		gcRef.position = position;
@@ -28,7 +28,7 @@ class Memory {
 		
 		#if debug if (addr < 0 || addr + 1 > len) throw("Bad address"); #end
 		
-		return gcRef.__get (addr);
+		return gcRef[addr];
 		
 	}
 	
@@ -97,7 +97,7 @@ class Memory {
 		
 		#if debug if (addr < 0 || addr + 1 > len) throw ("Bad address"); #end
 		
-		gcRef.__set (addr, v);
+		gcRef[addr] = v;
 		
 	}
 	
@@ -134,7 +134,7 @@ class Memory {
 		
 		_setPositionTemporarily (addr, function () {
 			
-			gcRef.writeUnsignedShort (v);
+			gcRef.writeShort (v);
 			
 		});
 		
@@ -159,7 +159,4 @@ class Memory {
 
 #else
 typedef Memory = openfl._legacy.Memory;
-#end
-#else
-typedef Memory = flash.Memory;
 #end

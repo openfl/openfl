@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -39,8 +39,3 @@ abstract Context3DCompareMode(Int) {
 	
 	
 }
-
-
-#else
-typedef Context3DCompareMode = flash.display3D.Context3DCompareMode;
-#end

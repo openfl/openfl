@@ -1,9 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display;
 
 
-interface IGraphicsPath { }
-
-
-#else
-typedef IGraphicsPath = flash.display.IGraphicsPath;
-#end
+interface IGraphicsPath {}

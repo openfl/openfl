@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom;
 
 
 enum Orientation3D {
@@ -8,8 +8,3 @@ enum Orientation3D {
 	QUATERNION;
 	
 }
-
-
-#else
-typedef Orientation3D = flash.geom.Orientation3D;
-#end

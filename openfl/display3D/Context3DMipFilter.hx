@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 enum Context3DMipFilter {
@@ -6,10 +6,5 @@ enum Context3DMipFilter {
 	MIPLINEAR;
 	MIPNEAREST;
 	MIPNONE;
-
+	
 }
-
-
-#else
-typedef Context3DMipFilter = flash.display3D.Context3DMipFilter;
-#end

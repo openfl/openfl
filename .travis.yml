@@ -2,7 +2,7 @@ language: haxe
 
 haxe:
   - "3.2.0"
-  - "3.1.3"
+  #- "3.1.3"
 
 env: 
   - TARGET=flash
@@ -27,6 +27,7 @@ install:
   - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
   - if [[ $TARGET == 'docs' ]]; then haxelib dev dox ~/dox ; fi
   - haxelib install mcover > log.txt || cat log.txt
+  - haxelib install hamcrest > log.txt || cat log.txt
   - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > log.txt || cat log.txt
   - haxelib dev munit ~/munit/src
   - haxelib dev openfl $(pwd)
@@ -46,7 +47,7 @@ script:
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -nocffi ; fi
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Ddisable-cffi -nocffi ; fi
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime test neko -Dlegacy -nocffi ; fi
-  - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Dhybrid -nocffi ; fi
+  #- if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Dhybrid -nocffi ; fi
   - if [[ $TARGET == 'flash' ]]; then haxelib run munit test -as3 -norun -nocffi ; fi
   - if [[ $TARGET == 'html5' ]]; then haxelib run munit test -browser phantomjs -nocffi ; fi
   - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi

@@ -1,4 +1,4 @@
-package openfl.system; #if !flash
+package openfl.system;
 
 
 class SecurityDomain {
@@ -15,8 +15,3 @@ class SecurityDomain {
 	
 	
 }
-
-
-#else
-typedef SecurityDomain = flash.system.SecurityDomain;
-#end

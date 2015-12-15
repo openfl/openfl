@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 enum Context3DRenderMode {
@@ -7,8 +7,3 @@ enum Context3DRenderMode {
 	SOFTWARE;
 	
 }
-
-
-#else
-typedef Context3DRenderMode = flash.display3D.Context3DRenderMode;
-#end

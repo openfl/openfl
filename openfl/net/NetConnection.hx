@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net;
 
 
 import openfl.events.EventDispatcher;
@@ -11,7 +11,7 @@ class NetConnection extends EventDispatcher {
 	public static inline var CONNECT_SUCCESS:String = "connectSuccess";
 	
 	
-	public function new ():Void {
+	public function new () {
 		
 		super ();
 		
@@ -26,14 +26,9 @@ class NetConnection extends EventDispatcher {
 			
 		}
 		
-		this.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, true, { code:NetConnection.CONNECT_SUCCESS }));
+		this.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, true, { code: NetConnection.CONNECT_SUCCESS }));
 		
 	}
 	
 	
 }
-
-
-#else
-typedef NetConnection = flash.net.NetConnection;
-#end

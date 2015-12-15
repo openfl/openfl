@@ -1,13 +1,14 @@
-package openfl.events; #if !flash
+package openfl.events;
 
 
 class UncaughtErrorEvents extends EventDispatcher {
 	
 	
+	public function new () {
+		
+		super ();
+		
+	}
+	
 	
 }
-
-
-#else
-typedef UncaughtErrorEvents = flash.events.UncaughtErrorEvents;
-#end

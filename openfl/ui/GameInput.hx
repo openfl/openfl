@@ -1,4 +1,4 @@
-package openfl.ui; #if !flash
+package openfl.ui;
 
 
 import lime.ui.Gamepad;
@@ -15,9 +15,10 @@ import openfl.events.GameInputEvent;
 @:final class GameInput extends EventDispatcher {
 	
 	
-	public static var isSupported = true;
+	public static var isSupported (default, null) = true;
 	public static var numDevices (default, null) = 0;
 	
+	private static var __deviceList = new Array<GameInputDevice> ();
 	private static var __devices = new Map<Gamepad, GameInputDevice> ();
 	private static var __instances = [];
 	
@@ -33,9 +34,9 @@ import openfl.events.GameInputEvent;
 	
 	public static function getDeviceAt (index:Int):GameInputDevice {
 		
-		if (Gamepad.devices.exists (index)) {
+		if (index >= 0 && index < __deviceList.length) {
 			
-			return __devices.get (Gamepad.devices.get (index));
+			return __deviceList[index];
 			
 		}
 		
@@ -50,9 +51,10 @@ import openfl.events.GameInputEvent;
 		
 		if (!__devices.exists (gamepad)) {
 			
-			var device = new GameInputDevice (Std.string (gamepad.id), gamepad.name);
+			var device = new GameInputDevice (gamepad.guid, gamepad.name);
+			__deviceList.push (device);
 			__devices.set (gamepad, device);
-			numDevices = Lambda.count (__devices);
+			numDevices = __deviceList.length;
 			
 		}
 		
@@ -153,8 +155,14 @@ import openfl.events.GameInputEvent;
 		
 		if (device != null) {
 			
-			__devices.remove (gamepad);
-			numDevices = Lambda.count (__devices);
+			if (__devices.exists (gamepad)) {
+				
+				__deviceList.remove (__devices.get (gamepad));
+				__devices.remove (gamepad);
+				
+			}
+			
+			numDevices = __deviceList.length;
 			
 			for (instance in __instances) {
 				
@@ -169,8 +177,3 @@ import openfl.events.GameInputEvent;
 	
 	
 }
-
-
-#else
-typedef GameInput = flash.ui.GameInput;
-#end

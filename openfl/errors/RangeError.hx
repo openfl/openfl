@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors;
 
 
 class RangeError extends Error {
@@ -14,8 +14,3 @@ class RangeError extends Error {
 	
 	
 }
-
-
-#else
-typedef RangeError = flash.errors.RangeError;
-#end

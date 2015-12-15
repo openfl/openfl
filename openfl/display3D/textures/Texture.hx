@@ -1,4 +1,4 @@
-package openfl.display3D.textures; #if !flash
+package openfl.display3D.textures;
 
 
 import openfl.display3D.Context3D;
@@ -130,8 +130,3 @@ using openfl.display.BitmapData;
 	
 	
 }
-
-
-#else
-typedef Texture = flash.display3D.textures.Texture;
-#end

@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display;
 
 
 import haxe.Timer;
@@ -49,8 +49,3 @@ class Stage3D extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef Stage3D = flash.display.Stage3D;
-#end

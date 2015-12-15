@@ -1,4 +1,4 @@
-package openfl.net; #if !flash
+package openfl.net;
 
 
 import haxe.Timer;
@@ -16,31 +16,31 @@ import js.Browser;
 class NetStream extends EventDispatcher {
 	
 	
-	public var audioCodec:Int;
-	public var bufferLength:Float;
+	public var audioCodec (default, null):Int;
+	public var bufferLength (default, null):Float;
 	public var bufferTime:Float;
-	public var bytesLoaded:Int;
-	public var bytesTotal:Int;
+	public var bytesLoaded (default, null):Int;
+	public var bytesTotal (default, null):Int;
 	public var checkPolicyFile:Bool;
 	public var client:Dynamic;
-	public var currentFPS:Float;
-	public var decodedFrames:Int;
-	public var liveDelay:Float;
-	public var objectEncoding:Int;
+	public var currentFPS (default, null):Float;
+	public var decodedFrames (default, null):Int;
+	public var liveDelay (default, null):Float;
+	public var objectEncoding (default, null):Int;
 	public var soundTransform:SoundTransform;
 	public var speed (get, set):Float;
-	public var time:Float;
-	public var videoCodec:Int;
+	public var time (default, null):Float;
+	public var videoCode (default, null):Int;
 	
-	@:noCompletion private var __connection:NetConnection;
-	@:noCompletion private var __timer:Timer;
+	private var __connection:NetConnection;
+	private var __timer:Timer;
 	
 	#if (js && html5)
-	@:noCompletion private var __video (default, null):VideoElement;
+	private var __video (default, null):VideoElement;
 	#end
 	
 	
-	public function new (connection:NetConnection):Void {
+	public function new (connection:NetConnection, peerID:String = null):Void {
 		
 		super ();
 		
@@ -172,7 +172,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function __playStatus (code:String):Void {
+	private function __playStatus (code:String):Void {
 		
 		#if (js && html5)
 		if (client != null) {
@@ -205,28 +205,28 @@ class NetStream extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function video_onCanPlay (event:Dynamic):Void {
+	private function video_onCanPlay (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.canplay");
 		
 	}
 	
 	
-	@:noCompletion private function video_onCanPlayThrough (event:Dynamic):Void {
+	private function video_onCanPlayThrough (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.canplaythrough");
 		
 	}
 	
 	
-	@:noCompletion private function video_onDurationChanged (event:Dynamic):Void {
+	private function video_onDurationChanged (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.durationchanged");
 		
 	}
 	
 	
-	@:noCompletion private function video_onEnd (event:Dynamic):Void {
+	private function video_onEnd (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Stop" } ));
 		__playStatus ("NetStream.Play.Complete");
@@ -234,7 +234,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function video_onError (event:Dynamic):Void {
+	private function video_onError (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Stop" } ));
 		__playStatus ("NetStream.Play.error");
@@ -242,21 +242,21 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function video_onLoadStart (event:Dynamic):Void {
+	private function video_onLoadStart (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.loadstart");
 		
 	}
 	
 	
-	@:noCompletion private function video_onPause (event:Dynamic):Void {
+	private function video_onPause (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.pause");
 		
 	}
 	
 	
-	@:noCompletion private function video_onPlaying (event:Dynamic):Void {
+	private function video_onPlaying (event:Dynamic):Void {
 		
 		__connection.dispatchEvent (new NetStatusEvent (NetStatusEvent.NET_STATUS, false, false, { code : "NetStream.Play.Start" } ));
 		__playStatus ("NetStream.Play.playing");
@@ -264,28 +264,28 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function video_onSeeking (event:Dynamic):Void {
+	private function video_onSeeking (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.seeking");
 		
 	}
 	
 	
-	@:noCompletion private function video_onStalled (event:Dynamic):Void {
+	private function video_onStalled (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.stalled");
 		
 	}
 	
 	
-	@:noCompletion private function video_onTimeUpdate (event:Dynamic):Void {
+	private function video_onTimeUpdate (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.timeupdate");
 		
 	}
 	
 	
-	@:noCompletion private function video_onWaiting (event:Dynamic):Void {
+	private function video_onWaiting (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.waiting");
 		
@@ -299,7 +299,7 @@ class NetStream extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function get_speed ():Float {
+	private function get_speed ():Float {
 		
 		#if (js && html5)
 		return __video.playbackRate;
@@ -310,7 +310,7 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function set_speed (value:Float):Float {
+	private function set_speed (value:Float):Float {
 		
 		#if (js && html5)
 		return __video.playbackRate = value;
@@ -322,8 +322,3 @@ class NetStream extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef NetStream = flash.net.NetStream;
-#end

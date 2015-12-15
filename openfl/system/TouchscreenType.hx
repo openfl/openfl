@@ -1,4 +1,4 @@
-package openfl.system; #if !flash
+package openfl.system;
 
 
 enum TouchscreenType {
@@ -8,8 +8,3 @@ enum TouchscreenType {
 	STYLUS;
 	
 }
-
-
-#else
-typedef TouchscreenType = flash.system.TouchscreenType;
-#end

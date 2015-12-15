@@ -1,4 +1,4 @@
-package openfl.desktop; #if !flash #if !openfl_legacy
+package openfl.desktop; #if !openfl_legacy
 
 
 @:enum abstract ClipboardFormats(String) from String to String {
@@ -10,7 +10,4 @@ package openfl.desktop; #if !flash #if !openfl_legacy
 }
 
 
-#end
-#else
-typedef ClipboardFormats = flash.desktop.ClipboardFormats;
 #end

@@ -1,4 +1,5 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
+
 
 enum Context3DBufferUsage {
 	
@@ -6,7 +7,3 @@ enum Context3DBufferUsage {
 	DYNAMIC_DRAW;
 	
 }
-
-#else
-typedef Context3DBufferUsage = flash.display3D.Context3DBufferUsage;
-#end

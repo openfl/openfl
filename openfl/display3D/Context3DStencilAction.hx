@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -39,8 +39,3 @@ abstract Context3DStencilAction(Int) {
 	
 	
 }
-
-
-#else
-typedef Context3DStencilAction = flash.display3D.Context3DStencilAction;
-#end

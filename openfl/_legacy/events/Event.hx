@@ -111,6 +111,35 @@ class Event {
 	}
 	
 	
+	private function __formatToString (className:String, parameters:Array<String>):String {
+		
+		// TODO: Make this a macro function, and handle at compile-time, with rest parameters?
+		
+		var output = '[$className';
+		var arg:Dynamic = null;
+		
+		for (param in parameters) {
+			
+			arg = Reflect.field (this, param);
+			
+			if (Std.is (arg, String)) {
+				
+				output += ' $param="$arg"';
+				
+			} else {
+				
+				output += ' $param=$arg';
+				
+			}
+			
+		}
+		
+		output += "]";
+		return output;
+		
+	}
+	
+	
 	@:noCompletion public function __getIsCancelled ():Bool {
 		
 		return __isCancelled;

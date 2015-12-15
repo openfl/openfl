@@ -1,4 +1,4 @@
-package openfl.display; #if (!flash && !openfl_legacy)
+package openfl.display; #if !openfl_legacy
 
 
 import lime.graphics.GLRenderContext;
@@ -345,6 +345,5 @@ private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders2.Defaul
 private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
 private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
 
-#else
-typedef Shader = flash.display.Shader;
+
 #end

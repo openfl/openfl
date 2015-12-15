@@ -1,4 +1,4 @@
-package openfl.desktop; #if !flash #if !openfl_legacy
+package openfl.desktop; #if !openfl_legacy
 
 
 enum ClipboardTransferMode {
@@ -11,7 +11,4 @@ enum ClipboardTransferMode {
 }
 
 
-#end
-#else
-typedef ClipboardTransferMode = flash.desktop.ClipboardTransferMode;
 #end

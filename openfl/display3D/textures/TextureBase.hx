@@ -1,4 +1,4 @@
-package openfl.display3D.textures; #if !flash
+package openfl.display3D.textures;
 
 
 import openfl.gl.GL;
@@ -36,8 +36,3 @@ class TextureBase extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef TextureBase = flash.display3D.textures.TextureBase;
-#end

@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 enum Context3DProfile {
@@ -8,8 +8,3 @@ enum Context3DProfile {
 	BASELINE_EXTENDED;
 	
 }
-
-
-#else
-typedef Context3DProfile = flash.display3D.Context3DProfile;
-#end

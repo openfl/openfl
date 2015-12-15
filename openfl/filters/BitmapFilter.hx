@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !openfl_legacy
+package openfl.filters; #if !openfl_legacy
 
 
 import openfl._internal.renderer.opengl.utils.RenderTexture;
@@ -13,20 +13,10 @@ import openfl.geom.Rectangle;
 import js.html.ImageData;
 #end
 
+@:access(openfl.display.BitmapData)
+@:access(openfl.geom.Rectangle)
 
-/**
- * The BitmapFilter class is the base class for all image filter effects.
- *
- * <p>The BevelFilter, BlurFilter, ColorMatrixFilter, ConvolutionFilter,
- * DisplacementMapFilter, DropShadowFilter, GlowFilter, GradientBevelFilter,
- * and GradientGlowFilter classes all extend the BitmapFilter class. You can
- * apply these filter effects to any display object.</p>
- *
- * <p>You can neither directly instantiate nor extend BitmapFilter.</p>
- */
 
- @:access(openfl.display.BitmapData)
- @:access(openfl.geom.Rectangle)
 class BitmapFilter {
 	
 	private var __dirty:Bool = true;
@@ -42,12 +32,6 @@ class BitmapFilter {
 	}
 	
 	
-	/**
-	 * Returns a BitmapFilter object that is an exact copy of the original
-	 * BitmapFilter object.
-	 * 
-	 * @return A BitmapFilter object.
-	 */
 	public function clone ():BitmapFilter {
 		
 		return new BitmapFilter ();
@@ -56,41 +40,16 @@ class BitmapFilter {
 	
 	
 	#if (js && html5)
-	@:noCompletion @:dox(hide) public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		
 		
 	}
 	#end
 	
-	@:noCompletion private function __growBounds (rect:Rectangle) {
-		
-		
-		
-	}
 	
-	@:noCompletion private function __preparePass(pass:Int):Shader {
-		return null;
-	}
-	
-	@:noCompletion private function __useLastFilter(pass:Int):Bool {
-		return false;
-	}
-	
-	@:noCompletion private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
+	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point) {
 		
-		var r = Rectangle.__temp;
-		r.setEmpty();
-		for (filter in filters) {
-			filter.__growBounds (r);
-		}
-		
-		r.__transform(r, matrix);
-		rect.__expand(r.x, r.y, r.width, r.height);
-	}
-	
-	@:noCompletion private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point) {
-
 		var same = target == source && target.__usingPingPongTexture;
 		if (same) target.__pingPongTexture.useOldTexture = true;
 		
@@ -136,12 +95,47 @@ class BitmapFilter {
 	}
 	
 	
+	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
+		
+		var r = Rectangle.__temp;
+		r.setEmpty ();
+		
+		for (filter in filters) {
+			
+			filter.__growBounds (r);
+			
+		}
+		
+		r.__transform (r, matrix);
+		rect.__expand (r.x, r.y, r.width, r.height);
+		
+	}
+	
+	
+	private function __growBounds (rect:Rectangle) {
+		
+		
+		
+	}
+	
+	
+	private function __preparePass (pass:Int):Shader {
+		
+		return null;
+		
+	}
+	
+	
+	private function __useLastFilter (pass:Int):Bool {
+		
+		return false;
+		
+	}
+	
+	
 }
 
 
 #else
 typedef BitmapFilter = openfl._legacy.filters.BitmapFilter;
-#end
-#else
-typedef BitmapFilter = flash.filters.BitmapFilter;
 #end

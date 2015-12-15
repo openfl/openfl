@@ -1,4 +1,4 @@
-package openfl._internal.renderer; #if !flash
+package openfl._internal.renderer; #if (!display && !flash)
 
 
 import lime.graphics.CairoRenderContext;

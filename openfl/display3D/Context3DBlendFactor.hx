@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -41,8 +41,3 @@ abstract Context3DBlendFactor(Int) {
 	
 	
 }
-
-
-#else
-typedef Context3DBlendFactor = flash.display3D.Context3DBlendFactor;
-#end
