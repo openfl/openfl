@@ -9,8 +9,6 @@ import openfl.display.Stage;
 import openfl.geom.Rectangle;
 import openfl.gl.GL;
 import openfl.Lib;
-import lime.app.Application;
-import lime.ui.Window;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -44,13 +42,16 @@ class OpenGLView extends DirectRenderer {
 			__canvas.width = Lib.current.stage.stageWidth;
 			__canvas.height = Lib.current.stage.stageHeight;
 			
-			var window:Window = Application.current.window;
-			__context = cast __canvas.getContext("webgl", {
-				alpha:false, 
+			var window = Lib.current.stage.window;
+			
+			__context = cast __canvas.getContext ("webgl", {
+				
+				alpha: false, 
 				premultipliedAlpha: false, 
-				antialias:false, 
-				depth:window.config.depthBuffer, 
-				stencil:window.config.stencilBuffer
+				antialias: false, 
+				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
+				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
+				
 			});
 			
 			if (__context == null) {

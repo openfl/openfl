@@ -105,11 +105,11 @@ class URLLoader extends EventDispatcher {
 					
 				}
 				
-				var bytes = Bytes.readFile (path);
+				var bytes:ByteArray = Bytes.readFile (path);
 				worker.sendComplete (bytes);
 				
 			});
-			worker.onComplete.add (function (bytes) {
+			worker.onComplete.add (function (bytes:ByteArray) {
 				
 				if (bytes != null) {
 					
