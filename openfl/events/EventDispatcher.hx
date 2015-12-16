@@ -236,7 +236,7 @@ class EventDispatcher implements IEventDispatcher {
 				//listener.callback (event.clone ());
 				listener.callback (event);
 				
-				if (event.__isCancelledNow) {
+				if (event.__isCanceledNow) {
 					
 					break;
 					

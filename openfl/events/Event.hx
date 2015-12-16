@@ -42,8 +42,8 @@ class Event {
 	public var target (default, null):Dynamic;
 	public var type (default, null):String;
 	
-	private var __isCancelled:Bool;
-	private var __isCancelledNow:Bool;
+	private var __isCanceled:Bool;
+	private var __isCanceledNow:Bool;
 	private var __preventDefault:Bool;
 	
 	
@@ -102,15 +102,15 @@ class Event {
 	
 	public function stopImmediatePropagation ():Void {
 		
-		__isCancelled = true;
-		__isCancelledNow = true;
+		__isCanceled = true;
+		__isCanceledNow = true;
 		
 	}
 	
 	
 	public function stopPropagation ():Void {
 		
-		__isCancelled = true;
+		__isCanceled = true;
 		
 	}
 	
