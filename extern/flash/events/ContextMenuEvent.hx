@@ -1,6 +1,9 @@
 package flash.events; #if (!display && flash)
 
 
+import openfl.display.InteractiveObject;
+
+
 extern class ContextMenuEvent extends Event {
 	
 	

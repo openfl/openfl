@@ -1,4 +1,4 @@
-package openfl.net;
+package openfl.net; #if !openfl_legacy
 
 
 import haxe.io.Bytes;
@@ -563,8 +563,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	private function socket_onMessage (msg:Dynamic):Void {
 		
+		#if (js && html5)
 		var newData:ByteArray = (msg.data:ArrayBuffer);
 		newData.readBytes (__inputBuffer, __inputBuffer.length);
+		#end
 		
 	}
 	
@@ -769,3 +771,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	
 }
+
+
+#else
+typedef Socket = openfl._legacy.net.Socket;
+#end
