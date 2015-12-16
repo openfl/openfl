@@ -93,6 +93,7 @@ import openfl.Lib;
 		
 		#if js
 		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
+		GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 		#end
 	}
 	
