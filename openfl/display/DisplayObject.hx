@@ -250,7 +250,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			var result = super.__dispatchEvent (event);
 			
-			if (event.__isCancelled) {
+			if (event.__isCanceled) {
 				
 				return true;
 				
@@ -269,7 +269,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		var result = super.__dispatchEvent (event);
 		
-		if (event.__isCancelled) {
+		if (event.__isCanceled) {
 			
 			return true;
 			

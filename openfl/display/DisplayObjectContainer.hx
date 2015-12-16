@@ -354,13 +354,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		var result = super.__broadcast (event, notifyChilden);
 		
-		if (!event.__isCancelled && notifyChilden) {
+		if (!event.__isCanceled && notifyChilden) {
 			
 			for (child in __children) {
 				
 				child.__broadcast (event, true);
 				
-				if (event.__isCancelled) {
+				if (event.__isCanceled) {
 					
 					return true;
 					
