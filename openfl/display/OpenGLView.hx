@@ -42,7 +42,17 @@ class OpenGLView extends DirectRenderer {
 			__canvas.width = Lib.current.stage.stageWidth;
 			__canvas.height = Lib.current.stage.stageHeight;
 			
-			__context = cast __canvas.getContext ("webgl");
+			var window = Lib.current.stage.window;
+			
+			__context = cast __canvas.getContext ("webgl", {
+				
+				alpha: false, 
+				premultipliedAlpha: false, 
+				antialias: false, 
+				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
+				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
+				
+			});
 			
 			if (__context == null) {
 				
