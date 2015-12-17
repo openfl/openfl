@@ -1,3 +1,13 @@
+3.5.3 (12/16/2015)
+------------------
+
+* Improved the extern definitions for Flash
+* Moved fullscreen / back button key shortcut behaviors to Lime
+* Retained canvas as default HTML5 renderer on current Lime
+* Improved look-up for default iOS font paths
+* Minor compile fixes
+
+
 3.5.2 (12/11/2015)
 ------------------
 
