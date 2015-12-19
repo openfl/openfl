@@ -15,6 +15,7 @@ using openfl.display.BitmapData;
 
 @:final class Texture extends TextureBase {
 	
+	private static var internalFormat:Int = -1;
 	
 	public var optimizeForRenderToTexture:Bool;
 	
@@ -25,6 +26,14 @@ using openfl.display.BitmapData;
 		optimizeForRenderToTexture = optimize;
 
 		mipmapsGenerated = false;
+		
+		if (internalFormat == -1){
+			#if (cpp && !openfl_legacy)
+			internalFormat = GL.BGRA_EXT;
+			#else
+			internalFormat = GL.RGBA;
+			#end
+		}
 		
 		#if (js || neko)
 		if (optimizeForRenderToTexture == null) optimizeForRenderToTexture = false;
@@ -43,7 +52,6 @@ using openfl.display.BitmapData;
 			
 		}
 		#end
-		
 	}
 	
 	
@@ -123,7 +131,7 @@ using openfl.display.BitmapData;
 			
 		}
 		
-		GL.texImage2D (GL.TEXTURE_2D, miplevel, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (GL.TEXTURE_2D, miplevel, internalFormat, width, height, 0, internalFormat, GL.UNSIGNED_BYTE, data);
 		GL.bindTexture (GL.TEXTURE_2D, null);
 		
 	}
