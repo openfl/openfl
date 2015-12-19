@@ -968,8 +968,56 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		
-		openfl.Lib.notImplemented ("BitmapData.noise");
+		//Seeded Random Number Generator
+		var rand:Void->Int = {
+			function func():Int 
+			{	
+				randomSeed = randomSeed * 1103515245 + 12345; 
+				return Std.int(Math.abs(randomSeed / 65536)) % 32768; 
+			}
+		};
+		rand();
 		
+		//Range of values to value to.
+		var range:Int = high - low;		
+		var data:ByteArray = new ByteArray();
+		
+		var redChannel:Bool = ((channelOptions & ( 1 << 0 )) >> 0) == 1;
+		var greenChannel:Bool = ((channelOptions & ( 1 << 1 )) >> 1) == 1;
+		var blueChannel:Bool = ((channelOptions & ( 1 << 2 )) >> 2) == 1;
+		var alphaChannel:Bool = ((channelOptions & ( 1 << 3 )) >> 3) == 1;
+		
+		for (y in 0...height)
+		{
+			for (x in 0...width)
+			{
+				//Default channel colours if all channel options are false.
+				var red:Int = 0;
+				var blue:Int = 0;
+				var green:Int = 0;
+				var alpha:Int = 255;
+				
+				if (grayScale)
+				{
+					red = green = blue = low + (rand() % range);
+					alpha = 255;
+				}
+				else
+				{
+					if (redChannel) red = low + (rand() % range);
+					if (greenChannel) green = low + (rand() % range);
+					if (blueChannel) blue = low + (rand() % range);
+					if (alphaChannel) alpha = low + (rand() % range);
+				}
+				
+				var rgb:Int = alpha;
+				rgb = (rgb << 8) + red;
+				rgb = (rgb << 8) + green;
+				rgb = (rgb << 8) + blue;
+				
+				setPixel32(x, y, rgb);
+			}
+		}		
 	}
 	
 	
