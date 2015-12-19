@@ -1888,6 +1888,8 @@ class TextField extends InteractiveObject {
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
+				}else{
+					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
 				}
 			
 			default:
