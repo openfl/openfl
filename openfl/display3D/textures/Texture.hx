@@ -28,7 +28,7 @@ using openfl.display.BitmapData;
 		mipmapsGenerated = false;
 		
 		if (internalFormat == -1){
-			#if cpp
+			#if (cpp && !openfl_legacy)
 			internalFormat = GL.BGRA_EXT;
 			#else
 			internalFormat = GL.RGBA;
