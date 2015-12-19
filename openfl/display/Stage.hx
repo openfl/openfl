@@ -760,7 +760,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				stack[i].__broadcast (event, false);
 				
-				if (event.__isCancelled) {
+				if (event.__isCanceled) {
 					
 					return;
 					
@@ -771,7 +771,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.eventPhase = EventPhase.AT_TARGET;
 			event.target.__broadcast (event, false);
 			
-			if (event.__isCancelled) {
+			if (event.__isCanceled) {
 				
 				return;
 				
@@ -786,7 +786,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					stack[i].__broadcast (event, false);
 					
-					if (event.__isCancelled) {
+					if (event.__isCanceled) {
 						
 						return;
 						
@@ -846,41 +846,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack.reverse ();
 			__fireEvent (event, stack);
 			
-			#if (windows || linux)
-			
-			if (keyCode == KeyCode.RETURN && modifier.altKey && type == KeyboardEvent.KEY_DOWN && !modifier.ctrlKey && !modifier.shiftKey && !modifier.metaKey && !event.isDefaultPrevented ()) {
+			if (event.__isCanceled) {
 				
-				switch (displayState) {
+				if (type == KeyboardEvent.KEY_DOWN) {
 					
-					case NORMAL: displayState = FULL_SCREEN;
-					default: displayState = NORMAL;
+					window.onKeyDown.cancel ();
 					
-				}
-				
-			}
-			
-			#elseif mac
-			
-			if (keyCode == KeyCode.F && modifier.ctrlKey && modifier.metaKey && type == KeyboardEvent.KEY_DOWN && !modifier.altKey && !modifier.shiftKey && !event.isDefaultPrevented ()) {
-				
-				switch (displayState) {
+				} else {
 					
-					case NORMAL: displayState = FULL_SCREEN;
-					default: displayState = NORMAL;
+					window.onKeyUp.cancel ();
 					
 				}
 				
 			}
-			
-			#elseif android
-			
-			if (keyCode == KeyCode.APP_CONTROL_BACK && modifier == 0 && type == KeyboardEvent.KEY_UP && !event.isDefaultPrevented ()) {
-				
-				System.exit (0);
-				
-			}
-			
-			#end
 			
 		}
 		
