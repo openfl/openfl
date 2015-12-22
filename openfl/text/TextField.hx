@@ -126,7 +126,7 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
+	@:access(openfl._internal.text.TextEngine)
 	public function getCharBoundaries (charIndex:Int):Rectangle {
 		
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
@@ -137,15 +137,10 @@ class TextField extends InteractiveObject {
 			
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
 				
-				var x = group.offsetX;
+				var x = group.offsetX + __textEngine.getFormattedTextWidth(text.substr(group.startIndex, (charIndex-group.startIndex)), group.format);
+				var width = __textEngine.getFormattedTextWidth(text.charAt(charIndex), group.format);
 				
-				for (i in 0...(charIndex - group.startIndex)) {
-					
-					x += group.advances[i];
-					
-				}
-				
-				return new Rectangle (x, group.offsetY, group.advances[charIndex - group.startIndex], group.ascent + group.descent);
+				return new Rectangle (x, group.offsetY, width, group.ascent + group.descent);
 				
 			}
 			
