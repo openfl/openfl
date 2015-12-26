@@ -200,7 +200,7 @@ import openfl.Lib;
 	
 	public function createCubeTexture (size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture {
 		
-		var texture = new CubeTexture (cast this, GL.createTexture (), size); // TODO use format, optimizeForRenderToTexture and streamingLevels?
+		var texture = new CubeTexture (this, GL.createTexture (), size); // TODO use format, optimizeForRenderToTexture and streamingLevels?
 		texturesCreated.push (texture);
 		return texture;
 		
@@ -210,7 +210,7 @@ import openfl.Lib;
 	public function createIndexBuffer (numIndices:Int, bufferUsage:Context3DBufferUsage = null):IndexBuffer3D {
 		
 		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
-		var indexBuffer = new IndexBuffer3D (cast this, GL.createBuffer(), numIndices, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
+		var indexBuffer = new IndexBuffer3D (this, GL.createBuffer(), numIndices, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
 		indexBuffersCreated.push (indexBuffer);
 		return indexBuffer;
 		
@@ -219,7 +219,7 @@ import openfl.Lib;
 	
 	public function createProgram ():Program3D {
 		
-		var program = new Program3D (cast this, GL.createProgram ());
+		var program = new Program3D (this, GL.createProgram ());
 		programsCreated.push (program);
 		return program;
 		
@@ -228,7 +228,7 @@ import openfl.Lib;
 	
 	public function createRectangleTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture {
 		
-		var texture = new RectangleTexture (cast this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
+		var texture = new RectangleTexture (this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
 		texturesCreated.push (texture);
 		return texture;
 		
@@ -237,7 +237,7 @@ import openfl.Lib;
 	
 	public function createTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture {
 		
-		var texture = new Texture (cast this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
+		var texture = new Texture (this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
 		texturesCreated.push (texture);
 		return texture;
 		
@@ -247,7 +247,7 @@ import openfl.Lib;
 	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = null):VertexBuffer3D {
 		
 		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
-		var vertexBuffer = new VertexBuffer3D (cast this, GL.createBuffer (), numVertices, data32PerVertex, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
+		var vertexBuffer = new VertexBuffer3D (this, GL.createBuffer (), numVertices, data32PerVertex, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
 		vertexBuffersCreated.push (vertexBuffer);
 		return vertexBuffer;
 		
