@@ -852,7 +852,6 @@ import openfl.Lib;
 		if (scissorRectangle == null)
 			return;
 		
-		var width:Int = renderToTexture ? rttWidth : scrollRect.width;
 		var height:Int = renderToTexture ? rttHeight : Std.int(scrollRect.height);
 		GL.scissor (Std.int (scissorRectangle.x),
 			Std.int (height - Std.int(scissorRectangle.y) - Std.int(scissorRectangle.height)),
