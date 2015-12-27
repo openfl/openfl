@@ -222,9 +222,8 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.width,
 				object.scrollRect.height
 			);
-			object.scrollRect.__transform (clipRect, object.__worldTransform);
-			var bounds = object.getBounds (null);
-			clipRect = clipRect.intersection (bounds);
+			clipRect = clipRect.intersection (object.getBounds (null));
+			clipRect.__transform (clipRect, object.__getWorldTransform ());
 		}
 
 		var prevBlendMode = blendMode;
@@ -281,13 +280,14 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private function setObjectTransform (object:DisplayObject) {
 
+		var matrix = object.__getWorldTransform ();
 		transform = Matrix4.createABCD (
-			object.__worldTransform.a,
-			object.__worldTransform.b,
-			object.__worldTransform.c,
-			object.__worldTransform.d,
-			object.__worldTransform.tx,
-			object.__worldTransform.ty
+			matrix.a,
+			matrix.b,
+			matrix.c,
+			matrix.d,
+			matrix.tx,
+			matrix.ty
 		);
 
 	}
