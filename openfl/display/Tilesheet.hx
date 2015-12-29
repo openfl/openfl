@@ -1,6 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
+import flash.geom.ColorTransform;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.Point;
@@ -20,6 +21,7 @@ class Tilesheet {
 	public static inline var TILE_TRANS_2x2 = 0x0010;
 	public static inline var TILE_RECT = 0x0020;
 	public static inline var TILE_ORIGIN = 0x0040;
+	public static inline var TILE_TRANS_COLOR = 0x0080;
 	
 	public static inline var TILE_BLEND_NORMAL = 0x00000000;
 	public static inline var TILE_BLEND_ADD = 0x00010000;
@@ -188,10 +190,11 @@ class Tilesheet {
 	 * @param	smooth whether to smooth the tile or not
 	 * @param	flags
 	 * @param	count
+	 * @param	colorTransform
 	 */
-	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
+	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1, colorTransform:ColorTransform = null):Void {
 		
-		graphics.drawTiles (this, tileData, smooth, flags, count);
+		graphics.drawTiles (this, tileData, smooth, flags, count, colorTransform);
 		
 	}
 	
