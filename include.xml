@@ -31,7 +31,7 @@
 	<window hardware="false" if="html5" unless="webgl" />
 	
 	<unset name="custom-backend" />
-	
+
 	<section unless="no-custom-backend">
 		
 		<set name="custom-backend" value="${flash-backend}" if="flash flash-backend" />
@@ -50,7 +50,7 @@
 		
 	</section>
 	
-	<section unless="lime">
+	<section unless="lime || custom-backend">
 		
 		<haxelib name="lime" unless="create || native lime-legacy" />
 		<haxelib name="lime" if="display || rebuild" />
