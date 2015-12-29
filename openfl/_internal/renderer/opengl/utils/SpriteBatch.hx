@@ -68,7 +68,7 @@ class SpriteBatch {
 	
 	var matrix:Matrix = new Matrix();
 	var uvs:TextureUvs = new TextureUvs();
-	
+	var colorTransform:ColorTransform = new ColorTransform();
 	
 	public function new(gl:GLRenderContext, maxSprites:Int = 2000) {
 		this.maxSprites = maxSprites;
@@ -127,6 +127,8 @@ class SpriteBatch {
 			state.destroy();
 		}
 		
+		colorTransform = null;
+		
 		gl = null;
 	}
 	
@@ -183,7 +185,7 @@ class SpriteBatch {
 		batchedSprites++;
 	}
 	
-	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?flashShader:FlashShader, count:Int = -1) {		
+	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?flashShader:FlashShader, count:Int = -1) {
 		
 		var texture = sheet.__bitmap.getTexture(gl);
 		if (texture == null) return;
@@ -195,6 +197,7 @@ class SpriteBatch {
 		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
 		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
 		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
+		var useColorTransform = ((flags & Tilesheet.TILE_TRANS_COLOR) > 0);
 		
 		var blendMode:BlendMode = switch(flags & 0xF0000) {
 			case Tilesheet.TILE_BLEND_ADD:                ADD;
@@ -219,6 +222,7 @@ class SpriteBatch {
 		var scaleIndex = 0;
 		var rotationIndex = 0;
 		var rgbIndex = 0;
+		var colorTransformIndex = 0;
 		var alphaIndex = 0;
 		var transformIndex = 0;
 		
@@ -230,6 +234,7 @@ class SpriteBatch {
 		if (useTransform) { transformIndex = numValues; numValues += 4; }
 		if (useRGB) { rgbIndex = numValues; numValues += 3; }
 		if (useAlpha) { alphaIndex = numValues; numValues ++; }
+		if (useColorTransform) { colorTransformIndex = numValues; numValues += 8; }
 		
 		var totalCount = tileData.length;
 		if (count >= 0 && totalCount > count) totalCount = count;
@@ -329,6 +334,39 @@ class SpriteBatch {
 					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
 				}
 				
+				if (useColorTransform) {
+					/*
+					colorTransform.redMultiplier   = 1;
+					colorTransform.greenMultiplier = 1;
+					colorTransform.blueMultiplier  = 1;
+					colorTransform.alphaMultiplier = 1;
+					colorTransform.redOffset       = 255;
+					colorTransform.greenOffset     = 0;
+					colorTransform.blueOffset      = 0;
+					colorTransform.alphaOffset     = 0;
+					*/
+					colorTransform.redMultiplier   = tileData[iIndex + colorTransformIndex];
+					colorTransform.greenMultiplier = tileData[iIndex + colorTransformIndex + 1];
+					colorTransform.blueMultiplier  = tileData[iIndex + colorTransformIndex + 2];
+					colorTransform.alphaMultiplier = tileData[iIndex + colorTransformIndex + 3];
+					colorTransform.redOffset       = tileData[iIndex + colorTransformIndex + 4];
+					colorTransform.greenOffset     = tileData[iIndex + colorTransformIndex + 5];
+					colorTransform.blueOffset      = tileData[iIndex + colorTransformIndex + 6];
+					colorTransform.alphaOffset     = tileData[iIndex + colorTransformIndex + 7];
+				} else {
+					var wct = object.__worldColorTransform;
+					colorTransform.redMultiplier   = wct.redMultiplier;
+					colorTransform.greenMultiplier = wct.greenMultiplier;
+					colorTransform.blueMultiplier  = wct.blueMultiplier;
+					colorTransform.alphaMultiplier = wct.alphaMultiplier;
+					colorTransform.redOffset       = wct.redOffset;
+					colorTransform.greenOffset     = wct.greenOffset;
+					colorTransform.blueOffset      = wct.blueOffset;
+					colorTransform.alphaOffset     = wct.alphaOffset;
+					//colorTransform = object.__worldColorTransform;
+				}
+				
+				
 				if (useScale) {
 					scale = tileData[iIndex + scaleIndex];
 				}
@@ -390,7 +428,7 @@ class SpriteBatch {
 				
 				writtenVertexBytes = bIndex + 20;
 				
-				setState(batchedSprites, texture, smooth, blendMode, object.__worldColorTransform, flashShader, false);
+				setState(batchedSprites, texture, smooth, blendMode, colorTransform, flashShader, false);
 				
 				batchedSprites++;
 			}
@@ -587,6 +625,7 @@ class SpriteBatch {
 	}
 	
 	inline function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:FlashShader, ?skipAlpha:Bool = false) {
+		
 		var state:State = states[index];
 		if (state == null) {
 			state = states[index] = new State();
@@ -595,7 +634,28 @@ class SpriteBatch {
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
 		// colorTransform is default, skipping it
-		state.colorTransform = (colorTransform != null && @:privateAccess colorTransform.__isDefault()) ? null : colorTransform;
+		if (colorTransform == null || @:privateAccess colorTransform.__isDefault()) {
+			state.skipColorTransform = true;
+			state.colorTransform.redMultiplier = 1;
+			state.colorTransform.greenMultiplier = 1;
+			state.colorTransform.blueMultiplier= 1;
+			state.colorTransform.alphaMultiplier= 1;
+			state.colorTransform.redOffset = 0;
+			state.colorTransform.greenOffset = 0;
+			state.colorTransform.blueOffset = 0;
+			state.colorTransform.alphaOffset = 0;
+		} else {
+			state.skipColorTransform = false;
+			state.colorTransform.redMultiplier = colorTransform.redMultiplier;
+			state.colorTransform.greenMultiplier = colorTransform.greenMultiplier;
+			state.colorTransform.blueMultiplier = colorTransform.blueMultiplier;
+			state.colorTransform.alphaMultiplier = colorTransform.alphaMultiplier;
+			state.colorTransform.redOffset = colorTransform.redOffset;
+			state.colorTransform.greenOffset = colorTransform.greenOffset;
+			state.colorTransform.blueOffset = colorTransform.blueOffset;
+			state.colorTransform.alphaOffset = colorTransform.alphaOffset;
+		}
+		
 		state.skipColorTransformAlpha = skipAlpha;
 		if (shader == null) {
 			state.shader = null;
@@ -663,7 +723,8 @@ private class State {
 	public var texture:GLTexture;
 	public var textureSmooth:Bool = true;
 	public var blendMode:BlendMode;
-	public var colorTransform:ColorTransform;
+	public var colorTransform:ColorTransform = new ColorTransform();
+	public var skipColorTransform:Bool = false;
 	public var skipColorTransformAlpha:Bool = false;
 	public var shader:Shader;
 	public var shaderData:GLShaderData;
@@ -677,8 +738,12 @@ private class State {
 				texture == other.texture &&
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
+				skipColorTransform == other.skipColorTransform && 
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
-				((colorTransform == null && other.colorTransform == null) || (colorTransform != null && other.colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)))
+				(
+					(colorTransform == null && other.colorTransform == null) || 
+					(colorTransform != null && other.colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)) ||
+				)
 		);
 	}
 	
