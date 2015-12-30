@@ -190,11 +190,10 @@ class Tilesheet {
 	 * @param	smooth whether to smooth the tile or not
 	 * @param	flags
 	 * @param	count
-	 * @param	colorTransform
 	 */
-	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1, colorTransform:ColorTransform = null):Void {
+	public function drawTiles (graphics:Graphics, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, count:Int = -1):Void {
 		
-		graphics.drawTiles (this, tileData, smooth, flags, count, colorTransform);
+		graphics.drawTiles (this, tileData, smooth, flags, count);
 		
 	}
 	
