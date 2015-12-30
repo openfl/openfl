@@ -18,6 +18,8 @@ package openfl.text;
 	 */
 	public var CENTER = "center";
 	
+	public var END = "end";
+	
 	/**
 	 * Constant; justifies text within the text field. Use the syntax
 	 * <code>TextFormatAlign.JUSTIFY</code>.
@@ -36,12 +38,6 @@ package openfl.text;
 	 */
 	public var RIGHT = "right";
 	
-	#if (flash && !doc_gen)
-	@:noCompletion @:dox(hide) public static inline var END = "end";
-	#end
-	
-	#if (flash && !doc_gen)
-	@:noCompletion @:dox(hide) public static inline var START = "start";
-	#end
+	public var START = "start";
 	
 }

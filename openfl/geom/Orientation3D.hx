@@ -1,10 +1,34 @@
 package openfl.geom;
 
 
-@:enum abstract Orientation3D(String) from String to String {
+@:enum abstract Orientation3D(Int) {
 	
-	public var AXIS_ANGLE = "axisAngle";
-	public var EULER_ANGLES = "eulerAngles";
-	public var QUATERNION = "quaternion";
+	public var AXIS_ANGLE = 0;
+	public var EULER_ANGLES = 1;
+	public var QUATERNION = 2;
+	
+	@:from private static inline function fromString (value:String):Orientation3D {
+		
+		return switch (value) {
+			
+			case "axisAngle": AXIS_ANGLE;
+			case "quaternion": QUATERNION;
+			default: return EULER_ANGLES;
+			
+		}
+		
+	}
+	
+	@:to private static inline function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case Orientation3D.AXIS_ANGLE: "axisAngle";
+			case Orientation3D.QUATERNION: "quaternion";
+			default: "eulerAngles";
+			
+		}
+		
+	}
 	
 }

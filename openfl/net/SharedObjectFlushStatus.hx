@@ -1,9 +1,31 @@
 package openfl.net;
 
 
-@:enum abstract SharedObjectFlushStatus(String) from String to String {
+@:enum abstract SharedObjectFlushStatus(Int) {
 	
-	public var FLUSHED = "flushed";
-	public var PENDING = "pending";
+	public var FLUSHED = 0;
+	public var PENDING = 1;
+	
+	@:from private static inline function fromString (value:String):SharedObjectFlushStatus {
+		
+		return switch (value) {
+			
+			case "pending": PENDING;
+			default: return FLUSHED;
+			
+		}
+		
+	}
+	
+	@:to private static inline function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case SharedObjectFlushStatus.PENDING: "pending";
+			default: "flushed";
+			
+		}
+		
+	}
 	
 }
