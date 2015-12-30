@@ -1287,7 +1287,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	private inline function get_displayState ():StageDisplayState {
+	private function get_displayState ():StageDisplayState {
 		
 		return __displayState;
 		

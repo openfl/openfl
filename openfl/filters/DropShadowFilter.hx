@@ -104,7 +104,7 @@ import openfl.geom.Rectangle;
 	
 	
 	
-	private inline function set_knockout (value:Bool):Bool {
+	private function set_knockout (value:Bool):Bool {
 		
 		__saveLastFilter = !value;
 		return knockout = value;
@@ -112,7 +112,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private inline function set_hideObject (value:Bool):Bool {
+	private function set_hideObject (value:Bool):Bool {
 		
 		__saveLastFilter = !value;
 		return hideObject = value;

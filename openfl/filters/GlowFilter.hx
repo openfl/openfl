@@ -94,7 +94,7 @@ import openfl.geom.Rectangle;
 	
 	
 	
-	private inline function set_knockout (value:Bool):Bool {
+	private function set_knockout (value:Bool):Bool {
 		
 		__saveLastFilter = !value;
 		return knockout = value;
