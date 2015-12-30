@@ -26,7 +26,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var CLICK:String;
+	public static inline var CLICK = "click";
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
@@ -40,7 +40,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var DOUBLE_CLICK:String;
+	public static inline var DOUBLE_CLICK = "doubleClick";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -48,7 +48,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MIDDLE_CLICK:String;
+	public static inline var MIDDLE_CLICK = "middleClick";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -56,7 +56,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MIDDLE_MOUSE_DOWN:String;
+	public static inline var MIDDLE_MOUSE_DOWN = "middleMouseDown";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -64,7 +64,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MIDDLE_MOUSE_UP:String;
+	public static inline var MIDDLE_MOUSE_UP = "middleMouseUp";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -72,7 +72,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_DOWN:String;
+	public static inline var MOUSE_DOWN = "mouseDown";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -80,7 +80,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_MOVE:String;
+	public static inline var MOUSE_MOVE = "mouseMove";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -88,7 +88,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_OUT:String;
+	public static inline var MOUSE_OUT = "mouseOut";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -96,7 +96,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_OVER:String;
+	public static inline var MOUSE_OVER = "mouseOver";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -104,7 +104,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_UP:String;
+	public static inline var MOUSE_UP = "mouseUp";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -112,7 +112,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_WHEEL:String;
+	public static inline var MOUSE_WHEEL = "mouseWheel";
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_3) public static var RELEASE_OUTSIDE:String;
@@ -124,7 +124,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var RIGHT_CLICK:String;
+	public static inline var RIGHT_CLICK = "rightClick";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -132,7 +132,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var RIGHT_MOUSE_DOWN:String;
+	public static inline var RIGHT_MOUSE_DOWN = "rightMouseDown";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -140,7 +140,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var RIGHT_MOUSE_UP:String;
+	public static inline var RIGHT_MOUSE_UP = "rightMouseUp";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -148,7 +148,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ROLL_OUT:String;
+	public static inline var ROLL_OUT = "rollOut";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -156,7 +156,7 @@ extern class MouseEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ROLL_OVER:String;
+	public static inline var ROLL_OVER = "rollOver";
 	
 	/**
 	 * Indicates whether the Alt key is active(<code>true</code>) or inactive

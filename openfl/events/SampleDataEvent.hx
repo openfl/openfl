@@ -8,7 +8,7 @@ import openfl.utils.Endian;
 class SampleDataEvent extends Event {
 	
 	
-	public static var SAMPLE_DATA = "sampleData";
+	public static inline var SAMPLE_DATA = "sampleData";
 	
 	public var data:ByteArray;
 	public var position:Float;

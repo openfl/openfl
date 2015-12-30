@@ -4,7 +4,7 @@ package openfl.events;
 class IOErrorEvent extends ErrorEvent {
 	
 	
-	public static var IO_ERROR = "ioError";
+	public static inline var IO_ERROR = "ioError";
 	
 	
 	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0) {

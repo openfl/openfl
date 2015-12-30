@@ -69,7 +69,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_BEGIN:String;
+	public static inline var TOUCH_BEGIN = "touchBegin";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -77,7 +77,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_END:String;
+	public static inline var TOUCH_END = "touchEnd";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -85,7 +85,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_MOVE:String;
+	public static inline var TOUCH_MOVE = "touchMove";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -93,7 +93,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_OUT:String;
+	public static inline var TOUCH_OUT = "touchOut";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -101,7 +101,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_OVER:String;
+	public static inline var TOUCH_OVER = "touchOver";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -109,7 +109,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_ROLL_OUT:String;
+	public static inline var TOUCH_ROLL_OUT = "touchRollOut";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -117,7 +117,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_ROLL_OVER:String;
+	public static inline var TOUCH_ROLL_OVER = "touchRollOver";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -125,7 +125,7 @@ extern class TouchEvent extends Event {
 	 *
 	 * <p>The dispatched TouchEvent object has the following properties:</p>
 	 */
-	public static var TOUCH_TAP:String;
+	public static inline var TOUCH_TAP = "touchTap";
 	
 	
 	/**

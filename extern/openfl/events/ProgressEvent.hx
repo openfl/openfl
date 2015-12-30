@@ -20,7 +20,7 @@ extern class ProgressEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var PROGRESS:String;
+	public static inline var PROGRESS = "progress";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -28,7 +28,7 @@ extern class ProgressEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var SOCKET_DATA:String;
+	public static inline var SOCKET_DATA = "socketData";
 	
 	
 	/**

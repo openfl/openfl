@@ -4,10 +4,10 @@ package openfl.system;
 class Security {
 	
 	
-	public static var LOCAL_TRUSTED:String;
-	public static var LOCAL_WITH_FILE:String;
-	public static var LOCAL_WITH_NETWORK:String;
-	public static var REMOTE:String;
+	public static inline var LOCAL_TRUSTED = "localTrusted";
+	public static inline var LOCAL_WITH_FILE = "localWithFile";
+	public static inline var LOCAL_WITH_NETWORK = "localWithNetwork";
+	public static inline var REMOTE = "remote";
 	
 	public static var disableAVM1Loading:Bool;
 	public static var exactSettings:Bool;
