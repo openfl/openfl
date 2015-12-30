@@ -281,7 +281,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			var windowBits = switch (algorithm) {
 				
 				case DEFLATE: -15;
-				case GZIP: 31;
+				//case GZIP: 31;
 				default: 15;
 				
 			}
