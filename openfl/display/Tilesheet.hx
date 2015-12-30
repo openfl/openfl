@@ -1,7 +1,6 @@
 package openfl.display; #if !openfl_legacy
 
 
-import flash.geom.ColorTransform;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.Point;

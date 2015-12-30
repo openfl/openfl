@@ -541,7 +541,8 @@ class SpriteBatch {
 				currentState.texture = nextState.texture;
 				currentState.textureSmooth = nextState.textureSmooth;
 				currentState.blendMode = nextState.blendMode;
-				currentState.colorTransform = nextState.colorTransform;
+				currentState.skipColorTransform = nextState.skipColorTransform;
+				currentState.colorTransform = currentState.skipColorTransform ? null : nextState.colorTransform;
 				
 			}
 			
@@ -617,27 +618,19 @@ class SpriteBatch {
 		state.texture = texture;
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
+		
 		// colorTransform is default, skipping it
-		if (colorTransform == null || @:privateAccess colorTransform.__isDefault()) {
-			state.skipColorTransform = true;
-			state.colorTransform.redMultiplier = 1;
-			state.colorTransform.greenMultiplier = 1;
-			state.colorTransform.blueMultiplier= 1;
-			state.colorTransform.alphaMultiplier= 1;
-			state.colorTransform.redOffset = 0;
-			state.colorTransform.greenOffset = 0;
-			state.colorTransform.blueOffset = 0;
-			state.colorTransform.alphaOffset = 0;
-		} else {
-			state.skipColorTransform = false;
-			state.colorTransform.redMultiplier = colorTransform.redMultiplier;
+		state.skipColorTransform = (colorTransform != null && @:privateAccess colorTransform.__isDefault());
+		
+		if (!state.skipColorTransform) {
+			state.colorTransform.redMultiplier   = colorTransform.redMultiplier;
 			state.colorTransform.greenMultiplier = colorTransform.greenMultiplier;
-			state.colorTransform.blueMultiplier = colorTransform.blueMultiplier;
+			state.colorTransform.blueMultiplier  = colorTransform.blueMultiplier;
 			state.colorTransform.alphaMultiplier = colorTransform.alphaMultiplier;
-			state.colorTransform.redOffset = colorTransform.redOffset;
-			state.colorTransform.greenOffset = colorTransform.greenOffset;
-			state.colorTransform.blueOffset = colorTransform.blueOffset;
-			state.colorTransform.alphaOffset = colorTransform.alphaOffset;
+			state.colorTransform.redOffset       = colorTransform.redOffset;
+			state.colorTransform.greenOffset     = colorTransform.greenOffset;
+			state.colorTransform.blueOffset      = colorTransform.blueOffset;
+			state.colorTransform.alphaOffset     = colorTransform.alphaOffset;
 		}
 		
 		state.skipColorTransformAlpha = skipAlpha;
@@ -722,13 +715,9 @@ private class State {
 				texture == other.texture &&
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
-				skipColorTransform == other.skipColorTransform && 
-				//((colorTransform == null && other.colorTransform == null) || (colorTransform != null && other.colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)))
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
-				(
-					(colorTransform == null && other.colorTransform == null) ||
-					(colorTransform != null && other.colorTransform != null && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha))
-				)
+				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)))
+				
 		);
 	}
 	
