@@ -1,9 +1,9 @@
 package openfl.text;
 
 
-enum TextFieldType {
+@:enum abstract TextFieldType(String) from String to String {
 	
-	DYNAMIC;
-	INPUT;
+	public var DYNAMIC = "dynamic";
+	public var INPUT = "input";
 	
 }

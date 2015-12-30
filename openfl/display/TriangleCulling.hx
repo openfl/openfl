@@ -1,11 +1,11 @@
 package openfl.display; #if !openfl_legacy
 
 
-enum TriangleCulling {
+@:enum abstract TriangleCulling(String) from String to String {
 	
-	NEGATIVE;
-	NONE;
-	POSITIVE;
+	public var NEGATIVE = "negative";
+	public var NONE = "none";
+	public var POSITIVE = "positive";
 	
 }
 

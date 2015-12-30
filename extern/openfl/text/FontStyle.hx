@@ -9,35 +9,34 @@ package openfl.text;
 @:native("flash.text.FontStyle")
 #end
 
-
-@:fakeEnum(String) extern enum FontStyle {
-	
-	/**
-	 * Defines the plain style of a font for the <code>fontStyle</code> parameter
-	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
-	 * <code>FontStyle.REGULAR</code>.
-	 */
-	REGULAR;
-	
-	/**
-	 * Defines the italic style of a font for the <code>fontStyle</code>
-	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
-	 * the syntax <code>FontStyle.ITALIC</code>.
-	 */
-	ITALIC;
-	
-	/**
-	 * Defines the italic style of a font for the <code>fontStyle</code>
-	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
-	 * the syntax <code>FontStyle.ITALIC</code>.
-	 */
-	BOLD_ITALIC;
+@:enum abstract FontStyle(String) from String to String {
 	
 	/**
 	 * Defines the bold style of a font for the <code>fontStyle</code> parameter
 	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
 	 * <code>FontStyle.BOLD</code>.
 	 */
-	BOLD;
+	public var BOLD = "bold";
+	
+	/**
+	 * Defines the italic style of a font for the <code>fontStyle</code>
+	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
+	 * the syntax <code>FontStyle.ITALIC</code>.
+	 */
+	public var BOLD_ITALIC = "boldItalic";
+	
+	/**
+	 * Defines the italic style of a font for the <code>fontStyle</code>
+	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
+	 * the syntax <code>FontStyle.ITALIC</code>.
+	 */
+	public var ITALIC = "italic";
+	
+	/**
+	 * Defines the plain style of a font for the <code>fontStyle</code> parameter
+	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
+	 * <code>FontStyle.REGULAR</code>.
+	 */
+	public var REGULAR = "regular";
 	
 }

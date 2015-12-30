@@ -1,11 +1,11 @@
 package openfl.display; #if !openfl_legacy
 
 
-enum SpreadMethod {
+@:enum abstract SpreadMethod(String) from String to String {
 	
-	REPEAT;
-	REFLECT;
-	PAD;
+	public var PAD = "pad";
+	public var REFLECT = "reflect";
+	public var REPEAT = "repeat";
 	
 }
 

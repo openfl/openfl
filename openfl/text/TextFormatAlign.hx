@@ -1,12 +1,12 @@
 package openfl.text; #if !openfl_legacy
 
 
-enum TextFormatAlign {
+@:enum abstract TextFormatAlign(String) from String to String {
 	
-	LEFT;
-	RIGHT;
-	JUSTIFY;
-	CENTER;
+	public var CENTER = "center";
+	public var JUSTIFY = "justify";
+	public var LEFT = "left";
+	public var RIGHT = "right";
 	
 }
 

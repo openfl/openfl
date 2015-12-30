@@ -1,9 +1,9 @@
 package openfl.display;
 
 
-enum InterpolationMethod {
+@:enum abstract InterpolationMethod(String) from String to String {
 	
-	RGB;
-	LINEAR_RGB;
+	public var LINEAR_RGB = "linearRGB";
+	public var RGB = "rgb";
 	
 }

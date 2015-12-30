@@ -1,10 +1,10 @@
 package openfl.system;
 
 
-enum TouchscreenType {
+@:enum abstract TouchscreenType(String) from String to String {
 	
-	FINGER;
-	NONE;
-	STYLUS;
+	public var FINGER = "finger";
+	public var NONE = "none";
+	public var STYLUS = "stylus";
 	
 }

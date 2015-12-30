@@ -1,11 +1,11 @@
 package openfl.display; #if !openfl_legacy
 
 
-enum CapsStyle {
+@:enum abstract CapsStyle(String) from String to String {
 	
-	NONE;
-	ROUND;
-	SQUARE;
+	public var NONE = "none";
+	public var ROUND = "round";
+	public var SQUARE = "square";
 	
 }
 

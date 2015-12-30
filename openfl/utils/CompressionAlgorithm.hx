@@ -1,12 +1,12 @@
 package openfl.utils; #if !openfl_legacy
 
 
-enum CompressionAlgorithm {
+@:enum abstract CompressionAlgorithm(String) from String to String {
 	
-	DEFLATE;
-	ZLIB;
-	LZMA;
-	GZIP;
+	public var DEFLATE = "deflate";
+	//GZIP;
+	public var LZMA = "lzma";
+	public var ZLIB = "zlib";
 	
 }
 

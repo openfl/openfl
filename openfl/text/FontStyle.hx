@@ -1,12 +1,12 @@
 package openfl.text; #if !openfl_legacy
 
 
-enum FontStyle {
+@:enum abstract FontStyle(String) from String to String {
 	
-	REGULAR;
-	ITALIC;
-	BOLD_ITALIC;
-	BOLD;
+	public var BOLD = "bold";
+	public var BOLD_ITALIC = "boldItalic";
+	public var ITALIC = "italic";
+	public var REGULAR = "regular";
 	
 }
 

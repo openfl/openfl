@@ -1,11 +1,15 @@
 package openfl.desktop;
 
 
-@:fakeEnum(String) extern enum ClipboardTransferMode {
+#if flash
+@:native("flash.desktop.ClipboardTransferMode")
+#end
+
+@:enum abstract ClipboardTransferMode(String) from String to String {
 	
-	CLONE_ONLY;
-	CLONE_PREFERRED;
-	ORIGINAL_ONLY;
-	ORIGINAL_PREFERRED;
+	public var CLONE_ONLY = "cloneOnly";
+	public var CLONE_PREFERRED = "clonePreferred";
+	public var ORIGINAL_ONLY = "originalOnly";
+	public var ORIGINAL_PREFERRED = "originalPreferred";
 	
 }

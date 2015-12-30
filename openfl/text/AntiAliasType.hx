@@ -1,9 +1,9 @@
 package openfl.text;
 
 
-enum AntiAliasType {
+@:enum abstract AntiAliasType(String) from String to String {
 	
-	ADVANCED;
-	NORMAL;
+	public var ADVANCED = "advanced";
+	public var NORMAL = "normal";
 	
 }

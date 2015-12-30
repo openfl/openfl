@@ -13,15 +13,14 @@ package openfl.display;
 @:native("flash.display.GraphicsPathCommand")
 #end
 
-
-extern class GraphicsPathCommand {
+@:enum abstract GraphicsPathCommand(Int) from Int to Int {
 	
-	public static inline var LINE_TO = 2;
-	public static inline var MOVE_TO = 1;
-	public static inline var CURVE_TO = 3;
-	#if flash @:require(flash11) #end public static inline var CUBIC_CURVE_TO = 6;
-	public static inline var WIDE_LINE_TO = 5;
-	public static inline var WIDE_MOVE_TO = 4;
-	public static inline var NO_OP = 0;
+	#if flash @:require(flash11) #end public var CUBIC_CURVE_TO = 6;
+	public var CURVE_TO = 3;
+	public var LINE_TO = 2;
+	public var MOVE_TO = 1;
+	public var NO_OP = 0;
+	public var WIDE_LINE_TO = 5;
+	public var WIDE_MOVE_TO = 4;
 	
 }

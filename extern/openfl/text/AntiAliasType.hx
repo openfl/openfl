@@ -10,8 +10,7 @@ package openfl.text;
 @:native("flash.text.AntiAliasType")
 #end
 
-
-@:fakeEnum(String) extern enum AntiAliasType {
+@:enum abstract AntiAliasType(String) from String to String {
 	
 	/**
 	 * Sets anti-aliasing to advanced anti-aliasing. Advanced anti-aliasing
@@ -22,7 +21,7 @@ package openfl.text;
 	 * in the TextField class. Use the syntax
 	 * <code>AntiAliasType.ADVANCED</code>.
 	 */
-	ADVANCED;
+	public var ADVANCED = "advanced";
 	
 	/**
 	 * Sets anti-aliasing to the anti-aliasing that is used in Flash Player 7 and
@@ -31,6 +30,6 @@ package openfl.text;
 	 * property in the TextField class. Use the syntax
 	 * <code>AntiAliasType.NORMAL</code>.
 	 */
-	NORMAL;
+	public var NORMAL = "normal";
 	
 }

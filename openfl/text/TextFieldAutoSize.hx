@@ -1,11 +1,11 @@
 package openfl.text;
 
 
-enum TextFieldAutoSize {
+@:enum abstract TextFieldAutoSize(String) from String to String {
 	
-	CENTER;
-	LEFT;
-	NONE;
-	RIGHT;
+	public var CENTER = "center";
+	public var LEFT = "left";
+	public var NONE = "none";
+	public var RIGHT = "right";
 	
 }

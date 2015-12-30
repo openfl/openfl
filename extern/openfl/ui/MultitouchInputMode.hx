@@ -12,16 +12,7 @@ package openfl.ui;
 @:native("flash.ui.MultitouchInputMode")
 #end
 
-
-@:fakeEnum(String) @:require(flash10_1) extern enum MultitouchInputMode {
-	
-	NONE;
-	
-	/**
-	 * Specifies that all user contact with a touch-enabled device is interpreted
-	 * as a type of mouse event.
-	 */
-	TOUCH_POINT;
+@:enum abstract MultitouchInputMode(String) from String to String {
 	
 	/**
 	 * Specifies that TransformGestureEvent, PressAndTapGestureEvent, and
@@ -29,6 +20,14 @@ package openfl.ui;
 	 * supported by the current environment, and other touch events(such as a
 	 * simple tap) are interpreted as mouse events.
 	 */
-	GESTURE;
+	public var GESTURE = "gesture";
+	
+	public var NONE = "none";
+	
+	/**
+	 * Specifies that all user contact with a touch-enabled device is interpreted
+	 * as a type of mouse event.
+	 */
+	public var TOUCH_POINT = "touchPoint";
 	
 }

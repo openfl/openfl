@@ -5,11 +5,10 @@ package openfl.geom;
 @:native("flash.geom.Orientation3D")
 #end
 
-
-@:fakeEnum(String) extern enum Orientation3D {
+@:enum abstract Orientation3D(String) from String to String {
 	
-	AXIS_ANGLE;
-	EULER_ANGLES;
-	QUATERNION;
+	public var AXIS_ANGLE = "axisAngle";
+	public var EULER_ANGLES = "eulerAngles";
+	public var QUATERNION = "quaternion";
 	
 }

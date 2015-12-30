@@ -14,25 +14,24 @@ package openfl.display;
 @:native("flash.display.JointStyle")
 #end
 
-
-@:fakeEnum(String) extern enum JointStyle {
+@:enum abstract JointStyle(String) from String to String {
 	
 	/**
 	 * Specifies mitered joints in the <code>joints</code> parameter of the
 	 * <code>openfl.display.Graphics.lineStyle()</code> method.
 	 */
-	MITER;
+	public var MITER = "miter";
 	
 	/**
 	 * Specifies round joints in the <code>joints</code> parameter of the
 	 * <code>openfl.display.Graphics.lineStyle()</code> method.
 	 */
-	ROUND;
+	public var ROUND = "round";
 	
 	/**
 	 * Specifies beveled joints in the <code>joints</code> parameter of the
 	 * <code>openfl.display.Graphics.lineStyle()</code> method.
 	 */
-	BEVEL;
+	public var BEVEL = "bevel";
 	
 }

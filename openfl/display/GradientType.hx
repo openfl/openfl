@@ -1,9 +1,9 @@
 package openfl.display;
 
 
-enum GradientType {
+@:enum abstract GradientType(String) from String to String {
 	
-	RADIAL;
-	LINEAR;
+	public var LINEAR = "linear";
+	public var RADIAL = "radial";
 	
 }

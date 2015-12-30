@@ -1,10 +1,10 @@
 package openfl.display;
 
 
-enum StageDisplayState {
+@:enum abstract StageDisplayState(String) from String to String {
 	
-	NORMAL;
-	FULL_SCREEN;
-	FULL_SCREEN_INTERACTIVE;
+	public var FULL_SCREEN = "fullScreen";
+	public var FULL_SCREEN_INTERACTIVE = "fullScreenInteractive";
+	public var NORMAL = "normal";
 	
 }

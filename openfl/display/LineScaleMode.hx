@@ -1,12 +1,12 @@
 package openfl.display; #if !openfl_legacy
 
 
-enum LineScaleMode {
+@:enum abstract LineScaleMode(String) from String to String {
 	
-	HORIZONTAL;
-	NONE;
-	NORMAL;
-	VERTICAL;
+	public var HORIZONTAL = "horizontal";
+	public var NONE = "none";
+	public var NORMAL = "normal";
+	public var VERTICAL = "vertical";
 	
 }
 

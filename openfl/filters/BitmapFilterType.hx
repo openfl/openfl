@@ -1,12 +1,10 @@
 package openfl.filters;
 
 
-class BitmapFilterType {
+@:enum abstract BitmapFilterType(String) from String to String {
 	
-	
-	public static var FULL = "full";
-	public static var INNER = "inner";
-	public static var OUTER = "outer";
-	
+	public var FULL = "full";
+	public var INNER = "inner";
+	public var OUTER = "outer";
 	
 }

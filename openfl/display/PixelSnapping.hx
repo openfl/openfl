@@ -1,10 +1,10 @@
 package openfl.display;
 
 
-enum PixelSnapping {
+@:enum abstract PixelSnapping(String) from String to String {
 	
-	NEVER;
-	AUTO;
-	ALWAYS;
+	public var ALWAYS = "always";
+	public var AUTO = "auto";
+	public var NEVER = "never";
 	
 }

@@ -1,11 +1,11 @@
 package openfl.display; #if !openfl_legacy
 
 
-enum JointStyle {
+@:enum abstract JointStyle(String) from String to String {
 	
-	MITER;
-	ROUND;
-	BEVEL;
+	public var MITER = "miter";
+	public var ROUND = "round";
+	public var BEVEL = "bevel";
 	
 }
 

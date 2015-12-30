@@ -10,33 +10,32 @@ package openfl.text;
 @:native("flash.text.TextFieldAutoSize")
 #end
 
-
-@:fakeEnum(String) extern enum TextFieldAutoSize {
+@:enum abstract TextFieldAutoSize(String) from String to String {
 	
 	/**
 	 * Specifies that the text is to be treated as center-justified text. Any
 	 * resizing of a single line of a text field is equally distributed to both
 	 * the right and left sides.
 	 */
-	CENTER;
+	public var CENTER = "center";
 	
 	/**
 	 * Specifies that the text is to be treated as left-justified text, meaning
 	 * that the left side of the text field remains fixed and any resizing of a
 	 * single line is on the right side.
 	 */
-	LEFT;
+	public var LEFT = "left";
 	
 	/**
 	 * Specifies that no resizing is to occur.
 	 */
-	NONE;
+	public var NONE = "none";
 	
 	/**
 	 * Specifies that the text is to be treated as right-justified text, meaning
 	 * that the right side of the text field remains fixed and any resizing of a
 	 * single line is on the left side.
 	 */
-	RIGHT;
+	public var RIGHT = "right";
 	
 }

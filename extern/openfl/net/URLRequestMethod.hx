@@ -1,50 +1,46 @@
 package openfl.net;
 
 
-#if (flash && !display)
-
-@:native("flash.net.URLRequestMethod")
-
-extern class URLRequestMethod {
-	
-	@:require(flash10_1) public static var DELETE:String;
-	public static var GET:String;
-	@:require(flash10_1) public static var HEAD:String;
-	@:require(flash10_1) public static var OPTIONS:String;
-	public static var POST:String;
-	@:require(flash10_1) public static var PUT:String;
-	
-}
-
-#else
-
-
 /**
  * The URLRequestMethod class provides values that specify whether the
  * URLRequest object should use the <code>POST</code> method or the
  * <code>GET</code> method when sending data to a server.
  */
+
+#if flash
+@:native("flash.net.URLRequestMethod")
+#end
+
 @:enum abstract URLRequestMethod(String) from String to String {
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>DELETE</code>.
 	 */
-	var DELETE = "DELETE";
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var DELETE = "DELETE";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>GET</code>.
 	 */
-	var GET = "GET";
+	public var GET = "GET";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>HEAD</code>.
 	 */
-	var HEAD = "HEAD";
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var HEAD = "HEAD";
 	
 	/**
 	 * Specifies that the URLRequest object is <code>OPTIONS</code>.
 	 */
-	var OPTIONS = "OPTIONS";
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var OPTIONS = "OPTIONS";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>POST</code>.
@@ -54,14 +50,14 @@ extern class URLRequestMethod {
 	 * that uses the POST method(one that has its <code>method</code> property
 	 * set to <code>URLRequestMethod.POST</code>) as using the GET method.</p>
 	 */
-	var POST = "POST";
+	public var POST = "POST";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>PUT</code>.
 	 */
-	var PUT = "PUT";
+	#if flash
+	@:require(flash10_1)
+	#end
+	public var PUT = "PUT";
 	
 }
-
-
-#end

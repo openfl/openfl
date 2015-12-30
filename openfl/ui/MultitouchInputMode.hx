@@ -1,10 +1,10 @@
 package openfl.ui;
 
 
-enum MultitouchInputMode {
+@:enum abstract MultitouchInputMode(String) from String to String {
 	
-	NONE;
-	TOUCH_POINT;
-	GESTURE;
+	public var GESTURE = "gesture";
+	public var NONE = "none";
+	public var TOUCH_POINT = "touchPoint";
 	
 }

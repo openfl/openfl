@@ -10,24 +10,21 @@ package openfl.filters;
 @:native("flash.filters.BitmapFilterType")
 #end
 
-
-@:fakeEnum(String) extern enum BitmapFilterType {
-	
+@:enum abstract BitmapFilterType(String) from String to String {
 	
 	/**
 	 * Defines the setting that applies a filter to the entire area of an object.
 	 */
-	FULL;
+	public var FULL = "full";
 	
 	/**
 	 * Defines the setting that applies a filter to the inner area of an object.
 	 */
-	INNER;
+	public var INNER = "inner";
 	
 	/**
 	 * Defines the setting that applies a filter to the outer area of an object.
 	 */
-	OUTER;
-	
+	public var OUTER = "outer";
 	
 }

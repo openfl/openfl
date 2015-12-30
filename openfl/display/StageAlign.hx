@@ -1,15 +1,15 @@
 package openfl.display;
 
 
-enum StageAlign {
+@:enum abstract StageAlign(String) from String to String {
 	
-	TOP_RIGHT;
-	TOP_LEFT;
-	TOP;
-	RIGHT;
-	LEFT;
-	BOTTOM_RIGHT;
-	BOTTOM_LEFT;
-	BOTTOM;
+	public var BOTTOM = "bottom";
+	public var BOTTOM_LEFT = "bottomLeft";
+	public var BOTTOM_RIGHT = "bottomRight";
+	public var LEFT = "left";
+	public var RIGHT = "right";
+	public var TOP = "top";
+	public var TOP_LEFT = "topLeft";
+	public var TOP_RIGHT = "topRight";
 	
 }

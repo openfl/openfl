@@ -1,9 +1,9 @@
 package openfl.net;
 
 
-@:fakeEnum(String) enum SharedObjectFlushStatus {
+@:enum abstract SharedObjectFlushStatus(String) from String to String {
 	
-	FLUSHED;
-	PENDING;
+	public var FLUSHED = "flushed";
+	public var PENDING = "pending";
 	
 }

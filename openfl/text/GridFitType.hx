@@ -1,10 +1,10 @@
 package openfl.text;
 
 
-enum GridFitType {
+@:enum abstract GridFitType(String) from String to String {
 	
-	NONE;
-	PIXEL;
-	SUBPIXEL;
+	public var NONE = "none";
+	public var PIXEL = "pixel";
+	public var SUBPIXEL = "subpixel";
 	
 }

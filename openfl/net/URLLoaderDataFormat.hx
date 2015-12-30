@@ -1,10 +1,10 @@
 package openfl.net;
 
 
-enum URLLoaderDataFormat {
+@:enum abstract URLLoaderDataFormat(String) from String to String {
 	
-	BINARY;
-	TEXT;
-	VARIABLES;
+	public var BINARY = "binary";
+	public var TEXT = "text";
+	public var VARIABLES = "variables";
 	
 }

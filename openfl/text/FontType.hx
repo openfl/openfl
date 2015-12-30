@@ -1,11 +1,11 @@
 package openfl.text; #if !openfl_legacy
 
 
-enum FontType {
+@:enum abstract FontType(String) from String to String {
 	
-	DEVICE;
-	EMBEDDED;
-	EMBEDDED_CFF;
+	public var DEVICE = "device";
+	public var EMBEDDED = "embedded";
+	public var EMBEDDED_CFF = "embeddedCFF";
 	
 }
 

@@ -10,17 +10,16 @@ package openfl.text;
 @:native("flash.text.TextFieldType")
 #end
 
-
-@:fakeEnum(String) extern enum TextFieldType {
+@:enum abstract TextFieldType(String) from String to String {
 	
 	/**
 	 * Used to specify a <code>dynamic</code> TextField.
 	 */
-	DYNAMIC;
+	public var DYNAMIC = "dynamic";
 	
 	/**
 	 * Used to specify an <code>input</code> TextField.
 	 */
-	INPUT;
+	public var INPUT = "input";
 	
 }

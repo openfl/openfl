@@ -5,11 +5,10 @@ package openfl.system;
 @:native("flash.system.TouchscreenType")
 #end
 
-
-@:fakeEnum(String) extern enum TouchscreenType {
+@:enum abstract TouchscreenType(String) from String to String {
 	
-	FINGER;
-	NONE;
-	STYLUS;
+	public var FINGER = "finger";
+	public var NONE = "none";
+	public var STYLUS = "stylus";
 	
 }

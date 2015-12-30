@@ -13,8 +13,7 @@ package openfl.display;
 @:native("flash.display.InterpolationMethod")
 #end
 
-
-@:fakeEnum(String) extern enum InterpolationMethod {
+@:enum abstract InterpolationMethod(String) from String to String {
 	
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
@@ -28,7 +27,7 @@ package openfl.display;
 	 * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
 	 * affect the appearance as follows: </p>
 	 */
-	RGB;
+	public var LINEAR_RGB = "linearRGB";
 	
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means
@@ -42,6 +41,6 @@ package openfl.display;
 	 * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
 	 * affect the appearance as follows: </p>
 	 */
-	LINEAR_RGB;
+	public var RGB = "rgb";
 	
 }

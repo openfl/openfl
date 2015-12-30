@@ -1,12 +1,12 @@
 package openfl.display; #if !openfl_legacy
 
 
-enum StageQuality {
+@:enum abstract StageQuality(String) from String to String {
 	
-	BEST;
-	HIGH;
-	MEDIUM;
-	LOW;
+	public var BEST = "best";
+	public var HIGH = "high";
+	public var LOW = "low";
+	public var MEDIUM = "medium";
 	
 }
 

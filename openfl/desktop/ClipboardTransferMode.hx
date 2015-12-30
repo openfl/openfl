@@ -1,12 +1,12 @@
 package openfl.desktop; #if !openfl_legacy
 
 
-enum ClipboardTransferMode {
+@:enum abstract ClipboardTransferMode(String) from String to String {
 	
-	CLONE_ONLY;
-	CLONE_PREFERRED;
-	ORIGINAL_ONLY;
-	ORIGINAL_PREFERRED;
+	public var CLONE_ONLY = "cloneOnly";
+	public var CLONE_PREFERRED = "clonePreferred";
+	public var ORIGINAL_ONLY = "originalOnly";
+	public var ORIGINAL_PREFERRED = "originalPreferred";
 	
 }
 
