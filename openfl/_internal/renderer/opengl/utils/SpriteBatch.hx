@@ -334,38 +334,22 @@ class SpriteBatch {
 					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
 				}
 				
-				if (useRGBOffset) {
-					/*
-					colorTransform.redMultiplier   = 1;
-					colorTransform.greenMultiplier = 1;
-					colorTransform.blueMultiplier  = 1;
-					colorTransform.alphaMultiplier = 1;
-					colorTransform.redOffset       = 255;
-					colorTransform.greenOffset     = 0;
-					colorTransform.blueOffset      = 0;
-					colorTransform.alphaOffset     = 0;
-					*/
-					colorTransform.redMultiplier   = 1;
-					colorTransform.greenMultiplier = 1;
-					colorTransform.blueMultiplier  = 1;
-					colorTransform.alphaMultiplier = 1;
-					colorTransform.redOffset       = tileData[iIndex + rgbOffsetIndex + 4];
-					colorTransform.greenOffset     = tileData[iIndex + rgbOffsetIndex + 5];
-					colorTransform.blueOffset      = tileData[iIndex + rgbOffsetIndex + 6];
-					colorTransform.alphaOffset     = tileData[iIndex + rgbOffsetIndex + 7];
-				} else {
-					var wct = object.__worldColorTransform;
-					colorTransform.redMultiplier   = wct.redMultiplier;
-					colorTransform.greenMultiplier = wct.greenMultiplier;
-					colorTransform.blueMultiplier  = wct.blueMultiplier;
-					colorTransform.alphaMultiplier = wct.alphaMultiplier;
-					colorTransform.redOffset       = wct.redOffset;
-					colorTransform.greenOffset     = wct.greenOffset;
-					colorTransform.blueOffset      = wct.blueOffset;
-					colorTransform.alphaOffset     = wct.alphaOffset;
-					//colorTransform = object.__worldColorTransform;
-				}
+				var wct = object.__worldColorTransform;
+				colorTransform.redMultiplier   = wct.redMultiplier;
+				colorTransform.greenMultiplier = wct.greenMultiplier;
+				colorTransform.blueMultiplier  = wct.blueMultiplier;
+				colorTransform.alphaMultiplier = wct.alphaMultiplier;
+				colorTransform.redOffset       = wct.redOffset;
+				colorTransform.greenOffset     = wct.greenOffset;
+				colorTransform.blueOffset      = wct.blueOffset;
+				colorTransform.alphaOffset     = wct.alphaOffset;
 				
+				if (useRGBOffset) {
+					colorTransform.redOffset   += tileData[iIndex + rgbOffsetIndex + 0];
+					colorTransform.greenOffset += tileData[iIndex + rgbOffsetIndex + 1];
+					colorTransform.blueOffset  += tileData[iIndex + rgbOffsetIndex + 2];
+					colorTransform.alphaOffset += tileData[iIndex + rgbOffsetIndex + 3];
+				}
 				
 				if (useScale) {
 					scale = tileData[iIndex + scaleIndex];
