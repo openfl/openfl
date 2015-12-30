@@ -477,6 +477,7 @@ import js.html.CanvasRenderingContext2D;
 		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
 		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
 		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
+		var useColorTransform = (flags & Tilesheet.TILE_TRANS_COLOR) > 0;
 		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
 		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
 		
@@ -492,7 +493,7 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		if (useTransform || useScale || useRotation || useRGB || useAlpha) {
+		if (useTransform || useScale || useRotation || useRGB || useAlpha || useColorTransform) {
 			
 			var scaleIndex = 0;
 			var rotationIndex = 0;
@@ -504,6 +505,7 @@ import js.html.CanvasRenderingContext2D;
 			if (useTransform) { transformIndex = numValues; numValues += 4; }
 			if (useRGB) { numValues += 3; }
 			if (useAlpha) { numValues++; }
+			if (useColorTransform) { numValues += 4; }
 			
 			var itemCount = Std.int (totalCount / numValues);
 			var index = 0;
