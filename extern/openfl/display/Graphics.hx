@@ -167,7 +167,7 @@ import openfl.Vector;
 	 *                            a <code>focalPointRatio</code> set to 0.75:
 	 * @throws ArgumentError If the <code>type</code> parameter is not valid.
 	 */
-	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
+	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
 	
 	#if flash
@@ -368,7 +368,7 @@ import openfl.Vector;
 	 *                       <code>ellipseHeight</code> parameters are not a
 	 *                       number(<code>Number.NaN</code>).
 	 */
-	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void;
+	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ?ellipseHeight:Null<Float>):Void;
 	
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
@@ -395,7 +395,7 @@ import openfl.Vector;
 	 *                parameter can be set to any value defined by the
 	 *                TriangleCulling class.
 	 */
-	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling, ?colors:Vector<Int>, blendMode:Int = 0):Void;
+	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling):Void;
 	
 	
 	/**
@@ -496,7 +496,7 @@ import openfl.Vector;
 	 *                            image shows a gradient with a
 	 *                            <code>focalPointRatio</code> of -0.75:
 	 */
-	public function lineGradientStyle (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
+	public function lineGradientStyle (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
 	
 	
 	/**
@@ -638,7 +638,7 @@ import openfl.Vector;
 	 *                     has a specific maximum angle for which the miter is
 	 *                     cut off. The following table lists some examples:</p>
 	 */
-	public function lineStyle (thickness:Null<Float> = null, color:Null<UInt> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Null<Float> = 3):Void;
+	public function lineStyle (thickness:Null<Float> = null, ?color:UInt, ?alpha:Float, ?pixelHinting:Bool, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Float = 3):Void;
 	
 	
 	/**

@@ -115,7 +115,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:Null<SpreadMethod> = null, interpolationMethod:Null<InterpolationMethod> = null, focalPointRatio:Null<Float> = null):Void {
+	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void {
 		
 		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		__hardware = false;
@@ -387,7 +387,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = null):Void {
+	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD):Void {
 		
 		var dataIndex = 0;
 		
@@ -448,14 +448,14 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float = -1):Void {
+	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float> = null):Void {
 		
 		if (width <= 0 || height <= 0) return;
 		
 		__inflateBounds (x - __strokePadding, y - __strokePadding);
 		__inflateBounds (x + width + __strokePadding, y + height + __strokePadding);
 		
-		__commands.drawRoundRect (x, y, width, height, rx, ry);
+		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 		
 		__hardware = false;
 		__dirty = true;
@@ -685,7 +685,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function drawTriangles (vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling = null, ?colors:Vector<Int>, blendMode:Int = 0):Void{
+	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
 		
 		var vlen = Std.int (vertices.length / 2);
 		
@@ -730,7 +730,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__inflateBounds (maxX, maxY);
-		__commands.drawTriangles(vertices, indices, uvtData, culling, colors, blendMode);
+		__commands.drawTriangles (vertices, indices, uvtData, culling);
 		
 		__dirty = true;
 		__visible = true;
@@ -752,14 +752,14 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Null<Float> = null):Void {
+	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void {
 		
 		__commands.lineGradientStyle (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 		
 	}
 	
 	
-	public function lineStyle (thickness:Null<Float> = null, color:Null<Int> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, scaleMode:LineScaleMode = null, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Null<Float> = null):Void {
+	public function lineStyle (thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void {
 		
 		if (thickness != null) {
 			

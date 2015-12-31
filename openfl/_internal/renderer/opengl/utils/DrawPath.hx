@@ -284,10 +284,10 @@ class PathBuiler {
 						var y = c.y;
 						var width = c.width;
 						var height = c.height;
-						var rx = c.rx;
-						var ry = c.ry;
+						var rx = c.ellipseWidth;
+						var ry = c.ellipseHeight;
 						
-						if (ry == -1) ry = rx;
+						if (ry == null) ry = rx;
 						
 						rx *= 0.5;
 						ry *= 0.5;
@@ -362,8 +362,8 @@ class PathBuiler {
 						var vertices = c.vertices;
 						var indices = c.indices;
 						var culling = c.culling;
-						var colors = c.colors;
-						var blendMode = c.blendMode;
+						//var colors = c.colors;
+						//var blendMode = c.blendMode;
 						
 						var isColor = switch (__fill) { case Color (_, _): true; case _: false; };
 						if (isColor && uvtData != null) {
@@ -386,7 +386,8 @@ class PathBuiler {
 								case _:
 							}
 						}
-						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
+						//__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
+						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, null, null);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
 					
