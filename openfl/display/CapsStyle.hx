@@ -7,7 +7,7 @@ package openfl.display; #if !openfl_legacy
 	public var ROUND = 1;
 	public var SQUARE = 2;
 	
-	@:from private static inline function fromString (value:String):CapsStyle {
+	@:from private static function fromString (value:String):CapsStyle {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

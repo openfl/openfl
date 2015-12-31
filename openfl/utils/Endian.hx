@@ -6,7 +6,7 @@ package openfl.utils;
 	public var BIG_ENDIAN = 0;
 	public var LITTLE_ENDIAN = 1;
 	
-	@:from private static inline function fromString (value:String):Endian {
+	@:from private static function fromString (value:String):Endian {
 		
 		return switch (value) {
 			
@@ -18,7 +18,7 @@ package openfl.utils;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

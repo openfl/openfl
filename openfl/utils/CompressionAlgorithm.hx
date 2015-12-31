@@ -8,7 +8,7 @@ package openfl.utils; #if !openfl_legacy
 	public var LZMA = 1;
 	public var ZLIB = 2;
 	
-	@:from private static inline function fromString (value:String):CompressionAlgorithm {
+	@:from private static function fromString (value:String):CompressionAlgorithm {
 		
 		return switch (value) {
 			
@@ -21,7 +21,7 @@ package openfl.utils; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

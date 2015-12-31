@@ -8,7 +8,7 @@ package openfl.desktop; #if !openfl_legacy
 	public var ORIGINAL_ONLY = 2;
 	public var ORIGINAL_PREFERRED = 3;
 	
-	@:from private static inline function fromString (value:String):ClipboardTransferMode {
+	@:from private static function fromString (value:String):ClipboardTransferMode {
 		
 		return switch (value) {
 			
@@ -22,7 +22,7 @@ package openfl.desktop; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

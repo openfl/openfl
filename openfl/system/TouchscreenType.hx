@@ -7,7 +7,7 @@ package openfl.system;
 	public var NONE = 1;
 	public var STYLUS = 2;
 	
-	@:from private static inline function fromString (value:String):TouchscreenType {
+	@:from private static function fromString (value:String):TouchscreenType {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.system;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

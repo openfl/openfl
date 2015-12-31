@@ -10,7 +10,7 @@ package openfl.text; #if !openfl_legacy
 	public var RIGHT = 4;
 	public var START = 5;
 	
-	@:from private static inline function fromString (value:String):TextFormatAlign {
+	@:from private static function fromString (value:String):TextFormatAlign {
 		
 		return switch (value) {
 			
@@ -26,7 +26,7 @@ package openfl.text; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

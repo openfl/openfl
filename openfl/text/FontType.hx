@@ -7,7 +7,7 @@ package openfl.text; #if !openfl_legacy
 	public var EMBEDDED = 1;
 	public var EMBEDDED_CFF = 2;
 	
-	@:from private static inline function fromString (value:String):FontType {
+	@:from private static function fromString (value:String):FontType {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.text; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

@@ -6,7 +6,7 @@ package openfl.display; #if !openfl_legacy
 	public var LINEAR_RGB = 0;
 	public var RGB = 1;
 	
-	@:from private static inline function fromString (value:String):InterpolationMethod {
+	@:from private static function fromString (value:String):InterpolationMethod {
 		
 		return switch (value) {
 			
@@ -18,7 +18,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

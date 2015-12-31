@@ -7,7 +7,7 @@ package openfl.desktop; #if !openfl_legacy
 	public var RICH_TEXT_FORMAT = 1;
 	public var TEXT_FORMAT = 2;
 	
-	@:from private static inline function fromString (value:String):ClipboardFormats {
+	@:from private static function fromString (value:String):ClipboardFormats {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.desktop; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

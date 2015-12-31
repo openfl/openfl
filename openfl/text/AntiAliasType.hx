@@ -6,7 +6,7 @@ package openfl.text;
 	public var ADVANCED = 0;
 	public var NORMAL = 1;
 	
-	@:from private static inline function fromString (value:String):AntiAliasType {
+	@:from private static function fromString (value:String):AntiAliasType {
 		
 		return switch (value) {
 			
@@ -18,7 +18,7 @@ package openfl.text;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

@@ -7,7 +7,7 @@ package openfl.text;
 	public var PIXEL = 1;
 	public var SUBPIXEL = 2;
 	
-	@:from private static inline function fromString (value:String):GridFitType {
+	@:from private static function fromString (value:String):GridFitType {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.text;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

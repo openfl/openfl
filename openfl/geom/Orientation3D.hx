@@ -7,7 +7,7 @@ package openfl.geom;
 	public var EULER_ANGLES = 1;
 	public var QUATERNION = 2;
 	
-	@:from private static inline function fromString (value:String):Orientation3D {
+	@:from private static function fromString (value:String):Orientation3D {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.geom;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

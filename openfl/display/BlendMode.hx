@@ -19,7 +19,7 @@ package openfl.display; #if !openfl_legacy
 	public var SHADER = 13;
 	public var SUBTRACT = 14;
 	
-	@:from private static inline function fromString (value:String):BlendMode {
+	@:from private static function fromString (value:String):BlendMode {
 		
 		return switch (value) {
 			
@@ -44,7 +44,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

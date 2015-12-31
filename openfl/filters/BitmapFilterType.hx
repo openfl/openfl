@@ -7,7 +7,7 @@ package openfl.filters;
 	public var INNER = 1;
 	public var OUTER = 2;
 	
-	@:from private static inline function fromString (value:String):BitmapFilterType {
+	@:from private static function fromString (value:String):BitmapFilterType {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.filters;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

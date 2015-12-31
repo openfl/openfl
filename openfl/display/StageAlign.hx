@@ -12,7 +12,7 @@ package openfl.display; #if !openfl_legacy
 	public var TOP_LEFT = 6;
 	public var TOP_RIGHT = 7;
 	
-	@:from private static inline function fromString (value:String):StageAlign {
+	@:from private static function fromString (value:String):StageAlign {
 		
 		return switch (value) {
 			
@@ -30,7 +30,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

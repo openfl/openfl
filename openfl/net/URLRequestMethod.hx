@@ -10,7 +10,7 @@ package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 	public var POST = 4;
 	public var PUT = 5;
 	
-	@:from private static inline function fromString (value:String):URLRequestMethod {
+	@:from private static function fromString (value:String):URLRequestMethod {
 		
 		return switch (value) {
 			
@@ -26,7 +26,7 @@ package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

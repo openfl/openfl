@@ -7,7 +7,7 @@ package openfl.ui;
 	public var NONE = 1;
 	public var TOUCH_POINT = 2;
 	
-	@:from private static inline function fromString (value:String):MultitouchInputMode {
+	@:from private static function fromString (value:String):MultitouchInputMode {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.ui;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

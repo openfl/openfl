@@ -8,7 +8,7 @@ package openfl.text; #if !openfl_legacy
 	public var ITALIC = 2;
 	public var REGULAR = 3;
 	
-	@:from private static inline function fromString (value:String):FontStyle {
+	@:from private static function fromString (value:String):FontStyle {
 		
 		return switch (value) {
 			
@@ -22,7 +22,7 @@ package openfl.text; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

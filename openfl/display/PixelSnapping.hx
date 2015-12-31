@@ -7,7 +7,7 @@ package openfl.display; #if !openfl_legacy
 	public var AUTO = 1;
 	public var NEVER = 2;
 	
-	@:from private static inline function fromString (value:String):PixelSnapping {
+	@:from private static function fromString (value:String):PixelSnapping {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

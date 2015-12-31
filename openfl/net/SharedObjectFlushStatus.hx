@@ -6,7 +6,7 @@ package openfl.net;
 	public var FLUSHED = 0;
 	public var PENDING = 1;
 	
-	@:from private static inline function fromString (value:String):SharedObjectFlushStatus {
+	@:from private static function fromString (value:String):SharedObjectFlushStatus {
 		
 		return switch (value) {
 			
@@ -18,7 +18,7 @@ package openfl.net;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

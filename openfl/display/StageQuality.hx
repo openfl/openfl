@@ -8,7 +8,7 @@ package openfl.display; #if !openfl_legacy
 	public var LOW = 2;
 	public var MEDIUM = 3;
 	
-	@:from private static inline function fromString (value:String):StageQuality {
+	@:from private static function fromString (value:String):StageQuality {
 		
 		return switch (value) {
 			
@@ -22,7 +22,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

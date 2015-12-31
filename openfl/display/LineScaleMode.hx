@@ -8,7 +8,7 @@ package openfl.display; #if !openfl_legacy
 	public var NORMAL = 2;
 	public var VERTICAL = 3;
 	
-	@:from private static inline function fromString (value:String):LineScaleMode {
+	@:from private static function fromString (value:String):LineScaleMode {
 		
 		return switch (value) {
 			
@@ -22,7 +22,7 @@ package openfl.display; #if !openfl_legacy
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			

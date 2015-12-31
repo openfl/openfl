@@ -7,7 +7,7 @@ package openfl.net;
 	public var TEXT = 1;
 	public var VARIABLES = 2;
 	
-	@:from private static inline function fromString (value:String):URLLoaderDataFormat {
+	@:from private static function fromString (value:String):URLLoaderDataFormat {
 		
 		return switch (value) {
 			
@@ -20,7 +20,7 @@ package openfl.net;
 		
 	}
 	
-	@:to private static inline function toString (value:Int):String {
+	@:to private static function toString (value:Int):String {
 		
 		return switch (value) {
 			
