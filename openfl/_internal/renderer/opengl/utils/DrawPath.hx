@@ -330,8 +330,8 @@ class PathBuiler {
 						
 						graphicDataPop ();
 						
-						__line.color = c.color == null ? 0 : c.color;
-						__line.alpha = c.alpha == null ? 1 : c.alpha;
+						__line.color = c.color;
+						__line.alpha = c.alpha;
 						__line.scaleMode = c.scaleMode;
 						__line.caps = c.caps;
 						__line.joints = c.joints;
@@ -387,7 +387,7 @@ class PathBuiler {
 							}
 						}
 						//__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode);
-						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, null, null);
+						__currentPath.type = GraphicType.DrawTriangles (vertices, indices, uvtData, culling, null, 0);
 						__currentPath.isRemovable = false;
 						__drawPaths.push (__currentPath);
 					
