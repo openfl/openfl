@@ -1,7 +1,7 @@
 package openfl.text;
 
 
-@:enum abstract AntiAliasType(Int) {
+@:enum abstract AntiAliasType(Null<Int>) {
 	
 	public var ADVANCED = 0;
 	public var NORMAL = 1;
@@ -11,7 +11,8 @@ package openfl.text;
 		return switch (value) {
 			
 			case "advanced": ADVANCED;
-			default: return NORMAL;
+			case "normal": NORMAL;
+			default: null;
 			
 		}
 		
@@ -22,7 +23,8 @@ package openfl.text;
 		return switch (value) {
 			
 			case AntiAliasType.ADVANCED: "advanced";
-			default: "normal";
+			case AntiAliasType.NORMAL: "normal";
+			default: null;
 			
 		}
 		

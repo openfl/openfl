@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract StageQuality(Int) {
+@:enum abstract StageQuality(Null<Int>) {
 	
 	public var BEST = 0;
 	public var HIGH = 1;
@@ -13,9 +13,10 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case "best": BEST;
+			case "high": HIGH;
 			case "low": LOW;
 			case "medium": MEDIUM;
-			default: return HIGH;
+			default: null;
 			
 		}
 		
@@ -26,9 +27,10 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case StageQuality.BEST: "best";
+			case StageQuality.HIGH: "high";
 			case StageQuality.LOW: "low";
 			case StageQuality.MEDIUM: "medium";
-			default: "high";
+			default: null;
 			
 		}
 		

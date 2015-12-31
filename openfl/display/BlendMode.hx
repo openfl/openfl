@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract BlendMode(Int) {
+@:enum abstract BlendMode(Null<Int>) {
 	
 	public var ADD = 0;
 	public var ALPHA = 1;
@@ -33,11 +33,12 @@ package openfl.display; #if !openfl_legacy
 			case "layer": LAYER;
 			case "lighten": LIGHTEN;
 			case "multiply": MULTIPLY;
+			case "normal": NORMAL;
 			case "overlay": OVERLAY;
 			case "screen": SCREEN;
 			case "shader": SHADER;
 			case "subtract": SUBTRACT;
-			default: return NORMAL;
+			default: null;
 			
 		}
 		
@@ -57,11 +58,12 @@ package openfl.display; #if !openfl_legacy
 			case BlendMode.LAYER: "layer";
 			case BlendMode.LIGHTEN: "lighten";
 			case BlendMode.MULTIPLY: "multiply";
+			case BlendMode.NORMAL: "normal";
 			case BlendMode.OVERLAY: "overlay";
 			case BlendMode.SCREEN: "screen";
 			case BlendMode.SHADER: "shader";
 			case BlendMode.SUBTRACT: "subtract";
-			default: "normal";
+			default: null;
 			
 		}
 		

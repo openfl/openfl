@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract PixelSnapping(Int) {
+@:enum abstract PixelSnapping(Null<Int>) {
 	
 	public var ALWAYS = 0;
 	public var AUTO = 1;
@@ -12,8 +12,9 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case "always": ALWAYS;
+			case "auto": AUTO;
 			case "never": NEVER;
-			default: return AUTO;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case PixelSnapping.ALWAYS: "always";
+			case PixelSnapping.AUTO: "auto";
 			case PixelSnapping.NEVER: "never";
-			default: "auto";
+			default: null;
 			
 		}
 		

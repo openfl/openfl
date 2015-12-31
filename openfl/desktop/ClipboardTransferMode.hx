@@ -1,7 +1,7 @@
 package openfl.desktop; #if !openfl_legacy
 
 
-@:enum abstract ClipboardTransferMode(Int) {
+@:enum abstract ClipboardTransferMode(Null<Int>) {
 	
 	public var CLONE_ONLY = 0;
 	public var CLONE_PREFERRED = 1;
@@ -15,7 +15,8 @@ package openfl.desktop; #if !openfl_legacy
 			case "cloneOnly": CLONE_ONLY;
 			case "clonePreferred": CLONE_PREFERRED;
 			case "originalOnly": ORIGINAL_ONLY;
-			default: return ORIGINAL_PREFERRED;
+			case "originalPreferred": ORIGINAL_PREFERRED;
+			default: null;
 			
 		}
 		
@@ -28,7 +29,8 @@ package openfl.desktop; #if !openfl_legacy
 			case ClipboardTransferMode.CLONE_ONLY: "cloneOnly";
 			case ClipboardTransferMode.CLONE_PREFERRED: "clonePreferred";
 			case ClipboardTransferMode.ORIGINAL_ONLY: "originalOnly";
-			default: "originalPreferred";
+			case ClipboardTransferMode.ORIGINAL_PREFERRED: "originalPreferred";
+			default: null;
 			
 		}
 		

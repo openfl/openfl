@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract InterpolationMethod(Int) {
+@:enum abstract InterpolationMethod(Null<Int>) {
 	
 	public var LINEAR_RGB = 0;
 	public var RGB = 1;
@@ -11,7 +11,8 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case "linearRGB": LINEAR_RGB;
-			default: return RGB;
+			case "rgb": RGB;
+			default: null;
 			
 		}
 		
@@ -22,7 +23,8 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case InterpolationMethod.LINEAR_RGB: "linearRGB";
-			default: "rgb";
+			case InterpolationMethod.RGB: "rgb";
+			default: null;
 			
 		}
 		

@@ -1,7 +1,7 @@
 package openfl.text;
 
 
-@:enum abstract GridFitType(Int) {
+@:enum abstract GridFitType(Null<Int>) {
 	
 	public var NONE = 0;
 	public var PIXEL = 1;
@@ -12,8 +12,9 @@ package openfl.text;
 		return switch (value) {
 			
 			case "none": NONE;
+			case "pixel": PIXEL;
 			case "subpixel": SUBPIXEL;
-			default: return PIXEL;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.text;
 		return switch (value) {
 			
 			case GridFitType.NONE: "none";
+			case GridFitType.PIXEL: "pixel";
 			case GridFitType.SUBPIXEL: "subpixel";
-			default: "pixel";
+			default: null;
 			
 		}
 		

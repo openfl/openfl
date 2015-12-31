@@ -1,7 +1,7 @@
 package openfl.geom;
 
 
-@:enum abstract Orientation3D(Int) {
+@:enum abstract Orientation3D(Null<Int>) {
 	
 	public var AXIS_ANGLE = 0;
 	public var EULER_ANGLES = 1;
@@ -12,8 +12,9 @@ package openfl.geom;
 		return switch (value) {
 			
 			case "axisAngle": AXIS_ANGLE;
+			case "eulerAngles": EULER_ANGLES;
 			case "quaternion": QUATERNION;
-			default: return EULER_ANGLES;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.geom;
 		return switch (value) {
 			
 			case Orientation3D.AXIS_ANGLE: "axisAngle";
+			case Orientation3D.EULER_ANGLES: "eulerAngles";
 			case Orientation3D.QUATERNION: "quaternion";
-			default: "eulerAngles";
+			default: null;
 			
 		}
 		

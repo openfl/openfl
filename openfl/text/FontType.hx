@@ -1,7 +1,7 @@
 package openfl.text; #if !openfl_legacy
 
 
-@:enum abstract FontType(Int) {
+@:enum abstract FontType(Null<Int>) {
 	
 	public var DEVICE = 0;
 	public var EMBEDDED = 1;
@@ -11,9 +11,10 @@ package openfl.text; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case "device": DEVICE;
 			case "embedded": EMBEDDED;
 			case "embeddedCFF": EMBEDDED_CFF;
-			default: return DEVICE;
+			default: null;
 			
 		}
 		
@@ -23,9 +24,10 @@ package openfl.text; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case FontType.DEVICE: "device";
 			case FontType.EMBEDDED: "embedded";
 			case FontType.EMBEDDED_CFF: "embeddedCFF";
-			default: "device";
+			default: null;
 			
 		}
 		

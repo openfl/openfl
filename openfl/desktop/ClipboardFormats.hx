@@ -1,7 +1,7 @@
 package openfl.desktop; #if !openfl_legacy
 
 
-@:enum abstract ClipboardFormats(Int) {
+@:enum abstract ClipboardFormats(Null<Int>) {
 	
 	public var HTML_FORMAT = 0;
 	public var RICH_TEXT_FORMAT = 1;
@@ -13,7 +13,8 @@ package openfl.desktop; #if !openfl_legacy
 			
 			case "air:html": HTML_FORMAT;
 			case "air:rtf": RICH_TEXT_FORMAT;
-			default: return TEXT_FORMAT;
+			case "air:text": TEXT_FORMAT;
+			default: null;
 			
 		}
 		
@@ -25,7 +26,8 @@ package openfl.desktop; #if !openfl_legacy
 			
 			case ClipboardFormats.HTML_FORMAT: "air:html";
 			case ClipboardFormats.RICH_TEXT_FORMAT: "air:rtf";
-			default: "air:text";
+			case ClipboardFormats.TEXT_FORMAT: "air:text";
+			default: null;
 			
 		}
 		

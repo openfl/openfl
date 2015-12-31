@@ -1,7 +1,7 @@
 package openfl.net;
 
 
-@:enum abstract URLLoaderDataFormat(Int) {
+@:enum abstract URLLoaderDataFormat(Null<Int>) {
 	
 	public var BINARY = 0;
 	public var TEXT = 1;
@@ -12,8 +12,9 @@ package openfl.net;
 		return switch (value) {
 			
 			case "binary": BINARY;
+			case "text": TEXT;
 			case "variables": VARIABLES;
-			default: return TEXT;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.net;
 		return switch (value) {
 			
 			case URLLoaderDataFormat.BINARY: "binary";
+			case URLLoaderDataFormat.TEXT: "text";
 			case URLLoaderDataFormat.VARIABLES: "variables";
-			default: "text";
+			default: null;
 			
 		}
 		

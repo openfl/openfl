@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract CapsStyle(Int) {
+@:enum abstract CapsStyle(Null<Int>) {
 	
 	public var NONE = 0;
 	public var ROUND = 1;
@@ -11,9 +11,10 @@ package openfl.display; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case "none": NONE;
 			case "round": ROUND;
 			case "square": SQUARE;
-			default: return NONE;
+			default: null;
 			
 		}
 		
@@ -23,9 +24,10 @@ package openfl.display; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case CapsStyle.NONE: "none";
 			case CapsStyle.ROUND: "round";
 			case CapsStyle.SQUARE: "square";
-			default: "none";
+			default: null;
 			
 		}
 		

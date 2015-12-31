@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract StageAlign(Int) {
+@:enum abstract StageAlign(Null<Int>) {
 	
 	public var BOTTOM = 0;
 	public var BOTTOM_LEFT = 1;
@@ -22,8 +22,9 @@ package openfl.display; #if !openfl_legacy
 			case "left": LEFT;
 			case "right": RIGHT;
 			case "top": TOP;
+			case "topLeft": TOP_LEFT;
 			case "topRight": TOP_RIGHT;
-			default: return TOP_LEFT;
+			default: null;
 			
 		}
 		
@@ -39,8 +40,9 @@ package openfl.display; #if !openfl_legacy
 			case StageAlign.LEFT: "left";
 			case StageAlign.RIGHT: "right";
 			case StageAlign.TOP: "top";
+			case StageAlign.TOP_LEFT: "topLeft";
 			case StageAlign.TOP_RIGHT: "topRight";
-			default: "topLeft";
+			default: null;
 			
 		}
 		

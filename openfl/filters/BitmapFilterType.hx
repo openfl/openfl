@@ -1,7 +1,7 @@
 package openfl.filters;
 
 
-@:enum abstract BitmapFilterType(Int) {
+@:enum abstract BitmapFilterType(Null<Int>) {
 	
 	public var FULL = 0;
 	public var INNER = 1;
@@ -12,8 +12,9 @@ package openfl.filters;
 		return switch (value) {
 			
 			case "full": FULL;
+			case "inner": INNER;
 			case "outer": OUTER;
-			default: return INNER;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.filters;
 		return switch (value) {
 			
 			case BitmapFilterType.FULL: "full";
+			case BitmapFilterType.INNER: "inner";
 			case BitmapFilterType.OUTER: "outer";
-			default: "inner";
+			default: null;
 			
 		}
 		

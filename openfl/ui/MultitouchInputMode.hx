@@ -1,7 +1,7 @@
 package openfl.ui;
 
 
-@:enum abstract MultitouchInputMode(Int) {
+@:enum abstract MultitouchInputMode(Null<Int>) {
 	
 	public var GESTURE = 0;
 	public var NONE = 1;
@@ -12,8 +12,9 @@ package openfl.ui;
 		return switch (value) {
 			
 			case "gesture": GESTURE;
+			case "none": NONE;
 			case "touchPoint": TOUCH_POINT;
-			default: return NONE;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.ui;
 		return switch (value) {
 			
 			case MultitouchInputMode.GESTURE: "gesture";
+			case MultitouchInputMode.NONE: "none";
 			case MultitouchInputMode.TOUCH_POINT: "touchPoint";
-			default: "none";
+			default: null;
 			
 		}
 		

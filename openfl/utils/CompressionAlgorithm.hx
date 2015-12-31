@@ -1,7 +1,7 @@
 package openfl.utils; #if !openfl_legacy
 
 
-@:enum abstract CompressionAlgorithm(Int) {
+@:enum abstract CompressionAlgorithm(Null<Int>) {
 	
 	public var DEFLATE = 0;
 	//GZIP;
@@ -12,9 +12,10 @@ package openfl.utils; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case "deflate": DEFLATE;
 			case "lzma": LZMA;
 			case "zlib": ZLIB;
-			default: return DEFLATE;
+			default: null;
 			
 		}
 		
@@ -24,9 +25,10 @@ package openfl.utils; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case CompressionAlgorithm.DEFLATE: "deflate";
 			case CompressionAlgorithm.LZMA: "lzma";
 			case CompressionAlgorithm.ZLIB: "zlib";
-			default: "deflate";
+			default: null;
 			
 		}
 		

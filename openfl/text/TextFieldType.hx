@@ -1,7 +1,7 @@
 package openfl.text;
 
 
-@:enum abstract TextFieldType(Int) {
+@:enum abstract TextFieldType(Null<Int>) {
 	
 	public var DYNAMIC = 0;
 	public var INPUT = 1;
@@ -10,8 +10,9 @@ package openfl.text;
 		
 		return switch (value) {
 			
+			case "dynamic": DYNAMIC;
 			case "input": INPUT;
-			default: return DYNAMIC;
+			default: null;
 			
 		}
 		
@@ -21,8 +22,9 @@ package openfl.text;
 		
 		return switch (value) {
 			
+			case TextFieldType.DYNAMIC: "dynamic";
 			case TextFieldType.INPUT: "input";
-			default: "dynamic";
+			default: null;
 			
 		}
 		

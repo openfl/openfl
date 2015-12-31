@@ -1,7 +1,7 @@
 package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 
 
-@:enum abstract URLRequestMethod(Int) {
+@:enum abstract URLRequestMethod(Null<Int>) {
 	
 	public var DELETE = 0;
 	public var GET = 1;
@@ -15,11 +15,12 @@ package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 		return switch (value) {
 			
 			case "DELETE": DELETE;
+			case "GET": GET;
 			case "HEAD": HEAD;
 			case "OPTIONS": OPTIONS;
 			case "POST": POST;
 			case "PUT": PUT;
-			default: return GET;
+			default: null;
 			
 		}
 		
@@ -30,11 +31,12 @@ package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 		return switch (value) {
 			
 			case URLRequestMethod.DELETE: "DELETE";
+			case URLRequestMethod.GET: "GET";
 			case URLRequestMethod.HEAD: "HEAD";
 			case URLRequestMethod.OPTIONS: "OPTIONS";
 			case URLRequestMethod.POST: "POST";
 			case URLRequestMethod.PUT: "PUT";
-			default: "GET";
+			default: null;
 			
 		}
 		

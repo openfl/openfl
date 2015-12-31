@@ -1,7 +1,7 @@
 package openfl.text; #if !openfl_legacy
 
 
-@:enum abstract TextFormatAlign(Int) {
+@:enum abstract TextFormatAlign(Null<Int>) {
 	
 	public var CENTER = 0;
 	public var END = 1;
@@ -17,9 +17,10 @@ package openfl.text; #if !openfl_legacy
 			case "center": CENTER;
 			case "end": END;
 			case "justify": JUSTIFY;
+			case "left": LEFT;
 			case "right": RIGHT;
 			case "start": START;
-			default: return LEFT;
+			default: null;
 			
 		}
 		
@@ -32,9 +33,10 @@ package openfl.text; #if !openfl_legacy
 			case TextFormatAlign.CENTER: "center";
 			case TextFormatAlign.END: "end";
 			case TextFormatAlign.JUSTIFY: "justify";
+			case TextFormatAlign.LEFT: "left";
 			case TextFormatAlign.RIGHT: "right";
 			case TextFormatAlign.START: "start";
-			default: "left";
+			default: null;
 			
 		}
 		

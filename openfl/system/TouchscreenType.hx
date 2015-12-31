@@ -1,7 +1,7 @@
 package openfl.system;
 
 
-@:enum abstract TouchscreenType(Int) {
+@:enum abstract TouchscreenType(Null<Int>) {
 	
 	public var FINGER = 0;
 	public var NONE = 1;
@@ -12,8 +12,9 @@ package openfl.system;
 		return switch (value) {
 			
 			case "finger": FINGER;
+			case "none": NONE;
 			case "stylus": STYLUS;
-			default: return NONE;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.system;
 		return switch (value) {
 			
 			case TouchscreenType.FINGER: "finger";
+			case TouchscreenType.NONE: "none";
 			case TouchscreenType.STYLUS: "stylus";
-			default: "none";
+			default: null;
 			
 		}
 		

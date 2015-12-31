@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-@:enum abstract Endian(Int) {
+@:enum abstract Endian(Null<Int>) {
 	
 	public var BIG_ENDIAN = 0;
 	public var LITTLE_ENDIAN = 1;
@@ -10,8 +10,9 @@ package openfl.utils;
 		
 		return switch (value) {
 			
+			case "bigEndian": BIG_ENDIAN;
 			case "littleEndian": LITTLE_ENDIAN;
-			default: return BIG_ENDIAN;
+			default: null;
 			
 		}
 		
@@ -21,8 +22,9 @@ package openfl.utils;
 		
 		return switch (value) {
 			
+			case Endian.BIG_ENDIAN: "bigEndian";
 			case Endian.LITTLE_ENDIAN: "littleEndian";
-			default: "bigEndian";
+			default: null;
 			
 		}
 		

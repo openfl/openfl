@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract JointStyle(Int) {
+@:enum abstract JointStyle(Null<Int>) {
 	
 	public var BEVEL = 0;
 	public var MITER = 1;
@@ -13,7 +13,8 @@ package openfl.display; #if !openfl_legacy
 			
 			case "bevel": BEVEL;
 			case "miter": MITER;
-			default: return ROUND;
+			case "round": ROUND;
+			default: null;
 			
 		}
 		
@@ -25,7 +26,8 @@ package openfl.display; #if !openfl_legacy
 			
 			case JointStyle.BEVEL: "bevel";
 			case JointStyle.MITER: "miter";
-			default: "round";
+			case JointStyle.ROUND: "round";
+			default: null;
 			
 		}
 		

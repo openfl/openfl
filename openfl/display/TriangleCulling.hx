@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract TriangleCulling(Int) {
+@:enum abstract TriangleCulling(Null<Int>) {
 	
 	public var NEGATIVE = 0;
 	public var NONE = 1;
@@ -12,8 +12,9 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case "negative": NEGATIVE;
+			case "none": NONE;
 			case "positive": POSITIVE;
-			default: return NONE;
+			default: null;
 			
 		}
 		
@@ -24,8 +25,9 @@ package openfl.display; #if !openfl_legacy
 		return switch (value) {
 			
 			case TriangleCulling.NEGATIVE: "negative";
+			case TriangleCulling.NONE: "none";
 			case TriangleCulling.POSITIVE: "positive";
-			default: "none";
+			default: null;
 			
 		}
 		

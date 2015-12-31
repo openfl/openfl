@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract GradientType(Int) {
+@:enum abstract GradientType(Null<Int>) {
 	
 	public var LINEAR = 0;
 	public var RADIAL = 1;
@@ -10,8 +10,9 @@ package openfl.display; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case "linear": LINEAR;
 			case "radial": RADIAL;
-			default: return LINEAR;
+			default: null;
 			
 		}
 		
@@ -21,8 +22,9 @@ package openfl.display; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case GradientType.LINEAR: "linear";
 			case GradientType.RADIAL: "radial";
-			default: "linear";
+			default: null;
 			
 		}
 		

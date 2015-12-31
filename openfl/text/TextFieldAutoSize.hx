@@ -1,7 +1,7 @@
 package openfl.text; #if !openfl_legacy
 
 
-@:enum abstract TextFieldAutoSize(Int) {
+@:enum abstract TextFieldAutoSize(Null<Int>) {
 	
 	public var CENTER = 0;
 	public var LEFT = 1;
@@ -14,8 +14,9 @@ package openfl.text; #if !openfl_legacy
 			
 			case "center": CENTER;
 			case "left": LEFT;
+			case "none": NONE;
 			case "right": RIGHT;
-			default: return NONE;
+			default: null;
 			
 		}
 		
@@ -27,8 +28,9 @@ package openfl.text; #if !openfl_legacy
 			
 			case TextFieldAutoSize.CENTER: "center";
 			case TextFieldAutoSize.LEFT: "left";
+			case TextFieldAutoSize.NONE: "none";
 			case TextFieldAutoSize.RIGHT: "right";
-			default: "none";
+			default: null;
 			
 		}
 		

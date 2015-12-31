@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract LineScaleMode(Int) {
+@:enum abstract LineScaleMode(Null<Int>) {
 	
 	public var HORIZONTAL = 0;
 	public var NONE = 1;
@@ -14,8 +14,9 @@ package openfl.display; #if !openfl_legacy
 			
 			case "horizontal": HORIZONTAL;
 			case "none": NONE;
+			case "normal": NORMAL;
 			case "vertical": VERTICAL;
-			default: return NORMAL;
+			default: null;
 			
 		}
 		
@@ -27,8 +28,9 @@ package openfl.display; #if !openfl_legacy
 			
 			case LineScaleMode.HORIZONTAL: "horizontal";
 			case LineScaleMode.NONE: "none";
+			case LineScaleMode.NORMAL: "normal";
 			case LineScaleMode.VERTICAL: "vertical";
-			default: "normal";
+			default: null;
 			
 		}
 		

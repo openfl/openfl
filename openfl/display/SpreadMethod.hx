@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract SpreadMethod(Int) {
+@:enum abstract SpreadMethod(Null<Int>) {
 	
 	public var PAD = 0;
 	public var REFLECT = 1;
@@ -11,9 +11,10 @@ package openfl.display; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case "pad": PAD;
 			case "reflect": REFLECT;
 			case "repeat": REPEAT;
-			default: return PAD;
+			default: null;
 			
 		}
 		
@@ -23,9 +24,10 @@ package openfl.display; #if !openfl_legacy
 		
 		return switch (value) {
 			
+			case SpreadMethod.PAD: "pad";
 			case SpreadMethod.REFLECT: "reflect";
 			case SpreadMethod.REPEAT: "repeat";
-			default: "pad";
+			default: null;
 			
 		}
 		

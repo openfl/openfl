@@ -1,7 +1,7 @@
 package openfl.text; #if !openfl_legacy
 
 
-@:enum abstract FontStyle(Int) {
+@:enum abstract FontStyle(Null<Int>) {
 	
 	public var BOLD = 0;
 	public var BOLD_ITALIC = 1;
@@ -15,7 +15,8 @@ package openfl.text; #if !openfl_legacy
 			case "bold": BOLD;
 			case "boldItalic": BOLD_ITALIC;
 			case "italic": ITALIC;
-			default: return REGULAR;
+			case "regular": REGULAR;
+			default: null;
 			
 		}
 		
@@ -28,7 +29,8 @@ package openfl.text; #if !openfl_legacy
 			case FontStyle.BOLD: "bold";
 			case FontStyle.BOLD_ITALIC: "boldItalic";
 			case FontStyle.ITALIC: "italic";
-			default: "regular";
+			case FontStyle.REGULAR: "regular";
+			default: null;
 			
 		}
 		

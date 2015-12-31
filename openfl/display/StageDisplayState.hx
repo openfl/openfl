@@ -1,7 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 
-@:enum abstract StageDisplayState(Int) {
+@:enum abstract StageDisplayState(Null<Int>) {
 	
 	public var FULL_SCREEN = 0;
 	public var FULL_SCREEN_INTERACTIVE = 1;
@@ -13,7 +13,8 @@ package openfl.display; #if !openfl_legacy
 			
 			case "fullScreen": FULL_SCREEN;
 			case "fullScreenInteractive": FULL_SCREEN_INTERACTIVE;
-			default: return NORMAL;
+			case "normal": NORMAL;
+			default: null;
 			
 		}
 		
@@ -25,7 +26,8 @@ package openfl.display; #if !openfl_legacy
 			
 			case StageDisplayState.FULL_SCREEN: "fullScreen";
 			case StageDisplayState.FULL_SCREEN_INTERACTIVE: "fullScreenInteractive";
-			default: "normal";
+			case StageDisplayState.NORMAL: "normal";
+			default: null;
 			
 		}
 		
