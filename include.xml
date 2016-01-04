@@ -34,7 +34,7 @@
 	
 	<section if="${target}-backend" unless="no-custom-backend">
 		
-		<set name="target-backend" value="${target}-backend}" />
+		<set name="target-backend" value="${target}-backend" />
 		<set name="custom-backend" value="$${target-backend}" />
 		
 	</section>
