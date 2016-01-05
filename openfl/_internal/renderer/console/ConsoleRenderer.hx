@@ -770,12 +770,12 @@ class ConsoleRenderer extends AbstractRenderer {
 					hasStroke = true;
 
 					lineWidth = cmd.thickness;
-					lineColor = cmd.color == null ? 0 : cmd.color;
-					lineAlpha = cmd.alpha == null ? 1 : cmd.alpha;
+					lineColor = cmd.color;
+					lineAlpha = cmd.alpha;
 					lineScaleMode = cmd.scaleMode;
 					lineCaps = cmd.caps;
 					lineJoints = cmd.joints;
-					lineMiter = cmd.miterLimit == null ? 3 : cmd.miterLimit;
+					lineMiter = cmd.miterLimit;
 					// TODO(james4k): pixelHinting
 					
 					
@@ -874,8 +874,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with lineTo/curveTo calls
 
-					var rx = cmd.rx;
-					var ry = cmd.ry;
+					var rx = cmd.ellipseWidth * 1.0;
+					var ry = cmd.ellipseHeight * 1.0;
 
 					if (ry == -1) ry = rx;
 					
