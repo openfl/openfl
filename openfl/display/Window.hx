@@ -33,7 +33,11 @@ class Window extends LimeWindow {
 		
 		#if flash
 			
-			captureImage(null, region);	//clip the region bounds
+			if (region == null) region = new Rectangle();
+			if (region.x < 0) region.x = 0;
+			if (region.y < 0) region.y = 0;
+			if (region.width  == 0 || region.right  > stage.stageWidth ) region.right  = stage.stageWidth;
+			if (region.height == 0 || region.bottom > stage.stageHeight) region.bottom = stage.stageHeight;
 			
 			var b:flash.display.BitmapData = new flash.display.BitmapData(Std.int(region.width), Std.int(region.height));
 			var m:flash.geom.Matrix = new flash.geom.Matrix(1, 0, 0, 1, -region.x, -region.y);
