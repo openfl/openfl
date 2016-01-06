@@ -3,10 +3,8 @@ package openfl; #if !macro #if !openfl_legacy
 
 import lime.system.System;
 import openfl.display.Application;
-import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
-import openfl.geom.Matrix;
 import openfl.net.URLRequest;
 
 #if (js && html5)
@@ -166,8 +164,8 @@ import js.Browser;
 		#if flash
 			if (callback != null) {
 				
-				var b:BitmapData = new BitmapData(width, height);
-				var m:Matrix = new Matrix(1, 0, 0, 1, -x, -y);
+				var b:openfl.display.BitmapData = new openfl.display.BitmapData(width, height);
+				var m:openfl.geom.Matrix = new openfl.geom.Matrix(1, 0, 0, 1, -x, -y);
 				b.draw(Lib.current.stage);
 				callback(b);
 				
