@@ -60,9 +60,10 @@ class DrawCommandReader {
 			
 			case BEGIN_GRADIENT_FILL:
 				
-				oPos += 5; //type, matrix, spreadMethod, interpolationMethod, focalPointRatio
+				oPos += 4;  //type, matrix, spreadMethod, interpolationMethod
 				iiPos += 2; //colors, ratios
 				ffPos += 1; //alphas
+				fPos += 1;  //focalPointRatio
 			
 			case CUBIC_CURVE_TO:
 				
