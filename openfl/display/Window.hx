@@ -29,28 +29,25 @@ class Window extends LimeWindow {
 	
 	@:access(Stage)
 	@:access(openfl.geom.Rectangle)
-	public function captureBitmap(callback:openfl.display.BitmapData->Void, ?region:Rectangle):Void {
+	public function captureBitmap(?region:Rectangle):BitmapData {
 		
 		#if flash
 			
 			if (region == null) region = new Rectangle();
 			if (region.x < 0) region.x = 0;
 			if (region.y < 0) region.y = 0;
-			if (region.width  == 0 || region.right  > stage.stageWidth ) region.right  = stage.stageWidth;
-			if (region.height == 0 || region.bottom > stage.stageHeight) region.bottom = stage.stageHeight;
+			if (region.width  <= 0 || region.right  > stage.stageWidth ) region.right  = stage.stageWidth;
+			if (region.height <= 0 || region.bottom > stage.stageHeight) region.bottom = stage.stageHeight;
 			
-			var b:flash.display.BitmapData = new flash.display.BitmapData(Std.int(region.width), Std.int(region.height));
+			var b:flash.display.BitmapData = new flash.display.BitmapData(Std.int(region.width), Std.int(region.height), false, 0);
 			var m:flash.geom.Matrix = new flash.geom.Matrix(1, 0, 0, 1, -region.x, -region.y);
 			b.draw(stage);
-			callback(b);
+			return b;
 			
 		#else
 			
-			captureImage(function (i:Image) {
-				
-				callback(BitmapData.fromImage(i, true));
-				
-			}, region != null ? region.__toLimeRectangle() : null);
+			var limeRect = region != null ? region.__toLimeRectangle() : null;
+			return BitmapData.fromImage(capture(limeRect), false);
 			
 		#end
 		

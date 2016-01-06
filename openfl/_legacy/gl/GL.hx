@@ -913,6 +913,11 @@ class GL {
 		lime_gl_polygon_offset(factor, units);
 	}
 
+	public static inline function readBuffer(mode:Int):Void
+	{
+		lime_gl_read_buffer(mode);
+	}
+
 	public static inline function readPixels(x:Int, y:Int, width:Int, height:Int, format:Int, type:Int, pixels:ByteArray):Void 
 	{
 		lime_gl_read_pixels(x, y, width, height, format, type, pixels == null ? null : pixels.getByteBuffer(), pixels == null ? null : pixels.getStart());
@@ -1272,6 +1277,7 @@ class GL {
 	private static var lime_gl_link_program = load ("lime_legacy_gl_link_program", 1);
 	private static var lime_gl_pixel_storei = load ("lime_legacy_gl_pixel_storei", 2);
 	private static var lime_gl_polygon_offset = load ("lime_legacy_gl_polygon_offset", 2);
+	private static var lime_gl_read_pixels = load ("lime_gl_read_pixels", 1);
 	private static var lime_gl_read_pixels = load ("lime_legacy_gl_read_pixels", -1);
 	private static var lime_gl_renderbuffer_storage = load ("lime_legacy_gl_renderbuffer_storage", 4);
 	private static var lime_gl_sample_coverage = load ("lime_legacy_gl_sample_coverage", 2);

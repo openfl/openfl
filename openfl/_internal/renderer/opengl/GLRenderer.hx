@@ -73,10 +73,6 @@ class GLRenderer extends AbstractRenderer {
 	private var vpWidth:Int = 0;
 	private var vpHeight:Int = 0;
 	
-	private var __capturePending:Bool = false;
-	private var __captureCallback:Image->Void = null;
-	private var __captureBounds: { x:Int, y:Int, width:Int, height:Int } = null;
-	
 	
 	public function new (width:Int = 800, height:Int = 600, gl:GLRenderContext /*view:Dynamic = null*/, transparent:Bool = false, antialias:Bool = false, preserveDrawingBuffer:Bool = false) {
 		
@@ -309,14 +305,6 @@ class GLRenderer extends AbstractRenderer {
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		renderDisplayObject (stage, projection);
 		
-		if (__capturePending && __captureCallback != null) {
-			
-			__captureCallback(__captureImage());
-			__capturePending = false;
-			__captureCallback = null;
-			__captureBounds = null;
-			
-		}
 	}
 	
 	
@@ -374,7 +362,7 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function captureImage (stage:Stage, callback:Image->Void, region:lime.math.Rectangle):Void {
+	public override function capture (stage:Stage, region:lime.math.Rectangle):Image {
 		
 		if (region == null) region = new lime.math.Rectangle();
 		if (region.x < 0) region.x = 0;
@@ -384,35 +372,37 @@ class GLRenderer extends AbstractRenderer {
 		if (region.right  > stage.width)  region.right  = stage.stageWidth;
 		if (region.bottom > stage.height) region.bottom = stage.stageHeight;
 		
-		__captureBounds = { x:Std.int(region.x), y:Std.int(region.y), width:Std.int(region.width), height:Std.int(region.height) };
-		__captureCallback = callback;
-		__capturePending = __captureCallback != null;
+		var image = __captureImage(Std.int(region.x), Std.int(region.y), Std.int(region.width), Std.int(region.height));
+		
+		return image;
 		
 	}
 	
 	
-	private function __captureImage():Image {
+	private function __captureImage(x:Int, y:Int, width:Int, height:Int ):Image {
 		
-		var size = __captureBounds.width * __captureBounds.height * 4;
+		var size = width * height * 4;
 		var pixels = new UInt8Array(size);
-		GL.pixelStorei(GL.PACK_ALIGNMENT, 1);
-		GL.readPixels(__captureBounds.x, __captureBounds.y, __captureBounds.width, __captureBounds.height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
 		
-		var ww = __captureBounds.width;
-		var hh = __captureBounds.height;
+		GL.readBuffer(GL.FRONT);
+		
+		GL.pixelStorei(GL.PACK_ALIGNMENT, 1);
+		GL.readPixels(x, y, width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		
+		GL.readBuffer(GL.BACK);
 		
 		var bytesFlipped = 0;
 		var numBytes = Std.int(size / 4);
 		
 		for (i in 0...numBytes) {
 			
-			var y = Std.int(i / ww);
-			var x = i % ww;
+			var y = Std.int(i / width);
+			var x = i % width;
 			
-			var newy = (hh - 1) - y;
+			var newy = (height - 1) - y;
 			
 			var oldi = i * 4;
-			var newi = (newy * ww + x) * 4;
+			var newi = (newy * width + x) * 4;
 			
 			for (j in 0...4) {
 				if(j < 3) {
@@ -434,7 +424,7 @@ class GLRenderer extends AbstractRenderer {
 			}
 		}
 		
-		var imageBuffer = new ImageBuffer(pixels, __captureBounds.width, __captureBounds.height);
+		var imageBuffer = new ImageBuffer(pixels, width, height);
 		imageBuffer.transparent = false;
 		return new Image(imageBuffer);
 		

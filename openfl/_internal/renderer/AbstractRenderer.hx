@@ -1,7 +1,6 @@
 package openfl._internal.renderer;
 
 
-import openfl.display.BitmapData;
 import openfl.display.Shape;
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
@@ -26,9 +25,9 @@ class AbstractRenderer {
 	}
 	
 	
-	public function captureImage (stage:Stage, callback:lime.graphics.Image->Void, region:lime.math.Rectangle):Void {
+	public function capture (stage:Stage, region:lime.math.Rectangle):lime.graphics.Image {
 		
-		
+		return null;
 		
 	}
 	
