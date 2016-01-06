@@ -73,9 +73,9 @@ class GLRenderer extends AbstractRenderer {
 	private var vpWidth:Int = 0;
 	private var vpHeight:Int = 0;
 	
-	private var __screenShotPending:Bool = false;
-	private var __screenShotCallback:BitmapData->Void = null;
-	private var __screenShotBounds: { x:Int, y:Int, width:Int, height:Int } = null;
+	private var __capturePending:Bool = false;
+	private var __captureCallback:Image->Void = null;
+	private var __captureBounds: { x:Int, y:Int, width:Int, height:Int } = null;
 	
 	
 	public function new (width:Int = 800, height:Int = 600, gl:GLRenderContext /*view:Dynamic = null*/, transparent:Bool = false, antialias:Bool = false, preserveDrawingBuffer:Bool = false) {
@@ -309,12 +309,12 @@ class GLRenderer extends AbstractRenderer {
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		renderDisplayObject (stage, projection);
 		
-		if (__screenShotPending && __screenShotCallback != null) {
+		if (__capturePending && __captureCallback != null) {
 			
-			__screenShotCallback(__screenShot());
-			__screenShotPending = false;
-			__screenShotCallback = null;
-			__screenShotBounds = null;
+			__captureCallback(__captureImage());
+			__capturePending = false;
+			__captureCallback = null;
+			__captureBounds = null;
 			
 		}
 	}
@@ -374,33 +374,32 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function screenShot (callback:BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
+	public override function captureImage (stage:Stage, callback:Image->Void, region:lime.math.Rectangle):Void {
 		
-		if (width  < 0) width  = this.width;
-		if (height < 0) height = this.height;
-		if (width  > this.width)  width = this.width;
-		if (height > this.height) height = this.height;
-		if (x < 0) x = 0;
-		if (y < 0) y = 0;
-		if (x > width)  x = width;
-		if (y > height) y = height;
-		__screenShotBounds = { x:x, y:y, width:width, height:height };
-		__screenShotCallback = callback;
-		__screenShotPending = __screenShotCallback != null;
+		if (region == null) region = new lime.math.Rectangle();
+		if (region.x < 0) region.x = 0;
+		if (region.y < 0) region.y = 0;
+		if (region.width  <= 0) region.width  = stage.stageWidth;
+		if (region.height <= 0) region.height = stage.stageHeight;
+		if (region.right  > stage.width)  region.right  = stage.stageWidth;
+		if (region.bottom > stage.height) region.bottom = stage.stageHeight;
+		
+		__captureBounds = { x:Std.int(region.x), y:Std.int(region.y), width:Std.int(region.width), height:Std.int(region.height) };
+		__captureCallback = callback;
+		__capturePending = __captureCallback != null;
 		
 	}
 	
 	
-	private function __screenShot():BitmapData {
+	private function __captureImage():Image {
 		
-		var b = new BitmapData(__screenShotBounds.width, __screenShotBounds.height);
-		var size = __screenShotBounds.width * __screenShotBounds.height * 4;
+		var size = __captureBounds.width * __captureBounds.height * 4;
 		var pixels = new UInt8Array(size);
 		GL.pixelStorei(GL.PACK_ALIGNMENT, 1);
-		GL.readPixels(__screenShotBounds.x, __screenShotBounds.y, __screenShotBounds.width, __screenShotBounds.height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		GL.readPixels(__captureBounds.x, __captureBounds.y, __captureBounds.width, __captureBounds.height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
 		
-		var ww = __screenShotBounds.width;
-		var hh = __screenShotBounds.height;
+		var ww = __captureBounds.width;
+		var hh = __captureBounds.height;
 		
 		var bytesFlipped = 0;
 		var numBytes = Std.int(size / 4);
@@ -435,10 +434,9 @@ class GLRenderer extends AbstractRenderer {
 			}
 		}
 		
-		var imageBuffer = new ImageBuffer(pixels, __screenShotBounds.width, __screenShotBounds.height);
+		var imageBuffer = new ImageBuffer(pixels, __captureBounds.width, __captureBounds.height);
 		imageBuffer.transparent = false;
-		var image = new Image(imageBuffer);
-		return BitmapData.fromImage(image);
+		return new Image(imageBuffer);
 		
 	}
 	

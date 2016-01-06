@@ -139,46 +139,6 @@ import js.Browser;
 	#end
 	
 	
-	/**
-	 * 
-	 * @param	stage
-	 * @param	callback
-	 * @param	x
-	 * @param	y
-	 * @param	width
-	 * @param	height
-	 */
-	
-	@:access(Stage)
-	public static function screenShot(stage:Stage, callback:openfl.display.BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
-		
-		if (width  < 0) width  = Std.int(stage.width);
-		if (height < 0) height = Std.int(stage.height);
-		if (width  > stage.width)  width  = Std.int(stage.width);
-		if (height > stage.height) height = Std.int(stage.height);
-		if (x < 0) x = 0;
-		if (y < 0) y = 0;
-		if (x > width)  x = width;
-		if (y > height) y = height;
-		
-		#if flash
-			if (callback != null) {
-				
-				var b:openfl.display.BitmapData = new openfl.display.BitmapData(width, height);
-				var m:openfl.geom.Matrix = new openfl.geom.Matrix(1, 0, 0, 1, -x, -y);
-				b.draw(Lib.current.stage);
-				callback(b);
-				
-			}
-		#else
-			
-			stage.__renderer.screenShot(callback, x, y, width, height);
-			
-		#end
-		
-	}
-	
-	
 	public static function trace (arg:Dynamic):Void {
 		
 		haxe.Log.trace (arg);

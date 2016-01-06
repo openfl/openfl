@@ -26,6 +26,13 @@ class AbstractRenderer {
 	}
 	
 	
+	public function captureImage (stage:Stage, callback:lime.graphics.Image->Void, region:lime.math.Rectangle):Void {
+		
+		
+		
+	}
+	
+	
 	public function render (stage:Stage):Void {
 		
 		
@@ -48,13 +55,6 @@ class AbstractRenderer {
 	
 	
 	public function resize (width:Int, height:Int):Void {
-		
-		
-		
-	}
-	
-	
-	public function screenShot (callback:BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
 		
 		
 		

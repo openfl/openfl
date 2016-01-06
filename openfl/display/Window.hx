@@ -3,7 +3,9 @@ package openfl.display;
 
 import lime.app.Application;
 import lime.app.Config;
+import lime.graphics.Image;
 import lime.ui.Window in LimeWindow;
+import openfl.geom.Rectangle;
 import openfl.Lib;
 
 @:access(openfl.display.Stage)
@@ -15,6 +17,38 @@ class Window extends LimeWindow {
 	public function new (config:WindowConfig = null) {
 		
 		super (config);
+		
+	}
+	
+	
+	/**
+	 * Captures the contents of this window's stage to a BitmapData
+	 * @param	callback	function to call when the capture is taken
+	 * @param	region	the region of the stage to capture. By default, captures the entire stage.
+	 */
+	
+	@:access(Stage)
+	@:access(openfl.geom.Rectangle)
+	public function captureBitmap(callback:openfl.display.BitmapData->Void, ?region:Rectangle):Void {
+		
+		#if flash
+			
+			captureImage(null, region);	//clip the region bounds
+			
+			var b:flash.display.BitmapData = new flash.display.BitmapData(Std.int(region.width), Std.int(region.height));
+			var m:flash.geom.Matrix = new flash.geom.Matrix(1, 0, 0, 1, -region.x, -region.y);
+			b.draw(stage);
+			callback(b);
+			
+		#else
+			
+			captureImage(function (i:Image) {
+				
+				callback(BitmapData.fromImage(i, true));
+				
+			}, region != null ? region.__toLimeRectangle() : null);
+			
+		#end
 		
 	}
 	
