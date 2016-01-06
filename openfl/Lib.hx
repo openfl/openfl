@@ -150,7 +150,7 @@ import js.Browser;
 	 */
 	
 	@:access(Stage)
-	public static function screenShot(stage:Stage, callback:BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
+	public static function screenShot(stage:Stage, callback:openfl.display.BitmapData->Void, x:Int=0, y:Int=0, width:Int=-1, height:Int=-1):Void {
 		
 		if (width  < 0) width  = Std.int(stage.width);
 		if (height < 0) height = Std.int(stage.height);
