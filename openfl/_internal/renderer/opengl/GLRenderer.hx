@@ -1,12 +1,15 @@
 package openfl._internal.renderer.opengl;
 
+import lime.utils.UInt8Array;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
 import lime.graphics.ImageChannel;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.GLRenderContext;
+import lime.graphics.PixelFormat;
 import lime.math.Vector2;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -358,6 +361,74 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 	
+	
+	public override function capture (stage:Stage, region:lime.math.Rectangle):Image {
+		
+		if (region == null) region = new lime.math.Rectangle();
+		if (region.x < 0) region.x = 0;
+		if (region.y < 0) region.y = 0;
+		if (region.width  <= 0) region.width  = stage.stageWidth;
+		if (region.height <= 0) region.height = stage.stageHeight;
+		if (region.right  > stage.width)  region.right  = stage.stageWidth;
+		if (region.bottom > stage.height) region.bottom = stage.stageHeight;
+		
+		var image = __captureImage(Std.int(region.x), Std.int(region.y), Std.int(region.width), Std.int(region.height));
+		
+		return image;
+		
+	}
+	
+	
+	private function __captureImage(x:Int, y:Int, width:Int, height:Int ):Image {
+		
+		var size = width * height * 4;
+		var pixels = new UInt8Array(size);
+		
+		GL.readBuffer(GL.FRONT);
+		
+		GL.pixelStorei(GL.PACK_ALIGNMENT, 1);
+		GL.readPixels(x, y, width, height, GL.RGBA, GL.UNSIGNED_BYTE, pixels);
+		
+		GL.readBuffer(GL.BACK);
+		
+		var bytesFlipped = 0;
+		var numBytes = Std.int(size / 4);
+		
+		for (i in 0...numBytes) {
+			
+			var y = Std.int(i / width);
+			var x = i % width;
+			
+			var newy = (height - 1) - y;
+			
+			var oldi = i * 4;
+			var newi = (newy * width + x) * 4;
+			
+			for (j in 0...4) {
+				if(j < 3) {
+					var oldVal = pixels[oldi + j];
+					var newVal = pixels[newi + j];
+					
+					pixels[oldi + j] = newVal;
+					pixels[newi + j] = oldVal;
+				}
+				else {
+					pixels[oldi + j] = 0xFF;
+					pixels[newi + j] = 0xFF;
+				}
+				bytesFlipped += 2;
+			}
+			
+			if (bytesFlipped >= size) {
+				break;
+			}
+		}
+		
+		var imageBuffer = new ImageBuffer(pixels, width, height);
+		imageBuffer.transparent = false;
+		return new Image(imageBuffer);
+		
+	}
 	
 	/*private static function updateTextureFrame (texture:Texture):Void {
 		

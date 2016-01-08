@@ -25,6 +25,13 @@ class AbstractRenderer {
 	}
 	
 	
+	public function capture (stage:Stage, region:lime.math.Rectangle):lime.graphics.Image {
+		
+		return null;
+		
+	}
+	
+	
 	public function render (stage:Stage):Void {
 		
 		
@@ -51,6 +58,5 @@ class AbstractRenderer {
 		
 		
 	}
-	
 	
 }
