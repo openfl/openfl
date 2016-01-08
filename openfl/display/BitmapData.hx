@@ -46,7 +46,6 @@ import js.html.Uint8ClampedArray;
 import js.Browser;
 #end
 
-
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
@@ -1125,13 +1124,12 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
-	@:access(Rectangle)
-	@:access(Point)
+	
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
 		if (sourceBitmapData == null || sourceRect == null || destPoint == null || sourceRect.x > sourceBitmapData.width || sourceRect.y > sourceBitmapData.height || destPoint.x > width || destPoint.y > height) return 0;
 		
-		return image.threshold(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), operation, threshold, color, mask, copySource);
+		return image.threshold (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), operation, threshold, color, mask, copySource);
 		
 	}
 	
@@ -1464,60 +1462,6 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		ImageCanvasUtil.sync (image, false);
 		#end
-		
-	}
-	
-	
-	private static function __ucompare (n1:Int, n2:Int) : Int {
-		
-		var tmp1 : Int;
-		var tmp2 : Int;
-		
-		tmp1 = (n1 >> 24) & 0x000000FF;
-		tmp2 = (n2 >> 24) & 0x000000FF;
-		
-		if (tmp1 != tmp2) {
-			
-			return (tmp1 > tmp2 ? 1 : -1);
-			
-		} else {
-			
-			tmp1 = (n1 >> 16) & 0x000000FF;
-			tmp2 = (n2 >> 16) & 0x000000FF;
-			
-			if (tmp1 != tmp2) {
-				
-				return (tmp1 > tmp2 ? 1 : -1);
-				
-			} else {
-				
-				tmp1 = (n1 >> 8) & 0x000000FF;
-				tmp2 = (n2 >> 8) & 0x000000FF;
-				
-				if (tmp1 != tmp2) {
-					
-					return (tmp1 > tmp2 ? 1 : -1);
-					
-				} else {
-					
-					tmp1 = n1 & 0x000000FF;
-					tmp2 = n2 & 0x000000FF;
-					
-					if (tmp1 != tmp2) {
-						
-						return (tmp1 > tmp2 ? 1 : -1);
-						
-					} else {
-						
-						return 0;
-						
-					}
-					
-				}
-				
-			}
-			
-		}
 		
 	}
 	
