@@ -295,13 +295,21 @@ class NetStream extends EventDispatcher {
 
 	private function video_onLoadMetaData (event:Dynamic):Void {
 
-		var handler = client.onMetaData;
-		handler ({
+		if (client != null) {
 
-			width: __video.videoHeight,
-			height: __video.videoWidth
+			try {
 
-		});
+				var handler = client.onMetaData;
+				handler ({
+
+					width: __video.videoHeight,
+					height: __video.videoWidth
+
+				});
+
+			} catch (e:Dynamic) {}
+
+		}
 
 	}
 	
