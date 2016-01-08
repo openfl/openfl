@@ -61,6 +61,7 @@ class NetStream extends EventDispatcher {
 		__video.addEventListener ("durationchanged", video_onDurationChanged, false);
 		__video.addEventListener ("canplay", video_onCanPlay, false);
 		__video.addEventListener ("canplaythrough", video_onCanPlayThrough, false);
+		__video.addEventListener ("loadedmetadata", video_onLoadMetaData, false);
 		#end
 		
 	}
@@ -289,6 +290,27 @@ class NetStream extends EventDispatcher {
 		
 		__playStatus ("NetStream.Play.waiting");
 		
+	}
+
+
+	private function video_onLoadMetaData (event:Dynamic):Void {
+
+		if (client != null) {
+
+			try {
+
+				var handler = client.onMetaData;
+				handler ({
+
+					width: __video.videoHeight,
+					height: __video.videoWidth
+
+				});
+
+			} catch (e:Dynamic) {}
+
+		}
+
 	}
 	
 	
