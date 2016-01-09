@@ -610,6 +610,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
+		if (__displayState != NORMAL && !window.fullscreen) {
+			
+			__displayState = NORMAL;
+			
+		}
+		
 		stageWidth = Std.int (width * window.scale);
 		stageHeight = Std.int (height * window.scale);
 		
@@ -627,9 +633,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowRestore (window:Window):Void {
 		
-		if (this.window == null || this.window != window) return;
-		
-		__displayState = NORMAL;
+		//if (this.window == null || this.window != window) return;
 		
 	}
 	
