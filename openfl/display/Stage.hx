@@ -572,7 +572,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowFullscreen (window:Window):Void {
 		
-		//if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		
+		if (__displayState == NORMAL) {
+			
+			__displayState = FULL_SCREEN_INTERACTIVE;
+			
+		}
 		
 	}
 	
@@ -621,7 +627,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowRestore (window:Window):Void {
 		
-		//if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		
+		__displayState = NORMAL;
 		
 	}
 	
