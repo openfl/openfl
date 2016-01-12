@@ -114,6 +114,7 @@ class FileReference extends EventDispatcher {
 		if (__path != null) {
 			
 			data = Bytes.readFile (__path);
+			openFileDialog_onComplete();
 			
 		}
 		
@@ -169,6 +170,13 @@ class FileReference extends EventDispatcher {
 	private function openFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
+		
+	}
+	
+	
+	private function openFileDialog_onComplete ():Void {
+		
+		dispatchEvent (new Event (Event.COMPLETE));
 		
 	}
 	
