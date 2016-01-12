@@ -243,6 +243,29 @@ class NetStream extends EventDispatcher {
 	}
 	
 	
+	private function video_onLoadMetaData (event:Dynamic):Void {
+		
+		#if (js && html5)
+		if (client != null) {
+			
+			try {
+				
+				var handler = client.onMetaData;
+				handler ({
+					
+					width: __video.videoHeight,
+					height: __video.videoWidth
+					
+				});
+				
+			} catch (e:Dynamic) {}
+			
+		}
+		#end
+		
+	}
+	
+	
 	private function video_onLoadStart (event:Dynamic):Void {
 		
 		__playStatus ("NetStream.Play.loadstart");
@@ -290,27 +313,6 @@ class NetStream extends EventDispatcher {
 		
 		__playStatus ("NetStream.Play.waiting");
 		
-	}
-
-
-	private function video_onLoadMetaData (event:Dynamic):Void {
-
-		if (client != null) {
-
-			try {
-
-				var handler = client.onMetaData;
-				handler ({
-
-					width: __video.videoHeight,
-					height: __video.videoWidth
-
-				});
-
-			} catch (e:Dynamic) {}
-
-		}
-
 	}
 	
 	
