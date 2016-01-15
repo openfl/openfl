@@ -102,6 +102,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __invalidated:Bool;
 	private var __lastClickTime:Int;
 	private var __macKeyboard:Bool;
+	private var __mouseDownLeft:InteractiveObject;
+	private var __mouseDownMiddle:InteractiveObject;
+	private var __mouseDownRight:InteractiveObject;
 	private var __mouseOutStack:Array<DisplayObject>;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
@@ -901,30 +904,70 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (target == null) target = this;
 		
-		if (type == MouseEvent.MOUSE_DOWN) {
+		var clickType = null;
+		
+		switch (type) {
 			
-			if (target.tabEnabled) {
+			case MouseEvent.MOUSE_DOWN:
 				
-				focus = target;
+				if (target.tabEnabled) {
+					
+					focus = target;
+					
+				} else {
+					
+					focus = null;
+					
+				}
 				
-			} else {
+				__mouseDownLeft = target;
+			
+			case MouseEvent.MIDDLE_MOUSE_DOWN:
 				
-				focus = null;
+				__mouseDownMiddle = target;
+			
+			case MouseEvent.RIGHT_MOUSE_DOWN:
 				
-			}
+				__mouseDownRight = target;
+			
+			case MouseEvent.MOUSE_UP:
+				
+				if (__mouseDownLeft == target) {
+					
+					clickType = MouseEvent.CLICK;
+					
+					
+				}
+				
+				__mouseDownLeft = null;
+			
+			case MouseEvent.MIDDLE_MOUSE_UP:
+				
+				if (__mouseDownMiddle == target) {
+					
+					clickType = MouseEvent.MIDDLE_CLICK;
+					
+					
+				}
+				
+				__mouseDownMiddle = null;
+			
+			case MouseEvent.RIGHT_MOUSE_UP:
+				
+				if (__mouseDownRight == target) {
+					
+					clickType = MouseEvent.RIGHT_CLICK;
+					
+				}
+				
+				__mouseDownRight = null;
+			
+			default:
 			
 		}
+		
 		
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
-		
-		var clickType = switch (type) {
-			
-			case MouseEvent.MOUSE_UP: MouseEvent.CLICK;
-			case MouseEvent.MIDDLE_MOUSE_UP: MouseEvent.MIDDLE_CLICK;
-			case MouseEvent.RIGHT_MOUSE_UP: MouseEvent.RIGHT_CLICK;
-			default: null;
-			
-		}
 		
 		if (clickType != null) {
 			
@@ -969,14 +1012,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		var event, localPoint;
+		
 		for (target in __mouseOutStack) {
 			
 			if (stack.indexOf (target) == -1) {
 				
 				__mouseOutStack.remove (target);
 				
-				var localPoint = target.globalToLocal (targetPoint);
-				target.__dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OUT, false, false, localPoint.x, localPoint.y, cast target));
+				localPoint = target.globalToLocal (targetPoint);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast target);
+				event.bubbles = false;
+				target.__dispatchEvent (event);
 				
 			}
 			
@@ -988,8 +1035,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				if (target.hasEventListener (MouseEvent.MOUSE_OVER)) {
 					
-					var localPoint = target.globalToLocal (targetPoint);
-					target.__dispatchEvent (new MouseEvent (MouseEvent.MOUSE_OVER, false, false, localPoint.x, localPoint.y, cast target));
+					localPoint = target.globalToLocal (targetPoint);
+					event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+					event.bubbles = false;
+					target.__dispatchEvent (event);
 					
 				}
 				
