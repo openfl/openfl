@@ -159,7 +159,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function copyFrom (sourceGraphics:Graphics):Void {
 		
-		__bounds = sourceGraphics.__bounds.clone ();
+		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone () : null;
 		__commands = sourceGraphics.__commands.copy ();
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
