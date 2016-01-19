@@ -677,18 +677,22 @@ class DisplayObjectContainer extends InteractiveObject {
 			CanvasGraphics.renderMask (__graphics, renderSession);
 			
 		}
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
-		
-		/*for (child in __children) {
-			
-			child.__renderMask (renderSession);
-			
-		}*/
-		
+		else
+		{
+
+			if( __children.length > 0 ) {
+				for (child in __children) {
+
+					child.__renderCanvasMask (renderSession);
+
+				}
+			} else {
+				var bounds = new Rectangle ();
+				__getLocalBounds (bounds);
+
+				renderSession.context.rect (0, 0, bounds.width, bounds.height);
+			}
+		}
 	}
 	
 	
