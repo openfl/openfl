@@ -783,22 +783,19 @@ class CanvasGraphics {
 		if (!stroke) {
 			
 			if (hasFill || bitmapFill != null) {
+				context.save();
+				context.setTransform(1, 0, 0, 1, 0, 0);
 				
 				context.translate (-bounds.x, -bounds.y);
 				
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill ();
-					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
-					
-				} else {
-					
-					if (!hitTesting) context.fill ();
-					
 				}
-				
-				context.translate (bounds.x, bounds.y);
+
+				if (!hitTesting) context.fill ();
+
+				context.restore();
 				context.closePath ();
 				
 			}
