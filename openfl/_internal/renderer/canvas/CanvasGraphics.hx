@@ -1295,11 +1295,6 @@ class CanvasGraphics {
 			
 			context = cast renderSession.context;
 			
-			var positionX = 0.0;
-			var positionY = 0.0;
-			
-			var offsetX = 0;
-			var offsetY = 0;
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
@@ -1310,22 +1305,18 @@ class CanvasGraphics {
 					case CUBIC_CURVE_TO:
 						
 						var c = data.readCubicCurveTo ();
-						context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
-						positionX = c.anchorX;
-						positionY = c.anchorY;
 					
+						context.bezierCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 					case CURVE_TO:
 						
 						var c = data.readCurveTo ();
-						context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
-						positionX = c.anchorX;
-						positionY = c.anchorY;
 					
+						context.quadraticCurveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 					case DRAW_CIRCLE:
 						
 						var c = data.readDrawCircle ();
-						context.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2, true);
 					
+						context.arc (c.x, c.y, c.radius, 0, Math.PI * 2, true);
 					case DRAW_ELLIPSE:
 						
 						var c = data.readDrawEllipse ();
@@ -1333,8 +1324,6 @@ class CanvasGraphics {
 						var y = c.y;
 						var width = c.width;
 						var height = c.height;
-						x -= offsetX;
-						y -= offsetY;
 						
 						var kappa = .5522848,
 							ox = (width / 2) * kappa, // control point offset horizontal
@@ -1356,27 +1345,23 @@ class CanvasGraphics {
 					case DRAW_RECT:
 						
 						var c = data.readDrawRect ();
-						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
 					
+						context.rect (c.x, c.y, c.width, c.height);
 					case DRAW_ROUND_RECT:
 						
 						var c = data.readDrawRoundRect ();
-						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-					
+						drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+
 					case LINE_TO:
 						
 						var c = data.readLineTo ();
-						context.lineTo (c.x - offsetX, c.y - offsetY);
-						positionX = c.x;
-						positionY = c.y;
 					
+						context.lineTo (c.x, c.y);
 					case MOVE_TO:
 						
 						var c = data.readMoveTo ();
-						context.moveTo (c.x - offsetX, c.y - offsetY);
-						positionX = c.x;
-						positionY = c.y;
 					
+						context.moveTo (c.x, c.y);
 					default:
 						
 						data.skip (type);
