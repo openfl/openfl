@@ -755,7 +755,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private inline function get_bytesAvailable ():Int {
 		
-		return length - position;
+		return __length - position;
 		
 	}
 	
