@@ -447,7 +447,6 @@ class URLLoader extends EventDispatcher {
 						
 						__data.position = 0;
 						this.data = __data.readUTFBytes (__data.length);
-						this.data.position = 0;
 					
 				}
 				
