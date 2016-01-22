@@ -209,7 +209,8 @@ class Capabilities {
 		
 	}
 	
-	
+	public static function setKeepScreenOn():Void{ lime_capabilities_set_keep_screen_on();}
+	public static function setKeepScreenAuto():Void{ lime_capabilities_set_keep_screen_auto();}
 	
 	
 	// Native Methods
@@ -221,6 +222,8 @@ class Capabilities {
 	private static var lime_capabilities_get_screen_dpi = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_dpi", 0);
 	private static var lime_capabilities_get_screen_resolution_x = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_resolution_x", 0);
 	private static var lime_capabilities_get_screen_resolution_y = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_resolution_y", 0);
+	private static var lime_capabilities_set_keep_screen_on = Lib.load ("lime-legacy", "lime_legacy_capabilities_set_keep_screen_on", 0);
+	private static var lime_capabilities_set_keep_screen_auto = Lib.load ("lime-legacy", "lime_legacy_capabilities_set_keep_screen_auto", 0);
 	private static var lime_capabilities_get_screen_resolutions = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_resolutions", 0 );
 	private static var lime_capabilities_get_screen_modes = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_screen_modes", 0 );
 	private static var lime_capabilities_get_language = Lib.load ("lime-legacy", "lime_legacy_capabilities_get_language", 0);
