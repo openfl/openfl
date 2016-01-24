@@ -1,11 +1,43 @@
-package openfl.text;
+package openfl.text; #if !openfl_legacy
 
 
-enum TextFieldAutoSize {
+@:enum abstract TextFieldAutoSize(Null<Int>) {
 	
-	CENTER;
-	LEFT;
-	NONE;
-	RIGHT;
+	public var CENTER = 0;
+	public var LEFT = 1;
+	public var NONE = 2;
+	public var RIGHT = 3;
+	
+	@:from private static function fromString (value:String):TextFieldAutoSize {
+		
+		return switch (value) {
+			
+			case "center": CENTER;
+			case "left": LEFT;
+			case "none": NONE;
+			case "right": RIGHT;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case TextFieldAutoSize.CENTER: "center";
+			case TextFieldAutoSize.LEFT: "left";
+			case TextFieldAutoSize.NONE: "none";
+			case TextFieldAutoSize.RIGHT: "right";
+			default: null;
+			
+		}
+		
+	}
 	
 }
+
+#else
+typedef TextFieldAutoSize = openfl._legacy.text.TextFieldAutoSize;
+#end

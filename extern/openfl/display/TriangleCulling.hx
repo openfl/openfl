@@ -27,23 +27,22 @@ package openfl.display;
 @:native("flash.display.TriangleCulling")
 #end
 
-
-@:fakeEnum(String) extern enum TriangleCulling {
+@:enum abstract TriangleCulling(String) from String to String {
 	
 	/**
 	 * Specifies culling of all triangles facing toward the current view point.
 	 */
-	NEGATIVE;
+	public var NEGATIVE = "negative";
 	
 	/**
 	 * Specifies no culling. All triangles in the path are rendered.
 	 */
-	NONE;
+	public var NONE = "none";
 	
 	/**
 	 * Specifies culling of all triangles facing away from the current view
 	 * point. This is also known as backface culling.
 	 */
-	POSITIVE;
+	public var POSITIVE = "positive";
 	
 }

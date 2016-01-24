@@ -10,18 +10,17 @@ package openfl.net;
 @:native("flash.net.SharedObjectFlushStatus")
 #end
 
-
-@:fakeEnum(String) enum SharedObjectFlushStatus {
+@:enum abstract SharedObjectFlushStatus(String) from String to String {
 	
 	/**
 	 * Indicates that the flush completed successfully.
 	 */
-	FLUSHED;
+	public var FLUSHED = "flushed";
 	
 	/**
 	 * Indicates that the user is being prompted to increase disk space for the
 	 * shared object before the flush can occur.
 	 */
-	PENDING;
+	public var PENDING = "pending";
 	
 }

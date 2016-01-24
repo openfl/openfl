@@ -10,32 +10,31 @@ package openfl.display;
 @:native("flash.display.StageQuality")
 #end
 
-
-@:fakeEnum(String) extern enum StageQuality {
+@:enum abstract StageQuality(String) from String to String {
 	
 	/**
 	 * Specifies very high rendering quality: graphics are anti-aliased using a 4
 	 * x 4 pixel grid and bitmaps are always smoothed.
 	 */
-	BEST;
+	public var BEST = "best";
 	
 	/**
 	 * Specifies high rendering quality: graphics are anti-aliased using a 4 x 4
 	 * pixel grid, and bitmaps are smoothed if the movie is static.
 	 */
-	HIGH;
+	public var HIGH = "high";
+	
+	/**
+	 * Specifies low rendering quality: graphics are not anti-aliased, and
+	 * bitmaps are not smoothed.
+	 */
+	public var LOW = "low";
 	
 	/**
 	 * Specifies medium rendering quality: graphics are anti-aliased using a 2 x
 	 * 2 pixel grid, but bitmaps are not smoothed. This setting is suitable for
 	 * movies that do not contain text.
 	 */
-	MEDIUM;
-	
-	/**
-	 * Specifies low rendering quality: graphics are not anti-aliased, and
-	 * bitmaps are not smoothed.
-	 */
-	LOW;
+	public var MEDIUM = "medium";
 	
 }

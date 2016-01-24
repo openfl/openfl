@@ -11,14 +11,14 @@ package openfl.display;
 @:native("flash.display.PixelSnapping")
 #end
 
-
-@:fakeEnum(String) extern enum PixelSnapping {
+@:enum abstract PixelSnapping(String) from String to String {
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
-	 * Bitmap object to specify that no pixel snapping occurs.
+	 * Bitmap object to specify that the bitmap image is always snapped to the
+	 * nearest pixel, independent of any transformation.
 	 */
-	NEVER;
+	public var ALWAYS = "always";
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
@@ -29,13 +29,12 @@ package openfl.display;
 	 * setting allows the image to be drawn as fast as possible by using the
 	 * vector renderer.
 	 */
-	AUTO;
+	public var AUTO = "auto";
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
-	 * Bitmap object to specify that the bitmap image is always snapped to the
-	 * nearest pixel, independent of any transformation.
+	 * Bitmap object to specify that no pixel snapping occurs.
 	 */
-	ALWAYS;
+	public var NEVER = "never";
 	
 }

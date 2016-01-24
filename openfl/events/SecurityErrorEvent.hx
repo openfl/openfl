@@ -4,7 +4,7 @@ package openfl.events;
 class SecurityErrorEvent extends ErrorEvent {
 	
 	
-	static public var SECURITY_ERROR = "securityError";
+	public static inline var SECURITY_ERROR = "securityError";
 	
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0) {

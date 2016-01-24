@@ -117,7 +117,7 @@ class Video extends DisplayObject {
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || __stream == null) return;
 		
 		var context = renderSession.context;
 		

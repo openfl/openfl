@@ -7,10 +7,10 @@ import openfl.display.InteractiveObject;
 class FocusEvent extends Event {
 	
 	
-	public static var FOCUS_IN = "focusIn";
-	public static var FOCUS_OUT = "focusOut";
-	public static var KEY_FOCUS_CHANGE = "keyFocusChange";
-	public static var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
+	public static inline var FOCUS_IN = "focusIn";
+	public static inline var FOCUS_OUT = "focusOut";
+	public static inline var KEY_FOCUS_CHANGE = "keyFocusChange";
+	public static inline var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
 	
 	public var keyCode:Int;
 	public var relatedObject:InteractiveObject;

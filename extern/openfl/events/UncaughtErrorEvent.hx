@@ -4,7 +4,7 @@ package openfl.events; #if (display || !flash)
 extern class UncaughtErrorEvent extends ErrorEvent {
 	
 	
-	public static var UNCAUGHT_ERROR:String;
+	public static inline var UNCAUGHT_ERROR = "uncaughtError";
 	
 	public var error (default, null):Dynamic;
 	

@@ -20,10 +20,9 @@ package openfl.utils;
 @:native("flash.utils.Endian")
 #end
 
-
-@:fakeEnum(String) extern enum Endian {
+@:enum abstract Endian(String) from String to String {
 	
-	BIG_ENDIAN;
-	LITTLE_ENDIAN;
+	public var BIG_ENDIAN = "bigEndian";
+	public var LITTLE_ENDIAN = "littleEndian";
 	
 }

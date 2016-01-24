@@ -1181,9 +1181,7 @@ class Assets {
 				
 				if (preload != null) {
 					
-					image = preload;
-					width = image.width;
-					height = image.height;
+					__fromImage(preload);
 					
 				} else {
 					

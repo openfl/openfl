@@ -282,6 +282,16 @@ class GraphicsTest {
 		
 	}
 	
+
+	@Test public function copyFrom () {
+
+		// copyFrom of a Graphics with empty bounds shouldn't
+		// cause an error
+
+		var emptyGraphics = new Shape().graphics;
+		new Shape().graphics.copyFrom(emptyGraphics);
+
+	}
 	
 	/*private function hex (value:Int):String {
 		

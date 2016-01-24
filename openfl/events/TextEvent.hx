@@ -4,8 +4,8 @@ package openfl.events;
 class TextEvent extends Event {
 	
 	
-	public static var LINK = "link";
-	public static var TEXT_INPUT = "textInput";
+	public static inline var LINK = "link";
+	public static inline var TEXT_INPUT = "textInput";
 	
 	public var text:String;
 	

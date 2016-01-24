@@ -44,7 +44,7 @@ class ConvolutionFilter extends BitmapFilter {
 		return __convolutionShader;
 	}
 	
-	inline function set_matrix(v:Array<Float>) {
+	private function set_matrix(v:Array<Float>) {
 		
 		if (v == null) {
 			v = [0, 0, 0, 0, 1, 0, 0, 0, 0];

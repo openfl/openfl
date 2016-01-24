@@ -281,7 +281,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			var windowBits = switch (algorithm) {
 				
 				case DEFLATE: -15;
-				case GZIP: 31;
+				//case GZIP: 31;
 				default: 15;
 				
 			}
@@ -548,7 +548,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (algorithm == null) {
 			
-			algorithm = CompressionAlgorithm.GZIP;
+			algorithm = CompressionAlgorithm.DEFLATE;
+			//algorithm = CompressionAlgorithm.GZIP;
 			
 		}
 		
@@ -561,7 +562,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			var windowBits = switch (algorithm) {
 				
 				case DEFLATE: -15;
-				case GZIP: 31;
+				//case GZIP: 31;
 				default: 15;
 				
 			}
@@ -754,7 +755,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private inline function get_bytesAvailable ():Int {
 		
-		return length - position;
+		return __length - position;
 		
 	}
 	

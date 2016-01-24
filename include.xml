@@ -32,25 +32,14 @@
 	
 	<unset name="custom-backend" />
 	
-	<section unless="no-custom-backend">
+	<section if="${target}-backend" unless="no-custom-backend">
 		
-		<set name="custom-backend" value="${flash-backend}" if="flash flash-backend" />
-		<set name="custom-backend" value="${android-backend}" if="android android-backend" />
-		<set name="custom-backend" value="${blackberry-backend}" if="blackberry blackberry-backend" />
-		<set name="custom-backend" value="${emscripten-backend}" if="emscripten emscripten-backend" />
-		<set name="custom-backend" value="${ios-backend}" if="ios ios-backend" />
-		<set name="custom-backend" value="${linux-backend}" if="linux linux-backend" />
-		<set name="custom-backend" value="${mac-backend}" if="mac mac-backend" />
-		<set name="custom-backend" value="${tizen-backend}" if="tizen tizen-backend" />
-		<set name="custom-backend" value="${webos-backend}" if="webos webos-backend" />
-		<set name="custom-backend" value="${windows-backend}" if="windows windows-backend" />
-		<set name="custom-backend" value="${html5-backend}" if="html5 html5-backend" />
-		<set name="custom-backend" value="${firefoxos-backend}" if="firefoxos firefoxos-backend" />
-		<set name="custom-backend" value="${tvos-backend}" if="tvos tvos-backend" />
+		<set name="target-backend" value="${target}-backend" />
+		<set name="custom-backend" value="$${target-backend}" />
 		
 	</section>
 	
-	<section unless="lime">
+	<section unless="lime || custom-backend">
 		
 		<haxelib name="lime" unless="create || native lime-legacy" />
 		<haxelib name="lime" if="display || rebuild" />
@@ -59,7 +48,7 @@
 		
 	</section>
 	
-	<haxeflag name="--macro" value="openfl.Lib.includeExterns()" if="display || flash" />
+	<source path="extern" if="display || flash" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />

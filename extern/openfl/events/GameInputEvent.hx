@@ -13,17 +13,17 @@ import openfl.ui.GameInputDevice;
 	/**
 	 * Indicates that a compatible device has been connected or turned on.
 	 */
-	public static var DEVICE_ADDED:String;
+	public static inline var DEVICE_ADDED = "deviceAdded";
 	
 	/**
 	 * Indicates that one of the enumerated devices has been disconnected or turned off.
 	 */
-	public static var DEVICE_REMOVED:String;
+	public static inline var DEVICE_REMOVED = "deviceRemoved";
 	
 	/**
 	 * Dispatched when a game input device is connected but is not usable.
 	 */
-	public static var DEVICE_UNUSABLE:String;
+	public static inline var DEVICE_UNUSABLE = "deviceUnusable";
 	
 	
 	/**

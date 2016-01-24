@@ -7,8 +7,8 @@ import openfl.display.InteractiveObject;
 class ContextMenuEvent extends Event {
 	
 	
-	public static var MENU_ITEM_SELECT = "menuItemSelect";
-	public static var MENU_SELECT = "menuSelect";
+	public static inline var MENU_ITEM_SELECT = "menuItemSelect";
+	public static inline var MENU_SELECT = "menuSelect";
 	
 	public var contextMenuOwner:InteractiveObject;
 	public var mouseTarget:InteractiveObject;

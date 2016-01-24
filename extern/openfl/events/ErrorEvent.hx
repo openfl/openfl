@@ -29,7 +29,7 @@ extern class ErrorEvent extends TextEvent {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var ERROR:String;
+	public static inline var ERROR = "error";
 	
 	
 	/**

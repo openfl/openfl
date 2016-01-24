@@ -12,17 +12,16 @@ package openfl.display;
 @:native("flash.display.GradientType")
 #end
 
-
-@:fakeEnum(String) extern enum GradientType {
-	
-	/**
-	 * Value used to specify a radial gradient fill.
-	 */
-	RADIAL;
+@:enum abstract GradientType(String) from String to String {
 	
 	/**
 	 * Value used to specify a linear gradient fill.
 	 */
-	LINEAR;
+	public var LINEAR = "linear";
+	
+	/**
+	 * Value used to specify a radial gradient fill.
+	 */
+	public var RADIAL = "radial";
 	
 }

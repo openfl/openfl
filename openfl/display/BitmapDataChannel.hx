@@ -1,11 +1,11 @@
 package openfl.display;
 
 
-class BitmapDataChannel {
+@:enum abstract BitmapDataChannel(Int) from Int to Int {
 	
-	public static inline var ALPHA = 8;
-	public static inline var BLUE = 4;
-	public static inline var GREEN = 2;
-	public static inline var RED = 1;
+	public var ALPHA = 8;
+	public var BLUE = 4;
+	public var GREEN = 2;
+	public var RED = 1;
 	
 }

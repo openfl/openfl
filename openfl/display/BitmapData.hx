@@ -46,7 +46,6 @@ import js.html.Uint8ClampedArray;
 import js.Browser;
 #end
 
-
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
@@ -968,8 +967,56 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		
-		openfl.Lib.notImplemented ("BitmapData.noise");
+		//Seeded Random Number Generator
+		var rand:Void->Int = {
+			function func():Int 
+			{	
+				randomSeed = randomSeed * 1103515245 + 12345; 
+				return Std.int(Math.abs(randomSeed / 65536)) % 32768; 
+			}
+		};
+		rand();
 		
+		//Range of values to value to.
+		var range:Int = high - low;		
+		var data:ByteArray = new ByteArray();
+		
+		var redChannel:Bool = ((channelOptions & ( 1 << 0 )) >> 0) == 1;
+		var greenChannel:Bool = ((channelOptions & ( 1 << 1 )) >> 1) == 1;
+		var blueChannel:Bool = ((channelOptions & ( 1 << 2 )) >> 2) == 1;
+		var alphaChannel:Bool = ((channelOptions & ( 1 << 3 )) >> 3) == 1;
+		
+		for (y in 0...height)
+		{
+			for (x in 0...width)
+			{
+				//Default channel colours if all channel options are false.
+				var red:Int = 0;
+				var blue:Int = 0;
+				var green:Int = 0;
+				var alpha:Int = 255;
+				
+				if (grayScale)
+				{
+					red = green = blue = low + (rand() % range);
+					alpha = 255;
+				}
+				else
+				{
+					if (redChannel) red = low + (rand() % range);
+					if (greenChannel) green = low + (rand() % range);
+					if (blueChannel) blue = low + (rand() % range);
+					if (alphaChannel) alpha = low + (rand() % range);
+				}
+				
+				var rgb:Int = alpha;
+				rgb = (rgb << 8) + red;
+				rgb = (rgb << 8) + green;
+				rgb = (rgb << 8) + blue;
+				
+				setPixel32(x, y, rgb);
+			}
+		}		
 	}
 	
 	
@@ -1082,180 +1129,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (sourceBitmapData == null || sourceRect == null || destPoint == null || sourceRect.x > sourceBitmapData.width || sourceRect.y > sourceBitmapData.height || destPoint.x > width || destPoint.y > height) return 0;
 		
-		if (sourceBitmapData == this && sourceRect.equals (rect) && destPoint.x == 0 && destPoint.y == 0) {
-			
-			var hits = 0;
-			
-			#if flash
-			var memory = new ByteArray ();
-			@:privateAccess memory.length = width * height * 4;
-			#else
-			var memory = new ByteArray (width * height * 4);
-			#end
-			memory = getPixels (rect);
-			memory.position = 0;
-			Memory.select (memory);
-			
-			var thresholdMask:Int = cast threshold & mask;
-			
-			var width_yy:Int, position:Int, pixelMask:Int, pixelValue, i, test;
-			
-			for (yy in 0...height) {
-				
-				width_yy = width * yy;
-				
-				for (xx in 0...width) {
-					
-					position = (width_yy + xx) * 4;
-					pixelValue = Memory.getI32 (position);
-					pixelMask = cast pixelValue & mask;
-					
-					i = __ucompare (pixelMask, thresholdMask);
-					test = false;
-					
-					if (operation == "==") { test = (i == 0); }
-					else if (operation == "<") { test = (i == -1);}
-					else if (operation == ">") { test = (i == 1); }
-					else if (operation == "!=") { test = (i != 0); }
-					else if (operation == "<=") { test = (i == 0 || i == -1); }
-					else if (operation == ">=") { test = (i == 0 || i == 1); }
-					
-					if (test) {
-						
-						Memory.setI32 (position, color);
-						hits++;
-						
-					}
-					
-				}
-				
-			}
-			
-			memory.position = 0;
-			setPixels (rect, memory);
-			Memory.select (null);
-			return hits;
-			
-		} else {
-			
-			sourceRect = sourceRect.clone ();
-			
-			if (sourceRect.right > sourceBitmapData.width) {
-				
-				sourceRect.width = sourceBitmapData.width - sourceRect.x;
-				
-			}
-			
-			if (sourceRect.bottom > sourceBitmapData.height) {
-				
-				sourceRect.height = sourceBitmapData.height - sourceRect.y;
-				
-			}
-			
-			var targetRect = sourceRect.clone ();
-			targetRect.offsetPoint (destPoint);
-			
-			if (targetRect.right > width) {
-				
-				targetRect.width = width - targetRect.x;
-				
-			}
-			
-			if (targetRect.bottom > height) {
-				
-				targetRect.height = height - targetRect.y;
-				
-			}
-			
-			sourceRect.width = Math.min (sourceRect.width, targetRect.width);
-			sourceRect.height = Math.min (sourceRect.height, targetRect.height);
-			
-			var sx = Std.int (sourceRect.x);
-			var sy = Std.int (sourceRect.y);
-			var sw = Std.int (sourceRect.width);
-			var sh = Std.int (sourceRect.height);
-			
-			var dx = Std.int (destPoint.x);
-			var dy = Std.int (destPoint.y);
-			
-			var bw:Int = width - sw - dx;
-			var bh:Int = height - sh - dy;
-			
-			var dw:Int = (bw < 0) ? sw + (width - sw - dx) : sw;
-			var dh:Int = (bw < 0) ? sh + (height - sh - dy) : sh;
-			
-			var hits = 0;
-			
-			var canvasMemory = (sw * sh) * 4;
-			var sourceMemory = (sw * sh) * 4;
-			var totalMemory = (canvasMemory + sourceMemory);
-			
-			#if flash
-			var memory = new ByteArray ();
-			@:privateAccess memory.length = totalMemory;
-			#else
-			var memory = new ByteArray (totalMemory);
-			#end
-			
-			memory.position = 0;
-			
-			var pixels = sourceBitmapData.getPixels (sourceRect);
-			
-			if (copySource) {
-				
-				memory.writeBytes (pixels);
-				
-			} else {
-				
-				memory.writeBytes (getPixels (targetRect));
-				
-			}
-			
-			memory.position = canvasMemory;
-			memory.writeBytes (pixels);
-			
-			memory.position = 0;
-			Memory.select (memory);
-			
-			var thresholdMask:Int = cast threshold & mask;
-			
-			var position:Int, pixelMask:Int, pixelValue, i, test;
-			
-			for (yy in 0...dh) {
-				
-				for (xx in 0...dw) {
-					
-					position = ((xx + sx) + (yy + sy) * sw) * 4;
-					pixelValue = Memory.getI32 (canvasMemory + position);
-					pixelMask = cast pixelValue & mask;
-					
-					i = __ucompare (pixelMask, thresholdMask);
-					test = false;
-					
-					if (operation == "==") { test = (i == 0); }
-					else if (operation == "<") { test = (i == -1);}
-					else if (operation == ">") { test = (i == 1); }
-					else if (operation == "!=") { test = (i != 0); }
-					else if (operation == "<=") { test = (i == 0 || i == -1); }
-					else if (operation == ">=") { test = (i == 0 || i == 1); }
-					
-					if (test) {
-						
-						Memory.setI32 (position, color);
-						hits++;
-						
-					}
-					
-				}
-				
-			}
-			
-			memory.position = 0;
-			setPixels (targetRect, memory);
-			Memory.select (null);
-			return hits;
-			
-		}
+		return image.threshold (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), operation, threshold, color, mask, copySource, ARGB32);
 		
 	}
 	
@@ -1588,60 +1462,6 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		ImageCanvasUtil.sync (image, false);
 		#end
-		
-	}
-	
-	
-	private static function __ucompare (n1:Int, n2:Int) : Int {
-		
-		var tmp1 : Int;
-		var tmp2 : Int;
-		
-		tmp1 = (n1 >> 24) & 0x000000FF;
-		tmp2 = (n2 >> 24) & 0x000000FF;
-		
-		if (tmp1 != tmp2) {
-			
-			return (tmp1 > tmp2 ? 1 : -1);
-			
-		} else {
-			
-			tmp1 = (n1 >> 16) & 0x000000FF;
-			tmp2 = (n2 >> 16) & 0x000000FF;
-			
-			if (tmp1 != tmp2) {
-				
-				return (tmp1 > tmp2 ? 1 : -1);
-				
-			} else {
-				
-				tmp1 = (n1 >> 8) & 0x000000FF;
-				tmp2 = (n2 >> 8) & 0x000000FF;
-				
-				if (tmp1 != tmp2) {
-					
-					return (tmp1 > tmp2 ? 1 : -1);
-					
-				} else {
-					
-					tmp1 = n1 & 0x000000FF;
-					tmp2 = n2 & 0x000000FF;
-					
-					if (tmp1 != tmp2) {
-						
-						return (tmp1 > tmp2 ? 1 : -1);
-						
-					} else {
-						
-						return 0;
-						
-					}
-					
-				}
-				
-			}
-			
-		}
 		
 	}
 	

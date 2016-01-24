@@ -11,7 +11,7 @@ class TextFormatAlignTest {
 		
 		switch (TextFormatAlign.CENTER) {
 			
-			case TextFormatAlign.CENTER, TextFormatAlign.JUSTIFY, TextFormatAlign.LEFT, TextFormatAlign.RIGHT:
+			case TextFormatAlign.CENTER, TextFormatAlign.JUSTIFY, TextFormatAlign.LEFT, TextFormatAlign.RIGHT, TextFormatAlign.START, TextFormatAlign.END:
 			
 		}
 		

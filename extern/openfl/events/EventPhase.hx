@@ -10,11 +10,10 @@ package openfl.events;
 @:native("flash.events.EventPhase")
 #end
 
-
-@:fakeEnum(UInt) extern enum EventPhase {
+@:enum abstract EventPhase(Int) from Int to Int {
 	
-	AT_TARGET;
-	BUBBLING_PHASE;
-	CAPTURING_PHASE;
+	public var AT_TARGET = 2;
+	public var BUBBLING_PHASE = 3;
+	public var CAPTURING_PHASE = 1;
 	
 }

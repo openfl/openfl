@@ -65,9 +65,9 @@ class DrawCommandBuffer {
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
 				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
-				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.shader, c.count);
-				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling, c.colors, c.blendMode);
+				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 				case END_FILL: var c = data.readEndFill (); endFill ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
 				case LINE_GRADIENT_STYLE: var c = data.readLineGradientStyle (); lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
@@ -106,7 +106,7 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):Void {
+	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
 		
 		types.push (BEGIN_GRADIENT_FILL);
 		o.push (type);
@@ -116,7 +116,7 @@ class DrawCommandBuffer {
 		o.push (matrix);
 		o.push (spreadMethod);
 		o.push (interpolationMethod);
-		o.push (focalPointRatio);
+		f.push (focalPointRatio);
 		
 	}
 	
@@ -226,15 +226,15 @@ class DrawCommandBuffer {
 		
 	}
 	
-	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
+	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
 		
 		types.push (DRAW_ROUND_RECT);
 		f.push (x);
 		f.push (y);
 		f.push (width);
 		f.push (height);
-		f.push (rx);
-		f.push (ry);
+		f.push (ellipseWidth);
+		o.push (ellipseHeight);
 		
 	}
 	
@@ -252,15 +252,13 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling, colors:Vector<Int>, blendMode:Int):Void {
+	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void {
 		
 		types.push (DRAW_TRIANGLES);
 		o.push (vertices);
 		o.push (indices);
 		o.push (uvtData);
 		o.push (culling);
-		o.push (colors);
-		i.push (blendMode);
 		
 	}
 	
@@ -283,7 +281,7 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):Void {
+	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
 		
 		types.push (LINE_GRADIENT_STYLE);
 		o.push (type);
@@ -293,22 +291,22 @@ class DrawCommandBuffer {
 		o.push (matrix);
 		o.push (spreadMethod);
 		o.push (interpolationMethod);
-		o.push (focalPointRatio);
+		f.push (focalPointRatio);
 		
 	}
 	
 	
-	public function lineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>):Void {
+	public function lineStyle (thickness:Null<Float>, color:Int, alpha:Float, pixelHinting:Bool, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Float):Void {
 		
 		types.push (LINE_STYLE);
 		o.push (thickness);
-		o.push (color);
-		o.push (alpha);
-		o.push (pixelHinting);
+		i.push (color);
+		f.push (alpha);
+		b.push (pixelHinting);
 		o.push (scaleMode);
 		o.push (caps);
 		o.push (joints);
-		o.push (miterLimit);
+		f.push (miterLimit);
 		
 	}
 	
