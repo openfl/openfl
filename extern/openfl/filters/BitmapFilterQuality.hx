@@ -10,24 +10,21 @@ package openfl.filters;
 @:native("flash.filters.BitmapFilterQuality")
 #end
 
-
-extern class BitmapFilterQuality {
-	
+@:enum abstract BitmapFilterQuality(Int) from Int to Int {
 	
 	/**
 	 * Defines the high quality filter setting.
 	 */
-	public static var HIGH:Int;
+	public var HIGH = 3;
 	
 	/**
 	 * Defines the medium quality filter setting.
 	 */
-	public static var MEDIUM:Int;
+	public var MEDIUM = 2;
 	
 	/**
 	 * Defines the low quality filter setting.
 	 */
-	public static var LOW:Int;
-	
+	public var LOW = 1;
 	
 }

@@ -14,22 +14,21 @@ package openfl.display;
 @:native("flash.display.SpreadMethod")
 #end
 
-
-@:fakeEnum(String) extern enum SpreadMethod {
-	
-	/**
-	 * Specifies that the gradient use the <i>repeat</i> spread method.
-	 */
-	REPEAT;
-	
-	/**
-	 * Specifies that the gradient use the <i>reflect</i> spread method.
-	 */
-	REFLECT;
+@:enum abstract SpreadMethod(String) from String to String {
 	
 	/**
 	 * Specifies that the gradient use the <i>pad</i> spread method.
 	 */
-	PAD;
+	public var PAD = "pad";
+	
+	/**
+	 * Specifies that the gradient use the <i>reflect</i> spread method.
+	 */
+	public var REFLECT = "reflect";
+	
+	/**
+	 * Specifies that the gradient use the <i>repeat</i> spread method.
+	 */
+	public var REPEAT = "repeat";
 	
 }

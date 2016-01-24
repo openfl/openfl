@@ -4,8 +4,8 @@ package openfl.events;
 class TimerEvent extends Event {
 	
 	
-	public static var TIMER = "timer";
-	public static var TIMER_COMPLETE = "timerComplete";
+	public static inline var TIMER = "timer";
+	public static inline var TIMER_COMPLETE = "timerComplete";
 	
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false):Void {

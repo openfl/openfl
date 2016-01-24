@@ -23,7 +23,7 @@ extern class IOErrorEvent extends ErrorEvent {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var IO_ERROR:String;
+	public static inline var IO_ERROR = "ioError";
 	
 	#if flash
 	@:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;

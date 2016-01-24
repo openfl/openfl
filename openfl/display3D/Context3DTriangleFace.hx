@@ -20,7 +20,7 @@ abstract Context3DTriangleFace(Int) {
 	}
 	
 	
-	@:from static public inline function fromInt (s:Int) {
+	@:from public static inline function fromInt (s:Int) {
 		
 		return new Context3DTriangleFace (s);
 		

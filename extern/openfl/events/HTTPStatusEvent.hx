@@ -38,7 +38,7 @@ extern class HTTPStatusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var HTTP_RESPONSE_STATUS:String;
+	public static inline var HTTP_RESPONSE_STATUS = "httpResponseStatus";
 	
 	/**
 	 * The <code>HTTPStatusEvent.HTTP_STATUS</code> constant defines the value of
@@ -46,7 +46,7 @@ extern class HTTPStatusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var HTTP_STATUS:String;
+	public static inline var HTTP_STATUS = "httpStatus";
 	
 	
 	public var redirected:Bool;

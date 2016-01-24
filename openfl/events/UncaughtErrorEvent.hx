@@ -4,7 +4,7 @@ package openfl.events;
 class UncaughtErrorEvent extends ErrorEvent {
 	
 	
-	public static var UNCAUGHT_ERROR = "uncaughtError";
+	public static inline var UNCAUGHT_ERROR = "uncaughtError";
 	
 	public var error (default, null):Dynamic;
 	

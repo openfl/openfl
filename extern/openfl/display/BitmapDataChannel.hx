@@ -27,27 +27,26 @@ package openfl.display;
 @:native("flash.display.BitmapDataChannel")
 #end
 
-
-extern class BitmapDataChannel {
+@:enum abstract BitmapDataChannel(Int) from Int to Int {
 	
 	/**
 	 * The alpha channel.
 	 */
-	public static inline var ALPHA = 8;
+	public var ALPHA = 8;
 	
 	/**
 	 * The blue channel.
 	 */
-	public static inline var BLUE = 4;
+	public var BLUE = 4;
 	
 	/**
 	 * The green channel.
 	 */
-	public static inline var GREEN = 2;
+	public var GREEN = 2;
 	
 	/**
 	 * The red channel.
 	 */
-	public static inline var RED = 1;
+	public var RED = 1;
 	
 }

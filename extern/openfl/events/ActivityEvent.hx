@@ -4,7 +4,7 @@ package openfl.events; #if (display || !flash)
 extern class ActivityEvent extends Event {
 	
 	
-	public static var ACTIVITY:String;
+	public static inline var ACTIVITY = "activity";
 	
 	public var activating:Bool;
 	

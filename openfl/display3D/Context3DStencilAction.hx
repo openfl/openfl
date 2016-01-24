@@ -24,7 +24,7 @@ abstract Context3DStencilAction(Int) {
 	}
 	
 	
-	@:from static public inline function fromInt (s:Int) {
+	@:from public static inline function fromInt (s:Int) {
 		
 		return new Context3DStencilAction(s);
 		

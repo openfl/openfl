@@ -59,7 +59,11 @@ class Mapping {
 				//         s 															flags  	dest    a     b 	    mw 	  mh    ndwm  scale dm	  lod 
 				new OpLUT ("%dest = %cast(texture%texdimLod(%b,%texsize(%a)).%dm);\n", null, true, true, true, null, null, null, null, true, null),
 				new OpLUT ("if ( float(%a)<0.0 ) discard;\n", null, false, true, false, null, null, null, true, null, null),
-				new OpLUT ("%dest = %cast(texture%texdim(%b,%texsize(%a)%lod).%dm);\n", null, true, true, true, null, null, true, null, true, true),
+                #if js
+					new OpLUT ("%dest = %cast(texture%texdimYFlip(%b,%texsize(%a)%lod).%dm);\n", null, true, true, true, null, null, true, null, true, true),
+				#else
+					new OpLUT ("%dest = %cast(texture%texdim(%b,%texsize(%a)%lod).%dm);\n", null, true, true, true, null, null, true, null, true, true),
+				#end
 				new OpLUT ("%dest = %cast(greaterThanEqual(%a,%b).%dm);\n", 0, true, true, true, null, null, true, null, true, null),
 				new OpLUT ("%dest = %cast(lessThan(%a,%b).%dm);\n", 0, true, true, true, null, null, true, null, true, null),
 				new OpLUT ("%dest = %cast(sign(%a));\n", 0, true, true, false, null, null, null, null, null, null),

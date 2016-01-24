@@ -1,3 +1,30 @@
+3.6.0 (01/22/2016)
+------------------
+
+* Moved to a standard abstract enum style for all core enums
+* Moved to inlining on all core constant values (for Haxe 3.3)
+* Moved to no-inlining on all core methods (reflection support)
+* Standardized the signature of Graphics to be more consistent
+* Added support for using a custom backends with an external target
+* Added a COMPLETE event to FileReference when choosing a file
+* Added TextFormatAlign START and END support to TextField
+* Added color offset support to native drawTiles
+* Improved the handling of stage.displayState on window changes
+* Improved how core externs are imported to not require a macro
+* Improved the behavior of CLICK to occur only on the same target object
+* Improved the behavior of SimpleButton to ignore "drag over" actions
+* Improved support for custom backends that do not use Lime
+* Improved the behavior of BitmapData.threshold
+* Improved how video width and height are calculated on HTML5
+* Improved handling of pixel format for Stage3D
+* Fixed the behavior of byteArray.bytesAvailable
+* Fixed the extern for PNGEncoderOptions on Flash
+* Fixed a possible crash when editing TextField htmlText
+* Fixed a crash when using an empty net stream in Video
+* Fixed a crash when using graphics.copyFrom with an empty target object
+* Fixed some minor issues in URLLoader
+
+
 3.5.3 (12/16/2015)
 ------------------
 

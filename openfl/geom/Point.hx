@@ -97,7 +97,7 @@ class Point {
 	}
 	
 	
-	public inline function setTo (xa:Float, ya:Float):Void {
+	public function setTo (xa:Float, ya:Float):Void {
 		
 		x = xa;
 		y = ya;

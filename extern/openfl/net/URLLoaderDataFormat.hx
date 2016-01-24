@@ -10,22 +10,21 @@ package openfl.net;
 @:native("flash.net.URLLoaderDataFormat")
 #end
 
-
-@:fakeEnum(String) extern enum URLLoaderDataFormat {
+@:enum abstract URLLoaderDataFormat(String) from String to String {
 	
 	/**
 	 * Specifies that downloaded data is received as raw binary data.
 	 */
-	BINARY;
+	public var BINARY = "binary";
 	
 	/**
 	 * Specifies that downloaded data is received as text.
 	 */
-	TEXT;
+	public var TEXT = "text";
 	
 	/**
 	 * Specifies that downloaded data is received as URL-encoded variables.
 	 */
-	VARIABLES;
+	public var VARIABLES = "variables";
 	
 }

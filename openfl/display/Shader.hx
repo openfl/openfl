@@ -16,51 +16,51 @@ class Shader {
 	/**
 	 * Attribute (vec2) with the object position.
 	 */
-	static public var aPosition = DefaultAttrib.Position;
+	public static var aPosition = DefaultAttrib.Position;
 	/**
 	 * Attribute (vec2) with the object texture coordinate.
 	 */
-	static public var aTexCoord = DefaultAttrib.TexCoord;
+	public static var aTexCoord = DefaultAttrib.TexCoord;
 	/**
 	 * Attribute (vec4) with the tint and alpha values of the object.
 	 */
-	static public var aColor = DefaultAttrib.Color;
+	public static var aColor = DefaultAttrib.Color;
 	
 	/**
 	 * Uniform (sampler2D) holding the object texture.
 	 */
-	static public var uSampler = DefaultUniform.Sampler;
+	public static var uSampler = DefaultUniform.Sampler;
 	/**
 	 * Uniform (mat4) holding the projection matrix.
 	 */
-	static public var uProjectionMatrix = DefaultUniform.ProjectionMatrix;
+	public static var uProjectionMatrix = DefaultUniform.ProjectionMatrix;
 	/**
 	 * Uniform (vec4) holding the colorMultiplier values from the transfrom.colorTransform of the object.
 	 */
-	static public var uColorMultiplier = DefaultUniform.ColorMultiplier;
+	public static var uColorMultiplier = DefaultUniform.ColorMultiplier;
 	/**
 	 * Uniform (vec4) holding the colorOffset values from the transfrom.colorTransform of the object.
 	 */
-	static public var uColorOffset = DefaultUniform.ColorOffset;
+	public static var uColorOffset = DefaultUniform.ColorOffset;
 	/**
 	 * Uniform (vec2) holding the object width and height. If it's used with Tilesheet.drawTiles() the value will be [0, 0]
 	 * For example, if the object is 200x200, the value of this uniform will be 200x200.
 	 */
-	static public var uObjectSize = "openfl_uObjectSize";
+	public static var uObjectSize = "openfl_uObjectSize";
 	/**
 	 * Uniform (vec2) holding the object texture real width and height. If it's used with Tilesheet.drawTiles() the value will be [0, 0]
 	 * For example, if the object is 200x200, the value of this uniform will be 256x256.
 	 */
-	static public var uTextureSize = "openfl_uTextureSize";
+	public static var uTextureSize = "openfl_uTextureSize";
 	
 	/**
 	 * Varying (vec2) with the object texture coordinate.
 	 */
-	static public var vTexCoord = DefaultVarying.TexCoord;
+	public static var vTexCoord = DefaultVarying.TexCoord;
 	/**
 	 * Varying (vec4) with the tint and alpha values of the object.
 	 */
-	static public var vColor = DefaultVarying.Color;
+	public static var vColor = DefaultVarying.Color;
 	
 	
 	@:noCompletion static var vertexHeader = [

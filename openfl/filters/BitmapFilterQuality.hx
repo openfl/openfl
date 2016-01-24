@@ -1,10 +1,10 @@
 package openfl.filters;
 
 
-class BitmapFilterQuality {
+@:enum abstract BitmapFilterQuality(Int) from Int to Int {
 	
-	public static var HIGH = 3;
-	public static var MEDIUM = 2;
-	public static var LOW = 1;
+	public var HIGH = 3;
+	public var MEDIUM = 2;
+	public var LOW = 1;
 	
 }

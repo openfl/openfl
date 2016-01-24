@@ -1,9 +1,9 @@
 package openfl.display;
 
 
-@:fakeEnum(String) enum GraphicsPathWinding {
+@:enum abstract GraphicsPathWinding(String) from String to String {
 	
-	EVEN_ODD;
-	NON_ZERO;
+	public var EVEN_ODD = "evenOdd";
+	public var NON_ZERO = "nonZero";
 	
 }

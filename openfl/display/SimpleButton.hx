@@ -26,6 +26,7 @@ class SimpleButton extends InteractiveObject {
 	public var useHandCursor:Bool;
 	
 	private var __currentState (default, set):DisplayObject;
+	private var __ignoreEvent:Bool;
 	private var __soundTransform:SoundTransform;
 	
 	
@@ -109,7 +110,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		return useHandCursor ? POINTER : null;
+		return (useHandCursor && !__ignoreEvent) ? POINTER : null;
 		
 	}
 	
@@ -464,6 +465,8 @@ class SimpleButton extends InteractiveObject {
 	
 	private function __this_onMouseOut (event:MouseEvent):Void {
 		
+		__ignoreEvent = false;
+		
 		if (upState != __currentState) {
 			
 			__currentState = upState;
@@ -475,7 +478,13 @@ class SimpleButton extends InteractiveObject {
 	
 	private function __this_onMouseOver (event:MouseEvent):Void {
 		
-		if (overState != __currentState && overState != null) {
+		if (event.buttonDown) {
+			
+			__ignoreEvent = true;
+			
+		}
+		
+		if (overState != __currentState && overState != null && !__ignoreEvent) {
 			
 			__currentState = overState;
 			
@@ -485,7 +494,9 @@ class SimpleButton extends InteractiveObject {
 	
 	
 	private function __this_onMouseUp (event:MouseEvent):Void {
-	
+		
+		__ignoreEvent = false;
+		
 		if (overState != null) {
 			
 			__currentState = overState;

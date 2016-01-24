@@ -17,7 +17,7 @@ extern class TextEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var LINK:String;
+	public static inline var LINK = "link";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -28,7 +28,7 @@ extern class TextEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TEXT_INPUT:String;
+	public static inline var TEXT_INPUT = "textInput";
 	
 	
 	/**

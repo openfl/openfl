@@ -16,8 +16,7 @@ package openfl.display;
 @:native("flash.display.BlendMode")
 #end
 
-
-@:fakeEnum(String) extern enum BlendMode {
+@:enum abstract BlendMode(String) from String to String {
 	
 	/**
 	 * Adds the values of the constituent colors of the display object to the
@@ -29,7 +28,7 @@ package openfl.display;
 	 * resulting RGB value for the displayed pixel is 0xFFC833(because 0xAA +
 	 * 0xDD > 0xFF, 0xA6 + 0x22 = 0xC8, and 0x33 + 0x00 = 0x33).</p>
 	 */
-	ADD;
+	public var ADD = "add";
 	
 	/**
 	 * Applies the alpha value of each pixel of the display object to the
@@ -39,7 +38,7 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	ALPHA;
+	public var ALPHA = "alpha";
 	
 	/**
 	 * Selects the darker of the constituent colors of the display object and the
@@ -53,7 +52,7 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	DARKEN;
+	public var DARKEN = "darken";
 	
 	/**
 	 * Compares the constituent colors of the display object with the colors of
@@ -66,7 +65,7 @@ package openfl.display;
 	 * resulting RGB value for the displayed pixel is 0x222C33(because 0xFF -
 	 * 0xDD = 0x22, 0xF8 - 0xCC = 0x2C, and 0x33 - 0x00 = 0x33).</p>
 	 */
-	DIFFERENCE;
+	public var DIFFERENCE = "difference";
 	
 	/**
 	 * Erases the background based on the alpha value of the display object. This
@@ -75,7 +74,7 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	ERASE;
+	public var ERASE = "erase";
 	
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the display
@@ -87,12 +86,12 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	HARDLIGHT;
+	public var HARDLIGHT = "hardlight";
 	
 	/**
 	 * Inverts the background.
 	 */
-	INVERT;
+	public var INVERT = "invert";
 	
 	/**
 	 * Forces the creation of a transparency group for the display object. This
@@ -104,7 +103,7 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	LAYER;
+	public var LAYER = "layer";
 	
 	/**
 	 * Selects the lighter of the constituent colors of the display object and
@@ -118,7 +117,7 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	LIGHTEN;
+	public var LIGHTEN = "lighten";
 	
 	/**
 	 * Multiplies the values of the display object constituent colors by the
@@ -133,14 +132,14 @@ package openfl.display;
 	 * shade than the color of the display object or the color of the
 	 * background.</p>
 	 */
-	MULTIPLY;
+	public var MULTIPLY = "multiply";
 	
 	/**
 	 * The display object appears in front of the background. Pixel values of the
 	 * display object override the pixel values of the background. Where the
 	 * display object is transparent, the background is visible.
 	 */
-	NORMAL;
+	public var NORMAL = "normal";
 	
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the background.
@@ -152,7 +151,7 @@ package openfl.display;
 	 *
 	 * <p>Not supported under GPU rendering.</p>
 	 */
-	OVERLAY;
+	public var OVERLAY = "overlay";
 	
 	/**
 	 * Multiplies the complement(inverse) of the display object color by the
@@ -160,9 +159,9 @@ package openfl.display;
 	 * setting is commonly used for highlights or to remove black areas of the
 	 * display object.
 	 */
-	SCREEN;
+	public var SCREEN = "screen";
 	
-	SHADER;
+	public var SHADER = "shader";
 	
 	/**
 	 * Subtracts the values of the constituent colors in the display object from
@@ -174,6 +173,6 @@ package openfl.display;
 	 * resulting RGB value for the displayed pixel is 0x338400(because 0xDD -
 	 * 0xAA = 0x33, 0xA6 - 0x22 = 0x84, and 0x00 - 0x33 < 0x00).</p>
 	 */
-	SUBTRACT;
+	public var SUBTRACT = "subtract";
 	
 }

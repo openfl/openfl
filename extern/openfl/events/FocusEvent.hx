@@ -25,7 +25,7 @@ extern class FocusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var FOCUS_IN:String;
+	public static inline var FOCUS_IN = "focusIn";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -33,7 +33,7 @@ extern class FocusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var FOCUS_OUT:String;
+	public static inline var FOCUS_OUT = "focusOut";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -41,7 +41,7 @@ extern class FocusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var KEY_FOCUS_CHANGE:String;
+	public static inline var KEY_FOCUS_CHANGE = "keyFocusChange";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -49,7 +49,7 @@ extern class FocusEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var MOUSE_FOCUS_CHANGE:String;
+	public static inline var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
 	
 	
 	#if flash

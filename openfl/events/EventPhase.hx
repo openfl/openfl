@@ -1,10 +1,10 @@
 package openfl.events;
 
 
-enum EventPhase {
+@:enum abstract EventPhase(Int) from Int to Int {
 	
-	CAPTURING_PHASE;
-	AT_TARGET;
-	BUBBLING_PHASE;
+	public var AT_TARGET = 2;
+	public var BUBBLING_PHASE = 3;
+	public var CAPTURING_PHASE = 1;
 	
 }

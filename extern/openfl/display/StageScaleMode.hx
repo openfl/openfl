@@ -10,12 +10,11 @@ package openfl.display;
 @:native("flash.display.StageScaleMode")
 #end
 
-
-@:fakeEnum(String) extern enum StageScaleMode {
+@:enum abstract StageScaleMode(String) from String to String {
 	
-	SHOW_ALL;
-	NO_SCALE;
-	NO_BORDER;
-	EXACT_FIT;
+	public var EXACT_FIT = "exactFit";
+	public var NO_BORDER = "noBorder";
+	public var NO_SCALE = "noScale";
+	public var SHOW_ALL = "showAll";
 	
 }

@@ -93,7 +93,7 @@ class CanvasGraphics {
 	}
 	
 	
-	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>) {
+	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float) {
 	
 		#if (js && html5)
 		
@@ -166,37 +166,37 @@ class CanvasGraphics {
 	}
 	
 	
-	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
+	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
 		
 		#if (js && html5)
-		if (ry == -1) ry = rx;
+		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
 		
-		rx *= 0.5;
-		ry *= 0.5;
+		ellipseWidth *= 0.5;
+		ellipseHeight *= 0.5;
 		
-		if (rx > width / 2) rx = width / 2;
-		if (ry > height / 2) ry = height / 2;
+		if (ellipseWidth > width / 2) ellipseWidth = width / 2;
+		if (ellipseHeight > height / 2) ellipseHeight = height / 2;
 		
 		var xe = x + width,
 		ye = y + height,
-		cx1 = -rx + (rx * SIN45),
-		cx2 = -rx + (rx * TAN22),
-		cy1 = -ry + (ry * SIN45),
-		cy2 = -ry + (ry * TAN22);
+		cx1 = -ellipseWidth + (ellipseWidth * SIN45),
+		cx2 = -ellipseWidth + (ellipseWidth * TAN22),
+		cy1 = -ellipseHeight + (ellipseHeight * SIN45),
+		cy2 = -ellipseHeight + (ellipseHeight * TAN22);
 		
-		context.moveTo (xe, ye - ry);
+		context.moveTo (xe, ye - ellipseHeight);
 		context.quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
-		context.quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
-		context.lineTo (x + rx, ye);
+		context.quadraticCurveTo (xe + cx2, ye, xe - ellipseWidth, ye);
+		context.lineTo (x + ellipseWidth, ye);
 		context.quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
-		context.quadraticCurveTo (x, ye + cy2, x, ye - ry);
-		context.lineTo (x, y + ry);
+		context.quadraticCurveTo (x, ye + cy2, x, ye - ellipseHeight);
+		context.lineTo (x, y + ellipseHeight);
 		context.quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
-		context.quadraticCurveTo (x - cx2, y, x + rx, y);
-		context.lineTo (xe - rx, y);
+		context.quadraticCurveTo (x - cx2, y, x + ellipseWidth, y);
+		context.lineTo (xe - ellipseWidth, y);
 		context.quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
-		context.quadraticCurveTo (xe, y - cy2, xe, y + ry);
-		context.lineTo (xe, ye - ry);
+		context.quadraticCurveTo (xe, y - cy2, xe, y + ellipseHeight);
+		context.lineTo (xe, ye - ellipseHeight);
 		#end
 		
 	}
@@ -387,8 +387,8 @@ class CanvasGraphics {
 					case DRAW_ROUND_RECT:
 						
 						var c = data.readDrawRoundRect ();
-						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
-						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
 					default:
 						
@@ -547,7 +547,7 @@ class CanvasGraphics {
 				case DRAW_ROUND_RECT:
 					
 					var c = data.readDrawRoundRect ();
-					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
+					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				
 				case LINE_TO:
 					
@@ -596,11 +596,11 @@ class CanvasGraphics {
 							default: Std.string (c.caps).toLowerCase ();
 						});
 						
-						context.miterLimit = (c.miterLimit == null ? 3 : c.miterLimit);
+						context.miterLimit = c.miterLimit;
 						
-						if (c.alpha == 1 || c.alpha == null) {
+						if (c.alpha == 1) {
 							
-							context.strokeStyle = (c.color == null ? "#000000" : "#" + StringTools.hex (c.color & 0x00FFFFFF, 6));
+							context.strokeStyle = "#" + StringTools.hex (c.color & 0x00FFFFFF, 6);
 							
 						} else {
 							
@@ -608,7 +608,7 @@ class CanvasGraphics {
 							var g = (c.color & 0x00FF00) >>> 8;
 							var b = (c.color & 0x0000FF);
 							
-							context.strokeStyle = (c.color == null ? "#000000" : "rgba(" + r + ", " + g + ", " + b + ", " + c.alpha + ")");
+							context.strokeStyle = "rgba(" + r + ", " + g + ", " + b + ", " + c.alpha + ")";
 							
 						}
 						
@@ -961,8 +961,8 @@ class CanvasGraphics {
 						case DRAW_ROUND_RECT:
 							
 							var c = data.readDrawRoundRect ();
-							fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
-							strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+							fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+							strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						
 						case DRAW_TRIANGLES:
 							
@@ -1364,7 +1364,7 @@ class CanvasGraphics {
 					case DRAW_ROUND_RECT:
 						
 						var c = data.readDrawRoundRect ();
-						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
+						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
 					case LINE_TO:
 						

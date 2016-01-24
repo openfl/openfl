@@ -10,8 +10,7 @@ package openfl.display;
 @:native("flash.display.LineScaleMode")
 #end
 
-
-@:fakeEnum(String) extern enum LineScaleMode {
+@:enum abstract LineScaleMode(String) from String to String {
 	
 	/**
 	 * With this setting used as the <code>scaleMode</code> parameter of the
@@ -22,20 +21,20 @@ package openfl.display;
 	 * scaled only vertically, and the circle on the right is scaled both
 	 * vertically and horizontally.
 	 */
-	HORIZONTAL;
+	public var HORIZONTAL = "horizontal";
 	
 	/**
 	 * With this setting used as the <code>scaleMode</code> parameter of the
 	 * <code>lineStyle()</code> method, the thickness of the line never scales.
 	 */
-	NONE;
+	public var NONE = "none";
 	
 	/**
 	 * With this setting used as the <code>scaleMode</code> parameter of the
 	 * <code>lineStyle()</code> method, the thickness of the line always scales
 	 * when the object is scaled(the default).
 	 */
-	NORMAL;
+	public var NORMAL = "normal";
 	
 	/**
 	 * With this setting used as the <code>scaleMode</code> parameter of the
@@ -46,6 +45,6 @@ package openfl.display;
 	 * left is scaled only horizontally, and the circle on the right is scaled
 	 * both vertically and horizontally.
 	 */
-	VERTICAL;
+	public var VERTICAL = "vertical";
 	
 }

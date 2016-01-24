@@ -4,8 +4,8 @@ package openfl.events;
 class DataEvent extends TextEvent {
 	
 	
-	public static var DATA = "data";
-	public static var UPLOAD_COMPLETE_DATA = "uploadCompleteData";
+	public static inline var DATA = "data";
+	public static inline var UPLOAD_COMPLETE_DATA = "uploadCompleteData";
 	
 	public var data:String;
 	

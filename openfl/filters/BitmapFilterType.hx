@@ -1,12 +1,36 @@
 package openfl.filters;
 
 
-class BitmapFilterType {
+@:enum abstract BitmapFilterType(Null<Int>) {
 	
+	public var FULL = 0;
+	public var INNER = 1;
+	public var OUTER = 2;
 	
-	public static var FULL = "full";
-	public static var INNER = "inner";
-	public static var OUTER = "outer";
+	@:from private static function fromString (value:String):BitmapFilterType {
+		
+		return switch (value) {
+			
+			case "full": FULL;
+			case "inner": INNER;
+			case "outer": OUTER;
+			default: null;
+			
+		}
+		
+	}
 	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case BitmapFilterType.FULL: "full";
+			case BitmapFilterType.INNER: "inner";
+			case BitmapFilterType.OUTER: "outer";
+			default: null;
+			
+		}
+		
+	}
 	
 }

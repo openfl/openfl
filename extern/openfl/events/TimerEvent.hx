@@ -15,7 +15,7 @@ extern class TimerEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TIMER:String;
+	public static inline var TIMER = "timer";
 	
 	/**
 	 * Defines the value of the <code>type</code> property of a
@@ -23,7 +23,7 @@ extern class TimerEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var TIMER_COMPLETE:String;
+	public static inline var TIMER_COMPLETE = "timerComplete";
 	
 	
 	/**

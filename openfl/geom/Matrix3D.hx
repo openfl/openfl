@@ -30,7 +30,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function append (lhs:Matrix3D):Void {
+	public function append (lhs:Matrix3D):Void {
 		
 		var m111:Float = this.rawData[0], m121:Float = this.rawData[4], m131:Float = this.rawData[8], m141:Float = this.rawData[12],
 			m112:Float = this.rawData[1], m122:Float = this.rawData[5], m132:Float = this.rawData[9], m142:Float = this.rawData[13],
@@ -64,7 +64,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
+	public function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
 		var m = __getAxisRotation (axis.x, axis.y, axis.z, degrees);
 		
@@ -80,14 +80,14 @@ class Matrix3D {
 	}
 	
 	
-	public inline function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
+	public function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
 		this.append (new Matrix3D ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ]));
 		
 	}
 	
 	
-	public inline function appendTranslation (x:Float, y:Float, z:Float):Void {
+	public function appendTranslation (x:Float, y:Float, z:Float):Void {
 		
 		rawData[12] += x;
 		rawData[13] += y;
@@ -96,7 +96,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function clone ():Matrix3D {
+	public function clone ():Matrix3D {
 		
 		return new Matrix3D (this.rawData.copy ());
 		
@@ -507,7 +507,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function interpolateTo (toMat:Matrix3D, percent:Float):Void {
+	public function interpolateTo (toMat:Matrix3D, percent:Float):Void {
 		
 		for (i in 0...16) {
 			
@@ -518,7 +518,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function invert ():Bool {
+	public function invert ():Bool {
 		
 		var d = determinant;
 		var invertable = Math.abs (d) > 0.00000000001;
@@ -623,7 +623,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function prepend (rhs:Matrix3D):Void {
+	public function prepend (rhs:Matrix3D):Void {
 		
 		var m111:Float = rhs.rawData[0], m121:Float = rhs.rawData[4], m131:Float = rhs.rawData[8], m141:Float = rhs.rawData[12],
 			m112:Float = rhs.rawData[1], m122:Float = rhs.rawData[5], m132:Float = rhs.rawData[9], m142:Float = rhs.rawData[13],
@@ -657,7 +657,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
+	public function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
 		var m = __getAxisRotation (axis.x, axis.y, axis.z, degrees);
 		
@@ -673,14 +673,14 @@ class Matrix3D {
 	}
 	
 	
-	public inline function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
+	public function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
 		this.prepend (new Matrix3D ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
 		
 	}
 	
 	
-	public inline function prependTranslation (x:Float, y:Float, z:Float):Void {
+	public function prependTranslation (x:Float, y:Float, z:Float):Void {
 		
 		var m = new Matrix3D ();
 		m.position = new Vector3D (x, y, z);
@@ -796,7 +796,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function transformVector (v:Vector3D):Vector3D {
+	public function transformVector (v:Vector3D):Vector3D {
 		
 		var x = v.x;
 		var y = v.y;
@@ -829,7 +829,7 @@ class Matrix3D {
 	}
 	
 	
-	public inline function transpose ():Void {
+	public function transpose ():Void {
 		
 		var oRawData = rawData.copy ();
 		rawData[1] = oRawData[4];
@@ -887,7 +887,7 @@ class Matrix3D {
 	
 	
 	
-	public inline function get_determinant ():Float {
+	public function get_determinant ():Float {
 		
 		return 1 * ((rawData[0] * rawData[5] - rawData[4] * rawData[1]) * (rawData[10] * rawData[15] - rawData[14] * rawData[11]) 
 			- (rawData[0] * rawData[9] - rawData[8] * rawData[1]) * (rawData[6] * rawData[15] - rawData[14] * rawData[7])
@@ -899,14 +899,14 @@ class Matrix3D {
 	}
 	
 	
-	public inline function get_position ():Vector3D {
+	public function get_position ():Vector3D {
 		
 		return new Vector3D (rawData[12], rawData[13], rawData[14]);
 		
 	}
 	
 	
-	public inline function set_position (val:Vector3D):Vector3D {
+	public function set_position (val:Vector3D):Vector3D {
 		
 		rawData[12] = val.x;
 		rawData[13] = val.y;

@@ -8,22 +8,22 @@ import openfl.geom.Point;
 class MouseEvent extends Event {
 	
 	
-	public static var CLICK = "click";
-	public static var DOUBLE_CLICK = "doubleClick";
-	public static var MIDDLE_CLICK = "middleClick";
-	public static var MIDDLE_MOUSE_DOWN = "middleMouseDown";
-	public static var MIDDLE_MOUSE_UP = "middleMouseUp";
-	public static var MOUSE_DOWN = "mouseDown";
-	public static var MOUSE_MOVE = "mouseMove";
-	public static var MOUSE_OUT = "mouseOut";
-	public static var MOUSE_OVER = "mouseOver";
-	public static var MOUSE_UP = "mouseUp";
-	public static var MOUSE_WHEEL = "mouseWheel";
-	public static var RIGHT_CLICK = "rightClick";
-	public static var RIGHT_MOUSE_DOWN = "rightMouseDown";
-	public static var RIGHT_MOUSE_UP = "rightMouseUp";
-	public static var ROLL_OUT = "rollOut";
-	public static var ROLL_OVER = "rollOver";
+	public static inline var CLICK = "click";
+	public static inline var DOUBLE_CLICK = "doubleClick";
+	public static inline var MIDDLE_CLICK = "middleClick";
+	public static inline var MIDDLE_MOUSE_DOWN = "middleMouseDown";
+	public static inline var MIDDLE_MOUSE_UP = "middleMouseUp";
+	public static inline var MOUSE_DOWN = "mouseDown";
+	public static inline var MOUSE_MOVE = "mouseMove";
+	public static inline var MOUSE_OUT = "mouseOut";
+	public static inline var MOUSE_OVER = "mouseOver";
+	public static inline var MOUSE_UP = "mouseUp";
+	public static inline var MOUSE_WHEEL = "mouseWheel";
+	public static inline var RIGHT_CLICK = "rightClick";
+	public static inline var RIGHT_MOUSE_DOWN = "rightMouseDown";
+	public static inline var RIGHT_MOUSE_UP = "rightMouseUp";
+	public static inline var ROLL_OUT = "rollOut";
+	public static inline var ROLL_OVER = "rollOver";
 	
 	private static var __altKey:Bool;
 	private static var __buttonDown:Bool;

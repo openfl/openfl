@@ -4,8 +4,8 @@ package openfl.events; #if !openfl_legacy
 class HTTPStatusEvent extends Event {
 	
 	
-	public static var HTTP_RESPONSE_STATUS = "httpResponseStatus";
-	public static var HTTP_STATUS = "httpStatus";
+	public static inline var HTTP_RESPONSE_STATUS = "httpResponseStatus";
+	public static inline var HTTP_STATUS = "httpStatus";
 	
 	public var redirected:Bool;
 	public var responseHeaders:Array<Dynamic>;

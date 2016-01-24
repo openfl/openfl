@@ -26,14 +26,14 @@ class Vector3D {
 	}
 	
 	
-	public inline function add (a:Vector3D):Vector3D {
+	public function add (a:Vector3D):Vector3D {
 		
 		return new Vector3D (this.x + a.x, this.y + a.y, this.z + a.z);
 		
 	}
 	
 	
-	public inline static function angleBetween (a:Vector3D, b:Vector3D):Float {
+	public static function angleBetween (a:Vector3D, b:Vector3D):Float {
 		
 		var la = a.length;
 		var lb = b.length;
@@ -56,14 +56,14 @@ class Vector3D {
 	}
 	
 	
-	public inline function clone ():Vector3D {
+	public function clone ():Vector3D {
 		
 		return new Vector3D (x, y, z, w);
 		
 	}
 	
 	
-	public inline function copyFrom (sourceVector3D:Vector3D):Void {
+	public function copyFrom (sourceVector3D:Vector3D):Void {
 		
 		x = sourceVector3D.x;
 		y = sourceVector3D.y;
@@ -72,14 +72,14 @@ class Vector3D {
 	}
 	
 	
-	public inline function crossProduct (a:Vector3D):Vector3D {
+	public function crossProduct (a:Vector3D):Vector3D {
 		
 		return new Vector3D (y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);
 		
 	}
 	
 	
-	public inline function decrementBy (a:Vector3D):Void {
+	public function decrementBy (a:Vector3D):Void {
 		
 		x -= a.x;
 		y -= a.y;
@@ -88,7 +88,7 @@ class Vector3D {
 	}
 	
 	
-	public inline static function distance (pt1:Vector3D, pt2:Vector3D):Float {
+	public static function distance (pt1:Vector3D, pt2:Vector3D):Float {
 		
 		var x:Float = pt2.x - pt1.x;
 		var y:Float = pt2.y - pt1.y;
@@ -99,21 +99,21 @@ class Vector3D {
 	}
 	
 	
-	public inline function dotProduct (a:Vector3D):Float {
+	public function dotProduct (a:Vector3D):Float {
 		
 		return x * a.x + y * a.y + z * a.z;
 		
 	}
 	
 	
-	public inline function equals (toCompare:Vector3D, allFour:Bool = false):Bool {
+	public function equals (toCompare:Vector3D, allFour:Bool = false):Bool {
 		
 		return x == toCompare.x && y == toCompare.y && z == toCompare.z && (!allFour || w == toCompare.w);
 		
 	}
 	
 	
-	public inline function incrementBy (a:Vector3D):Void {
+	public function incrementBy (a:Vector3D):Void {
 		
 		x += a.x;
 		y += a.y;
@@ -122,14 +122,14 @@ class Vector3D {
 	}
 	
 	
-	public inline function nearEquals (toCompare:Vector3D, tolerance:Float, ?allFour:Bool = false):Bool {
+	public function nearEquals (toCompare:Vector3D, tolerance:Float, ?allFour:Bool = false):Bool {
 		
 		return Math.abs (x - toCompare.x) < tolerance && Math.abs (y - toCompare.y) < tolerance && Math.abs (z - toCompare.z) < tolerance && (!allFour || Math.abs (w - toCompare.w) < tolerance);
 		
 	}
 	
 	
-	public inline function negate ():Void {
+	public function negate ():Void {
 		
 		x *= -1;
 		y *= -1;
@@ -138,7 +138,7 @@ class Vector3D {
 	}
 	
 	
-	public inline function normalize ():Float {
+	public function normalize ():Float {
 		
 		var l = length;
 		
@@ -155,7 +155,7 @@ class Vector3D {
 	}
 	
 	
-	public inline function project ():Void {
+	public function project ():Void {
 		
 		x /= w;
 		y /= w;
@@ -164,7 +164,7 @@ class Vector3D {
 	}
 	
 	
-	public inline function scaleBy (s:Float):Void {
+	public function scaleBy (s:Float):Void {
 		
 		x *= s;
 		y *= s;
@@ -173,7 +173,7 @@ class Vector3D {
 	}
 	
 	
-	public inline function setTo (xa:Float, ya:Float, za:Float):Void {
+	public function setTo (xa:Float, ya:Float, za:Float):Void {
 		
 		x = xa;
 		y = ya;
@@ -182,14 +182,14 @@ class Vector3D {
 	}
 	
 	
-	public inline function subtract (a:Vector3D):Vector3D {
+	public function subtract (a:Vector3D):Vector3D {
 		
 		return new Vector3D (x - a.x, y - a.y, z - a.z);
 		
 	}
 	
 	
-	public inline function toString ():String {
+	public function toString ():String {
 		
 		return 'Vector3D($x, $y, $z)';
 		
@@ -203,14 +203,14 @@ class Vector3D {
 	
 	
 	
-	private inline function get_length ():Float {
+	private function get_length ():Float {
 		
 		return Math.sqrt (x * x + y * y + z * z);
 		
 	}
 	
 	
-	private inline function get_lengthSquared ():Float {
+	private function get_lengthSquared ():Float {
 		
 		return x * x + y * y + z * z;
 		

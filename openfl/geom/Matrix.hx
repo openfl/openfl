@@ -34,7 +34,7 @@ class Matrix {
 	}
 	
 	
-	public inline function clone ():Matrix {
+	public function clone ():Matrix {
 		
 		return new Matrix (a, b, c, d, tx, ty);
 		
@@ -358,7 +358,7 @@ class Matrix {
 	}
 	
 	
-	private inline function setRotation (theta:Float, scale:Float = 1):Void {
+	private function setRotation (theta:Float, scale:Float = 1):Void {
 		
 		a = Math.cos (theta) * scale;
 		c = Math.sin (theta) * scale;
@@ -404,7 +404,7 @@ class Matrix {
 	}
 	
 	
-	public inline function toString ():String {
+	public function toString ():String {
 		
 		return 'matrix($a, $b, $c, $d, $tx, $ty)';
 		

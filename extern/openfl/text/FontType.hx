@@ -11,8 +11,7 @@ package openfl.text;
 @:native("flash.text.FontType")
 #end
 
-
-@:fakeEnum(String) extern enum FontType {
+@:enum abstract FontType(String) from String to String {
 	
 	/**
 	 * Indicates that this is a device font. The SWF file renders fonts with
@@ -29,7 +28,7 @@ package openfl.text;
 	 * installed on the system. For the same reason, device fonts are not
 	 * anti-aliased and may appear jagged at large point sizes.</p>
 	 */
-	DEVICE;
+	public var DEVICE = "device";
 	
 	/**
 	 * Indicates that this is an embedded font. Font outlines are embedded in the
@@ -48,7 +47,8 @@ package openfl.text;
 	 * flash.text.engine classes are directed to use such a font they will fall
 	 * back to device fonts.</p>
 	 */
-	EMBEDDED;
-	EMBEDDED_CFF;
+	public var EMBEDDED = "embedded";
+	
+	public var EMBEDDED_CFF = "embeddedCFF";
 	
 }

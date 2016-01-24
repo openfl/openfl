@@ -7,7 +7,7 @@ import openfl.events.Event;
 class AccelerometerEvent extends Event {
 	
 	
-	public static var UPDATE = "update";
+	public static inline var UPDATE = "update";
 	
 	public var accelerationX:Float;
 	public var accelerationY:Float;

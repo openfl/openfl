@@ -447,7 +447,6 @@ class URLLoader extends EventDispatcher {
 						
 						__data.position = 0;
 						this.data = __data.readUTFBytes (__data.length);
-						this.data.position = 0;
 					
 				}
 				
@@ -469,7 +468,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function writeFunction (output:Bytes, size:Int, nmemb:Int):Int {
+	private function writeFunction (output:haxe.io.Bytes, size:Int, nmemb:Int):Int {
 		
 		__data.writeBytes (ByteArray.fromBytes (output));
 		return size * nmemb;
@@ -477,7 +476,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function headerFunction (output:Bytes, size:Int, nmemb:Int):Int {
+	private function headerFunction (output:haxe.io.Bytes, size:Int, nmemb:Int):Int {
 		
 		// TODO
 		return size * nmemb;

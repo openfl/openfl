@@ -6,11 +6,11 @@ package openfl.utils;
 @:require(flash11)
 #end
 
-
-@:fakeEnum(String) extern enum CompressionAlgorithm {
+@:enum abstract CompressionAlgorithm(String) from String to String {
 	
-	DEFLATE;
-	LZMA;
-	ZLIB;
+	public var DEFLATE = "deflate";
+	//GZIP;
+	public var LZMA = "lzma";
+	public var ZLIB = "zlib";
 	
 }

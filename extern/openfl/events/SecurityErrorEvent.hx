@@ -29,7 +29,7 @@ extern class SecurityErrorEvent extends ErrorEvent {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	static public var SECURITY_ERROR:String;
+	public static inline var SECURITY_ERROR = "securityError";
 	
 	
 	/**

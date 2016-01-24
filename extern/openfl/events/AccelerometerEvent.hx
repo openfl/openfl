@@ -16,7 +16,7 @@ extern class AccelerometerEvent extends Event {
 	 *
 	 * <p>This event has the following properties:</p>
 	 */
-	public static var UPDATE:String;
+	public static inline var UPDATE = "update";
 	
 	
 	/**

@@ -10,22 +10,21 @@ package openfl.display;
 @:native("flash.display.StageDisplayState")
 #end
 
-
-@:fakeEnum(String) extern enum StageDisplayState {
-	
-	/**
-	 * Specifies that the Stage is in normal mode.
-	 */
-	NORMAL;
+@:enum abstract StageDisplayState(String) from String to String {
 	
 	/**
 	 * Specifies that the Stage is in full-screen mode.
 	 */
-	FULL_SCREEN;
+	public var FULL_SCREEN = "fullScreen";
 	
 	/**
 	 * Specifies that the Stage is in full-screen mode with keyboard interactivity enabled.
 	 */
-	FULL_SCREEN_INTERACTIVE;
+	public var FULL_SCREEN_INTERACTIVE = "fullScreenInteractive";
+	
+	/**
+	 * Specifies that the Stage is in normal mode.
+	 */
+	public var NORMAL = "normal";
 	
 }
