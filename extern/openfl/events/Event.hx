@@ -178,6 +178,10 @@ extern class Event {
 	 */
 	public static var ENTER_FRAME:String;
 	
+	#if air
+	public static var EXITING : String;
+	#end
+	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public static var EXIT_FRAME:String;
 	#end
