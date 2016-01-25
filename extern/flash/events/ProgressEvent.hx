@@ -4,8 +4,8 @@ package flash.events; #if (!display && flash)
 extern class ProgressEvent extends Event {
 	
 	
-	public static var PROGRESS(default,never):String;
-	public static var SOCKET_DATA(default,never):String;
+	public static var PROGRESS (default, never):String;
+	public static var SOCKET_DATA (default, never):String;
 	public var bytesLoaded:Float;
 	public var bytesTotal:Float;
 	
