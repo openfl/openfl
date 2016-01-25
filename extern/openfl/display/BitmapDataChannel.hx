@@ -27,7 +27,7 @@ package openfl.display;
 @:native("flash.display.BitmapDataChannel")
 #end
 
-@:enum abstract BitmapDataChannel(Int) from Int to Int {
+@:enum abstract BitmapDataChannel(Int) from Int to Int to UInt {
 	
 	/**
 	 * The alpha channel.
