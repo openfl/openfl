@@ -1,4 +1,4 @@
-package flash.display; #if (display && !flash)
+package flash.display; #if (!display && flash)
 
 
 @:final extern class PNGEncoderOptions {
