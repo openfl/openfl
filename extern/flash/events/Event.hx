@@ -43,6 +43,9 @@ extern class Event {
 	
 	public static var DEACTIVATE:String;
 	public static var ENTER_FRAME:String;
+	#if air
+	public static var EXITING : String;
+	#end
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public static var EXIT_FRAME:String;
@@ -125,6 +128,11 @@ extern class Event {
 	public function toString ():String;
 	
 	
+	
+	#if (flash && air)
+	static var NETWORK_CHANGE : String;
+	static var STANDARD_OUTPUT_CLOSE : String;
+	#end
 }
 
 
