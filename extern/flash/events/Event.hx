@@ -128,6 +128,11 @@ extern class Event {
 	public function toString ():String;
 	
 	
+	
+	#if (flash && air)
+	static var NETWORK_CHANGE : String;
+	static var STANDARD_OUTPUT_CLOSE : String;
+	#end
 }
 
 

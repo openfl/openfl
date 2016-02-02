@@ -12,6 +12,9 @@ extern class ProgressEvent extends Event {
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0);
 	
 	
+	#if (flash && air)
+	static var STANDARD_OUTPUT_DATA : String;
+	#end
 }
 
 
