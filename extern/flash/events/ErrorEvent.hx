@@ -4,7 +4,7 @@ package flash.events; #if (!display && flash)
 extern class ErrorEvent extends TextEvent {
 	
 	
-	public static var ERROR:String;
+	public static var ERROR (default, never):String;
 	
 	@:require(flash10_1) public var errorID (default, null):Int;
 	

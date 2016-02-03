@@ -10,11 +10,11 @@ extern class NetStream extends EventDispatcher {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var CONNECT_TO_FMS:String;
+	@:noCompletion @:dox(hide) @:require(flash10) public static var CONNECT_TO_FMS (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var DIRECT_CONNECTIONS:String;
+	@:noCompletion @:dox(hide) @:require(flash10) public static var DIRECT_CONNECTIONS (default, never):String;
 	#end
 	
 	public var audioCodec (default, null):Int;

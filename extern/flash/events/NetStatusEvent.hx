@@ -4,7 +4,7 @@ package flash.events; #if (!display && flash)
 extern class NetStatusEvent extends Event {
 	
 	
-	public static var NET_STATUS:String;
+	public static var NET_STATUS (default, never):String;
 	
 	public var info:Dynamic;
 	

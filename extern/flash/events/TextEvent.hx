@@ -4,8 +4,8 @@ package flash.events; #if (!display && flash)
 extern class TextEvent extends Event {
 	
 	
-	public static var LINK:String;
-	public static var TEXT_INPUT:String;
+	public static var LINK (default, never):String;
+	public static var TEXT_INPUT (default, never):String;
 	
 	public var text:String;
 	

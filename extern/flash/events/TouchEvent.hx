@@ -9,41 +9,41 @@ extern class TouchEvent extends Event {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_BEGIN:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_BEGIN (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_END:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_END (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_MOVE:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_MOVE (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_OUT:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_OUT (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_OVER:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_OVER (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OUT:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OUT (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER:String;
+	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER (default, never):String;
 	#end
 	
-	public static var TOUCH_BEGIN:String;
-	public static var TOUCH_END:String;
-	public static var TOUCH_MOVE:String;
-	public static var TOUCH_OUT:String;
-	public static var TOUCH_OVER:String;
-	public static var TOUCH_ROLL_OUT:String;
-	public static var TOUCH_ROLL_OVER:String;
-	public static var TOUCH_TAP:String;
+	public static var TOUCH_BEGIN (default, never):String;
+	public static var TOUCH_END (default, never):String;
+	public static var TOUCH_MOVE (default, never):String;
+	public static var TOUCH_OUT (default, never):String;
+	public static var TOUCH_OVER (default, never):String;
+	public static var TOUCH_ROLL_OUT (default, never):String;
+	public static var TOUCH_ROLL_OVER (default, never):String;
+	public static var TOUCH_TAP (default, never):String;
 	
 	public var altKey:Bool;
 	public var commandKey:Bool;

@@ -7,9 +7,9 @@ import openfl.ui.GameInputDevice;
 @:final extern class GameInputEvent extends Event {
 	
 	
-	public static var DEVICE_ADDED:String;
-	public static var DEVICE_REMOVED:String;
-	public static var DEVICE_UNUSABLE:String;
+	public static var DEVICE_ADDED (default, never):String;
+	public static var DEVICE_REMOVED (default, never):String;
+	public static var DEVICE_UNUSABLE (default, never):String;
 	
 	public var device (default, null):GameInputDevice;
 	
