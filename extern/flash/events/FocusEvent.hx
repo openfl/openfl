@@ -7,10 +7,10 @@ import openfl.display.InteractiveObject;
 extern class FocusEvent extends Event {
 	
 	
-	public static var FOCUS_IN:String;
-	public static var FOCUS_OUT:String;
-	public static var KEY_FOCUS_CHANGE:String;
-	public static var MOUSE_FOCUS_CHANGE:String;
+	public static var FOCUS_IN (default, never):String;
+	public static var FOCUS_OUT (default, never):String;
+	public static var KEY_FOCUS_CHANGE (default, never):String;
+	public static var MOUSE_FOCUS_CHANGE (default, never):String;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;

@@ -7,7 +7,7 @@ import haxe.io.Error;
 extern class AsyncErrorEvent extends ErrorEvent {
 	
 	
-	public static var ASYNC_ERROR:String;
+	public static var ASYNC_ERROR (default, never):String;
 	
 	public var error:Error;
 	

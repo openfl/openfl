@@ -4,8 +4,8 @@ package flash.events; #if (!display && flash)
 extern class HTTPStatusEvent extends Event {
 	
 	
-	@:require(flash10_1) public static var HTTP_RESPONSE_STATUS:String;
-	public static var HTTP_STATUS:String;
+	@:require(flash10_1) public static var HTTP_RESPONSE_STATUS (default, never):String;
+	public static var HTTP_STATUS (default, never):String;
 	
 	public var redirected:Bool;
 	@:require(flash10_1) public var responseHeaders:Array<Dynamic>;

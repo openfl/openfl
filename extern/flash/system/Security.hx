@@ -5,13 +5,13 @@ extern class Security {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static var APPLICATION:String;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var APPLICATION (default, never):String;
 	#end
 	
-	public static var LOCAL_TRUSTED:String;
-	public static var LOCAL_WITH_FILE:String;
-	public static var LOCAL_WITH_NETWORK:String;
-	public static var REMOTE:String;
+	public static var LOCAL_TRUSTED (default, never):String;
+	public static var LOCAL_WITH_FILE (default, never):String;
+	public static var LOCAL_WITH_NETWORK (default, never):String;
+	public static var REMOTE (default, never):String;
 	
 	public static var disableAVM1Loading:Bool;
 	public static var exactSettings:Bool;

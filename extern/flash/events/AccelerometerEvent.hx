@@ -6,7 +6,7 @@ package flash.events; #if (!display && flash)
 extern class AccelerometerEvent extends Event {
 	
 	
-	public static var UPDATE:String;
+	public static var UPDATE (default, never):String;
 	public var accelerationX:Float;
 	public var accelerationY:Float;
 	public var accelerationZ:Float;

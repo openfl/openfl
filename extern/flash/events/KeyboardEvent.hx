@@ -6,8 +6,8 @@ import openfl.ui.KeyLocation;
 extern class KeyboardEvent extends Event {
 	
 	
-	public static var KEY_DOWN:String;
-	public static var KEY_UP:String;
+	public static var KEY_DOWN (default, never):String;
+	public static var KEY_UP (default, never):String;
 	
 	public var altKey:Bool;
 	public var charCode:Int;
