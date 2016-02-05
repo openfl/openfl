@@ -109,6 +109,13 @@ package flash.ui; #if (!display && flash)
 	public static inline var RIGHTBRACKET = 221;
 	public static inline var QUOTE = 222;
 	
+	#if air
+	public static inline var NEXT = 0x0100000E;
+	public static inline var BACK = 0x01000016;
+	public static inline var SEARCH = 0x0100001F;
+	public static inline var MENU = 0x01000012;
+	#end
+	
 	public static var capsLock (default, null):Bool;
 	public static var numLock (default, null):Bool;
 	public static function isAccessible ():Bool;

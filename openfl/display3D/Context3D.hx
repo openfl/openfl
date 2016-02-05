@@ -1,6 +1,9 @@
 package openfl.display3D;
 
 
+#if !lime_legacy
+import lime.app.Application;
+#end
 import openfl.display.BitmapData;
 import openfl.display.OpenGLView;
 import openfl.display3D.textures.CubeTexture;
@@ -19,7 +22,6 @@ import openfl.gl.GLRenderbuffer;
 import openfl.utils.ByteArray;
 import openfl.utils.Float32Array;
 import openfl.Lib;
-
 
 @:final class Context3D {
 	
@@ -55,6 +57,12 @@ import openfl.Lib;
 	private var texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
 	private var vertexBuffersCreated:Array<VertexBuffer3D>; // to keep track of stuff to dispose when calling dispose
 	private var _yFlip:Float;
+	private var backBufferDepthAndStencil:Bool;
+	private var rttDepthAndStencil:Bool;
+	private var scissorRectangle:Rectangle;
+	private var renderToTexture:Bool;
+	private var rttWidth:Int;
+	private var rttHeight:Int;
 	
 	public function new () {
 		
@@ -110,34 +118,85 @@ import openfl.Lib;
 		#if (cpp || neko || nodejs)
 		GL.depthMask (true);
 		#end
+		#if js
+		if (scissorRectangle != null) GL.disable(GL.SCISSOR_TEST);
+		#end
 		GL.clearColor (red, green, blue, alpha);
 		GL.clearDepth (depth);
 		GL.clearStencil (stencil);
 		
 		GL.clear (mask);
 		
+		#if js
+		if (scissorRectangle != null) GL.enable(GL.SCISSOR_TEST);
+		#end
 	}
 	
 	
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true):Void {
 		
-		if (enableDepthAndStencil) {
-			
-			// TODO check whether this is kept across frame
-			GL.enable (GL.DEPTH_TEST);
-			GL.enable (GL.STENCIL_TEST);
-			
-		}
+		backBufferDepthAndStencil = enableDepthAndStencil;
+		updateDepthAndStencilState();
 		
 		// TODO use antiAlias parameter
-		ogl.scrollRect = new Rectangle (0, 0, width, height);
-		ogl.width = width;
-		ogl.height = height;
-		scrollRect = ogl.scrollRect.clone ();
-		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+		setBackBufferViewPort (null, null, width, height);
+		updateScissorRectangle ();
 		
 	}
 	
+	private function setBackBufferViewPort (?x:Int, ?y:Int, ?width:Int, ?height:Int) {
+		
+		if (x == null) x = Std.int (scrollRect.x);
+		if (y == null) y = Std.int (scrollRect.y);
+		if (width == null) width = Std.int (scrollRect.width);
+		if (height == null) height = Std.int (scrollRect.height);
+		
+		scrollRect.x = x;
+		scrollRect.y = y;
+		scrollRect.width = width;
+		scrollRect.height = height;
+		ogl.width = x + width;
+		ogl.height = y + height;
+		
+		updateBackBufferViewPort ();
+		
+	}
+	
+	private function updateBackBufferViewPort () {
+		
+		if (!renderToTexture) {
+			
+			GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+			
+		}
+		
+	}
+	
+	private function updateDepthAndStencilState() {
+		
+		// used to enable masking
+		var depthAndStencil:Bool = renderToTexture ? rttDepthAndStencil : backBufferDepthAndStencil;
+		
+		#if !lime_legacy
+		if (depthAndStencil) {
+			
+			// TODO check whether this is kept across frame
+			if (Application.current.window.config.depthBuffer)
+				GL.enable (GL.DEPTH_TEST);
+			if (Application.current.window.config.stencilBuffer)
+				GL.enable (GL.STENCIL_TEST);
+			
+		} else {
+			
+			GL.disable (GL.DEPTH_TEST);
+			GL.disable (GL.STENCIL_TEST);
+			
+		}
+		#else
+			GL.disable (GL.DEPTH_TEST);
+			GL.disable (GL.STENCIL_TEST);
+		#end
+	}
 	
 	public function createCubeTexture (size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture {
 		
@@ -151,7 +210,7 @@ import openfl.Lib;
 	public function createIndexBuffer (numIndices:Int, bufferUsage:Context3DBufferUsage = null):IndexBuffer3D {
 		
 		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
-		var indexBuffer = new IndexBuffer3D (this, GL.createBuffer (), numIndices, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
+		var indexBuffer = new IndexBuffer3D (this, GL.createBuffer(), numIndices, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
 		indexBuffersCreated.push (indexBuffer);
 		return indexBuffer;
 		
@@ -536,6 +595,7 @@ import openfl.Lib;
 	public function setGLSLVertexBufferAt (locationName, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
 		
 		var location = (currentProgram != null && currentProgram.glProgram != null) ? GL.getAttribLocation (currentProgram.glProgram, locationName) : -1;
+		if (location == -1) return;
 		
 		if (buffer == null) {
 			
@@ -681,6 +741,7 @@ import openfl.Lib;
 		GL.disable (GL.DEPTH_TEST);
 		GL.disable (GL.STENCIL_TEST);
 		GL.disable (GL.SCISSOR_TEST);
+		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
 
 		if (framebuffer != null) {
 
@@ -693,9 +754,11 @@ import openfl.Lib;
 			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
 
 		}
-
-		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
-
+		
+		renderToTexture = false;
+		updateBackBufferViewPort ();
+		updateScissorRectangle();
+		updateDepthAndStencilState();
 	}
 	
 	
@@ -720,6 +783,8 @@ import openfl.Lib;
 		GL.bindRenderbuffer (GL.RENDERBUFFER, renderbuffer);
 		#if (ios || tvos)
 		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
+		#elseif js
+		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
 		#else
 		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);
 		#end
@@ -740,6 +805,13 @@ import openfl.Lib;
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
 		
 		GL.viewport (0, 0, texture.width, texture.height);
+		
+		renderToTexture = true;
+		rttDepthAndStencil = enableDepthAndStencil;
+		rttWidth = texture.width;
+		rttHeight = texture.height;
+		updateScissorRectangle();
+		updateDepthAndStencilState();
 	}
 	
 	
@@ -765,6 +837,7 @@ import openfl.Lib;
 	public function setScissorRectangle (rectangle:Rectangle):Void {
 		
 		// TODO test it
+		scissorRectangle = rectangle;
 		
 		if (rectangle == null) {
 			
@@ -774,10 +847,25 @@ import openfl.Lib;
 		}
 		
 		GL.enable (GL.SCISSOR_TEST);
-		GL.scissor (Std.int (rectangle.x), Std.int (rectangle.y), Std.int (rectangle.width), Std.int (rectangle.height));
+		updateScissorRectangle();
 		
 	}
 	
+	private function updateScissorRectangle()
+	{
+		
+		if (scissorRectangle == null)
+			return;
+		
+		//var width:Int = renderToTexture ? rttWidth : scrollRect.width;
+		var height:Int = renderToTexture ? rttHeight : Std.int(scrollRect.height);
+		GL.scissor (Std.int (scissorRectangle.x),
+			Std.int (height - Std.int(scissorRectangle.y) - Std.int(scissorRectangle.height)),
+			Std.int (scissorRectangle.width),
+			Std.int (scissorRectangle.height)
+		);
+		
+	}
 	
 	public function setStencilActions (?triangleFace:Int, ?compareMode:Int, ?actionOnBothPass:Int, ?actionOnDepthFail:Int, ?actionOnDepthPassStencilFail:Int):Void {
 		

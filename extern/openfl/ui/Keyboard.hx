@@ -531,6 +531,13 @@ package openfl.ui; #if (display || !flash)
 	 */
 	public static inline var QUOTE = 222;
 	
+	#if air
+	public static inline var NEXT = 0x0100000E;
+	public static inline var BACK = 0x01000016;
+	public static inline var SEARCH = 0x0100001F;
+	public static inline var MENU = 0x01000012;
+	#end
+	
 	/**
 	 * Specifies whether the Caps Lock key is activated(<code>true</code>) or
 	 * not(<code>false</code>).
