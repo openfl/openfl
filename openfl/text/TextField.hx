@@ -869,7 +869,7 @@ class TextField extends InteractiveObject {
 						}
 						
 						__textEngine.height = __textEngine.textHeight + 4;
-					
+						__textEngine.update ();
 					default:
 						
 					
