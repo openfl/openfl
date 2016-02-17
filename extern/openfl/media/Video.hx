@@ -28,7 +28,10 @@ extern class Video extends DisplayObject {
 	
 	public function attachNetStream (netStream:NetStream) : Void;
 	public function clear ():Void;	
+	
+	
 }
+
 
 #else
 typedef Video = flash.media.Video;

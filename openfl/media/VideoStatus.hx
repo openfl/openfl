@@ -1,4 +1,4 @@
-package openfl.media;
+package openfl.media; #if (display || !flash)
 
 /**
  * ...
@@ -13,3 +13,7 @@ class VideoStatus
 	}
 	
 }
+
+#else
+typedef StageVideoAvailabilityReason = flash.media.StageVideoAvailabilityReason;
+#end
