@@ -121,7 +121,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __wasDirty:Bool;
 	
 	public var _stageVideos:Array<StageVideo>;
-	public var stageVideos(get, null);
+	public var stageVideos(get, null):Array<StageVideo>;
 	
 	#if (js && html5)
 	//private var __div:DivElement;
