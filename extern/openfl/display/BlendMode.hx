@@ -11,11 +11,6 @@ package openfl.display;
  * method of the openfl.display.BitmapData class</li>
  * </ul>
  */
-
-#if flash
-@:native("flash.display.BlendMode")
-#end
-
 @:enum abstract BlendMode(String) from String to String {
 	
 	/**

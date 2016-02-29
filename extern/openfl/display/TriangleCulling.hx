@@ -22,11 +22,6 @@ package openfl.display;
  * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
  * negative normals will not be rendered. </p>
  */
-
-#if flash
-@:native("flash.display.TriangleCulling")
-#end
-
 @:enum abstract TriangleCulling(String) from String to String {
 	
 	/**

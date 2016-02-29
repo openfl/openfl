@@ -5,11 +5,6 @@ package openfl.net;
  * The URLLoaderDataFormat class provides values that specify how downloaded
  * data is received.
  */
-
-#if flash
-@:native("flash.net.URLLoaderDataFormat")
-#end
-
 @:enum abstract URLLoaderDataFormat(String) from String to String {
 	
 	/**

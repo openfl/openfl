@@ -1,10 +1,6 @@
 package openfl.desktop;
 
 
-#if flash
-@:native("flash.desktop.ClipboardFormats")
-#end
-
 @:enum abstract ClipboardFormats(String) from String to String {
 	
 	public var HTML_FORMAT = "air:html";

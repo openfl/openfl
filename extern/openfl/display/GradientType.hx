@@ -7,11 +7,6 @@ package openfl.display;
  * <code>lineGradientStyle()</code> methods of the openfl.display.Graphics
  * class.
  */
-
-#if flash
-@:native("flash.display.GradientType")
-#end
-
 @:enum abstract GradientType(String) from String to String {
 	
 	/**

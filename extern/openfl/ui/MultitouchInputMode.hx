@@ -7,11 +7,6 @@ package openfl.ui;
  * values set the type of touch events the Flash runtime dispatches when the
  * user interacts with a touch-enabled device.
  */
-
-#if flash
-@:native("flash.ui.MultitouchInputMode")
-#end
-
 @:enum abstract MultitouchInputMode(String) from String to String {
 	
 	/**

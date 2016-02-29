@@ -11,11 +11,6 @@ package openfl.display;
  * <p> When paths intersect or overlap, the winding direction determines the
  * rules for filling the areas created by the intersection or overlap:</p>
  */
-
-#if flash
-@:native("flash.display.GraphicsPathWinding")
-#end
-
 @:enum abstract GraphicsPathWinding(String) from String to String {
 	
 	public var EVEN_ODD = "evenOdd";

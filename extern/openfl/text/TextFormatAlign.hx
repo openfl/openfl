@@ -5,11 +5,6 @@ package openfl.text;
  * The TextFormatAlign class provides values for text alignment in the
  * TextFormat class.
  */
-
-#if flash
-@:native("flash.text.TextFormatAlign")
-#end
-
 @:enum abstract TextFormatAlign(String) from String to String {
 	
 	/**
