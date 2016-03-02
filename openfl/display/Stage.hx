@@ -552,6 +552,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public function onWindowDropFile (window:Window, file:String):Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowEnter (window:Window):Void {
 		
 		//if (this.window == null || this.window != window) return;
