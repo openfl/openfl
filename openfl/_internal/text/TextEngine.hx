@@ -775,18 +775,18 @@ class TextEngine {
 					lineIndex++;
 					
 				}
-				
-				textIndex = breakIndex + 1;
-				breakIndex = text.indexOf ("\n", textIndex);
-				lineIndex++;
-				
+
 				if (formatRange.end == breakIndex) {
 					
 					nextFormatRange ();
 					lineFormat = formatRange.format;
 					
 				}
-				
+
+				textIndex = breakIndex + 1;
+				breakIndex = text.indexOf ("\n", textIndex);
+				lineIndex++;
+
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
 				
 				layoutGroup = null;
@@ -938,28 +938,32 @@ class TextEngine {
 				
 			} else {
 				
-				if (textIndex >= formatRange.end) {
+				if (textIndex > formatRange.end) {
 					
 					break;
 					
 				}
-				
-				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
-				layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-				layoutGroup.height = heightValue;
-				layoutGroups.push (layoutGroup);
-				
-				offsetX += layoutGroup.width;
-				
-				textIndex = formatRange.end;
-				
+
+				if (textIndex < formatRange.end) {
+
+					layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.height = heightValue;
+					layoutGroups.push (layoutGroup);
+
+					offsetX += layoutGroup.width;
+
+					textIndex = formatRange.end;
+
+				}
+
 				nextFormatRange ();
 				
 			}
