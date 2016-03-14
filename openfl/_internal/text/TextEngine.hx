@@ -929,6 +929,12 @@ class TextEngine {
 					}
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
+
+						if (spaceIndex > formatRange.end) {
+
+							textIndex--;
+
+						}
 						
 						break;
 						
