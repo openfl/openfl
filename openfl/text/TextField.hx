@@ -1180,9 +1180,9 @@ class TextField extends InteractiveObject {
 			value = new EReg ("<br/>", "g").replace (value, "\n");
 			
 			// crude solution
-			
-			var segments = value.split ("<font");
-			
+
+			var segments = value.split ("<");
+
 			if (segments.length == 1) {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
@@ -1205,64 +1205,117 @@ class TextField extends InteractiveObject {
 				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 				
 				value = "";
-				
-				// crude search for font
-				
+
+				var formatStack:Array<TextFormat> = [__textFormat.clone()];
+				var sub:String;
+				var noLineBreak:Bool = false;
+
 				for (segment in segments) {
 					
 					if (segment == "") continue;
-					
-					var closeFontIndex = segment.indexOf ("</font>");
-					
-					if (closeFontIndex > -1) {
-						
-						var start = segment.indexOf (">") + 1;
-						var end = closeFontIndex;
-						var format = __textFormat.clone ();
-						
-						var faceIndex = segment.indexOf ("face=");
-						var colorIndex = segment.indexOf ("color=");
-						var sizeIndex = segment.indexOf ("size=");
-						
-						if (faceIndex > -1 && faceIndex < start) {
-							
-							format.font = segment.substr (faceIndex + 6, segment.indexOf ("\"", faceIndex));
-							
+
+					var isClosingTag = segment.substr(0, 1) == "/";
+					var tagEndIndex = segment.indexOf(">");
+					var start = tagEndIndex + 1;
+					var spaceIndex = segment.indexOf(" ");
+					var tagName:String = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+					var format:TextFormat;
+
+					if (isClosingTag) {
+
+						formatStack.pop();
+						format = formatStack[(formatStack.length - 1)].clone();
+
+						if (tagName.toLowerCase() == "p" && __textEngine.textFormatRanges.length > 0) {
+							value += "\n";
+							noLineBreak = true;
 						}
-						
-						if (colorIndex > -1 && colorIndex < start) {
-							
-							format.color = Std.parseInt ("0x" + segment.substr (colorIndex + 8, 6));
-							
-						}
-						
-						if (sizeIndex > -1 && sizeIndex < start) {
-							
-							format.size = Std.parseInt (segment.substr (sizeIndex + 6, segment.indexOf ("\"", sizeIndex)));
-							
-						}
-						
-						var sub = segment.substring (start, end);
-						sub = new EReg ("<.*?>", "g").replace (sub, "");
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-						value += sub;
-						
-						if (closeFontIndex + 7 < segment.length) {
-							
-							sub = segment.substr (closeFontIndex + 7);
-							__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
+
+						if (start < segment.length) {
+
+							sub = segment.substr(start);
+							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
 							value += sub;
-							
+							noLineBreak = false;
+
 						}
-						
-					} else {
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
-						value += segment;
-						
+
 					}
-					
+					else {
+
+						format = formatStack[(formatStack.length - 1)].clone();
+
+						if (tagEndIndex > -1) {
+
+							switch (tagName.toLowerCase()) {
+
+								case "p":
+
+									if (__textEngine.textFormatRanges.length > 0 && !noLineBreak) {
+										value += "\n";
+									}
+
+									var alignIndex = segment.indexOf("align=");
+
+									if (alignIndex > -1 && alignIndex < start) {
+
+										var alignValue = segment.substr (alignIndex + 6, segment.indexOf ("\"", alignIndex));
+										format.align = alignValue.toLowerCase();
+
+									}
+
+								case "font":
+
+									var faceEreg = ~/face="([^"]+)/i;
+									if (faceEreg.match(segment)) {
+										format.font = faceEreg.matched(1);
+									}
+
+									var colorEreg = ~/color="([^"]+)/i;
+									if (colorEreg.match(segment)) {
+										format.color = Std.parseInt ("0x" + colorEreg.matched(1));
+									}
+
+									var sizeEreg = ~/size="([^"]+)/i;
+									if (sizeEreg.match(segment)) {
+										format.size = Std.parseInt (sizeEreg.matched(1));
+									}
+
+								case "b":
+
+									format.bold = true;
+
+								case "u":
+
+									format.underline = true;
+
+								case "i", "em":
+
+									format.italic = true;
+
+							}
+
+							formatStack.push(format);
+
+							if (start < (segment.length - 1)) {
+
+								sub = segment.substring (start);
+								__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
+								value += sub;
+								noLineBreak = false;
+
+							}
+
+						} else {
+
+							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + segment.length));
+							value += segment;
+							noLineBreak = false;
+
+						}
+
+					}
+
 				}
 				
 			}
