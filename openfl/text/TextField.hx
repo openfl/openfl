@@ -1254,7 +1254,7 @@ class TextField extends InteractiveObject {
 										format.font = faceEreg.matched(1);
 									}
 
-									var colorEreg = ~/color="([^"]+)/i;
+									var colorEreg = ~/color="#([^"]+)/i;
 									if (colorEreg.match(segment)) {
 										format.color = Std.parseInt ("0x" + colorEreg.matched(1));
 									}
