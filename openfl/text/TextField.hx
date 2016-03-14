@@ -1297,7 +1297,7 @@ class TextField extends InteractiveObject {
 
 							formatStack.push(format);
 
-							if (start < (segment.length - 1)) {
+							if (start < segment.length) {
 
 								sub = segment.substring (start);
 								__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
