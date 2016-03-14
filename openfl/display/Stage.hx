@@ -1381,6 +1381,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 						//window.minimized = false;
 						window.fullscreen = false;
 						
+						stageWidth = Std.int (window.width * window.scale);
+						stageHeight = Std.int (window.height * window.scale);
+						
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 						
 					}
@@ -1391,6 +1394,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						//window.minimized = false;
 						window.fullscreen = true;
+						
+						stageWidth = Std.int (window.width * window.scale);
+						stageHeight = Std.int (window.height * window.scale);
 						
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 						
