@@ -511,28 +511,27 @@ class TextField extends InteractiveObject {
 	
 	
 	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
-		
-		if (format.font != null) __textFormat.font = format.font;
-		if (format.size != null) __textFormat.size = format.size;
-		if (format.color != null) __textFormat.color = format.color;
-		if (format.bold != null) __textFormat.bold = format.bold;
-		if (format.italic != null) __textFormat.italic = format.italic;
-		if (format.underline != null) __textFormat.underline = format.underline;
-		if (format.url != null) __textFormat.url = format.url;
-		if (format.target != null) __textFormat.target = format.target;
-		if (format.align != null) __textFormat.align = format.align;
-		if (format.leftMargin != null) __textFormat.leftMargin = format.leftMargin;
-		if (format.rightMargin != null) __textFormat.rightMargin = format.rightMargin;
-		if (format.indent != null) __textFormat.indent = format.indent;
-		if (format.leading != null) __textFormat.leading = format.leading;
-		if (format.blockIndent != null) __textFormat.blockIndent = format.blockIndent;
-		if (format.bullet != null) __textFormat.bullet = format.bullet;
-		if (format.kerning != null) __textFormat.kerning = format.kerning;
-		if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
-		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
-		
-		__dirty = true;
+		if (__textEngine.textFormatRanges.length > 0)
+        {
+            var range = __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1];
+            
+            range.end = beginIndex;
+            
+            if (endIndex == 0)
+                endIndex = text.length;
+            
+            var formatRange = new TextFormatRange(format, beginIndex, endIndex);
+            __textEngine.textFormatRanges.push(formatRange);
+        }
+        else
+        {
+            var formatRange = new TextFormatRange(format, beginIndex, endIndex);
+            __textEngine.textFormatRanges.push(formatRange);
+        }
+        
 		__layoutDirty = true;
+        
+        __updateLayout();
 		
 	}
 	
