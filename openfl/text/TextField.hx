@@ -511,11 +511,12 @@ class TextField extends InteractiveObject {
 	
 	
 	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
-		if (__textEngine.textFormatRanges.length > 0)
+		if (__textEngine.textFormatRanges.length > 0 && beginIndex > 0)
         {
             var range = __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1];
             
-            range.end = beginIndex;
+            if (range.end > beginIndex)
+                range.end = beginIndex;
             
             if (endIndex == 0)
                 endIndex = text.length;
@@ -528,9 +529,9 @@ class TextField extends InteractiveObject {
             var formatRange = new TextFormatRange(format, beginIndex, endIndex);
             __textEngine.textFormatRanges.push(formatRange);
         }
-        
-		__layoutDirty = true;
-        
+
+        __layoutDirty = true;
+
         __updateLayout();
 		
 	}
