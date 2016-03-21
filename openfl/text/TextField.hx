@@ -734,6 +734,9 @@ class TextField extends InteractiveObject {
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (__cacheAsBitmap) {
+			if (__dirty) {
+				__setRenderDirty();
+			}
 			__cacheGL(renderSession);
 			return;
 		}
