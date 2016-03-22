@@ -605,8 +605,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__updateCachedBitmap || __updateFilters) {
 			
 			if (__cachedFilterBounds != null) {
-				w += Math.abs(__cachedFilterBounds.x) + Math.abs(__cachedFilterBounds.width);
-				h += Math.abs(__cachedFilterBounds.y) + Math.abs(__cachedFilterBounds.height);
+				w += __cachedFilterBounds.width;
+				h += __cachedFilterBounds.height;
 			}
 
 			if (__cachedBitmap == null) {

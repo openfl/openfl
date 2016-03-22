@@ -39,11 +39,13 @@ import openfl.geom.Rectangle;
 	
 	private override function __growBounds (rect:Rectangle):Void {
 		
-		rect.x += -blurX * 0.5 * quality;
-		rect.y += -blurY * 0.5 * quality;
-		rect.width += blurX * 0.5 * quality;
-		rect.height += blurY * 0.5 * quality;
-		
+		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
+		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+
+		rect.x += -halfBlurX;
+		rect.y += -halfBlurY;
+		rect.width += 2.0 * halfBlurX;
+		rect.height += 2.0 * halfBlurY;
 	}
 	
 	

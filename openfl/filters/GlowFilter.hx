@@ -48,11 +48,14 @@ import openfl.geom.Rectangle;
 	
 	private override function __growBounds (rect:Rectangle):Void {
 		
-		rect.x += -blurX * 0.5 * quality;
-		rect.y += -blurY * 0.5 * quality;
-		rect.width += blurX * 0.5 * quality;
-		rect.height += blurY * 0.5 * quality;
-		
+
+		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
+		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+
+		rect.x += -halfBlurX;
+		rect.y += -halfBlurY;
+		rect.width += 2.0 * halfBlurX;
+		rect.height += 2.0 * halfBlurY;
 	}
 	
 	
@@ -72,6 +75,7 @@ import openfl.geom.Rectangle;
 			__glowShader.uColor[1] = ((color >> 8) & 0xFF) / 255;
 			__glowShader.uColor[2] = (color & 0xFF) / 255;
 			__glowShader.uColor[3] = alpha;
+			__glowShader.uStrength = strength;
 			
 			return __glowShader;
 			
@@ -123,7 +127,7 @@ private class GlowShader extends Shader {
 		'void main(void)',
 		'{',
 		
-			'vec2 r = uRadius / ${Shader.uTextureSize};',
+			'vec2 r = 0.5 * uRadius / ${Shader.uTextureSize};',
 			'vBlurCoords[0] = ${Shader.aTexCoord} - r * 1.2;',
 			'vBlurCoords[1] = ${Shader.aTexCoord} - r * 0.8;',
 			'vBlurCoords[2] = ${Shader.aTexCoord} - r * 0.4;',
@@ -141,6 +145,7 @@ private class GlowShader extends Shader {
 	
 	@fragment var fragment = [
 		'uniform vec4 uColor;',
+		'uniform float uStrength;',
 		
 		'varying vec2 vBlurCoords[7];',
 		
@@ -154,6 +159,7 @@ private class GlowShader extends Shader {
 			'a += texture2D(${Shader.uSampler}, vBlurCoords[4]).a * 0.24197;',
 			'a += texture2D(${Shader.uSampler}, vBlurCoords[5]).a * 0.05399;',
 			'a += texture2D(${Shader.uSampler}, vBlurCoords[6]).a * 0.00443;',
+			'a = clamp(a * uStrength, 0.0, 1.0);',
 			'a *= uColor.a;',
 			
 		'	gl_FragColor = vec4(uColor.rgb * a, a);',
