@@ -570,7 +570,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
-
+		
 		var hasCacheMatrix = __cacheAsBitmapMatrix != null;
 		var x = __cachedBitmapBounds.x;
 		var y = __cachedBitmapBounds.y;
@@ -599,7 +599,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 		if (w <= 0 && h <= 0) {
-			throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
+			
+			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
+			return;
+			
 		}
 		
 		if (__updateCachedBitmap || __updateFilters) {
