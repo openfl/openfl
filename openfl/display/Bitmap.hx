@@ -161,6 +161,12 @@ class Bitmap extends DisplayObject {
 	
 	public override function __updateMask (maskGraphics:Graphics):Void {
 		
+		if (bitmapData == null) {
+			
+			return;
+			
+		}
+		
 		maskGraphics.__commands.overrideMatrix (this.__worldTransform);
 		maskGraphics.beginFill (0);
 		maskGraphics.drawRect (0, 0, bitmapData.width, bitmapData.height);
