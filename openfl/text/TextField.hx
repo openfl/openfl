@@ -570,8 +570,6 @@ class TextField extends InteractiveObject {
         }
 
         __layoutDirty = true;
-
-        __updateLayout();
 		
 	}
 	
