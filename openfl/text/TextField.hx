@@ -897,6 +897,11 @@ class TextField extends InteractiveObject {
 					
 					
 				}
+
+				if( __textEngine.width != cacheWidth || __textEngine.height != cacheHeight){
+					__textEngine.getLineMeasurements();
+				}
+
 				
 				__textEngine.getBounds ();
 				
