@@ -617,12 +617,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			// we need to position the drawing origin to 0,0 in the texture
 			var m = __cacheGLMatrix.clone();
 			m.translate( -x, -y);
+			//Disable mask
+
+			var stencil_test_name = renderSession.gl.STENCIL_TEST;
+			var stencil_test = renderSession.gl.getParameter(stencil_test_name);
+			renderSession.gl.disable(stencil_test_name);
+
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
 			this.__shader = null;
 			@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
 			this.__shader = shader;
-			
+
+			if( stencil_test ){
+				renderSession.gl.enable(stencil_test_name);
+			}
+
 			__updateCachedBitmap = false;
 		}
 		
