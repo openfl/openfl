@@ -24,6 +24,9 @@ import js.html.CanvasElement;
 import js.html.CanvasGradient;
 import js.html.CanvasPattern;
 import js.html.CanvasRenderingContext2D;
+    #if (haxe_ver >= 3.2)
+    import js.html.CanvasWindingRule;
+    #end
 import js.Browser;
 import js.html.ImageData;
 #end
@@ -159,7 +162,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill ();
+		if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 		return canvas;
 		#end
 		
@@ -508,11 +511,17 @@ class CanvasGraphics {
 					
 					var c = data.readCubicCurveTo ();
 					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
-				
+
+                    positionX = c.anchorX;
+                    positionY = c.anchorY;
+
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
 					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+
+                    positionX = c.anchorX;
+                    positionY = c.anchorY;
 				
 				case DRAW_CIRCLE:
 					
@@ -573,8 +582,7 @@ class CanvasGraphics {
 					
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
-						
-						context.closePath ();
+
 						if (!hitTesting) context.stroke ();
 						context.beginPath ();
 						
@@ -789,12 +797,12 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 					context.transform (inversePendingMatrix.a, inversePendingMatrix.b, inversePendingMatrix.c, inversePendingMatrix.d, inversePendingMatrix.tx, inversePendingMatrix.ty);
 					
 				} else {
 					
-					if (!hitTesting) context.fill ();
+					if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 					
 				}
 				
@@ -1081,7 +1089,7 @@ class CanvasGraphics {
 									context.lineTo (x2, y2);
 									context.lineTo (x3, y3);
 									context.closePath ();
-									if (!hitTesting) context.fill ();
+									if (!hitTesting) context.fill (#if (haxe_ver >= 3.2) CanvasWindingRule.EVENODD #end);
 									i += 3;
 									continue;
 									
