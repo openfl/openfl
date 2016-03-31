@@ -117,7 +117,11 @@ class CanvasTextField {
 			
 			textField.__updateLayout ();
 			
-			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
+            if (textField.stage.focus == textField) {
+                textEngine.__hasFocus = true;
+            }
+
+            if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
@@ -224,89 +228,100 @@ class CanvasTextField {
 					var offsetY = 0.0;
 					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
 					
-					for (group in textEngine.layoutGroups) {
-						
-						if (group.lineIndex < textField.scrollV - 1) continue;
-						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
-						
-						context.font = TextEngine.getFont (group.format);
-						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
-						
-						if (applyHack) {
-							
-							offsetY = group.format.size * 0.185;
-							
-						}
-						
-						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
-						
-						if (textField.__caretIndex > -1 && textEngine.selectable) {
-							
-							if (textField.__selectionIndex == textField.__caretIndex) {
-								
-								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
-									
-									advance = 0.0;
-									
-									for (i in 0...(textField.__caretIndex - group.startIndex)) {
-										
-										if (group.advances.length <= i) break;
-										advance += group.advances[i];
-										
+
+					if (textEngine.layoutGroups.length > 0) {
+
+						for (group in textEngine.layoutGroups) {
+
+							if (group.lineIndex < textField.scrollV - 1) continue;
+							if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
+
+							context.font = TextEngine.getFont (group.format);
+							context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
+
+							if (applyHack) {
+
+								offsetY = group.format.size * 0.185;
+
+							}
+
+							context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
+
+							if (textField.__caretIndex > -1 && textEngine.selectable) {
+
+								if (textField.__selectionIndex == textField.__caretIndex) {
+
+									if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+
+										advance = 0.0;
+
+										for (i in 0...(textField.__caretIndex - group.startIndex)) {
+
+											if (group.advances.length <= i) break;
+											advance += group.advances[i];
+
+										}
+
+										context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
+
 									}
-									
-									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
-									
-								}
-								
-							} else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) || (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)) {
-								
-								var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
-								var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
-								
-								if (group.startIndex > selectionStart) {
-									
-									selectionStart = group.startIndex;
-									
-								}
-								
-								if (group.endIndex < selectionEnd) {
-									
-									selectionEnd = group.endIndex;
-									
-								}
-								
-								var start, end;
-								
-								start = textField.getCharBoundaries (selectionStart);
-								
-								if (selectionEnd >= textEngine.text.length) {
-									
-									end = textField.getCharBoundaries (textEngine.text.length - 1);
-									end.x += end.width + 2;
-									
-								} else {
-									
-									end = textField.getCharBoundaries (selectionEnd);
-									
-								}
-								
-								if (start != null && end != null) {
-									
-									context.fillStyle = "#000000";
-									context.fillRect (start.x, start.y, end.x - start.x, group.height);
-									context.fillStyle = "#FFFFFF";
-									
-									// TODO: fill only once
-									
-									context.fillText (text.substring (selectionStart, selectionEnd), scrollX + start.x, group.offsetY + offsetY + scrollY);
-									
+
+								} else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) || (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)) {
+
+									var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
+									var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
+
+									if (group.startIndex > selectionStart) {
+
+										selectionStart = group.startIndex;
+
+									}
+
+									if (group.endIndex < selectionEnd) {
+
+										selectionEnd = group.endIndex;
+
+									}
+
+									var start, end;
+
+									start = textField.getCharBoundaries (selectionStart);
+
+									if (selectionEnd >= textEngine.text.length) {
+
+										end = textField.getCharBoundaries (textEngine.text.length - 1);
+										end.x += end.width + 2;
+
+									} else {
+
+										end = textField.getCharBoundaries (selectionEnd);
+
+									}
+
+									if (start != null && end != null) {
+
+										context.fillStyle = "#000000";
+										context.fillRect (start.x, start.y, end.x - start.x, group.height);
+										context.fillStyle = "#FFFFFF";
+
+										// TODO: fill only once
+
+										context.fillText (text.substring (selectionStart, selectionEnd), scrollX + start.x, group.offsetY + offsetY + scrollY);
+
+									}
+
 								}
 								
 							}
 							
 						}
 						
+					} else if (textField.__showCursor) {
+						textField.text = "WORKAROUND";
+						context.fillStyle = "#" + StringTools.hex(textField.defaultTextFormat.color, 6);
+						var start:Rectangle = textField.getCharBoundaries(0);
+						context.fillRect (start.x, start.y, 1, start.height);
+						textField.text = "";
 					}
 					
 				} else {
