@@ -5,7 +5,7 @@ import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.shaders2.*;
 import openfl._internal.renderer.opengl.shaders2.FillShader.FillUniform;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 import openfl.geom.Matrix;
@@ -97,7 +97,7 @@ class StencilManager {
 		stencilMask++;
 		
 		if (maskGraphics.__dirty) {
-			GraphicsRenderer.updateGraphics(object, maskGraphics, renderSession.gl);
+			GLTilesheet.updateGraphics(object, maskGraphics, renderSession.gl);
 		}
 		
 		var func = stencilMask == 1 ? gl.NEVER : gl.EQUAL;
