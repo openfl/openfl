@@ -4,7 +4,6 @@ package openfl._internal.renderer.opengl.utils;
 import lime.graphics.GLRenderContext;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.opengl.shaders2.*;
-import openfl._internal.renderer.opengl.shaders2.FillShader.FillUniform;
 import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
@@ -39,15 +38,15 @@ class StencilManager {
 	}
 	
 	public inline function prepareGraphics(fill:GLBucketData, renderSession:RenderSession, translationMatrix:Float32Array):Void {
-		var shader = renderSession.shaderManager.fillShader;
-		
-		renderSession.shaderManager.setShader (shader);
-		gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.TranslationMatrix), false, translationMatrix);
-		gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
-			
-		fill.vertexArray.bind();
-		shader.bindVertexArray(fill.vertexArray);
-		gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, fill.indexBuffer);
+		//var shader = renderSession.shaderManager.fillShader;
+		//
+		//renderSession.shaderManager.setShader (shader);
+		//gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.TranslationMatrix), false, translationMatrix);
+		//gl.uniformMatrix3fv (shader.getUniformLocation(FillUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
+			//
+		//fill.vertexArray.bind();
+		//shader.bindVertexArray(fill.vertexArray);
+		//gl.bindBuffer (gl.ELEMENT_ARRAY_BUFFER, fill.indexBuffer);
 	}
 	
 	public function pushBucket (bucket:GLBucket, renderSession:RenderSession, translationMatrix:Float32Array, ?isMask:Bool = false):Void {
