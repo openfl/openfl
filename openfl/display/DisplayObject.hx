@@ -9,7 +9,7 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -517,7 +517,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			if (#if !disable_cairo_graphics __graphics.__hardware #else true #end) {
 				
-				GraphicsRenderer.render (this, renderSession);
+				GLTilesheet.render (this, renderSession);
 				
 			} else {
 				

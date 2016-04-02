@@ -63,7 +63,6 @@ class DrawCommandBuffer {
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
-				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.shader, c.count);
@@ -202,16 +201,6 @@ class DrawCommandBuffer {
 		f.push (y);
 		f.push (width);
 		f.push (height);
-		
-	}
-	
-	
-	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding):Void {
-		
-		types.push (DRAW_PATH);
-		o.push (commands);
-		o.push (data);
-		o.push (winding);
 		
 	}
 	

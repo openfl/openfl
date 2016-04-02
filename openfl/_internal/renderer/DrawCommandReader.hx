@@ -1,7 +1,6 @@
 package openfl._internal.renderer;
 
 
-import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
@@ -80,10 +79,6 @@ class DrawCommandReader {
 			case DRAW_ELLIPSE:
 				
 				fPos += 4; //x, y, width, height
-			
-			case DRAW_PATH:
-				
-				oPos += 3; //commands, data, winding
 			
 			case DRAW_RECT:
 				
@@ -207,7 +202,6 @@ class DrawCommandReader {
 	public #if !html5 inline #end function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
 	public #if !html5 inline #end function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
 	public #if !html5 inline #end function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
-	public #if !html5 inline #end function readDrawPath ():DrawPathView { advance (); prev = DRAW_PATH; return new DrawPathView (this); }
 	public #if !html5 inline #end function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
 	public #if !html5 inline #end function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
 	public #if !html5 inline #end function readDrawTiles ():DrawTilesView { advance (); prev = DRAW_TILES; return new DrawTilesView (this); }
@@ -322,16 +316,6 @@ abstract DrawEllipseView (DrawCommandReader) {
 	public var y (get, never):Float; private #if !html5 inline #end function get_y ():Float { return this.float (1); }
 	public var width (get, never):Float; private #if !html5 inline #end function get_width ():Float { return this.float (2); }
 	public var height(get, never):Float; private #if !html5 inline #end function get_height ():Float { return this.float (3); }
-	
-}
-
-
-abstract DrawPathView (DrawCommandReader) {
-	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var commands (get, never):Vector<Int>; private #if !html5 inline #end function get_commands ():Vector<Int> { return cast this.obj (0); }
-	public var data (get, never):Vector<Float>; private #if !html5 inline #end function get_data ():Vector<Float> { return cast this.obj (1); }
-	public var winding (get, never):GraphicsPathWinding; private #if !html5 inline #end function get_winding ():GraphicsPathWinding { return cast this.obj (2); }
 	
 }
 
