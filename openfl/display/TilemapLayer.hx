@@ -125,7 +125,7 @@ class TilemapLayer {
 		if (beginIndex < 0) beginIndex = 0;
 		if (end > __tiles.length - 1) endIndex = __tiles.length - 1;
 		
-		__tiles.splice (beginIndex, endIndex + 1);
+		__tiles.splice (beginIndex, endIndex - beginIndex + 1);
 		__dirty = true;
 		numTiles = __tiles.length;
 		
