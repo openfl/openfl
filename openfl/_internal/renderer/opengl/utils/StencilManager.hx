@@ -122,11 +122,11 @@ class StencilManager {
 				translationMatrix = object.__worldTransform;
 			}
 			
-			switch(bucket.mode) {
-				case Fill, PatternFill:
-					pushBucket(bucket, renderSession, translationMatrix.toArray(true), true);
-				case _:
-			}
+			//switch(bucket.mode) {
+				//case Fill, PatternFill:
+					//pushBucket(bucket, renderSession, translationMatrix.toArray(true), true);
+				//case _:
+			//}
 		}
 		
 		
