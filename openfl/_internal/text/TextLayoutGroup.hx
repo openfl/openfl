@@ -13,7 +13,7 @@ class TextLayoutGroup {
 	public var endIndex:Int;
 	public var format:TextFormat;
 	public var height:Float;
-	public var leading:Int;
+	public var leading:Float;
 	public var lineIndex:Int;
 	public var offsetX:Float;
 	public var offsetY:Float;

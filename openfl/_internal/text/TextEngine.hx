@@ -462,7 +462,7 @@ class TextEngine {
 		
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
-		var currentLineLeading:Null<Int> = null;
+		var currentLineLeading:Null<Float> = null;
 		var currentLineHeight = 0.0;
 		var currentLineWidth = 0.0;
 		
@@ -570,8 +570,8 @@ class TextEngine {
 		var font = null;
 		
 		var currentFormat = TextField.__defaultTextFormat.clone ();
-		
-		var leading = 0;
+
+		var leading = 0.0;
 		var ascent = 0.0;
 		var descent = 0.0;
 		
@@ -704,8 +704,8 @@ class TextEngine {
 				
 				ascent = currentFormat.size;
 				descent = currentFormat.size * 0.185;
-				leading = currentFormat.leading;
-				
+				leading = currentFormat.leading / 20;
+
 				heightValue = ascent + descent + leading;
 				
 				#elseif (cpp || neko || nodejs)
