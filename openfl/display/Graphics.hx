@@ -659,8 +659,8 @@ import js.html.CanvasRenderingContext2D;
 					if (tile != null) {
 						
 						centerPoint = sheet.__centerPoints[id];
-						originX = centerPoint.x * tile.width;
-						originY = centerPoint.y * tile.height;
+						originX = centerPoint.x;
+						originY = centerPoint.y;
 						
 						__inflateBounds (x - originX, y - originY);
 						__inflateBounds (x - originX + tile.width, y - originY + tile.height);
