@@ -1228,10 +1228,6 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					r.readLineBitmapStyle ();
 
-				case DRAW_PATH:
-
-					r.readDrawPath ();
-
 				case OVERRIDE_MATRIX:
 
 					r.readOverrideMatrix ();
