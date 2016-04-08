@@ -133,26 +133,24 @@ class Shader {
 		if (program == null) {
 			throw "Shader isn't initialized";
 		}
-		if (attributes.exists(attribute)) {
-			return attributes.get(attribute);
-		} else {
+		var location = attributes.get(attribute);
+		if (location == null) {
 			var location = gl.getAttribLocation(program, attribute);
 			attributes.set(attribute, location);
-			return location;
 		}
+		return location;
 	}
 	
 	public function getUniformLocation(uniform:String):GLUniformLocation {
 		if (program == null) {
 			throw "Shader isn't initialized";
 		}
-		if (uniforms.exists(uniform)) {
-			return uniforms.get(uniform);
-		} else {
-			var location = gl.getUniformLocation(program, uniform);
+		var location = uniforms.get(uniform);
+		if (location == null) {
+			location = gl.getUniformLocation(program, uniform);
 			uniforms.set(uniform, location);
-			return location;
 		}
+		return location;
 	}
 	
 	public function enableVertexAttribute(attribute:VertexAttribute, stride:Int, offset:Int) {
