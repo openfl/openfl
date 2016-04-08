@@ -14,6 +14,7 @@ import openfl.gl.GLProgram;
 import openfl.gl.GLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
+import openfl.utils.UnsafeStringMap;
 
 @:allow(openfl.display.Shader)
 @:access(openfl._internal.renderer.opengl.utils.ShaderManager)
@@ -25,8 +26,8 @@ class Shader {
 	
 	public var vertexSrc:Array<String>;
 	public var fragmentSrc:Array<String>;
-	public var attributes:Map<String, Int> = new Map();
-	public var uniforms:Map<String, GLUniformLocation> = new Map();
+	public var attributes:UnsafeStringMap<Int> = new UnsafeStringMap();
+	public var uniforms:UnsafeStringMap<GLUniformLocation> = new UnsafeStringMap();
 	public var compiled:Bool = false;
 	public var ID(default, null):Int;
 	
