@@ -1,5 +1,9 @@
 language: haxe
 
+os:
+  - linux
+  - osx
+
 haxe:
   - "3.2.0"
   #- "3.1.3"
@@ -33,8 +37,10 @@ install:
   - haxelib dev openfl $(pwd)
   - cd ~/munit/tool
   - haxe build.hxml
-  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > log.txt || cat log.txt; fi
-  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > log.txt || cat log.txt ; fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > log.txt || cat log.txt; fi fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild mac -release -64 -nocffi > log.txt || cat log.txt; fi fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > log.txt || cat log.txt ; fi fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild mac -release -64 -Dlegacy -nocffi > log.txt || cat log.txt ; fi fi
   - haxelib run lime rebuild tools -nocffi
 
 before_script:
@@ -50,8 +56,10 @@ script:
   #- if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Dhybrid -nocffi ; fi
   - if [[ $TARGET == 'flash' ]]; then haxelib run munit test -as3 -norun -nocffi ; fi
   - if [[ $TARGET == 'html5' ]]; then haxelib run munit test -browser phantomjs -nocffi ; fi
-  - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi
-  - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux -Dlegacy ; fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then if [[ $TARGET == 'cpp' ]]; then haxelib run lime test mac --window-hardware=false ; fi fi
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux -Dlegacy ; fi fi
+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then if [[ $TARGET == 'cpp' ]]; then haxelib run lime test mac -Dlegacy ; fi fi
   - if [[ $TARGET == 'docs' ]]; then cd $TRAVIS_BUILD_DIR/docs && haxe build.hxml ; fi
 
 notifications:
