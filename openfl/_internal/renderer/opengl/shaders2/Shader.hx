@@ -136,7 +136,7 @@ class Shader {
 		}
 		var location = attributes.get(attribute);
 		if (location == null) {
-			var location = gl.getAttribLocation(program, attribute);
+			location = gl.getAttribLocation(program, attribute);
 			attributes.set(attribute, location);
 		}
 		return location;
