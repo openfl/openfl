@@ -72,7 +72,29 @@ class DOMRenderer extends AbstractRenderer {
 		if (setTransform && displayObject.__worldTransformChanged) {
 			
 			style.setProperty (renderSession.transformProperty, displayObject.__worldTransform.to3DString (renderSession.roundPixels), null);
-			
+
+			if(displayObject.parent != null && displayObject.parent.scrollRect != null){
+				var scrollRect:Rectangle = displayObject.parent.scrollRect;
+
+				var top:Float = 0.0;
+				var right:Float = displayObject.width / displayObject.scaleX;
+				var bottom:Float = displayObject.height / displayObject.scaleY;
+				var left:Float = 0.0;
+
+				if(displayObject.x < scrollRect.x)
+					left = (scrollRect.x - displayObject.x) / displayObject.scaleX;
+
+				if(displayObject.y < scrollRect.y)
+					top = (scrollRect.y - displayObject.y) / displayObject.scaleY;
+
+				if(displayObject.x + displayObject.width > scrollRect.x + scrollRect.width)
+					right = (scrollRect.x + scrollRect.width - displayObject.x) / displayObject.scaleX;
+
+				if(displayObject.y + displayObject.height > scrollRect.y + scrollRect.height)
+					bottom = (scrollRect.y + scrollRect.height - displayObject.y) / displayObject.scaleY;
+
+				style.setProperty ("clip", "rect(" + top + "px, " + right + "px, " + bottom + "px, " + left + "px)", null);
+			}
 		}
 		
 		if (displayObject.__worldZ != ++renderSession.z) {
