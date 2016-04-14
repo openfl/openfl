@@ -620,8 +620,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			//Disable mask
 
 			var stencil_test_name = renderSession.gl.STENCIL_TEST;
-			var stencil_test = renderSession.gl.getParameter(stencil_test_name);
-			renderSession.gl.disable(stencil_test_name);
+			var stencil_test:Bool = renderSession.stencilManager.count > 0;
+
+			if ( stencil_test ) {
+				renderSession.gl.disable(stencil_test_name);
+			}
 
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
