@@ -159,15 +159,19 @@ class SpriteBatch {
 		flush();
 	}
 	
-	public function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping, bgra:Bool = false) {
+	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
+
+		renderBitmapDataEx(bitmapData, bitmapData.width, bitmapData.height, bitmapData.__uvData, smoothing, matrix, ct, alpha, blendMode, flashShader, pixelSnapping);
+	}
+
+	public function renderBitmapDataEx(bitmapData:BitmapData, width:Int, height:Int, uvs:TextureUvs, smoothing:Bool, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
 		var texture = bitmapData.getTexture(gl);
 		
 		if (batchedSprites >= maxSprites) {
 			flush();
 		}
 		
-		var uvs = bitmapData.__uvData;
 		if (uvs == null) return;
 		
 		prepareShader(flashShader, bitmapData);
@@ -178,7 +182,7 @@ class SpriteBatch {
 		enableAttributes(0);
 		
 		var index = batchedSprites * 4 * elementsPerVertex;
-		fillVertices(index, bitmapData.width, bitmapData.height, matrix, uvs, color, pixelSnapping);
+		fillVertices(index, width, height, matrix, uvs, color, pixelSnapping);
 		
 		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader, true);
 		
