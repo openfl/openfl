@@ -620,7 +620,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			//Disable mask
 
 			var stencil_test_name = renderSession.gl.STENCIL_TEST;
-			var stencil_test:Bool = renderSession.stencilManager.count > 0;
+			var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
 
 			if ( stencil_test ) {
 				renderSession.gl.disable(stencil_test_name);
