@@ -9,7 +9,7 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
+import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -517,7 +517,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			if (#if !disable_cairo_graphics __graphics.__hardware #else true #end) {
 				
-				GraphicsRenderer.render (this, renderSession);
+				GLTilesheet.render (this, renderSession);
 				
 			} else {
 				
@@ -570,7 +570,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
-
+		
 		var hasCacheMatrix = __cacheAsBitmapMatrix != null;
 		var x = __cachedBitmapBounds.x;
 		var y = __cachedBitmapBounds.y;
@@ -599,7 +599,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 		if (w <= 0 && h <= 0) {
-			throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
+			
+			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
+			return;
+			
 		}
 		
 		if (__updateCachedBitmap || __updateFilters) {

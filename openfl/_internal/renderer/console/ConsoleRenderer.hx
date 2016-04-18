@@ -316,7 +316,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		var ib = ctx.createIndexBuffer (null, indexCount);	
+		var ib = ctx.createIndexBuffer (untyped 0 /*NULL*/, indexCount);
 
 		indexBufferCounts.push (indexCount);
 		indexBuffers.push (ib);
@@ -480,7 +480,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			TextureFormat.ARGB,
 			image.buffer.width,
 			image.buffer.height,
-			null
+			untyped 0 /*NULL*/
 		);
 
 		if (image.buffer.data != null) {
@@ -1227,10 +1227,6 @@ class ConsoleRenderer extends AbstractRenderer {
 				case LINE_BITMAP_STYLE:
 
 					r.readLineBitmapStyle ();
-
-				case DRAW_PATH:
-
-					r.readDrawPath ();
 
 				case OVERRIDE_MATRIX:
 

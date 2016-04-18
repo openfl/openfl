@@ -1,4 +1,4 @@
-package openfl._internal.renderer;
+package openfl._internal.renderer.console;
 
 
 class GraphicsPaths {

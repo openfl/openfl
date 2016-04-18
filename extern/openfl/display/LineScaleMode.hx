@@ -5,11 +5,6 @@ package openfl.display;
  * The LineScaleMode class provides values for the <code>scaleMode</code>
  * parameter in the <code>Graphics.lineStyle()</code> method.
  */
-
-#if flash
-@:native("flash.display.LineScaleMode")
-#end
-
 @:enum abstract LineScaleMode(String) from String to String {
 	
 	/**

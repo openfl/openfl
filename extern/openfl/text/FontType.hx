@@ -6,11 +6,6 @@ package openfl.text;
  * <code>"embedded"</code> and <code>"device"</code> for the
  * <code>fontType</code> property of the Font class.
  */
-
-#if flash
-@:native("flash.text.FontType")
-#end
-
 @:enum abstract FontType(String) from String to String {
 	
 	/**

@@ -65,7 +65,7 @@ class SystemPath {
 			case DESKTOP: return System.desktopDirectory;
 			case DOCS: return System.documentsDirectory;
 			case USER: return System.userDirectory;
-			default; return "";
+			default: return "";
 			
 		}
 		

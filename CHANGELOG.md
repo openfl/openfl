@@ -1,3 +1,21 @@
+3.6.1 (03/28/2016)
+------------------
+
+* Updated for Haxe 3.3.0
+* Updated for Lime 2.9.1
+* Improved Tilemap for standard support across all renderers
+* Merged latest improvements to Stage3D compatibility
+* Merged latest console renderer improvements
+* Improved the behavior of sprite.hitArea
+* Improved stageWidth/stageHeight to update after fullscreen
+* Reduced the standard output size of HTML5 builds
+* Fixed issues compiling for Flash
+* Fixed assignment of Loader.contentType
+* Fixed some minor crash issues with cacheAsBitmap
+* Added textField.length (legacy)
+* Fixed an issue with SystemPath (legacy)
+
+
 3.6.0 (01/22/2016)
 ------------------
 

@@ -62,7 +62,7 @@ class Loader extends DisplayObjectContainer {
 		
 		contentLoaderInfo.url = request.url;
 		
-		if (request.contentType == null && request.contentType != "") {
+		if (request.contentType == null || request.contentType == "") {
 			
 			contentLoaderInfo.contentType = switch (extension) {
 				

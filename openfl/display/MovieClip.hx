@@ -44,8 +44,6 @@ class MovieClip extends Sprite {
 			
 			__frameScripts.set (index, method);
 			
-			trace ("added script index " + index);
-			
 		} else if (__frameScripts != null) {
 			
 			__frameScripts.remove (index);

@@ -8,11 +8,6 @@ package openfl.display;
  * <code>openfl.display.Graphics.lineStyle()</code> method. You can specify the
  * following three types of caps:
  */
-
-#if flash
-@:native("flash.display.CapsStyle")
-#end
-
 @:enum abstract CapsStyle(String) from String to String {
 	
 	/**

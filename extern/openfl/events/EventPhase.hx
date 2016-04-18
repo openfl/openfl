@@ -5,11 +5,6 @@ package openfl.events;
  * The EventPhase class provides values for the <code>eventPhase</code>
  * property of the Event class.
  */
-
-#if flash
-@:native("flash.events.EventPhase")
-#end
-
 @:enum abstract EventPhase(Int) from Int to Int {
 	
 	public var AT_TARGET = 2;

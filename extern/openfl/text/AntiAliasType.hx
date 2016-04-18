@@ -5,11 +5,6 @@ package openfl.text;
  * The AntiAliasType class provides values for anti-aliasing in the
  * flash.text.TextField class.
  */
-
-#if flash
-@:native("flash.text.AntiAliasType")
-#end
-
 @:enum abstract AntiAliasType(String) from String to String {
 	
 	/**

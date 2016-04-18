@@ -4,11 +4,6 @@ package openfl.text;
 /**
  * The FontStyle class provides values for the TextRenderer class.
  */
-
-#if flash
-@:native("flash.text.FontStyle")
-#end
-
 @:enum abstract FontStyle(String) from String to String {
 	
 	/**

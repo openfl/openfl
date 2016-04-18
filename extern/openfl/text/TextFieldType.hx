@@ -5,11 +5,6 @@ package openfl.text;
  * The TextFieldType class is an enumeration of constant values used in
  * setting the <code>type</code> property of the TextField class.
  */
-
-#if flash
-@:native("flash.text.TextFieldType")
-#end
-
 @:enum abstract TextFieldType(String) from String to String {
 	
 	/**

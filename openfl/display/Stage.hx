@@ -520,7 +520,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case OPENGL (gl):
 					
-					#if !disable_cffi
+					#if (!disable_cffi && (!html5 || webgl))
 					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
 					#end
 				
@@ -530,15 +530,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case DOM (element):
 					
+					#if (!html5 || dom)
 					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+					#end
 				
 				case CAIRO (cairo):
 					
+					#if !html5
 					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
+					#end
 				
 				case CONSOLE (ctx):
 					
+					#if !html5
 					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
+					#end
 				
 				default:
 				
@@ -555,6 +561,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var event = new Event (Event.DEACTIVATE);
 		__broadcast (event, true);
+		
+	}
+	
+	
+	public function onWindowDropFile (window:Window, file:String):Void {
+		
+		
 		
 	}
 	
@@ -1383,6 +1396,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 						//window.minimized = false;
 						window.fullscreen = false;
 						
+						stageWidth = Std.int (window.width * window.scale);
+						stageHeight = Std.int (window.height * window.scale);
+						
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 						
 					}
@@ -1393,6 +1409,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						//window.minimized = false;
 						window.fullscreen = true;
+						
+						stageWidth = Std.int (window.width * window.scale);
+						stageHeight = Std.int (window.height * window.scale);
 						
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 						

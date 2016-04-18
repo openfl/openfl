@@ -11,11 +11,11 @@ class Tile {
 	public var y:Float;
 	
 	
-	public function new () {
+	public function new (id:Int = 0, x:Float = 0, y:Float = 0) {
 		
-		id = 0;
-		x = 0;
-		y = 0;
+		this.id = id;
+		this.x = x;
+		this.y = y;
 		
 	}
 	

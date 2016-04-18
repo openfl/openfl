@@ -68,10 +68,6 @@ class GLTilemap {
 			
 			glProgram = GLUtils.createProgram (vertexSource, fragmentSource);
 			
-			// TODO: Handle width/height
-			
-			glMatrix = Matrix4.createOrtho (0, 800, 600, 0, -1000, 1000);
-			
 			glVertexAttribute = gl.getAttribLocation (glProgram, "aVertexPosition");
 			glTextureAttribute = gl.getAttribLocation (glProgram, "aTexCoord");
 			glMatrixUniform = gl.getUniformLocation (glProgram, "uMatrix");
@@ -85,6 +81,12 @@ class GLTilemap {
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		if (tilemap.__layers == null || tilemap.__layers.length == 0) return;
+		
+		// TODO: Smarter matrix
+		
+		glMatrix = Matrix4.createOrtho (-tilemap.__renderTransform.tx, tilemap.stage.stageWidth - tilemap.__renderTransform.tx, tilemap.stage.stageHeight - tilemap.__renderTransform.ty, -tilemap.__renderTransform.ty, -1000, 1000);
+		
+		renderSession.spriteBatch.finish ();
 		
 		renderSession.shaderManager.setShader (null);
 		renderSession.blendModeManager.setBlendMode (null);
@@ -104,7 +106,7 @@ class GLTilemap {
 		gl.enable (gl.TEXTURE_2D);
 		#end
 		
-		var tiles, count, bufferData, buffer, previousLength, offset;
+		var tiles, count, bufferData, buffer, previousLength, offset, uvs, uv;
 		var cacheTileID = -1, tileWidth = 0, tileHeight = 0;
 		var tile, x, y, x2, y2;
 		
@@ -118,6 +120,7 @@ class GLTilemap {
 			
 			tiles = layer.__tiles;
 			count = tiles.length;
+			uvs = layer.tileset.__uvs;
 			
 			bufferData = layer.__bufferData;
 			
@@ -147,21 +150,29 @@ class GLTilemap {
 				
 				for (i in previousLength...count) {
 					
+					uv = uvs[tiles[i].id];
+					trace (uv);
+					
+					x = uv.x;
+					y = uv.y;
+					x2 = uv.width;
+					y2 = uv.height;
+					
 					offset = i * 24;
 					
-					bufferData[offset + 2] = 0;
-					bufferData[offset + 3] = 0;
-					bufferData[offset + 6] = 1;
-					bufferData[offset + 7] = 0;
-					bufferData[offset + 10] = 0;
-					bufferData[offset + 11] = 1;
+					bufferData[offset + 2] = x;
+					bufferData[offset + 3] = y;
+					bufferData[offset + 6] = x2;
+					bufferData[offset + 7] = y;
+					bufferData[offset + 10] = x;
+					bufferData[offset + 11] = y2;
 					
-					bufferData[offset + 14] = 0;
-					bufferData[offset + 15] = 1;
-					bufferData[offset + 18] = 1;
-					bufferData[offset + 19] = 0;
-					bufferData[offset + 22] = 1;
-					bufferData[offset + 23] = 1;
+					bufferData[offset + 14] = x;
+					bufferData[offset + 15] = y2;
+					bufferData[offset + 18] = x2;
+					bufferData[offset + 19] = y;
+					bufferData[offset + 22] = x2;
+					bufferData[offset + 23] = y2;
 					
 				}
 				

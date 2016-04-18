@@ -5,11 +5,6 @@ package openfl.display;
  * The StageQuality class provides values for the <code>Stage.quality</code>
  * property.
  */
-
-#if flash
-@:native("flash.display.StageQuality")
-#end
-
 @:enum abstract StageQuality(String) from String to String {
 	
 	/**

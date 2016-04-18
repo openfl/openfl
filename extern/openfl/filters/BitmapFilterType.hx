@@ -5,11 +5,6 @@ package openfl.filters;
  * The BitmapFilterType class contains values to set the type of a
  * BitmapFilter.
  */
-
-#if flash
-@:native("flash.filters.BitmapFilterType")
-#end
-
 @:enum abstract BitmapFilterType(String) from String to String {
 	
 	/**
