@@ -75,6 +75,7 @@ import js.html.CanvasRenderingContext2D;
 	#if (js && html5)
 	private var __canvas:CanvasElement;
 	private var __context:CanvasRenderingContext2D;
+	@:noCompletion public var __drawTilesMode:Bool = false;
 	#else
 	private var __cairo:Cairo;
 	#end
@@ -680,6 +681,10 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__commands.drawTiles (sheet, tileData, smooth, flags, shader, count);
+		
+		#if (js && html5)
+		__drawTilesMode = true;
+		#end
 		
 		__dirty = true;
 		__visible = true;
