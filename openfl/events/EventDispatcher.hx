@@ -10,7 +10,7 @@ import openfl.events.IEventDispatcher;
 class EventDispatcher implements IEventDispatcher {
 	
 	
-	private var __dispatching:Map<String, Bool>;
+	private var __dispatchingCount:Map<String, Int>;
 	private var __targetDispatcher:IEventDispatcher;
 	private var __eventMap:Map<String, Array<Listener>>;
 	private var __newEventMap:Map<String, Array<Listener>>;
@@ -31,7 +31,7 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (__eventMap == null) {
 			
-			__dispatching = new Map ();
+			__dispatchingCount = new Map ();
 			__eventMap = new Map ();
 			__newEventMap = new Map ();
 			
@@ -47,7 +47,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 			var list;
 			
-			if (__dispatching.get (type) == true) {
+			if (__dispatchingCount.exists (type)) {
 				
 				if (!__newEventMap.exists (type)) {
 					
@@ -101,7 +101,7 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (__eventMap == null) return false;
 		
-		if (__dispatching.get (type) == true && __newEventMap.exists (type)) {
+		if (__dispatchingCount.exists(type) && __newEventMap.exists (type)) {
 			
 			return __newEventMap.get (type).length > 0;
 			
@@ -121,7 +121,7 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		var dispatching = (__dispatching.get (type) == true);
+		var dispatching = (__dispatchingCount.exists (type));
 		
 		if (dispatching) {
 			
@@ -193,19 +193,30 @@ class EventDispatcher implements IEventDispatcher {
 		var type = event.type;
 		var list;
 		
-		if (__dispatching.get (type) == true) {
+		var wasDispatchingCount:Int = __dispatchingCount.exists (type) ? __dispatchingCount.get(type) : 0;
+		
+		if (wasDispatchingCount > 0) {
 			
-			list = __newEventMap.get (type);
-			if (list == null) return false;
+			if (!__newEventMap.exists (type)) {
+				
+				list = __eventMap.get (type).copy ();
+				__newEventMap.set (type, list);
+				
+			} else {
+				
+				list = __newEventMap.get (type);
+				
+			}
+			
 			list = list.copy ();
 			
 		} else {
 			
 			list = __eventMap.get (type);
 			if (list == null) return false;
-			__dispatching.set (type, true);
 			
 		}
+		__dispatchingCount.set (type, wasDispatchingCount + 1);
 		
 		if (event.target == null) {
 			
@@ -252,34 +263,39 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (__newEventMap != null && __newEventMap.exists (type)) {
-			
-			var list = __newEventMap.get (type);
-			
-			if (list.length > 0) {
+		if(wasDispatchingCount == 0){
+			if (__newEventMap != null && __newEventMap.exists (type)) {
 				
-				__eventMap.set (type, list);
+				var list = __newEventMap.get (type);
 				
-			} else {
+				if (list.length > 0) {
+					
+					__eventMap.set (type, list);
+					
+				} else {
+					
+					__eventMap.remove (type);
+					
+				}
 				
-				__eventMap.remove (type);
+				if (!__eventMap.iterator ().hasNext ()) {
+					
+					__eventMap = null;
+					__newEventMap = null;
+					
+				} else {
+					
+					__newEventMap.remove (type);
+					
+				}
 				
 			}
+			__dispatchingCount.remove (event.type);
 			
-			if (!__eventMap.iterator ().hasNext ()) {
-				
-				__eventMap = null;
-				__newEventMap = null;
-				
-			} else {
-				
-				__newEventMap.remove (type);
-				
-			}
-			
+		}else{
+			__dispatchingCount.set (event.type, wasDispatchingCount);
 		}
 		
-		__dispatching.set (event.type, false);
 		
 		return true;
 		
