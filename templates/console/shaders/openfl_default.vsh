@@ -1,5 +1,4 @@
-//#include "gamma.fxh"
-#include "wfUtils.fxh"
+#include "common.fxh"
 
 
 MATRIX_ORDER float4x4 g_transform : register (c0);
