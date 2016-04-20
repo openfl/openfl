@@ -402,9 +402,9 @@ class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		if (!__isValid) return;
-		
-		#if (js && html5)
-		
+
+		#if (js && html5 && !webgl)
+
 		if (colorTransform != null) {
 			
 			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
@@ -464,7 +464,12 @@ class BitmapData implements IBitmapDrawable {
 		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 		buffer.__srcImageData = null;
 		buffer.data = null;
-		
+
+		#elseif (js && html5) //webgl
+
+		var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
+		__drawGL ( renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
+
 		#else
 		
 		if (colorTransform != null) {
