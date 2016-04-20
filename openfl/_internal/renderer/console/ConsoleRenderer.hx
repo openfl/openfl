@@ -246,7 +246,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		} else if (Std.is (object, Bitmap)) {
 
 			var b:Bitmap = cast (object);
-			drawBitmapData (b, b.bitmapData);
+			drawBitmapData (b, b.bitmapData, b.smoothing);
 
 		} else if (Std.is (object, Shape)) {
 
@@ -561,7 +561,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData) {
+	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData, smoothing:Bool) {
 
 		beginClipRect ();
 
@@ -598,6 +598,11 @@ class ConsoleRenderer extends AbstractRenderer {
 		ctx.setVertexSource (vertexBuffer);
 		ctx.setTexture (0, texture);
 		ctx.setTextureAddressMode (0, Clamp, Clamp);
+		if (smoothing) {
+			ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+		}
 		ctx.draw (Primitive.TriangleStrip, 0, 2);
 
 		endClipRect ();
@@ -637,7 +642,8 @@ class ConsoleRenderer extends AbstractRenderer {
 			return;
 		}
 
-		drawBitmapData (tf, tf.__graphics.__bitmap);
+		var smoothing = false;
+		drawBitmapData (tf, tf.__graphics.__bitmap, smoothing);
 
 	}
 
