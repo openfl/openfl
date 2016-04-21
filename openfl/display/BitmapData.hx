@@ -163,22 +163,13 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		filter.__applyFilter (image.buffer.__srcImageData, sourceBitmapData.image.buffer.__srcImageData, sourceRect, destPoint);
 		#elseif (cpp || neko)
-		if (sourceBitmapData == this) {
-			
-			var renderer = @:privateAccess Lib.current.stage.__renderer;
-			var renderSession = @:privateAccess renderer.renderSession;
-			__drawGL (renderSession, this);
-			@:privateAccess BitmapFilter.__applyFilters ([filter], renderSession, this, this, sourceRect, destPoint);
-			
-		} else {
 		
 			var wrapper:Bitmap = new Bitmap(sourceBitmapData);
 			wrapper.filters = [filter];
 			draw(wrapper);
 			wrapper.bitmapData = null;
 			wrapper = null;
-			
-		}
+		
 		#end
 		
 		image.dirty = true;
@@ -531,15 +522,21 @@ class BitmapData implements IBitmapDrawable {
 		
 		surface.flush ();
 		
-		var renderer = @:privateAccess Lib.current.stage.__renderer;
-		var renderSession = @:privateAccess renderer.renderSession;
-		
-		if(__pingPongTexture == null) __drawGL (renderSession, this);
-		
-		if (Std.is(source, DisplayObject) && cast(source, DisplayObject).filters != null) {
+		if(Std.is(source,DisplayObject))
+		{
+			var filters = cast(source,DisplayObject).filters;
+			if (filters != null && filters.length != 0)
+			{
 			
-			@:privateAccess BitmapFilter.__applyFilters (cast(source, DisplayObject).filters, renderSession, this, this, null, null);
-			
+				var renderer = @:privateAccess Lib.current.stage.__renderer;
+				var renderSession = @:privateAccess renderer.renderSession;
+				if(__pingPongTexture == null)  __drawGL (renderSession, this);
+				@:privateAccess BitmapFilter.__applyFilters (
+					filters,
+					renderSession, this, this, null, null
+				);
+				
+			}
 		}
 		
 		image.dirty = true;
