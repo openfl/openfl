@@ -533,7 +533,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		var renderer = @:privateAccess Lib.current.stage.__renderer;
 		var renderSession = @:privateAccess renderer.renderSession;
-		__drawGL (renderSession, this);
+		
+		if(__pingPongTexture == null) __drawGL (renderSession, this);
 		
 		if (Std.is(source, DisplayObject) && cast(source, DisplayObject).filters != null) {
 			
