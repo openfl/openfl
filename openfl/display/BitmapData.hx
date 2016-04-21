@@ -162,6 +162,12 @@ class BitmapData implements IBitmapDrawable {
 		
 		#if (js && html5)
 		filter.__applyFilter (image.buffer.__srcImageData, sourceBitmapData.image.buffer.__srcImageData, sourceRect, destPoint);
+		#elseif (cpp || neko)
+		var wrapper:Bitmap = new Bitmap(sourceBitmapData);
+		wrapper.filters = [filter];
+		draw(wrapper);
+		wrapper.bitmapData = null;
+		wrapper = null;
 		#end
 		
 		image.dirty = true;
@@ -513,6 +519,16 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		surface.flush ();
+		
+		var renderer = @:privateAccess Lib.current.stage.__renderer;
+		var renderSession = @:privateAccess renderer.renderSession;
+		__drawGL (renderSession, this);
+		
+		if (Std.is(source, DisplayObject) && cast(source, DisplayObject).filters != null) {
+			
+			@:privateAccess BitmapFilter.__applyFilters (cast(source, DisplayObject).filters, renderSession, this, this, null, null);
+			
+		}
 		
 		image.dirty = true;
 		
