@@ -160,8 +160,8 @@ class ConsoleRenderer extends AbstractRenderer {
 		ctx.setViewport (0, 0, width, height);
 		scissorRect[0] = 0.0;
 		scissorRect[1] = 0.0;
-		scissorRect[2] = width - 1.0;
-		scissorRect[3] = height - 1.0;
+		scissorRect[2] = width;
+		scissorRect[3] = height;
 		ctx.clear (
 			Std.int (stage.__colorSplit[0] * 0xff),
 			Std.int (stage.__colorSplit[1] * 0xff),
@@ -532,8 +532,8 @@ class ConsoleRenderer extends AbstractRenderer {
 		);
 		scissorRect[0] = viewport.x;
 		scissorRect[1] = viewport.y;
-		scissorRect[2] = viewport.x + viewport.width - 0.1;
-		scissorRect[3] = viewport.y + viewport.height - 0.1;
+		scissorRect[2] = viewport.x + viewport.width;
+		scissorRect[3] = viewport.y + viewport.height;
 
 	}
 
@@ -555,8 +555,8 @@ class ConsoleRenderer extends AbstractRenderer {
 		ctx.setViewport (0, 0, this.width, this.height);
 		scissorRect[0] = 0;
 		scissorRect[1] = 0;
-		scissorRect[2] = this.width - 1.0;
-		scissorRect[3] = this.height - 1.0;
+		scissorRect[2] = this.width;
+		scissorRect[3] = this.height;
 
 	}
 
