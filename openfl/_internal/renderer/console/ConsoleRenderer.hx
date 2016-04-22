@@ -151,8 +151,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		viewProj = Matrix4.createOrtho (
 			0 + pixelOffsetX,
-			width + pixelOffsetY,
-			height + pixelOffsetX,
+			width + pixelOffsetX,
+			height + pixelOffsetY,
 			0 + pixelOffsetY,
 			-1, 1
 		);
