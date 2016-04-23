@@ -40,7 +40,7 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
+class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 	private static var __instanceCount = 0;
