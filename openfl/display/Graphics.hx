@@ -779,6 +779,12 @@ import js.html.CanvasRenderingContext2D;
 	
 	
 	public function lineTo (x:Float, y:Float):Void {
+
+		if (!Math.isFinite(x) || !Math.isFinite(y)) {
+
+			return;
+
+		}
 		
 		// TODO: Should we consider the origin instead, instead of inflating in all directions?
 		
