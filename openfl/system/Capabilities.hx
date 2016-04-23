@@ -3,12 +3,6 @@ package openfl.system; #if !openfl_legacy
 
 import haxe.macro.Compiler;
 
-#if (js && html5)
-import js.html.DivElement;
-import js.html.Element;
-import js.Browser;
-#end
-
 
 @:final class Capabilities {
 	
@@ -94,29 +88,21 @@ import js.Browser;
 	private static function get_pixelAspectRatio ():Float { return 1; }
 	private static function get_screenDPI ():Float {
 		
-		#if (js && html5)
+		var window = Lib.application.window;
 		
-		if (screenDPI > 0) return screenDPI;
-		
-		//little trick of measuring the width of a 1 inch div
-		//but sadly most browsers/OSs still return wrong result...
-		var body = Browser.document.getElementsByTagName ("body")[0];
-		var testDiv:DivElement = cast Browser.document.createElement ("div");
-		testDiv.style.width = testDiv.style.height = "1in";
-		testDiv.style.padding = testDiv.style.margin = "0px";
-		testDiv.style.position = "absolute";
-		testDiv.style.top = "-100%";
-		body.appendChild (testDiv);
-		screenDPI = testDiv.offsetWidth;
-		body.removeChild (testDiv);
-		
-		return screenDPI;
-		
-		#else
+		if (window != null) {
+			
+			var display = window.display;
+			
+			if (display != null) {
+				
+				return display.dpi;
+				
+			}
+			
+		}
 		
 		return 0;
-		
-		#end
 		
 	}
 	
