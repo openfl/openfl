@@ -65,7 +65,6 @@
 			<section if="telemetry || advanced-telemetry">
 				
 				<haxelib name="hxtelemetry" />
-				<config:hxtelemetry allocations="true" host="localhost" />
 				
 			</section>
 			
