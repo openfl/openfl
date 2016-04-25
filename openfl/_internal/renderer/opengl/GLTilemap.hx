@@ -151,7 +151,6 @@ class GLTilemap {
 				for (i in previousLength...count) {
 					
 					uv = uvs[tiles[i].id];
-					trace (uv);
 					
 					x = uv.x;
 					y = uv.y;
