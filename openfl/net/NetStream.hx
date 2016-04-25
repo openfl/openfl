@@ -253,8 +253,8 @@ class NetStream extends EventDispatcher {
 				var handler = client.onMetaData;
 				handler ({
 					
-					width: __video.videoHeight,
-					height: __video.videoWidth
+					width: __video.videoWidth,
+					height: __video.videoHeight
 					
 				});
 				
