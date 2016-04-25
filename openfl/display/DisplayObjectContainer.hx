@@ -76,17 +76,16 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
-		
-		if (index > __children.length || index < 0) {
-			
+
+		if (index < 0) {
 			throw "Invalid index position " + index;
 			
 		}
 		
 		if (child.parent == this) {
-			
-			__children.remove (child);
-			
+
+			var index: Int = __children.indexOf (child);
+			__children[index] = null;
 		} else {
 			
 			if (child.parent != null) {
@@ -114,9 +113,13 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__dispatchEvent (event);
 			
 		}
-		
-		__children.insert (index, child);
-		
+
+		if(__children[index] == null ){
+			__children[index] = child;
+		} else {
+			__children.insert(index,child);
+		}
+
 		return child;
 		
 	}
@@ -158,7 +161,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function getChildByName (name:String):DisplayObject {
 		
 		for (child in __children) {
-			
+			if (child == null) continue;
 			if (child.name == name) return child;
 			
 		}
@@ -220,9 +223,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function removeChildAt (index:Int):DisplayObject {
 		
 		if (index >= 0 && index < __children.length) {
-			
-			return removeChild (__children[index]);
-			
+
+			var child: DisplayObject = __children[index];
+
+			if(child !=null){
+				return removeChild (child);
+			} else {
+				__children.splice(index, 1);
+			}
+
 		}
 		
 		return null;
@@ -287,10 +296,17 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function setChildIndex (child:DisplayObject, index:Int):Void {
 		
 		if (index >= 0 && index <= __children.length && child.parent == this) {
-			
-			__children.remove (child);
-			__children.insert (index, child);
-			
+
+			if(__children[index]==null){
+				var old_index: Int = __children.indexOf (child);
+				__children[old_index] = null;
+				__children[index] = child;
+			} else {
+
+				__children.remove(child);
+				__children.insert(index, child);
+			}
+
 		}
 		
 	}
@@ -357,7 +373,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (!event.__isCanceled && notifyChilden) {
 			
 			for (child in __children) {
-				
+
+				if(child == null) continue;
+
 				child.__broadcast (event, true);
 				
 				if (event.__isCanceled) {
@@ -378,7 +396,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	private override function __enterFrame (deltaTime:Int):Void {
 		
 		for (child in __children) {
-			
+			if(child == null ) continue;
 			child.__enterFrame (deltaTime);
 			
 		}
@@ -400,8 +418,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		for (child in __children) {
-			
-			if (child.scaleX == 0 || child.scaleY == 0) continue;
+
+			if (child == null ) continue;
+			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getBounds (rect, child.__worldTransform);
 			
 		}
@@ -439,7 +458,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		for (child in __children) {
-			
+
+			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			child.__getRenderBounds (rect, child.__worldTransform);
 			
@@ -467,9 +487,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (stack == null || !mouseChildren) {
 				
 				while (--i >= 0) {
-					
-					if (__children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
-						
+
+					if (__children[i] != null && __children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
+
 						if (stack != null) {
 							
 							stack.push (hitObject);
@@ -490,7 +510,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				var hitTest = false;
 				
 				while (--i >= 0) {
-					
+
+					if (__children[i] == null) continue;
 					interactive = __children[i].__getInteractive (null);
 					
 					if (interactive || (mouseEnabled && !hitTest)) {
@@ -523,7 +544,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		} else {
 			
 			while (--i >= 0) {
-				
+
+				if (__children[i] == null ) continue;
 				__children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]);
 				
 			}
@@ -540,7 +562,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		var i = __children.length;
 		
 		while (--i >= 0) {
-			
+
+			if (__children[i] == null ) continue;
+
 			if (__children[i].__hitTestMask (x, y)) {
 				
 				return true;
@@ -573,7 +597,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		for (child in __children) {
-			
+
+			if (child == null ) continue;
 			child.__renderCairo (renderSession);
 			
 		}
@@ -613,7 +638,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
 		
 		for (child in __children) {
-			
+			if (child == null ) continue;
 			child.__renderCairoMask (renderSession);
 			
 		}
@@ -642,7 +667,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		for (child in __children) {
-			
+			if (child == null ) continue;
 			child.__renderCanvas (renderSession);
 			
 		}
@@ -677,18 +702,22 @@ class DisplayObjectContainer extends InteractiveObject {
 			CanvasGraphics.renderMask (__graphics, renderSession);
 			
 		}
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
-		
-		/*for (child in __children) {
-			
-			child.__renderMask (renderSession);
-			
-		}*/
-		
+		else
+		{
+
+			if( __children.length > 0 ) {
+				for (child in __children) {
+					if (child == null ) continue;
+					child.__renderCanvasMask (renderSession);
+
+				}
+			} else {
+				var bounds = new Rectangle ();
+				__getLocalBounds (bounds);
+
+				renderSession.context.rect (0, 0, bounds.width, bounds.height);
+			}
+		}
 	}
 	
 	
@@ -709,7 +738,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		// TODO: scrollRect
 		
 		for (child in __children) {
-			
+			if (child == null ) continue;
 			child.__renderDOM (renderSession);
 			
 		}
@@ -754,7 +783,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		__drawGraphicsGL (renderSession);
 		
 		for (child in __children) {
-			
+			if (child == null ) continue;
 			child.__renderGL (renderSession);
 			
 		}
@@ -791,7 +820,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (__children != null) {
 				
 				for (child in __children) {
-					
+
+					if(child == null) continue;
 					child.__setStageReference (stage);
 					
 				}
@@ -819,7 +849,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (updateChildren) {
 			
 			for (child in __children) {
-				
+
+				if (child == null ) continue;
 				child.__update (transformOnly, true, maskGraphics);
 				
 			}
@@ -834,7 +865,8 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__updateChildren (transformOnly);
 		
 		for (child in __children) {
-			
+
+			if (child == null ) continue;
 			child.__update (transformOnly, true);
 			
 		}
