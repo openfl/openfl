@@ -50,7 +50,7 @@ class CairoBlendModeManager implements BlendModeManager {
 			
 			case ALPHA:
 			
-				//~ renderSession.cairo.operator = CairoOperator.ALPHA;
+				//TODO;
 				
 			case DARKEN:
 			
@@ -62,7 +62,7 @@ class CairoBlendModeManager implements BlendModeManager {
 			
 			case ERASE:
 			
-				//~ renderSession.cairo.operator = CairoOperator.ERASE;
+				//TODO;
 				
 			case HARDLIGHT:
 			
@@ -70,11 +70,11 @@ class CairoBlendModeManager implements BlendModeManager {
 				
 			case INVERT:
 			
-				//~ renderSession.cairo.operator = CairoOperator.INVERT;
+				//TODO
 				
 			case LAYER:
 			
-				//~ renderSession.cairo.operator = CairoOperator.LAYER;
+				renderSession.cairo.operator = CairoOperator.OVER;
 				
 			case LIGHTEN:
 			
@@ -98,11 +98,11 @@ class CairoBlendModeManager implements BlendModeManager {
 				
 			case SHADER:
 			
-				//~ renderSession.cairo.operator = CairoOperator.SHADER;
+				//TODO
 				
 			case SUBTRACT:
 			
-				//~ renderSession.cairo.operator = CairoOperator.SUBSTRACT;
+				//TODO;
 		}
 		
 		return true;
