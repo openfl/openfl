@@ -781,11 +781,48 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__preRenderGL (renderSession);
 		__drawGraphicsGL (renderSession);
-		
+
+		var maskEndDepth = -1;
+
 		for (child in __children) {
-			if (child == null ) continue;
-			child.__renderGL (renderSession);
-			
+
+			--maskEndDepth;
+
+			if( maskEndDepth == -1 ){
+				renderSession.maskManager.popMask();
+			}
+
+			if (child == null ) {
+				continue;
+			}
+
+			if( child.__clipDepth != 0 ){
+
+				if( !child.__maskCached ){
+					if (child.__maskGraphics == null) {
+
+						child.__maskGraphics = new Graphics ();
+
+					}
+
+					child.__maskGraphics.clear ();
+
+					child.__isMask = true;
+					child.__update (true, true, child.__maskGraphics);
+
+					child.__maskCached = true;
+				}
+
+				renderSession.maskManager.pushMask (child);
+				maskEndDepth =  child.__clipDepth;
+			}
+			else {
+				child.__renderGL (renderSession);
+			}
+		}
+
+		if( maskEndDepth > 0 ){
+			renderSession.maskManager.popMask();
 		}
 		
 		__postRenderGL (renderSession);

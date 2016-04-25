@@ -126,7 +126,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __cachedFilterBounds:Rectangle;
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
-	
+	private var __clipDepth : Int;
+
 	#if (js && html5)
 	private var __canvas:CanvasElement;
 	private var __context:CanvasRenderingContext2D;
@@ -154,7 +155,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
-		
+		__clipDepth = 0;
+
 		#if dom
 		__worldVisible = true;
 		#end
