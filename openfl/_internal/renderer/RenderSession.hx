@@ -6,7 +6,7 @@ import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLFramebuffer;
-import openfl._internal.renderer.opengl.utils.BlendModeManager;
+import openfl._internal.renderer.BlendModeManager;
 import openfl._internal.renderer.opengl.utils.FilterManager;
 import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;

@@ -12,7 +12,7 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.opengl.utils.*;
-import openfl._internal.renderer.opengl.utils.BlendModeManager.GLBlendMode;
+import openfl._internal.renderer.opengl.utils.GLBlendModeManager.GLBlendMode;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -115,7 +115,7 @@ class GLRenderer extends AbstractRenderer {
 		spriteBatch = new SpriteBatch (gl);
 		filterManager = new FilterManager (gl, this.transparent);
 		stencilManager = new StencilManager (gl);
-		blendModeManager = new BlendModeManager (gl);
+		blendModeManager = new GLBlendModeManager (gl);
 		
 		renderSession = new RenderSession ();
 		renderSession.gl = this.gl;
