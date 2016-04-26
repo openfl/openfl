@@ -821,7 +821,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 		}
 
-		if( maskEndDepth > 0 ){
+		if( maskEndDepth >= 0 ){
 			renderSession.maskManager.popMask();
 		}
 		
