@@ -1,6 +1,7 @@
 package openfl.events;
 
 
+//import haxe.PosInfos; // for assert
 import openfl.events.EventPhase;
 import openfl.events.IEventDispatcher;
 
@@ -23,37 +24,56 @@ class EventDispatcher implements IEventDispatcher {
 		
 	}
 	
-	private function getList(type:String, mode:GetListMode):Array<Listener> {
+	
+	/* private static function assert (cond:Bool, ?pos:haxe.PosInfos):Void {
 		
-		var typeInfo:EventTypeInfo = null;
-		if (__typeInfos == null) {
+		if (!cond) {
+			trace ("Assert in " + pos.className+"::" + pos.methodName, pos);
+		}
+		
+	} */
+	
+	
+	/* private function assertTypeInvariants (type:String, ?pos:haxe.PosInfos):Void {
+		var typeInfo = getTypeInfo (type);
+		if (typeInfo != null) {
 			
-			// Map doesn't yet exist.
+			// listeners list is always non-null (but may be empty temporarily)
+			assert (typeInfo.listeners != null, pos);
+			
+			// lists are always separate, never referring to the same thing
+			assert (typeInfo.listeners != typeInfo.newListeners, pos);
+			
+			// when not dispatching, newListeners is always null
+			assert (typeInfo.dispatching || (typeInfo.newListeners == null), pos);
+			
+		}
+		
+	} */
+	
+	
+	private function __getList(type:String, mode:GetListMode):Array<Listener> {
+		
+		if (__typeInfos == null) {
 			
 			if (mode == Add) {
 				
 				// Create missing map only if we're about to add.
 				__typeInfos = new Map ();
-				typeInfo = new EventTypeInfo();
-				__typeInfos.set (type, typeInfo);
 				
 			} else {
 				
-				// No lists of any type present.
+				// No map present, therefore no types, therefore no lists.
 				return null;
 				
 			}
 			
-		} else {
-			
-			// Map exists, look up info.
-			typeInfo = __typeInfos.get (type);
-			
 		}
 		
+		// Map exists, look up info.
+		var typeInfo = __typeInfos.get (type);
+		
 		if (typeInfo == null) {
-			
-			// Type info doesn't yet exist.
 			
 			if (mode == Add) {
 				
@@ -67,6 +87,7 @@ class EventDispatcher implements IEventDispatcher {
 				return null;
 				
 			}
+			
 		}
 		
 		// If dispatching, try newListeners first.
@@ -94,50 +115,28 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		// Haven't found a list yet.  Try original listeners.
-		if (typeInfo.listeners == null) {
+		// Haven't found a list yet.  Use original listeners.
+		var isWrite = (mode == Add) || (mode == Remove);
+		if (typeInfo.dispatching && isWrite) {
 			
-			// No original listeners.
-			
-			if (mode == Add) {
-				
-				// Create missing list only if we're about to add.
-				// By definition no one was iterating over this particular list instance,
-				// since it was null before; safe to return.
-				typeInfo.listeners = new Array<Listener>();
-				return typeInfo.listeners;
-				
-			} else {
-				
-				// Non-Add mode and we didn't find any lists.
-				return null;
-				
-			}
+			// Dispatching, and we're about to mutate.
+			// Copy to newListeners and return that instead.
+			typeInfo.newListeners = typeInfo.listeners.copy ();
+			return typeInfo.newListeners;
 			
 		} else {
+		
+			// Found, and no chance of this mutating out from under us:
+			// We're either not yet dispatching (and if we're about to,
+			// we'll only mutate newListeners entries), or we're not
+			// writing.
+			// Return as-is.
+			return typeInfo.listeners;
 			
-			// Found an original listeners list.
-			
-			var isWrite = (mode == Add) || (mode == Remove);
-			if (typeInfo.dispatching && isWrite) {
-				
-				// Dispatching, and we're about to mutate.
-				// Copy to newListeners and return that instead.
-				typeInfo.newListeners = typeInfo.listeners .copy ();
-				return typeInfo.newListeners;
-				
-			} else {
-			
-				// Found, and no chance of this mutating out from under us:
-				// We're either not yet dispatching (and if we're about to,
-				// we'll only mutate newListeners entries), or we're not
-				// writing.
-				// Return as-is.
-				return typeInfo.listeners;
-				
-			}
-		} 
+		}
+		
 	}
+	
 	
 	private function getTypeInfo (type:String):EventTypeInfo {
 		
@@ -149,7 +148,11 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
 		
-		var list = getList (type, Add);
+		var list = __getList (type, Add);
+		//assert( list != null ); // non-null in Add mode; autovivifies map / entry / list.
+		//assert ((list == getTypeInfo (type).listeners) || (list == getTypeInfo (type).newListeners)); // not a copy
+		//assert (getTypeInfo (type).dispatching || (list == getTypeInfo (type).listeners)); // always listeners when not dispatching
+		//assertTypeInvariants (type);
 		
 		for (i in 0...list.length) {
 			
@@ -182,7 +185,9 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function hasEventListener (type:String):Bool {
 		
-		var list = getList (type, Read);
+		var list = __getList (type, Read);
+		//assert ((list == null) || (list == getTypeInfo (type).listeners) || (list == getTypeInfo (type).newListeners)); // not a copy
+		//assertTypeInvariants (type);
 		return ((list != null) && (list.length > 0));
 		
 	}
@@ -190,8 +195,12 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
 		
-		var list = getList (type, Remove);
-		if (list == null) return;
+		var list = __getList (type, Remove);
+		if (list == null) return; // may be null
+		//assert ((list == getTypeInfo (type).listeners) || (list == getTypeInfo (type).newListeners)); // not a copy
+		//assert (getTypeInfo (type).dispatching || (list == getTypeInfo (type).listeners)); // always listeners when not dispatching
+		//assertTypeInvariants (type);
+		
 		
 		for (i in 0...list.length) {
 			
@@ -204,27 +213,45 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		var typeInfo = getTypeInfo (type);
-		if (!typeInfo.dispatching) {
+		__cleanupType (type);
+		
+	}
+	
+	private function __cleanupType (type:String, ?typeInfo:EventTypeInfo = null) {
+		
+		//assert ((typeInfo == null) || (getTypeInfo (type) == typeInfo));
+		//assertTypeInvariants (type);
+		
+		if (typeInfo == null) {
 			
-			if (list.length == 0) {
-				
-				// Not dispatching, and the original listeners list is empty.
-				// No need to keep info for this type anymore;
-				// no type info = not dispatching.
-				__typeInfos.remove (type);
-				
-			}
-			
-			if (!__typeInfos.iterator ().hasNext ()) {
-				
-				// No types remaining.
-				__typeInfos = null;
-				
-			}
+			typeInfo = getTypeInfo (type);
 			
 		}
 		
+		if (typeInfo.dispatching) {
+			
+			// No cleanups while dispatching.
+			return;
+			
+		}
+			
+		if (typeInfo.listeners.length == 0) {
+			
+			// Not dispatching, and the original listeners list is empty.
+			// No need to keep info for this type anymore;
+			// no type info = not dispatching.
+			__typeInfos.remove (type);
+			
+		}
+		
+		if (!__typeInfos.iterator ().hasNext ()) {
+			
+			// No types remaining.
+			__typeInfos = null;
+			
+		}
+		
+		//assertTypeInvariants (type);
 	}
 	
 	
@@ -250,7 +277,7 @@ class EventDispatcher implements IEventDispatcher {
 		if (event == null) return false;
 		
 		var type = event.type;
-		var list = getList (type, ReadCopy);
+		var list = __getList (type, ReadCopy);
 		if ((list == null) || (list.length == 0)) return false;
 		
 		// Safe to assume typeInfo exists if getList returned non-NULL.
@@ -298,49 +325,23 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			if (listener == list[index]) {
-				
-				index++;
-				
-			}
-			
+			//assert (listener == list[index]); // should not have mutated
+			++index;
 		}
 		
 		if (outermostDispatch) {
 			
-			typeInfo.dispatching = false;
-			
-			// Merge any newListeners back into listeners as appropriate.
+			// Swap any newListeners back into listeners as appropriate.
 			if (typeInfo.newListeners != null) {
 				
-				if (typeInfo.newListeners.length > 0) {
-					
-					typeInfo.listeners = typeInfo.newListeners;
-					
-				} else {
-					
-					typeInfo.listeners = null;
-					
-				}
-				
+				typeInfo.listeners = typeInfo.newListeners;
 				typeInfo.newListeners = null;
-			}
-			
-			if (typeInfo.listeners == null || typeInfo.listeners.length == 0) {
-				
-				// Not dispatching, and the original listeners list is empty.
-				// No need to keep info for this type anymore;
-				// no type info = not dispatching.
-				__typeInfos.remove (type);
 				
 			}
 			
-			if (!__typeInfos.iterator ().hasNext ()) {
-				
-				// No types remaining.
-				__typeInfos = null;
-				
-			}
+			// No longer dispatching.
+			typeInfo.dispatching = false;
+			__cleanupType (type, typeInfo);
 			
 		}
 		
@@ -422,12 +423,12 @@ private enum GetListMode {
 private class EventTypeInfo {
 	
 	public var dispatching:Bool;
-	public var listeners:Array<Listener>;
-	public var newListeners:Array<Listener>;
+	public var listeners:Array<Listener>; // never null
+	public var newListeners:Array<Listener>; // always null when !dispatching
 	
 	public function new ():Void {
 		dispatching = false;
-		listeners = null;
+		listeners = new Array<Listener>();
 		newListeners = null;
 	}
 	
