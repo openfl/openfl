@@ -11,6 +11,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 #if (js && html5)
+import haxe.Int32;
 import js.html.ImageElement;
 #end
 
@@ -29,6 +30,7 @@ class Bitmap extends DisplayObject {
 	
 	#if (js && html5)
 	private var __image:ImageElement;
+	private var __changeId:Int32 = 0;
 	#end
 	
 	
@@ -191,6 +193,16 @@ class Bitmap extends DisplayObject {
 	
 	
 	private function set_bitmapData (value:BitmapData):BitmapData {
+
+		#if (js && html5)
+
+		if (value != null) {
+
+			__changeId = value.__changeId - 1;
+
+		}
+
+		#end
 
 		bitmapData = value;
 

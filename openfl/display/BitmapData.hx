@@ -39,6 +39,7 @@ import openfl.utils.ByteArray;
 import openfl.Vector;
 
 #if (js && html5)
+import haxe.Int32;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.ImageData;
@@ -85,6 +86,10 @@ class BitmapData implements IBitmapDrawable {
 	private var __pingPongTexture:PingPongTexture;
 	private var __usingPingPongTexture:Bool = false;
 	private var __uvData:TextureUvs;
+
+	#if (js && html5)
+	private var __changeId:Int32 = -1;
+	#end
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -167,6 +172,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.dirty = true;
 		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -191,6 +200,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
 		__usingPingPongTexture = false;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 	}
 	
@@ -348,6 +361,10 @@ class BitmapData implements IBitmapDrawable {
 		image.copyChannel (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), sourceChannel, destChannel);
 		__usingPingPongTexture = false;
 		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -357,6 +374,10 @@ class BitmapData implements IBitmapDrawable {
 		
 		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
 		__usingPingPongTexture = false;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 	}
 	
@@ -369,6 +390,10 @@ class BitmapData implements IBitmapDrawable {
 		height = 0;
 		rect = null;
 		__isValid = false;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 		if (__texture != null) {
 			
@@ -466,6 +491,8 @@ class BitmapData implements IBitmapDrawable {
 		buffer.__srcImageData = null;
 		buffer.data = null;
 		
+		__changeId++;
+		
 		#else
 		
 		if (colorTransform != null) {
@@ -558,6 +585,10 @@ class BitmapData implements IBitmapDrawable {
 		image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
 		__usingPingPongTexture = false;
 		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -566,6 +597,10 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		image.floodFill (x, y, color, ARGB32);
 		__usingPingPongTexture = false;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 	}
 	
@@ -959,6 +994,10 @@ class BitmapData implements IBitmapDrawable {
 		image.merge (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 		__usingPingPongTexture = false;
 		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -1016,6 +1055,11 @@ class BitmapData implements IBitmapDrawable {
 				setPixel32(x, y, rgb);
 			}
 		}		
+		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -1059,7 +1103,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		pixels.position = 0;
 		var destRect = new Rectangle (destPoint.x, destPoint.y, sw, sh);
-		setPixels (destRect, pixels);
+		setPixels (destRect, pixels); // __changeId will be changed in setPixels()
 		
 	}
 	
@@ -1067,6 +1111,7 @@ class BitmapData implements IBitmapDrawable {
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
 		openfl.Lib.notImplemented ("BitmapData.perlinNoise");
+		// #if (js && html5) __changeId++; #end
 		
 	}
 	
@@ -1077,6 +1122,10 @@ class BitmapData implements IBitmapDrawable {
 		image.scroll (x, y);
 		__usingPingPongTexture = false;
 		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -1085,6 +1134,10 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		image.setPixel (x, y, color, ARGB32);
 		__usingPingPongTexture = false;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 	}
 	
@@ -1095,6 +1148,10 @@ class BitmapData implements IBitmapDrawable {
 		image.setPixel32 (x, y, color, ARGB32);
 		__usingPingPongTexture = false;
 		
+		#if (js && html5)
+		__changeId++;
+		#end
+		
 	}
 	
 	
@@ -1103,6 +1160,10 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || rect == null) return;
 		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
 		__usingPingPongTexture = false;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 	}
 	
@@ -1119,7 +1180,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		byteArray.position = 0;
-		setPixels (rect, byteArray);
+		setPixels (rect, byteArray); // __changeId will be changed in setPixels()
 		
 	}
 	
@@ -1127,6 +1188,10 @@ class BitmapData implements IBitmapDrawable {
 	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000, mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int {
 		
 		if (sourceBitmapData == null || sourceRect == null || destPoint == null || sourceRect.x > sourceBitmapData.width || sourceRect.y > sourceBitmapData.height || destPoint.x > width || destPoint.y > height) return 0;
+		
+		#if (js && html5)
+		__changeId++;
+		#end
 		
 		return image.threshold (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), operation, threshold, color, mask, copySource, ARGB32);
 		
@@ -1184,7 +1249,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		Image.fromBase64 (base64, type, function (image) {
 			
-			__fromImage (image);
+			__fromImage (image); // __changeId will be changed inside __fromImage()
 			
 			if (onload != null) {
 				
@@ -1201,7 +1266,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		Image.fromBytes (bytes, function (image) {
 			
-			__fromImage (image);
+			__fromImage (image); // __changeId will be changed inside __fromImage()
 			
 			if (rawAlpha != null) {
 				
@@ -1220,6 +1285,10 @@ class BitmapData implements IBitmapDrawable {
 				
 				image.dirty = true;
 				
+				#if (js && html5)
+				__changeId++;
+				#end
+				
 			}
 			
 			if (onload != null) {
@@ -1237,7 +1306,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		Image.fromFile (path, function (image) {
 			
-			__fromImage (image);
+			__fromImage (image); // __changeId will be changed inside __fromImage()
 			
 			if (onload != null) {
 				
@@ -1266,6 +1335,10 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			__isValid = true;
+			
+			#if (js && html5)
+			__changeId++;
+			#end
 			
 		}
 		
