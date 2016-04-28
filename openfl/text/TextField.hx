@@ -1175,10 +1175,27 @@ class TextField extends InteractiveObject {
 		__isHTML = true;
 		
 		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
+
+			inline function decodeHTMLEntities(text) {
+				var entities = [
+					['quot', '"'],
+					['apos', '\''],
+					['amp', '&'],
+					['lt', '<'],
+					['gt', '>']
+				];
+
+				for (i in 0...entities.length) {
+					text = new EReg('&'+entities[i][0]+';', 'g').replace(text, entities[i][1]);
+				}
+
+				return text;
+			}
 			
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
-			
+			value = decodeHTMLEntities(value);
+
 			// crude solution
 
 			var segments = value.split ("<");
