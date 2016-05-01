@@ -617,37 +617,33 @@ import openfl.Lib;
 		
 		var dimension = 4;
 		var type = GL.FLOAT;
-		var numBytes = 4;
+		var normalized:Bool = false;
 		
 		if (format == Context3DVertexBufferFormat.BYTES_4) {
 			
 			dimension = 4;
-			type = GL.FLOAT;
-			numBytes = 4;
+			type = GL.UNSIGNED_BYTE;
+			normalized = true;
 			
 		} else if (format == Context3DVertexBufferFormat.FLOAT_1) {
 			
 			dimension = 1;
 			type = GL.FLOAT;
-			numBytes = 4;
 			
 		} else if (format == Context3DVertexBufferFormat.FLOAT_2) {
 			
 			dimension = 2;
 			type = GL.FLOAT;
-			numBytes = 4;
 			
 		} else if (format == Context3DVertexBufferFormat.FLOAT_3) {
 			
 			dimension = 3;
 			type = GL.FLOAT;
-			numBytes = 4;
 			
 		} else if (format == Context3DVertexBufferFormat.FLOAT_4) {
 			
 			dimension = 4;
 			type = GL.FLOAT;
-			numBytes = 4;
 			
 		} else {
 			
@@ -656,7 +652,7 @@ import openfl.Lib;
 		}
 		
 		GL.enableVertexAttribArray (location);
-		GL.vertexAttribPointer (location, dimension, type, false, buffer.data32PerVertex * numBytes, bufferOffset * numBytes);
+		GL.vertexAttribPointer (location, dimension, type, normalized, buffer.data32PerVertex * 4, bufferOffset * 4);
 		
 	}
 	
