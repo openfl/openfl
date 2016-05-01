@@ -1,5 +1,6 @@
 package;
 
+import haxe.rtti.CType;
 import lime.math.Rectangle in LimeRectangle;
 import openfl.Assets;
 import openfl.Lib;
@@ -7,32 +8,108 @@ import openfl.display.Application;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
 
-@:autoBuild(FunctionalTestMacro.buildSubClasses())
+@:rtti
 class FunctionalTest {
 
 	static function main () {
 
 		// Import all test groups
-		CompileTime.importPackage("ftests");
-		var list = CompileTime.getAllClasses(FunctionalTest);
+		CompileTime.importPackage ("ftests");
 
+		var list = CompileTime.getAllClasses (FunctionalTest);
 		var total = 0;
 		var passed = 0;
+		var args = Sys.args ();
+		var keep = args.length > 0 && args[0] == "-k";
 
-		// For each test group, run it
+		if (keep) {
+
+			args.shift();
+
+		}
+
+		var cname = args.length == 2 ? args[0] : null;
+		var tname = args.length == 2 ? args[1] : null;
+
 		for (c in list) {
 
-			var name = Type.getClassName(c).split(".");
-			name.shift();
-			Sys.print("Testing " + name.join(".") + ": ");
+			var name = Type.getClassName(c);
 
-			var obj = Type.createInstance(c, []);
-			obj.run();
+			if (cname != null) {
 
-			total += obj.total;
-			passed += obj.passed;
+				if (name != cname) {
 
-			Sys.println("");
+					continue;
+
+				}
+
+			}
+			else {
+
+				Sys.println("Testing " + name + " ...");
+
+			}
+
+			var obj = Type.createInstance (c, []);
+
+			for (field in haxe.rtti.Rtti.getRtti(c).fields) {
+
+				for (m in field.meta) {
+
+					if (m.name != ":functionalTest") {
+
+						continue;
+
+					}
+
+					if (tname != null) {
+
+						if (field.name != tname) {
+
+							continue;
+
+						}
+
+					} else {
+
+						Sys.print("  " + field.name);
+
+					}
+
+					if (cname != null) {
+
+						// Actually do the test
+						var truth = m.params[0];
+						truth = truth.substr(1, truth.length-2);
+						launchTest (obj, field.name, truth, keep);
+
+						// If the test didn't exit we had keep on
+						Sys.exit (0);
+
+					}
+					else {
+
+						// Launch a new process asking for the test
+						total++;
+
+						switch (Sys.command ("neko", ["tests.n", name, field.name])) {
+
+							case 0:
+								passed++;
+								Sys.println (" succedded");
+
+							case 1:
+								Sys.println(" failed");
+
+							case _:
+								Sys.println(" errored");
+						}
+
+					}
+
+				}
+
+			}
 
 		}
 
@@ -44,66 +121,48 @@ class FunctionalTest {
 		Sys.println(total + " tests ran " + passed + " succedded and " + (total - passed) + " failed");
 
 		Sys.exit (success ? 0 : 1);
-
-	}
-
-	/** Number of tests which passed. */
-	public var passed:Int = 0;
-
-	/** Number of test ran. */
-	public var total:Int = 0;
-
-	// Necessary for Type.createInstance to work
-	public function new () {
-	}
-
-	// Will be overriden in the test classes
-	public function run () {
 	}
 
 	/**
 	 * Launch a test function in a clean app,
 	 * and then compares its output to the expected truth.
 	 */
-	@:access(lime.app.Application)
-	public function launchTest (fn:Sprite->Void, truth:String) {
+	public static function launchTest (object:FunctionalTest, testMethod:String, truth:String, keep:Bool) {
 
-		total++;
+		// Creating a new OpenFL app
+		var config = {};
+		var app = new Application ();
+		app.create (config);
 
-		try {
+		var window = new DummyWindow ();
+		app.createWindow(window);
 
-			// Creating a new OpenFL app
-			var config = {};
-			var app = new Application ();
-			app.create (config);
+		var display = new NMEPreloader ();
+		var preloader = new openfl.display.Preloader (display);
+		@:privateAccess app.setPreloader (preloader);
 
-			var window = new DummyWindow ();
-			app.createWindow(window);
+		// Injecting test code
+		var test = function () {  Reflect.callMethod (object, Reflect.field (object, testMethod), [Lib.current]); };
 
-			var display = new NMEPreloader ();
-			var preloader = new openfl.display.Preloader (display);
-			app.setPreloader (preloader);
+		if (keep) {
 
-			// Injecting test code
-			preloader.onComplete.add (report.bind(app, fn.bind(Lib.current), truth));
-			preloader.create (config);
-
-			// Running app
-			app.exec();
-		}
-		catch (e:String) {
-
-			if (e != "testdone") {
-
-				throw e;
-
-			}
+			preloader.onComplete.add (test);
 
 		}
+		else {
+
+			preloader.onComplete.add (report.bind(app, test, truth));
+
+		}
+
+		preloader.create (config);
+
+		// Running app
+		app.exec();
 
 	}
 
-	public function report (app:Application, fn:Void->Void, truth:String) {
+	public static function report (app:Application, fn:Void->Void, truth:String) {
 
 		// Run test code
 		try {
@@ -113,10 +172,8 @@ class FunctionalTest {
 		}
 		catch (e:Dynamic) {
 
-			Sys.println(" ");
-			Sys.println("    [ERROR] " + e);
-
-			testDone (app);
+			Sys.stderr().writeString (e);
+			Sys.exit (2);
 
 		}
 
@@ -128,8 +185,6 @@ class FunctionalTest {
 		// Extract output
 		var outputImage = renderer.readPixels (new LimeRectangle (0, 0, 800, 600));
 		var outputData = outputImage.getPixels (new LimeRectangle (0, 0, outputImage.width, outputImage.height), ARGB32);
-
-		//sys.io.File.saveBytes ("output/" + truth, outputImage.encode ()); //TEMP
 
 		// Load truth
 		var truthImage = Assets.getBitmapData ("truths/" + truth);
@@ -169,22 +224,22 @@ class FunctionalTest {
 
 		// Report
 		if (totalDistance/(800*600) < 0.5) { //TODO find good threshold, note that 17 seems to be the max so that 0.5 would be 3%
-			passed++;
-			Sys.print(".");
+
+			Sys.exit (0);
+
 		}
 		else {
-			Sys.print("!");
+
+			Sys.exit (1);
+
 		}
 
-		testDone (app);
 	}
 
-	@:access(lime.app.Application)
-	function testDone (app:Application) {
-
-		app.backend.exit();
-		throw "testdone";
-
+	/**
+	 * Required for Type.createInstance
+	 */
+	public function new () {
 	}
 
 }
