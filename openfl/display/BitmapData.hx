@@ -782,18 +782,33 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			
 			var textureImage = image;
-			
-			if ((!textureImage.premultiplied && textureImage.transparent) #if (js && html5) || textureImage.format != RGBA32 #end) {
-				
-				textureImage = textureImage.clone ();
-				#if (js && html5)
-				textureImage.format = RGBA32;
-				#end
-				textureImage.premultiplied = true;
-				
-			}
-			
-			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+
+			#if !webgl
+				if ((!textureImage.premultiplied && textureImage.transparent) ) {
+
+					textureImage = textureImage.clone ();
+					#if (js && html5)
+					textureImage.format = RGBA32;
+					#end
+					textureImage.premultiplied = true;
+
+				}
+
+				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+			#else
+
+				gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, (!textureImage.premultiplied && textureImage.transparent) ? 1 : 0 );
+
+				var glCompatibleBuffer : Dynamic = textureImage.buffer.glCompatibleBuffer;
+
+				if( glCompatibleBuffer == null ){
+					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+				} else {
+
+					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
+				}
+
+			#end
 			gl.bindTexture (gl.TEXTURE_2D, null);
 			image.dirty = false;
 			
