@@ -6,7 +6,7 @@ import openfl.display.Sprite;
 
 class BitmapTest extends FunctionalTest {
 
-	@:functionalTest("bitmap/test1.png")
+	@:functionalTest
 	function test1 (sprite:Sprite) {
 
 		var bitmap = new Bitmap (Assets.getBitmapData ("assets/openfl.png"));
@@ -17,7 +17,7 @@ class BitmapTest extends FunctionalTest {
 
 	}
 
-	@:functionalTest("bitmap/test2.png")
+	@:functionalTest
 	function test2 (sprite:Sprite) {
 
 		var bitmap = new Bitmap (Assets.getBitmapData ("assets/openflLogo.png"));

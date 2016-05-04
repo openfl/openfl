@@ -79,8 +79,9 @@ class FunctionalTest {
 					if (cname != null) {
 
 						// Actually do the test
-						var truth = m.params[0];
-						truth = truth.substr(1, truth.length-2);
+						var cl_name = name.split(".");
+						cl_name.shift();
+						var truth = cl_name.join("_") + "/" + field.name + ".png";
 						launchTest (obj, field.name, truth, keep);
 
 						// If the test didn't exit we had keep on
@@ -92,8 +93,11 @@ class FunctionalTest {
 						// Launch a new process asking for the test
 						total++;
 
+					#if neko
 						switch (Sys.command ("neko", ["tests.n", name, field.name])) {
-
+					#elseif cpp
+						switch (Sys.command ("./bin/FunctionalTest", [name, field.name])) {
+					#end
 							case 0:
 								passed++;
 								Sys.println (" succedded");
