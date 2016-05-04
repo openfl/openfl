@@ -1,5 +1,11 @@
 import openfl.utils.ByteArray;
 
+typedef RGB = {
+    r:Float,
+    g:Float,
+    b:Float
+}
+
 typedef LCHab = {
     L:Float,
     C:Float,
@@ -23,15 +29,13 @@ class ColorUtils {
     /**
      * Read 4 unsigned ARGB values from `data` and returns the pixel color as LCH(ab).
      */
-    public static function getLCHab (data:ByteArray):LCHab {
+    public static function RGBtoLCHab (rgb:RGB):LCHab {
 
-        var r, g, b, x, y, z, L, C, H, a;
+        var x=0.0, y=0.0, z=0.0, L=0.0, C=0.0, H=0.0, a=0.0;
 
-        // Get sRGB data (no pixels are transparent)
-        data.readUnsignedByte ();
-        r = data.readUnsignedByte () / 255.0;
-        g = data.readUnsignedByte () / 255.0;
-        b = data.readUnsignedByte () / 255.0;
+        var r = rgb.r;
+        var g = rgb.g;
+        var b = rgb.b;
 
         // rRGB to RGB
         r = r <= 0.0404482362771082 ? r/12.92 : Math.pow ((r+0.055)/1.055, 2.4);
@@ -106,6 +110,12 @@ class ColorUtils {
         }
 
         return v;
+
+    }
+
+    public static function equalRGB (a:RGB, b:RGB) {
+
+        return a.r == b.r && a.g == b.g && a.b == b.b;
 
     }
 

@@ -7,6 +7,7 @@ import openfl.Lib;
 import openfl.display.Application;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
+import sys.io.File;
 
 @:rtti
 class FunctionalTest {
@@ -19,12 +20,14 @@ class FunctionalTest {
 		var list = CompileTime.getAllClasses (FunctionalTest);
 		var total = 0;
 		var passed = 0;
+		var ignored = 0;
 		var args = Sys.args ();
 		var keep = args.length > 0 && args[0] == "-k";
+		var dump = args.length > 0 && args[0] == "-d";
 
-		if (keep) {
+		if (keep || dump) {
 
-			args.shift();
+			args.shift ();
 
 		}
 
@@ -54,61 +57,78 @@ class FunctionalTest {
 
 			for (field in haxe.rtti.Rtti.getRtti(c).fields) {
 
+				var isTest = false;
+				var isIgnored = false;
+
 				for (m in field.meta) {
 
-					if (m.name != ":functionalTest") {
+					isTest = isTest || m.name == ":functionalTest";
+					isIgnored = isIgnored || m.name == ":ignore";
+
+				}
+
+				if (!isTest) {
+
+					continue;
+
+				}
+
+				if (tname != null) {
+
+					if (field.name != tname) {
 
 						continue;
 
 					}
 
-					if (tname != null) {
+				} else {
 
-						if (field.name != tname) {
+					if (isIgnored) {
 
-							continue;
+						ignored++;
+						Sys.println("  [IGNORING] " + field.name);
+						continue;
 
-						}
-
-					} else {
+					}
+					else {
 
 						Sys.print("  " + field.name);
 
 					}
 
-					if (cname != null) {
+				}
 
-						// Actually do the test
-						var cl_name = name.split(".");
-						cl_name.shift();
-						var truth = cl_name.join("_") + "/" + field.name + ".png";
-						launchTest (obj, field.name, truth, keep);
+				if (cname != null) {
 
-						// If the test didn't exit we had keep on
-						Sys.exit (0);
+					// Actually do the test
+					var cl_name = name.split(".");
+					cl_name.shift();
+					var truth = cl_name.join("_") + "/" + field.name + ".png";
+					launchTest (obj, field.name, truth, keep, dump);
 
-					}
-					else {
+					// If the test didn't exit we had keep on
+					Sys.exit (0);
 
-						// Launch a new process asking for the test
-						total++;
+				}
+				else {
 
-					#if neko
-						switch (Sys.command ("neko", ["tests.n", name, field.name])) {
-					#elseif cpp
-						switch (Sys.command ("./bin/FunctionalTest", [name, field.name])) {
-					#end
-							case 0:
-								passed++;
-								Sys.println (" succedded");
+					// Launch a new process asking for the test
+					total++;
 
-							case 1:
-								Sys.println(" failed");
+				#if neko
+					switch (Sys.command ("neko", ["tests.n", name, field.name])) {
+				#elseif cpp
+					switch (Sys.command ("./bin/FunctionalTest", [name, field.name])) {
+				#end
+						case 0:
+							passed++;
+							Sys.println (" succedded");
 
-							case _:
-								Sys.println(" errored");
-						}
+						case 1:
+							Sys.println(" failed");
 
+						case _:
+							Sys.println(" errored");
 					}
 
 				}
@@ -122,7 +142,7 @@ class FunctionalTest {
 
 		Sys.println("==============================");
 		Sys.println(success ? "SUCCESS" : "FAILURE");
-		Sys.println(total + " tests ran " + passed + " succedded and " + (total - passed) + " failed");
+		Sys.println(total + " tests ran: " + passed + " succedded, " + (total - passed) + " failed and " + ignored + " were ignored");
 
 		Sys.exit (success ? 0 : 1);
 	}
@@ -131,7 +151,7 @@ class FunctionalTest {
 	 * Launch a test function in a clean app,
 	 * and then compares its output to the expected truth.
 	 */
-	public static function launchTest (object:FunctionalTest, testMethod:String, truth:String, keep:Bool) {
+	public static function launchTest (object:FunctionalTest, testMethod:String, truth:String, keep:Bool, dump:Bool) {
 
 		// Creating a new OpenFL app
 		var config = {};
@@ -155,7 +175,7 @@ class FunctionalTest {
 		}
 		else {
 
-			preloader.onComplete.add (report.bind(app, test, truth));
+			preloader.onComplete.add (report.bind(app, test, truth, dump));
 
 		}
 
@@ -166,7 +186,7 @@ class FunctionalTest {
 
 	}
 
-	public static function report (app:Application, fn:Void->Void, truth:String) {
+	public static function report (app:Application, fn:Void->Void, truth:String, dump:Bool) {
 
 		// Run test code
 		try {
@@ -188,27 +208,47 @@ class FunctionalTest {
 
 		// Extract output
 		var outputImage = renderer.readPixels (new LimeRectangle (0, 0, 800, 600));
-		var outputData = outputImage.getPixels (new LimeRectangle (0, 0, outputImage.width, outputImage.height), ARGB32);
+		var outputData = outputImage.data;
+
+		if (dump) {
+
+			var b = outputImage.encode ();
+			File.saveBytes ("dump.png", b);
+			Sys.exit (0);
+
+		}
 
 		// Load truth
-		var truthImage = Assets.getBitmapData ("truths/" + truth);
-		var truthData = truthImage.getPixels (new Rectangle (0, 0, truthImage.width, truthImage.height));
+		var truthData = Assets.getBitmapData ("truths/" + truth).image.data;
 
 		// Compare output and truth
-		var totalDistance = -1.0;
-		var l = truthData.length;
-		var i = 0;
-		var p1, p2, d;
+		var totalDistance = 0.0;
+		var l = 800 * 600;
 		var nan = 0;
+		var differentPixels = 0;
 
-		while (i < l)
-		{
-			i += 4;
+		for (i in 0...l) {
 
-			p1 = ColorUtils.getLCHab (outputData);
-			p2 = ColorUtils.getLCHab (truthData);
+			var p1_r = outputData.__get(i*4 + 0) / 255.0;
+			var p1_g = outputData.__get(i*4 + 1) / 255.0;
+			var p1_b = outputData.__get(i*4 + 2) / 255.0;
 
-			d = ColorUtils.CMC (1, 1, p2, p1); // Output to reference truth
+			var p2_b = truthData.__get(i*4 + 0) / 255.0;
+			var p2_g = truthData.__get(i*4 + 1) / 255.0;
+			var p2_r = truthData.__get(i*4 + 2) / 255.0;
+
+			var p1 = { r: p1_r, g: p1_g, b: p1_b };
+			var p2 = { r: p2_r, g: p2_g, b: p2_b };
+
+			if (ColorUtils.equalRGB (p1, p2)) {
+
+				continue;
+
+			}
+
+			differentPixels++;
+
+			var d = ColorUtils.CMC (1, 1, ColorUtils.RGBtoLCHab(p2), ColorUtils.RGBtoLCHab(p1)); // Output to reference truth
 
 			if (!Math.isNaN (d)) {
 
@@ -224,10 +264,8 @@ class FunctionalTest {
 
 		}
 
-		//trace(totalDistance, nan, totalDistance/(800*600));
-
 		// Report
-		if (totalDistance/(800*600) < 0.5) { //TODO find good threshold, note that 17 seems to be the max so that 0.5 would be 3%
+		if (differentPixels == 0 || totalDistance/differentPixels < 1) { //TODO find good threshold, find out range of CMC too
 
 			Sys.exit (0);
 
