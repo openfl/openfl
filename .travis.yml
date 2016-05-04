@@ -21,6 +21,7 @@ before_install:
 install:
   - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
   - haxelib dev lime ~/lime
+  - haxelib install compiletime
   - haxelib install hxcpp > log.txt || cat log.txt
   - haxelib install format > log.txt || cat log.txt
   - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
