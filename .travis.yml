@@ -3,7 +3,7 @@ language: haxe
 haxe:
   - "3.2.1"
 
-env: 
+env:
   - TARGET=flash
   - TARGET=neko
   - TARGET=cpp
@@ -52,6 +52,10 @@ script:
   - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi
   - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux -Dlegacy ; fi
   - if [[ $TARGET == 'docs' ]]; then cd $TRAVIS_BUILD_DIR/docs && haxe build.hxml ; fi
+
+  # Functional testing
+  - if [[ $TARGET == 'neko' ]]; then cd $TRAVIS_BUILD_DIR/functionalTests && haxe build_neko.html && neko tests.n ; fi
+  - if [[ $TARGET == 'cpp' ]]; then cd $TRAVIS_BUILD_DIR/functionalTests && haxe build_cpp.html && ./bin/FunctionalTest ; fi
 
 notifications:
   slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz
