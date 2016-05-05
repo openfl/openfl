@@ -23,9 +23,9 @@ import lime.utils.UInt8Array;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
-import openfl._internal.renderer.opengl.GLBitmap;
-import openfl._internal.renderer.opengl.utils.PingPongTexture;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
+//import openfl._internal.renderer.opengl.GLBitmap;
+//import openfl._internal.renderer.opengl.utils.PingPongTexture;
+//import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
@@ -75,14 +75,14 @@ class BitmapData implements IBitmapDrawable {
 	public var __cacheAsBitmap:Bool;
 	
 	private var __blendMode:BlendMode;
-	private var __shader:Shader;
 	private var __buffer:GLBuffer;
+	private var __shader:Shader;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
-	private var __pingPongTexture:PingPongTexture;
-	private var __usingPingPongTexture:Bool = false;
+	//private var __pingPongTexture:PingPongTexture;
+	//private var __usingPingPongTexture:Bool = false;
 	private var __uvData:TextureUvs;
 	
 	
@@ -189,7 +189,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		
 		image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -345,7 +345,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		image.copyChannel (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), sourceChannel, destChannel);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -355,7 +355,7 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null) return;
 		
 		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -389,12 +389,12 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		if (__pingPongTexture != null) {
-			
-			__pingPongTexture.destroy ();
-			__pingPongTexture = null;
-			
-		}
+		//if (__pingPongTexture != null) {
+			//
+			//__pingPongTexture.destroy ();
+			//__pingPongTexture = null;
+			//
+		//}
 		
 	}
 	
@@ -553,7 +553,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -562,7 +562,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.floodFill (x, y, color, ARGB32);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -713,11 +713,11 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		
-		if (__usingPingPongTexture && __pingPongTexture != null) {
-			
-			return __pingPongTexture.texture;
-			
-		}
+		//if (__usingPingPongTexture && __pingPongTexture != null) {
+			//
+			//return __pingPongTexture.texture;
+			//
+		//}
 		
 		if (__texture == null) {
 			
@@ -954,7 +954,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
 		image.merge (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1072,7 +1072,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.scroll (x, y);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1081,7 +1081,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.setPixel (x, y, color, ARGB32);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1090,7 +1090,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.setPixel32 (x, y, color, ARGB32);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1099,7 +1099,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
-		__usingPingPongTexture = false;
+		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1164,15 +1164,15 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
 		
-		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
-		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
-		GLBitmap.popFramebuffer(renderSession, readPixels ? image : null);
-		
-		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
-		__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
-		
-		__isValid = true;
-		__usingPingPongTexture = true;
+		//__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
+		//GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
+		//GLBitmap.popFramebuffer(renderSession, readPixels ? image : null);
+		//
+		//var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
+		//__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
+		//
+		//__isValid = true;
+		//__usingPingPongTexture = true;
 		
 	}
 	
@@ -1365,7 +1365,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader);
+		//renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader);
 		
 	}
 	

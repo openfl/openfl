@@ -9,7 +9,8 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.GLTilesheet;
+import openfl._internal.renderer.opengl.GLShape;
+//import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -498,16 +499,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public function __renderGL (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		//if (!__renderable || __worldAlpha <= 0) return;
+		//
+		//if (__cacheAsBitmap) {
+			//__cacheGL(renderSession);
+			//return;
+		//}
+		//
+		//__preRenderGL (renderSession);
+		//__drawGraphicsGL (renderSession);
+		//__postRenderGL (renderSession);
 		
-		if (__cacheAsBitmap) {
-			__cacheGL(renderSession);
-			return;
+		if (__graphics != null) {
+			
+			GLShape.render (this, renderSession);
+			
 		}
-		
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
-		__postRenderGL (renderSession);
 		
 	}
 	
@@ -517,7 +524,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			if (#if !disable_cairo_graphics __graphics.__hardware #else true #end) {
 				
-				GLTilesheet.render (this, renderSession);
+				//GLTilesheet.render (this, renderSession);
 				
 			} else {
 				
@@ -527,7 +534,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				CairoGraphics.render (__graphics, renderSession);
 				#end
 				
-				GLRenderer.renderBitmap (this, renderSession);
+				//GLRenderer.renderBitmap (this, renderSession);
 				
 			}
 			
@@ -640,7 +647,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.concat(__renderTransform);
 		__cacheGLMatrix.translate ( __offset.x, __offset.y);
 		
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+		//renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 	
 	

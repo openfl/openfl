@@ -1,7 +1,7 @@
 package openfl.filters; #if !openfl_legacy
 
 
-import openfl._internal.renderer.opengl.utils.RenderTexture;
+//import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
@@ -23,7 +23,7 @@ class BitmapFilter {
 	private var __passes:Int = 0;
 	private var __saveLastFilter:Bool = false;
 	
-	static private var __tmpRenderTexture:RenderTexture;
+	//static private var __tmpRenderTexture:RenderTexture;
 	
 	public function new () {
 		
@@ -50,8 +50,8 @@ class BitmapFilter {
 	
 	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, source:BitmapData, target:BitmapData, sourceRect:Rectangle, destPoint:Point) {
 		
-		var same = target == source && target.__usingPingPongTexture;
-		if (same) target.__pingPongTexture.useOldTexture = true;
+		//var same = target == source && target.__usingPingPongTexture;
+		//if (same) target.__pingPongTexture.useOldTexture = true;
 		
 		if (sourceRect == null) sourceRect = source.rect;
 		
@@ -65,32 +65,32 @@ class BitmapFilter {
 			
 			// if the filter needs the last filter output, swap and save a copy of it
 			if (filter.__saveLastFilter) {
-				target.__pingPongTexture.swap();
-				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, true);
-				lastFilterOutput = target.__pingPongTexture.oldRenderTexture;
-				target.__pingPongTexture.oldRenderTexture = __tmpRenderTexture;
+				//target.__pingPongTexture.swap();
+				//target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, true);
+				//lastFilterOutput = target.__pingPongTexture.oldRenderTexture;
+				//target.__pingPongTexture.oldRenderTexture = __tmpRenderTexture;
 			}
 			
 			for (pass in 0...filter.__passes) {
 				
 				useLastFilter = filter.__saveLastFilter && filter.__useLastFilter(pass);
 				
-				if (same && !useLastFilter) target.__pingPongTexture.swap();
+				//if (same && !useLastFilter) target.__pingPongTexture.swap();
 				
 				if (useLastFilter) {
-					__tmpRenderTexture = target.__pingPongTexture.oldRenderTexture;
-					target.__pingPongTexture.oldRenderTexture = lastFilterOutput;
+					//__tmpRenderTexture = target.__pingPongTexture.oldRenderTexture;
+					//target.__pingPongTexture.oldRenderTexture = lastFilterOutput;
 				}
 				
 				source.__shader = filter.__preparePass(pass);
-				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, !useLastFilter);
+				//target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, !useLastFilter);
 			}
 			
 		}
 		
 		source.__shader = srcShader;
 		
-		if (same) target.__pingPongTexture.useOldTexture = false;
+		//if (same) target.__pingPongTexture.useOldTexture = false;
 		
 	}
 	

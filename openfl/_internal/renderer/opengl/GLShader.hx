@@ -1,8 +1,10 @@
-package openfl._internal.renderer.opengl.shaders2;
+package openfl._internal.renderer.opengl;
+
 
 import haxe.crypto.Md5;
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.opengl.utils.ShaderManager;
+import openfl._internal.renderer.AbstractShader;
+import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
@@ -11,13 +13,16 @@ import openfl.display.Shader.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
 import openfl.display.Shader.RepeatMode;
 import openfl.gl.GLProgram;
-import openfl.gl.GLShader;
+import openfl.gl.GLShader in LimeGLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
 
 @:allow(openfl.display.Shader)
-@:access(openfl._internal.renderer.opengl.utils.ShaderManager)
-class Shader {
+@:access(openfl._internal.renderer.opengl.GLShaderManager)
+
+
+class GLShader extends AbstractShader {
+	
 	
 	private static var UID:Int = 0;
 	
@@ -40,12 +45,31 @@ class Shader {
 	private var vertexString:String;
 	private var fragmentString:String;
 	
-	public function new(gl:GLRenderContext) {
+	
+	public function new (gl:GLRenderContext) {
+		
+		super ();
+		
 		ID = UID++;
 		this.gl = gl;
 		
 		program = null;
 	}
+	
+	
+	public function disable ():Void {
+		
+		
+		
+	}
+	
+	
+	public function enable ():Void {
+		
+		
+		
+	}
+	
 	
 	private function init(force:Bool = false) {
 		
@@ -62,7 +86,7 @@ class Shader {
 			throw "No vertex or fragment source provided";
 		}
 		
-		program = Shader.compileProgram(gl, vertexString, fragmentString);
+		program = GLShader.compileProgram(gl, vertexString, fragmentString);
 		if (program != null) {
 			compiled = true;
 		}
@@ -201,7 +225,7 @@ class Shader {
 	
 	public static function compileProgram(gl:GLRenderContext, vertexSrc:String, fragmentSrc:String):GLProgram {
 		
-		var cache = ShaderManager.compiledShadersCache;
+		var cache = GLShaderManager.compiledShadersCache;
 		var key = Md5.encode(vertexSrc + fragmentSrc);
 		
 		if (cache.exists(key)) {
@@ -210,8 +234,8 @@ class Shader {
 			
 		}
 		
-		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
-		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
+		var vertexShader = GLShader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
+		var fragmentShader = GLShader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
 		var program = gl.createProgram();
 		
 		if (vertexShader != null && fragmentShader != null) {
@@ -234,7 +258,7 @@ class Shader {
 		return program;
 	}
 	
-	static function compileShader(gl:GLRenderContext, shaderSrc:String, type:Int):GLShader {
+	static function compileShader(gl:GLRenderContext, shaderSrc:String, type:Int):LimeGLShader {
 		var src = shaderSrc;
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, src);

@@ -9,7 +9,7 @@ import openfl.geom.Rectangle;
 
 #if !flash
 import openfl._internal.renderer.canvas.CanvasTilemap;
-import openfl._internal.renderer.opengl.GLTilemap;
+//import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
 @:access(openfl.geom.Rectangle)
@@ -197,7 +197,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		if (stage == null) return;
 		
-		GLTilemap.render (this, renderSession);
+		//GLTilemap.render (this, renderSession);
 		
 	}
 	#end
