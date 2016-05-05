@@ -20,7 +20,7 @@ import openfl.geom.Rectangle;
 	public var quality (default, set):Int;
 	public var strength:Float;
 	
-	private var __dropShadowShader:DropShadowShader;
+	//private var __dropShadowShader:DropShadowShader;
 	
 	
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
@@ -39,8 +39,8 @@ import openfl.geom.Rectangle;
 		this.knockout = knockout;
 		this.hideObject = hideObject;
 		
-		__dropShadowShader = new DropShadowShader ();
-		__dropShadowShader.smooth = true;
+		//__dropShadowShader = new DropShadowShader ();
+		//__dropShadowShader.smooth = true;
 		
 	}
 	
@@ -66,7 +66,7 @@ import openfl.geom.Rectangle;
 	
 	private override function __preparePass (pass:Int):Shader {
 		
-		if (pass == __passes - 1) {
+		/*if (pass == __passes - 1) {
 			
 			return null;
 			
@@ -85,7 +85,8 @@ import openfl.geom.Rectangle;
 			
 			return __dropShadowShader;
 			
-		}
+		}*/
+		return null;
 		
 	}
 	
@@ -131,7 +132,7 @@ import openfl.geom.Rectangle;
 }
 
 
-private class DropShadowShader extends Shader {
+/*private class DropShadowShader extends Shader {
 	
 	
 	@vertex var vertex = [
@@ -188,7 +189,7 @@ private class DropShadowShader extends Shader {
 	}
 	
 	
-}
+}*/
 
 
 #else

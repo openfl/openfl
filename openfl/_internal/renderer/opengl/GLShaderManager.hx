@@ -12,7 +12,7 @@ import openfl._internal.renderer.opengl.shaders.GLBitmapShader;
 class GLShaderManager extends AbstractShaderManager {
 	
 	
-	private static var compiledShadersCache:Map<String, GLProgram> = new Map();
+	private static var compiledShadersCache:Map<String, GLProgram> = new Map ();
 	
 	private var currentShader:GLShader;
 	private var gl:GLRenderContext;

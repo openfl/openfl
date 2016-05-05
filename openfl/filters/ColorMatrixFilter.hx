@@ -15,14 +15,14 @@ import js.html.ImageData;
 	
 	public var matrix (default, set):Array<Float>;
 	
-	private var __colorMatrixShader:ColorMatrixShader;
+	//private var __colorMatrixShader:ColorMatrixShader;
 	
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
 		
-		__colorMatrixShader = new ColorMatrixShader ();
+		//__colorMatrixShader = new ColorMatrixShader ();
 		__passes = 1;
 		
 		this.matrix = matrix;
@@ -78,7 +78,8 @@ import js.html.ImageData;
 	
 	private override function __preparePass (pass:Int):Shader {
 		
-		return __colorMatrixShader;
+		//return __colorMatrixShader;
+		return null;
 		
 	}
 	
@@ -98,8 +99,8 @@ import js.html.ImageData;
 			
 		}
 		
-		__colorMatrixShader.uMultipliers = [ value[0], value[1], value[2], value[3], value[5], value[6], value[7], value[8], value[10], value[11], value[12], value[13], value[15], value[16], value[17], value[18] ];
-		__colorMatrixShader.uOffsets = [ value[4] / 255., value[9] / 255., value[14] / 255., value[19] / 255. ];
+		//__colorMatrixShader.uMultipliers = [ value[0], value[1], value[2], value[3], value[5], value[6], value[7], value[8], value[10], value[11], value[12], value[13], value[15], value[16], value[17], value[18] ];
+		//__colorMatrixShader.uOffsets = [ value[4] / 255., value[9] / 255., value[14] / 255., value[19] / 255. ];
 		
 		return matrix = value;
 		
@@ -109,7 +110,7 @@ import js.html.ImageData;
 }
 
 
-private class ColorMatrixShader extends Shader {
+/*private class ColorMatrixShader extends Shader {
 	
 	
 	@fragment var fragment = [
@@ -132,7 +133,7 @@ private class ColorMatrixShader extends Shader {
 	}
 	
 	
-}
+}*/
 
 
 #else

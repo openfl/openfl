@@ -17,7 +17,7 @@ import openfl.geom.Rectangle;
 	public var quality (default, set):Int;
 	public var strength:Float;
 	
-	private var __glowShader:GlowShader;
+	//private var __glowShader:GlowShader;
 	
 	
 	public function new (color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false, knockout:Bool = false) {
@@ -33,8 +33,8 @@ import openfl.geom.Rectangle;
 		this.inner = inner;
 		this.knockout = knockout;
 		
-		__glowShader = new GlowShader ();
-		__glowShader.smooth = true;
+		//__glowShader = new GlowShader ();
+		//__glowShader.smooth = true;
 		
 	}
 	
@@ -58,7 +58,7 @@ import openfl.geom.Rectangle;
 	
 	private override function __preparePass (pass:Int):Shader {
 		
-		if (pass == __passes - 1) {
+		/*if (pass == __passes - 1) {
 			
 			return null;
 			
@@ -75,7 +75,9 @@ import openfl.geom.Rectangle;
 			
 			return __glowShader;
 			
-		}
+		}*/
+		
+		return null;
 		
 	}
 	
@@ -113,7 +115,7 @@ import openfl.geom.Rectangle;
 }
 
 
-private class GlowShader extends Shader {
+/*private class GlowShader extends Shader {
 	
 	
 	@vertex var vertex = [
@@ -168,7 +170,7 @@ private class GlowShader extends Shader {
 	}
 	
 	
-}
+}*/
 
 
 #else
