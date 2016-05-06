@@ -9,11 +9,6 @@ package openfl.display;
  * three types of joints: miter, round, and bevel, as the following example
  * shows:
  */
-
-#if flash
-@:native("flash.display.JointStyle")
-#end
-
 @:enum abstract JointStyle(String) from String to String {
 	
 	/**

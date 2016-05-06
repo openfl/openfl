@@ -15,11 +15,6 @@ package openfl.utils;
  * order that matches the protocol of the server that is sending or receiving
  * data.</p>
  */
-
-#if flash
-@:native("flash.utils.Endian")
-#end
-
 @:enum abstract Endian(String) from String to String {
 	
 	public var BIG_ENDIAN = "bigEndian";

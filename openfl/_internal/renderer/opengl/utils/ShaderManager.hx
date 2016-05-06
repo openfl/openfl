@@ -13,10 +13,6 @@ class ShaderManager {
 	public var currentShader:Shader;
 	
 	public var defaultShader:DefaultShader;
-	public var fillShader:FillShader;
-	public var patternFillShader:PatternFillShader;
-	public var drawTrianglesShader:DrawTrianglesShader;
-	public var primitiveShader:PrimitiveShader;
 	
 	public function new(gl:GLRenderContext) {
 		setContext(gl);
@@ -26,10 +22,6 @@ class ShaderManager {
 		this.gl = gl;
 		
 		defaultShader = new DefaultShader(gl);
-		fillShader = new FillShader(gl);
-		patternFillShader = new PatternFillShader(gl);
-		drawTrianglesShader = new DrawTrianglesShader(gl);
-		primitiveShader = new PrimitiveShader(gl);
 		
 		setShader(defaultShader, true);
 		
@@ -38,10 +30,6 @@ class ShaderManager {
 	public function destroy ():Void {
 		
 		defaultShader.destroy();
-		fillShader.destroy();
-		patternFillShader.destroy();
-		drawTrianglesShader.destroy();
-		primitiveShader.destroy();
 		
 		gl = null;
 		

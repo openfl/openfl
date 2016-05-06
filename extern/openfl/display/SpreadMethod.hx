@@ -9,11 +9,6 @@ package openfl.display;
  * <p>The following example shows the same gradient fill using various spread
  * methods:</p>
  */
-
-#if flash
-@:native("flash.display.SpreadMethod")
-#end
-
 @:enum abstract SpreadMethod(String) from String to String {
 	
 	/**

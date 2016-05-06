@@ -1,10 +1,6 @@
 package openfl.system;
 
 
-#if flash
-@:native("flash.system.TouchscreenType")
-#end
-
 @:enum abstract TouchscreenType(String) from String to String {
 	
 	public var FINGER = "finger";

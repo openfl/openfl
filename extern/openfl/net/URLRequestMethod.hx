@@ -6,11 +6,6 @@ package openfl.net;
  * URLRequest object should use the <code>POST</code> method or the
  * <code>GET</code> method when sending data to a server.
  */
-
-#if flash
-@:native("flash.net.URLRequestMethod")
-#end
-
 @:enum abstract URLRequestMethod(String) from String to String {
 	
 	/**

@@ -5,11 +5,6 @@ package openfl.filters;
  * The BitmapFilterQuality class contains values to set the rendering quality
  * of a BitmapFilter object.
  */
-
-#if flash
-@:native("flash.filters.BitmapFilterQuality")
-#end
-
 @:enum abstract BitmapFilterQuality(Int) from Int to Int {
 	
 	/**

@@ -1,10 +1,6 @@
 package openfl.ui;
 
 
-#if flash
-@:native("flash.ui.KeyLocation")
-#end
-
 @:enum abstract KeyLocation(Int) from Int to Int {
 	
 	#if (flash && !doc_gen)

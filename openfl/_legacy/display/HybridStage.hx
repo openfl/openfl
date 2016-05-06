@@ -328,6 +328,13 @@ class HybridStage extends ManagedStage implements IModule {
 	}
 	
 	
+	public function onWindowDropFile (window:Window, file:String):Void {
+		
+		
+		
+	}
+	
+	
 	public function onWindowEnter (window:Window):Void {
 		
 		

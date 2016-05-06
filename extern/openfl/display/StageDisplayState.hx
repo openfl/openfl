@@ -5,11 +5,6 @@ package openfl.display;
  * The StageDisplayState class provides values for the
  * <code>Stage.displayState</code> property.
  */
-
-#if flash
-@:native("flash.display.StageDisplayState")
-#end
-
 @:enum abstract StageDisplayState(String) from String to String {
 	
 	/**

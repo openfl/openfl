@@ -145,6 +145,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	@:noCompletion @:dox(hide) public function onWindowClose (window:Window):Void;
 	@:noCompletion @:dox(hide) public function onWindowCreate (window:Window):Void;
 	@:noCompletion @:dox(hide) public function onWindowDeactivate (window:Window):Void;
+	@:noCompletion @:dox(hide) public function onWindowDropFile (window:Window, file:String):Void;
 	@:noCompletion @:dox(hide) public function onWindowEnter (window:Window):Void;
 	@:noCompletion @:dox(hide) public function onWindowFocusIn (window:Window):Void;
 	@:noCompletion @:dox(hide) public function onWindowFocusOut (window:Window):Void;
