@@ -36,8 +36,10 @@ class GLBitmapShader extends GLShader {
 			
 			"void main(void)",
 			"{",
-			"	gl_FragColor = texture2D (uImage0, vTexCoord);",
-			"}"
+			"	vec4 color = texture2D (uImage0, vTexCoord);",
+			"	if (color.a == 0.0) discard;",
+			"	gl_FragColor = vec4 (color.rgb / color.a, color.a);",
+			"}",
 			
 		];
 		

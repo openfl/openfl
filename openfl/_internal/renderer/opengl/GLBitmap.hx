@@ -30,6 +30,8 @@ class GLBitmap {
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
 			
+			// TODO: Add state management for this?
+			
 			if (bitmap.smoothing) {
 				
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
