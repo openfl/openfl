@@ -6,6 +6,12 @@ class IOErrorEvent extends ErrorEvent {
 	
 	public static inline var IO_ERROR = "ioError";
 	
+	#if air
+	public static inline var STANDARD_ERROR_IO_ERROR : String = "standardErrorIoError";
+	public static inline var STANDARD_INPUT_IO_ERROR : String = "standardInputIoError"
+	public static inline var STANDARD_OUTPUT_IO_ERROR : String = "standardOutputIoError"
+	#end
+	
 	
 	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0) {
 		

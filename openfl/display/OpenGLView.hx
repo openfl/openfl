@@ -48,7 +48,7 @@ class OpenGLView extends DirectRenderer {
 				
 				alpha: false, 
 				premultipliedAlpha: false, 
-				antialias: false, 
+				antialias: true, 
 				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
 				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
 				
