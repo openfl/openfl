@@ -40,7 +40,11 @@ class GLShape {
 				renderSession.shaderManager.setShader (shader);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
-				gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (shape.__renderTransform));
+				
+				var transform = shape.__renderTransform.clone ();
+				transform.translate (bounds.x, bounds.y);
+				
+				gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (transform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
 				
