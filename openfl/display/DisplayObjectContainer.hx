@@ -761,7 +761,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__postRenderGL (renderSession);
+		//__postRenderGL (renderSession);
 		
 		if (__removedChildren.length > 0) {
 			
