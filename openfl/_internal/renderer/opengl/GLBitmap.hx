@@ -26,6 +26,14 @@ class GLBitmap {
 			renderSession.shaderManager.setShader (shader);
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
+			var scrollRect = bitmap.scrollRect;
+			
+			if (scrollRect != null) {
+				
+				renderSession.maskManager.pushRect (scrollRect, bitmap.__renderTransform);
+				
+			}
+			
 			gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (bitmap.__renderTransform));
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
@@ -49,6 +57,12 @@ class GLBitmap {
 			gl.vertexAttribPointer (shader.attributes.get ("aTexCoord"), 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+			
+			if (scrollRect != null) {
+				
+				renderSession.maskManager.popRect ();
+				
+			}
 			
 		}
 		
