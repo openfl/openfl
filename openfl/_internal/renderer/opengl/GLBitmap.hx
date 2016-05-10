@@ -34,6 +34,7 @@ class GLBitmap {
 				
 			}
 			
+			gl.uniform1f (shader.uniforms.get ("uAlpha"), bitmap.__worldAlpha);
 			gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (bitmap.__renderTransform));
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));

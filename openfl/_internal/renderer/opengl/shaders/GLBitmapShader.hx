@@ -36,10 +36,12 @@ class GLBitmapShader extends GLShader {
 			'#endif',
 			"varying vec2 vTexCoord;",
 			"uniform sampler2D uImage0;",
+			"uniform float uAlpha;",
 			
 			"void main(void) {",
 				
 			"	vec4 color = texture2D (uImage0, vTexCoord);",
+			"	color.a = color.a * uAlpha;",
 				
 			"	if (color.a == 0.0) {",
 					
@@ -98,6 +100,7 @@ class GLBitmapShader extends GLShader {
 		getAttribLocation ("aTexCoord");
 		getUniformLocation ("uMatrix");
 		getUniformLocation ("uImage0");
+		getUniformLocation ("uAlpha");
 		
 	}
 	

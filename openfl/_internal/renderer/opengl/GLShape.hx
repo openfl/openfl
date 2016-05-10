@@ -51,6 +51,7 @@ class GLShape {
 				var transform = shape.__renderTransform.clone ();
 				transform.translate (bounds.x, bounds.y);
 				
+				gl.uniform1f (shader.uniforms.get ("uAlpha"), shape.__worldAlpha);
 				gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (transform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
