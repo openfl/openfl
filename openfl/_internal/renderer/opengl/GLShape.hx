@@ -40,6 +40,13 @@ class GLShape {
 				renderSession.shaderManager.setShader (shader);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
+				var scrollRect = shape.scrollRect;
+				
+				if (scrollRect != null) {
+					
+					renderSession.maskManager.pushRect (scrollRect, shape.__renderTransform);
+					
+				}
 				
 				var transform = shape.__renderTransform.clone ();
 				transform.translate (bounds.x, bounds.y);
@@ -56,6 +63,12 @@ class GLShape {
 				gl.vertexAttribPointer (shader.attributes.get ("aTexCoord"), 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
+				
+				if (scrollRect != null) {
+					
+					renderSession.maskManager.popRect ();
+					
+				}
 				
 			}
 			

@@ -29,9 +29,10 @@ class GLRenderer extends AbstractRenderer {
 		renderSession = new RenderSession ();
 		renderSession.gl = gl;
 		renderSession.roundPixels = true;
+		renderSession.renderer = this;
 		renderSession.blendModeManager = new GLBlendModeManager (gl);
 		renderSession.shaderManager = new GLShaderManager (gl);
-		renderSession.renderer = this;
+		renderSession.maskManager = new GLMaskManager (renderSession);
 		
 		projection = Matrix4.createOrtho (0, width, height, 0, -1000, 1000);
 		

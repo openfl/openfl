@@ -747,6 +747,18 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderGL (renderSession);
 		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
+			
+		}
+		
+		if (__mask != null) {
+			
+			renderSession.maskManager.pushMask (__mask);
+			
+		}
+		
 		//if (__cacheAsBitmap) {
 			//__cacheGL(renderSession);
 			//return;
@@ -766,6 +778,18 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (__removedChildren.length > 0) {
 			
 			__removedChildren.splice (0, __removedChildren.length);
+			
+		}
+		
+		if (__mask != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.popRect ();
 			
 		}
 		
