@@ -23,5 +23,5 @@ extern class Clipboard {
 
 
 #else
-typedef Clipboard = openfl.desktop.Clipboard;
+typedef Clipboard = flash.desktop.Clipboard;
 #end

@@ -18,6 +18,12 @@ extern class IOErrorEvent extends ErrorEvent {
 	@:noCompletion @:dox(hide) public static var VERIFY_ERROR (default, never):String;
 	#end
 	
+	#if air
+	@:noCompletion @:dox(hide) public static var STANDARD_ERROR_IO_ERROR (default, never):String;
+	@:noCompletion @:dox(hide) public static var STANDARD_INPUT_IO_ERROR (default, never):String;
+	@:noCompletion @:dox(hide) public static var STANDARD_OUTPUT_IO_ERROR (default, never):String;
+	#end
+	
 	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0);
 	
 	

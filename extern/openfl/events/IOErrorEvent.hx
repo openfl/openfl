@@ -33,6 +33,12 @@ extern class IOErrorEvent extends ErrorEvent {
 	@:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
 	#end
 	
+	#if air
+	@:noCompletion @:dox(hide) public static var STANDARD_ERROR_IO_ERROR:String;
+	@:noCompletion @:dox(hide) public static var STANDARD_INPUT_IO_ERROR:String;
+	@:noCompletion @:dox(hide) public static var STANDARD_OUTPUT_IO_ERROR:String;
+	#end
+	
 	
 	/**
 	 * Creates an Event object that contains specific information about

@@ -2,6 +2,7 @@ package openfl.display; #if !openfl_legacy
 
 
 import haxe.EnumFlags;
+import haxe.Timer;
 import lime.app.Application;
 import lime.app.IModule;
 import lime.graphics.opengl.GL;
@@ -40,11 +41,14 @@ import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
+import openfl.events.StageVideoAvailabilityEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.media.StageVideo;
+import openfl.media.StageVideoAvailability;
 import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
@@ -115,6 +119,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
+	
+	public var _stageVideos:Array<StageVideo>;
+	public var stageVideos(get, null):Array<StageVideo>;
 	
 	#if (js && html5)
 	//private var __div:DivElement;
@@ -191,6 +198,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		haxe.Timer.delay(InitStageVideos, 500);
+	}
+	
+	private function InitStageVideos():Void
+	{
+		setStageVideos([]);
 	}
 	
 	
@@ -640,6 +653,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__renderer.resize (stageWidth, stageHeight);
 			
 		}
+		
+		setStageVideos([]);
 		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
@@ -1475,6 +1490,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		return value;
 		
+	}
+	
+	private function get_stageVideos():Array<StageVideo>
+	{
+		return _stageVideos;
+	}
+	
+	private function setStageVideos(value:Array<StageVideo>):Void
+	{
+		if (_stageVideos == value) return;
+		_stageVideos = value;
+		var availability:String = StageVideoAvailability.AVAILABLE;
+		if (_stageVideos.length == 0) {
+			availability = StageVideoAvailability.UNAVAILABLE;
+		}
+		this.dispatchEvent(new StageVideoAvailabilityEvent(StageVideoAvailabilityEvent.STAGE_VIDEO_AVAILABILITY, false, false, availability));
 	}
 
 }

@@ -44,20 +44,18 @@ class OpenGLView extends DirectRenderer {
 			
 			var window = Lib.current.stage.window;
 			
-			__context = cast __canvas.getContext ("webgl", {
-				
+			var options = {
 				alpha: false, 
 				premultipliedAlpha: false, 
-				antialias: false, 
+				antialias: true, 
 				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
 				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
-				
-			});
+			}
+			
+			__context = cast __canvas.getContext ("webgl", options);
 			
 			if (__context == null) {
-				
-				__context = cast __canvas.getContext ("experimental-webgl");
-				
+				__context = cast __canvas.getContext ("experimental-webgl", options);
 			}
 			
 			#if debug
@@ -152,7 +150,6 @@ class OpenGLView extends DirectRenderer {
 					rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
 					
 				}
-				
 				if (__render != null) __render (rect);
 				
 			}
@@ -191,7 +188,6 @@ class OpenGLView extends DirectRenderer {
 				rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
 				
 			}
-			
 			if (__render != null) __render (rect);
 			
 			renderSession.shaderManager.setShader(null);
@@ -261,6 +257,7 @@ class OpenGLView extends DirectRenderer {
 		super.set_width (value);
 		
 		__canvas.width = Std.int (value);
+		
 		return value;
 		
 	}

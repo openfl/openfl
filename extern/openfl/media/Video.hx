@@ -27,7 +27,7 @@ extern class Video extends DisplayObject {
 	#end
 	
 	public function attachNetStream (netStream:NetStream) : Void;
-	public function clear ():Void;
+	public function clear ():Void;	
 	
 	
 }
