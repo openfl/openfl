@@ -185,20 +185,20 @@ class Bitmap extends DisplayObject {
 	
 	
 	private function set_bitmapData (value:BitmapData):BitmapData {
-
+		
 		bitmapData = value;
-
+		
 		if (__filters != null && __filters.length > 0) {
-
-			__updateFilters = true;
-
+			
+			//__updateFilters = true;
+			
 		}
-
+		
 		return bitmapData;
-
+		
 	}
-
-
+	
+	
 	private override function get_height ():Float {
 		
 		if (bitmapData != null) {
