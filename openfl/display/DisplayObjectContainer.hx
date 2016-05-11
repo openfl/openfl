@@ -607,11 +607,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		//var bounds = new Rectangle ();
-		//__getLocalBounds (bounds);
-		//
-		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
-		
 		for (child in __children) {
 			
 			child.__renderCairoMask (renderSession);
@@ -696,8 +691,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		#if !neko
 		
-		//if (!__renderable) return;
-		
 		super.__renderDOM (renderSession);
 		
 		if (__mask != null) {
@@ -759,21 +752,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		//if (__cacheAsBitmap) {
-			//__cacheGL(renderSession);
-			//return;
-		//}
-		//
-		//__preRenderGL (renderSession);
-		//__drawGraphicsGL (renderSession);
-		
 		for (child in __children) {
 			
 			child.__renderGL (renderSession);
 			
 		}
-		
-		//__postRenderGL (renderSession);
 		
 		if (__removedChildren.length > 0) {
 			
@@ -839,8 +822,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			return;
 			
 		}
-		
-		//if (!__renderable) return;
 		
 		if (updateChildren) {
 			

@@ -192,10 +192,10 @@ class OpenGLView extends DirectRenderer {
 				
 			}
 			
-			if (__render != null) __render (rect);
-			
 			renderSession.shaderManager.setShader (null);
 			renderSession.blendModeManager.setBlendMode (null);
+			
+			if (__render != null) __render (rect);
 			
 		}
 		

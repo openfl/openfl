@@ -58,7 +58,7 @@ class BitmapFilter {
 		var lastFilterOutput = null;
 		var useLastFilter = false;
 		
-		var srcShader = source.__shader;
+		/*var srcShader = source.__shader;
 		
 		for (filter in filters) {
 			useLastFilter = false;
@@ -88,7 +88,7 @@ class BitmapFilter {
 			
 		}
 		
-		source.__shader = srcShader;
+		source.__shader = srcShader;*/
 		
 		//if (same) target.__pingPongTexture.useOldTexture = false;
 		

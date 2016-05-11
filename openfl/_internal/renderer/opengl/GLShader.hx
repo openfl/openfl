@@ -5,8 +5,6 @@ import haxe.crypto.Md5;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractShader;
 import openfl._internal.renderer.opengl.GLShaderManager;
-import openfl._internal.renderer.opengl.utils.VertexArray;
-import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader.GLShaderData;
@@ -16,6 +14,11 @@ import openfl.gl.GLProgram;
 import openfl.gl.GLShader in LimeGLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
+
+import lime.graphics.opengl.GL;
+import openfl.gl.GLBuffer;
+import openfl.utils.ArrayBuffer;
+import openfl.utils.ArrayBufferView;
 
 @:allow(openfl.display.Shader)
 @:access(openfl._internal.renderer.opengl.GLShaderManager)
@@ -273,4 +276,115 @@ class GLShader extends AbstractShader {
 		return shader;
 	}
 	
+}
+
+
+class VertexArray {
+
+	public var gl:GLRenderContext;
+	public var glBuffer:GLBuffer;
+	public var attributes:Array<VertexAttribute> = [];
+	public var buffer:ArrayBuffer;
+	public var size:Int = 0;
+	public var stride(get, never):Int;
+
+	public var isStatic:Bool = false;
+	
+	public function new(attributes:Array<VertexAttribute>, ?size:Int = 0, isStatic:Bool = false) {
+		this.size = size;
+		this.attributes = attributes;
+		
+		if(size > 0) {
+			buffer = new ArrayBuffer(size);
+		}
+		
+		this.isStatic = isStatic;
+	}
+	
+	public inline function bind() {
+		gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
+	}
+	
+	public inline function unbind() {
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+	}
+	
+	public function upload(view:ArrayBufferView) {
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
+	}
+	
+	public function destroy() {
+		gl.deleteBuffer(glBuffer);
+		buffer = null;
+	}
+	
+	public function setContext(gl:GLRenderContext, view:ArrayBufferView) {
+		this.gl = gl;
+		
+		glBuffer = gl.createBuffer();
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
+		// TODO fix this, it should accept an ArrayBuffer
+		gl.bufferData(gl.ARRAY_BUFFER, view, isStatic ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+	}
+	
+	private function get_stride() {
+		var s = 0;
+		for (a in attributes) {
+			if (a.enabled) s += a.elements * 4;
+		}
+		return s;
+	}
+}
+
+
+class VertexAttribute {
+
+	public var components:Int;
+	public var normalized:Bool = false;
+	public var type:ElementType;
+	public var name:String;
+	public var enabled:Bool = true;
+	public var elements(get, never):Int;
+	
+	public var defaultValue:Float32Array;
+	
+	public function new(components:Int, type:ElementType, normalized:Bool = false, name:String, ?defaultValue:Float32Array) {
+		this.components = components;
+		this.type = type;
+		this.normalized = normalized;
+		this.name = name;
+		
+		if (defaultValue == null) {
+			this.defaultValue = new Float32Array(components);
+		} else {
+			this.defaultValue = defaultValue;
+		}
+		
+	}
+	
+	public function copy() {
+		return new VertexAttribute(components, type, normalized, name, defaultValue);
+	}
+	
+	private inline function getElementsBytes() {
+		return switch(type) {
+			case BYTE, UNSIGNED_BYTE: 1;
+			case SHORT, UNSIGNED_SHORT: 2;
+			default: 4;
+		}
+	}	
+	
+	private inline function get_elements():Int {
+		return Math.floor((components * getElementsBytes()) / 4);
+	}
+	
+}
+
+@:enum abstract ElementType(Int) from Int to Int {
+	var BYTE = GL.BYTE;
+	var UNSIGNED_BYTE = GL.UNSIGNED_BYTE;
+	var SHORT = GL.SHORT;
+	var UNSIGNED_SHORT = GL.UNSIGNED_SHORT;
+	var FLOAT = GL.FLOAT;
 }

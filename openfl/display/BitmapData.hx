@@ -23,9 +23,6 @@ import lime.utils.UInt8Array;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
-//import openfl._internal.renderer.opengl.GLBitmap;
-//import openfl._internal.renderer.opengl.utils.PingPongTexture;
-//import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.RenderSession;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
@@ -72,18 +69,12 @@ class BitmapData implements IBitmapDrawable {
 	
 	public var __worldTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
-	public var __cacheAsBitmap:Bool;
 	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
-	private var __shader:Shader;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
-	private var __textureImage:Image;
-	//private var __pingPongTexture:PingPongTexture;
-	//private var __usingPingPongTexture:Bool = false;
-	private var __uvData:TextureUvs;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -141,10 +132,8 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		__createUVs ();	
-		
-		__worldTransform = new Matrix();
-		__worldColorTransform = new ColorTransform();
+		__worldTransform = new Matrix ();
+		__worldColorTransform = new ColorTransform ();
 		
 	}
 	
@@ -189,7 +178,6 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid) return;
 		
 		image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -345,7 +333,6 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		image.copyChannel (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), sourceChannel, destChannel);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -355,7 +342,6 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null) return;
 		
 		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -388,13 +374,6 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 		}
-		
-		//if (__pingPongTexture != null) {
-			//
-			//__pingPongTexture.destroy ();
-			//__pingPongTexture = null;
-			//
-		//}
 		
 	}
 	
@@ -476,9 +455,6 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
-		
 		var surface = getSurface ();
 		var cairo = new Cairo (surface);
 		
@@ -553,7 +529,6 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -562,7 +537,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.floodFill (x, y, color, ARGB32);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -712,12 +686,6 @@ class BitmapData implements IBitmapDrawable {
 	public function getTexture (gl:GLRenderContext):GLTexture {
 		
 		if (!__isValid) return null;
-		
-		//if (__usingPingPongTexture && __pingPongTexture != null) {
-			//
-			//return __pingPongTexture.texture;
-			//
-		//}
 		
 		if (__texture == null) {
 			
@@ -954,7 +922,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
 		image.merge (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -974,7 +941,7 @@ class BitmapData implements IBitmapDrawable {
 		rand();
 		
 		//Range of values to value to.
-		var range:Int = high - low;		
+		var range:Int = high - low;
 		var data:ByteArray = new ByteArray();
 		
 		var redChannel:Bool = ((channelOptions & ( 1 << 0 )) >> 0) == 1;
@@ -1072,7 +1039,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.scroll (x, y);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1081,7 +1047,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.setPixel (x, y, color, ARGB32);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1090,7 +1055,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		image.setPixel32 (x, y, color, ARGB32);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1099,7 +1063,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid || rect == null) return;
 		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
-		//__usingPingPongTexture = false;
 		
 	}
 	
@@ -1133,46 +1096,6 @@ class BitmapData implements IBitmapDrawable {
 	public function unlock (changeRect:Rectangle = null):Void {
 		
 		
-		
-	}
-	
-	
-	private static function __asRenderTexture (width:Int = 0, height:Int = 0):BitmapData {
-		
-		var b = new BitmapData (0, 0);
-		b.__resize (width, height);
-		
-		return b;
-	}
-	
-	
-	private function __createUVs (	x0:Float = 0, y0:Float = 0, x1:Float = 1, y1:Float = 0, x2:Float = 1, y2:Float = 1, x3:Float = 0, y3:Float = 1):Void {
-		
-		if (__uvData == null) __uvData = new TextureUvs();
-		
-		__uvData.x0 = x0;
-		__uvData.y0 = y0;
-		__uvData.x1 = x1;
-		__uvData.y1 = y1;
-		__uvData.x2 = x2;
-		__uvData.y2 = y2;
-		__uvData.x3 = x3;
-		__uvData.y3 = y3;
-		
-	}
-	
-	
-	private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
-		
-		//__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
-		//GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
-		//GLBitmap.popFramebuffer(renderSession, readPixels ? image : null);
-		//
-		//var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
-		//__createUVs(uv.x0, uv.y0, uv.x1, uv.y1, uv.x2, uv.y2, uv.x3, uv.y3);
-		//
-		//__isValid = true;
-		//__usingPingPongTexture = true;
 		
 	}
 	
@@ -1277,7 +1200,6 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__worldTransform == null) __worldTransform = new Matrix ();
 		
-		//context.globalAlpha = 1;
 		var transform = __worldTransform;
 		
 		if (renderSession.roundPixels) {
@@ -1286,12 +1208,10 @@ class BitmapData implements IBitmapDrawable {
 			matrix.tx = Math.round (matrix.tx);
 			matrix.ty = Math.round (matrix.ty);
 			cairo.matrix = matrix;
-			//context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
 			
 		} else {
 			
 			cairo.matrix = transform.__toMatrix3 ();
-			//context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 			
 		}
 		
@@ -1365,7 +1285,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function __renderGL (renderSession:RenderSession):Void {
 		
-		//renderSession.spriteBatch.renderBitmapData (this, false, __worldTransform, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader);
+		
 		
 	}
 	
@@ -1414,30 +1334,6 @@ class BitmapData implements IBitmapDrawable {
 			__worldTransform = overrideTransform;
 			
 		}
-		
-	}
-	
-	
-}
-
-
-class TextureUvs {
-	
-	
-	public var x0:Float = 0;
-	public var x1:Float = 0;
-	public var x2:Float = 0;
-	public var x3:Float = 0;
-	public var y0:Float = 0;
-	public var y1:Float = 0;
-	public var y2:Float = 0;
-	public var y3:Float = 0;
-	
-	public inline function reset():Void {
-		x0 = x1 = x2 = x3 = y0 = y1 = y2 = y3 = 0;
-	}
-	
-	public function new () {
 		
 	}
 	

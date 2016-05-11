@@ -150,14 +150,6 @@ class Bitmap extends DisplayObject {
 		
 		GLBitmap.render (this, renderSession);
 		
-		//if (__cacheAsBitmap) {
-			//__cacheGL(renderSession);
-			//return;
-		//}
-		//__preRenderGL (renderSession);
-		////GLBitmap.render (this, renderSession);
-		//__postRenderGL (renderSession);
-		
 	}
 	
 	
