@@ -13,13 +13,13 @@ class ConvolutionFilter extends BitmapFilter {
 	public var matrixY:Int;
 	public var preserveAlpha:Bool;
 	
-	private var __convolutionShader:ConvolutionShader;
+	//private var __convolutionShader:ConvolutionShader;
 	
 	public function new(matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0, bias:Float = 0.0, preserveAlpha:Bool = true, clamp:Bool = true, color:Int = 0, alpha:Float = 0.0) {
 		
 		super ();
 		
-		__convolutionShader = new ConvolutionShader();
+		//__convolutionShader = new ConvolutionShader();
 		__passes = 1;
 		
 		this.matrixX = matrixX;
@@ -41,7 +41,8 @@ class ConvolutionFilter extends BitmapFilter {
 	}
 	
 	override function __preparePass(pass:Int):Shader {
-		return __convolutionShader;
+		//return __convolutionShader;
+		return null;
 	}
 	
 	private function set_matrix(v:Array<Float>) {
@@ -52,14 +53,14 @@ class ConvolutionFilter extends BitmapFilter {
 		if (v.length != 9) {
 			throw "Only a 3x3 matrix is supported";
 		}
-		__convolutionShader.uMatrix = v;
+		//__convolutionShader.uMatrix = v;
 		
 		return matrix = v;
 	}
 	
 }
 
-private class ConvolutionShader extends Shader {
+/*private class ConvolutionShader extends Shader {
 	
 	@vertex var vertex = [
 		'varying vec2 vBlurCoords[9];',
@@ -117,7 +118,7 @@ private class ConvolutionShader extends Shader {
 		super();
 		__uMatrix.transpose = false;
 	}
-}
+}*/
 
 #else
 typedef ConvolutionFilter = openfl._legacy.filters.ConvolutionFilter;

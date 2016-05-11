@@ -49,6 +49,7 @@
 	</section>
 	
 	<source path="extern" if="display || flash" />
+	<source path="extern-flash" if="flash" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />

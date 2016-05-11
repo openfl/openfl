@@ -1,23 +1,31 @@
-package openfl._internal.renderer.opengl.shaders2;
+package openfl._internal.renderer.opengl;
+
 
 import haxe.crypto.Md5;
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.opengl.utils.ShaderManager;
-import openfl._internal.renderer.opengl.utils.VertexArray;
-import openfl._internal.renderer.opengl.utils.VertexAttribute;
+import openfl._internal.renderer.AbstractShader;
+import openfl._internal.renderer.opengl.GLShaderManager;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
 import openfl.display.Shader.RepeatMode;
 import openfl.gl.GLProgram;
-import openfl.gl.GLShader;
+import openfl.gl.GLShader in LimeGLShader;
 import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
 
+import lime.graphics.opengl.GL;
+import openfl.gl.GLBuffer;
+import openfl.utils.ArrayBuffer;
+import openfl.utils.ArrayBufferView;
+
 @:allow(openfl.display.Shader)
-@:access(openfl._internal.renderer.opengl.utils.ShaderManager)
-class Shader {
+@:access(openfl._internal.renderer.opengl.GLShaderManager)
+
+
+class GLShader extends AbstractShader {
+	
 	
 	private static var UID:Int = 0;
 	
@@ -40,12 +48,31 @@ class Shader {
 	private var vertexString:String;
 	private var fragmentString:String;
 	
-	public function new(gl:GLRenderContext) {
+	
+	public function new (gl:GLRenderContext) {
+		
+		super ();
+		
 		ID = UID++;
 		this.gl = gl;
 		
 		program = null;
 	}
+	
+	
+	public function disable ():Void {
+		
+		
+		
+	}
+	
+	
+	public function enable ():Void {
+		
+		
+		
+	}
+	
 	
 	private function init(force:Bool = false) {
 		
@@ -62,7 +89,7 @@ class Shader {
 			throw "No vertex or fragment source provided";
 		}
 		
-		program = Shader.compileProgram(gl, vertexString, fragmentString);
+		program = GLShader.compileProgram(gl, vertexString, fragmentString);
 		if (program != null) {
 			compiled = true;
 		}
@@ -201,7 +228,7 @@ class Shader {
 	
 	public static function compileProgram(gl:GLRenderContext, vertexSrc:String, fragmentSrc:String):GLProgram {
 		
-		var cache = ShaderManager.compiledShadersCache;
+		var cache = GLShaderManager.compiledShadersCache;
 		var key = Md5.encode(vertexSrc + fragmentSrc);
 		
 		if (cache.exists(key)) {
@@ -210,8 +237,8 @@ class Shader {
 			
 		}
 		
-		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
-		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
+		var vertexShader = GLShader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
+		var fragmentShader = GLShader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
 		var program = gl.createProgram();
 		
 		if (vertexShader != null && fragmentShader != null) {
@@ -234,7 +261,7 @@ class Shader {
 		return program;
 	}
 	
-	static function compileShader(gl:GLRenderContext, shaderSrc:String, type:Int):GLShader {
+	static function compileShader(gl:GLRenderContext, shaderSrc:String, type:Int):LimeGLShader {
 		var src = shaderSrc;
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, src);
@@ -249,4 +276,115 @@ class Shader {
 		return shader;
 	}
 	
+}
+
+
+class VertexArray {
+
+	public var gl:GLRenderContext;
+	public var glBuffer:GLBuffer;
+	public var attributes:Array<VertexAttribute> = [];
+	public var buffer:ArrayBuffer;
+	public var size:Int = 0;
+	public var stride(get, never):Int;
+
+	public var isStatic:Bool = false;
+	
+	public function new(attributes:Array<VertexAttribute>, ?size:Int = 0, isStatic:Bool = false) {
+		this.size = size;
+		this.attributes = attributes;
+		
+		if(size > 0) {
+			buffer = new ArrayBuffer(size);
+		}
+		
+		this.isStatic = isStatic;
+	}
+	
+	public inline function bind() {
+		gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
+	}
+	
+	public inline function unbind() {
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+	}
+	
+	public function upload(view:ArrayBufferView) {
+		gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
+	}
+	
+	public function destroy() {
+		gl.deleteBuffer(glBuffer);
+		buffer = null;
+	}
+	
+	public function setContext(gl:GLRenderContext, view:ArrayBufferView) {
+		this.gl = gl;
+		
+		glBuffer = gl.createBuffer();
+		
+		gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
+		// TODO fix this, it should accept an ArrayBuffer
+		gl.bufferData(gl.ARRAY_BUFFER, view, isStatic ? gl.STATIC_DRAW : gl.DYNAMIC_DRAW);
+	}
+	
+	private function get_stride() {
+		var s = 0;
+		for (a in attributes) {
+			if (a.enabled) s += a.elements * 4;
+		}
+		return s;
+	}
+}
+
+
+class VertexAttribute {
+
+	public var components:Int;
+	public var normalized:Bool = false;
+	public var type:ElementType;
+	public var name:String;
+	public var enabled:Bool = true;
+	public var elements(get, never):Int;
+	
+	public var defaultValue:Float32Array;
+	
+	public function new(components:Int, type:ElementType, normalized:Bool = false, name:String, ?defaultValue:Float32Array) {
+		this.components = components;
+		this.type = type;
+		this.normalized = normalized;
+		this.name = name;
+		
+		if (defaultValue == null) {
+			this.defaultValue = new Float32Array(components);
+		} else {
+			this.defaultValue = defaultValue;
+		}
+		
+	}
+	
+	public function copy() {
+		return new VertexAttribute(components, type, normalized, name, defaultValue);
+	}
+	
+	private inline function getElementsBytes() {
+		return switch(type) {
+			case BYTE, UNSIGNED_BYTE: 1;
+			case SHORT, UNSIGNED_SHORT: 2;
+			default: 4;
+		}
+	}	
+	
+	private inline function get_elements():Int {
+		return Math.floor((components * getElementsBytes()) / 4);
+	}
+	
+}
+
+@:enum abstract ElementType(Int) from Int to Int {
+	var BYTE = GL.BYTE;
+	var UNSIGNED_BYTE = GL.UNSIGNED_BYTE;
+	var SHORT = GL.SHORT;
+	var UNSIGNED_SHORT = GL.UNSIGNED_SHORT;
+	var FLOAT = GL.FLOAT;
 }

@@ -13,7 +13,7 @@ import openfl.geom.Rectangle;
 	public var blurY:Float;
 	public var quality (default, set):Int;
 	
-	private var __blurShader:BlurShader;
+	//private var __blurShader:BlurShader;
 	
 	
 	public function new (blurX:Float = 4, blurY:Float = 4, quality:Int = 1) {
@@ -24,8 +24,8 @@ import openfl.geom.Rectangle;
 		this.blurY = blurY;
 		this.quality = quality;
 		
-		__blurShader = new BlurShader ();
-		__blurShader.smooth = true;
+		//__blurShader = new BlurShader ();
+		//__blurShader.smooth = true;
 		
 	}
 	
@@ -49,12 +49,14 @@ import openfl.geom.Rectangle;
 	
 	private override function __preparePass (pass:Int):Shader {
 		
-		var even = pass % 2 == 0;
-		var scale = Math.pow(0.5, pass >> 1);
-		__blurShader.uRadius[0] = even ? scale * blurX : 0;
-		__blurShader.uRadius[1] = even ? 0 : scale * blurY;
+		//var even = pass % 2 == 0;
+		//var scale = Math.pow(0.5, pass >> 1);
+		//__blurShader.uRadius[0] = even ? scale * blurX : 0;
+		//__blurShader.uRadius[1] = even ? 0 : scale * blurY;
+		//
+		//return __blurShader;
 		
-		return __blurShader;
+		return null;
 		
 	}
 	
@@ -77,7 +79,7 @@ import openfl.geom.Rectangle;
 }
 
 
-private class BlurShader extends Shader {
+/*private class BlurShader extends Shader {
 	
 	
 	@vertex var vertex = [
@@ -129,7 +131,7 @@ private class BlurShader extends Shader {
 	}
 	
 	
-}
+}*/
 
 
 #else

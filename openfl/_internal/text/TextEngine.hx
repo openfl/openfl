@@ -380,7 +380,7 @@ class TextEngine {
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/timesb.ttf" ];
+				fontList = [ systemFontDirectory + "/timesbd.ttf" ];
 				
 			}
 			
