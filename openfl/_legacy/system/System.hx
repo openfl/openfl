@@ -8,6 +8,7 @@ class System {
 	
 	
 	public static var deviceID (get, null):String;
+	public static var keepScreenOn (default, set):Bool = false;
 	public static var totalMemory (get, null):Int;
 	
 	
@@ -56,9 +57,13 @@ class System {
 		#end
 		
 	}
-	
-	
-	
+
+	private static function set_keepScreenOn (value:Bool):Bool { 
+		keepScreenOn = value;
+		if(value) lime_set_keep_screen_on();
+		else lime_set_keep_screen_auto();
+		return value;
+	}
 	
 	// Native Methods
 	
@@ -66,7 +71,8 @@ class System {
 	
 	
 	private static var lime_get_unique_device_identifier = Lib.load ("lime-legacy", "lime_legacy_get_unique_device_identifier", 0);
-	
+	private static var lime_set_keep_screen_on = Lib.load ("lime-legacy", "lime_legacy_set_keep_screen_on", 0);
+	private static var lime_set_keep_screen_auto = Lib.load ("lime-legacy", "lime_legacy_set_keep_screen_auto", 0);
 	
 }
 

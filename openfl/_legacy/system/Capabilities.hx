@@ -210,8 +210,6 @@ class Capabilities {
 	}
 	
 	
-	
-	
 	// Native Methods
 	
 	
