@@ -20,6 +20,7 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl._internal.renderer.cairo.CairoBlendModeManager;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
@@ -469,6 +470,7 @@ class BitmapData implements IBitmapDrawable {
 		renderSession.cairo = cairo;
 		renderSession.roundPixels = true;
 		renderSession.maskManager = new CairoMaskManager (renderSession);
+		renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
 		
 		if (clipRect != null) {
 			
