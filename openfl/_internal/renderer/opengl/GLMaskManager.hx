@@ -35,7 +35,9 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	public override function pushMask (mask:DisplayObject):Void {
 		
+		// TODO: Handle true mask shape, as well as alpha test
 		
+		pushRect (mask.getBounds (mask), mask.__renderTransform);
 		
 	}
 	
@@ -82,7 +84,7 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	public override function popMask ():Void {
 		
-		
+		popRect ();
 		
 	}
 	

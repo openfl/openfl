@@ -40,6 +40,13 @@ class GLShape {
 				renderSession.shaderManager.setShader (shader);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
+				
+				if (shape.__mask != null) {
+					
+					renderSession.maskManager.pushMask (shape.__mask);
+					
+				}
+				
 				var scrollRect = shape.scrollRect;
 				
 				if (scrollRect != null) {
@@ -68,6 +75,12 @@ class GLShape {
 				if (scrollRect != null) {
 					
 					renderSession.maskManager.popRect ();
+					
+				}
+				
+				if (shape.__mask != null) {
+					
+					renderSession.maskManager.popMask ();
 					
 				}
 				

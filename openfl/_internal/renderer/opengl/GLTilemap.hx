@@ -24,6 +24,13 @@ class GLTilemap {
 		renderSession.shaderManager.setShader (shader);
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
+		
+		if (tilemap.__mask != null) {
+			
+			renderSession.maskManager.pushMask (tilemap.__mask);
+			
+		}
+		
 		var scrollRect = tilemap.scrollRect;
 		
 		if (scrollRect != null) {
@@ -163,6 +170,12 @@ class GLTilemap {
 		if (scrollRect != null) {
 			
 			renderSession.maskManager.popRect ();
+			
+		}
+		
+		if (tilemap.__mask != null) {
+			
+			renderSession.maskManager.popMask ();
 			
 		}
 		

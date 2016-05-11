@@ -26,6 +26,13 @@ class GLBitmap {
 			renderSession.shaderManager.setShader (shader);
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
+			
+			if (bitmap.__mask != null) {
+				
+				renderSession.maskManager.pushMask (bitmap.__mask);
+				
+			}
+			
 			var scrollRect = bitmap.scrollRect;
 			
 			if (scrollRect != null) {
@@ -62,6 +69,12 @@ class GLBitmap {
 			if (scrollRect != null) {
 				
 				renderSession.maskManager.popRect ();
+				
+			}
+			
+			if (bitmap.__mask != null) {
+				
+				renderSession.maskManager.popMask ();
 				
 			}
 			
