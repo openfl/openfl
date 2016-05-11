@@ -9,6 +9,7 @@ ImportAll
 -lib lime
 -lib openfl
 -cp ../extern
+-cp ../extern-flash
 --no-output
 
 --next
