@@ -431,6 +431,19 @@ class TextEngine {
 	}
 	
 	
+	public function getBreakIndex (?startIndex:Int):Int {
+		
+		var cr = text.indexOf ("\n", startIndex);
+		var lf = text.indexOf ("\r", startIndex);
+		
+		if (cr == -1) return lf;
+		if (lf == -1) return cr;
+		
+		return cr < lf ? cr : lf;
+		
+	}
+	
+	
 	public function getLine (index:Int):String {
 		
 		if (index < 0 || index > lineBreaks.length + 1) {
@@ -581,7 +594,7 @@ class TextEngine {
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
-		var breakIndex = text.indexOf ("\n");
+		var breakIndex = getBreakIndex ();
 		
 		var marginRight = 0.0;
 		var offsetX = 2.0;
@@ -778,7 +791,7 @@ class TextEngine {
 				}
 				
 				textIndex = breakIndex + 1;
-				breakIndex = text.indexOf ("\n", textIndex);
+				breakIndex = getBreakIndex (textIndex);
 				lineIndex++;
 				
 				if (formatRange.end == breakIndex) {
@@ -1034,7 +1047,8 @@ class TextEngine {
 								
 								group = layoutGroups[i + lineLength - 1];
 								
-								if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
+								var endChar = text.charAt (group.endIndex);
+								if (group.endIndex < text.length && endChar != "\n" && endChar != "\r") {
 									
 									offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
 									
