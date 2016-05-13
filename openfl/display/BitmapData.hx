@@ -76,6 +76,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
+	private var __textureVersion:Int;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -390,7 +391,6 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		ImageCanvasUtil.convertToCanvas (image);
-		ImageCanvasUtil.sync (image, true);
 		
 		var buffer = image.buffer;
 		
@@ -441,6 +441,7 @@ class BitmapData implements IBitmapDrawable {
 		buffer.data = null;
 		
 		image.dirty = true;
+		image.version++;
 		
 		#else
 		
@@ -496,6 +497,7 @@ class BitmapData implements IBitmapDrawable {
 		surface.flush ();
 		
 		image.dirty = true;
+		image.version++;
 		
 		#end
 		
@@ -700,11 +702,15 @@ class BitmapData implements IBitmapDrawable {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-			image.dirty = true;
+			__textureVersion = -1;
 			
 		}
 		
-		if (image != null && image.dirty) {
+		#if (js && html5)
+		//ImageCanvasUtil.sync (image, false);
+		#end
+		
+		if (image != null && image.version != __textureVersion) {
 			
 			var internalFormat, format;
 			
@@ -765,7 +771,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if (js && html5)
 			
-			if (textureImage.buffer.data != null) {
+			if (textureImage.type == DATA) {
 				
 				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 				
@@ -782,7 +788,7 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			gl.bindTexture (gl.TEXTURE_2D, null);
-			image.dirty = false;
+			__textureVersion = image.version;
 			
 		}
 		
@@ -1162,7 +1168,7 @@ class BitmapData implements IBitmapDrawable {
 					
 				}
 				
-				image.dirty = true;
+				image.version++;
 				
 			}
 			
@@ -1275,7 +1281,7 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		if (!__isValid) return;
 		
-		ImageCanvasUtil.sync (image, false);
+		ImageCanvasUtil.convertToCanvas (image);
 		
 		var context = renderSession.context;
 		
