@@ -6,10 +6,12 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 
 
 class GLShape {
@@ -55,8 +57,11 @@ class GLShape {
 					
 				}
 				
-				var transform = shape.__renderTransform.clone ();
-				transform.translate (bounds.x, bounds.y);
+				var transform = Matrix.__temp;
+				transform.identity ();
+				transform.tx = bounds.x;
+				transform.ty = bounds.y;
+				transform.concat (shape.__renderTransform);
 				
 				gl.uniform1f (shader.uniforms.get ("uAlpha"), shape.__worldAlpha);
 				gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (transform));
