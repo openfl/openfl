@@ -591,7 +591,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case OPENGL (gl):
 					
-					#if (!disable_cffi && (!html5 || webgl))
+					#if (!disable_cffi && (!html5 || !canvas))
 					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
 					#end
 				
@@ -601,9 +601,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case DOM (element):
 					
-					#if (!html5 || dom)
 					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-					#end
 				
 				case CAIRO (cairo):
 					
