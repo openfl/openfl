@@ -71,7 +71,7 @@ class CairoGraphics {
 	}
 	
 	
-	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:Null<SpreadMethod>, interpolationMethod:Null<InterpolationMethod>, focalPointRatio:Null<Float>):CairoPattern {
+	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern {
 		
 		var pattern:CairoPattern = null;
 		
@@ -149,36 +149,36 @@ class CairoGraphics {
 	}
 	
 	
-	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float):Void {
+	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
 		
-		if (ry == -1) ry = rx;
+		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
 		
-		rx *= 0.5;
-		ry *= 0.5;
+		ellipseWidth *= 0.5;
+		ellipseHeight *= 0.5;
 		
-		if (rx > width / 2) rx = width / 2;
-		if (ry > height / 2) ry = height / 2;
+		if (ellipseWidth > width / 2) ellipseWidth = width / 2;
+		if (ellipseHeight > height / 2) ellipseHeight = height / 2;
 		
 		var xe = x + width,
 		ye = y + height,
-		cx1 = -rx + (rx * SIN45),
-		cx2 = -rx + (rx * TAN22),
-		cy1 = -ry + (ry * SIN45),
-		cy2 = -ry + (ry * TAN22);
+		cx1 = -ellipseWidth + (ellipseWidth * SIN45),
+		cx2 = -ellipseWidth + (ellipseWidth * TAN22),
+		cy1 = -ellipseHeight + (ellipseHeight * SIN45),
+		cy2 = -ellipseHeight + (ellipseHeight * TAN22);
 		
-		cairo.moveTo (xe, ye - ry);
+		cairo.moveTo (xe, ye - ellipseHeight);
 		quadraticCurveTo (xe, ye + cy2, xe + cx1, ye + cy1);
-		quadraticCurveTo (xe + cx2, ye, xe - rx, ye);
-		cairo.lineTo (x + rx, ye);
+		quadraticCurveTo (xe + cx2, ye, xe - ellipseWidth, ye);
+		cairo.lineTo (x + ellipseWidth, ye);
 		quadraticCurveTo (x - cx2, ye, x - cx1, ye + cy1);
-		quadraticCurveTo (x, ye + cy2, x, ye - ry);
-		cairo.lineTo (x, y + ry);
+		quadraticCurveTo (x, ye + cy2, x, ye - ellipseHeight);
+		cairo.lineTo (x, y + ellipseHeight);
 		quadraticCurveTo (x, y - cy2, x - cx1, y - cy1);
-		quadraticCurveTo (x - cx2, y, x + rx, y);
-		cairo.lineTo (xe - rx, y);
+		quadraticCurveTo (x - cx2, y, x + ellipseWidth, y);
+		cairo.lineTo (xe - ellipseWidth, y);
 		quadraticCurveTo (xe + cx2, y, xe + cx1, y - cy1);
-		quadraticCurveTo (xe, y - cy2, xe, y + ry);
-		cairo.lineTo (xe, ye - ry);
+		quadraticCurveTo (xe, y - cy2, xe, y + ellipseHeight);
+		cairo.lineTo (xe, ye - ellipseHeight);
 		
 	}
 	
@@ -369,8 +369,8 @@ class CairoGraphics {
 					case DRAW_ROUND_RECT:
 						
 						var c = data.readDrawRoundRect ();
-						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
-						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
 					default:
 						
@@ -547,7 +547,7 @@ class CairoGraphics {
 					
 					var c = data.readDrawRoundRect ();
 					hasPath = true;
-					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
+					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				
 				case LINE_TO:
 					
@@ -623,23 +623,19 @@ class CairoGraphics {
 							
 						}
 						
-						cairo.miterLimit = (c.miterLimit == null ? 3 : c.miterLimit);
+						cairo.miterLimit = c.miterLimit;
 						
-						if (c.color != null) {
+						var r = ((c.color & 0xFF0000) >>> 16) / 0xFF;
+						var g = ((c.color & 0x00FF00) >>> 8) / 0xFF;
+						var b = (c.color & 0x0000FF) / 0xFF;
+						
+						if (c.alpha == 1) {
 							
-							var r = ((c.color & 0xFF0000) >>> 16) / 0xFF;
-							var g = ((c.color & 0x00FF00) >>> 8) / 0xFF;
-							var b = (c.color & 0x0000FF) / 0xFF;
+							strokePattern = CairoPattern.createRGB (r, g, b);
 							
-							if (c.alpha == 1 || c.alpha == null) {
-								
-								strokePattern = CairoPattern.createRGB (r, g, b);
-								
-							} else {
-								
-								strokePattern = CairoPattern.createRGBA (r, g, b, c.alpha);
-								
-							}
+						} else {
+							
+							strokePattern = CairoPattern.createRGBA (r, g, b, c.alpha);
 							
 						}
 						
@@ -1297,8 +1293,8 @@ class CairoGraphics {
 					case DRAW_ROUND_RECT:
 						
 						var c = data.readDrawRoundRect ();
-						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
-						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.rx, c.ry);
+						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
 					case DRAW_TILES:
 						
@@ -1308,7 +1304,7 @@ class CairoGraphics {
 					case DRAW_TRIANGLES:
 						
 						var c = data.readDrawTriangles ();
-						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling, c.colors, c.blendMode);
+						fillCommands.drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 					
 					default:
 						
@@ -1417,7 +1413,7 @@ class CairoGraphics {
 					case DRAW_ROUND_RECT:
 						
 						var c = data.readDrawRoundRect ();
-						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.rx, c.ry);
+						drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 					
 					case LINE_TO:
 						

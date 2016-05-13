@@ -1,9 +1,9 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
 
-	
+
 abstract Context3DTriangleFace(Int) {
 	
 	
@@ -20,7 +20,7 @@ abstract Context3DTriangleFace(Int) {
 	}
 	
 	
-	@:from static public inline function fromInt (s:Int) {
+	@:from public static inline function fromInt (s:Int) {
 		
 		return new Context3DTriangleFace (s);
 		
@@ -35,8 +35,3 @@ abstract Context3DTriangleFace(Int) {
 	
 	
 }
-
-
-#else
-typedef Context3DTriangleFace = flash.display3D.Context3DTriangleFace;
-#end

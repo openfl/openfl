@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 enum Context3DWrapMode {
@@ -7,8 +7,3 @@ enum Context3DWrapMode {
 	REPEAT;
 	
 }
-
-
-#else
-typedef Context3DWrapMode = flash.display3D.Context3DWrapMode;
-#end

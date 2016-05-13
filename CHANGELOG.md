@@ -1,3 +1,110 @@
+3.6.1 (03/28/2016)
+------------------
+
+* Updated for Haxe 3.3.0
+* Updated for Lime 2.9.1
+* Improved Tilemap for standard support across all renderers
+* Merged latest improvements to Stage3D compatibility
+* Merged latest console renderer improvements
+* Improved the behavior of sprite.hitArea
+* Improved stageWidth/stageHeight to update after fullscreen
+* Reduced the standard output size of HTML5 builds
+* Fixed issues compiling for Flash
+* Fixed assignment of Loader.contentType
+* Fixed some minor crash issues with cacheAsBitmap
+* Added textField.length (legacy)
+* Fixed an issue with SystemPath (legacy)
+
+
+3.6.0 (01/22/2016)
+------------------
+
+* Moved to a standard abstract enum style for all core enums
+* Moved to inlining on all core constant values (for Haxe 3.3)
+* Moved to no-inlining on all core methods (reflection support)
+* Standardized the signature of Graphics to be more consistent
+* Added support for using a custom backends with an external target
+* Added a COMPLETE event to FileReference when choosing a file
+* Added TextFormatAlign START and END support to TextField
+* Added color offset support to native drawTiles
+* Improved the handling of stage.displayState on window changes
+* Improved how core externs are imported to not require a macro
+* Improved the behavior of CLICK to occur only on the same target object
+* Improved the behavior of SimpleButton to ignore "drag over" actions
+* Improved support for custom backends that do not use Lime
+* Improved the behavior of BitmapData.threshold
+* Improved how video width and height are calculated on HTML5
+* Improved handling of pixel format for Stage3D
+* Fixed the behavior of byteArray.bytesAvailable
+* Fixed the extern for PNGEncoderOptions on Flash
+* Fixed a possible crash when editing TextField htmlText
+* Fixed a crash when using an empty net stream in Video
+* Fixed a crash when using graphics.copyFrom with an empty target object
+* Fixed some minor issues in URLLoader
+
+
+3.5.3 (12/16/2015)
+------------------
+
+* Improved the extern definitions for Flash
+* Moved fullscreen / back button key shortcut behaviors to Lime
+* Retained canvas as default HTML5 renderer on current Lime
+* Improved look-up for default iOS font paths
+* Minor compile fixes
+
+
+3.5.2 (12/11/2015)
+------------------
+
+* Formalized the extern classes more, fixed some Flash behaviors
+* Improved the standard HTML5 template for <window resizable="false" />
+* Fixed the use of binary request data in HTML5 URLLoaders
+* Improved compatibility for ByteArrayData (legacy)
+
+
+3.5.1 (12/09/2015)
+------------------
+
+* Improved the behavior of GameInput.getDeviceAt
+* Updated GameInputDevice.id to be a GUID, not an internal index value
+* Fixed a minor issue in ApplicationDomain.getDefinition
+* Fixed "haxelib run openfl setup" when Lime is not installed
+
+
+3.5.0 (12/07/2015)
+------------------
+
+* ByteArray is now abstract -- supports array access and to/from Bytes
+* Improved openfl.utils.Object to support array access and for loops
+* The Haxe externs for Flash target classes are now integrated/unified
+* Multiple inconsistencies with Flash have been resolved
+* Implemented initial support for sprite.hitArea
+* Re-wrote SimpleButton with more accurate API support
+* Repeated SharedObject "get" calls now return the same instance
+* Minor improvements to the Stage3D compatibility layer
+* Fixed incorrect hit testing with touch events
+* Fixed a premature start in projects that use only SWF libraries
+* Fixed a regression with graphics.cubicCurveTo support
+* Fixed the Tilesheet bounds calculation when TILE_TRANS_2x2 is used
+* -Dtelemetry now enables HxScout support on Neko as well
+* Ported behavior from legacy for native XMLSocket support
+
+
+3.4.0 (10/28/2015)
+------------------
+
+* Fixed behavior of fillRect without alpha on non-transparent bitmapData
+* Fixed behavior of getColorBoundsRect on non-transparent bitmapData
+* Fixed red/blue color regression in some instances
+* Fixed transforms when using bitmapData.draw
+* Fixed support for Lime window scale (used on Mac retina)
+* Fixed a crash in Cairo rendering for near-zero dimensions
+* Fixed a null rect issue in OpenGL graphics drawTiles
+* Fixed access to System.totalMemory on HTML5
+* Fixed reference for default Noto Android font
+* Minor fixes for better scrollRect support 
+
+
 3.3.9 (10/15/2015)
 ------------------
 

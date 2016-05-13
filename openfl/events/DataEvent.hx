@@ -1,11 +1,11 @@
-package openfl.events; #if !flash
+package openfl.events;
 
 
 class DataEvent extends TextEvent {
 	
 	
-	public static var DATA:String = "data";
-	public static var UPLOAD_COMPLETE_DATA:String = "uploadCompleteData";
+	public static inline var DATA = "data";
+	public static inline var UPLOAD_COMPLETE_DATA = "uploadCompleteData";
 	
 	public var data:String;
 	
@@ -19,9 +19,24 @@ class DataEvent extends TextEvent {
 	}
 	
 	
+	public override function clone ():Event {
+		
+		var event = new DataEvent (type, bubbles, cancelable, data);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("DataEvent",  [ "type", "bubbles", "cancelable", "data" ]);
+		
+	}
+	
+	
 }
-
-
-#else
-typedef DataEvent = flash.events.DataEvent;
-#end

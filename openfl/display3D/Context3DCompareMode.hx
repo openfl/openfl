@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -7,14 +7,14 @@ import openfl.gl.GL;
 abstract Context3DCompareMode(Int) {
 	
 	
-	inline static public var ALWAYS = GL.ALWAYS;
-	inline static public var EQUAL = GL.EQUAL;
-	inline static public var GREATER = GL.GREATER;
-	inline static public var GREATER_EQUAL = GL.GEQUAL;
-	inline static public var LESS = GL.LESS;
-	inline static public var LESS_EQUAL = GL.LEQUAL; // TODO : wrong value
-	inline static public var NEVER = GL.NEVER;
-	inline static public var NOT_EQUAL = GL.NOTEQUAL;
+	public static inline var ALWAYS = GL.ALWAYS;
+	public static inline var EQUAL = GL.EQUAL;
+	public static inline var GREATER = GL.GREATER;
+	public static inline var GREATER_EQUAL = GL.GEQUAL;
+	public static inline var LESS = GL.LESS;
+	public static inline var LESS_EQUAL = GL.LEQUAL; // TODO : wrong value
+	public static inline var NEVER = GL.NEVER;
+	public static inline var NOT_EQUAL = GL.NOTEQUAL;
 	
 	
 	inline function new (a:Int) {
@@ -24,7 +24,7 @@ abstract Context3DCompareMode(Int) {
 	}
 	
 	
-	@:from static public inline function fromInt (s:Int) {
+	@:from public static inline function fromInt (s:Int) {
 		
 		return new Context3DCompareMode (s);
 		
@@ -39,8 +39,3 @@ abstract Context3DCompareMode(Int) {
 	
 	
 }
-
-
-#else
-typedef Context3DCompareMode = flash.display3D.Context3DCompareMode;
-#end

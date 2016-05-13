@@ -35,7 +35,7 @@ class CairoBitmap {
 			//bitmap.bitmapData.__sync ();
 			
 			//context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__worldTransform;
+			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.scrollRect;
 			
 			if (renderSession.roundPixels) {

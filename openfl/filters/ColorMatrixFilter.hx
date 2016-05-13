@@ -1,29 +1,21 @@
-package openfl.filters; #if !flash #if !openfl_legacy
+package openfl.filters; #if !openfl_legacy
 
 
-import openfl.display.Shader;
+import lime.graphics.utils.ImageCanvasUtil;
+import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-#if (js && html5)
-import js.html.ImageData;
-#end
 
-
-
-class ColorMatrixFilter extends BitmapFilter {
+@:final class ColorMatrixFilter extends BitmapFilter {
 	
 	
-	public var matrix(default, set):Array<Float>;
+	public var matrix (default, set):Array<Float>;
 	
-	private var __colorMatrixShader:ColorMatrixShader;
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
-		
-		__colorMatrixShader = new ColorMatrixShader();
-		__passes = 1;
 		
 		this.matrix = matrix;
 		
@@ -37,16 +29,22 @@ class ColorMatrixFilter extends BitmapFilter {
 	}
 	
 	
-	#if (js && html5)
-	@:noCompletion @:dox(hide) public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	public override function __applyFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
 		
-		var source = sourceData.data;
-		var target = targetData.data;
+		#if (js && html5)
+		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
+		ImageCanvasUtil.createImageData (sourceBitmapData.image);
+		ImageCanvasUtil.convertToCanvas (destBitmapData.image);
+		ImageCanvasUtil.createImageData (destBitmapData.image);
+		#end
+		
+		var source = sourceBitmapData.image.data;
+		var target = destBitmapData.image.data;
 		
 		var offsetX = Std.int (destPoint.x - sourceRect.x);
 		var offsetY = Std.int (destPoint.y - sourceRect.y);
-		var sourceStride = sourceData.width * 4;
-		var targetStride = targetData.width * 4;
+		var sourceStride = sourceBitmapData.width * 4;
+		var targetStride = destBitmapData.width * 4;
 		
 		var sourceOffset:Int;
 		var targetOffset:Int;
@@ -72,52 +70,34 @@ class ColorMatrixFilter extends BitmapFilter {
 			
 		}
 		
-	}
-	#end
-	
-	override function __preparePass(pass:Int):Shader {
-		return __colorMatrixShader;
-	}
-	
-	function set_matrix(v:Array<Float>) {
-		if (v == null) {
-			v = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
-		}
-		__colorMatrixShader.uMultipliers = [
-											v[0], v[1], v[2], v[3],
-											v[5], v[6], v[7], v[8],
-											v[10], v[11], v[12], v[13],
-											v[15], v[16], v[17], v[18],
-											];
-		__colorMatrixShader.uOffsets = [v[4] / 255., v[9] / 255., v[14] / 255., v[19] / 255.];
+		destBitmapData.image.dirty = true;
 		
-		return matrix = v;
 	}
-}
-
-private class ColorMatrixShader extends Shader {
 	
-	@fragment var fragment = [
-		'uniform mat4 uMultipliers;',
-		'uniform vec4 uOffsets;',
-		'void main(void) {',
-		'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
-		'	color = vec4(color.rgb / color.a, color.a);',
-		'	color = uOffsets + color * uMultipliers;',
-		'	color = vec4(color.rgb * color.a, color.a);',
-		'	gl_FragColor = color;',
-		'}',
-	];
 	
-	public function new() {
-		super();
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function set_matrix (value:Array<Float>):Array<Float> {
+		
+		if (value == null) {
+			
+			value = [ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0 ];
+			
+		}
+		
+		return matrix = value;
+		
 	}
+	
+	
 }
 
 
 #else
 typedef ColorMatrixFilter = openfl._legacy.filters.ColorMatrixFilter;
-#end
-#else
-typedef ColorMatrixFilter = flash.filters.ColorMatrixFilter;
 #end

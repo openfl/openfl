@@ -1,8 +1,9 @@
-package openfl.display; #if (!flash && !openfl_legacy)
+package openfl.display; #if !openfl_legacy
 
 
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.opengl.shaders2.Shader in InternalShader;
+//import openfl._internal.renderer.opengl.shaders.DefaultShader;
+//import openfl._internal.renderer.opengl.shaders.Shader in InternalShader;
 import openfl.geom.Matrix;
 import openfl.gl.GL;
 
@@ -16,86 +17,86 @@ class Shader {
 	/**
 	 * Attribute (vec2) with the object position.
 	 */
-	static public var aPosition = DefaultAttrib.Position;
+	//public static var aPosition = DefaultAttrib.Position;
 	/**
 	 * Attribute (vec2) with the object texture coordinate.
 	 */
-	static public var aTexCoord = DefaultAttrib.TexCoord;
+	//public static var aTexCoord = DefaultAttrib.TexCoord;
 	/**
 	 * Attribute (vec4) with the tint and alpha values of the object.
 	 */
-	static public var aColor = DefaultAttrib.Color;
+	//public static var aColor = DefaultAttrib.Color;
 	
 	/**
 	 * Uniform (sampler2D) holding the object texture.
 	 */
-	static public var uSampler = DefaultUniform.Sampler;
+	//public static var uSampler = DefaultUniform.Sampler;
 	/**
 	 * Uniform (mat4) holding the projection matrix.
 	 */
-	static public var uProjectionMatrix = DefaultUniform.ProjectionMatrix;
+	//public static var uProjectionMatrix = DefaultUniform.ProjectionMatrix;
 	/**
 	 * Uniform (vec4) holding the colorMultiplier values from the transfrom.colorTransform of the object.
 	 */
-	static public var uColorMultiplier = DefaultUniform.ColorMultiplier;
+	//public static var uColorMultiplier = DefaultUniform.ColorMultiplier;
 	/**
 	 * Uniform (vec4) holding the colorOffset values from the transfrom.colorTransform of the object.
 	 */
-	static public var uColorOffset = DefaultUniform.ColorOffset;
+	//public static var uColorOffset = DefaultUniform.ColorOffset;
 	/**
 	 * Uniform (vec2) holding the object width and height. If it's used with Tilesheet.drawTiles() the value will be [0, 0]
 	 * For example, if the object is 200x200, the value of this uniform will be 200x200.
 	 */
-	static public var uObjectSize = "openfl_uObjectSize";
+	public static var uObjectSize = "openfl_uObjectSize";
 	/**
 	 * Uniform (vec2) holding the object texture real width and height. If it's used with Tilesheet.drawTiles() the value will be [0, 0]
 	 * For example, if the object is 200x200, the value of this uniform will be 256x256.
 	 */
-	static public var uTextureSize = "openfl_uTextureSize";
+	public static var uTextureSize = "openfl_uTextureSize";
 	
 	/**
 	 * Varying (vec2) with the object texture coordinate.
 	 */
-	static public var vTexCoord = DefaultVarying.TexCoord;
+	//public static var vTexCoord = DefaultVarying.TexCoord;
 	/**
 	 * Varying (vec4) with the tint and alpha values of the object.
 	 */
-	static public var vColor = DefaultVarying.Color;
+	//public static var vColor = DefaultVarying.Color;
 	
 	
 	@:noCompletion static var vertexHeader = [
-		'attribute vec2 ${Shader.aPosition};',
-		'attribute vec2 ${Shader.aTexCoord};',
-		'attribute vec4 ${Shader.aColor};',
-		
-		'uniform mat3 ${Shader.uProjectionMatrix};',
-		
-		'uniform vec2 ${Shader.uObjectSize};',
-		'uniform vec2 ${Shader.uTextureSize};',
-		
-		'varying vec2 ${Shader.vTexCoord};',
-		'varying vec4 ${Shader.vColor};',
+		//'attribute vec2 ${Shader.aPosition};',
+		//'attribute vec2 ${Shader.aTexCoord};',
+		//'attribute vec4 ${Shader.aColor};',
+		//
+		//'uniform mat3 ${Shader.uProjectionMatrix};',
+		//
+		//'uniform vec2 ${Shader.uObjectSize};',
+		//'uniform vec2 ${Shader.uTextureSize};',
+		//
+		//'varying vec2 ${Shader.vTexCoord};',
+		//'varying vec4 ${Shader.vColor};',
 	];
 	
 	@:noCompletion static var fragmentHeader = [
-		'uniform sampler2D ${Shader.uSampler};',
-		'uniform vec4 ${Shader.uColorMultiplier};',
-		'uniform vec4 ${Shader.uColorOffset};',
-		
-		'uniform vec2 ${Shader.uObjectSize};',
-		'uniform vec2 ${Shader.uTextureSize};',
-		
-		'varying vec2 ${Shader.vTexCoord};',
-		'varying vec4 ${Shader.vColor};',
-		
-		'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
-		'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
-		'   vec4 result = unmultiply * tint * multiplier;',
-		'   result = result + offset;',
-		'   result = clamp(result, 0., 1.);',
-		'   result = vec4(result.rgb * result.a, result.a);',
-		'   return result;',
-		'}',
+		//'uniform sampler2D ${Shader.uSampler};',
+		//'uniform vec4 ${Shader.uColorMultiplier};',
+		//'uniform vec4 ${Shader.uColorOffset};',
+		//
+		//'uniform vec2 ${Shader.uObjectSize};',
+		//'uniform vec2 ${Shader.uTextureSize};',
+		//
+		//'varying vec2 ${Shader.vTexCoord};',
+		//'varying vec4 ${Shader.vColor};',
+		//
+		//'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
+		//'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
+		//'   vec4 result = unmultiply * tint * multiplier;',
+		//'   result = result + offset;',
+		//'   result = clamp(result, 0., 1.);',
+		//'   result = vec4(result.rgb * result.a, result.a);',
+		//'   return result;',
+		//'}',
 	];
 	
 	/**
@@ -130,7 +131,7 @@ class Shader {
 	@:noCompletion private var __dirty:Bool = true;
 	@:noCompletion private var __fragmentCode:String;
 	@:noCompletion private var __vertexCode:String;
-	@:noCompletion private var __shader:InternalShader;
+	//@:noCompletion private var __shader:InternalShader;
 	
 	public function new(?precision:GLShaderPrecision = MEDIUM) {
 		this.precision = precision;
@@ -143,16 +144,16 @@ class Shader {
 	@:noCompletion private function __init(gl:GLRenderContext) {
 		var dirty = __dirty;
 		if (dirty) {
-			if (__shader != null) {
-				__shader.destroy();
-			}
-			__shader = new InternalShader(gl);
-			__shader.vertexString = __vertexCode != null ? __vertexCode : openfl._internal.renderer.opengl.shaders2.DefaultShader.VERTEX_SRC.join("\n");
-			__shader.fragmentString = __fragmentCode;
+			//if (__shader != null) {
+				//__shader.destroy();
+			//}
+			//__shader = new InternalShader(gl);
+			//__shader.vertexString = __vertexCode != null ? __vertexCode : openfl._internal.renderer.opengl.shaders.DefaultShader.VERTEX_SRC.join("\n");
+			//__shader.fragmentString = __fragmentCode;
 			__dirty = false;
 		}
 		
-		__shader.init(dirty);
+		//__shader.init(dirty);
 	}
 	
 	@:noCompletion private function __buildFragmentCode(code:String) {
@@ -341,10 +342,9 @@ class GLShaderParameter {
 
 typedef GLShaderData = Map<String, GLShaderParameter>;
 
-private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders2.DefaultShader.Attrib;
-private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
-private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
+//private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders.DefaultShader.Attrib;
+//private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders.DefaultShader.Uniform;
+//private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders.DefaultShader.Varying;
 
-#else
-typedef Shader = flash.display.Shader;
+
 #end

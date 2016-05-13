@@ -1,4 +1,4 @@
-package openfl.geom; #if !flash
+package openfl.geom;
 
 
 class Vector3D {
@@ -26,43 +26,44 @@ class Vector3D {
 	}
 	
 	
-	inline public function add (a:Vector3D):Vector3D {
+	public function add (a:Vector3D):Vector3D {
 		
 		return new Vector3D (this.x + a.x, this.y + a.y, this.z + a.z);
 		
 	}
 	
 	
-	inline public static function angleBetween (a:Vector3D, b:Vector3D):Float {
+	public static function angleBetween (a:Vector3D, b:Vector3D):Float {
 		
 		var la = a.length;
 		var lb = b.length;
 		var dot = a.dotProduct (b);
-
+		
 		if (la != 0) {
-
+			
 			dot /= la;
-
+			
 		}
-
+		
 		if (lb != 0) {
-
+			
 			dot /= lb;
-
+			
 		}
-
+		
 		return Math.acos (dot);
+		
 	}
 	
 	
-	inline public function clone ():Vector3D {
+	public function clone ():Vector3D {
 		
 		return new Vector3D (x, y, z, w);
 		
 	}
 	
 	
-	inline public function copyFrom (sourceVector3D:Vector3D):Void {
+	public function copyFrom (sourceVector3D:Vector3D):Void {
 		
 		x = sourceVector3D.x;
 		y = sourceVector3D.y;
@@ -71,14 +72,14 @@ class Vector3D {
 	}
 	
 	
-	inline public function crossProduct (a:Vector3D):Vector3D {
+	public function crossProduct (a:Vector3D):Vector3D {
 		
 		return new Vector3D (y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);
 		
 	}
 	
 	
-	inline public function decrementBy (a:Vector3D):Void {
+	public function decrementBy (a:Vector3D):Void {
 		
 		x -= a.x;
 		y -= a.y;
@@ -87,7 +88,7 @@ class Vector3D {
 	}
 	
 	
-	inline public static function distance (pt1:Vector3D, pt2:Vector3D):Float {
+	public static function distance (pt1:Vector3D, pt2:Vector3D):Float {
 		
 		var x:Float = pt2.x - pt1.x;
 		var y:Float = pt2.y - pt1.y;
@@ -98,21 +99,21 @@ class Vector3D {
 	}
 	
 	
-	inline public function dotProduct (a:Vector3D):Float {
+	public function dotProduct (a:Vector3D):Float {
 		
 		return x * a.x + y * a.y + z * a.z;
 		
 	}
 	
 	
-	inline public function equals (toCompare:Vector3D, allFour:Bool = false):Bool {
+	public function equals (toCompare:Vector3D, allFour:Bool = false):Bool {
 		
 		return x == toCompare.x && y == toCompare.y && z == toCompare.z && (!allFour || w == toCompare.w);
 		
 	}
 	
 	
-	inline public function incrementBy (a:Vector3D):Void {
+	public function incrementBy (a:Vector3D):Void {
 		
 		x += a.x;
 		y += a.y;
@@ -121,14 +122,14 @@ class Vector3D {
 	}
 	
 	
-	inline public function nearEquals (toCompare:Vector3D, tolerance:Float, ?allFour:Bool = false):Bool {
+	public function nearEquals (toCompare:Vector3D, tolerance:Float, ?allFour:Bool = false):Bool {
 		
 		return Math.abs (x - toCompare.x) < tolerance && Math.abs (y - toCompare.y) < tolerance && Math.abs (z - toCompare.z) < tolerance && (!allFour || Math.abs (w - toCompare.w) < tolerance);
 		
 	}
 	
 	
-	inline public function negate ():Void {
+	public function negate ():Void {
 		
 		x *= -1;
 		y *= -1;
@@ -137,7 +138,7 @@ class Vector3D {
 	}
 	
 	
-	inline public function normalize ():Float {
+	public function normalize ():Float {
 		
 		var l = length;
 		
@@ -154,7 +155,7 @@ class Vector3D {
 	}
 	
 	
-	inline public function project ():Void {
+	public function project ():Void {
 		
 		x /= w;
 		y /= w;
@@ -163,7 +164,7 @@ class Vector3D {
 	}
 	
 	
-	inline public function scaleBy (s:Float):Void {
+	public function scaleBy (s:Float):Void {
 		
 		x *= s;
 		y *= s;
@@ -172,7 +173,7 @@ class Vector3D {
 	}
 	
 	
-	inline public function setTo (xa:Float, ya:Float, za:Float):Void {
+	public function setTo (xa:Float, ya:Float, za:Float):Void {
 		
 		x = xa;
 		y = ya;
@@ -181,16 +182,16 @@ class Vector3D {
 	}
 	
 	
-	inline public function subtract (a:Vector3D):Vector3D {
+	public function subtract (a:Vector3D):Vector3D {
 		
 		return new Vector3D (x - a.x, y - a.y, z - a.z);
 		
 	}
 	
 	
-	inline public function toString ():String {
+	public function toString ():String {
 		
-		return "Vector3D(" + x + ", " + y + ", " + z + ")";
+		return 'Vector3D($x, $y, $z)';
 		
 	}
 	
@@ -202,35 +203,35 @@ class Vector3D {
 	
 	
 	
-	@:noCompletion inline private function get_length ():Float {
+	private function get_length ():Float {
 		
 		return Math.sqrt (x * x + y * y + z * z);
 		
 	}
 	
 	
-	@:noCompletion inline private function get_lengthSquared ():Float {
+	private function get_lengthSquared ():Float {
 		
 		return x * x + y * y + z * z;
 		
 	}
 	
 	
-	@:noCompletion inline private static function get_X_AXIS ():Vector3D {
+	private inline static function get_X_AXIS ():Vector3D {
 		
 		return new Vector3D (1, 0, 0);
 		
 	}
 	
 	
-	@:noCompletion inline private static function get_Y_AXIS ():Vector3D {
+	private inline static function get_Y_AXIS ():Vector3D {
 		
 		return new Vector3D (0, 1, 0);
 		
 	}
 	
 	
-	@:noCompletion inline private static function get_Z_AXIS ():Vector3D {
+	private inline static function get_Z_AXIS ():Vector3D {
 		
 		return new Vector3D (0, 0, 1);
 		
@@ -238,8 +239,3 @@ class Vector3D {
 	
 	
 }
-
-
-#else
-typedef Vector3D = flash.geom.Vector3D;
-#end

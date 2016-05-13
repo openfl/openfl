@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -7,6 +7,7 @@ import openfl.gl.GLShader;
 
 
 @:final class Program3D {
+	
 	
 	public var context:Context3D;
 	public var glProgram:GLProgram;
@@ -46,8 +47,3 @@ import openfl.gl.GLShader;
 	
 	
 }
-
-
-#else
-typedef Program3D = flash.display3D.Program3D;
-#end

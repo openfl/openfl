@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display;
 
 
 import openfl.events.EventDispatcher;
@@ -10,8 +10,8 @@ import openfl.events.EventDispatcher;
 	public var frame (get, null):Int;
 	public var name (get, null):String;
 	
-	@:noCompletion private var __frame:Int;
-	@:noCompletion private var __name:String;
+	private var __frame:Int;
+	private var __name:String;
 	
 	
 	public function new (name:String, frame:Int) {
@@ -31,13 +31,8 @@ import openfl.events.EventDispatcher;
 	
 	
 	
-	@:noCompletion private function get_frame ():Int { return __frame; }
-	@:noCompletion private function get_name ():String { return __name; }
+	private function get_frame ():Int { return __frame; }
+	private function get_name ():String { return __name; }
 	
 	
 }
-
-
-#else
-typedef FrameLabel = flash.display.FrameLabel;
-#end

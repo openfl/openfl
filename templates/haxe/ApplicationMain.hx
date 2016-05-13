@@ -84,9 +84,9 @@ class ApplicationMain {
 		
 		preloader = null;
 		
-		::if (libraries != null)::::foreach libraries::::if (preload)::
-		total++;
-		openfl.Assets.loadLibrary ("::name::").onComplete (library_onLoad);
+		::if (libraries != null)::::foreach libraries::::if (preload)::total++;
+		::end::::end::::end::
+		::if (libraries != null)::::foreach libraries::::if (preload)::openfl.Assets.loadLibrary ("::name::").onComplete (library_onLoad);
 		::end::::end::::end::
 		
 		if (total == 0) {
@@ -204,7 +204,7 @@ class ApplicationMain {
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		var loader = new neko.vm.Loader (untyped $loader);
-		loader.addPath (haxe.io.Path.directory (Sys.executablePath ()));
+		loader.addPath (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end));
 		loader.addPath ("./");
 		loader.addPath ("@executable_path/");
 		

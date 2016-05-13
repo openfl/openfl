@@ -1,60 +1,10 @@
-
-## Flash 9+
--main TestMain
--lib munit
--lib hamcrest
--lib mlib
--lib lime
--lib openfl
--D openfl-flash
--D web
--cp test
--swf-version 11.3
--swf build/as3_test.swf
-
-# Trick munit into building our app
-
--cmd haxelib run lime build html5 -nocffi
-#-cmd openfl build neko
-#-cmd mv build/linux64/neko/obj/ApplicationMain.n build/linux64/neko/bin/Validation.n
-#-cmd lime update linux
+-swf build/flash/bin/TestMain.swf
+-swf-version 9
+--no-output
+-cmd haxelib run openfl build flash
 
 --next
-
-## JavaScript
 
 -js build/html5/bin/TestMain.js
 --no-output
-
---next
-
-## Neko
-
-#-neko build/linux64/neko/bin/Validation.n
-#--no-output
-
-#--next
-
-## C++
-
-#-main ApplicationMain
-
-#-cp build/linux64/cpp/haxe
-#-cp test
-
-#-lib openfl
-#-lib munit
-#-lib hamcrest
-#-lib mlib
-#-lib openfl-native
-
-#-D linux
-#-D desktop
-#-D HXCPP_M64
-#-D display
-
-#-cpp build/linux64/cpp/bin
-#--remap flash:flash
-#--no-output
-
-
+-cmd haxelib run openfl build html5

@@ -1,4 +1,4 @@
-package openfl.net; #if !flash #if !openfl_legacy
+package openfl.net; #if !openfl_legacy
 
 
 import haxe.io.Path;
@@ -18,9 +18,6 @@ import sys.FileSystem;
 class FileReferenceList extends EventDispatcher {
 	
 	
-	/**
-	 * An array of FileReference objects.
-	 */
 	public var fileList (default, null):Array<FileReference>;
 	
 	
@@ -73,14 +70,14 @@ class FileReferenceList extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function fileDialog_onCancel ():Void {
+	private function fileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	@:noCompletion private function fileDialog_onSelectMultiple (paths:Array<String>):Void {
+	private function fileDialog_onSelectMultiple (paths:Array<String>):Void {
 		
 		var fileReference, fileInfo;
 		
@@ -112,7 +109,4 @@ class FileReferenceList extends EventDispatcher {
 
 
 #else
-#end
-#else
-typedef FileReferenceList = flash.net.FileReferenceList;
 #end

@@ -1,9 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display;
 
 
-interface IGraphicsStroke { }
-
-
-#else
-typedef IGraphicsStroke = flash.display.IGraphicsStroke;
-#end
+interface IGraphicsStroke {}

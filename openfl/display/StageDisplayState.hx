@@ -1,30 +1,41 @@
-package openfl.display; #if !flash
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The StageDisplayState class provides values for the
- * <code>Stage.displayState</code> property.
- */
-enum StageDisplayState {
+@:enum abstract StageDisplayState(Null<Int>) {
 	
-	/**
-	 * Specifies that the Stage is in normal mode.
-	 */
-	NORMAL;
+	public var FULL_SCREEN = 0;
+	public var FULL_SCREEN_INTERACTIVE = 1;
+	public var NORMAL = 2;
 	
-	/**
-	 * Specifies that the Stage is in full-screen mode.
-	 */
-	FULL_SCREEN;
+	@:from private static function fromString (value:String):StageDisplayState {
+		
+		return switch (value) {
+			
+			case "fullScreen": FULL_SCREEN;
+			case "fullScreenInteractive": FULL_SCREEN_INTERACTIVE;
+			case "normal": NORMAL;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Specifies that the Stage is in full-screen mode with keyboard interactivity enabled.
-	 */
-	FULL_SCREEN_INTERACTIVE;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case StageDisplayState.FULL_SCREEN: "fullScreen";
+			case StageDisplayState.FULL_SCREEN_INTERACTIVE: "fullScreenInteractive";
+			case StageDisplayState.NORMAL: "normal";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
-typedef StageDisplayState = flash.display.StageDisplayState;
+typedef StageDisplayState = openfl._legacy.display.StageDisplayState;
 #end

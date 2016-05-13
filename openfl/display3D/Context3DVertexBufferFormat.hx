@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 enum Context3DVertexBufferFormat {
@@ -10,8 +10,3 @@ enum Context3DVertexBufferFormat {
 	FLOAT_4;
 	
 }
-
-
-#else
-typedef Context3DVertexBufferFormat = flash.display3D.Context3DVertexBufferFormat;
-#end

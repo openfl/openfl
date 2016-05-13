@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -10,16 +10,19 @@ import openfl.Vector;
 
 @:final class IndexBuffer3D {
 	
+	
 	public var context:Context3D;
 	public var glBuffer:GLBuffer;
 	public var numIndices:Int;
+	public var bufferUsage:Int;
 	
 	
-	public function new (context:Context3D, glBuffer:GLBuffer, numIndices:Int) {
+	public function new (context:Context3D, glBuffer:GLBuffer, numIndices:Int, bufferUsage:Int) {
 		
 		this.context = context;
 		this.glBuffer = glBuffer;
 		this.numIndices = numIndices;
+		this.bufferUsage = bufferUsage;
 		
 	}
 	
@@ -56,7 +59,7 @@ import openfl.Vector;
 		indices = new Int16Array (byteArray, offset, length);
 		#end
 		
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, bufferUsage);
 		
 	}
 	
@@ -78,14 +81,17 @@ import openfl.Vector;
 		indices = new Int16Array (data, startOffset, count);
 		#end
 		
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, bufferUsage);
+		
+	}
+	
+	
+	public function uploadFromInt16Array (data:Int16Array):Void {
+		
+		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, glBuffer);
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, bufferUsage);
 		
 	}
 	
 	
 }
-
-
-#else
-typedef IndexBuffer3D = flash.display3D.IndexBuffer3D;
-#end

@@ -1,4 +1,4 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
 import openfl.display.IGraphicsData;
@@ -15,8 +15,8 @@ import openfl.Lib;
 	public var repeat:Bool;
 	public var smooth:Bool;
 	
-	@:noCompletion @:dox(hide) public var __graphicsDataType (default,null):GraphicsDataType;
-	@:noCompletion @:dox(hide) public var __graphicsFillType (default, null):GraphicsFillType;
+	public var __graphicsDataType (default, null):GraphicsDataType;
+	public var __graphicsFillType (default, null):GraphicsFillType;
 	
 	
 	public function new (bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
@@ -37,7 +37,4 @@ import openfl.Lib;
 
 #else
 typedef GraphicsBitmapFill = openfl._legacy.display.GraphicsBitmapFill;
-#end
-#else
-typedef GraphicsBitmapFill = flash.display.GraphicsBitmapFill;
 #end

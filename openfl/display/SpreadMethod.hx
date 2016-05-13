@@ -1,37 +1,41 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The SpreadMethod class provides values for the <code>spreadMethod</code>
- * parameter in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the Graphics class.
- *
- * <p>The following example shows the same gradient fill using various spread
- * methods:</p>
- */
-enum SpreadMethod {
+@:enum abstract SpreadMethod(Null<Int>) {
 	
-	/**
-	 * Specifies that the gradient use the <i>repeat</i> spread method.
-	 */
-	REPEAT;
+	public var PAD = 0;
+	public var REFLECT = 1;
+	public var REPEAT = 2;
 	
-	/**
-	 * Specifies that the gradient use the <i>reflect</i> spread method.
-	 */
-	REFLECT;
+	@:from private static function fromString (value:String):SpreadMethod {
+		
+		return switch (value) {
+			
+			case "pad": PAD;
+			case "reflect": REFLECT;
+			case "repeat": REPEAT;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Specifies that the gradient use the <i>pad</i> spread method.
-	 */
-	PAD;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case SpreadMethod.PAD: "pad";
+			case SpreadMethod.REFLECT: "reflect";
+			case SpreadMethod.REPEAT: "repeat";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef SpreadMethod = openfl._legacy.display.SpreadMethod;
-#end
-#else
-typedef SpreadMethod = flash.display.SpreadMethod;
 #end

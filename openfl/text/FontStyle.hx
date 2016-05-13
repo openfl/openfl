@@ -1,45 +1,44 @@
-package openfl.text; #if !flash #if !openfl_legacy
+package openfl.text; #if !openfl_legacy
 
 
-/**
- * The FontStyle class provides values for the TextRenderer class.
- */
-enum FontStyle {
+@:enum abstract FontStyle(Null<Int>) {
 	
-	/**
-	 * Defines the plain style of a font for the <code>fontStyle</code> parameter
-	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
-	 * <code>FontStyle.REGULAR</code>.
-	 */
-	REGULAR;
+	public var BOLD = 0;
+	public var BOLD_ITALIC = 1;
+	public var ITALIC = 2;
+	public var REGULAR = 3;
 	
-	/**
-	 * Defines the italic style of a font for the <code>fontStyle</code>
-	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
-	 * the syntax <code>FontStyle.ITALIC</code>.
-	 */
-	ITALIC;
+	@:from private static function fromString (value:String):FontStyle {
+		
+		return switch (value) {
+			
+			case "bold": BOLD;
+			case "boldItalic": BOLD_ITALIC;
+			case "italic": ITALIC;
+			case "regular": REGULAR;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Defines the italic style of a font for the <code>fontStyle</code>
-	 * parameter in the <code>setAdvancedAntiAliasingTable()</code> method. Use
-	 * the syntax <code>FontStyle.ITALIC</code>.
-	 */
-	BOLD_ITALIC;
-	
-	/**
-	 * Defines the bold style of a font for the <code>fontStyle</code> parameter
-	 * in the <code>setAdvancedAntiAliasingTable()</code> method. Use the syntax
-	 * <code>FontStyle.BOLD</code>.
-	 */
-	BOLD;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case FontStyle.BOLD: "bold";
+			case FontStyle.BOLD_ITALIC: "boldItalic";
+			case FontStyle.ITALIC: "italic";
+			case FontStyle.REGULAR: "regular";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef FontStyle = openfl._legacy.text.FontStyle;
-#end
-#else
-typedef FontStyle = flash.text.FontStyle;
 #end

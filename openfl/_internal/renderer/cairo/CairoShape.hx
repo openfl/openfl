@@ -2,6 +2,7 @@ package openfl._internal.renderer.cairo;
 
 
 import openfl.display.DisplayObject;
+import openfl.text.TextField;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -21,8 +22,9 @@ class CairoShape {
 		if (graphics != null) {
 			
 			CairoGraphics.render (graphics, renderSession);
+			var bounds = graphics.__bounds;
 			
-			if (graphics.__cairo != null) {
+			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
 				
 				if (shape.__mask != null) {
 					
@@ -32,7 +34,7 @@ class CairoShape {
 				
 				var cairo = renderSession.cairo;
 				var scrollRect = shape.scrollRect;
-				var transform = shape.__worldTransform;
+				var transform = shape.__renderTransform;
 				
 				if (renderSession.roundPixels) {
 					
@@ -53,7 +55,7 @@ class CairoShape {
 					
 					cairo.pushGroup ();
 					cairo.newPath ();
-					cairo.rectangle (graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
+					cairo.rectangle (scrollRect.x - graphics.__bounds.x, scrollRect.y - graphics.__bounds.y, scrollRect.width, scrollRect.height);
 					cairo.fill ();
 					cairo.popGroupToSource ();
 					

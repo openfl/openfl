@@ -1,25 +1,33 @@
-package openfl.text; #if !flash
+package openfl.text;
 
 
-/**
- * The TextFieldType class is an enumeration of constant values used in
- * setting the <code>type</code> property of the TextField class.
- */
-enum TextFieldType {
+@:enum abstract TextFieldType(Null<Int>) {
 	
-	/**
-	 * Used to specify a <code>dynamic</code> TextField.
-	 */
-	DYNAMIC;
+	public var DYNAMIC = 0;
+	public var INPUT = 1;
 	
-	/**
-	 * Used to specify an <code>input</code> TextField.
-	 */
-	INPUT;
+	@:from private static function fromString (value:String):TextFieldType {
+		
+		return switch (value) {
+			
+			case "dynamic": DYNAMIC;
+			case "input": INPUT;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case TextFieldType.DYNAMIC: "dynamic";
+			case TextFieldType.INPUT: "input";
+			default: null;
+			
+		}
+		
+	}
 	
 }
-
-
-#else
-typedef TextFieldType = flash.text.TextFieldType;
-#end

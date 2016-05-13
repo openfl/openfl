@@ -1,7 +1,7 @@
-package openfl.profiler; #if !flash
+package openfl.profiler;
 
 
-#if (cpp && hxtelemetry)
+#if ((cpp || neko) && hxtelemetry)
 import hxtelemetry.HxTelemetry;
 #end
 
@@ -14,7 +14,7 @@ import hxtelemetry.HxTelemetry;
 	public static var connected (get, never):Bool;
 	public static var spanMarker (default, null) = 0.0;
 	
-	#if (cpp && hxtelemetry)
+	#if ((cpp || neko) && hxtelemetry)
 	private static var telemetry:HxTelemetry;
 	#end
 	
@@ -49,7 +49,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __advanceFrame ():Void {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		telemetry.advance_frame ();
 		#end
 		
@@ -58,7 +58,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __endTiming (name:String):Void {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		telemetry.end_timing (name);
 		#end
 		
@@ -67,7 +67,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __initialize ():Void {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		var config:hxtelemetry.Config;
 		
 		#if !lime_legacy
@@ -85,7 +85,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __rewindStack (stack:String):Void {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		telemetry.rewind_stack (stack);
 		#end
 		
@@ -94,7 +94,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __startTiming (name:String):Void {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		telemetry.start_timing (name);
 		#end
 		
@@ -103,7 +103,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static inline function __unwindStack ():String {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		return telemetry.unwind_stack ();
 		#else
 		return "";
@@ -121,7 +121,7 @@ import hxtelemetry.HxTelemetry;
 	
 	private static function get_connected ():Bool {
 		
-		#if (cpp && hxtelemetry)
+		#if ((cpp || neko) && hxtelemetry)
 		return true;
 		#else
 		return false;
@@ -140,8 +140,3 @@ import hxtelemetry.HxTelemetry;
 	var RENDER = ".render";
 	
 }
-
-
-#else
-typedef Telemetry = flash.profiler.Telemetry;
-#end

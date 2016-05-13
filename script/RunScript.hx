@@ -1,9 +1,9 @@
 package;
 
 
-import helpers.LogHelper;
-import helpers.PathHelper;
-import project.Haxelib;
+import lime.tools.helpers.LogHelper;
+import lime.tools.helpers.PathHelper;
+import lime.project.Haxelib;
 
 
 class RunScript {
@@ -41,7 +41,7 @@ class RunScript {
 			
 			if (limeDirectory == null || limeDirectory == "" || limeDirectory.indexOf ("is not installed") > -1) {
 				
-				Sys.command ("haxelib install lime");
+				Sys.command ("haxelib", [ "install", "lime" ]);
 				
 			}
 			

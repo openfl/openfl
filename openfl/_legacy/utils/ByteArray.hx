@@ -37,6 +37,8 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 	private var allocated:Int;
 	#end
 	
+	private var __length (get, set):Int;
+	
 	
 	public function new (size = 0) {
 		
@@ -774,6 +776,13 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 	}
 	
 	
+	private function __resize (length:Int):Void {
+		
+		setLength (length);
+		
+	}
+	
+	
 	@:noCompletion private function __throwEOFi ():Int {
 		
 		throw new EOFError ();
@@ -793,8 +802,10 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 	private function get_byteLength ():Int { return length; }
 	private function get_endian ():String { return bigEndian ? Endian.BIG_ENDIAN : Endian.LITTLE_ENDIAN; }
 	private function set_endian (value:String):String { bigEndian = (value == Endian.BIG_ENDIAN); return value; }
+	private function get___length ():Int { return length; }
+	private function set___length (value:Int):Int { setLength (value); return value; }
 	
-	//
+	
 	
 	
 	// Native Methods
@@ -821,3 +832,6 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
 #else
 typedef ByteArray = openfl.utils.ByteArray;
 #end
+
+
+typedef ByteArrayData = ByteArray;

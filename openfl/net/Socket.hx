@@ -1,422 +1,778 @@
-package openfl.net; #if !flash
+package openfl.net; #if !openfl_legacy
 
 
-import haxe.io.Output;
-import haxe.io.BytesBuffer;
 import haxe.io.Bytes;
-import haxe.io.Input;
-import haxe.io.BytesInput;
-import haxe.io.BytesOutput;
-import openfl.errors.SecurityError;
+import haxe.io.BytesBuffer;
+import haxe.io.Error;
+import haxe.Timer;
 import openfl.errors.IOError;
+import openfl.errors.SecurityError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-import openfl.events.ProgressEvent;
 import openfl.events.IOErrorEvent;
-import openfl.utils.IDataInput;
+import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
+import openfl.utils.IDataInput;
+import openfl.utils.IDataOutput;
 import openfl.Lib;
+
+#if (js && html5)
+import js.html.ArrayBuffer;
+#end
 
 #if sys
 import sys.net.Host;
+import sys.net.Socket in SysSocket;
 #end
 
 
-class Socket extends EventDispatcher /*implements IDataInput implements IDataOutput*/ {
+class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	private var _stamp : Float;
-	private var _buf : haxe.io.Bytes;
-    private var _socket: #if sys sys.net.Socket #else Dynamic #end;
-    private var _connected: Bool;
-    private var _host: String;
-    private var _port: Int;
-
-	private var _inputBuffer : ByteArray;
-	private var _input : ByteArray;
-	private var _output : ByteArray;
-
-	/**
-	Controls whether the Socket is a secure socket or not.
-	This value is only used in HTML5 targets (WebSockets)
-	**/
+	public var bytesAvailable (get, null) : Int;
+	public var bytesPending (get, null) : Int;
+	public var connected (get, null): Bool;
+	public var objectEncoding:UInt;
 	public var secure:Bool;
-
-    public var bytesAvailable(get, null) : Int;
-	public var bytesPending(get, null) : Int;
-	public var timeout : Int;
-    public var objectEncoding : Int;
-    @:isVar
-    public var endian(get, set): String;
-
-    public var connected(get, null): Bool;
-
-    @:noCompletion private function get_connected(): Bool {
-        return _connected;
-    }
-
-    @:noCompletion private function get_endian(): String {
-        return endian;
-    }
-
-    @:noCompletion private function set_endian(value: String): String {
-        endian = value;
-		if( _input != null ) _input.endian = value;
-		if( _inputBuffer != null ) _inputBuffer.endian = value;
-		if( _output != null ) _output.endian = value;
-        return endian;
-    }
-
-	@:noCompletion private function get_bytesAvailable() : Int {
-		return _input.bytesAvailable;
-	}
+	public var timeout:Int;
+	public var endian (get, set):Endian;
 	
-	@:noCompletion private function get_bytesPending() : Int {
-		return _output.length;
-	}
-
-    public function new(host:String = null, port:Int = 0) {
-		super();
+	private var __buffer:Bytes;
+	private var __connected:Bool;
+	private var __endian:Endian;
+	private var __host:String;
+	private var __input:ByteArray;
+	private var __inputBuffer:ByteArray;
+	private var __output:ByteArray;
+	private var __port:Int;
+	private var __socket:#if sys SysSocket #else Dynamic #end;
+	private var __timestamp:Float;
+	
+	
+	public function new (host:String = null, port:Int = 0) {
+		
+		super ();
+		
 		endian = Endian.BIG_ENDIAN;
 		timeout = 20000;
-		_buf = haxe.io.Bytes.alloc( 4096 );
-		if( port > 0 && port < 65535 )
-			connect(host, port);
-	}
-	
-	public function connect( ?host: String = null, ?port: Int = 0) {
-		if( _socket != null )
-			close();
-
-		if( port < 0 || port > 65535 )
-			throw new SecurityError("Invalid socket port number specified.");
 		
-		#if (js && html5)
-		_stamp = haxe.Timer.stamp();
-		#else
-		var h : Host = null;
-		try {
-			h = new Host( host );
-		}catch( e : Dynamic ){
-			dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Invalid host") );
-			return;
+		__buffer = Bytes.alloc (4096);
+		
+		if (port > 0 && port < 65535) {
+			
+			connect (host, port);
+			
 		}
 		
-		_stamp = Sys.time();
-		#end
-
-		_host = host;
-		_port = port;
-
-		_output = new ByteArray();
-		_output.endian = endian;
-		_input = new ByteArray();
-		_input.endian = endian;
+	}
+	
+	
+	public function connect (host:String = null, port:Int = 0):Void {
+		
+		if (__socket != null) {
+			
+			close ();
+			
+		}
+		
+		if (port < 0 || port > 65535) {
+			
+			throw new SecurityError ("Invalid socket port number specified.");
+			
+		}
+		
 		#if (js && html5)
-		_inputBuffer = new ByteArray();
-		_inputBuffer.endian = endian;
+		
+		__timestamp = Timer.stamp ();
+		
+		#else
+		
+		var h:Host = null;
+		
+		try {
+			
+			h = new Host (host);
+			
+		} catch (e:Dynamic) {
+			
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR, true, false, "Invalid host"));
+			return;
+			
+		}
+		
+		__timestamp = Sys.time ();
+		
+		#end
+		
+		__host = host;
+		__port = port;
+		
+		__output = new ByteArray ();
+		__output.endian = __endian;
+		
+		__input = new ByteArray ();
+		__input.endian = __endian;
+		
+		#if (js && html5)
+		__inputBuffer = new ByteArray ();
+		__inputBuffer.endian = __endian;
 		#end
 		
 		#if (js && html5)
+		
 		var schema = secure ? "wss" : "ws";
 		var urlReg = ~/^(.*:\/\/)?([A-Za-z0-9\-\.]+)\/?(.*)/g;
-		urlReg.match(host);
-		var _webHost = urlReg.matched(2);
-		var _webPath = urlReg.matched(3);
-		_socket = untyped __js__("new WebSocket(schema + \"://\" + _webHost + \":\" + port + \"/\" + _webPath)");
-
-		_socket.onopen = onOpenHandler;
-		_socket.onmessage = onMessageHandler;
-		_socket.onclose = onCloseHandler;
-		_socket.onerror = onErrorHandler;
-		_socket.binaryType = "arraybuffer";
+		urlReg.match (host);
+		var __webHost = urlReg.matched (2);
+		var __webPath = urlReg.matched (3);
+		
+		__socket = untyped __js__("new WebSocket(schema + \"://\" + __webHost + \":\" + port + \"/\" + __webPath)");
+		
+		__socket.onopen = socket_onOpen;
+		__socket.onmessage = socket_onMessage;
+		__socket.onclose = socket_onClose;
+		__socket.onerror = socket_onError;
+		__socket.binaryType = "arraybuffer";
+		
 		#else
-		_socket = new sys.net.Socket();
-		_socket.setBlocking( false );
-		_socket.setFastSend( true );
+		
+		__socket = new SysSocket ();
+		__socket.setBlocking (false);
+		__socket.setFastSend (true);
+		
 		try {
-			_socket.connect( h, port );
-		}catch(e:Dynamic){
-		}
+			
+			__socket.connect (h, port);
+			
+		} catch (e:Dynamic) {}
+		
 		#end
-
-		Lib.current.addEventListener( Event.ENTER_FRAME, onFrame );
+		
+		Lib.current.addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 	}
 	
-	@:noCompletion private function onFrame( _ ){
-		#if (js && html5)
-		if (_inputBuffer.bytesAvailable > 0)
-		{
-			var newInput = new ByteArray();
-			var newDataLength = _inputBuffer.bytesAvailable;
-			_input.readBytes(newInput, 0, _input.bytesAvailable);
-			_inputBuffer.position = 0;
-			_inputBuffer.readBytes(newInput, newInput.position, _inputBuffer.length);
-			newInput.position = 0;
-			_input = newInput;
-			_inputBuffer.clear();
-			dispatchEvent( new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0) );
+	
+    public function close ():Void {
+		
+		if ( __socket != null) {
+			
+			__cleanSocket ();
+			
+		} else {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
 		}
 		
-		if( _socket != null )
-			flush();
-		#else
-		var doConnect = false;
-		var doClose = false;
-
-		if( !connected ){
-			var r = sys.net.Socket.select(null,[_socket],null,0);
-			if( r.write[0] == _socket )
-				doConnect = true;
-			else if ( Sys.time() - _stamp > timeout/1000 )
-				doClose = true;
-		}
-		
-		var b = new BytesBuffer();
-		var bLength = 0;
-		if( connected || doConnect ){
-			try {
-				var l : Int;
-				do {
-					l = _socket.input.readBytes(_buf,0,_buf.length);
-					if( l > 0 ){
-						b.addBytes( _buf, 0, l );
-						bLength += l;
-					}
-				}while( l == _buf.length );
-			}catch( e : haxe.io.Error ){
-				if( e != haxe.io.Error.Blocked )
-					doClose = true;
-			}catch( e : Dynamic ){
-				doClose = true;
-			}
-		}
-
-		if( doClose && connected ){
-			_connected = false;
-			cleanSocket();
-			dispatchEvent( new Event(Event.CLOSE) );
-		}else if( doClose ){
-			_connected = false;
-			cleanSocket();
-			dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Connection failed") );
-		}else if( doConnect ){
-			_connected = true;
-			dispatchEvent( new Event(Event.CONNECT) );
-		}
-		
-		if ( bLength > 0 ){
-			var newData = b.getBytes();
-			var rl = _input.length - _input.position;
-			if (rl < 0) rl = 0;
-			var newInput = new ByteArray( rl + newData.length );
-			if (rl > 0) newInput.blit( 0, _input, _input.position, rl );
-			newInput.blit( rl, newData, 0, newData.length );
-			_input = newInput;
-			dispatchEvent( new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0) );
-		}
-		
-		if ( _socket != null ) {
-			try {
-				flush();
-			} catch ( e:IOError ) {
-				dispatchEvent( new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, e.message) );
-			}
-		}
-		#end
 	}
-
-	@:noCompletion private function cleanSocket(){
+	
+	
+	public function flush ():Void {
+		
+		if ( __socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		if ( __output.length > 0) {
+			
+			try {
+				
+				#if (js && html5)
+				__socket.send (cast (__output, ArrayBuffer));
+				#else
+				__socket.output.write (__output);
+				#end
+				__output = new ByteArray ();
+				__output.endian = __endian;
+				
+			} catch (e:Dynamic) {
+				
+				throw new IOError ("Operation attempted on invalid socket.");
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	public function readBoolean ():Bool {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readBoolean ();
+		
+	}
+	
+	
+	public function readByte ():Int {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readByte ();
+		
+	}
+	
+	
+	public function readBytes (bytes:ByteArray, offset:Int = 0, length:Int = 0):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__input.readBytes (bytes, offset, length);
+		
+	}
+	
+	
+	public function readDouble ():Float {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readDouble ();
+		
+	}
+	
+	
+	public function readFloat ():Float {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readFloat ();
+		
+	}
+	
+	
+	public function readInt ():Int {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readInt ();
+		
+	}
+	
+	
+	public function readMultiByte (length:Int, charSet:String):String {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readMultiByte (length, charSet);
+		
+	}
+	
+	
+	//public function readObject ():Dynamic {
+		//
+		//return __input.readObject ();
+		//
+	//}
+	
+	
+	public function readShort ():Int {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readShort ();
+		
+	}
+	
+	
+	public function readUnsignedByte ():Int {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		return __input.readUnsignedByte ();
+		
+	}
+	
+	
+	public function readUnsignedInt ():Int {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readUnsignedInt ();
+		
+	}
+	
+	
+	public function readUnsignedShort ():Int {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readUnsignedShort ();
+		
+	}
+	
+	
+	public function readUTF ():String {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readUTF ();
+		
+	}
+	
+	
+	public function readUTFBytes (length:Int):String {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		return __input.readUTFBytes (length);
+		
+	}
+	
+	
+	public function writeBoolean (value:Bool):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeBoolean (value);
+		
+	}
+	
+	
+	public function writeByte (value:Int):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeByte (value);
+		
+	}
+	
+	
+	public function writeBytes (bytes:ByteArray, offset:Int = 0, length:Int = 0):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeBytes (bytes, offset, length);
+		
+	}
+	
+	
+	public function writeDouble (value:Float):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeDouble (value);
+		
+	}
+	
+	
+	public function writeFloat (value:Float):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeFloat (value);
+		
+	}
+	
+	
+	public function writeInt (value:Int):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeInt (value);
+		
+	}
+	
+	
+	public function writeMultiByte (value:String, charSet:String):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeUTFBytes (value);
+		
+	}
+	
+	
+	//public function writeObject (object:Dynamic):Void {
+		//
+		//__output.writeObject (object);
+		//
+	//}
+	
+	
+	public function writeShort (value:Int):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeShort (value);
+		
+	}
+	
+	
+	public function writeUnsignedInt (value:Int):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeUnsignedInt (value);
+		
+	}
+	
+	
+	public function writeUTF (value:String):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeUTF (value);
+		
+	}
+	
+	
+	public function writeUTFBytes (value:String):Void {
+		
+		if (__socket == null) {
+			
+			throw new IOError ("Operation attempted on invalid socket.");
+			
+		}
+		
+		__output.writeUTFBytes (value);
+		
+	}
+	
+	
+	
+	private function __cleanSocket ():Void {
+		
 		try {
-			_socket.close();
-		}catch( e : Dynamic ){
-		}
-		_socket = null;
-		Lib.current.removeEventListener( Event.ENTER_FRAME, onFrame );
-	}
-
-    public function close(): Void {
-        if( _socket!=null ){
-			cleanSocket();
-        }else{
-			throw new IOError("Operation attempted on invalid socket.");
-		}
-    }
-	
-	// **** READ ****
-
-    public function readBoolean():Bool {
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readBoolean();
-	}
-    public function readByte():Int {
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readByte(); 
-	}
-	public function readBytes(bytes: ByteArray, offset: Int = 0, length: Int = 0): Void {
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_input.readBytes(bytes,offset,length);
-	}
-	public function readDouble():Float { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readDouble(); 
-	}
-	public function readFloat():Float { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readFloat(); 
-	}	
-	public function readInt():Int { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readInt();
-	}
-	public function readMultiByte(length:Int, charSet:String):String { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readMultiByte(length, charSet);
-	}
-	//public function readObject():Dynamic { return _input.readObject(); }
-	public function readShort():Int { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readShort(); 
-	}
-	public function readUnsignedByte():Int { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readUnsignedByte();
-	}
-	public function readUnsignedInt():Int { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readUnsignedInt();
-	}
-	public function readUnsignedShort():Int { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readUnsignedShort(); 
-	}
-	public function readUTF():String { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readUTF();
-	}
-	public function readUTFBytes(length:Int):String { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		return _input.readUTFBytes(length); 
-	}
-
-	// **** WRITE ****
-
-	public function writeBoolean( value:Bool ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeBoolean(value);
-	}
-	public function writeByte( value:Int ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeByte(value);
-	}
-	public function writeBytes( bytes:ByteArray, offset : Int = 0, length : Int = 0 ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeBytes(bytes, offset, length);
-	}
-	public function writeDouble( value:Float ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeDouble(value); 
-	}
-	public function writeFloat( value:Float ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeFloat(value);
-	}
-	public function writeInt( value:Int ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeInt(value);
-	}
-	public function writeMultiByte( value:String, charSet:String ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeUTFBytes(value);
-	}
-	public function writeShort( value:Int ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeShort(value);
-	}
-	public function writeUTF( value:String ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeUTF(value); 
-	}
-	public function writeUTFBytes( value:String ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeUTFBytes(value);
-	}
-	public function writeUnsignedInt( value:Int ):Void { 
-		if ( _socket == null ) 
-			throw new IOError("Operation attempted on invalid socket.");
-		_output.writeUnsignedInt(value); 
-	}
-	//public function writeObject( object:Dynamic ):Void {  _output.writeObject(object); }
-	
-	#if (js && html5)
-	@:noCompletion private function onOpenHandler (_):Void {
-		_connected = true;
-		dispatchEvent (new Event (Event.CONNECT));
-	}
-
-	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
-		var newData = ByteArray.__ofBuffer(msg.data);
-		newData.readBytes(_inputBuffer, _inputBuffer.length);
+			
+			__socket.close ();
+			
+		} catch (e:Dynamic) {}
+		
+		__socket = null;
+		Lib.current.removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 	}
 	
-
-	@:noCompletion private function onCloseHandler (_):Void {
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private function socket_onClose (_):Void {
 		
 		dispatchEvent (new Event (Event.CLOSE));
 		
 	}
-
-	@:noCompletion private function onErrorHandler (_):Void {
+	
+	
+	private function socket_onError (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
 		
 	}
-	#end
 	
-	public function flush() {
-		if( _socket == null )
-			throw new IOError("Operation attempted on invalid socket.");
-		if( _output.length > 0 ){
-			try {
-				#if (js && html5)
-				_socket.send( _output.__getBuffer() );
-				#else
-				_socket.output.write( _output );
-				#end
-				_output = new ByteArray();
-				_output.endian = endian;
-			} catch (e:Dynamic) {
-				throw new IOError("Operation attempted on invalid socket.");
-			}
-		}
+	
+	private function socket_onMessage (msg:Dynamic):Void {
+		
+		#if (js && html5)
+		var newData:ByteArray = (msg.data:ArrayBuffer);
+		newData.readBytes (__inputBuffer, __inputBuffer.length);
+		#end
+		
 	}
+	
+	
+	private function socket_onOpen (_):Void {
+		
+		__connected = true;
+		dispatchEvent (new Event (Event.CONNECT));
+		
+	}
+	
+	
+	private function this_onEnterFrame (event:Event):Void {
+		
+		#if (js && html5)
+		
+		if (__inputBuffer.bytesAvailable > 0) {
+			
+			var newInput = new ByteArray ();
+			var newDataLength = __inputBuffer.bytesAvailable;
+			
+			__input.readBytes (newInput, 0, __input.bytesAvailable);
+			__inputBuffer.position = 0;
+			__inputBuffer.readBytes (newInput, newInput.position, __inputBuffer.length);
+			
+			newInput.position = 0;
+			
+			__input = newInput;
+			__inputBuffer.clear ();
+			
+			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newDataLength, 0));
+			
+		}
+		
+		if (__socket != null) {
+			
+			flush ();
+			
+		}
+		
+		#else
+		
+		var doConnect = false;
+		var doClose = false;
+		
+		if (!connected) {
+			
+			var r = SysSocket.select (null, [ __socket ], null, 0);
+			
+			if (r.write[0] == __socket) {
+				
+				doConnect = true;
+				
+			} else if (Sys.time () - __timestamp > timeout / 1000) {
+				
+				doClose = true;
+				
+			}
+			
+		}
+		
+		var b = new BytesBuffer ();
+		var bLength = 0;
+		
+		if (connected || doConnect) {
+			
+			try {
+				
+				var l:Int;
+				
+				do {
+					
+					l = __socket.input.readBytes (__buffer, 0, __buffer.length);
+					
+					if (l > 0) {
+						
+						b.addBytes (__buffer, 0, l);
+						bLength += l;
+						
+					}
+					
+				} while (l == __buffer.length);
+				
+			} catch (e:Error) {
+				
+				if (e != Error.Blocked) {
+					
+					doClose = true;
+					
+				}
+				
+			} catch (e:Dynamic) {
+				
+				doClose = true;
+				
+			}
+			
+		}
+		
+		if (doClose && connected) {
+			
+			__connected = false;
+			__cleanSocket ();
+			
+			dispatchEvent (new Event (Event.CLOSE));
+			
+		} else if (doClose) {
+			
+			__connected = false;
+			__cleanSocket ();
+			
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
+			
+		} else if (doConnect) {
+			
+			__connected = true;
+			dispatchEvent (new Event (Event.CONNECT));
+			
+		}
+		
+		if (bLength > 0) {
+			
+			var newData = b.getBytes ();
+			
+			var rl = __input.length - __input.position;
+			if (rl < 0) rl = 0;
+			
+			var newInput = Bytes.alloc (rl + newData.length);
+			if (rl > 0) newInput.blit (0, __input, __input.position, rl);
+			newInput.blit (rl, newData, 0, newData.length);
+			__input = newInput;
+			
+			dispatchEvent (new ProgressEvent (ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
+			
+		}
+		
+		if (__socket != null) {
+			
+			try {
+				
+				flush ();
+				
+			} catch (e:IOError) {
+				
+				dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR, true, false, e.message));
+				
+			}
+			
+		}
+		
+		#end
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function get_bytesAvailable ():Int {
+		
+		return __input.bytesAvailable;
+		
+	}
+	
+	
+	private function get_bytesPending ():Int {
+		
+		return __output.length;
+		
+	}
+	
+	
+	private function get_connected ():Bool {
+		
+		return __connected;
+		
+	}
+	
+	
+	private function get_endian ():Endian {
+		
+		return __endian;
+		
+	}
+	
+	
+	private function set_endian (value:Endian):Endian {
+		
+		__endian = value;
+		
+		if (__input != null) __input.endian = value;
+		if (__inputBuffer != null) __inputBuffer.endian = value;
+		if (__output != null) __output.endian = value;
+		
+		return __endian;
+		
+	}
+	
+	
 }
 
 
 #else
-typedef Socket = flash.net.Socket;
+typedef Socket = openfl._legacy.net.Socket;
 #end

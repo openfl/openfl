@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 enum Context3DTextureFilter {
@@ -11,8 +11,3 @@ enum Context3DTextureFilter {
 	NEAREST;
 	
 }
-
-
-#else
-typedef Context3DTextureFilter = flash.display3D.Context3DTextureFilter;
-#end

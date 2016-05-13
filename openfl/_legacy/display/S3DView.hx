@@ -119,7 +119,7 @@ class S3DView extends OpenGLView {
 		";
 		var fragmentShader = GL.createShader (GL.FRAGMENT_SHADER);
 		#if mobile
-		fragmentShaderSource = "precision highp float;\n" + fragmentShaderSource;
+		fragmentShaderSource = "precision mediump float;\n" + fragmentShaderSource;
 		#end
 		GL.shaderSource (fragmentShader, fragmentShaderSource);
 		GL.compileShader (fragmentShader);

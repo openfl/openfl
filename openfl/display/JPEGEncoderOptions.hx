@@ -1,4 +1,4 @@
-package openfl.display; #if !flash
+package openfl.display;
 
 
 @:final class JPEGEncoderOptions {
@@ -15,8 +15,3 @@ package openfl.display; #if !flash
 	
 	
 }
-
-
-#else
-typedef JPEGEncoderOptions = flash.display.JPEGEncoderOptions;
-#end

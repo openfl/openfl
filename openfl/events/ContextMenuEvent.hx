@@ -1,4 +1,4 @@
-package openfl.events; #if !flash
+package openfl.events;
 
 
 import openfl.display.InteractiveObject;
@@ -7,8 +7,8 @@ import openfl.display.InteractiveObject;
 class ContextMenuEvent extends Event {
 	
 	
-	public static var MENU_ITEM_SELECT:String = "menuItemSelect";
-	public static var MENU_SELECT:String = "menuSelect";
+	public static inline var MENU_ITEM_SELECT = "menuItemSelect";
+	public static inline var MENU_SELECT = "menuSelect";
 	
 	public var contextMenuOwner:InteractiveObject;
 	public var mouseTarget:InteractiveObject;
@@ -24,9 +24,24 @@ class ContextMenuEvent extends Event {
 	}
 	
 	
+	public override function clone ():Event {
+		
+		var event = new ContextMenuEvent (type, bubbles, cancelable, mouseTarget, contextMenuOwner);
+		event.target = target;
+		event.currentTarget = currentTarget;
+		#if !openfl_legacy
+		event.eventPhase = eventPhase;
+		#end
+		return event;
+		
+	}
+	
+	
+	public override function toString ():String {
+		
+		return __formatToString ("ContextMenuEvent",  [ "type", "bubbles", "cancelable", "mouseTarget", "contextMenuOwner" ]);
+		
+	}
+	
+	
 }
-
-
-#else
-typedef ContextMenuEvent = flash.events.ContextMenuEvent;
-#end

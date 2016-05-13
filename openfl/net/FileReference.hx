@@ -1,9 +1,10 @@
-package openfl.net; #if !flash #if !openfl_legacy
+package openfl.net; #if !openfl_legacy
 
 
 import haxe.io.Path;
 import lime.system.System;
 import lime.ui.FileDialog;
+import lime.utils.Bytes;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
@@ -20,44 +21,17 @@ import sys.FileSystem;
 class FileReference extends EventDispatcher {
 	
 	
-	/**
-	 * The creation date of the file on the local disk.
-	 */
 	public var creationDate (default, null):Date;
-	
-	/**
-	 * The Macintosh creator type of the file, which is only used in Mac OS versions prior to Mac OS X.
-	 */
 	public var creator (default, null):String;
-	
-	/**
-	 * The ByteArray object representing the data from the loaded file after a successful call to the load() method.
-	 */
 	public var data (default, null):ByteArray;
-	
-	/**
-	 * The date that the file on the local disk was last modified.
-	 */
 	public var modificationDate (default, null):Date;
-	
-	/**
-	 * The name of the file on the local disk.
-	 */
 	public var name (default, null):String;
-	
-	/**
-	 * The size of the file on the local disk in bytes.
-	 */
 	public var size (default, null):Int;
-	
-	/**
-	 * The file type.
-	 */
 	public var type (default, null):String;
 	
-	@:noCompletion private var __data:ByteArray;
-	@:noCompletion private var __path:String;
-	@:noCompletion private var __urlLoader:URLLoader;
+	private var __data:ByteArray;
+	private var __path:String;
+	private var __urlLoader:URLLoader;
 	
 	
 	public function new () {
@@ -139,7 +113,8 @@ class FileReference extends EventDispatcher {
 		
 		if (__path != null) {
 			
-			data = ByteArray.readFile (__path);
+			data = Bytes.readFile (__path);
+			openFileDialog_onComplete();
 			
 		}
 		
@@ -157,7 +132,7 @@ class FileReference extends EventDispatcher {
 		
 		#if desktop
 		
-		if (Std.is (data, ByteArray)) {
+		if (Std.is (data, ByteArrayData)) {
 			
 			__data = data;
 			
@@ -192,14 +167,21 @@ class FileReference extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function openFileDialog_onCancel ():Void {
+	private function openFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	@:noCompletion private function openFileDialog_onSelect (path:String):Void {
+	private function openFileDialog_onComplete ():Void {
+		
+		dispatchEvent (new Event (Event.COMPLETE));
+		
+	}
+	
+	
+	private function openFileDialog_onSelect (path:String):Void {
 		
 		#if sys
 		var fileInfo = FileSystem.stat (path);
@@ -217,14 +199,14 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function saveFileDialog_onCancel ():Void {
+	private function saveFileDialog_onCancel ():Void {
 		
 		dispatchEvent (new Event (Event.CANCEL));
 		
 	}
 	
 	
-	@:noCompletion private function saveFileDialog_onSelect (path:String):Void {
+	private function saveFileDialog_onSelect (path:String):Void {
 		
 		#if desktop
 		
@@ -250,11 +232,11 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function urlLoader_onComplete (event:Event):Void {
+	private function urlLoader_onComplete (event:Event):Void {
 		
 		#if desktop
 		
-		if (Std.is (__urlLoader.data, ByteArray)) {
+		if (Std.is (__urlLoader.data, ByteArrayData)) {
 			
 			__data = __urlLoader.data;
 			
@@ -281,14 +263,14 @@ class FileReference extends EventDispatcher {
 	}
 	
 	
-	@:noCompletion private function urlLoader_onIOError (event:IOErrorEvent):Void {
+	private function urlLoader_onIOError (event:IOErrorEvent):Void {
 		
 		dispatchEvent (event);
 		
 	}
 	
 	
-	@:noCompletion private function urlLoader_onProgress (event:ProgressEvent):Void {
+	private function urlLoader_onProgress (event:ProgressEvent):Void {
 		
 		dispatchEvent (event);
 		
@@ -299,7 +281,4 @@ class FileReference extends EventDispatcher {
 
 
 #else
-#end
-#else
-typedef FileReference = flash.net.FileReference;
 #end

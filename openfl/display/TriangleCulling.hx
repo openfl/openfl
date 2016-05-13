@@ -1,51 +1,41 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * Defines codes for culling algorithms that determine which triangles not to
- * render when drawing triangle paths.
- *
- * <p> The terms <code>POSITIVE</code> and <code>NEGATIVE</code> refer to the
- * sign of a triangle's normal along the z-axis. The normal is a 3D vector
- * that is perpendicular to the surface of the triangle. </p>
- *
- * <p> A triangle whose vertices 0, 1, and 2 are arranged in a clockwise order
- * has a positive normal value. That is, its normal points in a positive
- * z-axis direction, away from the current view point. When the
- * <code>TriangleCulling.POSITIVE</code> algorithm is used, triangles with
- * positive normals are not rendered. Another term for this is backface
- * culling. </p>
- *
- * <p> A triangle whose vertices are arranged in a counter-clockwise order has
- * a negative normal value. That is, its normal points in a negative z-axis
- * direction, toward the current view point. When the
- * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
- * negative normals will not be rendered. </p>
- */
-enum TriangleCulling {
+@:enum abstract TriangleCulling(Null<Int>) {
 	
-	/**
-	 * Specifies culling of all triangles facing toward the current view point.
-	 */
-	NEGATIVE;
+	public var NEGATIVE = 0;
+	public var NONE = 1;
+	public var POSITIVE = 2;
 	
-	/**
-	 * Specifies no culling. All triangles in the path are rendered.
-	 */
-	NONE;
+	@:from private static function fromString (value:String):TriangleCulling {
+		
+		return switch (value) {
+			
+			case "negative": NEGATIVE;
+			case "none": NONE;
+			case "positive": POSITIVE;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Specifies culling of all triangles facing away from the current view
-	 * point. This is also known as backface culling.
-	 */
-	POSITIVE;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case TriangleCulling.NEGATIVE: "negative";
+			case TriangleCulling.NONE: "none";
+			case TriangleCulling.POSITIVE: "positive";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef TriangleCulling = openfl._legacy.display.TriangleCulling;
-#end
-#else
-typedef TriangleCulling = flash.display.TriangleCulling;
 #end

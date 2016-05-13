@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors;
 
 
 class ArgumentError extends Error {
@@ -14,8 +14,3 @@ class ArgumentError extends Error {
 	
 	
 }
-
-
-#else
-typedef ArgumentError = flash.errors.ArgumentError;
-#end

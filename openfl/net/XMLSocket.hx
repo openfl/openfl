@@ -1,10 +1,12 @@
-package openfl.net; #if !flash #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 
 
 import openfl.events.DataEvent;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.EventDispatcher;
+import openfl.events.ProgressEvent;
+import openfl.net.Socket;
 
 
 class XMLSocket extends EventDispatcher {
@@ -13,12 +15,18 @@ class XMLSocket extends EventDispatcher {
 	public var connected (default, null):Bool;
 	public var timeout:Int;
 	
-	private var _socket:Dynamic;
+	// TODO: Use openfl.net.Socket for all targets
+	
+	#if (js && html5)
+	private var __socket:Dynamic;
+	#else
+	private var __socket:Socket;
+	#end
 	
 	
-	public function new (host:String = null, port:Int = 80):Void {
+	public function new (host:String = null, port:Int = 80) {
 		
-		super();
+		super ();
 		
 		if (host != null) {
 			
@@ -31,34 +39,52 @@ class XMLSocket extends EventDispatcher {
 	
 	public function close ():Void {
 		
-		_socket.close ();
+		#if (!js || !html5)
+		__socket.removeEventListener (Event.CONNECT, onOpenHandler);
+		__socket.removeEventListener (ProgressEvent.SOCKET_DATA, onMessageHandler);
+		#end
+		
+		__socket.close ();
 		
 	}
 	
 	
-	public function connect (host: String, port:Int):Void {
+	public function connect (host:String, port:Int):Void {
 		
-		connectWithProto(host, port, null);
+		connectWithProto (host, port, null);
 		
 	}
 	
 	
-	public function connectWithProto (host: String, port:Int, protocol:String):Void {
+	@:dox(hide) public function connectWithProto (host:String, port:Int, protocol:String):Void {
 		
-		#if (js && html5)
-		if (protocol == null) {
-            _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
-        }
-        else {
-            _socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port, protocol)");
-        }
+		// TODO: Remove this method
 		
 		connected = false;
 		
-		_socket.onopen = onOpenHandler;
-		_socket.onmessage = onMessageHandler;
-		_socket.onclose = onCloseHandler;
-		_socket.onerror = onErrorHandler;
+		#if (js && html5)
+		if (protocol == null) {
+			
+			__socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port)");
+			
+		} else {
+			
+			__socket = untyped __js__("new WebSocket(\"ws://\" + host + \":\" + port, protocol)");
+			
+		}
+		
+		__socket.onopen = onOpenHandler;
+		__socket.onmessage = onMessageHandler;
+		__socket.onclose = onCloseHandler;
+		__socket.onerror = onErrorHandler;
+		#else
+		
+		__socket = new Socket ();
+		__socket.connect (host, port);
+		
+		__socket.addEventListener (Event.CONNECT, onOpenHandler);
+		__socket.addEventListener (ProgressEvent.SOCKET_DATA, onMessageHandler);
+		
 		#end
 		
 	}
@@ -66,7 +92,12 @@ class XMLSocket extends EventDispatcher {
 	
 	public function send (object:Dynamic):Void {
 		
-		_socket.send (object);
+		#if (js && html5)
+		__socket.send (object);
+		#else
+		__socket.writeUTFBytes (object);
+		__socket.writeByte (0);
+		#end
 		
 	}
 	
@@ -78,31 +109,35 @@ class XMLSocket extends EventDispatcher {
 	
 	
 	
-	@:noCompletion private function onMessageHandler (msg:Dynamic):Void {
-		
-		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, msg.data));
-		
-	}
-	
-	
-	@:noCompletion private function onOpenHandler (_):Void {
-		
-		connected = true;
-		dispatchEvent (new Event (Event.CONNECT));
-		
-	}
-	
-	
-	@:noCompletion private function onCloseHandler (_):Void {
+	private function onCloseHandler (_):Void {
 		
 		dispatchEvent (new Event (Event.CLOSE));
 		
 	}
 	
 	
-	@:noCompletion private function onErrorHandler (_):Void {
+	private function onErrorHandler (_):Void {
 		
 		dispatchEvent (new Event (IOErrorEvent.IO_ERROR));
+		
+	}
+	
+	
+	private function onMessageHandler (e:#if (js && html5) Dynamic #else ProgressEvent #end):Void {
+		
+		#if (js && html5)
+		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, e.data));
+		#else
+		dispatchEvent (new DataEvent (DataEvent.DATA, false, false, __socket.readUTFBytes (__socket.bytesAvailable)));
+		#end
+		
+	}
+	
+	
+	private function onOpenHandler (_):Void {
+		
+		connected = true;
+		dispatchEvent (new Event (Event.CONNECT));
 		
 	}
 	
@@ -112,7 +147,4 @@ class XMLSocket extends EventDispatcher {
 
 #else
 typedef XMLSocket = openfl._legacy.net.XMLSocket;
-#end
-#else
-typedef XMLSocket = flash.net.XMLSocket;
 #end

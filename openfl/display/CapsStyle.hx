@@ -1,39 +1,41 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The CapsStyle class is an enumeration of constant values that specify the
- * caps style to use in drawing lines. The constants are provided for use as
- * values in the <code>caps</code> parameter of the
- * <code>openfl.display.Graphics.lineStyle()</code> method. You can specify the
- * following three types of caps:
- */
-enum CapsStyle {
+@:enum abstract CapsStyle(Null<Int>) {
 	
-	/**
-	 * Used to specify no caps in the <code>caps</code> parameter of the
-	 * <code>openfl.display.Graphics.lineStyle()</code> method.
-	 */
-	NONE;
+	public var NONE = 0;
+	public var ROUND = 1;
+	public var SQUARE = 2;
 	
-	/**
-	 * Used to specify round caps in the <code>caps</code> parameter of the
-	 * <code>openfl.display.Graphics.lineStyle()</code> method.
-	 */
-	ROUND;
+	@:from private static function fromString (value:String):CapsStyle {
+		
+		return switch (value) {
+			
+			case "none": NONE;
+			case "round": ROUND;
+			case "square": SQUARE;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Used to specify square caps in the <code>caps</code> parameter of the
-	 * <code>openfl.display.Graphics.lineStyle()</code> method.
-	 */
-	SQUARE;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case CapsStyle.NONE: "none";
+			case CapsStyle.ROUND: "round";
+			case CapsStyle.SQUARE: "square";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef CapsStyle = openfl._legacy.display.CapsStyle;
-#end
-#else
-typedef CapsStyle = flash.display.CapsStyle;
 #end

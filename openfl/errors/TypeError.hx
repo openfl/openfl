@@ -1,9 +1,9 @@
-package openfl.errors; #if !flash
+package openfl.errors;
 
 
 class TypeError extends Error {
 	
-
+	
 	public function new (message:String = "") {
 		
 		super (message, 0);
@@ -14,8 +14,3 @@ class TypeError extends Error {
 	
 	
 }
-
-
-#else
-typedef TypeError = flash.errors.TypeError;
-#end

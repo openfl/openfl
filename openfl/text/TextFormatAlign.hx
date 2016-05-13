@@ -1,42 +1,50 @@
-package openfl.text; #if !flash #if !openfl_legacy
+package openfl.text; #if !openfl_legacy
 
 
-/**
- * The TextFormatAlign class provides values for text alignment in the
- * TextFormat class.
- */
-enum TextFormatAlign {
+@:enum abstract TextFormatAlign(Null<Int>) {
 	
-	/**
-	 * Constant; aligns text to the left within the text field. Use the syntax
-	 * <code>TextFormatAlign.LEFT</code>.
-	 */
-	LEFT;
+	public var CENTER = 0;
+	public var END = 1;
+	public var JUSTIFY = 2;
+	public var LEFT = 3;
+	public var RIGHT = 4;
+	public var START = 5;
 	
-	/**
-	 * Constant; aligns text to the right within the text field. Use the syntax
-	 * <code>TextFormatAlign.RIGHT</code>.
-	 */
-	RIGHT;
+	@:from private static function fromString (value:String):TextFormatAlign {
+		
+		return switch (value) {
+			
+			case "center": CENTER;
+			case "end": END;
+			case "justify": JUSTIFY;
+			case "left": LEFT;
+			case "right": RIGHT;
+			case "start": START;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Constant; justifies text within the text field. Use the syntax
-	 * <code>TextFormatAlign.JUSTIFY</code>.
-	 */
-	JUSTIFY;
-	
-	/**
-	 * Constant; centers the text in the text field. Use the syntax
-	 * <code>TextFormatAlign.CENTER</code>.
-	 */
-	CENTER;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case TextFormatAlign.CENTER: "center";
+			case TextFormatAlign.END: "end";
+			case TextFormatAlign.JUSTIFY: "justify";
+			case TextFormatAlign.LEFT: "left";
+			case TextFormatAlign.RIGHT: "right";
+			case TextFormatAlign.START: "start";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
-#end
-#else
-typedef TextFormatAlign = flash.text.TextFormatAlign;
 #end

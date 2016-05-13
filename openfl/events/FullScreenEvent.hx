@@ -1,17 +1,19 @@
-package openfl.events; #if !flash
+package openfl.events;
 
 
-class FullScreenEvent extends Event {
+class FullScreenEvent extends ActivityEvent {
 	
 	
-	public static var FULL_SCREEN = "fullScreen";
-	public static var FULL_SCREEN_INTERACTIVE_ACCEPTED = "fullScreenInteractiveAccepted";
+	public static inline var FULL_SCREEN = "fullScreen";
+	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED = "fullScreenInteractiveAccepted";
 	
 	public var fullScreen:Bool;
 	public var interactive:Bool;
 	
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, fullScreen:Bool = false, interactive:Bool = false) {
+		
+		// TODO: What is the "activating" value supposed to be?
 		
 		super (type, bubbles, cancelable);
 		
@@ -36,14 +38,9 @@ class FullScreenEvent extends Event {
 	
 	public override function toString ():String {
 		
-		return "[FullscreenEvent type=\"" + type + "\" bubbles=" + bubbles + " cancelable=" + cancelable + " fullscreen=" + fullScreen + " interactive=" + interactive + "]";
+		return __formatToString ("FullscreenEvent",  [ "type", "bubbles", "cancelable", "fullscreen", "interactive" ]);
 		
 	}
 	
 	
 }
-
-
-#else
-typedef FullScreenEvent = flash.events.FullScreenEvent;
-#end

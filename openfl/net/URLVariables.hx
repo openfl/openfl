@@ -1,48 +1,21 @@
-package openfl.net; #if !flash
+package openfl.net;
 
 
-/**
- * The URLVariables class allows you to transfer variables between an
- * application and a server. Use URLVariables objects with methods of the
- * URLLoader class, with the <code>data</code> property of the URLRequest
- * class, and with flash.net package functions.
- */
 class URLVariables implements Dynamic {
 	
 	
-	/**
-	 * Creates a new URLVariables object. You pass URLVariables objects to the
-	 * <code>data</code> property of URLRequest objects.
-	 *
-	 * <p>If you call the URLVariables constructor with a string, the
-	 * <code>decode()</code> method is automatically called to convert the string
-	 * to properties of the URLVariables object.</p>
-	 * 
-	 * @param source A URL-encoded string containing name/value pairs.
-	 */
-	public function new (inEncoded:String = null) {
+	public function new (source:String = null) {
 		
-		if (inEncoded != null) {
+		if (source != null) {
 			
-			decode (inEncoded);
+			decode (source);
 			
 		}
 		
 	}
 	
 	
-	/**
-	 * Converts the variable string to properties of the specified URLVariables
-	 * object.
-	 *
-	 * <p>This method is used internally by the URLVariables events. Most users
-	 * do not need to call this method directly.</p>
-	 * 
-	 * @param source A URL-encoded query string containing name/value pairs.
-	 * @throws Error The source parameter must be a URL-encoded query string
-	 *               containing name/value pairs.
-	 */
-	public function decode (inVars:String):Void {
+	public function decode (source:String):Void {
 		
 		var fields = Reflect.fields (this);
 		
@@ -52,7 +25,7 @@ class URLVariables implements Dynamic {
 			
 		}
 		
-		var fields = inVars.split (";").join ("&").split ("&");
+		var fields = source.split (";").join ("&").split ("&");
 		
 		for (f in fields) {
 			
@@ -73,12 +46,6 @@ class URLVariables implements Dynamic {
 	}
 	
 	
-	/**
-	 * Returns a string containing all enumerable variables, in the MIME content
-	 * encoding <i>application/x-www-form-urlencoded</i>.
-	 * 
-	 * @return A URL-encoded string containing name/value pairs.
-	 */
 	public function toString ():String {
 		
 		var result = new Array<String> ();
@@ -96,8 +63,3 @@ class URLVariables implements Dynamic {
 	
 	
 }
-
-
-#else
-typedef URLVariables = flash.net.URLVariables;
-#end

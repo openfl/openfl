@@ -1,4 +1,4 @@
-package openfl.display3D; #if !flash
+package openfl.display3D;
 
 
 import openfl.gl.GL;
@@ -7,20 +7,24 @@ import openfl.utils.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+
 class VertexBuffer3D {
+	
 	
 	public var context:Context3D;
 	public var data32PerVertex:Int;
 	public var glBuffer:GLBuffer;
 	public var numVertices:Int;
+	public var bufferUsage:Int;
 	
 	
-	public function new (context:Context3D, glBuffer:GLBuffer, numVertices:Int, data32PerVertex:Int) {
+	public function new (context:Context3D, glBuffer:GLBuffer, numVertices:Int, data32PerVertex:Int, bufferUsage:Int) {
 		
 		this.context = context;
 		this.glBuffer = glBuffer;
 		this.numVertices = numVertices;
 		this.data32PerVertex = data32PerVertex;
+		this.bufferUsage = bufferUsage;
 		
 	}
 	
@@ -58,15 +62,15 @@ class VertexBuffer3D {
 		float32Array = new Float32Array (byteArray, offset, length);
 		#end
 		
-		GL.bufferData (GL.ARRAY_BUFFER, float32Array, GL.STATIC_DRAW);
+		GL.bufferData (GL.ARRAY_BUFFER, float32Array, bufferUsage);
 		
 	}
 	
 	
-	public function uploadFromFloat32Array (data:Float32Array, startVertex:Int, numVertices:Int):Void {
+	public function uploadFromFloat32Array (data:Float32Array):Void {
 		
 		GL.bindBuffer (GL.ARRAY_BUFFER, glBuffer);
-		GL.bufferData (GL.ARRAY_BUFFER, data, GL.STATIC_DRAW);
+		GL.bufferData (GL.ARRAY_BUFFER, data, bufferUsage);
 		
 	}
 	
@@ -93,7 +97,7 @@ class VertexBuffer3D {
 		float32Array = new Float32Array (data, offset, length);
 		#end
 		
-		GL.bufferData (GL.ARRAY_BUFFER, float32Array, GL.STATIC_DRAW);
+		GL.bufferData (GL.ARRAY_BUFFER, float32Array, bufferUsage);
 		
 		float32Array = null;
 		
@@ -101,8 +105,3 @@ class VertexBuffer3D {
 	
 	
 }
-
-
-#else
-typedef VertexBuffer3D = flash.display3D.VertexBuffer3D;
-#end

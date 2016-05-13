@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !display #if !flash
 
 
 import openfl._internal.renderer.dom.DOMRenderer;
@@ -14,8 +14,8 @@ import js.html.Element;
 class DOMSprite extends Sprite {
 	
 	
-	@:noCompletion private var __active:Bool;
-	@:noCompletion private var __element:#if (js && html5) Element #else Dynamic #end;
+	private var __active:Bool;
+	private var __element:#if (js && html5) Element #else Dynamic #end;
 	
 	
 	public function new (element:#if (js && html5) Element #else Dynamic #end) {
@@ -27,7 +27,7 @@ class DOMSprite extends Sprite {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public override function __renderDOM (renderSession:RenderSession):Void {
+	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -59,3 +59,19 @@ class DOMSprite extends Sprite {
 	
 	
 }
+
+
+#end
+#else
+
+
+extern class DOMSprite extends Sprite {
+	
+	
+	public function new (element:Dynamic);
+	
+	
+}
+
+
+#end

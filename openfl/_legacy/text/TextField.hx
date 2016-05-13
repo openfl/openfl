@@ -26,6 +26,7 @@ class TextField extends InteractiveObject {
 	public var embedFonts (get, set):Bool;
 	public var gridFitType:GridFitType;
 	public var htmlText (get, set):String;
+	public var length (get, never):Int;
 	public var maxChars (get, set):Int;
 	public var maxScrollH (get, null):Int;
 	public var maxScrollV (get, null):Int;
@@ -209,6 +210,7 @@ class TextField extends InteractiveObject {
 	private function set_embedFonts (value:Bool):Bool { lime_text_field_set_embed_fonts (__handle, value); return value; }
 	private function get_htmlText ():String { return StringTools.replace (lime_text_field_get_html_text (__handle), "\n", "<br/>"); }
 	private function set_htmlText (value:String):String	{ lime_text_field_set_html_text (__handle, value); return value; }
+	private function get_length ():Int { return this.text.length; }
 	private function get_maxChars ():Int { return lime_text_field_get_max_chars (__handle); }
 	private function set_maxChars (value:Int):Int { lime_text_field_set_max_chars (__handle, value); return value; }
 	private function get_maxScrollH ():Int { return lime_text_field_get_max_scroll_h (__handle); }

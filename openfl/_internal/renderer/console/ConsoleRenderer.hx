@@ -78,6 +78,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var textureImages:Array<WeakRef<Image>> = [];
 	private var textures:Array<Texture> = [];
 
+	private var scissorRect:Array<Float32> = [0, 0, 0, 0];
 	private var viewProj:Matrix4;
 	private var transform:Matrix4;
 
@@ -97,6 +98,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private var points = new Array<Float32> ();
 
+	private var blendMode:BlendMode = NORMAL;
 	private var clipRect:Rectangle = null;
 
 	#if !console_pc
@@ -149,13 +151,17 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		viewProj = Matrix4.createOrtho (
 			0 + pixelOffsetX,
-			width + pixelOffsetY,
-			height + pixelOffsetX,
+			width + pixelOffsetX,
+			height + pixelOffsetY,
 			0 + pixelOffsetY,
 			-1, 1
 		);
 
 		ctx.setViewport (0, 0, width, height);
+		scissorRect[0] = 0.0;
+		scissorRect[1] = 0.0;
+		scissorRect[2] = width;
+		scissorRect[3] = height;
 		ctx.clear (
 			Std.int (stage.__colorSplit[0] * 0xff),
 			Std.int (stage.__colorSplit[1] * 0xff),
@@ -165,12 +171,34 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		ctx.setRasterizerState (CULLNONE_SOLID);
 		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
-		ctx.setBlendState (SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB);
+
+		blendMode = NORMAL;
+		setBlendState (blendMode);
 
 		renderDisplayObject (stage);
 
 		collectTransientBuffers ();
 		collectTextures ();
+
+	}
+
+
+	public function setBlendState (b:BlendMode):Void {
+
+		#if !final
+		switch (b) {
+			case NORMAL, ADD, MULTIPLY:
+			default:
+				trace ('unsupported blend mode: $b');
+		}
+		#end
+
+		// TODO(james4k): premultiplied alpha
+		ctx.setBlendState (switch (b) {
+			case ADD:       SRCALPHA_ONE_ONE_ZERO_RGB;
+			case MULTIPLY:  DESTCOLOR_INVSRCALPHA_ONE_ZERO_RGB;
+			default:        SRCALPHA_INVSRCALPHA_ONE_ZERO_RGB;
+		});
 
 	}
 
@@ -199,18 +227,16 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.width,
 				object.scrollRect.height
 			);
-			object.scrollRect.__transform (clipRect, object.__worldTransform);
-			var bounds = object.getBounds (null);
+			clipRect = clipRect.intersection (object.getBounds (null));
+			object.__getWorldTransform ();
+			clipRect.__transform (clipRect, object.__renderTransform);
+		}
 
-			//clipRect.x += object.__worldTransform.tx;
-			//clipRect.y += object.__worldTransform.ty;
-			//trace ("-");
-			//trace (object.__worldTransform.tx, object.__worldTransform.ty, object.width, object.height);
-			//trace (object.x, object.y, object.width, object.height);
-			//trace (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
-			//trace (bounds.x, bounds.y, bounds.width, bounds.height);
-			clipRect = clipRect.intersection (bounds);
-			//trace (clipRect.x, clipRect.y, clipRect.width, clipRect.height);
+		var prevBlendMode = blendMode;
+		var objBlendMode:BlendMode = (object.blendMode == null) ? NORMAL : object.blendMode;
+		if (objBlendMode != blendMode) {
+			blendMode = objBlendMode;
+			setBlendState(objBlendMode);
 		}
 
 		if (Std.is (object, DisplayObjectContainer)) {
@@ -220,7 +246,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		} else if (Std.is (object, Bitmap)) {
 
 			var b:Bitmap = cast (object);
-			drawBitmapData (b, b.bitmapData);
+			drawBitmapData (b, b.bitmapData, b.smoothing);
 
 		} else if (Std.is (object, Shape)) {
 
@@ -235,6 +261,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		if (object.scrollRect != null) {
 			clipRect = prevClipRect;	
 		}
+		blendMode = prevBlendMode;
 
 	}
 
@@ -259,13 +286,15 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private function setObjectTransform (object:DisplayObject) {
 
+		object.__getWorldTransform ();
+		var matrix = object.__renderTransform;
 		transform = Matrix4.createABCD (
-			object.__worldTransform.a,
-			object.__worldTransform.b,
-			object.__worldTransform.c,
-			object.__worldTransform.d,
-			object.__worldTransform.tx,
-			object.__worldTransform.ty
+			matrix.a,
+			matrix.b,
+			matrix.c,
+			matrix.d,
+			matrix.tx,
+			matrix.ty
 		);
 
 	}
@@ -294,7 +323,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		var ib = ctx.createIndexBuffer (null, indexCount);	
+		var ib = ctx.createIndexBuffer (untyped 0 /*NULL*/, indexCount);
 
 		indexBufferCounts.push (indexCount);
 		indexBuffers.push (ib);
@@ -458,7 +487,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			TextureFormat.ARGB,
 			image.buffer.width,
 			image.buffer.height,
-			null
+			untyped 0 /*NULL*/
 		);
 
 		if (image.buffer.data != null) {
@@ -479,7 +508,62 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData) {
+	private function beginClipRect ():Void {
+
+		if (clipRect == null) {
+			return;
+		}
+
+		viewProj = Matrix4.createOrtho (
+			Math.floor (clipRect.x) + pixelOffsetX,
+			Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
+			Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
+			Math.floor (clipRect.y) + pixelOffsetY,
+			-1, 1
+		);
+
+		var viewport = new Rectangle (0, 0, this.width, this.height);
+		viewport = viewport.intersection (clipRect);
+		ctx.setViewport (
+			cast (viewport.x),
+			cast (viewport.y),
+			cast (Math.ceil (viewport.width)),
+			cast (Math.ceil (viewport.height))
+		);
+		scissorRect[0] = viewport.x;
+		scissorRect[1] = viewport.y;
+		scissorRect[2] = viewport.x + viewport.width;
+		scissorRect[3] = viewport.y + viewport.height;
+
+	}
+
+
+	private function endClipRect ():Void {
+
+		if (clipRect == null) {
+			return;
+		}
+
+		viewProj = Matrix4.createOrtho (
+			0 + pixelOffsetX,
+			this.width + pixelOffsetX,
+			this.height + pixelOffsetY,
+			0 + pixelOffsetY,
+			-1, 1
+		);
+
+		ctx.setViewport (0, 0, this.width, this.height);
+		scissorRect[0] = 0;
+		scissorRect[1] = 0;
+		scissorRect[2] = this.width;
+		scissorRect[3] = this.height;
+
+	}
+
+
+	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData, smoothing:Bool) {
+
+		beginClipRect ();
 
 		setObjectTransform (object);
 		transform.append (viewProj);
@@ -508,12 +592,20 @@ class ConsoleRenderer extends AbstractRenderer {
 		var texture = imageTexture (bitmap.image);
 
 		ctx.bindShader (defaultShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
 		ctx.setTexture (0, texture);
 		ctx.setTextureAddressMode (0, Clamp, Clamp);
+		if (smoothing) {
+			ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+		}
 		ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+		endClipRect ();
 
 	}
 
@@ -550,7 +642,8 @@ class ConsoleRenderer extends AbstractRenderer {
 			return;
 		}
 
-		drawBitmapData (tf, tf.__graphics.__bitmap);
+		var smoothing = false;
+		drawBitmapData (tf, tf.__graphics.__bitmap, smoothing);
 
 	}
 
@@ -643,6 +736,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		indexBuffer.unlock ();
 
 		ctx.bindShader (fillShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
@@ -673,37 +767,20 @@ class ConsoleRenderer extends AbstractRenderer {
 		fillColor[2] = 1.0;
 		fillColor[3] = object.__worldAlpha;
 
-		// TODO(james4k): set blend state based on object.blendMode
-
 		// TODO(james4k): warn on unimplemented WindingRules
 
-		if (clipRect != null) {
+		beginClipRect ();
 
-			viewProj = Matrix4.createOrtho (
-				Math.floor (clipRect.x) + pixelOffsetX,
-				Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
-				Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
-				Math.floor (clipRect.y) + pixelOffsetY,
-				-1, 1
-			);
+		var r = new DrawCommandReader (graphics.__commands);
 
-			var viewport = new Rectangle (0, 0, this.width, this.height);
-			viewport = viewport.intersection (clipRect);
-			ctx.setViewport (
-				cast (viewport.x),
-				cast (viewport.y),
-				cast (Math.ceil (viewport.width)),
-				cast (Math.ceil (viewport.height))
-			);
+		for (type in graphics.__commands.types) {
 
-		}
-
-		for (cmd in graphics.__commands) {
-
-			switch (cmd.command) {
+			switch (type) {
 
 				//case BeginBitmapFill (bitmap, matrix, repeat, smooth):
 				case BEGIN_BITMAP_FILL:
+
+					var cmd = r.readBeginBitmapFill ();
 
 					hasFill = true;
 					fillBitmap = cmd.bitmap;
@@ -719,6 +796,9 @@ class ConsoleRenderer extends AbstractRenderer {
 				case BEGIN_FILL:
 
 					// TODO(james4k): color transform. no sense doing that in shader for fill, right?
+
+					var cmd = r.readBeginFill ();
+
 					hasFill = true;
 					fillBitmap = null;
 					fillColor[0] = ((cmd.color >> 16) & 0xFF) / 255.0;
@@ -733,7 +813,9 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					//closePath (object);
 
-					if (thickness == null) {
+					var cmd = r.readLineStyle ();
+
+					if (cmd.thickness == null) {
 						hasStroke = false;
 						continue;
 					}
@@ -741,23 +823,27 @@ class ConsoleRenderer extends AbstractRenderer {
 					hasStroke = true;
 
 					lineWidth = cmd.thickness;
-					lineColor = cmd.color == null ? 0 : cmd.color;
-					lineAlpha = cmd.alpha == null ? 1 : cmd.alpha;
+					lineColor = cmd.color;
+					lineAlpha = cmd.alpha;
 					lineScaleMode = cmd.scaleMode;
 					lineCaps = cmd.caps;
 					lineJoints = cmd.joints;
-					lineMiter = cmd.miterLimit == null ? 3 : cmd.miterLimit;
+					lineMiter = cmd.miterLimit;
 					// TODO(james4k): pixelHinting
 					
 					
 				//case LineTo (x, y):
 				case LINE_TO:
 
+					var cmd = r.readLineTo ();
+
 					points.push (cmd.x);
 					points.push (cmd.y);
 
 				//case MoveTo (x, y):
 				case MOVE_TO:
+
+					var cmd = r.readMoveTo ();
 
 					closePath (object);
 
@@ -766,6 +852,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				//case EndFill:
 				case END_FILL:
+
+					var cmd = r.readEndFill ();
 
 					closePath (object);
 
@@ -782,6 +870,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with 2? curveTo calls
 
+					var cmd = r.readDrawCircle ();
+
 					drawEllipse (object, cmd.x, cmd.y, cmd.radius, cmd.radius);
 
 				//case DrawEllipse (x, y, width, height):
@@ -789,10 +879,14 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with 2? curveTo calls
 
+					var cmd = r.readDrawEllipse ();
+
 					drawEllipse (object, cmd.x + cmd.width*0.5, cmd.y + cmd.height*0.5, cmd.width*0.5, cmd.height*0.5);
 
 				//case DrawRect (x, y, width, height):
 				case DRAW_RECT:
+
+					var cmd = r.readDrawRect ();
 
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
@@ -815,6 +909,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					vertexBuffer.unlock ();
 
 					ctx.bindShader (fillShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
@@ -822,6 +917,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				//case DrawRoundRect (x, y, width, height, rx, ry):
 				case DRAW_ROUND_RECT:
+
+					var cmd = r.readDrawRoundRect ();
 
 					if (!hasFill || fillBitmap != null) {
 						// TODO(james4k): fillBitmap, stroke
@@ -831,16 +928,19 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					// TODO(james4k): replace with lineTo/curveTo calls
 
-					if (cmd.ry == -1) cmd.ry = cmd.rx;
+					var rx = cmd.ellipseWidth * 1.0;
+					var ry = cmd.ellipseHeight * 1.0;
+
+					if (ry == -1) ry = rx;
 					
-					cmd.rx *= 0.5;
-					cmd.ry *= 0.5;
+					rx *= 0.5;
+					ry *= 0.5;
 					
-					if (cmd.rx > cmd.width / 2) cmd.rx = cmd.width / 2;
-					if (cmd.ry > cmd.height / 2) cmd.ry = cmd.height / 2;
+					if (rx > cmd.width / 2) rx = cmd.width / 2;
+					if (ry > cmd.height / 2) ry = cmd.height / 2;
 
 					var points = new Array<Float> ();
-					GraphicsPaths.roundRectangle (points, cmd.x, cmd.y, cmd.width, cmd.height, cmd.rx, cmd.ry);
+					GraphicsPaths.roundRectangle (points, cmd.x, cmd.y, cmd.width, cmd.height, rx, ry);
 
 					if (hasFill) {
 
@@ -870,6 +970,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						indexBuffer.unlock ();
 
 						ctx.bindShader (fillShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 						ctx.setVertexSource (vertexBuffer);
@@ -881,6 +982,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 				//case DrawTiles (sheet, tileData, smooth, flags, count):
 				case DRAW_TILES:
+
+					var cmd = r.readDrawTiles ();
 
 					var useScale = (cmd.flags & Tilesheet.TILE_SCALE) != 0;
 					var useRotation = (cmd.flags & Tilesheet.TILE_ROTATION) != 0;
@@ -894,12 +997,18 @@ class ConsoleRenderer extends AbstractRenderer {
 						case Tilesheet.TILE_BLEND_ADD:		ADD;
 						case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
 						case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
-						case _:								NORMAL;
+						case _: switch(cmd.flags & 0xF00000) {
+							case Tilesheet.TILE_BLEND_DARKEN:         DARKEN;
+							case Tilesheet.TILE_BLEND_LIGHTEN:        LIGHTEN;
+							case Tilesheet.TILE_BLEND_OVERLAY:        OVERLAY;
+							case Tilesheet.TILE_BLEND_HARDLIGHT:      HARDLIGHT;
+							case _: switch(cmd.flags & 0xF000000) {
+								case Tilesheet.TILE_BLEND_DIFFERENCE: DIFFERENCE;
+								case Tilesheet.TILE_BLEND_INVERT:     INVERT;
+								case _:                               NORMAL;
+							}
+						}
 					};
-
-					if (blendMode != BlendMode.NORMAL) {
-						trace ("DrawTiles not implemented for BlendMode: " + blendMode);
-					}
 
 					if (useTransform) {
 						useScale = false;
@@ -938,8 +1047,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 
 					var totalCount = cmd.tileData.length;
-					if (count >= 0 && totalCount > count) {
-						totalCount = count;
+					if (cmd.count >= 0 && totalCount > cmd.count) {
+						totalCount = cmd.count;
 					}
 					var itemCount = div (totalCount, stride);
 					if (itemCount <= 0) {
@@ -1083,22 +1192,27 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var texture = imageTexture (cmd.sheet.__bitmap.image);
 
+					setBlendState (blendMode);
 					ctx.bindShader (defaultShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
 					ctx.setTextureAddressMode (0, Clamp, Clamp);
-					if (smooth) {
+					if (cmd.smooth) {
 						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
 					} else {
 						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
 					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
+					setBlendState (this.blendMode);
 
 				//case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 				case DRAW_TRIANGLES:
+
+					var cmd = r.readDrawTriangles ();
 
 					if (!hasFill || fillBitmap == null) {
 						trace ("DrawTriangles without bitmap fill");
@@ -1128,20 +1242,21 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 					vertexBuffer.unlock ();
 					
-					var indexBuffer = transientIndexBuffer (cmd.indices.length);
+					var indexCount = cmd.indices.length;
+					var indexBuffer = transientIndexBuffer (indexCount);
 					var unsafeIndices = indexBuffer.lock ();
-					for (i in 0...indices.length) {
+					for (i in 0...indexCount) {
 						unsafeIndices[i] = cmd.indices[i];
 					}
 					indexBuffer.unlock ();
 
 					ctx.bindShader (defaultShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
 					ctx.setIndexSource (indexBuffer);
 					ctx.setTexture (0, texture);
-					// TODO(james4k): BunnyMark's usage wants wrapped textures. do we ever use clamped?
 					ctx.setTextureAddressMode (0, Wrap, Wrap);
 					if (fillBitmapSmooth) {
 						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
@@ -1150,42 +1265,43 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (cmd.indices.length, 3));
 
-				default:
+				case BEGIN_GRADIENT_FILL:
 
-					trace ("not implemented: " + cmd);
+					r.readBeginGradientFill ();
 
-/*
+				case CUBIC_CURVE_TO:
 
-	COMMANDS TODO
+					r.readCubicCurveTo ();
 
-	CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
-	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
-	DrawPathC(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding);
-	OverrideMatrix(matrix:Matrix);
+				case CURVE_TO:
 
-*/
+					r.readCurveTo ();
+
+				case LINE_GRADIENT_STYLE:
+
+					r.readLineGradientStyle ();
+
+				case LINE_BITMAP_STYLE:
+
+					r.readLineBitmapStyle ();
+
+				case OVERRIDE_MATRIX:
+
+					r.readOverrideMatrix ();
+
+				case UNKNOWN:
 
 			}
 	
 		}
 
+		r.destroy ();
+
 		if (points.length > 0) {
 			closePath (object);
 		}
 
-		if (clipRect != null) {
-
-			viewProj = Matrix4.createOrtho (
-				0 + pixelOffsetX,
-				this.width + pixelOffsetX,
-				this.height + pixelOffsetY,
-				0 + pixelOffsetY,
-				-1, 1
-			);
-
-			ctx.setViewport (0, 0, this.width, this.height);
-
-		}
+		endClipRect ();
 
 	}
 
@@ -1232,6 +1348,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			indexBuffer.unlock ();
 
 			ctx.bindShader (fillShader);
+			ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 			ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 			ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 			ctx.setVertexSource (vertexBuffer);

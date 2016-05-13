@@ -1,27 +1,38 @@
-package openfl.display; #if !flash
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The GradientType class provides values for the <code>type</code> parameter
- * in the <code>beginGradientFill()</code> and
- * <code>lineGradientStyle()</code> methods of the openfl.display.Graphics
- * class.
- */
-enum GradientType {
+@:enum abstract GradientType(Null<Int>) {
 	
-	/**
-	 * Value used to specify a radial gradient fill.
-	 */
-	RADIAL;
+	public var LINEAR = 0;
+	public var RADIAL = 1;
 	
-	/**
-	 * Value used to specify a linear gradient fill.
-	 */
-	LINEAR;
+	@:from private static function fromString (value:String):GradientType {
+		
+		return switch (value) {
+			
+			case "linear": LINEAR;
+			case "radial": RADIAL;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case GradientType.LINEAR: "linear";
+			case GradientType.RADIAL: "radial";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
-typedef GradientType = flash.display.GradientType;
+typedef GradientType = openfl._legacy.display.GradientType;
 #end

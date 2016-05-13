@@ -1,7 +1,8 @@
-package openfl.desktop; #if !flash #if !openfl_legacy
+package openfl.desktop; #if !openfl_legacy
 
 
 import lime.system.Clipboard in LimeClipboard;
+import openfl.utils.Object;
 
 
 class Clipboard {
@@ -9,14 +10,14 @@ class Clipboard {
 	
 	public static var generalClipboard (get, null):Clipboard;
 	
-	@:noCompletion private static var __generalClipboard:Clipboard;
+	private static var __generalClipboard:Clipboard;
 	
 	public var formats:Array<ClipboardFormats>;
 	
-	@:noCompletion private var __htmlText:String;
-	@:noCompletion private var __richText:String;
-	@:noCompletion private var __systemClipboard:Bool;
-	@:noCompletion private var __text:String;
+	private var __htmlText:String;
+	private var __richText:String;
+	private var __systemClipboard:Bool;
+	private var __text:String;
 	
 	
 	public function new () {
@@ -82,7 +83,7 @@ class Clipboard {
 	}
 	
 	
-	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Dynamic {
+	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object {
 		
 		if (transferMode == null) {
 			
@@ -142,7 +143,7 @@ class Clipboard {
 	}
 	
 	
-	public function setData (format:ClipboardFormats, data:Dynamic, serializable:Bool = true):Bool {
+	public function setData (format:ClipboardFormats, data:Object, serializable:Bool = true):Bool {
 		
 		if (!__systemClipboard) {
 			
@@ -204,7 +205,7 @@ class Clipboard {
 	
 	
 	
-	@:noCompletion private static function get_generalClipboard ():Clipboard {
+	private static function get_generalClipboard ():Clipboard {
 		
 		if (__generalClipboard == null) {
 			
@@ -221,7 +222,4 @@ class Clipboard {
 }
 
 
-#end
-#else
-typedef Clipboard = flash.desktop.Clipboard;
 #end

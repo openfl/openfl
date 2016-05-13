@@ -1,4 +1,4 @@
-package openfl.errors; #if !flash
+package openfl.errors;
 
 
 class SecurityError extends Error {
@@ -14,8 +14,3 @@ class SecurityError extends Error {
 	
 
 }
-
-
-#else
-typedef SecurityError = flash.errors.SecurityError;
-#end

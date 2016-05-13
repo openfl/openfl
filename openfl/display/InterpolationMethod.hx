@@ -1,46 +1,38 @@
-package openfl.display; #if !flash
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The InterpolationMethod class provides values for the
- * <code>interpolationMethod</code> parameter in the
- * <code>Graphics.beginGradientFill()</code> and
- * <code>Graphics.lineGradientStyle()</code> methods. This parameter
- * determines the RGB space to use when rendering the gradient.
- */
-enum InterpolationMethod {
+@:enum abstract InterpolationMethod(Null<Int>) {
 	
-	/**
-	 * Specifies that the RGB interpolation method should be used. This means
-	 * that the gradient is rendered with exponential sRGB(standard RGB) space.
-	 * The sRGB space is a W3C-endorsed standard that defines a non-linear
-	 * conversion between red, green, and blue component values and the actual
-	 * intensity of the visible component color.
-	 *
-	 * <p>For example, consider a simple linear gradient between two colors(with
-	 * the <code>spreadMethod</code> parameter set to
-	 * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-	 * affect the appearance as follows: </p>
-	 */
-	RGB;
+	public var LINEAR_RGB = 0;
+	public var RGB = 1;
 	
-	/**
-	 * Specifies that the RGB interpolation method should be used. This means
-	 * that the gradient is rendered with exponential sRGB(standard RGB) space.
-	 * The sRGB space is a W3C-endorsed standard that defines a non-linear
-	 * conversion between red, green, and blue component values and the actual
-	 * intensity of the visible component color.
-	 *
-	 * <p>For example, consider a simple linear gradient between two colors(with
-	 * the <code>spreadMethod</code> parameter set to
-	 * <code>SpreadMethod.REFLECT</code>). The different interpolation methods
-	 * affect the appearance as follows: </p>
-	 */
-	LINEAR_RGB;
+	@:from private static function fromString (value:String):InterpolationMethod {
+		
+		return switch (value) {
+			
+			case "linearRGB": LINEAR_RGB;
+			case "rgb": RGB;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case InterpolationMethod.LINEAR_RGB: "linearRGB";
+			case InterpolationMethod.RGB: "rgb";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
-typedef InterpolationMethod = flash.display.InterpolationMethod;
+typedef InterpolationMethod = openfl._legacy.display.InterpolationMethod;
 #end

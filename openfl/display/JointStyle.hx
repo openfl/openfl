@@ -1,40 +1,41 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The JointStyle class is an enumeration of constant values that specify the
- * joint style to use in drawing lines. These constants are provided for use
- * as values in the <code>joints</code> parameter of the
- * <code>openfl.display.Graphics.lineStyle()</code> method. The method supports
- * three types of joints: miter, round, and bevel, as the following example
- * shows:
- */
-enum JointStyle {
+@:enum abstract JointStyle(Null<Int>) {
 	
-	/**
-	 * Specifies mitered joints in the <code>joints</code> parameter of the
-	 * <code>openfl.display.Graphics.lineStyle()</code> method.
-	 */
-	MITER;
+	public var BEVEL = 0;
+	public var MITER = 1;
+	public var ROUND = 2;
 	
-	/**
-	 * Specifies round joints in the <code>joints</code> parameter of the
-	 * <code>openfl.display.Graphics.lineStyle()</code> method.
-	 */
-	ROUND;
+	@:from private static function fromString (value:String):JointStyle {
+		
+		return switch (value) {
+			
+			case "bevel": BEVEL;
+			case "miter": MITER;
+			case "round": ROUND;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Specifies beveled joints in the <code>joints</code> parameter of the
-	 * <code>openfl.display.Graphics.lineStyle()</code> method.
-	 */
-	BEVEL;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case JointStyle.BEVEL: "bevel";
+			case JointStyle.MITER: "miter";
+			case JointStyle.ROUND: "round";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef JointStyle = openfl._legacy.display.JointStyle;
-#end
-#else
-typedef JointStyle = flash.display.JointStyle;
 #end

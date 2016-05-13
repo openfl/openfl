@@ -1,31 +1,11 @@
-package openfl.ui; #if !flash
+package openfl.ui;
 
 
-#if (haxe_ver > 3.100)
-
-@:enum abstract KeyLocation(Int) {
+@:enum abstract KeyLocation(Int) from Int to Int {
 	
-	var STANDARD = 0;
-	var LEFT = 1;
-	var RIGHT = 2;
-	var NUM_PAD = 3;
+	public var LEFT = 1;
+	public var NUM_PAD = 3;
+	public var RIGHT = 2;
+	public var STANDARD = 0;
 	
 }
-
-#else
-
-@:fakeEnum(Int) enum KeyLocation {
-	
-	STANDARD;
-	LEFT;
-	RIGHT;
-	NUM_PAD;
-	
-}
-
-#end
-
-
-#else
-typedef KeyLocation = flash.ui.KeyLocation;
-#end

@@ -1,17 +1,8 @@
-package openfl.ui; #if !flash #if (!openfl_legacy || lime_hybrid)
+package openfl.ui; #if (!openfl_legacy || lime_hybrid)
 
 
 import lime.ui.Mouse in LimeMouse;
 import openfl.Lib;
-
-
-/**
- * The methods of the Mouse class are used to hide and show the mouse pointer,
- * or to set the pointer to a specific style. The Mouse class is a top-level
- * class whose properties and methods you can access without using a
- * constructor. <ph outputclass="flashonly">The pointer is visible by default,
- * but you can hide it and implement a custom pointer.
- */
 
 @:access(openfl.display.Stage)
 
@@ -19,14 +10,6 @@ import openfl.Lib;
 @:final class Mouse {
 	
 	
-	/**
-	 * Hides the pointer. The pointer is visible by default.
-	 *
-	 * <p><b>Note:</b> You need to call <code>Mouse.hide()</code> only once,
-	 * regardless of the number of previous calls to
-	 * <code>Mouse.show()</code>.</p>
-	 * 
-	 */
 	public static function hide ():Void {
 		
 		LimeMouse.hide ();
@@ -34,14 +17,6 @@ import openfl.Lib;
 	}
 	
 	
-	/**
-	 * Displays the pointer. The pointer is visible by default.
-	 *
-	 * <p><b>Note:</b> You need to call <code>Mouse.show()</code> only once,
-	 * regardless of the number of previous calls to
-	 * <code>Mouse.hide()</code>.</p>
-	 * 
-	 */
 	public static function show ():Void {
 		
 		LimeMouse.show ();
@@ -54,7 +29,4 @@ import openfl.Lib;
 
 #else
 typedef Mouse = openfl._legacy.ui.Mouse;
-#end
-#else
-typedef Mouse = flash.ui.Mouse;
 #end

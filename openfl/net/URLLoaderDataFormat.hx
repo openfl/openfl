@@ -1,30 +1,36 @@
-package openfl.net; #if !flash
+package openfl.net;
 
 
-/**
- * The URLLoaderDataFormat class provides values that specify how downloaded
- * data is received.
- */
-enum URLLoaderDataFormat {
+@:enum abstract URLLoaderDataFormat(Null<Int>) {
 	
-	/**
-	 * Specifies that downloaded data is received as raw binary data.
-	 */
-	BINARY;
+	public var BINARY = 0;
+	public var TEXT = 1;
+	public var VARIABLES = 2;
 	
-	/**
-	 * Specifies that downloaded data is received as text.
-	 */
-	TEXT;
+	@:from private static function fromString (value:String):URLLoaderDataFormat {
+		
+		return switch (value) {
+			
+			case "binary": BINARY;
+			case "text": TEXT;
+			case "variables": VARIABLES;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Specifies that downloaded data is received as URL-encoded variables.
-	 */
-	VARIABLES;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case URLLoaderDataFormat.BINARY: "binary";
+			case URLLoaderDataFormat.TEXT: "text";
+			case URLLoaderDataFormat.VARIABLES: "variables";
+			default: null;
+			
+		}
+		
+	}
 	
 }
-
-
-#else
-typedef URLLoaderDataFormat = flash.net.URLLoaderDataFormat;
-#end

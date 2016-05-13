@@ -1,43 +1,44 @@
-package openfl.display; #if !flash #if !openfl_legacy
+package openfl.display; #if !openfl_legacy
 
 
-/**
- * The StageQuality class provides values for the <code>Stage.quality</code>
- * property.
- */
-enum StageQuality {
+@:enum abstract StageQuality(Null<Int>) {
 	
-	/**
-	 * Specifies very high rendering quality: graphics are anti-aliased using a 4
-	 * x 4 pixel grid and bitmaps are always smoothed.
-	 */
-	BEST;
+	public var BEST = 0;
+	public var HIGH = 1;
+	public var LOW = 2;
+	public var MEDIUM = 3;
 	
-	/**
-	 * Specifies high rendering quality: graphics are anti-aliased using a 4 x 4
-	 * pixel grid, and bitmaps are smoothed if the movie is static.
-	 */
-	HIGH;
+	@:from private static function fromString (value:String):StageQuality {
+		
+		return switch (value) {
+			
+			case "best": BEST;
+			case "high": HIGH;
+			case "low": LOW;
+			case "medium": MEDIUM;
+			default: null;
+			
+		}
+		
+	}
 	
-	/**
-	 * Specifies medium rendering quality: graphics are anti-aliased using a 2 x
-	 * 2 pixel grid, but bitmaps are not smoothed. This setting is suitable for
-	 * movies that do not contain text.
-	 */
-	MEDIUM;
-	
-	/**
-	 * Specifies low rendering quality: graphics are not anti-aliased, and
-	 * bitmaps are not smoothed.
-	 */
-	LOW;
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case StageQuality.BEST: "best";
+			case StageQuality.HIGH: "high";
+			case StageQuality.LOW: "low";
+			case StageQuality.MEDIUM: "medium";
+			default: null;
+			
+		}
+		
+	}
 	
 }
 
 
 #else
 typedef StageQuality = openfl._legacy.display.StageQuality;
-#end
-#else
-typedef StageQuality = flash.display.StageQuality;
 #end
