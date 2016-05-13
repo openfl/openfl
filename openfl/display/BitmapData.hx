@@ -707,7 +707,7 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		#if (js && html5)
-		//ImageCanvasUtil.sync (image, false);
+		ImageCanvasUtil.sync (image, false);
 		#end
 		
 		if (image != null && image.version != __textureVersion) {
