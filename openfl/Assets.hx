@@ -2,6 +2,7 @@ package openfl; #if (!openfl_legacy || (openfl_legacy && lime_hybrid))
 #if !macro
 
 
+import haxe.CallStack;
 import haxe.Unserializer;
 import lime.app.Future;
 import lime.app.Promise;
@@ -220,19 +221,19 @@ class Assets {
 					
 				} else {
 					
-					trace ("[openfl.Assets] MovieClip asset \"" + id + "\" exists, but only asynchronously");
+					printError ("[openfl.Assets] MovieClip asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
 				
 			} else {
 				
-				trace ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				printError ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			trace ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			printError ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
@@ -864,6 +865,18 @@ class Assets {
 	}
 	
 	
+	private static inline function printError (message:String):Void {
+
+		#if debug
+		var callstack = CallStack.callStack ();
+		callstack.reverse();
+		trace (CallStack.toString (callstack) + "\n" + message);
+		#else
+		trace (message);
+		#end
+
+	}
+
 	
 	
 	// Event Handlers

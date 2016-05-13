@@ -2,6 +2,7 @@ package openfl._internal.renderer.dom;
 
 
 import lime.graphics.ImageBuffer;
+import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
@@ -68,7 +69,7 @@ class DOMBitmap {
 		
 		if (bitmap.__canvas == null) {
 			
-			bitmap.__canvas = cast Browser.document.createElement ("canvas");	
+			bitmap.__canvas = cast Browser.document.createElement ("canvas");
 			bitmap.__context = bitmap.__canvas.getContext ("2d");
 			
 			if (!bitmap.smoothing) {
@@ -84,7 +85,9 @@ class DOMBitmap {
 			
 		}
 		
-		bitmap.bitmapData.__sync ();
+		// TODO: Cache if the image.version is the same as before
+		
+		ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 		
 		bitmap.__canvas.width = bitmap.bitmapData.width;
 		bitmap.__canvas.height = bitmap.bitmapData.height;

@@ -1,4 +1,3 @@
-//#include "gamma.fxh"
 #include "common.fxh"
 
 

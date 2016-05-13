@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -81,7 +82,7 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		bitmap.__sync ();
+		ImageCanvasUtil.convertToCanvas (bitmap.image);
 		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
 		#else
@@ -1170,7 +1171,7 @@ class CanvasGraphics {
 							var previousTileID = -1;
 							
 							var surface:Dynamic;
-							c.sheet.__bitmap.__sync ();
+							ImageCanvasUtil.convertToCanvas (c.sheet.__bitmap.image);
 							surface = c.sheet.__bitmap.image.src;
 							
 							if (useBlendAdd) {

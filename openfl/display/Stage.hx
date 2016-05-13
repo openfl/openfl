@@ -4,6 +4,7 @@ package openfl.display; #if !openfl_legacy
 import haxe.EnumFlags;
 import lime.app.Application;
 import lime.app.IModule;
+import lime.app.Preloader;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
@@ -190,6 +191,89 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stage.addChild (Lib.current);
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion public function addRenderer (renderer:Renderer):Void {
+		
+		renderer.onRender.add (render.bind (renderer));
+		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
+		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
+		
+	}
+	
+	
+	@:noCompletion public function addWindow (window:Window):Void {
+		
+		if (this.window != window) return;
+		
+		window.onActivate.add (onWindowActivate.bind (window));
+		window.onClose.add (onWindowClose.bind (window));
+		window.onCreate.add (onWindowCreate.bind (window));
+		window.onDeactivate.add (onWindowDeactivate.bind (window));
+		window.onDropFile.add (onWindowDropFile.bind (window));
+		window.onEnter.add (onWindowEnter.bind (window));
+		window.onFocusIn.add (onWindowFocusIn.bind (window));
+		window.onFocusOut.add (onWindowFocusOut.bind (window));
+		window.onFullscreen.add (onWindowFullscreen.bind (window));
+		window.onKeyDown.add (onKeyDown.bind (window));
+		window.onKeyUp.add (onKeyUp.bind (window));
+		window.onLeave.add (onWindowLeave.bind (window));
+		window.onMinimize.add (onWindowMinimize.bind (window));
+		window.onMouseDown.add (onMouseDown.bind (window));
+		window.onMouseMove.add (onMouseMove.bind (window));
+		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
+		window.onMouseUp.add (onMouseUp.bind (window));
+		window.onMouseWheel.add (onMouseWheel.bind (window));
+		window.onMove.add (onWindowMove.bind (window));
+		window.onResize.add (onWindowResize.bind (window));
+		window.onRestore.add (onWindowRestore.bind (window));
+		window.onTextEdit.add (onTextEdit.bind (window));
+		window.onTextInput.add (onTextInput.bind (window));
+		
+		if (window.id > -1) {
+			
+			onWindowCreate (window);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function registerModule (application:Application):Void {
+		
+		application.onExit.add (onModuleExit, false, 0);
+		application.onUpdate.add (update);
+		
+		for (gamepad in Gamepad.devices) {
+			
+			__onGamepadConnect (gamepad);
+			
+		}
+		
+		Gamepad.onConnect.add (__onGamepadConnect);
+		Touch.onStart.add (onTouchStart);
+		Touch.onMove.add (onTouchMove);
+		Touch.onEnd.add (onTouchEnd);
+		
+	}
+	
+	
+	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
+	@:noCompletion public function removeWindow (window:Window):Void { }
+	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
+	
+	
+	@:noCompletion public function unregisterModule (application:Application):Void {
+		
+		application.onExit.remove (onModuleExit);
+		application.onUpdate.remove (update);
+		
+		Gamepad.onConnect.remove (__onGamepadConnect);
+		Touch.onStart.remove (onTouchStart);
+		Touch.onMove.remove (onTouchMove);
+		Touch.onEnd.remove (onTouchEnd);
 		
 	}
 	
@@ -507,7 +591,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case OPENGL (gl):
 					
-					#if (!disable_cffi && (!html5 || webgl))
+					#if (!disable_cffi && (!html5 || !canvas))
 					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
 					#end
 				
@@ -517,9 +601,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case DOM (element):
 					
-					#if (!html5 || dom)
 					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-					#end
 				
 				case CAIRO (cairo):
 					
@@ -889,6 +971,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 		}
+		
+	}
+	
+	
+	private function __onGamepadConnect (gamepad:Gamepad):Void {
+		
+		onGamepadConnect (gamepad);
+		
+		gamepad.onAxisMove.add (onGamepadAxisMove.bind (gamepad));
+		gamepad.onButtonDown.add (onGamepadButtonDown.bind (gamepad));
+		gamepad.onButtonUp.add (onGamepadButtonUp.bind (gamepad));
+		gamepad.onDisconnect.add (onGamepadDisconnect.bind (gamepad));
 		
 	}
 	

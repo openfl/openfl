@@ -12,7 +12,6 @@ interface IBitmapDrawable {
 	public var __worldColorTransform:ColorTransform;
 	
 	private var __blendMode:BlendMode;
-	private var __cacheAsBitmap:Bool;
 	
 	public function __renderCairo (renderSession:RenderSession):Void;
 	public function __renderCairoMask (renderSession:RenderSession):Void;

@@ -78,6 +78,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var textureImages:Array<WeakRef<Image>> = [];
 	private var textures:Array<Texture> = [];
 
+	private var scissorRect:Array<Float32> = [0, 0, 0, 0];
 	private var viewProj:Matrix4;
 	private var transform:Matrix4;
 
@@ -150,13 +151,17 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		viewProj = Matrix4.createOrtho (
 			0 + pixelOffsetX,
-			width + pixelOffsetY,
-			height + pixelOffsetX,
+			width + pixelOffsetX,
+			height + pixelOffsetY,
 			0 + pixelOffsetY,
 			-1, 1
 		);
 
 		ctx.setViewport (0, 0, width, height);
+		scissorRect[0] = 0.0;
+		scissorRect[1] = 0.0;
+		scissorRect[2] = width;
+		scissorRect[3] = height;
 		ctx.clear (
 			Std.int (stage.__colorSplit[0] * 0xff),
 			Std.int (stage.__colorSplit[1] * 0xff),
@@ -223,7 +228,8 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.height
 			);
 			clipRect = clipRect.intersection (object.getBounds (null));
-			clipRect.__transform (clipRect, object.__getWorldTransform ());
+			object.__getWorldTransform ();
+			clipRect.__transform (clipRect, object.__renderTransform);
 		}
 
 		var prevBlendMode = blendMode;
@@ -240,7 +246,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		} else if (Std.is (object, Bitmap)) {
 
 			var b:Bitmap = cast (object);
-			drawBitmapData (b, b.bitmapData);
+			drawBitmapData (b, b.bitmapData, b.smoothing);
 
 		} else if (Std.is (object, Shape)) {
 
@@ -280,7 +286,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private function setObjectTransform (object:DisplayObject) {
 
-		var matrix = object.__getWorldTransform ();
+		object.__getWorldTransform ();
+		var matrix = object.__renderTransform;
 		transform = Matrix4.createABCD (
 			matrix.a,
 			matrix.b,
@@ -316,7 +323,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		var ib = ctx.createIndexBuffer (null, indexCount);	
+		var ib = ctx.createIndexBuffer (untyped 0 /*NULL*/, indexCount);
 
 		indexBufferCounts.push (indexCount);
 		indexBuffers.push (ib);
@@ -480,7 +487,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			TextureFormat.ARGB,
 			image.buffer.width,
 			image.buffer.height,
-			null
+			untyped 0 /*NULL*/
 		);
 
 		if (image.buffer.data != null) {
@@ -501,7 +508,62 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData) {
+	private function beginClipRect ():Void {
+
+		if (clipRect == null) {
+			return;
+		}
+
+		viewProj = Matrix4.createOrtho (
+			Math.floor (clipRect.x) + pixelOffsetX,
+			Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
+			Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
+			Math.floor (clipRect.y) + pixelOffsetY,
+			-1, 1
+		);
+
+		var viewport = new Rectangle (0, 0, this.width, this.height);
+		viewport = viewport.intersection (clipRect);
+		ctx.setViewport (
+			cast (viewport.x),
+			cast (viewport.y),
+			cast (Math.ceil (viewport.width)),
+			cast (Math.ceil (viewport.height))
+		);
+		scissorRect[0] = viewport.x;
+		scissorRect[1] = viewport.y;
+		scissorRect[2] = viewport.x + viewport.width;
+		scissorRect[3] = viewport.y + viewport.height;
+
+	}
+
+
+	private function endClipRect ():Void {
+
+		if (clipRect == null) {
+			return;
+		}
+
+		viewProj = Matrix4.createOrtho (
+			0 + pixelOffsetX,
+			this.width + pixelOffsetX,
+			this.height + pixelOffsetY,
+			0 + pixelOffsetY,
+			-1, 1
+		);
+
+		ctx.setViewport (0, 0, this.width, this.height);
+		scissorRect[0] = 0;
+		scissorRect[1] = 0;
+		scissorRect[2] = this.width;
+		scissorRect[3] = this.height;
+
+	}
+
+
+	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData, smoothing:Bool) {
+
+		beginClipRect ();
 
 		setObjectTransform (object);
 		transform.append (viewProj);
@@ -530,12 +592,20 @@ class ConsoleRenderer extends AbstractRenderer {
 		var texture = imageTexture (bitmap.image);
 
 		ctx.bindShader (defaultShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
 		ctx.setTexture (0, texture);
 		ctx.setTextureAddressMode (0, Clamp, Clamp);
+		if (smoothing) {
+			ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+		}
 		ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+		endClipRect ();
 
 	}
 
@@ -572,7 +642,8 @@ class ConsoleRenderer extends AbstractRenderer {
 			return;
 		}
 
-		drawBitmapData (tf, tf.__graphics.__bitmap);
+		var smoothing = false;
+		drawBitmapData (tf, tf.__graphics.__bitmap, smoothing);
 
 	}
 
@@ -665,6 +736,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		indexBuffer.unlock ();
 
 		ctx.bindShader (fillShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
@@ -697,26 +769,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		// TODO(james4k): warn on unimplemented WindingRules
 
-		if (clipRect != null) {
-
-			viewProj = Matrix4.createOrtho (
-				Math.floor (clipRect.x) + pixelOffsetX,
-				Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
-				Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
-				Math.floor (clipRect.y) + pixelOffsetY,
-				-1, 1
-			);
-
-			var viewport = new Rectangle (0, 0, this.width, this.height);
-			viewport = viewport.intersection (clipRect);
-			ctx.setViewport (
-				cast (viewport.x),
-				cast (viewport.y),
-				cast (Math.ceil (viewport.width)),
-				cast (Math.ceil (viewport.height))
-			);
-
-		}
+		beginClipRect ();
 
 		var r = new DrawCommandReader (graphics.__commands);
 
@@ -856,6 +909,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					vertexBuffer.unlock ();
 
 					ctx.bindShader (fillShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
@@ -916,6 +970,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						indexBuffer.unlock ();
 
 						ctx.bindShader (fillShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 						ctx.setVertexSource (vertexBuffer);
@@ -1139,6 +1194,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					setBlendState (blendMode);
 					ctx.bindShader (defaultShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
@@ -1195,6 +1251,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					indexBuffer.unlock ();
 
 					ctx.bindShader (defaultShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
@@ -1228,10 +1285,6 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					r.readLineBitmapStyle ();
 
-				case DRAW_PATH:
-
-					r.readDrawPath ();
-
 				case OVERRIDE_MATRIX:
 
 					r.readOverrideMatrix ();
@@ -1248,19 +1301,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			closePath (object);
 		}
 
-		if (clipRect != null) {
-
-			viewProj = Matrix4.createOrtho (
-				0 + pixelOffsetX,
-				this.width + pixelOffsetX,
-				this.height + pixelOffsetY,
-				0 + pixelOffsetY,
-				-1, 1
-			);
-
-			ctx.setViewport (0, 0, this.width, this.height);
-
-		}
+		endClipRect ();
 
 	}
 
@@ -1307,6 +1348,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			indexBuffer.unlock ();
 
 			ctx.bindShader (fillShader);
+			ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 			ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 			ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 			ctx.setVertexSource (vertexBuffer);

@@ -6,11 +6,10 @@ import lime.graphics.Image;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
-import openfl._internal.renderer.opengl.utils.RenderTexture;
+//import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.display.Shader;
 import openfl.errors.ArgumentError;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
-import openfl._internal.renderer.opengl.utils.DrawPath;
+//import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;
 import openfl.display.GraphicsEndFill;
@@ -61,15 +60,15 @@ import js.html.CanvasRenderingContext2D;
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
-	private var __glStack:Array<GLStack> = [];
-	private var __drawPaths:Array<DrawPath>;
+	//private var __glStack:Array<GLStack> = [];
+	//private var __drawPaths:Array<DrawPath>;
 	private var __image:Image;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __strokePadding:Float;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;
-	private var __cachedTexture:RenderTexture;
+	//private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
 	
 	#if (js && html5)
@@ -88,7 +87,7 @@ import js.html.CanvasRenderingContext2D;
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
-		__hardware = true;
+		__hardware = false;
 		
 		#if (js && html5)
 		moveTo (0, 0);
@@ -118,7 +117,6 @@ import js.html.CanvasRenderingContext2D;
 	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void {
 		
 		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-		__hardware = false;
 		
 		for (alpha in alphas) {
 			
@@ -148,7 +146,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 		
 		__visible = false;
-		__hardware = true;
+		__hardware = false;
 		
 		#if (js && html5)
 		moveTo (0, 0);
@@ -240,7 +238,6 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 		
-		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -283,7 +280,6 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.curveTo (controlX, controlY, anchorX, anchorY);
 		
-		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -298,7 +294,6 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.drawCircle (x, y, radius);
 		
-		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -313,7 +308,6 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.drawEllipse (x, y, width, height);
 		
-		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -457,7 +451,6 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 		
-		__hardware = false;
 		__dirty = true;
 		
 	}
@@ -683,6 +676,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		__dirty = true;
 		__visible = true;
+		__hardware = true;
 		
 	}
 	
@@ -785,6 +779,12 @@ import js.html.CanvasRenderingContext2D;
 	
 	
 	public function lineTo (x:Float, y:Float):Void {
+
+		if (!Math.isFinite(x) || !Math.isFinite(y)) {
+
+			return;
+
+		}
 		
 		// TODO: Should we consider the origin instead, instead of inflating in all directions?
 		
@@ -799,7 +799,6 @@ import js.html.CanvasRenderingContext2D;
 		
 		__commands.lineTo (x, y);
 		
-		__hardware = false;
 		__dirty = true;
 		
 	}
