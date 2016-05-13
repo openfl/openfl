@@ -415,10 +415,10 @@ class BitmapData implements IBitmapDrawable {
 		}
 		
 		var matrixCache = source.__worldTransform;
-		source.__updateTransforms(matrix != null ? matrix : new Matrix ());
+		source.__updateTransforms (matrix != null ? matrix : new Matrix ());
 		source.__updateChildren (false);
 		source.__renderCanvas (renderSession);
-		source.__updateTransforms(matrixCache);
+		source.__updateTransforms (matrixCache);
 		source.__updateChildren (true);
 		
 		if (!smoothing) {
@@ -440,12 +440,14 @@ class BitmapData implements IBitmapDrawable {
 		buffer.__srcImageData = null;
 		buffer.data = null;
 		
+		image.dirty = true;
+		
 		#else
 		
 		if (source == this) {
-
-			source = clone();
-
+			
+			source = clone ();
+			
 		}
 		
 		if (colorTransform != null) {
@@ -749,6 +751,8 @@ class BitmapData implements IBitmapDrawable {
 			
 			var textureImage = image;
 			
+			// TODO: Support premultiplied canvas?
+			
 			if ((!textureImage.premultiplied && textureImage.transparent) #if (js && html5) || textureImage.format != RGBA32 #end) {
 				
 				textureImage = textureImage.clone ();
@@ -759,7 +763,24 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
+			#if (js && html5)
+			
+			if (textureImage.buffer.data != null) {
+				
+				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+				
+			} else {
+				
+				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
+				
+			}
+			
+			#else
+			
 			gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+			
+			#end
+			
 			gl.bindTexture (gl.TEXTURE_2D, null);
 			image.dirty = false;
 			
