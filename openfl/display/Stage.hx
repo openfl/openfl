@@ -1073,7 +1073,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		if (clickType != null) {
@@ -1100,10 +1099,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var cursor = null;
 		
-		// If any object is pressed, we use it's cursor at all times until released.
 		if (__mouseDownLeft != null) {
 			
-			cursor = __mouseDownLeft.__getCursor();
+			cursor = __mouseDownLeft.__getCursor ();
 			
 		} else {
 			
