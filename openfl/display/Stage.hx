@@ -1100,14 +1100,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var cursor = null;
 		
-		for (target in stack) {
+		// If any object is pressed, we use it's cursor at all times until released.
+		if (__mouseDownLeft != null) {
 			
-			cursor = target.__getCursor ();
+			cursor = __mouseDownLeft.__getCursor();
 			
-			if (cursor != null) {
+		} else {
+			
+			for (target in stack) {
 				
-				Mouse.cursor = cursor;
-				break;
+				cursor = target.__getCursor ();
+				
+				if (cursor != null) {
+					
+					Mouse.cursor = cursor;
+					break;
+					
+				}
 				
 			}
 			
