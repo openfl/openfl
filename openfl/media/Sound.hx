@@ -95,13 +95,14 @@ class Sound extends EventDispatcher {
 	
 	public function load (stream:URLRequest, context:SoundLoaderContext = null):Void {
 		
+		url = stream.url;
+
 		#if !html5
 		
 		AudioBuffer.fromURL (stream.url, AudioBuffer_onURLLoad);
 		
 		#else
 		
-		url = stream.url;
 		__soundID = Path.withoutExtension (stream.url);
 		
 		if (!__registeredSounds.exists (__soundID)) {
