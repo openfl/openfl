@@ -84,7 +84,7 @@ class GLTilemap {
 		
 		// TODO: Smarter matrix
 		
-		glMatrix = Matrix4.createOrtho (-tilemap.__renderTransform.tx, tilemap.stage.stageWidth - tilemap.__renderTransform.tx, tilemap.stage.stageHeight - tilemap.__renderTransform.ty, -tilemap.__renderTransform.ty, -1000, 1000);
+		glMatrix = Matrix4.createOrtho (-tilemap.__worldTransform.tx, tilemap.stage.stageWidth - tilemap.__worldTransform.tx, tilemap.stage.stageHeight - tilemap.__worldTransform.ty, -tilemap.__worldTransform.ty, -1000, 1000);
 		
 		renderSession.spriteBatch.finish ();
 		

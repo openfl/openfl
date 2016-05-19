@@ -179,7 +179,7 @@ class SimpleButton extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
 			
 		}
 		
@@ -221,7 +221,7 @@ class SimpleButton extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
 			
 		}
 		

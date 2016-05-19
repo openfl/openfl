@@ -39,7 +39,7 @@ class CanvasShape {
 					}
 					
 					context.globalAlpha = shape.__worldAlpha;
-					var transform = shape.__renderTransform;
+					var transform = shape.__worldTransform;
 					
 					if (renderSession.roundPixels) {
 						

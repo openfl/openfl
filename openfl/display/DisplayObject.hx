@@ -78,9 +78,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
-	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
-	public var __worldOffset:Point;
 	public var __worldTransform:Matrix;
 	
 	private var __alpha:Float;
@@ -96,7 +94,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __maskCached:Bool = false;
 	private var __name:String;
 	private var __objectTransform:Transform;
-	private var __offset:Point;
 	private var __renderable:Bool;
 	private var __renderDirty:Bool;
 	private var __rotation:Float;
@@ -145,11 +142,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		__rotation = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
-		
-		__renderTransform = new Matrix ();
-		
-		__offset = new Point ();
-		__worldOffset = new Point ();
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
@@ -539,7 +531,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		
 		if (__scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (__scrollRect, __worldTransform);
 			
 		}
 		
@@ -637,7 +629,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		// Calculate the correct position
 		__cacheGLMatrix.invert();
 		__cacheGLMatrix.__translateTransformed(x, y);
-		__cacheGLMatrix.concat(__renderTransform);
+		__cacheGLMatrix.concat(__worldTransform);
 		__cacheGLMatrix.translate ( __offset.x, __offset.y);
 		
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
@@ -948,28 +940,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 			
-			__worldOffset.copyFrom (parent.__worldOffset);
-			
 		} else {
 			
 			__worldTransform.copyFrom (local);
-			__worldOffset.setTo (0, 0);
 			
 		}
 		
 		if (__scrollRect != null) {
 			
-			__offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
-			__worldOffset.offset (__offset.x, __offset.y);
-			
-		} else {
-			
-			__offset.setTo (0, 0);
+			__worldTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
 			
 		}
-		
-		__renderTransform.copyFrom (__worldTransform);
-		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 		
 	}
 	

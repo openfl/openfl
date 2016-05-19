@@ -562,7 +562,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
 			
 		}
 		
@@ -631,7 +631,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
 			
 		}
 		

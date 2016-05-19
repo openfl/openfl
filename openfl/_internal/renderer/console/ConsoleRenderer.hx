@@ -229,7 +229,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			);
 			clipRect = clipRect.intersection (object.getBounds (null));
 			object.__getWorldTransform ();
-			clipRect.__transform (clipRect, object.__renderTransform);
+			clipRect.__transform (clipRect, object.__worldTransform);
 		}
 
 		var prevBlendMode = blendMode;
@@ -287,7 +287,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private function setObjectTransform (object:DisplayObject) {
 
 		object.__getWorldTransform ();
-		var matrix = object.__renderTransform;
+		var matrix = object.__worldTransform;
 		transform = Matrix4.createABCD (
 			matrix.a,
 			matrix.b,
