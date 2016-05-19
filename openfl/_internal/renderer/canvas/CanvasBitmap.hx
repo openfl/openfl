@@ -30,7 +30,7 @@ class CanvasBitmap {
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 			
 			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__renderTransform;
+			var transform = bitmap.__worldTransform;
 			var scrollRect = bitmap.scrollRect;
 			
 			if (renderSession.roundPixels) {

@@ -34,7 +34,7 @@ class CairoShape {
 				
 				var cairo = renderSession.cairo;
 				var scrollRect = shape.scrollRect;
-				var transform = shape.__renderTransform;
+				var transform = shape.__worldTransform;
 				
 				if (renderSession.roundPixels) {
 					

@@ -37,12 +37,12 @@ class GLBitmap {
 			
 			if (scrollRect != null) {
 				
-				renderSession.maskManager.pushRect (scrollRect, bitmap.__renderTransform);
+				renderSession.maskManager.pushRect (scrollRect, bitmap.__worldTransform);
 				
 			}
 			
 			gl.uniform1f (shader.uniforms.get ("uAlpha"), bitmap.__worldAlpha);
-			gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (bitmap.__renderTransform));
+			gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (bitmap.__worldTransform));
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
 			

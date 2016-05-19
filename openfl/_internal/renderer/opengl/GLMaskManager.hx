@@ -37,7 +37,7 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		// TODO: Handle true mask shape, as well as alpha test
 		
-		pushRect (mask.getBounds (mask), mask.__renderTransform);
+		pushRect (mask.getBounds (mask), mask.__worldTransform);
 		
 	}
 	

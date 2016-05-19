@@ -53,7 +53,7 @@ class GLShape {
 				
 				if (scrollRect != null) {
 					
-					renderSession.maskManager.pushRect (scrollRect, shape.__renderTransform);
+					renderSession.maskManager.pushRect (scrollRect, shape.__worldTransform);
 					
 				}
 				
@@ -61,7 +61,7 @@ class GLShape {
 				transform.identity ();
 				transform.tx = bounds.x;
 				transform.ty = bounds.y;
-				transform.concat (shape.__renderTransform);
+				transform.concat (shape.__worldTransform);
 				
 				gl.uniform1f (shader.uniforms.get ("uAlpha"), shape.__worldAlpha);
 				gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (transform));

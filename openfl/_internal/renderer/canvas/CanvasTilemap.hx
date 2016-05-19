@@ -28,7 +28,7 @@ class CanvasTilemap {
 		}
 		
 		context.globalAlpha = tilemap.__worldAlpha;
-		var transform = tilemap.__renderTransform;
+		var transform = tilemap.__worldTransform;
 		
 		if (renderSession.roundPixels) {
 			

@@ -35,12 +35,12 @@ class GLTilemap {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, tilemap.__renderTransform);
+			renderSession.maskManager.pushRect (scrollRect, tilemap.__worldTransform);
 			
 		}
 		
 		gl.uniform1f (shader.uniforms.get ("uAlpha"), tilemap.__worldAlpha);
-		gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (tilemap.__renderTransform));
+		gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (tilemap.__worldTransform));
 		
 		var tiles, count, bufferData, buffer, previousLength, offset, uvs, uv;
 		var cacheTileID = -1, tileWidth = 0, tileHeight = 0;
