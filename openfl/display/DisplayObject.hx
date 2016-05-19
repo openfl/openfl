@@ -757,8 +757,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			
 		}
 		
-		__renderTransform.copyFrom (__worldTransform);
-		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
+		//__renderTransform.copyFrom (__worldTransform);
+		//__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
+		__worldTransform.translate ( -__offset.x, -__offset.y);
+		__renderTransform = __worldTransform;
 		
 	}
 	

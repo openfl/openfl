@@ -26,6 +26,8 @@ class Window extends LimeWindow {
 		#if (!flash && !openfl_legacy)
 		
 		stage = new Stage (this, Reflect.hasField (config, "background") ? config.background : 0xFFFFFF);
+		stage.__setLogicalSize (config.width, config.height);
+		
 		application.addModule (stage);
 		
 		#else
