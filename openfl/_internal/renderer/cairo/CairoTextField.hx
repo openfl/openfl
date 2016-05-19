@@ -299,6 +299,7 @@ class CairoTextField {
 		}
 		
 		graphics.__bitmap.image.dirty = true;
+		graphics.__bitmap.image.version++;
 		textField.__dirty = false;
 		graphics.__dirty = false;
 		

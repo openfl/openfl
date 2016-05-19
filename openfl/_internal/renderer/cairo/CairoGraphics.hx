@@ -1329,6 +1329,7 @@ class CairoGraphics {
 			data.destroy ();
 			
 			graphics.__bitmap.image.dirty = true;
+			graphics.__bitmap.image.version++;
 			
 		}
 		
