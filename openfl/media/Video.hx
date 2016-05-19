@@ -1,4 +1,4 @@
-package openfl.media; #if !openfl_legacy
+package openfl.media;
 
 
 import openfl._internal.renderer.RenderSession;
@@ -291,6 +291,3 @@ class Video extends DisplayObject implements Dynamic {
 	
 	
 }
-
-
-#end

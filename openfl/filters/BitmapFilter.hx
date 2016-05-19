@@ -1,4 +1,4 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
 
 
 import openfl.display.BitmapData;
@@ -31,8 +31,3 @@ class BitmapFilter {
 	
 	
 }
-
-
-#else
-typedef BitmapFilter = openfl._legacy.filters.BitmapFilter;
-#end

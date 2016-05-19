@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -864,8 +864,3 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 }
-
-
-#else
-typedef DisplayObjectContainer = openfl._legacy.display.DisplayObjectContainer;
-#end

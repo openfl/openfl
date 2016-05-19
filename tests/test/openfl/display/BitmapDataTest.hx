@@ -108,7 +108,7 @@ class BitmapDataTest {
 	}
 	
 	
-	#if (!flash && !openfl_legacy) @Ignore #end @Test public function applyFilter () {
+	#if !flash @Ignore #end @Test public function applyFilter () {
 		
 		#if !html5
 		
@@ -173,7 +173,7 @@ class BitmapDataTest {
 		
 		// premultiplied
 		
-		#if (!flash && !openfl_legacy)
+		#if !flash
 		var colorTransform = new ColorTransform (0, 0, 0, 1, 0xFF, 0, 0, 0);
 		
 		var bitmapData = new BitmapData (100, 100);
@@ -268,7 +268,7 @@ class BitmapDataTest {
 		
 		bitmapData.copyChannel (bitmapData2, bitmapData2.rect, new Point (), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
 		
-		//#if (!flash && !openfl_legacy && !disable_cffi)
+		//#if (!flash && !disable_cffi)
 		//if (bitmapData.image.premultiplied) {
 			//
 			//Assert.areEqual (hex (0x22F7F7F7), hex (bitmapData.getPixel32 (0, 0)));

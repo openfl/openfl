@@ -23,9 +23,7 @@ class ActivityEvent extends Event {
 		var event = new ActivityEvent (type, bubbles, cancelable, activating);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

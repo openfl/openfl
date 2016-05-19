@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.graphics.cairo.CairoExtend;
@@ -1369,8 +1369,3 @@ class BitmapData implements IBitmapDrawable {
 	
 	
 }
-
-
-#else
-typedef BitmapData = openfl._legacy.display.BitmapData;
-#end

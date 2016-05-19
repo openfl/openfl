@@ -52,13 +52,7 @@ using openfl.display.BitmapData;
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, side:Int, miplevel:Int = 0):Void {
 		
-		// TODO: Support upload from UInt8Array directly
-		
-		#if openfl_legacy
-		var source = new UInt8Array (BitmapData.getRGBAPixels (bitmapData));
-		#else
 		var source = bitmapData.image.data;
-		#end
 		
 		GL.bindTexture (GL.TEXTURE_CUBE_MAP, glTexture);
 		

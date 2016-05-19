@@ -1,4 +1,4 @@
-package openfl.geom; #if !openfl_legacy
+package openfl.geom;
 
 
 import openfl.display.DisplayObject;
@@ -187,8 +187,3 @@ class Transform {
 	
 	
 }
-
-
-#else
-typedef Transform = openfl._legacy.geom.Transform;
-#end

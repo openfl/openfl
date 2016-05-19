@@ -1,4 +1,4 @@
-package openfl.utils; #if !openfl_legacy
+package openfl.utils;
 
 
 interface IDataInput {
@@ -23,8 +23,3 @@ interface IDataInput {
 	public function readUTFBytes (length:Int):String;
 	
 }
-
-
-#else
-typedef IDataInput = openfl._legacy.utils.IDataInput;
-#end

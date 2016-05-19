@@ -28,9 +28,7 @@ class FullScreenEvent extends ActivityEvent {
 		var event = new FullScreenEvent (type, bubbles, cancelable, fullScreen, interactive);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

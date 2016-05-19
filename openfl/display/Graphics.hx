@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.graphics.cairo.Cairo;
@@ -930,8 +930,3 @@ import js.html.CanvasRenderingContext2D;
 	
 	
 }
-
-
-#else
-typedef Graphics = openfl._legacy.display.Graphics;
-#end

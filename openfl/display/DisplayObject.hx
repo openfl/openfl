@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.graphics.cairo.Cairo;
@@ -1247,8 +1247,3 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	
 }
-
-
-#else
-typedef DisplayObject = openfl._legacy.display.DisplayObject;
-#end

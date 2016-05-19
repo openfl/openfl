@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 @:enum abstract FontStyle(Null<Int>) {
@@ -37,8 +37,3 @@ package openfl.text; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef FontStyle = openfl._legacy.text.FontStyle;
-#end

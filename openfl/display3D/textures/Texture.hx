@@ -28,7 +28,7 @@ using openfl.display.BitmapData;
 		mipmapsGenerated = false;
 		
 		if (internalFormat == -1){
-			#if (cpp && !openfl_legacy)
+			#if native
 			internalFormat = GL.BGRA_EXT;
 			#else
 			internalFormat = GL.RGBA;
@@ -64,17 +64,6 @@ using openfl.display.BitmapData;
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
 		
-		#if openfl_legacy
-		
-		var pixels = BitmapData.getRGBAPixels (bitmapData);
-		
-		width = bitmapData.width;
-		height = bitmapData.height;
-		
-		uploadFromByteArray (pixels, 0, miplevel);
-		
-		#else
-		
 		var image = bitmapData.image;
 		
 		if (!image.premultiplied && image.transparent) {
@@ -88,8 +77,6 @@ using openfl.display.BitmapData;
 		height = image.height;
 		
 		uploadFromUInt8Array (image.data, miplevel);
-		
-		#end
 		
 	}
 	

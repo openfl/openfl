@@ -1,4 +1,4 @@
-package openfl.net; #if !openfl_legacy
+package openfl.net;
 
 
 import haxe.io.Bytes;
@@ -771,8 +771,3 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	
 }
-
-
-#else
-typedef Socket = openfl._legacy.net.Socket;
-#end

@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoBitmap;
@@ -264,8 +264,3 @@ class Bitmap extends DisplayObject {
 	
 	
 }
-
-
-#else
-typedef Bitmap = openfl._legacy.display.Bitmap;
-#end

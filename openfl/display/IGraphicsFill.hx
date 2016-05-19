@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 interface IGraphicsFill {
@@ -16,8 +16,3 @@ interface IGraphicsFill {
 	END_FILL;
 	
 }
-
-
-#else
-typedef IGraphicsFill = openfl._legacy.display.IGraphicsFill;
-#end

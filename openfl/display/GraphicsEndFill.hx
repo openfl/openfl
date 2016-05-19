@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl.display.IGraphicsData;
@@ -21,8 +21,3 @@ import openfl.display.IGraphicsFill;
 	
 	
 }
-
-
-#else
-typedef GraphicsEndFill = openfl._legacy.display.GraphicsEndFill;
-#end

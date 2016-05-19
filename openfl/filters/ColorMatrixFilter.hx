@@ -1,4 +1,4 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
 
 
 import lime.graphics.utils.ImageCanvasUtil;
@@ -96,8 +96,3 @@ import openfl.geom.Rectangle;
 	
 	
 }
-
-
-#else
-typedef ColorMatrixFilter = openfl._legacy.filters.ColorMatrixFilter;
-#end

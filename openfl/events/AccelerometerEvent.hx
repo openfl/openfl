@@ -32,9 +32,7 @@ class AccelerometerEvent extends Event {
 		var event = new AccelerometerEvent (type, bubbles, cancelable, timestamp, accelerationX, accelerationY, accelerationZ);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

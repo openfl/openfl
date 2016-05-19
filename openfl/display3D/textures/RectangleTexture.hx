@@ -46,13 +46,7 @@ import openfl.utils.UInt8Array;
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
 		
-		// TODO: Support upload from UInt8Array directly
-		
-		#if openfl_legacy
-		var p = BitmapData.getRGBAPixels (bitmapData);
-		#else
 		var p:ByteArray = bitmapData.image.data.buffer;
-		#end
 		
 		width = bitmapData.width;
 		height = bitmapData.height;

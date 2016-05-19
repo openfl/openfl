@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import haxe.EnumFlags;
@@ -1502,8 +1502,3 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 }
-
-
-#else
-typedef Stage = openfl._legacy.display.Stage;
-#end

@@ -1,4 +1,4 @@
-package openfl.net; #if !openfl_legacy
+package openfl.net;
 
 
 @:final class FileFilter {
@@ -19,7 +19,3 @@ package openfl.net; #if !openfl_legacy
 	
 	
 }
-
-
-#else
-#end

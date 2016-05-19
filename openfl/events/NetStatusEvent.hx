@@ -23,9 +23,7 @@ class NetStatusEvent extends Event {
 		var event = new NetStatusEvent (type, bubbles, cancelable, info);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract StageQuality(Null<Int>) {
@@ -37,8 +37,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef StageQuality = openfl._legacy.display.StageQuality;
-#end

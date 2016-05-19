@@ -1,4 +1,4 @@
-package openfl.filters; #if !flash #if !openfl_legacy
+package openfl.filters;
 
 
 class ConvolutionFilter extends BitmapFilter {
@@ -65,11 +65,3 @@ class ConvolutionFilter extends BitmapFilter {
 	
 	
 }
-
-
-#else
-typedef ConvolutionFilter = openfl._legacy.filters.ConvolutionFilter;
-#end
-#else
-typedef ConvolutionFilter = flash.filters.ConvolutionFilter;
-#end

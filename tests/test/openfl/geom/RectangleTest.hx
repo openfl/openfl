@@ -263,10 +263,7 @@ class RectangleTest {
 	}
 	
 	
-	#if openfl_legacy @Ignore #end @Test public function containsPoint () {
-		
-		// This function works on the older native code, but sometimes causes
-		// a race condition when run on the Travis CI servers
+	@Test public function containsPoint () {
 		
 		var rect = new Rectangle (0, 0, 100, 100);
 		

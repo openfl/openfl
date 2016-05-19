@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.graphics.GLRenderContext;
@@ -345,6 +345,3 @@ typedef GLShaderData = Map<String, GLShaderParameter>;
 //private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders.DefaultShader.Attrib;
 //private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders.DefaultShader.Uniform;
 //private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders.DefaultShader.Varying;
-
-
-#end

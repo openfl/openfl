@@ -1,4 +1,4 @@
-package openfl.utils; #if (!openfl_legacy || lime_hybrid)
+package openfl.utils;
 
 
 import haxe.io.Bytes;
@@ -1385,8 +1385,4 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 }
 
 
-#end
-#else
-typedef ByteArray = openfl._legacy.utils.ByteArray;
-typedef ByteArrayData = openfl._legacy.utils.ByteArray.ByteArrayData;
 #end

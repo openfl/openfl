@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 class MovieClip extends Sprite {
@@ -111,8 +111,3 @@ class MovieClip extends Sprite {
 	
 	
 }
-
-
-#else
-typedef MovieClip = openfl._legacy.display.MovieClip;
-#end

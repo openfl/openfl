@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract InterpolationMethod(Null<Int>) {
@@ -31,8 +31,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef InterpolationMethod = openfl._legacy.display.InterpolationMethod;
-#end

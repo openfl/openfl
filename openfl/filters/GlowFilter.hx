@@ -1,4 +1,4 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
 
 
 import openfl.display.Shader;
@@ -63,8 +63,3 @@ import openfl.geom.Rectangle;
 	
 	
 }
-
-
-#else
-typedef GlowFilter = openfl._legacy.filters.GlowFilter;
-#end

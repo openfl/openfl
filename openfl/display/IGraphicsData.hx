@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 interface IGraphicsData {
@@ -18,8 +18,3 @@ interface IGraphicsData {
 	END;
 	
 }
-
-
-#else
-typedef IGraphicsData = openfl._legacy.display.IGraphicsData;
-#end

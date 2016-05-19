@@ -1,4 +1,4 @@
-package openfl.utils; #if !openfl_legacy
+package openfl.utils;
 
 
 interface IDataOutput {
@@ -20,8 +20,3 @@ interface IDataOutput {
 	public function writeUnsignedInt (value:Int):Void;
 	
 }
-
-
-#else
-typedef IDataOutput = openfl._legacy.utils.IDataOutput;
-#end

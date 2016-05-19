@@ -1,4 +1,4 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
 
 
 import openfl.display.Shader;
@@ -47,8 +47,3 @@ import openfl.geom.Rectangle;
 	
 	
 }
-
-
-#else
-typedef BlurFilter = openfl._legacy.filters.BlurFilter;
-#end

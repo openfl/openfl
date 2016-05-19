@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.ui.MouseCursor;
@@ -525,8 +525,3 @@ class SimpleButton extends InteractiveObject {
 	
 	
 }
-
-
-#else
-typedef SimpleButton = openfl._legacy.display.SimpleButton;
-#end

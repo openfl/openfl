@@ -1,4 +1,4 @@
-package openfl.media; #if (!openfl_legacy || disable_legacy_audio)
+package openfl.media;
 
 
 import haxe.io.Path;
@@ -401,9 +401,4 @@ class Sound extends EventDispatcher {
 	public function toString ():String;
 	
 }
-#end
-
-
-#else
-typedef Sound = openfl._legacy.media.Sound;
 #end

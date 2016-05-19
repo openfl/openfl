@@ -73,7 +73,7 @@ class DisplayObjectTest {
 	}
 	
 	
-	#if !openfl_legacy @Ignore #end @Test public function loaderInfo () {
+	@Ignore @Test public function loaderInfo () {
 		
 		// TODO: Confirm functionality
 		

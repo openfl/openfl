@@ -1,4 +1,4 @@
-package openfl.sensors; #if !openfl_legacy
+package openfl.sensors;
 
 
 import haxe.Timer;
@@ -159,8 +159,3 @@ class Accelerometer extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef Accelerometer = openfl._legacy.sensors.Accelerometer;
-#end

@@ -1,4 +1,4 @@
-package openfl.geom; #if !openfl_legacy
+package openfl.geom;
 
 
 import lime.math.Rectangle in LimeRectangle;
@@ -330,8 +330,3 @@ class Rectangle {
 	
 	
 }
-
-
-#else
-typedef Rectangle = openfl._legacy.geom.Rectangle;
-#end

@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 import haxe.Timer;
@@ -1894,8 +1894,3 @@ class TextField extends InteractiveObject {
 	
 	
 }
-
-
-#else
-typedef TextField = openfl._legacy.text.TextField;
-#end
