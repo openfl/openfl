@@ -45,17 +45,6 @@ OpenFL is also being used in additional environments:
  * Raspberry Pi
  * Node.js
 
-The OpenFL v2 "legacy" codebase supports:
-
- * Windows
- * Mac
- * Linux
- * iOS
- * Android
- * BlackBerry
- * Tizen
-
-You can switch to the legacy codebase by using `-Dlegacy` when you build.
 
 Libraries
 =========
