@@ -11,8 +11,8 @@ import openfl.geom.Matrix;
 class ConsoleLineTesselator {
 
 
-	public var vertices:VertexOutput;
-	public var indices:Pointer<UInt16>;
+	private var vertices:VertexOutput;
+	private var indices:Pointer<UInt16>;
 
 	private var thin = false;
 	private var radius:Float32;
