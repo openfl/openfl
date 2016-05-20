@@ -1027,32 +1027,78 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var cmd = r.readDrawRect ();
 
-					if (!hasFill || fillBitmap != null) {
-						// TODO(james4k): fillBitmap, stroke
+					if (!hasFill) {
+						// TODO(james4k): stroke
 						trace ("unsupported DrawRect");
 						continue;
 					}
 
-					// TODO(james4k): replace moveTo/lineTo calls
+					if (fillBitmap != null) {
 
-					setObjectTransform (object);
-					transform.append (viewProj);
-					transform.transpose ();
+						setObjectTransform (object);
+						transform.append (viewProj);
+						transform.transpose ();
 
-					var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
-					var out = vertexBuffer.lock ();
-					out.vec3 (cmd.x, cmd.y, 0);
-					out.vec3 (cmd.x, cmd.y + cmd.height, 0);
-					out.vec3 (cmd.x + cmd.width, cmd.y, 0);
-					out.vec3 (cmd.x + cmd.width, cmd.y + cmd.height, 0);
-					vertexBuffer.unlock ();
+						var w = cmd.width;
+						var h = cmd.height;
+						var color:Array<cpp.Float32> = [1, 1, 1, object.__worldAlpha];
 
-					ctx.bindShader (fillShader);
-					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
-					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
-					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
-					ctx.setVertexSource (vertexBuffer);
-					ctx.draw (Primitive.TriangleStrip, 0, 2);
+						var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, 4);
+						var out = vertexBuffer.lock ();
+						out.vec3 (cmd.x, cmd.y, 0);
+						out.vec2 (0, 0);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						out.vec3 (cmd.x, cmd.y + h, 0);
+						out.vec2 (0, 1);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						out.vec3 (cmd.x + w, cmd.y, 0);
+						out.vec2 (1, 0);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						out.vec3 (cmd.x + w, cmd.y + h, 0);
+						out.vec2 (1, 1);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						vertexBuffer.unlock ();
+
+						var texture = imageTexture (fillBitmap.image);
+
+						ctx.bindShader (defaultShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
+						ctx.setVertexSource (vertexBuffer);
+						ctx.setTexture (0, texture);
+						ctx.setTextureAddressMode (0, Clamp, Clamp);
+						if (fillBitmapSmooth) {
+							ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+						} else {
+							ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+						}
+						ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+					} else {
+
+						// TODO(james4k): replace moveTo/lineTo calls
+
+						setObjectTransform (object);
+						transform.append (viewProj);
+						transform.transpose ();
+
+						var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
+						var out = vertexBuffer.lock ();
+						out.vec3 (cmd.x, cmd.y, 0);
+						out.vec3 (cmd.x, cmd.y + cmd.height, 0);
+						out.vec3 (cmd.x + cmd.width, cmd.y, 0);
+						out.vec3 (cmd.x + cmd.width, cmd.y + cmd.height, 0);
+						vertexBuffer.unlock ();
+
+						ctx.bindShader (fillShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+						ctx.setVertexSource (vertexBuffer);
+						ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+					}
 
 				//case DrawRoundRect (x, y, width, height, rx, ry):
 				case DRAW_ROUND_RECT:
