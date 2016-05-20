@@ -242,9 +242,7 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.width,
 				object.scrollRect.height
 			);
-			clipRect = clipRect.intersection (object.getBounds (null));
-			object.__getWorldTransform ();
-			clipRect.__transform (clipRect, object.__worldTransform);
+			clipRect.__transform (clipRect, object.__getWorldTransform ());
 		}
 
 		var prevBlendMode = blendMode;
@@ -531,16 +529,17 @@ class ConsoleRenderer extends AbstractRenderer {
 			return;
 		}
 
+		var viewport = new Rectangle (0, 0, this.width, this.height);
+		viewport = viewport.intersection (clipRect);
+
 		viewProj = Matrix4.createOrtho (
-			Math.floor (clipRect.x) + pixelOffsetX,
-			Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
-			Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
-			Math.floor (clipRect.y) + pixelOffsetY,
+			Math.floor (viewport.x) + pixelOffsetX,
+			Math.floor (viewport.x) + Math.ceil (viewport.width) + pixelOffsetX,
+			Math.floor (viewport.y) + Math.ceil (viewport.height) + pixelOffsetY,
+			Math.floor (viewport.y) + pixelOffsetY,
 			-1, 1
 		);
 
-		var viewport = new Rectangle (0, 0, this.width, this.height);
-		viewport = viewport.intersection (clipRect);
 		ctx.setViewport (
 			cast (viewport.x),
 			cast (viewport.y),
