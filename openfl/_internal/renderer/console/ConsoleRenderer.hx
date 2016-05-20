@@ -338,7 +338,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		var ib = ctx.createIndexBuffer (untyped 0 /*NULL*/, indexCount);
+		var ib = ctx.createIndexBuffer (untyped __cpp__ ("NULL"), indexCount);
 
 		indexBufferCounts.push (indexCount);
 		indexBuffers.push (ib);
@@ -502,7 +502,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			TextureFormat.ARGB,
 			image.buffer.width,
 			image.buffer.height,
-			untyped 0 /*NULL*/
+			untyped __cpp__ ("NULL")
 		);
 
 		if (image.buffer.data != null) {
