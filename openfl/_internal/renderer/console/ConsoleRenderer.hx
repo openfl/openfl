@@ -261,7 +261,9 @@ class ConsoleRenderer extends AbstractRenderer {
 		} else if (Std.is (object, Bitmap)) {
 
 			var b:Bitmap = cast (object);
-			drawBitmapData (b, b.bitmapData, b.smoothing);
+			if (b.bitmapData != null) {
+				drawBitmapData (b, b.bitmapData, b.smoothing);
+			}
 
 		} else if (Std.is (object, Shape)) {
 
