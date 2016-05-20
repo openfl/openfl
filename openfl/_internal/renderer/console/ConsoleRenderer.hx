@@ -38,6 +38,7 @@ import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.display.Tilesheet;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
@@ -88,13 +89,19 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var fillColor:Array<Float32> = [1, 1, 1, 1];
 
 	private var hasStroke = false;
-	private var lineWidth = 0.0;
-	private var lineColor = 0;
+	private var lineBitmap:BitmapData = null;
+	private var lineBitmapMatrix:Matrix = null;
+	private var lineBitmapRepeat:Bool = false;
+	private var lineBitmapSmooth:Bool = false;
+	private var lineThickness = 0.0;
+	private var lineColor:Array<Float32> = [1, 1, 1, 1];
 	private var lineAlpha = 1.0;
 	private var lineScaleMode = LineScaleMode.NORMAL;
 	private var lineCaps = CapsStyle.ROUND;
 	private var lineJoints = JointStyle.ROUND;
 	private var lineMiter = 3.0;
+
+	private var whiteTexture:Texture;
 
 	private var points = new Array<Float32> ();
 
@@ -122,6 +129,14 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		defaultShader = ctx.lookupShader ("openfl_default");
 		fillShader = ctx.lookupShader ("openfl_fill");
+
+		
+		var white:cpp.UInt32 = 0xffffffff;
+		whiteTexture = ctx.createTexture (
+			TextureFormat.ARGB,
+			1, 1,
+			cpp.Pointer.addressOf (white).reinterpret ()
+		);
 
 	}
 
@@ -682,7 +697,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private function closePath (object:DisplayObject) {
 
 		drawFill (object);
-		drawStroke ();
+		drawStroke (object);
 
 		cpp.NativeArray.setSize (points, 0);
 
@@ -747,11 +762,114 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function drawStroke () {
 
-		if (!hasStroke) {
+	private function drawStroke (object:DisplayObject) {
+
+		var numPoints = Std.int (points.length / 2);
+		if (!hasStroke || numPoints < 2) {
 			return;
-		}	
+		}
+
+		// TODO(james4k): complex tesselation like this could easily go into a
+		// background job. maybe do so if expected vertices is greater than 64 or
+		// something. doubt we have any games that need this yet, though. think
+		// about this when the renderer does more shape tesselation.
+		
+		// TODO(james4k): if lines overlap, may be visible overdraw if lines
+		// are transparent. not clear if there is a cheap solution.
+
+		// TODO(james4k): closed paths to form rectangles/shapes
+		// TODO(james4k): bevel/miter joints
+		// TODO(james4k): square/butt caps
+
+		setObjectTransform (object);
+		transform.append (viewProj);
+		transform.transpose ();
+
+		// TODO(james4k): closed paths should form a joint, and have no caps
+		var numSegments = numPoints - 1;
+		var numCaps = 2;
+		var numJoints = numPoints - numCaps;
+
+		// TODO(james4k): prealloc size should be ConsoleLineTesselator's jurisdiction.
+		// also, these overestimate a bit. at least as of May 14th, 2016.
+		var vertexCount = numSegments * 4;
+		vertexCount += numCaps; // for now just 1 additional vertex for rounded cap
+		vertexCount += numJoints; // for now just 1 additional vertex for rounded joint
+		var indexCount = numSegments * 6; // 2 triangles per segment
+		indexCount += numCaps * 3; // 1 triangle per cap
+		indexCount += numJoints * 12; // 4 triangles per joint
+
+		var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
+		var indexBuffer = transientIndexBuffer (indexCount);
+		var texture = if (lineBitmap != null) {
+			imageTexture (lineBitmap.image);
+		} else {
+			whiteTexture;
+		}
+		var bitmapMatrix:Matrix = new Matrix ();
+		if (lineBitmap != null) {
+			// TODO(james4k): this is a hack, only applies translation. need to
+			// think through these coordinate spaces.
+			var tx = 0.0;
+			var ty = 0.0;
+			if (lineBitmapMatrix != null) {
+				tx = lineBitmapMatrix.tx;
+				ty = lineBitmapMatrix.ty;
+			}
+			bitmapMatrix.translate (-tx, -ty);
+			bitmapMatrix.scale (1.0 / lineBitmap.width, 1.0 / lineBitmap.height);
+			bitmapMatrix.translate (tx, ty);
+		}
+
+		var vertices = vertexBuffer.lock ();
+		var unsafeIndices = indexBuffer.lock ();
+
+		var radius = lineThickness * 0.5;
+		var line = new ConsoleLineTesselator (vertices, unsafeIndices, radius, bitmapMatrix);
+
+		line.capRound (
+			points[0], points[1],
+			points[2], points[3]
+		);
+		for (i in 1...numPoints-1) {
+			line.jointRound (
+				points[i*2+0], points[i*2+1],
+				points[i*2+2], points[i*2+3]
+			);
+		}
+		line.capRound (
+			points[points.length-2], points[points.length-1], 0, 0
+		);
+
+		#if debug
+		if (vertexCount < line.vertexCount || indexCount < line.indexCount) {
+			throw "overflowed vertex buffer or index buffer";
+		}
+		#end
+		vertexCount = line.vertexCount;
+		indexCount = line.indexCount;
+		vertexBuffer.unlock ();
+		indexBuffer.unlock ();
+
+		ctx.bindShader (defaultShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (lineColor, 0), 1);
+		ctx.setVertexSource (vertexBuffer);
+		ctx.setIndexSource (indexBuffer);
+		ctx.setTexture (0, texture);
+		if (lineBitmapRepeat) {
+			ctx.setTextureAddressMode (0, Wrap, Wrap);
+		} else {
+			ctx.setTextureAddressMode (0, Clamp, Clamp);
+		}
+		if (lineBitmapSmooth) {
+			ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+		}
+		ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indexCount, 3));
 
 	}
 
@@ -822,16 +940,35 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					hasStroke = true;
 
-					lineWidth = cmd.thickness;
-					lineColor = cmd.color;
+					lineThickness = cmd.thickness;
+					lineBitmap = null;
+					lineColor[0] = ((cmd.color >> 16) & 0xFF) / 255.0;
+					lineColor[1] = ((cmd.color >> 8) & 0xFF) / 255.0;
+					lineColor[2] = ((cmd.color >> 0) & 0xFF) / 255.0;
+					lineColor[3] = cmd.alpha * object.__worldAlpha;
 					lineAlpha = cmd.alpha;
 					lineScaleMode = cmd.scaleMode;
-					lineCaps = cmd.caps;
-					lineJoints = cmd.joints;
+					lineCaps = cmd.caps != null ? cmd.caps : ROUND;
+					lineJoints = cmd.joints != null ? cmd.joints : ROUND;
 					lineMiter = cmd.miterLimit;
 					// TODO(james4k): pixelHinting
+
+					if (lineScaleMode != NORMAL ||
+					    lineCaps != ROUND ||
+					    lineJoints != ROUND 
+					) {
+						trace ("unsupported lineStyle");
+					}
 					
-					
+				case LINE_BITMAP_STYLE:
+
+					var cmd = r.readLineBitmapStyle ();
+
+					lineBitmap = cmd.bitmap;
+					lineBitmapMatrix = cmd.matrix;
+					lineBitmapRepeat = cmd.repeat;
+					lineBitmapSmooth = cmd.smooth;
+
 				//case LineTo (x, y):
 				case LINE_TO:
 
@@ -1280,10 +1417,6 @@ class ConsoleRenderer extends AbstractRenderer {
 				case LINE_GRADIENT_STYLE:
 
 					r.readLineGradientStyle ();
-
-				case LINE_BITMAP_STYLE:
-
-					r.readLineBitmapStyle ();
 
 				case OVERRIDE_MATRIX:
 
