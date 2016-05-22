@@ -1178,6 +1178,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var target:InteractiveObject = cast stack[stack.length - 1];
 		var targetPoint = new Point (x, y);
+		__displayMatrix.__transformPoint (targetPoint);
 		var delta = Std.int (deltaY);
 		
 		__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
