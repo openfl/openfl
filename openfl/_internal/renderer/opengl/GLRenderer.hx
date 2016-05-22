@@ -57,7 +57,13 @@ class GLRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 		
-		gl.viewport (0, 0, width, height);
+		var displayMatrix = stage.__displayMatrix;
+		var offsetX = Math.round (displayMatrix.__transformInverseX (0, 0));
+		var offsetY = Math.round (displayMatrix.__transformInverseY (0, 0));
+		var displayWidth = Math.round (displayMatrix.__transformInverseX (width, 0) - offsetX);
+		var displayHeight = Math.round (displayMatrix.__transformInverseY (0, height) - offsetY);
+		
+		gl.viewport (offsetX, offsetY, displayWidth, displayHeight);
 		
 		if (this.transparent) {
 			
@@ -73,13 +79,41 @@ class GLRenderer extends AbstractRenderer {
 		
 		stage.__renderGL (renderSession);
 		
+		if (offsetX > 0 || offsetY > 0) {
+			
+			gl.clearColor (0, 0, 0, 1);
+			gl.enable (gl.SCISSOR_TEST);
+			
+			var window = stage.window;
+			
+			if (offsetX > 0) {
+				
+				gl.scissor (0, 0, offsetX, window.height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+				
+				gl.scissor (offsetX + displayWidth, 0, window.width, window.height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+				
+			}
+			
+			if (offsetY > 0) {
+				
+				gl.scissor (0, 0, stage.window.width, offsetY);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+				
+				gl.scissor (0, offsetY + displayHeight, window.width, window.height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+				
+			}
+			
+			gl.disable (gl.SCISSOR_TEST);
+			
+		}
+		
 	}
 	
 	
 	public override function resize (width:Int, height:Int):Void {
-		
-		this.width = width;
-		this.height = height;
 		
 		super.resize (width, height);
 		

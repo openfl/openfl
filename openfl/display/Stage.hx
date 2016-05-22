@@ -93,6 +93,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorString:String;
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
+	private var __displayMatrix:Matrix;
 	private var __displayState:StageDisplayState;
 	private var __dragBounds:Rectangle;
 	private var __dragObject:Sprite;
@@ -149,6 +150,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__lastClickTime = 0;
 		__logicalWidth = 0;
 		__logicalHeight = 0;
+		__displayMatrix = new Matrix ();
 		
 		__resize ();
 		
@@ -707,12 +709,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__resize ();
 		
-		if (__renderer != null) {
-			
-			__renderer.resize (stageWidth, stageHeight);
-			
-		}
-		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
 		
@@ -981,14 +977,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (button > 2) return;
 		
-		__mouseX = x;
-		__mouseY = y;
+		var targetPoint = new Point (x, y);
+		__displayMatrix.__transformPoint (targetPoint);
+		
+		__mouseX = targetPoint.x;
+		__mouseY = targetPoint.y;
 		
 		var stack = [];
 		var target:InteractiveObject = null;
-		var targetPoint = new Point (x, y);
 		
-		if (__hitTest (x, y, true, stack, true, this)) {
+		if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
 			
 			target = cast stack[stack.length - 1];
 			
@@ -1189,7 +1187,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (touch.x * stageWidth, touch.y * stageHeight);
+		var point = new Point (touch.x * window.width, touch.y * window.height);
+		__displayMatrix.__transformPoint (point);
 		
 		__mouseX = point.x;
 		__mouseY = point.y;
@@ -1223,10 +1222,36 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __resize ():Void {
 		
+		var windowWidth = Std.int (window.width * window.scale);
+		var windowHeight = Std.int (window.height * window.scale);
+		
+		__displayMatrix.identity ();
+		
 		if (__logicalWidth == 0 && __logicalHeight == 0) {
 			
-			stageWidth = Std.int (window.width * window.scale);
-			stageHeight = Std.int (window.height * window.scale);
+			stageWidth = windowWidth;
+			stageHeight = windowHeight;
+			
+		} else {
+			
+			stageWidth = __logicalWidth;
+			stageHeight = __logicalHeight;
+			
+			var scaleX = stageWidth / windowWidth;
+			var scaleY = stageHeight / windowHeight;
+			var targetScale = Math.max (scaleX, scaleY);
+			
+			var offsetX = Math.round ((windowWidth - (stageWidth / targetScale)) / 2);
+			var offsetY = Math.round ((windowHeight - (stageHeight / targetScale)) / 2);
+			
+			__displayMatrix.translate (-offsetX, -offsetY);
+			__displayMatrix.scale (targetScale, targetScale);
+			
+		}
+		
+		if (__renderer != null) {
+			
+			__renderer.resize (stageWidth, stageHeight);
 			
 		}
 		
@@ -1238,12 +1263,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = width;
 		__logicalHeight = height;
 		
-		if (width > 0 && height > 0) {
-			
-			stageWidth = width;
-			stageHeight = height;
-			
-		}
+		__resize ();
 		
 	}
 	
