@@ -7,6 +7,7 @@ import openfl.geom.Matrix;
 class Tile {
 	
 	
+	public var data:Dynamic;
 	public var id:Int;
 	public var matrix:Matrix;
 	public var rotation (get, set):Float;
