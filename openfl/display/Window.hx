@@ -1,4 +1,4 @@
-package openfl.display; #if !display
+package openfl.display;
 
 
 import lime.app.Application;
@@ -45,22 +45,3 @@ class Window extends LimeWindow {
 	
 	
 }
-
-
-#else
-
-
-import lime.app.Config;
-import lime.ui.Window in LimeWindow;
-
-
-extern class Window extends LimeWindow {
-	
-	
-	public function new (config:WindowConfig = null);
-	
-	
-}
-
-
-#end

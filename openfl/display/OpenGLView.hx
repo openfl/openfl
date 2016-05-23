@@ -1,4 +1,4 @@
-package openfl.display; #if !display
+package openfl.display;
 
 
 #if !flash
@@ -280,23 +280,3 @@ class OpenGLView extends DirectRenderer {
 	
 	
 }
-
-
-#else
-
-
-extern class OpenGLView extends DirectRenderer {
-	
-	
-	public static inline var CONTEXT_LOST = "glcontextlost";
-	public static inline var CONTEXT_RESTORED = "glcontextrestored";
-	
-	public static var isSupported (get, null):Bool;
-	
-	public function new ();
-	
-	
-}
-
-
-#end

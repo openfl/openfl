@@ -9,7 +9,6 @@ import openfl._internal.renderer.DrawCommandBuffer;
 //import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.display.Shader;
 import openfl.errors.ArgumentError;
-//import openfl._internal.renderer.opengl.GLTilesheet;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;
 import openfl.display.GraphicsEndFill;
@@ -17,7 +16,6 @@ import openfl.display.GraphicsGradientFill;
 import openfl.display.GraphicsPath;
 import openfl.display.GraphicsSolidFill;
 import openfl.display.GraphicsStroke;
-import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -34,26 +32,6 @@ import js.html.CanvasRenderingContext2D;
 
 @:final class Graphics {
 	
-	
-	public static inline var TILE_SCALE = 0x0001;
-	public static inline var TILE_ROTATION = 0x0002;
-	public static inline var TILE_RGB = 0x0004;
-	public static inline var TILE_ALPHA = 0x0008;
-	public static inline var TILE_TRANS_2x2 = 0x0010;
-	public static inline var TILE_RECT = 0x0020;
-	public static inline var TILE_ORIGIN = 0x0040;
-	
-	public static inline var TILE_BLEND_NORMAL = 0x00000000;
-	public static inline var TILE_BLEND_ADD = 0x00010000;
-	public static inline var TILE_BLEND_MULTIPLY = 0x00020000;
-	public static inline var TILE_BLEND_SCREEN = 0x00040000;
-	public static inline var TILE_BLEND_SUBTRACT = 0x00080000;
-	public static inline var TILE_BLEND_DARKEN = 0x00100000;
-	public static inline var TILE_BLEND_LIGHTEN = 0x00200000;
-	public static inline var TILE_BLEND_OVERLAY = 0x00400000;
-	public static inline var TILE_BLEND_HARDLIGHT = 0x00800000;
-	public static inline var TILE_BLEND_DIFFERENCE = 0x01000000;
-	public static inline var TILE_BLEND_INVERT = 0x02000000;
 	
 	public var __hardware:Bool;
 	
@@ -459,224 +437,6 @@ import js.html.CanvasRenderingContext2D;
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
 		openfl.Lib.notImplemented ("Graphics.drawRoundRectComplex");
-		
-	}
-	
-	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?shader:Shader, count:Int = -1):Void {
-		
-		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
-		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
-		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
-		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
-		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
-		var useColorTransform = (flags & Tilesheet.TILE_TRANS_COLOR) > 0;
-		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
-		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
-		
-		var rect = openfl.geom.Rectangle.__temp;
-		var matrix = Matrix.__temp;
-		
-		var numValues = 3;
-		var totalCount = count;
-		
-		if (count < 0) {
-			
-			totalCount = tileData.length;
-			
-		}
-		
-		if (useTransform || useScale || useRotation || useRGB || useAlpha || useColorTransform) {
-			
-			var scaleIndex = 0;
-			var rotationIndex = 0;
-			var transformIndex = 0;
-			
-			if (useRect) { numValues = useOrigin ? 8 : 6; }
-			if (useScale) { scaleIndex = numValues; numValues++; }
-			if (useRotation) { rotationIndex = numValues; numValues++; }
-			if (useTransform) { transformIndex = numValues; numValues += 4; }
-			if (useRGB) { numValues += 3; }
-			if (useAlpha) { numValues++; }
-			if (useColorTransform) { numValues += 4; }
-			
-			var itemCount = Std.int (totalCount / numValues);
-			var index = 0;
-			var cacheID = -1;
-			
-			var x, y, id, scale, rotation, tileWidth, tileHeight, originX, originY;
-			var tile = null;
-			var tilePoint = null;
-			
-			while (index < totalCount) {
-				
-				x = tileData[index];
-				y = tileData[index + 1];
-				id = (!useRect #if neko && tileData[index + 2] != null #end) ? Std.int (tileData[index + 2]) : -1;
-				scale = 1.0;
-				rotation = 0.0;
-				
-				if (useScale) {
-					
-					scale = tileData[index + scaleIndex];
-					
-				}
-				
-				if (useRotation) {
-					
-					rotation = tileData[index + rotationIndex];
-					
-				}
-				
-				if (id < 0) {
-					
-					tile = null;
-					
-				} else {
-					
-					if (!useRect && cacheID != id) {
-						
-						cacheID = id;
-						tile = sheet.__tileRects[id];
-						tilePoint = sheet.__centerPoints[id];
-						
-					} else if (useRect) {
-						
-						tile = sheet.__rectTile;
-						tile.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
-						tilePoint = sheet.__point;
-						
-						if (useOrigin) {
-							
-							tilePoint.setTo (tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
-							
-						} else {
-							
-							tilePoint.setTo (0, 0);
-							
-						}
-						
-					}
-					
-				}
-				
-				if (tile != null) {
-					
-					if (useTransform) {
-						
-						rect.setTo (0, 0, tile.width, tile.height);
-						matrix.setTo (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
-						
-						originX = tilePoint.x * scale;
-						originY = tilePoint.y * scale;
-						
-						matrix.translate (x - matrix.__transformX (originX, originY), y - matrix.__transformY (originX, originY));
-						
-						rect.__transform (rect, matrix);
-						
-						__inflateBounds (rect.x, rect.y);
-						__inflateBounds (rect.right, rect.bottom);
-						
-					} else {
-						
-						tileWidth = tile.width * scale;
-						tileHeight = tile.height * scale;
-						
-						x -= tilePoint.x * tileWidth;
-						y -= tilePoint.y * tileHeight;
-						
-						if (rotation != 0) {
-							
-							rect.setTo (0, 0, tileWidth, tileHeight);
-							
-							matrix.identity ();
-							matrix.rotate (rotation);
-							matrix.translate (x, y);
-							
-							rect.__transform (rect, matrix);
-							
-							__inflateBounds (rect.x, rect.y);
-							__inflateBounds (rect.right, rect.bottom);
-							
-						} else {
-							
-							__inflateBounds (x, y);
-							__inflateBounds (x + tileWidth, y + tileHeight);
-							
-						}
-						
-					}
-					
-				}
-				
-				index += numValues;
-				
-			}
-			
-		} else {
-			
-			var x, y, id, tile, centerPoint, originX, originY;
-			var rect = openfl.geom.Rectangle.__temp;
-			var index = 0;
-			
-			while (index < totalCount) {
-				
-				x = tileData[index++];
-				y = tileData[index++];
-				
-				#if neko
-				if (useRect) {
-					id = -1;
-				} else {
-					id = (tileData[index] != null) ? Std.int (tileData[index]) : 0;
-					index++;
-				}
-				#else
-				id = (!useRect) ? Std.int (tileData[index++]) : -1;
-				#end
-				
-				originX = 0.0;
-				originY = 0.0;
-				
-				if (useRect) {
-					
-					rect.setTo (tileData[index++], tileData[index++], tileData[index++], tileData[index++]);
-					
-					if (useOrigin) {
-						
-						originX = tileData[index++];
-						originY = tileData[index++];
-						
-					}
-					
-					__inflateBounds (x - originX, y - originY);
-					__inflateBounds (x - originX + rect.width, y - originY + rect.height);
-					
-				} else {
-					
-					tile = sheet.__tileRects[id];
-					
-					if (tile != null) {
-						
-						centerPoint = sheet.__centerPoints[id];
-						originX = centerPoint.x * tile.width;
-						originY = centerPoint.y * tile.height;
-						
-						__inflateBounds (x - originX, y - originY);
-						__inflateBounds (x - originX + tile.width, y - originY + tile.height);
-						
-					}
-					
-				}
-				
-			}
-		}
-		
-		__commands.drawTiles (sheet, tileData, smooth, flags, shader, count);
-		
-		__dirty = true;
-		__visible = true;
-		__hardware = true;
 		
 	}
 	

@@ -18,11 +18,6 @@ import openfl._internal.renderer.opengl.GLTilemap;
 class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end {
 	
 	
-	// TODO: Handle more properties
-	
-	public var allowRotation:Bool;
-	public var allowScale:Bool;
-	public var allowTransform:Bool;
 	public var numLayers (default, null):Int;
 	
 	#if !flash

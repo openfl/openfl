@@ -26,9 +26,7 @@ package openfl.display; #if (display || !flash)
  * 
  * <p>If you would prefer to perform a batch rendering command, rather than using a
  * single surface for each Bitmap object, you can also draw to the screen using the
- * <code>drawTiles()</code> or <code>drawTriangles()</code> methods which are
- * available to <code>openfl.display.Tilesheet</code> and <code>openfl.display.Graphics
- * objects.</code></p>
+ * <code>openfl.display.Tilemap</code> class.</p>
  *
  * <p><b>Note:</b> The Bitmap class is not a subclass of the InteractiveObject
  * class, so it cannot dispatch mouse events. However, you can use the

@@ -28,7 +28,6 @@ import openfl.Vector;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
-@:access(openfl.display.Tilesheet)
 @:access(openfl.geom.Matrix)
 
 
@@ -880,170 +879,6 @@ class CairoGraphics {
 						
 					}
 				
-				case DRAW_TILES:
-					
-					var c = data.readDrawTiles ();
-					var useScale = (c.flags & Graphics.TILE_SCALE) > 0;
-					var useRotation = (c.flags & Graphics.TILE_ROTATION) > 0;
-					var offsetX = bounds.x;
-					var offsetY = bounds.y;
-					
-					var useTransform = (c.flags & Graphics.TILE_TRANS_2x2) > 0;
-					var useRGB = (c.flags & Graphics.TILE_RGB) > 0;
-					var useAlpha = (c.flags & Graphics.TILE_ALPHA) > 0;
-					var useRect = (c.flags & Graphics.TILE_RECT) > 0;
-					var useOrigin = (c.flags & Graphics.TILE_ORIGIN) > 0;
-					var useBlendAdd = (c.flags & Graphics.TILE_BLEND_ADD) > 0;
-					var useBlendOverlay = (c.flags & Graphics.TILE_BLEND_OVERLAY) > 0;
-					
-					if (useTransform) { useScale = false; useRotation = false; }
-					
-					var scaleIndex = 0;
-					var rotationIndex = 0;
-					var rgbIndex = 0;
-					var alphaIndex = 0;
-					var transformIndex = 0;
-					
-					var numValues = 3;
-					
-					if (useRect) { numValues = useOrigin ? 8 : 6; }
-					if (useScale) { scaleIndex = numValues; numValues ++; }
-					if (useRotation) { rotationIndex = numValues; numValues ++; }
-					if (useTransform) { transformIndex = numValues; numValues += 4; }
-					if (useRGB) { rgbIndex = numValues; numValues += 3; }
-					if (useAlpha) { alphaIndex = numValues; numValues ++; }
-					
-					var totalCount = c.tileData.length;
-					if (c.count >= 0 && totalCount > c.count) totalCount = c.count;
-					var itemCount = Std.int (totalCount / numValues);
-					var index = 0;
-					
-					var rect = null;
-					var center = null;
-					var previousTileID = -1;
-					
-					var surface:Dynamic;
-					c.sheet.__bitmap.__sync ();
-					surface = c.sheet.__bitmap.getSurface ();
-					
-					cairo.save ();
-					
-					if (useBlendAdd) {
-						
-						cairo.operator = ADD;
-						
-					}
-					
-					if (useBlendOverlay) {
-						
-						cairo.operator = OVERLAY;
-						
-					}
-					
-					while (index < totalCount) {
-						
-						#if neko
-						
-						var f:Float = c.tileData[index + 2];
-						var i = 0;
-						
-						if (f != null) {
-							
-							i = Std.int (f);
-							
-						}
-						
-						#else
-						
-						var i = Std.int (c.tileData[index + 2]);
-						
-						#end
-						
-						var tileID = (!useRect) ? i : -1;
-						
-						if (!useRect && tileID != previousTileID) {
-							
-							rect = c.sheet.__tileRects[tileID];
-							center = c.sheet.__centerPoints[tileID];
-							
-							previousTileID = tileID;
-							
-						} else if (useRect) {
-							
-							rect = c.sheet.__rectTile;
-							rect.setTo (c.tileData[index + 2], c.tileData[index + 3], c.tileData[index + 4], c.tileData[index + 5]);
-							center = c.sheet.__point;
-							
-							if (useOrigin) {
-								
-								center.setTo (c.tileData[index + 6], c.tileData[index + 7]);
-								
-							} else {
-								
-								center.setTo (0, 0);
-								
-							}
-							
-						}
-						
-						if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
-							
-							// TODO: Handle rect, center, and offset X/Y properly based on matrix transform
-							
-							//cairo.save ();
-							
-							cairo.identityMatrix ();
-							
-							if (useTransform) {
-								
-								var matrix = new Matrix3 (c.tileData[index + transformIndex], c.tileData[index + transformIndex + 1], c.tileData[index + transformIndex + 2], c.tileData[index + transformIndex + 3], 0, 0);
-								cairo.matrix = matrix;
-								
-							}
-							
-							cairo.translate (c.tileData[index] - offsetX, c.tileData[index + 1] - offsetY);
-							
-							if (useRotation) {
-								
-								cairo.rotate (c.tileData[index + rotationIndex]);
-								
-							}
-							
-							if (useScale) {
-								
-								var scale = c.tileData[index + scaleIndex];
-								cairo.scale (scale, scale);
-								
-							}
-							
-							cairo.setSourceSurface (surface, 0, 0);
-							
-							if (useAlpha) {
-								
-								if (!hitTesting) cairo.paintWithAlpha (c.tileData[index + alphaIndex]);
-								
-							} else {
-								
-								if (!hitTesting) cairo.paint ();
-								
-							}
-							
-							//cairo.restore ();
-							
-						}
-						
-						index += numValues;
-						
-					}
-					
-					if (useBlendAdd || useBlendOverlay) {
-						
-						cairo.operator = OVER;
-						
-					}
-					
-					cairo.restore ();
-				
 				default:
 					
 					data.skip (type);
@@ -1295,11 +1130,6 @@ class CairoGraphics {
 						var c = data.readDrawRoundRect ();
 						fillCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 						strokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-					
-					case DRAW_TILES:
-						
-						var c = data.readDrawTiles ();
-						fillCommands.drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.count);
 					
 					case DRAW_TRIANGLES:
 						
