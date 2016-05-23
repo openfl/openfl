@@ -4,6 +4,8 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.TilemapLayer)
@@ -44,7 +46,7 @@ class GLTilemap {
 		
 		var tiles, count, bufferData, buffer, previousLength, offset, uvs, uv;
 		var cacheTileID = -1, tileWidth = 0, tileHeight = 0;
-		var tile, x, y, x2, y2;
+		var tile, tileMatrix, x, y, x2, y2, x3, y3, x4, y4;
 		
 		for (layer in tilemap.__layers) {
 			
@@ -137,24 +139,30 @@ class GLTilemap {
 				
 				// TODO: Use dirty flag on tiles?
 				
-				x = tile.x;
-				y = tile.y;
-				x2 = x + tileWidth;
-				y2 = y + tileHeight;
+				tileMatrix = tile.matrix;
+				
+				x = tileMatrix.__transformX (0, 0);
+				y = tileMatrix.__transformY (0, 0);
+				x2 = tileMatrix.__transformX (tileWidth, 0);
+				y2 = tileMatrix.__transformY (tileWidth, 0);
+				x3 = tileMatrix.__transformX (0, tileHeight);
+				y3 = tileMatrix.__transformY (0, tileHeight);
+				x4 = tileMatrix.__transformX (tileWidth, tileHeight);
+				y4 = tileMatrix.__transformY (tileWidth, tileHeight);
 				
 				bufferData[offset + 0] = x;
 				bufferData[offset + 1] = y;
 				bufferData[offset + 4] = x2;
-				bufferData[offset + 5] = y;
-				bufferData[offset + 8] = x;
-				bufferData[offset + 9] = y2;
+				bufferData[offset + 5] = y2;
+				bufferData[offset + 8] = x3;
+				bufferData[offset + 9] = y3;
 				
-				bufferData[offset + 12] = x;
-				bufferData[offset + 13] = y2;
+				bufferData[offset + 12] = x3;
+				bufferData[offset + 13] = y3;
 				bufferData[offset + 16] = x2;
-				bufferData[offset + 17] = y;
-				bufferData[offset + 20] = x2;
-				bufferData[offset + 21] = y2;
+				bufferData[offset + 17] = y2;
+				bufferData[offset + 20] = x4;
+				bufferData[offset + 21] = y4;
 				
 			}
 			

@@ -1018,7 +1018,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	private function set_scaleX (value:Float):Float {
 		
-		if (__transform.c == 0) {
+		if (__transform.b == 0) {
 			
 			if (value != __transform.a) __setTransformDirty ();
 			__transform.a = value;
