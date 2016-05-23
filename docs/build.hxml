@@ -8,8 +8,8 @@
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
--cp ../extern-flash
+-cp ../externs/openfl
+-cp ../externs/flash
 --no-output
 
 --next
@@ -23,7 +23,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -37,7 +37,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -51,7 +51,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -64,7 +64,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -78,7 +78,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -92,7 +92,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -106,7 +106,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -119,7 +119,7 @@ ImportAll
 #ImportAll
 #-lib lime
 #-lib openfl
-#-cp ../extern
+#-cp ../externs/openfl
 #--no-output
 #
 #--next
@@ -133,7 +133,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
@@ -146,7 +146,7 @@ ImportAll
 ImportAll
 -lib lime
 -lib openfl
--cp ../extern
+-cp ../externs/openfl
 --no-output
 
 --next
