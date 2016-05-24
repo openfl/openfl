@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="::title::" package="::packageName::" version="::version::" company="::company::" />
+	<meta title="::title::" package="::packageName::" version="::version::" company="::company::" cacheversion="1" />
 	<app main="Main" path="Export" file="::file::" />
 	
 	<source path="Source" />
