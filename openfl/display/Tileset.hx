@@ -10,6 +10,7 @@ class Tileset {
 	public var bitmapData:BitmapData;
 	
 	private var __rects:Array<Rectangle>;
+	private var __uvs:Array<Rectangle>;
 	
 	
 	// TODO: Add support for adding uniform tile rectangles (margin, spacing, width, height)
@@ -19,6 +20,7 @@ class Tileset {
 		this.bitmapData = bitmapData;
 		
 		__rects = new Array ();
+		__uvs = new Array ();
 		
 	}
 	
@@ -26,6 +28,7 @@ class Tileset {
 	public function addRect (rect:Rectangle):Int {
 		
 		__rects.push (rect);
+		__uvs.push (new Rectangle (rect.x / bitmapData.width, rect.y / bitmapData.height, rect.right / bitmapData.width, rect.bottom / bitmapData.height));
 		return __rects.length - 1;
 		
 	}

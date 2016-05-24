@@ -4,6 +4,7 @@ package openfl._internal.renderer.canvas;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.TilemapLayer)
 @:access(openfl.display.Tileset)
@@ -26,7 +27,7 @@ class CanvasTilemap {
 		}
 		
 		context.globalAlpha = tilemap.__worldAlpha;
-		var transform = tilemap.__worldTransform;
+		var transform = tilemap.__renderTransform;
 		
 		if (renderSession.roundPixels) {
 			
@@ -47,20 +48,21 @@ class CanvasTilemap {
 			
 		}
 		
-		var tileWidth = 0.0;
-		var tileHeight = 0.0;
+		var tileRect = null;
 		var cacheTileID = -1;
 		
-		var tiles, count, tile, source;
+		var tiles, count, tile, source, rects;
 		
 		for (layer in tilemap.__layers) {
 			
 			if (layer.__tiles.length == 0 || layer.tileset == null || layer.tileset.bitmapData == null) continue;
 			
+			layer.tileset.bitmapData.__sync ();
 			source = layer.tileset.bitmapData.image.src;
 			
 			tiles = layer.__tiles;
 			count = tiles.length;
+			rects = layer.tileset.__rects;
 			
 			for (i in 0...count) {
 				
@@ -68,13 +70,12 @@ class CanvasTilemap {
 				
 				if (tile.id != cacheTileID) {
 					
-					tileWidth = layer.tileset.__rects[tile.id].width;
-					tileHeight = layer.tileset.__rects[tile.id].height;
+					tileRect = rects[tile.id];
 					cacheTileID = tile.id;
 					
 				}
 				
-				context.drawImage (source, 0, 0, tileWidth, tileHeight, tile.x, tile.y, tileWidth, tileHeight);
+				context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, tile.x, tile.y, tileRect.width, tileRect.height);
 				
 			}
 			

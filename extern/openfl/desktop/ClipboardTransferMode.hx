@@ -1,10 +1,6 @@
 package openfl.desktop;
 
 
-#if flash
-@:native("flash.desktop.ClipboardTransferMode")
-#end
-
 @:enum abstract ClipboardTransferMode(String) from String to String {
 	
 	public var CLONE_ONLY = "cloneOnly";

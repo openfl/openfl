@@ -8,11 +8,6 @@ package openfl.display;
  * <code>Graphics.lineGradientStyle()</code> methods. This parameter
  * determines the RGB space to use when rendering the gradient.
  */
-
-#if flash
-@:native("flash.display.InterpolationMethod")
-#end
-
 @:enum abstract InterpolationMethod(String) from String to String {
 	
 	/**

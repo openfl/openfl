@@ -4,7 +4,7 @@ package flash.events; #if (!display && flash)
 extern class UncaughtErrorEvent extends ErrorEvent {
 	
 	
-	public static var UNCAUGHT_ERROR:String;
+	public static var UNCAUGHT_ERROR (default, never):String;
 	
 	public var error (default, null):Dynamic;
 	

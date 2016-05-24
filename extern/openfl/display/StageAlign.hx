@@ -5,11 +5,6 @@ package openfl.display;
  * The StageAlign class provides constant values to use for the
  * <code>Stage.align</code> property.
  */
-
-#if flash
-@:native("flash.display.StageAlign")
-#end
-
 @:enum abstract StageAlign(String) from String to String {
 	
 	/**

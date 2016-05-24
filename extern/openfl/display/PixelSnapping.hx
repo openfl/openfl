@@ -6,11 +6,6 @@ package openfl.display;
  * the pixel snapping options by using the <code>pixelSnapping</code> property
  * of a Bitmap object.
  */
-
-#if flash
-@:native("flash.display.PixelSnapping")
-#end
-
 @:enum abstract PixelSnapping(String) from String to String {
 	
 	/**

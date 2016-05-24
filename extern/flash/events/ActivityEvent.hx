@@ -4,7 +4,7 @@ package flash.events; #if (!display && flash)
 extern class ActivityEvent extends Event {
 	
 	
-	public static var ACTIVITY:String;
+	public static var ACTIVITY (default, never):String;
 	
 	public var activating:Bool;
 	

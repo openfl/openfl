@@ -22,12 +22,7 @@ package openfl.display;
  * <code>openfl.filters.DisplacementMapFilter.componentY</code> properties</li>
  * </ul>
  */
-
-#if flash
-@:native("flash.display.BitmapDataChannel")
-#end
-
-@:enum abstract BitmapDataChannel(Int) from Int to Int {
+@:enum abstract BitmapDataChannel(Int) from Int to Int to UInt {
 	
 	/**
 	 * The alpha channel.

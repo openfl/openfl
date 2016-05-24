@@ -4,8 +4,8 @@ package flash.events; #if (!display && flash)
 extern class DataEvent extends TextEvent {
 	
 	
-	public static var DATA:String;
-	public static var UPLOAD_COMPLETE_DATA:String;
+	public static var DATA (default, never):String;
+	public static var UPLOAD_COMPLETE_DATA (default, never):String;
 	
 	public var data:String;
 	
