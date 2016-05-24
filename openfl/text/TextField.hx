@@ -207,7 +207,7 @@ class TextField extends InteractiveObject {
 		
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
 		
-		var index = __textEngine.getBreakIndex ();
+		var index = __textEngine.getLineBreakIndex ();
 		var startIndex = 0;
 		
 		while (index > -1) {
@@ -222,7 +222,7 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			index = __textEngine.getBreakIndex (index + 1);
+			index = __textEngine.getLineBreakIndex (index + 1);
 			
 		}
 		
@@ -391,7 +391,7 @@ class TextField extends InteractiveObject {
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
 		
 		var startIndex = getFirstCharInParagraph (charIndex);
-		var endIndex = __textEngine.getBreakIndex (charIndex) + 1;
+		var endIndex = __textEngine.getLineBreakIndex (charIndex) + 1;
 		
 		if (endIndex == 0) endIndex = __textEngine.text.length;
 		return endIndex - startIndex;
@@ -1158,31 +1158,35 @@ class TextField extends InteractiveObject {
 		__isHTML = true;
 		
 		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
-
-			inline function decodeHTMLEntities(text) {
+			
+			inline function decodeHTMLEntities (text) {
+				
 				var entities = [
-					['quot', '"'],
-					['apos', '\''],
-					['amp', '&'],
-					['lt', '<'],
-					['gt', '>']
+					[ 'quot', '"' ],
+					[ 'apos', '\'' ],
+					[ 'amp', '&' ],
+					[ 'lt', '<' ],
+					[ 'gt', '>' ]
 				];
-
+				
 				for (i in 0...entities.length) {
-					text = new EReg('&'+entities[i][0]+';', 'g').replace(text, entities[i][1]);
+					
+					text = new EReg ('&' + entities[i][0] + ';', 'g').replace (text, entities[i][1]);
+					
 				}
-
+				
 				return text;
+				
 			}
 			
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
-			value = decodeHTMLEntities(value);
-
+			value = decodeHTMLEntities (value);
+			
 			// crude solution
-
+			
 			var segments = value.split ("<");
-
+			
 			if (segments.length == 1) {
 				
 				value = new EReg ("<.*?>", "g").replace (value, "");
@@ -1205,113 +1209,128 @@ class TextField extends InteractiveObject {
 				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 				
 				value = "";
-
+				
 				var formatStack:Array<TextFormat> = [__textFormat.clone()];
 				var sub:String;
 				var noLineBreak:Bool = false;
-
+				
 				for (segment in segments) {
 					
 					if (segment == "") continue;
-
-					var isClosingTag = segment.substr(0, 1) == "/";
-					var tagEndIndex = segment.indexOf(">");
+					
+					var isClosingTag = segment.substr (0, 1) == "/";
+					var tagEndIndex = segment.indexOf (">");
 					var start = tagEndIndex + 1;
-					var spaceIndex = segment.indexOf(" ");
-					var tagName:String = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+					var spaceIndex = segment.indexOf (" ");
+					var tagName:String = segment.substring (isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
 					var format:TextFormat;
-
+					
 					if (isClosingTag) {
-
-						formatStack.pop();
-						format = formatStack[(formatStack.length - 1)].clone();
-
-						if (tagName.toLowerCase() == "p" && __textEngine.textFormatRanges.length > 0) {
+						
+						formatStack.pop ();
+						format = formatStack[formatStack.length - 1].clone ();
+						
+						if (tagName.toLowerCase () == "p" && __textEngine.textFormatRanges.length > 0) {
+							
 							value += "\n";
 							noLineBreak = true;
+							
 						}
-
+						
 						if (start < segment.length) {
-
-							sub = segment.substr(start);
+							
+							sub = segment.substr (start);
 							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
 							value += sub;
 							noLineBreak = false;
-
+							
 						}
-
-					}
-					else {
-
-						format = formatStack[(formatStack.length - 1)].clone();
-
+						
+					} else {
+						
+						format = formatStack[formatStack.length - 1].clone ();
+						
 						if (tagEndIndex > -1) {
-
-							switch (tagName.toLowerCase()) {
-
+							
+							switch (tagName.toLowerCase ()) {
+								
 								case "p":
-
+									
 									if (__textEngine.textFormatRanges.length > 0 && !noLineBreak) {
+										
 										value += "\n";
+										
 									}
-
+									
 									var alignEreg = ~/align="([^"]+)/i;
-									if (alignEreg.match(segment)) {
-										format.align = alignEreg.matched(1).toLowerCase();
+									
+									if (alignEreg.match (segment)) {
+										
+										format.align = alignEreg.matched (1).toLowerCase ();
+										
 									}
-
+								
 								case "font":
-
+									
 									var faceEreg = ~/face="([^"]+)/i;
-									if (faceEreg.match(segment)) {
-										format.font = faceEreg.matched(1);
+									
+									if (faceEreg.match (segment)) {
+										
+										format.font = faceEreg.matched (1);
+										
 									}
-
+									
 									var colorEreg = ~/color="#([^"]+)/i;
-									if (colorEreg.match(segment)) {
-										format.color = Std.parseInt ("0x" + colorEreg.matched(1));
+									
+									if (colorEreg.match (segment)) {
+										
+										format.color = Std.parseInt ("0x" + colorEreg.matched (1));
+										
 									}
-
+									
 									var sizeEreg = ~/size="([^"]+)/i;
-									if (sizeEreg.match(segment)) {
-										format.size = Std.parseInt (sizeEreg.matched(1));
+									
+									if (sizeEreg.match (segment)) {
+										
+										format.size = Std.parseInt (sizeEreg.matched (1));
+										
 									}
-
+								
 								case "b":
-
+									
 									format.bold = true;
-
+								
 								case "u":
-
+									
 									format.underline = true;
-
+								
 								case "i", "em":
-
+									
 									format.italic = true;
-
+								
 							}
-
-							formatStack.push(format);
-
+							
+							formatStack.push (format);
+							
 							if (start < segment.length) {
-
+								
 								sub = segment.substring (start);
 								__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
 								value += sub;
 								noLineBreak = false;
-
+								
 							}
-
+							
 						} else {
-
+							
 							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + segment.length));
 							value += segment;
 							noLineBreak = false;
-
+							
 						}
-
+						
 					}
-
+					
 				}
 				
 			}

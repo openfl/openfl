@@ -430,19 +430,6 @@ class TextEngine {
 	}
 	
 	
-	public function getBreakIndex (?startIndex:Int):Int {
-		
-		var cr = text.indexOf ("\n", startIndex);
-		var lf = text.indexOf ("\r", startIndex);
-		
-		if (cr == -1) return lf;
-		if (lf == -1) return cr;
-		
-		return cr < lf ? cr : lf;
-		
-	}
-	
-	
 	public function getLine (index:Int):String {
 		
 		if (index < 0 || index > lineBreaks.length + 1) {
@@ -460,6 +447,19 @@ class TextEngine {
 			return text.substring (index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
 			
 		}
+		
+	}
+	
+	
+	public function getLineBreakIndex (startIndex:Int = 0):Int {
+		
+		var cr = text.indexOf ("\n", startIndex);
+		var lf = text.indexOf ("\r", startIndex);
+		
+		if (cr == -1) return lf;
+		if (lf == -1) return cr;
+		
+		return cr < lf ? cr : lf;
 		
 	}
 	
@@ -593,7 +593,7 @@ class TextEngine {
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
-		var breakIndex = getBreakIndex ();
+		var breakIndex = getLineBreakIndex ();
 		
 		var marginRight = 0.0;
 		var offsetX = 2.0;
@@ -788,18 +788,18 @@ class TextEngine {
 					lineIndex++;
 					
 				}
-
+				
 				if (formatRange.end == breakIndex) {
 					
 					nextFormatRange ();
 					lineFormat = formatRange.format;
 					
 				}
-
+				
 				textIndex = breakIndex + 1;
-				breakIndex = getBreakIndex (textIndex);
+				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
-
+				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
 				
 				layoutGroup = null;
@@ -942,11 +942,11 @@ class TextEngine {
 					}
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-
+						
 						if (spaceIndex > formatRange.end) {
-
+							
 							textIndex--;
-
+							
 						}
 						
 						break;
@@ -962,9 +962,9 @@ class TextEngine {
 					break;
 					
 				}
-
+				
 				if (textIndex < formatRange.end) {
-
+					
 					layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
 					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
 					layoutGroup.offsetX = offsetX;
@@ -976,13 +976,13 @@ class TextEngine {
 					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
 					layoutGroup.height = heightValue;
 					layoutGroups.push (layoutGroup);
-
+					
 					offsetX += layoutGroup.width;
-
+					
 					textIndex = formatRange.end;
-
+					
 				}
-
+				
 				nextFormatRange ();
 				
 			}
