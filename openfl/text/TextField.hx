@@ -207,7 +207,7 @@ class TextField extends InteractiveObject {
 		
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
 		
-		var index = __textEngine.text.indexOf ("\n");
+		var index = __textEngine.getBreakIndex ();
 		var startIndex = 0;
 		
 		while (index > -1) {
@@ -222,7 +222,7 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			index = __textEngine.text.indexOf ("\n", index + 1);
+			index = __textEngine.getBreakIndex (index + 1);
 			
 		}
 		
@@ -391,7 +391,7 @@ class TextField extends InteractiveObject {
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
 		
 		var startIndex = getFirstCharInParagraph (charIndex);
-		var endIndex = __textEngine.text.indexOf ("\n", charIndex) + 1;
+		var endIndex = __textEngine.getBreakIndex (charIndex) + 1;
 		
 		if (endIndex == 0) endIndex = __textEngine.text.length;
 		return endIndex - startIndex;
