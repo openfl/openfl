@@ -1272,13 +1272,9 @@ class TextField extends InteractiveObject {
 										value += "\n";
 									}
 
-									var alignIndex = segment.indexOf("align=");
-
-									if (alignIndex > -1 && alignIndex < start) {
-
-										var alignValue = segment.substr (alignIndex + 6, segment.indexOf ("\"", alignIndex));
-										format.align = alignValue.toLowerCase();
-
+									var alignEreg = ~/align="([^"]+)/i;
+									if (alignEreg.match(segment)) {
+										format.align = alignEreg.matched(1).toLowerCase();
 									}
 
 								case "font":
