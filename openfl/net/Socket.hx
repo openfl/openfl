@@ -182,7 +182,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			try {
 				
 				#if (js && html5)
-				__socket.send (cast (__output, ArrayBuffer));
+				__socket.send (__output);
 				#else
 				__socket.output.write (__output);
 				#end
