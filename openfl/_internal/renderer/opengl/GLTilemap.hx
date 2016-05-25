@@ -20,7 +20,7 @@ class GLTilemap {
 		if (tilemap.__layers == null || tilemap.__layers.length == 0) return;
 		
 		var gl = renderSession.gl;
-		var shader:GLShader = cast renderSession.shaderManager.defaultShader;
+		var shader = cast renderSession.shaderManager.defaultShader;
 		
 		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
 		renderSession.shaderManager.setShader (shader);
@@ -41,8 +41,8 @@ class GLTilemap {
 			
 		}
 		
-		gl.uniform1f (shader.uniforms.get ("uAlpha"), tilemap.__worldAlpha);
-		gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (tilemap.__worldTransform));
+		gl.uniform1f (shader.data.uAlpha.index, tilemap.__worldAlpha);
+		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__worldTransform));
 		
 		var tiles, count, bufferData, buffer, previousLength, offset, uvs, uv;
 		var cacheTileID = -1, tileWidth = 0, tileHeight = 0;
@@ -168,8 +168,8 @@ class GLTilemap {
 			
 			gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
 			
-			gl.vertexAttribPointer (shader.attributes.get ("aPosition"), 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.attributes.get ("aTexCoord"), 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 			
 			gl.drawArrays (gl.TRIANGLES, 0, tiles.length * 6);
 			

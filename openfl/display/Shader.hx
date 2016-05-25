@@ -25,11 +25,7 @@ class Shader {
 		byteCode = code;
 		precisionHint = FULL;
 		
-		if (gl != null && glFragmentSource != null && glVertexSource != null) {
-			
-			__init ();
-			
-		}
+		__init ();
 		
 	}
 	
@@ -43,7 +39,7 @@ class Shader {
 	
 	private function __enable ():Void {
 		
-		
+		__init ();
 		
 	}
 	
@@ -52,11 +48,22 @@ class Shader {
 		
 		if (gl != null && glProgram == null) {
 			
-			glProgram = GLUtils.createProgram (glVertexSource, glFragmentSource);
+			var fragment = 
+				
+				"#ifdef GLES
+				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float
+				#endif
+				" + glFragmentSource;
+			
+			glProgram = GLUtils.createProgram (glVertexSource, fragment);
 			
 		}
 		
-		data = new ShaderData (null);
+		if (data == null) {
+			
+			data = new ShaderData (null);
+			
+		}
 		
 	}
 	
