@@ -630,7 +630,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		__cacheGLMatrix.invert();
 		__cacheGLMatrix.__translateTransformed(x, y);
 		__cacheGLMatrix.concat(__worldTransform);
-		__cacheGLMatrix.translate ( __offset.x, __offset.y);
+		
+		if (scrollRect != null) {
+			var __offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
+			__cacheGLMatrix.translate ( __offset.x, __offset.y);
+		}
 		
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
