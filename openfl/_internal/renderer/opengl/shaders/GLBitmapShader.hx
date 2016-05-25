@@ -86,28 +86,4 @@ class GLBitmapShader extends Shader {
 	}
 	
 	
-	private override function __init () {
-		
-		super.__init ();
-		
-		data.aPosition = new ShaderParameter ();
-		data.aTexCoord = new ShaderParameter ();
-		data.uMatrix = new ShaderParameter ();
-		data.uImage0 = new ShaderParameter ();
-		data.uAlpha = new ShaderParameter ();
-		
-		data.aPosition.index = gl.getAttribLocation (glProgram, "aPosition");
-		data.aPosition.type = ShaderParameterType.FLOAT4;
-		data.aTexCoord.index = gl.getAttribLocation (glProgram, "aTexCoord");
-		data.aTexCoord.type = ShaderParameterType.FLOAT2;
-		data.uMatrix.index = gl.getUniformLocation (glProgram, "uMatrix");
-		data.uMatrix.type = ShaderParameterType.MATRIX4X4;
-		data.uImage0.index = gl.getUniformLocation (glProgram, "uImage0");
-		data.uImage0.type = null;
-		data.uAlpha.index = gl.getUniformLocation (glProgram, "uAlpha");
-		data.uAlpha.type = ShaderParameterType.FLOAT;
-		
-	}
-	
-	
 }
