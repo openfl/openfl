@@ -1,20 +1,18 @@
 package openfl._internal.renderer.opengl;
 
 
-import lime.graphics.opengl.GLProgram;
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.AbstractShader;
-import openfl._internal.renderer.opengl.GLShader;
 import openfl._internal.renderer.AbstractShaderManager;
 import openfl._internal.renderer.opengl.shaders.GLBitmapShader;
+import openfl.display.Shader;
+
+@:access(openfl.display.Shader)
 
 
 class GLShaderManager extends AbstractShaderManager {
 	
 	
-	private static var compiledShadersCache:Map<String, GLProgram> = new Map ();
-	
-	private var currentShader:GLShader;
+	private var currentShader:Shader;
 	private var gl:GLRenderContext;
 	
 	
@@ -29,13 +27,13 @@ class GLShaderManager extends AbstractShaderManager {
 	}
 	
 	
-	public override function setShader (shader:AbstractShader):Void {
+	public override function setShader (shader:Shader):Void {
 		
 		if (currentShader == shader) return;
 		
 		if (currentShader != null) {
 			
-			currentShader.disable ();
+			currentShader.__disable ();
 			
 		}
 		
@@ -47,11 +45,10 @@ class GLShaderManager extends AbstractShaderManager {
 			
 		}
 		
-		var glShader:GLShader = cast shader;
-		currentShader = glShader;
+		currentShader = shader;
 		
-		gl.useProgram (glShader.program);
-		currentShader.enable ();
+		gl.useProgram (shader.glProgram);
+		currentShader.__enable ();
 		
 	}
 	

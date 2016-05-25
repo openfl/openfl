@@ -36,7 +36,7 @@ class GLShape {
 			
 			if (graphics.__bitmap != null && graphics.__visible && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
 				
-				var shader:GLShader = cast renderSession.shaderManager.defaultShader;
+				var shader = renderSession.shaderManager.defaultShader;
 				
 				renderSession.blendModeManager.setBlendMode (shape.blendMode);
 				renderSession.shaderManager.setShader (shader);
@@ -63,8 +63,8 @@ class GLShape {
 				transform.ty = bounds.y;
 				transform.concat (shape.__worldTransform);
 				
-				gl.uniform1f (shader.uniforms.get ("uAlpha"), shape.__worldAlpha);
-				gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (transform));
+				gl.uniform1f (shader.data.uAlpha.index, shape.__worldAlpha);
+				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (transform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
 				
@@ -72,8 +72,8 @@ class GLShape {
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 				
 				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
-				gl.vertexAttribPointer (shader.attributes.get ("aPosition"), 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.attributes.get ("aTexCoord"), 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				

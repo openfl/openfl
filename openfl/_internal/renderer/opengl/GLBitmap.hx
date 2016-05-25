@@ -20,7 +20,7 @@ class GLBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			var shader:GLShader = cast renderSession.shaderManager.defaultShader;
+			var shader = renderSession.shaderManager.defaultShader;
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.blendMode);
 			renderSession.shaderManager.setShader (shader);
@@ -41,8 +41,8 @@ class GLBitmap {
 				
 			}
 			
-			gl.uniform1f (shader.uniforms.get ("uAlpha"), bitmap.__worldAlpha);
-			gl.uniformMatrix4fv (shader.uniforms.get ("uMatrix"), false, renderer.getMatrix (bitmap.__worldTransform));
+			gl.uniform1f (shader.data.uAlpha.index, bitmap.__worldAlpha);
+			gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (bitmap.__worldTransform));
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
 			
@@ -61,8 +61,8 @@ class GLBitmap {
 			}
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, bitmap.bitmapData.getBuffer (gl));
-			gl.vertexAttribPointer (shader.attributes.get ("aPosition"), 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.attributes.get ("aTexCoord"), 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+			gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
