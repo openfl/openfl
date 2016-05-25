@@ -183,10 +183,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				
 				#if (js && html5)
 				var buffer:ArrayBuffer = __output;
-				if (buffer.length > __output.byteLength) buffer = buffer.slice (0, __output.byteLength);
+				if (buffer.length > __output.length) buffer = buffer.slice (0, __output.length);
 				__socket.send (buffer);
 				#else
-				__socket.output.writeBytes (__output, 0, __output.byteLength);
+				__socket.output.writeBytes (__output, 0, __output.length);
 				#end
 				__output = new ByteArray ();
 				__output.endian = __endian;
