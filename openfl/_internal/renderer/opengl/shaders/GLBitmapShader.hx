@@ -56,34 +56,4 @@ class GLBitmapShader extends Shader {
 	}
 	
 	
-	private override function __disable ():Void {
-		
-		gl.disableVertexAttribArray (data.aPosition.index);
-		gl.disableVertexAttribArray (data.aTexCoord.index);
-		
-		gl.bindBuffer (gl.ARRAY_BUFFER, null);
-		gl.bindTexture (gl.TEXTURE_2D, null);
-		
-		#if desktop
-		gl.disable (gl.TEXTURE_2D);
-		#end
-		
-	}
-	
-	
-	private override function __enable ():Void {
-		
-		gl.enableVertexAttribArray (data.aPosition.index);
-		gl.enableVertexAttribArray (data.aTexCoord.index);
-		gl.uniform1i (data.uImage0.index, 0);
-		
-		gl.activeTexture (gl.TEXTURE0);
-		
-		#if desktop
-		gl.enable (gl.TEXTURE_2D);
-		#end
-		
-	}
-	
-	
 }

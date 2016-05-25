@@ -16,7 +16,13 @@ package openfl.display;
 	public var INT3 = "int3";
 	public var INT4 = "int4";
 	public var MATRIX2X2 = "matrix2x2";
+	public var MATRIX2X3 = "matrix2x3";
+	public var MATRIX2X4 = "matrix2x4";
+	public var MATRIX3X2 = "matrix3x2";
 	public var MATRIX3X3 = "matrix3x3";
+	public var MATRIX3X4 = "matrix3x4";
+	public var MATRIX4X2 = "matrix4x2";
+	public var MATRIX4X3 = "matrix4x3";
 	public var MATRIX4X4 = "matrix4x4";
 	
 }
