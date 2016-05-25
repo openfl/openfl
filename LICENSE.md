@@ -3,7 +3,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2013-2015 Joshua Granick and other OpenFL contributors
+Copyright (c) 2013-2016 Joshua Granick and other OpenFL contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,12 +47,6 @@ https://github.com/away3d/away3d-core-openfl
     openfl/_internal/aglsl/
     openfl/display3D/
     openfl/utils/AGALMiniAssembler.hx
-
-The following files were developed in collaboration with the NME project,
-which is available under an "MIT" license. For details, see
-https://github.com/haxenme/nme
-
-    openfl/_legacy/
 
 Excerpts of the Adobe ActionScript 3.0 Reference are used, with modification,
 which is available under the "CC BY-NC-SA 3.0" license. For details, see
