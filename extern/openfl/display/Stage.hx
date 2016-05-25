@@ -1,7 +1,9 @@
 package openfl.display; #if (display || !flash)
 
 
+import lime.app.Application in LimeApplication;
 import lime.app.IModule;
+import lime.app.Preloader;
 import lime.graphics.RenderContext;
 import lime.graphics.Renderer;
 import lime.ui.Gamepad;
@@ -580,6 +582,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	#end
 	
 	
+	@:noCompletion @:dox(hide) public function addRenderer (renderer:Renderer):Void;
+	@:noCompletion @:dox(hide) public function addWindow (window:Window):Void;
+	@:noCompletion @:dox(hide) public function registerModule (application:LimeApplication):Void;
+	@:noCompletion @:dox(hide) public function removeRenderer (renderer:Renderer):Void;
+	@:noCompletion @:dox(hide) public function removeWindow (window:Window):Void;
+	@:noCompletion @:dox(hide) public function setPreloader (preloader:Preloader):Void;
+	@:noCompletion @:dox(hide) public function unregisterModule (application:LimeApplication):Void;
 	@:noCompletion @:dox(hide) public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void;
 	@:noCompletion @:dox(hide) public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void;
 	@:noCompletion @:dox(hide) public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void;
