@@ -173,8 +173,8 @@ class Shader {
 			
 			var fragment = 
 				
-				"#ifdef GLES
-				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float
+				"#ifdef GL_ES
+				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
 				#endif
 				" + glFragmentSource;
 			
