@@ -784,7 +784,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	private function get_cacheAsBitmap ():Bool {
 		
-		return __cacheAsBitmap;
+		return (filters == null ? __cacheAsBitmap : true);
 		
 	}
 	
@@ -792,7 +792,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private function set_cacheAsBitmap (value:Bool):Bool {
 		
 		__setRenderDirty ();
-		return __cacheAsBitmap = __forceCacheAsBitmap ? true : value;
+		return __cacheAsBitmap = value;
 		
 	}
 	
@@ -832,14 +832,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		if (value != null && value.length > 0) {
 			
 			__filters = value;
-			__forceCacheAsBitmap = true;
 			__cacheAsBitmap = true;
 			//__updateFilters = true;
 			
 		} else {
 			
 			__filters = null;
-			__forceCacheAsBitmap = false;
 			__cacheAsBitmap = false;
 			//__updateFilters = false;
 			

@@ -4,6 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
+import openfl.filters.ShaderFilter;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
@@ -20,7 +21,17 @@ class GLBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			var shader = renderSession.shaderManager.defaultShader;
+			var shader;
+			
+			if (bitmap.filters != null && Std.is (bitmap.filters[0], ShaderFilter)) {
+				
+				shader = cast (bitmap.filters[0], ShaderFilter).shader;
+				
+			} else {
+				
+				shader = renderSession.shaderManager.defaultShader;
+				
+			}
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.blendMode);
 			renderSession.shaderManager.setShader (shader);

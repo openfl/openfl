@@ -4,6 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 
@@ -15,12 +16,22 @@ import openfl.geom.Point;
 class GLTilemap {
 	
 	
-	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
+	public static function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		if (tilemap.__layers == null || tilemap.__layers.length == 0) return;
 		
 		var gl = renderSession.gl;
-		var shader = cast renderSession.shaderManager.defaultShader;
+		var shader;
+		
+		if (tilemap.filters != null && Std.is (tilemap.filters[0], ShaderFilter)) {
+			
+			shader = cast (tilemap.filters[0], ShaderFilter).shader;
+			
+		} else {
+			
+			shader = renderSession.shaderManager.defaultShader;
+			
+		}
 		
 		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
 		renderSession.shaderManager.setShader (shader);

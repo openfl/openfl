@@ -3,7 +3,6 @@ package openfl._internal.renderer.opengl;
 
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractShaderManager;
-import openfl._internal.renderer.opengl.shaders.GLBitmapShader;
 import openfl.display.Shader;
 
 @:access(openfl.display.Shader)
@@ -22,7 +21,9 @@ class GLShaderManager extends AbstractShaderManager {
 		
 		this.gl = gl;
 		
-		defaultShader = new GLBitmapShader (gl);
+		defaultShader = new Shader ();
+		defaultShader.gl = gl;
+		defaultShader.__init ();
 		
 	}
 	
@@ -46,6 +47,13 @@ class GLShaderManager extends AbstractShaderManager {
 		}
 		
 		currentShader = shader;
+		
+		if (currentShader.gl == null) {
+			
+			currentShader.gl = gl;
+			currentShader.__init ();
+			
+		}
 		
 		gl.useProgram (shader.glProgram);
 		currentShader.__enable ();

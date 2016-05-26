@@ -28,6 +28,43 @@ class Shader {
 		byteCode = code;
 		precisionHint = FULL;
 		
+		glVertexSource =
+			
+			"attribute vec4 aPosition;
+			attribute vec2 aTexCoord;
+			varying vec2 vTexCoord;
+			
+			uniform mat4 uMatrix;
+			
+			void main(void) {
+				
+				vTexCoord = aTexCoord;
+				gl_Position = uMatrix * aPosition;
+				
+			}";
+		
+		glFragmentSource = 
+			
+			"varying vec2 vTexCoord;
+			uniform sampler2D uImage0;
+			uniform float uAlpha;
+			
+			void main(void) {
+				
+				vec4 color = texture2D (uImage0, vTexCoord);
+				
+				if (color.a == 0.0) {
+					
+					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+					
+				} else {
+					
+					gl_FragColor = vec4 (color.rgb / color.a, color.a * uAlpha);
+					
+				}
+				
+			}";
+		
 		__init ();
 		
 	}
@@ -126,6 +163,12 @@ class Shader {
 	
 	private function __init ():Void {
 		
+		if (data == null) {
+			
+			data = new ShaderData (null);
+			
+		}
+		
 		if (gl != null && glProgram == null && glFragmentSource != null && glVertexSource != null) {
 			
 			var fragment = 
@@ -136,12 +179,6 @@ class Shader {
 				" + glFragmentSource;
 			
 			glProgram = GLUtils.createProgram (glVertexSource, fragment);
-			
-		}
-		
-		if (data == null) {
-			
-			data = new ShaderData (null);
 			
 			if (glProgram != null) {
 				
@@ -189,7 +226,6 @@ class Shader {
 					
 				}
 				
-				input.storageType = storageType;
 				Reflect.setField (data, name, input);
 				
 			} else {
@@ -233,7 +269,6 @@ class Shader {
 					
 				}
 				
-				parameter.storageType = storageType;
 				Reflect.setField (data, name, parameter);
 				
 			}

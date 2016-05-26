@@ -6,6 +6,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
+import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
 
 @:access(openfl.display.DisplayObject)
@@ -36,7 +37,17 @@ class GLShape {
 			
 			if (graphics.__bitmap != null && graphics.__visible && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
 				
-				var shader = renderSession.shaderManager.defaultShader;
+				var shader;
+				
+				if (shape.filters != null && Std.is (shape.filters[0], ShaderFilter)) {
+					
+					shader = cast (shape.filters[0], ShaderFilter).shader;
+					
+				} else {
+					
+					shader = renderSession.shaderManager.defaultShader;
+					
+				}
 				
 				renderSession.blendModeManager.setBlendMode (shape.blendMode);
 				renderSession.shaderManager.setShader (shader);
