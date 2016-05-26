@@ -211,7 +211,13 @@ class Shader {
 					case "vec3", "dvec3": FLOAT3;
 					case "vec4", "dvec4": FLOAT4;
 					case "mat2", "mat2x2": MATRIX2X2;
+					case "mat2x3": MATRIX2X3;
+					case "mat2x4": MATRIX2X4;
+					case "mat3x2": MATRIX3X2;
 					case "mat3", "mat3x3": MATRIX3X3;
+					case "mat3x4": MATRIX3X4;
+					case "mat4x2": MATRIX4X2;
+					case "mat4x3": MATRIX4X3;
 					case "mat4", "mat4x4": MATRIX4X4;
 					default: null;
 					
