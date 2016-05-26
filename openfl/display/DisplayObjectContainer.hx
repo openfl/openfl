@@ -77,7 +77,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function addChildAt (child:DisplayObject, index:Int):DisplayObject {
 
-		if (index < 0) {
+		if (index < 0 || index > __children.length) {
 			throw "Invalid index position " + index;
 			
 		}
