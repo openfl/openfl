@@ -67,7 +67,7 @@ class CairoTextField {
 			
 			var options = new CairoFontOptions ();
 			
-			if (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) {
+			if (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400) {
 				
 				options.hintStyle = CairoHintStyle.NONE;
 				options.hintMetrics = CairoHintMetrics.OFF;

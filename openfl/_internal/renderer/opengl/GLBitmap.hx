@@ -8,6 +8,7 @@ import openfl.filters.ShaderFilter;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Stage)
 
 
 class GLBitmap {
@@ -57,9 +58,7 @@ class GLBitmap {
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
 			
-			// TODO: Add state management for this?
-			
-			if (bitmap.smoothing) {
+			if (bitmap.smoothing || bitmap.stage.__displayMatrix.a != 1 || bitmap.stage.__displayMatrix.d != 1) {
 				
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
