@@ -784,7 +784,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	private function get_cacheAsBitmap ():Bool {
 		
-		return (filters == null ? __cacheAsBitmap : true);
+		return (__filters == null ? __cacheAsBitmap : true);
 		
 	}
 	
