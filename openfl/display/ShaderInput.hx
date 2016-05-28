@@ -6,7 +6,7 @@ package openfl.display;
 	
 	public var channels (default, null):Int;
 	public var height:Int;
-	public var index (default, null):Int;
+	public var index (default, null):Dynamic;
 	public var input:Dynamic;
 	public var width:Int;
 	
