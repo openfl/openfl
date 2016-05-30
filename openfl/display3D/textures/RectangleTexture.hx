@@ -5,13 +5,14 @@ import openfl.display.BitmapData;
 import openfl.display3D.Context3D;
 import openfl.gl.GL;
 import openfl.gl.GLTexture;
-import openfl.geom.Rectangle;
+import openfl.utils.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.utils.UInt8Array;
 
 
 @:final class RectangleTexture extends TextureBase {
 	
+	private static var internalFormat:Int = -1;
 	
 	public var optimizeForRenderToTexture:Bool;
 	
@@ -20,21 +21,17 @@ import openfl.utils.UInt8Array;
 		
 		optimizeForRenderToTexture = optimize;
 		
-		#if (js || neko)
-		if (optimizeForRenderToTexture == null) optimizeForRenderToTexture = false;
-		#end
+		if (internalFormat == -1) {
+			
+			#if native
+			internalFormat = GL.BGRA_EXT;
+			#else
+			internalFormat = GL.RGBA;
+			#end
+			
+		}
 		
 		super (context, glTexture, width, height);
-		
-		#if (cpp || neko || nodejs)
-		if (optimizeForRenderToTexture)
-			GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1); 
-		
-		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-		#end
 		
 	}
 	
@@ -46,67 +43,55 @@ import openfl.utils.UInt8Array;
 	
 	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
 		
-		var p:ByteArray = bitmapData.image.data.buffer;
+		var image = bitmapData.image;
 		
-		width = bitmapData.width;
-		height = bitmapData.height;
+		if (!image.premultiplied && image.transparent) {
+			
+			image = image.clone ();
+			image.premultiplied = true;
+			
+		}
 		
-		uploadFromByteArray (p, 0);
+		width = image.width;
+		height = image.height;
+		
+		uploadFromTypedArray (image.data);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int):Void {
 		
-		GL.bindTexture (GL.TEXTURE_2D, glTexture);
-		
-		#if (js && html5)
-			
-			if (optimizeForRenderToTexture)
-				GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1);
-			
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-			
-			var source = new UInt8Array (data.length);
-			data.position = byteArrayOffset;
-			
-			var i:Int = 0;
-			
-			while (data.position < data.length) {
-				
-				source[i] = data.readUnsignedByte ();
-				i++;
-				
-			}
-			
-		#else
-			
-			if (optimizeForRenderToTexture) {
-				
-				GL.pixelStorei(GL.UNPACK_FLIP_Y_WEBGL, 1); 
-				GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-				GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-				GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-				GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-			 
-			}
-			
-			#if nodejs
-			var source = data.byteView;
-			#else
-			var source = new UInt8Array(data);
-			#end
-			
-		#end
-		
-		// mipLevel always should be 0 in rectangle textures
-		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, width, height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
-		GL.bindTexture (GL.TEXTURE_2D, null);
+		uploadFromTypedArray (getUInt8ArrayFromByteArray (data, byteArrayOffset));
 		
 	}
 	
+	@:deprecated("uploadFromUInt8Array is deprecated. Use uploadFromTypedArray instead.")
+	public inline function uploadFromUInt8Array (data:UInt8Array):Void {
+		
+		uploadFromTypedArray (data);
+		
+	}
+	
+	public function uploadFromTypedArray (data:ArrayBufferView, yFlipped:Bool = false, premultiplied:Bool = true):Void {
+		
+		// TODO use premultiplied parameter
+		
+		GL.bindTexture (GL.TEXTURE_2D, glTexture);
+		
+		#if (js && html5)
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, yFlipped ? 0 : 1);
+		#else
+		if (!yFlipped) {
+			
+			data = flipPixels (data, width, height);
+			
+		}
+		#end
+		
+		GL.texImage2D (GL.TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, GL.UNSIGNED_BYTE, data);
+		GL.bindTexture (GL.TEXTURE_2D, null);
+		
+	}
 	
 }

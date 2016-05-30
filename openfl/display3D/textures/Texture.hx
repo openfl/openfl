@@ -4,9 +4,7 @@ package openfl.display3D.textures;
 import openfl.display3D.Context3D;
 import openfl.gl.GL;
 import openfl.gl.GLTexture;
-import openfl.gl.GLFramebuffer;
-import openfl.geom.Rectangle;
-import openfl.utils.ArrayBuffer;
+import openfl.utils.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.utils.UInt8Array;
 
@@ -27,31 +25,18 @@ using openfl.display.BitmapData;
 
 		mipmapsGenerated = false;
 		
-		if (internalFormat == -1){
+		if (internalFormat == -1) {
+			
 			#if native
 			internalFormat = GL.BGRA_EXT;
 			#else
 			internalFormat = GL.RGBA;
 			#end
+			
 		}
-		
-		#if (js || neko)
-		if (optimizeForRenderToTexture == null) optimizeForRenderToTexture = false;
-		#end
 		
 		super (context, glTexture, width, height);
 		
-		#if (cpp || neko || nodejs)
-		if (optimizeForRenderToTexture) { 
-			
-			GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1); 
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-			
-		}
-		#end
 	}
 	
 	
@@ -76,49 +61,45 @@ using openfl.display.BitmapData;
 		width = image.width;
 		height = image.height;
 		
-		uploadFromUInt8Array (image.data, miplevel);
+		uploadFromTypedArray (image.data, miplevel);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, miplevel:Int = 0):Void {
 		
-		#if js
-		var source = new UInt8Array (data.length);
-		data.position = byteArrayOffset;
-		
-		var i:Int = 0;
-		
-		while (data.position < data.length) {
-			
-			source[i] = data.readUnsignedByte ();
-			i++;
-			
-		}
-		#else
-		var source = new UInt8Array (data);
-		#end
-		
-		uploadFromUInt8Array (source, miplevel);
+		uploadFromTypedArray (getUInt8ArrayFromByteArray (data, byteArrayOffset), miplevel);
 		
 	}
 	
 	
-	public function uploadFromUInt8Array (data:UInt8Array, miplevel:Int = 0):Void {
+	@:deprecated("uploadFromUInt8Array is deprecated. Use uploadFromTypedArray instead.")
+	public inline function uploadFromUInt8Array (data:UInt8Array, miplevel:Int = 0):Void {
+		
+		uploadFromTypedArray (data, miplevel);
+		
+	}
+	
+	
+	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:Int = 0, yFlipped:Bool = false, premultiplied:Bool = true):Void {
+		
+		// TODO use premultiplied parameter
+		
+		var size = getSizeForMipLevel (miplevel);
 		
 		GL.bindTexture (GL.TEXTURE_2D, glTexture);
 		
-		if (optimizeForRenderToTexture) {
+		#if (js && html5)
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, yFlipped ? 0 : 1);
+		#else
+		if (!yFlipped) {
 			
-			GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+			data = flipPixels (data, size.width, size.height);
 			
 		}
+		#end
 		
-		GL.texImage2D (GL.TEXTURE_2D, miplevel, internalFormat, width, height, 0, internalFormat, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (GL.TEXTURE_2D, miplevel, internalFormat, size.width, size.height, 0, internalFormat, GL.UNSIGNED_BYTE, data);
 		GL.bindTexture (GL.TEXTURE_2D, null);
 		
 	}
