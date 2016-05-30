@@ -4,9 +4,7 @@ package openfl.display3D.textures;
 import openfl.display3D.Context3D;
 import openfl.gl.GL;
 import openfl.gl.GLTexture;
-import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import openfl.utils.UInt8Array;
 
 using openfl.display.BitmapData;
 
@@ -53,6 +51,10 @@ using openfl.display.BitmapData;
 	public function uploadFromBitmapData (bitmapData:BitmapData, side:Int, miplevel:Int = 0):Void {
 		
 		var source = bitmapData.image.data;
+		
+		#if (js && html5)
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 0);
+		#end
 		
 		GL.bindTexture (GL.TEXTURE_CUBE_MAP, glTexture);
 		
