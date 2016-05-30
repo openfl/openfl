@@ -11,6 +11,8 @@ extern class ProgressEvent extends Event {
 	
 	#if (flash && air)
 	static var STANDARD_OUTPUT_DATA : String;
+	static var STANDARD_ERROR_DATA : String;
+	static var STANDARD_INPUT_PROGRESS : String;
 	#end
 	
 	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0);
