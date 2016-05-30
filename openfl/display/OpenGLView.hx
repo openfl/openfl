@@ -58,7 +58,7 @@ class OpenGLView extends DirectRenderer {
 				__context = cast __canvas.getContext ("experimental-webgl", options);
 			}
 			
-			#if debug
+			#if debugWebGL
 			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 			#end
 			
