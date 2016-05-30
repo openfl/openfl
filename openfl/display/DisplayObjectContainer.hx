@@ -578,6 +578,16 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
+		
 		if (__removedChildren.length > 0) {
 			
 			__removedChildren.splice (0, __removedChildren.length);
@@ -639,6 +649,16 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 			
 			child.__renderCanvas (renderSession);
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
 			
 		}
 		
@@ -755,6 +775,16 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 			
 			child.__renderGL (renderSession);
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
 			
 		}
 		
