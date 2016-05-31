@@ -79,7 +79,7 @@ class AGALMiniAssembler {
 				glType = GL.VERTEX_SHADER;
 				shaderType = "vertex";
 			
-			case FRAGMENT:
+			default:
 				
 				glType = GL.FRAGMENT_SHADER;
 				shaderType = "fragment";
