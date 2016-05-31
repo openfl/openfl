@@ -33,13 +33,13 @@ class AGLSLCompiler {
 				
 				concatSource = "part vertex 1 \n" + source + "\nendpart\n";
 				agalMiniAssembler.__assemble (concatSource);
-				data = agalMiniAssembler.r.get ("vertex").data;
+				data = agalMiniAssembler.__r.get ("vertex").data;
 			
 			case "fragment":
 				
 				concatSource = "part fragment 1 \n" + source + "\nendpart\n";
 				agalMiniAssembler.__assemble (concatSource);
-				data = agalMiniAssembler.r.get ("fragment").data;
+				data = agalMiniAssembler.__r.get ("fragment").data;
 			
 			default:
 				
