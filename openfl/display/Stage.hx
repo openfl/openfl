@@ -742,6 +742,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Telemetry.__advanceFrame ();
 		#end
 		
+		if (__renderer != null) {
+			
+			__renderer.init (this);
+			
+		}
+		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
 		
 		if (__invalidated) {
@@ -764,15 +770,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			switch (renderer.context) {
+			if (renderer.type == CAIRO) {
 				
-				case CAIRO (cairo):
+				switch (renderer.context) {
 					
-					cast (__renderer, CairoRenderer).cairo = cairo;
-					@:privateAccess (__renderer.renderSession).cairo = cairo;
+					case CAIRO (cairo):
+						
+						cast (__renderer, CairoRenderer).cairo = cairo;
+						@:privateAccess (__renderer.renderSession).cairo = cairo;
+					
+					default:
+						
+				}
 				
-				default:
-					
 			}
 			
 			__renderer.render (this);

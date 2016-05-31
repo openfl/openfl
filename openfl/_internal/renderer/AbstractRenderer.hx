@@ -26,6 +26,13 @@ class AbstractRenderer {
 	}
 	
 	
+	public function init (stage:Stage):Void {
+		
+		
+		
+	}
+	
+	
 	public function render (stage:Stage):Void {
 		
 		

@@ -56,6 +56,23 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
+	public override function init (stage:Stage):Void {
+		
+		if (this.transparent) {
+			
+			gl.clearColor (1, 0, 0, 1);
+			
+		} else {
+			
+			gl.clearColor (stage.__colorSplit[0], stage.__colorSplit[1], stage.__colorSplit[2], 1);
+			
+		}
+		
+		gl.clear (gl.COLOR_BUFFER_BIT);
+		
+	}
+	
+	
 	public override function render (stage:Stage):Void {
 		
 		var displayMatrix = stage.__displayMatrix;
@@ -65,24 +82,6 @@ class GLRenderer extends AbstractRenderer {
 		var displayHeight = Math.round (displayMatrix.__transformInverseY (0, height) - offsetY);
 		
 		gl.viewport (offsetX, offsetY, displayWidth, displayHeight);
-		
-		// Temporary fix for Stage3D
-		
-		if (stage.__children.length == 0 || !Std.is (stage.__children[0], OpenGLView)) {
-			
-			if (this.transparent) {
-				
-				gl.clearColor (1, 0, 0, 1);
-				
-			} else {
-				
-				gl.clearColor (stage.__colorSplit[0], stage.__colorSplit[1], stage.__colorSplit[2], 1);
-				
-			}
-			
-			gl.clear (gl.COLOR_BUFFER_BIT);
-			
-		}
 		
 		stage.__renderGL (renderSession);
 		
