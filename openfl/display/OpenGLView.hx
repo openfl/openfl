@@ -69,7 +69,7 @@ class OpenGLView extends DirectRenderer {
 			__initialized = true;
 			
 		}
-		#elseif !webgl
+		#elseif canvas
 		if (!__added) {
 			
 			__added = true;
@@ -218,7 +218,7 @@ class OpenGLView extends DirectRenderer {
 		
 		#elseif (js && html5)
 		
-		#if (!dom && !webgl)
+		#if (canvas && !dom)
 		return false;
 		#else
 		
