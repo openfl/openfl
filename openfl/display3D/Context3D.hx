@@ -23,6 +23,10 @@ import openfl.utils.ByteArray;
 import openfl.utils.Float32Array;
 import openfl.Lib;
 
+@:access(openfl.display3D.Program3D)
+@:access(openfl.display3D.VertexBuffer3D)
+
+
 @:final class Context3D {
 	
 	
@@ -263,11 +267,15 @@ import openfl.Lib;
 	
 	public function __deleteVertexBuffer (buffer:VertexBuffer3D):Void {
 		
-		if (buffer.glBuffer == null)
+		if (buffer.__glBuffer == null) {
+			
 			return;
+			
+		}
+		
 		vertexBuffersCreated.remove (buffer);
-		GL.deleteBuffer (buffer.glBuffer);
-		buffer.glBuffer = null;
+		GL.deleteBuffer (buffer.__glBuffer);
+		buffer.__glBuffer = null;
 		
 	}
 	
@@ -285,11 +293,15 @@ import openfl.Lib;
 	
 	public function __deleteProgram (program:Program3D):Void {
 		
-		if (program.glProgram == null)
+		if (program.__glProgram == null) {
+			
 			return;
+			
+		}
+		
 		programsCreated.remove (program);
-		GL.deleteProgram (program.glProgram);
-		program.glProgram = null;
+		GL.deleteProgram (program.__glProgram);
+		program.__glProgram = null;
 		
 	}
 	
@@ -361,9 +373,9 @@ import openfl.Lib;
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		var location:GLUniformLocation = currentProgram.yFlipLoc ();
+		var location:GLUniformLocation = currentProgram.__yFlipLoc ();
 		GL.uniform1f (location, this._yFlip);
-
+		
 		if (!drawing) {
 			
 			throw new Error ("Need to clear before drawing if the buffer has not been cleared since the last present() call.");
@@ -591,7 +603,7 @@ import openfl.Lib;
 			
 		}
 		
-		GL.bindBuffer (GL.ARRAY_BUFFER, buffer.glBuffer);
+		GL.bindBuffer (GL.ARRAY_BUFFER, buffer.__glBuffer);
 		
 		var dimension = 4;
 		var type = GL.FLOAT;
@@ -630,21 +642,21 @@ import openfl.Lib;
 		}
 		
 		GL.enableVertexAttribArray (location);
-		GL.vertexAttribPointer (location, dimension, type, normalized, buffer.data32PerVertex * 4, bufferOffset * 4);
+		GL.vertexAttribPointer (location, dimension, type, normalized, buffer.__data32PerVertex * 4, bufferOffset * 4);
 		
 	}
 	
 	
 	public function setProgram (program3D:Program3D):Void {
 		
-		var glProgram:GLProgram = null;
+		var glProgram = null;
 		
 		if (program3D != null) {
 			
-			glProgram = program3D.glProgram;
+			glProgram = program3D.__glProgram;
 			
 		}
-
+		
 		GL.useProgram (glProgram);
 		currentProgram = program3D;
 		//TODO reset bound textures, buffers... ?
@@ -659,7 +671,7 @@ import openfl.Lib;
 		
 		for (i in 0...numRegisters) {
 			
-			var location = currentProgram.constUniformLocationFromAgal (programType, firstRegister + i);
+			var location = currentProgram.__constUniformLocationFromAgal (programType, firstRegister + i);
 			setGLSLProgramConstantsFromByteArray (location, data);
 			
 		}
@@ -693,7 +705,7 @@ import openfl.Lib;
 		for (i in 0...numRegisters) {
 			
 			var currentIndex:Int = i * 4;
-			var location:GLUniformLocation = currentProgram.constUniformLocationFromAgal (programType, firstRegister + i);
+			var location = currentProgram.__constUniformLocationFromAgal (programType, firstRegister + i);
 			setGLSLProgramConstantsFromVector4 (location, data, currentIndex);
 			
 		}
@@ -863,7 +875,7 @@ import openfl.Lib;
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
-		var location = currentProgram.fsampUniformLocationFromAgal (sampler);
+		var location = currentProgram.__fsampUniformLocationFromAgal (sampler);
 		setGLSLTextureAt (location, texture, sampler);
 		
 	}
@@ -1127,7 +1139,7 @@ import openfl.Lib;
 	
 	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
 		
-		var location = currentProgram.vaUniformLocationFromAgal (index);
+		var location = currentProgram.__vaUniformLocationFromAgal (index);
 		setGLSLVertexBufferAt (location, buffer, bufferOffset, format);
 		
 	}

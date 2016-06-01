@@ -2,140 +2,148 @@ package openfl.display3D;
 
 
 import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLActiveInfo;
 import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
-import openfl._internal.aglsl.AGLSLCompiler;
-import openfl.utils.ByteArray;
 
 
 @:final class Program3D {
 	
 	
-	public var context:Context3D;
-	public var glProgram:GLProgram;
+	private var __context:Context3D;
+	private var __glProgram:GLProgram;
+	
 	/*#! Haxiomic Addition for performance improvements */
-	private var glFCLocationMap:Array<GLUniformLocation>;
-	private var glVCLocationMap:Array<GLUniformLocation>;
-	private var glFSLocationMap:Array<GLUniformLocation>; // sampler
-	private var glVALocationMap:Array<Int>;
+	private var __glFCLocationMap:Array<GLUniformLocation>;
+	private var __glVCLocationMap:Array<GLUniformLocation>;
+	private var __glFSLocationMap:Array<GLUniformLocation>; // sampler
+	private var __glVALocationMap:Array<Int>;
+	
+	private var __yFlip:Null<GLUniformLocation>;
 	
 	
-	public function new (context:Context3D, program:GLProgram) {
+	private function new (context:Context3D, program:GLProgram) {
 		
-		this.context = context;
-		this.glProgram = program;
-		this.glFCLocationMap = new Array<GLUniformLocation> ();
-		this.glVCLocationMap = new Array<GLUniformLocation> ();
-		this.glFSLocationMap = new Array<GLUniformLocation> ();
-		this.glVALocationMap = new Array<Int> ();
+		__context = context;
+		__glProgram = program;
+		__glFCLocationMap = new Array<GLUniformLocation> ();
+		__glVCLocationMap = new Array<GLUniformLocation> ();
+		__glFSLocationMap = new Array<GLUniformLocation> ();
+		__glVALocationMap = new Array<Int> ();
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		context.__deleteProgram (this);
+		__context.__deleteProgram (this);
 		
 	}
 	
 	
-	public function upload (vertexShader:Dynamic, fragmentShader:Dynamic):Void {
+	public function upload (vertexProgram:Dynamic, fragmentProgram:Dynamic):Void {
 		
-		GL.attachShader (glProgram, vertexShader);
-		GL.attachShader (glProgram, fragmentShader);
-		GL.linkProgram (glProgram);
+		GL.attachShader (__glProgram, vertexProgram);
+		GL.attachShader (__glProgram, fragmentProgram);
+		GL.linkProgram (__glProgram);
 		
-		if (GL.getProgramParameter (glProgram, GL.LINK_STATUS) == 0) {
+		if (GL.getProgramParameter (__glProgram, GL.LINK_STATUS) == 0) {
 			
-			var result = GL.getProgramInfoLog (glProgram);
+			var result = GL.getProgramInfoLog (__glProgram);
 			if (result != "") throw result;
 			
 		}
-
-		for (i in 0 ... GL.getProgramParameter (glProgram, GL.ACTIVE_UNIFORMS)) {
+		
+		for (i in 0 ... GL.getProgramParameter (__glProgram, GL.ACTIVE_UNIFORMS)) {
 			
-			var info:GLActiveInfo = GL.getActiveUniform (glProgram, i);
-			var loc:GLUniformLocation = GL.getUniformLocation (glProgram, info.name);
+			var info = GL.getActiveUniform (__glProgram, i);
+			var loc = GL.getUniformLocation (__glProgram, info.name);
 			
-			if (yFlip == null && info.name == "yflip") {
+			if (__yFlip == null && info.name == "yflip") {
 				
-				yFlip = loc;
+				__yFlip = loc;
 				
-			}
-			else {
+			} else {
 				
-				var name:String = info.name.substr (0, 2);
-				var idx:Int = Std.parseInt (info.name.substr (2));
+				var name = info.name.substr (0, 2);
+				var idx = Std.parseInt (info.name.substr (2));
 				
 				switch (info.name.substr (0, 2)) {
-				
-				case "fc": glFCLocationMap[idx] = loc;
-				case "vc": glVCLocationMap[idx] = loc;
-				case "fs": glFSLocationMap[idx] = loc;
-				
+					
+					case "fc": __glFCLocationMap[idx] = loc;
+					case "vc": __glVCLocationMap[idx] = loc;
+					case "fs": __glFSLocationMap[idx] = loc;
+					
 				}
 				
 			}
 			
 		}
 		
-		for(i in 0 ... GL.getProgramParameter (glProgram, GL.ACTIVE_ATTRIBUTES)) {
+		var info, name, idx;
+		
+		for (i in 0 ... GL.getProgramParameter (__glProgram, GL.ACTIVE_ATTRIBUTES)) {
 			
-			var info:GLActiveInfo = GL.getActiveAttrib (glProgram, i);
-			var name:String = info.name.substr (0, 2);
-			var idx:Int = Std.parseInt (info.name.substr (2));
-			if (name == "va")
-				glVALocationMap[idx] = i;
+			info = GL.getActiveAttrib (__glProgram, i);
+			name = info.name.substr (0, 2);
+			idx = Std.parseInt (info.name.substr (2));
+			
+			if (name == "va") {
+				
+				__glVALocationMap[idx] = i;
+				
+			}
 			
 		}
-	}
-	
-	var yFlip:Null<GLUniformLocation>;
-	
-	public inline function yFlipLoc ():GLUniformLocation {
-		
-		return yFlip;
 		
 	}
 	
-	public inline function fsUniformLocationFromAgal (i:Int):GLUniformLocation {
-		
-		return glFCLocationMap[i];
-		
-	}
 	
-	public inline function vsUniformLocationFromAgal (i:Int):GLUniformLocation {
-		
-		return glVCLocationMap[i];
-		
-	}
-	
-	//sampler
-	public inline function fsampUniformLocationFromAgal (i:Int):GLUniformLocation {
-		
-		return glFSLocationMap[i];
-		
-	}
-	
-	public inline function vaUniformLocationFromAgal (i:Int):Int {
-		
-		return glVALocationMap[i];
-		
-	}
-	
-	public inline function constUniformLocationFromAgal (type:Context3DProgramType, i:Int):GLUniformLocation {
+	private inline function __constUniformLocationFromAgal (type:Context3DProgramType, i:Int):GLUniformLocation {
 		
 		if (type == Context3DProgramType.VERTEX) {
 			
-			return vsUniformLocationFromAgal (i);
+			return __vsUniformLocationFromAgal (i);
 			
 		} else {
-				
-			return fsUniformLocationFromAgal (i);
+			
+			return __fsUniformLocationFromAgal (i);
 			
 		}
+		
+	}
+	
+	
+	private inline function __fsampUniformLocationFromAgal (i:Int):GLUniformLocation {
+		
+		return __glFSLocationMap[i];
+		
+	}
+	
+	
+	private inline function __fsUniformLocationFromAgal (i:Int):GLUniformLocation {
+		
+		return __glFCLocationMap[i];
+		
+	}
+	
+	
+	private inline function __vaUniformLocationFromAgal (i:Int):Int {
+		
+		return __glVALocationMap[i];
+		
+	}
+	
+	
+	private inline function __vsUniformLocationFromAgal (i:Int):GLUniformLocation {
+		
+		return __glVCLocationMap[i];
+		
+	}
+	
+	
+	private inline function __yFlipLoc ():GLUniformLocation {
+		
+		return __yFlip;
 		
 	}
 	
