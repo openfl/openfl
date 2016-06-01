@@ -9,6 +9,8 @@ import openfl.events.EventDispatcher;
 import openfl.utils.ByteArray;
 import openfl.utils.ByteArray.ByteArrayData;
 
+@:access(openfl.display3D.Context3D)
+
 
 class TextureBase extends EventDispatcher {
 	

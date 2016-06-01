@@ -7,6 +7,8 @@ import lime.utils.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+@:access(openfl.display3D.Context3D)
+
 
 class VertexBuffer3D {
 	

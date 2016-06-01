@@ -7,6 +7,8 @@ import lime.utils.Int16Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+@:access(openfl.display3D.Context3D)
+
 
 @:final class IndexBuffer3D {
 	

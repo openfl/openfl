@@ -29,88 +29,97 @@ import openfl.Lib;
 @:final class Context3D {
 	
 	
+	public static var supportsVideoTexture (default, null):Bool = false;
+	
 	private static var TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
 	private static var MAX_SAMPLERS = 8;
 	private static var MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FF;
 	
-	private static var anisotropySupportTested:Bool = false;
-	private static var supportsAnisotropy:Bool = false;
-	private static var maxSupportedAnisotropy:UInt = 256;
+	private static var __anisotropySupportTested:Bool = false;
+	private static var __maxSupportedAnisotropy:UInt = 256;
+	private static var __supportsAnisotropy:Bool = false;
 	
-	public var driverInfo (default, null):String; // TODO
+	public var backBufferHeight (default, null):Int;
+	public var backBufferWidth (default, null):Int;
+	public var driverInfo (default, null):String = "OpenGL (Direct blitting)";
 	public var enableErrorChecking:Bool; // TODO (use GL.getError() and GL.validateProgram(program))
+	public var maxBackBufferHeight:Int;
+	public var maxBackBufferWidth:Int;
+	public var profile (default, null):Context3DProfile = BASELINE;
+	public var totalGPUMemory (default, null):Int = 0;
 	
-	private var blendDestinationFactor:Context3DBlendFactor; // to mimic Stage3d behavior of keeping blending across frames:
-	private var blendEnabled:Bool; // to mimic Stage3d behavior of keeping blending across frames:
-	private var blendSourceFactor:Context3DBlendFactor; // to mimic Stage3d behavior of keeping blending across frames:
-	private var currentProgram:Program3D;
-	private var disposed:Bool;
-	private var drawing:Bool; // to mimic Stage3d behavior of not allowing calls to drawTriangles between present and clear
-	private var framebuffer:GLFramebuffer;
-	private var indexBuffersCreated:Array<IndexBuffer3D>; // to keep track of stuff to dispose when calling dispose
-	private var ogl:OpenGLView;
-	private var programsCreated:Array<Program3D>; // to keep track of stuff to dispose when calling dispose
-	private var renderbuffer:GLRenderbuffer;
-	private var samplerParameters:Array<SamplerState>; //TODO : use Tupple3
-	private var scrollRect:Rectangle;
-	private var stencilbuffer:GLRenderbuffer;
-	private var stencilCompareMode:Context3DCompareMode;
-	private var stencilRef:Int;
-	private var stencilReadMask:Int;
-	private var texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
-	private var vertexBuffersCreated:Array<VertexBuffer3D>; // to keep track of stuff to dispose when calling dispose
-	private var _yFlip:Float;
-	private var backBufferDepthAndStencil:Bool;
-	private var rttDepthAndStencil:Bool;
-	private var scissorRectangle:Rectangle;
-	private var renderToTexture:Bool;
-	private var rttWidth:Int;
-	private var rttHeight:Int;
+	private var __blendDestinationFactor:Context3DBlendFactor; // to mimic Stage3d behavior of keeping blending across frames:
+	private var __blendEnabled:Bool; // to mimic Stage3d behavior of keeping blending across frames:
+	private var __blendSourceFactor:Context3DBlendFactor; // to mimic Stage3d behavior of keeping blending across frames:
+	private var __currentProgram:Program3D;
+	private var __disposed:Bool;
+	private var __drawing:Bool; // to mimic Stage3d behavior of not allowing calls to drawTriangles between present and clear
+	private var __framebuffer:GLFramebuffer;
+	private var __indexBuffersCreated:Array<IndexBuffer3D>; // to keep track of stuff to dispose when calling dispose
+	private var __ogl:OpenGLView;
+	private var __programsCreated:Array<Program3D>; // to keep track of stuff to dispose when calling dispose
+	private var __renderbuffer:GLRenderbuffer;
+	private var __samplerParameters:Array<SamplerState>; //TODO : use Tupple3
+	private var __scrollRect:Rectangle;
+	private var __stencilbuffer:GLRenderbuffer;
+	private var __stencilCompareMode:Context3DCompareMode;
+	private var __stencilRef:Int;
+	private var __stencilReadMask:Int;
+	private var __texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
+	private var __vertexBuffersCreated:Array<VertexBuffer3D>; // to keep track of stuff to dispose when calling dispose
+	private var __yFlip:Float;
+	private var __backBufferDepthAndStencil:Bool;
+	private var __rttDepthAndStencil:Bool;
+	private var __scissorRectangle:Rectangle;
+	private var __renderToTexture:Bool;
+	private var __rttWidth:Int;
+	private var __rttHeight:Int;
 	
-	public function new () {
+	
+	private function new () {
 		
-		disposed = false;
+		__disposed = false;
 		
-		stencilCompareMode = Context3DCompareMode.ALWAYS;
-		stencilRef = 0;
-		stencilReadMask = 0xFF;
+		__stencilCompareMode = Context3DCompareMode.ALWAYS;
+		__stencilRef = 0;
+		__stencilReadMask = 0xFF;
 		
-		_yFlip = 1;
+		__yFlip = 1;
 		
-		vertexBuffersCreated = new Array ();
-		indexBuffersCreated = new Array ();
-		programsCreated = new Array ();
-		texturesCreated = new Array (); 
-		samplerParameters = new Array<SamplerState> ();
+		__vertexBuffersCreated = new Array ();
+		__indexBuffersCreated = new Array ();
+		__programsCreated = new Array ();
+		__texturesCreated = new Array (); 
+		__samplerParameters = new Array<SamplerState> ();
 		
 		for (i in 0...MAX_SAMPLERS) {
 			
-			samplerParameters[i] = new SamplerState ();
-			samplerParameters[i].wrap = Context3DWrapMode.CLAMP;
-			samplerParameters[i].filter = Context3DTextureFilter.LINEAR;
-			samplerParameters[i].mipfilter =Context3DMipFilter.MIPNONE;
+			__samplerParameters[i] = new SamplerState ();
+			__samplerParameters[i].wrap = Context3DWrapMode.CLAMP;
+			__samplerParameters[i].filter = Context3DTextureFilter.LINEAR;
+			__samplerParameters[i].mipfilter =Context3DMipFilter.MIPNONE;
 			
 		}
 		
 		var stage = Lib.current.stage;
 		
-		ogl = new OpenGLView ();
-		ogl.scrollRect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
-		scrollRect = ogl.scrollRect.clone ();
-		ogl.width = stage.stageWidth;
-		ogl.height = stage.stageHeight;
+		__ogl = new OpenGLView ();
+		__ogl.scrollRect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
+		__scrollRect = __ogl.scrollRect.clone ();
+		__ogl.width = stage.stageWidth;
+		__ogl.height = stage.stageHeight;
 		
-		stage.addChildAt(ogl, 0);
+		stage.addChildAt (__ogl, 0);
 		
 	}
 	
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:Context3DClearMask = ALL):Void {
 		
-		if (!drawing) {
+		if (!__drawing) {
 			
 		 	__updateBlendStatus ();
-		 	drawing = true;
+		 	__drawing = true;
 		 	
 		}
 		
@@ -118,7 +127,7 @@ import openfl.Lib;
 		GL.depthMask (true);
 		#end
 		#if js
-		if (scissorRectangle != null) GL.disable(GL.SCISSOR_TEST);
+		if (__scissorRectangle != null) GL.disable (GL.SCISSOR_TEST);
 		#end
 		GL.clearColor (red, green, blue, alpha);
 		GL.clearDepth (depth);
@@ -127,86 +136,37 @@ import openfl.Lib;
 		GL.clear (__getGLClearMask (mask));
 		
 		#if js
-		if (scissorRectangle != null) GL.enable(GL.SCISSOR_TEST);
+		if (__scissorRectangle != null) GL.enable (GL.SCISSOR_TEST);
 		#end
+		
 	}
 	
 	
-	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true):Void {
+	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void {
 		
-		backBufferDepthAndStencil = enableDepthAndStencil;
-		updateDepthAndStencilState();
+		__backBufferDepthAndStencil = enableDepthAndStencil;
+		__updateDepthAndStencilState ();
 		
 		// TODO use antiAlias parameter
-		setBackBufferViewPort (null, null, width, height);
-		updateScissorRectangle ();
+		__setBackBufferViewPort (null, null, width, height);
+		__updateScissorRectangle ();
 		
 	}
 	
-	private function setBackBufferViewPort (?x:Int, ?y:Int, ?width:Int, ?height:Int) {
-		
-		if (x == null) x = Std.int (scrollRect.x);
-		if (y == null) y = Std.int (scrollRect.y);
-		if (width == null) width = Std.int (scrollRect.width);
-		if (height == null) height = Std.int (scrollRect.height);
-		
-		scrollRect.x = x;
-		scrollRect.y = y;
-		scrollRect.width = width;
-		scrollRect.height = height;
-		ogl.width = x + width;
-		ogl.height = y + height;
-		
-		updateBackBufferViewPort ();
-		
-	}
-	
-	private function updateBackBufferViewPort () {
-		
-		if (!renderToTexture) {
-			
-			GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
-			
-		}
-		
-	}
-	
-	private function updateDepthAndStencilState() {
-		
-		// used to enable masking
-		var depthAndStencil:Bool = renderToTexture ? rttDepthAndStencil : backBufferDepthAndStencil;
-		
-		if (depthAndStencil) {
-			
-			// TODO check whether this is kept across frame
-			if (Application.current.window.config.depthBuffer)
-				GL.enable (GL.DEPTH_TEST);
-			if (Application.current.window.config.stencilBuffer)
-				GL.enable (GL.STENCIL_TEST);
-			
-		} else {
-			
-			GL.disable (GL.DEPTH_TEST);
-			GL.disable (GL.STENCIL_TEST);
-			
-		}
-		
-	}
 	
 	public function createCubeTexture (size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture {
 		
 		var texture = new CubeTexture (this, GL.createTexture (), size); // TODO use format, optimizeForRenderToTexture and streamingLevels?
-		texturesCreated.push (texture);
+		__texturesCreated.push (texture);
 		return texture;
 		
 	}
 	
 	
-	public function createIndexBuffer (numIndices:Int, bufferUsage:Context3DBufferUsage = null):IndexBuffer3D {
+	public function createIndexBuffer (numIndices:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):IndexBuffer3D {
 		
-		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
 		var indexBuffer = new IndexBuffer3D (this, GL.createBuffer(), numIndices, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
-		indexBuffersCreated.push (indexBuffer);
+		__indexBuffersCreated.push (indexBuffer);
 		return indexBuffer;
 		
 	}
@@ -215,7 +175,7 @@ import openfl.Lib;
 	public function createProgram ():Program3D {
 		
 		var program = new Program3D (this, GL.createProgram ());
-		programsCreated.push (program);
+		__programsCreated.push (program);
 		return program;
 		
 	}
@@ -224,7 +184,7 @@ import openfl.Lib;
 	public function createRectangleTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture {
 		
 		var texture = new RectangleTexture (this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
-		texturesCreated.push (texture);
+		__texturesCreated.push (texture);
 		return texture;
 		
 	}
@@ -233,132 +193,75 @@ import openfl.Lib;
 	public function createTexture (width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture {
 		
 		var texture = new Texture (this, GL.createTexture (), optimizeForRenderToTexture, width, height); // TODO use format, optimizeForRenderToTexture and streamingLevels?
-		texturesCreated.push (texture);
+		__texturesCreated.push (texture);
 		return texture;
 		
 	}
 	
 	
-	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = null):VertexBuffer3D {
+	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):VertexBuffer3D {
 		
-		if (bufferUsage == null) bufferUsage = Context3DBufferUsage.STATIC_DRAW;
 		var vertexBuffer = new VertexBuffer3D (this, GL.createBuffer (), numVertices, data32PerVertex, bufferUsage == Context3DBufferUsage.STATIC_DRAW ? GL.STATIC_DRAW : GL.DYNAMIC_DRAW);
-		vertexBuffersCreated.push (vertexBuffer);
+		__vertexBuffersCreated.push (vertexBuffer);
 		return vertexBuffer;
 		
 	}
 	
 	
-	public function __deleteTexture (texture:TextureBase):Void {
+	public function dispose (recreate:Bool = true):Void {
 		
-		if (texture.glTexture == null)
-			return;
-		texturesCreated.remove (texture);
-		GL.deleteTexture (texture.glTexture);
-		texture.glTexture = null;
-		
-	}
-	
-	
-	public function __deleteVertexBuffer (buffer:VertexBuffer3D):Void {
-		
-		if (buffer.__glBuffer == null) {
-			
-			return;
-			
-		}
-		
-		vertexBuffersCreated.remove (buffer);
-		GL.deleteBuffer (buffer.__glBuffer);
-		buffer.__glBuffer = null;
-		
-	}
-	
-	
-	public function __deleteIndexBuffer (buffer:IndexBuffer3D):Void {
-		
-		if (buffer.__glBuffer == null) {
-			
-			return;
-			
-		}
-		
-		indexBuffersCreated.remove (buffer);
-		GL.deleteBuffer (buffer.__glBuffer);
-		buffer.__glBuffer = null;
-		
-	}
-	
-	
-	public function __deleteProgram (program:Program3D):Void {
-		
-		if (program.__glProgram == null) {
-			
-			return;
-			
-		}
-		
-		programsCreated.remove (program);
-		GL.deleteProgram (program.__glProgram);
-		program.__glProgram = null;
-		
-	}
-	
-	
-	public function dispose ():Void {
-		
+		// TODO handle recreate
 		// TODO simulate context loss by recreating a context3d and dispatch event on Stage3d(see Adobe Doc)
 		// TODO add error on other method when context3d is disposed
 		
-		for (vertexBuffer in vertexBuffersCreated) {
+		for (vertexBuffer in __vertexBuffersCreated) {
 			
 			vertexBuffer.dispose ();
 			
 		}
 		
-		vertexBuffersCreated = null;
+		__vertexBuffersCreated = null;
 		
-		for (indexBuffer in indexBuffersCreated) {
+		for (indexBuffer in __indexBuffersCreated) {
 			
 			indexBuffer.dispose ();
 			
 		}
 		
-		indexBuffersCreated = null;
+		__indexBuffersCreated = null;
 		
-		for (program in programsCreated) {
+		for (program in __programsCreated) {
 			
 			program.dispose ();
 			
 		}
 		
-		programsCreated = null;
- 		
-		samplerParameters = null;
+		__programsCreated = null;
+		__samplerParameters = null;
 		
-		for (texture in texturesCreated) {
+		for (texture in __texturesCreated) {
 			
 			texture.dispose ();
 			
 		}
 		
-		texturesCreated = null;
+		__texturesCreated = null;
 		
-		if (framebuffer != null) {
+		if (__framebuffer != null) {
 			
-			GL.deleteFramebuffer (framebuffer);
-			framebuffer = null;
+			GL.deleteFramebuffer (__framebuffer);
+			__framebuffer = null;
 			
 		}
 		
-		if (renderbuffer != null) {
+		if (__renderbuffer != null) {
 			
-			GL.deleteRenderbuffer (renderbuffer);
-			renderbuffer = null;
+			GL.deleteRenderbuffer (__renderbuffer);
+			__renderbuffer = null;
 			
 		}
 		
-		disposed = true;
+		__disposed = true;
 		
 	}
 	
@@ -372,10 +275,10 @@ import openfl.Lib;
 	
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 		
-		var location:GLUniformLocation = currentProgram.__yFlipLoc ();
-		GL.uniform1f (location, this._yFlip);
+		var location = __currentProgram.__yFlipLoc ();
+		GL.uniform1f (location, __yFlip);
 		
-		if (!drawing) {
+		if (!__drawing) {
 			
 			throw new Error ("Need to clear before drawing if the buffer has not been cleared since the last present() call.");
 			
@@ -403,39 +306,32 @@ import openfl.Lib;
 	
 	public function present ():Void {
 		
-		drawing = false;
+		__drawing = false;
 		GL.useProgram (null);
 		
 		GL.bindBuffer (GL.ARRAY_BUFFER, null);
 		GL.disable (GL.CULL_FACE);
 		
-		if (framebuffer != null) {
-
+		if (__framebuffer != null) {
+			
 			GL.bindFramebuffer (GL.FRAMEBUFFER, null);
-
+			
 		}
 		
-		if (renderbuffer != null) {
-
+		if (__renderbuffer != null) {
+			
 			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
-
+			
 		}
-
-	}
-	
-	
-	public function removeRenderMethod (func:Event -> Void):Void {
-		
-		ogl.render = null;
 		
 	}
 	
 	
 	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		blendEnabled = true;
-		blendSourceFactor = sourceFactor;
-		blendDestinationFactor = destinationFactor;
+		__blendEnabled = true;
+		__blendSourceFactor = sourceFactor;
+		__blendDestinationFactor = destinationFactor;
 		
 		__updateBlendStatus ();
 		
@@ -447,7 +343,6 @@ import openfl.Lib;
 		GL.colorMask (red, green, blue, alpha);
 		
 	}
-	
 	
 	
 	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void {
@@ -475,25 +370,26 @@ import openfl.Lib;
 			
 			case Context3DTriangleFace.FRONT:
 				
-				this._yFlip = -1;
+				__yFlip = -1;
 			
 			case Context3DTriangleFace.BACK:
 				
-				this._yFlip = 1; // checked
+				__yFlip = 1; // checked
 			
 			case Context3DTriangleFace.FRONT_AND_BACK:
 				
-				this._yFlip = 1;
+				__yFlip = 1;
 			
 			case Context3DTriangleFace.NONE:
 				
-				this._yFlip = 1; // checked
+				__yFlip = 1; // checked
 			
 			default:
 				
 				throw "Unknown culling mode " + triangleFaceToCull + ".";
  			
  		}
+		
 	}
 	
 	
@@ -501,147 +397,6 @@ import openfl.Lib;
 		
 		GL.depthFunc (__getGLCompareMode (passCompareMode));
 		GL.depthMask (depthMask);
-		
-	}
-	
-	
-	public function setGLSLProgramConstantsFromByteArray (location:GLUniformLocation, data:ByteArray, byteArrayOffset:Int = 0):Void {
-		
-		data.position = byteArrayOffset;
-		GL.uniform4f (location, data.readFloat (), data.readFloat (), data.readFloat (), data.readFloat ());
-		
-	}
-	
-	
-	public function setGLSLProgramConstantsFromMatrix (location:GLUniformLocation, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
-		
-		GL.uniformMatrix4fv (location, !transposedMatrix, new Float32Array (matrix.rawData));
-		
-	}
-	
-	
-	public function setGLSLProgramConstantsFromVector4 (location:GLUniformLocation, data:Array<Float>, startIndex:Int = 0):Void {
-		
-		GL.uniform4f (location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
-		
-	}
-	
-	
-	public function setGLSLTextureAt (location:GLUniformLocation, texture:TextureBase, textureIndex:Int):Void {
-		
-		switch (textureIndex) {
-			
-			case 0 : GL.activeTexture (GL.TEXTURE0);
-			case 1 : GL.activeTexture (GL.TEXTURE1);
-			case 2 : GL.activeTexture (GL.TEXTURE2);
-			case 3 : GL.activeTexture (GL.TEXTURE3);
-			case 4 : GL.activeTexture (GL.TEXTURE4);
-			case 5 : GL.activeTexture (GL.TEXTURE5);
-			case 6 : GL.activeTexture (GL.TEXTURE6);
-			case 7 : GL.activeTexture (GL.TEXTURE7);
-			// TODO more?
-			default: throw "Does not support texture8 or more";
-			
-		}
-		
-		if (texture == null) {
-			
-			GL.bindTexture (GL.TEXTURE_2D, null);
-			GL.bindTexture (GL.TEXTURE_CUBE_MAP, null);
-			return;
-			
-		}
-		
-		if (Std.is (texture, Texture)) {
-			
-			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
-			GL.uniform1i (location, textureIndex);
-			
-		} else if (Std.is (texture, RectangleTexture)) {
-			
-			GL.bindTexture (GL.TEXTURE_2D, cast (texture, RectangleTexture).glTexture);
-			GL.uniform1i (location, textureIndex);
-			
-		} else if (Std.is (texture, CubeTexture) ) {
-			
-			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture );
-			GL.uniform1i (location, textureIndex);
-			
-		} else {
-			
-			throw "Texture of type " + Type.getClassName (Type.getClass (texture)) + " not supported yet";
-			
-		}
-		
-		var parameters:SamplerState = samplerParameters[textureIndex];
-		
-		if (parameters != null) {
-			
-			setTextureParameters (texture, parameters.wrap, parameters.filter, parameters.mipfilter);
-			
-		} else {
-			
-			setTextureParameters (texture, Context3DWrapMode.CLAMP, Context3DTextureFilter.NEAREST, Context3DMipFilter.MIPNONE);
-			
-		}
-		
-	}
-	
-	
-	public function setGLSLVertexBufferAt (location:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
-		
-		if (buffer == null) {
-			
-			if (location > -1) {
-				
-				GL.disableVertexAttribArray (location);
-				
-			}
-			
-			return;
-			
-		}
-		
-		GL.bindBuffer (GL.ARRAY_BUFFER, buffer.__glBuffer);
-		
-		var dimension = 4;
-		var type = GL.FLOAT;
-		var normalized:Bool = false;
-		
-		if (format == Context3DVertexBufferFormat.BYTES_4) {
-			
-			dimension = 4;
-			type = GL.UNSIGNED_BYTE;
-			normalized = true;
-			
-		} else if (format == Context3DVertexBufferFormat.FLOAT_1) {
-			
-			dimension = 1;
-			type = GL.FLOAT;
-			
-		} else if (format == Context3DVertexBufferFormat.FLOAT_2) {
-			
-			dimension = 2;
-			type = GL.FLOAT;
-			
-		} else if (format == Context3DVertexBufferFormat.FLOAT_3) {
-			
-			dimension = 3;
-			type = GL.FLOAT;
-			
-		} else if (format == Context3DVertexBufferFormat.FLOAT_4) {
-			
-			dimension = 4;
-			type = GL.FLOAT;
-			
-		} else {
-			
-			throw "Buffer format " + format + " is not supported";
-			
-		}
-		
-		GL.enableVertexAttribArray (location);
-		GL.vertexAttribPointer (location, dimension, type, normalized, buffer.__data32PerVertex * 4, bufferOffset * 4);
 		
 	}
 	
@@ -657,21 +412,21 @@ import openfl.Lib;
 		}
 		
 		GL.useProgram (glProgram);
-		currentProgram = program3D;
+		__currentProgram = program3D;
 		//TODO reset bound textures, buffers... ?
 		// Or maybe we should have arrays and map for each program so we can switch them while keeping the bounded texture and variable?
 		
 	}
 	
 	
-	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:Int):Void {
+	public function setProgramConstantsFromByteArray (programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		data.position = byteArrayOffset;
 		
 		for (i in 0...numRegisters) {
 			
-			var location = currentProgram.__constUniformLocationFromAgal (programType, firstRegister + i);
-			setGLSLProgramConstantsFromByteArray (location, data);
+			var location = __currentProgram.__constUniformLocationFromAgal (programType, firstRegister + i);
+			__setGLSLProgramConstantsFromByteArray (location, data);
 			
 		}
 		
@@ -684,39 +439,35 @@ import openfl.Lib;
 		// setProgramConstantsFromVector (programType, firstRegister, matrix.rawData, 16);
 		
 		var d = matrix.rawData;
+		
 		if (transposedMatrix) {
-			this.setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[4], d[8], d[12] ], 1);  
-			this.setProgramConstantsFromVector(programType, firstRegister + 1, [ d[1], d[5], d[9], d[13] ], 1);
-			this.setProgramConstantsFromVector(programType, firstRegister + 2, [ d[2], d[6], d[10], d[14] ], 1);
-			this.setProgramConstantsFromVector(programType, firstRegister + 3, [ d[3], d[7], d[11], d[15] ], 1);
+			
+			setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[4], d[8], d[12] ], 1);  
+			setProgramConstantsFromVector(programType, firstRegister + 1, [ d[1], d[5], d[9], d[13] ], 1);
+			setProgramConstantsFromVector(programType, firstRegister + 2, [ d[2], d[6], d[10], d[14] ], 1);
+			setProgramConstantsFromVector(programType, firstRegister + 3, [ d[3], d[7], d[11], d[15] ], 1);
+			
 		} else {
-			this.setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[1], d[2], d[3] ], 1);
-			this.setProgramConstantsFromVector(programType, firstRegister + 1, [ d[4], d[5], d[6], d[7] ], 1);
-			this.setProgramConstantsFromVector(programType, firstRegister + 2, [ d[8], d[9], d[10], d[11] ], 1);
-			this.setProgramConstantsFromVector(programType, firstRegister + 3, [ d[12], d[13], d[14], d[15] ], 1);
+			
+			setProgramConstantsFromVector(programType, firstRegister, [ d[0], d[1], d[2], d[3] ], 1);
+			setProgramConstantsFromVector(programType, firstRegister + 1, [ d[4], d[5], d[6], d[7] ], 1);
+			setProgramConstantsFromVector(programType, firstRegister + 2, [ d[8], d[9], d[10], d[11] ], 1);
+			setProgramConstantsFromVector(programType, firstRegister + 3, [ d[12], d[13], d[14], d[15] ], 1);
+			
 		}
-
+		
 	}
 	
 	
-	public function setProgramConstantsFromVector (programType:Context3DProgramType, firstRegister:Int, data:Array<Float>, numRegisters:Int = 1):Void {
+	public function setProgramConstantsFromVector (programType:Context3DProgramType, firstRegister:Int, data:Vector<Float>, numRegisters:Int = 1):Void {
 		
 		for (i in 0...numRegisters) {
 			
-			var currentIndex:Int = i * 4;
-			var location = currentProgram.__constUniformLocationFromAgal (programType, firstRegister + i);
-			setGLSLProgramConstantsFromVector4 (location, data, currentIndex);
+			var currentIndex = i * 4;
+			var location = __currentProgram.__constUniformLocationFromAgal (programType, firstRegister + i);
+			__setGLSLProgramConstantsFromVector4 (location, data, currentIndex);
 			
 		}
-		
-	}
-	
-	
-	public function setRenderMethod (func:Event -> Void):Void {
-		
-		// TODO: Conform to API?
-		
-		ogl.render = function (rect:Rectangle) func (null);
 		
 	}
 	
@@ -727,45 +478,46 @@ import openfl.Lib;
 		GL.disable (GL.STENCIL_TEST);
 		GL.disable (GL.SCISSOR_TEST);
 		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
-
-		if (framebuffer != null) {
-
+		
+		if (__framebuffer != null) {
+			
 			GL.bindFramebuffer (GL.FRAMEBUFFER, null);
-
+			
 		}
 		
-		if (renderbuffer != null) {
-
+		if (__renderbuffer != null) {
+			
 			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
-
+			
 		}
 		
-		renderToTexture = false;
-		updateBackBufferViewPort ();
-		updateScissorRectangle();
-		updateDepthAndStencilState();
+		__renderToTexture = false;
+		__updateBackBufferViewPort ();
+		__updateScissorRectangle ();
+		__updateDepthAndStencilState ();
+		
 	}
 	
 	
-	public function setRenderToTexture (texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void {      
+	public function setRenderToTexture (texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0, colorOutputIndex:Int = 0):Void {      
 		
 		// TODO : currently does not work (framebufferStatus always return zero)
 		
-		if (framebuffer == null) {
+		if (__framebuffer == null) {
 			
-			framebuffer = GL.createFramebuffer ();
-			
-		}
-		
-		GL.bindFramebuffer (GL.FRAMEBUFFER, framebuffer);
-		
-		if (renderbuffer == null) {
-			
-			renderbuffer = GL.createRenderbuffer ();
+			__framebuffer = GL.createFramebuffer ();
 			
 		}
 		
-		GL.bindRenderbuffer (GL.RENDERBUFFER, renderbuffer);
+		GL.bindFramebuffer (GL.FRAMEBUFFER, __framebuffer);
+		
+		if (__renderbuffer == null) {
+			
+			__renderbuffer = GL.createRenderbuffer ();
+			
+		}
+		
+		GL.bindRenderbuffer (GL.RENDERBUFFER, __renderbuffer);
 		#if (ios || tvos)
 		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
 		#elseif js
@@ -774,29 +526,31 @@ import openfl.Lib;
 		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);
 		#end
 		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.glTexture, 0);
-
+		
 		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
-		GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, renderbuffer);
+		GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __renderbuffer);
 		
 		if (enableDepthAndStencil) {
 			
 			GL.enable (GL.DEPTH_TEST);
 			GL.enable (GL.STENCIL_TEST);
+			
 		}
 		
 		GL.bindTexture (GL.TEXTURE_2D, texture.glTexture);
 		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, texture.width, texture.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
+		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
 		
 		GL.viewport (0, 0, texture.width, texture.height);
 		
-		renderToTexture = true;
-		rttDepthAndStencil = enableDepthAndStencil;
-		rttWidth = texture.width;
-		rttHeight = texture.height;
-		updateScissorRectangle();
-		updateDepthAndStencilState();
+		__renderToTexture = true;
+		__rttDepthAndStencil = enableDepthAndStencil;
+		__rttWidth = texture.width;
+		__rttHeight = texture.height;
+		__updateScissorRectangle ();
+		__updateDepthAndStencilState ();
+		
 	}
 	
 	
@@ -806,9 +560,9 @@ import openfl.Lib;
 		
 		if (0 <= sampler && sampler <  MAX_SAMPLERS) {
 			
-			samplerParameters[sampler].wrap = wrap;
-			samplerParameters[sampler].filter = filter;
-			samplerParameters[sampler].mipfilter = mipfilter;
+			__samplerParameters[sampler].wrap = wrap;
+			__samplerParameters[sampler].filter = filter;
+			__samplerParameters[sampler].mipfilter = mipfilter;
 			
 		} else {
 			
@@ -822,7 +576,7 @@ import openfl.Lib;
 	public function setScissorRectangle (rectangle:Rectangle):Void {
 		
 		// TODO test it
-		scissorRectangle = rectangle;
+		__scissorRectangle = rectangle;
 		
 		if (rectangle == null) {
 			
@@ -832,41 +586,26 @@ import openfl.Lib;
 		}
 		
 		GL.enable (GL.SCISSOR_TEST);
-		updateScissorRectangle();
+		__updateScissorRectangle ();
 		
 	}
 	
-	private function updateScissorRectangle()
-	{
-		
-		if (scissorRectangle == null)
-			return;
-		
-		//var width:Int = renderToTexture ? rttWidth : scrollRect.width;
-		var height:Int = renderToTexture ? rttHeight : Std.int(scrollRect.height);
-		GL.scissor (Std.int (scissorRectangle.x),
-			Std.int (height - Std.int(scissorRectangle.y) - Std.int(scissorRectangle.height)),
-			Std.int (scissorRectangle.width),
-			Std.int (scissorRectangle.height)
-		);
-		
-	}
 	
 	public function setStencilActions (triangleFace:Context3DTriangleFace = FRONT_AND_BACK, compareMode:Context3DCompareMode = ALWAYS, actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP, actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void {
 		
-		this.stencilCompareMode = compareMode;
+		__stencilCompareMode = compareMode;
 		GL.stencilOp (__getGLStencilAction (actionOnBothPass), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnDepthPassStencilFail));
-		GL.stencilFunc (__getGLCompareMode (stencilCompareMode), stencilRef, stencilReadMask);
+		GL.stencilFunc (__getGLCompareMode (__stencilCompareMode), __stencilRef, __stencilReadMask);
 		
 	}
 	
 	
-	public function setStencilReferenceValue (referenceValue:Int, readMask:Int = 0xFF, writeMask:Int = 0xFF):Void {
+	public function setStencilReferenceValue (referenceValue:UInt, readMask:UInt = 0xFF, writeMask:UInt = 0xFF):Void {
 		
-		stencilReadMask = readMask;
-		stencilRef = referenceValue;
+		__stencilReadMask = readMask;
+		__stencilRef = referenceValue;
 		
-		GL.stencilFunc (__getGLCompareMode (stencilCompareMode), stencilRef, stencilReadMask);
+		GL.stencilFunc (__getGLCompareMode (__stencilCompareMode), __stencilRef, __stencilReadMask);
 		GL.stencilMask (writeMask);
 		
 	}
@@ -874,272 +613,76 @@ import openfl.Lib;
 	
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 		
-		var location = currentProgram.__fsampUniformLocationFromAgal (sampler);
-		setGLSLTextureAt (location, texture, sampler);
+		var location = __currentProgram.__fsampUniformLocationFromAgal (sampler);
+		__setGLSLTextureAt (location, texture, sampler);
 		
 	}
 	
 	
-	private function setTextureParameters (texture:TextureBase, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
+	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void {
 		
-		if (!anisotropySupportTested) {
-			
-			#if !js
-			
-			supportsAnisotropy = (GL.getSupportedExtensions ().indexOf ("GL_EXT_texture_filter_anisotropic") != -1);
-			
-			if (supportsAnisotropy) {
-				// GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is not currently recongnised in Lime
-				// If supported, max anisotropic filtering of 256 is assumed.
-				// maxSupportedAnisotropy = GL.getTexParameter (GL.TEXTURE_2D, MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
-			}
-			
-			#else
-			
-			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
-			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
-			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
-			supportsAnisotropy = (ext != null);
-			
-			if (supportsAnisotropy) {
-				maxSupportedAnisotropy = GL.getParameter (ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
-			}
-			
-			#end
-			
-			anisotropySupportTested = true;
-			
-		}
-		
-		if (Std.is (texture, Texture)) {
-			
-			switch (wrap) {
-				
-				case Context3DWrapMode.CLAMP:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-				
-				case Context3DWrapMode.CLAMP_U_REPEAT_V:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
-				
-				case Context3DWrapMode.REPEAT:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
-				
-				case Context3DWrapMode.REPEAT_U_CLAMP_V:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-				
-			}
-			
-			// Currently using TEXTURE_MAX_ANISOTROPY_EXT instead of GL.TEXTURE_MAX_ANISOTROPY_EXT
-			// until it is implemented.
-			
-			switch (filter) {
-				
-				case Context3DTextureFilter.LINEAR:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				
-				case Context3DTextureFilter.NEAREST:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				
-				case Context3DTextureFilter.ANISOTROPIC2X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 2) ? maxSupportedAnisotropy : 2);
-				 
-				case Context3DTextureFilter.ANISOTROPIC4X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf(GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 4) ? maxSupportedAnisotropy : 4);
-				
-				case Context3DTextureFilter.ANISOTROPIC8X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf(GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 8) ? maxSupportedAnisotropy : 8);
-				
-				case Context3DTextureFilter.ANISOTROPIC16X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf(GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 16) ? maxSupportedAnisotropy : 16);
-				
-			}
-			
-			switch (mipfilter) {
-				
-				case Context3DMipFilter.MIPLINEAR:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
-				
-				case Context3DMipFilter.MIPNEAREST:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST_MIPMAP_NEAREST);
-				
-				case Context3DMipFilter.MIPNONE:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
-				
-			} 
-			
-			var tex:Texture = cast texture;
-			if (mipfilter != Context3DMipFilter.MIPNONE && !tex.mipmapsGenerated) {
-				GL.generateMipmap (GL.TEXTURE_2D);
-				tex.mipmapsGenerated = true;
-			}
-			
-		} else if (Std.is (texture, RectangleTexture)) {
-			
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-			
-			switch (filter) {
-				
-				case Context3DTextureFilter.LINEAR:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				
-				case Context3DTextureFilter.NEAREST:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				
-				case Context3DTextureFilter.ANISOTROPIC2X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 2) ? maxSupportedAnisotropy : 2);
-				
-				case Context3DTextureFilter.ANISOTROPIC4X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 4) ? maxSupportedAnisotropy : 4);
-				
-				case Context3DTextureFilter.ANISOTROPIC8X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 8) ? maxSupportedAnisotropy : 8);
-				
-				case Context3DTextureFilter.ANISOTROPIC16X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 16) ? maxSupportedAnisotropy : 16);
-				
-			}
-			
-			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
-			
-		} else if (Std.is (texture, CubeTexture)) {
-			
-			switch (wrap) {
-				
-				case Context3DWrapMode.CLAMP:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-				
-				case Context3DWrapMode.CLAMP_U_REPEAT_V:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
-				
-				case Context3DWrapMode.REPEAT:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
-				
-				case Context3DWrapMode.REPEAT_U_CLAMP_V:
-					
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
-					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-				
-			}
-			
-			switch (filter) {
-				
-				case Context3DTextureFilter.LINEAR:
-					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				
-				case Context3DTextureFilter.NEAREST:
-					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, 1);
-				
-				case Context3DTextureFilter.ANISOTROPIC2X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 2) ? maxSupportedAnisotropy : 2);
-				 
-				case Context3DTextureFilter.ANISOTROPIC4X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 4) ? maxSupportedAnisotropy : 4);
-				
-				case Context3DTextureFilter.ANISOTROPIC8X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 8) ? maxSupportedAnisotropy : 8);
-				
-				case Context3DTextureFilter.ANISOTROPIC16X:
-					
-					if (supportsAnisotropy)
-						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (maxSupportedAnisotropy < 16) ? maxSupportedAnisotropy : 16);
-				
-			}
-			
-			switch (mipfilter) {
-				
-				case Context3DMipFilter.MIPLINEAR:
-					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
-				
-				case Context3DMipFilter.MIPNEAREST:
-					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, GL.NEAREST_MIPMAP_NEAREST);
-				
-				case Context3DMipFilter.MIPNONE:
-					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
-				
-			}
-			
-			var cubetex:CubeTexture = cast texture;
-			if (mipfilter != Context3DMipFilter.MIPNONE && !cubetex.mipmapsGenerated) {
-				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
-				cubetex.mipmapsGenerated = true;
-			}
-
-		} else {
-			
-			throw "Texture of type " + Type.getClassName (Type.getClass (texture)) + " not supported yet";
-			
-		}
+		var location = __currentProgram.__vaUniformLocationFromAgal (index);
+		__setGLSLVertexBufferAt (location, buffer, bufferOffset, format);
 		
 	}
 	
 	
-	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
+	private function __deleteIndexBuffer (buffer:IndexBuffer3D):Void {
 		
-		var location = currentProgram.__vaUniformLocationFromAgal (index);
-		setGLSLVertexBufferAt (location, buffer, bufferOffset, format);
+		if (buffer.__glBuffer == null) {
+			
+			return;
+			
+		}
+		
+		__indexBuffersCreated.remove (buffer);
+		GL.deleteBuffer (buffer.__glBuffer);
+		buffer.__glBuffer = null;
+		
+	}
+	
+	
+	private function __deleteProgram (program:Program3D):Void {
+		
+		if (program.__glProgram == null) {
+			
+			return;
+			
+		}
+		
+		__programsCreated.remove (program);
+		GL.deleteProgram (program.__glProgram);
+		program.__glProgram = null;
+		
+	}
+	
+	
+	private function __deleteTexture (texture:TextureBase):Void {
+		
+		if (texture.glTexture == null) {
+			
+			return;
+			
+		}
+		
+		__texturesCreated.remove (texture);
+		GL.deleteTexture (texture.glTexture);
+		texture.glTexture = null;
+		
+	}
+	
+	
+	private function __deleteVertexBuffer (buffer:VertexBuffer3D):Void {
+		
+		if (buffer.__glBuffer == null) {
+			
+			return;
+			
+		}
+		
+		__vertexBuffersCreated.remove (buffer);
+		GL.deleteBuffer (buffer.__glBuffer);
+		buffer.__glBuffer = null;
 		
 	}
 	
@@ -1233,15 +776,512 @@ import openfl.Lib;
 	}
 	
 	
+	private function __setBackBufferViewPort (?x:Int, ?y:Int, ?width:Int, ?height:Int) {
+		
+		if (x == null) x = Std.int (__scrollRect.x);
+		if (y == null) y = Std.int (__scrollRect.y);
+		if (width == null) width = Std.int (__scrollRect.width);
+		if (height == null) height = Std.int (__scrollRect.height);
+		
+		__scrollRect.x = x;
+		__scrollRect.y = y;
+		__scrollRect.width = width;
+		__scrollRect.height = height;
+		__ogl.width = x + width;
+		__ogl.height = y + height;
+		
+		__updateBackBufferViewPort ();
+		
+	}
+	
+	
+	private function __setGLSLProgramConstantsFromByteArray (location:GLUniformLocation, data:ByteArray, byteArrayOffset:Int = 0):Void {
+		
+		data.position = byteArrayOffset;
+		GL.uniform4f (location, data.readFloat (), data.readFloat (), data.readFloat (), data.readFloat ());
+		
+	}
+	
+	
+	private function __setGLSLProgramConstantsFromMatrix (location:GLUniformLocation, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
+		
+		GL.uniformMatrix4fv (location, !transposedMatrix, new Float32Array (matrix.rawData));
+		
+	}
+	
+	
+	private function __setGLSLProgramConstantsFromVector4 (location:GLUniformLocation, data:Array<Float>, startIndex:Int = 0):Void {
+		
+		GL.uniform4f (location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
+		
+	}
+	
+	
+	private function __setGLSLTextureAt (location:GLUniformLocation, texture:TextureBase, textureIndex:Int):Void {
+		
+		switch (textureIndex) {
+			
+			case 0 : GL.activeTexture (GL.TEXTURE0);
+			case 1 : GL.activeTexture (GL.TEXTURE1);
+			case 2 : GL.activeTexture (GL.TEXTURE2);
+			case 3 : GL.activeTexture (GL.TEXTURE3);
+			case 4 : GL.activeTexture (GL.TEXTURE4);
+			case 5 : GL.activeTexture (GL.TEXTURE5);
+			case 6 : GL.activeTexture (GL.TEXTURE6);
+			case 7 : GL.activeTexture (GL.TEXTURE7);
+			// TODO more?
+			default: throw "Does not support texture8 or more";
+			
+		}
+		
+		if (texture == null) {
+			
+			GL.bindTexture (GL.TEXTURE_2D, null);
+			GL.bindTexture (GL.TEXTURE_CUBE_MAP, null);
+			return;
+			
+		}
+		
+		if (Std.is (texture, Texture)) {
+			
+			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
+			GL.uniform1i (location, textureIndex);
+			
+		} else if (Std.is (texture, RectangleTexture)) {
+			
+			GL.bindTexture (GL.TEXTURE_2D, cast (texture, RectangleTexture).glTexture);
+			GL.uniform1i (location, textureIndex);
+			
+		} else if (Std.is (texture, CubeTexture) ) {
+			
+			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture );
+			GL.uniform1i (location, textureIndex);
+			
+		} else {
+			
+			throw "Texture of type " + Type.getClassName (Type.getClass (texture)) + " not supported yet";
+			
+		}
+		
+		var parameters = __samplerParameters[textureIndex];
+		
+		if (parameters != null) {
+			
+			__setTextureParameters (texture, parameters.wrap, parameters.filter, parameters.mipfilter);
+			
+		} else {
+			
+			__setTextureParameters (texture, Context3DWrapMode.CLAMP, Context3DTextureFilter.NEAREST, Context3DMipFilter.MIPNONE);
+			
+		}
+		
+	}
+	
+	
+	private function __setGLSLVertexBufferAt (location:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
+		
+		if (buffer == null) {
+			
+			if (location > -1) {
+				
+				GL.disableVertexAttribArray (location);
+				
+			}
+			
+			return;
+			
+		}
+		
+		GL.bindBuffer (GL.ARRAY_BUFFER, buffer.__glBuffer);
+		
+		var dimension = 4;
+		var type = GL.FLOAT;
+		var normalized:Bool = false;
+		
+		if (format == Context3DVertexBufferFormat.BYTES_4) {
+			
+			dimension = 4;
+			type = GL.UNSIGNED_BYTE;
+			normalized = true;
+			
+		} else if (format == Context3DVertexBufferFormat.FLOAT_1) {
+			
+			dimension = 1;
+			type = GL.FLOAT;
+			
+		} else if (format == Context3DVertexBufferFormat.FLOAT_2) {
+			
+			dimension = 2;
+			type = GL.FLOAT;
+			
+		} else if (format == Context3DVertexBufferFormat.FLOAT_3) {
+			
+			dimension = 3;
+			type = GL.FLOAT;
+			
+		} else if (format == Context3DVertexBufferFormat.FLOAT_4) {
+			
+			dimension = 4;
+			type = GL.FLOAT;
+			
+		} else {
+			
+			throw "Buffer format " + format + " is not supported";
+			
+		}
+		
+		GL.enableVertexAttribArray (location);
+		GL.vertexAttribPointer (location, dimension, type, normalized, buffer.__data32PerVertex * 4, bufferOffset * 4);
+		
+	}
+	
+	
+	private function __setTextureParameters (texture:TextureBase, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
+		
+		if (!__anisotropySupportTested) {
+			
+			#if !js
+			
+			__supportsAnisotropy = (GL.getSupportedExtensions ().indexOf ("GL_EXT_texture_filter_anisotropic") != -1);
+			
+			if (__supportsAnisotropy) {
+				
+				// GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT is not currently recongnised in Lime
+				// If supported, max anisotropic filtering of 256 is assumed.
+				// maxSupportedAnisotropy = GL.getTexParameter (GL.TEXTURE_2D, MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, __maxSupportedAnisotropy);
+				
+			}
+			
+			#else
+			
+			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
+			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+			__supportsAnisotropy = (ext != null);
+			
+			if (__supportsAnisotropy) {
+				
+				__maxSupportedAnisotropy = GL.getParameter (ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, __maxSupportedAnisotropy);
+				
+			}
+			
+			#end
+			
+			__anisotropySupportTested = true;
+			
+		}
+		
+		if (Std.is (texture, Texture)) {
+			
+			switch (wrap) {
+				
+				case Context3DWrapMode.CLAMP:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+				
+				case Context3DWrapMode.CLAMP_U_REPEAT_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
+				case Context3DWrapMode.REPEAT:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
+				case Context3DWrapMode.REPEAT_U_CLAMP_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+				
+			}
+			
+			// Currently using TEXTURE_MAX_ANISOTROPY_EXT instead of GL.TEXTURE_MAX_ANISOTROPY_EXT
+			// until it is implemented.
+			
+			switch (filter) {
+				
+				case Context3DTextureFilter.LINEAR:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
+						
+					}
+				
+				case Context3DTextureFilter.NEAREST:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC2X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 2) ? __maxSupportedAnisotropy : 2);
+						
+					}
+				 
+				case Context3DTextureFilter.ANISOTROPIC4X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 4) ? __maxSupportedAnisotropy : 4);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC8X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 8) ? __maxSupportedAnisotropy : 8);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC16X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 16) ? __maxSupportedAnisotropy : 16);
+						
+					}
+				
+			}
+			
+			switch (mipfilter) {
+				
+				case Context3DMipFilter.MIPLINEAR:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
+				
+				case Context3DMipFilter.MIPNEAREST:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST_MIPMAP_NEAREST);
+				
+				case Context3DMipFilter.MIPNONE:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
+				
+			} 
+			
+			var tex:Texture = cast texture;
+			
+			if (mipfilter != Context3DMipFilter.MIPNONE && !tex.mipmapsGenerated) {
+				
+				GL.generateMipmap (GL.TEXTURE_2D);
+				tex.mipmapsGenerated = true;
+				
+			}
+			
+		} else if (Std.is (texture, RectangleTexture)) {
+			
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+			
+			switch (filter) {
+				
+				case Context3DTextureFilter.LINEAR:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
+						
+					}
+				
+				case Context3DTextureFilter.NEAREST:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, 1);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC2X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 2) ? __maxSupportedAnisotropy : 2);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC4X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 4) ? __maxSupportedAnisotropy : 4);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC8X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 8) ? __maxSupportedAnisotropy : 8);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC16X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 16) ? __maxSupportedAnisotropy : 16);
+						
+					}
+				
+			}
+			
+			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
+			
+		} else if (Std.is (texture, CubeTexture)) {
+			
+			switch (wrap) {
+				
+				case Context3DWrapMode.CLAMP:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+				
+				case Context3DWrapMode.CLAMP_U_REPEAT_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
+				case Context3DWrapMode.REPEAT:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
+				case Context3DWrapMode.REPEAT_U_CLAMP_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+				
+			}
+			
+			switch (filter) {
+				
+				case Context3DTextureFilter.LINEAR:
+					
+					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, 1);
+						
+					}
+				
+				case Context3DTextureFilter.NEAREST:
+					
+					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, 1);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC2X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 2) ? __maxSupportedAnisotropy : 2);
+						
+					}
+				 
+				case Context3DTextureFilter.ANISOTROPIC4X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 4) ? __maxSupportedAnisotropy : 4);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC8X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 8) ? __maxSupportedAnisotropy : 8);
+						
+					}
+				
+				case Context3DTextureFilter.ANISOTROPIC16X:
+					
+					if (__supportsAnisotropy) {
+						
+						GL.texParameterf (GL.TEXTURE_CUBE_MAP, TEXTURE_MAX_ANISOTROPY_EXT, (__maxSupportedAnisotropy < 16) ? __maxSupportedAnisotropy : 16);
+						
+					}
+				
+			}
+			
+			switch (mipfilter) {
+				
+				case Context3DMipFilter.MIPLINEAR:
+					
+					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_LINEAR);
+				
+				case Context3DMipFilter.MIPNEAREST:
+					
+					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, GL.NEAREST_MIPMAP_NEAREST);
+				
+				case Context3DMipFilter.MIPNONE:
+					
+					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
+				
+			}
+			
+			var cubetex:CubeTexture = cast texture;
+			
+			if (mipfilter != Context3DMipFilter.MIPNONE && !cubetex.mipmapsGenerated) {
+				
+				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
+				cubetex.mipmapsGenerated = true;
+				
+			}
+			
+		} else {
+			
+			throw "Texture of type " + Type.getClassName (Type.getClass (texture)) + " not supported yet";
+			
+		}
+		
+	}
+	
+	
+	private function __updateBackBufferViewPort ():Void {
+		
+		if (!__renderToTexture) {
+			
+			GL.viewport (Std.int (__scrollRect.x), Std.int (__scrollRect.y), Std.int (__scrollRect.width), Std.int (__scrollRect.height));
+			
+		}
+		
+	}
+	
+	
 	private function __updateBlendStatus ():Void {
 		
 		//TODO do the same for other states ?
 		
-		if (blendEnabled) {
+		if (__blendEnabled) {
 			
 			GL.enable (GL.BLEND);
 			GL.blendEquation (GL.FUNC_ADD);
-			GL.blendFunc (__getGLBlend (blendSourceFactor), __getGLBlend (blendDestinationFactor));
+			GL.blendFunc (__getGLBlend (__blendSourceFactor), __getGLBlend (__blendDestinationFactor));
 			
 		} else {
 			
@@ -1252,10 +1292,60 @@ import openfl.Lib;
 	}
 	
 	
+	private function __updateDepthAndStencilState ():Void {
+		
+		// used to enable masking
+		var depthAndStencil = __renderToTexture ? __rttDepthAndStencil : __backBufferDepthAndStencil;
+		
+		if (depthAndStencil) {
+			
+			// TODO check whether this is kept across frame
+			if (Application.current.window.config.depthBuffer) {
+				
+				GL.enable (GL.DEPTH_TEST);
+				
+			}
+			
+			if (Application.current.window.config.stencilBuffer) {
+				
+				GL.enable (GL.STENCIL_TEST);
+				
+			}
+			
+		} else {
+			
+			GL.disable (GL.DEPTH_TEST);
+			GL.disable (GL.STENCIL_TEST);
+			
+		}
+		
+	}
+	
+	
+	private function __updateScissorRectangle ():Void {
+		
+		if (__scissorRectangle == null) {
+			
+			return;
+			
+		}
+		
+		//var width:Int = renderToTexture ? rttWidth : scrollRect.width;
+		var height:Int = __renderToTexture ? __rttHeight : Std.int (__scrollRect.height);
+		
+		GL.scissor (Std.int (__scissorRectangle.x),
+			Std.int (height - Std.int (__scissorRectangle.y) - Std.int (__scissorRectangle.height)),
+			Std.int (__scissorRectangle.width),
+			Std.int (__scissorRectangle.height)
+		);
+		
+	}
+	
+	
 }
 
 
-private class SamplerState {
+@:noCompletion @:dox(hide) private class SamplerState {
 	
 	
 	public var wrap:Context3DWrapMode;

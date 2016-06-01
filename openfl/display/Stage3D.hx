@@ -11,6 +11,8 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.Vector;
 
+@:access(openfl.display3D.Context3D)
+
 
 class Stage3D extends EventDispatcher {
 	

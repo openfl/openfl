@@ -5,6 +5,8 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
 
+@:access(openfl.display3D.Context3D)
+
 
 @:final class Program3D {
 	
