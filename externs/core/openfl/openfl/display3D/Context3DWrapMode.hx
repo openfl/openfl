@@ -1,23 +1,11 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DWrapMode")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DWrapMode {
+@:enum abstract Context3DWrapMode(String) from String to String {
 	
-	CLAMP;
-	
-	#if (flash && !doc_gen)
-	@:noCompletion @:dox(hide) CLAMP_U_REPEAT_V;
-	#end
-	
-	REPEAT;
-	
-	#if (flash && !doc_gen)
-	@:noCompletion @:dox(hide) REPEAT_U_CLAMP_V;
-	#end
+	public var CLAMP = "clamp";
+	public var CLAMP_U_REPEAT_V = "clamp_u_repeat_v";
+	public var REPEAT = "repeat";
+	public var REPEAT_U_CLAMP_V = "repeat_u_clamp_v";
 	
 }

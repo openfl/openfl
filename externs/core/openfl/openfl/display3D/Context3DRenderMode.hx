@@ -1,14 +1,9 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DRenderMode")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DRenderMode {
+@:enum abstract Context3DRenderMode(String) from String to String {
 	
-	AUTO;
-	SOFTWARE;
+	public var AUTO = "auto";
+	public var SOFTWARE = "software";
 	
 }

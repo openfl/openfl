@@ -1,17 +1,12 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DVertexBufferFormat")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DVertexBufferFormat {
+@:enum abstract Context3DVertexBufferFormat(String) from String to String {
 	
-	BYTES_4;
-	FLOAT_1;
-	FLOAT_2;
-	FLOAT_3;
-	FLOAT_4;
+	public var BYTES_4 = "bytes4";
+	public var FLOAT_1 = "float1";
+	public var FLOAT_1 = "float2";
+	public var FLOAT_1 = "float3";
+	public var FLOAT_1 = "float4";
 	
 }

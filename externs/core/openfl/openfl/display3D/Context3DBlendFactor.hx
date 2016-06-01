@@ -1,22 +1,17 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DBlendFactor")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DBlendFactor {
+@:enum abstract Context3DBlendFactor(String) from String to String {
 	
-	DESTINATION_ALPHA;
-	DESTINATION_COLOR;
-	ONE;
-	ONE_MINUS_DESTINATION_ALPHA;
-	ONE_MINUS_DESTINATION_COLOR;
-	ONE_MINUS_SOURCE_ALPHA;
-	ONE_MINUS_SOURCE_COLOR;
-	SOURCE_ALPHA;
-	SOURCE_COLOR;
-	ZERO;
+	public var DESTINATION_ALPHA = "destinationAlpha";
+	public var DESTINATION_COLOR = "destinationColor";
+	public var ONE = "one";
+	public var ONE_MINUS_DESTINATION_ALPHA = "oneMinusDestinationAlpha";
+	public var ONE_MINUS_DESTINATION_COLOR = "oneMinusDestinationColor";
+	public var ONE_MINUS_SOURCE_ALPHA = "oneMinusSourceAlpha";
+	public var ONE_MINUS_SOURCE_COLOR = "oneMinusSourceColor";
+	public var SOURCE_ALPHA = "sourceAlpha";
+	public var SOURCE_COLOR = "sourceColor";
+	public var ZERO = "zero";
 	
 }

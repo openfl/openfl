@@ -1,14 +1,9 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DProgramType")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DProgramType {
+@:enum abstract Context3DProgramType(String) from String to String {
 	
-	FRAGMENT;
-	VERTEX;
+	public var FRAGMENT = "fragment";
+	public var VERTEX = "vertex";
 	
 }

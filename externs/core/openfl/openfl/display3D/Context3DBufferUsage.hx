@@ -1,15 +1,9 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DBufferUsage")
-@:require(flash12)
-#end
-
-
-@:fakeEnum(String) extern enum Context3DBufferUsage {
+@:enum abstract Context3DBufferUsage(String) from String to String {
 	
-	DYNAMIC_DRAW;
-	STATIC_DRAW;
+	public var DYNAMIC_DRAW = "dynamicDraw";
+	public var STATIC_DRAW = "staticDraw";
 	
 }

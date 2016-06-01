@@ -1,18 +1,13 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DTextureFilter")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DTextureFilter {
+@:enum abstract Context3DTextureFilter(String) from String to String {
 	
-	ANISOTROPIC16X;
-	ANISOTROPIC2X;
-	ANISOTROPIC4X;
-	ANISOTROPIC8X;
-	LINEAR;
-	NEAREST;
+	public var ANISOTROPIC16X = "anisotropic16x";
+	public var ANISOTROPIC2X = "anisotropic2x";
+	public var ANISOTROPIC4X = "anisotropic4x";
+	public var ANISOTROPIC8X = "anisotropic8x";
+	public var LINEAR = "linear";
+	public var NEAREST = "nearest";
 	
 }

@@ -1,16 +1,11 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DClearMask")
-#end
-
-
-extern class Context3DClearMask {
+@:enum abstract Context3DClearMask(String) from String to String {
 	
-	public static var ALL:Int;
-	public static var COLOR:Int;
-	public static var DEPTH:Int;
-	public static var STENCIL:Int;
+	public var ALL = "all";
+	public var COLOR = "color";
+	public var DEPTH = "depth";
+	public var STENCIL = "stencil";
 	
 }

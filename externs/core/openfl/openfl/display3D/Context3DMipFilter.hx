@@ -1,15 +1,10 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DMipFilter")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DMipFilter {
+@:enum abstract Context3DMipFilter(String) from String to String {
 	
-	MIPLINEAR;
-	MIPNEAREST;
-	MIPNONE;
+	public var MIPLINEAR = "miplinear";
+	public var MIPNEAREST = "mipnearest";
+	public var MIPNONE = "mipnone";
 	
 }

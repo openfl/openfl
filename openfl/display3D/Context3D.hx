@@ -37,9 +37,9 @@ import openfl.Lib;
 	public var driverInfo (default, null):String; // TODO
 	public var enableErrorChecking:Bool; // TODO (use GL.getError() and GL.validateProgram(program))
 	
-	private var blendDestinationFactor:Int; // to mimic Stage3d behavior of keeping blending across frames:
+	private var blendDestinationFactor:Context3DBlendFactor; // to mimic Stage3d behavior of keeping blending across frames:
 	private var blendEnabled:Bool; // to mimic Stage3d behavior of keeping blending across frames:
-	private var blendSourceFactor:Int; // to mimic Stage3d behavior of keeping blending across frames:
+	private var blendSourceFactor:Context3DBlendFactor; // to mimic Stage3d behavior of keeping blending across frames:
 	private var currentProgram:Program3D;
 	private var disposed:Bool;
 	private var drawing:Bool; // to mimic Stage3d behavior of not allowing calls to drawTriangles between present and clear
@@ -102,7 +102,7 @@ import openfl.Lib;
 	}
 	
 	
-	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:Int = 0, mask:Int = Context3DClearMask.ALL):Void {
+	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:Context3DClearMask = ALL):Void {
 		
 		if (!drawing) {
 			
@@ -121,7 +121,7 @@ import openfl.Lib;
 		GL.clearDepth (depth);
 		GL.clearStencil (stencil);
 		
-		GL.clear (mask);
+		GL.clear (__getGLClearMask (mask));
 		
 		#if js
 		if (scissorRectangle != null) GL.enable(GL.SCISSOR_TEST);
@@ -420,9 +420,7 @@ import openfl.Lib;
 	}
 	
 	
-	public function setBlendFactors (sourceFactor:Int, destinationFactor:Int):Void {
-		
-		// TODO: Type as Context3DBlendFactor instead of Int?
+	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
 		blendEnabled = true;
 		blendSourceFactor = sourceFactor;
@@ -441,9 +439,7 @@ import openfl.Lib;
 	
 	
 	
-	public function setCulling (triangleFaceToCull:Int):Void {
-		
-		// TODO: Type as Context3DTriangleFace instead of Int?
+	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void {
 		
 		if (triangleFaceToCull == Context3DTriangleFace.NONE) {
 			
@@ -490,11 +486,9 @@ import openfl.Lib;
 	}
 	
 	
-	public function setDepthTest (depthMask:Bool, passCompareMode:Int):Void {
+	public function setDepthTest (depthMask:Bool, passCompareMode:Context3DCompareMode):Void {
 		
-		// TODO: Type as Context3DCompareMode instead of Int?
-		
-		GL.depthFunc (passCompareMode);
+		GL.depthFunc (__getGLCompareMode (passCompareMode));
 		GL.depthMask (depthMask);
 		
 	}
@@ -847,11 +841,11 @@ import openfl.Lib;
 		
 	}
 	
-	public function setStencilActions (?triangleFace:Int, ?compareMode:Int, ?actionOnBothPass:Int, ?actionOnDepthFail:Int, ?actionOnDepthPassStencilFail:Int):Void {
+	public function setStencilActions (triangleFace:Context3DTriangleFace = FRONT_AND_BACK, compareMode:Context3DCompareMode = ALWAYS, actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP, actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void {
 		
 		this.stencilCompareMode = compareMode;
-		GL.stencilOp (actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail);
-		GL.stencilFunc (stencilCompareMode, stencilRef, stencilReadMask);
+		GL.stencilOp (__getGLStencilAction (actionOnBothPass), __getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnDepthPassStencilFail));
+		GL.stencilFunc (__getGLCompareMode (stencilCompareMode), stencilRef, stencilReadMask);
 		
 	}
 	
@@ -861,7 +855,7 @@ import openfl.Lib;
 		stencilReadMask = readMask;
 		stencilRef = referenceValue;
 		
-		GL.stencilFunc (stencilCompareMode, stencilRef, stencilReadMask);
+		GL.stencilFunc (__getGLCompareMode (stencilCompareMode), stencilRef, stencilReadMask);
 		GL.stencilMask (writeMask);
 		
 	}
@@ -889,9 +883,9 @@ import openfl.Lib;
 				// maxSupportedAnisotropy = GL.getTexParameter (GL.TEXTURE_2D, MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 				GL.texParameteri (GL.TEXTURE_2D, TEXTURE_MAX_ANISOTROPY_EXT, maxSupportedAnisotropy);
 			}
-
+			
 			#else
-
+			
 			var ext:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
 			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
 			if (ext == null || Reflect.field( ext, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) ext = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
@@ -905,7 +899,7 @@ import openfl.Lib;
 			#end
 			
 			anisotropySupportTested = true;
-						
+			
 		}
 		
 		if (Std.is (texture, Texture)) {
@@ -917,10 +911,20 @@ import openfl.Lib;
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 				
+				case Context3DWrapMode.CLAMP_U_REPEAT_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
 				case Context3DWrapMode.REPEAT:
 					
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
+				case Context3DWrapMode.REPEAT_U_CLAMP_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 				
 			}
 			
@@ -978,13 +982,12 @@ import openfl.Lib;
 					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR);
 				
 			} 
-
+			
 			var tex:Texture = cast texture;
 			if (mipfilter != Context3DMipFilter.MIPNONE && !tex.mipmapsGenerated) {
 				GL.generateMipmap (GL.TEXTURE_2D);
 				tex.mipmapsGenerated = true;
 			}
-					
 			
 		} else if (Std.is (texture, RectangleTexture)) {
 			
@@ -1035,13 +1038,23 @@ import openfl.Lib;
 				
 				case Context3DWrapMode.CLAMP:
 					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
+				
+				case Context3DWrapMode.CLAMP_U_REPEAT_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
 				
 				case Context3DWrapMode.REPEAT:
 					
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_S, GL.REPEAT);
-					GL.texParameteri (GL.TEXTURE_CUBE_MAP, GL.TEXTURE_WRAP_T, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+				
+				case Context3DWrapMode.REPEAT_U_CLAMP_V:
+					
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT);
+					GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 				
 			}
 			
@@ -1120,6 +1133,95 @@ import openfl.Lib;
 	}
 	
 	
+	private function __getGLBlend (blendMode:Context3DBlendFactor):Int {
+		
+		return switch (blendMode) {
+			
+			case DESTINATION_ALPHA: GL.DST_ALPHA;
+			case DESTINATION_COLOR: GL.DST_COLOR;
+			case ONE: GL.ONE;
+			case ONE_MINUS_DESTINATION_ALPHA: GL.ONE_MINUS_DST_ALPHA;
+			case ONE_MINUS_DESTINATION_COLOR: GL.ONE_MINUS_DST_COLOR;
+			case ONE_MINUS_SOURCE_ALPHA: GL.ONE_MINUS_SRC_ALPHA;
+			case ONE_MINUS_SOURCE_COLOR: GL.ONE_MINUS_SRC_COLOR;
+			case SOURCE_ALPHA: GL.SRC_ALPHA;
+			case SOURCE_COLOR: GL.SRC_COLOR;
+			case ZERO: GL.ZERO;
+			default: GL.ONE_MINUS_SRC_ALPHA;
+			
+		}
+		
+	}
+	
+	
+	private function __getGLClearMask (clearMask:Context3DClearMask):Int {
+		
+		return switch (clearMask) {
+			
+			case ALL: GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT;
+			case COLOR: GL.COLOR_BUFFER_BIT;
+			case DEPTH: GL.DEPTH_BUFFER_BIT;
+			case STENCIL: GL.STENCIL_BUFFER_BIT;
+			default: GL.COLOR_BUFFER_BIT;
+			
+		}
+		
+	}
+	
+	
+	private function __getGLCompareMode (compareMode:Context3DCompareMode):Int {
+		
+		return switch (compareMode) {
+			
+			case ALWAYS: GL.ALWAYS;
+			case EQUAL: GL.EQUAL;
+			case GREATER: GL.GREATER;
+			case GREATER_EQUAL: GL.GEQUAL;
+			case LESS: GL.LESS;
+			case LESS_EQUAL: GL.LEQUAL; // TODO : wrong value
+			case NEVER: GL.NEVER;
+			case NOT_EQUAL: GL.NOTEQUAL;
+			default: GL.EQUAL;
+			
+		}
+		
+	}
+	
+	
+	private function __getGLStencilAction (stencilAction:Context3DStencilAction):Int {
+		
+		return switch (stencilAction) {
+			
+			case DECREMENT_SATURATE: GL.DECR;
+			case DECREMENT_WRAP: GL.DECR_WRAP;
+			case INCREMENT_SATURATE: GL.INCR;
+			case INCREMENT_WRAP: GL.INCR_WRAP;
+			case INVERT: GL.INVERT;
+			case KEEP: GL.KEEP;
+			case SET: GL.REPLACE;
+			case ZERO: GL.ZERO;
+			default: GL.KEEP;
+			
+		}
+		
+	}
+	
+	
+	private function __getGLTriangleFace (triangleFace:Context3DTriangleFace):Int {
+		
+		return switch (triangleFace) {
+			
+			case BACK: GL.FRONT;
+			case FRONT: GL.BACK;
+			case FRONT_AND_BACK: GL.FRONT_AND_BACK;
+			case NONE: 0;
+			default: 0;
+			
+		}
+		
+	}
+	
+	
 	private function __updateBlendStatus ():Void {
 		
 		//TODO do the same for other states ?
@@ -1128,7 +1230,7 @@ import openfl.Lib;
 			
 			GL.enable (GL.BLEND);
 			GL.blendEquation (GL.FUNC_ADD);
-			GL.blendFunc (blendSourceFactor, blendDestinationFactor);
+			GL.blendFunc (__getGLBlend (blendSourceFactor), __getGLBlend (blendDestinationFactor));
 			
 		} else {
 			

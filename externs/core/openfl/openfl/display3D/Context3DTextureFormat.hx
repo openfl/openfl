@@ -1,18 +1,13 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DTextureFormat")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DTextureFormat {
+@:enum abstract Context3DTextureFormat(String) from String to String {
 	
-	BGRA;
-	BGRA_PACKED;
-	BGR_PACKED;
-	COMPRESSED;
-	COMPRESSED_ALPHA;
-	RGBA_HALF_FLOAT;
+	public var BGR_PACKED = "bgrPacked565";
+	public var BGRA = "bgra";
+	public var BGRA_PACKED = "bgraPacked4444";
+	public var COMPRESSED = "compressed";
+	public var COMPRESSED_ALPHA = "compressedAlpha";
+	public var RGBA_HALF_FLOAT = "rgbaHalfFloat";
 	
 }

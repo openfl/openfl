@@ -1,20 +1,15 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DStencilAction")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DStencilAction {
+@:enum abstract Context3DStencilAction(String) from String to String {
 	
-	DECREMENT_SATURATE;
-	DECREMENT_WRAP;
-	INCREMENT_SATURATE;
-	INCREMENT_WRAP;
-	INVERT;
-	KEEP;
-	SET;
-	ZERO;
+	public var DECREMENT_SATURATE = "decrementSaturate";
+	public var DECREMENT_WRAP = "decrementWrap";
+	public var INCREMENT_SATURATE = "incrementSaturate";
+	public var INCREMENT_WRAP = "incrementWrap";
+	public var INVERT = "invert";
+	public var KEEP = "keep";
+	public var SET = "set";
+	public var ZERO = "zero";
 	
 }

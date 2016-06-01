@@ -1,20 +1,15 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DCompareMode")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DCompareMode {
+@:enum abstract Context3DCompareMode(String) from String to String {
 	
-	ALWAYS;
-	EQUAL;
-	GREATER;
-	GREATER_EQUAL;
-	LESS;
-	LESS_EQUAL;
-	NEVER;
-	NOT_EQUAL;
+	public var ALWAYS = "always";
+	public var EQUAL = "equal";
+	public var GREATER = "greater";
+	public var GREATER_EQUAL = "greaterEqual";
+	public var LESS = "less";
+	public var LESS_EQUAL = "lessEqual";
+	public var NEVER = "never";
+	public var NOT_EQUAL = "notEqual";
 	
 }

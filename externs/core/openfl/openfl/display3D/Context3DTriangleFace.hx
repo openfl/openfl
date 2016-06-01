@@ -1,16 +1,11 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DTriangleFace")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DTriangleFace {
+@:enum abstract Context3DTriangleFace(String) from String to String {
 	
-	BACK;
-	FRONT;
-	FRONT_AND_BACK;
-	NONE;
+	public var BACK = "back";
+	public var FRONT = "front";
+	public var FRONT_AND_BACK = "frontAndBack";
+	public var NONE = "none";
 	
 }

@@ -1,17 +1,12 @@
 package openfl.display3D;
 
 
-#if flash
-@:native("flash.display3D.Context3DProfile")
-#end
-
-
-@:fakeEnum(String) extern enum Context3DProfile {
+@:enum abstract Context3DProfile(String) from String to String {
 	
-	BASELINE;
-	BASELINE_CONSTRAINED;
-	BASELINE_EXTENDED;
-	STANDARD;
-	STANDARD_CONSTRAINED;
+	public var BASELINE = "baseline";
+	public var BASELINE_CONSTRAINED = "baselineConstrained";
+	public var BASELINE_EXTENDED = "baselineExtended";
+	public var STANDARD = "standard";
+	public var STANDARD_CONSTRAINED = "standardConstrained";
 	
 }
