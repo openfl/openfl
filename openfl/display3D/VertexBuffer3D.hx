@@ -43,9 +43,7 @@ class VertexBuffer3D {
 		var offset = byteArrayOffset + (startVertex * bytesPerVertex);
 		var length = numVertices * __data32PerVertex;
 		
-		var buffer:ArrayBuffer = cast byteArray;
-		var array = new Float32Array (buffer, offset, length);
-		
+		var array = new Float32Array (byteArray, offset, length);
 		GL.bindBuffer (GL.ARRAY_BUFFER, __glBuffer);
 		GL.bufferData (GL.ARRAY_BUFFER, array, __bufferUsage);
 		
