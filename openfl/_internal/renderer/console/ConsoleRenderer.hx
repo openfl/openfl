@@ -85,6 +85,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private var hasFill = false;
 	private var fillBitmap:BitmapData = null;
+	private var fillBitmapMatrix:Matrix = null;
+	private var fillBitmapRepeat:Bool = false;
 	private var fillBitmapSmooth:Bool = false;
 	private var fillColor:Array<Float32> = [1, 1, 1, 1];
 
@@ -903,13 +905,13 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					hasFill = true;
 					fillBitmap = cmd.bitmap;
+					fillBitmapMatrix = cmd.matrix;
+					fillBitmapRepeat = cmd.repeat;
 					fillBitmapSmooth = cmd.smooth;
 					fillColor[0] = 1.0;
 					fillColor[1] = 1.0;
 					fillColor[2] = 1.0;
 					fillColor[3] = object.__worldAlpha;
-
-					// TODO(james4k): deal with matrix, repeat
 
 				//case BeginFill (rgb, alpha):
 				case BEGIN_FILL:
@@ -1038,6 +1040,21 @@ class ConsoleRenderer extends AbstractRenderer {
 						transform.append (viewProj);
 						transform.transpose ();
 
+						var m:Matrix = new Matrix ();
+						if (fillBitmap != null) {
+							var tx = 0.0;
+							var ty = 0.0;
+							// TODO(james4k): this is a hack, only applies translation. need to
+							// think through these coordinate spaces.
+							if (fillBitmapMatrix != null) {
+								tx = fillBitmapMatrix.tx;
+								ty = fillBitmapMatrix.ty;
+							}
+							m.translate (-tx, -ty);
+							m.scale (1.0 / fillBitmap.width, 1.0 / fillBitmap.height);
+							m.translate (tx, ty);
+						}
+
 						var w = cmd.width;
 						var h = cmd.height;
 						var color:Array<cpp.Float32> = [1, 1, 1, object.__worldAlpha];
@@ -1045,16 +1062,16 @@ class ConsoleRenderer extends AbstractRenderer {
 						var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, 4);
 						var out = vertexBuffer.lock ();
 						out.vec3 (cmd.x, cmd.y, 0);
-						out.vec2 (0, 0);
+						out.vec2 ((cmd.x)*m.a + (cmd.y)*m.c + m.tx, (cmd.x)*m.b + (cmd.y)*m.d + m.ty);
 						out.color(0xff, 0xff, 0xff, 0xff);
 						out.vec3 (cmd.x, cmd.y + h, 0);
-						out.vec2 (0, 1);
+						out.vec2 ((cmd.x)*m.a + (cmd.y+h)*m.c + m.tx, (cmd.x)*m.b + (cmd.y+h)*m.d + m.ty);
 						out.color(0xff, 0xff, 0xff, 0xff);
 						out.vec3 (cmd.x + w, cmd.y, 0);
-						out.vec2 (1, 0);
+						out.vec2 ((cmd.x+w)*m.a + (cmd.y)*m.c + m.tx, (cmd.x+w)*m.b + (cmd.y)*m.d + m.ty);
 						out.color(0xff, 0xff, 0xff, 0xff);
 						out.vec3 (cmd.x + w, cmd.y + h, 0);
-						out.vec2 (1, 1);
+						out.vec2 ((cmd.x+w)*m.a + (cmd.y+h)*m.c + m.tx, (cmd.x+w)*m.b + (cmd.y+h)*m.d + m.ty);
 						out.color(0xff, 0xff, 0xff, 0xff);
 						vertexBuffer.unlock ();
 
@@ -1067,6 +1084,11 @@ class ConsoleRenderer extends AbstractRenderer {
 						ctx.setVertexSource (vertexBuffer);
 						ctx.setTexture (0, texture);
 						ctx.setTextureAddressMode (0, Clamp, Clamp);
+						if (fillBitmapRepeat) {
+							ctx.setTextureAddressMode (0, Wrap, Wrap);
+						} else {
+							ctx.setTextureAddressMode (0, Clamp, Clamp);
+						}
 						if (fillBitmapSmooth) {
 							ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
 						} else {
