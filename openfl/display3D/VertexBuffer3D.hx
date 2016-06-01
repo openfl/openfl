@@ -1,6 +1,7 @@
 package openfl.display3D;
 
 
+import lime.utils.ArrayBuffer;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
 import openfl.utils.Float32Array;
@@ -39,22 +40,14 @@ class VertexBuffer3D {
 	public function uploadFromByteArray (byteArray:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
 		
 		var bytesPerVertex = __data32PerVertex * 4;
-		var offset = Std.int (byteArrayOffset / bytesPerVertex) + (startVertex * __data32PerVertex);
+		var offset = byteArrayOffset + (startVertex * bytesPerVertex);
 		var length = numVertices * __data32PerVertex;
 		
-		var array = new Float32Array (byteArray, offset, length);
+		var buffer:ArrayBuffer = cast byteArray;
+		var array = new Float32Array (buffer, offset, length);
+		
 		GL.bindBuffer (GL.ARRAY_BUFFER, __glBuffer);
 		GL.bufferData (GL.ARRAY_BUFFER, array, __bufferUsage);
-		
-	}
-	
-	
-	public function uploadFromFloat32Array (data:Float32Array):Void {
-		
-		// TODO: Why does this work differently than uploadFromByteArray (data.buffer, data.byteOffset, 0, data.length)?
-		
-		GL.bindBuffer (GL.ARRAY_BUFFER, __glBuffer);
-		GL.bufferData (GL.ARRAY_BUFFER, data, __bufferUsage);
 		
 	}
 	
