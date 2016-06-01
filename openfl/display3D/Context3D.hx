@@ -21,6 +21,10 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Lib;
 
+@:access(openfl.display3D.textures.CubeTexture)
+@:access(openfl.display3D.textures.RectangleTexture)
+@:access(openfl.display3D.textures.Texture)
+@:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
@@ -521,13 +525,13 @@ import openfl.Lib;
 		#if (ios || tvos)
 		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
 		#elseif js
-		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
 		#else
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.__width, texture.__height);
 		#end
-		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.glTexture, 0);
+		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__glTexture, 0);
 		
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
 		GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __renderbuffer);
 		
 		if (enableDepthAndStencil) {
@@ -537,17 +541,17 @@ import openfl.Lib;
 			
 		}
 		
-		GL.bindTexture (GL.TEXTURE_2D, texture.glTexture);
-		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, texture.width, texture.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
+		GL.bindTexture (GL.TEXTURE_2D, texture.__glTexture);
+		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, texture.__width, texture.__height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
 		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
 		
-		GL.viewport (0, 0, texture.width, texture.height);
+		GL.viewport (0, 0, texture.__width, texture.__height);
 		
 		__renderToTexture = true;
 		__rttDepthAndStencil = enableDepthAndStencil;
-		__rttWidth = texture.width;
-		__rttHeight = texture.height;
+		__rttWidth = texture.__width;
+		__rttHeight = texture.__height;
 		__updateScissorRectangle ();
 		__updateDepthAndStencilState ();
 		
@@ -659,15 +663,15 @@ import openfl.Lib;
 	
 	private function __deleteTexture (texture:TextureBase):Void {
 		
-		if (texture.glTexture == null) {
+		if (texture.__glTexture == null) {
 			
 			return;
 			
 		}
 		
 		__texturesCreated.remove (texture);
-		GL.deleteTexture (texture.glTexture);
-		texture.glTexture = null;
+		GL.deleteTexture (texture.__glTexture);
+		texture.__glTexture = null;
 		
 	}
 	
@@ -844,17 +848,17 @@ import openfl.Lib;
 		
 		if (Std.is (texture, Texture)) {
 			
-			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).glTexture);
+			GL.bindTexture (GL.TEXTURE_2D, cast (texture, Texture).__glTexture);
 			GL.uniform1i (location, textureIndex);
 			
 		} else if (Std.is (texture, RectangleTexture)) {
 			
-			GL.bindTexture (GL.TEXTURE_2D, cast (texture, RectangleTexture).glTexture);
+			GL.bindTexture (GL.TEXTURE_2D, cast (texture, RectangleTexture).__glTexture);
 			GL.uniform1i (location, textureIndex);
 			
 		} else if (Std.is (texture, CubeTexture) ) {
 			
-			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).glTexture );
+			GL.bindTexture (GL.TEXTURE_CUBE_MAP, cast (texture, CubeTexture).__glTexture );
 			GL.uniform1i (location, textureIndex);
 			
 		} else {
@@ -1076,10 +1080,10 @@ import openfl.Lib;
 			
 			var tex:Texture = cast texture;
 			
-			if (mipfilter != Context3DMipFilter.MIPNONE && !tex.mipmapsGenerated) {
+			if (mipfilter != Context3DMipFilter.MIPNONE && !tex.__mipmapsGenerated) {
 				
 				GL.generateMipmap (GL.TEXTURE_2D);
-				tex.mipmapsGenerated = true;
+				tex.__mipmapsGenerated = true;
 				
 			}
 			
@@ -1246,10 +1250,10 @@ import openfl.Lib;
 			
 			var cubetex:CubeTexture = cast texture;
 			
-			if (mipfilter != Context3DMipFilter.MIPNONE && !cubetex.mipmapsGenerated) {
+			if (mipfilter != Context3DMipFilter.MIPNONE && !cubetex.__mipmapsGenerated) {
 				
 				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
-				cubetex.mipmapsGenerated = true;
+				cubetex.__mipmapsGenerated = true;
 				
 			}
 			

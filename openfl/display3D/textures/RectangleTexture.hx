@@ -12,21 +12,21 @@ import openfl.utils.ByteArray;
 
 @:final class RectangleTexture extends TextureBase {
 	
-	private static var internalFormat:Int = -1;
 	
-	public var optimizeForRenderToTexture:Bool;
+	private static var __internalFormat:Int = -1;
+	private var __optimizeForRenderToTexture:Bool;
 	
 	
-	public function new (context:Context3D, glTexture:GLTexture, optimize:Bool, width:Int, height:Int) {
+	private function new (context:Context3D, glTexture:GLTexture, optimize:Bool, width:Int, height:Int) {
 		
-		optimizeForRenderToTexture = optimize;
+		__optimizeForRenderToTexture = optimize;
 		
-		if (internalFormat == -1) {
+		if (__internalFormat == -1) {
 			
 			#if native
-			internalFormat = GL.BGRA_EXT;
+			__internalFormat = GL.BGRA_EXT;
 			#else
-			internalFormat = GL.RGBA;
+			__internalFormat = GL.RGBA;
 			#end
 			
 		}
@@ -36,14 +36,9 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	//public function uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:Int, async:Bool = false):Void {
-		// TODO
-	//}
-	
-	
-	public function uploadFromBitmapData (bitmapData:BitmapData, miplevel:Int = 0):Void {
+	public function uploadFromBitmapData (source:BitmapData):Void {
 		
-		var image = bitmapData.image;
+		var image = source.image;
 		
 		if (!image.premultiplied && image.transparent) {
 			
@@ -52,46 +47,52 @@ import openfl.utils.ByteArray;
 			
 		}
 		
-		width = image.width;
-		height = image.height;
+		__width = image.width;
+		__height = image.height;
 		
 		uploadFromTypedArray (image.data);
 		
 	}
 	
 	
-	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int):Void {
+	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		uploadFromTypedArray (getUInt8ArrayFromByteArray (data, byteArrayOffset));
+		uploadFromTypedArray (__getUInt8ArrayFromByteArray (data, byteArrayOffset));
 		
 	}
 	
+	
+	// TODO: Should there be a typed array API, or just use ByteArray?
+	
+	
 	@:deprecated("uploadFromUInt8Array is deprecated. Use uploadFromTypedArray instead.")
-	public inline function uploadFromUInt8Array (data:UInt8Array):Void {
+	@:noCompletion @:dox(hide) public inline function uploadFromUInt8Array (data:UInt8Array):Void {
 		
 		uploadFromTypedArray (data);
 		
 	}
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, yFlipped:Bool = false, premultiplied:Bool = true):Void {
+	
+	@:noCompletion @:dox(hide) public function uploadFromTypedArray (data:ArrayBufferView, yFlipped:Bool = false, premultiplied:Bool = true):Void {
 		
 		// TODO use premultiplied parameter
 		
-		GL.bindTexture (GL.TEXTURE_2D, glTexture);
+		GL.bindTexture (GL.TEXTURE_2D, __glTexture);
 		
 		#if (js && html5)
 		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, yFlipped ? 0 : 1);
 		#else
 		if (!yFlipped) {
 			
-			data = flipPixels (data, width, height);
+			data = __flipPixels (data, __width, __height);
 			
 		}
 		#end
 		
-		GL.texImage2D (GL.TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (GL.TEXTURE_2D, 0, __internalFormat, __width, __height, 0, __internalFormat, GL.UNSIGNED_BYTE, data);
 		GL.bindTexture (GL.TEXTURE_2D, null);
 		
 	}
+	
 	
 }

@@ -14,32 +14,34 @@ import openfl.utils.ByteArray.ByteArrayData;
 
 class TextureBase extends EventDispatcher {
 	
-	public var context:Context3D;
-	public var height:Int;
-	public var frameBuffer:GLFramebuffer;
-	public var glTexture:GLTexture;
-	public var width:Int;
+	
+	private var __context:Context3D;
+	private var __frameBuffer:GLFramebuffer;
+	private var __glTexture:GLTexture;
+	private var __height:Int;
+	private var __width:Int;
 	
 	
-	public function new (context:Context3D, glTexture:GLTexture, width:Int = 0, height:Int = 0) {
+	private function new (context:Context3D, glTexture:GLTexture, width:Int = 0, height:Int = 0) {
 		
 		super ();
 		
-		this.context = context;
-		this.width = width;
-		this.height = height;
-		this.glTexture = glTexture;
+		__context = context;
+		__width = width;
+		__height = height;
+		__glTexture = glTexture;
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		context.__deleteTexture (this);
+		__context.__deleteTexture (this);
 		
 	}
 	
-	private function flipPixels (inData:ArrayBufferView, _width:Int, _height:Int):UInt8Array {
+	
+	private function __flipPixels (inData:ArrayBufferView, _width:Int, _height:Int):UInt8Array {
 		
 		#if native
 		if (inData == null) {
@@ -48,7 +50,7 @@ class TextureBase extends EventDispatcher {
 			
 		}
 		
-		var data = getUInt8ArrayFromArrayBufferView (inData);
+		var data = __getUInt8ArrayFromArrayBufferView (inData);
 		var data2 = new UInt8Array (data.length);
 		var bpp = 4;
 		var bytesPerLine = _width * bpp;
@@ -70,26 +72,11 @@ class TextureBase extends EventDispatcher {
 		
 	}
 	
-	private function getUInt8ArrayFromByteArray (data:ByteArray, byteArrayOffset:Int):UInt8Array {
-		
-		#if js
-		return byteArrayOffset == 0 ? @:privateAccess (data:ByteArrayData).b : new UInt8Array (data.toArrayBuffer (), byteArrayOffset);
-		#else
-		return new UInt8Array (data.toArrayBuffer (), byteArrayOffset);
-		#end
-		
-	}
 	
-	private function getUInt8ArrayFromArrayBufferView (data:ArrayBufferView):UInt8Array {
+	private function __getSizeForMipLevel (miplevel:Int):{ width:Int, height:Int } {
 		
-		return new UInt8Array (data.buffer, data.byteOffset, data.byteLength);
-		
-	}
-	
-	private function getSizeForMipLevel (miplevel:Int): {width:Int, height:Int} {
-		
-		var _width = width;
-		var _height = height;
+		var _width = __width;
+		var _height = __height;
 		var lv = miplevel;
 		
 		while (lv > 0) {
@@ -100,7 +87,27 @@ class TextureBase extends EventDispatcher {
 			
 		}
 		
-		return {width:_width, height:_height};
+		return { width: _width, height: _height };
 		
 	}
+	
+	
+	private function __getUInt8ArrayFromByteArray (data:ByteArray, byteArrayOffset:Int):UInt8Array {
+		
+		#if js
+		return byteArrayOffset == 0 ? @:privateAccess (data:ByteArrayData).b : new UInt8Array (data.toArrayBuffer (), byteArrayOffset);
+		#else
+		return new UInt8Array (data.toArrayBuffer (), byteArrayOffset);
+		#end
+		
+	}
+	
+	
+	private function __getUInt8ArrayFromArrayBufferView (data:ArrayBufferView):UInt8Array {
+		
+		return new UInt8Array (data.buffer, data.byteOffset, data.byteLength);
+		
+	}
+	
+	
 }
