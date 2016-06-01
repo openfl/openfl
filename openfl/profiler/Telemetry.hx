@@ -68,14 +68,7 @@ import hxtelemetry.HxTelemetry;
 	private static inline function __initialize ():Void {
 		
 		#if ((cpp || neko) && hxtelemetry)
-		var config:hxtelemetry.Config;
-		
-		#if !lime_legacy
-		config = (Lib.application.config:Dynamic).telemetry;
-		#else
-		config = ApplicationMain.telemetryConfig;
-		#end
-		
+		var config:hxtelemetry.Config = (Lib.application.config:Dynamic).telemetry;
 		config.activity_descriptors = [ { name: TelemetryCommandName.EVENT, description: "Event Handler", color: 0x2288cc }, { name: TelemetryCommandName.RENDER, description: "Rendering", color:0x66aa66 } ];
 		telemetry = new HxTelemetry (config);
 		#end

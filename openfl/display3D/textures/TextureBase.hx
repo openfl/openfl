@@ -1,13 +1,13 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
 import openfl.events.EventDispatcher;
-import openfl.gl.GLFramebuffer;
-import openfl.gl.GLTexture;
-import openfl.utils.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.utils.ByteArray.ByteArrayData;
-import openfl.utils.UInt8Array;
 
 
 class TextureBase extends EventDispatcher {

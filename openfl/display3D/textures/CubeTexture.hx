@@ -1,9 +1,9 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.opengl.GL;
+import lime.graphics.opengl.GLTexture;
 import openfl.display3D.Context3D;
-import openfl.gl.GL;
-import openfl.gl.GLTexture;
 import openfl.utils.ByteArray;
 
 using openfl.display.BitmapData;

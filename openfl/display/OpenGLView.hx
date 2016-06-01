@@ -1,13 +1,13 @@
 package openfl.display;
 
 
+import lime.graphics.opengl.GL;
 #if !flash
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
 #end
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
-import openfl.gl.GL;
 import openfl.Lib;
 
 #if (js && html5)

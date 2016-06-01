@@ -20,13 +20,13 @@ class GLTest {
 #if (false && display)
 
 
+import lime.utils.ArrayBuffer;
+import lime.utils.ArrayBufferView;
+import lime.utils.Float32Array;
+import lime.utils.Int32Array;
 import openfl.display.BitmapData;
-import openfl.utils.ByteArray;
 import openfl.geom.Matrix3D;
-import openfl.utils.ArrayBuffer;
-import openfl.utils.ArrayBufferView;
-import openfl.utils.Float32Array;
-import openfl.utils.Int32Array;
+import openfl.utils.ByteArray;
 //import native.Lib;
 //import native.Loader;
 

@@ -1,9 +1,13 @@
 package openfl.display3D;
 
 
-#if !lime_legacy
 import lime.app.Application;
-#end
+import lime.graphics.opengl.GL;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLUniformLocation;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.OpenGLView;
 import openfl.display3D.textures.CubeTexture;
@@ -14,15 +18,10 @@ import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
-import openfl.gl.GL;
-import openfl.gl.GLFramebuffer;
-import openfl.gl.GLUniformLocation;
-import openfl.gl.GLProgram;
-import openfl.gl.GLRenderbuffer;
 import openfl.utils.ByteArray;
-import openfl.utils.Float32Array;
 import openfl.Lib;
 
+@:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
 
@@ -177,7 +176,6 @@ import openfl.Lib;
 		// used to enable masking
 		var depthAndStencil:Bool = renderToTexture ? rttDepthAndStencil : backBufferDepthAndStencil;
 		
-		#if !lime_legacy
 		if (depthAndStencil) {
 			
 			// TODO check whether this is kept across frame
@@ -192,10 +190,7 @@ import openfl.Lib;
 			GL.disable (GL.STENCIL_TEST);
 			
 		}
-		#else
-			GL.disable (GL.DEPTH_TEST);
-			GL.disable (GL.STENCIL_TEST);
-		#end
+		
 	}
 	
 	public function createCubeTexture (size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture {
@@ -282,11 +277,15 @@ import openfl.Lib;
 	
 	public function __deleteIndexBuffer (buffer:IndexBuffer3D):Void {
 		
-		if (buffer.glBuffer == null)
+		if (buffer.__glBuffer == null) {
+			
 			return;
+			
+		}
+		
 		indexBuffersCreated.remove (buffer);
-		GL.deleteBuffer (buffer.glBuffer);
-		buffer.glBuffer = null;
+		GL.deleteBuffer (buffer.__glBuffer);
+		buffer.__glBuffer = null;
 		
 	}
 	
@@ -386,7 +385,7 @@ import openfl.Lib;
 		
 		if (numTriangles == -1) {
 			
-			numIndices = indexBuffer.numIndices;
+			numIndices = indexBuffer.__numIndices;
 			
 		} else {
 			
@@ -396,7 +395,7 @@ import openfl.Lib;
 		
 		var byteOffset = firstIndex * 2;
 		
-		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, indexBuffer.glBuffer);
+		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, indexBuffer.__glBuffer);
 		GL.drawElements (GL.TRIANGLES, numIndices, GL.UNSIGNED_SHORT, byteOffset);
 		
 	}
