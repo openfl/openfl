@@ -696,8 +696,27 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (__bounds.width <= 0 || __bounds.height <= 0) return;
 		
-		var scaleX = Math.abs (parentTransform.a);
-		var scaleY = Math.abs (parentTransform.d);
+		var scaleX, scaleY;
+		
+		if (parentTransform.b == 0) {
+			
+			scaleX = parentTransform.a;
+			
+		} else {
+			
+			scaleX = Math.sqrt (parentTransform.a * parentTransform.a + parentTransform.b * parentTransform.b);
+			
+		}
+		
+		if (parentTransform.c == 0) {
+			
+			scaleY = parentTransform.d;
+			
+		} else {
+			
+			scaleY = Math.sqrt (parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
+			
+		}
 		
 		var width = __bounds.width * scaleX;
 		var height = __bounds.height * scaleY;
