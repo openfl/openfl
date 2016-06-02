@@ -272,22 +272,3 @@ class Video extends DisplayObject {
 	
 	
 }
-
-
-#else
-
-
-import openfl.display.DisplayObject;
-
-
-class Video extends DisplayObject implements Dynamic {
-	
-	
-	public function new (width:Int = 320, height:Int = 240):Void {
-		
-		super (null, "video");
-		
-	}
-	
-	
-}
