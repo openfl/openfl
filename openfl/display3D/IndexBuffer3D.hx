@@ -3,7 +3,7 @@ package openfl.display3D;
 
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
-import lime.utils.Int16Array;
+import lime.utils.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -49,7 +49,7 @@ import openfl.Vector;
 	}
 	
 	
-	public function uploadFromInt16Array (data:Int16Array):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __glBuffer);
 		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __bufferUsage);

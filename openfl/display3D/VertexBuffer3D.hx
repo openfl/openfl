@@ -3,7 +3,7 @@ package openfl.display3D;
 
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
+import lime.utils.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -51,7 +51,7 @@ class VertexBuffer3D {
 	}
 	
 	
-	public function uploadFromFloat32Array (data:Float32Array):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
 		GL.bindBuffer (GL.ARRAY_BUFFER, __glBuffer);
 		GL.bufferData (GL.ARRAY_BUFFER, data, __bufferUsage);
