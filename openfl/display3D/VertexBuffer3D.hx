@@ -4,6 +4,7 @@ package openfl.display3D;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
+import lime.utils.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -44,9 +45,7 @@ class VertexBuffer3D {
 		var offset = byteArrayOffset + (startVertex * bytesPerVertex);
 		var length = numVertices * __data32PerVertex;
 		
-		var array = new Float32Array (data, offset, length);
-		GL.bindBuffer (GL.ARRAY_BUFFER, __glBuffer);
-		GL.bufferData (GL.ARRAY_BUFFER, array, __bufferUsage);
+		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
 	}
 	
@@ -64,9 +63,7 @@ class VertexBuffer3D {
 		var offset = startVertex * __data32PerVertex;
 		var length = numVertices * __data32PerVertex;
 		
-		var array = new Float32Array (data, offset, length);
-		GL.bindBuffer (GL.ARRAY_BUFFER, __glBuffer);
-		GL.bufferData (GL.ARRAY_BUFFER, array, __bufferUsage);
+		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
 	}
 	

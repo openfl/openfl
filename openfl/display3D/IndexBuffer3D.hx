@@ -4,6 +4,7 @@ package openfl.display3D;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.ArrayBufferView;
+import lime.utils.Int16Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -42,9 +43,7 @@ import openfl.Vector;
 		var length:Int = count * bytesPerIndex;
 		var offset:Int = byteArrayOffset + startOffset * bytesPerIndex;
 		
-		var indices = new Int16Array (data, offset, length);
-		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __glBuffer);
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, __bufferUsage);
+		uploadFromTypedArray (new Int16Array (data, offset, length));
 		
 	}
 	
@@ -59,9 +58,7 @@ import openfl.Vector;
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		var indices = new Int16Array (data, startOffset, count);
-		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __glBuffer);
-		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, indices, __bufferUsage);
+		uploadFromTypedArray (new Int16Array (data, startOffset, count));
 		
 	}
 	
