@@ -809,23 +809,23 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
 		
 		#if (js && html5)
 		
-		// TODO: Handle world transform if we want to use direct render
+		graphics.__update (parentTransform);
 		
-		//var directRender = (graphics.__hardware && renderSession.context != null);
-		var directRender = false;
-		
-		if (graphics.__dirty || directRender) {
+		if (graphics.__dirty) {
 			
 			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
 			
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
+			var width = graphics.__width;
+			var height = graphics.__height;
+			
+			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1) {
 				
 				graphics.__canvas = null;
 				graphics.__context = null;
@@ -833,26 +833,20 @@ class CanvasGraphics {
 				
 			} else {
 				
-				if (directRender) {
+				if (graphics.__canvas == null) {
 					
-					context = cast renderSession.context;
-					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
-					
-				} else {
-					
-					if (graphics.__canvas == null) {
-						
-						graphics.__canvas = cast Browser.document.createElement ("canvas");
-						graphics.__context = graphics.__canvas.getContext ("2d");
-						
-					}
-					
-					context = graphics.__context;
-					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
+					graphics.__canvas = cast Browser.document.createElement ("canvas");
+					graphics.__context = graphics.__canvas.getContext ("2d");
 					
 				}
+				
+				context = graphics.__context;
+				
+				graphics.__canvas.width = width;
+				graphics.__canvas.height = height;
+				
+				var transform = graphics.__renderTransform;
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				
 				fillCommands.clear ();
 				strokeCommands.clear ();

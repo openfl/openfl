@@ -2,9 +2,11 @@ package openfl._internal.renderer.canvas;
 
 
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 
 
 class CanvasShape {
@@ -19,18 +21,18 @@ class CanvasShape {
 		
 		if (graphics != null) {
 			
-			//#if old
-			CanvasGraphics.render (graphics, renderSession);
-			//#else
-			//CanvasGraphics.renderObjectGraphics (shape, renderSession);
-			//#end
+			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
+			
+			var bounds = graphics.__bounds;
+			var width = graphics.__width;
+			var height = graphics.__height;
 			
 			if (graphics.__canvas != null) {
 				
 				var context = renderSession.context;
 				var scrollRect = shape.scrollRect;
 				
-				if (graphics.__bounds.width > 0 && graphics.__bounds.height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
+				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					
 					if (shape.__mask != null) {
 						
@@ -39,7 +41,8 @@ class CanvasShape {
 					}
 					
 					context.globalAlpha = shape.__worldAlpha;
-					var transform = shape.__worldTransform;
+					
+					var transform = graphics.__worldTransform;
 					
 					if (renderSession.roundPixels) {
 						

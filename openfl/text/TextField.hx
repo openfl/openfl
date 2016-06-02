@@ -681,7 +681,7 @@ class TextField extends InteractiveObject {
 	
 	public override function __renderCairo (renderSession:RenderSession):Void {
 		
-		CairoTextField.render (this, renderSession);
+		CairoTextField.render (this, renderSession, __worldTransform);
 		super.__renderCairo (renderSession);
 		
 	}
@@ -689,7 +689,7 @@ class TextField extends InteractiveObject {
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		CanvasTextField.render (this, renderSession);
+		CanvasTextField.render (this, renderSession, __worldTransform);
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
 			
@@ -734,9 +734,9 @@ class TextField extends InteractiveObject {
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		CanvasTextField.render (this, renderSession);
+		CanvasTextField.render (this, renderSession, __worldTransform);
 		#elseif lime_cairo
-		CairoTextField.render (this, renderSession);
+		CairoTextField.render (this, renderSession, __worldTransform);
 		#end
 		
 		super.__renderGL (renderSession);

@@ -837,7 +837,8 @@ class CairoGraphics {
 							
 						} 
 						
-						cairo.identityMatrix();
+						cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
+						//cairo.identityMatrix();
 						//cairo.resetClip();
 						
 						cairo.newPath ();
@@ -975,16 +976,21 @@ class CairoGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
 		
 		#if lime_cairo
+		
 		CairoGraphics.graphics = graphics;
+		graphics.__update (parentTransform);
 		
 		if (!graphics.__dirty) return;
 		
 		bounds = graphics.__bounds;
 		
-		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width < 1 || bounds.height < 1) {
+		var width = graphics.__width;
+		var height = graphics.__height;
+		
+		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1) {
 			
 			graphics.__cairo = null;
 			graphics.__bitmap = null;
@@ -997,7 +1003,7 @@ class CairoGraphics {
 				
 				var surface:CairoImageSurface = cast graphics.__cairo.target;
 				
-				if (bounds.width != surface.width || bounds.height != surface.height) {
+				if (width != surface.width || height != surface.height) {
 					
 					graphics.__cairo = null;
 					
@@ -1007,7 +1013,7 @@ class CairoGraphics {
 			
 			if (graphics.__cairo == null || graphics.__bitmap == null) {
 				
-				var bitmap = new BitmapData (Math.floor (bounds.width), Math.floor (bounds.height), true, 0);
+				var bitmap = new BitmapData (width, height, true, 0);
 				var surface = bitmap.getSurface ();
 				graphics.__cairo = new Cairo (surface);
 				graphics.__bitmap = bitmap;
@@ -1015,6 +1021,7 @@ class CairoGraphics {
 			}
 			
 			cairo = graphics.__cairo;
+			cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
 			
 			cairo.operator = CLEAR;
 			cairo.paint ();

@@ -28,14 +28,14 @@ class GLShape {
 		if (graphics != null) {
 			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession);
+			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession);
+			CairoGraphics.render (graphics, renderSession, shape.__worldTransform);
 			#end
 			
 			var bounds = graphics.__bounds;
 			
-			if (graphics.__bitmap != null && graphics.__visible && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
+			if (graphics.__bitmap != null && graphics.__visible) {
 				
 				var shader;
 				
@@ -68,14 +68,8 @@ class GLShape {
 					
 				}
 				
-				var transform = Matrix.__temp;
-				transform.identity ();
-				transform.tx = bounds.x;
-				transform.ty = bounds.y;
-				transform.concat (shape.__worldTransform);
-				
 				gl.uniform1f (shader.data.uAlpha.index, shape.__worldAlpha);
-				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (transform));
+				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (graphics.__worldTransform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
 				
