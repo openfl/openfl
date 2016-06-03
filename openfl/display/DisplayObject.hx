@@ -47,7 +47,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private static var __worldTransformDirty = 0;
 	
 	public var alpha (get, set):Float;
-	public var blendMode (default, set):BlendMode;
+	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
 	public var cacheAsBitmapMatrix (get, set):Matrix;
 	public var filters (get, set):Array<BitmapFilter>;
@@ -121,6 +121,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		super ();
 		
 		__alpha = 1;
+		__blendMode = NORMAL;
 		__cacheAsBitmap = false;
 		__transform = new Matrix ();
 		__visible = true;
@@ -798,10 +799,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
+	private function get_blendMode ():BlendMode {
+		
+		return __blendMode;
+		
+	}
+	
+	
 	private function set_blendMode (value:BlendMode):BlendMode {
 		
-		__blendMode = value;
-		return blendMode = value;
+		if (value == null) value = NORMAL;
+		return __blendMode = value;
 		
 	}
 	

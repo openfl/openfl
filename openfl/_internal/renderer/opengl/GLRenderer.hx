@@ -62,7 +62,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		if (this.transparent) {
 			
-			gl.clearColor (1, 0, 0, 1);
+			gl.clearColor (0, 0, 0, 0);
 			
 		} else {
 			
