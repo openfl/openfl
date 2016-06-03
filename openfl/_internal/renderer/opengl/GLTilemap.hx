@@ -35,22 +35,9 @@ class GLTilemap {
 		
 		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
 		renderSession.shaderManager.setShader (shader);
+		renderSession.maskManager.pushObject (tilemap);
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
-		
-		if (tilemap.__mask != null) {
-			
-			renderSession.maskManager.pushMask (tilemap.__mask);
-			
-		}
-		
-		var scrollRect = tilemap.scrollRect;
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, tilemap.__worldTransform);
-			
-		}
 		
 		gl.uniform1f (shader.data.uAlpha.index, tilemap.__worldAlpha);
 		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__worldTransform));
@@ -186,17 +173,7 @@ class GLTilemap {
 			
 		}
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
-		
-		if (tilemap.__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (tilemap);
 		
 	}
 	

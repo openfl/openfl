@@ -123,11 +123,7 @@ class Video extends DisplayObject {
 		
 		if (__stream.__video != null) {
 			
-			if (__mask != null) {
-				
-				renderSession.maskManager.pushMask (__mask);
-				
-			}
+			renderSession.maskManager.pushObject (this);
 			
 			context.globalAlpha = __worldAlpha;
 			var transform = __worldTransform;
@@ -170,11 +166,7 @@ class Video extends DisplayObject {
 				
 			}
 			
-			if (__mask != null) {
-				
-				renderSession.maskManager.popMask ();
-				
-			}
+			renderSession.maskManager.popObject (this);
 			
 		}
 		#end

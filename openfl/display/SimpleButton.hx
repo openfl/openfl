@@ -177,31 +177,9 @@ class SimpleButton extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderCairo (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 	}
 	
@@ -219,31 +197,9 @@ class SimpleButton extends InteractiveObject {
 		
 		#if !neko
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderCanvas (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -268,31 +224,9 @@ class SimpleButton extends InteractiveObject {
 		
 		//if (!__renderable) return;
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		// TODO: scrollRect
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderDOM (renderSession);
-		
-		//for (orphan in __removedChildren) {
-			//
-			//if (orphan.stage == null) {
-				//
-				//orphan.__renderDOM (renderSession);
-				//
-			//}
-			//
-		//}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -303,31 +237,9 @@ class SimpleButton extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderGL (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 	}
 	

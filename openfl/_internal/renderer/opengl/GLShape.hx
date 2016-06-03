@@ -51,22 +51,9 @@ class GLShape {
 				
 				renderSession.blendModeManager.setBlendMode (shape.blendMode);
 				renderSession.shaderManager.setShader (shader);
+				renderSession.maskManager.pushObject (shape);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
-				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.pushMask (shape.__mask);
-					
-				}
-				
-				var scrollRect = shape.scrollRect;
-				
-				if (scrollRect != null) {
-					
-					renderSession.maskManager.pushRect (scrollRect, shape.__worldTransform);
-					
-				}
 				
 				gl.uniform1f (shader.data.uAlpha.index, shape.__worldAlpha);
 				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (graphics.__worldTransform));
@@ -82,17 +69,7 @@ class GLShape {
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
-				if (scrollRect != null) {
-					
-					renderSession.maskManager.popRect ();
-					
-				}
-				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.popMask ();
-					
-				}
+				renderSession.maskManager.popObject (shape);
 				
 			}
 			

@@ -28,14 +28,9 @@ class CairoShape {
 			
 			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1) {
 				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.pushMask (shape.__mask);
-					
-				}
+				renderSession.maskManager.pushObject (shape);
 				
 				var cairo = renderSession.cairo;
-				var scrollRect = shape.scrollRect;
 				
 				if (renderSession.roundPixels) {
 					
@@ -51,24 +46,9 @@ class CairoShape {
 				}
 				
 				cairo.setSourceSurface (graphics.__cairo.target, 0, 0);
-				
-				if (scrollRect != null) {
-					
-					cairo.pushGroup ();
-					cairo.newPath ();
-					cairo.rectangle (scrollRect.x - bounds.x, scrollRect.y - bounds.y, scrollRect.width, scrollRect.height);
-					cairo.fill ();
-					cairo.popGroupToSource ();
-					
-				}
-				
 				cairo.paintWithAlpha (shape.__worldAlpha);
 				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.popMask ();
-					
-				}
+				renderSession.maskManager.popObject (shape);
 				
 			}
 			

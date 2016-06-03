@@ -26,6 +26,7 @@ import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -58,7 +59,9 @@ import js.html.CanvasRenderingContext2D;
 	private var __bitmap:BitmapData;
 	
 	
-	private function new () {
+	private function new (owner:DisplayObject) {
+		
+		__owner = owner;
 		
 		__commands = new DrawCommandBuffer ();
 		__strokePadding = 0;
@@ -692,10 +695,11 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	private function __update (parentTransform:Matrix):Void {
+	private function __update ():Void {
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 		
+		var parentTransform = __owner.__getRenderTransform ();
 		var scaleX, scaleY;
 		
 		if (parentTransform.b == 0) {
@@ -740,7 +744,7 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform.d = 1 / __renderTransform.d;
 		__worldTransform.tx = __bounds.x;
 		__worldTransform.ty = __bounds.y;
-		__worldTransform.concat (parentTransform);
+		__worldTransform.concat (__owner.__worldTransform);
 		
 	}
 	

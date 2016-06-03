@@ -18,6 +18,8 @@ class GLRenderer extends AbstractRenderer {
 	
 	private var gl:GLRenderContext;
 	private var matrix:Matrix4;
+	private var windowHeight:Int;
+	private var windowWidth:Int;
 	
 	
 	public function new (width:Int, height:Int, gl:GLRenderContext) {
@@ -90,6 +92,9 @@ class GLRenderer extends AbstractRenderer {
 		
 		gl.viewport (offsetX, offsetY, displayWidth, displayHeight);
 		
+		windowWidth = stage.window.width;
+		windowHeight = stage.window.height;
+		
 		stage.__renderGL (renderSession);
 		
 		if (offsetX > 0 || offsetY > 0) {
@@ -97,24 +102,22 @@ class GLRenderer extends AbstractRenderer {
 			gl.clearColor (0, 0, 0, 1);
 			gl.enable (gl.SCISSOR_TEST);
 			
-			var window = stage.window;
-			
 			if (offsetX > 0) {
 				
-				gl.scissor (0, 0, offsetX, window.height);
+				gl.scissor (0, 0, offsetX, windowHeight);
 				gl.clear (gl.COLOR_BUFFER_BIT);
 				
-				gl.scissor (offsetX + displayWidth, 0, window.width, window.height);
+				gl.scissor (offsetX + displayWidth, 0, windowWidth, windowHeight);
 				gl.clear (gl.COLOR_BUFFER_BIT);
 				
 			}
 			
 			if (offsetY > 0) {
 				
-				gl.scissor (0, 0, stage.window.width, offsetY);
+				gl.scissor (0, 0, windowWidth, offsetY);
 				gl.clear (gl.COLOR_BUFFER_BIT);
 				
-				gl.scissor (0, offsetY + displayHeight, window.width, window.height);
+				gl.scissor (0, offsetY + displayHeight, windowWidth, windowHeight);
 				gl.clear (gl.COLOR_BUFFER_BIT);
 				
 			}

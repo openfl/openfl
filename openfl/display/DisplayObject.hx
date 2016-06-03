@@ -91,6 +91,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __objectTransform:Transform;
 	private var __renderable:Bool;
 	private var __renderDirty:Bool;
+	private var __renderTransform:Matrix;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
@@ -131,6 +132,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
+		__renderTransform = new Matrix ();
 		
 		#if dom
 		__worldVisible = true;
@@ -342,6 +344,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
 			
 		}
+		
+	}
+	
+	
+	private function __getRenderTransform ():Matrix {
+		
+		__getWorldTransform ();
+		return __renderTransform;
 		
 	}
 	
@@ -751,6 +761,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		if (__scrollRect != null) {
 			
 			__worldTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
+			
+		}
+		
+		__renderTransform.copyFrom (__worldTransform);
+		
+		if (stage != null) {
+			
+			__renderTransform.concat (stage.__displayMatrix);
 			
 		}
 		

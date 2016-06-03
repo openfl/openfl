@@ -21,22 +21,13 @@ class CairoBitmap {
 		
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 		
-		//var context = renderSession.context;
 		var cairo = renderSession.cairo;
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.pushMask (bitmap.__mask);
-				
-			}
+			renderSession.maskManager.pushObject (bitmap);
 			
-			//bitmap.bitmapData.__sync ();
-			
-			//context.globalAlpha = bitmap.__worldAlpha;
 			var transform = bitmap.__worldTransform;
-			var scrollRect = bitmap.scrollRect;
 			
 			if (renderSession.roundPixels) {
 				
@@ -44,12 +35,10 @@ class CairoBitmap {
 				matrix.tx = Math.round (matrix.tx);
 				matrix.ty = Math.round (matrix.ty);
 				cairo.matrix = matrix;
-				//context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
 				
 			} else {
 				
 				cairo.matrix = transform.__toMatrix3 ();
-				//context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				
 			}
 			
@@ -60,20 +49,7 @@ class CairoBitmap {
 				var pattern = CairoPattern.createForSurface (surface);
 				pattern.filter = bitmap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
-				if (scrollRect != null) {
-					
-					cairo.pushGroup ();
-					cairo.source = pattern;
-					cairo.newPath ();
-					cairo.rectangle (scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
-					cairo.fill ();
-					cairo.popGroupToSource ();
-					
-				} else {
-					
-					cairo.source = pattern;
-					
-				}
+				cairo.source = pattern;
 				
 				if (bitmap.__worldAlpha == 1) {
 					
@@ -87,11 +63,7 @@ class CairoBitmap {
 				
 			}
 			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.popMask ();
-				
-			}
+			renderSession.maskManager.popObject (bitmap);
 			
 		}
 		

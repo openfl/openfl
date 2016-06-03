@@ -34,11 +34,7 @@ class CanvasShape {
 				
 				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					
-					if (shape.__mask != null) {
-						
-						renderSession.maskManager.pushMask (shape.__mask);
-						
-					}
+					renderSession.maskManager.pushObject (shape);
 					
 					context.globalAlpha = shape.__worldAlpha;
 					
@@ -54,21 +50,9 @@ class CanvasShape {
 						
 					}
 					
-					if (scrollRect != null) {
-						
-						context.beginPath ();
-						context.rect (scrollRect.x - graphics.__bounds.x, scrollRect.y - graphics.__bounds.y, scrollRect.width, scrollRect.height);
-						context.clip ();
-						
-					}
-					
 					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
 					
-					if (shape.__mask != null) {
-						
-						renderSession.maskManager.popMask ();
-						
-					}
+					renderSession.maskManager.popObject (shape);
 					
 				}
 				

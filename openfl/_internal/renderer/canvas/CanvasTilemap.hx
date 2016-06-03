@@ -17,15 +17,12 @@ class CanvasTilemap {
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
+		
 		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
 		
 		var context = renderSession.context;
 		
-		if (tilemap.__mask != null) {
-			
-			renderSession.maskManager.pushMask (tilemap.__mask);
-			
-		}
+		renderSession.maskManager.pushObject (tilemap);
 		
 		context.globalAlpha = tilemap.__worldAlpha;
 		var transform = tilemap.__worldTransform;
@@ -91,11 +88,8 @@ class CanvasTilemap {
 			
 		}
 		
-		if (tilemap.__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (tilemap);
+		
 		#end
 		
 	}

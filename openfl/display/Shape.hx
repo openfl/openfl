@@ -28,8 +28,7 @@ class Shape extends DisplayObject {
 		
 		if (__graphics == null) {
 			
-			__graphics = new Graphics ();
-			__graphics.__owner = this;
+			__graphics = new Graphics (this);
 			
 		}
 		

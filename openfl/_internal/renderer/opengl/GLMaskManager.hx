@@ -8,6 +8,8 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+@:access(openfl._internal.renderer.opengl.GLRenderer)
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -39,7 +41,24 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		// TODO: Handle true mask shape, as well as alpha test
 		
-		pushRect (mask.getBounds (mask), mask.__worldTransform);
+		pushRect (mask.getBounds (mask), mask.__getRenderTransform ());
+		
+	}
+	
+	
+	public override function pushObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+		
+		if (handleScrollRect && object.scrollRect != null) {
+			
+			pushRect (object.scrollRect, object.__renderTransform);
+			
+		}
+		
+		if (object.__mask != null) {
+			
+			pushMask (object.__mask);
+			
+		}
 		
 	}
 	
@@ -47,7 +66,6 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function pushRect (rect:Rectangle, transform:Matrix):Void {
 		
 		// TODO: Handle rotation?
-		// TODO: Work without a stage reference
 		
 		var stage = openfl.Lib.current.stage;
 		
@@ -58,12 +76,7 @@ class GLMaskManager extends AbstractMaskManager {
 		}
 		
 		var clipRect = clipRects[numClipRects];
-		
-		var matrix = Matrix.__temp;
-		matrix.copyFrom (transform);
-		matrix.concat (stage.__displayMatrix);
-		
-		rect.__transform (clipRect, matrix);
+		rect.__transform (clipRect, transform);
 		
 		if (numClipRects > 0) {
 			
@@ -84,8 +97,10 @@ class GLMaskManager extends AbstractMaskManager {
 			
 		}
 		
+		var renderer:GLRenderer = cast renderSession.renderer;
+		
 		gl.enable (gl.SCISSOR_TEST);
-		gl.scissor (Math.floor (clipRect.x), Math.floor (stage.window.height - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
+		gl.scissor (Math.floor (clipRect.x), Math.floor (renderer.windowHeight - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
 		
 		numClipRects++;
 		
@@ -95,6 +110,23 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function popMask ():Void {
 		
 		popRect ();
+		
+	}
+	
+	
+	public override function popObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+		
+		if (object.__mask != null) {
+			
+			popMask ();
+			
+		}
+		
+		if (handleScrollRect && object.scrollRect != null) {
+			
+			popRect ();
+			
+		}
 		
 	}
 	

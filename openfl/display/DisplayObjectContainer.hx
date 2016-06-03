@@ -560,17 +560,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderSession);
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -594,17 +584,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 	}
 	
@@ -634,17 +614,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCanvas (renderSession);
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -668,17 +638,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -713,13 +673,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderDOM (renderSession);
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		// TODO: scrollRect
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -743,11 +697,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -760,17 +710,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderGL (renderSession);
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -794,17 +734,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 	}
 	

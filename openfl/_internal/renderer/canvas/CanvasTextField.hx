@@ -146,13 +146,7 @@ class CanvasTextField {
 				
 			} else {
 				
-				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
-					
-					if (textField.__graphics == null) {
-						
-						textField.__graphics = new Graphics ();
-						
-					}
+				if (textField.__graphics.__canvas == null) {
 					
 					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
 					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");

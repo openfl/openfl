@@ -21,11 +21,7 @@ class CanvasBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.pushMask (bitmap.__mask);
-				
-			}
+			renderSession.maskManager.pushObject (bitmap, false);
 			
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 			
@@ -71,11 +67,7 @@ class CanvasBitmap {
 				
 			}
 			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.popMask ();
-				
-			}
+			renderSession.maskManager.popObject (bitmap, false);
 			
 		}
 		#end

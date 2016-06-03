@@ -36,22 +36,9 @@ class GLBitmap {
 			
 			renderSession.blendModeManager.setBlendMode (bitmap.blendMode);
 			renderSession.shaderManager.setShader (shader);
+			renderSession.maskManager.pushObject (bitmap);
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
-			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.pushMask (bitmap.__mask);
-				
-			}
-			
-			var scrollRect = bitmap.scrollRect;
-			
-			if (scrollRect != null) {
-				
-				renderSession.maskManager.pushRect (scrollRect, bitmap.__worldTransform);
-				
-			}
 			
 			gl.uniform1f (shader.data.uAlpha.index, bitmap.__worldAlpha);
 			gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (bitmap.__worldTransform));
@@ -76,17 +63,7 @@ class GLBitmap {
 			
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
-			if (scrollRect != null) {
-				
-				renderSession.maskManager.popRect ();
-				
-			}
-			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.popMask ();
-				
-			}
+			renderSession.maskManager.popObject (bitmap);
 			
 		}
 		
