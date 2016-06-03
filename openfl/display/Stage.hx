@@ -988,7 +988,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (button > 2) return;
 		
 		var targetPoint = new Point (x, y);
-		__displayMatrix.__transformPoint (targetPoint);
+		__displayMatrix.__transformInversePoint (targetPoint);
 		
 		__mouseX = targetPoint.x;
 		__mouseY = targetPoint.y;
@@ -1188,7 +1188,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var target:InteractiveObject = cast stack[stack.length - 1];
 		var targetPoint = new Point (x, y);
-		__displayMatrix.__transformPoint (targetPoint);
+		__displayMatrix.__transformInversePoint (targetPoint);
 		var delta = Std.int (deltaY);
 		
 		__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
@@ -1199,7 +1199,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private function __onTouch (type:String, touch:Touch):Void {
 		
 		var point = new Point (touch.x * window.width, touch.y * window.height);
-		__displayMatrix.__transformPoint (point);
+		__displayMatrix.__transformInversePoint (point);
 		
 		__mouseX = point.x;
 		__mouseY = point.y;
@@ -1248,15 +1248,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stageWidth = __logicalWidth;
 			stageHeight = __logicalHeight;
 			
-			var scaleX = stageWidth / windowWidth;
-			var scaleY = stageHeight / windowHeight;
-			var targetScale = Math.max (scaleX, scaleY);
+			var scaleX = windowWidth / stageWidth;
+			var scaleY = windowHeight / stageHeight;
+			var targetScale = Math.min (scaleX, scaleY);
 			
-			var offsetX = Math.round ((windowWidth - (stageWidth / targetScale)) / 2);
-			var offsetY = Math.round ((windowHeight - (stageHeight / targetScale)) / 2);
+			var offsetX = Math.round ((windowWidth - (stageWidth * targetScale)) / 2);
+			var offsetY = Math.round ((windowHeight - (stageHeight * targetScale)) / 2);
 			
-			__displayMatrix.translate (-offsetX, -offsetY);
 			__displayMatrix.scale (targetScale, targetScale);
+			__displayMatrix.translate (offsetX, offsetY);
 			
 		}
 		

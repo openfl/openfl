@@ -83,10 +83,10 @@ class GLRenderer extends AbstractRenderer {
 	public override function render (stage:Stage):Void {
 		
 		var displayMatrix = stage.__displayMatrix;
-		var offsetX = Math.round (displayMatrix.__transformInverseX (0, 0));
-		var offsetY = Math.round (displayMatrix.__transformInverseY (0, 0));
-		var displayWidth = Math.round (displayMatrix.__transformInverseX (width, 0) - offsetX);
-		var displayHeight = Math.round (displayMatrix.__transformInverseY (0, height) - offsetY);
+		var offsetX = Math.round (displayMatrix.__transformX (0, 0));
+		var offsetY = Math.round (displayMatrix.__transformY (0, 0));
+		var displayWidth = Math.round (displayMatrix.__transformX (width, 0) - offsetX);
+		var displayHeight = Math.round (displayMatrix.__transformY (0, height) - offsetY);
 		
 		gl.viewport (offsetX, offsetY, displayWidth, displayHeight);
 		
