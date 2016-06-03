@@ -120,6 +120,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		super ();
 		
 		__alpha = 1;
+		__cacheAsBitmap = false;
 		__transform = new Matrix ();
 		__visible = true;
 		
@@ -837,13 +838,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		if (value != null && value.length > 0) {
 			
 			__filters = value;
-			__cacheAsBitmap = true;
 			//__updateFilters = true;
 			
 		} else {
 			
 			__filters = null;
-			__cacheAsBitmap = false;
 			//__updateFilters = false;
 			
 		}
