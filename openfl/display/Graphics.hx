@@ -694,7 +694,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	private function __update (parentTransform:Matrix):Void {
 		
-		if (__bounds.width <= 0 || __bounds.height <= 0) return;
+		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 		
 		var scaleX, scaleY;
 		
