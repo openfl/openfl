@@ -223,7 +223,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                         <code>BitmapDataChannel.ALPHA</code>).
 	 * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
 	 */
-	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:UInt, destChannel:UInt):Void;
+	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel):Void;
 	
 	
 	/**

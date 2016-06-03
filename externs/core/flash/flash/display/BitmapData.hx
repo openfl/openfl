@@ -2,6 +2,7 @@ package flash.display; #if (!display && flash)
 
 
 import lime.graphics.Image;
+import openfl.display.BitmapDataChannel;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -28,7 +29,7 @@ extern class BitmapData implements IBitmapDrawable {
 	public function clone ():BitmapData;
 	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void;
 	public function compare (otherBitmapData:BitmapData):Object;
-	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:UInt, destChannel:UInt):Void;
+	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel):Void;
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void;
 	
 	#if flash

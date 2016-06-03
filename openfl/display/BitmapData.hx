@@ -299,7 +299,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:Int, destChannel:Int):Void {
+	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel):Void {
 		
 		if (!__isValid) return;
 		
