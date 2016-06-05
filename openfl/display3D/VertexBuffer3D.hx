@@ -41,9 +41,9 @@ class VertexBuffer3D {
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
 		
-		var bytesPerVertex = __data32PerVertex * 4;
-		var offset = byteArrayOffset + (startVertex * bytesPerVertex);
-		var length = numVertices * __data32PerVertex;
+		var bytesPerVertex:Int = __data32PerVertex * 4;
+		var offset:Int = byteArrayOffset + startVertex * bytesPerVertex;
+		var length:Int = numVertices * __data32PerVertex;
 		
 		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
@@ -60,8 +60,9 @@ class VertexBuffer3D {
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
-		var offset = startVertex * __data32PerVertex;
-		var length = numVertices * __data32PerVertex;
+		var bytesPerVertex:Int = __data32PerVertex * 4;
+		var offset:Int = startVertex * bytesPerVertex;
+		var length:Int = numVertices * __data32PerVertex;
 		
 		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
