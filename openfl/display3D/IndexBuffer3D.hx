@@ -39,7 +39,7 @@ import openfl.Vector;
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
-		var offset:Int = byteArrayOffset + startOffset * 2;
+		var offset = byteArrayOffset + startOffset * 2;
 		
 		uploadFromTypedArray (new Int16Array (data.toArrayBuffer(), offset, count));
 		
