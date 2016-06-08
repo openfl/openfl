@@ -46,12 +46,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 	
-	public var alpha (get, set):Float;
+	@:keep public var alpha (get, set):Float;
 	public var blendMode (get, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
 	public var cacheAsBitmapMatrix (get, set):Matrix;
 	public var filters (get, set):Array<BitmapFilter>;
-	public var height (get, set):Float;
+	@:keep public var height (get, set):Float;
 	public var loaderInfo (default, null):LoaderInfo;
 	public var mask (get, set):DisplayObject;
 	public var mouseX (get, null):Float;
@@ -60,17 +60,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public var opaqueBackground:Null <Int>;
 	public var parent (default, null):DisplayObjectContainer;
 	public var root (get, null):DisplayObject;
-	public var rotation (get, set):Float;
+	@:keep public var rotation (get, set):Float;
 	public var scale9Grid:Rectangle;
-	public var scaleX (get, set):Float;
-	public var scaleY (get, set):Float;
+	@:keep public var scaleX (get, set):Float;
+	@:keep public var scaleY (get, set):Float;
 	public var scrollRect (get, set):Rectangle;
 	public var stage (default, null):Stage;
-	public var transform (get, set):Transform;
+	@:keep public var transform (get, set):Transform;
 	public var visible (get, set):Bool;
-	public var width (get, set):Float;
-	public var x (get, set):Float;
-	public var y (get, set):Float;
+	@:keep public var width (get, set):Float;
+	@:keep public var x (get, set):Float;
+	@:keep public var y (get, set):Float;
 	
 	public var __worldColorTransform:ColorTransform;
 	public var __worldTransform:Matrix;
