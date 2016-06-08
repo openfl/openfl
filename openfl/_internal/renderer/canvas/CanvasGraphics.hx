@@ -228,7 +228,10 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-		
+
+		bounds = graphics.__bounds;
+		CanvasGraphics.graphics = graphics;
+
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
 			return false;
