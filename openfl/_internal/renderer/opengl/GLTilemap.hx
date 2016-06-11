@@ -4,13 +4,16 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.display.Tile;
 import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.TilemapLayer)
 @:access(openfl.display.Tileset)
+@:access(openfl.display.Tile)
 
 
 class GLTilemap {
@@ -84,28 +87,7 @@ class GLTilemap {
 				
 				for (i in previousLength...count) {
 					
-					uv = uvs[tiles[i].id];
-					
-					x = uv.x;
-					y = uv.y;
-					x2 = uv.width;
-					y2 = uv.height;
-					
-					offset = i * 24;
-					
-					bufferData[offset + 2] = x;
-					bufferData[offset + 3] = y;
-					bufferData[offset + 6] = x2;
-					bufferData[offset + 7] = y;
-					bufferData[offset + 10] = x;
-					bufferData[offset + 11] = y2;
-					
-					bufferData[offset + 14] = x;
-					bufferData[offset + 15] = y2;
-					bufferData[offset + 18] = x2;
-					bufferData[offset + 19] = y;
-					bufferData[offset + 22] = x2;
-					bufferData[offset + 23] = y2;
+					updateTileUV(tiles[i], uvs, i * 24, bufferData);
 					
 				}
 				
@@ -135,18 +117,39 @@ class GLTilemap {
 				
 				offset = i * 24;
 				
-				// TODO: Use dirty flag on tiles?
+				if (tile.__dirtyUV) {
+					
+					updateTileUV(tile, uvs, offset, bufferData);
+					
+				}
 				
-				tileMatrix = tile.matrix;
-				
-				x = tileMatrix.__transformX (0, 0);
-				y = tileMatrix.__transformY (0, 0);
-				x2 = tileMatrix.__transformX (tileWidth, 0);
-				y2 = tileMatrix.__transformY (tileWidth, 0);
-				x3 = tileMatrix.__transformX (0, tileHeight);
-				y3 = tileMatrix.__transformY (0, tileHeight);
-				x4 = tileMatrix.__transformX (tileWidth, tileHeight);
-				y4 = tileMatrix.__transformY (tileWidth, tileHeight);
+				if (tile.__dirtyTranform) {
+					
+					tileMatrix = tile.matrix;
+					
+					x = tile.__transform[0] = tileMatrix.__transformX (0, 0);
+					y = tile.__transform[1] = tileMatrix.__transformY (0, 0);
+					x2 = tile.__transform[2] = tileMatrix.__transformX (tileWidth, 0);
+					y2 = tile.__transform[3] = tileMatrix.__transformY (tileWidth, 0);
+					x3 = tile.__transform[4] = tileMatrix.__transformX (0, tileHeight);
+					y3 = tile.__transform[5] = tileMatrix.__transformY (0, tileHeight);
+					x4 = tile.__transform[6] = tileMatrix.__transformX (tileWidth, tileHeight);
+					y4 = tile.__transform[7] = tileMatrix.__transformY (tileWidth, tileHeight);
+					
+					tile.__dirtyTranform = false;
+					
+				} else {
+					
+					x = tile.__transform[0];
+					y = tile.__transform[1];
+					x2 = tile.__transform[2];
+					y2 = tile.__transform[3];
+					x3 = tile.__transform[4];
+					y3 = tile.__transform[5];
+					x4 = tile.__transform[6];
+					y4 = tile.__transform[7];
+					
+				}
 				
 				bufferData[offset + 0] = x;
 				bufferData[offset + 1] = y;
@@ -174,6 +177,33 @@ class GLTilemap {
 		}
 		
 		renderSession.maskManager.popObject (tilemap);
+		
+	}
+	
+	private static inline function updateTileUV (tile:Tile, uvs:Array<Rectangle>, tileOffset:Int, bufferData:Float32Array):Void {
+		
+		var uv = uvs[tile.id];
+		
+		var x = uv.x;
+		var y = uv.y;
+		var x2 = uv.width;
+		var y2 = uv.height;
+		
+		bufferData[tileOffset + 2] = x;
+		bufferData[tileOffset + 3] = y;
+		bufferData[tileOffset + 6] = x2;
+		bufferData[tileOffset + 7] = y;
+		bufferData[tileOffset + 10] = x;
+		bufferData[tileOffset + 11] = y2;
+		
+		bufferData[tileOffset + 14] = x;
+		bufferData[tileOffset + 15] = y2;
+		bufferData[tileOffset + 18] = x2;
+		bufferData[tileOffset + 19] = y;
+		bufferData[tileOffset + 22] = x2;
+		bufferData[tileOffset + 23] = y2;
+		
+		tile.__dirtyUV = false;
 		
 	}
 	

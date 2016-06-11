@@ -8,13 +8,18 @@ class Tile {
 	
 	
 	public var data:Dynamic;
-	public var id:Int;
+	public var id(default, set):Int;
 	public var matrix:Matrix;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
+	
+	private var __dirtyTranform:Bool = true;
+	private var __dirtyUV:Bool = true;
+	
+	private var __transform:Array<Float> = [];
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0) {
@@ -57,6 +62,7 @@ class Tile {
 		matrix.b = rotationSine * __scaleX;
 		matrix.c = -rotationSine * __scaleY;
 		matrix.d = rotationCosine * __scaleY;
+		__dirtyTranform = true;
 		
 		return value;
 		
@@ -99,6 +105,8 @@ class Tile {
 			
 		}
 		
+		__dirtyTranform = true;
+		
 		return value;
 		
 	}
@@ -140,6 +148,8 @@ class Tile {
 			
 		}
 		
+		__dirtyTranform = true;
+		
 		return value;
 		
 	}
@@ -161,6 +171,7 @@ class Tile {
 	
 	private inline function set_x (value:Float):Float {
 		
+		__dirtyTranform = true;
 		return matrix.tx = value;
 		
 	}
@@ -168,9 +179,17 @@ class Tile {
 	
 	private inline function set_y (value:Float):Float {
 		
+		__dirtyTranform = true;
 		return matrix.ty = value;
 		
 	}
 	
+	
+	private inline function set_id (value:Int):Int {
+		
+		__dirtyUV = true;
+		return id = value;
+		
+	}
 	
 }
