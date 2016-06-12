@@ -158,14 +158,19 @@ class Sound extends EventDispatcher {
 	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
-		// TODO: handle pan
-		
 		#if !html5
 		
 		var source = new AudioSource (__buffer);
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
-		if (sndTransform != null) source.gain = sndTransform.volume;
+		
+		if (sndTransform != null) {
+			
+			source.gain = sndTransform.volume;
+			source.pan = sndTransform.pan;
+			
+		}
+		
 		return new SoundChannel (source);
 		
 		#else
