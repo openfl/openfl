@@ -143,8 +143,7 @@ import openfl.media.Sound;
 		
 		#if !html5
 		__source.gain = value.volume;
-		
-		// TODO: pan
+		__source.pan = value.pan;
 		
 		return value;
 		#else
