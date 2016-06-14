@@ -167,7 +167,11 @@ class Sound extends EventDispatcher {
 		if (sndTransform != null) {
 			
 			source.gain = sndTransform.volume;
-			source.pan = sndTransform.pan;
+			
+			var position = source.position;
+			position.x = sndTransform.pan;
+			position.z = -1 * Math.sqrt (1 - Math.pow (sndTransform.pan, 2));
+			source.position = position;
 			
 		}
 		
