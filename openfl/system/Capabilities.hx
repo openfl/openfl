@@ -109,42 +109,56 @@ import haxe.macro.Compiler;
 	
 	private static function get_screenResolutionX ():Float { 
 		
-		var window = Lib.application.window;
+		var stage = Lib.current.stage;
+		var resolutionX = 0;
 		
-		if (window != null) {
+		if (stage.window != null) {
 			
-			var display = window.display;
+			var display = stage.window.display;
 			
 			if (display != null) {
 				
-				return display.currentMode.width;
+				resolutionX = display.currentMode.width;
 				
 			}
 			
 		}
 		
-		return 0;
+		if (resolutionX > 0) {
+			
+			return resolutionX;
+			
+		}
+		
+		return stage.stageWidth;
 		
 	}
 	
 	
 	private static function get_screenResolutionY ():Float {
 		
-		var window = Lib.application.window;
+		var stage = Lib.current.stage;
+		var resolutionY = 0;
 		
-		if (window != null) {
+		if (stage.window != null) {
 			
-			var display = window.display;
+			var display = stage.window.display;
 			
 			if (display != null) {
 				
-				return display.currentMode.height;
+				resolutionY = display.currentMode.width;
 				
 			}
 			
 		}
 		
-		return 0;
+		if (resolutionY > 0) {
+			
+			return resolutionY;
+			
+		}
+		
+		return stage.stageHeight;
 		
 	}
 	
