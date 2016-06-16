@@ -204,7 +204,7 @@ class ApplicationMain {
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		var loader = new neko.vm.Loader (untyped $loader);
-		loader.addPath (haxe.io.Path.directory (Sys.executablePath ()));
+		loader.addPath (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end));
 		loader.addPath ("./");
 		loader.addPath ("@executable_path/");
 		

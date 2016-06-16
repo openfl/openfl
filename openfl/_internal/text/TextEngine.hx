@@ -380,7 +380,7 @@ class TextEngine {
 				
 			} else {
 				
-				fontList = [ systemFontDirectory + "/timesb.ttf" ];
+				fontList = [ systemFontDirectory + "/timesbd.ttf" ];
 				
 			}
 			
@@ -770,6 +770,7 @@ class TextEngine {
 					
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.offsetX = offsetX;
+					layoutGroup.lineIndex++;
 					
 					offsetY += heightValue;
 					lineIndex++;

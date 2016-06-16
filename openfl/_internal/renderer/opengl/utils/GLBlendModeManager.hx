@@ -2,11 +2,12 @@ package openfl._internal.renderer.opengl.utils;
 
 
 import lime.graphics.GLRenderContext;
+import openfl._internal.renderer.BlendModeManager;
 import openfl.display.BlendMode;
 import openfl.gl.GL;
 
 
-class BlendModeManager {
+class GLBlendModeManager implements BlendModeManager {
 	
 	public var currentBlendMode:BlendMode;
 	public var gl:GLRenderContext;

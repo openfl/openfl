@@ -4,6 +4,7 @@ package openfl.display; #if !openfl_legacy
 import haxe.EnumFlags;
 import lime.app.Application;
 import lime.app.IModule;
+import lime.app.Preloader;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
@@ -101,6 +102,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __fullscreen:Bool;
 	private var __invalidated:Bool;
 	private var __lastClickTime:Int;
+	private var __logicalWidth:Int;
+	private var __logicalHeight:Int;
 	private var __macKeyboard:Bool;
 	private var __mouseDownLeft:InteractiveObject;
 	private var __mouseDownMiddle:InteractiveObject;
@@ -108,21 +111,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseOutStack:Array<DisplayObject>;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
-	private var __originalWidth:Int;
-	private var __originalHeight:Int;
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
-	
-	#if (js && html5)
-	//private var __div:DivElement;
-	//private var __element:HtmlElement;
-	#if stats
-	private var __stats:Dynamic;
-	#end
-	#end
 	
 	
 	public function new (window:Window, color:Null<Int> = null) {
@@ -154,9 +147,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseX = 0;
 		__mouseY = 0;
 		__lastClickTime = 0;
+		__logicalWidth = 0;
+		__logicalHeight = 0;
 		
-		stageWidth = Std.int (window.width * window.scale);
-		stageHeight = Std.int (window.height * window.scale);
+		__resize ();
 		
 		this.stage = this;
 		
@@ -190,6 +184,89 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stage.addChild (Lib.current);
 			
 		}
+		
+	}
+	
+	
+	@:noCompletion public function addRenderer (renderer:Renderer):Void {
+		
+		renderer.onRender.add (render.bind (renderer));
+		renderer.onContextLost.add (onRenderContextLost.bind (renderer));
+		renderer.onContextRestored.add (onRenderContextRestored.bind (renderer));
+		
+	}
+	
+	
+	@:noCompletion public function addWindow (window:Window):Void {
+		
+		if (this.window != window) return;
+		
+		window.onActivate.add (onWindowActivate.bind (window));
+		window.onClose.add (onWindowClose.bind (window));
+		window.onCreate.add (onWindowCreate.bind (window));
+		window.onDeactivate.add (onWindowDeactivate.bind (window));
+		window.onDropFile.add (onWindowDropFile.bind (window));
+		window.onEnter.add (onWindowEnter.bind (window));
+		window.onFocusIn.add (onWindowFocusIn.bind (window));
+		window.onFocusOut.add (onWindowFocusOut.bind (window));
+		window.onFullscreen.add (onWindowFullscreen.bind (window));
+		window.onKeyDown.add (onKeyDown.bind (window));
+		window.onKeyUp.add (onKeyUp.bind (window));
+		window.onLeave.add (onWindowLeave.bind (window));
+		window.onMinimize.add (onWindowMinimize.bind (window));
+		window.onMouseDown.add (onMouseDown.bind (window));
+		window.onMouseMove.add (onMouseMove.bind (window));
+		window.onMouseMoveRelative.add (onMouseMoveRelative.bind (window));
+		window.onMouseUp.add (onMouseUp.bind (window));
+		window.onMouseWheel.add (onMouseWheel.bind (window));
+		window.onMove.add (onWindowMove.bind (window));
+		window.onResize.add (onWindowResize.bind (window));
+		window.onRestore.add (onWindowRestore.bind (window));
+		window.onTextEdit.add (onTextEdit.bind (window));
+		window.onTextInput.add (onTextInput.bind (window));
+		
+		if (window.id > -1) {
+			
+			onWindowCreate (window);
+			
+		}
+		
+	}
+	
+	
+	@:noCompletion public function registerModule (application:Application):Void {
+		
+		application.onExit.add (onModuleExit, false, 0);
+		application.onUpdate.add (update);
+		
+		for (gamepad in Gamepad.devices) {
+			
+			__onGamepadConnect (gamepad);
+			
+		}
+		
+		Gamepad.onConnect.add (__onGamepadConnect);
+		Touch.onStart.add (onTouchStart);
+		Touch.onMove.add (onTouchMove);
+		Touch.onEnd.add (onTouchEnd);
+		
+	}
+	
+	
+	@:noCompletion public function removeRenderer (renderer:Renderer):Void { }
+	@:noCompletion public function removeWindow (window:Window):Void { }
+	@:noCompletion public function setPreloader (preloader:Preloader):Void { }
+	
+	
+	@:noCompletion public function unregisterModule (application:Application):Void {
+		
+		application.onExit.remove (onModuleExit);
+		application.onUpdate.remove (update);
+		
+		Gamepad.onConnect.remove (__onGamepadConnect);
+		Touch.onStart.remove (onTouchStart);
+		Touch.onMove.remove (onTouchMove);
+		Touch.onEnd.remove (onTouchEnd);
 		
 	}
 	
@@ -427,8 +504,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		// TODO: Move to TextField
-		
 		var stack = new Array <DisplayObject> ();
 		
 		if (__focus == null) {
@@ -507,7 +582,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case OPENGL (gl):
 					
-					#if (!disable_cffi && (!html5 || webgl))
+					#if (!disable_cffi && (!html5 || !canvas))
 					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
 					#end
 				
@@ -517,9 +592,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				case DOM (element):
 					
-					#if (!html5 || dom)
 					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
-					#end
 				
 				case CAIRO (cairo):
 					
@@ -632,8 +705,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		stageWidth = Std.int (width * window.scale);
-		stageHeight = Std.int (height * window.scale);
+		__resize ();
 		
 		if (__renderer != null) {
 			
@@ -893,6 +965,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private function __onGamepadConnect (gamepad:Gamepad):Void {
+		
+		onGamepadConnect (gamepad);
+		
+		gamepad.onAxisMove.add (onGamepadAxisMove.bind (gamepad));
+		gamepad.onButtonDown.add (onGamepadButtonDown.bind (gamepad));
+		gamepad.onButtonUp.add (onGamepadButtonUp.bind (gamepad));
+		gamepad.onDisconnect.add (onGamepadDisconnect.bind (gamepad));
+		
+	}
+	
+	
 	private function __onMouse (type:String, x:Float, y:Float, button:Int):Void {
 		
 		if (button > 2) return;
@@ -979,7 +1063,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		
 		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		if (clickType != null) {
@@ -1006,14 +1089,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var cursor = null;
 		
-		for (target in stack) {
+		if (__mouseDownLeft != null) {
 			
-			cursor = target.__getCursor ();
+			cursor = __mouseDownLeft.__getCursor ();
 			
-			if (cursor != null) {
+		} else {
+			
+			for (target in stack) {
 				
-				Mouse.cursor = cursor;
-				break;
+				cursor = target.__getCursor ();
+				
+				if (cursor != null) {
+					
+					Mouse.cursor = cursor;
+					break;
+					
+				}
 				
 			}
 			
@@ -1111,18 +1202,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (target == null) target = this;
 			var localPoint = target.globalToLocal (point);
 			
-			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, localPoint, cast target);
+			var touchEvent = TouchEvent.__create (type, null, __mouseX, __mouseY, localPoint, cast target);
 			touchEvent.touchPointID = touch.id;
-			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
 			__fireEvent (touchEvent, __stack);
 			
 		} else {
 			
-			var touchEvent = TouchEvent.__create (type, /*event,*/ null/*touch*/, __mouseX, __mouseY, point, this);
+			var touchEvent = TouchEvent.__create (type, null, __mouseX, __mouseY, point, this);
 			touchEvent.touchPointID = touch.id;
-			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
 			__fireEvent (touchEvent, [ stage ]);
@@ -1134,61 +1223,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __resize ():Void {
 		
-		/*
-		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
+		if (__logicalWidth == 0 && __logicalHeight == 0) {
 			
-			if (__fullscreen) {
-				
-				stageWidth = __element.clientWidth;
-				stageHeight = __element.clientHeight;
-				
-				if (__canvas != null) {
-					
-					if (__element != cast __canvas) {
-						
-						__canvas.width = stageWidth;
-						__canvas.height = stageHeight;
-						
-					}
-					
-				} else {
-					
-					__div.style.width = stageWidth + "px";
-					__div.style.height = stageHeight + "px";
-					
-				}
-				
-			} else {
-				
-				var scaleX = __element.clientWidth / __originalWidth;
-				var scaleY = __element.clientHeight / __originalHeight;
-				
-				var currentRatio = scaleX / scaleY;
-				var targetRatio = Math.min (scaleX, scaleY);
-				
-				if (__canvas != null) {
-					
-					if (__element != cast __canvas) {
-						
-						__canvas.style.width = __originalWidth * targetRatio + "px";
-						__canvas.style.height = __originalHeight * targetRatio + "px";
-						__canvas.style.marginLeft = ((__element.clientWidth - (__originalWidth * targetRatio)) / 2) + "px";
-						__canvas.style.marginTop = ((__element.clientHeight - (__originalHeight * targetRatio)) / 2) + "px";
-						
-					}
-					
-				} else {
-					
-					__div.style.width = __originalWidth * targetRatio + "px";
-					__div.style.height = __originalHeight * targetRatio + "px";
-					__div.style.marginLeft = ((__element.clientWidth - (__originalWidth * targetRatio)) / 2) + "px";
-					__div.style.marginTop = ((__element.clientHeight - (__originalHeight * targetRatio)) / 2) + "px";
-					
-				}
-				
-			}
+			stageWidth = Std.int (window.width * window.scale);
+			stageHeight = Std.int (window.height * window.scale);
 			
-		}*/
+		}
+		
+	}
+	
+	
+	private function __setLogicalSize (width:Int, height:Int):Void {
+		
+		__logicalWidth = width;
+		__logicalHeight = height;
+		
+		if (width > 0 && height > 0) {
+			
+			stageWidth = width;
+			stageHeight = height;
+			
+		}
 		
 	}
 	
@@ -1296,50 +1351,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 	
-	private override function get_mouseX ():Float {
-		
-		return __mouseX;
-		
-	}
-	
-	
-	private override function get_mouseY ():Float {
-		
-		return __mouseY;
-		
-	}
-	
-	
-	
-	
-	// Event Handlers
-	
-	
-	
-	
-	#if (js && html5)
-	private function canvas_onContextLost (event:js.html.webgl.ContextEvent):Void {
-		
-		//__glContextLost = true;
-		
-	}
-	
-	
-	private function canvas_onContextRestored (event:js.html.webgl.ContextEvent):Void {
-		
-		//__glContextLost = false;
-		
-	}
-	#end
-	
-	
-	
-	
-	// Get & Set Methods
-	
-	
-	
-	
 	private function get_color ():Int {
 		
 		return __color;
@@ -1381,8 +1392,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 						//window.minimized = false;
 						window.fullscreen = false;
 						
-						stageWidth = Std.int (window.width * window.scale);
-						stageHeight = Std.int (window.height * window.scale);
+						__resize ();
 						
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 						
@@ -1395,8 +1405,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 						//window.minimized = false;
 						window.fullscreen = true;
 						
-						stageWidth = Std.int (window.width * window.scale);
-						stageHeight = Std.int (window.height * window.scale);
+						__resize ();
 						
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 						
@@ -1476,7 +1485,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 		return value;
 		
 	}
-
+	
+	
+	private override function get_mouseX ():Float {
+		
+		return __mouseX;
+		
+	}
+	
+	
+	private override function get_mouseY ():Float {
+		
+		return __mouseY;
+		
+	}
+	
+	
 }
 
 

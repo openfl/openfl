@@ -9,7 +9,7 @@ import openfl.geom.Transform;
 import openfl.geom.Vector3D;
 
 
-extern class DisplayObject extends EventDispatcher implements IBitmapDrawable implements #if flash Dynamic #else Dynamic<DisplayObject> #end {
+extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 	#if flash

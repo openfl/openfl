@@ -78,7 +78,7 @@ class ApplicationMain {
 				#if windows
 				try {
 					
-					var currentPath = haxe.io.Path.directory (Sys.executablePath ());
+					var currentPath = haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end);
 					Sys.setCwd (currentPath);
 					
 				} catch (e:Dynamic) {}
@@ -87,7 +87,7 @@ class ApplicationMain {
 					
 					if (!sys.FileSystem.exists (Sys.getCwd () + "/lime-legacy.ndll")) {
 						
-						Sys.setCwd (haxe.io.Path.directory (Sys.executablePath ()));
+						Sys.setCwd (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end));
 						
 					}
 					
@@ -205,7 +205,7 @@ class ApplicationMain {
 	#if neko
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
-		untyped $loader.path = $array (haxe.io.Path.directory (Sys.executablePath ()), $loader.path);
+		untyped $loader.path = $array (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end), $loader.path);
 		untyped $loader.path = $array ("./", $loader.path);
 		untyped $loader.path = $array ("@executable_path/", $loader.path);
 		
@@ -363,7 +363,7 @@ class ApplicationMain {
 	#if neko
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
-		untyped $loader.path = $array (haxe.io.Path.directory (Sys.executablePath ()), $loader.path);
+		untyped $loader.path = $array (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end), $loader.path);
 		untyped $loader.path = $array ("./", $loader.path);
 		untyped $loader.path = $array ("@executable_path/", $loader.path);
 		
@@ -594,7 +594,7 @@ class ApplicationMain {
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		var loader = new neko.vm.Loader (untyped $loader);
-		loader.addPath (haxe.io.Path.directory (Sys.executablePath ()));
+		loader.addPath (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end));
 		loader.addPath ("./");
 		loader.addPath ("@executable_path/");
 		

@@ -562,7 +562,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
 			
 		}
 		
@@ -607,11 +607,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		//var bounds = new Rectangle ();
-		//__getLocalBounds (bounds);
-		//
-		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
-		
 		for (child in __children) {
 			
 			child.__renderCairoMask (renderSession);
@@ -631,7 +626,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
 			
 		}
 		
@@ -696,8 +691,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		#if !neko
 		
-		//if (!__renderable) return;
-		
 		super.__renderDOM (renderSession);
 		
 		if (__mask != null) {
@@ -745,13 +738,19 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (__cacheAsBitmap) {
-			__cacheGL(renderSession);
-			return;
+		super.__renderGL (renderSession);
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.pushRect (scrollRect, __renderTransform);
+			
 		}
 		
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
+		if (__mask != null) {
+			
+			renderSession.maskManager.pushMask (__mask);
+			
+		}
 		
 		for (child in __children) {
 			
@@ -759,11 +758,21 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__postRenderGL (renderSession);
-		
 		if (__removedChildren.length > 0) {
 			
 			__removedChildren.splice (0, __removedChildren.length);
+			
+		}
+		
+		if (__mask != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
+		
+		if (scrollRect != null) {
+			
+			renderSession.maskManager.popRect ();
 			
 		}
 		
@@ -813,8 +822,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			return;
 			
 		}
-		
-		//if (!__renderable) return;
 		
 		if (updateChildren) {
 			

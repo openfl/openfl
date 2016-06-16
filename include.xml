@@ -28,7 +28,6 @@
 	<haxedef name="openfl-next" if="openfl-next" />
 	
 	<window stencil-buffer="true" unless="lime-legacy" />
-	<window hardware="false" if="html5" unless="webgl" />
 	
 	<unset name="custom-backend" />
 	
@@ -49,6 +48,7 @@
 	</section>
 	
 	<source path="extern" if="display || flash" />
+	<source path="extern-flash" if="flash" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
@@ -90,8 +90,6 @@
 			
 			<set name="openfl-html5" />
 			<haxedef name="openfl-html5" />
-			<haxedef name="canvas" unless="webgl || dom" />
-			<haxedef name="webgl" if="webgl" />
 			<haxeflag name="--remap" value="flash:openfl" />
 			<dependency path="dependencies/soundjs.min.js" />
 			

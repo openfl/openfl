@@ -51,15 +51,15 @@ class CanvasShape {
 						
 					}
 					
-					if (scrollRect == null) {
+					if (scrollRect != null) {
 						
-						context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
-						
-					} else {
-						
-						context.drawImage (graphics.__canvas, Math.ceil (graphics.__bounds.x + scrollRect.x), Math.ceil (graphics.__bounds.y + scrollRect.y), scrollRect.width, scrollRect.height, Math.ceil (graphics.__bounds.x + scrollRect.x), Math.ceil (graphics.__bounds.y + scrollRect.y), scrollRect.width, scrollRect.height);
+						context.beginPath ();
+						context.rect (scrollRect.x - graphics.__bounds.x, scrollRect.y - graphics.__bounds.y, scrollRect.width, scrollRect.height);
+						context.clip ();
 						
 					}
+					
+					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
 					
 					if (shape.__mask != null) {
 						

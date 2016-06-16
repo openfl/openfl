@@ -138,7 +138,7 @@ import openfl.geom.Vector3D;
  *                         display is not rendering. This is the case when the
  *                         content is either minimized or obscured. </p>
  */
-extern class DisplayObject extends EventDispatcher implements IBitmapDrawable implements #if flash Dynamic #else Dynamic<DisplayObject> #end {
+extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 	#if flash

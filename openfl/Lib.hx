@@ -99,6 +99,8 @@ import js.Browser;
 		Browser.window.open (request.url, target);
 		#elseif flash
 		return flash.Lib.getURL (request, target);
+		#elseif desktop
+		lime.tools.helpers.ProcessHelper.openURL (request.url);
 		#end
 		
 	}
