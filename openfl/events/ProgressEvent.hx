@@ -26,9 +26,7 @@ class ProgressEvent extends Event {
 		var event = new ProgressEvent (type, bubbles, cancelable, bytesLoaded, bytesTotal);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

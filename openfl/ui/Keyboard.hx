@@ -1,4 +1,4 @@
-package openfl.ui; #if (!openfl_legacy || lime_hybrid)
+package openfl.ui;
 
 
 import lime.ui.KeyCode;
@@ -482,8 +482,3 @@ import lime.ui.KeyCode;
 	
 	
 }
-
-
-#else
-typedef Keyboard = openfl._legacy.ui.Keyboard;
-#end

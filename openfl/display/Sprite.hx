@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.ui.MouseCursor;
@@ -136,8 +136,7 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics == null) {
 			
-			__graphics = new Graphics ();
-			@:privateAccess __graphics.__owner = this;
+			__graphics = new Graphics (this);
 			
 		}
 		
@@ -154,8 +153,3 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 }
-
-
-#else
-typedef Sprite = openfl._legacy.display.Sprite;
-#end

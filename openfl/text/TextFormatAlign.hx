@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 @:enum abstract TextFormatAlign(Null<Int>) {
@@ -43,8 +43,3 @@ package openfl.text; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef TextFormatAlign = openfl._legacy.text.TextFormatAlign;
-#end

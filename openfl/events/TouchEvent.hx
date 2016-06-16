@@ -1,4 +1,4 @@
-package openfl.events; #if !openfl_legacy
+package openfl.events;
 
 
 import openfl.display.InteractiveObject;
@@ -95,8 +95,3 @@ class TouchEvent extends Event {
 	
 	
 }
-
-
-#else
-typedef TouchEvent = openfl._legacy.events.TouchEvent;
-#end

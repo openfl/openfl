@@ -1,4 +1,4 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
 
 
 import openfl.display.Shader;
@@ -76,8 +76,3 @@ import openfl.geom.Rectangle;
 	
 	
 }
-
-
-#else
-typedef DropShadowFilter = openfl._legacy.filters.DropShadowFilter;
-#end

@@ -33,9 +33,7 @@ class FocusEvent extends Event {
 		var event = new FocusEvent (type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

@@ -1,4 +1,4 @@
-package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net;
 
 
 import openfl.utils.ByteArray;
@@ -50,8 +50,3 @@ import openfl.utils.ByteArray;
 	
 	
 }
-
-
-#else
-typedef URLRequest = openfl._legacy.net.URLRequest;
-#end

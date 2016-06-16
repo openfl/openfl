@@ -1,4 +1,4 @@
-package openfl.ui; #if !openfl_legacy
+package openfl.ui;
 
 
 import openfl.ui.MultitouchInputMode;
@@ -75,8 +75,3 @@ import js.Browser;
 	
 	
 }
-
-
-#else
-typedef Multitouch = openfl._legacy.ui.Multitouch;
-#end

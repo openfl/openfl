@@ -27,9 +27,7 @@ class AsyncErrorEvent extends ErrorEvent {
 		var event = new AsyncErrorEvent (type, bubbles, cancelable, text, error);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

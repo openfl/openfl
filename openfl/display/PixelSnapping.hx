@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract PixelSnapping(Null<Int>) {
@@ -34,8 +34,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef PixelSnapping = openfl._legacy.display.PixelSnapping;
-#end

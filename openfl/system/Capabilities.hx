@@ -1,4 +1,4 @@
-package openfl.system; #if !openfl_legacy
+package openfl.system;
 
 
 import haxe.macro.Compiler;
@@ -200,8 +200,3 @@ import haxe.macro.Compiler;
 	
 	
 }
-
-
-#else
-typedef Capabilities = openfl._legacy.system.Capabilities;
-#end

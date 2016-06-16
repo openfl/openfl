@@ -1,10 +1,10 @@
 package openfl._internal.renderer.opengl.utils;
 
 
+import lime.graphics.opengl.GL;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.BlendModeManager;
 import openfl.display.BlendMode;
-import openfl.gl.GL;
 
 
 class GLBlendModeManager implements BlendModeManager {
@@ -49,40 +49,40 @@ class GLBlendModeManager implements BlendModeManager {
 			
 			case ADD:
 				
-				gl.blendEquation (GL.FUNC_ADD);
-				gl.blendFunc (GL.ONE, GL.ONE);
+				gl.blendEquation (gl.FUNC_ADD);
+				gl.blendFunc (gl.ONE, gl.ONE);
 			
 			case MULTIPLY:
 				
-				gl.blendEquation (GL.FUNC_ADD);
-				gl.blendFunc (GL.DST_COLOR, GL.ONE_MINUS_SRC_ALPHA);
+				gl.blendEquation (gl.FUNC_ADD);
+				gl.blendFunc (gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
 			
 			case SCREEN:
 				
-				gl.blendEquation (GL.FUNC_ADD);
-				gl.blendFunc (GL.ONE, GL.ONE_MINUS_SRC_COLOR);
+				gl.blendEquation (gl.FUNC_ADD);
+				gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_COLOR);
 			
 			case SUBTRACT:
 				
-				gl.blendEquation (GL.FUNC_REVERSE_SUBTRACT);
-				gl.blendFunc (GL.ONE, GL.ONE);
+				gl.blendEquation (gl.FUNC_REVERSE_SUBTRACT);
+				gl.blendFunc (gl.ONE, gl.ONE);
 			
 			#if desktop
 			case DARKEN:
 				
 				gl.blendEquation (0x8007); // GL_MIN
-				gl.blendFunc (GL.ONE, GL.ONE);
+				gl.blendFunc (gl.ONE, gl.ONE);
 				
 			case LIGHTEN:
 				
 				gl.blendEquation (0x8008); // GL_MAX
-				gl.blendFunc (GL.ONE, GL.ONE);
+				gl.blendFunc (gl.ONE, gl.ONE);
 			#end
 			
 			default:
 				
-				gl.blendEquation (GL.FUNC_ADD);
-				gl.blendFunc (GL.ONE, GL.ONE_MINUS_SRC_ALPHA);
+				gl.blendEquation (gl.FUNC_ADD);
+				gl.blendFunc (gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 			
 		}
 		

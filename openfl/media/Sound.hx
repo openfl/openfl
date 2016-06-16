@@ -1,4 +1,4 @@
-package openfl.media; #if (!openfl_legacy || disable_legacy_audio)
+package openfl.media;
 
 
 import haxe.io.Path;
@@ -159,14 +159,23 @@ class Sound extends EventDispatcher {
 	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
-		// TODO: handle pan
-		
 		#if !html5
 		
 		var source = new AudioSource (__buffer);
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
-		if (sndTransform != null) source.gain = sndTransform.volume;
+		
+		if (sndTransform != null) {
+			
+			source.gain = sndTransform.volume;
+			
+			var position = source.position;
+			position.x = sndTransform.pan;
+			position.z = -1 * Math.sqrt (1 - Math.pow (sndTransform.pan, 2));
+			source.position = position;
+			
+		}
+		
 		return new SoundChannel (source);
 		
 		#else
@@ -401,9 +410,4 @@ class Sound extends EventDispatcher {
 	public function toString ():String;
 	
 }
-#end
-
-
-#else
-typedef Sound = openfl._legacy.media.Sound;
 #end

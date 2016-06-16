@@ -1,4 +1,4 @@
-package openfl; #if (!openfl_legacy || (openfl_legacy && lime_hybrid))
+package openfl;
 #if !macro
 
 
@@ -1473,14 +1473,4 @@ class Assets {
 }
 
 
-#end
-#else
-typedef Assets = openfl._legacy.Assets;
-#if !macro
-typedef AssetLibrary = openfl._legacy.Assets.AssetLibrary;
-typedef AssetCache = openfl._legacy.Assets.AssetCache;
-typedef IAssetCache = openfl._legacy.Assets.IAssetCache;
-typedef AssetData = openfl._legacy.Assets.AssetData;
-typedef AssetType = openfl._legacy.Assets.AssetType;
-#end
 #end

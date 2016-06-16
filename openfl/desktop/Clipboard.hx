@@ -1,4 +1,4 @@
-package openfl.desktop; #if !openfl_legacy
+package openfl.desktop;
 
 
 import lime.system.Clipboard in LimeClipboard;
@@ -220,6 +220,3 @@ class Clipboard {
 	
 	
 }
-
-
-#end

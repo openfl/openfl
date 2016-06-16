@@ -1,4 +1,4 @@
-package openfl.events; #if !openfl_legacy
+package openfl.events;
 
 
 import openfl.events.EventPhase;
@@ -321,8 +321,3 @@ private class Listener {
 	
 	
 }
-
-
-#else
-typedef EventDispatcher = openfl._legacy.events.EventDispatcher;
-#end

@@ -7,7 +7,6 @@ import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 import lime.text.TextLayout;
-import openfl.display.Tilesheet;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
@@ -106,9 +105,9 @@ class TextEngine {
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
-	@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
-	@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
-	@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
+	//@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
+	//@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
+	//@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
 	
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
@@ -452,6 +451,19 @@ class TextEngine {
 	}
 	
 	
+	public function getLineBreakIndex (startIndex:Int = 0):Int {
+		
+		var cr = text.indexOf ("\n", startIndex);
+		var lf = text.indexOf ("\r", startIndex);
+		
+		if (cr == -1) return lf;
+		if (lf == -1) return cr;
+		
+		return cr < lf ? cr : lf;
+		
+	}
+	
+	
 	private function getLineMeasurements ():Void {
 		
 		lineAscents.splice (0, lineAscents.length);
@@ -581,7 +593,7 @@ class TextEngine {
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
 		var spaceIndex = text.indexOf (" ");
-		var breakIndex = text.indexOf ("\n");
+		var breakIndex = getLineBreakIndex ();
 		
 		var marginRight = 0.0;
 		var offsetX = 2.0;
@@ -777,16 +789,16 @@ class TextEngine {
 					
 				}
 				
-				textIndex = breakIndex + 1;
-				breakIndex = text.indexOf ("\n", textIndex);
-				lineIndex++;
-				
 				if (formatRange.end == breakIndex) {
 					
 					nextFormatRange ();
 					lineFormat = formatRange.format;
 					
 				}
+				
+				textIndex = breakIndex + 1;
+				breakIndex = getLineBreakIndex (textIndex);
+				lineIndex++;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
 				
@@ -931,6 +943,12 @@ class TextEngine {
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
 						
+						if (spaceIndex > formatRange.end) {
+							
+							textIndex--;
+							
+						}
+						
 						break;
 						
 					}
@@ -939,27 +957,31 @@ class TextEngine {
 				
 			} else {
 				
-				if (textIndex >= formatRange.end) {
+				if (textIndex > formatRange.end) {
 					
 					break;
 					
 				}
 				
-				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
-				layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-				layoutGroup.height = heightValue;
-				layoutGroups.push (layoutGroup);
-				
-				offsetX += layoutGroup.width;
-				
-				textIndex = formatRange.end;
+				if (textIndex < formatRange.end) {
+					
+					layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
+					layoutGroup.offsetX = offsetX;
+					layoutGroup.ascent = ascent;
+					layoutGroup.descent = descent;
+					layoutGroup.leading = leading;
+					layoutGroup.lineIndex = lineIndex;
+					layoutGroup.offsetY = offsetY;
+					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					layoutGroup.height = heightValue;
+					layoutGroups.push (layoutGroup);
+					
+					offsetX += layoutGroup.width;
+					
+					textIndex = formatRange.end;
+					
+				}
 				
 				nextFormatRange ();
 				
@@ -1034,7 +1056,8 @@ class TextEngine {
 								
 								group = layoutGroups[i + lineLength - 1];
 								
-								if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
+								var endChar = text.charAt (group.endIndex);
+								if (group.endIndex < text.length && endChar != "\n" && endChar != "\r") {
 									
 									offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
 									

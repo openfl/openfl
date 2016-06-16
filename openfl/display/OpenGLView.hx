@@ -1,13 +1,13 @@
-package openfl.display; #if !display #if !openfl_legacy
+package openfl.display;
 
 
+import lime.graphics.opengl.GL;
 #if !flash
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
 #end
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
-import openfl.gl.GL;
 import openfl.Lib;
 
 #if (js && html5)
@@ -69,7 +69,7 @@ class OpenGLView extends DirectRenderer {
 			__initialized = true;
 			
 		}
-		#elseif !webgl
+		#elseif canvas
 		if (!__added) {
 			
 			__added = true;
@@ -218,7 +218,7 @@ class OpenGLView extends DirectRenderer {
 		
 		#elseif (js && html5)
 		
-		#if (!dom && !webgl)
+		#if (canvas && !dom)
 		return false;
 		#else
 		
@@ -280,26 +280,3 @@ class OpenGLView extends DirectRenderer {
 	
 	
 }
-
-
-#else
-typedef OpenGLView = openfl._legacy.display.OpenGLView;
-#end
-#elseif !flash
-
-
-extern class OpenGLView extends DirectRenderer {
-	
-	
-	public static inline var CONTEXT_LOST = "glcontextlost";
-	public static inline var CONTEXT_RESTORED = "glcontextrestored";
-	
-	public static var isSupported (get, null):Bool;
-	
-	public function new ();
-	
-	
-}
-
-
-#end

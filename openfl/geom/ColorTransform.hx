@@ -1,4 +1,4 @@
-package openfl.geom; #if !openfl_legacy
+package openfl.geom;
 
 
 import lime.math.ColorMatrix;
@@ -128,8 +128,3 @@ class ColorTransform {
 	
 	
 }
-
-
-#else
-typedef ColorTransform = openfl._legacy.geom.ColorTransform;
-#end

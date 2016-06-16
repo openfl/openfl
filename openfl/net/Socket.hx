@@ -1,4 +1,4 @@
-package openfl.net; #if !openfl_legacy
+package openfl.net;
 
 
 import haxe.io.Bytes;
@@ -182,9 +182,11 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			try {
 				
 				#if (js && html5)
-				__socket.send (cast (__output, ArrayBuffer));
+				var buffer:ArrayBuffer = __output;
+				if (buffer.byteLength > __output.length) buffer = buffer.slice (0, __output.length);
+				__socket.send (buffer);
 				#else
-				__socket.output.write (__output);
+				__socket.output.writeBytes (__output, 0, __output.length);
 				#end
 				__output = new ByteArray ();
 				__output.endian = __endian;
@@ -771,8 +773,3 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	
 	
 }
-
-
-#else
-typedef Socket = openfl._legacy.net.Socket;
-#end

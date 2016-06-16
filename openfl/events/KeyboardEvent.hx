@@ -1,4 +1,4 @@
-package openfl.events; #if !openfl_legacy
+package openfl.events;
 
 
 import openfl.ui.KeyLocation;
@@ -57,8 +57,3 @@ class KeyboardEvent extends Event {
 	
 	
 }
-
-
-#else
-typedef KeyboardEvent = openfl._legacy.events.KeyboardEvent;
-#end

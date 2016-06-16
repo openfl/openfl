@@ -24,9 +24,7 @@ class DataEvent extends TextEvent {
 		var event = new DataEvent (type, bubbles, cancelable, data);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

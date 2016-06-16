@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract BlendMode(Null<Int>) {
@@ -70,8 +70,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef BlendMode = openfl._legacy.display.BlendMode;
-#end

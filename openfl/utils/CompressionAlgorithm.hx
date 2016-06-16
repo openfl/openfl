@@ -1,4 +1,4 @@
-package openfl.utils; #if !openfl_legacy
+package openfl.utils;
 
 
 @:enum abstract CompressionAlgorithm(Null<Int>) {
@@ -35,8 +35,3 @@ package openfl.utils; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef CompressionAlgorithm = openfl._legacy.utils.CompressionAlgorithm;
-#end

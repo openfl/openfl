@@ -1,10 +1,13 @@
 package openfl._internal.renderer;
 
 
+import openfl.display.Shader;
+
+
 class AbstractShaderManager {
 	
 	
-	public var defaultShader:AbstractShader;
+	public var defaultShader:Shader;
 	
 	
 	public function new () {
@@ -14,7 +17,7 @@ class AbstractShaderManager {
 	}
 	
 	
-	public function setShader (shader:AbstractShader):Void {
+	public function setShader (shader:Shader):Void {
 		
 		
 		

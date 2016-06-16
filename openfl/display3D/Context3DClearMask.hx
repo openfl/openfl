@@ -1,16 +1,39 @@
 package openfl.display3D;
 
 
-import openfl.gl.GL;
-
-
-class Context3DClearMask {
+@:enum abstract Context3DClearMask(Null<Int>) {
 	
+	public var ALL = 0;
+	public var COLOR = 1;
+	public var DEPTH = 2;
+	public var STENCIL = 3;
 	
-	public static inline var ALL:Int = COLOR | DEPTH | STENCIL;
-	public static inline var COLOR:Int = GL.COLOR_BUFFER_BIT;
-	public static inline var DEPTH:Int = GL.DEPTH_BUFFER_BIT;
-	public static inline var STENCIL:Int = GL.STENCIL_BUFFER_BIT;
+	@:from private static function fromString (value:String):Context3DClearMask {
+		
+		return switch (value) {
+			
+			case "all": ALL;
+			case "color": COLOR;
+			case "depth": DEPTH;
+			case "stencil": STENCIL;
+			default: null;
+			
+		}
+		
+	}
 	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case Context3DClearMask.ALL: "all";
+			case Context3DClearMask.COLOR: "color";
+			case Context3DClearMask.DEPTH: "depth";
+			case Context3DClearMask.STENCIL: "stencil";
+			default: null;
+			
+		}
+		
+	}
 	
 }

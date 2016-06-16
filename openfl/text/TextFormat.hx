@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 class TextFormat {
@@ -89,8 +89,3 @@ class TextFormat {
 	
 	
 }
-
-
-#else
-typedef TextFormat = openfl._legacy.text.TextFormat;
-#end

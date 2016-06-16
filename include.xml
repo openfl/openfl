@@ -4,30 +4,7 @@
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
-	<set name="lime-hybrid" value="1" if="hybrid || lime_hybrid" unless="web || display" />
-	<set name="openfl-legacy" value="1" if="legacy || openfl_legacy || lime-legacy || lime_legacy || v2 || lime-hybrid" unless="web || display" />
-	
-	<section if="web || display">
-		
-		<unset name="openfl-legacy" />
-		<unset name="lime-legacy" />
-		<unset name="lime-hybrid" />
-		<unset name="legacy" />
-		<unset name="hybrid" />
-		
-	</section>
-	
-	<set name="lime-legacy" value="1" if="openfl-legacy" unless="lime-hybrid" />
-	<set name="openfl-next" value="1" unless="openfl-legacy" />
-	
-	<haxedef name="disable-legacy-sound" if="ios lime-hybrid" />
-	
-	<haxedef name="openfl-legacy" if="openfl-legacy" unless="display" />
-	<haxedef name="lime-legacy" if="lime-legacy" unless="display" />
-	<haxedef name="lime-hybrid" if="lime-hybrid" unless="display" />
-	<haxedef name="openfl-next" if="openfl-next" />
-	
-	<window stencil-buffer="true" unless="lime-legacy" />
+	<window stencil-buffer="true" />
 	
 	<unset name="custom-backend" />
 	
@@ -40,15 +17,16 @@
 	
 	<section unless="lime || custom-backend">
 		
-		<haxelib name="lime" unless="create || native lime-legacy" />
+		<haxelib name="lime" unless="create" />
 		<haxelib name="lime" if="display || rebuild" />
 		
 		<template path="templates" />
 		
 	</section>
 	
-	<source path="extern" if="display || flash" />
-	<source path="extern-flash" if="flash" />
+	<source path="externs/core/flash" if="flash" />
+	<source path="externs/core/openfl" if="display || flash" />
+	<source path="externs/extras" if="display" />
 	
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
@@ -66,13 +44,6 @@
 				
 				<haxelib name="hxtelemetry" />
 				<config:hxtelemetry allocations="true" host="localhost" />
-				
-			</section>
-			
-			<section if="openfl-legacy">
-				
-				<include haxelib="lime" if="lime-legacy" />
-				<template path="templates/legacy" />
 				
 			</section>
 			

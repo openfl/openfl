@@ -28,7 +28,7 @@ class CairoMaskManager extends AbstractMaskManager {
 		cairo.save ();
 		
 		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__getWorldTransform ();
+		var transform = mask.__getRenderTransform ();
 		
 		cairo.matrix = transform.__toMatrix3 ();
 		
@@ -37,6 +37,23 @@ class CairoMaskManager extends AbstractMaskManager {
 		cairo.clip ();
 		
 		//mask.worldAlpha = cacheAlpha;
+		
+	}
+	
+	
+	public override function pushObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+		
+		if (handleScrollRect && object.scrollRect != null) {
+			
+			pushRect (object.scrollRect, object.__worldTransform);
+			
+		}
+		
+		if (object.__mask != null) {
+			
+			pushMask (object.__mask);
+			
+		}
 		
 	}
 	
@@ -58,6 +75,23 @@ class CairoMaskManager extends AbstractMaskManager {
 	public override function popMask ():Void {
 		
 		renderSession.cairo.restore ();
+		
+	}
+	
+	
+	public override function popObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+		
+		if (object.__mask != null) {
+			
+			popMask ();
+			
+		}
+		
+		if (handleScrollRect && object.scrollRect != null) {
+			
+			popRect ();
+			
+		}
 		
 	}
 	

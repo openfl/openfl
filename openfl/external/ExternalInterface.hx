@@ -1,4 +1,4 @@
-package openfl.external; #if !openfl_legacy
+package openfl.external;
 
 
 import openfl.Lib;
@@ -73,8 +73,3 @@ import openfl.Lib;
 	
 	
 }
-
-
-#else
-typedef ExternalInterface = openfl._legacy.external.ExternalInterface;
-#end

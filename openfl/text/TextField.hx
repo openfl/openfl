@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 import haxe.Timer;
@@ -93,7 +93,7 @@ class TextField extends InteractiveObject {
 		super ();
 		
 		__caretIndex = -1;
-		__graphics = new Graphics ();
+		__graphics = new Graphics (this);
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		__tabEnabled = true;
@@ -207,7 +207,7 @@ class TextField extends InteractiveObject {
 		
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
 		
-		var index = __textEngine.text.indexOf ("\n");
+		var index = __textEngine.getLineBreakIndex ();
 		var startIndex = 0;
 		
 		while (index > -1) {
@@ -222,7 +222,7 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			index = __textEngine.text.indexOf ("\n", index + 1);
+			index = __textEngine.getLineBreakIndex (index + 1);
 			
 		}
 		
@@ -391,7 +391,7 @@ class TextField extends InteractiveObject {
 		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
 		
 		var startIndex = getFirstCharInParagraph (charIndex);
-		var endIndex = __textEngine.text.indexOf ("\n", charIndex) + 1;
+		var endIndex = __textEngine.getLineBreakIndex (charIndex) + 1;
 		
 		if (endIndex == 0) endIndex = __textEngine.text.length;
 		return endIndex - startIndex;
@@ -681,7 +681,7 @@ class TextField extends InteractiveObject {
 	
 	public override function __renderCairo (renderSession:RenderSession):Void {
 		
-		CairoTextField.render (this, renderSession);
+		CairoTextField.render (this, renderSession, __worldTransform);
 		super.__renderCairo (renderSession);
 		
 	}
@@ -689,7 +689,7 @@ class TextField extends InteractiveObject {
 	
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		CanvasTextField.render (this, renderSession);
+		CanvasTextField.render (this, renderSession, __worldTransform);
 		
 		if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL) {
 			
@@ -734,9 +734,9 @@ class TextField extends InteractiveObject {
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		CanvasTextField.render (this, renderSession);
+		CanvasTextField.render (this, renderSession, __worldTransform);
 		#elseif lime_cairo
-		CairoTextField.render (this, renderSession);
+		CairoTextField.render (this, renderSession, __worldTransform);
 		#end
 		
 		super.__renderGL (renderSession);
@@ -1159,12 +1159,33 @@ class TextField extends InteractiveObject {
 		
 		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
 			
+			inline function decodeHTMLEntities (text) {
+				
+				var entities = [
+					[ 'quot', '"' ],
+					[ 'apos', '\'' ],
+					[ 'amp', '&' ],
+					[ 'lt', '<' ],
+					[ 'gt', '>' ]
+				];
+				
+				for (i in 0...entities.length) {
+					
+					text = new EReg ('&' + entities[i][0] + ';', 'g').replace (text, entities[i][1]);
+					
+				}
+				
+				return text;
+				
+			}
+			
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
+			value = decodeHTMLEntities (value);
 			
 			// crude solution
 			
-			var segments = value.split ("<font");
+			var segments = value.split ("<");
 			
 			if (segments.length == 1) {
 				
@@ -1189,60 +1210,124 @@ class TextField extends InteractiveObject {
 				
 				value = "";
 				
-				// crude search for font
+				var formatStack:Array<TextFormat> = [__textFormat.clone()];
+				var sub:String;
+				var noLineBreak:Bool = false;
 				
 				for (segment in segments) {
 					
 					if (segment == "") continue;
 					
-					var closeFontIndex = segment.indexOf ("</font>");
+					var isClosingTag = segment.substr (0, 1) == "/";
+					var tagEndIndex = segment.indexOf (">");
+					var start = tagEndIndex + 1;
+					var spaceIndex = segment.indexOf (" ");
+					var tagName:String = segment.substring (isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+					var format:TextFormat;
 					
-					if (closeFontIndex > -1) {
+					if (isClosingTag) {
 						
-						var start = segment.indexOf (">") + 1;
-						var end = closeFontIndex;
-						var format = __textFormat.clone ();
+						formatStack.pop ();
+						format = formatStack[formatStack.length - 1].clone ();
 						
-						var faceIndex = segment.indexOf ("face=");
-						var colorIndex = segment.indexOf ("color=");
-						var sizeIndex = segment.indexOf ("size=");
-						
-						if (faceIndex > -1 && faceIndex < start) {
+						if (tagName.toLowerCase () == "p" && __textEngine.textFormatRanges.length > 0) {
 							
-							format.font = segment.substr (faceIndex + 6, segment.indexOf ("\"", faceIndex));
+							value += "\n";
+							noLineBreak = true;
 							
 						}
 						
-						if (colorIndex > -1 && colorIndex < start) {
+						if (start < segment.length) {
 							
-							format.color = Std.parseInt ("0x" + segment.substr (colorIndex + 8, 6));
-							
-						}
-						
-						if (sizeIndex > -1 && sizeIndex < start) {
-							
-							format.size = Std.parseInt (segment.substr (sizeIndex + 6, segment.indexOf ("\"", sizeIndex)));
-							
-						}
-						
-						var sub = segment.substring (start, end);
-						sub = new EReg ("<.*?>", "g").replace (sub, "");
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-						value += sub;
-						
-						if (closeFontIndex + 7 < segment.length) {
-							
-							sub = segment.substr (closeFontIndex + 7);
-							__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
+							sub = segment.substr (start);
+							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
 							value += sub;
+							noLineBreak = false;
 							
 						}
 						
 					} else {
 						
-						__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
-						value += segment;
+						format = formatStack[formatStack.length - 1].clone ();
+						
+						if (tagEndIndex > -1) {
+							
+							switch (tagName.toLowerCase ()) {
+								
+								case "p":
+									
+									if (__textEngine.textFormatRanges.length > 0 && !noLineBreak) {
+										
+										value += "\n";
+										
+									}
+									
+									var alignEreg = ~/align="([^"]+)/i;
+									
+									if (alignEreg.match (segment)) {
+										
+										format.align = alignEreg.matched (1).toLowerCase ();
+										
+									}
+								
+								case "font":
+									
+									var faceEreg = ~/face="([^"]+)/i;
+									
+									if (faceEreg.match (segment)) {
+										
+										format.font = faceEreg.matched (1);
+										
+									}
+									
+									var colorEreg = ~/color="#([^"]+)/i;
+									
+									if (colorEreg.match (segment)) {
+										
+										format.color = Std.parseInt ("0x" + colorEreg.matched (1));
+										
+									}
+									
+									var sizeEreg = ~/size="([^"]+)/i;
+									
+									if (sizeEreg.match (segment)) {
+										
+										format.size = Std.parseInt (sizeEreg.matched (1));
+										
+									}
+								
+								case "b":
+									
+									format.bold = true;
+								
+								case "u":
+									
+									format.underline = true;
+								
+								case "i", "em":
+									
+									format.italic = true;
+								
+							}
+							
+							formatStack.push (format);
+							
+							if (start < segment.length) {
+								
+								sub = segment.substring (start);
+								__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
+								value += sub;
+								noLineBreak = false;
+								
+							}
+							
+						} else {
+							
+							__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + segment.length));
+							value += segment;
+							noLineBreak = false;
+							
+						}
 						
 					}
 					
@@ -1894,8 +1979,3 @@ class TextField extends InteractiveObject {
 	
 	
 }
-
-
-#else
-typedef TextField = openfl._legacy.text.TextField;
-#end

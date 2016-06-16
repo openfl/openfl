@@ -1,4 +1,4 @@
-package openfl.system; #if !openfl_legacy
+package openfl.system;
 
 
 import lime.system.Clipboard;
@@ -84,8 +84,3 @@ import cpp.vm.Gc;
 	
 	
 }
-
-
-#else
-typedef System = openfl._legacy.system.System;
-#end

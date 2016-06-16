@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import haxe.EnumFlags;
@@ -93,6 +93,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __colorString:String;
 	private var __deltaTime:Int;
 	private var __dirty:Bool;
+	private var __displayMatrix:Matrix;
 	private var __displayState:StageDisplayState;
 	private var __dragBounds:Rectangle;
 	private var __dragObject:Sprite;
@@ -149,6 +150,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__lastClickTime = 0;
 		__logicalWidth = 0;
 		__logicalHeight = 0;
+		__displayMatrix = new Matrix ();
 		
 		__resize ();
 		
@@ -707,12 +709,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__resize ();
 		
-		if (__renderer != null) {
-			
-			__renderer.resize (stageWidth, stageHeight);
-			
-		}
-		
 		var event = new Event (Event.RESIZE);
 		__broadcast (event, false);
 		
@@ -746,6 +742,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Telemetry.__advanceFrame ();
 		#end
 		
+		if (__renderer != null) {
+			
+			__renderer.init (this);
+			
+		}
+		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
 		
 		if (__invalidated) {
@@ -768,15 +770,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			switch (renderer.context) {
+			if (renderer.type == CAIRO) {
 				
-				case CAIRO (cairo):
+				switch (renderer.context) {
 					
-					cast (__renderer, CairoRenderer).cairo = cairo;
-					@:privateAccess (__renderer.renderSession).cairo = cairo;
+					case CAIRO (cairo):
+						
+						cast (__renderer, CairoRenderer).cairo = cairo;
+						@:privateAccess (__renderer.renderSession).cairo = cairo;
+					
+					default:
+						
+				}
 				
-				default:
-					
 			}
 			
 			__renderer.render (this);
@@ -981,14 +987,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (button > 2) return;
 		
-		__mouseX = x;
-		__mouseY = y;
+		var targetPoint = new Point (x, y);
+		__displayMatrix.__transformInversePoint (targetPoint);
+		
+		__mouseX = targetPoint.x;
+		__mouseY = targetPoint.y;
 		
 		var stack = [];
 		var target:InteractiveObject = null;
-		var targetPoint = new Point (x, y);
 		
-		if (__hitTest (x, y, true, stack, true, this)) {
+		if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
 			
 			target = cast stack[stack.length - 1];
 			
@@ -1180,6 +1188,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var target:InteractiveObject = cast stack[stack.length - 1];
 		var targetPoint = new Point (x, y);
+		__displayMatrix.__transformInversePoint (targetPoint);
 		var delta = Std.int (deltaY);
 		
 		__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
@@ -1189,7 +1198,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (touch.x * stageWidth, touch.y * stageHeight);
+		var point = new Point (touch.x * window.width, touch.y * window.height);
+		__displayMatrix.__transformInversePoint (point);
 		
 		__mouseX = point.x;
 		__mouseY = point.y;
@@ -1223,10 +1233,36 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __resize ():Void {
 		
+		var windowWidth = Std.int (window.width * window.scale);
+		var windowHeight = Std.int (window.height * window.scale);
+		
+		__displayMatrix.identity ();
+		
 		if (__logicalWidth == 0 && __logicalHeight == 0) {
 			
-			stageWidth = Std.int (window.width * window.scale);
-			stageHeight = Std.int (window.height * window.scale);
+			stageWidth = windowWidth;
+			stageHeight = windowHeight;
+			
+		} else {
+			
+			stageWidth = __logicalWidth;
+			stageHeight = __logicalHeight;
+			
+			var scaleX = windowWidth / stageWidth;
+			var scaleY = windowHeight / stageHeight;
+			var targetScale = Math.min (scaleX, scaleY);
+			
+			var offsetX = Math.round ((windowWidth - (stageWidth * targetScale)) / 2);
+			var offsetY = Math.round ((windowHeight - (stageHeight * targetScale)) / 2);
+			
+			__displayMatrix.scale (targetScale, targetScale);
+			__displayMatrix.translate (offsetX, offsetY);
+			
+		}
+		
+		if (__renderer != null) {
+			
+			__renderer.resize (stageWidth, stageHeight);
 			
 		}
 		
@@ -1238,12 +1274,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalWidth = width;
 		__logicalHeight = height;
 		
-		if (width > 0 && height > 0) {
-			
-			stageWidth = width;
-			stageHeight = height;
-			
-		}
+		__resize ();
 		
 	}
 	
@@ -1502,8 +1533,3 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	
 }
-
-
-#else
-typedef Stage = openfl._legacy.display.Stage;
-#end

@@ -9,6 +9,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
@@ -107,15 +108,34 @@ class CanvasTextField {
 	}
 	
 	
-	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
+	public static inline function render (textField:TextField, renderSession:RenderSession, transform:Matrix):Void {
 		
 		#if (js && html5)
 		
+		var textEngine = textField.__textEngine;
+		var bounds = textEngine.bounds;
+		var graphics = textField.__graphics;
+		
 		if (textField.__dirty) {
 			
-			var textEngine = textField.__textEngine;
-			
 			textField.__updateLayout ();
+			
+			if (graphics.__bounds == null) {
+				
+				graphics.__bounds = new Rectangle ();
+				
+			}
+			
+			graphics.__bounds.copyFrom (bounds);
+			
+		}
+		
+		graphics.__update ();
+		
+		if (textField.__dirty || graphics.__dirty) {
+			
+			var width = graphics.__width;
+			var height = graphics.__height;
 			
 			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
@@ -126,24 +146,29 @@ class CanvasTextField {
 				
 			} else {
 				
-				var bounds = textEngine.bounds;
-				
-				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
-					
-					if (textField.__graphics == null) {
-						
-						textField.__graphics = new Graphics ();
-						
-					}
+				if (textField.__graphics.__canvas == null) {
 					
 					textField.__graphics.__canvas = cast Browser.document.createElement ("canvas");
 					textField.__graphics.__context = textField.__graphics.__canvas.getContext ("2d");
-					textField.__graphics.__bounds = new Rectangle (0, 0, bounds.width, bounds.height);
 					
 				}
 				
-				var graphics = textField.__graphics;
 				context = graphics.__context;
+				
+				graphics.__canvas.width = width;
+				graphics.__canvas.height = height;
+				
+				var transform = graphics.__renderTransform;
+				
+				if (renderSession.roundPixels) {
+					
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
+					
+				} else {
+					
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					
+				}
 				
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
 					
@@ -163,9 +188,6 @@ class CanvasTextField {
 						text = mask;
 						
 					}
-					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textEngine.antiAliasType != ADVANCED || textEngine.gridFitType != PIXEL) {
 						
@@ -310,9 +332,6 @@ class CanvasTextField {
 					}
 					
 				} else {
-					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
 					
 					if (textEngine.border || textEngine.background) {
 						

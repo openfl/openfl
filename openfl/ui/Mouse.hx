@@ -1,4 +1,4 @@
-package openfl.ui; #if (!openfl_legacy || lime_hybrid)
+package openfl.ui;
 
 
 import lime.ui.Mouse in LimeMouse;
@@ -25,8 +25,3 @@ import openfl.Lib;
 	
 	
 }
-
-
-#else
-typedef Mouse = openfl._legacy.ui.Mouse;
-#end

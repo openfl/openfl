@@ -1,4 +1,4 @@
-package openfl.desktop; #if !openfl_legacy
+package openfl.desktop;
 
 
 @:enum abstract ClipboardFormats(Null<Int>) {
@@ -34,6 +34,3 @@ package openfl.desktop; #if !openfl_legacy
 	}
 	
 }
-
-
-#end

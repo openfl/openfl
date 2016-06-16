@@ -1,4 +1,4 @@
-package openfl.display; #if !display #if !flash
+package openfl.display;
 
 
 import openfl._internal.renderer.dom.DOMRenderer;
@@ -59,19 +59,3 @@ class DOMSprite extends Sprite {
 	
 	
 }
-
-
-#end
-#else
-
-
-extern class DOMSprite extends Sprite {
-	
-	
-	public function new (element:Dynamic);
-	
-	
-}
-
-
-#end
