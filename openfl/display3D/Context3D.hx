@@ -525,7 +525,7 @@ import openfl.Lib;
 		#elseif js
 		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
 		#else
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.__width, texture.__height);
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA4, texture.__width, texture.__height);
 		#end
 		
 		if (enableDepthAndStencil) {
