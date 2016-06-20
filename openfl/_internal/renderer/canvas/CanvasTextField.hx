@@ -222,8 +222,8 @@ class CanvasTextField {
 					// Hack, baseline "top" is not consistent across browsers
 					
 					var offsetY = 0.0;
-					var applyHack = ~/(iPad|iPhone|iPod|Firefox)/g.match (Browser.window.navigator.userAgent);
-					
+					var applyHack = ~/(iPad|iPhone|iPod)/g.match (Browser.window.navigator.userAgent);
+
 					for (group in textEngine.layoutGroups) {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
