@@ -33,6 +33,11 @@ class CairoTextField {
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
+
+		bounds.x = Math.floor (bounds.x);
+		bounds.y = Math.floor (bounds.y);
+		bounds.width = Math.ceil (bounds.width);
+		bounds.height = Math.ceil (bounds.height);
 		
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
@@ -41,7 +46,7 @@ class CairoTextField {
 			
 			var surface:CairoImageSurface = cast cairo.target;
 			
-			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
+			if (bounds.width != surface.width || bounds.height != surface.height) {
 				
 				graphics.__cairo = null;
 				graphics.__visible = false;
@@ -55,13 +60,13 @@ class CairoTextField {
 		
 		if (cairo == null) {
 			
-			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true, 0);
+			var bitmap = new BitmapData (Std.int (bounds.width), Std.int (bounds.height), true, 0);
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
 			graphics.__visible = true;
 			
 			graphics.__bitmap = bitmap;
-			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
+			graphics.__bounds = bounds.clone ();
 			
 			cairo = graphics.__cairo;
 			
@@ -87,7 +92,7 @@ class CairoTextField {
 		
 		if (textEngine.border) {
 			
-			cairo.rectangle (0.5, 0.5, Std.int (bounds.width - 1), Std.int (bounds.height - 1));
+			cairo.rectangle (0.5, 0.5, bounds.width - 1, bounds.height - 1);
 			
 		} else {
 			
