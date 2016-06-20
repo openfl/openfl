@@ -194,6 +194,10 @@ class BitmapData implements IBitmapDrawable {
 				
 				return byteArray = lime_bitmap_data_encode (__handle, "jpg", cast (compressorOrQuality, JPEGEncoderOptions).quality / 100);
 				
+			} else if (Std.is (compressorOrQuality, String)) {
+				
+				return byteArray = lime_bitmap_data_encode (__handle, compressorOrQuality, 1);
+				
 			}
 			
 			return byteArray = null;
