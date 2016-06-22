@@ -56,6 +56,10 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var focus:InteractiveObject;
 	public var frameRate:Float;
 	
+	#if (flash && air)
+	public var nativeWindow(default,null) : NativeWindow;
+	#end
+	
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenHeight (default, null):UInt;
 	#end
