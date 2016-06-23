@@ -379,16 +379,19 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 		
-		#if (js && html5)
+		#if (js && html5) 
+		//ill apply the change on this #if, ill leave it up to you to implement on the other #else
 		
-		if (colorTransform != null) {
+		/*if (colorTransform != null) {
 			
 			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
-			copy.draw (source);
+			copy.draw (source); //this calls this function, 1) it creates a new function frame, 2) it calls the same code as here 3) it will render the image 1 more time
+			//the problem here is that it wont take the matrix into account when doing the copy. nice, so if you have a negative x then that part will get
+			//cropped, you could pass the same matrix here, but that wont help as it will use later in the render code
 			copy.colorTransform (copy.rect, colorTransform);
 			source = copy;
 			
-		}
+		}*/
 		
 		ImageCanvasUtil.convertToCanvas (image);
 		
@@ -439,7 +442,7 @@ class BitmapData implements IBitmapDrawable {
 		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
 		buffer.__srcImageData = null;
 		buffer.data = null;
-		
+		if (colorTransform != null) this.colorTransform(this.rect, colorTransform); //much cleaner to me, it does one copy only and apply the transform using a function that already does what it should( and would be called anyway )
 		image.dirty = true;
 		image.version++;
 		
