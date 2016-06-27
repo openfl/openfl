@@ -149,7 +149,7 @@ class Video extends DisplayObject {
 			
 			if (scrollRect == null) {
 				
-				context.drawImage (__stream.__video, 0, 0);
+				context.drawImage (__stream.__video, 0, 0, width, height);
 				
 			} else {
 				
