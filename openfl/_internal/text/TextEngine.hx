@@ -35,6 +35,12 @@ import js.Browser;
 import haxe.io.Path;
 #end
 
+typedef FontData = {
+	var name:String;
+	var ascent: Float;
+	var descent: Float;
+};
+
 @:access(openfl.text.Font)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)
@@ -160,12 +166,11 @@ class TextEngine {
 		#end
 		
 	}
-	
-	
+
+	#if (cpp || neko || nodejs)
 	private static function findFont (name:String):Font {
-		
-		#if (cpp || neko || nodejs)
-		
+
+
 		for (registeredFont in Font.__registeredFonts) {
 			
 			if (registeredFont == null) continue;
@@ -186,14 +191,14 @@ class TextEngine {
 			return font;
 			
 		}
-		
-		#end
-		
+
 		return null;
 		
 	}
-	
-	
+
+	#end
+
+
 	private function getBounds ():Void {
 		
 		var padding = border ? 1 : 0;
@@ -202,10 +207,14 @@ class TextEngine {
 		bounds.height = height + padding;
 		
 	}
-	
-	
-	public static function getFont (format:TextFormat):String {
-		
+
+
+	public static function getFont (format:TextFormat):FontData {
+
+		var logicalFontName = format.font;
+		logicalFontName += format.bold ? " Bold" : "";
+		logicalFontName += format.italic ? " Italic" : "";
+
 		var font = format.italic ? "italic " : "normal ";
 		font += "normal ";
 		font += format.bold ? "bold " : "normal ";
@@ -220,9 +229,10 @@ class TextEngine {
 			default: "'" + format.font + "'";
 			
 		}
-		
-		return font;
-		
+		var fontData: Dynamic = Reflect.getProperty( @:privateAccess Assets.getLibrary("default"), "fontData" ).get( logicalFontName );
+
+		return {name:font, ascent:fontData.ascent, descent:fontData.descent };
+
 	}
 	
 	
@@ -699,11 +709,12 @@ class TextEngine {
 				currentFormat.__merge (formatRange.format);
 				
 				#if (js && html5)
-				
-				__context.font = getFont (currentFormat);
-				
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
+
+				var fontData = getFont (currentFormat);
+				__context.font = fontData.name;
+
+				ascent = currentFormat.size * fontData.ascent;
+				descent = currentFormat.size * fontData.descent;
 				leading = currentFormat.leading / 20;
 
 				heightValue = ascent + descent + leading;

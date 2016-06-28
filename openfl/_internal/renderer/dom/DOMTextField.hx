@@ -31,7 +31,7 @@ class DOMTextField {
 			
 			div = cast Browser.document.createElement ("div");
 			div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
-			div.style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+			div.style.setProperty ("font", TextEngine.getFont (textField.__textFormat).name, null);
 			div.style.setProperty ("pointer-events", "none", null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
@@ -136,8 +136,8 @@ class DOMTextField {
 						style.removeProperty ("border");
 						
 					}
-					
-					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+
+					style.setProperty ("font", TextEngine.getFont (textField.__textFormat).name, null);
 					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color, 6), null);
 					
 					if (textEngine.autoSize != TextFieldAutoSize.NONE) {

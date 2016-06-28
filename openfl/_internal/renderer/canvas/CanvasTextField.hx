@@ -203,9 +203,8 @@ class CanvasTextField {
 						}
 						
 					}
-					
-					context.textBaseline = "top";
-					//context.textBaseline = "alphabetic";
+
+					context.textBaseline = "alphabetic";
 					context.textAlign = "start";
 					
 					var scrollX = -textField.scrollH;
@@ -218,26 +217,18 @@ class CanvasTextField {
 					}
 					
 					var advance;
-					
-					// Hack, baseline "top" is not consistent across browsers
-					
+
 					var offsetY = 0.0;
-					var applyHack = ~/(iPad|iPhone|iPod)/g.match (Browser.window.navigator.userAgent);
 
 					for (group in textEngine.layoutGroups) {
 						
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
-						
-						context.font = TextEngine.getFont (group.format);
+						var fontData = TextEngine.getFont (group.format);
+						offsetY = fontData.ascent * group.format.size;
+						context.font = fontData.name;
 						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
-						
-						if (applyHack) {
-							
-							offsetY = group.format.size * 0.185;
-							
-						}
-						
+
 						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
