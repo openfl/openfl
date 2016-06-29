@@ -230,6 +230,10 @@ class TextEngine {
 			
 		}
 		var fontData: Dynamic = Reflect.getProperty( @:privateAccess Assets.getLibrary("default"), "fontData" ).get( logicalFontName );
+		if( fontData == null )
+		{
+			return {name:font, ascent:0.825, descent:0.175 };
+		}
 
 		return {name:font, ascent:fontData.ascent, descent:fontData.descent };
 
