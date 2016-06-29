@@ -625,7 +625,7 @@ class CanvasGraphics {
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
-					context.fillStyle = createBitmapFill (c.bitmap, true);
+					context.fillStyle = createBitmapFill (c.bitmap, c.repeat);
 					hasFill = true;
 					
 					if (c.matrix != null) {
