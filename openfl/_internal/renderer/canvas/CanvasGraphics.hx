@@ -103,8 +103,16 @@ class CanvasGraphics {
 			case RADIAL:
 				
 				if (matrix == null) matrix = new Matrix ();
-				var point = matrix.transformPoint (new Point (1638.4, 0));
-				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+				var squared_x_scale = matrix.a * matrix.a + matrix.b * matrix.b;
+				#if debug
+					var squared_y_scale = matrix.c * matrix.c + matrix.d * matrix.d;
+					
+					if ( Math.abs( squared_x_scale - squared_y_scale ) > 0.001 ) {
+						throw ":TODO: unsupported non uniform scale";
+					}
+				#end
+				var radius = Math.sqrt( squared_x_scale ) * 819.2;
+				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, radius);
 			
 			case LINEAR:
 				
