@@ -505,8 +505,6 @@ import openfl.Lib;
 	
 	public function setRenderToTexture (texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0, colorOutputIndex:Int = 0):Void {      
 		
-		// TODO : currently does not work (framebufferStatus always return zero)
-		
 		if (__framebuffer == null) {
 			
 			__framebuffer = GL.createFramebuffer ();
@@ -527,14 +525,17 @@ import openfl.Lib;
 		#elseif js
 		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
 		#else
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.__width, texture.__height);
+		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA4, texture.__width, texture.__height);
 		#end
-		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__glTexture, 0);
-		
-		GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
-		GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __renderbuffer);
 		
 		if (enableDepthAndStencil) {
+			
+			// TODO : currently does not work
+			
+			GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__glTexture, 0);
+			
+			GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
+			GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __renderbuffer);
 			
 			GL.enable (GL.DEPTH_TEST);
 			GL.enable (GL.STENCIL_TEST);
@@ -545,6 +546,7 @@ import openfl.Lib;
 		GL.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, texture.__width, texture.__height, 0, GL.RGBA, GL.UNSIGNED_BYTE, null);
 		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
 		GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
+		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__glTexture, 0);
 		
 		GL.viewport (0, 0, texture.__width, texture.__height);
 		
