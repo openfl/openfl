@@ -2,5 +2,4 @@
 -js ::OUTPUT_FILE::
 -cp ::OUTPUT_DIR::/haxe
 -D html5
---macro allowPackage("flash")
 -debug

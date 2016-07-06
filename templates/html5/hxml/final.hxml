@@ -2,7 +2,6 @@
 -js ::OUTPUT_FILE::
 -cp ::OUTPUT_DIR::/haxe
 -D html5
---macro allowPackage("flash")
 -dce full
 -D final
 -D js-flatten
