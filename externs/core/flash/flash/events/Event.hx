@@ -23,68 +23,46 @@ extern class Event {
 	@:noCompletion @:dox(hide) public static var CHANNEL_STATE (default, never):String;
 	#end
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var CLEAR (default, never):String;
-	#end
-	
+	@:require(flash10) public static var CLEAR (default, never):String;
 	public static var CLOSE (default, never):String;
 	public static var COMPLETE (default, never):String;
 	public static var CONNECT (default, never):String;
-	
 	@:require(flash11) public static var CONTEXT3D_CREATE (default, never):String;
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var COPY (default, never):String;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var CUT (default, never):String;
-	#end
-	
+	@:require(flash10) public static var COPY (default, never):String;
+	@:require(flash10) public static var CUT (default, never):String;
 	public static var DEACTIVATE (default, never):String;
 	public static var ENTER_FRAME (default, never):String;
 	
-	#if air
-	public static var EXITING : String;
+	#if (flash && air)
+	public static var EXITING (default, never):String;
 	#end
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var EXIT_FRAME (default, never):String;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var FRAME_CONSTRUCTED (default, never):String;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public static var FRAME_LABEL (default, never):String;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) public static var FULLSCREEN (default, never):String;
-	#end
-	
+	@:require(flash10) public static var EXIT_FRAME (default, never):String;
+	@:require(flash10) public static var FRAME_CONSTRUCTED (default, never):String;
+	@:require(flash11_3) public static var FRAME_LABEL (default, never):String;
+	public static var FULLSCREEN (default, never):String;
 	public static var ID3 (default, never):String;
 	public static var INIT (default, never):String;
 	public static var MOUSE_LEAVE (default, never):String;
-	public static var OPEN (default, never):String;
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var PASTE (default, never):String;
+	#if (flash && air)
+	public static var NETWORK_CHANGE (default, never):String;
 	#end
 	
+	public static var OPEN (default, never):String;
+	@:require(flash10) public static var PASTE (default, never):String;
 	public static var REMOVED (default, never):String;
 	public static var REMOVED_FROM_STAGE (default, never):String;
 	public static var RENDER (default, never):String;
 	public static var RESIZE (default, never):String;
 	public static var SCROLL (default, never):String;
 	public static var SELECT (default, never):String;
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var SELECT_ALL (default, never):String;
-	#end
-	
+	@:require(flash10) public static var SELECT_ALL (default, never):String;
 	public static var SOUND_COMPLETE (default, never):String;
+	
+	#if (flash && air)
+	public static var STANDARD_OUTPUT_CLOSE (default, never):String;
+	#end
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_3) public static var SUSPEND (default, never):String;
@@ -128,10 +106,6 @@ extern class Event {
 	public function stopPropagation ():Void;
 	public function toString ():String;
 	
-	#if (flash && air)
-	static var NETWORK_CHANGE : String;
-	static var STANDARD_OUTPUT_CLOSE : String;
-	#end
 }
 
 

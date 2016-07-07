@@ -749,6 +749,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		__broadcast (new Event (Event.ENTER_FRAME), true);
+		__broadcast (new Event (Event.EXIT_FRAME), true);
 		
 		if (__invalidated) {
 			
@@ -1425,6 +1426,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						__resize ();
 						
+						dispatchEvent (new Event (Event.FULLSCREEN));
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 						
 					}
@@ -1438,6 +1440,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						__resize ();
 						
+						dispatchEvent (new Event (Event.FULLSCREEN));
 						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 						
 					}
