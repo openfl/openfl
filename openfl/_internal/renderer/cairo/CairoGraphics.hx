@@ -54,7 +54,7 @@ class CairoGraphics {
 	private static var strokePattern:CairoPattern;
 	
 	
-	private static function closePath ():Void {
+	private static function closePath (strokeBefore:Bool = false):Void {
 		
 		if (strokePattern == null) {
 			
@@ -62,9 +62,21 @@ class CairoGraphics {
 			
 		}
 		
-		cairo.closePath ();
+		if (!strokeBefore) {
+			
+			cairo.closePath ();
+			
+		}
+		
 		cairo.source = strokePattern;
 		if (!hitTesting) cairo.strokePreserve ();
+		
+		if (strokeBefore) {
+			
+			cairo.closePath ();
+			
+		}
+		
 		cairo.newPath ();
 		
 	}
@@ -186,7 +198,7 @@ class CairoGraphics {
 		
 		cairo.newPath ();
 		playCommands (fillCommands, false);
-		fillCommands.clear();
+		fillCommands.clear ();
 		
 	}
 	
@@ -196,7 +208,7 @@ class CairoGraphics {
 		cairo.newPath ();
 		playCommands (strokeCommands, true);
 		cairo.closePath ();
-		strokeCommands.clear();
+		strokeCommands.clear ();
 		
 	}
 	
@@ -574,7 +586,7 @@ class CairoGraphics {
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
 						
-						closePath ();
+						closePath (c.thickness == null);
 						
 					}
 					
@@ -900,7 +912,7 @@ class CairoGraphics {
 					
 				} else if (closeGap && positionX == startX && positionY == startY) {
 					
-					cairo.closePath ();
+					closePath (true);
 					
 				}
 				

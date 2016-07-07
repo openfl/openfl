@@ -117,7 +117,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function clear ():Void {
 		
-		__commands.clear();
+		__commands.clear ();
 		__strokePadding = 0;
 		
 		if (__bounds != null) {

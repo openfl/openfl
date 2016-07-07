@@ -58,7 +58,7 @@ class CanvasGraphics {
 	#end
 	
 	
-	private static function closePath ():Void {
+	private static function closePath (strokeBefore:Bool = false):Void {
 		
 		#if (js && html5)
 		
@@ -68,8 +68,20 @@ class CanvasGraphics {
 			
 		}
 		
-		context.closePath ();
+		if (!strokeBefore) {
+			
+			context.closePath ();
+			
+		}
+		
 		context.stroke ();
+		
+		if (strokeBefore) {
+			
+			context.closePath ();
+			
+		}
+		
 		context.beginPath ();
 		
 		#end
@@ -207,7 +219,7 @@ class CanvasGraphics {
 		#if (js && html5)
 		context.beginPath ();
 		playCommands (fillCommands, false);
-		fillCommands.clear();
+		fillCommands.clear ();
 		#end
 		
 	}
@@ -219,7 +231,7 @@ class CanvasGraphics {
 		context.beginPath ();
 		playCommands (strokeCommands, true);
 		context.closePath ();
-		strokeCommands.clear();
+		strokeCommands.clear ();
 		#end
 		
 	}
@@ -577,9 +589,7 @@ class CanvasGraphics {
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
 						
-						context.closePath ();
-						if (!hitTesting) context.stroke ();
-						context.beginPath ();
+						closePath (c.thickness == null);
 						
 					}
 					
@@ -775,7 +785,7 @@ class CanvasGraphics {
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
-				context.closePath ();
+				closePath (true);
 				
 			}
 			
