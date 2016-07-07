@@ -989,6 +989,12 @@ class TextEngine {
 		var lineIndex = -1;
 		var offsetX = 0.0;
 		var group, lineLength;
+
+		var realWidth:Float = width;
+		if (autoSize != TextFieldAutoSize.NONE && !multiline)
+		{
+			realWidth = textWidth;
+		}
 		
 		for (i in 0...layoutGroups.length) {
 			
@@ -1002,9 +1008,9 @@ class TextEngine {
 					
 					case CENTER:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < realWidth - 4) {
 							
-							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							offsetX = Math.round ((realWidth - 4 - lineWidths[lineIndex]) / 2);
 							
 						} else {
 							
@@ -1014,9 +1020,9 @@ class TextEngine {
 					
 					case RIGHT:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < realWidth - 4) {
 							
-							offsetX = Math.round (width - 4 - lineWidths[lineIndex]);
+							offsetX = Math.round (realWidth - 4 - lineWidths[lineIndex]);
 							
 						} else {
 							
@@ -1026,7 +1032,7 @@ class TextEngine {
 					
 					case JUSTIFY:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < realWidth - 4) {
 							
 							lineLength = 1;
 							
@@ -1050,7 +1056,7 @@ class TextEngine {
 								
 								if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
 									
-									offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
+									offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (lineLength - 1);
 									
 									for (j in 1...lineLength) {
 										
