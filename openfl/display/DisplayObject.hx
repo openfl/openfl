@@ -91,6 +91,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __objectTransform:Transform;
 	private var __renderable:Bool;
 	private var __renderDirty:Bool;
+	private var __renderParent:DisplayObject;
 	private var __renderTransform:Matrix;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
@@ -609,32 +610,34 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 				
 			}
 			
-			if (parent != null) {
+			var __parent = (parent != null) ? parent : __renderParent;
+			
+			if (__parent != null) {
 				
 				#if !dom
 				
-				__worldAlpha = alpha * parent.__worldAlpha;
-				__worldColorTransform.__combine (parent.__worldColorTransform);
+				__worldAlpha = alpha * __parent.__worldAlpha;
+				__worldColorTransform.__combine (__parent.__worldColorTransform);
 				
 				if ((blendMode == null || blendMode == NORMAL)) {
 					
-					__blendMode = parent.__blendMode;
+					__blendMode = __parent.__blendMode;
 					
 				}
 				
 				#else
 				
-				var worldVisible = (parent.__worldVisible && visible);
+				var worldVisible = (__parent.__worldVisible && visible);
 				__worldVisibleChanged = (__worldVisible != worldVisible);
 				__worldVisible = worldVisible;
 				
-				var worldAlpha = alpha * parent.__worldAlpha;
+				var worldAlpha = alpha * __parent.__worldAlpha;
 				__worldAlphaChanged = (__worldAlpha != worldAlpha);
 				__worldAlpha = worldAlpha;
 				
-				if (parent.__worldClip != null) {
+				if (__parent.__worldClip != null) {
 					
-					worldClip = parent.__worldClip.clone ();
+					worldClip = __parent.__worldClip.clone ();
 					
 				}
 				

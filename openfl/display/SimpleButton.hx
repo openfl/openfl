@@ -276,8 +276,12 @@ class SimpleButton extends InteractiveObject {
 		overrideTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 		overrideTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 		
-		state.__updateTransforms (overrideTransform);
-		state.__updateChildren (true);
+		var cacheTransform = state.__transform;
+		state.__transform = overrideTransform;
+		
+		state.__update (false, true);
+		
+		state.__transform = cacheTransform;
 		
 		return cacheTransform;
 		
@@ -369,12 +373,19 @@ class SimpleButton extends InteractiveObject {
 	
 	private function set___currentState (value:DisplayObject):DisplayObject {
 		
+		if (__currentState != null) {
+			
+			__currentState.__renderParent = null;
+			
+		}
+		
 		if (value.parent != null) {
 			
 			value.parent.removeChild (value);
 			
 		}
 		
+		value.__renderParent = this;
 		return __currentState = value;
 		
 	}
