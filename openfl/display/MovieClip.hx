@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-class MovieClip extends Sprite {
+class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	
 	
 	public var currentFrame (get, null):Int;

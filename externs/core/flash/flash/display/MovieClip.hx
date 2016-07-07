@@ -1,7 +1,7 @@
 package flash.display; #if (!display && flash)
 
 
-extern class MovieClip extends Sprite {
+extern class MovieClip extends Sprite implements Dynamic {
 	
 	
 	public var currentFrame (default, null):Int;
