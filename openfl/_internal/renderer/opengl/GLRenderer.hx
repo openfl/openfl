@@ -60,7 +60,7 @@ class GLRenderer extends AbstractRenderer {
 	
 	public override function init (stage:Stage):Void {
 		
-		if (this.transparent) {
+		if (stage.__transparent) {
 			
 			gl.clearColor (0, 0, 0, 0);
 			
