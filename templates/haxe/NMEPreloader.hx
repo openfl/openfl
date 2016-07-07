@@ -56,7 +56,7 @@ class NMEPreloader extends Sprite {
 	
 	public function getBackgroundColor ():Int {
 		
-		return ::WIN_BACKGROUND::;
+		return ::if (WIN_BACKGROUND == null)::0::else::::WIN_BACKGROUND::::end::;
 		
 	}
 	
