@@ -149,6 +149,15 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
+		// TODO: Better fix?
+		// (this is caused by the "hitObject" logic in hit testing)
+		
+		while (stack.length > 1 && stack[stack.length - 1] == stack[stack.length - 2]) {
+			
+			stack.pop ();
+			
+		}
+		
 		return hitTest;
 		
 	}
