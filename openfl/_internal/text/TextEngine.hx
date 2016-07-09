@@ -912,9 +912,7 @@ class TextEngine {
 							
 						}
 						
-						if (wordWrap) {
-							breakLongWords(spaceIndex);
-						}
+						breakLongWords(spaceIndex);
 						
 						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
 						layoutGroup.advances = advances;
