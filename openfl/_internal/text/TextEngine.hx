@@ -758,7 +758,7 @@ class TextEngine {
 			
 			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
 			
-			while (tempWidth > width) {
+			while (offsetX + tempWidth > width - 2) {
 				
 				var i = 1;
 				
