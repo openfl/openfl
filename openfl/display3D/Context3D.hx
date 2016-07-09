@@ -523,7 +523,7 @@ import openfl.Lib;
 		
 		GL.bindRenderbuffer (GL.RENDERBUFFER, __renderbuffer);
 		#if (ios || tvos)
-		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
+		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.__width, texture.__height);
 		#elseif js
 		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.__width, texture.__height);
 		#else
