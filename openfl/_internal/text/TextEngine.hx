@@ -235,6 +235,10 @@ class TextEngine {
 			return {name:font, ascent:0.825, descent:0.175 };
 		}
 
+		if (fontData == null){
+			return {name:font, ascent: 1, descent:0.185};
+		}
+
 		return {name:font, ascent:fontData.ascent, descent:fontData.descent };
 
 	}
