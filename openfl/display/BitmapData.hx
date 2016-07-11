@@ -598,7 +598,6 @@ class BitmapData implements IBitmapDrawable {
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__fromImage (Image.fromCanvas (canvas));
 		bitmapData.image.transparent = transparent;
-		bitmapData.image.buffer.premultiplied = transparent;
 		return bitmapData;
 		
 	}
