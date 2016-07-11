@@ -117,6 +117,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __worldVisibleChanged:Bool;
 	private var __worldZ:Int;
 	private var __cacheAsBitmap:Bool = false;
+	private var __isCachingAsBitmap:Bool = false;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cacheAsBitmapSmooth:Bool = true;
 	private var __forceCacheAsBitmap:Bool;
@@ -503,7 +504,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		if (__cacheAsBitmap) {
+			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
+			__isCachingAsBitmap = false;
 			return;
 		}
 		
