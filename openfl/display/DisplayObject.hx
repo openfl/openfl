@@ -63,6 +63,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var name (get, set):String;
 	public var opaqueBackground:Null <Int>;
 	public var parent (default, null):DisplayObjectContainer;
+	public var cachedParent (default, null):DisplayObjectContainer;
 	public var root (get, null):DisplayObject;
 	public var rotation (get, set):Float;
 	public var scale9Grid:Rectangle;
@@ -156,12 +157,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
+		__cachedBitmapBounds = new Rectangle();
 		__clipDepth = 0;
 
 		#if dom
 		__worldVisible = true;
 		#end
-		
+
+		cachedParent = null;
+
 		name = "instance" + (++__instanceCount);
 		
 	}
@@ -243,10 +247,45 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public function localToGlobal (point:Point):Point {
 		
 		return __getWorldTransform ().transformPoint (point);
-		
+
 	}
-	
-	
+
+	private function resetCachedParent (currentParent:DisplayObject){
+		if (currentParent != null) {
+				if (__children != null) {
+					for (child in __children) {
+
+						child.resetCachedParent (currentParent);
+
+					}
+					cachedParent = cast ( currentParent );
+				} else {
+
+					cachedParent = cast ( currentParent );
+
+			}
+
+		} else {
+			if (__children != null) {
+				for (child in __children) {
+					if (child.cacheAsBitmap) {
+
+						child.resetCachedParent (child);
+
+					} else {
+
+						child.resetCachedParent (null);
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
 	private function __broadcast (event:Event, notifyChilden:Bool):Bool {
 		
 		if (__eventMap != null && hasEventListener (event.type)) {
@@ -715,7 +754,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateFilters = filters != null && filters.length > 0;
 			__renderDirty = true;
 			__worldRenderDirty++;
-			
+			if (cachedParent != null) {
+				this.cachedParent.__setRenderDirty();
+
+			}
+
 		}
 		
 	}
@@ -773,9 +816,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateMask (maskGraphics);
 			
 		}
-		
-		if (!transformOnly && __cacheAsBitmap) {
-			
+
+		if (!transformOnly && cacheAsBitmap) {
+
 			// we need to update the bounds
 			if (__updateCachedBitmap || __updateFilters) {
 				
@@ -1076,10 +1119,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_cacheAsBitmap (value:Bool):Bool {
 		
 		__setRenderDirty ();
-		return __cacheAsBitmap = __forceCacheAsBitmap ? true : value;
-		
+		if (this.cachedParent == null) {
+		if (value) {
+
+				resetCachedParent (this);
+
+		} else {
+
+				resetCachedParent (this.cachedParent);
+
+		}
+			
 	}
 	
+		return 		__cacheAsBitmap = __forceCacheAsBitmap ? true : value;
+
+	}
 	
 	private function get_cacheAsBitmapMatrix ():Matrix {
 		
@@ -1131,14 +1186,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			__filters = value;
 			__forceCacheAsBitmap = true;
-			__cacheAsBitmap = true;
+			cacheAsBitmap = true;
 			__updateFilters = true;
 			
 		} else {
 			
 			__filters = null;
 			__forceCacheAsBitmap = false;
-			__cacheAsBitmap = false;
+			cacheAsBitmap = false;
 			__updateFilters = false;
 			
 		}
