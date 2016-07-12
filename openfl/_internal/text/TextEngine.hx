@@ -777,6 +777,8 @@ class TextEngine {
 					
 				}
 				
+				if (i == 0) i = 1;
+				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, textIndex + i);
 				layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
 				layoutGroup.offsetX = offsetX;
