@@ -227,7 +227,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	private function __broadcast (event:Event, notifyChilden:Bool):Bool {
 		
-		if (__eventMap != null && hasEventListener (event.type)) {
+		if (hasEventListener (event.type)) {
 			
 			var result = super.__dispatchEvent (event);
 			
