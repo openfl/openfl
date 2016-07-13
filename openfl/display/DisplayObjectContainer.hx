@@ -843,7 +843,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (this.stage != null) {
 				
 				__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
-				
+				__releaseResources();
+
 			}
 			
 			this.stage = stage;

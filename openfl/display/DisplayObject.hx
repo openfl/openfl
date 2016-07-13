@@ -669,7 +669,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 				
 				dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
-				
+
+				__releaseResources();
+
 			}
 			
 			this.stage = stage;
@@ -683,12 +685,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 	}
-	
-	
+
+	private function __releaseResources ():Void {
+
+		if (__cachedBitmap != null) {
+			__cachedBitmap.dispose();
+			__cachedBitmap = null;
+		}
+	}
+
+
 	private inline function __setRenderDirty ():Void {
-		
+
 		if (!__renderDirty) {
-			
+
 			__updateCachedBitmap = true;
 			__updateFilters = filters != null && filters.length > 0;
 			__renderDirty = true;
