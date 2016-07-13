@@ -167,7 +167,7 @@ class GLTilemap {
 			if (tileData.bitmapData != cacheBitmapData || i == count - 1) {
 				
 				gl.bindTexture (gl.TEXTURE_2D, cacheBitmapData.getTexture (gl));
-				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, i * 6);
+				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1) * 6);
 				
 				cacheBitmapData = tileData.bitmapData;
 				lastIndex = i;
