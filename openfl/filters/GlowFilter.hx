@@ -74,7 +74,7 @@ import openfl.geom.Rectangle;
 			__glowShader.uColor[1] = ((color >> 8) & 0xFF) / 255;
 			__glowShader.uColor[2] = (color & 0xFF) / 255;
 			__glowShader.uColor[3] = alpha;
-			__glowShader.uStrength = strength;
+			__glowShader.uStrength = (pass == __passes - 2) ? strength : 1.0;
 			
 			return __glowShader;
 			
