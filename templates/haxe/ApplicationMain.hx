@@ -60,7 +60,11 @@ class ApplicationMain {
 		var result = app.exec ();
 		
 		#if (sys && !nodejs && !emscripten)
-		Sys.exit (result);
+		if (result != 0) {
+			
+			Sys.exit (result);
+			
+		}
 		#end
 		
 	}
@@ -144,7 +148,7 @@ class ApplicationMain {
 		
 		#if (js && html5)
 		#if (munit || utest)
-		openfl.Lib.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
+		lime.system.System.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 		#end
 		#else
 		create ();
@@ -204,7 +208,7 @@ class ApplicationMain {
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		var loader = new neko.vm.Loader (untyped $loader);
-		loader.addPath (haxe.io.Path.directory (Sys.executablePath ()));
+		loader.addPath (haxe.io.Path.directory (#if (haxe_ver > 3.3) Sys.programPath () #else Sys.executablePath () #end));
 		loader.addPath ("./");
 		loader.addPath ("@executable_path/");
 		

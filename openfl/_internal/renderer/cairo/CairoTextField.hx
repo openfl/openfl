@@ -12,36 +12,53 @@ import lime.graphics.cairo.CairoImageSurface;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Matrix)
 @:access(openfl.text.TextField)
 
 
 class CairoTextField {
 	
 	
-	public static function render (textField:TextField, renderSession:RenderSession) {
+	public static function render (textField:TextField, renderSession:RenderSession, transform:Matrix) {
 		
 		#if lime_cairo
-		if (!textField.__dirty) return;
-		
-		textField.__updateLayout ();
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
-		
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
+		
+		if (textField.__dirty) {
+			
+			textField.__updateLayout ();
+			
+			if (graphics.__bounds == null) {
+				
+				graphics.__bounds = new Rectangle ();
+				
+			}
+			
+			graphics.__bounds.copyFrom (bounds);
+			
+		}
+		
+		graphics.__update ();
+		
+		var width = graphics.__width;
+		var height = graphics.__height;
 		
 		if (cairo != null) {
 			
 			var surface:CairoImageSurface = cast cairo.target;
 			
-			if (Math.ceil (bounds.width) != surface.width || Math.ceil (bounds.height) != surface.height) {
+			if (width != surface.width || height != surface.height) {
 				
 				graphics.__cairo = null;
 				graphics.__visible = false;
@@ -51,23 +68,27 @@ class CairoTextField {
 			
 		}
 		
-		if (bounds.width <= 0 || bounds.height <= 0) return;
+		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__dirty)) {
+			
+			textField.__dirty = false;
+			return;
+			
+		}
 		
 		if (cairo == null) {
 			
-			var bitmap = new BitmapData (Math.ceil (bounds.width), Math.ceil (bounds.height), true, 0);
+			var bitmap = new BitmapData (width, height, true, 0);
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
 			graphics.__visible = true;
 			
 			graphics.__bitmap = bitmap;
-			graphics.__bounds = new Rectangle (bounds.x, bounds.y, bounds.width, bounds.height);
 			
 			cairo = graphics.__cairo;
 			
 			var options = new CairoFontOptions ();
 			
-			if (textEngine.antiAliasType == ADVANCED && textEngine.gridFitType == PIXEL) {
+			if (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400) {
 				
 				options.hintStyle = CairoHintStyle.NONE;
 				options.hintMetrics = CairoHintMetrics.OFF;
@@ -82,6 +103,19 @@ class CairoTextField {
 			}
 			
 			cairo.fontOptions = options;
+			
+		}
+		
+		if (renderSession.roundPixels) {
+			
+			var matrix = graphics.__renderTransform.__toMatrix3 ();
+			matrix.tx = Math.round (matrix.tx);
+			matrix.ty = Math.round (matrix.ty);
+			cairo.matrix = matrix;
+			
+		} else {
+			
+			cairo.matrix = graphics.__renderTransform.__toMatrix3 ();
 			
 		}
 		
@@ -198,6 +232,26 @@ class CairoTextField {
 					cairo.setFontSize (size);
 					
 					cairo.moveTo (group.offsetX + scrollX, group.offsetY + group.ascent + scrollY);
+					//cairo.translate (0, 0);
+					//
+					//var glyphs = [];
+					//var x:Float = group.offsetX + scrollX;
+					//var y:Float = group.offsetY + group.ascent + scrollY;
+					//var j = 0;
+					//
+					//for (i in group.startIndex...group.endIndex) {
+						//
+						//glyphs.push (new lime.graphics.cairo.CairoGlyph (font.getGlyph (text.charAt (i)), x + 0.5, y + 0.5));
+						//
+						//if (group.advances.length > j) {
+							//x += group.advances[j];
+							//j++;
+						//}
+						//
+					//}
+					//
+					//cairo.showGlyphs (glyphs);
+					
 					cairo.showText (text.substring (group.startIndex, group.endIndex));
 					
 					if (textField.__caretIndex > -1 && textEngine.selectable) {
@@ -279,6 +333,7 @@ class CairoTextField {
 		}
 		
 		graphics.__bitmap.image.dirty = true;
+		graphics.__bitmap.image.version++;
 		textField.__dirty = false;
 		graphics.__dirty = false;
 		

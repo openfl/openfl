@@ -1,41 +1,51 @@
 package openfl.display3D;
 
 
-import openfl.gl.GL;
-
-
-abstract Context3DStencilAction(Int) {
+@:enum abstract Context3DStencilAction(Null<Int>) {
 	
+	public var DECREMENT_SATURATE = 0;
+	public var DECREMENT_WRAP = 1;
+	public var INCREMENT_SATURATE = 2;
+	public var INCREMENT_WRAP = 3;
+	public var INVERT = 4;
+	public var KEEP = 5;
+	public var SET = 6;
+	public var ZERO = 7;
 	
-	public static inline var DECREMENT_SATURATE = GL.DECR;
-	public static inline var DECREMENT_WRAP = GL.DECR_WRAP;
-	public static inline var INCREMENT_SATURATE = GL.INCR;
-	public static inline var INCREMENT_WRAP = GL.INCR_WRAP;
-	public static inline var INVERT = GL.INVERT;
-	public static inline var KEEP = GL.KEEP;
-	public static inline var SET = GL.REPLACE;
-	public static inline var ZERO = GL.ZERO;
-	
-	
-	inline function new (a:Int) {
+	@:from private static function fromString (value:String):Context3DStencilAction {
 		
-		this = a;
-		
-	}
-	
-	
-	@:from public static inline function fromInt (s:Int) {
-		
-		return new Context3DStencilAction(s);
-		
-	}
-	
-	
-	@:to public inline function toInt ():Int {
-		
-		return this;
+		return switch (value) {
+			
+			case "decrementSaturate": DECREMENT_SATURATE;
+			case "decrementWrap": DECREMENT_WRAP;
+			case "incrementSaturate": INCREMENT_SATURATE;
+			case "incrementWrap": INCREMENT_WRAP;
+			case "invert": INVERT;
+			case "keep": KEEP;
+			case "set": SET;
+			case "zero": ZERO;
+			default: null;
+			
+		}
 		
 	}
 	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case Context3DStencilAction.DECREMENT_SATURATE: "decrementSaturate";
+			case Context3DStencilAction.DECREMENT_WRAP: "decrementWrap";
+			case Context3DStencilAction.INCREMENT_SATURATE: "incrementSaturate";
+			case Context3DStencilAction.INCREMENT_WRAP: "incrementWrap";
+			case Context3DStencilAction.INVERT: "invert";
+			case Context3DStencilAction.KEEP: "keep";
+			case Context3DStencilAction.SET: "set";
+			case Context3DStencilAction.ZERO: "zero";
+			default: null;
+			
+		}
+		
+	}
 	
 }

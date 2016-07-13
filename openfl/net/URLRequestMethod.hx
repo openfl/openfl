@@ -1,4 +1,4 @@
-package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net;
 
 
 @:enum abstract URLRequestMethod(Null<Int>) {
@@ -43,8 +43,3 @@ package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
 	}
 	
 }
-
-
-#else
-typedef URLRequestMethod = openfl._legacy.net.URLRequestMethod;
-#end

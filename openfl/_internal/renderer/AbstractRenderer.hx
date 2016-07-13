@@ -3,6 +3,7 @@ package openfl._internal.renderer;
 
 import openfl.display.Shape;
 import openfl.display.Stage;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 
@@ -25,6 +26,13 @@ class AbstractRenderer {
 	}
 	
 	
+	public function init (stage:Stage):Void {
+		
+		
+		
+	}
+	
+	
 	public function render (stage:Stage):Void {
 		
 		
@@ -38,7 +46,7 @@ class AbstractRenderer {
 		
 	}
 	
-
+	
 	public function setViewport (x:Int, y:Int, width:Int, height:Int):Void {
 		
 		
@@ -48,7 +56,8 @@ class AbstractRenderer {
 	
 	public function resize (width:Int, height:Int):Void {
 		
-		
+		this.width = width;
+		this.height = height;
 		
 	}
 	

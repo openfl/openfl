@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract LineScaleMode(Null<Int>) {
@@ -37,8 +37,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef LineScaleMode = openfl._legacy.display.LineScaleMode;
-#end

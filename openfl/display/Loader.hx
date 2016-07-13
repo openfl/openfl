@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.system.BackgroundWorker;
@@ -214,8 +214,3 @@ class Loader extends DisplayObjectContainer {
 	
 	
 }
-
-
-#else
-typedef Loader = openfl._legacy.display.Loader;
-#end

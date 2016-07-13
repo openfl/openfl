@@ -22,9 +22,7 @@ class ErrorEvent extends TextEvent {
 		var event = new ErrorEvent (type, bubbles, cancelable, text, errorID);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

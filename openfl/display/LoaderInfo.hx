@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl.events.EventDispatcher;
@@ -71,8 +71,3 @@ class LoaderInfo extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef LoaderInfo = openfl._legacy.display.LoaderInfo;
-#end

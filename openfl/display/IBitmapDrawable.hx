@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl._internal.renderer.RenderSession;
@@ -12,7 +12,6 @@ interface IBitmapDrawable {
 	public var __worldColorTransform:ColorTransform;
 	
 	private var __blendMode:BlendMode;
-	private var __cacheAsBitmap:Bool;
 	
 	public function __renderCairo (renderSession:RenderSession):Void;
 	public function __renderCairoMask (renderSession:RenderSession):Void;
@@ -25,8 +24,3 @@ interface IBitmapDrawable {
 	public function __updateMask (maskGraphics:Graphics):Void;
 	
 }
-
-
-#else
-typedef IBitmapDrawable = openfl._legacy.display.IBitmapDrawable;
-#end

@@ -23,9 +23,7 @@ class UncaughtErrorEvent extends ErrorEvent {
 		var event = new UncaughtErrorEvent (type, bubbles, cancelable, error);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

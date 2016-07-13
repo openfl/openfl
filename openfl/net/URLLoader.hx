@@ -1,4 +1,4 @@
-package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net;
 
 
 import lime.app.Event;
@@ -628,8 +628,3 @@ class URLLoader extends EventDispatcher {
 
 
 typedef XMLHttpRequestProgressEvent = Dynamic;
-
-
-#else
-typedef URLLoader = openfl._legacy.net.URLLoader;
-#end

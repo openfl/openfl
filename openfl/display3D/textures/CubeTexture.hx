@@ -1,12 +1,10 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.opengl.GL;
+import lime.graphics.opengl.GLTexture;
 import openfl.display3D.Context3D;
-import openfl.gl.GL;
-import openfl.gl.GLTexture;
-import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
-import openfl.utils.UInt8Array;
 
 using openfl.display.BitmapData;
 
@@ -14,79 +12,71 @@ using openfl.display.BitmapData;
 @:final class CubeTexture extends TextureBase {
 	
 	
-	public var size : Int;
-	public var _textures:Array<GLTexture>;
-	public var mipmapsGenerated:Bool;
+	private var __size:Int;
+	private var __textures:Array<GLTexture>;
+	private var __mipmapsGenerated:Bool;
 	
 	
-	public function new (context:Context3D, glTexture:GLTexture, size:Int) {
+	private function new (context:Context3D, glTexture:GLTexture, size:Int) {
 		
 		super (context, glTexture, size, size);
-		this.size = size;
-		this.mipmapsGenerated = false;
 		
-		this._textures = [];
+		__size = size;
+		__mipmapsGenerated = false;
+		
+		__textures = [];
 		
 		for (i in 0...6) {
 			
-			this._textures[i] = GL.createTexture ();
+			__textures[i] = GL.createTexture ();
 			
 		}
 		
 	}
 	
 	
-	public function glTextureAt (index:Int):GLTexture {
-		
-		return this._textures[index];
-		
-	}
-	
-	
-	public function uploadCompressedTextureFromByteArray (data:ByteArray, byteArrayOffset:Int, async:Bool = false):Void {
+	public function uploadCompressedTextureFromByteArray (data:ByteArray, byteArrayOffset:UInt, async:Bool = false):Void {
 		
 		// TODO
 		
 	}
 	
 	
-	public function uploadFromBitmapData (bitmapData:BitmapData, side:Int, miplevel:Int = 0):Void {
+	public function uploadFromBitmapData (source:BitmapData, side:UInt, miplevel:UInt = 0):Void {
 		
-		// TODO: Support upload from UInt8Array directly
+		var data = source.image.data;
 		
-		#if openfl_legacy
-		var source = new UInt8Array (BitmapData.getRGBAPixels (bitmapData));
-		#else
-		var source = bitmapData.image.data;
+		#if (js && html5)
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 0);
 		#end
 		
-		GL.bindTexture (GL.TEXTURE_CUBE_MAP, glTexture);
+		GL.bindTexture (GL.TEXTURE_CUBE_MAP, __glTexture);
 		
 		switch (side) {
 			
 			case 0:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 			
 			case 1:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 			
 			case 2:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 			
 			case 3:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 			
 			case 4:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 			
 			case 5:
 				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, GL.RGBA, bitmapData.width, bitmapData.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source);
+				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 			
 			default:
 				
@@ -99,9 +89,16 @@ using openfl.display.BitmapData;
 	}
 	
 	
-	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, side:Int, miplevel:Int = 0):Void {
+	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void {
 		
 		// TODO
+		
+	}
+	
+	
+	private function __glTextureAt (index:Int):GLTexture {
+		
+		return __textures[index];
 		
 	}
 	

@@ -1,4 +1,4 @@
-package openfl.events; #if !openfl_legacy
+package openfl.events;
 
 
 interface IEventDispatcher {
@@ -10,8 +10,3 @@ interface IEventDispatcher {
 	public function willTrigger (type:String):Bool;
 	
 }
-
-
-#else
-typedef IEventDispatcher = openfl._legacy.events.IEventDispatcher;
-#end

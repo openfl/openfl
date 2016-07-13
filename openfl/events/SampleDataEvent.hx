@@ -30,9 +30,7 @@ class SampleDataEvent extends Event {
 		var event = new SampleDataEvent (type, bubbles, cancelable);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

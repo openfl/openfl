@@ -1,4 +1,4 @@
-package openfl.desktop; #if !openfl_legacy
+package openfl.desktop;
 
 
 @:enum abstract ClipboardTransferMode(Null<Int>) {
@@ -37,6 +37,3 @@ package openfl.desktop; #if !openfl_legacy
 	}
 	
 }
-
-
-#end

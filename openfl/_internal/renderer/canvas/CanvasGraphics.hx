@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -31,7 +32,6 @@ import js.html.ImageData;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
-@:access(openfl.display.Tilesheet)
 
 
 class CanvasGraphics {
@@ -58,7 +58,7 @@ class CanvasGraphics {
 	#end
 	
 	
-	private static function closePath ():Void {
+	private static function closePath (strokeBefore:Bool = false):Void {
 		
 		#if (js && html5)
 		
@@ -68,8 +68,20 @@ class CanvasGraphics {
 			
 		}
 		
-		context.closePath ();
+		if (!strokeBefore) {
+			
+			context.closePath ();
+			
+		}
+		
 		context.stroke ();
+		
+		if (strokeBefore) {
+			
+			context.closePath ();
+			
+		}
+		
 		context.beginPath ();
 		
 		#end
@@ -81,7 +93,7 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		bitmap.__sync ();
+		ImageCanvasUtil.convertToCanvas (bitmap.image);
 		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
 		#else
@@ -207,7 +219,7 @@ class CanvasGraphics {
 		#if (js && html5)
 		context.beginPath ();
 		playCommands (fillCommands, false);
-		fillCommands.clear();
+		fillCommands.clear ();
 		#end
 		
 	}
@@ -219,7 +231,7 @@ class CanvasGraphics {
 		context.beginPath ();
 		playCommands (strokeCommands, true);
 		context.closePath ();
-		strokeCommands.clear();
+		strokeCommands.clear ();
 		#end
 		
 	}
@@ -228,7 +240,10 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-		
+
+		bounds = graphics.__bounds;
+		CanvasGraphics.graphics = graphics;
+
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
 			return false;
@@ -574,9 +589,7 @@ class CanvasGraphics {
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
 						
-						context.closePath ();
-						if (!hitTesting) context.stroke ();
-						context.beginPath ();
+						closePath (c.thickness == null);
 						
 					}
 					
@@ -772,7 +785,7 @@ class CanvasGraphics {
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
-				context.closePath ();
+				closePath (true);
 				
 			}
 			
@@ -809,23 +822,23 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, parentTransform:Matrix):Void {
 		
 		#if (js && html5)
 		
-		// TODO: Handle world transform if we want to use direct render
+		graphics.__update ();
 		
-		//var directRender = (graphics.__hardware && renderSession.context != null);
-		var directRender = false;
-		
-		if (graphics.__dirty || directRender) {
+		if (graphics.__dirty) {
 			
 			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
 			bounds = graphics.__bounds;
 			
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
+			var width = graphics.__width;
+			var height = graphics.__height;
+			
+			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1) {
 				
 				graphics.__canvas = null;
 				graphics.__context = null;
@@ -833,26 +846,20 @@ class CanvasGraphics {
 				
 			} else {
 				
-				if (directRender) {
+				if (graphics.__canvas == null) {
 					
-					context = cast renderSession.context;
-					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
-					
-				} else {
-					
-					if (graphics.__canvas == null) {
-						
-						graphics.__canvas = cast Browser.document.createElement ("canvas");
-						graphics.__context = graphics.__canvas.getContext ("2d");
-						
-					}
-					
-					context = graphics.__context;
-					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
+					graphics.__canvas = cast Browser.document.createElement ("canvas");
+					graphics.__context = graphics.__canvas.getContext ("2d");
 					
 				}
+				
+				context = graphics.__context;
+				
+				graphics.__canvas.width = width;
+				graphics.__canvas.height = height;
+				
+				var transform = graphics.__renderTransform;
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				
 				fillCommands.clear ();
 				strokeCommands.clear ();
@@ -1124,135 +1131,6 @@ class CanvasGraphics {
 								context.restore ();
 								
 								i += 3;
-								
-							}
-						
-						case DRAW_TILES:
-							
-							var c = data.readDrawTiles ();
-							
-							var useScale = (c.flags & Graphics.TILE_SCALE) > 0;
-							var offsetX = bounds.x;
-							var offsetY = bounds.y;
-							
-							var useRotation = (c.flags & Graphics.TILE_ROTATION) > 0;
-							var useTransform = (c.flags & Graphics.TILE_TRANS_2x2) > 0;
-							var useRGB = (c.flags & Graphics.TILE_RGB) > 0;
-							var useAlpha = (c.flags & Graphics.TILE_ALPHA) > 0;
-							var useRect = (c.flags & Graphics.TILE_RECT) > 0;
-							var useOrigin = (c.flags & Graphics.TILE_ORIGIN) > 0;
-							var useBlendAdd = (c.flags & Graphics.TILE_BLEND_ADD) > 0;
-							
-							if (useTransform) { useScale = false; useRotation = false; }
-							
-							var scaleIndex = 0;
-							var rotationIndex = 0;
-							var rgbIndex = 0;
-							var alphaIndex = 0;
-							var transformIndex = 0;
-							
-							var numValues = 3;
-							
-							if (useRect) { numValues = useOrigin ? 8 : 6; }
-							if (useScale) { scaleIndex = numValues; numValues ++; }
-							if (useRotation) { rotationIndex = numValues; numValues ++; }
-							if (useTransform) { transformIndex = numValues; numValues += 4; }
-							if (useRGB) { rgbIndex = numValues; numValues += 3; }
-							if (useAlpha) { alphaIndex = numValues; numValues ++; }
-							
-							var totalCount = c.tileData.length;
-							if (c.count >= 0 && totalCount > c.count) totalCount = c.count;
-							var itemCount = Std.int (totalCount / numValues);
-							var index = 0;
-							
-							var rect = null;
-							var center = null;
-							var previousTileID = -1;
-							
-							var surface:Dynamic;
-							c.sheet.__bitmap.__sync ();
-							surface = c.sheet.__bitmap.image.src;
-							
-							if (useBlendAdd) {
-								
-								context.globalCompositeOperation = "lighter";
-								
-							}
-							
-							while (index < totalCount) {
-								
-								var tileID = (!useRect) ? Std.int (c.tileData[index + 2]) : -1;
-								
-								if (!useRect && tileID != previousTileID) {
-									
-									rect = c.sheet.__tileRects[tileID];
-									center = c.sheet.__centerPoints[tileID];
-									
-									previousTileID = tileID;
-									
-								} else if (useRect) {
-									
-									rect = c.sheet.__rectTile;
-									rect.setTo (c.tileData[index + 2], c.tileData[index + 3], c.tileData[index + 4], c.tileData[index + 5]);
-									center = c.sheet.__point;
-									
-									if (useOrigin) {
-										
-										center.setTo (c.tileData[index + 6], c.tileData[index + 7]);
-										
-									} else {
-										
-										center.setTo (0, 0);
-										
-									}
-									
-								}
-								
-								if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
-									
-									context.save ();
-									context.translate (c.tileData[index] - offsetX, c.tileData[index + 1] - offsetY);
-									
-									if (useRotation) {
-										
-										context.rotate (c.tileData[index + rotationIndex]);
-										
-									}
-									
-									var scale = 1.0;
-									
-									if (useScale) {
-										
-										scale = c.tileData[index + scaleIndex];
-										
-									}
-									
-									if (useTransform) {
-										
-										context.transform (c.tileData[index + transformIndex], c.tileData[index + transformIndex + 1], c.tileData[index + transformIndex + 2], c.tileData[index + transformIndex + 3], 0, 0);
-										
-									}
-									
-									if (useAlpha) {
-										
-										context.globalAlpha = c.tileData[index + alphaIndex];
-										
-									}
-									
-									context.imageSmoothingEnabled = c.smooth;
-									
-									context.drawImage (surface, rect.x, rect.y, rect.width, rect.height, -center.x * scale, -center.y * scale, rect.width * scale, rect.height * scale);
-									context.restore ();
-									
-								}
-								
-								index += numValues;
-								
-							}
-							
-							if (useBlendAdd) {
-								
-								context.globalCompositeOperation = "source-over";
 								
 							}
 						

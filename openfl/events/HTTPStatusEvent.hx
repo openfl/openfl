@@ -1,4 +1,4 @@
-package openfl.events; #if !openfl_legacy
+package openfl.events;
 
 
 class HTTPStatusEvent extends Event {
@@ -28,9 +28,7 @@ class HTTPStatusEvent extends Event {
 		var event = new HTTPStatusEvent (type, bubbles, status, redirected);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}
@@ -44,8 +42,3 @@ class HTTPStatusEvent extends Event {
 	
 	
 }
-
-
-#else
-typedef HTTPStatusEvent = openfl._legacy.events.HTTPStatusEvent;
-#end

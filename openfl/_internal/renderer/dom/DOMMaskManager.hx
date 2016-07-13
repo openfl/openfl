@@ -40,6 +40,19 @@ class DOMMaskManager extends AbstractMaskManager {
 	}
 	
 	
+	public override function pushObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+		
+		if (object.__mask != null) {
+			
+			renderSession.maskManager.pushMask (object.__mask);
+			
+		}
+		
+		// TODO: scrollRect
+		
+	}
+	
+	
 	public override function pushRect (rect:Rectangle, transform:Matrix):Void {
 		
 		//var context = renderSession.context;
@@ -57,6 +70,17 @@ class DOMMaskManager extends AbstractMaskManager {
 	public override function popMask ():Void {
 		
 		//renderSession.context.restore ();
+		
+	}
+	
+	
+	public override function popObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
+		
+		if (object.__mask != null) {
+			
+			renderSession.maskManager.popMask ();
+			
+		}
 		
 	}
 	

@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoBitmap;
@@ -23,7 +23,7 @@ import js.html.ImageElement;
 class Bitmap extends DisplayObject {
 	
 	
-	public var bitmapData:BitmapData;
+	public var bitmapData (default, set):BitmapData;
 	public var pixelSnapping:PixelSnapping;
 	public var smoothing:Bool;
 	
@@ -148,13 +148,7 @@ class Bitmap extends DisplayObject {
 	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
-		if (__cacheAsBitmap) {
-			__cacheGL(renderSession);
-			return;
-		}
-		__preRenderGL (renderSession);
 		GLBitmap.render (this, renderSession);
-		__postRenderGL (renderSession);
 		
 	}
 	
@@ -188,6 +182,21 @@ class Bitmap extends DisplayObject {
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_bitmapData (value:BitmapData):BitmapData {
+		
+		bitmapData = value;
+		
+		if (__filters != null && __filters.length > 0) {
+			
+			//__updateFilters = true;
+			
+		}
+		
+		return bitmapData;
+		
+	}
 	
 	
 	private override function get_height ():Float {
@@ -255,8 +264,3 @@ class Bitmap extends DisplayObject {
 	
 	
 }
-
-
-#else
-typedef Bitmap = openfl._legacy.display.Bitmap;
-#end

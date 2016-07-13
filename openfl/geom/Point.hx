@@ -1,4 +1,4 @@
-package openfl.geom; #if !openfl_legacy
+package openfl.geom;
 
 
 import lime.math.Vector2;
@@ -140,8 +140,3 @@ class Point {
 	
 	
 }
-
-
-#else
-typedef Point = openfl._legacy.geom.Point;
-#end

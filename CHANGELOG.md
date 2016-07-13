@@ -1,3 +1,28 @@
+4.0.0 (06/08/2016)
+------------------
+
+* Rewrote the OpenGL renderer for simplicity and performance
+* Implemented WebGL as the default on HTML5, -Dcanvas/-Ddom still available
+* Implemented upscaling in openfl.display.Graphics for better visual quality
+* Committed to official support of Stage3D, initial work to conform to API
+* Reduced the memory use of off-screen display list objects
+* Removed the legacy OpenFL 2.x backend
+* Added support for letterboxing when window.resizable = false on mobile
+* Added improved Tilemap support, currently in beta
+* Added Event.EXIT_FRAME and Event.FULLSCREEN events
+* Added m4a support to HTML5
+* Added support for ShaderFilter on Bitmap, TextField and Tilemap
+* Updated the Tilemap API with scale, rotation and transform support
+* Updated the BitmapData class to better handle WebGL
+* Improved support for textField.htmlText
+* Improved support for scrollRects
+* Improved the behavior of SimpleButton events and alpha
+* Improved code completion support
+* Fixed the default Windows serif bold font path
+* Fixed issues with bitmapData draw and copyPixels
+* Many other minor fixes
+
+
 3.6.1 (03/28/2016)
 ------------------
 

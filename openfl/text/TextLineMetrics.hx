@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 class TextLineMetrics {
@@ -25,8 +25,3 @@ class TextLineMetrics {
 	
 	
 }
-
-
-#else
-typedef TextLineMetrics = openfl._legacy.text.TextLineMetrics;
-#end

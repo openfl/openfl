@@ -1,37 +1,39 @@
 package openfl.display3D;
 
 
-import openfl.gl.GL;
-
-
-abstract Context3DTriangleFace(Int) {
+@:enum abstract Context3DTriangleFace(Null<Int>) {
 	
+	public var BACK = 0;
+	public var FRONT = 1;
+	public var FRONT_AND_BACK = 2;
+	public var NONE = 3;
 	
-	inline public static var BACK = GL.FRONT;
-	inline public static var FRONT = GL.BACK;
-	inline public static var FRONT_AND_BACK = GL.FRONT_AND_BACK;
-	inline public static var NONE = 0;
-	
-	
-	inline function new (a:Int) {
+	@:from private static function fromString (value:String):Context3DTriangleFace {
 		
-		this = a;
-		
-	}
-	
-	
-	@:from public static inline function fromInt (s:Int) {
-		
-		return new Context3DTriangleFace (s);
+		return switch (value) {
+			
+			case "back": BACK;
+			case "front": FRONT;
+			case "frontAndBack": FRONT_AND_BACK;
+			case "none": NONE;
+			default: null;
+			
+		}
 		
 	}
 	
-	
-	@:to public inline function toInt ():Int {
+	@:to private static function toString (value:Int):String {
 		
-		return this;
+		return switch (value) {
+			
+			case Context3DTriangleFace.BACK: "back";
+			case Context3DTriangleFace.FRONT: "front";
+			case Context3DTriangleFace.FRONT_AND_BACK: "frontAndBack";
+			case Context3DTriangleFace.NONE: "none";
+			default: null;
+			
+		}
 		
 	}
-	
 	
 }

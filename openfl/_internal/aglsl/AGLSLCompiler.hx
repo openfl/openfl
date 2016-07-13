@@ -4,6 +4,8 @@ package openfl._internal.aglsl;
 import openfl.utils.AGALMiniAssembler; 
 import openfl.utils.ByteArray;
 
+@:access(openfl.utils.AGALMiniAssembler)
+
 
 class AGLSLCompiler {
 	
@@ -26,17 +28,18 @@ class AGLSLCompiler {
 		var concatSource:String;
 		
 		switch (programType) {
+			
 			case "vertex":
 				
 				concatSource = "part vertex 1 \n" + source + "\nendpart\n";
-				agalMiniAssembler.assemble (concatSource);
-				data = agalMiniAssembler.r.get ("vertex").data;
+				agalMiniAssembler.__assemble (concatSource);
+				data = agalMiniAssembler.__r.get ("vertex").data;
 			
 			case "fragment":
 				
 				concatSource = "part fragment 1 \n" + source + "\nendpart\n";
-				agalMiniAssembler.assemble (concatSource);
-				data = agalMiniAssembler.r.get ("fragment").data;
+				agalMiniAssembler.__assemble (concatSource);
+				data = agalMiniAssembler.__r.get ("fragment").data;
 			
 			default:
 				

@@ -1,4 +1,4 @@
-package openfl; #if !macro #if !openfl_legacy
+package openfl; #if !macro
 
 
 import lime.system.System;
@@ -99,6 +99,8 @@ import js.Browser;
 		Browser.window.open (request.url, target);
 		#elseif flash
 		return flash.Lib.getURL (request, target);
+		#elseif desktop
+		lime.tools.helpers.ProcessHelper.openURL (request.url);
 		#end
 		
 	}
@@ -172,9 +174,6 @@ import js.Browser;
 }
 
 
-#else
-typedef Lib = openfl._legacy.Lib;
-#end
 #else
 
 

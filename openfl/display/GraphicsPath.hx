@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl.display.IGraphicsData;
@@ -99,8 +99,3 @@ import openfl.Vector;
 	
 	
 }
-
-
-#else
-typedef GraphicsPath = openfl._legacy.display.GraphicsPath;
-#end

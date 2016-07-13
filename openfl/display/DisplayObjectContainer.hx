@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -560,21 +560,21 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCairo (renderSession);
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
 			child.__renderCairo (renderSession);
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
 			
 		}
 		
@@ -584,17 +584,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 	}
 	
@@ -606,11 +596,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			CairoGraphics.renderMask (__graphics, renderSession);
 			
 		}
-		
-		//var bounds = new Rectangle ();
-		//__getLocalBounds (bounds);
-		//
-		//renderSession.cairo.rectangle (0, 0, bounds.width, bounds.height);
 		
 		for (child in __children) {
 			
@@ -629,21 +614,21 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		super.__renderCanvas (renderSession);
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
 			child.__renderCanvas (renderSession);
+			
+		}
+		
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
 			
 		}
 		
@@ -653,17 +638,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -696,17 +671,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		#if !neko
 		
-		//if (!__renderable) return;
-		
 		super.__renderDOM (renderSession);
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		// TODO: scrollRect
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -730,11 +697,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -745,13 +708,9 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (__cacheAsBitmap) {
-			__cacheGL(renderSession);
-			return;
-		}
+		super.__renderGL (renderSession);
 		
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
+		renderSession.maskManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -759,13 +718,23 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		__postRenderGL (renderSession);
+		for (orphan in __removedChildren) {
+			
+			if (orphan.stage == null) {
+				
+				orphan.__cleanup ();
+				
+			}
+			
+		}
 		
 		if (__removedChildren.length > 0) {
 			
 			__removedChildren.splice (0, __removedChildren.length);
 			
 		}
+		
+		renderSession.maskManager.popObject (this);
 		
 	}
 	
@@ -814,8 +783,6 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		//if (!__renderable) return;
-		
 		if (updateChildren) {
 			
 			for (child in __children) {
@@ -857,8 +824,3 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 }
-
-
-#else
-typedef DisplayObjectContainer = openfl._legacy.display.DisplayObjectContainer;
-#end
