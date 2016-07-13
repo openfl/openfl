@@ -1,4 +1,4 @@
-package openfl.geom; #if !openfl_legacy
+package openfl.geom;
 
 
 import lime.math.Matrix3;
@@ -574,8 +574,3 @@ class Matrix {
 	
 	
 }
-
-
-#else
-typedef Matrix = openfl._legacy.geom.Matrix;
-#end

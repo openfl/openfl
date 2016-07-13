@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 @:enum abstract TextFieldAutoSize(Null<Int>) {
@@ -37,7 +37,3 @@ package openfl.text; #if !openfl_legacy
 	}
 	
 }
-
-#else
-typedef TextFieldAutoSize = openfl._legacy.text.TextFieldAutoSize;
-#end

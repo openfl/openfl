@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract CapsStyle(Null<Int>) {
@@ -34,8 +34,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef CapsStyle = openfl._legacy.display.CapsStyle;
-#end

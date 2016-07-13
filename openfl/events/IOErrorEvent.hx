@@ -19,9 +19,7 @@ class IOErrorEvent extends ErrorEvent {
 		var event = new IOErrorEvent (type, bubbles, cancelable, text, errorID);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

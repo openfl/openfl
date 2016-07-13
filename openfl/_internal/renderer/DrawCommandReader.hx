@@ -1,7 +1,6 @@
 package openfl._internal.renderer;
 
 
-import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
@@ -11,7 +10,6 @@ import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.Shader;
 import openfl.display.SpreadMethod;
-import openfl.display.Tilesheet;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
@@ -81,10 +79,6 @@ class DrawCommandReader {
 				
 				fPos += 4; //x, y, width, height
 			
-			case DRAW_PATH:
-				
-				oPos += 3; //commands, data, winding
-			
 			case DRAW_RECT:
 				
 				fPos += 4; //x, y, width, height
@@ -93,14 +87,6 @@ class DrawCommandReader {
 				
 				fPos += 5; //x, y, width, height, ellipseWidth
 				oPos += 1; //ellipseHeight
-			
-			case DRAW_TILES:
-				
-				tsPos += 1; //sheet
-				ffPos += 1; //tileData
-				bPos += 1; //smooth
-				iPos += 2; //flags, count
-				oPos += 1;
 			
 			case DRAW_TRIANGLES:
 				
@@ -207,10 +193,8 @@ class DrawCommandReader {
 	public #if !html5 inline #end function readCurveTo ():CurveToView { advance (); prev = CURVE_TO; return new CurveToView (this); }
 	public #if !html5 inline #end function readDrawCircle ():DrawCircleView { advance (); prev = DRAW_CIRCLE; return new DrawCircleView (this); }
 	public #if !html5 inline #end function readDrawEllipse ():DrawEllipseView { advance (); prev = DRAW_ELLIPSE; return new DrawEllipseView (this); }
-	public #if !html5 inline #end function readDrawPath ():DrawPathView { advance (); prev = DRAW_PATH; return new DrawPathView (this); }
 	public #if !html5 inline #end function readDrawRect ():DrawRectView { advance (); prev = DRAW_RECT; return new DrawRectView (this); }
 	public #if !html5 inline #end function readDrawRoundRect ():DrawRoundRectView { advance (); prev = DRAW_ROUND_RECT; return new DrawRoundRectView (this); }
-	public #if !html5 inline #end function readDrawTiles ():DrawTilesView { advance (); prev = DRAW_TILES; return new DrawTilesView (this); }
 	public #if !html5 inline #end function readDrawTriangles ():DrawTrianglesView { advance (); prev = DRAW_TRIANGLES; return new DrawTrianglesView (this); }
 	public #if !html5 inline #end function readEndFill ():EndFillView { advance (); prev = END_FILL; return new EndFillView (this); }
 	public #if !html5 inline #end function readLineBitmapStyle ():LineBitmapStyleView { advance (); prev = LINE_BITMAP_STYLE; return new LineBitmapStyleView (this); }
@@ -232,13 +216,6 @@ class DrawCommandReader {
 		
 		advance ();
 		prev = type;
-		
-	}
-	
-	
-	private #if !html5 inline #end function tileSheet (index:Int):Tilesheet {
-		
-		return buffer.ts[tsPos + index];
 		
 	}
 	
@@ -326,16 +303,6 @@ abstract DrawEllipseView (DrawCommandReader) {
 }
 
 
-abstract DrawPathView (DrawCommandReader) {
-	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var commands (get, never):Vector<Int>; private #if !html5 inline #end function get_commands ():Vector<Int> { return cast this.obj (0); }
-	public var data (get, never):Vector<Float>; private #if !html5 inline #end function get_data ():Vector<Float> { return cast this.obj (1); }
-	public var winding (get, never):GraphicsPathWinding; private #if !html5 inline #end function get_winding ():GraphicsPathWinding { return cast this.obj (2); }
-	
-}
-
-
 abstract DrawRectView (DrawCommandReader) {
 	
 	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
@@ -356,19 +323,6 @@ abstract DrawRoundRectView (DrawCommandReader) {
 	public var height(get, never):Float; private #if !html5 inline #end function get_height ():Float { return this.float (3); }
 	public var ellipseWidth (get, never):Float; private #if !html5 inline #end function get_ellipseWidth ():Float { return this.float (4); }
 	public var ellipseHeight (get, never):Null<Float>; private #if !html5 inline #end function get_ellipseHeight ():Null<Float> { return this.obj (0); }
-	
-}
-
-
-abstract DrawTilesView (DrawCommandReader) {
-	
-	public #if !html5 inline #end function new (d:DrawCommandReader) { this = d; }
-	public var sheet (get, never):Tilesheet; private #if !html5 inline #end function get_sheet ():Tilesheet { return this.tileSheet (0); }
-	public var tileData (get, never):Array<Float>; private #if !html5 inline #end function get_tileData ():Array<Float> { return this.fArr (0); }
-	public var smooth (get, never):Bool; private #if !html5 inline #end function get_smooth ():Bool { return this.bool (0); }
-	public var flags (get, never):Int; private #if !html5 inline #end function get_flags ():Int { return this.int (0); }
-	public var shader (get, never):Shader; private #if !html5 inline #end function get_shader ():Shader { return cast this.obj (0); }
-	public var count (get, never):Int; private #if !html5 inline #end function get_count ():Int { return this.int (1); }
 	
 }
 

@@ -1,349 +1,284 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.graphics.GLRenderContext;
-import openfl._internal.renderer.opengl.shaders2.Shader in InternalShader;
-import openfl.geom.Matrix;
-import openfl.gl.GL;
+import lime.graphics.opengl.GLProgram;
+import lime.utils.GLUtils;
+import openfl.utils.ByteArray;
 
-using StringTools;
+@:access(openfl.display.ShaderInput)
+@:access(openfl.display.ShaderParameter)
 
-@:autoBuild(openfl._internal.macros.MacroShader.buildUniforms())
+
 class Shader {
 	
-	@:noCompletion static var uniformRegex = ~/^\s*uniform\s+(sampler(?:2D|Cube)|[bi]?vec[234]|float|int|bool|mat[234])\s+(\w+)\s*(?:\[(\d+)\])?\s*;.*$/gmi;
 	
-	/**
-	 * Attribute (vec2) with the object position.
-	 */
-	public static var aPosition = DefaultAttrib.Position;
-	/**
-	 * Attribute (vec2) with the object texture coordinate.
-	 */
-	public static var aTexCoord = DefaultAttrib.TexCoord;
-	/**
-	 * Attribute (vec4) with the tint and alpha values of the object.
-	 */
-	public static var aColor = DefaultAttrib.Color;
+	public var byteCode (null, default):ByteArray;
+	public var data:ShaderData;
+	public var glFragmentSource:String;
+	public var glProgram:GLProgram;
+	public var glVertexSource:String;
+	public var precisionHint:ShaderPrecision;
 	
-	/**
-	 * Uniform (sampler2D) holding the object texture.
-	 */
-	public static var uSampler = DefaultUniform.Sampler;
-	/**
-	 * Uniform (mat4) holding the projection matrix.
-	 */
-	public static var uProjectionMatrix = DefaultUniform.ProjectionMatrix;
-	/**
-	 * Uniform (vec4) holding the colorMultiplier values from the transfrom.colorTransform of the object.
-	 */
-	public static var uColorMultiplier = DefaultUniform.ColorMultiplier;
-	/**
-	 * Uniform (vec4) holding the colorOffset values from the transfrom.colorTransform of the object.
-	 */
-	public static var uColorOffset = DefaultUniform.ColorOffset;
-	/**
-	 * Uniform (vec2) holding the object width and height. If it's used with Tilesheet.drawTiles() the value will be [0, 0]
-	 * For example, if the object is 200x200, the value of this uniform will be 200x200.
-	 */
-	public static var uObjectSize = "openfl_uObjectSize";
-	/**
-	 * Uniform (vec2) holding the object texture real width and height. If it's used with Tilesheet.drawTiles() the value will be [0, 0]
-	 * For example, if the object is 200x200, the value of this uniform will be 256x256.
-	 */
-	public static var uTextureSize = "openfl_uTextureSize";
-	
-	/**
-	 * Varying (vec2) with the object texture coordinate.
-	 */
-	public static var vTexCoord = DefaultVarying.TexCoord;
-	/**
-	 * Varying (vec4) with the tint and alpha values of the object.
-	 */
-	public static var vColor = DefaultVarying.Color;
+	private var gl:GLRenderContext;
 	
 	
-	@:noCompletion static var vertexHeader = [
-		'attribute vec2 ${Shader.aPosition};',
-		'attribute vec2 ${Shader.aTexCoord};',
-		'attribute vec4 ${Shader.aColor};',
+	public function new (code:ByteArray = null) {
 		
-		'uniform mat3 ${Shader.uProjectionMatrix};',
+		byteCode = code;
+		precisionHint = FULL;
 		
-		'uniform vec2 ${Shader.uObjectSize};',
-		'uniform vec2 ${Shader.uTextureSize};',
+		glVertexSource =
+			
+			"attribute vec4 aPosition;
+			attribute vec2 aTexCoord;
+			varying vec2 vTexCoord;
+			
+			uniform mat4 uMatrix;
+			
+			void main(void) {
+				
+				vTexCoord = aTexCoord;
+				gl_Position = uMatrix * aPosition;
+				
+			}";
 		
-		'varying vec2 ${Shader.vTexCoord};',
-		'varying vec4 ${Shader.vColor};',
-	];
-	
-	@:noCompletion static var fragmentHeader = [
-		'uniform sampler2D ${Shader.uSampler};',
-		'uniform vec4 ${Shader.uColorMultiplier};',
-		'uniform vec4 ${Shader.uColorOffset};',
+		glFragmentSource = 
+			
+			"varying vec2 vTexCoord;
+			uniform sampler2D uImage0;
+			uniform float uAlpha;
+			
+			void main(void) {
+				
+				vec4 color = texture2D (uImage0, vTexCoord);
+				
+				if (color.a == 0.0) {
+					
+					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+					
+				} else {
+					
+					gl_FragColor = vec4 (color.rgb / color.a, color.a * uAlpha);
+					
+				}
+				
+			}";
 		
-		'uniform vec2 ${Shader.uObjectSize};',
-		'uniform vec2 ${Shader.uTextureSize};',
+		__init ();
 		
-		'varying vec2 ${Shader.vTexCoord};',
-		'varying vec4 ${Shader.vColor};',
-		
-		'vec4 colorTransform(const vec4 color, const vec4 tint, const vec4 multiplier, const vec4 offset) {',
-		'   vec4 unmultiply = vec4(color.rgb / color.a, color.a);',
-		'   vec4 result = unmultiply * tint * multiplier;',
-		'   result = result + offset;',
-		'   result = clamp(result, 0., 1.);',
-		'   result = vec4(result.rgb * result.a, result.a);',
-		'   return result;',
-		'}',
-	];
-	
-	/**
-	 * The shader precision. It can be HIGH, MEDIUM or LOW. Defaults to MEDIUM
-	 */
-	public var precision:GLShaderPrecision = MEDIUM;
-	/**
-	 * A Map<String, GLShaderParameter>
-	 */
-	public var data(default, null):GLShaderData;
-	/**
-	 * Overrides the default repetition applied to the object's bitmap or cached bitmap.
-	 * By default: NONE
-	 */
-	public var repeatX:RepeatMode = NONE;
-	/**
-	 * Overrides the default repetition applied to the object's bitmap or cached bitmap.
-	 * By default: NONE
-	 */
-	public var repeatY:RepeatMode = NONE;
-	/**
-	 * Overrides the default smooth applied to the object's bitmap or cached bitmap.
-	 * By default: Null (not overriden)
-	 */
-	public var smooth:Null<Bool>;
-	/**
-	 * Overrides the object blendMode property.
-	 * By default: Null (not overriden)
-	 */
-	public var blendMode:BlendMode;
-	
-	@:noCompletion private var __dirty:Bool = true;
-	@:noCompletion private var __fragmentCode:String;
-	@:noCompletion private var __vertexCode:String;
-	@:noCompletion private var __shader:InternalShader;
-	
-	public function new(?precision:GLShaderPrecision = MEDIUM) {
-		this.precision = precision;
-		data = new Map();
-		
-		data.set(Shader.uObjectSize, new GLShaderParameter("vec2"));
-		data.set(Shader.uTextureSize, new GLShaderParameter("vec2"));
 	}
 	
-	@:noCompletion private function __init(gl:GLRenderContext) {
-		var dirty = __dirty;
-		if (dirty) {
-			if (__shader != null) {
-				__shader.destroy();
+	
+	private function __disable ():Void {
+		
+		if (glProgram != null) {
+			
+			var value, parameter:ShaderParameter;
+			
+			for (field in Reflect.fields (data)) {
+				
+				value = Reflect.field (data, field);
+				
+				if (Std.is (value, ShaderParameter)) {
+					
+					parameter = cast value;
+					
+					switch (parameter.type) {
+						
+						case BOOL2, BOOL3, BOOL4, INT2, INT3, INT4, FLOAT2, FLOAT3, FLOAT4:
+							
+							gl.disableVertexAttribArray (parameter.index);
+						
+						default:
+						
+					}
+					
+				}
+				
 			}
-			__shader = new InternalShader(gl);
-			__shader.vertexString = __vertexCode != null ? __vertexCode : openfl._internal.renderer.opengl.shaders2.DefaultShader.VERTEX_SRC.join("\n");
-			__shader.fragmentString = __fragmentCode;
-			__dirty = false;
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			gl.bindTexture (gl.TEXTURE_2D, null);
+			
+			#if desktop
+			gl.disable (gl.TEXTURE_2D);
+			#end
+			
 		}
 		
-		__shader.init(dirty);
 	}
 	
-	@:noCompletion private function __buildFragmentCode(code:String) {
-		var output = [];
-		
-		output.push('#ifdef GL_ES');
-		output.push(switch(precision) {
-			case HIGH: 		'precision highp float;';
-			case MEDIUM: 	'precision mediump float;';
-			case _: 		'precision lowp float;';
-		});
-		output.push('#endif');
-		
-		// TODO extensions
-		
-		output = output.concat(fragmentHeader);
-		output.push(code);
-		
-		__fragmentCode = output.join("\n");
-	}
 	
-	@:noCompletion private function __buildVertexCode(code:String) {
-		var output = [];
+	private function __enable ():Void {
 		
-		output.push('#ifdef GL_ES');
-		output.push(switch(precision) {
-			case HIGH: 		'precision highp float;';
-			case MEDIUM: 	'precision mediump float;';
-			case _: 		'precision lowp float;';
-		});
-		output.push('#endif');
+		__init ();
 		
-		output = output.concat(vertexHeader);
-		output.push(code);
-		
-		__vertexCode = output.join("\n");
-	}
-	
-}
-
-class GLShaderParameter {
-	/**
-	 * The raw type as expressed in the glsl code
-	 * For example: vec4 will be "vec4"
-	 */
-	public var type(default, null):String;
-	/**
-	 * The size of the value.
-	 * For example: vec4 will be 4
-	 */
-	public var size(default, null):Int = 0;
-	/**
-	 * The size of the array.
-	 * For example: uniform vec2 uExample[2]; will be 2
-	 */
-	public var arraySize(default, null):Int = 0;
-	/**
-	 * The value of the parameter when the type isn't a sampler2D
-	 */
-	public var value(default, set):Array<Float>;
-	/**
-	 * The BitmapData to be used when the type is a sampler2D
-	 */
-	public var bitmap(default, set):BitmapData;
-	/**
-	 * Enables linear smoothing to the BitmapData
-	 */
-	public var smooth:Bool = false;
-	/**
-	 * Controls repetition in the x axis for the BitmapData
-	 */
-	public var repeatX:RepeatMode = NONE;
-	/**
-	 * Controls repetition in the y axis for the BitmapData
-	 */
-	public var repeatY:RepeatMode = NONE;
-	/**
-	 * Enables matrices to be transposed. Only used in mat* types.
-	 */
-	public var transpose:Bool = false;
-	
-	private var internalType:GLShaderParameterInternal = NONE;
-	
-	public function new(type:String, ?arraySize:Null<Int>) {
-		this.type = type;
-		this.arraySize = arraySize == null ? 0 : arraySize;
-		
-		__init();
-	}
-	
-	@:noCompletion private function __init() {
-		switch(type) {
-			case "bool": 
-				internalType = INT;
-				size = 1;
+		if (glProgram != null) {
+			
+			var parameter:ShaderParameter, value;
+			var textureCount = 0;
+			
+			for (field in Reflect.fields (data)) {
 				
-				value = [0.0];
+				value = Reflect.field (data, field);
 				
-			case "int": 
-				internalType = INT;
-				size = 1;
+				if (Std.is (value, ShaderInput)) {
+					
+					gl.uniform1i (value.index, textureCount);
+					textureCount++;
+					
+				} else {
+					
+					parameter = cast value;
+					
+					switch (parameter.type) {
+						
+						case BOOL2, BOOL3, BOOL4, INT2, INT3, INT4, FLOAT2, FLOAT3, FLOAT4:
+							
+							gl.enableVertexAttribArray (parameter.index);
+						
+						default:
+						
+					}
+					
+				}
 				
-				value = [0.0];
+			}
+			
+			if (textureCount > 0) {
 				
-			case "float":
-				internalType = FLOAT;
-				size = 1;
+				gl.activeTexture (gl.TEXTURE0);
 				
-				value = [0.0];
+				#if desktop
+				gl.enable (gl.TEXTURE_2D);
+				#end
 				
-			case v if (v.indexOf("vec") > -1):
-				if(type.startsWith("b") || type.startsWith("i"))
-					internalType = INT;
-				else
-					internalType = FLOAT;
-				
-				var s = Std.parseInt(type.charAt(type.length - 1));
-				size = s;
-				
-				value = [for (i in 0...size) 0.0];
-				
-			case m if (m.indexOf("mat") > -1):
-				internalType = MAT;
-				var s = Std.parseInt(type.charAt(type.length - 1));
-				size = s;
-				
-				value = switch(size) {
-					case 2:
-						[	1, 0,
-							1, 0
-						];
-					case 3:
-						[	1, 0, 0,
-							0, 1, 0,
-							0, 0, 1
-						];
-					case 4:
-						[	1, 0, 0, 0,
-							0, 1, 0, 0,
-							0, 0, 1, 0,
-							0, 0, 0, 1,
-						];
-					case _:
-						[0];
-				};
-				
-			case "sampler2D" | "samplerCube":
-				internalType = SAMPLER;
-				size = 0;
-			case _: 
-				internalType = NONE;
-				trace("Can't initialize value for type " + type);
+			}
+			
 		}
+		
 	}
 	
-	@:noCompletion private inline function set_value(v) {
-		if (internalType == SAMPLER) throw "This parameter doesn't accept a value, use bitmap instead";
-		return value = v;
+	
+	private function __init ():Void {
+		
+		if (data == null) {
+			
+			data = new ShaderData (null);
+			
+		}
+		
+		if (gl != null && glProgram == null && glFragmentSource != null && glVertexSource != null) {
+			
+			var fragment = 
+				
+				"#ifdef GL_ES
+				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
+				#endif
+				" + glFragmentSource;
+			
+			glProgram = GLUtils.createProgram (glVertexSource, fragment);
+			
+			if (glProgram != null) {
+				
+				__processGLData (glVertexSource, "attribute");
+				__processGLData (glVertexSource, "uniform");
+				__processGLData (glFragmentSource, "uniform");
+				
+			}
+			
+		}
+		
 	}
-	@:noCompletion private inline function set_bitmap(v) {
-		if (internalType != SAMPLER) throw "This parameter doesn't accept a bitmap, use value instead";
-		return bitmap = v;
+	
+	
+	private function __processGLData (source:String, storageType:String):Void {
+		
+		var lastMatch = 0, position, regex, name, type;
+		
+		if (storageType == "uniform") {
+			
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			
+		} else {
+			
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			
+		}
+		
+		while (regex.matchSub (source, lastMatch)) {
+			
+			type = regex.matched (1);
+			name = regex.matched (2);
+			
+			if (StringTools.startsWith (type, "sampler")) {
+				
+				var input = new ShaderInput ();
+				
+				if (storageType == "uniform") {
+					
+					input.index = gl.getUniformLocation (glProgram, name);
+					
+				} else {
+					
+					input.index = gl.getAttribLocation (glProgram, name);
+					
+				}
+				
+				Reflect.setField (data, name, input);
+				
+			} else {
+				
+				var parameter = new ShaderParameter ();
+				
+				parameter.type = switch (type) {
+					
+					case "bool": BOOL;
+					case "double", "float": FLOAT;
+					case "int", "uint": INT;
+					case "bvec2": BOOL2;
+					case "bvec3": BOOL3;
+					case "bvec4": BOOL4;
+					case "ivec2", "uvec2": INT2;
+					case "ivec3", "uvec3": INT3;
+					case "ivec4", "uvec4": INT4;
+					case "vec2", "dvec2": FLOAT2;
+					case "vec3", "dvec3": FLOAT3;
+					case "vec4", "dvec4": FLOAT4;
+					case "mat2", "mat2x2": MATRIX2X2;
+					case "mat2x3": MATRIX2X3;
+					case "mat2x4": MATRIX2X4;
+					case "mat3x2": MATRIX3X2;
+					case "mat3", "mat3x3": MATRIX3X3;
+					case "mat3x4": MATRIX3X4;
+					case "mat4x2": MATRIX4X2;
+					case "mat4x3": MATRIX4X3;
+					case "mat4", "mat4x4": MATRIX4X4;
+					default: null;
+					
+				}
+				
+				if (storageType == "uniform") {
+					
+					parameter.index = gl.getUniformLocation (glProgram, name);
+					
+				} else {
+					
+					parameter.index = gl.getAttribLocation (glProgram, name);
+					
+				}
+				
+				Reflect.setField (data, name, parameter);
+				
+			}
+			
+			position = regex.matchedPos ();
+			lastMatch = position.pos + position.len;
+			
+		}
+		
 	}
+	
+	
 }
-
-@:enum abstract GLShaderPrecision(Int) {
-	var LOW 	= 0;
-	var MEDIUM 	= 1;
-	var HIGH 	= 2;
-}
-
-
-@:enum private abstract GLShaderParameterInternal(Int) {
-	var NONE 	= 0;
-	var INT 	= 1;
-	var FLOAT 	= 2;
-	var MAT 	= 3;
-	var SAMPLER = 4;
-}
-
-@:enum abstract RepeatMode(Int) to Int {
-	var NONE 	= GL.CLAMP_TO_EDGE;
-	var REPEAT 	= GL.REPEAT;
-	var MIRROR 	= GL.MIRRORED_REPEAT;
-}
-
-typedef GLShaderData = Map<String, GLShaderParameter>;
-
-private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders2.DefaultShader.Attrib;
-private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;
-private typedef DefaultVarying = openfl._internal.renderer.opengl.shaders2.DefaultShader.Varying;
-
-
-#end

@@ -1,13 +1,7 @@
-package openfl.system; #if !openfl_legacy
+package openfl.system;
 
 
 import haxe.macro.Compiler;
-
-#if (js && html5)
-import js.html.DivElement;
-import js.html.Element;
-import js.Browser;
-#end
 
 
 @:final class Capabilities {
@@ -94,71 +88,77 @@ import js.Browser;
 	private static function get_pixelAspectRatio ():Float { return 1; }
 	private static function get_screenDPI ():Float {
 		
-		#if (js && html5)
+		var window = Lib.application.window;
 		
-		if (screenDPI > 0) return screenDPI;
-		
-		//little trick of measuring the width of a 1 inch div
-		//but sadly most browsers/OSs still return wrong result...
-		var body = Browser.document.getElementsByTagName ("body")[0];
-		var testDiv:DivElement = cast Browser.document.createElement ("div");
-		testDiv.style.width = testDiv.style.height = "1in";
-		testDiv.style.padding = testDiv.style.margin = "0px";
-		testDiv.style.position = "absolute";
-		testDiv.style.top = "-100%";
-		body.appendChild (testDiv);
-		screenDPI = testDiv.offsetWidth;
-		body.removeChild (testDiv);
-		
-		return screenDPI;
-		
-		#else
+		if (window != null) {
+			
+			var display = window.display;
+			
+			if (display != null) {
+				
+				return display.dpi;
+				
+			}
+			
+		}
 		
 		return 0;
-		
-		#end
 		
 	}
 	
 	
 	private static function get_screenResolutionX ():Float { 
 		
-		var window = Lib.application.window;
+		var stage = Lib.current.stage;
+		var resolutionX = 0;
 		
-		if (window != null) {
+		if (stage.window != null) {
 			
-			var display = window.display;
+			var display = stage.window.display;
 			
 			if (display != null) {
 				
-				return display.currentMode.width;
+				resolutionX = display.currentMode.width;
 				
 			}
 			
 		}
 		
-		return 0;
+		if (resolutionX > 0) {
+			
+			return resolutionX;
+			
+		}
+		
+		return stage.stageWidth;
 		
 	}
 	
 	
 	private static function get_screenResolutionY ():Float {
 		
-		var window = Lib.application.window;
+		var stage = Lib.current.stage;
+		var resolutionY = 0;
 		
-		if (window != null) {
+		if (stage.window != null) {
 			
-			var display = window.display;
+			var display = stage.window.display;
 			
 			if (display != null) {
 				
-				return display.currentMode.height;
+				resolutionY = display.currentMode.width;
 				
 			}
 			
 		}
 		
-		return 0;
+		if (resolutionY > 0) {
+			
+			return resolutionY;
+			
+		}
+		
+		return stage.stageHeight;
 		
 	}
 	
@@ -214,8 +214,3 @@ import js.Browser;
 	
 	
 }
-
-
-#else
-typedef Capabilities = openfl._legacy.system.Capabilities;
-#end

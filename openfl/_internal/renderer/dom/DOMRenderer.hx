@@ -145,7 +145,15 @@ class DOMRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 		
-		element.style.background = stage.__colorString;
+		if (!stage.__transparent) {
+			
+			element.style.background = stage.__colorString;
+			
+		} else {
+			
+			element.style.background = "none";
+			
+		}
 		
 		renderSession.z = 1;
 		stage.__renderDOM (renderSession);

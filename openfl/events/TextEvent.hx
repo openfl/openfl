@@ -24,9 +24,7 @@ class TextEvent extends Event {
 		var event = new TextEvent (type, bubbles, cancelable, text);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

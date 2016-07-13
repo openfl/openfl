@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl.display.IGraphicsData;
@@ -57,8 +57,3 @@ import openfl.geom.Matrix;
 	
 	
 }
-
-
-#else
-typedef GraphicsGradientFill = openfl._legacy.display.GraphicsGradientFill;
-#end

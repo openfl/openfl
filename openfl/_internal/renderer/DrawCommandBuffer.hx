@@ -10,7 +10,6 @@ import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.Shader;
 import openfl.display.SpreadMethod;
-import openfl.display.Tilesheet;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
@@ -30,7 +29,6 @@ class DrawCommandBuffer {
 	private var i:Array<Int>;
 	private var ii:Array<Array<Int>>;
 	private var o:Array<Dynamic>;
-	private var ts:Array<Tilesheet>;
 	
 	
 	public function new () {
@@ -43,7 +41,6 @@ class DrawCommandBuffer {
 		o = [];
 		ff = [];
 		ii = [];
-		ts = [];
 		
 	}
 	
@@ -63,10 +60,8 @@ class DrawCommandBuffer {
 				case CURVE_TO: var c = data.readCurveTo (); curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				case DRAW_CIRCLE: var c = data.readDrawCircle (); drawCircle (c.x, c.y, c.radius);
 				case DRAW_ELLIPSE: var c = data.readDrawEllipse (); drawEllipse (c.x, c.y, c.width, c.height);
-				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.shader, c.count);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 				case END_FILL: var c = data.readEndFill (); endFill ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
@@ -131,7 +126,6 @@ class DrawCommandBuffer {
 		o.splice (0, o.length);
 		ff.splice (0, ff.length);
 		ii.splice (0, ii.length);
-		ts.splice (0, ts.length);
 		
 	}
 	
@@ -180,7 +174,6 @@ class DrawCommandBuffer {
 		o = null;
 		ff = null;
 		ii = null;
-		ts = null;
 		
 	}
 	
@@ -206,16 +199,6 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding):Void {
-		
-		types.push (DRAW_PATH);
-		o.push (commands);
-		o.push (data);
-		o.push (winding);
-		
-	}
-	
-	
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void {
 		
 		types.push (DRAW_RECT);
@@ -235,19 +218,6 @@ class DrawCommandBuffer {
 		f.push (height);
 		f.push (ellipseWidth);
 		o.push (ellipseHeight);
-		
-	}
-	
-	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, ?shader:Shader, count:Int):Void {
-		
-		types.push (DRAW_TILES);
-		ts.push (sheet);
-		ff.push (tileData);
-		b.push (smooth);
-		i.push (flags);
-		o.push (shader);
-		i.push (count);
 		
 	}
 	

@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl.geom.Rectangle;
@@ -90,8 +90,3 @@ class InteractiveObject extends DisplayObject {
 	
 	
 }
-
-
-#else
-typedef InteractiveObject = openfl._legacy.display.InteractiveObject;
-#end

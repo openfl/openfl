@@ -2,6 +2,7 @@ package openfl._internal.renderer.cairo;
 
 
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
 import openfl.text.TextField;
 
 @:access(openfl.display.DisplayObject)
@@ -21,53 +22,33 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession);
+			CairoGraphics.render (graphics, renderSession, shape.__worldTransform);
+			
 			var bounds = graphics.__bounds;
 			
-			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && bounds.width >= 1 && bounds.height >= 1) {
+			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1) {
 				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.pushMask (shape.__mask);
-					
-				}
+				renderSession.maskManager.pushObject (shape);
 				
 				var cairo = renderSession.cairo;
-				var scrollRect = shape.scrollRect;
-				var transform = shape.__renderTransform;
 				
 				if (renderSession.roundPixels) {
 					
-					var matrix = transform.__toMatrix3 ();
+					var matrix = graphics.__worldTransform.__toMatrix3 ();
 					matrix.tx = Math.round (matrix.tx);
 					matrix.ty = Math.round (matrix.ty);
 					cairo.matrix = matrix;
 					
 				} else {
 					
-					cairo.matrix = transform.__toMatrix3 ();
+					cairo.matrix = graphics.__worldTransform.__toMatrix3 ();
 					
 				}
 				
-				cairo.setSourceSurface (graphics.__cairo.target, graphics.__bounds.x, graphics.__bounds.y);
-				
-				if (scrollRect != null) {
-					
-					cairo.pushGroup ();
-					cairo.newPath ();
-					cairo.rectangle (graphics.__bounds.x + scrollRect.x, graphics.__bounds.y + scrollRect.y, scrollRect.width, scrollRect.height);
-					cairo.fill ();
-					cairo.popGroupToSource ();
-					
-				}
-				
+				cairo.setSourceSurface (graphics.__cairo.target, 0, 0);
 				cairo.paintWithAlpha (shape.__worldAlpha);
 				
-				if (shape.__mask != null) {
-					
-					renderSession.maskManager.popMask ();
-					
-				}
+				renderSession.maskManager.popObject (shape);
 				
 			}
 			

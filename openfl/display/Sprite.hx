@@ -1,11 +1,10 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
 import openfl._internal.renderer.dom.DOMShape;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -137,8 +136,7 @@ class Sprite extends DisplayObjectContainer {
 		
 		if (__graphics == null) {
 			
-			__graphics = new Graphics ();
-			@:privateAccess __graphics.__owner = this;
+			__graphics = new Graphics (this);
 			
 		}
 		
@@ -155,8 +153,3 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 }
-
-
-#else
-typedef Sprite = openfl._legacy.display.Sprite;
-#end

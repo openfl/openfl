@@ -1,13 +1,10 @@
-package openfl.filters; #if !openfl_legacy
+package openfl.filters;
 
 
-import openfl.display.Shader;
+import lime.graphics.utils.ImageCanvasUtil;
+import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-
-#if (js && html5)
-import js.html.ImageData;
-#end
 
 
 @:final class ColorMatrixFilter extends BitmapFilter {
@@ -15,15 +12,10 @@ import js.html.ImageData;
 	
 	public var matrix (default, set):Array<Float>;
 	
-	private var __colorMatrixShader:ColorMatrixShader;
-	
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
-		
-		__colorMatrixShader = new ColorMatrixShader ();
-		__passes = 1;
 		
 		this.matrix = matrix;
 		
@@ -37,16 +29,22 @@ import js.html.ImageData;
 	}
 	
 	
-	#if (js && html5)
-	public override function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
+	public override function __applyFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
 		
-		var source = sourceData.data;
-		var target = targetData.data;
+		#if (js && html5)
+		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
+		ImageCanvasUtil.createImageData (sourceBitmapData.image);
+		ImageCanvasUtil.convertToCanvas (destBitmapData.image);
+		ImageCanvasUtil.createImageData (destBitmapData.image);
+		#end
+		
+		var source = sourceBitmapData.image.data;
+		var target = destBitmapData.image.data;
 		
 		var offsetX = Std.int (destPoint.x - sourceRect.x);
 		var offsetY = Std.int (destPoint.y - sourceRect.y);
-		var sourceStride = sourceData.width * 4;
-		var targetStride = targetData.width * 4;
+		var sourceStride = sourceBitmapData.width * 4;
+		var targetStride = destBitmapData.width * 4;
 		
 		var sourceOffset:Int;
 		var targetOffset:Int;
@@ -72,13 +70,7 @@ import js.html.ImageData;
 			
 		}
 		
-	}
-	#end
-	
-	
-	private override function __preparePass (pass:Int):Shader {
-		
-		return __colorMatrixShader;
+		destBitmapData.image.dirty = true;
 		
 	}
 	
@@ -98,43 +90,9 @@ import js.html.ImageData;
 			
 		}
 		
-		//__colorMatrixShader.uMultipliers = [ value[0], value[1], value[2], value[3], value[5], value[6], value[7], value[8], value[10], value[11], value[12], value[13], value[15], value[16], value[17], value[18] ];
-		//__colorMatrixShader.uOffsets = [ value[4] / 255., value[9] / 255., value[14] / 255., value[19] / 255. ];
-		
 		return matrix = value;
 		
 	}
 	
 	
 }
-
-
-private class ColorMatrixShader extends Shader {
-	
-	
-	@fragment var fragment = [
-		'uniform mat4 uMultipliers;',
-		'uniform vec4 uOffsets;',
-		'void main(void) {',
-		'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
-		'	color = vec4(color.rgb / color.a, color.a);',
-		'	color = uOffsets + color * uMultipliers;',
-		'	color = vec4(color.rgb * color.a, color.a);',
-		'	gl_FragColor = color;',
-		'}',
-	];
-	
-	
-	public function new () {
-		
-		super ();
-		
-	}
-	
-	
-}
-
-
-#else
-typedef ColorMatrixFilter = openfl._legacy.filters.ColorMatrixFilter;
-#end

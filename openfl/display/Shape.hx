@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:access(openfl.display.Graphics)
@@ -28,8 +28,7 @@ class Shape extends DisplayObject {
 		
 		if (__graphics == null) {
 			
-			__graphics = new Graphics ();
-			__graphics.__owner = this;
+			__graphics = new Graphics (this);
 			
 		}
 		
@@ -39,8 +38,3 @@ class Shape extends DisplayObject {
 	
 	
 }
-
-
-#else
-typedef Shape = openfl._legacy.display.Shape;
-#end

@@ -98,6 +98,14 @@ class DOMTextField {
 						
 					}
 					
+					if (!textEngine.multiline) {
+					  textField.__style.setProperty ("white-space", "nowrap", null);
+					}
+					else {
+					  textField.__style.setProperty ("word-wrap", "break-word", null);
+					}
+					textField.__style.setProperty ("overflow", "hidden", null);
+					
 					if (textEngine.selectable) {
 						
 						textField.__style.setProperty ("cursor", "text", null);

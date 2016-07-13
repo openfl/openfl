@@ -6,11 +6,11 @@ import lime.graphics.CanvasRenderContext;
 import lime.graphics.DOMRenderContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLFramebuffer;
-import openfl._internal.renderer.opengl.utils.BlendModeManager;
-import openfl._internal.renderer.opengl.utils.FilterManager;
-import openfl._internal.renderer.opengl.utils.ShaderManager;
-import openfl._internal.renderer.opengl.utils.SpriteBatch;
-import openfl._internal.renderer.opengl.utils.StencilManager;
+//import openfl._internal.renderer.opengl.utils.BlendModeManager;
+//import openfl._internal.renderer.opengl.utils.FilterManager;
+//import openfl._internal.renderer.opengl.utils.ShaderManager;
+//import openfl._internal.renderer.opengl.utils.SpriteBatch;
+//import openfl._internal.renderer.opengl.utils.StencilManager;
 import openfl.display.BlendMode;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -35,13 +35,15 @@ class RenderSession {
 	public var currentBlendMode:BlendMode;
 	public var activeTextures:Int = 0;
 	
-	public var shaderManager:ShaderManager;
+	//public var shaderManager:ShaderManager;
+	public var blendModeManager:AbstractBlendModeManager;
 	public var maskManager:AbstractMaskManager;
-	public var filterManager:FilterManager;
-	public var blendModeManager:BlendModeManager;
-	public var spriteBatch:SpriteBatch;
-	public var stencilManager:StencilManager;
-	public var defaultFramebuffer:GLFramebuffer;
+	public var shaderManager:AbstractShaderManager;
+	//public var filterManager:FilterManager;
+	//public var blendModeManager:BlendModeManager;
+	//public var spriteBatch:SpriteBatch;
+	//public var stencilManager:StencilManager;
+	//public var defaultFramebuffer:GLFramebuffer;
 	
 	
 	public function new () {
@@ -51,4 +53,7 @@ class RenderSession {
 	}
 	
 	
-} #end
+}
+
+
+#end

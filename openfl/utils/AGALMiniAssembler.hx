@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-import haxe.ds.StringMap;
+import lime.graphics.opengl.GL;
 import openfl._internal.aglsl.assembler.FS;
 import openfl._internal.aglsl.assembler.Part;
 import openfl._internal.aglsl.assembler.Opcode;
@@ -9,25 +9,113 @@ import openfl._internal.aglsl.assembler.OpcodeMap;
 import openfl._internal.aglsl.assembler.RegMap;
 import openfl._internal.aglsl.assembler.Sampler;
 import openfl._internal.aglsl.assembler.SamplerMap;
+import openfl._internal.aglsl.AGALTokenizer;
+import openfl._internal.aglsl.AGLSLCompiler;
+import openfl._internal.aglsl.AGLSLParser;
+import openfl._internal.aglsl.Description;
+import openfl.display3D.Context3DProgramType;
 import openfl.errors.Error;
 
 
 class AGALMiniAssembler {
 	
 	
-	public var cur:Part;
-	public var r:StringMap<Part>;
+	public var agalcode:ByteArray;
+	public var error:String;
+	
+	private var __cur:Part;
+	private var __debugEnabled:Bool;
+	private var __r:Map<String, Part>;
 	
 	
-	public function new () {
+	public function new (debugging:Bool = false) {
 		
-		this.r = new StringMap<Part> ();
-		this.cur = new Part ();
+		__r = new Map ();
+		__cur = new Part ();
 		
 	}
 	
 	
-	public function addHeader (partname:String, version:Int) {
+	public function assemble (programType:Context3DProgramType, source:String):Dynamic {
+		
+		#if flash
+		
+		var agalMiniAssembler:AGALMiniAssembler = new AGALMiniAssembler ();
+		var data:ByteArray = null;
+		var concatSource:String;
+		
+		switch (programType) {
+			
+			case VERTEX:
+				
+				concatSource = "part vertex 1 \n" + source + "endpart";
+				agalMiniAssembler.__assemble (concatSource);
+				data = agalMiniAssembler.__r.get ("vertex").data;
+			
+			case FRAGMENT:
+				
+				concatSource = "part fragment 1 \n" + source + "endpart";
+				agalMiniAssembler.__assemble (concatSource);
+				data = agalMiniAssembler.__r.get ("fragment").data;
+			
+			default:
+				
+				throw "Unknown Context3DProgramType";
+			
+		}
+		
+		return agalcode = data;
+		
+		#elseif (cpp || neko || js)
+		
+		var aglsl:AGLSLCompiler = new AGLSLCompiler ();
+		var glType:Int;
+		var shaderType:String;
+		
+		switch (programType) {
+			
+			case VERTEX:
+				
+				glType = GL.VERTEX_SHADER;
+				shaderType = "vertex";
+			
+			default:
+				
+				glType = GL.FRAGMENT_SHADER;
+				shaderType = "fragment";
+			
+		}
+		
+		//trace ("--- AGAL ---\n" + shaderSource);
+		
+		var shaderSourceString = aglsl.compile (shaderType, source);
+		var shader = GL.createShader (glType);
+		
+		GL.shaderSource (shader, shaderSourceString);
+		GL.compileShader (shader);
+		
+		if (GL.getShaderParameter (shader, GL.COMPILE_STATUS) == 0) {
+			
+			trace("--- ERR ---\n" + shaderSourceString);
+			var err = GL.getShaderInfoLog (shader);
+			if (err != "") throw err;
+			
+		} 
+		
+		//trace ("--- GLSL ---\n" + shaderSourceString);
+		
+		return shader;
+		
+		#else
+		
+		return null;
+		
+		#end
+		
+	}
+	
+	
+	private function __addHeader (partname:String, version:Int) {
 		
 		if (version == 0) {
 			
@@ -35,23 +123,23 @@ class AGALMiniAssembler {
 			
 		}
 		
-		if (!this.r.exists (partname)) {
+		if (!__r.exists (partname)) {
 			
-			this.r.set (partname, new Part (partname, version));
-			this.emitHeader (this.r.get (partname));
+			__r.set (partname, new Part (partname, version));
+			__emitHeader (__r.get (partname));
 			
-		} else if (this.r.get (partname).version != Std.int (version)) {
+		} else if (__r.get (partname).version != Std.int (version)) {
 			
 			throw "Multiple versions for part " + partname;
 			
 		}
 		
-		this.cur = this.r.get (partname);
+		__cur = __r.get (partname);
 		
 	}
 	
 	
-	public function assemble (source:String, ext_part = null, ext_version = null):Dynamic {
+	private function __assemble (source:String, ext_part = null, ext_version = null):Dynamic {
 		
 		if (ext_version == 0) {
 			
@@ -61,29 +149,29 @@ class AGALMiniAssembler {
 		
 		if (ext_part != null) {
 			
-			this.addHeader (ext_part, ext_version);
+			__addHeader (ext_part, ext_version);
 			
 		}
 		
 		var reg = ~/[\n\r]+/g;
-		var lines = reg.split (source); // handle breaks, then split into lines        
+		var lines = reg.split (source); // handle breaks, then split into lines
 		
 		var i:UInt;
 		
 		for (i in 0...lines.length) {
 			
-			this.processLine (lines[i], i);
+			__processLine (lines[i], i);
 			
 		}
 		
-		return this.r;
+		return __r;
 		
 	}
 	
 	
-	public function emitDest (pr:Part, token:String, opdest:String):Bool {
+	private function __emitDest (pr:Part, token:String, opdest:String):Bool {
 		
-		var reg = getGroupMatches (~/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i, token, 3); // g1: regname, g2:regnum, g3:mask
+		var reg = __getGroupMatches (~/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i, token, 3); // g1: regname, g2:regnum, g3:mask
 		
 		if (RegMap.map.get (reg[1]) == null) {
 			
@@ -97,7 +185,7 @@ class AGALMiniAssembler {
 			
 		}
 		
-		var em = { num: reg[2] != null ? reg[2] : "0", code: RegMap.map.get (reg[1]).code, mask: this.stringToMask (reg[3]) };
+		var em = { num: reg[2] != null ? reg[2] : "0", code: RegMap.map.get (reg[1]).code, mask: __stringToMask (reg[3]) };
 		
 		pr.data.writeShort (Std.parseInt (em.num));
 		pr.data.writeByte (em.mask);
@@ -108,7 +196,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function emitHeader (pr:Part):Void {
+	private function __emitHeader (pr:Part):Void {
 		
 		pr.data.writeByte (0xa0); // tag version
 		pr.data.writeUnsignedInt (pr.version);
@@ -133,16 +221,16 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function emitOpcode (pr:Part, opcode) {
+	private function __emitOpcode (pr:Part, opcode) {
 		
 		pr.data.writeUnsignedInt (opcode);
 		
 	}
 	
 	
-	public function emitSampler (pr:Part, token:String, opsrc:FS, opts:Array<String>):Bool {
+	private function __emitSampler (pr:Part, token:String, opsrc:FS, opts:Array<String>):Bool {
 		
-		var reg = getGroupMatches (~/fs(\d*)/i, token, 1); // g1:regnum
+		var reg = __getGroupMatches (~/fs(\d*)/i, token, 1); // g1:regnum
 		
 		if (reg.length < 1) {
 			
@@ -202,11 +290,11 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function emitSource (pr:Part, token:String, opsrc):Bool {
+	private function __emitSource (pr:Part, token:String, opsrc):Bool {
 		
 		//trace ("emitSource:" + token);
 		
-		var indexed = getGroupMatches (~/vc\[(v[tcai])(\d+)\.([xyzw])([\+\-]\d+)?\](\.[xyzw]{1,4})?/i, token, 5); // g1: indexregname, g2:indexregnum, g3:select, [g4:offset], [g5:swizzle]
+		var indexed = __getGroupMatches (~/vc\[(v[tcai])(\d+)\.([xyzw])([\+\-]\d+)?\](\.[xyzw]{1,4})?/i, token, 5); // g1: indexregname, g2:indexregnum, g3:select, [g4:offset], [g5:swizzle]
 		var reg;
 		
 		if (indexed.length > 0) {
@@ -218,7 +306,7 @@ class AGALMiniAssembler {
 			}
 			
 			var selindex = { x: 0, y: 1, z: 2, w: 3 };
-			var em:Dynamic = { num: Std.parseInt (indexed[2]) | 0, code: RegMap.map.get (indexed[1]).code, swizzle: this.stringToSwizzle (indexed[5]), select: Reflect.getProperty (selindex, indexed[3]), offset: Std.parseInt (indexed[4]) | 0 };
+			var em:Dynamic = { num: Std.parseInt (indexed[2]) | 0, code: RegMap.map.get (indexed[1]).code, swizzle: __stringToSwizzle (indexed[5]), select: Reflect.getProperty (selindex, indexed[3]), offset: Std.parseInt (indexed[4]) | 0 };
 			
 			pr.data.writeShort (em.num);
 			pr.data.writeByte (em.offset);
@@ -230,7 +318,7 @@ class AGALMiniAssembler {
 			
 		} else {
 			
-			reg = getGroupMatches (~/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i, token, 3); // g1: regname, g2:regnum, g3:swizzle
+			reg = __getGroupMatches (~/([fov]?[tpocidavs])(\d*)(\.[xyzw]{1,4})?/i, token, 3); // g1: regname, g2:regnum, g3:swizzle
 			
 			if (RegMap.map.get (reg[1]) == null) {
 				
@@ -239,7 +327,7 @@ class AGALMiniAssembler {
 			}
 			
 			if (reg.length < 4) reg.push ("");
-			var em:Dynamic = { num: Std.parseInt (reg[2]) | 0, code: RegMap.map.get (reg[1]).code, swizzle: this.stringToSwizzle (reg[3]) };
+			var em:Dynamic = { num: Std.parseInt (reg[2]) | 0, code: RegMap.map.get (reg[1]).code, swizzle: __stringToSwizzle (reg[3]) };
 			
 			pr.data.writeShort (em.num);
 			pr.data.writeByte (0);
@@ -256,14 +344,14 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function emitZeroDword (pr:Part) {
+	private function __emitZeroDword (pr:Part) {
 		
 		pr.data.writeUnsignedInt (0);
 		
 	}
 	
 	
-	public function emitZeroQword (pr) {
+	private function __emitZeroQword (pr) {
 		
 		pr.data.writeUnsignedInt (0);
 		pr.data.writeUnsignedInt (0);
@@ -271,7 +359,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function getGroupMatches (ereg:EReg, text:String, groupCount:UInt = 0):Array<String> {
+	private function __getGroupMatches (ereg:EReg, text:String, groupCount:UInt = 0):Array<String> {
 		
 		var matches:Array<String> = [];
 		if (!ereg.match (text)) return matches;
@@ -292,7 +380,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function getMatches (ereg:EReg, text:String):Array<String> {
+	private function __getMatches (ereg:EReg, text:String):Array<String> {
 		
 		var matches:Array<String> = [];
 		
@@ -309,7 +397,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	private function processLine (line:String, linenr:UInt):Void {
+	private function __processLine (line:String, linenr:UInt):Void {
 		
 		var startcomment = line.indexOf ("//");  // remove comments
 		
@@ -335,13 +423,13 @@ class AGALMiniAssembler {
 		if (optsb) {
 			
 			var optsi = r.matchedPos ().pos;
-			opts = getMatches (~/([\w\.\-\+]+)/gi, line.substring (optsi));
+			opts = __getMatches (~/([\w\.\-\+]+)/gi, line.substring (optsi));
 			line = line.substring (0, optsi);
 			
 		}
 		
 		// get opcode/command
-		var tokens = getMatches (~/([\w\.\+\[\]]+)/gi, line);			            
+		var tokens = __getMatches (~/([\w\.\+\[\]]+)/gi, line);         
 		if (tokens.length == 0) {
 			
 			if (line.length >= 3) {
@@ -359,30 +447,30 @@ class AGALMiniAssembler {
 			
 			case "part":
 				
-				this.addHeader (tokens[1], Std.parseInt (tokens[2]));
+				__addHeader (tokens[1], Std.parseInt (tokens[2]));
 			
 			case "endpart":
 				
-				if (this.cur == null) {
+				if (__cur == null) {
 					
 					throw "Unexpected endpart";
 					
 				}
 				
-				this.cur.data.position = 0;
-				this.cur = null; 
+				__cur.data.position = 0;
+				__cur = null; 
 				return;
 			
 			default:
 				
-				if (this.cur == null) {
+				if (__cur == null) {
 					
 					trace ("Warning: bad line " + linenr + ": " + line + " (Outside of any part definition)");
 					return;
 					
 				}
 				
-				if (this.cur.name == "comment") {
+				if (__cur.name == "comment") {
 					
 					return;
 					
@@ -396,12 +484,12 @@ class AGALMiniAssembler {
 					
 				}
 				
-				this.emitOpcode (this.cur, op.opcode);
+				__emitOpcode (__cur, op.opcode);
 				var ti:Int = 1;
 				
 				if (op.dest != null && op.dest != "none") {
 					
-					if (!this.emitDest (this.cur, tokens[ti++], op.dest)) {
+					if (!__emitDest (__cur, tokens[ti++], op.dest)) {
 						
 						throw "Bad destination register " + tokens[ti - 1] + " " + linenr + ": " + line;
 						
@@ -409,17 +497,17 @@ class AGALMiniAssembler {
 					
 				} else {
 					
-					this.emitZeroDword (this.cur);
+					__emitZeroDword (__cur);
 					
 				}
 				
 				if (op.a != null && op.a.format != "none") {
 					
-					if (!this.emitSource (this.cur, tokens[ti++], op.a)) throw "Bad source register " + tokens[ti - 1] + " " + linenr + ": " + line;
+					if (!__emitSource (__cur, tokens[ti++], op.a)) throw "Bad source register " + tokens[ti - 1] + " " + linenr + ": " + line;
 					
 				} else {
 					
-					this.emitZeroQword (this.cur);
+					__emitZeroQword (__cur);
 					 
 				}
 				
@@ -427,7 +515,7 @@ class AGALMiniAssembler {
 					
 					if (op.b.format == "sampler") {
 						
-						if (!this.emitSampler (this.cur, tokens[ti++], op.b, opts)) {
+						if (!__emitSampler (__cur, tokens[ti++], op.b, opts)) {
 							
 							throw "Bad sampler register " + tokens[ti - 1] + " " + linenr + ": " + line;
 							
@@ -435,7 +523,7 @@ class AGALMiniAssembler {
 						
 					} else {
 						
-						if (!this.emitSource (this.cur, tokens[ti++], op.b)) {
+						if (!__emitSource (__cur, tokens[ti++], op.b)) {
 							
 							throw "Bad source register " + tokens[ti - 1] + " " + linenr + ": " + line;
 							
@@ -445,7 +533,7 @@ class AGALMiniAssembler {
 					
 				} else {
 					
-					this.emitZeroQword (this.cur);
+					__emitZeroQword (__cur);
 					
 				}
 			
@@ -454,7 +542,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function stringToMask (s:String = null):UInt {
+	private function __stringToMask (s:String = null):UInt {
 		
 		if (s == null) return 0xf;
 		
@@ -468,7 +556,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function stringToSwizzle (s:String) {
+	private function __stringToSwizzle (s:String) {
 		
 		if (s == "") {
 			

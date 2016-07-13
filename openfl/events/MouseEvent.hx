@@ -1,4 +1,4 @@
-package openfl.events; #if !openfl_legacy
+package openfl.events;
 
 
 import openfl.display.InteractiveObject;
@@ -116,8 +116,3 @@ class MouseEvent extends Event {
 	
 	
 }
-
-
-#else
-typedef MouseEvent = openfl._legacy.events.MouseEvent;
-#end

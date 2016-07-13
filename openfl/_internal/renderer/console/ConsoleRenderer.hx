@@ -37,7 +37,7 @@ import openfl.display.LineScaleMode;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.display.Stage;
-import openfl.display.Tilesheet;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.text.Font;
@@ -54,7 +54,6 @@ import openfl.text.TextFormatAlign;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage)
-@:access(openfl.display.Tilesheet)
 @:access(openfl.geom.Rectangle)
 
 
@@ -78,6 +77,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var textureImages:Array<WeakRef<Image>> = [];
 	private var textures:Array<Texture> = [];
 
+	private var scissorRect:Array<Float32> = [0, 0, 0, 0];
 	private var viewProj:Matrix4;
 	private var transform:Matrix4;
 
@@ -87,13 +87,19 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var fillColor:Array<Float32> = [1, 1, 1, 1];
 
 	private var hasStroke = false;
-	private var lineWidth = 0.0;
-	private var lineColor = 0;
+	private var lineBitmap:BitmapData = null;
+	private var lineBitmapMatrix:Matrix = null;
+	private var lineBitmapRepeat:Bool = false;
+	private var lineBitmapSmooth:Bool = false;
+	private var lineThickness = 0.0;
+	private var lineColor:Array<Float32> = [1, 1, 1, 1];
 	private var lineAlpha = 1.0;
 	private var lineScaleMode = LineScaleMode.NORMAL;
 	private var lineCaps = CapsStyle.ROUND;
 	private var lineJoints = JointStyle.ROUND;
 	private var lineMiter = 3.0;
+
+	private var whiteTexture:Texture;
 
 	private var points = new Array<Float32> ();
 
@@ -121,6 +127,14 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		defaultShader = ctx.lookupShader ("openfl_default");
 		fillShader = ctx.lookupShader ("openfl_fill");
+
+		
+		var white:cpp.UInt32 = 0xffffffff;
+		whiteTexture = ctx.createTexture (
+			TextureFormat.ARGB,
+			1, 1,
+			cpp.Pointer.addressOf (white).reinterpret ()
+		);
 
 	}
 
@@ -150,13 +164,17 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		viewProj = Matrix4.createOrtho (
 			0 + pixelOffsetX,
-			width + pixelOffsetY,
-			height + pixelOffsetX,
+			width + pixelOffsetX,
+			height + pixelOffsetY,
 			0 + pixelOffsetY,
 			-1, 1
 		);
 
 		ctx.setViewport (0, 0, width, height);
+		scissorRect[0] = 0.0;
+		scissorRect[1] = 0.0;
+		scissorRect[2] = width;
+		scissorRect[3] = height;
 		ctx.clear (
 			Std.int (stage.__colorSplit[0] * 0xff),
 			Std.int (stage.__colorSplit[1] * 0xff),
@@ -222,7 +240,6 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.width,
 				object.scrollRect.height
 			);
-			clipRect = clipRect.intersection (object.getBounds (null));
 			clipRect.__transform (clipRect, object.__getWorldTransform ());
 		}
 
@@ -240,7 +257,9 @@ class ConsoleRenderer extends AbstractRenderer {
 		} else if (Std.is (object, Bitmap)) {
 
 			var b:Bitmap = cast (object);
-			drawBitmapData (b, b.bitmapData);
+			if (b.bitmapData != null) {
+				drawBitmapData (b, b.bitmapData, b.smoothing);
+			}
 
 		} else if (Std.is (object, Shape)) {
 
@@ -280,7 +299,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	private function setObjectTransform (object:DisplayObject) {
 
-		var matrix = object.__getWorldTransform ();
+		object.__getWorldTransform ();
+		var matrix = object.__worldTransform;
 		transform = Matrix4.createABCD (
 			matrix.a,
 			matrix.b,
@@ -316,7 +336,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		var ib = ctx.createIndexBuffer (null, indexCount);	
+		var ib = ctx.createIndexBuffer (untyped __cpp__ ("NULL"), indexCount);
 
 		indexBufferCounts.push (indexCount);
 		indexBuffers.push (ib);
@@ -480,7 +500,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			TextureFormat.ARGB,
 			image.buffer.width,
 			image.buffer.height,
-			null
+			untyped __cpp__ ("NULL")
 		);
 
 		if (image.buffer.data != null) {
@@ -501,7 +521,63 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData) {
+	private function beginClipRect ():Void {
+
+		if (clipRect == null) {
+			return;
+		}
+
+		var viewport = new Rectangle (0, 0, this.width, this.height);
+		viewport = viewport.intersection (clipRect);
+
+		viewProj = Matrix4.createOrtho (
+			Math.floor (viewport.x) + pixelOffsetX,
+			Math.floor (viewport.x) + Math.ceil (viewport.width) + pixelOffsetX,
+			Math.floor (viewport.y) + Math.ceil (viewport.height) + pixelOffsetY,
+			Math.floor (viewport.y) + pixelOffsetY,
+			-1, 1
+		);
+
+		ctx.setViewport (
+			cast (viewport.x),
+			cast (viewport.y),
+			cast (Math.ceil (viewport.width)),
+			cast (Math.ceil (viewport.height))
+		);
+		scissorRect[0] = viewport.x;
+		scissorRect[1] = viewport.y;
+		scissorRect[2] = viewport.x + viewport.width;
+		scissorRect[3] = viewport.y + viewport.height;
+
+	}
+
+
+	private function endClipRect ():Void {
+
+		if (clipRect == null) {
+			return;
+		}
+
+		viewProj = Matrix4.createOrtho (
+			0 + pixelOffsetX,
+			this.width + pixelOffsetX,
+			this.height + pixelOffsetY,
+			0 + pixelOffsetY,
+			-1, 1
+		);
+
+		ctx.setViewport (0, 0, this.width, this.height);
+		scissorRect[0] = 0;
+		scissorRect[1] = 0;
+		scissorRect[2] = this.width;
+		scissorRect[3] = this.height;
+
+	}
+
+
+	private function drawBitmapData (object:DisplayObject, bitmap:BitmapData, smoothing:Bool) {
+
+		beginClipRect ();
 
 		setObjectTransform (object);
 		transform.append (viewProj);
@@ -530,12 +606,20 @@ class ConsoleRenderer extends AbstractRenderer {
 		var texture = imageTexture (bitmap.image);
 
 		ctx.bindShader (defaultShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
 		ctx.setTexture (0, texture);
 		ctx.setTextureAddressMode (0, Clamp, Clamp);
+		if (smoothing) {
+			ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+		}
 		ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+		endClipRect ();
 
 	}
 
@@ -572,7 +656,8 @@ class ConsoleRenderer extends AbstractRenderer {
 			return;
 		}
 
-		drawBitmapData (tf, tf.__graphics.__bitmap);
+		var smoothing = false;
+		drawBitmapData (tf, tf.__graphics.__bitmap, smoothing);
 
 	}
 
@@ -611,7 +696,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private function closePath (object:DisplayObject) {
 
 		drawFill (object);
-		drawStroke ();
+		drawStroke (object);
 
 		cpp.NativeArray.setSize (points, 0);
 
@@ -665,6 +750,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		indexBuffer.unlock ();
 
 		ctx.bindShader (fillShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 		ctx.setVertexSource (vertexBuffer);
@@ -675,11 +761,114 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function drawStroke () {
 
-		if (!hasStroke) {
+	private function drawStroke (object:DisplayObject) {
+
+		var numPoints = Std.int (points.length / 2);
+		if (!hasStroke || numPoints < 2) {
 			return;
-		}	
+		}
+
+		// TODO(james4k): complex tesselation like this could easily go into a
+		// background job. maybe do so if expected vertices is greater than 64 or
+		// something. doubt we have any games that need this yet, though. think
+		// about this when the renderer does more shape tesselation.
+		
+		// TODO(james4k): if lines overlap, may be visible overdraw if lines
+		// are transparent. not clear if there is a cheap solution.
+
+		// TODO(james4k): closed paths to form rectangles/shapes
+		// TODO(james4k): bevel/miter joints
+		// TODO(james4k): square/butt caps
+
+		setObjectTransform (object);
+		transform.append (viewProj);
+		transform.transpose ();
+
+		// TODO(james4k): closed paths should form a joint, and have no caps
+		var numSegments = numPoints - 1;
+		var numCaps = 2;
+		var numJoints = numPoints - numCaps;
+
+		// TODO(james4k): prealloc size should be ConsoleLineTesselator's jurisdiction.
+		// also, these overestimate a bit. at least as of May 14th, 2016.
+		var vertexCount = numSegments * 4;
+		vertexCount += numCaps; // for now just 1 additional vertex for rounded cap
+		vertexCount += numJoints; // for now just 1 additional vertex for rounded joint
+		var indexCount = numSegments * 6; // 2 triangles per segment
+		indexCount += numCaps * 3; // 1 triangle per cap
+		indexCount += numJoints * 12; // 4 triangles per joint
+
+		var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
+		var indexBuffer = transientIndexBuffer (indexCount);
+		var texture = if (lineBitmap != null) {
+			imageTexture (lineBitmap.image);
+		} else {
+			whiteTexture;
+		}
+		var bitmapMatrix:Matrix = new Matrix ();
+		if (lineBitmap != null) {
+			// TODO(james4k): this is a hack, only applies translation. need to
+			// think through these coordinate spaces.
+			var tx = 0.0;
+			var ty = 0.0;
+			if (lineBitmapMatrix != null) {
+				tx = lineBitmapMatrix.tx;
+				ty = lineBitmapMatrix.ty;
+			}
+			bitmapMatrix.translate (-tx, -ty);
+			bitmapMatrix.scale (1.0 / lineBitmap.width, 1.0 / lineBitmap.height);
+			bitmapMatrix.translate (tx, ty);
+		}
+
+		var vertices = vertexBuffer.lock ();
+		var unsafeIndices = indexBuffer.lock ();
+
+		var radius = lineThickness * 0.5;
+		var line = new ConsoleLineTesselator (vertices, unsafeIndices, radius, bitmapMatrix);
+
+		line.capRound (
+			points[0], points[1],
+			points[2], points[3]
+		);
+		for (i in 1...numPoints-1) {
+			line.jointRound (
+				points[i*2+0], points[i*2+1],
+				points[i*2+2], points[i*2+3]
+			);
+		}
+		line.capRound (
+			points[points.length-2], points[points.length-1], 0, 0
+		);
+
+		#if debug
+		if (vertexCount < line.vertexCount || indexCount < line.indexCount) {
+			throw "overflowed vertex buffer or index buffer";
+		}
+		#end
+		vertexCount = line.vertexCount;
+		indexCount = line.indexCount;
+		vertexBuffer.unlock ();
+		indexBuffer.unlock ();
+
+		ctx.bindShader (defaultShader);
+		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+		ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+		ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (lineColor, 0), 1);
+		ctx.setVertexSource (vertexBuffer);
+		ctx.setIndexSource (indexBuffer);
+		ctx.setTexture (0, texture);
+		if (lineBitmapRepeat) {
+			ctx.setTextureAddressMode (0, Wrap, Wrap);
+		} else {
+			ctx.setTextureAddressMode (0, Clamp, Clamp);
+		}
+		if (lineBitmapSmooth) {
+			ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+		} else {
+			ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+		}
+		ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (indexCount, 3));
 
 	}
 
@@ -697,26 +886,7 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		// TODO(james4k): warn on unimplemented WindingRules
 
-		if (clipRect != null) {
-
-			viewProj = Matrix4.createOrtho (
-				Math.floor (clipRect.x) + pixelOffsetX,
-				Math.floor (clipRect.x) + Math.ceil (clipRect.width) + pixelOffsetX,
-				Math.floor (clipRect.y) + Math.ceil (clipRect.height) + pixelOffsetY,
-				Math.floor (clipRect.y) + pixelOffsetY,
-				-1, 1
-			);
-
-			var viewport = new Rectangle (0, 0, this.width, this.height);
-			viewport = viewport.intersection (clipRect);
-			ctx.setViewport (
-				cast (viewport.x),
-				cast (viewport.y),
-				cast (Math.ceil (viewport.width)),
-				cast (Math.ceil (viewport.height))
-			);
-
-		}
+		beginClipRect ();
 
 		var r = new DrawCommandReader (graphics.__commands);
 
@@ -769,16 +939,35 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					hasStroke = true;
 
-					lineWidth = cmd.thickness;
-					lineColor = cmd.color;
+					lineThickness = cmd.thickness;
+					lineBitmap = null;
+					lineColor[0] = ((cmd.color >> 16) & 0xFF) / 255.0;
+					lineColor[1] = ((cmd.color >> 8) & 0xFF) / 255.0;
+					lineColor[2] = ((cmd.color >> 0) & 0xFF) / 255.0;
+					lineColor[3] = cmd.alpha * object.__worldAlpha;
 					lineAlpha = cmd.alpha;
 					lineScaleMode = cmd.scaleMode;
-					lineCaps = cmd.caps;
-					lineJoints = cmd.joints;
+					lineCaps = cmd.caps != null ? cmd.caps : ROUND;
+					lineJoints = cmd.joints != null ? cmd.joints : ROUND;
 					lineMiter = cmd.miterLimit;
 					// TODO(james4k): pixelHinting
+
+					if (lineScaleMode != NORMAL ||
+					    lineCaps != ROUND ||
+					    lineJoints != ROUND 
+					) {
+						trace ("unsupported lineStyle");
+					}
 					
-					
+				case LINE_BITMAP_STYLE:
+
+					var cmd = r.readLineBitmapStyle ();
+
+					lineBitmap = cmd.bitmap;
+					lineBitmapMatrix = cmd.matrix;
+					lineBitmapRepeat = cmd.repeat;
+					lineBitmapSmooth = cmd.smooth;
+
 				//case LineTo (x, y):
 				case LINE_TO:
 
@@ -835,31 +1024,78 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var cmd = r.readDrawRect ();
 
-					if (!hasFill || fillBitmap != null) {
-						// TODO(james4k): fillBitmap, stroke
+					if (!hasFill) {
+						// TODO(james4k): stroke
 						trace ("unsupported DrawRect");
 						continue;
 					}
 
-					// TODO(james4k): replace moveTo/lineTo calls
+					if (fillBitmap != null) {
 
-					setObjectTransform (object);
-					transform.append (viewProj);
-					transform.transpose ();
+						setObjectTransform (object);
+						transform.append (viewProj);
+						transform.transpose ();
 
-					var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
-					var out = vertexBuffer.lock ();
-					out.vec3 (cmd.x, cmd.y, 0);
-					out.vec3 (cmd.x, cmd.y + cmd.height, 0);
-					out.vec3 (cmd.x + cmd.width, cmd.y, 0);
-					out.vec3 (cmd.x + cmd.width, cmd.y + cmd.height, 0);
-					vertexBuffer.unlock ();
+						var w = cmd.width;
+						var h = cmd.height;
+						var color:Array<cpp.Float32> = [1, 1, 1, object.__worldAlpha];
 
-					ctx.bindShader (fillShader);
-					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
-					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
-					ctx.setVertexSource (vertexBuffer);
-					ctx.draw (Primitive.TriangleStrip, 0, 2);
+						var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, 4);
+						var out = vertexBuffer.lock ();
+						out.vec3 (cmd.x, cmd.y, 0);
+						out.vec2 (0, 0);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						out.vec3 (cmd.x, cmd.y + h, 0);
+						out.vec2 (0, 1);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						out.vec3 (cmd.x + w, cmd.y, 0);
+						out.vec2 (1, 0);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						out.vec3 (cmd.x + w, cmd.y + h, 0);
+						out.vec2 (1, 1);
+						out.color(0xff, 0xff, 0xff, 0xff);
+						vertexBuffer.unlock ();
+
+						var texture = imageTexture (fillBitmap.image);
+
+						ctx.bindShader (defaultShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (color, 0), 1);
+						ctx.setVertexSource (vertexBuffer);
+						ctx.setTexture (0, texture);
+						ctx.setTextureAddressMode (0, Clamp, Clamp);
+						if (fillBitmapSmooth) {
+							ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
+						} else {
+							ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
+						}
+						ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+					} else {
+
+						// TODO(james4k): replace moveTo/lineTo calls
+
+						setObjectTransform (object);
+						transform.append (viewProj);
+						transform.transpose ();
+
+						var vertexBuffer = transientVertexBuffer (VertexDecl.Position, 4);	
+						var out = vertexBuffer.lock ();
+						out.vec3 (cmd.x, cmd.y, 0);
+						out.vec3 (cmd.x, cmd.y + cmd.height, 0);
+						out.vec3 (cmd.x + cmd.width, cmd.y, 0);
+						out.vec3 (cmd.x + cmd.width, cmd.y + cmd.height, 0);
+						vertexBuffer.unlock ();
+
+						ctx.bindShader (fillShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+						ctx.setVertexSource (vertexBuffer);
+						ctx.draw (Primitive.TriangleStrip, 0, 2);
+
+					}
 
 				//case DrawRoundRect (x, y, width, height, rx, ry):
 				case DRAW_ROUND_RECT:
@@ -916,6 +1152,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						indexBuffer.unlock ();
 
 						ctx.bindShader (fillShader);
+						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 						ctx.setVertexSource (vertexBuffer);
@@ -924,234 +1161,6 @@ class ConsoleRenderer extends AbstractRenderer {
 						//ctx.draw (Primitive.TriangleStrip, 0, div (triangles.length, 3));
 
 					}
-
-				//case DrawTiles (sheet, tileData, smooth, flags, count):
-				case DRAW_TILES:
-
-					var cmd = r.readDrawTiles ();
-
-					var useScale = (cmd.flags & Tilesheet.TILE_SCALE) != 0;
-					var useRotation = (cmd.flags & Tilesheet.TILE_ROTATION) != 0;
-					var useTransform = (cmd.flags & Tilesheet.TILE_TRANS_2x2) != 0;
-					var useRGB = (cmd.flags & Tilesheet.TILE_RGB) != 0;
-					var useAlpha = (cmd.flags & Tilesheet.TILE_ALPHA) != 0;
-					var useRect = (cmd.flags & Tilesheet.TILE_RECT) != 0;
-					var useOrigin = (cmd.flags & Tilesheet.TILE_ORIGIN) != 0;
-
-					var blendMode:BlendMode = switch(cmd.flags & 0xF0000) {
-						case Tilesheet.TILE_BLEND_ADD:		ADD;
-						case Tilesheet.TILE_BLEND_MULTIPLY:	MULTIPLY;
-						case Tilesheet.TILE_BLEND_SCREEN:	SCREEN;
-						case _: switch(cmd.flags & 0xF00000) {
-							case Tilesheet.TILE_BLEND_DARKEN:         DARKEN;
-							case Tilesheet.TILE_BLEND_LIGHTEN:        LIGHTEN;
-							case Tilesheet.TILE_BLEND_OVERLAY:        OVERLAY;
-							case Tilesheet.TILE_BLEND_HARDLIGHT:      HARDLIGHT;
-							case _: switch(cmd.flags & 0xF000000) {
-								case Tilesheet.TILE_BLEND_DIFFERENCE: DIFFERENCE;
-								case Tilesheet.TILE_BLEND_INVERT:     INVERT;
-								case _:                               NORMAL;
-							}
-						}
-					};
-
-					if (useTransform) {
-						useScale = false;
-						useRotation = false;
-					}
-
-					var scaleIndex = 0;
-					var rotationIndex = 0;
-					var transformIndex = 0;
-					var rgbIndex = 0;
-					var alphaIndex = 0;
-
-					var stride = 3;
-					if (useRect) {
-						stride = useOrigin ? 8 : 6;
-					}
-					if (useScale) {
-						scaleIndex = stride;
-						stride += 1;
-					}
-					if (useRotation) {
-						rotationIndex = stride;
-						stride += 1;
-					}
-					if (useTransform) {
-						transformIndex = stride;
-						stride += 4;
-					}
-					if (useRGB) {
-						rgbIndex = stride;
-						stride += 3;
-					}
-					if (useAlpha) {
-						alphaIndex = stride;
-						stride += 1;
-					}
-
-					var totalCount = cmd.tileData.length;
-					if (cmd.count >= 0 && totalCount > cmd.count) {
-						totalCount = cmd.count;
-					}
-					var itemCount = div (totalCount, stride);
-					if (itemCount <= 0) {
-						continue;
-					}
-
-					var tileID = -1;
-					var rect:Rectangle = cmd.sheet.__rectTile;
-					var tileUV:Rectangle = cmd.sheet.__rectUV;
-					var center:Point = cmd.sheet.__point;
-
-					var vertexCount = itemCount * 4;
-					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
-					var out = vertexBuffer.lock ();
-
-					for (itemIndex in 0...itemCount) {
-
-						var index = itemIndex * stride;
-
-						var x = cmd.tileData[index + 0];
-						var y = cmd.tileData[index + 1];
-
-						if (useRect) {
-
-							tileID = -1;
-
-							rect.x = cmd.tileData[index + 2];
-							rect.y = cmd.tileData[index + 3];
-							rect.width = cmd.tileData[index + 4];
-							rect.height = cmd.tileData[index + 5];
-							
-							if (useOrigin) {
-								center.x = cmd.tileData[index + 6];
-								center.y = cmd.tileData[index + 7];
-							} else {
-								center.setTo(0, 0);
-							}
-							
-							tileUV.setTo(
-								rect.left / cmd.sheet.__bitmap.width,
-								rect.top / cmd.sheet.__bitmap.height,
-								rect.right / cmd.sheet.__bitmap.width,
-								rect.bottom / cmd.sheet.__bitmap.height
-							);
-
-						} else {
-
-							tileID = Std.int (cmd.tileData[index + 2]);
-							rect = cmd.sheet.getTileRect(tileID);	
-							center = cmd.sheet.getTileCenter(tileID);	
-							tileUV = cmd.sheet.getTileUVs(tileID);	
-
-						}
-
-						if (rect == null || rect.width <= 0 || rect.height <= 0 || center == null) {
-							continue;
-						}	
-
-						var alpha = object.__worldAlpha;
-						var red:UInt8 = 255, green:UInt8 = 255, blue:UInt8 = 255;
-						var scale = 1.0;
-						var rotation = 0.0;
-						var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
-
-						if (useRGB) {
-							// TODO(james4k): premultiplied alpha?
-							red   = Std.int (cmd.tileData[index + rgbIndex + 0] * 255);
-							green = Std.int (cmd.tileData[index + rgbIndex + 1] * 255);
-							blue  = Std.int (cmd.tileData[index + rgbIndex + 2] * 255);
-						}
-
-						if (useAlpha) {
-							alpha *= cmd.tileData[index + alphaIndex];	
-						}
-
-						if (useScale) {
-							scale = cmd.tileData[index + scaleIndex];
-						}
-
-						if (useRotation) {
-							rotation = cmd.tileData[index + rotationIndex];
-						}
-
-						if (useTransform) {
-							a = cmd.tileData[index + transformIndex + 0];
-							b = cmd.tileData[index + transformIndex + 1];
-							c = cmd.tileData[index + transformIndex + 2];
-							d = cmd.tileData[index + transformIndex + 3];
-						} else {
-							a = scale * Math.cos (rotation);
-							b = scale * Math.sin (rotation);
-							c = -b;
-							d = a;
-						}
-
-						var tx = x - (center.x * a + center.y * c);
-						var ty = y - (center.x * b + center.y * d);
-
-						var w0 = rect.width * 1.0;
-						var w1 = 0.0;
-						var h0 = rect.height * 1.0;
-						var h1 = 0.0;
-
-						// tileUV.width, height are actually x1, y1
-
-						out.vec3 (a*w1 + c*h1 + tx, d*h1 + b*w1 + ty, 0);
-						out.vec2 (tileUV.x, tileUV.y);
-						out.color (red, green, blue, Std.int(alpha * 0xff));
-
-						out.vec3 (a*w0 + c*h1 + tx, d*h1 + b*w0 + ty, 0);
-						out.vec2 (tileUV.width, tileUV.y);
-						out.color (red, green, blue, Std.int(alpha * 0xff));
-
-						out.vec3 (a*w0 + c*h0 + tx, d*h0 + b*w0 + ty, 0);
-						out.vec2 (tileUV.width, tileUV.height);
-						out.color (red, green, blue, Std.int(alpha * 0xff));
-
-						out.vec3 (a*w1 + c*h0 + tx, d*h0 + b*w1 + ty, 0);
-						out.vec2 (tileUV.x, tileUV.height);
-						out.color (red, green, blue, Std.int(alpha * 0xff));
-
-					}
-
-					vertexBuffer.unlock ();
-
-					var indexBuffer = transientIndexBuffer (itemCount * 6);
-					var unsafeIndices = indexBuffer.lock ();
-					for (i in 0...itemCount) {
-						unsafeIndices[i*6 + 0] = i*4 + 0;
-						unsafeIndices[i*6 + 1] = i*4 + 1;
-						unsafeIndices[i*6 + 2] = i*4 + 2;
-						unsafeIndices[i*6 + 3] = i*4 + 0;
-						unsafeIndices[i*6 + 4] = i*4 + 3;
-						unsafeIndices[i*6 + 5] = i*4 + 2;
-					}
-					indexBuffer.unlock ();
-
-					setObjectTransform (object);
-					transform.append (viewProj);
-					transform.transpose ();
-
-					var texture = imageTexture (cmd.sheet.__bitmap.image);
-
-					setBlendState (blendMode);
-					ctx.bindShader (defaultShader);
-					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
-					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
-					ctx.setVertexSource (vertexBuffer);
-					ctx.setIndexSource (indexBuffer);
-					ctx.setTexture (0, texture);
-					ctx.setTextureAddressMode (0, Clamp, Clamp);
-					if (cmd.smooth) {
-						ctx.setTextureFilter (0, TextureFilter.Linear, TextureFilter.Linear);
-					} else {
-						ctx.setTextureFilter (0, TextureFilter.Nearest, TextureFilter.Nearest);
-					}
-					ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, itemCount * 2);
-					setBlendState (this.blendMode);
 
 				//case DrawTriangles (vertices, indices, uvtData, culling, colors, blendMode):
 				case DRAW_TRIANGLES:
@@ -1195,6 +1204,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					indexBuffer.unlock ();
 
 					ctx.bindShader (defaultShader);
+					ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 					ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 					ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 					ctx.setVertexSource (vertexBuffer);
@@ -1224,14 +1234,6 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					r.readLineGradientStyle ();
 
-				case LINE_BITMAP_STYLE:
-
-					r.readLineBitmapStyle ();
-
-				case DRAW_PATH:
-
-					r.readDrawPath ();
-
 				case OVERRIDE_MATRIX:
 
 					r.readOverrideMatrix ();
@@ -1248,19 +1250,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			closePath (object);
 		}
 
-		if (clipRect != null) {
-
-			viewProj = Matrix4.createOrtho (
-				0 + pixelOffsetX,
-				this.width + pixelOffsetX,
-				this.height + pixelOffsetY,
-				0 + pixelOffsetY,
-				-1, 1
-			);
-
-			ctx.setViewport (0, 0, this.width, this.height);
-
-		}
+		endClipRect ();
 
 	}
 
@@ -1307,6 +1297,7 @@ class ConsoleRenderer extends AbstractRenderer {
 			indexBuffer.unlock ();
 
 			ctx.bindShader (fillShader);
+			ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
 			ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
 			ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
 			ctx.setVertexSource (vertexBuffer);

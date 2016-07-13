@@ -26,11 +26,12 @@ class DOMShape {
 			
 			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas == null && graphics.__canvas != null)) {
 				
-				//#if old
-				CanvasGraphics.render (graphics, renderSession);
-				//#else
-				//CanvasGraphics.renderObjectGraphics (shape, renderSession);
-				//#end
+				var matrix = Matrix.__temp;
+				matrix.identity ();
+				
+				// TODO: Implement scaling
+				
+				CanvasGraphics.render (graphics, renderSession, matrix);
 				
 				if (graphics.__canvas != null) {
 					

@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import lime.ui.MouseCursor;
@@ -149,6 +149,15 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
+		// TODO: Better fix?
+		// (this is caused by the "hitObject" logic in hit testing)
+		
+		while (stack.length > 1 && stack[stack.length - 1] == stack[stack.length - 2]) {
+			
+			stack.pop ();
+			
+		}
+		
 		return hitTest;
 		
 	}
@@ -177,31 +186,9 @@ class SimpleButton extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderCairo (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 	}
 	
@@ -219,31 +206,9 @@ class SimpleButton extends InteractiveObject {
 		
 		#if !neko
 		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderCanvas (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -268,31 +233,9 @@ class SimpleButton extends InteractiveObject {
 		
 		//if (!__renderable) return;
 		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		// TODO: scrollRect
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderDOM (renderSession);
-		
-		//for (orphan in __removedChildren) {
-			//
-			//if (orphan.stage == null) {
-				//
-				//orphan.__renderDOM (renderSession);
-				//
-			//}
-			//
-		//}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (this);
 		
 		#end
 		
@@ -303,17 +246,9 @@ class SimpleButton extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (__cacheAsBitmap) {
-			__cacheGL(renderSession);
-			return;
-		}
-		
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
-		
+		renderSession.maskManager.pushObject (this);
 		__currentState.__renderGL (renderSession);
-		
-		__postRenderGL (renderSession);
+		renderSession.maskManager.popObject (this);
 		
 	}
 	
@@ -341,8 +276,12 @@ class SimpleButton extends InteractiveObject {
 		overrideTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 		overrideTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 		
-		state.__updateTransforms (overrideTransform);
-		state.__updateChildren (true);
+		var cacheTransform = state.__transform;
+		state.__transform = overrideTransform;
+		
+		state.__update (false, true);
+		
+		state.__transform = cacheTransform;
 		
 		return cacheTransform;
 		
@@ -434,12 +373,19 @@ class SimpleButton extends InteractiveObject {
 	
 	private function set___currentState (value:DisplayObject):DisplayObject {
 		
+		if (__currentState != null) {
+			
+			__currentState.__renderParent = null;
+			
+		}
+		
 		if (value.parent != null) {
 			
 			value.parent.removeChild (value);
 			
 		}
 		
+		value.__renderParent = this;
 		return __currentState = value;
 		
 	}
@@ -511,8 +457,3 @@ class SimpleButton extends InteractiveObject {
 	
 	
 }
-
-
-#else
-typedef SimpleButton = openfl._legacy.display.SimpleButton;
-#end

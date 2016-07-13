@@ -1,10 +1,9 @@
 language: haxe
 
 haxe:
-  - "3.2.0"
-  #- "3.1.3"
+  - "3.2.1"
 
-env: 
+env:
   - TARGET=flash
   - TARGET=neko
   - TARGET=cpp
@@ -22,6 +21,7 @@ before_install:
 install:
   - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
   - haxelib dev lime ~/lime
+  - haxelib install compiletime
   - haxelib install hxcpp > log.txt || cat log.txt
   - haxelib install format > log.txt || cat log.txt
   - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
@@ -34,11 +34,10 @@ install:
   - cd ~/munit/tool
   - haxe build.hxml
   - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > log.txt || cat log.txt; fi
-  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -Dlegacy -nocffi > log.txt || cat log.txt ; fi
   - haxelib run lime rebuild tools -nocffi
 
 before_script:
-  - cd $TRAVIS_BUILD_DIR/tests
+  - cd $TRAVIS_BUILD_DIR/tests/unit
   - haxelib run munit gen
 
 script:
@@ -46,13 +45,14 @@ script:
   #- haxelib run lime test neko -Ddisable-cffi
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -nocffi ; fi
   - if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Ddisable-cffi -nocffi ; fi
-  - if [[ $TARGET == 'neko' ]]; then haxelib run lime test neko -Dlegacy -nocffi ; fi
-  #- if [[ $TARGET == 'neko' ]]; then haxelib run lime build neko -Dhybrid -nocffi ; fi
   - if [[ $TARGET == 'flash' ]]; then haxelib run munit test -as3 -norun -nocffi ; fi
   - if [[ $TARGET == 'html5' ]]; then haxelib run munit test -browser phantomjs -nocffi ; fi
   - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux --window-hardware=false ; fi
-  - if [[ $TARGET == 'cpp' ]]; then haxelib run lime test linux -Dlegacy ; fi
   - if [[ $TARGET == 'docs' ]]; then cd $TRAVIS_BUILD_DIR/docs && haxe build.hxml ; fi
+
+  # Functional testing
+  - if [[ $TARGET == 'neko' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_neko.hxml && neko tests.n ; fi
+  - if [[ $TARGET == 'cpp' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_cpp.hxml && ./bin/FunctionalTest ; fi
 
 notifications:
   slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz

@@ -1,4 +1,4 @@
-package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net;
 
 
 import lime.app.Event;
@@ -363,7 +363,7 @@ class URLLoader extends EventDispatcher {
 		
 		CURLEasy.reset (__curl);
 		CURLEasy.setopt (__curl, URL, url);
-		
+
 		switch (method) {
 			
 			case HEAD:
@@ -394,8 +394,9 @@ class URLLoader extends EventDispatcher {
 				CURLEasy.setopt(__curl, INFILESIZE, uri.length);
 			
 			case _:
+				var reqMethod:String = method;
 				
-				CURLEasy.setopt(__curl, CUSTOMREQUEST, cast method);
+				CURLEasy.setopt(__curl, CUSTOMREQUEST, reqMethod);
 				CURLEasy.setopt(__curl, READFUNCTION, readFunction.bind(_, uri));
 				CURLEasy.setopt(__curl, INFILESIZE, uri.length);
 			
@@ -627,8 +628,3 @@ class URLLoader extends EventDispatcher {
 
 
 typedef XMLHttpRequestProgressEvent = Dynamic;
-
-
-#else
-typedef URLLoader = openfl._legacy.net.URLLoader;
-#end

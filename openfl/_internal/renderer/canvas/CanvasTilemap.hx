@@ -1,13 +1,13 @@
 package openfl._internal.renderer.canvas;
 
 
+import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 
+@:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
-@:access(openfl.display.TilemapLayer)
-@:access(openfl.display.Tileset)
 
 
 class CanvasTilemap {
@@ -16,18 +16,15 @@ class CanvasTilemap {
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		
+		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
 		var context = renderSession.context;
 		
-		if (tilemap.__mask != null) {
-			
-			renderSession.maskManager.pushMask (tilemap.__mask);
-			
-		}
+		renderSession.maskManager.pushObject (tilemap);
 		
 		context.globalAlpha = tilemap.__worldAlpha;
-		var transform = tilemap.__renderTransform;
+		var transform = tilemap.__worldTransform;
 		
 		if (renderSession.roundPixels) {
 			
@@ -48,36 +45,36 @@ class CanvasTilemap {
 			
 		}
 		
-		var tileRect = null;
-		var cacheTileID = -1;
+		var cacheBitmapData = null;
+		var source = null;
 		
-		var tiles, count, tile, source, rects;
+		var tiles, count, tile, tileData, bitmapData;
 		
-		for (layer in tilemap.__layers) {
+		tiles = tilemap.__tiles;
+		count = tiles.length;
+		
+		for (i in 0...count) {
 			
-			if (layer.__tiles.length == 0 || layer.tileset == null || layer.tileset.bitmapData == null) continue;
+			tile = tiles[i];
+			tileData = tile.tileData;
+			bitmapData = tileData.bitmapData;
 			
-			layer.tileset.bitmapData.__sync ();
-			source = layer.tileset.bitmapData.image.src;
+			if (bitmapData == null) continue;
 			
-			tiles = layer.__tiles;
-			count = tiles.length;
-			rects = layer.tileset.__rects;
-			
-			for (i in 0...count) {
+			if (bitmapData != cacheBitmapData) {
 				
-				tile = tiles[i];
-				
-				if (tile.id != cacheTileID) {
+				if (tileData.bitmapData.image.buffer.__srcImage == null) {
 					
-					tileRect = rects[tile.id];
-					cacheTileID = tile.id;
+					ImageCanvasUtil.convertToCanvas (tileData.bitmapData.image);
 					
 				}
 				
-				context.drawImage (source, tileRect.x, tileRect.y, tileRect.width, tileRect.height, tile.x, tile.y, tileRect.width, tileRect.height);
+				source = bitmapData.image.src;
+				cacheBitmapData = tileData.bitmapData;
 				
 			}
+			
+			context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, tile.x, tile.y, tileData.width, tileData.height);
 			
 		}
 		
@@ -90,11 +87,8 @@ class CanvasTilemap {
 			
 		}
 		
-		if (tilemap.__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
+		renderSession.maskManager.popObject (tilemap);
+		
 		#end
 		
 	}

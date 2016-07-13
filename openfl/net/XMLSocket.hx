@@ -1,4 +1,4 @@
-package openfl.net; #if (!openfl_legacy || disable_legacy_networking)
+package openfl.net;
 
 
 import openfl.events.DataEvent;
@@ -143,8 +143,3 @@ class XMLSocket extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef XMLSocket = openfl._legacy.net.XMLSocket;
-#end

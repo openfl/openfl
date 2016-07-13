@@ -28,9 +28,7 @@ import openfl.ui.GameInputDevice;
 		var event = new GameInputEvent (type, bubbles, cancelable, device);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

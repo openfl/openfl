@@ -1,6 +1,11 @@
 #include "common.fxh"
 
 
+float4 g_scissorRect : register (c0);
+#define g_scissorMin (g_scissorRect.xy)
+#define g_scissorMax (g_scissorRect.zw)
+
+
 struct PS_IN {
 
 	PS_IN_POSITION
@@ -10,6 +15,17 @@ struct PS_IN {
 
 
 float4 main( PS_IN In ) : PS_TARGET_OUT {
+
+#if defined WF_VITA
+	// TODO(james4k): maybe stencil test instead, or multiply with alpha
+	{
+		float2 s0 = step(g_scissorMin, In.Position.xy);
+		float2 s1 = step(In.Position.xy, g_scissorMax);
+		if (s0.x*s0.y * s1.x*s1.y < 0.5) {
+			discard;
+		}
+	}
+#endif
 
 	return In.Color;
 

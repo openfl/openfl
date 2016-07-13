@@ -1,4 +1,4 @@
-package openfl.text; #if !openfl_legacy
+package openfl.text;
 
 
 import lime.text.Font in LimeFont;
@@ -108,8 +108,3 @@ class Font extends LimeFont {
 	
 	
 }
-
-
-#else
-typedef Font = openfl._legacy.text.Font;
-#end

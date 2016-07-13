@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
@@ -20,16 +21,12 @@ class CanvasBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.pushMask (bitmap.__mask);
-				
-			}
+			renderSession.maskManager.pushObject (bitmap, false);
 			
-			bitmap.bitmapData.__sync ();
+			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 			
 			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__renderTransform;
+			var transform = bitmap.__worldTransform;
 			var scrollRect = bitmap.scrollRect;
 			
 			if (renderSession.roundPixels) {
@@ -70,11 +67,7 @@ class CanvasBitmap {
 				
 			}
 			
-			if (bitmap.__mask != null) {
-				
-				renderSession.maskManager.popMask ();
-				
-			}
+			renderSession.maskManager.popObject (bitmap, false);
 			
 		}
 		#end

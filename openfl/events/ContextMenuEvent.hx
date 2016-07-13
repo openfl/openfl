@@ -29,9 +29,7 @@ class ContextMenuEvent extends Event {
 		var event = new ContextMenuEvent (type, bubbles, cancelable, mouseTarget, contextMenuOwner);
 		event.target = target;
 		event.currentTarget = currentTarget;
-		#if !openfl_legacy
 		event.eventPhase = eventPhase;
-		#end
 		return event;
 		
 	}

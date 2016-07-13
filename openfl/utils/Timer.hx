@@ -1,4 +1,4 @@
-package openfl.utils; #if !openfl_legacy
+package openfl.utils;
 
 
 import haxe.Timer in HaxeTimer;
@@ -168,8 +168,3 @@ class Timer extends EventDispatcher {
 	
 	
 }
-
-
-#else
-typedef Timer = openfl._legacy.utils.Timer;
-#end

@@ -23,9 +23,16 @@ class Window extends LimeWindow {
 		
 		super.create (application);
 		
-		#if (!flash && !openfl_legacy)
+		#if !flash
 		
 		stage = new Stage (this, Reflect.hasField (config, "background") ? config.background : 0xFFFFFF);
+		
+		if (Reflect.hasField (config, "resizable") && !config.resizable) {
+			
+			stage.__setLogicalSize (config.width, config.height);
+			
+		}
+		
 		application.addModule (stage);
 		
 		#else

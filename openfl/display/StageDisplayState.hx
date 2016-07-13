@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract StageDisplayState(Null<Int>) {
@@ -34,8 +34,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef StageDisplayState = openfl._legacy.display.StageDisplayState;
-#end

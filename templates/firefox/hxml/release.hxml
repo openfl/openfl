@@ -3,4 +3,3 @@
 -cp ::OUTPUT_DIR::/haxe
 -D firefoxos
 -D html5
---macro allowPackage("flash")

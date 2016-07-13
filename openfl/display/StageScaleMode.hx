@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 @:enum abstract StageScaleMode(Null<Int>) {
@@ -37,8 +37,3 @@ package openfl.display; #if !openfl_legacy
 	}
 	
 }
-
-
-#else
-typedef StageScaleMode = openfl._legacy.display.StageScaleMode;
-#end

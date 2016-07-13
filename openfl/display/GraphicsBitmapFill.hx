@@ -1,4 +1,4 @@
-package openfl.display; #if !openfl_legacy
+package openfl.display;
 
 
 import openfl.display.IGraphicsData;
@@ -33,8 +33,3 @@ import openfl.Lib;
 	
 	
 }
-
-
-#else
-typedef GraphicsBitmapFill = openfl._legacy.display.GraphicsBitmapFill;
-#end

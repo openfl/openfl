@@ -1,4 +1,4 @@
-package openfl.net; #if !openfl_legacy
+package openfl.net;
 
 
 import haxe.io.Path;
@@ -106,7 +106,3 @@ class FileReferenceList extends EventDispatcher {
 	
 	
 }
-
-
-#else
-#end
