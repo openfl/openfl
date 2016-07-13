@@ -11,9 +11,8 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tilemap)
-@:access(openfl.display.TilemapLayer)
-@:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
+@:access(openfl.display.TileData)
 
 
 class GLTilemap {
@@ -21,7 +20,7 @@ class GLTilemap {
 	
 	public static function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		if (tilemap.__layers == null || tilemap.__layers.length == 0) return;
+		if (tilemap.__tiles.length == 0) return;
 		
 		var gl = renderSession.gl;
 		var shader;
@@ -45,149 +44,152 @@ class GLTilemap {
 		gl.uniform1f (shader.data.uAlpha.index, tilemap.__worldAlpha);
 		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__worldTransform));
 		
-		var tiles, count, bufferData, buffer, previousLength, offset, uvs, uv;
-		var cacheTileID = -1, tileWidth = 0, tileHeight = 0;
-		var tile, tileMatrix, x, y, x2, y2, x3, y3, x4, y4;
+		var tiles, count, bufferData, buffer, startIndex, offset, uvs, uv;
+		var tileWidth = 0, tileHeight = 0;
+		var tile, tileData, tileMatrix, x, y, x2, y2, x3, y3, x4, y4;
 		
-		for (layer in tilemap.__layers) {
+		tiles = tilemap.__tiles;
+		count = tiles.length;
+		
+		bufferData = tilemap.__bufferData;
+		
+		if (bufferData == null || tilemap.__dirty || bufferData.length != count * 24) {
 			
-			if (layer.__tiles.length == 0 || layer.tileset == null || layer.tileset.bitmapData == null) continue;
+			startIndex = 0;
 			
-			gl.bindTexture (gl.TEXTURE_2D, layer.tileset.bitmapData.getTexture (gl));
-			
-			tiles = layer.__tiles;
-			count = tiles.length;
-			uvs = layer.tileset.__uvs;
-			
-			bufferData = layer.__bufferData;
-			
-			if (bufferData == null || bufferData.length != count * 24) {
+			if (bufferData == null) {
 				
-				previousLength = 0;
+				bufferData = new Float32Array (count * 24);
 				
-				if (bufferData == null) {
+			} else if (bufferData.length != count * 24) {
+				
+				if (!tilemap.__dirty) {
 					
-					bufferData = new Float32Array (count * 24);
-					
-				} else {
-					
-					previousLength = Std.int (bufferData.length / 24);
-					
-					var data = new Float32Array (count * 24);
-					
-					for (i in 0...bufferData.length) {
-						
-						data[i] = bufferData[i];
-						
-					}
-					
-					bufferData = data;
+					startIndex = Std.int (bufferData.length / 24);
 					
 				}
 				
-				for (i in previousLength...count) {
-					
-					updateTileUV(tiles[i], uvs, i * 24, bufferData);
-					
-				}
-				
-				layer.__bufferData = bufferData;
+				var data = new Float32Array (count * 24);
+				data.set (bufferData);
+				bufferData = data;
 				
 			}
 			
-			if (layer.__buffer == null) {
+			for (i in startIndex...count) {
 				
-				layer.__buffer = gl.createBuffer ();
-				
-			}
-			
-			gl.bindBuffer (gl.ARRAY_BUFFER, layer.__buffer);
-			
-			for (i in 0...count) {
-				
-				tile = tiles[i];
-				
-				if (tile.id != cacheTileID) {
-					
-					tileWidth = Std.int (layer.tileset.__rects[tile.id].width);
-					tileHeight = Std.int (layer.tileset.__rects[tile.id].height);
-					cacheTileID = tile.id;
-					
-				}
-				
-				offset = i * 24;
-				
-				if (tile.__dirtyUV) {
-					
-					updateTileUV(tile, uvs, offset, bufferData);
-					
-				}
-				
-				if (tile.__dirtyTranform) {
-					
-					tileMatrix = tile.matrix;
-					
-					x = tile.__transform[0] = tileMatrix.__transformX (0, 0);
-					y = tile.__transform[1] = tileMatrix.__transformY (0, 0);
-					x2 = tile.__transform[2] = tileMatrix.__transformX (tileWidth, 0);
-					y2 = tile.__transform[3] = tileMatrix.__transformY (tileWidth, 0);
-					x3 = tile.__transform[4] = tileMatrix.__transformX (0, tileHeight);
-					y3 = tile.__transform[5] = tileMatrix.__transformY (0, tileHeight);
-					x4 = tile.__transform[6] = tileMatrix.__transformX (tileWidth, tileHeight);
-					y4 = tile.__transform[7] = tileMatrix.__transformY (tileWidth, tileHeight);
-					
-					tile.__dirtyTranform = false;
-					
-				} else {
-					
-					x = tile.__transform[0];
-					y = tile.__transform[1];
-					x2 = tile.__transform[2];
-					y2 = tile.__transform[3];
-					x3 = tile.__transform[4];
-					y3 = tile.__transform[5];
-					x4 = tile.__transform[6];
-					y4 = tile.__transform[7];
-					
-				}
-				
-				bufferData[offset + 0] = x;
-				bufferData[offset + 1] = y;
-				bufferData[offset + 4] = x2;
-				bufferData[offset + 5] = y2;
-				bufferData[offset + 8] = x3;
-				bufferData[offset + 9] = y3;
-				
-				bufferData[offset + 12] = x3;
-				bufferData[offset + 13] = y3;
-				bufferData[offset + 16] = x2;
-				bufferData[offset + 17] = y2;
-				bufferData[offset + 20] = x4;
-				bufferData[offset + 21] = y4;
+				updateTileUV (tiles[i], i * 24, bufferData);
 				
 			}
 			
-			gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
-			
-			gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-			gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
-			
-			gl.drawArrays (gl.TRIANGLES, 0, tiles.length * 6);
+			tilemap.__bufferData = bufferData;
 			
 		}
 		
+		if (tilemap.__buffer == null) {
+			
+			tilemap.__buffer = gl.createBuffer ();
+			
+		}
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
+		
+		for (i in 0...count) {
+			
+			tile = tiles[i];
+			tileData = tile.tileData;
+			tileWidth = tileData.width;
+			tileHeight = tileData.height;
+			
+			offset = i * 24;
+			
+			if (tile.__tileDataDirty) {
+				
+				updateTileUV (tile, offset, bufferData);
+				
+			}
+			
+			if (tile.__transformDirty) {
+				
+				tileMatrix = tile.matrix;
+				
+				x = tile.__transform[0] = tileMatrix.__transformX (0, 0);
+				y = tile.__transform[1] = tileMatrix.__transformY (0, 0);
+				x2 = tile.__transform[2] = tileMatrix.__transformX (tileWidth, 0);
+				y2 = tile.__transform[3] = tileMatrix.__transformY (tileWidth, 0);
+				x3 = tile.__transform[4] = tileMatrix.__transformX (0, tileHeight);
+				y3 = tile.__transform[5] = tileMatrix.__transformY (0, tileHeight);
+				x4 = tile.__transform[6] = tileMatrix.__transformX (tileWidth, tileHeight);
+				y4 = tile.__transform[7] = tileMatrix.__transformY (tileWidth, tileHeight);
+				
+				tile.__transformDirty = false;
+				
+			} else {
+				
+				x = tile.__transform[0];
+				y = tile.__transform[1];
+				x2 = tile.__transform[2];
+				y2 = tile.__transform[3];
+				x3 = tile.__transform[4];
+				y3 = tile.__transform[5];
+				x4 = tile.__transform[6];
+				y4 = tile.__transform[7];
+				
+			}
+			
+			bufferData[offset + 0] = x;
+			bufferData[offset + 1] = y;
+			bufferData[offset + 4] = x2;
+			bufferData[offset + 5] = y2;
+			bufferData[offset + 8] = x3;
+			bufferData[offset + 9] = y3;
+			
+			bufferData[offset + 12] = x3;
+			bufferData[offset + 13] = y3;
+			bufferData[offset + 16] = x2;
+			bufferData[offset + 17] = y2;
+			bufferData[offset + 20] = x4;
+			bufferData[offset + 21] = y4;
+			
+		}
+		
+		gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
+		
+		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		
+		var cacheBitmapData = tiles[0].tileData.bitmapData;
+		var lastIndex = 0;
+		
+		for (i in 0...count) {
+			
+			tileData = tiles[i].tileData;
+			
+			if (tileData.bitmapData != cacheBitmapData || i == count - 1) {
+				
+				gl.bindTexture (gl.TEXTURE_2D, cacheBitmapData.getTexture (gl));
+				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, i * 6);
+				
+				cacheBitmapData = tileData.bitmapData;
+				lastIndex = i;
+				
+			}
+			
+		}
+		
+		tilemap.__dirty = false;
 		renderSession.maskManager.popObject (tilemap);
 		
 	}
 	
-	private static inline function updateTileUV (tile:Tile, uvs:Array<Rectangle>, tileOffset:Int, bufferData:Float32Array):Void {
+	
+	private static inline function updateTileUV (tile:Tile, tileOffset:Int, bufferData:Float32Array):Void {
 		
-		var uv = uvs[tile.id];
+		var tileData = tile.tileData;
 		
-		var x = uv.x;
-		var y = uv.y;
-		var x2 = uv.width;
-		var y2 = uv.height;
+		var x = tileData.__uvX;
+		var y = tileData.__uvY;
+		var x2 = tileData.__uvWidth;
+		var y2 = tileData.__uvHeight;
 		
 		bufferData[tileOffset + 2] = x;
 		bufferData[tileOffset + 3] = y;
@@ -203,7 +205,7 @@ class GLTilemap {
 		bufferData[tileOffset + 22] = x2;
 		bufferData[tileOffset + 23] = y2;
 		
-		tile.__dirtyUV = false;
+		tile.__tileDataDirty = false;
 		
 	}
 	
