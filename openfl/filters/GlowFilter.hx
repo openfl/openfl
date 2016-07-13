@@ -68,9 +68,8 @@ import openfl.geom.Rectangle;
 		} else {
 			
 			var even = pass % 2 == 0;
-			var scale = Math.pow (0.5, pass >> 1);
-			__glowShader.uRadius[0] = even ? scale * blurX : 0;
-			__glowShader.uRadius[1] = even ? 0 : scale * blurY;
+			__glowShader.uRadius[0] = even ? 0.5 * blurX : 0;
+			__glowShader.uRadius[1] = even ? 0 : 0.5 * blurY;
 			__glowShader.uColor[0] = ((color >> 16) & 0xFF) / 255;
 			__glowShader.uColor[1] = ((color >> 8) & 0xFF) / 255;
 			__glowShader.uColor[2] = (color & 0xFF) / 255;
@@ -119,22 +118,21 @@ import openfl.geom.Rectangle;
 
 private class GlowShader extends Shader {
 	
-	
+	// :TODO: generate shader with texfetch number depending on blurX and blurY
+
 	@vertex var vertex = [
 		'uniform vec2 uRadius;',
-		'varying vec2 vBlurCoords[7];',
+		'varying vec2 vBlurCoords[5];',
 		
 		'void main(void)',
 		'{',
 		
-			'vec2 r = 0.5 * uRadius / ${Shader.uTextureSize};',
-			'vBlurCoords[0] = ${Shader.aTexCoord} - r * 1.2;',
-			'vBlurCoords[1] = ${Shader.aTexCoord} - r * 0.8;',
-			'vBlurCoords[2] = ${Shader.aTexCoord} - r * 0.4;',
-			'vBlurCoords[3] = ${Shader.aTexCoord};',
-			'vBlurCoords[4] = ${Shader.aTexCoord} + r * 0.4;',
-			'vBlurCoords[5] = ${Shader.aTexCoord} + r * 0.8;',
-			'vBlurCoords[6] = ${Shader.aTexCoord} + r * 1.2;',
+			'vec2 r = uRadius / ${Shader.uTextureSize};', // :TODO: move this out of VS
+			'vBlurCoords[0] = ${Shader.aTexCoord} - r * 1.0;',
+			'vBlurCoords[1] = ${Shader.aTexCoord} - r * 0.5;',
+			'vBlurCoords[2] = ${Shader.aTexCoord};',
+			'vBlurCoords[3] = ${Shader.aTexCoord} + r * 0.5;',
+			'vBlurCoords[4] = ${Shader.aTexCoord} + r * 1.0;',
 			
 			'${Shader.vTexCoord} = ${Shader.aTexCoord};',
 			'${Shader.vColor} = ${Shader.aColor};',
@@ -147,18 +145,16 @@ private class GlowShader extends Shader {
 		'uniform vec4 uColor;',
 		'uniform float uStrength;',
 		
-		'varying vec2 vBlurCoords[7];',
+		'varying vec2 vBlurCoords[5];',
 		
 		'void main(void)',
 		'{',
 			'float a = 0.0;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[0]).a * 0.00443;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[1]).a * 0.05399;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[2]).a * 0.24197;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[3]).a * 0.39894;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[4]).a * 0.24197;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[5]).a * 0.05399;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[6]).a * 0.00443;',
+			'a += texture2D(${Shader.uSampler}, vBlurCoords[0]).a * 0.2;',
+			'a += texture2D(${Shader.uSampler}, vBlurCoords[1]).a * 0.2;',
+			'a += texture2D(${Shader.uSampler}, vBlurCoords[2]).a * 0.2;',
+			'a += texture2D(${Shader.uSampler}, vBlurCoords[3]).a * 0.2;',
+			'a += texture2D(${Shader.uSampler}, vBlurCoords[4]).a * 0.2;',
 			'a = clamp(a * uStrength, 0.0, 1.0);',
 			'a *= uColor.a;',
 			
