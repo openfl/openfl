@@ -7,6 +7,7 @@ import openfl.geom.Rectangle;
 
 @:final class GlowFilter extends BitmapFilter {
 	
+	public static inline var MAXIMUM_FETCH_COUNT = 20;
 	
 	public var alpha:Float;
 	public var blurX:Float;
@@ -67,9 +68,19 @@ import openfl.geom.Rectangle;
 			
 		} else {
 			
-			var even = pass % 2 == 0;
-			__glowShader.uRadius[0] = even ? 0.5 * blurX : 0;
-			__glowShader.uRadius[1] = even ? 0 : 0.5 * blurY;
+			// :TODO: reduce the number of tex fetches  using texture HW filtering
+			
+			var horizontal_pass = pass % 2 == 0;
+			var blur = horizontal_pass ? blurX : blurY;
+			var fetch_count = Math.min(blur, MAXIMUM_FETCH_COUNT);
+			var pass_width = horizontal_pass ? blur - 1 : 0;
+			var pass_height = horizontal_pass ? 0 : blur - 1;
+			__glowShader.uFetchCountInverseFetchCount[0] = fetch_count;
+			__glowShader.uFetchCountInverseFetchCount[1] = 1.0 / fetch_count;
+			__glowShader.uTexCoordDelta[0] = fetch_count > 1 ? pass_width / (fetch_count - 1) : 0;
+			__glowShader.uTexCoordDelta[1] = fetch_count > 1 ? pass_height / (fetch_count - 1) : 0;
+			__glowShader.uRadius[0] = 0.5 * pass_width;
+			__glowShader.uRadius[1] = 0.5 * pass_height;
 			__glowShader.uColor[0] = ((color >> 16) & 0xFF) / 255;
 			__glowShader.uColor[1] = ((color >> 8) & 0xFF) / 255;
 			__glowShader.uColor[2] = (color & 0xFF) / 255;
@@ -118,23 +129,13 @@ import openfl.geom.Rectangle;
 
 private class GlowShader extends Shader {
 	
-	// :TODO: generate shader with texfetch number depending on blurX and blurY
-
 	@vertex var vertex = [
 		'uniform vec2 uRadius;',
-		'varying vec2 vBlurCoords[5];',
-		
+
 		'void main(void)',
 		'{',
-		
-			'vec2 r = uRadius / ${Shader.uTextureSize};', // :TODO: move this out of VS
-			'vBlurCoords[0] = ${Shader.aTexCoord} - r * 1.0;',
-			'vBlurCoords[1] = ${Shader.aTexCoord} - r * 0.5;',
-			'vBlurCoords[2] = ${Shader.aTexCoord};',
-			'vBlurCoords[3] = ${Shader.aTexCoord} + r * 0.5;',
-			'vBlurCoords[4] = ${Shader.aTexCoord} + r * 1.0;',
-			
-			'${Shader.vTexCoord} = ${Shader.aTexCoord};',
+			'vec2 r = uRadius / ${Shader.uTextureSize};',
+			'${Shader.vTexCoord} = ${Shader.aTexCoord} - r;',
 			'${Shader.vColor} = ${Shader.aColor};',
 			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
 		'}',
@@ -144,17 +145,18 @@ private class GlowShader extends Shader {
 	@fragment var fragment = [
 		'uniform vec4 uColor;',
 		'uniform float uStrength;',
-		
-		'varying vec2 vBlurCoords[5];',
+		'uniform vec2 uTexCoordDelta;',
+		'uniform vec2 uFetchCountInverseFetchCount;',
 		
 		'void main(void)',
 		'{',
+			'vec2 texcoord_delta = uTexCoordDelta / ${Shader.uTextureSize};', // :TODO: move to VS
+			'int fetch_count = int(uFetchCountInverseFetchCount.x);',
 			'float a = 0.0;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[0]).a * 0.2;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[1]).a * 0.2;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[2]).a * 0.2;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[3]).a * 0.2;',
-			'a += texture2D(${Shader.uSampler}, vBlurCoords[4]).a * 0.2;',
+			'for(int i = 0; i < ${GlowFilter.MAXIMUM_FETCH_COUNT}; ++i){',
+			'    if (i >= fetch_count) break;',
+			'    a += texture2D(${Shader.uSampler}, ${Shader.vTexCoord} + texcoord_delta * float(i)).a * uFetchCountInverseFetchCount.y;',
+			'}',
 			'a = clamp(a * uStrength, 0.0, 1.0);',
 			'a *= uColor.a;',
 			
