@@ -333,9 +333,9 @@ class BitmapData implements IBitmapDrawable {
 		if (!__isValid || sourceBitmapData == null) return;
 		
 		if (sourceBitmapData == this) {
-
+			
 			sourceBitmapData = sourceBitmapData.clone ();
-
+			
 		}
 		
 		image.copyPixels (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? alphaPoint.__toLimeVector2 () : null, mergeAlpha);

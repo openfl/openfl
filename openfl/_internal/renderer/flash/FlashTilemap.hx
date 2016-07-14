@@ -7,6 +7,8 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tilemap)
+@:access(openfl.display.TilemapData)
+@:access(openfl.display.Tileset)
 
 
 class FlashTilemap {
@@ -15,41 +17,55 @@ class FlashTilemap {
 	public static inline function render (tilemap:Tilemap):Void {
 		
 		#if flash
-		var bitmapData = tilemap.bitmapData;
+		if (tilemap.stage == null || !tilemap.visible || tilemap.alpha <= 0) return;
 		
-		bitmapData.lock ();
-		bitmapData.fillRect (bitmapData.rect, 0);
+		var tilemapData = tilemap.tilemapData;
 		
-		var tiles, count, tile, tileData, sourceBitmapData;
-		var sourceRect = new Rectangle ();
-		var destPoint = new Point ();
-		
-		if (tilemap.__tiles.length > 0) {
+		if (tilemapData != null) {
 			
-			tiles = tilemap.__tiles;
-			count = tiles.length;
+			var bitmapData = tilemapData.__bitmapData;
 			
-			for (i in 0...count) {
+			bitmapData.lock ();
+			bitmapData.fillRect (bitmapData.rect, 0);
+			
+			var tiles, count, tile, tileset, tileData, sourceBitmapData;
+			var sourceRect = new Rectangle ();
+			var destPoint = new Point ();
+			
+			if (tilemapData.__tiles.length > 0) {
 				
-				tile = tiles[i];
-				tileData = tile.tileData;
-				sourceBitmapData = tileData.bitmapData;
+				tiles = tilemapData.__tiles;
+				count = tiles.length;
 				
-				sourceRect.x = tileData.x;
-				sourceRect.y = tileData.y;
-				sourceRect.width = tileData.width;
-				sourceRect.height = tileData.height;
-				
-				destPoint.x = tile.x;
-				destPoint.y = tile.y;
-				
-				bitmapData.copyPixels (sourceBitmapData, sourceRect, destPoint, null, null, true);
+				for (i in 0...count) {
+					
+					tile = tiles[i];
+					tileset = (tile.tileset != null ? tile.tileset : tilemapData.tileset);
+					
+					if (tileset == null) continue;
+					
+					tileData = tileset.__data[tile.id];
+					sourceBitmapData = tileset.bitmapData;
+					
+					if (sourceBitmapData == null) continue;
+					
+					sourceRect.x = tileData.x;
+					sourceRect.y = tileData.y;
+					sourceRect.width = tileData.width;
+					sourceRect.height = tileData.height;
+					
+					destPoint.x = tile.x;
+					destPoint.y = tile.y;
+					
+					bitmapData.copyPixels (sourceBitmapData, sourceRect, destPoint, null, null, true);
+					
+				}
 				
 			}
 			
+			bitmapData.unlock ();
+			
 		}
-		
-		bitmapData.unlock ();
 		#end
 		
 	}

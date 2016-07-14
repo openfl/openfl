@@ -1,13 +1,15 @@
 package openfl.display;
 
 
-extern class TilemapLayer {
+extern class TilemapData {
 	
 	
+	public var height (default, null):Int;
 	public var numTiles (default, null):Int;
 	public var tileset:Tileset;
+	public var width (default, null):Int;
 	
-	public function new (tileset:Tileset);
+	public function new (width:Int, height:Int, tileset:Tileset = null);
 	
 	public function addTile (tile:Tile):Tile;
 	public function addTiles (tiles:Array<Tile>):Array<Tile>;
