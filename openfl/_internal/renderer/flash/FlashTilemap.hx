@@ -1,8 +1,10 @@
 package openfl._internal.renderer.flash;
 
 
+import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Tilemap;
+import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -23,9 +25,12 @@ class FlashTilemap {
 		bitmapData.lock ();
 		bitmapData.fillRect (bitmapData.rect, 0);
 		
-		var tiles, count, tile, tileset, tileData, sourceBitmapData;
+		var smoothing = tilemap.smoothing;
+		
+		var tiles, count, tile, tileset, tileData, sourceBitmapData, matrix;
 		var sourceRect = new Rectangle ();
 		var destPoint = new Point ();
+		var bitmap = new Bitmap ();
 		
 		if (tilemap.__tiles.length > 0) {
 			
@@ -41,6 +46,7 @@ class FlashTilemap {
 				
 				tileData = tileset.__data[tile.id];
 				sourceBitmapData = tileset.bitmapData;
+				matrix = tile.matrix;
 				
 				if (sourceBitmapData == null) continue;
 				
@@ -49,10 +55,21 @@ class FlashTilemap {
 				sourceRect.width = tileData.width;
 				sourceRect.height = tileData.height;
 				
-				destPoint.x = tile.x;
-				destPoint.y = tile.y;
-				
-				bitmapData.copyPixels (sourceBitmapData, sourceRect, destPoint, null, null, true);
+				if (matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
+					
+					destPoint.x = tile.x;
+					destPoint.y = tile.y;
+					
+					bitmapData.copyPixels (sourceBitmapData, sourceRect, destPoint, null, null, true);
+					
+				} else {
+					
+					bitmap.bitmapData = sourceBitmapData;
+					bitmap.scrollRect = sourceRect;
+					
+					bitmapData.draw (bitmap, matrix, null, null, null, smoothing);
+					
+				}
 				
 			}
 			

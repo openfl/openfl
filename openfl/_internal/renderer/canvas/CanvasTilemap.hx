@@ -26,16 +26,7 @@ class CanvasTilemap {
 		
 		context.globalAlpha = tilemap.__worldAlpha;
 		var transform = tilemap.__worldTransform;
-		
-		if (renderSession.roundPixels) {
-			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-			
-		} else {
-			
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-			
-		}
+		var roundPixels = renderSession.roundPixels;
 		
 		if (!tilemap.smoothing) {
 			
@@ -50,7 +41,7 @@ class CanvasTilemap {
 		var cacheBitmapData = null;
 		var source = null;
 		
-		var tiles, count, tile, tileset, tileData, bitmapData;
+		var tiles, count, tile, tileset, tileData, bitmapData, tileTransform;
 		
 		tiles = tilemap.__tiles;
 		count = tiles.length;
@@ -80,7 +71,20 @@ class CanvasTilemap {
 				
 			}
 			
-			context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, tile.x, tile.y, tileData.width, tileData.height);
+			tileTransform = transform.clone ();
+			tileTransform.concat (tile.matrix);
+			
+			if (roundPixels) {
+				
+				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, Std.int (tileTransform.tx), Std.int (tileTransform.ty));
+				
+			} else {
+				
+				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+				
+			}
+			
+			context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, 0, 0, tileData.width, tileData.height);
 			
 		}
 		
