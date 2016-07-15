@@ -12,6 +12,7 @@ import openfl.geom.Rectangle;
 #if !flash
 import openfl._internal.renderer.cairo.CairoTilemap;
 import openfl._internal.renderer.canvas.CanvasTilemap;
+import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
@@ -216,6 +217,13 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTilemap.render (this, renderSession);
+		
+	}
+	
+	
+	public override function __renderDOM (renderSession:RenderSession):Void {
+		
+		DOMTilemap.render (this, renderSession);
 		
 	}
 	#end
