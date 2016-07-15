@@ -1,6 +1,7 @@
 package openfl._internal.renderer.flash;
 
 
+import flash.display.Sprite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.Tilemap;
@@ -27,10 +28,14 @@ class FlashTilemap {
 		
 		var smoothing = tilemap.smoothing;
 		
-		var tiles, count, tile, tileset, tileData, sourceBitmapData, matrix;
+		var tiles, count, tile, alpha, visible, tileset, tileData, sourceBitmapData, matrix;
 		var sourceRect = new Rectangle ();
 		var destPoint = new Point ();
+		
 		var bitmap = new Bitmap ();
+		bitmap.smoothing = smoothing;
+		var sprite = new Sprite ();
+		sprite.addChild (bitmap);
 		
 		if (tilemap.__tiles.length > 0) {
 			
@@ -40,6 +45,12 @@ class FlashTilemap {
 			for (i in 0...count) {
 				
 				tile = tiles[i];
+				
+				alpha = tile.alpha;
+				visible = tile.visible;
+				
+				if (!visible || alpha <= 0) continue;
+				
 				tileset = (tile.tileset != null) ? tile.tileset : tilemap.tileset;
 				
 				if (tileset == null) continue;
@@ -48,14 +59,14 @@ class FlashTilemap {
 				sourceBitmapData = tileset.bitmapData;
 				matrix = tile.matrix;
 				
-				if (sourceBitmapData == null) continue;
+				if (sourceBitmapData == null || alpha == 0) continue;
 				
 				sourceRect.x = tileData.x;
 				sourceRect.y = tileData.y;
 				sourceRect.width = tileData.width;
 				sourceRect.height = tileData.height;
 				
-				if (matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
+				if (alpha == 1 && matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
 					
 					destPoint.x = tile.x;
 					destPoint.y = tile.y;
@@ -66,8 +77,9 @@ class FlashTilemap {
 					
 					bitmap.bitmapData = sourceBitmapData;
 					bitmap.scrollRect = sourceRect;
+					bitmap.alpha = alpha;
 					
-					bitmapData.draw (bitmap, matrix, null, null, null, smoothing);
+					bitmapData.draw (sprite, matrix, null, null, null, smoothing);
 					
 				}
 				

@@ -48,7 +48,7 @@ class GLTilemap {
 		
 		var tiles, count, bufferData, buffer, startIndex, offset, uvs, uv;
 		var tileWidth = 0, tileHeight = 0;
-		var tile, tileset, tileData, tileMatrix, x, y, x2, y2, x3, y3, x4, y4;
+		var tile, alpha, visible, tileset, tileData, tileMatrix, x, y, x2, y2, x3, y3, x4, y4;
 		
 		tiles = tilemap.__tiles;
 		count = tiles.length;
@@ -98,6 +98,12 @@ class GLTilemap {
 		for (i in 0...count) {
 			
 			tile = tiles[i];
+			
+			alpha = tile.alpha;
+			visible = tile.visible;
+			
+			if (!visible || alpha <= 0) continue;
+			
 			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
 			
 			if (tileset == null) continue;

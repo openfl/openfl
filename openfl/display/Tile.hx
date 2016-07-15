@@ -7,6 +7,7 @@ import openfl.geom.Matrix;
 class Tile {
 	
 	
+	public var alpha (default, set):Float;
 	public var data:Dynamic;
 	public var id (default, set):Int;
 	public var matrix:Matrix;
@@ -14,9 +15,11 @@ class Tile {
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
 	public var tileset (default, set):Tileset;
+	public var visible:Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
+	private var __alphaDirty:Bool;
 	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
@@ -33,6 +36,10 @@ class Tile {
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
 		
+		alpha = 1;
+		visible = true;
+		
+		__alphaDirty = true;
 		__sourceDirty = true;
 		__transformDirty = true;
 		__transform = [];
@@ -55,6 +62,14 @@ class Tile {
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_alpha (value:Float):Float {
+		
+		__alphaDirty = true;
+		return alpha = value;
+		
+	}
 	
 	
 	private function set_id (value:Int):Int {

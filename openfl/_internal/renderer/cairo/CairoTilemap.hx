@@ -36,7 +36,7 @@ class CairoTilemap {
 		var surface = null;
 		var pattern = null;
 		
-		var tiles, count, tile, tileset, tileData, bitmapData;
+		var tiles, count, tile, alpha, visible, tileset, tileData, bitmapData;
 		
 		tiles = tilemap.__tiles;
 		count = tiles.length;
@@ -47,6 +47,12 @@ class CairoTilemap {
 		for (i in 0...count) {
 			
 			tile = tiles[i];
+			
+			alpha = tile.alpha;
+			visible = tile.visible;
+			
+			if (!visible || alpha <= 0) continue;
+			
 			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
 			
 			if (tileset == null) continue;
@@ -90,13 +96,13 @@ class CairoTilemap {
 			cairo.rectangle (0, 0, tileData.width, tileData.height);
 			cairo.clip ();
 			
-			if (tilemap.__worldAlpha == 1) {
+			if (tilemap.__worldAlpha == 1 && alpha == 1) {
 				
 				cairo.paint ();
 				
 			} else {
 				
-				cairo.paintWithAlpha (tilemap.__worldAlpha);
+				cairo.paintWithAlpha (tilemap.__worldAlpha * alpha);
 				
 			}
 			

@@ -26,7 +26,6 @@ class CanvasTilemap {
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
-		context.globalAlpha = tilemap.__worldAlpha;
 		var transform = tilemap.__worldTransform;
 		var roundPixels = renderSession.roundPixels;
 		
@@ -43,7 +42,7 @@ class CanvasTilemap {
 		var cacheBitmapData = null;
 		var source = null;
 		
-		var tiles, count, tile, tileset, tileData, bitmapData;
+		var tiles, count, tile, alpha, visible, tileset, tileData, bitmapData;
 		
 		tiles = tilemap.__tiles;
 		count = tiles.length;
@@ -53,6 +52,12 @@ class CanvasTilemap {
 		for (i in 0...count) {
 			
 			tile = tiles[i];
+			
+			alpha = tile.alpha;
+			visible = tile.visible;
+			
+			if (!visible || alpha <= 0) continue;
+			
 			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
 			
 			if (tileset == null) continue;
@@ -74,6 +79,8 @@ class CanvasTilemap {
 				cacheBitmapData = bitmapData;
 				
 			}
+			
+			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
 			tileTransform.copyFrom (transform);
 			tileTransform.concat (tile.matrix);
