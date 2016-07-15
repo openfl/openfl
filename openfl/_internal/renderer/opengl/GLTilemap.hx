@@ -5,14 +5,12 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 import openfl.display.Tile;
-import openfl.display.TilemapData;
 import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.Tilemap)
-@:access(openfl.display.TilemapData)
 @:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
 
@@ -22,7 +20,7 @@ class GLTilemap {
 	
 	public static function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		if (!tilemap.__renderable || tilemap.tilemapData == null || tilemap.tilemapData.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
 		var shader;
@@ -46,19 +44,18 @@ class GLTilemap {
 		gl.uniform1f (shader.data.uAlpha.index, tilemap.__worldAlpha);
 		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__worldTransform));
 		
-		var tilemapData = tilemap.tilemapData;
-		var defaultTileset = tilemapData.tileset;
+		var defaultTileset = tilemap.tileset;
 		
 		var tiles, count, bufferData, buffer, startIndex, offset, uvs, uv;
 		var tileWidth = 0, tileHeight = 0;
 		var tile, tileset, tileData, tileMatrix, x, y, x2, y2, x3, y3, x4, y4;
 		
-		tiles = tilemapData.__tiles;
+		tiles = tilemap.__tiles;
 		count = tiles.length;
 		
-		bufferData = tilemapData.__bufferData;
+		bufferData = tilemap.__bufferData;
 		
-		if (bufferData == null || tilemapData.__dirty || bufferData.length != count * 24) {
+		if (bufferData == null || tilemap.__dirty || bufferData.length != count * 24) {
 			
 			startIndex = 0;
 			
@@ -68,7 +65,7 @@ class GLTilemap {
 				
 			} else if (bufferData.length != count * 24) {
 				
-				if (!tilemapData.__dirty) {
+				if (!tilemap.__dirty) {
 					
 					startIndex = Std.int (bufferData.length / 24);
 					
@@ -82,21 +79,21 @@ class GLTilemap {
 			
 			for (i in startIndex...count) {
 				
-				updateTileUV (tiles[i], tilemapData, i * 24, bufferData);
+				updateTileUV (tiles[i], tilemap, i * 24, bufferData);
 				
 			}
 			
-			tilemapData.__bufferData = bufferData;
+			tilemap.__bufferData = bufferData;
 			
 		}
 		
-		if (tilemapData.__buffer == null) {
+		if (tilemap.__buffer == null) {
 			
-			tilemapData.__buffer = gl.createBuffer ();
+			tilemap.__buffer = gl.createBuffer ();
 			
 		}
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, tilemapData.__buffer);
+		gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
 		
 		for (i in 0...count) {
 			
@@ -115,7 +112,7 @@ class GLTilemap {
 			
 			if (tile.__sourceDirty) {
 				
-				updateTileUV (tile, tilemapData, offset, bufferData);
+				updateTileUV (tile, tilemap, offset, bufferData);
 				
 			}
 			
@@ -199,15 +196,15 @@ class GLTilemap {
 			
 		}
 		
-		tilemapData.__dirty = false;
+		tilemap.__dirty = false;
 		renderSession.maskManager.popObject (tilemap);
 		
 	}
 	
 	
-	private static inline function updateTileUV (tile:Tile, tilemapData:TilemapData, tileOffset:Int, bufferData:Float32Array):Void {
+	private static inline function updateTileUV (tile:Tile, tilemap:Tilemap, tileOffset:Int, bufferData:Float32Array):Void {
 		
-		var tileset = (tile.tileset != null) ? tile.tileset : tilemapData.tileset;
+		var tileset = (tile.tileset != null) ? tile.tileset : tilemap.tileset;
 		
 		if (tileset == null) return;
 		

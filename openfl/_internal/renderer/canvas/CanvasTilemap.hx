@@ -8,7 +8,6 @@ import openfl.display.Tilemap;
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
-@:access(openfl.display.TilemapData)
 @:access(openfl.display.Tileset)
 
 
@@ -19,7 +18,7 @@ class CanvasTilemap {
 		
 		#if (js && html5)
 		
-		if (!tilemap.__renderable || tilemap.tilemapData == null || tilemap.tilemapData.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
 		var context = renderSession.context;
 		
@@ -47,14 +46,13 @@ class CanvasTilemap {
 			
 		}
 		
-		var tilemapData = tilemap.tilemapData;
-		var defaultTileset = tilemapData.tileset;
+		var defaultTileset = tilemap.tileset;
 		var cacheBitmapData = null;
 		var source = null;
 		
 		var tiles, count, tile, tileset, tileData, bitmapData;
 		
-		tiles = tilemapData.__tiles;
+		tiles = tilemap.__tiles;
 		count = tiles.length;
 		
 		for (i in 0...count) {
