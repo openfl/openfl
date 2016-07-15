@@ -5,6 +5,7 @@ import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoFormat;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 
@@ -51,6 +52,8 @@ class CairoTilemap {
 		tiles = tilemap.__tiles;
 		count = tiles.length;
 		
+		var matrix = new Matrix3 ();
+		
 		for (i in 0...count) {
 			
 			tile = tiles[i];
@@ -74,7 +77,13 @@ class CairoTilemap {
 				
 			}
 			
-			// TODO: Handle tile transform and clip source dimensions
+			matrix.tx = tileData.x - tile.x;
+			matrix.ty = tileData.y - tile.y;
+			pattern.matrix = matrix;
+			
+			cairo.rectangle (tile.x, tile.y, tileData.width, tileData.height);
+			
+			// TODO: Handle tile scale and rotation?
 			
 			if (tilemap.__worldAlpha == 1) {
 				
@@ -85,8 +94,6 @@ class CairoTilemap {
 				cairo.paintWithAlpha (tilemap.__worldAlpha);
 				
 			}
-			
-			//context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, tile.x, tile.y, tileData.width, tileData.height);
 			
 		}
 		
