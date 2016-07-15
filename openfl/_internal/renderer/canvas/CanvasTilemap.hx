@@ -1,6 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 
+import flash.geom.Matrix;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
@@ -9,6 +10,7 @@ import openfl.display.Tilemap;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
+@:access(openfl.geom.Matrix)
 
 
 class CanvasTilemap {
@@ -41,10 +43,12 @@ class CanvasTilemap {
 		var cacheBitmapData = null;
 		var source = null;
 		
-		var tiles, count, tile, tileset, tileData, bitmapData, tileTransform;
+		var tiles, count, tile, tileset, tileData, bitmapData;
 		
 		tiles = tilemap.__tiles;
 		count = tiles.length;
+		
+		var tileTransform = Matrix.__temp;
 		
 		for (i in 0...count) {
 			
@@ -71,7 +75,7 @@ class CanvasTilemap {
 				
 			}
 			
-			tileTransform = transform.clone ();
+			tileTransform.copyFrom (transform);
 			tileTransform.concat (tile.matrix);
 			
 			if (roundPixels) {

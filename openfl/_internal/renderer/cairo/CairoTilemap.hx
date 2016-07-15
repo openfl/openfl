@@ -8,6 +8,7 @@ import lime.graphics.cairo.CairoSurface;
 import lime.math.Matrix3;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.geom.Matrix;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
@@ -28,19 +29,7 @@ class CairoTilemap {
 		renderSession.maskManager.pushObject (tilemap);
 		
 		var transform = tilemap.__worldTransform;
-		
-		if (renderSession.roundPixels) {
-			
-			var matrix = transform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
-			
-		} else {
-			
-			cairo.matrix = transform.__toMatrix3 ();
-			
-		}
+		var roundPixels = renderSession.roundPixels;
 		
 		var defaultTileset = tilemap.tileset;
 		var cacheBitmapData = null;
@@ -53,6 +42,7 @@ class CairoTilemap {
 		count = tiles.length;
 		
 		var matrix = new Matrix3 ();
+		var tileTransform = Matrix.__temp;
 		
 		for (i in 0...count) {
 			
@@ -77,13 +67,28 @@ class CairoTilemap {
 				
 			}
 			
-			matrix.tx = tileData.x - tile.x;
-			matrix.ty = tileData.y - tile.y;
+			tileTransform.copyFrom (transform);
+			tileTransform.concat (tile.matrix);
+			
+			if (roundPixels) {
+				
+				tileTransform.tx = Math.round (tileTransform.tx);
+				tileTransform.ty = Math.round (tileTransform.ty);
+				
+			}
+			
+			cairo.matrix = tileTransform.__toMatrix3 ();
+			
+			matrix.tx = tileData.x;
+			matrix.ty = tileData.y;
 			pattern.matrix = matrix;
+			cairo.source = pattern;
 			
-			cairo.rectangle (tile.x, tile.y, tileData.width, tileData.height);
+			cairo.save ();
 			
-			// TODO: Handle tile scale and rotation?
+			cairo.newPath ();
+			cairo.rectangle (0, 0, tileData.width, tileData.height);
+			cairo.clip ();
 			
 			if (tilemap.__worldAlpha == 1) {
 				
@@ -94,6 +99,8 @@ class CairoTilemap {
 				cairo.paintWithAlpha (tilemap.__worldAlpha);
 				
 			}
+			
+			cairo.restore ();
 			
 		}
 		
