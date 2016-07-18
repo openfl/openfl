@@ -1,3 +1,13 @@
+4.0.1 (06/18/2016)
+------------------
+
+* Added mixing of tilesets in Tilemap, removed TilemapLayer
+* Added support for tile.alpha and tile.visible in Tilemap
+* Added dictionary.remove to allow deletion of keys
+* Implemented Tilemap support in Cairo and DOM renderers
+* Added -Dopenfl-disable-graphics-upscaling
+
+
 4.0.0 (06/08/2016)
 ------------------
 
