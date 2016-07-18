@@ -664,7 +664,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 				
 				dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
-				
+
+				__releaseResources();
+
 			}
 			
 			this.stage = stage;
@@ -678,12 +680,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 	}
-	
-	
+
+	private function __releaseResources ():Void {
+
+		if (__cachedBitmap != null) {
+			__cachedBitmap.dispose();
+			__cachedBitmap = null;
+			__setRenderDirty();
+		}
+	}
+
+
 	private inline function __setRenderDirty ():Void {
-		
+
 		if (!__renderDirty) {
-			
+
 			__updateCachedBitmap = true;
 			__updateFilters = filters != null && filters.length > 0;
 			__renderDirty = true;
@@ -1280,13 +1291,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	private function set_scaleX (value:Float):Float {
 		
-		if (__transform.c == 0) {
-			
-			if (value != __transform.a) __setTransformDirty ();
-			__transform.a = value;
-			
-		} else {
-			
 			var a = __rotationCosine * value;
 			var b = __rotationSine * value;
 			
@@ -1299,7 +1303,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__transform.a = a;
 			__transform.b = b;
 			
-		}
 		
 		return value;
 		
@@ -1323,13 +1326,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	private function set_scaleY (value:Float):Float {
 		
-		if (__transform.c == 0) {
-			
-			if (value != __transform.d) __setTransformDirty ();
-			__transform.d = value;
-			
-		} else {
-			
 			var c = -__rotationSine * value;
 			var d = __rotationCosine * value;
 			
@@ -1342,8 +1338,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__transform.c = c;
 			__transform.d = d;
 			
-		}
-		
 		return value;
 		
 	}

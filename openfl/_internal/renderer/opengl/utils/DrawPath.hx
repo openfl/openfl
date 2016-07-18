@@ -217,7 +217,7 @@ class PathBuiler {
 						
 						var c = data.readBeginFill ();
 						endFill ();
-						__fill = c.alpha > 0 ? Color (c.color & 0xFFFFFF, c.alpha) : None;
+						__fill = Color (c.color & 0xFFFFFF, c.alpha);
 						
 						if (__currentPath.points == null || __currentPath.points.length == 0) {
 							
