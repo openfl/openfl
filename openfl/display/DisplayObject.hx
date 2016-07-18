@@ -691,6 +691,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__cachedBitmap != null) {
 			__cachedBitmap.dispose();
 			__cachedBitmap = null;
+			__setRenderDirty();
 		}
 	}
 
