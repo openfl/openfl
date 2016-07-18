@@ -722,6 +722,11 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
+		#if openfl_disable_graphics_upscaling
+		if (scaleX > 1) scaleX = 1;
+		if (scaleY > 1) scaleY = 1;
+		#end
+		
 		var width = __bounds.width * scaleX;
 		var height = __bounds.height * scaleY;
 		
