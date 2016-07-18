@@ -25,6 +25,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	public inline function remove (key:K):Bool {
+		
+		return this.remove (key);
+		
+	}
+	
+	
 	@:arrayAccess public inline function set (key:K, value:V):V {
 		
 		this.set (key, value);
@@ -108,6 +115,15 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	@:arrayAccess public inline function get (key:K):V {
 		
 		return untyped this[key];
+		
+	}
+	
+	
+	public inline function remove (key:K):Bool {
+		
+		var exists = (untyped this[key] != untyped __global__["undefined"]);
+		untyped __delete__ (this, key);
+		return exists;
 		
 	}
 	
