@@ -4,6 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.display.Tileset;
 import openfl.display.Tile;
 import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
@@ -41,10 +42,12 @@ class GLTilemap {
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
 		
-		gl.uniform1f (shader.data.uAlpha.index, tilemap.__worldAlpha);
+		gl.enableVertexAttribArray (shader.data.aAlpha.index);
 		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__worldTransform));
 		
 		var defaultTileset = tilemap.tileset;
+		var worldAlpha = tilemap.__worldAlpha;
+		var alphaDirty = (tilemap.__worldAlpha != tilemap.__cacheAlpha);
 		
 		var tiles, count, bufferData, buffer, startIndex, offset, uvs, uv;
 		var tileWidth = 0, tileHeight = 0;
@@ -55,23 +58,23 @@ class GLTilemap {
 		
 		bufferData = tilemap.__bufferData;
 		
-		if (bufferData == null || tilemap.__dirty || bufferData.length != count * 24) {
+		if (bufferData == null || tilemap.__dirty || bufferData.length != count * 30) {
 			
 			startIndex = 0;
 			
 			if (bufferData == null) {
 				
-				bufferData = new Float32Array (count * 24);
+				bufferData = new Float32Array (count * 30);
 				
-			} else if (bufferData.length != count * 24) {
+			} else if (bufferData.length != count * 30) {
 				
 				if (!tilemap.__dirty) {
 					
-					startIndex = Std.int (bufferData.length / 24);
+					startIndex = Std.int (bufferData.length / 30);
 					
 				}
 				
-				var data = new Float32Array (count * 24);
+				var data = new Float32Array (count * 30);
 				data.set (bufferData);
 				bufferData = data;
 				
@@ -79,7 +82,15 @@ class GLTilemap {
 			
 			for (i in startIndex...count) {
 				
-				updateTileUV (tiles[i], tilemap, i * 24, bufferData);
+				__updateTileAlpha (tiles[i], worldAlpha, i * 30, bufferData);
+				
+				tileset = (tiles[i].tileset != null) ? tiles[i].tileset : tilemap.tileset;
+				
+				if (tileset != null) {
+					
+					__updateTileUV (tiles[i], tileset, i * 30, bufferData);
+					
+				}
 				
 			}
 			
@@ -112,13 +123,19 @@ class GLTilemap {
 			tileWidth = tileData.width;
 			tileHeight = tileData.height;
 			
-			offset = i * 24;
+			offset = i * 30;
 			
 			// TODO: Handle all cases where tileset may change for the tile?
 			
+			if (alphaDirty || tile.__alphaDirty) {
+				
+				__updateTileAlpha (tile, worldAlpha, offset, bufferData);
+				
+			}
+			
 			if (tile.__sourceDirty) {
 				
-				updateTileUV (tile, tilemap, offset, bufferData);
+				__updateTileUV (tile, tileset, offset, bufferData);
 				
 			}
 			
@@ -152,24 +169,25 @@ class GLTilemap {
 			
 			bufferData[offset + 0] = x;
 			bufferData[offset + 1] = y;
-			bufferData[offset + 4] = x2;
-			bufferData[offset + 5] = y2;
-			bufferData[offset + 8] = x3;
-			bufferData[offset + 9] = y3;
+			bufferData[offset + 5] = x2;
+			bufferData[offset + 6] = y2;
+			bufferData[offset + 10] = x3;
+			bufferData[offset + 11] = y3;
 			
-			bufferData[offset + 12] = x3;
-			bufferData[offset + 13] = y3;
-			bufferData[offset + 16] = x2;
-			bufferData[offset + 17] = y2;
-			bufferData[offset + 20] = x4;
-			bufferData[offset + 21] = y4;
+			bufferData[offset + 15] = x3;
+			bufferData[offset + 16] = y3;
+			bufferData[offset + 20] = x2;
+			bufferData[offset + 21] = y2;
+			bufferData[offset + 25] = x4;
+			bufferData[offset + 26] = y4;
 			
 		}
 		
 		gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
 		
-		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 		
 		var cacheBitmapData = null;
 		var lastIndex = 0;
@@ -202,20 +220,34 @@ class GLTilemap {
 			
 		}
 		
+		gl.disableVertexAttribArray (shader.data.aAlpha.index);
+		
 		tilemap.__dirty = false;
+		tilemap.__cacheAlpha = worldAlpha;
 		renderSession.maskManager.popObject (tilemap);
 		
 	}
 	
 	
-	private static inline function updateTileUV (tile:Tile, tilemap:Tilemap, tileOffset:Int, bufferData:Float32Array):Void {
+	private static function __updateTileAlpha (tile:Tile, worldAlpha:Float, tileOffset:Int, bufferData:Float32Array):Void {
 		
-		var tileset = (tile.tileset != null) ? tile.tileset : tilemap.tileset;
+		var alpha = worldAlpha * tile.alpha;
 		
-		if (tileset == null) return;
+		bufferData[tileOffset + 4] = alpha;
+		bufferData[tileOffset + 9] = alpha;
+		bufferData[tileOffset + 14] = alpha;
+		bufferData[tileOffset + 19] = alpha;
+		bufferData[tileOffset + 24] = alpha;
+		bufferData[tileOffset + 29] = alpha;
+		
+		tile.__alphaDirty = false;
+		
+	}
+	
+	
+	private static function __updateTileUV (tile:Tile, tileset:Tileset, tileOffset:Int, bufferData:Float32Array):Void {
 		
 		var tileData = tileset.__data[tile.id];
-		
 		var x = tileData.__uvX;
 		var y = tileData.__uvY;
 		var x2 = tileData.__uvWidth;
@@ -223,17 +255,17 @@ class GLTilemap {
 		
 		bufferData[tileOffset + 2] = x;
 		bufferData[tileOffset + 3] = y;
-		bufferData[tileOffset + 6] = x2;
-		bufferData[tileOffset + 7] = y;
-		bufferData[tileOffset + 10] = x;
-		bufferData[tileOffset + 11] = y2;
+		bufferData[tileOffset + 7] = x2;
+		bufferData[tileOffset + 8] = y;
+		bufferData[tileOffset + 12] = x;
+		bufferData[tileOffset + 13] = y2;
 		
-		bufferData[tileOffset + 14] = x;
-		bufferData[tileOffset + 15] = y2;
-		bufferData[tileOffset + 18] = x2;
-		bufferData[tileOffset + 19] = y;
+		bufferData[tileOffset + 17] = x;
+		bufferData[tileOffset + 18] = y2;
 		bufferData[tileOffset + 22] = x2;
-		bufferData[tileOffset + 23] = y2;
+		bufferData[tileOffset + 23] = y;
+		bufferData[tileOffset + 27] = x2;
+		bufferData[tileOffset + 28] = y2;
 		
 		tile.__sourceDirty = false;
 		

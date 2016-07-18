@@ -55,7 +55,7 @@ class GLShape {
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
 				
-				gl.uniform1f (shader.data.uAlpha.index, shape.__worldAlpha);
+				gl.vertexAttrib1f (shader.data.aAlpha.index, shape.__worldAlpha);
 				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (graphics.__worldTransform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
