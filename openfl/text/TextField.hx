@@ -915,7 +915,12 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
+	public override function _onWorldTransformScaleRotationChanged ():Void {
+		super._onWorldTransformScaleRotationChanged ();
+		__dirty = true;
+		__layoutDirty = true;
+	}
+
 	
 	
 	// Getters & Setters

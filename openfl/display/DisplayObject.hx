@@ -949,6 +949,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
+		var old_world_transform_a = __worldTransform.a;
+		var old_world_transform_b = __worldTransform.b;
+		var old_world_transform_c = __worldTransform.c;
+		var old_world_transform_d = __worldTransform.d;
+
 		if (!overrided && parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
@@ -980,12 +985,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
+		if (old_world_transform_a != __worldTransform.a ||
+			old_world_transform_d != __worldTransform.d ||
+			old_world_transform_b != __worldTransform.b ||
+			old_world_transform_c != __worldTransform.c) {
+			_onWorldTransformScaleRotationChanged ();
+		}
+		
 		__renderTransform.copyFrom (__worldTransform);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 		
 	}
 	
-	
+	public function _onWorldTransformScaleRotationChanged ():Void {
+		__updateCachedBitmap = true;
+		__updateFilters = filters != null && filters.length > 0;
+	}
 	
 	
 	// Get & Set Methods
