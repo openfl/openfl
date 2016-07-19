@@ -79,7 +79,7 @@ import js.html.CanvasRenderingContext2D;
 	private var __cairo:Cairo;
 	#end
 	
-	private var __bitmap:BitmapData;
+	private var __bitmap(default, set):BitmapData;
 	
 	
 	private function new () {
@@ -909,7 +909,17 @@ import js.html.CanvasRenderingContext2D;
 		
 	}
 	
+	public function dispose ():Void {
+		for( stack in __glStack ) {
+			if (stack != null) {
+				stack.dispose();
+			}
+		}
 	
+		__glStack = [];
+		__bitmap = null;
+		__dirty = true;
+	}
 	
 	
 	// Get & Set Methods
@@ -929,6 +939,17 @@ import js.html.CanvasRenderingContext2D;
 		
 	}
 	
+	private function set___bitmap (value:BitmapData):BitmapData {
+
+		if (__bitmap != null) {
+
+			__bitmap.dispose ();
+
+		}
+
+		return __bitmap = value;
+
+	}
 	
 }
 

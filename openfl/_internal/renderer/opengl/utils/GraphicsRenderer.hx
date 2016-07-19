@@ -1208,6 +1208,13 @@ class GLStack {
 		}
 	}
 
+	public function dispose ():Void {
+		for( bucket in buckets ) {
+			bucket.dispose();
+		}
+	}
+
+
 }
 
 class GLBucket {
@@ -1345,6 +1352,7 @@ class GLBucket {
 						}
 						idx = tmp.indices[tmp.indices.length - 1] + 1;
 						last = d;
+						d.dispose();
 					} else {
 						if (tmp != null) {
 							result.push(tmp);
@@ -1397,6 +1405,20 @@ class GLBucket {
 		graphicType = GraphicType.Polygon;
 	}
 	
+	public function dispose ():Void {
+		if(tileBuffer != null) {
+			gl.deleteBuffer(tileBuffer);
+			tileBuffer = null;
+		}
+
+		for( fill in fills ) {
+			fill.dispose();
+		}
+
+		for (line in lines) {
+			line.dispose();
+		}
+	}
 	public function uploadTile (x:Int, y:Int, w:Int, h:Int):Void {
 		
 		if(tileBuffer == null) {
@@ -1520,6 +1542,16 @@ class GLBucketData {
 			gl.bufferData (gl.ELEMENT_ARRAY_BUFFER, glIndices, gl.STREAM_DRAW);
 		}
 	}
+
+	public function dispose ():Void {
+		vertexArray.destroy();
+		vertexArray = null;
+
+		if(indexBuffer != null) {
+			gl.deleteBuffer(indexBuffer);
+			indexBuffer = null;
+		}
+	}
 }
 
 enum BucketMode {
@@ -1574,6 +1606,14 @@ class GLGraphicsData {
 		
 	}
 	
+	public function dispose ():Void {
+		gl.deleteBuffer(dataBuffer);
+		dataBuffer = null;
+
+		gl.deleteBuffer(indexBuffer);
+		indexBuffer = null;
+	}
+
 	
 	public function upload ():Void {
 		

@@ -369,22 +369,26 @@ class BitmapData implements IBitmapDrawable {
 		rect = null;
 		__isValid = false;
 		
-		if (__texture != null) {
+		var renderer = @:privateAccess Lib.current.stage.__renderer;
+		
+		if(renderer != null) {
 			
-			var renderer = @:privateAccess Lib.current.stage.__renderer;
+			var renderSession = @:privateAccess renderer.renderSession;
+			var gl = renderSession.gl;
 			
-			if(renderer != null) {
-				
-				var renderSession = @:privateAccess renderer.renderSession;
-				var gl = renderSession.gl;
-				
-				if (gl != null) {
+			if (gl != null) {
 					
+				if (__texture != null) {
+
 					gl.deleteTexture (__texture);
 					__texture = null;
 					
 				}
 				
+				if (__buffer != null) {
+					gl.deleteBuffer (__buffer);
+					__buffer = null;
+				}
 			}
 			
 		}
