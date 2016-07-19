@@ -688,9 +688,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function __releaseResources ():Void {
 
+		var dirty:Bool = false;
+
+		if (__graphics != null) {
+			__graphics.dispose();
+			dirty = true;
+		}
+
+		if (__maskGraphics != null) {
+			__maskGraphics.dispose();
+			dirty = true;
+		}
+
 		if (__cachedBitmap != null) {
 			__cachedBitmap.dispose();
 			__cachedBitmap = null;
+			dirty = true;
+		}
+
+		if (dirty) {
 			__setRenderDirty();
 		}
 	}
