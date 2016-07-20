@@ -839,7 +839,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	#if (flash && !display)
 	public var bytesAvailable (default, null):UInt;
 	#else
-	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
+	public var bytesAvailable (get, never):UInt;
+	private inline function get_bytesAvailable ():UInt { return length - position; }
 	#end
 	
 	/**
