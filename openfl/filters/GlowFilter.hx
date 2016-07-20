@@ -155,9 +155,9 @@ private class GlowShader extends Shader {
 			'float a = 0.0;',
 			'for(int i = 0; i < ${GlowFilter.MAXIMUM_FETCH_COUNT}; ++i){',
 			'    if (i >= fetch_count) break;',
-			'    a += texture2D(${Shader.uSampler}, ${Shader.vTexCoord} + texcoord_delta * float(i)).a * uFetchCountInverseFetchCount.y;',
+			'    a += texture2D(${Shader.uSampler}, ${Shader.vTexCoord} + texcoord_delta * float(i)).a;',
 			'}',
-			'a = clamp(a * uStrength, 0.0, 1.0);',
+			'a = clamp(a * uFetchCountInverseFetchCount.y * uStrength, 0.0, 1.0);',
 			'a *= uColor.a;',
 			
 		'	gl_FragColor = vec4(uColor.rgb * a, a);',
