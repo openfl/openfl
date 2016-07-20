@@ -54,7 +54,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var cacheAsBitmap (get, set):Bool;
 	public var cacheAsBitmapMatrix (get, set):Matrix;
 	public var cacheAsBitmapSmooth (get, set):Bool;
-	public var cacheAsBitmapBounds:Rectangle;
 	public var filters (get, set):Array<BitmapFilter>;
 	public var height (get, set):Float;
 	public var loaderInfo (default, null):LoaderInfo;
@@ -117,11 +116,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __worldVisibleChanged:Bool;
 	private var __worldZ:Int;
 	private var __cacheAsBitmap:Bool = false;
+	private var __isCachingAsBitmap:Bool = false;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cacheAsBitmapSmooth:Bool = true;
 	private var __forceCacheAsBitmap:Bool;
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
+	private var __cachedBitmapScale:Float;
 	private var __cachedBitmapBounds:Rectangle;
 	private var __cachedFilterBounds:Rectangle;
 	private var __cacheGLMatrix:Matrix;
@@ -503,7 +504,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		if (__cacheAsBitmap) {
+			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
+			__isCachingAsBitmap = false;
 			return;
 		}
 		
@@ -573,30 +576,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		var hasCacheMatrix = __cacheAsBitmapMatrix != null;
 		var x = __cachedBitmapBounds.x;
 		var y = __cachedBitmapBounds.y;
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
-		
+
 		// can't use Matrix.__temp here, it's not safe
 		if (__cacheGLMatrix == null) __cacheGLMatrix = new Matrix();
-		
-		if (hasCacheMatrix) {
 			
-			// Transform the bounds
-			var bmpBounds = openfl.geom.Rectangle.__temp;
-			__cachedBitmapBounds.__transform(bmpBounds, __cacheAsBitmapMatrix);
-			x = bmpBounds.x;
-			y = bmpBounds.y;
-			w = bmpBounds.width;
-			h = bmpBounds.height;
+		if (__cacheAsBitmapMatrix != null) {
 			
 			__cacheGLMatrix = __cacheAsBitmapMatrix.clone();
 			
 		} else {
 			
 			__cacheGLMatrix.identity();
+			__cacheGLMatrix.scale(__cachedBitmapScale, __cachedBitmapScale);
 			
 		}
 		
@@ -788,15 +783,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					__cachedBitmapBounds = new Rectangle();
 				}
 				
-				if(cacheAsBitmapBounds != null) {
-					__cachedBitmapBounds.copyFrom(cacheAsBitmapBounds);
+				if (__cacheAsBitmapMatrix != null) {
+					__cachedBitmapScale = 1.0;
+					__getRenderBounds(__cachedBitmapBounds, __cacheAsBitmapMatrix);
 				} else {
+					var squared_x_scale = __renderTransform.a * __renderTransform.a + __renderTransform.b * __renderTransform.b;
+					var squared_y_scale = __renderTransform.c * __renderTransform.c + __renderTransform.d * __renderTransform.d;
+					var scale =  Math.sqrt(Math.max(squared_x_scale, squared_y_scale));
+					var scale_transform = new Matrix();
 					
+					scale_transform.scale(scale, scale );
+					__cachedBitmapScale = scale;
 					__cachedBitmapBounds.setEmpty();
-					__getRenderBounds(__cachedBitmapBounds, @:privateAccess Matrix.__identity);
-					
+					__getRenderBounds(__cachedBitmapBounds, scale_transform);
 				}
-				
 				
 				if (__filters != null) {
 					
@@ -976,6 +976,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
+		var old_world_transform_a = __worldTransform.a;
+		var old_world_transform_b = __worldTransform.b;
+		var old_world_transform_c = __worldTransform.c;
+		var old_world_transform_d = __worldTransform.d;
+
 		if (!overrided && parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
@@ -1007,12 +1012,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
+		if (old_world_transform_a != __worldTransform.a ||
+			old_world_transform_d != __worldTransform.d ||
+			old_world_transform_b != __worldTransform.b ||
+			old_world_transform_c != __worldTransform.c) {
+			_onWorldTransformScaleRotationChanged ();
+		}
+		
 		__renderTransform.copyFrom (__worldTransform);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 		
 	}
 	
-	
+	public function _onWorldTransformScaleRotationChanged ():Void {
+		__updateCachedBitmap = true;
+		__updateFilters = filters != null && filters.length > 0;
+	}
 	
 	
 	// Get & Set Methods

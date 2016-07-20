@@ -310,13 +310,9 @@ class GLRenderer extends AbstractRenderer {
 		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
 		if (shape.__graphics == null || shape.__graphics.__bitmap == null) return;
 		
-		var rect = openfl.geom.Rectangle.__temp;
 		var matrix = openfl.geom.Matrix.__temp;
 		
-		rect.setEmpty ();
 		matrix.identity ();
-		
-		shape.__getBounds (rect, matrix);
 		
 		var bitmap = shape.__graphics.__bitmap;
 		

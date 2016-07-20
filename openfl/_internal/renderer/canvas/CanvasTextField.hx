@@ -28,13 +28,8 @@ import js.html.ImageData;
 
 
 class CanvasTextField {
-	
-	
-	#if (js && html5)
-	private static var context:CanvasRenderingContext2D;
-	#end
-	
-	
+
+
 	public static function disableInputMode (textEngine:TextEngine):Void {
 		
 		//#if (js && html5)
@@ -111,6 +106,17 @@ class CanvasTextField {
 		
 		#if (js && html5)
 
+		var render_transform = textField.__renderTransform;
+		var scaleX =  Math.sqrt (render_transform.a * render_transform.a + render_transform.b * render_transform.b);
+		var scaleY =  Math.sqrt (render_transform.c * render_transform.c + render_transform.d * render_transform.d);
+
+		if (scaleX == 0 || scaleY == 0) {
+			throw ":TODO: support scale of zero";
+		}
+
+		var scale_transform = new openfl.geom.Matrix();
+		scale_transform.scale (scaleX, scaleY);
+
 		if (textField.__dirty || textField.__graphics == null || textField.__graphics.__bitmap == null) {
 
 			var textEngine = textField.__textEngine;
@@ -125,9 +131,11 @@ class CanvasTextField {
 				textField.__dirty = false;
 				
 			} else {
-				
-				var bounds = textEngine.bounds;
-				
+
+				var bounds = textEngine.bounds.clone();
+				bounds.width *= scaleX;
+				bounds.height *= scaleY;
+
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 					
 					if (textField.__graphics == null) {
@@ -143,8 +151,12 @@ class CanvasTextField {
 				}
 				
 				var graphics = textField.__graphics;
-				context = graphics.__context;
-				
+				var context = graphics.__context;
+				graphics.__canvas.width = Math.ceil (bounds.width);
+				graphics.__canvas.height = Math.ceil (bounds.height);
+
+				context.setTransform (scale_transform.a, scale_transform.b, scale_transform.c, scale_transform.d, scale_transform.tx, scale_transform.ty);
+
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
 					
 					var text = textEngine.text;
@@ -163,10 +175,7 @@ class CanvasTextField {
 						text = mask;
 						
 					}
-					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
-					
+
 					if (textEngine.antiAliasType != ADVANCED || textEngine.gridFitType != PIXEL) {
 						
 						untyped (graphics.__context).mozImageSmoothingEnabled = true;
@@ -301,10 +310,7 @@ class CanvasTextField {
 					}
 					
 				} else {
-					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
-					
+
 					if (textEngine.border || textEngine.background) {
 						
 						if (textEngine.border) {
@@ -344,7 +350,18 @@ class CanvasTextField {
 			}
 			
 		}
-		
+
+		if (!textField.__isCachingAsBitmap) {
+			scale_transform.invert ();
+			scale_transform.concat (textField.__renderTransform);
+			textField.__renderTransform = scale_transform;
+		} else {
+			textField.__renderTransform.a = 1.0;
+			textField.__renderTransform.b = 0.0;
+			textField.__renderTransform.c = 0.0;
+			textField.__renderTransform.d = -1.0;
+		}
+
 		#end
 		
 	}
