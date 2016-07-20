@@ -44,32 +44,12 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (child != null) {
 			
 			if (child.parent != null) {
-				
 				child.parent.removeChild (child);
-				
 			}
-			
 			__children.push (child);
-			child.parent = this;
-			
-			if (stage != null) {
-				
-				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				
-				child.__setStageReference (stage);
-				
-			}
-			
-			child.__setTransformDirty ();
-			child.__setRenderDirty ();
-			__setRenderDirty();
-			
-			var event = new Event (Event.ADDED, true);
-			event.target = child;
-			child.__dispatchEvent (event);
-			
+			initParent(child);
+
 		}
-		
 		return child;
 		
 	}
@@ -93,13 +73,36 @@ class DisplayObjectContainer extends InteractiveObject {
 				child.parent.removeChild (child);
 				
 			}
-			
+
+			initParent(child);
+		}
+
+		if(__children[index] == null ){
+			__children[index] = child;
+		} else {
+			__children.insert(index,child);
+		}
+
+		return child;
+
+	}
+
+	public function initParent (child:DisplayObject) {
+
 			child.parent = this;
-			
+
+			if (this.__cachedParent != null) {
+
+				child.setCachedParent (this.__cachedParent);
+
+			}	else if (this.__cacheAsBitmap) {
+
+				child.setCachedParent (this);
+
+			}
+
 			if (stage != null) {
-				
 				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				
 				child.__setStageReference (stage);
 				
 			}
@@ -111,19 +114,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			var event = new Event (Event.ADDED, true);
 			event.target = child;
 			child.__dispatchEvent (event);
-			
-		}
-
-		if(__children[index] == null ){
-			__children[index] = child;
-		} else {
-			__children.insert(index,child);
-		}
-
-		return child;
-		
 	}
-	
 	
 	public function areInaccessibleObjectsUnderPoint (point:Point):Bool {
 		
@@ -207,6 +198,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 			child.parent = null;
+			if(child.__cachedParent != null){
+				child.setCachedParent(null);
+			}
 			__children.remove (child);
 			__removedChildren.push (child);
 			child.__setTransformDirty ();
@@ -358,8 +352,29 @@ class DisplayObjectContainer extends InteractiveObject {
 		swap = null;
 		
 	}
-	
-	
+
+	private override function setCachedParent (newParent:DisplayObjectContainer){
+
+		__cachedParent = newParent;
+
+		if (newParent != null) {
+			for (child in __children) {
+				child.setCachedParent (newParent);
+			}
+		} else {
+
+			if( __cacheAsBitmap ) {
+				for (child in __children) {
+					child.setCachedParent (this);
+				}
+			} else {
+				for (child in __children) {
+					child.setCachedParent (null);
+				}
+			}
+		}
+	}
+
 	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
 		
 		if (event.target == null) {
@@ -926,8 +941,26 @@ class DisplayObjectContainer extends InteractiveObject {
 		return __children.length;
 		
 	}
-	
-	
+
+	private override function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
+
+		if (__cachedParent == null){
+			if(cacheAsBitmap) {
+				for(child in __children){
+					child.setCachedParent (this);
+				}
+			} else {
+				for(child in __children){
+					setCachedParent (null);
+				}
+			}
+		}
+
+		return super.set_cacheAsBitmap(cacheAsBitmap);
+
+	}
+
+
 }
 
 
