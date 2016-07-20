@@ -90,15 +90,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function initParent (child:DisplayObject) {
 
 			child.parent = this;
-			
-			if (this.cachedParent != null) {
-				
-				child.cachedParent = this.cachedParent;
+
+			if (this.__cachedParent != null) {
+
+				child.setCachedParent (this.__cachedParent);
 
 			}	else if (this.__cacheAsBitmap) {
 
-				child.cachedParent = this;
-				
+				child.setCachedParent (this);
+
 			}
 
 			if (stage != null) {
@@ -198,6 +198,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 			
 			child.parent = null;
+			if(child.__cachedParent != null){
+				child.setCachedParent(null);
+			}
 			__children.remove (child);
 			__removedChildren.push (child);
 			child.__setTransformDirty ();
@@ -349,8 +352,29 @@ class DisplayObjectContainer extends InteractiveObject {
 		swap = null;
 		
 	}
-	
-	
+
+	private override function setCachedParent (currentParent:DisplayObjectContainer){
+
+		__cachedParent = currentParent;
+
+		if (currentParent != null) {
+			for (child in __children) {
+				child.setCachedParent (currentParent);
+			}
+		} else {
+
+			if( __cacheAsBitmap ) {
+				for (child in __children) {
+					child.setCachedParent (this);
+				}
+			} else {
+				for (child in __children) {
+					child.setCachedParent (null);
+				}
+			}
+		}
+	}
+
 	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
 		
 		if (event.target == null) {
@@ -917,8 +941,26 @@ class DisplayObjectContainer extends InteractiveObject {
 		return __children.length;
 		
 	}
-	
-	
+
+	private override function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
+
+		if (__cachedParent == null && Std.is(this, DisplayObjectContainer)){
+			if(cacheAsBitmap) {
+				for(child in __children){
+					child.setCachedParent (this);
+				}
+			} else {
+				for(child in __children){
+					setCachedParent (null);
+				}
+			}
+		}
+
+		return super.set_cacheAsBitmap(cacheAsBitmap);
+
+	}
+
+
 }
 
 
