@@ -59,8 +59,8 @@ import openfl.geom.Rectangle;
 		var sY = distance * Math.sin (angle * Math.PI / 180);
 		rect.x += -(Math.abs (sX) + (blurX * 0.5)) * quality;
 		rect.y += -(Math.abs (sY) + (blurY * 0.5)) * quality;
-		rect.width += (sX + (blurX * 0.5)) * quality;
-		rect.height += (sY + (blurY * 0.5))  * quality;
+		rect.width += (sX + blurX) * quality;
+		rect.height += (sY + blurY)  * quality;
 		
 	}
 	
