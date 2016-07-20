@@ -1,4 +1,4 @@
-4.0.1 (06/18/2016)
+4.0.1 (06/20/2016)
 ------------------
 
 * Added mixing of tilesets in Tilemap, removed TilemapLayer
@@ -6,6 +6,7 @@
 * Added dictionary.remove to allow deletion of keys
 * Implemented Tilemap support in Cairo and DOM renderers
 * Added -Dopenfl-disable-graphics-upscaling
+* Updated extern enum types for Flash and native
 
 
 4.0.0 (06/08/2016)
