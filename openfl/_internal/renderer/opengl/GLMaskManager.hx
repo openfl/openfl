@@ -135,6 +135,12 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (numClipRects > 0) {
 			
+			var clipRect = clipRects[numClipRects - 1];
+			var renderer:GLRenderer = cast renderSession.renderer;
+			
+			gl.enable (gl.SCISSOR_TEST);
+			gl.scissor (Math.floor (clipRect.x), Math.floor (renderer.windowHeight - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
+			
 			numClipRects--;
 			
 		}
