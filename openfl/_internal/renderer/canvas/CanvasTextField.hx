@@ -133,8 +133,8 @@ class CanvasTextField {
 			} else {
 				
 				var bounds = textEngine.bounds.clone();
-				bounds.width = bounds.width * scaleX;
-				bounds.height = bounds.height * scaleY;
+				bounds.width *= scaleX;
+				bounds.height *= scaleY;
 				
 				if (textField.__graphics == null || textField.__graphics.__canvas == null) {
 					
