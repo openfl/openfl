@@ -62,9 +62,11 @@ class RenderTexture {
 		
 		if(frameBuffer != null) gl.deleteFramebuffer (frameBuffer);
 		if(texture != null) gl.deleteTexture (texture);
+		if(renderBuffer != null) gl.deleteRenderbuffer (renderBuffer);
 		
 		frameBuffer = null;
 		texture = null;
+		renderBuffer = null;
 		
 	}
 	
