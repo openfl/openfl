@@ -253,9 +253,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 
 
-	private function setCachedParent (currentParent:DisplayObjectContainer){
+	private function setCachedParent (newParent:DisplayObjectContainer){
 
-		__cachedParent = currentParent;
+		__cachedParent = newParent;
 
 	}
 

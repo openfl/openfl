@@ -353,13 +353,13 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 
-	private override function setCachedParent (currentParent:DisplayObjectContainer){
+	private override function setCachedParent (newParent:DisplayObjectContainer){
 
-		__cachedParent = currentParent;
+		__cachedParent = newParent;
 
-		if (currentParent != null) {
+		if (newParent != null) {
 			for (child in __children) {
-				child.setCachedParent (currentParent);
+				child.setCachedParent (newParent);
 			}
 		} else {
 
@@ -944,7 +944,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function set_cacheAsBitmap (cacheAsBitmap:Bool):Bool {
 
-		if (__cachedParent == null && Std.is(this, DisplayObjectContainer)){
+		if (__cachedParent == null){
 			if(cacheAsBitmap) {
 				for(child in __children){
 					child.setCachedParent (this);
