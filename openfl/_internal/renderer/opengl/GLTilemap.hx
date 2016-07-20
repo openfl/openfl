@@ -204,17 +204,24 @@ class GLTilemap {
 				
 			}
 			
-			if (tileset.bitmapData != cacheBitmapData || i == count - 1) {
+			if (tileset.bitmapData != cacheBitmapData) {
 				
 				if (cacheBitmapData != null) {
 					
 					gl.bindTexture (gl.TEXTURE_2D, cacheBitmapData.getTexture (gl));
-					gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1) * 6);
+					gl.drawArrays (gl.TRIANGLES, lastIndex * 6, i * 6);
 					
 				}
 				
 				cacheBitmapData = tileset.bitmapData;
 				lastIndex = i;
+				
+			}
+			
+			if (i == count - 1 && tileset.bitmapData != null) {
+				
+				gl.bindTexture (gl.TEXTURE_2D, tileset.bitmapData.getTexture (gl));
+				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1) * 6);
 				
 			}
 			
