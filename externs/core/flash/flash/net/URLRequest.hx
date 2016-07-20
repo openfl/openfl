@@ -8,7 +8,7 @@ package flash.net; #if (!display && flash)
 	public var data:Dynamic;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var digest:String;
+	public var digest:String;
 	#end
 	
 	public var method:String;
@@ -19,7 +19,7 @@ package flash.net; #if (!display && flash)
 	public function new (url:String = null);
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
+	public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
 	#end
 	
 	

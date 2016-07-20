@@ -12,17 +12,17 @@ extern class MovieClip extends Sprite implements Dynamic {
 	public var framesLoaded (default, null):Int;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public var isPlaying (default, null):Bool;
+	@:require(flash11) public var isPlaying (default, null):Bool;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
+	public var scenes (default, null):Array<flash.display.Scene>;
 	#end
 	
 	public var totalFrames (default, null):Int;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;
+	public var trackAsMenu:Bool;
 	#end
 	
 	public function new ();
@@ -32,14 +32,14 @@ extern class MovieClip extends Sprite implements Dynamic {
 	public function nextFrame ():Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function nextScene ():Void;
+	public function nextScene ():Void;
 	#end
 	
 	public function play ():Void;
 	public function prevFrame ():Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function prevScene ():Void;
+	public function prevScene ():Void;
 	#end
 	
 	public function stop ():Void;

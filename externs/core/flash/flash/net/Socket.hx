@@ -31,7 +31,7 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	public function readMultiByte (length:Int, charSet:String):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function readObject ():Dynamic;
+	public function readObject ():Dynamic;
 	#end
 	
 	public function readShort ():Int;
@@ -49,7 +49,7 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	public function writeMultiByte (value:String, charSet:String):Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function writeObject (object:Dynamic):Void;
+	public function writeObject (object:Dynamic):Void;
 	#end
 	
 	public function writeShort (value:Int):Void;

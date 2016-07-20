@@ -1,4 +1,4 @@
-package openfl.text;
+package openfl.text; #if (display || !flash)
 
 
 /**
@@ -6,7 +6,7 @@ package openfl.text;
  * <code>"embedded"</code> and <code>"device"</code> for the
  * <code>fontType</code> property of the Font class.
  */
-@:enum abstract FontType(String) from String to String {
+@:enum abstract FontType(Null<Int>) {
 	
 	/**
 	 * Indicates that this is a device font. The SWF file renders fonts with
@@ -23,7 +23,7 @@ package openfl.text;
 	 * installed on the system. For the same reason, device fonts are not
 	 * anti-aliased and may appear jagged at large point sizes.</p>
 	 */
-	public var DEVICE = "device";
+	public var DEVICE = 0;
 	
 	/**
 	 * Indicates that this is an embedded font. Font outlines are embedded in the
@@ -42,8 +42,39 @@ package openfl.text;
 	 * flash.text.engine classes are directed to use such a font they will fall
 	 * back to device fonts.</p>
 	 */
-	public var EMBEDDED = "embedded";
+	public var EMBEDDED = 1;
 	
-	public var EMBEDDED_CFF = "embeddedCFF";
+	public var EMBEDDED_CFF = 2;
+	
+	@:from private static function fromString (value:String):FontType {
+		
+		return switch (value) {
+			
+			case "device": DEVICE;
+			case "embedded": EMBEDDED;
+			case "embeddedCFF": EMBEDDED_CFF;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case FontType.DEVICE: "device";
+			case FontType.EMBEDDED: "embedded";
+			case FontType.EMBEDDED_CFF: "embeddedCFF";
+			default: null;
+			
+		}
+		
+	}
 	
 }
+
+
+#else
+typedef FontType = flash.text.FontType;
+#end

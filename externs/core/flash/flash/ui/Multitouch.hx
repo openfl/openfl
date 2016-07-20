@@ -10,7 +10,7 @@ import openfl.Vector;
 	public static var inputMode:MultitouchInputMode;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
+	public static var mapTouchToMouse:Bool;
 	#end
 	
 	public static var maxTouchPoints (default, null):Int;
