@@ -31,6 +31,7 @@ import lime.graphics.opengl.GLUniformLocation;
 		__glVCLocationMap = new Array<GLUniformLocation> ();
 		__glFSLocationMap = new Array<GLUniformLocation> ();
 		__glVALocationMap = new Array<Int> ();
+		__yFlip = null;
 		
 	}
 	
@@ -60,7 +61,7 @@ import lime.graphics.opengl.GLUniformLocation;
 			var info = GL.getActiveUniform (__glProgram, i);
 			var loc = GL.getUniformLocation (__glProgram, info.name);
 			
-			if (__yFlip == null && info.name == "yflip") {
+			if (info.name == "yflip") {
 				
 				__yFlip = loc;
 				
@@ -117,28 +118,40 @@ import lime.graphics.opengl.GLUniformLocation;
 	
 	private inline function __fsampUniformLocationFromAgal (i:Int):GLUniformLocation {
 		
+		#if html5
 		return __glFSLocationMap[i];
+		#else
+		return i >= 0 && i < __glFSLocationMap.length ? __glFSLocationMap[i] : -1;
+		#end
 		
 	}
 	
 	
 	private inline function __fsUniformLocationFromAgal (i:Int):GLUniformLocation {
 		
+		#if html5
 		return __glFCLocationMap[i];
+		#else
+		return i >= 0 && i < __glFCLocationMap.length ? __glFCLocationMap[i] : -1;
+		#end
 		
 	}
 	
 	
 	private inline function __vaUniformLocationFromAgal (i:Int):Int {
 		
-		return __glVALocationMap[i];
+		return i >= 0 &&  i < __glVALocationMap.length ? __glVALocationMap[i] : -1;
 		
 	}
 	
 	
 	private inline function __vsUniformLocationFromAgal (i:Int):GLUniformLocation {
 		
+		#if html5
 		return __glVCLocationMap[i];
+		#else
+		return i >= 0 && i < __glVCLocationMap.length ? __glVCLocationMap[i] : -1;
+		#end
 		
 	}
 	
