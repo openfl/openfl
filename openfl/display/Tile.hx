@@ -7,22 +7,27 @@ import openfl.geom.Matrix;
 class Tile {
 	
 	
+	public var alpha (default, set):Float;
+	public var data:Dynamic;
+	public var id (default, set):Int;
 	public var matrix:Matrix;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	public var tileData (default, set):TileData;
+	public var tileset (default, set):Tileset;
+	public var visible:Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
-	private var __tileDataDirty:Bool;
+	private var __alphaDirty:Bool;
+	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
 	
 	
-	public function new (tileData:TileData = null, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0) {
+	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0) {
 		
-		this.tileData = tileData;
+		this.id = id;
 		
 		this.matrix = new Matrix ();
 		if (x != 0) this.x = x;
@@ -31,7 +36,11 @@ class Tile {
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
 		
-		__tileDataDirty = true;
+		alpha = 1;
+		visible = true;
+		
+		__alphaDirty = true;
+		__sourceDirty = true;
 		__transformDirty = true;
 		__transform = [];
 		
@@ -40,8 +49,9 @@ class Tile {
 	
 	public function clone ():Tile {
 		
-		var tile = new Tile (tileData);
+		var tile = new Tile (id);
 		tile.matrix = matrix.clone ();
+		tile.tileset = tileset;
 		return tile;
 		
 	}
@@ -52,6 +62,22 @@ class Tile {
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_alpha (value:Float):Float {
+		
+		__alphaDirty = true;
+		return alpha = value;
+		
+	}
+	
+	
+	private function set_id (value:Int):Int {
+		
+		__sourceDirty = true;
+		return id = value;
+		
+	}
 	
 	
 	private function get_rotation ():Float {
@@ -168,10 +194,10 @@ class Tile {
 	}
 	
 	
-	private function set_tileData (value:TileData):TileData {
+	private function set_tileset (value:Tileset):Tileset {
 		
-		__tileDataDirty = true;
-		return tileData = value;
+		__sourceDirty = true;
+		return tileset = value;
 		
 	}
 	

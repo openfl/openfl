@@ -8,11 +8,11 @@ extern class InteractiveObject extends DisplayObject {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
+	public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var contextMenu:flash.ui.ContextMenu;
+	public var contextMenu:flash.ui.ContextMenu;
 	#end
 	
 	public var doubleClickEnabled:Bool;

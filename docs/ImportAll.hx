@@ -55,7 +55,6 @@ import openfl.display.StageQuality;
 import openfl.display.StageScaleMode;
 import openfl.display.Tile;
 import openfl.display.Tilemap;
-import openfl.display.TilemapLayer;
 import openfl.display.Tileset;
 import openfl.display.TriangleCulling;
 import openfl.display.Window;

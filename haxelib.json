@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.0.0",
-	"releasenote": "WebGL by default on HTML5, better Graphics rendering, many other improvements",
+	"version": "4.0.1",
+	"releasenote": "Improvements to Tilemap, ability to disable vector upscaling",
 	"contributors": [ "singmajesty" ]
 }

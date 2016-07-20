@@ -9,31 +9,31 @@ extern class TouchEvent extends Event {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_BEGIN (default, never):String;
+	public static var PROXIMITY_BEGIN (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_END (default, never):String;
+	public static var PROXIMITY_END (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_MOVE (default, never):String;
+	public static var PROXIMITY_MOVE (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_OUT (default, never):String;
+	public static var PROXIMITY_OUT (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_OVER (default, never):String;
+	public static var PROXIMITY_OVER (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OUT (default, never):String;
+	public static var PROXIMITY_ROLL_OUT (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var PROXIMITY_ROLL_OVER (default, never):String;
+	public static var PROXIMITY_ROLL_OVER (default, never):String;
 	#end
 	
 	public static var TOUCH_BEGIN (default, never):String;
@@ -53,7 +53,7 @@ extern class TouchEvent extends Event {
 	public var isPrimaryTouchPoint:Bool;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
+	public var isRelatedObjectInaccessible:Bool;
 	#end
 	
 	public var localX:Float;

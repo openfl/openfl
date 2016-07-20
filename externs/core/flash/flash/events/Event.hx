@@ -9,18 +9,18 @@ extern class Event {
 	public static var ADDED_TO_STAGE (default, never):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE (default, never):String;
+	@:require(flash15) public static var BROWSER_ZOOM_CHANGE (default, never):String;
 	#end
 	
 	public static var CANCEL (default, never):String;
 	public static var CHANGE (default, never):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE (default, never):String;
+	public static var CHANNEL_MESSAGE (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var CHANNEL_STATE (default, never):String;
+	public static var CHANNEL_STATE (default, never):String;
 	#end
 	
 	@:require(flash10) public static var CLEAR (default, never):String;
@@ -65,7 +65,7 @@ extern class Event {
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public static var SUSPEND (default, never):String;
+	@:require(flash11_3) public static var SUSPEND (default, never):String;
 	#end
 	
 	public static var TAB_CHILDREN_CHANGE (default, never):String;
@@ -73,21 +73,21 @@ extern class Event {
 	public static var TAB_INDEX_CHANGE (default, never):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public static var TEXTURE_READY (default, never):String;
+	@:require(flash11_3) public static var TEXTURE_READY (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE (default, never):String;
+	@:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE (default, never):String;
 	#end
 	
 	public static var UNLOAD (default, never):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var VIDEO_FRAME (default, never):String;
+	public static var VIDEO_FRAME (default, never):String;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public static var WORKER_STATE (default, never):String;
+	public static var WORKER_STATE (default, never):String;
 	#end
 	
 	public var bubbles (default, null):Bool;

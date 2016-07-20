@@ -10,7 +10,7 @@ extern class MouseEvent extends Event {
 	public static var CLICK (default, never):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU (default, never):String;
+	@:require(flash11_2) public static var CONTEXT_MENU (default, never):String;
 	#end
 	
 	public static var DOUBLE_CLICK (default, never):String;
@@ -25,7 +25,7 @@ extern class MouseEvent extends Event {
 	public static var MOUSE_WHEEL (default, never):String;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public static var RELEASE_OUTSIDE (default, never):String;
+	@:require(flash11_3) public static var RELEASE_OUTSIDE (default, never):String;
 	#end
 	
 	@:require(flash11_2) public static var RIGHT_CLICK (default, never):String;
@@ -42,18 +42,18 @@ extern class MouseEvent extends Event {
 	public var delta:Int;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
+	@:require(flash10) public var isRelatedObjectInaccessible:Bool;
 	#end
 	
 	public var localX:Float;
 	public var localY:Float;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
+	@:require(flash11_2) public var movementX:Float;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
+	@:require(flash11_2) public var movementY:Float;
 	#end
 	
 	public var relatedObject:InteractiveObject;

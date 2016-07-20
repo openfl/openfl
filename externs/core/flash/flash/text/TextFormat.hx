@@ -11,7 +11,7 @@ extern class TextFormat {
 	public var color:Null<Int>;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var display:flash.text.TextFormatDisplay;
+	public var display:flash.text.TextFormatDisplay;
 	#end
 	
 	public var font:String;

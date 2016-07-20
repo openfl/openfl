@@ -1,10 +1,14 @@
-package openfl._internal.renderer.canvas;
+package openfl._internal.renderer.cairo;
 
 
-import flash.geom.Matrix;
-import lime.graphics.utils.ImageCanvasUtil;
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoFormat;
+import lime.graphics.cairo.CairoPattern;
+import lime.graphics.cairo.CairoSurface;
+import lime.math.Matrix3;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.geom.Matrix;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
@@ -13,40 +17,31 @@ import openfl.display.Tilemap;
 @:access(openfl.geom.Matrix)
 
 
-class CanvasTilemap {
+class CairoTilemap {
 	
 	
 	public static inline function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
-		#if (js && html5)
-		
 		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
-		var context = renderSession.context;
+		var cairo = renderSession.cairo;
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
 		var transform = tilemap.__worldTransform;
 		var roundPixels = renderSession.roundPixels;
 		
-		if (!tilemap.smoothing) {
-			
-			untyped (context).mozImageSmoothingEnabled = false;
-			//untyped (context).webkitImageSmoothingEnabled = false;
-			untyped (context).msImageSmoothingEnabled = false;
-			untyped (context).imageSmoothingEnabled = false;
-			
-		}
-		
 		var defaultTileset = tilemap.tileset;
 		var cacheBitmapData = null;
-		var source = null;
+		var surface = null;
+		var pattern = null;
 		
 		var tiles, count, tile, alpha, visible, tileset, tileData, bitmapData;
 		
 		tiles = tilemap.__tiles;
 		count = tiles.length;
 		
+		var matrix = new Matrix3 ();
 		var tileTransform = Matrix.__temp;
 		
 		for (i in 0...count) {
@@ -69,48 +64,53 @@ class CanvasTilemap {
 			
 			if (bitmapData != cacheBitmapData) {
 				
-				if (bitmapData.image.buffer.__srcImage == null) {
-					
-					ImageCanvasUtil.convertToCanvas (bitmapData.image);
-					
-				}
+				surface = bitmapData.getSurface ();
+				pattern = CairoPattern.createForSurface (surface);
+				pattern.filter = tilemap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
-				source = bitmapData.image.src;
+				cairo.source = pattern;
 				cacheBitmapData = bitmapData;
 				
 			}
-			
-			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
 			tileTransform.copyFrom (transform);
 			tileTransform.concat (tile.matrix);
 			
 			if (roundPixels) {
 				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, Std.int (tileTransform.tx), Std.int (tileTransform.ty));
-				
-			} else {
-				
-				context.setTransform (tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+				tileTransform.tx = Math.round (tileTransform.tx);
+				tileTransform.ty = Math.round (tileTransform.ty);
 				
 			}
 			
-			context.drawImage (source, tileData.x, tileData.y, tileData.width, tileData.height, 0, 0, tileData.width, tileData.height);
+			cairo.matrix = tileTransform.__toMatrix3 ();
 			
-		}
-		
-		if (!tilemap.smoothing) {
+			matrix.tx = tileData.x;
+			matrix.ty = tileData.y;
+			pattern.matrix = matrix;
+			cairo.source = pattern;
 			
-			untyped (context).mozImageSmoothingEnabled = true;
-			//untyped (context).webkitImageSmoothingEnabled = true;
-			untyped (context).msImageSmoothingEnabled = true;
-			untyped (context).imageSmoothingEnabled = true;
+			cairo.save ();
+			
+			cairo.newPath ();
+			cairo.rectangle (0, 0, tileData.width, tileData.height);
+			cairo.clip ();
+			
+			if (tilemap.__worldAlpha == 1 && alpha == 1) {
+				
+				cairo.paint ();
+				
+			} else {
+				
+				cairo.paintWithAlpha (tilemap.__worldAlpha * alpha);
+				
+			}
+			
+			cairo.restore ();
 			
 		}
 		
 		renderSession.maskManager.popObject (tilemap);
-		
-		#end
 		
 	}
 	

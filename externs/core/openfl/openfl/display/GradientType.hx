@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if (display || !flash)
 
 
 /**
@@ -7,16 +7,45 @@ package openfl.display;
  * <code>lineGradientStyle()</code> methods of the openfl.display.Graphics
  * class.
  */
-@:enum abstract GradientType(String) from String to String {
+@:enum abstract GradientType(Null<Int>) {
 	
 	/**
 	 * Value used to specify a linear gradient fill.
 	 */
-	public var LINEAR = "linear";
+	public var LINEAR = 0;
 	
 	/**
 	 * Value used to specify a radial gradient fill.
 	 */
-	public var RADIAL = "radial";
+	public var RADIAL = 1;
+	
+	@:from private static function fromString (value:String):GradientType {
+		
+		return switch (value) {
+			
+			case "linear": LINEAR;
+			case "radial": RADIAL;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case GradientType.LINEAR: "linear";
+			case GradientType.RADIAL: "radial";
+			default: null;
+			
+		}
+		
+	}
 	
 }
+
+
+#else
+typedef GradientType = flash.display.GradientType;
+#end

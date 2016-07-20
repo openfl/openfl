@@ -15,7 +15,7 @@ import openfl.Vector;
 	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
+	@:require(flash10) public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
 	#end
 	
 	public function clear ():Void;
@@ -40,7 +40,7 @@ import openfl.Vector;
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_6) public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
+	@:require(flash11_6) public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
 	#end
 	
 	

@@ -10,7 +10,9 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 #if !flash
+import openfl._internal.renderer.cairo.CairoTilemap;
 import openfl._internal.renderer.canvas.CanvasTilemap;
+import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
@@ -21,21 +23,33 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	public var numTiles (default, null):Int;
+	public var tileset (default, set):Tileset;
+	
 	#if !flash
 	public var smoothing:Bool;
 	#end
 	
 	private var __buffer:GLBuffer;
 	private var __bufferData:Float32Array;
+	private var __cacheAlpha:Float;
 	private var __dirty:Bool;
-	private var __height:Int;
 	private var __tiles:Array<Tile>;
+	
+	#if !flash
+	private var __height:Int;
 	private var __width:Int;
+	#end
 	
 	
-	public function new (width:Int, height:Int) {
+	public function new (width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true) {
 		
 		super ();
+		
+		this.tileset = tileset;
+		this.smoothing = smoothing;
+		
+		__tiles = new Array ();
+		numTiles = 0;
 		
 		#if !flash
 		__width = width;
@@ -44,10 +58,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		bitmapData = new BitmapData (width, height, true, 0);
 		FlashRenderer.register (this);
 		#end
-		
-		__tiles = new Array ();
-		numTiles = 0;
-		smoothing = true;
 		
 	}
 	
@@ -198,19 +208,29 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	@:noCompletion @:dox(hide) public override function __renderCanvas (renderSession:RenderSession):Void {
+	public override function __renderCairo (renderSession:RenderSession):Void {
 		
-		if (stage == null) return;
+		CairoTilemap.render (this, renderSession);
+		
+	}
+	
+	
+	public override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTilemap.render (this, renderSession);
+		
+	}
+	
+	
+	public override function __renderDOM (renderSession:RenderSession):Void {
+		
+		DOMTilemap.render (this, renderSession);
 		
 	}
 	#end
 	
 	
-	@:noCompletion @:dox(hide) public function __renderFlash ():Void {
-		
-		if (stage == null) return;
+	public function __renderFlash ():Void {
 		
 		FlashTilemap.render (this);
 		
@@ -218,9 +238,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	@:noCompletion @:dox(hide) public override function __renderGL (renderSession:RenderSession):Void {
-		
-		if (stage == null) return;
+	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLTilemap.render (this, renderSession);
 		
@@ -248,8 +266,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		return __height = Std.int (value);
 		
 	}
+	#end
 	
 	
+	private function set_tileset (value:Tileset):Tileset {
+		
+		__dirty = true;
+		return this.tileset = value;
+		
+	}
+	
+	
+	#if !flash
 	private override function get_width ():Float {
 		
 		return __width;
