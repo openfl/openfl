@@ -372,7 +372,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			(bytes:ByteArrayData).__resize (offset + _length);
 			
 		}
-		
+
 		(bytes:ByteArrayData).blit (offset, this, position, _length);
 		position += _length;
 		
@@ -699,7 +699,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (size > __length) {
 
 
-			var bytes = Bytes.alloc ((size + 1));
+			var bytes = Bytes.alloc(size);
 			var cacheLength = length;
 			this.length = __length;
 			bytes.blit (0, this, 0, this.length);
