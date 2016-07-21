@@ -249,9 +249,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function clear ():Void {
-		
-		length = 0;
-		position = 0;
+
+        __length = 0;
+		this.length = 0;
+		this.position = 0;
 		
 	}
 	
@@ -302,18 +303,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function readBoolean ():Bool {
-		
-		if (this.position < this.length) {
-			
-			return (get (this.position++) != 0);
-			
-		} else {
-			
-			throw new EOFError ();
-			return false;
-			
-		}
-		
+
+        __checkReadLength(1);
+
+		return (get (this.position++) != 0);
+
 	}
 	
 	
@@ -338,20 +332,16 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (_length == 0) _length = this.length - this.position;
 		
-		if (this.position + _length > this.length) {
-			
-			throw new EOFError ();
-			
-		}
-		
+		__checkReadLength(_length);
+
 		if ((bytes:ByteArrayData).length < (offset + _length)) {
 			
 			(bytes:ByteArrayData).__resize (offset + _length);
 			
 		}
 		
-		(bytes:ByteArrayData).blit (offset, this, position, _length);
-		position += _length;
+		(bytes:ByteArrayData).blit (offset, this, this.position, _length);
+		this.position += _length;
 		
 	}
 	
@@ -360,8 +350,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		__checkReadLength(8);
 
-		position += 8;
-		return getDouble (position - 8);
+		this.position += 8;
+		return getDouble (this.position - 8);
 		
 	}
 	
@@ -370,8 +360,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		__checkReadLength(4);
 
-		position += 4;
-		return getFloat (position - 4);
+		this.position += 4;
+		return getFloat (this.position - 4);
 		
 	}
 	
@@ -463,8 +453,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readUnsignedShort ():Int {
 
-		__checkReadLength(2);
-
 		var ch1 = readUnsignedByte ();
 		var ch2 = readUnsignedByte ();
 		
@@ -493,9 +481,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		__checkReadLength(_length);
 
-		position += _length;
+		this.position += _length;
 		
-		return getString (position - _length, _length);
+		return getString (this.position - _length, _length);
 		
 	}
 	
@@ -540,7 +528,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeBytes (bytes:ByteArray, offset:UInt = 0, _length:UInt = 0):Void {
 		
 		if (bytes.length == 0) return;
-		if (length == 0) length = bytes.length - offset;
+		if (_length == 0) _length = bytes.length - offset;
 		
 		__resize (this.position + _length);
 		blit (this.position, (bytes:ByteArrayData), offset, _length);
@@ -645,47 +633,38 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	private function __fromBytes (bytes:Bytes):Void {
 		
 		__setData (bytes);
-		this.length = bytes.length;
 		
 	}
 	
 	
 	private function __resize (size:Int) {
 		
-		if (size > __length) {
+		if (size > this.length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
-			var cacheLength = length;
-			this.length = __length;
-			bytes.blit (0, this, 0, this.length);
-			this.length = cacheLength;
-			__setData (bytes);
-			
-		}
-		
-		if (this.length < size) {
-			
 			this.length = size;
-			
+			bytes.blit (0, this, this.position, size);
+			__setData (bytes);
 		}
-		
+
 	}
 	
 	
 	private inline function __setData (bytes:Bytes):Void {
-		
-		b = bytes.b;
 		#if js
-		__length = bytes.b.length;
+        if (bytes.b != null) {
+            b = bytes.b;
+            __length = bytes.b.length;
+        } else if (bytes.length != null) {
+            untyped b = bytes;
+            untyped __length = bytes.length;
+        }
+        untyped this.data = b;
 		#else
+        b = bytes.b;
 		__length = bytes.length;
 		#end
 		this.length = __length;
-		
-		#if js
-		this.data = bytes.data;
-		#end
-		
 	}
 
 	private function __checkReadLength(readLength:Int):Int {
