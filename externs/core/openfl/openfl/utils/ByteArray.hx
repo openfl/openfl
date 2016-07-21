@@ -3,17 +3,12 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import lime.utils.compress.Deflate;
+import lime.utils.compress.LZMA;
+import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
 import lime.utils.Bytes in LimeBytes;
-import lime.utils.LZMA;
 import openfl.errors.EOFError;
-
-#if sys
-import haxe.zip.Compress;
-import haxe.zip.Uncompress;
-#elseif format
-import format.tools.Inflate;
-#end
 
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
@@ -262,42 +257,24 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	public function compress (algorithm:CompressionAlgorithm = null):Void {
+	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
 		#if sys
 		
-		if (algorithm == null) {
+		var bytes = switch (algorithm) {
 			
-			algorithm = CompressionAlgorithm.ZLIB;
+			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
+			case CompressionAlgorithm.LZMA: LZMA.compress (this);
+			default: Zlib.compress (this);
 			
 		}
 		
-		if (algorithm == CompressionAlgorithm.LZMA) {
-			
-			__setData (LZMA.encode (this));
-			
-		} else {
-			
-			var windowBits = switch (algorithm) {
-				
-				case DEFLATE: -15;
-				case GZIP: 31;
-				default: 15;
-				
-			}
-			
-			#if enable_deflate
-			__setData (Compress.run (this, 8, windowBits));
-			#else
-			__setData (Compress.run (this, 8));
-			#end
-			
-		}
+		__setData (bytes);
 		
 		#end
 		
-		__length = this.length;
-		position = __length;
+		length = __length;
+		position = length;
 		
 	}
 	
@@ -542,46 +519,24 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	public function uncompress (algorithm:CompressionAlgorithm = null):Void {
+	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
 		#if sys
 		
-		if (algorithm == null) {
+		var bytes = switch (algorithm) {
 			
-			algorithm = CompressionAlgorithm.GZIP;
+			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
+			case CompressionAlgorithm.LZMA: LZMA.decompress (this);
+			default: Zlib.decompress (this);
 			
-		}
+		};
 		
-		if (algorithm == CompressionAlgorithm.LZMA) {
-			
-			__setData (LZMA.decode (this));
-			
-		} else {
-			
-			var windowBits = switch (algorithm) {
-				
-				case DEFLATE: -15;
-				case GZIP: 31;
-				default: 15;
-				
-			}
-			
-			#if enable_deflate
-			__setData (Uncompress.run (this, null, windowBits));
-			#else
-			__setData (Uncompress.run (this, null));
-			#end
-			
-		}
-		
-		#elseif format
-		
-		__setData (Inflate.run (this));
+		__setData (bytes);
 		
 		#end
 		
-		__length = this.length;
-		position = 0;
+		length = __length;
+		position = __length;
 		
 	}
 	
