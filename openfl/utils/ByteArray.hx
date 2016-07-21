@@ -257,8 +257,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if sys
-		
 		var bytes = switch (algorithm) {
 			
 			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
@@ -267,12 +265,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		
-		__setData (bytes);
-		
-		#end
-		
-		length = __length;
-		position = length;
+		if (bytes != null) {
+			
+			__setData (bytes);
+			
+			length = __length;
+			position = length;
+			
+		}
 		
 	}
 	
@@ -519,8 +519,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if sys
-		
 		var bytes = switch (algorithm) {
 			
 			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
@@ -529,12 +527,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		};
 		
-		__setData (bytes);
-		
-		#end
-		
-		length = __length;
-		position = __length;
+		if (bytes != null) {
+			
+			__setData (bytes);
+			
+			length = __length;
+			position = __length;
+			
+		}
 		
 	}
 	
