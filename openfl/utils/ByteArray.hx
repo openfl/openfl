@@ -3,12 +3,17 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
-import lime.utils.compress.Deflate;
-import lime.utils.compress.LZMA;
-import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
 import lime.utils.Bytes in LimeBytes;
+import lime.utils.LZMA;
 import openfl.errors.EOFError;
+
+#if sys
+import haxe.zip.Compress;
+import haxe.zip.Uncompress;
+#elseif format
+import format.tools.Inflate;
+#end
 
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
@@ -249,27 +254,44 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function clear ():Void {
-
-        __length = 0;
-		this.length = 0;
-		this.position = 0;
+		
+		length = 0;
+		position = 0;
 		
 	}
 	
 	
-	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
+	public function compress (algorithm:CompressionAlgorithm = null):Void {
 		
 		#if sys
 		
-		var bytes = switch (algorithm) {
+		if (algorithm == null) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
-			case CompressionAlgorithm.LZMA: LZMA.compress (this);
-			default: Zlib.compress (this);
+			algorithm = CompressionAlgorithm.ZLIB;
 			
 		}
 		
-		__setData (bytes);
+		if (algorithm == CompressionAlgorithm.LZMA) {
+			
+			__setData (LZMA.encode (this));
+			
+		} else {
+			
+			var windowBits = switch (algorithm) {
+				
+				case DEFLATE: -15;
+				//case GZIP: 31;
+				default: 15;
+				
+			}
+			
+			#if enable_deflate
+			__setData (Compress.run (this, 8, windowBits));
+			#else
+			__setData (Compress.run (this, 8));
+			#end
+			
+		}
 		
 		#end
 		
@@ -303,11 +325,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function readBoolean ():Bool {
-
-        __checkReadLength(1);
-
-		return (get (this.position++) != 0);
-
+		
+		if (this.position < this.length) {
+			
+			return (get (this.position++) != 0);
+			
+		} else {
+			
+			throw new EOFError ();
+			return false;
+			
+		}
+		
 	}
 	
 	
@@ -332,16 +361,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (_length == 0) _length = this.length - this.position;
 		
-		__checkReadLength(_length);
-
+		if (this.position + _length > this.length) {
+			
+			throw new EOFError ();
+			
+		}
+		
 		if ((bytes:ByteArrayData).length < (offset + _length)) {
 			
 			(bytes:ByteArrayData).__resize (offset + _length);
 			
 		}
 		
-		(bytes:ByteArrayData).blit (offset, this, this.position, _length);
-		this.position += _length;
+		(bytes:ByteArrayData).blit (offset, this, position, _length);
+		position += _length;
 		
 	}
 	
@@ -350,8 +383,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		__checkReadLength(8);
 
-		this.position += 8;
-		return getDouble (this.position - 8);
+		position += 8;
+		return getDouble (position - 8);
 		
 	}
 	
@@ -360,8 +393,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		__checkReadLength(4);
 
-		this.position += 4;
-		return getFloat (this.position - 4);
+		position += 4;
+		return getFloat (position - 4);
 		
 	}
 	
@@ -453,6 +486,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readUnsignedShort ():Int {
 
+		__checkReadLength(2);
+
 		var ch1 = readUnsignedByte ();
 		var ch2 = readUnsignedByte ();
 		
@@ -481,31 +516,54 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		__checkReadLength(_length);
 
-		this.position += _length;
+		position += _length;
 		
-		return getString (this.position - _length, _length);
+		return getString (position - _length, _length);
 		
 	}
 	
 	
-	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
+	public function uncompress (algorithm:CompressionAlgorithm = null):Void {
 		
 		#if sys
 		
-		var bytes = switch (algorithm) {
+		if (algorithm == null) {
 			
-			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
-			case CompressionAlgorithm.LZMA: LZMA.decompress (this);
-			default: Zlib.decompress (this);
+			algorithm = CompressionAlgorithm.DEFLATE;
+			//algorithm = CompressionAlgorithm.GZIP;
 			
-		};
+		}
 		
-		__setData (bytes);
+		if (algorithm == CompressionAlgorithm.LZMA) {
+			
+			__setData (LZMA.decode (this));
+			
+		} else {
+			
+			var windowBits = switch (algorithm) {
+				
+				case DEFLATE: -15;
+				//case GZIP: 31;
+				default: 15;
+				
+			}
+			
+			#if enable_deflate
+			__setData (Uncompress.run (this, null, windowBits));
+			#else
+			__setData (Uncompress.run (this, null));
+			#end
+			
+		}
+		
+		#elseif format
+		
+		__setData (Inflate.run (this));
 		
 		#end
 		
 		length = __length;
-		position = __length;
+		position = 0;
 		
 	}
 	
@@ -528,7 +586,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeBytes (bytes:ByteArray, offset:UInt = 0, _length:UInt = 0):Void {
 		
 		if (bytes.length == 0) return;
-		if (_length == 0) _length = bytes.length - offset;
+		if (length == 0) length = bytes.length - offset;
 		
 		__resize (this.position + _length);
 		blit (this.position, (bytes:ByteArrayData), offset, _length);
@@ -633,38 +691,47 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	private function __fromBytes (bytes:Bytes):Void {
 		
 		__setData (bytes);
+		this.length = bytes.length;
 		
 	}
 	
 	
 	private function __resize (size:Int) {
 		
-		if (size > this.length) {
+		if (size > __length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
-			this.length = size;
-			bytes.blit (0, this, this.position, size);
+			var cacheLength = length;
+			this.length = __length;
+			bytes.blit (0, this, 0, this.length);
+			this.length = cacheLength;
 			__setData (bytes);
+			
 		}
-
+		
+		if (this.length < size) {
+			
+			this.length = size;
+			
+		}
+		
 	}
 	
 	
 	private inline function __setData (bytes:Bytes):Void {
+		
+		b = bytes.b;
 		#if js
-        if (bytes.b != null) {
-            b = bytes.b;
-            __length = bytes.b.length;
-        } else if (bytes.length != null) {
-            untyped b = bytes;
-            untyped __length = bytes.length;
-        }
-        untyped this.data = b;
+		__length = bytes.b.length;
 		#else
-        b = bytes.b;
 		__length = bytes.length;
 		#end
 		this.length = __length;
+		
+		#if js
+		this.data = bytes.data;
+		#end
+		
 	}
 
 	private function __checkReadLength(readLength:Int):Int {
