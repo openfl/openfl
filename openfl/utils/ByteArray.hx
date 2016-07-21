@@ -366,7 +366,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			throw new EOFError ();
 			
 		}
-		
+
 		if ((bytes:ByteArrayData).length < (offset + _length)) {
 			
 			(bytes:ByteArrayData).__resize (offset + _length);
@@ -485,8 +485,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function readUnsignedShort ():Int {
-
-		__checkReadLength(2);
 
 		var ch1 = readUnsignedByte ();
 		var ch2 = readUnsignedByte ();
@@ -696,16 +694,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	private function __resize (size:Int) {
-		
+	private function __resize (size:Int, ?copyData:Bool) {
+		if (copyData == null) copyData = true;
 		if (size > __length) {
-			
-			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
+
+
+			var bytes = Bytes.alloc ((size + 1));
 			var cacheLength = length;
 			this.length = __length;
 			bytes.blit (0, this, 0, this.length);
+            __length = size;
 			this.length = cacheLength;
-			__setData (bytes);
+			if (copyData) __setData (bytes);
 			
 		}
 		
