@@ -39,9 +39,9 @@ class GLShape {
 				
 				var shader;
 				
-				if (shape.filters != null && Std.is (shape.filters[0], ShaderFilter)) {
+				if (shape.__filters != null && Std.is (shape.__filters[0], ShaderFilter)) {
 					
-					shader = cast (shape.filters[0], ShaderFilter).shader;
+					shader = cast (shape.__filters[0], ShaderFilter).shader;
 					
 				} else {
 					

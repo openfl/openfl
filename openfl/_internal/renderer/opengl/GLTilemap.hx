@@ -26,9 +26,9 @@ class GLTilemap {
 		var gl = renderSession.gl;
 		var shader;
 		
-		if (tilemap.filters != null && Std.is (tilemap.filters[0], ShaderFilter)) {
+		if (tilemap.__filters != null && Std.is (tilemap.__filters[0], ShaderFilter)) {
 			
-			shader = cast (tilemap.filters[0], ShaderFilter).shader;
+			shader = cast (tilemap.__filters[0], ShaderFilter).shader;
 			
 		} else {
 			

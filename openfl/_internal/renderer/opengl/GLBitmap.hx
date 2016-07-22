@@ -24,9 +24,9 @@ class GLBitmap {
 			
 			var shader;
 			
-			if (bitmap.filters != null && Std.is (bitmap.filters[0], ShaderFilter)) {
+			if (bitmap.__filters != null && Std.is (bitmap.__filters[0], ShaderFilter)) {
 				
-				shader = cast (bitmap.filters[0], ShaderFilter).shader;
+				shader = cast (bitmap.__filters[0], ShaderFilter).shader;
 				
 			} else {
 				
