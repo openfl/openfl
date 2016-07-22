@@ -179,12 +179,17 @@ class ConsoleRenderer extends AbstractRenderer {
 		scissorRect[1] = 0.0;
 		scissorRect[2] = width;
 		scissorRect[3] = height;
-		ctx.clear (
-			Std.int (stage.__colorSplit[0] * 0xff),
-			Std.int (stage.__colorSplit[1] * 0xff),
-			Std.int (stage.__colorSplit[2] * 0xff),
-			0xff
-		);
+
+		if (stage.__clearBeforeRender) {
+
+			ctx.clear (
+				Std.int (stage.__colorSplit[0] * 0xff),
+				Std.int (stage.__colorSplit[1] * 0xff),
+				Std.int (stage.__colorSplit[2] * 0xff),
+				0xff
+			);
+
+		}
 
 		ctx.setRasterizerState (CULLNONE_SOLID);
 		ctx.setDepthStencilState (DEPTHTESTOFF_DEPTHWRITEOFF_STENCILOFF);
