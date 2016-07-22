@@ -2,7 +2,7 @@ package openfl.display;
 
 
 @:access(openfl.display.Graphics)
- 
+
 
 class Shape extends DisplayObject {
 	

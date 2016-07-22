@@ -6,7 +6,7 @@ extern class SecurityError extends Error {
 	
 	public function new (message:String = "");
 	
-
+	
 }
 
 

@@ -362,23 +362,23 @@ class ByteArrayTest {
 	@Test public function testEmptyArray () {
 		
 		var data = new ByteArray();
-
+		
 		Assert.areEqual(0, data.length);
-
+		
 		var testString : String;
-
+		
 		// Verify that readUTFBytes correctly handles
 		// an empty ByteArray and doesn't crash
 		testString = data.readUTFBytes(data.length);
 		Assert.areEqual( 0, testString.length );
-
+		
 		// Test toString as well just in case it gets changed
 		// to not just call readUTFBytes
 		testString = data.toString();
 		Assert.areEqual( 0, testString.length );
 	}
 	
-
+	
 	@Test public function testReadWriteUnsigned () {
 		
 		var data = new ByteArray();

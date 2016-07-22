@@ -70,11 +70,11 @@ class Transform {
 	}
 	
 	
-	private function get_matrix ():Matrix {
+	private function get_concatenatedMatrix ():Matrix {
 		
 		if (__hasMatrix) {
 			
-			return __displayObject.__transform.clone ();
+			return __displayObject.__getWorldTransform ().clone ();
 			
 		}
 		
@@ -82,12 +82,12 @@ class Transform {
 		
 	}
 	
-
-	private function get_concatenatedMatrix ():Matrix {
+	
+	private function get_matrix ():Matrix {
 		
 		if (__hasMatrix) {
 			
-			return __displayObject.__getWorldTransform ().clone ();
+			return __displayObject.__transform.clone ();
 			
 		}
 		

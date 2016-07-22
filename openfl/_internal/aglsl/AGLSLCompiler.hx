@@ -1,4 +1,4 @@
-package openfl._internal.aglsl; 
+package openfl._internal.aglsl;
 
 
 import openfl.utils.AGALMiniAssembler; 
