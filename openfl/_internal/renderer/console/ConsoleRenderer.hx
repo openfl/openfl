@@ -250,6 +250,9 @@ class ConsoleRenderer extends AbstractRenderer {
 				object.scrollRect.height
 			);
 			clipRect.__transform (clipRect, object.__getWorldTransform ());
+			if (prevClipRect != null) {
+				clipRect = clipRect.intersection(prevClipRect);
+			}
 		}
 
 		var prevBlendMode = blendMode;
@@ -828,17 +831,11 @@ class ConsoleRenderer extends AbstractRenderer {
 		}
 		var bitmapMatrix:Matrix = new Matrix ();
 		if (lineBitmap != null) {
-			// TODO(james4k): this is a hack, only applies translation. need to
-			// think through these coordinate spaces.
-			var tx = 0.0;
-			var ty = 0.0;
 			if (lineBitmapMatrix != null) {
-				tx = lineBitmapMatrix.tx;
-				ty = lineBitmapMatrix.ty;
+				bitmapMatrix.copyFrom (lineBitmapMatrix);
+				bitmapMatrix.invert ();
 			}
-			bitmapMatrix.translate (-tx, -ty);
 			bitmapMatrix.scale (1.0 / lineBitmap.width, 1.0 / lineBitmap.height);
-			bitmapMatrix.translate (tx, ty);
 		}
 
 		var vertices = vertexBuffer.lock ();
@@ -1058,17 +1055,11 @@ class ConsoleRenderer extends AbstractRenderer {
 
 						var m:Matrix = new Matrix ();
 						if (fillBitmap != null) {
-							var tx = 0.0;
-							var ty = 0.0;
-							// TODO(james4k): this is a hack, only applies translation. need to
-							// think through these coordinate spaces.
 							if (fillBitmapMatrix != null) {
-								tx = fillBitmapMatrix.tx;
-								ty = fillBitmapMatrix.ty;
+								m.copyFrom(fillBitmapMatrix);
+								m.invert();
 							}
-							m.translate (-tx, -ty);
 							m.scale (1.0 / fillBitmap.width, 1.0 / fillBitmap.height);
-							m.translate (tx, ty);
 						}
 
 						var w = cmd.width;
