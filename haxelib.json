@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.0.1",
-	"releasenote": "Improvements to Tilemap, ability to disable vector upscaling",
+	"version": "4.0.2",
+	"releasenote": "Improvements to Tilemap and ByteArray compression, minor fixes",
 	"contributors": [ "singmajesty" ]
 }
