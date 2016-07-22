@@ -75,7 +75,17 @@ class GLTilemap {
 				}
 				
 				var data = new Float32Array (count * 30);
-				data.set (bufferData);
+				
+				if (bufferData.length <= data.length) {
+					
+					data.set (bufferData);
+					
+				} else {
+					
+					data.set (bufferData.subarray (0, data.length));
+					
+				}
+				
 				bufferData = data;
 				
 			}
@@ -209,6 +219,19 @@ class GLTilemap {
 				if (cacheBitmapData != null) {
 					
 					gl.bindTexture (gl.TEXTURE_2D, cacheBitmapData.getTexture (gl));
+					
+					if (tilemap.smoothing /*|| tilemap.stage.__displayMatrix.a != 1 || tilemap.stage.__displayMatrix.d != 1*/) {
+						
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+						
+					} else {
+						
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+						
+					}
+					
 					gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 					
 				}
@@ -221,6 +244,19 @@ class GLTilemap {
 			if (i == count - 1 && tileset.bitmapData != null) {
 				
 				gl.bindTexture (gl.TEXTURE_2D, tileset.bitmapData.getTexture (gl));
+				
+				if (tilemap.smoothing /*|| tilemap.stage.__displayMatrix.a != 1 || tilemap.stage.__displayMatrix.d != 1*/) {
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					
+				} else {
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+					
+				}
+				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1 - lastIndex) * 6);
 				
 			}
