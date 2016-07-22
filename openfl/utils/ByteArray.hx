@@ -119,6 +119,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#end
 		
 	}
+
+    #if js
+
+    @:from @:noCompletion public static function fromUInt8Array (bytes:UInt8Array):ByteArray {
+        var ba:ByteArray = new ByteArray(bytes.length);
+        untyped {
+            ba.b = bytes;
+            ba.length = ba.b.length;
+            ba.__length = ba.b.length;
+        };
+        return ba;
+    }
+
+    #end
 	
 	
 	@:to @:noCompletion public static function toArrayBuffer (byteArray:ByteArray):ArrayBuffer {
@@ -745,11 +759,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 
 		return 1;
 	}
-	
-	
-	
-	
-	// Get & Set Methods
+
+
+
+
+        // Get & Set Methods
 	
 	
 	
