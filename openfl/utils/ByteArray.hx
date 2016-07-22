@@ -54,6 +54,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#elseif flash
 		this[index] = value;
 		#else
+		this.__resize (index + 1);
 		this.set (index, value);
 		#end
 		return value;
@@ -256,6 +257,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
+		
+		#if (js && html5)
+		if (__length > length) {
+			
+			var cacheLength = length;
+			this.length = __length;
+			var data = Bytes.alloc (cacheLength);
+			data.blit (0, this, 0, cacheLength);
+			__setData (data);
+			this.length = cacheLength;
+			
+		}
+		#end
 		
 		var bytes = switch (algorithm) {
 			
@@ -518,6 +532,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
+		
+		#if (js && html5)
+		if (__length > length) {
+			
+			var cacheLength = length;
+			this.length = __length;
+			var data = Bytes.alloc (cacheLength);
+			data.blit (0, this, 0, cacheLength);
+			__setData (data);
+			this.length = cacheLength;
+			
+		}
+		#end
 		
 		var bytes = switch (algorithm) {
 			
