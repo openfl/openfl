@@ -301,7 +301,18 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		}
 
-		object.__removedChildren = [];
+		// clean up resources for off-displaylist objects
+		if (object.__removedChildren.length > 0) {
+
+			for (orphan in object.__removedChildren) {
+				if (orphan.stage == null) {
+					orphan.__cleanup ();
+				}
+			}
+
+			object.__removedChildren = new Array<DisplayObject> ();
+
+		}
 
 	}
 

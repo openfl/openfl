@@ -255,6 +255,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		return false;
 		
 	}
+
+
+	private function __cleanup ():Void {
+		
+		__cairo = null;
+		
+		#if (js && html5)
+		__canvas = null;
+		__context = null;
+		#end
+		
+		if (__graphics != null) {
+			
+			__graphics.__cleanup ();
+			
+		}
+		
+	}
 	
 	
 	private override function __dispatchEvent (event:Event):Bool {

@@ -828,6 +828,27 @@ import js.html.CanvasRenderingContext2D;
 		return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
 		
 	}
+
+
+	private function __cleanup ():Void {
+		
+		if (__bounds != null) {
+			
+			__dirty = true;
+			__transformDirty = true;
+			
+		}
+		
+		__bitmap = null;
+		
+		#if (js && html5)
+		__canvas = null;
+		__context = null;
+		#else
+		__cairo = null;
+		#end
+		
+	}
 	
 	
 	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
