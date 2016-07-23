@@ -144,9 +144,12 @@ import openfl.Vector;
 				if (!useRect && cacheID != tileID) {
 					
 					cacheID = tileID;
-					tile = sheet.__tileRects[tileID];
-					tileUV = sheet.__tileUVs[tileID];
-					tilePoint = sheet.__centerPoints[tileID];
+					tile = sheet.__rectTile;
+					tileUV = sheet.__rectUV;
+					tilePoint = sheet.__point;
+					sheet.copyTileRect (tile, tileID);
+					sheet.copyTileUVs (tileUV, tileID);
+					sheet.copyTileCenter (tilePoint, tileID);
 					
 				} else if (useRect) {
 					
@@ -267,8 +270,10 @@ import openfl.Vector;
 				
 				if (!useRect) {
 					
-					tile = sheet.__tileRects[tileID];
-					tilePoint = sheet.__centerPoints[tileID];
+					tile = sheet.__rectTile;
+					tilePoint = sheet.__point;
+					sheet.copyTileRect(tile, tileID);
+					sheet.copyTileCenter(tilePoint, tileID);
 					ox = tilePoint.x * tile.width;
 					oy = tilePoint.y * tile.height;
 				}

@@ -1310,9 +1310,9 @@ class ConsoleRenderer extends AbstractRenderer {
 						} else {
 
 							tileID = Std.int (cmd.tileData[index + 2]);
-							rect = cmd.sheet.getTileRect(tileID);	
-							center = cmd.sheet.getTileCenter(tileID);	
-							tileUV = cmd.sheet.getTileUVs(tileID);	
+							cmd.sheet.copyTileRect(rect, tileID);	
+							cmd.sheet.copyTileCenter(center, tileID);	
+							cmd.sheet.copyTileUVs(tileUV, tileID);	
 
 						}
 

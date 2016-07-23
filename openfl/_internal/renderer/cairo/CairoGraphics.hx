@@ -918,8 +918,8 @@ class CairoGraphics {
 					var itemCount = Std.int (totalCount / numValues);
 					var index = 0;
 					
-					var rect = null;
-					var center = null;
+					var rect:Rectangle = null;
+					var center:Point = null;
 					var previousTileID = -1;
 					
 					var surface:Dynamic;
@@ -963,8 +963,10 @@ class CairoGraphics {
 						
 						if (!useRect && tileID != previousTileID) {
 							
-							rect = c.sheet.__tileRects[tileID];
-							center = c.sheet.__centerPoints[tileID];
+							rect = c.sheet.__rectTile;
+							center = c.sheet.__point;
+							c.sheet.copyTileRect (rect, tileID);
+							c.sheet.copyTileCenter (center, tileID);
 							
 							previousTileID = tileID;
 							

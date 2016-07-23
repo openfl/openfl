@@ -305,9 +305,9 @@ class SpriteBatch {
 				tuvh = rect.bottom / sheet.__bitmap.height;
 			} else {
 				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
-				rect = sheet.getTileRect(tileID);
-				center = sheet.getTileCenter(tileID);
-				tileUV = sheet.getTileUVs(tileID);
+				sheet.copyTileRect(rect, tileID);
+				sheet.copyTileCenter(center, tileID);
+				sheet.copyTileUVs(tileUV, tileID);
 				
 				if (rect != null) {
 					rw = rect.width; rh = rect.height;

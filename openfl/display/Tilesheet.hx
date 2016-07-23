@@ -37,9 +37,9 @@ class Tilesheet {
 	@:noCompletion private static var __defaultPoint = new Point (0, 0);
 	
 	@:noCompletion private var __bitmap:BitmapData;
-	@:noCompletion private var __centerPoints:Array<Point>;
-	@:noCompletion private var __tileRects:Array<Rectangle>;
-	@:noCompletion private var __tileUVs:Array<Rectangle>;
+	@:noCompletion private var __centerPoints:Array<Float>; // stride of 2
+	@:noCompletion private var __tileRects:Array<Float>; // stride of 4
+	@:noCompletion private var __tileUVs:Array<Float>; // stride of 4
 	
 	@:noCompletion private var __rectTile:Rectangle;
 	@:noCompletion private var __rectUV:Rectangle;
@@ -61,9 +61,9 @@ class Tilesheet {
 	public function new (image:BitmapData) {
 		
 		__bitmap = image;
-		__centerPoints = new Array<Point> ();
-		__tileRects = new Array<Rectangle> ();
-		__tileUVs = new Array<Rectangle> ();
+		__centerPoints = new Array<Float> ();
+		__tileRects = new Array<Float> ();
+		__tileUVs = new Array<Float> ();
 		
 		__rectTile = new Rectangle();
 		__rectUV = new Rectangle();
@@ -88,7 +88,10 @@ class Tilesheet {
 	 */
 	public function addTileRect (rectangle:Rectangle, centerPoint:Point = null):Int {
 		
-		__tileRects.push (rectangle);
+		__tileRects.push (rectangle.x);
+		__tileRects.push (rectangle.y);
+		__tileRects.push (rectangle.width);
+		__tileRects.push (rectangle.height);
 		
 		if (centerPoint == null) {
 			
@@ -97,14 +100,19 @@ class Tilesheet {
 		}
 		
 		#if flash
-		__centerPoints.push (new Point (centerPoint.x / rectangle.width, centerPoint.y / rectangle.height));
+		__centerPoints.push (centerPoint.x / rectangle.width);
+		__centerPoints.push (centerPoint.y / rectangle.height);
 		#else
-		__centerPoints.push (centerPoint);
+		__centerPoints.push (centerPoint.x);
+		__centerPoints.push (centerPoint.y);
 		#end
 		
-		__tileUVs.push (new Rectangle (rectangle.left / __bitmap.width, rectangle.top / __bitmap.height, rectangle.right / __bitmap.width, rectangle.bottom / __bitmap.height));
+		__tileUVs.push (rectangle.left / __bitmap.width);
+		__tileUVs.push (rectangle.top / __bitmap.height);
+		__tileUVs.push (rectangle.right / __bitmap.width);
+		__tileUVs.push (rectangle.bottom / __bitmap.height);
 		
-		return __tileRects.length - 1;
+		return (__tileRects.length >> 2) - 1;
 		
 	}
 	
@@ -195,25 +203,30 @@ class Tilesheet {
 		graphics.drawTiles (this, tileData, smooth, flags, count);
 		
 	}
-	
-	public inline function getTileCenter (index:Int):Point {
+
+	public inline function copyTileCenter (dest:Point, index:Int):Void {
 		
-		return __centerPoints[index];
-		
-	}
-	
-	
-	public inline function getTileRect (index:Int):Rectangle {
-		
-		return __tileRects[index];
+		dest.x = __centerPoints[index*2 + 0];
+		dest.y = __centerPoints[index*2 + 1];
 		
 	}
-	
-	
-	public inline function getTileUVs (index:Int):Rectangle {
-		
-		return __tileUVs[index];
-		
+
+	public inline function copyTileRect (dest:Rectangle, index:Int):Void {
+
+		dest.x = __tileRects[index*4 + 0];
+		dest.y = __tileRects[index*4 + 1];
+		dest.width = __tileRects[index*4 + 2];
+		dest.height = __tileRects[index*4 + 3];
+
+	}
+
+	public inline function copyTileUVs (dest:Rectangle, index:Int):Void {
+
+		__rectUV.x = __tileUVs[index*4 + 0];
+		__rectUV.y = __tileUVs[index*4 + 1];
+		__rectUV.width = __tileUVs[index*4 + 2];
+		__rectUV.height = __tileUVs[index*4 + 3];
+
 	}
 	
 	
