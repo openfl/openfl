@@ -1273,6 +1273,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					var tileUV:Rectangle = cmd.sheet.__rectUV;
 					var center:Point = cmd.sheet.__point;
 
+					var skippedItemCount = 0;
 					var vertexCount = itemCount * 4;
 					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
 					var out = vertexBuffer.lock ();
@@ -1317,6 +1318,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						}
 
 						if (rect == null || rect.width <= 0 || rect.height <= 0 || center == null) {
+							skippedItemCount++;
 							continue;
 						}	
 
@@ -1386,6 +1388,8 @@ class ConsoleRenderer extends AbstractRenderer {
 					}
 
 					vertexBuffer.unlock ();
+					itemCount -= skippedItemCount;
+					vertexCount = itemCount * 4;
 
 					var indexBuffer = transientIndexBuffer (itemCount * 6);
 					var unsafeIndices = indexBuffer.lock ();
