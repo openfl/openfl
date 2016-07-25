@@ -1,0 +1,78 @@
+package openfl.media;
+
+
+@:access(openfl.media.SoundChannel)
+
+
+@:final class SoundMixer {
+	
+	
+	public static var bufferTime:Int;
+	public static var soundTransform (get, set):SoundTransform;
+	
+	private static var __soundChannels = new Array<SoundChannel> ();
+	private static var __soundTransform = new SoundTransform ();
+	
+	
+	public static function areSoundsInaccessible ():Bool {
+		
+		return false;
+		
+	}
+	
+	
+	public static function stopAll ():Void {
+		
+		for (channel in __soundChannels) {
+			
+			channel.stop ();
+			
+		}
+		
+	}
+	
+	
+	private static function __registerSoundChannel (soundChannel:SoundChannel):Void {
+		
+		__soundChannels.push (soundChannel);
+		
+	}
+	
+	
+	private static function __unregisterSoundChannel (soundChannel:SoundChannel):Void {
+		
+		__soundChannels.remove (soundChannel);
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private static function get_soundTransform ():SoundTransform {
+		
+		return __soundTransform;
+		
+	}
+	
+	
+	private static function set_soundTransform (value:SoundTransform):SoundTransform {
+		
+		__soundTransform = value.clone ();
+		
+		for (channel in __soundChannels) {
+			
+			channel.__updateTransform ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+}
