@@ -73,20 +73,28 @@ class BitmapData implements IBitmapDrawable {
 
 	public var __worldTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
-	public var __cacheAsBitmap:Bool;
 
 	private var __blendMode:BlendMode;
-	private var __shader:Shader;
-	private var __buffer:GLBuffer;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
+
+	// TODO(james4k): don't need all of these GL fields for lime_console, but
+	// cascades into needing a ton of other changes.
+//#if lime_console
+	private var __consoleTexture:lime.graphics.console.Texture;
+//#else
+	public var __cacheAsBitmap:Bool;
+	private var __shader:Shader;
+	private var __buffer:GLBuffer;
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
 	private var __usingPingPongTexture:Bool = false;
 	private var __uvData:TextureUvs;
+	private var __textureVersion:Int;
+//#end
 
-
+	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
 
 		this.transparent = transparent;
@@ -375,7 +383,10 @@ class BitmapData implements IBitmapDrawable {
 		height = 0;
 		rect = null;
 		__isValid = false;
-
+		
+		#if lime_console
+		// TODO(james4k): we check for liveliness via WeakRef's, but this would be more immediate
+		#else
 		if (__texture != null) {
 
 			var renderer = @:privateAccess Lib.current.stage.__renderer;
@@ -402,7 +413,8 @@ class BitmapData implements IBitmapDrawable {
 			__pingPongTexture = null;
 
 		}
-
+		#end
+		
 	}
 
 
@@ -643,6 +655,12 @@ class BitmapData implements IBitmapDrawable {
 
 
 	public function getBuffer (gl:GLRenderContext):GLBuffer {
+		
+		#if lime_console
+
+		return null;
+
+		#else
 
 		if (__buffer == null) {
 
@@ -664,6 +682,8 @@ class BitmapData implements IBitmapDrawable {
 
 		return __buffer;
 
+		#end
+		
 	}
 
 
@@ -725,6 +745,12 @@ class BitmapData implements IBitmapDrawable {
 
 
 	public function getTexture (gl:GLRenderContext):GLTexture {
+		
+		#if lime_console
+
+		return null;
+
+		#else
 
 		if (!__isValid) return null;
 
@@ -811,6 +837,8 @@ class BitmapData implements IBitmapDrawable {
 
 		return __texture;
 
+		#end
+		
 	}
 
 

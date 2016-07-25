@@ -67,17 +67,8 @@ class ConsoleRenderer extends AbstractRenderer {
 	private var defaultShader:Shader;
 	private var fillShader:Shader;
 
-	// TODO(james4k): move to a TransientBuffers class or something.. or move to C++
-	private var indexBufferCounts:Array<Int> = [];
-	private var indexBuffers:Array<IndexBuffer> = [];
-	private var indexBufferAges:Array<Int8> = [];
-	private var vertexBufferDecls:Array<VertexDecl> = [];
-	private var vertexBufferCounts:Array<Int> = [];
-	private var vertexBuffers:Array<VertexBuffer> = [];
-	private var vertexBufferAges:Array<Int8> = [];
-
-	private var textureImages:Array<WeakRef<Image>> = [];
-	private var textures:Array<Texture> = [];
+	private var textureBitmaps = new Array<WeakRef<BitmapData>> ();
+	private var textures = new Array<Texture> ();
 
 	private var scissorRect:Array<Float32> = [0, 0, 0, 0];
 	private var viewProj:Matrix4;
@@ -145,20 +136,10 @@ class ConsoleRenderer extends AbstractRenderer {
 
 	public function destroy ():Void {
 
-		for (ib in indexBuffers) {
-			ctx.destroyIndexBuffer (ib);
-		}
-
-		for (vb in vertexBuffers) {
-			ctx.destroyVertexBuffer (vb);
-		}
-
 		for (tex in textures) {
 			ctx.destroyTexture (tex);
 		}
 
-		indexBuffers = null;
-		vertexBuffers = null;
 		textures = null;
 
 	}
@@ -199,7 +180,6 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		renderDisplayObject (stage);
 
-		collectTransientBuffers ();
 		collectTextures ();
 
 	}
@@ -337,131 +317,17 @@ class ConsoleRenderer extends AbstractRenderer {
 
 
 	// transientIndexBuffer returns an IndexBuffer that is only valid for the frame
-	private function transientIndexBuffer (indexCount:Int):IndexBuffer {
+	private inline function transientIndexBuffer (indexCount:Int):IndexBuffer {
  
-		// aligned indexCount to allow for more reusability
-		var align = 16;
-		indexCount = (indexCount + align - 1) & ~(align - 1);
-
-		// age of -1 to double buffer, to prevent race conditions
-		// TODO(james4k): confirm this is necessary. dynamic vertex buffers are
-		// double buffered internally, and dynamic index buffers are not..
-		var startAge = -1;
-
-		for (i in 0...indexBuffers.length) {
-
-			if (indexBufferCounts[i] == indexCount &&
-				indexBufferAges[i] > 0
-			) {
-				indexBufferAges[i] = startAge;
-				return indexBuffers[i];
-			}
-
-		}
-
-		var ib = ctx.createIndexBuffer (untyped __cpp__ ("NULL"), indexCount);
-
-		indexBufferCounts.push (indexCount);
-		indexBuffers.push (ib);
-		indexBufferAges.push (startAge);
-
-		return ib;
+		return ctx.transientIndexBuffer (indexCount);
 
 	}
 
 
 	// transientVertexBuffer returns a VertexBuffer that is only valid for the frame
-	private function transientVertexBuffer (decl:VertexDecl, vertexCount:Int):VertexBuffer {
- 
-		// aligned vertexCount to allow for more reusability
-		var align = 16;
-		vertexCount = (vertexCount + align - 1) & ~(align - 1);
+	private inline function transientVertexBuffer (decl:VertexDecl, vertexCount:Int):VertexBuffer {
 
-		// vertex buffers are double buffered internally, so can reuse every frame.
-		// (compare to transientIndexBuffer)
-		var startAge = 0;
-
-		for (i in 0...vertexBuffers.length) {
-
-			if (vertexBufferDecls[i] == decl &&
-				vertexBufferCounts[i] == vertexCount &&
-				vertexBufferAges[i] > 0
-			) {
-				vertexBufferAges[i] = startAge;
-				return vertexBuffers[i];
-			}
-
-		}
-
-		var vb = ctx.createVertexBuffer (decl, vertexCount);	
-
-		vertexBufferDecls.push (decl);
-		vertexBufferCounts.push (vertexCount);
-		vertexBuffers.push (vb);
-		vertexBufferAges.push (startAge);
-
-		return vb;
-
-	}
-
-
-	private function collectTransientBuffers ():Void {
-
-		var i = 0;
-
-		while (i < indexBufferAges.length) {
-
-			if (indexBufferAges[i] > 1) {
-
-				ctx.destroyIndexBuffer (indexBuffers[i]);
-
-				if (i == indexBufferCounts.length - 1) {
-					indexBufferCounts.pop ();
-					indexBuffers.pop ();
-					indexBufferAges.pop ();
-				} else {
-					indexBufferCounts[i] = indexBufferCounts.pop ();
-					indexBuffers[i] = indexBuffers.pop ();
-					indexBufferAges[i] = indexBufferAges.pop ();
-				}
-
-				continue;
-
-			}
-
-			indexBufferAges[i]++;
-			i++;
-
-		}
-
-		i = 0;
-
-		while (i < vertexBufferAges.length) {
-
-			if (vertexBufferAges[i] > 1) {
-
-				ctx.destroyVertexBuffer (vertexBuffers[i]);
-
-				if (i == vertexBufferDecls.length - 1) {
-					vertexBufferDecls.pop ();
-					vertexBufferCounts.pop ();
-					vertexBuffers.pop ();
-					vertexBufferAges.pop ();
-				} else {
-					vertexBufferDecls[i] = vertexBufferDecls.pop ();
-					vertexBufferCounts[i] = vertexBufferCounts.pop ();
-					vertexBuffers[i] = vertexBuffers.pop ();
-					vertexBufferAges[i] = vertexBufferAges.pop ();
-				}
-
-				continue;
-
-			}
-
-			vertexBufferAges[i]++;
-			i++;
-
-		}
+		return ctx.transientVertexBuffer (decl, vertexCount);
 
 	}
 
@@ -470,17 +336,17 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		var i = 0;
 
-		while (i < textureImages.length) {
+		while (i < textureBitmaps.length) {
 
-			if (textureImages[i].get () == null) {
+			if (textureBitmaps[i].get () == null) {
 
 				ctx.destroyTexture (textures[i]);
 
-				if (i == textureImages.length - 1) {
-					textureImages.pop ();
+				if (i == textureBitmaps.length - 1) {
+					textureBitmaps.pop ();
 					textures.pop ();
 				} else {
-					textureImages[i] = textureImages.pop ();
+					textureBitmaps[i] = textureBitmaps.pop ();
 					textures[i] = textures.pop ();
 				}
 
@@ -495,35 +361,33 @@ class ConsoleRenderer extends AbstractRenderer {
 	}
 
 
-	private function imageTexture (image:Image):Texture {
+	private function bitmapDataTexture (bitmap:BitmapData):Texture {
 
-		for (i in 0...textureImages.length) {
+		if (bitmap.__consoleTexture.valid) {
 
-			if (textureImages[i].get () == image) {
+			var image = bitmap.image;
+			var t = bitmap.__consoleTexture;
 
-				var t = textures[i];
+			if (image.dirty && image.buffer.data != null) {
 
-				if (image.dirty && image.buffer.data != null) {
+				t.updateFromRGBA (
+					cast (cpp.Pointer.arrayElem (image.buffer.data.buffer.getData (), 0))
+				);
 
-					t.updateFromRGBA (
-						cast (cpp.Pointer.arrayElem (image.buffer.data.buffer.getData (), 0))
-					);
-
-					image.dirty = false;
-
-				}
-
-				return t;
+				image.dirty = false;
 
 			}
 
+			return bitmap.__consoleTexture;
+
 		}
 
+		var image = bitmap.image;
 		var texture = ctx.createTexture (
 			TextureFormat.ARGB,
 			image.buffer.width,
 			image.buffer.height,
-			untyped __cpp__ ("NULL")
+			null
 		);
 
 		if (image.buffer.data != null) {
@@ -536,7 +400,8 @@ class ConsoleRenderer extends AbstractRenderer {
 
 		image.dirty = false;
 
-		textureImages.push (new WeakRef (image));
+		bitmap.__consoleTexture = texture;
+		textureBitmaps.push (new WeakRef (bitmap));
 		textures.push (texture);
 
 		return texture;
@@ -626,7 +491,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		out.color(0xff, 0xff, 0xff, 0xff);
 		vertexBuffer.unlock ();
 
-		var texture = imageTexture (bitmap.image);
+		var texture = bitmapDataTexture (bitmap);
 
 		ctx.bindShader (defaultShader);
 		ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
@@ -825,7 +690,7 @@ class ConsoleRenderer extends AbstractRenderer {
 		var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
 		var indexBuffer = transientIndexBuffer (indexCount);
 		var texture = if (lineBitmap != null) {
-			imageTexture (lineBitmap.image);
+			bitmapDataTexture (lineBitmap);
 		} else {
 			whiteTexture;
 		}
@@ -1082,7 +947,7 @@ class ConsoleRenderer extends AbstractRenderer {
 						out.color(0xff, 0xff, 0xff, 0xff);
 						vertexBuffer.unlock ();
 
-						var texture = imageTexture (fillBitmap.image);
+						var texture = bitmapDataTexture (fillBitmap);
 
 						ctx.bindShader (defaultShader);
 						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
@@ -1410,7 +1275,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					transform.append (viewProj);
 					transform.transpose ();
 
-					var texture = imageTexture (cmd.sheet.__bitmap.image);
+					var texture = bitmapDataTexture (cmd.sheet.__bitmap);
 
 					setBlendState (blendMode);
 					ctx.bindShader (defaultShader);
@@ -1447,7 +1312,7 @@ class ConsoleRenderer extends AbstractRenderer {
 					transform.append (viewProj);
 					transform.transpose ();
 
-					var texture = imageTexture (fillBitmap.image);
+					var texture = bitmapDataTexture (fillBitmap);
 
 					var cmdVertices = cmd.vertices;
 					var cmdIndices = cmd.indices;
