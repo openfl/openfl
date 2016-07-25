@@ -1449,24 +1449,27 @@ class ConsoleRenderer extends AbstractRenderer {
 
 					var texture = imageTexture (fillBitmap.image);
 
-					var vertexCount = div (cmd.vertices.length, 2);
+					var cmdVertices = cmd.vertices;
+					var cmdIndices = cmd.indices;
+					var cmdUvtData = cmd.uvtData;
+					var vertexCount = div (cmdVertices.length, 2);
 					var vertexBuffer = transientVertexBuffer (VertexDecl.PositionTexcoordColor, vertexCount);	
 					var out = vertexBuffer.lock ();
 					var i = 0;
 					while (i < cmd.vertices.length) {
-						out.vec3 (cmd.vertices[i], cmd.vertices[i+1], 0);
-						out.vec2 (cmd.uvtData[i], cmd.uvtData[i+1]);
+						out.vec3 (cmdVertices[i], cmdVertices[i+1], 0);
+						out.vec2 (cmdUvtData[i], cmdUvtData[i+1]);
 						// TODO(james4k): color
 						out.color (0xff, 0xff, 0xff, 0xff);
 						i += 2;
 					}
 					vertexBuffer.unlock ();
 					
-					var indexCount = cmd.indices.length;
+					var indexCount = cmdIndices.length;
 					var indexBuffer = transientIndexBuffer (indexCount);
 					var unsafeIndices = indexBuffer.lock ();
 					for (i in 0...indexCount) {
-						unsafeIndices[i] = cmd.indices[i];
+						unsafeIndices[i] = cmdIndices[i];
 					}
 					indexBuffer.unlock ();
 
