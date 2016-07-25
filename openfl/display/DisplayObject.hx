@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.ds.Vector;
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -444,6 +445,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		}
 		
 		return false;
+		
+	}
+	
+	
+	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
+		
+		if (__graphics != null) {
+			
+			__graphics.__readGraphicsData (graphicsData);
+			
+		}
 		
 	}
 	

@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.ds.Vector;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -557,6 +558,23 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	private override function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
+		
+		super.__readGraphicsData (graphicsData, recurse);
+		
+		if (recurse) {
+			
+			for (child in __children) {
+				
+				child.__readGraphicsData (graphicsData, recurse);
+				
+			}
+			
+		}
 		
 	}
 	
