@@ -1160,36 +1160,39 @@ class ConsoleRenderer extends AbstractRenderer {
 						var triangles = new Array<Int> ();
 						PolyK.triangulate (triangles, points);
 
-						setObjectTransform (object);
-						transform.append (viewProj);
-						transform.transpose ();
+						if (triangles.length > 0) {
 
-						var vertexCount = div (points.length, 2);
-						var indexCount = triangles.length;
+							setObjectTransform (object);
+							transform.append (viewProj);
+							transform.transpose ();
 
-						var vertexBuffer = transientVertexBuffer (VertexDecl.Position, vertexCount);	
-						var indexBuffer = transientIndexBuffer (indexCount);
+							var vertexCount = div (points.length, 2);
+							var indexCount = triangles.length;
 
-						var out = vertexBuffer.lock ();
-						for (i in 0...div (points.length, 2)) {
-							out.vec3 (points[i*2], points[i*2 + 1], 0);
+							var vertexBuffer = transientVertexBuffer (VertexDecl.Position, vertexCount);	
+							var indexBuffer = transientIndexBuffer (indexCount);
+
+							var out = vertexBuffer.lock ();
+							for (i in 0...div (points.length, 2)) {
+								out.vec3 (points[i*2], points[i*2 + 1], 0);
+							}
+							vertexBuffer.unlock ();
+
+							var unsafeIndices = indexBuffer.lock ();
+							for (i in 0...triangles.length) {
+								unsafeIndices[i] = triangles[i];
+							}
+							indexBuffer.unlock ();
+
+							ctx.bindShader (fillShader);
+							ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
+							ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
+							ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
+							ctx.setVertexSource (vertexBuffer);
+							ctx.setIndexSource (indexBuffer);
+							ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (triangles.length, 3));
+
 						}
-						vertexBuffer.unlock ();
-
-						var unsafeIndices = indexBuffer.lock ();
-						for (i in 0...triangles.length) {
-							unsafeIndices[i] = triangles[i];
-						}
-						indexBuffer.unlock ();
-
-						ctx.bindShader (fillShader);
-						ctx.setPixelShaderConstantF (0, cpp.Pointer.arrayElem (scissorRect, 0), 1);
-						ctx.setVertexShaderConstantF (0, PointerUtil.fromMatrix (transform), 4);
-						ctx.setVertexShaderConstantF (4, cpp.Pointer.arrayElem (fillColor, 0), 1);
-						ctx.setVertexSource (vertexBuffer);
-						ctx.setIndexSource (indexBuffer);
-						ctx.drawIndexed (Primitive.Triangle, vertexCount, 0, div (triangles.length, 3));
-						//ctx.draw (Primitive.TriangleStrip, 0, div (triangles.length, 3));
 
 					}
 
