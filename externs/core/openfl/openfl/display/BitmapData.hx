@@ -370,9 +370,7 @@ extern class BitmapData implements IBitmapDrawable {
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false):Void;
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality) : Void;
-	#end
+	public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality):Void;
 	
 	
 	public function encode (rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
