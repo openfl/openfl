@@ -29,11 +29,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	public function removeChildAt (index:Int):DisplayObject;
 	@:require(flash11) public function removeChildren (beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void;
 	public function setChildIndex (child:DisplayObject, index:Int):Void;
-	
-	#if flash
 	@:require(flash11_8) public function stopAllMovieClips ():Void;
-	#end
-	
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void;
 	public function swapChildrenAt (index1:Int, index2:Int):Void;
 	

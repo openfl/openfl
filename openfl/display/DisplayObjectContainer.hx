@@ -296,6 +296,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	public function stopAllMovieClips ():Void {
+		
+		__stopAllMovieClips ();
+		
+	}
+	
+	
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void {
 		
 		if (child1.parent == this && child2.parent == this) {
@@ -766,6 +773,17 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 				
 			}
+			
+		}
+		
+	}
+	
+	
+	private override function __stopAllMovieClips ():Void {
+		
+		for (child in __children) {
+			
+			child.__stopAllMovieClips ();
 			
 		}
 		

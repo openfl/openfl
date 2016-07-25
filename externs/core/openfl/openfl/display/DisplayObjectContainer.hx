@@ -344,9 +344,8 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 */
 	public function setChildIndex (child:DisplayObject, index:Int):Void;
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_8) public function stopAllMovieClips ():Void;
-	#end
+	
+	public function stopAllMovieClips ():Void;
 	
 	
 	/**
