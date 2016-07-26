@@ -773,6 +773,7 @@ class CanvasGraphics {
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
+					pendingMatrix = null;
 				}
 
 				if (!hitTesting) context.fill ();
