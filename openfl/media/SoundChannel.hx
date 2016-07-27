@@ -165,8 +165,6 @@ import openfl.media.Sound;
 			if (pan < -1) pan = -1;
 			if (pan > 1) pan = 1;
 			
-			trace (pan);
-			
 			var volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
 			
 			if (__isValid) {
