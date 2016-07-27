@@ -12,10 +12,7 @@ extern class Utils3D {
 	#end
 	
 	public static function projectVector (m:Matrix3D, v:Vector3D):Vector3D;
-	
-	#if flash
 	public static function projectVectors (m:Matrix3D, verts:Vector<Float>, projectedVerts:Vector<Float>, uvts:Vector<Float>):Void;
-	#end
 	
 	
 }

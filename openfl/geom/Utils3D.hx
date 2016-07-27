@@ -29,8 +29,8 @@ class Utils3D {
 	}
 	
 	
-	//static function projectVectors(m : Matrix3D, verts : flash.Vector<Float>, projectedVerts : flash.Vector<Float>, uvts : flash.Vector<Float>) : Void;
-	public static function projectVectors(m : Matrix3D, verts : Array<Float>, projectedVerts : Array<Float>, uvts : Array<Float>) : Void {
+	public static function projectVectors (m:Matrix3D, verts:Vector<Float>, projectedVerts:Vector<Float>, uvts:Vector<Float>):Void {
+		
 		if ( verts.length % 3 != 0 ) return;
 		
 		var n = m.rawData,
@@ -59,5 +59,6 @@ class Utils3D {
 		}
 		
 	}
+	
 	
 }

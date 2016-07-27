@@ -13,11 +13,7 @@ extern class Utils3D {
 	
 	
 	public static function projectVector (m:Matrix3D, v:Vector3D):Vector3D;
-	
-	
-	#if flash
-	@:noCompletion @:dox(hide) public static function projectVectors (m:Matrix3D, verts:Vector<Float>, projectedVerts:Vector<Float>, uvts:Vector<Float>):Void;
-	#end
+	public static function projectVectors (m:Matrix3D, verts:Vector<Float>, projectedVerts:Vector<Float>, uvts:Vector<Float>):Void;
 	
 	
 }
