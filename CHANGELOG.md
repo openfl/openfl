@@ -1,3 +1,15 @@
+4.0.3 (07/27/2016)
+------------------
+
+* Added openfl.media.SoundMixer
+* Added Utils3D.projectVectors
+* Added sprite.stopAllMovieClips
+* Added bitmapData.drawWithQuality
+* Added some support for graphics.readGraphicsData
+* Improved support for Matrix3D appendRotation/prependRotation
+* Fixed a crash regression on current-generation Android devices
+
+
 4.0.2 (07/22/2016)
 ------------------
 
