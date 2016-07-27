@@ -73,6 +73,8 @@ class BitmapData implements IBitmapDrawable {
 	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
+	private var __bufferAlpha:Float;
+	private var __bufferData:Float32Array;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
@@ -615,23 +617,36 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function getBuffer (gl:GLRenderContext):GLBuffer {
+	public function getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
 		
 		if (__buffer == null) {
 			
-			var data = [
+			__bufferData = new Float32Array ([
 				
-				width, height, 0, 1, 1, 
-				0, height, 0, 0, 1, 
-				width, 0, 0, 1, 0, 
-				0, 0, 0, 0, 0
+				width, height, 0, 1, 1, alpha,
+				0, height, 0, 0, 1, alpha,
+				width, 0, 0, 1, 0, alpha,
+				0, 0, 0, 0, 0, alpha
 				
-			];
+			]);
 			
+			__bufferAlpha = alpha;
 			__buffer = gl.createBuffer ();
+			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
-			gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (data), gl.STATIC_DRAW);
-			gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
+			//gl.bindBuffer (gl.ARRAY_BUFFER, null);
+			
+		} else if (__bufferAlpha != alpha) {
+			
+			__bufferData[5] = alpha;
+			__bufferData[11] = alpha;
+			__bufferData[17] = alpha;
+			__bufferData[23] = alpha;
+			__bufferAlpha = alpha;
+			
+			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
+			gl.bufferData (gl.ARRAY_BUFFER, __bufferData, gl.STATIC_DRAW);
 			
 		}
 		
