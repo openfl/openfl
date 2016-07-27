@@ -315,9 +315,9 @@ abstract Vector<T>(VectorData<T>) {
 			if (this.data.length < this.length) {
 				
 				#if cpp
-				untyped (this.data).__SetSizeExact (this.data.length + 10);
+				untyped (this.data).__SetSizeExact (((this.data.length + 1) * 3) >> 1);
 				#else
-				var data = new haxe.ds.Vector<T> (this.data.length + 10);
+				var data = new haxe.ds.Vector<T> (((this.data.length + 1) * 3) >> 1);
 				haxe.ds.Vector.blit (this.data, 0, data, 0, this.data.length);
 				this.data = data;
 				#end
@@ -379,9 +379,9 @@ abstract Vector<T>(VectorData<T>) {
 			if (this.data.length < this.length) {
 				
 				#if cpp
-				untyped (this.data).__SetSizeExact (this.length + 10);
+				untyped (this.data).__SetSizeExact (((this.length + 1) * 3) >> 1);
 				#else
-				var data = new haxe.ds.Vector<T> (this.length + 10);
+				var data = new haxe.ds.Vector<T> (((this.length + 1) * 3) >> 1);
 				haxe.ds.Vector.blit (this.data, 0, data, 1, this.data.length);
 				this.data = data;
 				#end
@@ -565,7 +565,7 @@ abstract Vector<T>(VectorData<T>) {
 			
 			if (this.data.length < this.length) {
 				
-				var data = new haxe.ds.Vector<T> (this.data.length + 10);
+				var data = new haxe.ds.Vector<T> (((this.data.length + 1) * 3) >> 1);
 				haxe.ds.Vector.blit (cast this.data, 0, data, 0, this.data.length);
 				this.data = cast data;
 				
