@@ -709,7 +709,7 @@ class Matrix3D {
 		var y2 = y * y;
 		var z2 = z * z;
 		var ls = x2 + y2 + z2;
-		if (ls !== 0) {
+		if (ls != 0) {
 			var l = Math.sqrt(ls);
 			x /= l;
 			y /= l;
