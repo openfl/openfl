@@ -66,16 +66,49 @@ class Matrix3D {
 	
 	public function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
-		var m = __getAxisRotation (axis.x, axis.y, axis.z, degrees);
+		var tx:Float, ty:Float, tz:Float;
+		tx = ty = tz = 0;
 		
 		if (pivotPoint != null) {
-			
-			var p = pivotPoint;
-			m.appendTranslation (p.x, p.y, p.z);
-			
+			tx = pivotPoint.x;
+			ty = pivotPoint.y;
+			tz = pivotPoint.z;
 		}
-		
-		this.append (m);
+		var radian = degrees * Math.PI/180;
+		var cos = Math.cos(radian);
+		var sin = Math.sin(radian);
+		var x = axis.x;
+		var y = axis.y;
+		var z = axis.z;
+		var x2 = x * x;
+		var y2 = y * y;
+		var z2 = z * z;
+		var ls = x2 + y2 + z2;
+		if (ls != 0) {
+			var l = Math.sqrt(ls);
+			x /= l;
+			y /= l;
+			z /= l;
+			x2 /= ls;
+			y2 /= ls;
+			z2 /= ls;
+		}
+		var ccos = 1 - cos;
+		var m = new Matrix3D();
+		var d = m.rawData;
+		d[0]  = x2 + (y2 + z2) * cos;
+		d[1]  = x * y * ccos + z * sin;
+		d[2]  = x * z * ccos - y * sin;
+		d[4]  = x * y * ccos - z * sin;
+		d[5]  = y2 + (x2 + z2) * cos;
+		d[6]  = y * z * ccos + x * sin;
+		d[8]  = x * z * ccos + y * sin;
+		d[9]  = y * z * ccos - x * sin;
+		d[10] = z2 + (x2 + y2) * cos;
+		d[12] = (tx * (y2 + z2) - x * (ty * y + tz * z)) * ccos + (ty * z - tz * y) * sin;
+		d[13] = (ty * (x2 + z2) - y * (tx * x + tz * z)) * ccos + (tz * x - tx * z) * sin;
+		d[14] = (tz * (x2 + y2) - z * (tx * x + ty * y)) * ccos + (tx * y - ty * x) * sin;
+		this.append(m);
 		
 	}
 	
@@ -659,14 +692,47 @@ class Matrix3D {
 	
 	public function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
-		var m = __getAxisRotation (axis.x, axis.y, axis.z, degrees);
-		
-		if (pivotPoint != null) {
-			
-			var p = pivotPoint;
-			m.appendTranslation (p.x, p.y, p.z);
-			
+		var tx:Float, ty:Float, tz:Float;
+		tx = ty = tz = 0;
+		if ( pivotPoint != null ) {
+			tx = pivotPoint.x;
+			ty = pivotPoint.y;
+			tz = pivotPoint.z;
 		}
+		var radian = degrees *  Math.PI/180;
+		var cos = Math.cos(radian);
+		var sin = Math.sin(radian);
+		var x = axis.x;
+		var y = axis.y;
+		var z = axis.z;
+		var x2 = x * x;
+		var y2 = y * y;
+		var z2 = z * z;
+		var ls = x2 + y2 + z2;
+		if (ls !== 0) {
+			var l = Math.sqrt(ls);
+			x /= l;
+			y /= l;
+			z /= l;
+			x2 /= ls;
+			y2 /= ls;
+			z2 /= ls;
+		}
+		var ccos = 1 - cos;
+		var m = new Matrix3D();
+		var d = m.rawData;
+		d[0]  = x2 + (y2 + z2) * cos;
+		d[1]  = x * y * ccos + z * sin;
+		d[2]  = x * z * ccos - y * sin;
+		d[4]  = x * y * ccos - z * sin;
+		d[5]  = y2 + (x2 + z2) * cos;
+		d[6]  = y * z * ccos + x * sin;
+		d[8]  = x * z * ccos + y * sin;
+		d[9]  = y * z * ccos - x * sin;
+		d[10] = z2 + (x2 + y2) * cos;
+		d[12] = (tx * (y2 + z2) - x * (ty * y + tz * z)) * ccos + (ty * z - tz * y) * sin;
+		d[13] = (ty * (x2 + z2) - y * (tx * x + tz * z)) * ccos + (tz * x - tx * z) * sin;
+		d[14] = (tz * (x2 + y2) - z * (tx * x + ty * y)) * ccos + (tx * y - ty * x) * sin;
 		
 		this.prepend (m);
 		
