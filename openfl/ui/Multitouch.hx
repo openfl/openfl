@@ -41,6 +41,8 @@ import openfl.Vector;
 			
 		}
 		
+		return false;
+		
 		#else
 		
 		return true;
