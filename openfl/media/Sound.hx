@@ -1,6 +1,7 @@
 package openfl.media;
 
 
+import haxe.Timer;
 import haxe.io.Path;
 import lime.audio.AudioBuffer;
 import lime.audio.AudioSource;
@@ -71,6 +72,7 @@ class Sound extends EventDispatcher {
 		if (__registeredSounds.exists (__soundID)) {
 			
 			SoundJS.removeSound (__soundID);
+			__registeredSounds.remove (__soundID);
 			
 		}
 		
@@ -115,8 +117,12 @@ class Sound extends EventDispatcher {
 			SoundJS.registerSound (url, __soundID);
 			
 		} else {
-			
-			dispatchEvent (new Event (Event.COMPLETE));
+
+			Timer.delay(function() {
+
+				dispatchEvent (new Event (Event.COMPLETE));
+
+			}, 1);
 			
 		}
 		
