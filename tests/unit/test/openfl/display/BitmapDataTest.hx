@@ -251,6 +251,7 @@ class BitmapDataTest {
 		var bitmapData2 = new BitmapData (100, 100, true, 0xFFFF0000);
 		
 		Assert.areEqual (hex (0xFF000000), hex (bitmapData.getPixel32 (0, 0)));
+		Assert.areEqual (hex (0xFFFF0000), hex (bitmapData2.getPixel32 (0, 0)));
 		
 		bitmapData.copyChannel (bitmapData2, bitmapData2.rect, new Point (), BitmapDataChannel.RED, BitmapDataChannel.RED);
 		
