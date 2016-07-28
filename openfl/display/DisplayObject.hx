@@ -526,35 +526,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	private function __setStageReference (stage:Stage):Void {
-		
-		if (this.stage != stage) {
-			
-			if (this.stage != null) {
-				
-				if (this.stage.focus == this) {
-					
-					this.stage.focus = null;
-					
-				}
-				
-				dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
-				
-			}
-			
-			this.stage = stage;
-			
-			if (stage != null) {
-				
-				dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
-				
-			}
-			
-		}
-		
-	}
-	
-	
 	private inline function __setRenderDirty ():Void {
 		
 		if (!__renderDirty) {
