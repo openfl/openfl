@@ -9,7 +9,6 @@ import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.utils.Float32Array;
 import openfl.display.BitmapData;
-import openfl.display.OpenGLView;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.Texture;
@@ -60,7 +59,6 @@ import openfl.Lib;
 	private var __drawing:Bool; // to mimic Stage3d behavior of not allowing calls to drawTriangles between present and clear
 	private var __framebuffer:GLFramebuffer;
 	private var __indexBuffersCreated:Array<IndexBuffer3D>; // to keep track of stuff to dispose when calling dispose
-	private var __ogl:OpenGLView;
 	private var __programsCreated:Array<Program3D>; // to keep track of stuff to dispose when calling dispose
 	private var __renderbuffer:GLRenderbuffer;
 	private var __samplerParameters:Array<SamplerState>; //TODO : use Tupple3
@@ -106,14 +104,7 @@ import openfl.Lib;
 		}
 		
 		var stage = Lib.current.stage;
-		
-		__ogl = new OpenGLView ();
-		__ogl.scrollRect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
-		__scrollRect = __ogl.scrollRect.clone ();
-		__ogl.width = stage.stageWidth;
-		__ogl.height = stage.stageHeight;
-		
-		stage.addChildAt (__ogl, 0);
+		__scrollRect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
 		
 	}
 	
@@ -791,8 +782,6 @@ import openfl.Lib;
 		__scrollRect.y = y;
 		__scrollRect.width = width;
 		__scrollRect.height = height;
-		__ogl.width = x + width;
-		__ogl.height = y + height;
 		
 		__updateBackBufferViewPort ();
 		

@@ -33,6 +33,7 @@ import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.console.ConsoleRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
 import openfl.events.Event;
@@ -1228,6 +1229,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__fireEvent (touchEvent, [ stage ]);
 			
 		}
+		
+	}
+	
+	
+	public override function __renderGL (renderSession:RenderSession):Void {
+		
+		for (stage3D in stage3Ds) {
+			
+			stage3D.__renderGL (renderSession);
+			
+		}
+		
+		super.__renderGL (renderSession);
 		
 	}
 	

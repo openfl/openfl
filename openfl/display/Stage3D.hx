@@ -2,6 +2,8 @@ package openfl.display;
 
 
 import haxe.Timer;
+import openfl._internal.renderer.opengl.GLStage3D;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.OpenGLView;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
@@ -53,6 +55,17 @@ class Stage3D extends EventDispatcher {
 	public function requestContext3DMatchingProfiles (profiles:Vector<Context3DProfile>):Void {
 		
 		requestContext3D ();
+		
+	}
+	
+	
+	public function __renderGL (renderSession:RenderSession):Void {
+		
+		if (context3D != null) {
+			
+			GLStage3D.render (this, renderSession);
+			
+		}
 		
 	}
 	
