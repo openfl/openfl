@@ -14,8 +14,6 @@ import openfl.Vector;
 @:final class IndexBuffer3D {
 	
 	
-	private static var __shortData:Int16Array;
-	
 	private var __context:Context3D;
 	private var __elementType:Int;
 	private var __id:GLBuffer;
@@ -54,47 +52,25 @@ import openfl.Vector;
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void {
 		
-		__elementType = GL.UNSIGNED_SHORT;
+		var offset = byteArrayOffset + startOffset * 2;
 		
-		var ba:ByteArray = new ByteArray ();
-		data.readBytes (ba, byteArrayOffset);
-		var sData = new Int16Array (ba.length, ba.toArrayBuffer ());
-		
-		uploadFromTypedArray (sData, Std.int (data.length - byteArrayOffset), startOffset, count);
+		uploadFromTypedArray (new Int16Array (data.toArrayBuffer (), offset, count));
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, dataLength:Int, startOffset:Int, count:Int):Void {
-		
-		var elementSize:Int = 2;
-		var byteCount:Int = count * elementSize;
-		
-		if (byteCount > dataLength) {
-			
-			throw new RangeError ("data buffer is not big enough for upload");
-			
-		}
+	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
-		if (startOffset == 0) {
+		GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __usage);
+		GLUtils.CheckGLError ();
+		
+		if (data.byteLength != __memoryUsage) {
 			
-			GL.bufferData (GL.ELEMENT_ARRAY_BUFFER, data, __usage);
-			GLUtils.CheckGLError ();
-			
-			if (byteCount != __memoryUsage) {
-				
-				__context.__statsAdd (Context3D.Context3DTelemetry.MEM_INDEX_BUFFER, byteCount - __memoryUsage);
-				__memoryUsage = byteCount;
-				
-			}
-			
-		} else {
-			
-			GL.bufferSubData (GL.ELEMENT_ARRAY_BUFFER, startOffset * elementSize, data);
-			GLUtils.CheckGLError ();
+			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_INDEX_BUFFER, data.byteLength - __memoryUsage);
+			__memoryUsage = data.byteLength;
 			
 		}
 		
@@ -103,22 +79,7 @@ import openfl.Vector;
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		__elementType = GL.UNSIGNED_SHORT;
-		var length:Int = data.length;
-		
-		if ((__shortData == null) || (__shortData.length < length)) {
-			
-			__shortData = new Int16Array (Std.int (data.length * 1.2));
-			
-		}
-		
-		for (i in 0...length) {
-			
-			__shortData[i] = data[i];
-			
-		}
-		
-		uploadFromTypedArray (__shortData, length * 2, startOffset, count);
+		uploadFromTypedArray (new Int16Array (data, startOffset * 2, count));
 		
 	}
 	

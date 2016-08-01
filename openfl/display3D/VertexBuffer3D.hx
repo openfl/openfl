@@ -57,55 +57,26 @@ class VertexBuffer3D {
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void {
 		
-		// TODO: prevent copy
+		var offset = byteArrayOffset + startVertex * __stride;
+		var length = numVertices * __vertexSize;
 		
-		data.position = 0;
-		var ptr:Bytes = Bytes.alloc (data.length - byteArrayOffset);
-		
-		data.position = byteArrayOffset;
-		var i = 0;
-		while (data.bytesAvailable > 0) {
-			
-			ptr.set(i++, data.readByte ());
-			
-		}
-		
-		uploadFromTypedArray (ptr, (data.length - byteArrayOffset), startVertex, numVertices);
+		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
 	}
 	
 	
-	// TODO: Must be a better way to handle buffer uploading. Copying and
-	// transcoding data back and forth. Not good.
-	
-	public function uploadFromTypedArray (data:Bytes, dataLength:Int, startVertex:Int, numVertices:Int):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
+		GLUtils.CheckGLError ();
 		
-		var byteStart = startVertex * __vertexSize * 4;
-		var byteCount = numVertices * __vertexSize * 4;
-		var dataView = Float32Array.fromBytes (data, 0, Std.int (byteCount / 4));
+		GL.bufferData (GL.ARRAY_BUFFER, data, __usage);
+		GLUtils.CheckGLError ();
 		
-		if (byteCount > dataLength) {
+		if (data.byteLength != __memoryUsage) {
 			
-			throw new RangeError ("data buffer is not big enough for upload");
-			
-		}
-		
-		if (byteStart == 0) {
-			
-			GL.bufferData (GL.ARRAY_BUFFER, dataView, __usage);
-			
-			if (byteCount != __memoryUsage) {
-				
-				__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, byteCount - __memoryUsage);
-				__memoryUsage = byteCount;
-				
-			}
-			
-		} else {
-			
-			GL.bufferSubData (GL.ARRAY_BUFFER, byteStart, dataView);
+			__context.__statsAdd (Context3D.Context3DTelemetry.MEM_VERTEX_BUFFER, data.byteLength - __memoryUsage);
+			__memoryUsage = data.byteLength;
 			
 		}
 		
@@ -114,17 +85,10 @@ class VertexBuffer3D {
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
-		// TODO: prevent copy
+		var offset = startVertex * __stride;
+		var length = numVertices * __vertexSize;
 		
-		var bytes = Bytes.alloc (data.length * 4);
-		
-		for (i in 0...data.length) {
-			
-			bytes.setFloat (i * 4, data[i]);
-			
-		}
-		
-		uploadFromTypedArray (bytes, data.length * 4, startVertex, numVertices);
+		uploadFromTypedArray (new Float32Array (data, offset, length));
 		
 	}
 	
