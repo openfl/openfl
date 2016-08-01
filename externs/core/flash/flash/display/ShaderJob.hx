@@ -1,4 +1,4 @@
-package openfl.display; #if (display || !flash)
+package openfl.display; #if (!display && flash)
 
 
 import openfl.events.EventDispatcher;
@@ -23,5 +23,5 @@ extern class ShaderJob extends EventDispatcher {
 
 
 #else
-typedef ShaderJob = flash.display.ShaderJob;
+typedef ShaderJob = openfl.display.ShaderJob;
 #end

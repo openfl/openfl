@@ -11,129 +11,129 @@ import openfl.utils.Float32Array;
 
 
 class VertexBuffer3D {
-    public var stride(get, null):Int;
+	public var stride(get, null):Int;
 
-    public var id(get, null):GLBuffer;
-    private var mContext(default, null):Context3D;
-    private var mNumVertices(default, null):Int;
-    private var mVertexSize(default, null):Int; // size in Floats
-    private var mData:Vector<Float>;
-    private var mId:GLBuffer;
-    private var mUsage:Int = 0;
-    private var mMemoryUsage:Int = 0;
+	public var id(get, null):GLBuffer;
+	private var mContext(default, null):Context3D;
+	private var mNumVertices(default, null):Int;
+	private var mVertexSize(default, null):Int; // size in Floats
+	private var mData:Vector<Float>;
+	private var mId:GLBuffer;
+	private var mUsage:Int = 0;
+	private var mMemoryUsage:Int = 0;
 
-    //
-    // Methods
-    //
-
-
-    public function get_stride():Int
-    {
-        return mVertexSize * 4; //sizeof(Float);
-    }
-
-    public function get_id():GLBuffer
-    {
-        return mId;
-    }
-    /*Internal*/
-
-    public function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String)
-    {
-        mContext = context3D;
-        mNumVertices = numVertices;
-        mVertexSize = dataPerVertex;
-        mId = GL.createBuffer();
-
-        mUsage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
-
-        // update stats
-        mContext.statsIncrement(Context3D.Stats.Count_VertexBuffer);
-    }
-
-    public function dispose():Void
-    {
-        GL.deleteBuffer(mId);
-
-        // update stats
-        mContext.statsDecrement(Context3D.Stats.Count_VertexBuffer);
-        mContext.statsSubtract(Context3D.Stats.Mem_VertexBuffer, mMemoryUsage);
-        mMemoryUsage = 0;
-    }
+	//
+	// Methods
+	//
 
 
-    // TODO: Must be a better way to handle buffer uploading. Copying and
-    // transcoding data back and forth. Not good.
+	public function get_stride():Int
+	{
+		return mVertexSize * 4; //sizeof(Float);
+	}
 
-    public function uploadFromPointer(data:Bytes, dataLength:Int, startVertex:Int, numVertices:Int):Void
-    {
-        GL.bindBuffer(GL.ARRAY_BUFFER, mId);
+	public function get_id():GLBuffer
+	{
+		return mId;
+	}
+	/*Internal*/
 
-        // get poInter to byte array data
-        var byteStart:Int = startVertex * mVertexSize * 4; //sizeof(Float);
-        var byteCount:Int = numVertices * mVertexSize * 4; //sizeof(Float);
+	public function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:String)
+	{
+		mContext = context3D;
+		mNumVertices = numVertices;
+		mVertexSize = dataPerVertex;
+		mId = GL.createBuffer();
 
-        var dataView:Float32Array = Float32Array.fromBytes(data, 0, Std.int(byteCount / 4));
+		mUsage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
 
-        // bounds check
-        if (byteCount > dataLength)
-            throw new RangeError("data buffer is not big enough for upload");
+		// update stats
+		mContext.statsIncrement(Context3D.Stats.Count_VertexBuffer);
+	}
 
-        if (byteStart == 0) {
-            // upload whole array
-            GL.bufferData(GL.ARRAY_BUFFER,
-                //new IntPtr(byteCount),
-            dataView,
-            mUsage);
+	public function dispose():Void
+	{
+		GL.deleteBuffer(mId);
 
-            if (byteCount != mMemoryUsage) {
-                // update stats for memory usage
-                mContext.statsAdd(Context3D.Stats.Mem_VertexBuffer, byteCount - mMemoryUsage);
-                mMemoryUsage = byteCount;
-            }
-        } else {
-            // upload whole array
-            GL.bufferSubData(GL.ARRAY_BUFFER,
-            byteStart,
-                //new IntPtr(byteCount),
-            dataView);
-        }
-    }
+		// update stats
+		mContext.statsDecrement(Context3D.Stats.Count_VertexBuffer);
+		mContext.statsSubtract(Context3D.Stats.Mem_VertexBuffer, mMemoryUsage);
+		mMemoryUsage = 0;
+	}
 
-    public /*unsafe*/ function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void
-    {
-        // Ugh. On Haxe, we need to copy the bytes one by one from
-        // ByteArray to Bytes in order to be able to upload to GPU.
-        data.position = 0;
-        var ptr:Bytes = Bytes.alloc(data.length - byteArrayOffset);
 
-        data.position = byteArrayOffset;
-        var i = 0;
-        while (data.bytesAvailable > 0) {
-            ptr.set(i++, data.readByte());
-        }
+	// TODO: Must be a better way to handle buffer uploading. Copying and
+	// transcoding data back and forth. Not good.
 
-        uploadFromPointer(ptr, (data.length - byteArrayOffset), startVertex, numVertices);
-    }
+	public function uploadFromPointer(data:Bytes, dataLength:Int, startVertex:Int, numVertices:Int):Void
+	{
+		GL.bindBuffer(GL.ARRAY_BUFFER, mId);
 
-    public /*unsafe*/ function uploadFromArray(data:Array<Float>, startVertex:Int, numVertices:Int):Void
-    {
-        var bytes:Bytes = Bytes.alloc(data.length * 4);
-        for (i in 0...data.length) {
-            bytes.setFloat(i * 4, data[i]);
-        }
+		// get poInter to byte array data
+		var byteStart:Int = startVertex * mVertexSize * 4; //sizeof(Float);
+		var byteCount:Int = numVertices * mVertexSize * 4; //sizeof(Float);
 
-        uploadFromPointer(bytes, data.length * 4 /*sizeof(Float)*/, startVertex, numVertices);
-    }
+		var dataView:Float32Array = Float32Array.fromBytes(data, 0, Std.int(byteCount / 4));
 
-    public function uploadFromVector(data:Vector<Float>, startVertex:Int, numVertices:Int):Void
-    {
-        var array:Array<Float> = Lambda.array(data);
+		// bounds check
+		if (byteCount > dataLength)
+			throw new RangeError("data buffer is not big enough for upload");
 
-        uploadFromArray(array, startVertex, numVertices);
-    }
+		if (byteStart == 0) {
+			// upload whole array
+			GL.bufferData(GL.ARRAY_BUFFER,
+				//new IntPtr(byteCount),
+			dataView,
+			mUsage);
 
-    /*
+			if (byteCount != mMemoryUsage) {
+				// update stats for memory usage
+				mContext.statsAdd(Context3D.Stats.Mem_VertexBuffer, byteCount - mMemoryUsage);
+				mMemoryUsage = byteCount;
+			}
+		} else {
+			// upload whole array
+			GL.bufferSubData(GL.ARRAY_BUFFER,
+			byteStart,
+				//new IntPtr(byteCount),
+			dataView);
+		}
+	}
+
+	public /*unsafe*/ function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void
+	{
+		// Ugh. On Haxe, we need to copy the bytes one by one from
+		// ByteArray to Bytes in order to be able to upload to GPU.
+		data.position = 0;
+		var ptr:Bytes = Bytes.alloc(data.length - byteArrayOffset);
+
+		data.position = byteArrayOffset;
+		var i = 0;
+		while (data.bytesAvailable > 0) {
+			ptr.set(i++, data.readByte());
+		}
+
+		uploadFromPointer(ptr, (data.length - byteArrayOffset), startVertex, numVertices);
+	}
+
+	public /*unsafe*/ function uploadFromArray(data:Array<Float>, startVertex:Int, numVertices:Int):Void
+	{
+		var bytes:Bytes = Bytes.alloc(data.length * 4);
+		for (i in 0...data.length) {
+			bytes.setFloat(i * 4, data[i]);
+		}
+
+		uploadFromPointer(bytes, data.length * 4 /*sizeof(Float)*/, startVertex, numVertices);
+	}
+
+	public function uploadFromVector(data:Vector<Float>, startVertex:Int, numVertices:Int):Void
+	{
+		var array:Array<Float> = Lambda.array(data);
+
+		uploadFromArray(array, startVertex, numVertices);
+	}
+
+	/*
 		public function uploadFromVector(Vector<Float> data, Int startVertex, Int numVertices) :Void
 		{
 			uploadFromArray(data._GetInnerArray(), startVertex, numVertices);
@@ -156,7 +156,7 @@ class VertexBuffer3D {
 
 			uploadFromArray(mData, startVertex, numVertices);
 		}
-        */
+		*/
 
 /*Stubs
 

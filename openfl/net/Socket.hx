@@ -154,7 +154,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 	
 	
-    public function close ():Void {
+	public function close ():Void {
 		
 		if ( __socket != null) {
 			

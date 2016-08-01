@@ -1,197 +1,257 @@
 package openfl.net;
 
+
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.events.ProgressEvent;
-
 import openfl.utils.IDataInput;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
-import openfl.net.URLLoaderDataFormat;
-import openfl.net.URLRequest;
-import openfl.net.URLLoader;
 
-#if js
-import lime.utils.UInt8Array;
-#end
 
 class URLStream extends EventDispatcher implements IDataInput {
-
-    #if (flash && !display)
-    public var bytesAvailable (default, null):UInt;
-    #else
-    @:isVar public var bytesAvailable(get, never):UInt;
-
-    public function get_bytesAvailable():UInt {
-        untyped {
-            if (mData != null && mData.length != null && mData.position != null) {
-                return mData.length - mData.position;
-            }
-        };
-        return 0;
-
-    }
-    #end
-
-    @:isVar public var connected(get, never):Bool;
-
-    public function get_connected():Bool {
-        return false;
-    }
-
-    #if (flash && !display)
-    public var endian:Endian;
-    #else
-    @:isVar public var endian(get, set):Endian;
-
-    public function get_endian():Endian {
-        return mData.endian;
-    }
-
-    public function set_endian(e:Endian):Endian {
-        mData.endian = e;
-        return mData.endian;
-    }
-    #end
-
-
-    public var objectEncoding:UInt;
-
-    private var mLoader:URLLoader = new URLLoader();
-    private var mData:ByteArrayData;
-
-    public function new() {
-        super();
-        mLoader = new URLLoader();
-        mLoader.dataFormat = URLLoaderDataFormat.BINARY;
-    }
-
-
-    public function close():Void {
-        RemoveEventListeners();
-        mData = null;
-    }
-
-    public function load(request:URLRequest):Void {
-        RemoveEventListeners();
-        AddEventListeners();
-        mLoader.load(request);
-    }
-
-    public function readBoolean():Bool {
-        return mData.readBoolean();
-    }
-
-    public function readByte():Int {
-        return mData.readByte();
-    }
-
-    public function readBytes(bytes:ByteArray, offset:UInt = 0, length:Int = 0):Void {
-        mData.readBytes(bytes, offset, length);
-    }
-
-    public function readDouble():Float {
-        return mData.readDouble();
-    }
-
-    public function readFloat():Float {
-        return mData.readFloat();
-    }
-
-    public function readInt():Int {
-        return mData.readInt();
-    }
-
-    public function readMultiByte(length:UInt, charSet:String):String {
-        return mData.readMultiByte(length, charSet);
-    }
-
-    public function readObject():Dynamic {
-        #if flash
-        return mData.readObject();
-        #else
-        // return ByteArrayObjects._readObject(mData);
-        #end
-    }
-
-    public function readShort():Int {
-        return mData.readShort();
-    }
-
-    public function readUnsignedByte():UInt {
-        return mData.readUnsignedByte();
-    }
-
-    public function readUnsignedInt():UInt {
-        return mData.readUnsignedInt();
-    }
-
-    public function readUnsignedShort():UInt {
-        return mData.readUnsignedShort();
-    }
-
-    public function readUTF():String {
-        return mData.readUTF();
-    }
-
-    public function readUTFBytes(length:UInt):String {
-        return mData.readUTFBytes(length);
-    }
-
-    public function readmData():ByteArrayData {
-        return mData;
-    }
-
-    private function OnComplete(evt:Event):Void {
-        RemoveEventListeners();
-        #if js
-        untyped {
-            this.mData = cast(ByteArray.fromBytes(cast(mLoader.data.b, UInt8Array).toBytes()), ByteArrayData);
-        };
-        #end
-        this.mData = mLoader.data;
-
-        var pe:ProgressEvent = new ProgressEvent( ProgressEvent.PROGRESS, false, false, mLoader.bytesLoaded, mLoader.bytesTotal );
-        this.dispatchEvent(pe);
-
-        var de:Event = new Event(Event.COMPLETE);
-        this.dispatchEvent(de);
-    }
-
-    private function OnIOError(evt:IOErrorEvent):Void {
-        RemoveEventListeners();
-        var de:IOErrorEvent = new IOErrorEvent(evt.type, evt.bubbles, evt.cancelable, evt.text, evt.errorID);
-        this.dispatchEvent(de);
-    }
-
-    private function OnSecurityError(evt:SecurityErrorEvent):Void {
-        RemoveEventListeners();
-        var de:SecurityErrorEvent = new SecurityErrorEvent(evt.type, evt.bubbles, evt.cancelable);
-        this.dispatchEvent(de);
-    }
-
-    private function OnProgressEvent(evt:ProgressEvent):Void {
-        #if js
-        if (mLoader != null) {
-            untyped __js__('this.mData = this.mLoader.getData()');
-        }
-        #end
-        this.dispatchEvent(evt);
-    }
-
-    private function AddEventListeners():Void {
-        mLoader.addEventListener(Event.COMPLETE, OnComplete);
-        mLoader.addEventListener(IOErrorEvent.IO_ERROR, OnIOError);
-        mLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, OnSecurityError);
-        mLoader.addEventListener(ProgressEvent.PROGRESS, OnProgressEvent);
-    }
-
-    private function RemoveEventListeners():Void {
-        mLoader.removeEventListener(Event.COMPLETE, OnComplete);
-        mLoader.removeEventListener(IOErrorEvent.IO_ERROR, OnIOError);
-        mLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, OnSecurityError);
-        mLoader.removeEventListener(ProgressEvent.PROGRESS, OnProgressEvent);
-    }
+	
+	
+	public var bytesAvailable (get, never):UInt;
+	public var connected (get, never):Bool;
+	public var endian (get, set):Endian;
+	public var objectEncoding:UInt;
+	
+	private var __data:ByteArray;
+	private var __loader:URLLoader;
+	
+	
+	public function new () {
+		
+		super ();
+		
+		__loader = new URLLoader ();
+		__loader.dataFormat = URLLoaderDataFormat.BINARY;
+		
+	}
+	
+	
+	public function close ():Void {
+		
+		__removeEventListeners ();
+		__data = null;
+		
+	}
+	
+	
+	public function load (request:URLRequest):Void {
+		
+		__removeEventListeners ();
+		__addEventListeners ();
+		
+		__loader.load (request);
+		
+	}
+	
+	
+	public function readBoolean ():Bool {
+		
+		return __data.readBoolean ();
+		
+	}
+	
+	
+	public function readByte ():Int {
+		
+		return __data.readByte ();
+		
+	}
+	
+	
+	public function readBytes (bytes:ByteArray, offset:UInt = 0, length:Int = 0):Void {
+		
+		__data.readBytes (bytes, offset, length);
+		
+	}
+	
+	
+	public function readDouble ():Float {
+		
+		return __data.readDouble ();
+		
+	}
+	
+	
+	public function readFloat ():Float {
+		
+		return __data.readFloat ();
+		
+	}
+	
+	
+	public function readInt ():Int {
+		
+		return __data.readInt ();
+		
+	}
+	
+	
+	public function readMultiByte (length:UInt, charSet:String):String {
+		
+		return __data.readMultiByte (length, charSet);
+		
+	}
+	
+	
+	public function readObject ():Dynamic {
+		
+		return null;
+		
+	}
+	
+	
+	public function readShort ():Int {
+		
+		return __data.readShort ();
+		
+	}
+	
+	
+	public function readUnsignedByte ():UInt {
+		
+		return __data.readUnsignedByte ();
+		
+	}
+	
+	
+	public function readUnsignedInt ():UInt {
+		
+		return __data.readUnsignedInt ();
+		
+	}
+	
+	
+	public function readUnsignedShort ():UInt {
+		
+		return __data.readUnsignedShort ();
+		
+	}
+	
+	
+	public function readUTF ():String {
+		
+		return __data.readUTF ();
+		
+	}
+	
+	
+	public function readUTFBytes (length:UInt):String {
+		
+		return __data.readUTFBytes (length);
+		
+	}
+	
+	
+	private function __addEventListeners ():Void {
+		
+		__loader.addEventListener (Event.COMPLETE, loader_onComplete);
+		__loader.addEventListener (IOErrorEvent.IO_ERROR, loader_onIOError);
+		__loader.addEventListener (SecurityErrorEvent.SECURITY_ERROR, loader_onSecurityError);
+		__loader.addEventListener (ProgressEvent.PROGRESS, loader_onProgressEvent);
+		
+	}
+	
+	
+	private function __removeEventListeners ():Void {
+		
+		__loader.removeEventListener (Event.COMPLETE, loader_onComplete);
+		__loader.removeEventListener (IOErrorEvent.IO_ERROR, loader_onIOError);
+		__loader.removeEventListener (SecurityErrorEvent.SECURITY_ERROR, loader_onSecurityError);
+		__loader.removeEventListener (ProgressEvent.PROGRESS, loader_onProgressEvent);
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private function loader_onComplete (event:Event):Void {
+		
+		__removeEventListeners ();
+		__data = __loader.data;
+		
+		dispatchEvent (new ProgressEvent (ProgressEvent.PROGRESS, false, false, __loader.bytesLoaded, __loader.bytesTotal));
+		dispatchEvent (new Event (Event.COMPLETE));
+		
+	}
+	
+	
+	private function loader_onIOError (event:IOErrorEvent):Void {
+		
+		__removeEventListeners ();
+		
+		dispatchEvent (event);
+		
+	}
+	
+	
+	private function loader_onSecurityError (event:SecurityErrorEvent):Void {
+		
+		__removeEventListeners ();
+		
+		dispatchEvent (event);
+		
+	}
+	
+	
+	private function loader_onProgressEvent (event:ProgressEvent):Void {
+		
+		__data = __loader.data;
+		dispatchEvent (event);
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	public function get_bytesAvailable ():UInt {
+		
+		if (__data != null) {
+			
+			return __data.length - __data.position;
+			
+		}
+		
+		return 0;
+		
+	}
+	
+	
+	public function get_connected ():Bool {
+		
+		return false;
+		
+	}
+	
+	
+	public function get_endian ():Endian {
+		
+		return __data.endian;
+		
+	}
+	
+	
+	public function set_endian (value:Endian):Endian {
+		
+		return __data.endian = value;
+		
+	}
+	
+	
 }
