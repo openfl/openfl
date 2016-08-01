@@ -71,10 +71,7 @@ extern class Event {
 	public static var TAB_CHILDREN_CHANGE (default, never):String;
 	public static var TAB_ENABLED_CHANGE (default, never):String;
 	public static var TAB_INDEX_CHANGE (default, never):String;
-	
-	#if flash
 	@:require(flash11_3) public static var TEXTURE_READY (default, never):String;
-	#end
 	
 	#if flash
 	@:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE (default, never):String;

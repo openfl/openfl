@@ -42,6 +42,7 @@ class Event {
 	public static inline var TAB_CHILDREN_CHANGE = "tabChildrenChange";
 	public static inline var TAB_ENABLED_CHANGE = "tabEnabledChange";
 	public static inline var TAB_INDEX_CHANGE = "tabIndexChange";
+	public static inline var TEXTURE_READY = "textureReady";
 	public static inline var UNLOAD = "unload";
 	
 	public var bubbles (default, null):Bool;
