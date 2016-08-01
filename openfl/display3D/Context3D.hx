@@ -426,7 +426,7 @@ import openfl.profiler.Telemetry;
 	}
 	
 	
-	public function setDepthTest (depthMask:Bool, passCompareMode:String):Void {
+	public function setDepthTest (depthMask:Bool, passCompareMode:Context3DCompareMode):Void {
 		
 		var depthTestEnabled = __backBufferEnableDepthAndStencil;
 		
