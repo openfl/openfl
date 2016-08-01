@@ -1,6 +1,6 @@
-package openfl.display3D;
+package openfl._internal.stage3D;
 
-
+import openfl.display3D.Program3D;
 import openfl.Vector;
 
 class Context3DStateCache {

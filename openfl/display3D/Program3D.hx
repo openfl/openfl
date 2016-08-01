@@ -1,6 +1,8 @@
 package openfl.display3D;
 
-import openfl.display3D.textures.SamplerState;
+import openfl._internal.stage3D.AGALConverter;
+import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
@@ -34,7 +36,7 @@ private class Uniform {
         // array and copy it directly so we know that it will be the
         // right size. Significant downside is that we're introducing
         // an extra copy.
-#if webgl
+#if (js && html5)
         return this.RegData.subarray(index, size);
 #else
         var result = new Float32Array(size);
@@ -463,7 +465,7 @@ class Program3D {
             uniform.Size = size;
             uniform.Type = uniformType;
 
-#if (cpp || webgl || neko || PLATFORM_MONOTOUCH || PLATFORM_MONOMAC)
+#if (cpp || (js && html5) || neko || PLATFORM_MONOTOUCH || PLATFORM_MONOMAC)
             uniform.Location = GL.getUniformLocation(mProgramId, uniform.Name);
             GLUtils.CheckGLError();
 #elseif PLATFORM_MONODROID

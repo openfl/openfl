@@ -1,5 +1,6 @@
 package openfl.display3D;
 
+import openfl._internal.stage3D.GLUtils;
 import openfl.gl.GL;
 import openfl.gl.GLBuffer;
 import openfl.utils.ArrayBufferView;

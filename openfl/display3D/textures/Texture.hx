@@ -1,5 +1,6 @@
 package openfl.display3D.textures;
 
+import openfl._internal.stage3D.GLUtils;
 import openfl.utils.ByteArray;
 import openfl.events.Event;
 import openfl.events.TimerEvent;
@@ -9,7 +10,6 @@ import openfl.errors.RangeError;
 import openfl.utils.Timer;
 import openfl.utils.ArrayBufferView;
 import openfl.gl.GL;
-import openfl.display3D.GLUtils;
 
 
 @:enum
@@ -248,7 +248,7 @@ class Texture extends TextureBase {
         GL.bindTexture(textureTarget, textureId);
         GLUtils.CheckGLError();
 
-        #if (webgl || neko || cpp)
+        #if ((js && html5) || neko || cpp)
 
         #if lime
         var pixels = source.image.data;

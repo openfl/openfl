@@ -1,4 +1,4 @@
-package openfl.display3D;
+package openfl._internal.stage3D;
 
 import openfl.errors.IllegalOperationError;
 import openfl.gl.GL;

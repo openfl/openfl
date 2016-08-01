@@ -32,8 +32,8 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	public function requestContext3D (?context3DRenderMode:Context3DRenderMode, ?profile:Context3DProfile):Void {
-
+	public function requestContext3D (context3DRenderMode:Context3DRenderMode = AUTO, profile:Context3DProfile = BASELINE):Void {
+		
 		Timer.delay (function () {
 			
 			if (OpenGLView.isSupported) {

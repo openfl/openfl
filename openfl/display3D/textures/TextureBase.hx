@@ -1,5 +1,6 @@
 package openfl.display3D.textures;
 
+import openfl._internal.stage3D.SamplerState;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 import openfl.gl.GL;

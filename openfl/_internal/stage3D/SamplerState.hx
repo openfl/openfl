@@ -1,4 +1,4 @@
-package openfl.display3D.textures;
+package openfl._internal.stage3D;
 
 /// Represents a collection of sampler state to be set together.
 /// Usually parsed from an AGAL shader and associated with a tex instruction source

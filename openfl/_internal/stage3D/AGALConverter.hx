@@ -1,8 +1,8 @@
-package openfl.display3D;
+package openfl._internal.stage3D;
 
+import openfl._internal.stage3D.SamplerState;
 import openfl.utils.ByteArray;
 import openfl.errors.IllegalOperationError;
-import openfl.display3D.textures.SamplerState;
 import openfl.errors.IllegalOperationError;
 import openfl.gl.GL;
 
@@ -821,7 +821,7 @@ class AGALConverter {
         var glslVersion = 100; // Actually this is glsl 1.20 but in gles it's 1.0
 #elseif PLATFORM_MONODROID
         var glslVersion = 100;
-#elseif (webgl)
+#elseif (js && html5)
         var glslVersion = 100;
 #else
         var glslVersion = 120;
@@ -830,7 +830,7 @@ class AGALConverter {
         var glsl = new StringBuf();
         glsl.add("// AGAL " + ((programType == ProgramType.Vertex) ? "vertex" : "fragment") + " shader\n");
         glsl.add("#version " + glslVersion + "\n");
-#if (webgl || PLATFORM_MONOTOUCH || PLATFORM_MONODROID)
+#if ((js && html5) || PLATFORM_MONOTOUCH || PLATFORM_MONODROID)
         // Required to set the default precision of vectors
         glsl.add("precision mediump float;\n");
 #end

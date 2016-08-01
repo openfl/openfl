@@ -1,5 +1,8 @@
 package openfl.display3D;
 
+import openfl._internal.stage3D.Context3DStateCache;
+import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.display3D.Context3DProgramType;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
@@ -17,7 +20,6 @@ import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures.Texture;
-import openfl.display3D.textures.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 
@@ -743,7 +745,7 @@ class Context3D extends EventDispatcher {
         GLUtils.CheckGLError();
     }
 
-    public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:String = "Float4"):Void
+    public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
     {
         if (buffer == null) {
             GL.disableVertexAttribArray(index);
@@ -767,19 +769,19 @@ class Context3D extends EventDispatcher {
 
         // set attribute poInter within vertex buffer
         switch (format) {
-            case "Float4":
+            case FLOAT_4:
                 GL.vertexAttribPointer(index, 4, GL.FLOAT, false, buffer.stride, byteOffset);
                 GLUtils.CheckGLError();
 
-            case "Float3":
+            case FLOAT_3:
                 GL.vertexAttribPointer(index, 3, GL.FLOAT, false, buffer.stride, byteOffset);
                 GLUtils.CheckGLError();
 
-            case "Float2":
+            case FLOAT_2:
                 GL.vertexAttribPointer(index, 2, GL.FLOAT, false, buffer.stride, byteOffset);
                 GLUtils.CheckGLError();
 
-            case "Float1":
+            case FLOAT_1:
                 GL.vertexAttribPointer(index, 1, GL.FLOAT, false, buffer.stride, byteOffset);
                 GLUtils.CheckGLError();
 

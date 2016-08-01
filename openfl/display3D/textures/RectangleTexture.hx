@@ -1,5 +1,6 @@
 package openfl.display3D.textures;
 
+import openfl._internal.stage3D.GLUtils;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 import openfl.errors.RangeError;
