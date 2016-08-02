@@ -75,9 +75,7 @@ import openfl.utils.ByteArray;
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		trace ("before");
 		GL.texImage2D (__textureTarget, 0, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-		trace ("after");
 		
 		__allocated = true;
 		GLUtils.CheckGLError ();
