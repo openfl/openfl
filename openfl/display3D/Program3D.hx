@@ -480,7 +480,7 @@ private class Uniform {
 		// an extra copy.
 		
 		#if (js && html5)
-		return this.regData.subarray (index, size);
+		return this.regData.subarray (index, index + size);
 		#else
 		var result = new Float32Array (size);
 		
