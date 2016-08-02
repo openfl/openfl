@@ -72,10 +72,15 @@ class GLRenderer extends AbstractRenderer {
 		
 		gl.clear (gl.COLOR_BUFFER_BIT);
 		
-		if (stage.stage3Ds[0].context3D != null) {
+		for (stage3D in stage.stage3Ds) {
 			
-			renderSession.shaderManager.setShader (null);
-			renderSession.blendModeManager.setBlendMode (null);
+			if (stage3D.context3D != null) {
+				
+				renderSession.shaderManager.setShader (null);
+				renderSession.blendModeManager.setBlendMode (null);
+				break;
+				
+			}
 			
 		}
 		

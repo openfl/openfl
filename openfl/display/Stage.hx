@@ -154,6 +154,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__logicalHeight = 0;
 		__displayMatrix = new Matrix ();
 		
+		stage3Ds = new Vector ();
+		stage3Ds.push (new Stage3D ());
+		
 		__resize ();
 		
 		this.stage = this;
@@ -179,9 +182,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__clearBeforeRender = true;
 		__stack = [];
 		__mouseOutStack = [];
-		
-		stage3Ds = new Vector ();
-		stage3Ds.push (new Stage3D ());
 		
 		if (Lib.current.stage == null) {
 			
@@ -1233,11 +1233,24 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	public override function __renderDOM (renderSession:RenderSession):Void {
+		
+		for (stage3D in stage3Ds) {
+			
+			stage3D.__renderDOM (this, renderSession);
+			
+		}
+		
+		super.__renderDOM (renderSession);
+		
+	}
+	
+	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		for (stage3D in stage3Ds) {
 			
-			stage3D.__renderGL (renderSession);
+			stage3D.__renderGL (this, renderSession);
 			
 		}
 		
@@ -1272,6 +1285,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			__displayMatrix.scale (targetScale, targetScale);
 			__displayMatrix.translate (offsetX, offsetY);
+			
+		}
+		
+		for (stage3D in stage3Ds) {
+			
+			stage3D.__resize (stageWidth, stageHeight);
 			
 		}
 		

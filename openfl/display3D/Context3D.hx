@@ -5,6 +5,7 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.utils.Float32Array;
+import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.Context3DStateCache;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
@@ -66,6 +67,7 @@ import openfl.profiler.Telemetry;
 	private var __frameCount:Int;
 	private var __positionScale:Float32Array;
 	private var __program:Program3D;
+	private var __renderSession:RenderSession;
 	private var __renderToTexture:TextureBase;
 	private var __samplerDirty:Int;
 	private var __samplerTextures:Vector<TextureBase>;
@@ -83,11 +85,12 @@ import openfl.profiler.Telemetry;
 	#end
 	
 	
-	public function new (stage3D:Stage3D = null) {
+	private function new (stage3D:Stage3D, renderSession:RenderSession) {
 		
 		super ();
 		
 		__stage3D = stage3D;
+		__renderSession = renderSession;
 		
 		__vertexConstants = new Float32Array (4 * MAX_PROGRAM_REGISTERS);
 		__fragmentConstants = new Float32Array (4 * MAX_PROGRAM_REGISTERS);
