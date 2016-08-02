@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 
 import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
 import openfl.display.BitmapData;
 import openfl.events.Event;
@@ -20,6 +21,7 @@ import haxe.Timer;
 	
 	private var __format:Context3DTextureFormat;
 	private var __height:Int;
+	private var __miplevel:Int;
 	private var __optimizeForRenderToTexture:Bool;
 	private var __streamingLevels:Int;
 	private var __width:Int;
@@ -88,52 +90,46 @@ import haxe.Timer;
 			}
 			*/
 		
-		GL.bindTexture (__textureTarget, __textureID);
-		GLUtils.CheckGLError ();
+		__miplevel = miplevel;
 		
-		// TODO: Handle premultiplied alpha and color order
+		var image = source.image;
 		
-		GL.texImage2D (__textureTarget, miplevel, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, source.image.data);
-		GLUtils.CheckGLError ();
+		if (!image.premultiplied && image.transparent) {
+			
+			image = image.clone ();
+			image.premultiplied = true;
+			
+		}
 		
-		__allocated = true;
-		
-		GL.bindTexture (__textureTarget, null);
-		GLUtils.CheckGLError ();
-		
-		var memUsage = (__width * __height) * 4;
-		__trackMemoryUsage (memUsage);
+		uploadFromTypedArray (image.data);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
 		
-		if (cast (byteArrayOffset, Int) >= data.length) {
+		__miplevel = miplevel;
+		
+		#if js
+		if (byteArrayOffset == 0) {
 			
-			throw new RangeError ();
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			return;
 			
 		}
+		#end
 		
-		/*
-			   TODO: figure out fixed
-			fixed (byte *bytePtr = data.getRawArray()) {
-				IntPtr ptr = (IntPtr)bytePtr;
-				ptr += (Int)byteArrayOffset;
-				uploadFromPointer (ptr, miplevel);
-			}
-			*/
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		// TODO: handle mipmap generation? Maybe unnecessary, monoTouch, monoDroid don't bother.
-		GL.texImage2D (__textureTarget, miplevel, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (__textureTarget, __miplevel, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 		
 		__allocated = true;
 		GLUtils.CheckGLError ();

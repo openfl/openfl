@@ -72,7 +72,7 @@ import openfl.utils.ByteArray;
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		// TODO: upload
+		GL.texImage2D (__textureTarget, 0, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
 		
 		__allocated = true;
 		GLUtils.CheckGLError ();
