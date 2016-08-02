@@ -34,20 +34,6 @@ Modifications and source-repository versions of Haxe core files are included in 
 [haxe/](haxe/) folder, which are available under an "MIT" license. For details, see
 https://github.com/haxefoundation/haxe
 
-The foundation for the following files were based on the pixi.js project,
-which is available under an "MIT" license. For details, see
-https://github.com/goodboydigital/pixi.js
-
-    openfl/_internal/renderer/
-
-The following files were developed in collaboration with the Away3D project,
-which is available under an "MIT" license. For details, see
-https://github.com/away3d/away3d-core-openfl
-
-    openfl/_internal/aglsl/
-    openfl/display3D/
-    openfl/utils/AGALMiniAssembler.hx
-
 Excerpts of the Adobe ActionScript 3.0 Reference are used, with modification,
 which is available under the "CC BY-NC-SA 3.0" license. For details, see
 http://creativecommons.org/licenses/by-nc-sa/3.0/
