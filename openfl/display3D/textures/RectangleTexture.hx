@@ -14,7 +14,7 @@ import openfl.utils.ByteArray;
 @:final class RectangleTexture extends TextureBase {
 	
 	
-	private var __format:String;
+	//private var __format:Context3DTextureFormat;
 	private var __height:Int;
 	private var __optimizeForRenderToTexture:Bool;
 	private var __width:Int;
@@ -26,7 +26,7 @@ import openfl.utils.ByteArray;
 		
 		__width = width;
 		__height = height;
-		__format = format;
+		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
 	}
@@ -75,7 +75,7 @@ import openfl.utils.ByteArray;
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (__textureTarget, 0, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
 		
 		__allocated = true;
 		GLUtils.CheckGLError ();

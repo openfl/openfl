@@ -11,10 +11,14 @@ import openfl.errors.IllegalOperationError;
 class TextureBase extends EventDispatcher {
 	
 	
+	private static var __isGLES:Null<Bool>;
+	
 	private var __allocated:Bool = false;
 	private var __alphaTexture:Texture;
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
+	private var __format:Int;
+	private var __internalFormat:Int;
 	private var __memoryUsage:Int;
 	private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
@@ -30,6 +34,31 @@ class TextureBase extends EventDispatcher {
 		__textureTarget = target;
 		
 		__textureID = GL.createTexture ();
+		
+		
+		#if !sys
+		
+		__internalFormat = GL.RGBA;
+		__format = GL.RGBA;
+		
+		#elseif (ios || tvos)
+		
+		__internalFormat = GL.RGBA;
+		__format = GL.BGRA_EXT;
+		
+		#else
+		
+		if (__isGLES == null) {
+			
+			var version:String = GL.getParameter (GL.VERSION);
+			__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+			
+		}
+		
+		__internalFormat = (__isGLES ? GL.BGRA_EXT : GL.RGBA);
+		__format = GL.BGRA_EXT;
+		
+		#end
 		
 		__memoryUsage = 0;
 		__compressedMemoryUsage = 0;

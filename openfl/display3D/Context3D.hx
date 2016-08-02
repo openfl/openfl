@@ -340,7 +340,7 @@ import openfl.profiler.Telemetry;
 		var dest = GL.ONE_MINUS_SRC_ALPHA;
 		var updateBlendFunction = false;
 		
-		if (__stateCache.updateBlendSrcFactor(sourceFactor) || __stateCache.updateBlendDestFactor(destinationFactor)) {
+		if (__stateCache.updateBlendSrcFactor (sourceFactor) || __stateCache.updateBlendDestFactor (destinationFactor)) {
 			
 			updateBlendFunction = true;
 			
@@ -395,7 +395,7 @@ import openfl.profiler.Telemetry;
 	
 	public function setCulling (triangleFaceToCull:Context3DTriangleFace):Void {
 		
-		if (__stateCache.updateCullingMode(triangleFaceToCull)) {
+		if (__stateCache.updateCullingMode (triangleFaceToCull)) {
 			
 			switch (triangleFaceToCull) {
 				
