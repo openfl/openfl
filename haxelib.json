@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.0.3",
-	"releasenote": "Added SoundMixer, Utils3D.projectVectors, Android fix",
+	"version": "4.0.4",
+	"releasenote": "",
 	"contributors": [ "singmajesty" ]
 }
