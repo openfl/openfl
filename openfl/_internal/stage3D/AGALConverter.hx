@@ -215,8 +215,7 @@ private class SamplerReg {
 		{
 			// disable
 			case 0:
-				// TODO: figure out the right value for this
-//				minFilter = (TextureMinFilter)((f != 0) ? TextureMagFilter.Linear : TextureMagFilter.Nearest);
+				minFilter = (f != 0) ? GL.NEAREST : GL.LINEAR;
 
 			// nearest
 			case 1:
