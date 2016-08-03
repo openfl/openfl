@@ -46,7 +46,6 @@ import openfl.profiler.Telemetry;
 	private static inline var MAX_ATTRIBUTES = 16;
 	private static inline var MAX_PROGRAM_REGISTERS = 128;
 	
-	private static var __defaultSamplerState:SamplerState = new SamplerState (GL.LINEAR, GL.LINEAR, GL.REPEAT, GL.REPEAT).intern ();
 	private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
 	
 	public var backBufferHeight (default, null):Int;
@@ -71,6 +70,7 @@ import openfl.profiler.Telemetry;
 	private var __renderToTexture:TextureBase;
 	private var __samplerDirty:Int;
 	private var __samplerTextures:Vector<TextureBase>;
+	private var __samplerStates:Array<SamplerState>;
 	private var __stage3D:Dynamic;
 	private var __stats:Vector<Int>;
 	private var __statsCache:Vector<Int>;
@@ -98,6 +98,13 @@ import openfl.profiler.Telemetry;
 		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
 		__samplerDirty = 0;
 		__samplerTextures = new Vector<TextureBase> (Context3D.MAX_SAMPLERS);
+		__samplerStates = [];
+		
+		for (i in 0 ... Context3D.MAX_SAMPLERS) {
+			
+			__samplerStates[i] = new SamplerState (GL.LINEAR, GL.LINEAR, GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE).intern ();
+			
+		}
 		
 		__backBufferAntiAlias = 0;
 		__backBufferEnableDepthAndStencil = true;
@@ -692,7 +699,102 @@ import openfl.profiler.Telemetry;
 	
 	public function setSamplerStateAt (sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
 		
-		// TODO
+		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
+			
+			throw new Error ("sampler out of range");
+			
+		}
+		
+		var glWrapModeS;
+		var glWrapModeT;
+		var glMagFilter;
+		var glMinFilter;
+		
+		switch (wrap) {
+			
+			case Context3DWrapMode.CLAMP:
+				
+				glWrapModeS = GL.CLAMP_TO_EDGE;
+				glWrapModeT = GL.CLAMP_TO_EDGE;
+				
+			case Context3DWrapMode.CLAMP_U_REPEAT_V:
+				
+				glWrapModeS = GL.CLAMP_TO_EDGE;
+				glWrapModeT = GL.REPEAT;
+				
+			case Context3DWrapMode.REPEAT:
+				
+				glWrapModeS = GL.REPEAT;
+				glWrapModeT = GL.REPEAT;
+				
+			case Context3DWrapMode.REPEAT_U_CLAMP_V:
+				
+				glWrapModeS = GL.REPEAT;
+				glWrapModeT = GL.CLAMP_TO_EDGE;
+				
+			default:
+				
+				throw new Error ("wrap bad enum");
+				
+		}
+		
+		switch (filter) {
+			
+			case Context3DTextureFilter.LINEAR:
+				
+				glMagFilter = GL.LINEAR;
+				
+			case Context3DTextureFilter.NEAREST:
+				
+				glMagFilter = GL.NEAREST;
+				
+			case Context3DTextureFilter.ANISOTROPIC2X:
+					
+				// TODO
+				glMagFilter = GL.LINEAR;
+				 
+			case Context3DTextureFilter.ANISOTROPIC4X:
+					
+				// TODO
+				glMagFilter = GL.LINEAR;
+				
+			case Context3DTextureFilter.ANISOTROPIC8X:
+				
+				// TODO
+				glMagFilter = GL.LINEAR;
+				
+			case Context3DTextureFilter.ANISOTROPIC16X:
+				
+				// TODO
+				glMagFilter = GL.LINEAR;
+				
+			default:
+				
+				throw new Error ("filter bad enum");
+				
+		}
+		
+		switch (mipfilter) {
+						
+			case Context3DMipFilter.MIPLINEAR:
+				
+				glMinFilter = GL.LINEAR_MIPMAP_LINEAR;
+			
+			case Context3DMipFilter.MIPNEAREST:
+				
+				glMinFilter = GL.NEAREST_MIPMAP_NEAREST;
+			
+			case Context3DMipFilter.MIPNONE:
+				
+				glMinFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR;
+				
+			default:
+				
+				throw new Error ("mipfiter bad enum");
+				
+		}
+		
+		__samplerStates[sampler] = new SamplerState (glMinFilter, glMagFilter, glWrapModeS, glWrapModeT);
 		
 	}
 	
@@ -817,8 +919,6 @@ import openfl.profiler.Telemetry;
 					GL.bindTexture (target, texture.__textureID);
 					GLUtils.CheckGLError ();
 					
-					// TODO: support sampler state overrides through setSamplerAt(...)
-					
 					var state = __program.__getSamplerState(sampler);
 					
 					if (state != null) {
@@ -827,7 +927,7 @@ import openfl.profiler.Telemetry;
 						
 					} else {
 						
-						texture.__setSamplerState (Context3D.__defaultSamplerState);
+						texture.__setSamplerState (__samplerStates[sampler]);
 						
 					}
 					
