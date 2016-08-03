@@ -172,16 +172,11 @@ import openfl.profiler.Telemetry;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
-		var oldDepthWriteMask:Bool = GL.getParameter (GL.DEPTH_WRITEMASK);
-		GLUtils.CheckGLError ();
-		
 		var clearMask = 0;
 		
 		if (mask & Context3DClearMask.DEPTH > 0) {
 			
 			clearMask |= GL.DEPTH_BUFFER_BIT;
-			
-			GL.depthMask (true);
 			GLUtils.CheckGLError ();
 			
 		}
@@ -212,9 +207,6 @@ import openfl.profiler.Telemetry;
 		}
 		
 		GL.clear (clearMask);
-		GLUtils.CheckGLError ();
-		
-		GL.depthMask (oldDepthWriteMask);
 		GLUtils.CheckGLError ();
 		
 	}
