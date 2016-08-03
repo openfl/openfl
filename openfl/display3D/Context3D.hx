@@ -35,6 +35,7 @@ import openfl.profiler.Telemetry;
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl._internal.stage3D.GLUtils)
 
 
 @:final class Context3D extends EventDispatcher {
@@ -46,13 +47,12 @@ import openfl.profiler.Telemetry;
 	private static inline var MAX_ATTRIBUTES = 16;
 	private static inline var MAX_PROGRAM_REGISTERS = 128;
 	
-	private static var __defaultSamplerState:SamplerState = new SamplerState (GL.LINEAR, GL.LINEAR, GL.REPEAT, GL.REPEAT).intern ();
 	private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
 	
 	public var backBufferHeight (default, null):Int;
 	public var backBufferWidth (default, null):Int;
 	public var driverInfo (default, null):String = "OpenGL (Direct blitting)";
-	public var enableErrorChecking:Bool;
+	public var enableErrorChecking(default, set):Bool;
 	public var maxBackBufferHeight:Int;
 	public var maxBackBufferWidth:Int;
 	public var profile (default, null):Context3DProfile = BASELINE;
@@ -61,7 +61,6 @@ import openfl.profiler.Telemetry;
 	private var __backBufferAntiAlias:Int;
 	private var __backBufferEnableDepthAndStencil:Bool;
 	private var __backBufferWantsBestResolution:Bool;
-	private var __defaultFrameBufferID:GLFramebuffer;
 	private var __depthRenderBufferID:GLRenderbuffer;
 	private var __fragmentConstants:Float32Array;
 	private var __frameCount:Int;
@@ -71,6 +70,7 @@ import openfl.profiler.Telemetry;
 	private var __renderToTexture:TextureBase;
 	private var __samplerDirty:Int;
 	private var __samplerTextures:Vector<TextureBase>;
+	private var __samplerStates:Array<SamplerState>;
 	private var __stage3D:Dynamic;
 	private var __stats:Vector<Int>;
 	private var __statsCache:Vector<Int>;
@@ -98,6 +98,13 @@ import openfl.profiler.Telemetry;
 		__positionScale = new Float32Array ([ 1.0, 1.0, 1.0, 1.0 ]);
 		__samplerDirty = 0;
 		__samplerTextures = new Vector<TextureBase> (Context3D.MAX_SAMPLERS);
+		__samplerStates = [];
+		
+		for (i in 0 ... Context3D.MAX_SAMPLERS) {
+			
+			__samplerStates[i] = new SamplerState (GL.LINEAR, GL.LINEAR, GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE).intern ();
+			
+		}
 		
 		__backBufferAntiAlias = 0;
 		__backBufferEnableDepthAndStencil = true;
@@ -112,6 +119,8 @@ import openfl.profiler.Telemetry;
 		__spanPresent = new Telemetry.Span (".rend.molehill.present");
 		__valueFrame = new Telemetry.Value (".rend.molehill.frame");
 		#end
+		
+		enableErrorChecking = false;
 		
 		GLUtils.CheckGLError ();
 		
@@ -137,9 +146,6 @@ import openfl.profiler.Telemetry;
 		Telemetry.Session.WriteValue (".platform.3d.driverinfo", driverInfo);
 		#end
 		
-		__defaultFrameBufferID = GL.getParameter (GL.FRAMEBUFFER_BINDING);
-		GLUtils.CheckGLError ();
-		
 		__depthRenderBufferID = GL.createRenderbuffer ();
 		GLUtils.CheckGLError ();
 		
@@ -162,16 +168,11 @@ import openfl.profiler.Telemetry;
 	
 	public function clear (red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = Context3DClearMask.ALL):Void {
 		
-		var oldDepthWriteMask:Bool = GL.getParameter (GL.DEPTH_WRITEMASK);
-		GLUtils.CheckGLError ();
-		
 		var clearMask = 0;
 		
 		if (mask & Context3DClearMask.DEPTH > 0) {
 			
 			clearMask |= GL.DEPTH_BUFFER_BIT;
-			
-			GL.depthMask (true);
 			GLUtils.CheckGLError ();
 			
 		}
@@ -204,9 +205,6 @@ import openfl.profiler.Telemetry;
 		GL.clear (clearMask);
 		GLUtils.CheckGLError ();
 		
-		GL.depthMask (oldDepthWriteMask);
-		GLUtils.CheckGLError ();
-		
 	}
 	
 	
@@ -214,23 +212,12 @@ import openfl.profiler.Telemetry;
 		
 		__setViewport (0, 0, width, height);
 		
-		// TODO allow for resizing of frame buffer here
-		
 		backBufferWidth = width;
 		backBufferHeight = height;
 		
 		__backBufferAntiAlias = antiAlias;
 		__backBufferEnableDepthAndStencil = enableDepthAndStencil;
 		__backBufferWantsBestResolution = wantsBestResolution;
-		
-		var status = GL.checkFramebufferStatus (GL.FRAMEBUFFER);
-		GLUtils.CheckGLError ();
-		
-		if (status != GL.FRAMEBUFFER_COMPLETE) {
-			
-			trace ("FrameBuffer configuration error: " + status);
-			
-		}
 		
 		__stateCache.clearSettings ();
 		
@@ -629,7 +616,7 @@ import openfl.profiler.Telemetry;
 	
 	public function setRenderToBackBuffer ():Void {
 		
-		GL.bindFramebuffer (GL.FRAMEBUFFER, __defaultFrameBufferID);
+		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
 		GLUtils.CheckGLError ();
 		
 		__setViewport (0, 0, backBufferWidth, backBufferHeight);
@@ -692,7 +679,102 @@ import openfl.profiler.Telemetry;
 	
 	public function setSamplerStateAt (sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void {
 		
-		// TODO
+		if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
+			
+			throw new Error ("sampler out of range");
+			
+		}
+		
+		var glWrapModeS;
+		var glWrapModeT;
+		var glMagFilter;
+		var glMinFilter;
+		
+		switch (wrap) {
+			
+			case Context3DWrapMode.CLAMP:
+				
+				glWrapModeS = GL.CLAMP_TO_EDGE;
+				glWrapModeT = GL.CLAMP_TO_EDGE;
+				
+			case Context3DWrapMode.CLAMP_U_REPEAT_V:
+				
+				glWrapModeS = GL.CLAMP_TO_EDGE;
+				glWrapModeT = GL.REPEAT;
+				
+			case Context3DWrapMode.REPEAT:
+				
+				glWrapModeS = GL.REPEAT;
+				glWrapModeT = GL.REPEAT;
+				
+			case Context3DWrapMode.REPEAT_U_CLAMP_V:
+				
+				glWrapModeS = GL.REPEAT;
+				glWrapModeT = GL.CLAMP_TO_EDGE;
+				
+			default:
+				
+				throw new Error ("wrap bad enum");
+				
+		}
+		
+		switch (filter) {
+			
+			case Context3DTextureFilter.LINEAR:
+				
+				glMagFilter = GL.LINEAR;
+				
+			case Context3DTextureFilter.NEAREST:
+				
+				glMagFilter = GL.NEAREST;
+				
+			case Context3DTextureFilter.ANISOTROPIC2X:
+					
+				// TODO
+				glMagFilter = GL.LINEAR;
+				 
+			case Context3DTextureFilter.ANISOTROPIC4X:
+					
+				// TODO
+				glMagFilter = GL.LINEAR;
+				
+			case Context3DTextureFilter.ANISOTROPIC8X:
+				
+				// TODO
+				glMagFilter = GL.LINEAR;
+				
+			case Context3DTextureFilter.ANISOTROPIC16X:
+				
+				// TODO
+				glMagFilter = GL.LINEAR;
+				
+			default:
+				
+				throw new Error ("filter bad enum");
+				
+		}
+		
+		switch (mipfilter) {
+						
+			case Context3DMipFilter.MIPLINEAR:
+				
+				glMinFilter = GL.LINEAR_MIPMAP_LINEAR;
+			
+			case Context3DMipFilter.MIPNEAREST:
+				
+				glMinFilter = GL.NEAREST_MIPMAP_NEAREST;
+			
+			case Context3DMipFilter.MIPNONE:
+				
+				glMinFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR;
+				
+			default:
+				
+				throw new Error ("mipfiter bad enum");
+				
+		}
+		
+		__samplerStates[sampler] = new SamplerState (glMinFilter, glMagFilter, glWrapModeS, glWrapModeT);
 		
 	}
 	
@@ -764,6 +846,11 @@ import openfl.profiler.Telemetry;
 		
 		switch (format) {
 			
+			case BYTES_4:
+				
+				GL.vertexAttribPointer (index, 4, GL.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
+				GLUtils.CheckGLError ();
+				
 			case FLOAT_4:
 				
 				GL.vertexAttribPointer (index, 4, GL.FLOAT, false, buffer.__stride, byteOffset);
@@ -817,8 +904,6 @@ import openfl.profiler.Telemetry;
 					GL.bindTexture (target, texture.__textureID);
 					GLUtils.CheckGLError ();
 					
-					// TODO: support sampler state overrides through setSamplerAt(...)
-					
 					var state = __program.__getSamplerState(sampler);
 					
 					if (state != null) {
@@ -827,7 +912,7 @@ import openfl.profiler.Telemetry;
 						
 					} else {
 						
-						texture.__setSamplerState (Context3D.__defaultSamplerState);
+						texture.__setSamplerState (__samplerStates[sampler]);
 						
 					}
 					
@@ -943,6 +1028,13 @@ import openfl.profiler.Telemetry;
 		
 		__stats[stat] -= value;
 		return __stats [stat];
+		
+	}
+	
+	
+	public function set_enableErrorChecking (value:Bool):Bool {
+		
+		return enableErrorChecking = GLUtils.debug = value;
 		
 	}
 	
