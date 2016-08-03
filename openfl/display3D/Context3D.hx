@@ -35,6 +35,7 @@ import openfl.profiler.Telemetry;
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl._internal.stage3D.GLUtils)
 
 
 @:final class Context3D extends EventDispatcher {
@@ -51,7 +52,7 @@ import openfl.profiler.Telemetry;
 	public var backBufferHeight (default, null):Int;
 	public var backBufferWidth (default, null):Int;
 	public var driverInfo (default, null):String = "OpenGL (Direct blitting)";
-	public var enableErrorChecking:Bool;
+	public var enableErrorChecking(default, set):Bool;
 	public var maxBackBufferHeight:Int;
 	public var maxBackBufferWidth:Int;
 	public var profile (default, null):Context3DProfile = BASELINE;
@@ -119,6 +120,8 @@ import openfl.profiler.Telemetry;
 		__spanPresent = new Telemetry.Span (".rend.molehill.present");
 		__valueFrame = new Telemetry.Value (".rend.molehill.frame");
 		#end
+		
+		enableErrorChecking = false;
 		
 		GLUtils.CheckGLError ();
 		
@@ -1048,6 +1051,13 @@ import openfl.profiler.Telemetry;
 		
 		__stats[stat] -= value;
 		return __stats [stat];
+		
+	}
+	
+	
+	public function set_enableErrorChecking (value:Bool):Bool {
+		
+		return enableErrorChecking = GLUtils.debug = value;
 		
 	}
 	

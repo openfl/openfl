@@ -6,7 +6,7 @@ import openfl.gl.GL;
 
 class GLUtils {
 
-    private static inline var debug = true;
+    private static var debug = false;
 
     // Comment the following line if you want the GL Error check in release mode on device
     //[Conditional("DEBUG")]
