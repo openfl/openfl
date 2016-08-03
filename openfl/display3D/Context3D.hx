@@ -61,7 +61,6 @@ import openfl.profiler.Telemetry;
 	private var __backBufferAntiAlias:Int;
 	private var __backBufferEnableDepthAndStencil:Bool;
 	private var __backBufferWantsBestResolution:Bool;
-	private var __defaultFrameBufferID:GLFramebuffer;
 	private var __depthRenderBufferID:GLRenderbuffer;
 	private var __fragmentConstants:Float32Array;
 	private var __frameCount:Int;
@@ -147,9 +146,6 @@ import openfl.profiler.Telemetry;
 		Telemetry.Session.WriteValue (".platform.3d.driverinfo", driverInfo);
 		#end
 		
-		__defaultFrameBufferID = GL.getParameter (GL.FRAMEBUFFER_BINDING);
-		GLUtils.CheckGLError ();
-		
 		__depthRenderBufferID = GL.createRenderbuffer ();
 		GLUtils.CheckGLError ();
 		
@@ -216,23 +212,12 @@ import openfl.profiler.Telemetry;
 		
 		__setViewport (0, 0, width, height);
 		
-		// TODO allow for resizing of frame buffer here
-		
 		backBufferWidth = width;
 		backBufferHeight = height;
 		
 		__backBufferAntiAlias = antiAlias;
 		__backBufferEnableDepthAndStencil = enableDepthAndStencil;
 		__backBufferWantsBestResolution = wantsBestResolution;
-		
-		var status = GL.checkFramebufferStatus (GL.FRAMEBUFFER);
-		GLUtils.CheckGLError ();
-		
-		if (status != GL.FRAMEBUFFER_COMPLETE) {
-			
-			trace ("FrameBuffer configuration error: " + status);
-			
-		}
 		
 		__stateCache.clearSettings ();
 		
@@ -631,7 +616,7 @@ import openfl.profiler.Telemetry;
 	
 	public function setRenderToBackBuffer ():Void {
 		
-		GL.bindFramebuffer (GL.FRAMEBUFFER, __defaultFrameBufferID);
+		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
 		GLUtils.CheckGLError ();
 		
 		__setViewport (0, 0, backBufferWidth, backBufferHeight);
