@@ -4,6 +4,7 @@ package openfl.display3D.textures;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.stage3D.SamplerState;
+import openfl._internal.stage3D.GLUtils;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 
@@ -118,10 +119,15 @@ class TextureBase extends EventDispatcher {
 		if (!state.equals (__samplerState)) {
 			
 			GL.bindTexture (__textureTarget, __textureID);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_MIN_FILTER, state.minFilter);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_MAG_FILTER, state.magFilter);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_S, state.wrapModeS);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_T, state.wrapModeT);
+			GLUtils.CheckGLError ();
 			
 			if (state.lodBias != 0.0) {
 				
