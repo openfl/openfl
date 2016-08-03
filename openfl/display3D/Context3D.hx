@@ -866,6 +866,11 @@ import openfl.profiler.Telemetry;
 		
 		switch (format) {
 			
+			case BYTES_4:
+				
+				GL.vertexAttribPointer (index, 4, GL.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
+				GLUtils.CheckGLError ();
+				
 			case FLOAT_4:
 				
 				GL.vertexAttribPointer (index, 4, GL.FLOAT, false, buffer.__stride, byteOffset);
