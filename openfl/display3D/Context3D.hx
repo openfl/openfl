@@ -685,32 +685,29 @@ import openfl.profiler.Telemetry;
 			
 		}
 		
-		var glWrapModeS;
-		var glWrapModeT;
-		var glMagFilter;
-		var glMinFilter;
+		var state = __samplerStates[sampler];
 		
 		switch (wrap) {
 			
 			case Context3DWrapMode.CLAMP:
 				
-				glWrapModeS = GL.CLAMP_TO_EDGE;
-				glWrapModeT = GL.CLAMP_TO_EDGE;
+				state.wrapModeS = GL.CLAMP_TO_EDGE;
+				state.wrapModeT = GL.CLAMP_TO_EDGE;
 				
 			case Context3DWrapMode.CLAMP_U_REPEAT_V:
 				
-				glWrapModeS = GL.CLAMP_TO_EDGE;
-				glWrapModeT = GL.REPEAT;
+				state.wrapModeS = GL.CLAMP_TO_EDGE;
+				state.wrapModeT = GL.REPEAT;
 				
 			case Context3DWrapMode.REPEAT:
 				
-				glWrapModeS = GL.REPEAT;
-				glWrapModeT = GL.REPEAT;
+				state.wrapModeS = GL.REPEAT;
+				state.wrapModeT = GL.REPEAT;
 				
 			case Context3DWrapMode.REPEAT_U_CLAMP_V:
 				
-				glWrapModeS = GL.REPEAT;
-				glWrapModeT = GL.CLAMP_TO_EDGE;
+				state.wrapModeS = GL.REPEAT;
+				state.wrapModeT = GL.CLAMP_TO_EDGE;
 				
 			default:
 				
@@ -722,31 +719,31 @@ import openfl.profiler.Telemetry;
 			
 			case Context3DTextureFilter.LINEAR:
 				
-				glMagFilter = GL.LINEAR;
+				state.magFilter = GL.LINEAR;
 				
 			case Context3DTextureFilter.NEAREST:
 				
-				glMagFilter = GL.NEAREST;
+				state.magFilter = GL.NEAREST;
 				
 			case Context3DTextureFilter.ANISOTROPIC2X:
 					
 				// TODO
-				glMagFilter = GL.LINEAR;
+				state.magFilter = GL.LINEAR;
 				 
 			case Context3DTextureFilter.ANISOTROPIC4X:
 					
 				// TODO
-				glMagFilter = GL.LINEAR;
+				state.magFilter = GL.LINEAR;
 				
 			case Context3DTextureFilter.ANISOTROPIC8X:
 				
 				// TODO
-				glMagFilter = GL.LINEAR;
+				state.magFilter = GL.LINEAR;
 				
 			case Context3DTextureFilter.ANISOTROPIC16X:
 				
 				// TODO
-				glMagFilter = GL.LINEAR;
+				state.magFilter = GL.LINEAR;
 				
 			default:
 				
@@ -758,23 +755,21 @@ import openfl.profiler.Telemetry;
 						
 			case Context3DMipFilter.MIPLINEAR:
 				
-				glMinFilter = GL.LINEAR_MIPMAP_LINEAR;
+				state.minFilter = GL.LINEAR_MIPMAP_LINEAR;
 			
 			case Context3DMipFilter.MIPNEAREST:
 				
-				glMinFilter = GL.NEAREST_MIPMAP_NEAREST;
+				state.minFilter = GL.NEAREST_MIPMAP_NEAREST;
 			
 			case Context3DMipFilter.MIPNONE:
 				
-				glMinFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR;
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR;
 				
 			default:
 				
 				throw new Error ("mipfiter bad enum");
 				
 		}
-		
-		__samplerStates[sampler] = new SamplerState (glMinFilter, glMagFilter, glWrapModeS, glWrapModeT);
 		
 	}
 	
