@@ -79,9 +79,9 @@ import openfl.profiler.Telemetry;
 	private var __vertexConstants:Float32Array;
 	
 	#if telemetry
-	private var __spanPresent:Telemetry.Span;
-	private var __statsValues:Array<Telemetry.Value>;
-	private var __valueFrame:Telemetry.Value;
+	//private var __spanPresent:Telemetry.Span;
+	//private var __statsValues:Array<Telemetry.Value>;
+	//private var __valueFrame:Telemetry.Value;
 	#end
 	
 	
@@ -116,8 +116,8 @@ import openfl.profiler.Telemetry;
 		__statsCache = new Vector<Int> (Context3DTelemetry.length);
 		
 		#if telemetry
-		__spanPresent = new Telemetry.Span (".rend.molehill.present");
-		__valueFrame = new Telemetry.Value (".rend.molehill.frame");
+		//__spanPresent = new Telemetry.Span (".rend.molehill.present");
+		//__valueFrame = new Telemetry.Value (".rend.molehill.frame");
 		#end
 		
 		enableErrorChecking = false;
@@ -143,7 +143,7 @@ import openfl.profiler.Telemetry;
 					 " GLSL=" + glslVersion;
 		
 		#if telemetry
-		Telemetry.Session.WriteValue (".platform.3d.driverinfo", driverInfo);
+		//Telemetry.Session.WriteValue (".platform.3d.driverinfo", driverInfo);
 		#end
 		
 		__depthRenderBufferID = GL.createRenderbuffer ();
@@ -310,8 +310,8 @@ import openfl.profiler.Telemetry;
 		__statsSendToTelemetry ();
 		
 		#if telemetry
-		__spanPresent.End ();
-		__spanPresent.Begin ();
+		//__spanPresent.End ();
+		//__spanPresent.Begin ();
 		#end
 		
 		__statsClear (Context3DTelemetry.DRAW_CALLS);
@@ -978,7 +978,7 @@ import openfl.profiler.Telemetry;
 	private function __statsSendToTelemetry ():Void {
 		
 		#if telemetry
-		if (!Telemetry.Session.Connected) {
+		/*if (!Telemetry.Session.Connected) {
 			
 			return;
 			
@@ -1018,7 +1018,7 @@ import openfl.profiler.Telemetry;
 			
 		}
 		
-		__valueFrame.WriteValue (__frameCount);
+		__valueFrame.WriteValue (__frameCount);*/
 		#end
 		
 	}
