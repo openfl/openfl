@@ -170,14 +170,7 @@ import openfl.profiler.Telemetry;
 		
 		var clearMask = 0;
 		
-		if (mask & Context3DClearMask.DEPTH > 0) {
-			
-			clearMask |= GL.DEPTH_BUFFER_BIT;
-			GLUtils.CheckGLError ();
-			
-		}
-		
-		if (mask & Context3DClearMask.COLOR > 0) {
+		if (mask & Context3DClearMask.COLOR != 0) {
 			
 			clearMask |= GL.COLOR_BUFFER_BIT;
 			
@@ -186,14 +179,16 @@ import openfl.profiler.Telemetry;
 			
 		}
 		
-		if (mask & Context3DClearMask.DEPTH > 0) {
+		if (mask & Context3DClearMask.DEPTH != 0) {
+			
+			clearMask |= GL.DEPTH_BUFFER_BIT;
 			
 			GL.clearDepth (depth);
 			GLUtils.CheckGLError ();
 			
 		}
 		
-		if (mask & Context3DClearMask.STENCIL > 0) {
+		if (mask & Context3DClearMask.STENCIL != 0) {
 			
 			clearMask |= GL.STENCIL_BUFFER_BIT;
 			
