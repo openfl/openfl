@@ -232,7 +232,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		this = new VectorData<T> ();
 		#if cpp
-		this.data = new Array<T> ()
+		this.data = new Array<T> ();
 		untyped this.data.__SetSizeExact (length);
 		#else
 		this.data = new haxe.ds.Vector<T> (length);
