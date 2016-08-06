@@ -474,7 +474,8 @@ class AGALConverter {
 	public static function ConvertToGLSL(agal:ByteArray, outSamplers:Array<SamplerState>):String
 	{
 		agal.position = 0;
-
+		agal.endian = Endian.LITTLE_ENDIAN;
+		
 		var magic:Int = agal.readByte() & 0xFF;
 		if (magic == 0xB0) {
 			// use embedded GLSL shader instead
