@@ -143,12 +143,13 @@ private class SourceReg {
 			str += o;
 			var indexComponent:String = String.fromCharCode('x'.charCodeAt(0) + q);
 			var indexRegister = AGALConverter.PrefixFromType(itype, programType) + this.n + "." + indexComponent;
-			str += "[ Int(" + indexRegister + ") +" + offset + "]";
+			str += "[ int(" + indexRegister + ") +" + offset + "]";
 		}
 
 		if (emitSwizzle && swizzle != "") {
 			str += "." + swizzle;
 		}
+		
 		return str;
 	}
 }
