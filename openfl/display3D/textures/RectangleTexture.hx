@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 
 import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
@@ -13,7 +14,7 @@ import openfl.utils.ByteArray;
 @:final class RectangleTexture extends TextureBase {
 	
 	
-	private var __format:String;
+	//private var __format:Context3DTextureFormat;
 	private var __height:Int;
 	private var __optimizeForRenderToTexture:Bool;
 	private var __width:Int;
@@ -25,7 +26,7 @@ import openfl.utils.ByteArray;
 		
 		__width = width;
 		__height = height;
-		__format = format;
+		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
 	}
@@ -33,30 +34,32 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
-		/* TODO: figure out fixed.
-			   fixed (UInt *ptr = source.getRawData()) {
-				uploadFromPointer((IntPtr)ptr);
-			}*/
+		var image = source.image;
+		
+		if (!image.premultiplied && image.transparent) {
+			
+			image = image.clone ();
+			image.premultiplied = true;
+			
+		}
+		
+		uploadFromTypedArray (image.data);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		if (cast(byteArrayOffset, Int) >= data.length) {
+		#if js
+		if (byteArrayOffset == 0) {
 			
-			throw new RangeError ();
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			return;
 			
 		}
+		#end
 		
-		/*
-			   TODO: Figure out fixed.
-			fixed (byte *bytePtr = data.getRawArray()) {
-				IntPtr ptr = (IntPtr)bytePtr;
-				ptr += (Int)byteArrayOffset;
-				uploadFromPointer (ptr);
-			}
-			*/
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
 		
 	}
 	
@@ -72,7 +75,7 @@ import openfl.utils.ByteArray;
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (__textureTarget, 0, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
 		
 		__allocated = true;
 		GLUtils.CheckGLError ();

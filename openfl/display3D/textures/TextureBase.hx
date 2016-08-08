@@ -4,6 +4,7 @@ package openfl.display3D.textures;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.stage3D.SamplerState;
+import openfl._internal.stage3D.GLUtils;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 
@@ -11,10 +12,14 @@ import openfl.errors.IllegalOperationError;
 class TextureBase extends EventDispatcher {
 	
 	
+	private static var __isGLES:Null<Bool>;
+	
 	private var __allocated:Bool = false;
 	private var __alphaTexture:Texture;
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
+	private var __format:Int;
+	private var __internalFormat:Int;
 	private var __memoryUsage:Int;
 	private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
@@ -30,6 +35,31 @@ class TextureBase extends EventDispatcher {
 		__textureTarget = target;
 		
 		__textureID = GL.createTexture ();
+		
+		
+		#if !sys
+		
+		__internalFormat = GL.RGBA;
+		__format = GL.RGBA;
+		
+		#elseif (ios || tvos)
+		
+		__internalFormat = GL.RGBA;
+		__format = GL.BGRA_EXT;
+		
+		#else
+		
+		if (__isGLES == null) {
+			
+			var version:String = GL.getParameter (GL.VERSION);
+			__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+			
+		}
+		
+		__internalFormat = (__isGLES ? GL.BGRA_EXT : GL.RGBA);
+		__format = GL.BGRA_EXT;
+		
+		#end
 		
 		__memoryUsage = 0;
 		__compressedMemoryUsage = 0;
@@ -89,10 +119,15 @@ class TextureBase extends EventDispatcher {
 		if (!state.equals (__samplerState)) {
 			
 			GL.bindTexture (__textureTarget, __textureID);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_MIN_FILTER, state.minFilter);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_MAG_FILTER, state.magFilter);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_S, state.wrapModeS);
+			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_T, state.wrapModeT);
+			GLUtils.CheckGLError ();
 			
 			if (state.lodBias != 0.0) {
 				

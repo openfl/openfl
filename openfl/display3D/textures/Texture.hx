@@ -19,7 +19,7 @@ import haxe.Timer;
 	
 	private static var __lowMemoryMode:Bool = false;
 	
-	private var __format:Context3DTextureFormat;
+	//private var __format:Context3DTextureFormat;
 	private var __height:Int;
 	private var __miplevel:Int;
 	private var __optimizeForRenderToTexture:Bool;
@@ -33,7 +33,7 @@ import haxe.Timer;
 		
 		__width = width;
 		__height = height;
-		__format = format;
+		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
@@ -129,7 +129,7 @@ import haxe.Timer;
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (__textureTarget, __miplevel, GL.RGBA, __width, __height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
 		
 		__allocated = true;
 		GLUtils.CheckGLError ();

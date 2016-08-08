@@ -10,7 +10,7 @@ import openfl.utils.ByteArray;
 @:final class CubeTexture extends TextureBase {
 	
 	
-	private var __format:String;
+	//private var __format:Context3DTextureFormat;
 	private var __optimizeForRenderToTexture:Bool;
 	private var __size:Int;
 	private var __streamingLevels:Int;
@@ -22,7 +22,7 @@ import openfl.utils.ByteArray;
 		super (context, GL.TEXTURE_CUBE_MAP);
 		
 		__size = size;
-		__format = format;
+		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		

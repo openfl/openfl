@@ -215,8 +215,7 @@ private class SamplerReg {
 		{
 			// disable
 			case 0:
-				// TODO: figure out the right value for this
-//				minFilter = (TextureMinFilter)((f != 0) ? TextureMagFilter.Linear : TextureMagFilter.Nearest);
+				minFilter = (f != 0) ? GL.NEAREST : GL.LINEAR;
 
 			// nearest
 			case 1:
@@ -758,11 +757,11 @@ class AGALConverter {
 
 							sr1.sourceMask = 0x3;
 							map.AddSaR(sampler, RegisterUsage.Sampler2D);
-#if (neko || cpp)
-							sb.add(dr.ToGLSL() + " = texture2D(" + sampler.ToGLSL() + ", " + sr1.ToGLSL() + ").zxyw; // tex");
-#else
+//#if (neko || cpp)
+							//sb.add(dr.ToGLSL() + " = texture2D(" + sampler.ToGLSL() + ", " + sr1.ToGLSL() + ").zxyw; // tex");
+//#else
 							sb.add(dr.ToGLSL() + " = texture2D(" + sampler.ToGLSL() + ", " + sr1.ToGLSL() + "); // tex");
-#end
+//#end
 
 						case 1: // cube texture
 							sr1.sourceMask = 0x7;
