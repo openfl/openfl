@@ -608,8 +608,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 		if (w <= 0 && h <= 0) {
-			throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
-		}
+			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
+		} else {
 		
 		if (__updateCachedBitmap || __updateFilters) {
 			
@@ -660,6 +660,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.translate ( __offset.x, __offset.y);
 		
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+	}
 	}
 	
 	
