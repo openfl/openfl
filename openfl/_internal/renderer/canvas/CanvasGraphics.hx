@@ -826,7 +826,7 @@ class CanvasGraphics {
 		
 		#if (js && html5)
 		
-		graphics.__update ();
+		graphics.__update (parentTransform);
 		
 		if (graphics.__dirty) {
 			

@@ -993,7 +993,7 @@ class CairoGraphics {
 		#if lime_cairo
 		
 		CairoGraphics.graphics = graphics;
-		graphics.__update ();
+		graphics.__update (parentTransform);
 		
 		if (!graphics.__dirty) return;
 		
