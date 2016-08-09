@@ -1028,10 +1028,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		}
 		
-		if (old_world_transform_a != __worldTransform.a ||
+		if (!__isCachingAsBitmap &&
+			(old_world_transform_a != __worldTransform.a ||
 			old_world_transform_d != __worldTransform.d ||
 			old_world_transform_b != __worldTransform.b ||
-			old_world_transform_c != __worldTransform.c) {
+			old_world_transform_c != __worldTransform.c)) {
 			_onWorldTransformScaleRotationChanged ();
 		}
 		
