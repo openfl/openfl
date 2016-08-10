@@ -1250,6 +1250,7 @@ class TextField extends InteractiveObject {
 					
 			var data = Xml.parse(value);
 				
+			__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 			value = parseTags(data, __textFormat.clone(), 0).text;
 			
 			return __textEngine.text = value;

@@ -75,6 +75,7 @@ class TextEngine {
 	public var gridFitType:GridFitType;
 	public var height:Float;
 	public var layoutGroups:Array<TextLayoutGroup>;
+	public var lineLayoutGroups:Array<Array<TextLayoutGroup>>;
 	public var lineAscents:Array<Float>;
 	public var lineBreaks:Array<Int>;
 	public var lineDescents:Array<Float>;
@@ -158,6 +159,7 @@ class TextEngine {
 		lineHeights = new Array ();
 		lineWidths = new Array ();
 		layoutGroups = new Array ();
+		lineLayoutGroups = new Array();
 		textFormatRanges = new Array ();
 		
 		#if (js && html5)
@@ -490,8 +492,9 @@ class TextEngine {
 		bottomScrollV = 0;
 		maxScrollH = 0;
 		
-		for (group in layoutGroups) {
-			
+		for (groups in lineLayoutGroups) {
+			if ( groups.length > 0 ) {
+				var group = groups[0];
 			while (group.lineIndex > numLines - 1) {
 				
 				lineAscents.push (currentLineAscent);
@@ -514,8 +517,6 @@ class TextEngine {
 					
 				}
 				
-			}
-			
 			currentLineAscent = Math.max (currentLineAscent, group.ascent);
 			currentLineDescent = Math.max (currentLineDescent, group.descent);
 			
@@ -530,7 +531,15 @@ class TextEngine {
 			}
 			
 			currentLineHeight = Math.max (currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
+
+					textHeight = group.offsetY - 2 + group.ascent + group.descent;
+				}
+
+				currentLineWidth = 0;
+
+				for(group in groups) {
+
+					currentLineWidth += group.offsetX - 2 + group.width;
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -538,8 +547,8 @@ class TextEngine {
 				
 			}
 			
-			textHeight = group.offsetY - 2 + group.ascent + group.descent;
-			
+				}
+			}
 		}
 		
 		lineAscents.push (currentLineAscent);
@@ -593,34 +602,39 @@ class TextEngine {
 		var ascent = 0.0;
 		var descent = 0.0;
 		
-		var layoutGroup, advances;
-		var widthValue, heightValue = 0.0;
+		var layoutGroup;
+		var advances: Array<Float> = new Array();
+		var widthValue = 0.0;
+		var heightValue = 0.0;
 		
-		var spaceWidth = 0.0;
-		var previousSpaceIndex = 0;
-		var spaceIndex = text.indexOf (" ");
-		var breakIndex = text.indexOf ("\n");
-		
-		var marginRight = 0.0;
 		var offsetX = 2.0;
 		var offsetY = 2.0;
 		var textIndex = 0;
 		var lineIndex = 0;
 		var lineFormat = null;
 		
-		inline function getAdvances (text:String, startIndex:Int, endIndex:Int):Array<Float> {
+		var textLength = this.text.length;
 			
-			// TODO: optimize
+		inline function fillLayoutGroup (format:TextFormat, startIndex:Int, endIndex:Int):Void {
+			layoutGroup = new TextLayoutGroup (format, startIndex, endIndex);
+			layoutGroup.offsetX = offsetX;
+			layoutGroup.ascent = ascent;
+			layoutGroup.descent = descent;
+			layoutGroup.leading = leading;
+			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.offsetY = offsetY;
+			//layoutGroup.width = widthValue;
+			layoutGroup.height = heightValue;
+			widthValue = 0;
+			advances.splice(0,advances.length);
+		}
 			
-			var advances = [];
+		inline function getAdvance (text:String, startIndex:Int):Float {
 			
+			var width:Float = 0;
 			#if (js && html5)
 			
-			for (i in startIndex...endIndex) {
-				
-				advances.push (__context.measureText (text.charAt (i)).width);
-				
-			}
+			width = __context.measureText (text.charAt (startIndex)).width;
 			
 			#else
 			
@@ -629,8 +643,6 @@ class TextEngine {
 				__textLayout = new TextLayout ();
 				
 			}
-			
-			var width = 0.0;
 			
 			__textLayout.text = null;
 			__textLayout.font = font;
@@ -641,70 +653,17 @@ class TextEngine {
 				
 			}
 			
-			__textLayout.text = text.substring (startIndex, endIndex);
+			__textLayout.text = text.charAt(startIndex);
 			
 			for (position in __textLayout.positions) {
 				
-				advances.push (position.advance.x);
+				width = position.advance.x;
 				
 			}
 			
 			#end
 			
-			return advances;
-			
-		}
-		
-		inline function getAdvancesWidth (advances:Array<Float>):Float {
-			
-			var width = 0.0;
-			
-			for (advance in advances) {
-				
-				width += advance;
-				
-			}
-			
 			return width;
-			
-		}
-		
-		inline function getTextWidth (text:String):Float {
-			
-			#if (js && html5)
-			
-			return __context.measureText (text).width;
-			
-			#else
-			
-			if (__textLayout == null) {
-				
-				__textLayout = new TextLayout ();
-				
-			}
-			
-			var width = 0.0;
-			
-			__textLayout.text = null;
-			__textLayout.font = font;
-			
-			if (formatRange.format.size != null) {
-				
-				__textLayout.size = formatRange.format.size;
-				
-			}
-			
-			__textLayout.text = text;
-			
-			for (position in __textLayout.positions) {
-				
-				width += position.advance.x;
-				
-			}
-			
-			return width;
-			
-			#end
 			
 		}
 		
@@ -751,16 +710,85 @@ class TextEngine {
 				
 				#end
 				
-				if (spaceIndex > -1) {
+			}
+
+		}
 					
-					spaceWidth = getTextWidth (" ");
+		inline function pushLayoutGroup() {
+			layoutGroups.push (layoutGroup);
 					
+			if ( lineLayoutGroups.length == lineIndex ) {
+				lineLayoutGroups.push([]);
 				}
 				
+			lineLayoutGroups[lineIndex].push(layoutGroup);
 			}
 			
+		inline function pushNewLine(textIndex:Int) {
+			layoutGroup.endIndex = textIndex;
+			pushLayoutGroup();
+			offsetY += heightValue;
+			offsetX = 2; // :NOTE: I have no idea why this is here.
+			lineIndex++;
+			fillLayoutGroup(formatRange.format, textIndex, formatRange.end);
+			lineFormat = formatRange.format;
+		}
+
+
+		nextFormatRange();
+
+		fillLayoutGroup(formatRange.format, formatRange.start, formatRange.end);
+		lineFormat = formatRange.format;
+		while( textIndex < this.text.length ) {
+			var char = this.text.charAt(textIndex);
+			if ( char == "\n" ) {
+				pushNewLine(textIndex);
+			} else if ( char == " " ) {
+				var iterator = textIndex;
+				var width_till_next_word = getAdvance(text,iterator);
+				iterator++;
+				if ( wordWrap && layoutGroup.offsetX + widthValue + width_till_next_word > width - 2 ) {
+					// keep the space on this line.
+					pushNewLine(textIndex+1);
+				} else {
+					var next_space = text.indexOf(" ", textIndex+1);
+					while(iterator < next_space ) {
+						width_till_next_word += getAdvance(text,iterator);
+						iterator++;
+					}
+					if ( wordWrap && layoutGroup.offsetX + widthValue + width_till_next_word > width - 2 ) {
+						// keep the space on this line.
+						pushNewLine(textIndex+1);
+					}
+				}
+			}
+
+			// :NOTE: Why the offset by 2 pixels?
+			if ( wordWrap && layoutGroup.offsetX + widthValue > width - 2 ) {
+				pushNewLine(textIndex);
+			}
+
+			// add text advance and check for updated format range.
+			if ( textIndex == formatRange.end ) {
+				layoutGroup.advances = advances;
+				layoutGroup.width = widthValue;
+				offsetX = layoutGroup.offsetX + layoutGroup.width;
+				pushLayoutGroup();
+
+				nextFormatRange();
+				fillLayoutGroup(formatRange.format, formatRange.start, formatRange.end);
 		}
 		
+			var character_advance = getAdvance(text,textIndex);
+			advances.push(character_advance);
+			widthValue += character_advance;
+
+			textIndex++;
+		}
+		layoutGroup.advances = advances;
+		layoutGroup.width = widthValue;
+		pushLayoutGroup();
+/*
 		nextFormatRange ();
 		
 		lineFormat = formatRange.format;
@@ -947,7 +975,7 @@ class TextEngine {
 						
 					}
 					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
+					if ((spaceIndex > breakIndex && breakIndex > -1) || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
 						
 						break;
 						
@@ -983,6 +1011,10 @@ class TextEngine {
 				
 			}
 			
+		}*/
+
+		if ( rangeIndex < textFormatRanges.length - 1 ) {
+			throw "not all text ranges were processed by the text engine.";
 		}
 		
 	}
@@ -992,7 +1024,7 @@ class TextEngine {
 		
 		var lineIndex = -1;
 		var offsetX = 0.0;
-		var group, lineLength;
+		var group, groups, lineLength;
 
 		var realWidth:Float = width;
 		if (autoSize != TextFieldAutoSize.NONE && !multiline)
@@ -1000,11 +1032,11 @@ class TextEngine {
 			realWidth = textWidth;
 		}
 		
-		for (i in 0...layoutGroups.length) {
-			
-			group = layoutGroups[i];
-			
-			if (group.lineIndex != lineIndex) {
+		if( lineLayoutGroups.length > 0 ) {
+			for (i in 0...lineLayoutGroups.length) {
+				groups = lineLayoutGroups[i];
+				if ( groups.length > 0 ) {
+					group = groups[0];
 				
 				lineIndex = group.lineIndex;
 				
@@ -1040,40 +1072,19 @@ class TextEngine {
 							
 							lineLength = 1;
 							
-							for (j in (i + 1)...layoutGroups.length) {
-								
-								if (layoutGroups[j].lineIndex == lineIndex) {
-									
-									lineLength++;
-									
-								} else {
-									
-									break;
-									
-								}
-								
-							}
-							
-							if (lineLength > 1) {
-								
-								group = layoutGroups[i + lineLength - 1];
-								
+								group = groups[groups.length-1];
 								if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
 									
 									offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (lineLength - 1);
 									
-									for (j in 1...lineLength) {
+									for (j in 0...groups.length ) {
 										
-										layoutGroups[i + j].offsetX += (offsetX * j);
+										groups[j].offsetX += (offsetX * j);
 										
 									}
 									
 								}
-								
 							}
-							
-						}
-						
 						offsetX = 0;
 					
 					default:
@@ -1081,17 +1092,20 @@ class TextEngine {
 						offsetX = 0;
 					
 				}
-				
 			}
 			
 			if (offsetX > 0) {
 				
+					for ( group in groups ) {
 				group.offsetX += offsetX;
 				
 			}
 			
 		}
 		
+	}
+		}
+
 	}
 	
 	
