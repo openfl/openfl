@@ -811,7 +811,7 @@ class Matrix3D {
 				var z = components[1].z;
 				var w = components[1].w;
 				
-				if (Type.enumEq(orientationStyle, Orientation3D.AXIS_ANGLE)) {
+				if (orientationStyle == Orientation3D.AXIS_ANGLE) {
 					
 					x *= Math.sin (w / 2);
 					y *= Math.sin (w / 2);

@@ -34,7 +34,11 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
+		if (source == null) return;
+		
 		var image = source.image;
+		
+		if (image == null) return;
 		
 		if (!image.premultiplied && image.transparent) {
 			
