@@ -106,21 +106,12 @@ class CanvasTextField {
 		
 		#if (js && html5)
 
-		var render_transform = textField.__renderTransform;
-		var scaleX =  Math.sqrt (render_transform.a * render_transform.a + render_transform.b * render_transform.b);
-		var scaleY =  Math.sqrt (render_transform.c * render_transform.c + render_transform.d * render_transform.d);
-
-		if (scaleX == 0 || scaleY == 0) {
-			throw ":TODO: support scale of zero";
-		}
-
-		var scale_transform = new openfl.geom.Matrix();
-		scale_transform.scale (scaleX, scaleY);
-
 		if (textField.__dirty || textField.__graphics == null || textField.__graphics.__bitmap == null) {
-
-			var textEngine = textField.__textEngine;
 			
+			var textEngine = textField.__textEngine;
+
+ 			var scaleX = textField.renderScaleX;
+ 			var scaleY = textField.renderScaleY;
 			textField.__updateLayout ();
 			
 			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
@@ -155,7 +146,7 @@ class CanvasTextField {
 				graphics.__canvas.width = Math.ceil (bounds.width);
 				graphics.__canvas.height = Math.ceil (bounds.height);
 
-				context.setTransform (scale_transform.a, scale_transform.b, scale_transform.c, scale_transform.d, scale_transform.tx, scale_transform.ty);
+				context.setTransform (scaleX, 0, 0, scaleY, 0, 0);
 
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus) {
 					
@@ -349,18 +340,7 @@ class CanvasTextField {
 				
 			}
 			
-		}
-
-		if (!textField.__isCachingAsBitmap) {
-			scale_transform.invert ();
-			scale_transform.concat (textField.__renderTransform);
-			textField.__renderTransform = scale_transform;
-		} else {
-			textField.__renderTransform.a = 1.0;
-			textField.__renderTransform.b = 0.0;
-			textField.__renderTransform.c = 0.0;
-			textField.__renderTransform.d = -1.0;
-		}
+		} 
 
 		#end
 		

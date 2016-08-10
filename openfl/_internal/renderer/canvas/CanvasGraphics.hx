@@ -776,6 +776,9 @@ class CanvasGraphics {
 					pendingMatrix = null;
 				}
 
+				var scaleTransform = graphics.__owner.__renderScaleTransform;
+				context.transform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
+
 				if (!hitTesting) context.fill ();
 
 				context.restore();
@@ -819,6 +822,11 @@ class CanvasGraphics {
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
 					
 				} else {
+					var scaleX = graphics.__owner.renderScaleX;
+					var scaleY = graphics.__owner.renderScaleY;
+					var bounds = graphics.__bounds.clone();
+					bounds.width *= scaleX;
+					bounds.height *= scaleY;
 					
 					if (graphics.__canvas == null) {
 						
@@ -831,7 +839,7 @@ class CanvasGraphics {
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
-					
+ 					context.setTransform (scaleX, 0, 0, scaleY, 0, 0);
 				}
 
 				fillStrokeCommands.clear ();

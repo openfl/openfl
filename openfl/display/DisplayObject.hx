@@ -68,6 +68,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var scale9Grid:Rectangle;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
+	public var renderScaleX (get, null):Float;
+	public var renderScaleY (get, null):Float;
 	public var scrollRect (get, set):Rectangle;
 	public var shader (default, set):Shader;
 	public var stage (default, null):Stage;
@@ -77,6 +79,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
+	public var __renderScaleTransform:Matrix;
 	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
 	public var __worldOffset:Point;
@@ -123,12 +126,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __forceCacheAsBitmap:Bool;
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
-	private var __cachedBitmapScale:Float;
 	private var __cachedBitmapBounds:Rectangle;
 	private var __cachedFilterBounds:Rectangle;
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
 	private var __clipDepth : Int;
+	private var __useSeparateRenderScaleTransform = true;
 
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -149,7 +152,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__rotationSine = 0;
 		__rotationCosine = 1;
 		
+		__renderScaleTransform = new Matrix ();
 		__renderTransform = new Matrix ();
+		
+		__cacheGLMatrix = new Matrix();
 		
 		__offset = new Point ();
 		__worldOffset = new Point ();
@@ -556,6 +562,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		if (__scrollRect != null) {
 			
+			throw ":TODO: take __renderScaleTransform into account";
+			
 			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
 			
 		}
@@ -592,21 +600,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		var y = __cachedBitmapBounds.y;
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
-
-		// can't use Matrix.__temp here, it's not safe
-		if (__cacheGLMatrix == null) __cacheGLMatrix = new Matrix();
-			
-		if (__cacheAsBitmapMatrix != null) {
-			
-			__cacheGLMatrix = __cacheAsBitmapMatrix.clone();
-			
-		} else {
-			
-			__cacheGLMatrix.identity();
-			__cacheGLMatrix.scale(__cachedBitmapScale, __cachedBitmapScale);
-			
-		}
 		
+				
 		if (w <= 0 && h <= 0) {
 			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
 		} else {
@@ -624,7 +619,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 			
 			// we need to position the drawing origin to 0,0 in the texture
-			var m = __cacheGLMatrix.clone();
+			var m = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderScaleTransform).clone();
 			m.translate( -x, -y);
 			//Disable mask
 
@@ -654,8 +649,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		
 		// Calculate the correct position
-		__cacheGLMatrix.invert();
-		__cacheGLMatrix.__translateTransformed(x, y);
+		__cacheGLMatrix.identity();
+		__cacheGLMatrix.translate(x, y);
 		__cacheGLMatrix.concat(__renderTransform);
 		__cacheGLMatrix.translate ( __offset.x, __offset.y);
 		
@@ -799,20 +794,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					__cachedBitmapBounds = new Rectangle();
 				}
 				
-				if (__cacheAsBitmapMatrix != null) {
-					__cachedBitmapScale = 1.0;
-					__getRenderBounds(__cachedBitmapBounds, __cacheAsBitmapMatrix);
-				} else {
-					var squared_x_scale = __renderTransform.a * __renderTransform.a + __renderTransform.b * __renderTransform.b;
-					var squared_y_scale = __renderTransform.c * __renderTransform.c + __renderTransform.d * __renderTransform.d;
-					var scale =  Math.sqrt(Math.max(squared_x_scale, squared_y_scale));
-					var scale_transform = new Matrix();
 					
-					scale_transform.scale(scale, scale );
-					__cachedBitmapScale = scale;
-					__cachedBitmapBounds.setEmpty();
-					__getRenderBounds(__cachedBitmapBounds, scale_transform);
-				}
+				__cachedBitmapBounds.setEmpty();
+				__getRenderBounds(__cachedBitmapBounds, __cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderScaleTransform);
 				
 				if (__filters != null) {
 					
@@ -1036,14 +1020,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			_onWorldTransformScaleRotationChanged ();
 		}
 		
-		__renderTransform.copyFrom (__worldTransform);
-		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 		
+		__renderScaleTransform.identity();
+		__renderTransform.identity();
+		
+		if (__useSeparateRenderScaleTransform)
+		{
+			var renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
+			var renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
+			__renderScaleTransform.scale(renderScaleX, renderScaleY);
+
+			
+
+			__renderTransform.scale(1.0 / renderScaleX, 1.0 / renderScaleY);
+		}
+
+		if (__cacheAsBitmapMatrix != null) {
+			
+			throw ":TODO: take __cacheAsBitmapMatrix inverse into account";
+			
+		}
+
+		__renderTransform.concat (__worldTransform);
+		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
 	
 	public function _onWorldTransformScaleRotationChanged ():Void {
 		__updateCachedBitmap = true;
 		__updateFilters = filters != null && filters.length > 0;
+
+		if (__graphics != null) {
+			__graphics.__dirty = true;
+		}
 	}
 	
 	
@@ -1375,7 +1383,34 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 	}
 	
-	
+	private function get_renderScaleX ():Float {
+		
+		if (__cacheAsBitmapMatrix != null) {
+			
+			return Math.sqrt (__cacheAsBitmapMatrix.a * __cacheAsBitmapMatrix.a + __cacheAsBitmapMatrix.b * __cacheAsBitmapMatrix.b);
+			
+		} else {
+			
+			return __renderScaleTransform.a;
+			
+		}
+		
+	}
+
+	private function get_renderScaleY ():Float {
+		
+		if (__cacheAsBitmapMatrix != null) {
+			
+			return Math.sqrt (__cacheAsBitmapMatrix.c * __cacheAsBitmapMatrix.c + __cacheAsBitmapMatrix.d * __cacheAsBitmapMatrix.d);
+			
+		} else {
+			
+			return __renderScaleTransform.d;
+			
+		}
+		
+	}
+		
 	private function get_scrollRect ():Rectangle {
 		
 		if ( __scrollRect == null ) return null;

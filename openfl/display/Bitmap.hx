@@ -39,6 +39,7 @@ class Bitmap extends DisplayObject {
 		this.bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
 		this.smoothing = smoothing;
+		this.__useSeparateRenderScaleTransform = false;
 		
 		if (pixelSnapping == null) {
 			
