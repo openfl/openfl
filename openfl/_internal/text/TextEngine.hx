@@ -517,6 +517,7 @@ class TextEngine {
 					bottomScrollV++;
 					
 				}
+				}
 				
 			currentLineAscent = Math.max (currentLineAscent, group.ascent);
 			currentLineDescent = Math.max (currentLineDescent, group.descent);
@@ -534,7 +535,6 @@ class TextEngine {
 			currentLineHeight = Math.max (currentLineHeight, group.height);
 
 					textHeight = group.offsetY - 2 + group.ascent + group.descent;
-				}
 
 				currentLineWidth = 0;
 
@@ -592,6 +592,7 @@ class TextEngine {
 	private function getLayoutGroups ():Void {
 		
 		layoutGroups.splice (0, layoutGroups.length);
+		lineLayoutGroups.splice (0, lineLayoutGroups.length);
 		
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
@@ -1121,6 +1122,7 @@ class TextEngine {
 			lineHeights.splice (0, lineHeights.length);
 			lineWidths.splice (0, lineWidths.length);
 			layoutGroups.splice (0, layoutGroups.length);
+			lineLayoutGroups.splice (0, lineLayoutGroups.length);
 			
 			textWidth = 0;
 			textHeight = 0;
