@@ -322,7 +322,7 @@ abstract Vector<T>(VectorData<T>) {
 			
 		}
 		
-		this.data[i] = element;
+		this.data[index] = element;
 		
 	}
 	
