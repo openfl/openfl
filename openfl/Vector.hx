@@ -44,6 +44,13 @@ package openfl; #if (!flash || display)
 	}
 	
 	
+	public function insertAt (index:Int, element:T):Void {
+		
+		this.insert (index, element);
+		
+	}
+	
+	
 	public function iterator<T> ():Iterator<T> {
 		
 		return this.iterator ();
@@ -279,6 +286,43 @@ abstract Vector<T>(VectorData<T>) {
 		haxe.ds.Vector.blit (this.data, 0, vectorData.data, 0, this.length);
 		#end
 		return cast vectorData;
+		
+	}
+	
+	
+	public function insertAt (index:Int, element:T):Void {
+		
+		if (index < 0) {
+			
+			index = this.length + index;
+			
+		}
+		
+		if (!this.fixed) {
+			
+			this.length++;
+			
+			if (this.data.length < this.length) {
+				
+				#if cpp
+				untyped (this.data).__SetSizeExact (((this.data.length + 1) * 3) >> 1);
+				#else
+				var data = new haxe.ds.Vector<T> (((this.data.length + 1) * 3) >> 1);
+				haxe.ds.Vector.blit (this.data, 0, data, 0, this.data.length);
+				this.data = data;
+				#end
+				
+			}
+			
+		}
+		
+		for (i in index...(this.length - 1)) {
+			
+			this.data[i + 1] = this.data[i];
+			
+		}
+		
+		this.data[i] = element;
 		
 	}
 	
@@ -827,6 +871,13 @@ using cpp.NativeArray;
 	}
 	
 	
+	public function insertAt (index:Int, element:T):Void {
+		
+		this.insert (index, element);
+		
+	}
+	
+	
 	public inline function iterator<T> ():Iterator<T> {
 		
 		return this.iterator ();
@@ -1064,6 +1115,15 @@ abstract Vector<T>(VectorData<T>) {
 		}
 		
 		return vec;
+		
+	}
+	
+	
+	public function insertAt (index:Int, element:T):Void {
+		
+		Reflect.callMethod (this.splice, this.splice, [ index, 0, element ]);
+		//this.splice (index, 0, element);
+		//this.insertAt (index, element);
 		
 	}
 	
