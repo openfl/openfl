@@ -615,6 +615,8 @@ class TextEngine {
 		var lineIndex = 0;
 		var lineFormat = null;
 		
+		var itHasAddedAdvance: Bool = false;
+
 		var textLength = this.text.length;
 			
 		inline function fillLayoutGroup (format:TextFormat, startIndex:Int, endIndex:Int):Void {
@@ -736,42 +738,59 @@ class TextEngine {
 			lineFormat = formatRange.format;
 		}
 
+		inline function addAdvance(text, textIndex) {
+			if (!itHasAddedAdvance) {
+				itHasAddedAdvance = true;
+				var character_advance = getAdvance(text,textIndex);
+				advances.push(character_advance);
+				widthValue += character_advance;
+
+			}
+		}
 
 		nextFormatRange();
 
 		fillLayoutGroup(formatRange.format, formatRange.start, formatRange.end);
 		lineFormat = formatRange.format;
+		var previousChar:String = "";
 		while( textIndex < this.text.length ) {
+			itHasAddedAdvance = false;
 			var char = this.text.charAt(textIndex);
 			if ( char == "\n" ) {
+				addAdvance(text,textIndex);
 				pushNewLine(textIndex);
-			} else if ( char == " " ) {
-				var iterator = textIndex;
+			}
+			// keep the space on this line.
+			if ( previousChar == " " ) {
+				var iterator = textIndex-1;
 				var width_till_next_word = getAdvance(text,iterator);
 				iterator++;
 				if ( wordWrap && layoutGroup.offsetX + widthValue + width_till_next_word > width - 2 ) {
-					// keep the space on this line.
-					pushNewLine(textIndex+1);
+					//addAdvance(text,textIndex);
+					pushNewLine(textIndex);
 				} else {
-					var next_space = text.indexOf(" ", textIndex+1);
+					var next_space = text.indexOf(" ", textIndex);
+					if ( next_space == -1 ) {
+						next_space = text.length;
+					}
 					while(iterator < next_space ) {
 						width_till_next_word += getAdvance(text,iterator);
 						iterator++;
 					}
 					if ( wordWrap && layoutGroup.offsetX + widthValue + width_till_next_word > width - 2 ) {
-						// keep the space on this line.
-						pushNewLine(textIndex+1);
-					}
+						//addAdvance(text,textIndex);
+						pushNewLine(textIndex);
 				}
 			}
-
+			} else {
 			// :NOTE: Why the offset by 2 pixels?
 			if ( wordWrap && layoutGroup.offsetX + widthValue > width - 2 ) {
 				pushNewLine(textIndex);
 			}
+			}
 
 			// add text advance and check for updated format range.
-			if ( textIndex == formatRange.end ) {
+			if ( ( textIndex == formatRange.end && text.charAt(textIndex+1) != " " ) || ( textIndex - 1 == formatRange.end && char == " " )) {
 				layoutGroup.advances = advances;
 				layoutGroup.width = widthValue;
 				offsetX = layoutGroup.offsetX + layoutGroup.width;
@@ -781,239 +800,14 @@ class TextEngine {
 				fillLayoutGroup(formatRange.format, formatRange.start, formatRange.end);
 		}
 		
-			var character_advance = getAdvance(text,textIndex);
-			advances.push(character_advance);
-			widthValue += character_advance;
+			addAdvance(text,textIndex);
 
 			textIndex++;
+			previousChar = char;
 		}
 		layoutGroup.advances = advances;
 		layoutGroup.width = widthValue;
 		pushLayoutGroup();
-/*
-		nextFormatRange ();
-		
-		lineFormat = formatRange.format;
-		var wrap;
-		
-		while (textIndex < text.length) {
-			
-			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
-				
-				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
-				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-				layoutGroup.height = heightValue;
-				layoutGroups.push (layoutGroup);
-				
-				offsetY += heightValue;
-				offsetX = 2;
-				
-				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 2)) {
-					
-					layoutGroup.offsetY = offsetY;
-					layoutGroup.offsetX = offsetX;
-					
-					offsetY += heightValue;
-					lineIndex++;
-					
-				}
-				
-				textIndex = breakIndex + 1;
-				breakIndex = text.indexOf ("\n", textIndex);
-				lineIndex++;
-				
-				if (formatRange.end == breakIndex) {
-					
-					nextFormatRange ();
-					lineFormat = formatRange.format;
-					
-				}
-				
-			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
-				
-				layoutGroup = null;
-				wrap = false;
-				
-				while (true) {
-					
-					if (spaceIndex == -1) spaceIndex = formatRange.end;
-					
-					advances = getAdvances (text, textIndex, spaceIndex);
-					widthValue = getAdvancesWidth (advances);
-					
-					if (wordWrap) {
-						
-						if (offsetX + widthValue > width - 2) {
-							
-							wrap = true;
-							
-						}
-						
-					}
-					
-					if (wrap) {
-						
-						offsetY += heightValue;
-						
-						var i = layoutGroups.length - 1;
-						var offsetCount = 0;
-						
-						while (true) {
-							
-							layoutGroup = layoutGroups[i];
-							
-							if (i > 0 && layoutGroup.startIndex > previousSpaceIndex) {
-								
-								offsetCount++;
-								
-							} else {
-								
-								break;
-								
-							}
-							
-							i--;
-							
-						}
-						
-						lineIndex++;
-						
-						offsetX = 2;
-						
-						if (offsetCount > 0) {
-							
-							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
-							
-							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
-								
-								layoutGroup = layoutGroups[i];
-								layoutGroup.offsetX -= bumpX;
-								layoutGroup.offsetY = offsetY;
-								layoutGroup.lineIndex = lineIndex;
-								offsetX += layoutGroup.width;
-								
-							}
-							
-						}
-						
-						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
-						layoutGroup.advances = advances;
-						layoutGroup.offsetX = offsetX;
-						layoutGroup.ascent = ascent;
-						layoutGroup.descent = descent;
-						layoutGroup.leading = leading;
-						layoutGroup.lineIndex = lineIndex;
-						layoutGroup.offsetY = offsetY;
-						layoutGroup.width = widthValue;
-						layoutGroup.height = heightValue;
-						layoutGroups.push (layoutGroup);
-						
-						offsetX = widthValue + spaceWidth;
-						marginRight = spaceWidth;
-						
-						wrap = false;
-						
-					} else {
-						
-						if (layoutGroup != null && textIndex == spaceIndex) {
-							
-							if (formatRange.format.align != JUSTIFY) {
-								
-								layoutGroup.endIndex = spaceIndex;
-								
-							}
-							
-							layoutGroup.advances.push (spaceWidth);
-							marginRight += spaceWidth;
-							
-						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
-							
-							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
-							layoutGroup.advances = advances;
-							layoutGroup.offsetX = offsetX;
-							layoutGroup.ascent = ascent;
-							layoutGroup.descent = descent;
-							layoutGroup.leading = leading;
-							layoutGroup.lineIndex = lineIndex;
-							layoutGroup.offsetY = offsetY;
-							layoutGroup.width = widthValue;
-							layoutGroup.height = heightValue;
-							layoutGroups.push (layoutGroup);
-							
-							layoutGroup.advances.push (spaceWidth);
-							marginRight = spaceWidth;
-							
-						} else {
-							
-							layoutGroup.endIndex = spaceIndex;
-							layoutGroup.advances = layoutGroup.advances.concat (advances);
-							layoutGroup.width += marginRight + widthValue;
-							
-							layoutGroup.advances.push (spaceWidth);
-							marginRight = spaceWidth;
-							
-						}
-						
-						offsetX += widthValue + spaceWidth;
-						
-					}
-					
-					textIndex = spaceIndex + 1;
-					
-					previousSpaceIndex = spaceIndex;
-					spaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
-					
-					if (formatRange.end <= previousSpaceIndex) {
-						
-						layoutGroup = null;
-						nextFormatRange ();
-						
-					}
-					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
-						break;
-						
-					}
-					
-				}
-				
-			} else {
-				
-				if (textIndex >= formatRange.end) {
-					
-					break;
-					
-				}
-				
-				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
-				layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
-				layoutGroup.offsetX = offsetX;
-				layoutGroup.ascent = ascent;
-				layoutGroup.descent = descent;
-				layoutGroup.leading = leading;
-				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
-				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-				layoutGroup.height = heightValue;
-				layoutGroups.push (layoutGroup);
-				
-				offsetX += layoutGroup.width;
-				
-				textIndex = formatRange.end;
-				
-				nextFormatRange ();
-				
-			}
-			
-		}*/
 
 		if ( rangeIndex < textFormatRanges.length - 1 ) {
 			throw "not all text ranges were processed by the text engine.";
