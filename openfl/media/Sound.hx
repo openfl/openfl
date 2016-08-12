@@ -164,6 +164,7 @@ class Sound extends EventDispatcher {
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
 		
+		/*
 		if (sndTransform != null) {
 			
 			source.gain = sndTransform.volume;
@@ -173,7 +174,9 @@ class Sound extends EventDispatcher {
 			position.z = -1 * Math.sqrt (1 - Math.pow (sndTransform.pan, 2));
 			source.position = position;
 			
-		}
+		}*/
+		
+		if (sndTransform != null) source.gain = sndTransform.volume;
 		
 		return new SoundChannel (source);
 		
