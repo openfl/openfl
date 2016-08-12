@@ -144,12 +144,10 @@ import openfl.media.Sound;
 		#if !html5
 		__source.gain = value.volume;
 		
-		/*
 		var position = __source.position;
 		position.x = value.pan;
 		position.z = -1 * Math.sqrt (1 - Math.pow (value.pan, 2));
-		__source.position = position;*/
-		// TODO: pan
+		__source.position = position;
 		
 		return value;
 		#else
