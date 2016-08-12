@@ -646,7 +646,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = value.length;
-		vectorData.fixed = true;
+		vectorData.fixed = false;
 		#if cpp
 		vectorData.data = value.copy ();
 		#else
