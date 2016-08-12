@@ -7,6 +7,7 @@ import openfl._internal.renderer.opengl.GLStage3D;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.OpenGLView;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
 import openfl.events.ErrorEvent;
@@ -142,11 +143,15 @@ class Stage3D extends EventDispatcher {
 			
 		}
 		
-		//if (context3D != null) {
-			//
+		if (context3D != null) {
+			
+			// TODO: Better blend mode fix
+			
+			context3D.setBlendFactors (Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+			
 			//DOMStage3D.render (this, renderSession);
-			//
-		//}
+			
+		}
 		
 	}
 	
@@ -169,6 +174,10 @@ class Stage3D extends EventDispatcher {
 		}
 		
 		if (context3D != null) {
+			
+			// TODO: Better blend mode fix
+			
+			context3D.setBlendFactors (Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
 			
 			GLStage3D.render (this, renderSession);
 			
