@@ -388,37 +388,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
-		
-		if (event.target == null) {
-			
-			event.target = this;
-			
-		}
-		
-		var result = super.__broadcast (event, notifyChilden);
-		
-		if (!event.__isCanceled && notifyChilden) {
-			
-			for (child in __children) {
-				
-				child.__broadcast (event, true);
-				
-				if (event.__isCanceled) {
-					
-					return true;
-					
-				}
-				
-			}
-			
-		}
-		
-		return result;
-		
-	}
-	
-	
 	private override function __enterFrame (deltaTime:Int):Void {
 		
 		for (child in __children) {
