@@ -1,3 +1,4 @@
+<!-- 
 ::if full == ""::
 	<h1>Haxe API documentation <small ::cond api.isDefined("version")::>version ::api.getValue('version')::</small></h1>
 	<p>Haxe is an open source toolkit based on a modern, high level, strictly typed programming language, a cross-compiler, a complete cross-platform standard library and ways to access each platform's native capabilities.</p> 
@@ -29,3 +30,4 @@
 ::else::
 	<h1><small class="directive">package</small> ::full::</h1>
 ::end::
+-->
