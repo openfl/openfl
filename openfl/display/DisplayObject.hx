@@ -43,6 +43,7 @@ import js.html.Element;
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disable_dynamic_child_access implements Dynamic<DisplayObject> #end {
 	
 	
+	private static var __frameEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
@@ -146,6 +147,35 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
+	public override function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
+		
+		switch (type) {
+			
+			case Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
+				
+				if (!__frameEvents.exists (type)) {
+					
+					__frameEvents.set (type, []);
+					
+				}
+				
+				var list = __frameEvents.get (type);
+				
+				if (list.indexOf (this) == -1) {
+					
+					list.push (this);
+					
+				}
+			
+			default:
+			
+		}
+		
+		super.addEventListener (type, listener, useCapture, priority, useWeakReference);
+		
+	}
+	
+	
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		var matrix;
@@ -222,6 +252,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public function localToGlobal (point:Point):Point {
 		
 		return __getWorldTransform ().transformPoint (point);
+		
+	}
+	
+	
+	public override function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
+		
+		super.removeEventListener (type, listener, useCapture);
+		
+		switch (type) {
+			
+			case Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
+				
+				if (!hasEventListener (type)) {
+					
+					if (__frameEvents.exists (type)) {
+						
+						__frameEvents.get (type).remove (this);
+						
+					}
+					
+				}
+			
+			default:
+			
+		}
 		
 	}
 	

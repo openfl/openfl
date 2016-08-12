@@ -749,13 +749,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__broadcast (new Event (Event.ENTER_FRAME), true);
-		__broadcast (new Event (Event.EXIT_FRAME), true);
+		__dispatchFrameEvent (new Event (Event.ENTER_FRAME));
+		__dispatchFrameEvent (new Event (Event.EXIT_FRAME));
 		
 		if (__invalidated) {
 			
 			__invalidated = false;
-			__broadcast (new Event (Event.RENDER), true);
+			__dispatchFrameEvent (new Event (Event.RENDER));
 			
 		}
 		
@@ -804,6 +804,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function update (deltaTime:Int):Void {
 		
 		__deltaTime = deltaTime;
+		
+	}
+	
+	
+	private function __dispatchFrameEvent (event:Event):Void {
+		
+		if (DisplayObject.__frameEvents.exists (event.type)) {
+			
+			var list = DisplayObject.__frameEvents.get (event.type);
+			
+			for (object in list) {
+				
+				object.dispatchEvent (event);
+				
+			}
+			
+		}
 		
 	}
 	
