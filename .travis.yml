@@ -24,8 +24,7 @@ install:
   - haxelib install compiletime
   - haxelib install hxcpp > log.txt || cat log.txt
   - haxelib install format > log.txt || cat log.txt
-  - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
-  - if [[ $TARGET == 'docs' ]]; then haxelib dev dox ~/dox ; fi
+  - if [[ $TARGET == 'docs' ]]; then haxelib install dox > log.txt || cat log.txt ; fi
   - haxelib install mcover > log.txt || cat log.txt
   - haxelib install hamcrest > log.txt || cat log.txt
   - git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1 > log.txt || cat log.txt
