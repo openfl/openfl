@@ -402,8 +402,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (window != null) {
 			
-			var event = new Event (Event.DEACTIVATE);
-			__broadcast (event, true);
+			__broadcastEvent (new Event (Event.DEACTIVATE));
 			
 		}
 		
@@ -528,7 +527,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
-			__broadcast (event, true);
+			__dispatchEvent (event);
+			
 		}
 		
 	}
@@ -559,8 +559,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var event = new Event (Event.ACTIVATE);
-		__broadcast (event, true);
+		__broadcastEvent (new Event (Event.ACTIVATE));
 		
 	}
 	
@@ -623,8 +622,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var event = new Event (Event.DEACTIVATE);
-		__broadcast (event, true);
+		__broadcastEvent (new Event (Event.DEACTIVATE));
 		
 	}
 	
@@ -710,8 +708,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__resize ();
 		
-		var event = new Event (Event.RESIZE);
-		__broadcast (event, false);
+		__dispatchEvent (new Event (Event.RESIZE));
 		
 	}
 	
@@ -749,13 +746,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__dispatchFrameEvent (new Event (Event.ENTER_FRAME));
-		__dispatchFrameEvent (new Event (Event.EXIT_FRAME));
+		__broadcastEvent (new Event (Event.ENTER_FRAME));
+		__broadcastEvent (new Event (Event.EXIT_FRAME));
 		
 		if (__invalidated) {
 			
 			__invalidated = false;
-			__dispatchFrameEvent (new Event (Event.RENDER));
+			__broadcastEvent (new Event (Event.RENDER));
 			
 		}
 		
@@ -808,15 +805,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	private function __dispatchFrameEvent (event:Event):Void {
+	private function __broadcastEvent (event:Event):Void {
 		
-		if (DisplayObject.__frameEvents.exists (event.type)) {
+		if (DisplayObject.__broadcastEvents.exists (event.type)) {
 			
-			var list = DisplayObject.__frameEvents.get (event.type);
+			var dispatchers = DisplayObject.__broadcastEvents.get (event.type);
 			
-			for (object in list) {
+			for (dispatcher in dispatchers) {
 				
-				object.dispatchEvent (event);
+				dispatcher.__dispatch (event);
 				
 			}
 			
@@ -874,7 +871,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (length == 0) {
 			
 			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__broadcast (event, false);
+			event.target.__dispatch (event);
 			
 		} else {
 			
@@ -883,7 +880,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			for (i in 0...length - 1) {
 				
-				stack[i].__broadcast (event, false);
+				stack[i].__dispatch (event);
 				
 				if (event.__isCanceled) {
 					
@@ -894,7 +891,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__broadcast (event, false);
+			event.target.__dispatch (event);
 			
 			if (event.__isCanceled) {
 				
@@ -909,7 +906,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				while (i >= 0) {
 					
-					stack[i].__broadcast (event, false);
+					stack[i].__dispatch (event);
 					
 					if (event.__isCanceled) {
 						
