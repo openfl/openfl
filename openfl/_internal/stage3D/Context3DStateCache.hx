@@ -78,9 +78,7 @@ class Context3DStateCache {
 
     public function updateBlendSrcFactor(factor:Context3DBlendFactor):Bool
     {
-        if (disableCache) return true;
-
-        if (factor == _srcBlendFactor)
+        if (!disableCache && factor == _srcBlendFactor)
             return false;
         _srcBlendFactor = factor;
         return true;
@@ -88,9 +86,7 @@ class Context3DStateCache {
 
     public function updateBlendDestFactor(factor:Context3DBlendFactor):Bool
     {
-        if (disableCache) return true;
-
-        if (factor == _destlendFactor)
+        if (!disableCache && factor == _destlendFactor)
             return false;
         _destlendFactor = factor;
         return true;
@@ -98,9 +94,7 @@ class Context3DStateCache {
 
     public function updateDepthTestEnabled(test:Bool):Bool
     {
-        if (disableCache) return true;
-
-        if (test == _deptTestEnabled)
+        if (!disableCache && test == _deptTestEnabled)
             return false;
         _deptTestEnabled = test;
         return true;
@@ -108,9 +102,7 @@ class Context3DStateCache {
 
     public function updateDepthTestMask(mask:Bool):Bool
     {
-        if (disableCache) return true;
-
-        if (mask == _depthTestMask)
+        if (!disableCache && mask == _depthTestMask)
             return false;
         _depthTestMask = mask;
         return true;
@@ -118,9 +110,7 @@ class Context3DStateCache {
 
     public function updateDepthCompareMode(mode:Context3DCompareMode):Bool
     {
-        if (disableCache) return true;
-
-        if (mode == _depthTestCompareMode)
+        if (!disableCache && mode == _depthTestCompareMode)
             return false;
         _depthTestCompareMode = mode;
         return true;
@@ -128,9 +118,7 @@ class Context3DStateCache {
 
     public function updateProgram3D(program3d:Program3D):Bool
     {
-        if (disableCache) return true;
-
-        if (program3d == _program)
+        if (!disableCache && program3d == _program)
             return false;
         _program = program3d;
         return true;
@@ -138,9 +126,7 @@ class Context3DStateCache {
 
     public function updateCullingMode(cullMode:String):Bool
     {
-        if (disableCache) return true;
-
-        if (cullMode == _cullingMode)
+        if (!disableCache && cullMode == _cullingMode)
             return false;
         _cullingMode = cullMode;
         return true;
@@ -148,9 +134,7 @@ class Context3DStateCache {
 
     public function updateActiveTextureSample(texture:Int):Bool
     {
-        if (disableCache) return true;
-
-        if (texture == _activeTexture)
+        if (!disableCache && texture == _activeTexture)
             return false;
         _activeTexture = texture;
         return true;
@@ -158,9 +142,7 @@ class Context3DStateCache {
 
     public function updateActiveVertexArray(vertexArray:Int):Bool
     {
-        if (disableCache) return true;
-
-        if (vertexArray == _activeVertexArray)
+        if (!disableCache && vertexArray == _activeVertexArray)
             return false;
         _activeVertexArray = vertexArray;
         return true;
@@ -168,9 +150,7 @@ class Context3DStateCache {
 
     public function updateViewport(originX:Int, originY:Int, width:Int, height:Int):Bool
     {
-        if (disableCache) return true;
-
-        if (_viewportOriginX == originX && _viewportOriginY == originY && _viewportWidth == width && _viewportHeight == height)
+        if (!disableCache && _viewportOriginX == originX && _viewportOriginY == originY && _viewportWidth == width && _viewportHeight == height)
             return false;
 
         _viewportOriginX = originX;
