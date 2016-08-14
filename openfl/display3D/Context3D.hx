@@ -71,6 +71,7 @@ import openfl.profiler.Telemetry;
 	private var __samplerDirty:Int;
 	private var __samplerTextures:Vector<TextureBase>;
 	private var __samplerStates:Array<SamplerState>;
+	private var __scissorRectangle:Rectangle;
 	private var __stage3D:Stage3D;
 	private var __stats:Vector<Int>;
 	private var __statsCache:Vector<Int>;
@@ -625,7 +626,9 @@ import openfl.profiler.Telemetry;
 		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
 		GLUtils.CheckGLError ();
 		
+		__renderToTexture = null;
 		__setViewport (0, 0, backBufferWidth, backBufferHeight);
+		__updateScissorRectangle ();
 		
 		__positionScale[1] = 1.0;
 		
@@ -634,8 +637,6 @@ import openfl.profiler.Telemetry;
 			__program.__setPositionScale (__positionScale);
 			
 		}
-		
-		__renderToTexture = null;
 		
 	}
 	
@@ -679,6 +680,7 @@ import openfl.profiler.Telemetry;
 		}
 		
 		__renderToTexture = texture;
+		__updateScissorRectangle ();
 		
 	}
 	
@@ -782,15 +784,8 @@ import openfl.profiler.Telemetry;
 	
 	public function setScissorRectangle (rectangle:Rectangle):Void {
 		
-		if (rectangle != null) {
-			
-			GL.scissor (Std.int (rectangle.x), Std.int (rectangle.y), Std.int (rectangle.width), Std.int (rectangle.height));
-			
-		} else {
-			
-			GL.scissor (0, 0, backBufferWidth, backBufferHeight);
-			
-		}
+		__scissorRectangle = rectangle;
+		__updateScissorRectangle ();
 		
 	}
 	
@@ -1073,6 +1068,51 @@ import openfl.profiler.Telemetry;
 		
 		__stats[stat] -= value;
 		return __stats [stat];
+		
+	}
+	
+	
+	private function __updateScissorRectangle () {
+		
+		if (__scissorRectangle == null) {
+			
+			GL.disable (GL.SCISSOR_TEST);
+			GLUtils.CheckGLError ();
+			return;
+			
+		}
+		
+		GL.enable (GL.SCISSOR_TEST);
+		GLUtils.CheckGLError ();
+		
+		var height = 0;
+		
+		if (__renderToTexture != null) {
+		
+			if (Std.is (__renderToTexture, Texture)) {
+			
+				var texture2D:Texture = cast __renderToTexture;
+				height = texture2D.__height;
+			
+			} else if (Std.is (__renderToTexture, RectangleTexture)) {
+				
+				var rectTexture:RectangleTexture = cast __renderToTexture;
+				height = rectTexture.__height;
+				
+			}
+			
+		} else {
+			
+			height = backBufferHeight;
+			
+		}
+		
+		GL.scissor (Std.int (__scissorRectangle.x),
+			Std.int (height - Std.int (__scissorRectangle.y) - Std.int (__scissorRectangle.height)),
+			Std.int (__scissorRectangle.width),
+			Std.int (__scissorRectangle.height)
+		);
+		GLUtils.CheckGLError ();
 		
 	}
 	
