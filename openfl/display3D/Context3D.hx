@@ -49,12 +49,12 @@ import openfl.profiler.Telemetry;
 	
 	private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
 	
-	public var backBufferHeight (default, null):Int;
-	public var backBufferWidth (default, null):Int;
+	public var backBufferHeight (default, null):Int = 0;
+	public var backBufferWidth (default, null):Int = 0;
 	public var driverInfo (default, null):String = "OpenGL (Direct blitting)";
-	public var enableErrorChecking(default, set):Bool;
-	public var maxBackBufferHeight:Int;
-	public var maxBackBufferWidth:Int;
+	public var enableErrorChecking (default, set):Bool = false;
+	public var maxBackBufferHeight (default, null):Int;
+	public var maxBackBufferWidth (default, null):Int;
 	public var profile (default, null):Context3DProfile = BASELINE;
 	public var totalGPUMemory (default, null):Int = 0;
 	
@@ -109,11 +109,18 @@ import openfl.profiler.Telemetry;
 			
 		}
 		
+		#if (js && html5)
+		maxBackBufferHeight = maxBackBufferWidth = GL.getParameter (GL.MAX_VIEWPORT_DIMS);
+		#else
+		maxBackBufferHeight = maxBackBufferWidth = 16384;
+		#end
+		
 		__backBufferAntiAlias = 0;
 		__backBufferEnableDepthAndStencil = true;
 		__backBufferWantsBestResolution = false;
 		
 		__frameCount = 0;
+		__samplerDirty = 0;
 		__stencilCompareMode = Context3DCompareMode.ALWAYS;
 		__stencilRef = 0;
 		__stencilReadMask = 0xFF;
@@ -125,8 +132,6 @@ import openfl.profiler.Telemetry;
 		//__spanPresent = new Telemetry.Span (".rend.molehill.present");
 		//__valueFrame = new Telemetry.Value (".rend.molehill.frame");
 		#end
-		
-		enableErrorChecking = false;
 		
 		GLUtils.CheckGLError ();
 		
