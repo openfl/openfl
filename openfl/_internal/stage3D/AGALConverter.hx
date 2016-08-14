@@ -813,25 +813,13 @@ class AGALConverter {
 		}
 
 
-#if PLATFORM_MONOMAC
-		var glslVersion = 120;
-#elseif PLATFORM_MONOTOUCH
-		var glslVersion = 100; // Actually this is glsl 1.20 but in gles it's 1.0
-#elseif PLATFORM_MONODROID
 		var glslVersion = 100;
-#elseif (js && html5)
-		var glslVersion = 100;
-#else
-		var glslVersion = 120;
-#end
 		// combine parts Into final progam
 		var glsl = new StringBuf();
 		glsl.add("// AGAL " + ((programType == ProgramType.Vertex) ? "vertex" : "fragment") + " shader\n");
 		glsl.add("#version " + glslVersion + "\n");
-#if ((js && html5) || PLATFORM_MONOTOUCH || PLATFORM_MONODROID)
 		// Required to set the default precision of vectors
 		glsl.add("precision mediump float;\n");
-#end
 		glsl.add(map.ToGLSL(false));
 		if (programType == ProgramType.Vertex) {
 			// this is needed for flipping render textures upside down
