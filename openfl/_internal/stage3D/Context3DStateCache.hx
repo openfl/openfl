@@ -2,6 +2,7 @@ package openfl._internal.stage3D;
 
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.Vector;
 
@@ -22,7 +23,7 @@ class Context3DStateCache {
     private var _program:Program3D;
 
     // culling
-    private var _cullingMode:String;
+    private var _cullingMode:Context3DTriangleFace;
 
     // texture
     private var _activeTexture:Int;
@@ -124,7 +125,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public function updateCullingMode(cullMode:String):Bool
+    public function updateCullingMode(cullMode:Context3DTriangleFace):Bool
     {
         if (!disableCache && cullMode == _cullingMode)
             return false;
