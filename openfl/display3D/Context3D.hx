@@ -941,17 +941,17 @@ import openfl.profiler.Telemetry;
 					GL.bindTexture (target, texture.__textureID);
 					GLUtils.CheckGLError ();
 					
+					#if 0
 					var state = __program.__getSamplerState(sampler);
 					
 					if (state != null) {
 						
 						texture.__setSamplerState (state);
 						
-					} else {
-						
-						texture.__setSamplerState (__samplerStates[sampler]);
-						
 					}
+					#end
+					
+					texture.__setSamplerState (__samplerStates[sampler]);
 					
 				} else {
 					
