@@ -52,13 +52,13 @@ class Context3DStateCache {
     public function clearSettings():Void
     {
 
-        _srcBlendFactor = "";
-        _destlendFactor = "";
+        _srcBlendFactor = null;
+        _destlendFactor = null;
         _deptTestEnabled = false;
         _depthTestMask = false;
-        _depthTestCompareMode = "";
+        _depthTestCompareMode = null;
         _program = null;
-        _cullingMode = "";
+        _cullingMode = null;
         _activeTexture = -1;
         _activeVertexArray = -1;
         _viewportOriginX = -1;
