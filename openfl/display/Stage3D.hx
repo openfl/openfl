@@ -197,7 +197,7 @@ class Stage3D extends EventDispatcher {
 	private function __resetContext3DStates ():Void {
 		
 		// TODO: Better blend mode fix
-		context3D.setBlendFactors (Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+		context3D.__updateBlendFactors ();
 		// TODO: Better viewport fix
 		context3D.__updateBackbufferViewport ();
 		

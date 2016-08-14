@@ -35,6 +35,7 @@ import openfl.profiler.Telemetry;
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl._internal.stage3D.Context3DStateCache)
 @:access(openfl._internal.stage3D.GLUtils)
 
 
@@ -330,50 +331,9 @@ import openfl.profiler.Telemetry;
 	
 	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		var src = GL.ONE;
-		var dest = GL.ONE_MINUS_SRC_ALPHA;
-		var updateBlendFunction = false;
-		
 		if (__stateCache.updateBlendSrcFactor (sourceFactor) || __stateCache.updateBlendDestFactor (destinationFactor)) {
 			
-			updateBlendFunction = true;
-			
-		}
-		
-		if (updateBlendFunction) {
-			
-			switch (sourceFactor) {
-				
-				case Context3DBlendFactor.ONE: src = GL.ONE;
-				case Context3DBlendFactor.ZERO: src = GL.ZERO;
-				case Context3DBlendFactor.SOURCE_ALPHA: src = GL.SRC_ALPHA;
-				case Context3DBlendFactor.DESTINATION_ALPHA: src = GL.DST_ALPHA;
-				case Context3DBlendFactor.DESTINATION_COLOR: src = GL.DST_COLOR;
-				case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = GL.ONE_MINUS_SRC_ALPHA;
-				case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = GL.ONE_MINUS_DST_ALPHA;
-				case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = GL.ONE_MINUS_DST_COLOR;
-				default:
-					throw new IllegalOperationError ();
-				
-			}
-			
-			switch (destinationFactor) {
-				
-				case Context3DBlendFactor.ONE: dest = GL.ONE;
-				case Context3DBlendFactor.ZERO: dest = GL.ZERO;
-				case Context3DBlendFactor.SOURCE_ALPHA: dest = GL.SRC_ALPHA;
-				case Context3DBlendFactor.SOURCE_COLOR: dest = GL.SRC_COLOR;
-				case Context3DBlendFactor.DESTINATION_ALPHA: dest = GL.DST_ALPHA;
-				case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = GL.ONE_MINUS_SRC_ALPHA;
-				case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = GL.ONE_MINUS_SRC_COLOR;
-				case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = GL.ONE_MINUS_DST_ALPHA;
-				default:
-					throw new IllegalOperationError ();
-				
-			}
-			
-			GL.enable (GL.BLEND);
-			GL.blendFunc (src, dest);
+			__updateBlendFactors ();
 			
 		}
 		
@@ -1068,6 +1028,54 @@ import openfl.profiler.Telemetry;
 		
 		__stats[stat] -= value;
 		return __stats [stat];
+		
+	}
+	
+	
+	private function __updateBlendFactors ():Void {
+		
+		if (__stateCache._srcBlendFactor == null || __stateCache._destlendFactor == null) {
+			
+			return;
+			
+		}
+		
+		var src = GL.ONE;
+		var dest = GL.ZERO;
+		switch (__stateCache._srcBlendFactor) {
+			
+			case Context3DBlendFactor.ONE: src = GL.ONE;
+			case Context3DBlendFactor.ZERO: src = GL.ZERO;
+			case Context3DBlendFactor.SOURCE_ALPHA: src = GL.SRC_ALPHA;
+			case Context3DBlendFactor.DESTINATION_ALPHA: src = GL.DST_ALPHA;
+			case Context3DBlendFactor.DESTINATION_COLOR: src = GL.DST_COLOR;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: src = GL.ONE_MINUS_SRC_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: src = GL.ONE_MINUS_DST_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR: src = GL.ONE_MINUS_DST_COLOR;
+			default:
+				throw new IllegalOperationError ();
+			
+		}
+		
+		switch (__stateCache._destlendFactor) {
+			
+			case Context3DBlendFactor.ONE: dest = GL.ONE;
+			case Context3DBlendFactor.ZERO: dest = GL.ZERO;
+			case Context3DBlendFactor.SOURCE_ALPHA: dest = GL.SRC_ALPHA;
+			case Context3DBlendFactor.SOURCE_COLOR: dest = GL.SRC_COLOR;
+			case Context3DBlendFactor.DESTINATION_ALPHA: dest = GL.DST_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA: dest = GL.ONE_MINUS_SRC_ALPHA;
+			case Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR: dest = GL.ONE_MINUS_SRC_COLOR;
+			case Context3DBlendFactor.ONE_MINUS_DESTINATION_ALPHA: dest = GL.ONE_MINUS_DST_ALPHA;
+			default:
+				throw new IllegalOperationError ();
+			
+		}
+		
+		GL.enable (GL.BLEND);
+		GLUtils.CheckGLError ();
+		GL.blendFunc (src, dest);
+		GLUtils.CheckGLError ();
 		
 	}
 	
