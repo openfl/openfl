@@ -74,6 +74,9 @@ import openfl.profiler.Telemetry;
 	private var __stage3D:Stage3D;
 	private var __stats:Vector<Int>;
 	private var __statsCache:Vector<Int>;
+	private var __stencilCompareMode:Context3DCompareMode;
+	private var __stencilRef:Int;
+	private var __stencilReadMask:Int;
 	private var __textureDepthBufferID:GLRenderbuffer;
 	private var __textureFrameBufferID:GLFramebuffer;
 	private var __vertexConstants:Float32Array;
@@ -111,6 +114,9 @@ import openfl.profiler.Telemetry;
 		__backBufferWantsBestResolution = false;
 		
 		__frameCount = 0;
+		__stencilCompareMode = Context3DCompareMode.ALWAYS;
+		__stencilRef = 0;
+		__stencilReadMask = 0xFF;
 		
 		__stats = new Vector<Int> (Context3DTelemetry.length);
 		__statsCache = new Vector<Int> (Context3DTelemetry.length);
@@ -786,14 +792,20 @@ import openfl.profiler.Telemetry;
 	
 	public function setStencilActions (triangleFace:Context3DTriangleFace = FRONT_AND_BACK, compareMode:Context3DCompareMode = ALWAYS, actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP, actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void {
 		
-		// TODO
+		__stencilCompareMode = compareMode;
+		GL.stencilOp (__getGLStencilAction (actionOnDepthFail), __getGLStencilAction (actionOnDepthPassStencilFail), __getGLStencilAction (actionOnBothPass));
+		GL.stencilFunc (__getGLCompareMode (__stencilCompareMode), __stencilRef, __stencilReadMask);
 		
 	}
 	
 	
 	public function setStencilReferenceValue (referenceValue:UInt, readMask:UInt = 0xFF, writeMask:UInt = 0xFF):Void {
 		
-		// TODO
+		__stencilReadMask = readMask;
+		__stencilRef = referenceValue;
+		
+		GL.stencilFunc (__getGLCompareMode (__stencilCompareMode), __stencilRef, __stencilReadMask);
+		GL.stencilMask (writeMask);
 		
 	}
 	
@@ -918,6 +930,44 @@ import openfl.profiler.Telemetry;
 			}
 			
 			sampler++;
+			
+		}
+		
+	}
+	
+	
+	private function __getGLCompareMode (compareMode:Context3DCompareMode):Int {
+		
+		return switch (compareMode) {
+			
+			case ALWAYS: GL.ALWAYS;
+			case EQUAL: GL.EQUAL;
+			case GREATER: GL.GREATER;
+			case GREATER_EQUAL: GL.GEQUAL;
+			case LESS: GL.LESS;
+			case LESS_EQUAL: GL.LEQUAL; // TODO : wrong value
+			case NEVER: GL.NEVER;
+			case NOT_EQUAL: GL.NOTEQUAL;
+			default: GL.EQUAL;
+			
+		}
+		
+	}
+	
+	
+	private function __getGLStencilAction (stencilAction:Context3DStencilAction):Int {
+		
+		return switch (stencilAction) {
+			
+			case DECREMENT_SATURATE: GL.DECR;
+			case DECREMENT_WRAP: GL.DECR_WRAP;
+			case INCREMENT_SATURATE: GL.INCR;
+			case INCREMENT_WRAP: GL.INCR_WRAP;
+			case INVERT: GL.INVERT;
+			case KEEP: GL.KEEP;
+			case SET: GL.REPLACE;
+			case ZERO: GL.ZERO;
+			default: GL.KEEP;
 			
 		}
 		
