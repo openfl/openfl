@@ -1,5 +1,7 @@
 package openfl._internal.stage3D;
 
+import openfl.display3D.Context3DBlendFactor;
+import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Program3D;
 import openfl.Vector;
 
@@ -8,13 +10,13 @@ class Context3DStateCache {
     private static inline var disableCache:Bool = true;
 
     // blend
-    private var _srcBlendFactor:String;
-    private var _destlendFactor:String;
+    private var _srcBlendFactor:Context3DBlendFactor;
+    private var _destlendFactor:Context3DBlendFactor;
 
     // depth test
     private var _deptTestEnabled:Bool;
     private var _depthTestMask:Bool;
-    private var _depthTestCompareMode:String;
+    private var _depthTestCompareMode:Context3DCompareMode;
 
     // program
     private var _program:Program3D;
@@ -76,7 +78,7 @@ class Context3DStateCache {
 
     //[inline]
 
-    public inline function updateBlendSrcFactor(factor:String):Bool
+    public inline function updateBlendSrcFactor(factor:Context3DBlendFactor):Bool
     {
         if (disableCache) return true;
 
@@ -86,7 +88,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateBlendDestFactor(factor:String):Bool
+    public inline function updateBlendDestFactor(factor:Context3DBlendFactor):Bool
     {
         if (disableCache) return true;
 
@@ -116,7 +118,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateDepthCompareMode(mode:String):Bool
+    public inline function updateDepthCompareMode(mode:Context3DCompareMode):Bool
     {
         if (disableCache) return true;
 
