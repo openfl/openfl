@@ -1140,7 +1140,7 @@ import openfl.profiler.Telemetry;
 	
 	private function __updateBlendFactors ():Void {
 		
-		if (__stateCache._srcBlendFactor == null || __stateCache._destlendFactor == null) {
+		if (__stateCache._srcBlendFactor == null || __stateCache._destBlendFactor == null) {
 			
 			return;
 			
@@ -1163,7 +1163,7 @@ import openfl.profiler.Telemetry;
 			
 		}
 		
-		switch (__stateCache._destlendFactor) {
+		switch (__stateCache._destBlendFactor) {
 			
 			case Context3DBlendFactor.ONE: dest = GL.ONE;
 			case Context3DBlendFactor.ZERO: dest = GL.ZERO;

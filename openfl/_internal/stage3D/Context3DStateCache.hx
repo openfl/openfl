@@ -12,7 +12,7 @@ class Context3DStateCache {
 
     // blend
     private var _srcBlendFactor:Context3DBlendFactor;
-    private var _destlendFactor:Context3DBlendFactor;
+    private var _destBlendFactor:Context3DBlendFactor;
 
     // depth test
     private var _deptTestEnabled:Bool;
@@ -53,7 +53,7 @@ class Context3DStateCache {
     {
 
         _srcBlendFactor = null;
-        _destlendFactor = null;
+        _destBlendFactor = null;
         _deptTestEnabled = false;
         _depthTestMask = false;
         _depthTestCompareMode = null;
@@ -87,9 +87,9 @@ class Context3DStateCache {
 
     public function updateBlendDestFactor(factor:Context3DBlendFactor):Bool
     {
-        if (!disableCache && factor == _destlendFactor)
+        if (!disableCache && factor == _destBlendFactor)
             return false;
-        _destlendFactor = factor;
+        _destBlendFactor = factor;
         return true;
     }
 
