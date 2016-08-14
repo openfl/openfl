@@ -37,6 +37,8 @@ import haxe.Timer;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
+		uploadFromTypedArray (null);
+		
 	}
 	
 	
@@ -130,8 +132,6 @@ import haxe.Timer;
 		GLUtils.CheckGLError ();
 		
 		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
-		
-		__allocated = true;
 		GLUtils.CheckGLError ();
 		
 		GL.bindTexture (__textureTarget, null);

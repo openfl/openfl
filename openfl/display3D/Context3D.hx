@@ -1,6 +1,7 @@
 package openfl.display3D;
 
 
+import lime.graphics.opengl.ExtensionPackedDepthStencil;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
@@ -62,13 +63,16 @@ import openfl.profiler.Telemetry;
 	private var __backBufferAntiAlias:Int;
 	private var __backBufferEnableDepthAndStencil:Bool;
 	private var __backBufferWantsBestResolution:Bool;
-	private var __depthRenderBufferID:GLRenderbuffer;
+	private var __depthRenderBuffer:GLRenderbuffer;
+	private var __depthStencilRenderBuffer:GLRenderbuffer;
 	private var __fragmentConstants:Float32Array;
+	private var __framebuffer:GLFramebuffer;
 	private var __frameCount:Int;
 	private var __positionScale:Float32Array;
 	private var __program:Program3D;
 	private var __renderSession:RenderSession;
 	private var __renderToTexture:TextureBase;
+	private var __rttDepthAndStencil:Bool;
 	private var __samplerDirty:Int;
 	private var __samplerTextures:Vector<TextureBase>;
 	private var __samplerStates:Array<SamplerState>;
@@ -79,8 +83,8 @@ import openfl.profiler.Telemetry;
 	private var __stencilCompareMode:Context3DCompareMode;
 	private var __stencilRef:Int;
 	private var __stencilReadMask:Int;
-	private var __textureDepthBufferID:GLRenderbuffer;
-	private var __textureFrameBufferID:GLFramebuffer;
+	private var __stencilRenderBuffer:GLRenderbuffer;
+	private var __supportsPackedDepthStencil:Bool;
 	private var __vertexConstants:Float32Array;
 	
 	#if telemetry
@@ -122,10 +126,12 @@ import openfl.profiler.Telemetry;
 		__backBufferWantsBestResolution = false;
 		
 		__frameCount = 0;
+		__rttDepthAndStencil = false;
 		__samplerDirty = 0;
 		__stencilCompareMode = Context3DCompareMode.ALWAYS;
 		__stencilRef = 0;
 		__stencilReadMask = 0xFF;
+		__supportsPackedDepthStencil = __hasGLExtension ("GL_OES_packed_depth_stencil") || __hasGLExtension ("GL_EXT_packed_depth_stencil");
 		
 		__stats = new Vector<Int> (Context3DTelemetry.length);
 		__statsCache = new Vector<Int> (Context3DTelemetry.length);
@@ -158,15 +164,6 @@ import openfl.profiler.Telemetry;
 		#if telemetry
 		//Telemetry.Session.WriteValue (".platform.3d.driverinfo", driverInfo);
 		#end
-		
-		__depthRenderBufferID = GL.createRenderbuffer ();
-		GLUtils.CheckGLError ();
-		
-		__textureFrameBufferID = GL.createFramebuffer ();
-		GLUtils.CheckGLError ();
-		
-		__textureDepthBufferID = GL.createRenderbuffer ();
-		GLUtils.CheckGLError ();
 		
 		for (i in 0...__stats.length) {
 			
@@ -589,6 +586,7 @@ import openfl.profiler.Telemetry;
 		__renderToTexture = null;
 		__updateBackbufferViewport ();
 		__updateScissorRectangle ();
+		__updateDepthAndStencilState ();
 		
 		__positionScale[1] = 1.0;
 		
@@ -603,31 +601,106 @@ import openfl.profiler.Telemetry;
 	
 	public function setRenderToTexture (texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void {
 		
-		var texture2D:Texture = cast texture;
+		var width = 0;
+		var height = 0;
 		
-		if (texture2D == null) {
+		if (Std.is (texture, Texture)) {
+			
+			var texture2D:Texture = cast texture;
+			width = texture2D.__width;
+			height = texture2D.__height;
+			
+		} else if (Std.is (texture, RectangleTexture)) {
+			
+			var rectTexture:RectangleTexture = cast texture;
+			width = rectTexture.__width;
+			height = rectTexture.__height;
+			
+		} else {
 			
 			throw new Error ("Invalid texture");
 			
 		}
 		
-		if (!texture.__allocated) {
+		if (__framebuffer == null) {
 			
-			GL.bindTexture (GL.TEXTURE_2D, texture.__textureID);
-			texture.__allocated = true;
+			__framebuffer = GL.createFramebuffer ();
+			GLUtils.CheckGLError ();
 			
 		}
 		
-		GL.bindFramebuffer (GL.FRAMEBUFFER, __textureFrameBufferID);
+		GL.bindFramebuffer (GL.FRAMEBUFFER, __framebuffer);
+		GLUtils.CheckGLError ();
 		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
 		GLUtils.CheckGLError ();
 		
-		__setViewport (0, 0, texture2D.__width, texture2D.__height);
-		
-		var code = GL.checkFramebufferStatus (GL.FRAMEBUFFER);
-		if (code != GL.FRAMEBUFFER_COMPLETE) {
+		if (enableDepthAndStencil) {
 			
-			trace("Error: Context3D.setRenderToTexture status:${code} width:${texture2D.__width} height:${texture2D.__height}");
+			if (__supportsPackedDepthStencil) {
+				
+				if (__depthStencilRenderBuffer == null) {
+					
+					__depthStencilRenderBuffer = GL.createRenderbuffer ();
+					GLUtils.CheckGLError ();
+					
+				}
+				
+				GL.bindRenderbuffer (GL.RENDERBUFFER, __depthStencilRenderBuffer);
+				GLUtils.CheckGLError ();
+				GL.renderbufferStorage (GL.RENDERBUFFER, ExtensionPackedDepthStencil.DEPTH24_STENCIL8_EXT, width, height);
+				GLUtils.CheckGLError ();
+				
+				GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __depthStencilRenderBuffer);
+				GLUtils.CheckGLError ();
+				
+			} else {
+				
+				if (__depthRenderBuffer == null) {
+					
+					__depthRenderBuffer = GL.createRenderbuffer ();
+					GLUtils.CheckGLError ();
+					
+				}
+				
+				if (__stencilRenderBuffer == null) {
+					
+					__stencilRenderBuffer = GL.createRenderbuffer ();
+					GLUtils.CheckGLError ();
+					
+				}
+				
+				GL.bindRenderbuffer (GL.RENDERBUFFER, __depthRenderBuffer);
+				GLUtils.CheckGLError ();
+				GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, width, height);
+				GLUtils.CheckGLError ();
+				GL.bindRenderbuffer (GL.RENDERBUFFER, __stencilRenderBuffer);
+				GLUtils.CheckGLError ();
+				GL.renderbufferStorage (GL.RENDERBUFFER, GL.STENCIL_INDEX8, width, height);
+				GLUtils.CheckGLError ();
+				
+				GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, __depthRenderBuffer);
+				GLUtils.CheckGLError ();
+				GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.STENCIL_ATTACHMENT, GL.RENDERBUFFER, __stencilRenderBuffer);
+				GLUtils.CheckGLError ();
+				
+			}
+			
+			GL.bindRenderbuffer (GL.RENDERBUFFER, null);
+			GLUtils.CheckGLError ();
+			
+		}
+		
+		__setViewport (0, 0, width, height);
+		
+		if (enableErrorChecking) {
+			
+			var code = GL.checkFramebufferStatus (GL.FRAMEBUFFER);
+			
+			if (code != GL.FRAMEBUFFER_COMPLETE) {
+				
+				trace ("Error: Context3D.setRenderToTexture status:${code} width:${texture2D.__width} height:${texture2D.__height}");
+				
+			}
 			
 		}
 		
@@ -640,7 +713,9 @@ import openfl.profiler.Telemetry;
 		}
 		
 		__renderToTexture = texture;
+		__rttDepthAndStencil = enableDepthAndStencil;
 		__updateScissorRectangle ();
+		__updateDepthAndStencilState ();
 		
 	}
 	
@@ -934,6 +1009,13 @@ import openfl.profiler.Telemetry;
 	}
 	
 	
+	private function __hasGLExtension (name:String):Bool {
+		
+		return (GL.getSupportedExtensions ().indexOf (name) != -1);
+		
+	}
+	
+	
 	private function __setViewport (originX:Int, originY:Int, width:Int, height:Int):Void {
 		
 		if (__stateCache.updateViewport (originX, originY, width, height)) {
@@ -1028,6 +1110,28 @@ import openfl.profiler.Telemetry;
 		
 		__stats[stat] -= value;
 		return __stats [stat];
+		
+	}
+	
+	private function __updateDepthAndStencilState ():Void {
+		
+		var depthAndStencil = __renderToTexture != null ? __rttDepthAndStencil : __backBufferEnableDepthAndStencil;
+		
+		if (depthAndStencil) {
+			
+			GL.enable (GL.DEPTH_TEST);
+			GLUtils.CheckGLError ();
+			GL.enable (GL.STENCIL_TEST);
+			GLUtils.CheckGLError ();
+			
+		} else {
+			
+			GL.disable (GL.DEPTH_TEST);
+			GLUtils.CheckGLError ();
+			GL.disable (GL.STENCIL_TEST);
+			GLUtils.CheckGLError ();
+			
+		}
 		
 	}
 	
