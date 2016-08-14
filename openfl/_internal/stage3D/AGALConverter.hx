@@ -819,7 +819,7 @@ class AGALConverter {
 		glsl.add("// AGAL " + ((programType == ProgramType.Vertex) ? "vertex" : "fragment") + " shader\n");
 		glsl.add("#version " + glslVersion + "\n");
 		// Required to set the default precision of vectors
-		glsl.add("precision mediump float;\n");
+		glsl.add("precision highp float;\n");
 		glsl.add(map.ToGLSL(false));
 		if (programType == ProgramType.Vertex) {
 			// this is needed for flipping render textures upside down
