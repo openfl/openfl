@@ -328,7 +328,9 @@ import openfl.profiler.Telemetry;
 	
 	public function setBlendFactors (sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void {
 		
-		if (__stateCache.updateBlendSrcFactor (sourceFactor) || __stateCache.updateBlendDestFactor (destinationFactor)) {
+		var updateSrc = __stateCache.updateBlendSrcFactor (sourceFactor);
+		var updateDest = __stateCache.updateBlendDestFactor (destinationFactor);
+		if (updateSrc || updateDest) {
 			
 			__updateBlendFactors ();
 			
