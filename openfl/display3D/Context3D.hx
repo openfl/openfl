@@ -1080,7 +1080,7 @@ import openfl.profiler.Telemetry;
 	}
 	
 	
-	private function __updateScissorRectangle () {
+	private function __updateScissorRectangle ():Void {
 		
 		if (__scissorRectangle == null) {
 			
