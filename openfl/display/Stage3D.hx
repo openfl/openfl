@@ -31,8 +31,8 @@ class Stage3D extends EventDispatcher {
 	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
-	public var x:Float;
-	public var y:Float;
+	public var x (default, set):Float;
+	public var y (default, set):Float;
 	
 	private var __contextRequested:Bool;
 	
@@ -145,10 +145,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
-			// TODO: Better blend mode fix
-			
-			context3D.setBlendFactors (Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-			
+			__resetContext3DStates ();
 			//DOMStage3D.render (this, renderSession);
 			
 		}
@@ -175,10 +172,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
-			// TODO: Better blend mode fix
-			
-			context3D.setBlendFactors (Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
-			
+			__resetContext3DStates ();
 			GLStage3D.render (this, renderSession);
 			
 		}
@@ -196,6 +190,34 @@ class Stage3D extends EventDispatcher {
 			
 		}
 		#end
+		
+	}
+	
+	
+	private function __resetContext3DStates ():Void {
+		
+		// TODO: Better blend mode fix
+		context3D.setBlendFactors (Context3DBlendFactor.ONE, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA);
+		// TODO: Better viewport fix
+		context3D.__updateBackbufferViewport ();
+		
+	}
+	
+	
+	private function set_x (value:Float):Float {
+		
+		this.x = value;
+		context3D.__updateBackbufferViewport ();
+		return value;
+		
+	}
+	
+	
+	private function set_y (value:Float):Float {
+		
+		this.y = value;
+		context3D.__updateBackbufferViewport ();
+		return value;
 		
 	}
 	

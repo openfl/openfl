@@ -217,7 +217,7 @@ import openfl.profiler.Telemetry;
 	
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false, wantsBestResolutionOnBrowserZoom:Bool = false):Void {
 		
-		__setViewport (0, 0, width, height);
+		__updateBackbufferViewport ();
 		
 		backBufferWidth = width;
 		backBufferHeight = height;
@@ -627,7 +627,7 @@ import openfl.profiler.Telemetry;
 		GLUtils.CheckGLError ();
 		
 		__renderToTexture = null;
-		__setViewport (0, 0, backBufferWidth, backBufferHeight);
+		__updateBackbufferViewport ();
 		__updateScissorRectangle ();
 		
 		__positionScale[1] = 1.0;
@@ -1113,6 +1113,17 @@ import openfl.profiler.Telemetry;
 			Std.int (__scissorRectangle.height)
 		);
 		GLUtils.CheckGLError ();
+		
+	}
+	
+	
+	private function __updateBackbufferViewport ():Void {
+		
+		if (__renderToTexture == null) {
+			
+			__setViewport (Std.int (__stage3D.x), Std.int (__stage3D.y), backBufferWidth, backBufferHeight);
+			
+		}
 		
 	}
 	
