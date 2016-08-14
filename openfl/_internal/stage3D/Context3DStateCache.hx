@@ -76,9 +76,7 @@ class Context3DStateCache {
         }
     }
 
-    //[inline]
-
-    public inline function updateBlendSrcFactor(factor:Context3DBlendFactor):Bool
+    public function updateBlendSrcFactor(factor:Context3DBlendFactor):Bool
     {
         if (disableCache) return true;
 
@@ -88,7 +86,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateBlendDestFactor(factor:Context3DBlendFactor):Bool
+    public function updateBlendDestFactor(factor:Context3DBlendFactor):Bool
     {
         if (disableCache) return true;
 
@@ -98,7 +96,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateDepthTestEnabled(test:Bool):Bool
+    public function updateDepthTestEnabled(test:Bool):Bool
     {
         if (disableCache) return true;
 
@@ -108,7 +106,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateDepthTestMask(mask:Bool):Bool
+    public function updateDepthTestMask(mask:Bool):Bool
     {
         if (disableCache) return true;
 
@@ -118,7 +116,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateDepthCompareMode(mode:Context3DCompareMode):Bool
+    public function updateDepthCompareMode(mode:Context3DCompareMode):Bool
     {
         if (disableCache) return true;
 
@@ -128,7 +126,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateProgram3D(program3d:Program3D):Bool
+    public function updateProgram3D(program3d:Program3D):Bool
     {
         if (disableCache) return true;
 
@@ -138,7 +136,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateCullingMode(cullMode:String):Bool
+    public function updateCullingMode(cullMode:String):Bool
     {
         if (disableCache) return true;
 
@@ -148,7 +146,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateActiveTextureSample(texture:Int):Bool
+    public function updateActiveTextureSample(texture:Int):Bool
     {
         if (disableCache) return true;
 
@@ -158,7 +156,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateActiveVertexArray(vertexArray:Int):Bool
+    public function updateActiveVertexArray(vertexArray:Int):Bool
     {
         if (disableCache) return true;
 
@@ -168,7 +166,7 @@ class Context3DStateCache {
         return true;
     }
 
-    public inline function updateViewport(originX:Int, originY:Int, width:Int, height:Int):Bool
+    public function updateViewport(originX:Int, originY:Int, width:Int, height:Int):Bool
     {
         if (disableCache) return true;
 
