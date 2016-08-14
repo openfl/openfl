@@ -248,8 +248,7 @@ private class SamplerReg {
 		var lodBias:Float = ((b << 24) >> 24) / 8.0;
 
 		var maxAniso:Float = 0.0;
-		// create sampler state and Intern to allow for faster equality comparisons
-		return new SamplerState(minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso).intern();
+		return new SamplerState(minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso);
 	}
 }
 

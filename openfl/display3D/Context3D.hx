@@ -111,7 +111,7 @@ import openfl.profiler.Telemetry;
 		
 		for (i in 0 ... Context3D.MAX_SAMPLERS) {
 			
-			__samplerStates[i] = new SamplerState (GL.LINEAR, GL.LINEAR, GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE).intern ();
+			__samplerStates[i] = new SamplerState (GL.LINEAR, GL.LINEAR, GL.CLAMP_TO_EDGE, GL.CLAMP_TO_EDGE);
 			
 		}
 		
