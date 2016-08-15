@@ -85,10 +85,21 @@ class VertexBuffer3D {
 	
 	public function uploadFromVector (data:Vector<Float>, startVertex:Int, numVertices:Int):Void {
 		
-		var offset = startVertex * __stride;
-		var length = numVertices * __vertexSize;
+		// TODO: Optimize more
 		
-		uploadFromTypedArray (new Float32Array (data, offset, length));
+		var start = startVertex * __vertexSize;
+		var count = numVertices * __vertexSize;
+		var length = start + count;
+		
+		var buffer = new Float32Array (count);
+		
+		for (i in start...length) {
+			
+			buffer[i - start] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (buffer);
 		
 	}
 	

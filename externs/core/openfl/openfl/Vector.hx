@@ -479,7 +479,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = end - pos;
-		vectorData.fixed = true;
+		vectorData.fixed = this.fixed;
 		#if cpp
 		vectorData.data = this.data.slice (pos, end);
 		#else
@@ -594,7 +594,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = a.length;
-		vectorData.fixed = true;
+		vectorData.fixed = false;
 		#if cpp
 		vectorData.data = cast a.copy ();
 		#else
@@ -642,11 +642,11 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
+	/*@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = value.length;
-		vectorData.fixed = true;
+		vectorData.fixed = false;
 		#if cpp
 		vectorData.data = value.copy ();
 		#else
@@ -669,7 +669,7 @@ abstract Vector<T>(VectorData<T>) {
 		return value;
 		#end
 		
-	}
+	}*/
 	
 	
 	@:noCompletion @:dox(hide) @:from public static inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
@@ -1247,7 +1247,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
+	/*@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		return VectorData.ofArray (value);
 		
@@ -1266,7 +1266,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		return array;
 		
-	}
+	}*/
 	
 	
 	@:noCompletion @:dox(hide) @:from public static inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {

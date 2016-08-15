@@ -642,7 +642,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
+	/*@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		var vectorData = new VectorData<T> ();
 		vectorData.length = value.length;
@@ -669,7 +669,7 @@ abstract Vector<T>(VectorData<T>) {
 		return value;
 		#end
 		
-	}
+	}*/
 	
 	
 	@:noCompletion @:dox(hide) @:from public static inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {
@@ -1247,7 +1247,7 @@ abstract Vector<T>(VectorData<T>) {
 	}
 	
 	
-	@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
+	/*@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
 		
 		return VectorData.ofArray (value);
 		
@@ -1266,7 +1266,7 @@ abstract Vector<T>(VectorData<T>) {
 		
 		return array;
 		
-	}
+	}*/
 	
 	
 	@:noCompletion @:dox(hide) @:from public static inline function fromHaxeVector<T> (value:haxe.ds.Vector<T>):Vector<T> {

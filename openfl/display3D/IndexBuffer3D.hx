@@ -79,7 +79,18 @@ import openfl.Vector;
 	
 	public function uploadFromVector (data:Vector<UInt>, startOffset:Int, count:Int):Void {
 		
-		uploadFromTypedArray (new Int16Array (data, startOffset * 2, count));
+		// TODO: Optimize more
+		
+		var length = startOffset + count;
+		var buffer = new Int16Array (count);
+		
+		for (i in startOffset...length) {
+			
+			buffer[i - startOffset] = data[i];
+			
+		}
+		
+		uploadFromTypedArray (buffer);
 		
 	}
 	
