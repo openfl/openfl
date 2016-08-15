@@ -11,8 +11,8 @@ import openfl.Lib;
 	
 	
 	public static var cursor (get, set):String;
-	public static var supportsCursor (default, null):Bool = #if desktop true; #else false; #end
-	public static var supportsNativeCursor (default, null):Bool = #if desktop true; #else false; #end
+	public static var supportsCursor (default, null):Bool = #if !mobile true; #else false; #end
+	public static var supportsNativeCursor (default, null):Bool = #if !mobile true; #else false; #end
 	
 	private static var __cursor:String = MouseCursor.AUTO;
 	
