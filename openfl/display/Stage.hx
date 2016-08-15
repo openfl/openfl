@@ -25,7 +25,7 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.Mouse;
+import lime.ui.Mouse in LimeMouse;
 import lime.ui.Window;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
@@ -51,6 +51,8 @@ import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -66,6 +68,7 @@ import js.Browser;
 @:access(openfl.events.Event)
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
+@:access(openfl.ui.Mouse)
 
 
 class Stage extends DisplayObjectContainer implements IModule {
@@ -1111,32 +1114,36 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var cursor = null;
-		
-		if (__mouseDownLeft != null) {
+		if (Mouse.__cursor == MouseCursor.AUTO) {
 			
-			cursor = __mouseDownLeft.__getCursor ();
+			var cursor = null;
 			
-		} else {
-			
-			for (target in stack) {
+			if (__mouseDownLeft != null) {
 				
-				cursor = target.__getCursor ();
+				cursor = __mouseDownLeft.__getCursor ();
 				
-				if (cursor != null) {
+			} else {
+				
+				for (target in stack) {
 					
-					Mouse.cursor = cursor;
-					break;
+					cursor = target.__getCursor ();
+					
+					if (cursor != null) {
+						
+						LimeMouse.cursor = cursor;
+						break;
+						
+					}
 					
 				}
 				
 			}
 			
-		}
-		
-		if (cursor == null) {
-			
-			Mouse.cursor = ARROW;
+			if (cursor == null) {
+				
+				LimeMouse.cursor = ARROW;
+				
+			}
 			
 		}
 		

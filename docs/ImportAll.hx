@@ -187,6 +187,7 @@ import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 import openfl.ui.Multitouch;
 import openfl.ui.MultitouchInputMode;
 import openfl.utils.AGALMiniAssembler;
