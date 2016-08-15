@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-@:enum abstract BitmapDataChannel(Int) from Int to Int {
+@:enum abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt {
 	
 	public var ALPHA = 8;
 	public var BLUE = 4;
