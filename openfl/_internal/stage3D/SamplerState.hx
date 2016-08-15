@@ -4,16 +4,12 @@ package openfl._internal.stage3D;
 class SamplerState {
 	
 	
-	private static var __interns = new List<SamplerState> ();
-	
-	public var lodBias (default, null):Float;
-	public var magFilter (default, null):Int;
-	public var maxAniso (default, null):Float;
-	public var minFilter (default, null):Int;
-	public var wrapModeS (default, null):Int;
-	public var wrapModeT (default, null):Int;
-	
-	private var __isInterned:Bool;
+	public var lodBias:Float;
+	public var magFilter:Int;
+	public var maxAniso:Float;
+	public var minFilter:Int;
+	public var wrapModeS:Int;
+	public var wrapModeT:Int;
 	
 	
 	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0) {
@@ -24,8 +20,6 @@ class SamplerState {
 		this.wrapModeT = wrapModeT;
 		this.lodBias = lodBias;
 		this.maxAniso = maxAniso;
-		
-		__isInterned = false;
 		
 	}
 	
@@ -50,40 +44,6 @@ class SamplerState {
 				this.wrapModeT == other.wrapModeT &&
 				this.lodBias == other.lodBias &&
 				maxAniso == other.maxAniso;
-		
-	}
-	
-	
-	public function intern ():SamplerState {
-		
-		if (__isInterned) return this;
-		
-		for (i in __interns) {
-			
-			if (i.equals (this)) {
-				
-				return i;
-				
-			}
-			
-		}
-		
-		__interns.add(this);
-		__isInterned = true;
-		return this;
-		
-	}
-	
-	public function toString ():String {
-		
-		var result:String = "[SamplerState " +
-							" min:" + minFilter +
-							" mag:" + magFilter +
-							" wrapS:" + wrapModeS +
-							" wrapT:" + wrapModeT +
-							" bias:" + lodBias +
-							" aniso:" + maxAniso + "]]";
-		return result;
 		
 	}
 	

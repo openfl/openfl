@@ -1,5 +1,8 @@
 package openfl._internal.stage3D;
 
+import openfl.display3D.Context3DBlendFactor;
+import openfl.display3D.Context3DCompareMode;
+import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.Vector;
 
@@ -8,19 +11,19 @@ class Context3DStateCache {
     private static inline var disableCache:Bool = true;
 
     // blend
-    private var _srcBlendFactor:String;
-    private var _destlendFactor:String;
+    private var _srcBlendFactor:Context3DBlendFactor;
+    private var _destBlendFactor:Context3DBlendFactor;
 
     // depth test
     private var _deptTestEnabled:Bool;
     private var _depthTestMask:Bool;
-    private var _depthTestCompareMode:String;
+    private var _depthTestCompareMode:Context3DCompareMode;
 
     // program
     private var _program:Program3D;
 
     // culling
-    private var _cullingMode:String;
+    private var _cullingMode:Context3DTriangleFace;
 
     // texture
     private var _activeTexture:Int;
@@ -49,13 +52,13 @@ class Context3DStateCache {
     public function clearSettings():Void
     {
 
-        _srcBlendFactor = "";
-        _destlendFactor = "";
+        _srcBlendFactor = null;
+        _destBlendFactor = null;
         _deptTestEnabled = false;
         _depthTestMask = false;
-        _depthTestCompareMode = "";
+        _depthTestCompareMode = null;
         _program = null;
-        _cullingMode = "";
+        _cullingMode = null;
         _activeTexture = -1;
         _activeVertexArray = -1;
         _viewportOriginX = -1;
@@ -74,103 +77,81 @@ class Context3DStateCache {
         }
     }
 
-    //[inline]
-
-    public inline function updateBlendSrcFactor(factor:String):Bool
+    public function updateBlendSrcFactor(factor:Context3DBlendFactor):Bool
     {
-        if (disableCache) return true;
-
-        if (factor == _srcBlendFactor)
+        if (!disableCache && factor == _srcBlendFactor)
             return false;
         _srcBlendFactor = factor;
         return true;
     }
 
-    public inline function updateBlendDestFactor(factor:String):Bool
+    public function updateBlendDestFactor(factor:Context3DBlendFactor):Bool
     {
-        if (disableCache) return true;
-
-        if (factor == _destlendFactor)
+        if (!disableCache && factor == _destBlendFactor)
             return false;
-        _destlendFactor = factor;
+        _destBlendFactor = factor;
         return true;
     }
 
-    public inline function updateDepthTestEnabled(test:Bool):Bool
+    public function updateDepthTestEnabled(test:Bool):Bool
     {
-        if (disableCache) return true;
-
-        if (test == _deptTestEnabled)
+        if (!disableCache && test == _deptTestEnabled)
             return false;
         _deptTestEnabled = test;
         return true;
     }
 
-    public inline function updateDepthTestMask(mask:Bool):Bool
+    public function updateDepthTestMask(mask:Bool):Bool
     {
-        if (disableCache) return true;
-
-        if (mask == _depthTestMask)
+        if (!disableCache && mask == _depthTestMask)
             return false;
         _depthTestMask = mask;
         return true;
     }
 
-    public inline function updateDepthCompareMode(mode:String):Bool
+    public function updateDepthCompareMode(mode:Context3DCompareMode):Bool
     {
-        if (disableCache) return true;
-
-        if (mode == _depthTestCompareMode)
+        if (!disableCache && mode == _depthTestCompareMode)
             return false;
         _depthTestCompareMode = mode;
         return true;
     }
 
-    public inline function updateProgram3D(program3d:Program3D):Bool
+    public function updateProgram3D(program3d:Program3D):Bool
     {
-        if (disableCache) return true;
-
-        if (program3d == _program)
+        if (!disableCache && program3d == _program)
             return false;
         _program = program3d;
         return true;
     }
 
-    public inline function updateCullingMode(cullMode:String):Bool
+    public function updateCullingMode(cullMode:Context3DTriangleFace):Bool
     {
-        if (disableCache) return true;
-
-        if (cullMode == _cullingMode)
+        if (!disableCache && cullMode == _cullingMode)
             return false;
         _cullingMode = cullMode;
         return true;
     }
 
-    public inline function updateActiveTextureSample(texture:Int):Bool
+    public function updateActiveTextureSample(texture:Int):Bool
     {
-        if (disableCache) return true;
-
-        if (texture == _activeTexture)
+        if (!disableCache && texture == _activeTexture)
             return false;
         _activeTexture = texture;
         return true;
     }
 
-    public inline function updateActiveVertexArray(vertexArray:Int):Bool
+    public function updateActiveVertexArray(vertexArray:Int):Bool
     {
-        if (disableCache) return true;
-
-        if (vertexArray == _activeVertexArray)
+        if (!disableCache && vertexArray == _activeVertexArray)
             return false;
         _activeVertexArray = vertexArray;
         return true;
     }
 
-    public inline function updateViewport(originX:Int, originY:Int, width:Int, height:Int):Bool
+    public function updateViewport(originX:Int, originY:Int, width:Int, height:Int):Bool
     {
-        if (disableCache) return true;
-
-        if (_viewportOriginX == originX && _viewportOriginY == originY && _viewportWidth == width && _viewportHeight == height)
+        if (!disableCache && _viewportOriginX == originX && _viewportOriginY == originY && _viewportWidth == width && _viewportHeight == height)
             return false;
 
         _viewportOriginX = originX;

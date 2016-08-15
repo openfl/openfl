@@ -451,15 +451,16 @@ private class Uniform {
 	
 	public function flush ():Void {
 		
+		var index:Int = regIndex * 4;
 		switch (type) {
 			
-			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, false, __getRegisters (regIndex * 4, size * 2 * 2));
-			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, false, __getRegisters (regIndex * 4, size * 3 * 3));
-			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, false, __getRegisters (regIndex * 4, size * 4 * 4));
-			case GL.FLOAT_VEC2: GL.uniform2fv (location, __getRegisters (regIndex * 4, regCount * 2));
-			case GL.FLOAT_VEC3: GL.uniform3fv (location, __getRegisters (regIndex * 4, regCount * 3));
-			case GL.FLOAT_VEC4: GL.uniform4fv (location, __getRegisters (regIndex * 4, regCount * 4));
-			default: GL.uniform4fv (location, __getRegisters (regIndex * 4, regCount * 4));
+			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, false, __getRegisters (index, size * 2 * 2));
+			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, false, __getRegisters (index, size * 3 * 3));
+			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, false, __getRegisters (index, size * 4 * 4));
+			case GL.FLOAT_VEC2: GL.uniform2fv (location, __getRegisters (index, regCount * 2));
+			case GL.FLOAT_VEC3: GL.uniform3fv (location, __getRegisters (index, regCount * 3));
+			case GL.FLOAT_VEC4: GL.uniform4fv (location, __getRegisters (index, regCount * 4));
+			default: GL.uniform4fv (location, __getRegisters (index, regCount * 4));
 			
 		}
 		
