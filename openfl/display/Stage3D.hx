@@ -47,6 +47,9 @@ class Stage3D extends EventDispatcher {
 		
 		super ();
 		
+		this.x = 0;
+		this.y = 0;
+		
 		visible = true;
 		
 	}
@@ -207,7 +210,13 @@ class Stage3D extends EventDispatcher {
 	private function set_x (value:Float):Float {
 		
 		this.x = value;
-		context3D.__updateBackbufferViewport ();
+		
+		if (context3D != null) {
+			
+			context3D.__updateBackbufferViewport ();
+			
+		}
+		
 		return value;
 		
 	}
@@ -216,7 +225,13 @@ class Stage3D extends EventDispatcher {
 	private function set_y (value:Float):Float {
 		
 		this.y = value;
-		context3D.__updateBackbufferViewport ();
+		
+		if (context3D != null) {
+			
+			context3D.__updateBackbufferViewport ();
+			
+		}
+		
 		return value;
 		
 	}
