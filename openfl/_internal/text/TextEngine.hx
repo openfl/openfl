@@ -598,6 +598,7 @@ class TextEngine {
 		
 		var spaceWidth = 0.0;
 		var previousSpaceIndex = 0;
+		var hyphenIndex = text.indexOf ("-");
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = text.indexOf ("\n");
 		
@@ -767,9 +768,9 @@ class TextEngine {
 		var wrap;
 		
 		while (textIndex < text.length) {
-			
-			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
-				
+
+			if ((breakIndex > -1) && ( (spaceIndex == -1 || breakIndex < spaceIndex ) && (hyphenIndex == -1 || hyphenIndex < spaceIndex)) && (formatRange.end >= breakIndex)) {
+
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
@@ -805,17 +806,18 @@ class TextEngine {
 					lineFormat = formatRange.format;
 					
 				}
-				
-			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
-				
+
+			} else if ((formatRange.end >= spaceIndex && spaceIndex > -1) || (formatRange.end >= hyphenIndex && hyphenIndex > -1)) {
+
 				layoutGroup = null;
 				wrap = false;
 				
 				while (true) {
 					
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
-					
-					advances = getAdvances (text, textIndex, spaceIndex);
+					if (hyphenIndex == -1) hyphenIndex = formatRange.end + 1;
+
+					advances = getAdvances (text, textIndex, Std.int(Math.min(spaceIndex, hyphenIndex)));
 					widthValue = getAdvancesWidth (advances);
 					
 					if (wordWrap) {
@@ -872,8 +874,8 @@ class TextEngine {
 							}
 							
 						}
-						
-						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, Std.int(Math.min(spaceIndex, hyphenIndex + 1)));
 						layoutGroup.advances = advances;
 						layoutGroup.offsetX = offsetX;
 						layoutGroup.ascent = ascent;
@@ -897,15 +899,26 @@ class TextEngine {
 							if (formatRange.format.align != JUSTIFY) {
 								
 								layoutGroup.endIndex = spaceIndex;
-								
+
+							}
+
+							layoutGroup.advances.push (spaceWidth);
+							marginRight += spaceWidth;
+
+						} else if (layoutGroup != null && textIndex == hyphenIndex) {
+
+							if (formatRange.format.align != JUSTIFY) {
+
+								layoutGroup.endIndex = hyphenIndex;
+
 							}
 							
 							layoutGroup.advances.push (spaceWidth);
 							marginRight += spaceWidth;
 							
 						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
-							
-							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
+
+							layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, Std.int(Math.min(spaceIndex, hyphenIndex + 1)));
 							layoutGroup.advances = advances;
 							layoutGroup.offsetX = offsetX;
 							layoutGroup.ascent = ascent;
@@ -921,8 +934,8 @@ class TextEngine {
 							marginRight = spaceWidth;
 							
 						} else {
-							
-							layoutGroup.endIndex = spaceIndex;
+
+							layoutGroup.endIndex = Std.int(Math.min(spaceIndex, hyphenIndex));
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
 							layoutGroup.width += marginRight + widthValue;
 							
@@ -934,21 +947,25 @@ class TextEngine {
 						offsetX += widthValue + spaceWidth;
 						
 					}
-					
-					textIndex = spaceIndex + 1;
-					
-					previousSpaceIndex = spaceIndex;
+
+					textIndex = Std.int(Math.min(spaceIndex, hyphenIndex)) + 1;
+
+					previousSpaceIndex = Std.int(Math.min(spaceIndex, hyphenIndex));
 					spaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
-					
+					hyphenIndex = text.indexOf ("-", previousSpaceIndex + 1);
+
 					if (formatRange.end <= previousSpaceIndex) {
 						
 						layoutGroup = null;
 						nextFormatRange ();
 						
 					}
-					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
+
+					if ((spaceIndex > breakIndex && breakIndex > -1 && hyphenIndex > breakIndex && hyphenIndex > -1)
+						|| textIndex > text.length
+						|| (spaceIndex > formatRange.end && hyphenIndex > formatRange.end)
+						|| (spaceIndex == -1 && hyphenIndex == -1 && breakIndex > -1)) {
+
 						break;
 						
 					}
