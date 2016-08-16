@@ -77,7 +77,7 @@ import openfl.geom.Rectangle;
 			
 			var horizontal_pass = pass % 2 == 0;
 			var blur = horizontal_pass ? blurX : blurY;
-			var fetch_count = Math.min(blur, MAXIMUM_FETCH_COUNT);
+			var fetch_count = Math.min(Math.ceil(blur), MAXIMUM_FETCH_COUNT);
 			var pass_width = horizontal_pass ? blur - 1 : 0;
 			var pass_height = horizontal_pass ? 0 : blur - 1;
 			__dropShadowShader.uFetchCountInverseFetchCount[0] = fetch_count;
