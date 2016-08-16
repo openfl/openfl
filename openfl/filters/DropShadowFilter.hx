@@ -55,12 +55,14 @@ import openfl.geom.Rectangle;
 	
 	private override function __growBounds (rect:Rectangle):Void {
 		
+		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
+		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
 		var sX = distance * Math.cos (angle * Math.PI / 180);
 		var sY = distance * Math.sin (angle * Math.PI / 180);
-		rect.x += -(Math.abs (sX) + (blurX * 0.5)) * quality;
-		rect.y += -(Math.abs (sY) + (blurY * 0.5)) * quality;
-		rect.width += (sX + blurX) * quality;
-		rect.height += (sY + blurY)  * quality;
+		rect.x -= Math.abs (sX) + halfBlurX;
+		rect.y -= Math.abs (sY) + halfBlurY;
+		rect.width += 2.0 * (Math.abs (sX) + halfBlurX);
+		rect.height += 2.0 * (Math.abs (sY) + halfBlurY);
 		
 	}
 	
