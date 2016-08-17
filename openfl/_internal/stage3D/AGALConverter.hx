@@ -1,12 +1,12 @@
 package openfl._internal.stage3D;
 
+
+import haxe.Int64;
+import lime.graphics.opengl.GL;
 import openfl._internal.stage3D.SamplerState;
 import openfl.utils.ByteArray;
 import openfl.errors.IllegalOperationError;
-import openfl.errors.IllegalOperationError;
-import openfl.gl.GL;
-
-import haxe.Int64;
+import openfl.utils.Endian;
 
 
 @:enum
