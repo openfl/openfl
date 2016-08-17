@@ -1,4 +1,5 @@
 package openfl.display3D;
+import openfl._internal.utils.NullUtils;
 
 
 @:enum abstract Context3DMipFilter(Null<Int>) {
@@ -32,5 +33,21 @@ package openfl.display3D;
 		}
 		
 	}
+	
+	#if cs
+	@:noCompletion @:op(A == B) private static function equals (a:Context3DMipFilter, b:Context3DMipFilter):Bool {
+		
+		return NullUtils.valueEquals (a, b, Int);
+		
+	}
+	#end
+	
+	#if cs
+	@:noCompletion @:op(A != B) private static function notEquals (a:Context3DMipFilter, b:Context3DMipFilter):Bool {
+		
+		return !equals (a, b);
+		
+	}
+	#end
 	
 }

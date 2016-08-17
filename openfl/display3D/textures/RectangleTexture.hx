@@ -29,12 +29,18 @@ import openfl.utils.ByteArray;
 		//__format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
+		uploadFromTypedArray (null);
+		
 	}
 	
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
+		if (source == null) return;
+		
 		var image = source.image;
+		
+		if (image == null) return;
 		
 		if (!image.premultiplied && image.transparent) {
 			
@@ -76,8 +82,6 @@ import openfl.utils.ByteArray;
 		GLUtils.CheckGLError ();
 		
 		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
-		
-		__allocated = true;
 		GLUtils.CheckGLError ();
 		
 		GL.bindTexture (__textureTarget, null);

@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import haxe.ds.Vector;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -12,6 +11,7 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
@@ -384,37 +384,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
 		swap = null;
-		
-	}
-	
-	
-	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
-		
-		if (event.target == null) {
-			
-			event.target = this;
-			
-		}
-		
-		var result = super.__broadcast (event, notifyChilden);
-		
-		if (!event.__isCanceled && notifyChilden) {
-			
-			for (child in __children) {
-				
-				child.__broadcast (event, true);
-				
-				if (event.__isCanceled) {
-					
-					return true;
-					
-				}
-				
-			}
-			
-		}
-		
-		return result;
 		
 	}
 	

@@ -7,6 +7,7 @@ import openfl._internal.renderer.opengl.GLStage3D;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.OpenGLView;
 import openfl.display3D.Context3D;
+import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
 import openfl.events.ErrorEvent;
@@ -30,8 +31,8 @@ class Stage3D extends EventDispatcher {
 	
 	public var context3D (default, null):Context3D;
 	public var visible:Bool;
-	public var x:Float;
-	public var y:Float;
+	public var x (default, set):Float;
+	public var y (default, set):Float;
 	
 	private var __contextRequested:Bool;
 	
@@ -45,6 +46,9 @@ class Stage3D extends EventDispatcher {
 	public function new () {
 		
 		super ();
+		
+		this.x = 0;
+		this.y = 0;
 		
 		visible = true;
 		
@@ -142,11 +146,12 @@ class Stage3D extends EventDispatcher {
 			
 		}
 		
-		//if (context3D != null) {
-			//
+		if (context3D != null) {
+			
+			__resetContext3DStates ();
 			//DOMStage3D.render (this, renderSession);
-			//
-		//}
+			
+		}
 		
 	}
 	
@@ -170,6 +175,7 @@ class Stage3D extends EventDispatcher {
 		
 		if (context3D != null) {
 			
+			__resetContext3DStates ();
 			GLStage3D.render (this, renderSession);
 			
 		}
@@ -187,6 +193,46 @@ class Stage3D extends EventDispatcher {
 			
 		}
 		#end
+		
+	}
+	
+	
+	private function __resetContext3DStates ():Void {
+		
+		// TODO: Better blend mode fix
+		context3D.__updateBlendFactors ();
+		// TODO: Better viewport fix
+		context3D.__updateBackbufferViewport ();
+		
+	}
+	
+	
+	private function set_x (value:Float):Float {
+		
+		this.x = value;
+		
+		if (context3D != null) {
+			
+			context3D.__updateBackbufferViewport ();
+			
+		}
+		
+		return value;
+		
+	}
+	
+	
+	private function set_y (value:Float):Float {
+		
+		this.y = value;
+		
+		if (context3D != null) {
+			
+			context3D.__updateBackbufferViewport ();
+			
+		}
+		
+		return value;
 		
 	}
 	

@@ -23,7 +23,7 @@ class Matrix3D {
 			
 		} else {
 			
-			rawData = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ];
+			rawData = new Vector ([ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]);
 			
 		}
 		
@@ -115,7 +115,7 @@ class Matrix3D {
 	
 	public function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
-		this.append (new Matrix3D ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ]));
+		this.append (new Matrix3D (new Vector ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ])));
 		
 	}
 	
@@ -360,14 +360,14 @@ class Matrix3D {
 		var c = Math.cos (theta);
 		var s = Math.sin (theta);
 		
-		return new Matrix3D ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, x, y, 0, 1 ]);
+		return new Matrix3D (new Vector ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, x, y, 0, 1 ]));
 		
 	}
 	
 	
 	public static function createABCD (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Matrix3D {
 		
-		return new Matrix3D ([ a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, tx, ty, 0, 1 ]);
+		return new Matrix3D (new Vector ([ a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, tx, ty, 0, 1 ]));
 		
 	}
 	
@@ -378,7 +378,7 @@ class Matrix3D {
 		var sy = 1.0 / (y1 - y0);
 		var sz = 1.0 / (zFar - zNear);
 		
-		return new Matrix3D ([ 2.0 * sx, 0, 0, 0, 0, 2.0 * sy, 0, 0, 0, 0, -2.0 * sz, 0, -(x0 + x1) * sx, -(y0 + y1) * sy, -(zNear + zFar) * sz, 1 ]);
+		return new Matrix3D (new Vector ([ 2.0 * sx, 0, 0, 0, 0, 2.0 * sy, 0, 0, 0, 0, -2.0 * sz, 0, -(x0 + x1) * sx, -(y0 + y1) * sy, -(zNear + zFar) * sz, 1 ]));
 		
 	}
 	
@@ -520,7 +520,7 @@ class Matrix3D {
 	
 	public function identity ():Void {
 		
-		rawData = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ];
+		rawData = new Vector ([ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]);
 		
 	}
 	
@@ -741,7 +741,7 @@ class Matrix3D {
 	
 	public function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
-		this.prepend (new Matrix3D ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
+		this.prepend (new Matrix3D (new Vector ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0])));
 		
 	}
 	
@@ -811,7 +811,7 @@ class Matrix3D {
 				var z = components[1].z;
 				var w = components[1].w;
 				
-				if (Type.enumEq(orientationStyle, Orientation3D.AXIS_ANGLE)) {
+				if (orientationStyle == Orientation3D.AXIS_ANGLE) {
 					
 					x *= Math.sin (w / 2);
 					y *= Math.sin (w / 2);

@@ -18,6 +18,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	public function new (weakKeys:Bool = false);
 	
 	
+	public inline function exists (key:K):Bool {
+		
+		return this.exists (key);
+		
+	}
+	
+	
 	@:arrayAccess public inline function get (key:K):V {
 		
 		return this.get (key);
@@ -112,6 +119,13 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	}
 	
 	
+	public inline function exists (key:K):Bool {
+		
+		return (untyped this[key] != untyped __global__["undefined"]);
+		
+	}
+	
+	
 	@:arrayAccess public inline function get (key:K):V {
 		
 		return untyped this[key];
@@ -121,7 +135,7 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	
 	public inline function remove (key:K):Bool {
 		
-		var exists = (untyped this[key] != untyped __global__["undefined"]);
+		var exists = this.exists (key);
 		untyped __delete__ (this, key);
 		return exists;
 		

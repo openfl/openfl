@@ -25,7 +25,7 @@ import lime.ui.Joystick;
 import lime.ui.JoystickHatPosition;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.Mouse;
+import lime.ui.Mouse in LimeMouse;
 import lime.ui.Window;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
@@ -51,6 +51,8 @@ import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -66,6 +68,7 @@ import js.Browser;
 @:access(openfl.events.Event)
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
+@:access(openfl.ui.Mouse)
 
 
 class Stage extends DisplayObjectContainer implements IModule {
@@ -402,8 +405,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (window != null) {
 			
-			var event = new Event (Event.DEACTIVATE);
-			__broadcast (event, true);
+			__broadcastEvent (new Event (Event.DEACTIVATE));
 			
 		}
 		
@@ -528,7 +530,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		} else {
 			
-			__broadcast (event, true);
+			__dispatchEvent (event);
+			
 		}
 		
 	}
@@ -559,8 +562,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var event = new Event (Event.ACTIVATE);
-		__broadcast (event, true);
+		__broadcastEvent (new Event (Event.ACTIVATE));
 		
 	}
 	
@@ -623,8 +625,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var event = new Event (Event.DEACTIVATE);
-		__broadcast (event, true);
+		__broadcastEvent (new Event (Event.DEACTIVATE));
 		
 	}
 	
@@ -710,8 +711,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__resize ();
 		
-		var event = new Event (Event.RESIZE);
-		__broadcast (event, false);
+		__dispatchEvent (new Event (Event.RESIZE));
 		
 	}
 	
@@ -749,13 +749,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		__broadcast (new Event (Event.ENTER_FRAME), true);
-		__broadcast (new Event (Event.EXIT_FRAME), true);
+		__broadcastEvent (new Event (Event.ENTER_FRAME));
+		__broadcastEvent (new Event (Event.EXIT_FRAME));
 		
 		if (__invalidated) {
 			
 			__invalidated = false;
-			__broadcast (new Event (Event.RENDER), true);
+			__broadcastEvent (new Event (Event.RENDER));
 			
 		}
 		
@@ -804,6 +804,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function update (deltaTime:Int):Void {
 		
 		__deltaTime = deltaTime;
+		
+	}
+	
+	
+	private function __broadcastEvent (event:Event):Void {
+		
+		if (DisplayObject.__broadcastEvents.exists (event.type)) {
+			
+			var dispatchers = DisplayObject.__broadcastEvents.get (event.type);
+			
+			for (dispatcher in dispatchers) {
+				
+				dispatcher.__dispatch (event);
+				
+			}
+			
+		}
 		
 	}
 	
@@ -857,7 +874,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (length == 0) {
 			
 			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__broadcast (event, false);
+			event.target.__dispatch (event);
 			
 		} else {
 			
@@ -866,7 +883,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			for (i in 0...length - 1) {
 				
-				stack[i].__broadcast (event, false);
+				stack[i].__dispatch (event);
 				
 				if (event.__isCanceled) {
 					
@@ -877,7 +894,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__broadcast (event, false);
+			event.target.__dispatch (event);
 			
 			if (event.__isCanceled) {
 				
@@ -892,7 +909,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				while (i >= 0) {
 					
-					stack[i].__broadcast (event, false);
+					stack[i].__dispatch (event);
 					
 					if (event.__isCanceled) {
 						
@@ -1097,32 +1114,36 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
-		var cursor = null;
-		
-		if (__mouseDownLeft != null) {
+		if (Mouse.__cursor == MouseCursor.AUTO) {
 			
-			cursor = __mouseDownLeft.__getCursor ();
+			var cursor = null;
 			
-		} else {
-			
-			for (target in stack) {
+			if (__mouseDownLeft != null) {
 				
-				cursor = target.__getCursor ();
+				cursor = __mouseDownLeft.__getCursor ();
 				
-				if (cursor != null) {
+			} else {
+				
+				for (target in stack) {
 					
-					Mouse.cursor = cursor;
-					break;
+					cursor = target.__getCursor ();
+					
+					if (cursor != null) {
+						
+						LimeMouse.cursor = cursor;
+						break;
+						
+					}
 					
 				}
 				
 			}
 			
-		}
-		
-		if (cursor == null) {
-			
-			Mouse.cursor = ARROW;
+			if (cursor == null) {
+				
+				LimeMouse.cursor = ARROW;
+				
+			}
 			
 		}
 		

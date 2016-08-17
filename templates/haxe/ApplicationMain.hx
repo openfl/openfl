@@ -60,11 +60,7 @@ class ApplicationMain {
 		var result = app.exec ();
 		
 		#if (sys && !nodejs && !emscripten)
-		if (result != 0) {
-			
-			Sys.exit (result);
-			
-		}
+		lime.system.System.exit (result);
 		#end
 		
 	}
@@ -125,6 +121,9 @@ class ApplicationMain {
 					fullscreen: ::fullscreen::,
 					hardware: ::hardware::,
 					height: ::height::,
+					hidden: #if munit true #else ::hidden:: #end,
+					maximized: ::maximized::,
+					minimized: ::minimized::,
 					parameters: "::parameters::",
 					resizable: ::resizable::,
 					stencilBuffer: ::stencilBuffer::,

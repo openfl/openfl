@@ -11,17 +11,9 @@ package openfl.ui; #if (display || !flash)
 @:final extern class Mouse {
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public static var cursor:Dynamic;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static var supportsCursor (default, null):Bool;
-	#end
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public static var supportsNativeCursor (default, null):Bool;
-	#end
+	public static var cursor:String;
+	public static var supportsCursor (default, null):Bool;
+	public static var supportsNativeCursor (default, null):Bool;
 	
 	
 	/**

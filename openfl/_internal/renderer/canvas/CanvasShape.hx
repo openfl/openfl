@@ -50,7 +50,7 @@ class CanvasShape {
 						
 					}
 					
-					context.drawImage (graphics.__canvas, graphics.__bounds.x, graphics.__bounds.y);
+					context.drawImage (graphics.__canvas, 0, 0);
 					
 					renderSession.maskManager.popObject (shape);
 					

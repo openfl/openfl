@@ -14,7 +14,6 @@ class TextureBase extends EventDispatcher {
 	
 	private static var __isGLES:Null<Bool>;
 	
-	private var __allocated:Bool = false;
 	private var __alphaTexture:Texture;
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;

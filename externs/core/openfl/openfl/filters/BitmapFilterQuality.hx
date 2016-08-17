@@ -5,7 +5,7 @@ package openfl.filters;
  * The BitmapFilterQuality class contains values to set the rendering quality
  * of a BitmapFilter object.
  */
-@:enum abstract BitmapFilterQuality(Int) from Int to Int {
+@:enum abstract BitmapFilterQuality(Int) from Int to Int from UInt to UInt {
 	
 	/**
 	 * Defines the high quality filter setting.
