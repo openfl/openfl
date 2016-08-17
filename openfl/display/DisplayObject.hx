@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import haxe.ds.Vector;
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoGraphics;
@@ -24,6 +23,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Lib;
+import openfl.Vector;
 
 #if (js && html5)
 import js.html.CanvasElement;

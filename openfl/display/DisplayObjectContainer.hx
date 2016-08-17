@@ -1,7 +1,6 @@
 package openfl.display;
 
 
-import haxe.ds.Vector;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -12,6 +11,7 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
