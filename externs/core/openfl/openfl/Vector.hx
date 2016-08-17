@@ -165,35 +165,35 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	@:to static #if (!js && !display) inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool):BoolVector {
+	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool):BoolVector {
 		
 		return new BoolVector (length, fixed);
 		
 	}
 	
 	
-	@:to static #if (!js && !display) inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool):IntVector {
+	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool):IntVector {
 		
 		return new IntVector (length, fixed);
 		
 	}
 	
 	
-	@:to static #if (!js && !display) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool):FloatVector {
+	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool):FloatVector {
 		
 		return new FloatVector (length, fixed);
 		
 	}
 	
 	
-	@:to static #if (!js && !display) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool):FunctionVector {
+	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool):FunctionVector {
 		
 		return new FunctionVector (length, fixed);
 		
 	}
 	
 	
-	@:to static #if (!js && !display) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool):ObjectVector<T> {
+	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool):ObjectVector<T> {
 		
 		return new ObjectVector<T> (length, fixed);
 		
@@ -274,7 +274,8 @@ abstract Vector<T>(IVector<T>) {
 
 
 
-class BoolVector implements IVector<Bool> {
+
+@:dox(hide) private class BoolVector implements IVector<Bool> {
 	
 	
 	public var fixed:Bool;
@@ -563,7 +564,8 @@ class BoolVector implements IVector<Bool> {
 
 
 
-class FloatVector implements IVector<Float> {
+
+@:dox(hide) private class FloatVector implements IVector<Float> {
 	
 	
 	public var fixed:Bool;
@@ -845,7 +847,7 @@ class FloatVector implements IVector<Float> {
 
 
 
-class FunctionVector implements IVector<Function> {
+@:dox(hide) private class FunctionVector implements IVector<Function> {
 	
 	
 	public var fixed:Bool;
@@ -1135,7 +1137,7 @@ class FunctionVector implements IVector<Function> {
 
 
 
-class IntVector implements IVector<Int> {
+@:dox(hide) private class IntVector implements IVector<Int> {
 	
 	
 	public var fixed:Bool;
@@ -1417,7 +1419,7 @@ class IntVector implements IVector<Int> {
 
 
 
-class ObjectVector<T> implements IVector<T> {
+@:dox(hide) private class ObjectVector<T> implements IVector<T> {
 	
 	
 	public var fixed:Bool;
@@ -1699,7 +1701,7 @@ class ObjectVector<T> implements IVector<T> {
 
 
 
-@:dox(hide) interface IVector<T> {
+@:dox(hide) private interface IVector<T> {
 	
 	public var fixed:Bool;
 	public var length (get, set):Int;
@@ -2003,7 +2005,7 @@ abstract Vector<T>(VectorData<T>) {
 }
 
 
-private class VectorDataIterator<T> {
+@:dox(hide) private class VectorDataIterator<T> {
 	
 	
 	private var index:Int;
