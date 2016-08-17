@@ -254,7 +254,8 @@ class NetStream extends EventDispatcher {
 				handler ({
 					
 					width: __video.videoWidth,
-					height: __video.videoHeight
+					height: __video.videoHeight,
+					duration: __video.duration
 					
 				});
 				
