@@ -17,29 +17,17 @@ class VectorTest {
 		vector.length = 2;
 		
 		Assert.areEqual (2, vector.length);
-		#if (js || neko)
-		Assert.areEqual (null, vector[0]);
-		#else
 		Assert.areEqual (0, vector[0]);
-		#end
 		
 		var vector = new Vector<Float> ();
 		vector.length = 2;
 		
-		#if (js || neko)
-		Assert.areEqual (null, vector[0]);
-		#else
 		Assert.areEqual (0, vector[0]);
-		#end
 		
 		var vector = new Vector<Bool> ();
 		vector.length = 2;
 		
-		#if (js || neko)
-		Assert.areEqual (null, vector[0]);
-		#else
 		Assert.areEqual (false, vector[0]);
-		#end
 		
 		var vector = new Vector<Int> (10);
 		
@@ -91,11 +79,7 @@ class VectorTest {
 		#end
 		
 		Assert.areEqual (10, vector.length);
-		#if (js || neko)
-		Assert.areEqual (null, vector[0]);
-		#else
 		Assert.areEqual (0, vector[0]);
-		#end
 		
 		var vector2 = new Vector<Int> ();
 		vector2.push (1);
@@ -111,11 +95,7 @@ class VectorTest {
 		vector.shift ();
 		
 		Assert.areEqual (9, vector.length);
-		#if (js || neko)
-		Assert.areEqual (null, vector[0]);
-		#else
 		Assert.areEqual (0, vector[0]);
-		#end
 		
 		vector.fixed = true;
 		var vector = vector.splice (0, 2);
@@ -299,7 +279,7 @@ class VectorTest {
 			
 		}
 		
-		var vector = Vector.ofArray ([ 10, 2, 4, 5, 9, 1, 7, 3, 6, 8 ]);
+		var vector = new Vector ([ 10, 2, 4, 5, 9, 1, 7, 3, 6, 8 ]);
 		vector.sort (sort);
 		
 		var lastValue = 0;
@@ -429,7 +409,7 @@ class VectorTest {
 			
 		}
 		
-		var vector = Vector.ofArray (array);
+		var vector = new Vector (array);
 		
 		Assert.areEqual (10, vector.length);
 		Assert.areEqual (4, vector[4]);
