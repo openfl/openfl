@@ -14,7 +14,7 @@ abstract Vector<T>(IVector<T>) {
 	public var length (get, set):Int;
 	
 	
-	public function new (length:Int = 0, fixed:Bool = false, ?array:Array<T>):Void;
+	public function new (?length:Int, ?fixed:Bool):Void;
 	
 	
 	public inline function concat (?a:Vector<T>):Vector<T> {
@@ -143,59 +143,59 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	//public inline static function ofArray<T> (a:Array<Dynamic>):Vector<T> {
-		//
-		//var vector = new Vector<T> ();
-		//
-		//for (i in 0...a.length) {
-			//
-			//vector[i] = cast a[i];
-			//
-		//}
-		//
-		//return vector;
-		//
-	//}
+	public inline static function ofArray<T> (a:Array<Dynamic>):Vector<T> {
+		
+		var vector = new Vector<T> ();
+		
+		for (i in 0...a.length) {
+			
+			vector[i] = cast a[i];
+			
+		}
+		
+		return vector;
+		
+	}
 	
 	
-	public inline static function convert<T,U> (v:IVector<T>):Vector<U> {
+	public inline static function convert<T,U> (v:IVector<T>):IVector<U> {
 		
 		return cast v;
 		
 	}
 	
 	
-	@:to static inline function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Bool>):BoolVector {
+	@:to static #if !js inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool):BoolVector {
 		
-		return new BoolVector (length, fixed, array);
-		
-	}
-	
-	
-	@:to static inline function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Int>):IntVector {
-		
-		return new IntVector (length, fixed, array);
+		return new BoolVector (length, fixed);
 		
 	}
 	
 	
-	@:to static inline function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Float>):FloatVector {
+	@:to static #if !js inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool):IntVector {
 		
-		return new FloatVector (length, fixed, array);
-		
-	}
-	
-	
-	@:to static function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Function>):FunctionVector {
-		
-		return new FunctionVector (length, fixed, array);
+		return new IntVector (length, fixed);
 		
 	}
 	
 	
-	@:to static inline function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T> {
+	@:to static #if !js inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool):FloatVector {
 		
-		return new ObjectVector<T> (length, fixed, array);
+		return new FloatVector (length, fixed);
+		
+	}
+	
+	
+	@:to static #if !js inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool):FunctionVector {
+		
+		return new FunctionVector (length, fixed);
+		
+	}
+	
+	
+	@:to static #if !js inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool):ObjectVector<T> {
+		
+		return new ObjectVector<T> (length, fixed);
 		
 	}
 	
@@ -283,22 +283,23 @@ class BoolVector implements IVector<Bool> {
 	private var __array:Array<Bool>;
 	
 	
-	public function new (length:Int = 0, fixed:Bool = false, ?array:Array<Bool>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Bool>):Void {
 		
 		if (array == null) {
 			
 			array = new Array<Bool> ();
 			
-			for (i in 0...length) {
-				
-				array[i] = false;
-				
-			}
-			
 		}
 		
 		__array = array;
-		this.fixed = fixed;
+		
+		if (length != null) {
+			
+			this.length = length;
+			
+		}
+		
+		this.fixed = (fixed == true);
 		
 	}
 	
@@ -571,22 +572,23 @@ class FloatVector implements IVector<Float> {
 	private var __array:Array<Float>;
 	
 	
-	public function new (length:Int = 0, fixed:Bool = false, ?array:Array<Float>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Float>):Void {
 		
 		if (array == null) {
 			
 			array = new Array<Float> ();
 			
-			for (i in 0...length) {
-				
-				array[i] = 0;
-				
-			}
-			
 		}
 		
 		__array = array;
-		this.fixed = fixed;
+		
+		if (length != null) {
+			
+			this.length = length;
+			
+		}
+		
+		this.fixed = (fixed == true);
 		
 	}
 	
@@ -852,22 +854,23 @@ class FunctionVector implements IVector<Function> {
 	private var __array:Array<Function>;
 	
 	
-	public function new (length:Int = 0, fixed:Bool = false, ?array:Array<Function>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Function>):Void {
 		
 		if (array == null) {
 			
 			array = new Array<Function> ();
 			
-			for (i in 0...length) {
-				
-				array[i] = null;
-				
-			}
-			
 		}
 		
 		__array = array;
-		this.fixed = fixed;
+		
+		if (length != null) {
+			
+			this.length = length;
+			
+		}
+		
+		this.fixed = (fixed == true);
 		
 	}
 	
@@ -1141,22 +1144,23 @@ class IntVector implements IVector<Int> {
 	private var __array:Array<Int>;
 	
 	
-	public function new (?length:Int = 0, ?fixed:Bool = false, ?array:Array<Int>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Int>):Void {
 		
 		if (array == null) {
 			
 			array = new Array<Int> ();
 			
-			for (i in 0...length) {
-				
-				array[i] = 0;
-				
-			}
-			
 		}
 		
 		__array = array;
-		this.fixed = fixed;
+		
+		if (length != null) {
+			
+			this.length = length;
+			
+		}
+		
+		this.fixed = (fixed == true);
 		
 	}
 	
@@ -1422,7 +1426,7 @@ class ObjectVector<T> implements IVector<T> {
 	private var __array:Array<T>;
 	
 	
-	public function new (length:Int = 0, fixed:Bool = false, ?array:Array<T>):Void {
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
 		
 		if (array == null) {
 			
@@ -1431,13 +1435,14 @@ class ObjectVector<T> implements IVector<T> {
 		}
 		
 		__array = array;
-		this.fixed = fixed;
 		
-		if (length > 0) {
+		if (length != null) {
 			
 			this.length = length;
 			
 		}
+		
+		this.fixed = (fixed == true);
 		
 	}
 	
@@ -1736,9 +1741,9 @@ abstract Vector<T>(VectorData<T>) {
 	
 	
 	
-	public inline function new (length:Int = 0, fixed:Bool = false, ?array:Array<T>):Void {
+	public inline function new (?length:Int, ?fixed:Bool, ?array:Array<T>):Void {
 		
-		if (array != Null) {
+		if (array != null) {
 			
 			this = VectorData.ofArray (array);
 			

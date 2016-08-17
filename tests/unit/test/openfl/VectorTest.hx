@@ -279,7 +279,7 @@ class VectorTest {
 			
 		}
 		
-		var vector = new Vector ([ 10, 2, 4, 5, 9, 1, 7, 3, 6, 8 ]);
+		var vector = Vector.ofArray ([ 10, 2, 4, 5, 9, 1, 7, 3, 6, 8 ]);
 		vector.sort (sort);
 		
 		var lastValue = 0;
@@ -409,7 +409,7 @@ class VectorTest {
 			
 		}
 		
-		var vector = new Vector (array);
+		var vector = Vector.ofArray (array);
 		
 		Assert.areEqual (10, vector.length);
 		Assert.areEqual (4, vector[4]);
