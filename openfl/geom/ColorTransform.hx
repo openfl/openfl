@@ -1,5 +1,6 @@
 package openfl.geom;
 
+import haxe.macro.Expr;
 
 import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
@@ -84,12 +85,40 @@ class ColorTransform {
 	}
 	
 	
-	private function __isDefault ():Bool {
+	public function __isDefault ():Bool {
 		
 		return (redMultiplier == 1 && greenMultiplier == 1 && blueMultiplier == 1 && alphaMultiplier == 1 && redOffset == 0 && greenOffset == 0 && blueOffset == 0 && alphaOffset == 0);
 		
 	}
+
+
+	public static macro function __with_var_rgba (input_rgb : ExprOf<Int>, input_a : ExprOf<Float>, rgbaExpr : Expr) : Expr
+	{
+		return macro
+		{
+			var rgb = $input_rgb;
+			var r : Int   = ((rgb & 0xFF0000) >> 16);
+			var g : Int   = ((rgb & 0x00FF00) >>  8);
+			var b : Int   =  (rgb & 0x0000FF)       ;
+			var a : Float = $input_a;
+
+			${rgbaExpr}
+		}
+	}
+
 	
+	public macro function __apply_to_var_rgba (self : ExprOf<ColorTransform>) : Expr
+	{
+		return macro
+		{
+			var t = $self;
+			r = r * t   .redMultiplier + t   .redOffset;
+			g = g * t .greenMultiplier + t .greenOffset;
+			b = b * t  .blueMultiplier + t  .blueOffset;
+			a = a * t .alphaMultiplier + t .alphaOffset;
+		}
+	}
+
 	
 	
 	
