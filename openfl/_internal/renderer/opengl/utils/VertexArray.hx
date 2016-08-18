@@ -41,7 +41,9 @@ class VertexArray {
 	}
 	
 	public function destroy() {
-		gl.deleteBuffer(glBuffer);
+		if( gl != null ){
+			gl.deleteBuffer(glBuffer);
+		}
 		buffer = null;
 	}
 	
