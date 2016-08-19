@@ -7,6 +7,18 @@ import openfl.geom.ColorTransform.__with_var_rgba;
 
 class CanvasUtils
 {
+	public static inline function rgbaString(r : Float, g : Float, b : Float, a : Float) : String
+	{
+		var r = Std.int(r);
+		var g = Std.int(g);
+		var b = Std.int(b);
+
+		return if (a >= 1)
+			"#" + StringTools.hex ((r << 16) | (g << 8) | b, 6)
+		else
+			"rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+	}
+
 	public static inline function rgbaStyle(colorTransform : ColorTransform, input_rgb : Int, input_a : Float) : String
 	{
 		return if (colorTransform == null)
@@ -17,7 +29,7 @@ class CanvasUtils
 			}
 			else
 				__with_var_rgba(input_rgb, input_a,
-					"rgba(" + r + ", " + g + ", " + b + ", " + input_a + ")"
+					rgbaString(r,g,b, input_a)
 				);
 		}
 		else __with_var_rgba(input_rgb, input_a,
@@ -27,10 +39,7 @@ class CanvasUtils
 				var b:Float = b;
 				colorTransform.__apply_to_var_rgba();
 				
-				if (a >= 1)
-					"#" + StringTools.hex ((Std.int(r) << 16) | (Std.int(g) << 8) | Std.int(b), 6)
-				else
-					"rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+				rgbaString(r,g,b,a);
 			});
 	}
 }

@@ -144,7 +144,8 @@ class CanvasGraphics {
 			if (colorTransform != null)
 				colorTransform.__apply_to_var_rgba();
 
-			gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + a + ")");
+			var rgbaString = CanvasUtils.rgbaString(r,g,b,a);
+			gradientFill.addColorStop (ratio, rgbaString);
 		});
 		
 		return cast (gradientFill);
