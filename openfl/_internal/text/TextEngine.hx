@@ -769,7 +769,7 @@ class TextEngine {
 		
 		while (textIndex < text.length) {
 
-			if ((breakIndex > -1) && ( (spaceIndex == -1 || breakIndex < spaceIndex ) && (hyphenIndex == -1 || hyphenIndex < spaceIndex)) && (formatRange.end >= breakIndex)) {
+			if ((breakIndex > -1) && ( (spaceIndex == -1 || breakIndex < spaceIndex ) && (hyphenIndex == -1 || breakIndex < hyphenIndex)) && (formatRange.end >= breakIndex)) {
 
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
@@ -961,7 +961,8 @@ class TextEngine {
 						
 					}
 
-					if ((spaceIndex > breakIndex && breakIndex > -1 && hyphenIndex > breakIndex && hyphenIndex > -1)
+					if ( spaceIndex > breakIndex && breakIndex > -1
+						|| hyphenIndex > breakIndex && hyphenIndex > -1
 						|| textIndex > text.length
 						|| (spaceIndex > formatRange.end && hyphenIndex > formatRange.end)
 						|| (spaceIndex == -1 && hyphenIndex == -1 && breakIndex > -1)) {
