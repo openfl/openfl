@@ -24,7 +24,6 @@ import js.Browser;
 	public var ratios:Array<Float>; // :TODO: use setter to invalidate and regenerate lookup texture
 	public var color:Int;
 	public var distance:Float;
-	public var hideObject (default, set):Bool;
 	public var type:BitmapFilterType;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
@@ -50,7 +49,6 @@ import js.Browser;
 		this.quality = quality;
 		this.type = type;
 		this.knockout = knockout;
-		this.hideObject = hideObject;
 		
 		__gradientGlowShader = new GradientGlowShader ();
 		__gradientGlowShader.smooth = true;
@@ -199,14 +197,6 @@ import js.Browser;
 		
 		__saveLastFilter = !value;
 		return knockout = value;
-		
-	}
-	
-	
-	private function set_hideObject (value:Bool):Bool {
-		
-		__saveLastFilter = !value;
-		return hideObject = value;
 		
 	}
 	
