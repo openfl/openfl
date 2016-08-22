@@ -86,9 +86,10 @@ class BitmapFilter {
 				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, !useLastFilter);
 			}
 			
+			source.__shader = srcShader;
+			
 		}
 		
-		source.__shader = srcShader;
 		
 		if (same) target.__pingPongTexture.useOldTexture = false;
 		
