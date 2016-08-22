@@ -84,11 +84,15 @@ class BitmapFilter {
 				
 				source.__shader = filter.__preparePass(pass);
 				target.__drawGL(renderSession, source, sourceRect, true, !target.__usingPingPongTexture, !useLastFilter);
+				
+				// :HACK: must reset blend mode manager because of custom blend modes hack in some filters (e.g. GradientGlowFilter)
+				renderSession.blendModeManager.setBlendMode (null);
 			}
+			
+			source.__shader = srcShader;
 			
 		}
 		
-		source.__shader = srcShader;
 		
 		if (same) target.__pingPongTexture.useOldTexture = false;
 		
