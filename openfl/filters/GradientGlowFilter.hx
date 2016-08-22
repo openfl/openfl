@@ -1,5 +1,6 @@
 package openfl.filters; #if !openfl_legacy
 
+import lime.math.color.ARGB;
 
 import openfl.display.BitmapData;
 import openfl.display.Shader;
@@ -65,39 +66,91 @@ import js.Browser;
 	}
 	
 	private function updateLookupTexture():Void {
-		#if (js && html5)
-			var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-			var context:CanvasRenderingContext2D = canvas.getContext ("2d");
-			canvas.width = 256;
-			canvas.height = 8;
-
-			var gradientFill = context.createLinearGradient (0, 0, canvas.width, 0);
-			for (i in 0...colors.length) {
+		
+		inline function alpha(color:UInt):Float {
+			return (color >>> 24) / 255;
+		}
+		
+		inline function rgb(color:UInt):UInt {
+			return (color & 0xffffff);
+		}
+		
+		inline function ri(color:UInt):UInt {
+			return ((rgb(color) >> 16) & 0xff);
+		}
+		
+		inline function gi(color:UInt):UInt {
+			return ((rgb(color) >> 8) & 0xff);
+		}
+		
+		inline function bi(color:UInt):UInt {
+			return (rgb(color) & 0xff);
+		}
+		
+		inline function r(color:UInt):Float {
+			return ((rgb(color) >> 16) & 0xff) / 255;
+		}
+		
+		inline function g(color:UInt):Float {
+			return ((rgb(color) >> 8) & 0xff) / 255;
+		}
+		
+		inline function b(color:UInt):Float {
+			return (rgb(color) & 0xff) / 255;
+		}
+		
+		inline function interpolate(color1:UInt, color2:UInt, ratio:Float):UInt {
+			var r1:Float = r(color1);
+			var g1:Float = g(color1);
+			var b1:Float = b(color1);
+			var alpha1:Float = alpha(color1);
+			var ri:Int = Std.int((r1 + (r(color2) - r1) * ratio) * 255);
+			var gi:Int = Std.int((g1 + (g(color2) - g1) * ratio) * 255);
+			var bi:Int = Std.int((b1 + (b(color2) - b1) * ratio) * 255);
+			var alphai:Int = Std.int((alpha1 + (alpha(color2) - alpha1) * ratio) * 255);
+			return bi | (gi << 8) | (ri << 16) | (alphai << 24);
+		}
+		
+		__lookupTexture = new BitmapData (256, 1);
+		
+		var upperBoundIndex = 0;
+		var lowerBound = 0.0;
+		var upperBound = Math.max(Math.min(ratios[0] / 0xFF, 1.0),0.0);
+		var lowerBoundColor = ARGB.create(Math.round(alphas[0] * 255), ri(colors[0]), gi(colors[0]), bi(colors[0]));
+		var upperBoundColor = ARGB.create(Math.round(alphas[0] * 255), ri(colors[0]), gi(colors[0]), bi(colors[0]));
+		
+		for( x in 0...__lookupTexture.width ) {
+			var ratio = (x + 0.5) / __lookupTexture.width;
+			
+			if (ratio > upperBound) {
 				
-				var rgb = colors[i];
-				var alpha = alphas[i];
-				var r = (rgb & 0xFF0000) >>> 16;
-				var g = (rgb & 0x00FF00) >>> 8;
-				var b = (rgb & 0x0000FF);
+				while (ratio > upperBound ) {
+					if ( upperBoundIndex < ratios.length - 1) {
+						++upperBoundIndex;
+						upperBound = Math.max(Math.min(ratios[upperBoundIndex] / 0xFF, 1.0),0.0);
+					} else {
+						upperBound = 1.0;
+					}
+				}
 				
-				r = Math.round(r * alpha);
-				g = Math.round(g * alpha);
-				b = Math.round(b * alpha);
-				
-				var ratio = ratios[i] / 0xFF;
-				if (ratio < 0) ratio = 0;
-				if (ratio > 1) ratio = 1;
-				
-				gradientFill.addColorStop (ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
+				var lowerBoundIndex = upperBoundIndex == 0 ? 0 : upperBoundIndex - 1;
+				upperBoundColor.set(Math.round(alphas[upperBoundIndex] * 255), ri(colors[upperBoundIndex]), gi(colors[upperBoundIndex]), bi(colors[upperBoundIndex]));
+				lowerBoundColor.set(Math.round(alphas[lowerBoundIndex] * 255), ri(colors[lowerBoundIndex]), gi(colors[lowerBoundIndex]), bi(colors[lowerBoundIndex]));
+				lowerBound = Math.max(Math.min(ratios[lowerBoundIndex] / 0xFF, 1.0),0.0);
 				
 			}
 			
-			context.rect (0, 0, canvas.width, canvas.height);
-			context.fillStyle = gradientFill;
-			context.fill ();
+			var lerpFactor = (ratio - lowerBound) / (upperBound - lowerBound);
+			var color:ARGB = interpolate(lowerBoundColor, upperBoundColor, lerpFactor);
 			
-			__lookupTexture = BitmapData.fromCanvas (canvas);
-		#end
+			for( y in 0...__lookupTexture.height ) {
+				
+				__lookupTexture.setPixel32(x, y, color);
+				
+			}
+			
+		}
+		
 	}
 
 	
