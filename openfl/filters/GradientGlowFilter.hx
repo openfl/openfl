@@ -5,6 +5,7 @@ import lime.math.color.ARGB;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
+import openfl.gl.GL;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -32,6 +33,7 @@ import js.Browser;
 	
 	private var __gradientGlowShader:GradientGlowShader;
 	private var __gradientGlowShader2:GradientGlowShaderLookupPass;
+	private var __gradientGlowShaderInner:GradientGlowShaderInner;
 	private var __lookupTextureIsDirty:Bool = true;
 	private var __lookupTexture:BitmapData;
 	
@@ -56,6 +58,9 @@ import js.Browser;
 		
 		__gradientGlowShader2 = new GradientGlowShaderLookupPass ();
 		__gradientGlowShader2.smooth = true;
+
+		__gradientGlowShaderInner = new GradientGlowShaderInner ();
+		__gradientGlowShaderInner.smooth = true;
 	}
 	
 	
@@ -172,13 +177,23 @@ import js.Browser;
 		
 		if (pass == __passes - 1) {
 			
-			if (type == BitmapFilterType.OUTER) {
+			switch (type) {
 				
-				return null;
-				
-			} else {
-				
-				throw ':TODO: support ${type} filter type';
+				case BitmapFilterType.FULL:
+					throw ":TODO: render full effect on top of object";
+					return null;
+				case BitmapFilterType.INNER:
+					// :HACK: temporary hack until we switch to render commands for filters (blend mode manager must be reset in BitmapFilter)
+					var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
+					var gl = renderSession.gl;
+					gl.blendEquation (GL.FUNC_ADD);
+					gl.blendFunc (GL.DST_COLOR, GL.ZERO);
+					__gradientGlowShaderInner.blendMode = renderSession.blendModeManager.currentBlendMode;
+					return __gradientGlowShaderInner;
+				case BitmapFilterType.OUTER:
+					return null;
+				default:
+					return null;
 				
 			}
 			
@@ -364,6 +379,37 @@ private class GradientGlowShaderLookupPass extends Shader {
 	
 }
 
+private class GradientGlowShaderInner extends Shader {
+	
+	
+	@vertex var vertex = [
+		'void main(void)',
+		'{',
+		
+			'${Shader.vTexCoord} = ${Shader.aTexCoord};',
+			'${Shader.vColor} = ${Shader.aColor};',
+			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
+		'}',
+	];
+	
+	
+	@fragment var fragment = [
+		'void main(void)',
+		'{',
+			'float a = texture2D(${Shader.uSampler}, ${Shader.vTexCoord}).a;',
+			'gl_FragColor = vec4(a, a, a, a);',
+		'}',
+	];
+	
+	
+	public function new () {
+		
+		super ();
+		
+	}
+	
+	
+}
 
 #else
 typedef GradientGlowFilter = openfl._legacy.filters.GradientGlowFilter;
