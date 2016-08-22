@@ -61,8 +61,8 @@ class Transform {
 				
 			}
 			
-			__displayObject.__setRenderDirty ();
-			
+			__displayObject.__setGraphicsDirty ();
+
 		}
 		
 		return __colorTransform;
