@@ -110,6 +110,7 @@ class ConsoleRenderer extends AbstractRenderer {
 	private static var pixelOffsetY:Float = 0.5;
 	#end
 
+	private var whiteTextureData:cpp.UInt32 = 0xffffffff;
 	
 	public function new (width:Int, height:Int, ctx:ConsoleRenderContext) {
 
@@ -124,11 +125,13 @@ class ConsoleRenderer extends AbstractRenderer {
 		fillShader = ctx.lookupShader ("openfl_fill");
 
 		
-		var white:cpp.UInt32 = 0xffffffff;
+		// TODO(james4k): whiteTextureData should just be a local variable, but
+		// haxe's optimizer futz this and generates code that tries to take an address
+		// of a literal.
 		whiteTexture = ctx.createTexture (
 			TextureFormat.ARGB,
 			1, 1,
-			cpp.Pointer.addressOf (white).reinterpret ()
+			cpp.Pointer.addressOf (whiteTextureData).reinterpret ()
 		);
 
 	}
