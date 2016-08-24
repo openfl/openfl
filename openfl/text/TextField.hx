@@ -1178,13 +1178,16 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	private function parseTags(value:Xml, format:TextFormat, startIndex:Int):Dynamic {
+	private function parseTags(value:Xml, format:TextFormat, startIndex:Int, ?formatRanges:Array<TextFormatRange>):Dynamic {
 
+		if( formatRanges == null ) {
+			formatRanges = [];
+		}
 		var result = "";
 		for( element in value.iterator() ) {
 			if ( element.nodeType != XmlType.Element || element.firstChild() == null ) {
 				// It's a normal element. Insert into the formatRanges with the pushed format.
-				__textEngine.textFormatRanges.push (new TextFormatRange (format, startIndex, startIndex + element.nodeValue.length));
+				formatRanges.push (new TextFormatRange (format, startIndex, startIndex + element.nodeValue.length));
 				result += element.nodeValue;
 				startIndex += element.nodeValue.length;
 			} else {
@@ -1195,41 +1198,28 @@ class TextField extends InteractiveObject {
 						copied_format.bold = true;
 					case "i":
 						copied_format.italic = true;
-					default:
-						if(tag.indexOf("<font") == 0 ) {
-	
-							var faceIndex = tag.indexOf ("face=");
-							var colorIndex = tag.indexOf ("color=");
-							var sizeIndex = tag.indexOf ("size=");
-		
-							if (faceIndex > -1) {
-			
-								copied_format.font = tag.substr (faceIndex + 6, tag.indexOf ("\"", faceIndex));
-			
-		}
-		
-							if (colorIndex > -1) {
-				
-								copied_format.color = Std.parseInt ("0x" + tag.substr (colorIndex + 8, 6));
-					
-				}
-				
-							if (sizeIndex > -1) {
-				
-								copied_format.size = Std.parseInt (tag.substr (sizeIndex + 6, tag.indexOf ("\"", sizeIndex)));
-				
+					case "font":	
+						for( attribute in element.attributes() ) {
+							if ( attribute == "face" ) {
+								copied_format.font = element.get(attribute);
+							} else if ( attribute == "color" ) {
+								copied_format.color = Std.parseInt("0x" + element.get(attribute));
+							} else if ( attribute == "size" ) {
+								copied_format.size = Std.parseInt(element.get(attribute));
+							} else {
+								throw "encountered unsupported attribute when parsing html font.";
 							}
-			} else {
-							throw "trying to parse unsupported tag from localization";
 						}
-						}
-				var result_data = parseTags(element, copied_format, startIndex);
+					default:
+						throw "trying to parse unsupported tag from html text";
+					}
+				var result_data = parseTags(element, copied_format, startIndex, formatRanges);
 				result += result_data.text;
 				startIndex = result_data.start_index;
 			}
 		}
-		return { text:result, start_index: startIndex };
-						}
+		return { text:result, start_index: startIndex, format_ranges: formatRanges  };
+	}
 						
 						
 	private function set_htmlText (value:String):String {
@@ -1239,7 +1229,7 @@ class TextField extends InteractiveObject {
 			__dirty = true;
 			__layoutDirty = true;
 							
-						}
+		}
 						
 		__isHTML = true;
 						
@@ -1251,8 +1241,11 @@ class TextField extends InteractiveObject {
 			var data = Xml.parse(value);
 				
 			__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
-			value = parseTags(data, __textFormat.clone(), 0).text;
+			var result_data = parseTags(data, __textFormat.clone(), 0);
 			
+			value = result_data.text;
+			__textEngine.textFormatRanges = result_data.format_ranges;
+
 			return __textEngine.text = value;
 		}
 		
