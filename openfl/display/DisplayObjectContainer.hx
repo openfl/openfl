@@ -71,7 +71,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			__children.insert (index, child);
 			child.parent = this;
 			
-			var addedToStage = (child.stage == null);
+			var addedToStage = (stage != null && child.stage == null);
 			
 			if (addedToStage) {
 				
