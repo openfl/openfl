@@ -238,7 +238,7 @@ class TextEngine {
 			fontData = Reflect.getProperty( @:privateAccess Assets.getLibrary("default"), "fontData" ).get( format.font );
 			if ( fontData == null ) {
 				trace("Fallback didn't contain font data. Falling back to defaults." );
-			return {name:font, ascent: 1, descent:0.185};
+			return {name:font, ascent: 0.825, descent:0.175};
 		}
 		}
 
