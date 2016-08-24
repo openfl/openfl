@@ -43,7 +43,7 @@ import js.html.Element;
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disable_dynamic_child_access implements Dynamic<DisplayObject> #end {
 	
 	
-	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
+	private static var __frameEvents = new Map<String, Array<DisplayObject>> ();
 	private static var __instanceCount = 0;
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
@@ -151,19 +151,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		
 		switch (type) {
 			
-			case Event.ACTIVATE, Event.DEACTIVATE, Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
+			case Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
 				
-				if (!__broadcastEvents.exists (type)) {
+				if (!__frameEvents.exists (type)) {
 					
-					__broadcastEvents.set (type, []);
+					__frameEvents.set (type, []);
 					
 				}
 				
-				var dispatchers = __broadcastEvents.get (type);
+				var list = __frameEvents.get (type);
 				
-				if (dispatchers.indexOf (this) == -1) {
+				if (list.indexOf (this) == -1) {
 					
-					dispatchers.push (this);
+					list.push (this);
 					
 				}
 			
@@ -262,13 +262,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		
 		switch (type) {
 			
-			case Event.ACTIVATE, Event.DEACTIVATE, Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
+			case Event.ENTER_FRAME, Event.EXIT_FRAME, Event.FRAME_CONSTRUCTED, Event.RENDER:
 				
 				if (!hasEventListener (type)) {
 					
-					if (__broadcastEvents.exists (type)) {
+					if (__frameEvents.exists (type)) {
 						
-						__broadcastEvents.get (type).remove (this);
+						__frameEvents.get (type).remove (this);
 						
 					}
 					
@@ -277,6 +277,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			default:
 			
 		}
+		
+	}
+	
+	
+	private function __broadcast (event:Event, notifyChilden:Bool):Bool {
+		
+		if (__eventMap != null && hasEventListener (event.type)) {
+			
+			var result = super.__dispatchEvent (event);
+			
+			if (event.__isCanceled) {
+				
+				return true;
+				
+			}
+			
+			return result;
+			
+		}
+		
+		return false;
 		
 	}
 	
@@ -295,27 +316,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			__graphics.__cleanup ();
 			
 		}
-		
-	}
-	
-	
-	private function __dispatch (event:Event):Bool {
-		
-		if (__eventMap != null && hasEventListener (event.type)) {
-			
-			var result = super.__dispatchEvent (event);
-			
-			if (event.__isCanceled) {
-				
-				return true;
-				
-			}
-			
-			return result;
-			
-		}
-		
-		return false;
 		
 	}
 	
