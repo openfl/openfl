@@ -598,7 +598,7 @@ class TextEngine {
 		var formatRange:TextFormatRange = null;
 		var font = null;
 		
-		var currentFormat = TextField.__defaultTextFormat.clone ();
+		var currentFormat = this.textField.defaultTextFormat;
 
 		var leading = 0.0;
 		var ascent = 0.0;
