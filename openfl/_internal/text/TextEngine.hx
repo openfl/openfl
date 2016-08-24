@@ -540,7 +540,7 @@ class TextEngine {
 
 				for(group in groups) {
 
-					currentLineWidth += group.offsetX - 2 + group.width;
+					currentLineWidth += group.width;
 			
 			if (currentLineWidth > textWidth) {
 				
@@ -809,6 +809,13 @@ class TextEngine {
 					if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width - 2 ) {
 						removeLastAdvance();
 						pushNewLine(textIndex);
+					} else if ( formatRange.format.align == JUSTIFY ) {
+						layoutGroup.endIndex = textIndex;
+						layoutGroup.advances = advances;
+						layoutGroup.width = widthValue;
+						offsetX = layoutGroup.offsetX + layoutGroup.width;
+						pushLayoutGroup();
+						fillLayoutGroup(formatRange.format, textIndex, formatRange.end);
 				}
 			}
 			} else {
@@ -894,13 +901,11 @@ class TextEngine {
 					case JUSTIFY:
 						
 						if (lineWidths[lineIndex] < realWidth - 4) {
-							
-							lineLength = 1;
-							
+							if ( groups.length > 1 ) {
 								group = groups[groups.length-1];
 								if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
 									
-									offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (lineLength - 1);
+									offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
 									
 									for (j in 0...groups.length ) {
 										
@@ -910,6 +915,7 @@ class TextEngine {
 									
 								}
 							}
+						}
 						offsetX = 0;
 					
 					default:
