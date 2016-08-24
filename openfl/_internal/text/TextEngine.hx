@@ -761,7 +761,7 @@ class TextEngine {
 				pushNewLine(textIndex);
 			}
 			// keep the space on this line.
-			if ( previousChar == " " ) {
+			if ( previousChar == " " || previousChar == "-" ) {
 				var iterator = textIndex-1;
 				var width_till_next_word = getAdvance(text,iterator);
 				iterator++;
@@ -770,10 +770,23 @@ class TextEngine {
 					pushNewLine(textIndex);
 				} else {
 					var next_space = text.indexOf(" ", textIndex);
-					if ( next_space == -1 ) {
-						next_space = text.length;
+					var next_hyphen = text.indexOf("-", textIndex);
+					var next_break = -1;
+					if ( next_space > -1 ) {
+						if ( next_hyphen > -1 ) {
+							next_break = Std.int(Math.min(next_space, next_hyphen));
+						} else {
+							next_break = next_space;
+						}
+					} else {
+						if ( next_hyphen > -1 ) {
+							next_break = next_hyphen;
+						} else {
+							next_break = text.length;
+						}
 					}
-					while(iterator < next_space ) {
+
+					while(iterator < next_break) {
 						width_till_next_word += getAdvance(text,iterator);
 						iterator++;
 					}
