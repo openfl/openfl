@@ -737,6 +737,8 @@ class TextEngine {
 			}
 			
 		inline function pushNewLine(textIndex:Int) {
+			layoutGroup.width = widthValue;
+			layoutGroup.advances = advances;
 			layoutGroup.endIndex = textIndex;
 			pushLayoutGroup();
 			offsetY += heightValue;
