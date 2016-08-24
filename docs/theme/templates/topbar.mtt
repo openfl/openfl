@@ -13,6 +13,24 @@ a, code .type {
 	color: #ffffff;
 	text-shadow: 0 0 0 transparent;
 }
+.navbar .container {
+	width: 940px ;
+}
+@media (max-width: 767px) {
+	.navbar .container {
+		width: auto;
+	}
+}
+@media (max-width: 979px) and (min-width: 768px) {
+	.navbar .container {
+		width: 724px;
+	}
+}
+@media (min-width: 1200px) {
+	.navbar .container {
+		width: 1170px;
+	}
+}
 .navbar .container img {
 	margin: 5px 0 0 4px;
 }
