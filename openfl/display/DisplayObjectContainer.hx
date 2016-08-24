@@ -74,18 +74,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			var addedToStage = (stage != null && child.stage == null);
 			
 			if (addedToStage) {
-				
-				child.stage = stage;
-				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.stage = stage;
-						
-					}
-					
-				}
+
+				this.__setStageReference(stage);
 				
 			}
 			
@@ -214,29 +204,7 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 				}
 				
-				child.stage = null;
-				
-				if (stage.focus == child) {
-					
-					stage.focus = null;
-					
-				}
-				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.stage = null;
-						
-						if (stage.focus == _child) {
-							
-							stage.focus = null;
-							
-						}
-						
-					}
-					
-				}
+				child.__setStageReference (null);
 				
 			}
 			
@@ -769,6 +737,23 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	private override function __setStageReference (stage:Stage):Void {
+	
+		super.__setStageReference (stage);
+		
+		if (__children != null) {
+			
+			for (child in __children) {
+				
+				child.__setStageReference (stage);
+				
+			}
+			
+		}
+		
+	}
+
+
 	private override function __stopAllMovieClips ():Void {
 		
 		for (child in __children) {
