@@ -754,7 +754,8 @@ class TextEngine {
 				
 				if (spaceIndex > -1) {
 					
-					spaceWidth = getTextWidth (" ");
+					// :HACK: increase accuracy on browsers returning measurements as integers (e.g. Edge)
+					spaceWidth = getTextWidth ("                                                                                                                                ") / 128.0;
 					
 				}
 				
