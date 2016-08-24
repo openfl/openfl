@@ -21,7 +21,7 @@ class CanvasShape {
 		
 		if (graphics != null) {
 			
-			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform, shape.__worldColorTransform.__isDefault() ? null : shape.__worldColorTransform);
 			
 			var bounds = graphics.__bounds;
 			var width = graphics.__width;

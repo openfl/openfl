@@ -591,6 +591,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		}
 		
 	}
+
+
+	private function __setGraphicsDirty ():Void {
+
+		// implemented in subclasses that have Graphics or renderable Text
+		
+	}
 	
 	
 	private inline function __setTransformDirty ():Void {
@@ -605,6 +612,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
+	private function __setStageReference (stage:Stage):Void {
+		
+		if (stage == null && this.stage != null) {
+
+			if (this.stage.focus == this) {
+							
+				this.stage.focus = null;
+							
+			}
+
+		}
+
+		this.stage = stage;
+		
+	}
+
+
 	private function __stopAllMovieClips ():Void {
 		
 		

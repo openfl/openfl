@@ -887,6 +887,14 @@ class TextField extends InteractiveObject {
 		}
 		
 	}
+
+
+	public override function __setGraphicsDirty ():Void {
+
+		__dirty = true;
+		
+	}
+
 	
 	
 	

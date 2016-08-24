@@ -31,7 +31,7 @@ class DOMShape {
 				
 				// TODO: Implement scaling
 				
-				CanvasGraphics.render (graphics, renderSession, matrix);
+				CanvasGraphics.render (graphics, renderSession, matrix, shape.__worldColorTransform.__isDefault() ? null : shape.__worldColorTransform);
 				
 				if (graphics.__canvas != null) {
 					
