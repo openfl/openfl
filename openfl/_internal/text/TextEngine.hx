@@ -638,7 +638,15 @@ class TextEngine {
 			var width:Float = 0;
 			#if (js && html5)
 			
-			width = __context.measureText (text.charAt (startIndex)).width;
+			var text_buffer: String = "";
+			var char = text.charAt(startIndex);
+
+			// :HACK: increase accuracy on browsers returning measurements as integers 
+			for( iterator in 0...128 ) {
+				text_buffer += char;
+			}
+
+			width = __context.measureText (text_buffer).width / 128.0;
 			
 			#else
 			
