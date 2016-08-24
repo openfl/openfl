@@ -238,8 +238,8 @@ class TextEngine {
 			fontData = Reflect.getProperty( @:privateAccess Assets.getLibrary("default"), "fontData" ).get( format.font );
 			if ( fontData == null ) {
 				trace("Fallback didn't contain font data. Falling back to defaults." );
-			return {name:font, ascent: 0.825, descent:0.175};
-		}
+				return {name:font, ascent: 0.825, descent:0.175};
+			}
 		}
 
 		return {name:font, ascent:fontData.ascent, descent:fontData.descent };
@@ -496,45 +496,45 @@ class TextEngine {
 		for (groups in lineLayoutGroups) {
 			if ( groups.length > 0 ) {
 				var group = groups[0];
-			while (group.lineIndex > numLines - 1) {
-				
-				lineAscents.push (currentLineAscent);
-				lineDescents.push (currentLineDescent);
-				lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
-				lineHeights.push (currentLineHeight);
-				lineWidths.push (currentLineWidth);
-				
-				currentLineAscent = 0;
-				currentLineDescent = 0;
-				currentLineLeading = null;
-				currentLineHeight = 0;
-				currentLineWidth = 0;
-				
-				numLines++;
-				
-				if (textHeight <= height - 2) {
+				while (group.lineIndex > numLines - 1) {
 					
-					bottomScrollV++;
+					lineAscents.push (currentLineAscent);
+					lineDescents.push (currentLineDescent);
+					lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
+					lineHeights.push (currentLineHeight);
+					lineWidths.push (currentLineWidth);
+					
+					currentLineAscent = 0;
+					currentLineDescent = 0;
+					currentLineLeading = null;
+					currentLineHeight = 0;
+					currentLineWidth = 0;
+					
+					numLines++;
+					
+					if (textHeight <= height - 2) {
+						
+						bottomScrollV++;
+						
+					}
+				}
+				
+				currentLineAscent = Math.max (currentLineAscent, group.ascent);
+				currentLineDescent = Math.max (currentLineDescent, group.descent);
+				
+				if (currentLineLeading == null) {
+					
+					currentLineLeading = group.leading;
+					
+				} else {
+					
+					currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
 					
 				}
-				}
 				
-			currentLineAscent = Math.max (currentLineAscent, group.ascent);
-			currentLineDescent = Math.max (currentLineDescent, group.descent);
-			
-			if (currentLineLeading == null) {
-				
-				currentLineLeading = group.leading;
-				
-			} else {
-				
-				currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
-				
-			}
-			
-			currentLineHeight = Math.max (currentLineHeight, group.height);
+				currentLineHeight = Math.max (currentLineHeight, group.height);
 
-					textHeight = group.offsetY - 2 + group.ascent + group.descent;
+				textHeight = group.offsetY - 2 + group.ascent + group.descent;
 
 				currentLineWidth = 0;
 
@@ -542,11 +542,11 @@ class TextEngine {
 
 					currentLineWidth += group.width;
 			
-			if (currentLineWidth > textWidth) {
-				
-				textWidth = currentLineWidth;
-				
-			}
+					if (currentLineWidth > textWidth) {
+						
+						textWidth = currentLineWidth;
+						
+					}
 			
 				}
 			}
@@ -731,10 +731,10 @@ class TextEngine {
 					
 			if ( lineLayoutGroups.length == lineIndex ) {
 				lineLayoutGroups.push([]);
-				}
+			}
 				
 			lineLayoutGroups[lineIndex].push(layoutGroup);
-			}
+		}
 			
 		inline function pushNewLine(textIndex:Int) {
 			layoutGroup.width = widthValue;
@@ -816,13 +816,13 @@ class TextEngine {
 						offsetX = layoutGroup.offsetX + layoutGroup.width;
 						pushLayoutGroup();
 						fillLayoutGroup(formatRange.format, textIndex, formatRange.end);
+					}
 				}
-			}
 			} else {
-			// :NOTE: Why the offset by 2 pixels?
-			if ( wordWrap && layoutGroup.offsetX + widthValue > width - 2 ) {
-				pushNewLine(textIndex);
-			}
+				// :NOTE: Why the offset by 2 pixels?
+				if ( wordWrap && layoutGroup.offsetX + widthValue > width - 2 ) {
+					pushNewLine(textIndex);
+				}
 			}
 
 			// add text advance and check for updated format range.
@@ -834,7 +834,7 @@ class TextEngine {
 
 				nextFormatRange();
 				fillLayoutGroup(formatRange.format, formatRange.start, formatRange.end);
-		}
+			}
 		
 			addAdvance(text,textIndex);
 
@@ -870,71 +870,71 @@ class TextEngine {
 				if ( groups.length > 0 ) {
 					group = groups[0];
 				
-				lineIndex = group.lineIndex;
-				
-				switch (group.format.align) {
+					lineIndex = group.lineIndex;
 					
-					case CENTER:
+					switch (group.format.align) {
 						
-						if (lineWidths[lineIndex] < realWidth - 4) {
+						case CENTER:
 							
-							offsetX = Math.round ((realWidth - 4 - lineWidths[lineIndex]) / 2);
-							
-						} else {
-							
-							offsetX = 0;
-							
-						}
-					
-					case RIGHT:
+							if (lineWidths[lineIndex] < realWidth - 4) {
+								
+								offsetX = Math.round ((realWidth - 4 - lineWidths[lineIndex]) / 2);
+								
+							} else {
+								
+								offsetX = 0;
+								
+							}
 						
-						if (lineWidths[lineIndex] < realWidth - 4) {
+						case RIGHT:
 							
-							offsetX = Math.round (realWidth - 4 - lineWidths[lineIndex]);
-							
-						} else {
-							
-							offsetX = 0;
-							
-						}
-					
-					case JUSTIFY:
+							if (lineWidths[lineIndex] < realWidth - 4) {
+								
+								offsetX = Math.round (realWidth - 4 - lineWidths[lineIndex]);
+								
+							} else {
+								
+								offsetX = 0;
+								
+							}
 						
-						if (lineWidths[lineIndex] < realWidth - 4) {
-							if ( groups.length > 1 ) {
-								group = groups[groups.length-1];
-								if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
-									
-									offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
-									
-									for (j in 0...groups.length ) {
+						case JUSTIFY:
+							
+							if (lineWidths[lineIndex] < realWidth - 4) {
+								if ( groups.length > 1 ) {
+									group = groups[groups.length-1];
+									if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
 										
-										groups[j].offsetX += (offsetX * j);
+										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
+										
+										for (j in 0...groups.length ) {
+											
+											groups[j].offsetX += (offsetX * j);
+											
+										}
 										
 									}
-									
 								}
 							}
-						}
-						offsetX = 0;
-					
-					default:
+							offsetX = 0;
 						
-						offsetX = 0;
-					
+						default:
+							
+							offsetX = 0;
+						
+					}
 				}
-			}
-			
-			if (offsetX > 0) {
 				
+				if (offsetX > 0) {
+					
 					for ( group in groups ) {
-				group.offsetX += offsetX;
+						group.offsetX += offsetX;
+						
+					}
 				
-			}
+				}
 			
-		}
-		
-	}
+			}
 		}
 
 	}
