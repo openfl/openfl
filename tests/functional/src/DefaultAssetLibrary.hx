@@ -96,8 +96,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 	public override function loadBytes (id:String):Future<Bytes> {
 
 		var promise = new Promise<Bytes> ();
-        promise.completeWith (new Future<Bytes> (function () return getBytes (id)));
-        return promise.future;
+		promise.completeWith (new Future<Bytes> (function () return getBytes (id)));
+		return promise.future;
 
 	}
 
@@ -105,8 +105,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 	public override function loadImage (id:String):Future<Image> {
 
 		var promise = new Promise<Image> ();
-        promise.completeWith (new Future<Image> (function () return getImage (id)));
-        return promise.future;
+		promise.completeWith (new Future<Image> (function () return getImage (id)));
+		return promise.future;
 
 	}
 
@@ -114,7 +114,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 	public override function loadText (id:String):Future<String> {
 
 		var promise = new Promise<String> ();
-        promise.completeWith (loadBytes (id).then (function (bytes) {
+		promise.completeWith (loadBytes (id).then (function (bytes) {
 
 			return new Future<String> (function () {
 
@@ -131,7 +131,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 			});
 
 		}));
-        return promise.future;
+		return promise.future;
 
 	}
 

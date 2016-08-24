@@ -23,7 +23,7 @@ class Matrix3D {
 			
 		} else {
 			
-			rawData = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ];
+			rawData = Vector.ofArray ([ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]);
 			
 		}
 		
@@ -66,23 +66,56 @@ class Matrix3D {
 	
 	public function appendRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
-		var m = __getAxisRotation (axis.x, axis.y, axis.z, degrees);
+		var tx:Float, ty:Float, tz:Float;
+		tx = ty = tz = 0;
 		
 		if (pivotPoint != null) {
-			
-			var p = pivotPoint;
-			m.appendTranslation (p.x, p.y, p.z);
-			
+			tx = pivotPoint.x;
+			ty = pivotPoint.y;
+			tz = pivotPoint.z;
 		}
-		
-		this.append (m);
+		var radian = degrees * Math.PI/180;
+		var cos = Math.cos(radian);
+		var sin = Math.sin(radian);
+		var x = axis.x;
+		var y = axis.y;
+		var z = axis.z;
+		var x2 = x * x;
+		var y2 = y * y;
+		var z2 = z * z;
+		var ls = x2 + y2 + z2;
+		if (ls != 0) {
+			var l = Math.sqrt(ls);
+			x /= l;
+			y /= l;
+			z /= l;
+			x2 /= ls;
+			y2 /= ls;
+			z2 /= ls;
+		}
+		var ccos = 1 - cos;
+		var m = new Matrix3D();
+		var d = m.rawData;
+		d[0]  = x2 + (y2 + z2) * cos;
+		d[1]  = x * y * ccos + z * sin;
+		d[2]  = x * z * ccos - y * sin;
+		d[4]  = x * y * ccos - z * sin;
+		d[5]  = y2 + (x2 + z2) * cos;
+		d[6]  = y * z * ccos + x * sin;
+		d[8]  = x * z * ccos + y * sin;
+		d[9]  = y * z * ccos - x * sin;
+		d[10] = z2 + (x2 + y2) * cos;
+		d[12] = (tx * (y2 + z2) - x * (ty * y + tz * z)) * ccos + (ty * z - tz * y) * sin;
+		d[13] = (ty * (x2 + z2) - y * (tx * x + tz * z)) * ccos + (tz * x - tx * z) * sin;
+		d[14] = (tz * (x2 + y2) - z * (tx * x + ty * y)) * ccos + (tx * y - ty * x) * sin;
+		this.append(m);
 		
 	}
 	
 	
 	public function appendScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
-		this.append (new Matrix3D ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ]));
+		this.append (new Matrix3D (Vector.ofArray ([ xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0 ])));
 		
 	}
 	
@@ -327,14 +360,14 @@ class Matrix3D {
 		var c = Math.cos (theta);
 		var s = Math.sin (theta);
 		
-		return new Matrix3D ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, x, y, 0, 1 ]);
+		return new Matrix3D (Vector.ofArray ([ c * scale, -s * scale, 0, 0, s * scale, c * scale, 0, 0, 0, 0, 1, 0, x, y, 0, 1 ]));
 		
 	}
 	
 	
 	public static function createABCD (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Matrix3D {
 		
-		return new Matrix3D ([ a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, tx, ty, 0, 1 ]);
+		return new Matrix3D (Vector.ofArray ([ a, b, 0, 0, c, d, 0, 0, 0, 0, 1, 0, tx, ty, 0, 1 ]));
 		
 	}
 	
@@ -345,7 +378,7 @@ class Matrix3D {
 		var sy = 1.0 / (y1 - y0);
 		var sz = 1.0 / (zFar - zNear);
 		
-		return new Matrix3D ([ 2.0 * sx, 0, 0, 0, 0, 2.0 * sy, 0, 0, 0, 0, -2.0 * sz, 0, -(x0 + x1) * sx, -(y0 + y1) * sy, -(zNear + zFar) * sz, 1 ]);
+		return new Matrix3D (Vector.ofArray ([ 2.0 * sx, 0, 0, 0, 0, 2.0 * sy, 0, 0, 0, 0, -2.0 * sz, 0, -(x0 + x1) * sx, -(y0 + y1) * sy, -(zNear + zFar) * sz, 1 ]));
 		
 	}
 	
@@ -487,7 +520,7 @@ class Matrix3D {
 	
 	public function identity ():Void {
 		
-		rawData = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ];
+		rawData = Vector.ofArray ([ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0 ]);
 		
 	}
 	
@@ -659,14 +692,47 @@ class Matrix3D {
 	
 	public function prependRotation (degrees:Float, axis:Vector3D, pivotPoint:Vector3D = null):Void {
 		
-		var m = __getAxisRotation (axis.x, axis.y, axis.z, degrees);
-		
-		if (pivotPoint != null) {
-			
-			var p = pivotPoint;
-			m.appendTranslation (p.x, p.y, p.z);
-			
+		var tx:Float, ty:Float, tz:Float;
+		tx = ty = tz = 0;
+		if ( pivotPoint != null ) {
+			tx = pivotPoint.x;
+			ty = pivotPoint.y;
+			tz = pivotPoint.z;
 		}
+		var radian = degrees *  Math.PI/180;
+		var cos = Math.cos(radian);
+		var sin = Math.sin(radian);
+		var x = axis.x;
+		var y = axis.y;
+		var z = axis.z;
+		var x2 = x * x;
+		var y2 = y * y;
+		var z2 = z * z;
+		var ls = x2 + y2 + z2;
+		if (ls != 0) {
+			var l = Math.sqrt(ls);
+			x /= l;
+			y /= l;
+			z /= l;
+			x2 /= ls;
+			y2 /= ls;
+			z2 /= ls;
+		}
+		var ccos = 1 - cos;
+		var m = new Matrix3D();
+		var d = m.rawData;
+		d[0]  = x2 + (y2 + z2) * cos;
+		d[1]  = x * y * ccos + z * sin;
+		d[2]  = x * z * ccos - y * sin;
+		d[4]  = x * y * ccos - z * sin;
+		d[5]  = y2 + (x2 + z2) * cos;
+		d[6]  = y * z * ccos + x * sin;
+		d[8]  = x * z * ccos + y * sin;
+		d[9]  = y * z * ccos - x * sin;
+		d[10] = z2 + (x2 + y2) * cos;
+		d[12] = (tx * (y2 + z2) - x * (ty * y + tz * z)) * ccos + (ty * z - tz * y) * sin;
+		d[13] = (ty * (x2 + z2) - y * (tx * x + tz * z)) * ccos + (tz * x - tx * z) * sin;
+		d[14] = (tz * (x2 + y2) - z * (tx * x + ty * y)) * ccos + (tx * y - ty * x) * sin;
 		
 		this.prepend (m);
 		
@@ -675,7 +741,7 @@ class Matrix3D {
 	
 	public function prependScale (xScale:Float, yScale:Float, zScale:Float):Void {
 		
-		this.prepend (new Matrix3D ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0]));
+		this.prepend (new Matrix3D (Vector.ofArray ([xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zScale, 0.0, 0.0, 0.0, 0.0, 1.0])));
 		
 	}
 	
@@ -745,7 +811,7 @@ class Matrix3D {
 				var z = components[1].z;
 				var w = components[1].w;
 				
-				if (Type.enumEq(orientationStyle, Orientation3D.AXIS_ANGLE)) {
+				if (orientationStyle == Orientation3D.AXIS_ANGLE) {
 					
 					x *= Math.sin (w / 2);
 					y *= Math.sin (w / 2);

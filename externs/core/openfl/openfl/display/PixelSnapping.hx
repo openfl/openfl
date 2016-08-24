@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if (display || !flash)
 
 
 /**
@@ -6,14 +6,14 @@ package openfl.display;
  * the pixel snapping options by using the <code>pixelSnapping</code> property
  * of a Bitmap object.
  */
-@:enum abstract PixelSnapping(String) from String to String {
+@:enum abstract PixelSnapping(Null<Int>) {
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
 	 * Bitmap object to specify that the bitmap image is always snapped to the
 	 * nearest pixel, independent of any transformation.
 	 */
-	public var ALWAYS = "always";
+	public var ALWAYS = 0;
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
@@ -24,12 +24,43 @@ package openfl.display;
 	 * setting allows the image to be drawn as fast as possible by using the
 	 * vector renderer.
 	 */
-	public var AUTO = "auto";
+	public var AUTO = 1;
 	
 	/**
 	 * A constant value used in the <code>pixelSnapping</code> property of a
 	 * Bitmap object to specify that no pixel snapping occurs.
 	 */
-	public var NEVER = "never";
+	public var NEVER = 2;
+	
+	@:from private static function fromString (value:String):PixelSnapping {
+		
+		return switch (value) {
+			
+			case "always": ALWAYS;
+			case "auto": AUTO;
+			case "never": NEVER;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case PixelSnapping.ALWAYS: "always";
+			case PixelSnapping.AUTO: "auto";
+			case PixelSnapping.NEVER: "never";
+			default: null;
+			
+		}
+		
+	}
 	
 }
+
+
+#else
+typedef PixelSnapping = flash.display.PixelSnapping;
+#end

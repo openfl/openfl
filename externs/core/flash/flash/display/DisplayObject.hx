@@ -13,14 +13,14 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
+	public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
 	#end
 	
 	public var alpha:Float;
 	public var blendMode:BlendMode;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var blendShader (null, default):Shader;
+	@:require(flash10) public var blendShader (null, default):Shader;
 	#end
 	
 	public var cacheAsBitmap:Bool;
@@ -37,15 +37,15 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var rotation:Float;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
+	@:require(flash10) public var rotationX:Float;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
+	@:require(flash10) public var rotationY:Float;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var rotationZ:Float;
+	@:require(flash10) public var rotationZ:Float;
 	#end
 	
 	public var scale9Grid:Rectangle;
@@ -53,7 +53,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var scaleY:Float;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
+	@:require(flash10) public var scaleZ:Float;
 	#end
 	
 	public var scrollRect:Rectangle;
@@ -65,7 +65,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public var y:Float;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) var z:Float;
+	@:require(flash10) var z:Float;
 	#end
 	
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle;
@@ -73,7 +73,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	public function globalToLocal (pos:Point):Point;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
+	@:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
 	#end
 	
 	public function hitTestObject (obj:DisplayObject):Bool;
@@ -82,7 +82,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
+	@:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
 	#end
 	
 	

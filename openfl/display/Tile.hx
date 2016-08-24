@@ -7,30 +7,52 @@ import openfl.geom.Matrix;
 class Tile {
 	
 	
+	public var alpha (default, set):Float;
 	public var data:Dynamic;
-	public var id(default, set):Int;
+	public var id (default, set):Int;
 	public var matrix:Matrix;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
+	public var tileset (default, set):Tileset;
+	public var visible:Bool;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 	
-	private var __dirtyTranform:Bool = true;
-	private var __dirtyUV:Bool = true;
-	
-	private var __transform:Array<Float> = [];
+	private var __alphaDirty:Bool;
+	private var __sourceDirty:Bool;
+	private var __transform:Array<Float>;
+	private var __transformDirty:Bool;
 	
 	
 	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0) {
 		
 		this.id = id;
+		
 		this.matrix = new Matrix ();
 		if (x != 0) this.x = x;
 		if (y != 0) this.y = y;
 		if (scaleX != 1) this.scaleX = scaleX;
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
+		
+		alpha = 1;
+		visible = true;
+		
+		__alphaDirty = true;
+		__sourceDirty = true;
+		__transformDirty = true;
+		__transform = [];
+		
+	}
+	
+	
+	public function clone ():Tile {
+		
+		var tile = new Tile (id);
+		tile.matrix = matrix.clone ();
+		tile.tileset = tileset;
+		return tile;
 		
 	}
 	
@@ -40,6 +62,22 @@ class Tile {
 	// Get & Set Methods
 	
 	
+	
+	
+	private function set_alpha (value:Float):Float {
+		
+		__alphaDirty = true;
+		return alpha = value;
+		
+	}
+	
+	
+	private function set_id (value:Int):Int {
+		
+		__sourceDirty = true;
+		return id = value;
+		
+	}
 	
 	
 	private function get_rotation ():Float {
@@ -62,7 +100,8 @@ class Tile {
 		matrix.b = rotationSine * __scaleX;
 		matrix.c = -rotationSine * __scaleY;
 		matrix.d = rotationCosine * __scaleY;
-		__dirtyTranform = true;
+		
+		__transformDirty = true;
 		
 		return value;
 		
@@ -105,7 +144,7 @@ class Tile {
 			
 		}
 		
-		__dirtyTranform = true;
+		__transformDirty = true;
 		
 		return value;
 		
@@ -148,48 +187,49 @@ class Tile {
 			
 		}
 		
-		__dirtyTranform = true;
+		__transformDirty = true;
 		
 		return value;
 		
 	}
 	
 	
-	private inline function get_x ():Float {
+	private function set_tileset (value:Tileset):Tileset {
+		
+		__sourceDirty = true;
+		return tileset = value;
+		
+	}
+	
+	
+	private function get_x ():Float {
 		
 		return matrix.tx;
 		
 	}
 	
 	
-	private inline function get_y ():Float {
+	private function get_y ():Float {
 		
 		return matrix.ty;
 		
 	}
 	
 	
-	private inline function set_x (value:Float):Float {
+	private function set_x (value:Float):Float {
 		
-		__dirtyTranform = true;
+		__transformDirty = true;
 		return matrix.tx = value;
 		
 	}
 	
 	
-	private inline function set_y (value:Float):Float {
+	private function set_y (value:Float):Float {
 		
-		__dirtyTranform = true;
+		__transformDirty = true;
 		return matrix.ty = value;
 		
 	}
 	
-	
-	private inline function set_id (value:Int):Int {
-		
-		__dirtyUV = true;
-		return id = value;
-		
-	}
 	
 }

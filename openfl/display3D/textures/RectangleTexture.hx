@@ -2,43 +2,45 @@ package openfl.display3D.textures;
 
 
 import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLTexture;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
+import openfl._internal.stage3D.GLUtils;
 import openfl.display.BitmapData;
-import openfl.display3D.Context3D;
+import openfl.errors.IllegalOperationError;
+import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 
 
 @:final class RectangleTexture extends TextureBase {
 	
 	
-	private static var __internalFormat:Int = -1;
+	//private var __format:Context3DTextureFormat;
+	private var __height:Int;
 	private var __optimizeForRenderToTexture:Bool;
+	private var __width:Int;
 	
 	
-	private function new (context:Context3D, glTexture:GLTexture, optimize:Bool, width:Int, height:Int) {
+	private function new (context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool) {
 		
-		__optimizeForRenderToTexture = optimize;
+		super (context, GL.TEXTURE_2D);
 		
-		if (__internalFormat == -1) {
-			
-			#if native
-			__internalFormat = GL.BGRA_EXT;
-			#else
-			__internalFormat = GL.RGBA;
-			#end
-			
-		}
+		__width = width;
+		__height = height;
+		//__format = format;
+		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		
-		super (context, glTexture, width, height);
+		uploadFromTypedArray (null);
 		
 	}
 	
 	
 	public function uploadFromBitmapData (source:BitmapData):Void {
 		
+		if (source == null) return;
+		
 		var image = source.image;
+		
+		if (image == null) return;
 		
 		if (!image.premultiplied && image.transparent) {
 			
@@ -47,9 +49,6 @@ import openfl.utils.ByteArray;
 			
 		}
 		
-		__width = image.width;
-		__height = image.height;
-		
 		uploadFromTypedArray (image.data);
 		
 	}
@@ -57,40 +56,39 @@ import openfl.utils.ByteArray;
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
-		uploadFromTypedArray (__getUInt8ArrayFromByteArray (data, byteArrayOffset));
-		
-	}
-	
-	
-	// TODO: Should there be a typed array API, or just use ByteArray?
-	
-	
-	@:deprecated("uploadFromUInt8Array is deprecated. Use uploadFromTypedArray instead.")
-	@:noCompletion @:dox(hide) public inline function uploadFromUInt8Array (data:UInt8Array):Void {
-		
-		uploadFromTypedArray (data);
-		
-	}
-	
-	
-	@:noCompletion @:dox(hide) public function uploadFromTypedArray (data:ArrayBufferView, yFlipped:Bool = false, premultiplied:Bool = true):Void {
-		
-		// TODO use premultiplied parameter
-		
-		GL.bindTexture (GL.TEXTURE_2D, __glTexture);
-		
-		#if (js && html5)
-		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, yFlipped ? 0 : 1);
-		#else
-		if (!yFlipped) {
+		#if js
+		if (byteArrayOffset == 0) {
 			
-			data = __flipPixels (data, __width, __height);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			return;
 			
 		}
 		#end
 		
-		GL.texImage2D (GL.TEXTURE_2D, 0, __internalFormat, __width, __height, 0, __internalFormat, GL.UNSIGNED_BYTE, data);
-		GL.bindTexture (GL.TEXTURE_2D, null);
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		
+	}
+	
+	
+	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+		
+		//if (__format != Context3DTextureFormat.BGRA) {
+			//
+			//throw new IllegalOperationError ();
+			//
+		//}
+		
+		GL.bindTexture (__textureTarget, __textureID);
+		GLUtils.CheckGLError ();
+		
+		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
+		GLUtils.CheckGLError ();
+		
+		GL.bindTexture (__textureTarget, null);
+		GLUtils.CheckGLError ();
+		
+		var memUsage = (__width * __height) * 4;
+		__trackMemoryUsage (memUsage);
 		
 	}
 	

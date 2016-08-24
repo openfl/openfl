@@ -6,7 +6,7 @@ package flash.errors; #if (!display && flash)
 	
 	public function new (message:String = "");
 	
-
+	
 }
 
 

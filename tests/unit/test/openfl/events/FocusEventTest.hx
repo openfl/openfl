@@ -153,9 +153,9 @@ class FocusEventTest {
 		
 		// Build this scene graph...
 		//
-		//      /--> old1 ---> old2
+		//	  /--> old1 ---> old2
 		// root-
-		//      \--> new1 ---> new2
+		//	  \--> new1 ---> new2
 		//
 		// And move the focus from old2 to new2.
 		

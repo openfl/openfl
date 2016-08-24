@@ -125,7 +125,12 @@ class SimpleButton extends InteractiveObject {
 			
 			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
-				stack[stack.length - 1] = hitObject;
+				if (stack != null) {
+					
+					stack[stack.length - 1] = hitObject;
+					
+				}
+				
 				hitTest = true;
 				
 			}
@@ -152,9 +157,13 @@ class SimpleButton extends InteractiveObject {
 		// TODO: Better fix?
 		// (this is caused by the "hitObject" logic in hit testing)
 		
-		while (stack.length > 1 && stack[stack.length - 1] == stack[stack.length - 2]) {
+		if (stack != null) {
 			
-			stack.pop ();
+			while (stack.length > 1 && stack[stack.length - 1] == stack[stack.length - 2]) {
+				
+				stack.pop ();
+				
+			}
 			
 		}
 		

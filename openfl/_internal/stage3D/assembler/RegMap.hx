@@ -1,4 +1,4 @@
-package openfl._internal.aglsl.assembler;
+package openfl._internal.stage3D.assembler;
 
 
 import haxe.ds.StringMap;

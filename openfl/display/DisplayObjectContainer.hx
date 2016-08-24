@@ -11,6 +11,7 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.Vector;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
@@ -41,36 +42,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	public function addChild (child:DisplayObject):DisplayObject {
 		
-		if (child != null) {
-			
-			if (child.parent != null) {
-				
-				child.parent.removeChild (child);
-				
-			}
-			
-			__children.push (child);
-			child.parent = this;
-			
-			if (stage != null) {
-				
-				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
-				
-				child.__setStageReference (stage);
-				
-			}
-			
-			child.__setTransformDirty ();
-			child.__setRenderDirty ();
-			__setRenderDirty();
-			
-			var event = new Event (Event.ADDED, true);
-			event.target = child;
-			child.__dispatchEvent (event);
-			
-		}
-		
-		return child;
+		return addChildAt (child, numChildren);
 		
 	}
 	
@@ -86,6 +58,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (child.parent == this) {
 			
 			__children.remove (child);
+			__children.insert (index, child);
 			
 		} else {
 			
@@ -95,13 +68,24 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 			}
 			
+			__children.insert (index, child);
 			child.parent = this;
 			
-			if (stage != null) {
+			var addedToStage = (stage != null && child.stage == null);
+			
+			if (addedToStage) {
 				
-				// TODO: Dispatch ADDED_TO_STAGE after ADDED (but parent and stage must be set)
+				child.stage = stage;
 				
-				child.__setStageReference (stage);
+				if (child.__children != null) {
+					
+					for (_child in child.__children) {
+						
+						_child.stage = stage;
+						
+					}
+					
+				}
 				
 			}
 			
@@ -113,9 +97,25 @@ class DisplayObjectContainer extends InteractiveObject {
 			event.target = child;
 			child.__dispatchEvent (event);
 			
+			if (addedToStage) {
+				
+				var event = new Event (Event.ADDED_TO_STAGE, false, false);
+				
+				child.dispatchEvent (event);
+				
+				if (child.__children != null) {
+					
+					for (_child in child.__children) {
+						
+						_child.dispatchEvent (event);
+						
+					}
+					
+				}
+				
+			}
+			
 		}
-		
-		__children.insert (index, child);
 		
 		return child;
 		
@@ -168,6 +168,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	
 	public function getChildIndex (child:DisplayObject):Int {
 		
 		for (i in 0...__children.length) {
@@ -199,7 +200,43 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
-				child.__setStageReference (null);
+				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
+				
+				child.dispatchEvent (event);
+				
+				if (child.__children != null) {
+					
+					for (_child in child.__children) {
+						
+						_child.dispatchEvent (event);
+						
+					}
+					
+				}
+				
+				child.stage = null;
+				
+				if (stage.focus == child) {
+					
+					stage.focus = null;
+					
+				}
+				
+				if (child.__children != null) {
+					
+					for (_child in child.__children) {
+						
+						_child.stage = null;
+						
+						if (stage.focus == _child) {
+							
+							stage.focus = null;
+							
+						}
+						
+					}
+					
+				}
 				
 			}
 			
@@ -296,6 +333,13 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	public function stopAllMovieClips ():Void {
+		
+		__stopAllMovieClips ();
+		
+	}
+	
+	
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void {
 		
 		if (child1.parent == this && child2.parent == this) {
@@ -340,37 +384,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
 		swap = null;
-		
-	}
-	
-	
-	private override function __broadcast (event:Event, notifyChilden:Bool):Bool {
-		
-		if (event.target == null) {
-			
-			event.target = this;
-			
-		}
-		
-		var result = super.__broadcast (event, notifyChilden);
-		
-		if (!event.__isCanceled && notifyChilden) {
-			
-			for (child in __children) {
-				
-				child.__broadcast (event, true);
-				
-				if (event.__isCanceled) {
-					
-					return true;
-					
-				}
-				
-			}
-			
-		}
-		
-		return result;
 		
 	}
 	
@@ -550,6 +563,23 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 		
 		return false;
+		
+	}
+	
+	
+	private override function __readGraphicsData (graphicsData:Vector<IGraphicsData>, recurse:Bool):Void {
+		
+		super.__readGraphicsData (graphicsData, recurse);
+		
+		if (recurse) {
+			
+			for (child in __children) {
+				
+				child.__readGraphicsData (graphicsData, recurse);
+				
+			}
+			
+		}
 		
 	}
 	
@@ -739,33 +769,11 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __setStageReference (stage:Stage):Void {
+	private override function __stopAllMovieClips ():Void {
 		
-		if (this.stage != stage) {
+		for (child in __children) {
 			
-			if (this.stage != null) {
-				
-				__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
-				
-			}
-			
-			this.stage = stage;
-			
-			if (stage != null) {
-				
-				__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
-				
-			}
-			
-			if (__children != null) {
-				
-				for (child in __children) {
-					
-					child.__setStageReference (stage);
-					
-				}
-				
-			}
+			child.__stopAllMovieClips ();
 			
 		}
 		

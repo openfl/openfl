@@ -70,11 +70,11 @@ class Transform {
 	}
 	
 	
-	private function get_matrix ():Matrix {
+	private function get_concatenatedMatrix ():Matrix {
 		
 		if (__hasMatrix) {
 			
-			return __displayObject.__transform.clone ();
+			return __displayObject.__getWorldTransform ().clone ();
 			
 		}
 		
@@ -82,12 +82,12 @@ class Transform {
 		
 	}
 	
-
-	private function get_concatenatedMatrix ():Matrix {
+	
+	private function get_matrix ():Matrix {
 		
 		if (__hasMatrix) {
 			
-			return __displayObject.__getWorldTransform ().clone ();
+			return __displayObject.__transform.clone ();
 			
 		}
 		
@@ -136,7 +136,7 @@ class Transform {
 		if (__hasMatrix3D) {
 			
 			var matrix = __displayObject.__transform;
-			return new Matrix3D ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]);
+			return new Matrix3D (Vector.ofArray ([ matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0 ]));
 			
 		}
 		

@@ -12,7 +12,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	public var tabChildren:Bool;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var textSnapshot (default, null):flash.text.TextSnapshot;
+	public var textSnapshot (default, null):flash.text.TextSnapshot;
 	#end
 	
 	
@@ -29,11 +29,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	public function removeChildAt (index:Int):DisplayObject;
 	@:require(flash11) public function removeChildren (beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void;
 	public function setChildIndex (child:DisplayObject, index:Int):Void;
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_8) public function stopAllMovieClips ():Void;
-	#end
-	
+	@:require(flash11_8) public function stopAllMovieClips ():Void;
 	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void;
 	public function swapChildrenAt (index1:Int, index2:Int):Void;
 	

@@ -15,7 +15,7 @@ import openfl.Vector;
 	public function beginGradientFill (type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
+	@:require(flash10) public function beginShaderFill (shader:Shader, matrix:Matrix = null):Void;
 	#end
 	
 	public function clear ():Void;
@@ -37,11 +37,7 @@ import openfl.Vector;
 	public function lineStyle (thickness:Null<Float> = null, color:Null<UInt> = null, alpha:Null<Float> = null, pixelHinting:Null<Bool> = null, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle, miterLimit:Null<Float> = 3):Void;
 	public function lineTo (x:Float, y:Float):Void;
 	public function moveTo (x:Float, y:Float):Void;
-	
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_6) public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
-	#end
+	@:require(flash11_6) public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
 	
 	
 }

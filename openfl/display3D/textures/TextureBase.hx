@@ -1,111 +1,189 @@
 package openfl.display3D.textures;
 
 
-import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
-import lime.utils.ArrayBufferView;
-import lime.utils.UInt8Array;
+import openfl._internal.stage3D.SamplerState;
+import openfl._internal.stage3D.GLUtils;
 import openfl.events.EventDispatcher;
-import openfl.utils.ByteArray;
-import openfl.utils.ByteArray.ByteArrayData;
-
-@:access(openfl.display3D.Context3D)
+import openfl.errors.IllegalOperationError;
 
 
 class TextureBase extends EventDispatcher {
 	
 	
+	private static var __isGLES:Null<Bool>;
+	
+	private var __alphaTexture:Texture;
+	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
-	private var __frameBuffer:GLFramebuffer;
-	private var __glTexture:GLTexture;
-	private var __height:Int;
-	private var __width:Int;
+	private var __format:Int;
+	private var __internalFormat:Int;
+	private var __memoryUsage:Int;
+	private var __outputTextureMemoryUsage:Bool = false;
+	private var __samplerState:SamplerState;
+	private var __textureID:GLTexture;
+	private var __textureTarget:Int;
 	
 	
-	private function new (context:Context3D, glTexture:GLTexture, width:Int = 0, height:Int = 0) {
+	private function new (context:Context3D, target:Int) {
 		
 		super ();
 		
 		__context = context;
-		__width = width;
-		__height = height;
-		__glTexture = glTexture;
+		__textureTarget = target;
+		
+		__textureID = GL.createTexture ();
+		
+		
+		#if !sys
+		
+		__internalFormat = GL.RGBA;
+		__format = GL.RGBA;
+		
+		#elseif (ios || tvos)
+		
+		__internalFormat = GL.RGBA;
+		__format = GL.BGRA_EXT;
+		
+		#else
+		
+		if (__isGLES == null) {
+			
+			var version:String = GL.getParameter (GL.VERSION);
+			__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+			
+		}
+		
+		__internalFormat = (__isGLES ? GL.BGRA_EXT : GL.RGBA);
+		__format = GL.BGRA_EXT;
+		
+		#end
+		
+		__memoryUsage = 0;
+		__compressedMemoryUsage = 0;
 		
 	}
 	
 	
 	public function dispose ():Void {
 		
-		__context.__deleteTexture (this);
+		if (__alphaTexture != null) {
+			
+			__alphaTexture.dispose ();
+			
+		}
+		
+		GL.deleteTexture (__textureID);
+		
+		if (__compressedMemoryUsage > 0) {
+			
+			__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
+			var currentCompressedMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, __compressedMemoryUsage);
+			
+			#if debug
+			if (__outputTextureMemoryUsage) {
+				
+				trace (" - Texture Compressed GPU Memory (-" + __compressedMemoryUsage + ") - Current Compressed Memory : " + currentCompressedMemory);
+				
+			}
+			#end
+			
+			__compressedMemoryUsage = 0;
+			
+		}
+		
+		if (__memoryUsage > 0) {
+			
+			__context.__statsDecrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
+			var currentMemory = __context.__statsSubtract (Context3D.Context3DTelemetry.MEM_TEXTURE, __memoryUsage);
+			
+			#if debug
+			if (__outputTextureMemoryUsage) {
+				
+				trace (" - Texture GPU Memory (-" + __memoryUsage + ") - Current Memory : " + currentMemory);
+				
+			}
+			#end
+			
+			__memoryUsage = 0;
+			
+		}
 		
 	}
 	
 	
-	private function __flipPixels (inData:ArrayBufferView, _width:Int, _height:Int):UInt8Array {
+	private function __setSamplerState (state:SamplerState):Void {
 		
-		#if native
-		if (inData == null) {
+		if (!state.equals (__samplerState)) {
 			
-			return null;
+			GL.bindTexture (__textureTarget, __textureID);
+			GLUtils.CheckGLError ();
+			GL.texParameteri (__textureTarget, GL.TEXTURE_MIN_FILTER, state.minFilter);
+			GLUtils.CheckGLError ();
+			GL.texParameteri (__textureTarget, GL.TEXTURE_MAG_FILTER, state.magFilter);
+			GLUtils.CheckGLError ();
+			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_S, state.wrapModeS);
+			GLUtils.CheckGLError ();
+			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_T, state.wrapModeT);
+			GLUtils.CheckGLError ();
+			
+			if (state.lodBias != 0.0) {
+				
+				// TODO
+				//throw new IllegalOperationError("Lod bias setting not supported yet");
+				
+			}
+			
+			__samplerState = state;
 			
 		}
 		
-		var data = __getUInt8ArrayFromArrayBufferView (inData);
-		var data2 = new UInt8Array (data.length);
-		var bpp = 4;
-		var bytesPerLine = _width * bpp;
-		var srcPosition = (_height - 1) * bytesPerLine;
-		var dstPosition = 0;
+	}
+	
+	
+	private function __trackCompressedMemoryUsage (memory:Int):Void {
 		
-		for (i in 0 ... _height) {
+		if (__compressedMemoryUsage == 0) {
 			
-			data2.set (data.subarray (srcPosition, srcPosition + bytesPerLine), dstPosition);
-			srcPosition -= bytesPerLine;
-			dstPosition += bytesPerLine;
+			__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE_COMPRESSED);
 			
 		}
 		
-		return data2;
-		#else
-		return null;
+		__compressedMemoryUsage += memory;
+		var currentCompressedMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE_COMPRESSED, memory);
+		
+		#if debug
+		if (__outputTextureMemoryUsage) {
+			
+			trace (" + Texture Compressed GPU Memory (+" + memory + ") - Current Compressed Memory : " + currentCompressedMemory);
+			
+		}
 		#end
 		
+		__trackMemoryUsage (memory);
+		
 	}
 	
 	
-	private function __getSizeForMipLevel (miplevel:Int):{ width:Int, height:Int } {
+	private function __trackMemoryUsage (memory:Int):Void {
 		
-		var _width = __width;
-		var _height = __height;
-		var lv = miplevel;
-		
-		while (lv > 0) {
+		if (__memoryUsage == 0) {
 			
-			_width >>= 1;
-			_height >>= 1;
-			lv >>= 1;
+			__context.__statsIncrement (Context3D.Context3DTelemetry.COUNT_TEXTURE);
 			
 		}
 		
-		return { width: _width, height: _height };
+		__memoryUsage += memory;
+		var currentMemory = __context.__statsAdd (Context3D.Context3DTelemetry.MEM_TEXTURE, memory);
 		
-	}
-	
-	
-	private function __getUInt8ArrayFromByteArray (data:ByteArray, byteArrayOffset:Int):UInt8Array {
-		
-		#if js
-		return byteArrayOffset == 0 ? @:privateAccess (data:ByteArrayData).b : new UInt8Array (data.toArrayBuffer (), byteArrayOffset);
-		#else
-		return new UInt8Array (data.toArrayBuffer (), byteArrayOffset);
+		#if debug
+		if (__outputTextureMemoryUsage) {
+			
+			trace (" + Texture GPU Memory (+" + memory + ") - Current Memory : " + currentMemory);
+			
+		}
 		#end
-		
-	}
-	
-	
-	private function __getUInt8ArrayFromArrayBufferView (data:ArrayBufferView):UInt8Array {
-		
-		return new UInt8Array (data.buffer, data.byteOffset, data.byteLength);
 		
 	}
 	

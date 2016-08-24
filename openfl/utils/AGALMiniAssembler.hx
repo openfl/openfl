@@ -2,17 +2,13 @@ package openfl.utils;
 
 
 import lime.graphics.opengl.GL;
-import openfl._internal.aglsl.assembler.FS;
-import openfl._internal.aglsl.assembler.Part;
-import openfl._internal.aglsl.assembler.Opcode;
-import openfl._internal.aglsl.assembler.OpcodeMap;
-import openfl._internal.aglsl.assembler.RegMap;
-import openfl._internal.aglsl.assembler.Sampler;
-import openfl._internal.aglsl.assembler.SamplerMap;
-import openfl._internal.aglsl.AGALTokenizer;
-import openfl._internal.aglsl.AGLSLCompiler;
-import openfl._internal.aglsl.AGLSLParser;
-import openfl._internal.aglsl.Description;
+import openfl._internal.stage3D.assembler.FS;
+import openfl._internal.stage3D.assembler.Opcode;
+import openfl._internal.stage3D.assembler.OpcodeMap;
+import openfl._internal.stage3D.assembler.Part;
+import openfl._internal.stage3D.assembler.RegMap;
+import openfl._internal.stage3D.assembler.Sampler;
+import openfl._internal.stage3D.assembler.SamplerMap;
 import openfl.display3D.Context3DProgramType;
 import openfl.errors.Error;
 
@@ -37,8 +33,6 @@ class AGALMiniAssembler {
 	
 	
 	public function assemble (programType:Context3DProgramType, source:String):Dynamic {
-		
-		#if flash
 		
 		var agalMiniAssembler:AGALMiniAssembler = new AGALMiniAssembler ();
 		var data:ByteArray = null;
@@ -65,52 +59,6 @@ class AGALMiniAssembler {
 		}
 		
 		return agalcode = data;
-		
-		#elseif (cpp || neko || js)
-		
-		var aglsl:AGLSLCompiler = new AGLSLCompiler ();
-		var glType:Int;
-		var shaderType:String;
-		
-		switch (programType) {
-			
-			case VERTEX:
-				
-				glType = GL.VERTEX_SHADER;
-				shaderType = "vertex";
-			
-			default:
-				
-				glType = GL.FRAGMENT_SHADER;
-				shaderType = "fragment";
-			
-		}
-		
-		//trace ("--- AGAL ---\n" + shaderSource);
-		
-		var shaderSourceString = aglsl.compile (shaderType, source);
-		var shader = GL.createShader (glType);
-		
-		GL.shaderSource (shader, shaderSourceString);
-		GL.compileShader (shader);
-		
-		if (GL.getShaderParameter (shader, GL.COMPILE_STATUS) == 0) {
-			
-			trace("--- ERR ---\n" + shaderSourceString);
-			var err = GL.getShaderInfoLog (shader);
-			if (err != "") throw err;
-			
-		} 
-		
-		//trace ("--- GLSL ---\n" + shaderSourceString);
-		
-		return shader;
-		
-		#else
-		
-		return null;
-		
-		#end
 		
 	}
 	
@@ -139,7 +87,7 @@ class AGALMiniAssembler {
 	}
 	
 	
-	private function __assemble (source:String, ext_part = null, ext_version = null):Dynamic {
+	private function __assemble (source:String, ext_part = null, ext_version = null):Map<String, Part> {
 		
 		if (ext_version == 0) {
 			

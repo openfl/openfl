@@ -12,18 +12,18 @@ extern class Video extends DisplayObject {
 	public var smoothing:Bool;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var videoHeight (default, null):Int;
+	public var videoHeight (default, null):Int;
 	#end
 	
 	#if flash
-	@:noCompletion @:dox(hide) public var videoWidth (default, null):Int;
+	public var videoWidth (default, null):Int;
 	#end
 	
 	
 	public function new (width:Int = 320, height:Int = 240):Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function attachCamera (camera:flash.media.Camera):Void;
+	public function attachCamera (camera:flash.media.Camera):Void;
 	#end
 	
 	public function attachNetStream (netStream:NetStream) : Void;

@@ -1,4 +1,38 @@
-4.0.0 (06/08/2016)
+4.0.3 (07/27/2016)
+------------------
+
+* Added openfl.media.SoundMixer
+* Added Utils3D.projectVectors
+* Added sprite.stopAllMovieClips
+* Added bitmapData.drawWithQuality
+* Added some support for graphics.readGraphicsData
+* Improved support for Matrix3D appendRotation/prependRotation
+* Fixed a crash regression on current-generation Android devices
+
+
+4.0.2 (07/22/2016)
+------------------
+
+* Improved the behavior of Tilemap on the GL renderer
+* Improved the behavior of stage focus events when leaving the window
+* Fixed support for ByteArray deflate/inflate
+* Fixed support for increasing ByteArray size using array access
+* Fixed an issue where netStream.time was not updated on HTML5 video
+
+
+4.0.1 (07/20/2016)
+------------------
+
+* Added mixing of tilesets in Tilemap, removed TilemapLayer
+* Added support for tile.alpha and tile.visible in Tilemap
+* Added dictionary.remove to allow deletion of keys
+* Implemented Tilemap support in Cairo and DOM renderers
+* Added -Dopenfl-disable-graphics-upscaling
+* Updated extern enum types for Flash and native
+* Minor fix to GL masking
+
+
+4.0.0 (07/08/2016)
 ------------------
 
 * Rewrote the OpenGL renderer for simplicity and performance

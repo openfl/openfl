@@ -311,9 +311,7 @@ extern class Event {
 	 */
 	public static inline var TAB_INDEX_CHANGE = "tabIndexChange";
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public static var TEXTURE_READY:String;
-	#end
+	public static inline var TEXTURE_READY = "textureReady";
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;

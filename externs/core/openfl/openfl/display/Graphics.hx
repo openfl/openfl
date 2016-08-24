@@ -649,9 +649,7 @@ import openfl.Vector;
 	public function moveTo (x:Float, y:Float):Void;
 	
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_6) public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
-	#end
+	public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData>;
 	
 	
 }

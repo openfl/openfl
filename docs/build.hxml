@@ -1,6 +1,6 @@
 # Generate platform-specific XML for documentation output
 
--xml Flash.xml
+-xml xml/Flash.xml
 -swf obj/docs
 -swf-version 17.0
 -D display
@@ -15,7 +15,7 @@ ImportAll
 
 --next
 
--xml Windows.xml
+-xml xml/Windows.xml
 -cpp obj/docs
 -D display
 -D native
@@ -30,7 +30,7 @@ ImportAll
 
 --next
 
--xml Mac.xml
+-xml xml/macOS.xml
 -cpp obj/docs
 -D display
 -D native
@@ -45,7 +45,7 @@ ImportAll
 
 --next
 
--xml Linux.xml
+-xml xml/Linux.xml
 -cpp obj/docs
 -D display
 -D native
@@ -60,7 +60,7 @@ ImportAll
 
 --next
 
--xml Neko.xml
+-xml xml/Neko.xml
 -neko obj/docs
 -D display
 -D native
@@ -74,7 +74,7 @@ ImportAll
 
 --next
 
--xml iOS.xml
+-xml xml/iOS.xml
 -cpp obj/docs
 -D display
 -D native
@@ -89,7 +89,7 @@ ImportAll
 
 --next
 
--xml Android.xml
+-xml xml/Android.xml
 -cpp obj/docs
 -D display
 -D native
@@ -104,22 +104,22 @@ ImportAll
 
 --next
 
--xml BlackBerry.xml
--cpp obj/docs
--D display
--D native
--D blackberry
--D doc_gen
-ImportAll
--lib lime
--lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
---no-output
+#-xml xml/BlackBerry.xml
+#-cpp obj/docs
+#-D display
+#-D native
+#-D blackberry
+#-D doc_gen
+#ImportAll
+#-lib lime
+#-lib openfl
+#-cp ../externs/core/openfl
+#-cp ../externs/extras
+#--no-output
+#
+#--next
 
---next
-
-#-xml Tizen.xml
+#-xml xml/Tizen.xml
 #-cpp obj/docs
 #-D display
 #-D native
@@ -133,11 +133,25 @@ ImportAll
 #
 #--next
 
--xml Firefox.xml
+#-xml xml/Firefox.xml
+#-js obj/docs
+#-D display
+#-D html5
+#-D firefox
+#-D doc_gen
+#ImportAll
+#-lib lime
+#-lib openfl
+#-cp ../externs/core/openfl
+#-cp ../externs/extras
+#--no-output
+#
+#--next
+
+-xml xml/HTML5.xml
 -js obj/docs
 -D display
 -D html5
--D firefox
 -D doc_gen
 ImportAll
 -lib lime
@@ -148,18 +162,4 @@ ImportAll
 
 --next
 
--xml HTML5.xml
--js obj/docs
--D display
--D html5
--D doc_gen
-ImportAll
--lib lime
--lib openfl
--cp ../externs/core/openfl
--cp ../externs/extras
---no-output
-
---next
-
--cmd haxelib run dox -i . -theme flambe -ex flash --title "OpenFL API Documentation"
+-cmd haxelib run dox -i xml -ex flash --title "API Reference" -D website "http://www.openfl.org" -D logo "http://www.openfl.org/images/logo.png" -D textColor 0x777777 -theme ./theme

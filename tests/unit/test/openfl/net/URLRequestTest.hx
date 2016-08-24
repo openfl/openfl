@@ -66,7 +66,7 @@ class URLRequestTest {
 		
 	}
 
-    @Test public function userAgent () {
+	@Test public function userAgent () {
 		
 		// TODO: Confirm functionality
 		

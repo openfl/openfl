@@ -3,17 +3,12 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import lime.utils.compress.Deflate;
+import lime.utils.compress.LZMA;
+import lime.utils.compress.Zlib;
 import lime.utils.ArrayBuffer;
 import lime.utils.Bytes in LimeBytes;
-import lime.utils.LZMA;
 import openfl.errors.EOFError;
-
-#if sys
-import haxe.zip.Compress;
-import haxe.zip.Uncompress;
-#elseif format
-import format.tools.Inflate;
-#end
 
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
@@ -59,6 +54,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#elseif flash
 		this[index] = value;
 		#else
+		this.__resize (index + 1);
 		this.set (index, value);
 		#end
 		return value;
@@ -262,42 +258,37 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	public function compress (algorithm:CompressionAlgorithm = null):Void {
+	public function compress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if sys
-		
-		if (algorithm == null) {
+		#if (js && html5)
+		if (__length > length) {
 			
-			algorithm = CompressionAlgorithm.ZLIB;
+			var cacheLength = length;
+			this.length = __length;
+			var data = Bytes.alloc (cacheLength);
+			data.blit (0, this, 0, cacheLength);
+			__setData (data);
+			this.length = cacheLength;
 			
 		}
-		
-		if (algorithm == CompressionAlgorithm.LZMA) {
-			
-			__setData (LZMA.encode (this));
-			
-		} else {
-			
-			var windowBits = switch (algorithm) {
-				
-				case DEFLATE: -15;
-				case GZIP: 31;
-				default: 15;
-				
-			}
-			
-			#if enable_deflate
-			__setData (Compress.run (this, 8, windowBits));
-			#else
-			__setData (Compress.run (this, 8));
-			#end
-			
-		}
-		
 		#end
 		
-		__length = this.length;
-		position = __length;
+		var bytes = switch (algorithm) {
+			
+			case CompressionAlgorithm.DEFLATE: Deflate.compress (this);
+			case CompressionAlgorithm.LZMA: LZMA.compress (this);
+			default: Zlib.compress (this);
+			
+		}
+		
+		if (bytes != null) {
+			
+			__setData (bytes);
+			
+			length = __length;
+			position = length;
+			
+		}
 		
 	}
 	
@@ -542,46 +533,37 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	}
 	
 	
-	public function uncompress (algorithm:CompressionAlgorithm = null):Void {
+	public function uncompress (algorithm:CompressionAlgorithm = ZLIB):Void {
 		
-		#if sys
-		
-		if (algorithm == null) {
+		#if (js && html5)
+		if (__length > length) {
 			
-			algorithm = CompressionAlgorithm.GZIP;
+			var cacheLength = length;
+			this.length = __length;
+			var data = Bytes.alloc (cacheLength);
+			data.blit (0, this, 0, cacheLength);
+			__setData (data);
+			this.length = cacheLength;
 			
 		}
-		
-		if (algorithm == CompressionAlgorithm.LZMA) {
-			
-			__setData (LZMA.decode (this));
-			
-		} else {
-			
-			var windowBits = switch (algorithm) {
-				
-				case DEFLATE: -15;
-				case GZIP: 31;
-				default: 15;
-				
-			}
-			
-			#if enable_deflate
-			__setData (Uncompress.run (this, null, windowBits));
-			#else
-			__setData (Uncompress.run (this, null));
-			#end
-			
-		}
-		
-		#elseif format
-		
-		__setData (Inflate.run (this));
-		
 		#end
 		
-		__length = this.length;
-		position = 0;
+		var bytes = switch (algorithm) {
+			
+			case CompressionAlgorithm.DEFLATE: Deflate.decompress (this);
+			case CompressionAlgorithm.LZMA: LZMA.decompress (this);
+			default: Zlib.decompress (this);
+			
+		};
+		
+		if (bytes != null) {
+			
+			__setData (bytes);
+			
+			length = __length;
+			position = __length;
+			
+		}
 		
 	}
 	
@@ -839,7 +821,8 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	#if (flash && !display)
 	public var bytesAvailable (default, null):UInt;
 	#else
-	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
+	public var bytesAvailable (get, never):UInt;
+	private inline function get_bytesAvailable ():UInt { return length - position; }
 	#end
 	
 	/**

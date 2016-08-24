@@ -6,6 +6,7 @@ import lime.graphics.Image;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.DrawCommandBuffer;
+import openfl._internal.renderer.DrawCommandReader;
 //import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.display.Shader;
 import openfl.errors.ArgumentError;
@@ -578,6 +579,15 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
+	public function readGraphicsData (recurse:Bool = true):Vector<IGraphicsData> {
+		
+		var graphicsData = new Vector<IGraphicsData> ();
+		__owner.__readGraphicsData (graphicsData, recurse);
+		return graphicsData;
+		
+	}
+	
+	
 	private function __calculateBezierCubicPoint (t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float {
 		
 		var iT = 1 - t;
@@ -695,6 +705,114 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
+	private function __readGraphicsData (graphicsData:Vector<IGraphicsData>):Void {
+		
+		var data = new DrawCommandReader (__commands);
+		var path;
+		
+		for (type in __commands.types) {
+			
+			switch (type) {
+				
+				case CUBIC_CURVE_TO:
+					
+					var c = data.readCubicCurveTo ();
+					
+					// TODO: Convert cubic curve to bezier path
+				
+				case CURVE_TO:
+					
+					var c = data.readCurveTo ();
+					path = new GraphicsPath ();
+					path.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
+					graphicsData.push (path);
+				
+				case LINE_TO:
+					
+					var c = data.readLineTo ();
+					path = new GraphicsPath ();
+					path.lineTo (c.x, c.y);
+					graphicsData.push (path);
+					
+				case MOVE_TO:
+					
+					var c = data.readMoveTo ();
+					path = new GraphicsPath ();
+					path.moveTo (c.x, c.y);
+					graphicsData.push (path);
+				
+				case LINE_GRADIENT_STYLE:
+					
+					var c = data.readLineGradientStyle ();
+					
+					// TODO
+				
+				case LINE_BITMAP_STYLE:
+					
+					var c = data.readLineBitmapStyle ();
+					
+					// TODO
+				
+				case LINE_STYLE:
+					
+					var c = data.readLineStyle ();
+					graphicsData.push (new GraphicsStroke (c.thickness, /*c.color, c.alpha,*/ c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit));
+				
+				case END_FILL:
+					
+					data.readEndFill ();
+					graphicsData.push (new GraphicsEndFill ());
+				
+				case BEGIN_BITMAP_FILL:
+					
+					var c = data.readBeginBitmapFill ();
+					graphicsData.push (new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth));
+				
+				case BEGIN_FILL:
+					
+					var c = data.readBeginFill ();
+					graphicsData.push (new GraphicsSolidFill (c.color, 1));
+				
+				case BEGIN_GRADIENT_FILL:
+					
+					var c = data.readBeginGradientFill ();
+					graphicsData.push (new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio));
+				
+				case DRAW_CIRCLE:
+					
+					var c = data.readDrawCircle ();
+					
+					// TODO
+				
+				case DRAW_ELLIPSE:
+					
+					var c = data.readDrawEllipse ();
+					
+					// TODO
+				
+				case DRAW_RECT:
+					
+					var c = data.readDrawEllipse ();
+					
+					// TODO
+				
+				case DRAW_ROUND_RECT:
+					
+					var c = data.readDrawEllipse ();
+					
+					// TODO
+				
+				default:
+					
+					data.skip (type);
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	private function __update ():Void {
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
@@ -721,6 +839,11 @@ import js.html.CanvasRenderingContext2D;
 			scaleY = Math.sqrt (parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
 			
 		}
+		
+		#if openfl_disable_graphics_upscaling
+		if (scaleX > 1) scaleX = 1;
+		if (scaleY > 1) scaleY = 1;
+		#end
 		
 		var width = __bounds.width * scaleX;
 		var height = __bounds.height * scaleY;

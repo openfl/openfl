@@ -9,10 +9,10 @@ class OpenGLViewTest {
 	
 	@Test public function isSupported () {
 		
-		#if (cpp || neko || nodejs || (html5 && webgl) || (html5 && dom))
-		Assert.isTrue (OpenGLView.isSupported);
-		#else
+		#if (flash || console || (js && html5 && (dom || canvas)))
 		Assert.isFalse (OpenGLView.isSupported);
+		#else
+		Assert.isTrue (OpenGLView.isSupported);
 		#end
 		
 	}

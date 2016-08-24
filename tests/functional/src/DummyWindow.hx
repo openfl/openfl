@@ -6,13 +6,13 @@ import openfl.display.Stage;
 
 class DummyWindow extends Window {
 
-    public function new () {
+	public function new () {
 
-        super ({ width: 800, height: 600 });
+		super ({ width: 800, height: 600 });
 
-    }
+	}
 
-    public override function create (application:Application):Void {
+	public override function create (application:Application):Void {
 
 		super.create (application);
 

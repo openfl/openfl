@@ -1,6 +1,7 @@
 package openfl.media;
 
 
+import haxe.Timer;
 import haxe.io.Path;
 import lime.audio.AudioBuffer;
 import lime.audio.AudioSource;
@@ -9,6 +10,8 @@ import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
+
+@:access(openfl.media.SoundMixer)
 
 @:autoBuild(openfl.Assets.embedSound())
 
@@ -69,6 +72,7 @@ class Sound extends EventDispatcher {
 		if (__registeredSounds.exists (__soundID)) {
 			
 			SoundJS.removeSound (__soundID);
+			__registeredSounds.remove (__soundID);
 			
 		}
 		
@@ -113,8 +117,12 @@ class Sound extends EventDispatcher {
 			SoundJS.registerSound (url, __soundID);
 			
 		} else {
-			
-			dispatchEvent (new Event (Event.COMPLETE));
+
+			Timer.delay(function() {
+
+				dispatchEvent (new Event (Event.COMPLETE));
+
+			}, 1);
 			
 		}
 		
@@ -159,34 +167,39 @@ class Sound extends EventDispatcher {
 	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
+		if (sndTransform == null) {
+			
+			sndTransform = new SoundTransform ();
+			
+		} else {
+			
+			sndTransform = sndTransform.clone ();
+			
+		}
+		
+		var pan = SoundMixer.__soundTransform.pan + sndTransform.pan;
+		
+		if (pan > 1) pan = 1;
+		if (pan < -1) pan = -1;
+		
+		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
+		
 		#if !html5
 		
 		var source = new AudioSource (__buffer);
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
 		
-		if (sndTransform != null) {
-			
-			source.gain = sndTransform.volume;
-			
-			var position = source.position;
-			position.x = sndTransform.pan;
-			position.z = -1 * Math.sqrt (1 - Math.pow (sndTransform.pan, 2));
-			source.position = position;
-			
-		}
+		source.gain = volume;
 		
-		return new SoundChannel (source);
+		var position = source.position;
+		position.x = pan;
+		position.z = -1 * Math.sqrt (1 - Math.pow (pan, 2));
+		source.position = position;
+		
+		return new SoundChannel (source, sndTransform);
 		
 		#else
-		
-		if (sndTransform == null) {
-			
-			sndTransform = new SoundTransform (1, 0);
-			
-		}
-		
-		var pan = sndTransform.pan;
 		
 		// Hack to fix sound balance
 		
@@ -194,11 +207,11 @@ class Sound extends EventDispatcher {
 		
 		var instance = 
 		if (loops > 1)
-			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops - 1, sndTransform.volume, pan);
+			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), loops - 1, volume, pan);
 		else
-			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), 0, sndTransform.volume, pan);
+			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), 0, volume, pan);
 		
-		return new SoundChannel (instance);
+		return new SoundChannel (instance, sndTransform);
 		
 		#end
 		

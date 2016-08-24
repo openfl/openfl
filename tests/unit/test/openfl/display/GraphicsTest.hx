@@ -282,7 +282,7 @@ class GraphicsTest {
 		
 	}
 	
-
+	
 	@Test public function copyFrom () {
 
 		// copyFrom of a Graphics with empty bounds shouldn't

@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if (display || !flash)
 
 
 /**
@@ -22,22 +22,53 @@ package openfl.display;
  * <code>TriangleCulling.NEGATIVE</code> algorithm is used, triangles with
  * negative normals will not be rendered. </p>
  */
-@:enum abstract TriangleCulling(String) from String to String {
+@:enum abstract TriangleCulling(Null<Int>) {
 	
 	/**
 	 * Specifies culling of all triangles facing toward the current view point.
 	 */
-	public var NEGATIVE = "negative";
+	public var NEGATIVE = 0;
 	
 	/**
 	 * Specifies no culling. All triangles in the path are rendered.
 	 */
-	public var NONE = "none";
+	public var NONE = 1;
 	
 	/**
 	 * Specifies culling of all triangles facing away from the current view
 	 * point. This is also known as backface culling.
 	 */
-	public var POSITIVE = "positive";
+	public var POSITIVE = 2;
+	
+	@:from private static function fromString (value:String):TriangleCulling {
+		
+		return switch (value) {
+			
+			case "negative": NEGATIVE;
+			case "none": NONE;
+			case "positive": POSITIVE;
+			default: null;
+			
+		}
+		
+	}
+	
+	@:to private static function toString (value:Int):String {
+		
+		return switch (value) {
+			
+			case TriangleCulling.NEGATIVE: "negative";
+			case TriangleCulling.NONE: "none";
+			case TriangleCulling.POSITIVE: "positive";
+			default: null;
+			
+		}
+		
+	}
 	
 }
+
+
+#else
+typedef TriangleCulling = flash.display.TriangleCulling;
+#end

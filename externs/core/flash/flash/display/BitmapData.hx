@@ -18,7 +18,7 @@ extern class BitmapData implements IBitmapDrawable {
 	public var height (default, null):Int;
 	
 	public var image (get, never):Image;
-	@:noCompletion private inline function get_image ():Image { return null; }
+	private inline function get_image ():Image { return null; }
 	
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
@@ -33,16 +33,12 @@ extern class BitmapData implements IBitmapDrawable {
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
+	@:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
 	#end
 	
 	public function dispose ():Void;
-	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false):Void;
-	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality) : Void;
-	#end
-	
+	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void;
+	@:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null) : Void;
 	@:require(flash11_3) public function encode (rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
 	public function fillRect (rect:Rectangle, color:UInt):Void;
 	public function floodFill (x:Int, y:Int, color:UInt):Void;
@@ -95,7 +91,7 @@ extern class BitmapData implements IBitmapDrawable {
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
+	public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
 	#end
 	
 	public function scroll (x:Int, y:Int):Void;

@@ -5,22 +5,22 @@ import openfl.events.Event;
 
 class NMEPreloader extends Sprite {
 
-    public function new () {
+	public function new () {
 
-        super();
+		super();
 
-    }
+	}
 
-    public function onLoaded () {
+	public function onLoaded () {
 
 		dispatchEvent (new Event (Event.COMPLETE));
 
 	}
 
-    public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
-    }
+	public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
+	}
 
-    public function onInit () {
-    }
+	public function onInit () {
+	}
 
 }

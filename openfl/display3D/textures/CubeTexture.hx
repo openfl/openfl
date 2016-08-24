@@ -2,35 +2,31 @@ package openfl.display3D.textures;
 
 
 import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLTexture;
-import openfl.display3D.Context3D;
+import openfl.display.BitmapData;
+import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
-
-using openfl.display.BitmapData;
 
 
 @:final class CubeTexture extends TextureBase {
 	
 	
+	//private var __format:Context3DTextureFormat;
+	private var __optimizeForRenderToTexture:Bool;
 	private var __size:Int;
-	private var __textures:Array<GLTexture>;
-	private var __mipmapsGenerated:Bool;
+	private var __streamingLevels:Int;
+	private var __uploadedSides:Int;
 	
 	
-	private function new (context:Context3D, glTexture:GLTexture, size:Int) {
+	private function new (context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
 		
-		super (context, glTexture, size, size);
+		super (context, GL.TEXTURE_CUBE_MAP);
 		
 		__size = size;
-		__mipmapsGenerated = false;
+		//__format = format;
+		__optimizeForRenderToTexture = optimizeForRenderToTexture;
+		__streamingLevels = streamingLevels;
 		
-		__textures = [];
-		
-		for (i in 0...6) {
-			
-			__textures[i] = GL.createTexture ();
-			
-		}
+		__uploadedSides = 0;
 		
 	}
 	
@@ -42,49 +38,28 @@ using openfl.display.BitmapData;
 	}
 	
 	
-	public function uploadFromBitmapData (source:BitmapData, side:UInt, miplevel:UInt = 0):Void {
+	public function uploadFromBitmapData (source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void {
 		
-		var data = source.image.data;
+		GL.bindTexture (__textureTarget, __textureID);
 		
-		#if (js && html5)
-		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 0);
-		#end
-		
-		GL.bindTexture (GL.TEXTURE_CUBE_MAP, __glTexture);
-		
-		switch (side) {
+		var target = switch (side) {
 			
-			case 0:
-				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_X, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-			
-			case 1:
-				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_X, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-			
-			case 2:
-				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Y, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-			
-			case 3:
-				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Y, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-			
-			case 4:
-				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_POSITIVE_Z, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-			
-			case 5:
-				
-				GL.texImage2D (GL.TEXTURE_CUBE_MAP_NEGATIVE_Z, miplevel, GL.RGBA, source.width, source.height, 0, GL.RGBA, GL.UNSIGNED_BYTE, data);
-			
-			default:
-				
-				throw "unknown side type";
+			case 0: GL.TEXTURE_CUBE_MAP_POSITIVE_X;
+			case 1: GL.TEXTURE_CUBE_MAP_NEGATIVE_X;
+			case 2: GL.TEXTURE_CUBE_MAP_POSITIVE_Y;
+			case 3: GL.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+			case 4: GL.TEXTURE_CUBE_MAP_POSITIVE_Z;
+			case 5: GL.TEXTURE_CUBE_MAP_NEGATIVE_Z;
+			default: throw new IllegalOperationError ();
 			
 		}
 		
-		GL.bindTexture (GL.TEXTURE_CUBE_MAP, null);
+		// TODO: upload
+		
+		__uploadedSides |= 1 << side;
+		//__trackMemoryUsage (__width * __height * 4);
+		
+		GL.bindTexture (__textureTarget, null);
 		
 	}
 	
@@ -92,13 +67,6 @@ using openfl.display.BitmapData;
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void {
 		
 		// TODO
-		
-	}
-	
-	
-	private function __glTextureAt (index:Int):GLTexture {
-		
-		return __textures[index];
 		
 	}
 	

@@ -28,42 +28,53 @@ class Shader {
 		byteCode = code;
 		precisionHint = FULL;
 		
-		glVertexSource =
+		if (glVertexSource == null) {
 			
-			"attribute vec4 aPosition;
-			attribute vec2 aTexCoord;
-			varying vec2 vTexCoord;
-			
-			uniform mat4 uMatrix;
-			
-			void main(void) {
+			glVertexSource =
 				
-				vTexCoord = aTexCoord;
-				gl_Position = uMatrix * aPosition;
+				"attribute float aAlpha;
+				attribute vec4 aPosition;
+				attribute vec2 aTexCoord;
+				varying float vAlpha;
+				varying vec2 vTexCoord;
 				
-			}";
+				uniform mat4 uMatrix;
+				
+				void main(void) {
+					
+					vAlpha = aAlpha;
+					vTexCoord = aTexCoord;
+					gl_Position = uMatrix * aPosition;
+					
+				}";
+			
+		}
 		
-		glFragmentSource = 
+		if (glFragmentSource == null) {
 			
-			"varying vec2 vTexCoord;
-			uniform sampler2D uImage0;
-			uniform float uAlpha;
-			
-			void main(void) {
+			glFragmentSource = 
 				
-				vec4 color = texture2D (uImage0, vTexCoord);
+				"varying float vAlpha;
+				varying vec2 vTexCoord;
+				uniform sampler2D uImage0;
 				
-				if (color.a == 0.0) {
+				void main(void) {
 					
-					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+					vec4 color = texture2D (uImage0, vTexCoord);
 					
-				} else {
+					if (color.a == 0.0) {
+						
+						gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+						
+					} else {
+						
+						gl_FragColor = vec4 (color.rgb / color.a, color.a * vAlpha);
+						
+					}
 					
-					gl_FragColor = vec4 (color.rgb / color.a, color.a * uAlpha);
-					
-				}
+				}";
 				
-			}";
+		}
 		
 		__init ();
 		

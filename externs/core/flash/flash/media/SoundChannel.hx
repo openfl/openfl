@@ -13,7 +13,7 @@ import openfl.events.EventDispatcher;
 	public var soundTransform:SoundTransform;
 	
 	#if flash
-	@:noCompletion @:dox(hide) public function new ();
+	public function new ();
 	#end
 	
 	public function stop ():Void;

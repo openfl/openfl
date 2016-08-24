@@ -14,7 +14,7 @@ extern class Transform {
 	@:require(flash10) public var matrix3D:Matrix3D;
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;
+	@:require(flash10) public var perspectiveProjection:PerspectiveProjection;
 	#end
 	
 	public var pixelBounds (default, null):Rectangle;
@@ -22,7 +22,7 @@ extern class Transform {
 	public function new (displayObject:DisplayObject);
 	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
+	@:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
 	#end
 	
 	

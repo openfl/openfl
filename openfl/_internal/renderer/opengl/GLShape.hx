@@ -39,9 +39,9 @@ class GLShape {
 				
 				var shader;
 				
-				if (shape.filters != null && Std.is (shape.filters[0], ShaderFilter)) {
+				if (shape.__filters != null && Std.is (shape.__filters[0], ShaderFilter)) {
 					
-					shader = cast (shape.filters[0], ShaderFilter).shader;
+					shader = cast (shape.__filters[0], ShaderFilter).shader;
 					
 				} else {
 					
@@ -55,7 +55,7 @@ class GLShape {
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
 				
-				gl.uniform1f (shader.data.uAlpha.index, shape.__worldAlpha);
+				gl.enableVertexAttribArray (shader.data.aAlpha.index);
 				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (graphics.__worldTransform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
@@ -63,9 +63,10 @@ class GLShape {
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 				
-				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl));
-				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+				gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha));
+				gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+				gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+				gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 				
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				

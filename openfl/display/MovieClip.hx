@@ -95,6 +95,14 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	}
 	
 	
+	private override function __stopAllMovieClips ():Void {
+		
+		super.__stopAllMovieClips ();
+		stop ();
+		
+	}
+	
+	
 	
 	
 	// Getters & Setters

@@ -29,7 +29,36 @@ class Utils3D {
 	}
 	
 	
-	//static function projectVectors(m : Matrix3D, verts : flash.Vector<Float>, projectedVerts : flash.Vector<Float>, uvts : flash.Vector<Float>) : Void;
+	public static function projectVectors (m:Matrix3D, verts:Vector<Float>, projectedVerts:Vector<Float>, uvts:Vector<Float>):Void {
+		
+		if ( verts.length % 3 != 0 ) return;
+		
+		var n = m.rawData,
+			x:Float, y:Float, z:Float, w:Float,
+			x1:Float, y1:Float, z1:Float, w1:Float,
+			i:Int = 0;
+		
+		while ( i < verts.length ) {
+			x = verts[i];
+			y = verts[i + 1];
+			z = verts[i + 2];
+			w = 1;
+			
+			x1 = x * n[0] + y * n[4] + z * n[8] + w * n[12];
+			y1 = x * n[1] + y * n[5] + z * n[9] + w * n[13];
+			z1 = x * n[2] + y * n[6] + z * n[10] + w * n[14];
+			w1 = x * n[3] + y * n[7] + z * n[11] + w * n[15];
+			
+			projectedVerts.push( x1 / w1 );
+			projectedVerts.push( y1 / w1 );
+			
+			uvts.push( 0 );
+			uvts.push( 1/w1 );
+			
+			i += 3;
+		}
+		
+	}
 	
 	
 }

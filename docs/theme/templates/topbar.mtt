@@ -1,0 +1,30 @@
+<style>
+::raw "
+a, code .type {
+	color: #24afc4;
+}
+.navbar .brand {
+	display: inline-block;
+	float: none;
+	text-shadow: 0 0 0 transparent;
+}
+.nav-list>.active>a.treeLink, .nav-list>.active>a.treeLink:hover, .nav-list>.active>a.treeLink:focus {
+	background: #24afc4;
+	color: #ffffff;
+	text-shadow: 0 0 0 transparent;
+}
+.navbar .container img {
+	margin: 5px 0 0 4px;
+}
+"::
+</style>
+<nav class="nav">
+	<div class="navbar">
+		<div class="navbar-inner" style="background:$$getHexValue(::themeColor::); border-bottom:1px solid rgba(0,0,0,.09)">
+			<div class="container">
+				<a ::cond api.isDefined("logo"):: ::attr href if(api.isDefined("website")) api.getValue("website") else api.config.rootPath:: class="brand"><img alt="" ::attr src api.getValue("logo"):: /></a>
+				<a ::attr href api.config.rootPath:: class="brand" style="color:$$getHexValue(::textColor::)">::if api.config.pageTitle!=null::::api.config.pageTitle::::else::API Documentation::end::</a>
+			</div>
+		</div>
+	</div>
+</nav>
