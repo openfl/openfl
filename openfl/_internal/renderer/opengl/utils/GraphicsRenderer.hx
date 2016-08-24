@@ -1349,10 +1349,11 @@ class GLBucket {
 							for (j in 0...d.indices.length) {
 								tmp.indices[j + ii] = d.indices[j] + idx;
 							}
+
+							d.dispose();
 						}
 						idx = tmp.indices[tmp.indices.length - 1] + 1;
 						last = d;
-						d.dispose();
 					} else {
 						if (tmp != null) {
 							result.push(tmp);
