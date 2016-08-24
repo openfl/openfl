@@ -758,6 +758,12 @@ class TextEngine {
 			}
 		}
 
+		inline function removeLastAdvance() {
+			var value = advances[advances.length-1];
+			advances[advances.length-1] = 0;
+			widthValue -= value;
+		}
+
 		nextFormatRange();
 
 		fillLayoutGroup(formatRange.format, formatRange.start, formatRange.end);
@@ -770,13 +776,13 @@ class TextEngine {
 				addAdvance(text,textIndex);
 				pushNewLine(textIndex);
 			}
-			// keep the space on this line.
+			// remove the space.
 			if ( previousChar == " " || previousChar == "-" ) {
 				var iterator = textIndex-1;
 				var width_till_next_word = getAdvance(text,iterator);
 				iterator++;
-				if ( wordWrap && layoutGroup.offsetX + widthValue + width_till_next_word > width - 2 ) {
-					//addAdvance(text,textIndex);
+				if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width - 2 ) {
+					removeLastAdvance();
 					pushNewLine(textIndex);
 				} else {
 					var next_space = text.indexOf(" ", textIndex);
@@ -800,8 +806,8 @@ class TextEngine {
 						width_till_next_word += getAdvance(text,iterator);
 						iterator++;
 					}
-					if ( wordWrap && layoutGroup.offsetX + widthValue + width_till_next_word > width - 2 ) {
-						//addAdvance(text,textIndex);
+					if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width - 2 ) {
+						removeLastAdvance();
 						pushNewLine(textIndex);
 				}
 			}
