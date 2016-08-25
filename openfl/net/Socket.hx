@@ -30,9 +30,9 @@ import sys.net.Socket in SysSocket;
 class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (get, null) : Int;
-	public var bytesPending (get, null) : Int;
-	public var connected (get, null): Bool;
+	public var bytesAvailable (get, never) : Int;
+	public var bytesPending (get, never) : Int;
+	public var connected (get, never): Bool;
 	public var objectEncoding:UInt;
 	public var secure:Bool;
 	public var timeout:Int;

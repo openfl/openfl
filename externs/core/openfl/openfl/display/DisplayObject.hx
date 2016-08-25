@@ -384,7 +384,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * <p><b>Note</b>: For a DisplayObject that has been rotated, the returned x
 	 * coordinate will reflect the non-rotated object.</p>
 	 */
-	public var mouseX (get, null):Float;
+	public var mouseX (get, never):Float;
 	
 	/**
 	 * Indicates the y coordinate of the mouse or user input device position, in
@@ -393,7 +393,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * <p><b>Note</b>: For a DisplayObject that has been rotated, the returned y
 	 * coordinate will reflect the non-rotated object.</p>
 	 */
-	public var mouseY (get, null):Float;
+	public var mouseY (get, never):Float;
 	
 	/**
 	 * Indicates the instance name of the DisplayObject. The object can be
@@ -475,7 +475,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * as a child of a display object for which the <code>root</code> property is
 	 * set.</p>
 	 */
-	public var root (get, null):DisplayObject;
+	public var root (get, never):DisplayObject;
 	
 	/**
 	 * Indicates the rotation of the DisplayObject instance, in degrees, from its

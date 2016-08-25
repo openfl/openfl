@@ -7,8 +7,8 @@ import openfl.events.EventDispatcher;
 @:final class FrameLabel extends EventDispatcher {
 	
 	
-	public var frame (get, null):Int;
-	public var name (get, null):String;
+	public var frame (get, never):Int;
+	public var name (get, never):String;
 	
 	private var __frame:Int;
 	private var __name:String;

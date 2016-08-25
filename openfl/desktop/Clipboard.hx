@@ -8,7 +8,7 @@ import openfl.utils.Object;
 class Clipboard {
 	
 	
-	public static var generalClipboard (get, null):Clipboard;
+	public static var generalClipboard (get, never):Clipboard;
 	
 	private static var __generalClipboard:Clipboard;
 	

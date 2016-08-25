@@ -11,9 +11,9 @@ import openfl.utils.IDataOutput;
 extern class Socket extends EventDispatcher implements IDataInput implements IDataOutput {
 	
 	
-	public var bytesAvailable (get, null):UInt;
-	public var bytesPending (get, null):UInt;
-	public var connected (get, null):Bool;
+	public var bytesAvailable (get, never):UInt;
+	public var bytesPending (get, never):UInt;
+	public var connected (get, never):Bool;
 	public var endian (get, set):Endian;
 	public var objectEncoding:UInt;
 	public var timeout:UInt;

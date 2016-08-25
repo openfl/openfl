@@ -174,7 +174,7 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * <p>The server string is <code>L</code>.</p>
 	 */
-	public static var language (get, null):String;
+	public static var language (get, never):String;
 	
 	/**
 	 * Specifies whether read access to the user's hard disk has been
@@ -242,13 +242,13 @@ package openfl.system; #if (display || !flash)
 	 * corresponding to the capability for which you are testing. For more
 	 * information, see the Capabilities class description.</p>
 	 */
-	public static var os (get, null):String;
+	public static var os (get, never):String;
 	
 	/**
 	 * Specifies the pixel aspect ratio of the screen. The server string is
 	 * <code>AR</code>.
 	 */
-	public static var pixelAspectRatio (get, null):Float;
+	public static var pixelAspectRatio (get, never):Float;
 	
 	/**
 	 * Specifies the type of runtime environment. This property can have one of
@@ -282,7 +282,7 @@ package openfl.system; #if (display || !flash)
 	 * Specifies the dots-per-inch(dpi) resolution of the screen, in pixels. The
 	 * server string is <code>DP</code>.
 	 */
-	public static var screenDPI (get, null):Float;
+	public static var screenDPI (get, never):Float;
 	
 	/**
 	 * Specifies the maximum horizontal resolution of the screen. The server
@@ -292,7 +292,7 @@ package openfl.system; #if (display || !flash)
 	 * AIR application started. Also, the value only specifies the primary
 	 * screen.
 	 */
-	public static var screenResolutionX (get, null):Float;
+	public static var screenResolutionX (get, never):Float;
 	
 	/**
 	 * Specifies the maximum vertical resolution of the screen. The server string
@@ -301,7 +301,7 @@ package openfl.system; #if (display || !flash)
 	 * only indicates the resolution at the time Flash Player or an Adobe AIR
 	 * application started. Also, the value only specifies the primary screen.
 	 */
-	public static var screenResolutionY (get, null):Float;
+	public static var screenResolutionY (get, never):Float;
 	
 	/**
 	 * A URL-encoded string that specifies values for each Capabilities property.
@@ -354,7 +354,7 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * <p>The server string is <code>V</code>.</p>
 	 */
-	public static var version (get, null):String;
+	public static var version (get, never):String;
 	
 	
 	public static function hasMultiChannelAudio (type:String):Bool;

@@ -22,7 +22,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	public var mouseChildren:Bool;
-	public var numChildren (get, null):Int;
+	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
 	
 	private var __removedChildren:Array<DisplayObject>;

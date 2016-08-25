@@ -125,7 +125,7 @@ extern class Sound extends EventDispatcher {
 	 * href="http://www.adobe.com/go/devnet_security_en"
 	 * scope="external">Security</a>.</p>
 	 */
-	public var id3 (get, null):ID3Info;
+	public var id3 (get, never):ID3Info;
 	
 	/**
 	 * Returns the buffering state of external MP3 files. If the value is

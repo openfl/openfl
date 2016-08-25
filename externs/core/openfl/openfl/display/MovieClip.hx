@@ -44,14 +44,14 @@ extern class MovieClip extends Sprite {
 	 * timeline of the MovieClip instance. If the movie clip has multiple scenes,
 	 * this value is the frame number in the current scene.
 	 */
-	public var currentFrame (get, null):Int;
+	public var currentFrame (get, never):Int;
 	
 	/**
 	 * The label at the current frame in the timeline of the MovieClip instance.
 	 * If the current frame has no label, <code>currentLabel</code> is
 	 * <code>null</code>.
 	 */
-	public var currentFrameLabel (get, null):String;
+	public var currentFrameLabel (get, never):String;
 	
 	/**
 	 * The current label in which the playhead is located in the timeline of the
@@ -60,14 +60,14 @@ extern class MovieClip extends Sprite {
 	 * includes a label. If the current frame and previous frames do not include
 	 * a label, <code>currentLabel</code> returns <code>null</code>.
 	 */
-	public var currentLabel (get, null):String;
+	public var currentLabel (get, never):String;
 	
 	/**
 	 * Returns an array of FrameLabel objects from the current scene. If the
 	 * MovieClip instance does not use scenes, the array includes all frame
 	 * labels from the entire MovieClip instance.
 	 */
-	public var currentLabels (get, null):Array<FrameLabel>;
+	public var currentLabels (get, never):Array<FrameLabel>;
 	
 	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
@@ -98,7 +98,7 @@ extern class MovieClip extends Sprite {
 	 * <code>framesLoaded</code> property returns the number of frames loaded for
 	 * <i>all</i> scenes in the movie clip.</p>
 	 */
-	public var framesLoaded (get, null):Int;
+	public var framesLoaded (get, never):Int;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public var isPlaying (default, null):Bool;
@@ -115,7 +115,7 @@ extern class MovieClip extends Sprite {
 	 * <code>totalFrames</code> property returns the total number of frames in
 	 * <i>all</i> scenes in the movie clip.</p>
 	 */
-	public var totalFrames (get, null):Int;
+	public var totalFrames (get, never):Int;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;

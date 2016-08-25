@@ -54,7 +54,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	/**
 	 * Returns the number of children of this object.
 	 */
-	public var numChildren (get, null):Int;
+	public var numChildren (get, never):Int;
 	
 	
 	/**

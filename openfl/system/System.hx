@@ -14,9 +14,9 @@ import cpp.vm.Gc;
 @:final class System {
 	
 	
-	public static var totalMemory (get, null):Int;
+	public static var totalMemory (get, never):Int;
 	public static var useCodePage:Bool = false;
-	public static var vmVersion (get, null):String;
+	public static var vmVersion (get, never):String;
 	
 	
 	public static function exit (code:Int):Void {
