@@ -25,7 +25,7 @@ class Sound extends EventDispatcher {
 	
 	public var bytesLoaded (default, null):Int;
 	public var bytesTotal (default, null):Int;
-	public var id3 (get, null):ID3Info;
+	public var id3 (get, never):ID3Info;
 	public var isBuffering (default, null):Bool;
 	public var length (get, never):Float;
 	public var url (default, null):String;
@@ -44,7 +44,6 @@ class Sound extends EventDispatcher {
 		
 		bytesLoaded = 0;
 		bytesTotal = 0;
-		id3 = null;
 		isBuffering = false;
 		url = null;
 		

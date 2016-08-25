@@ -4,13 +4,13 @@ package openfl.display;
 class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	
 	
-	public var currentFrame (get, null):Int;
-	public var currentFrameLabel (get, null):String;
-	public var currentLabel (get, null):String;
-	public var currentLabels (get, null):Array<FrameLabel>;
+	public var currentFrame (get, never):Int;
+	public var currentFrameLabel (get, never):String;
+	public var currentLabel (get, never):String;
+	public var currentLabels (get, never):Array<FrameLabel>;
 	public var enabled:Bool;
-	public var framesLoaded (get, null):Int;
-	public var totalFrames (get, null):Int;
+	public var framesLoaded (get, never):Int;
+	public var totalFrames (get, never):Int;
 	
 	private var __currentFrame:Int;
 	private var __currentFrameLabel:String;

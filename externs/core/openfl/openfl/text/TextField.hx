@@ -188,7 +188,7 @@ extern class TextField extends InteractiveObject {
 	 * <p>All the text between the lines indicated by <code>scrollV</code> and
 	 * <code>bottomScrollV</code> is currently visible in the text field.</p>
 	 */
-	public var bottomScrollV (get, null):Int;
+	public var bottomScrollV (get, never):Int;
 	
 	/**
 	 * The index of the insertion point(caret) position. If no insertion point
@@ -199,7 +199,7 @@ extern class TextField extends InteractiveObject {
 	 * <p>Selection span indexes are zero-based(for example, the first position
 	 * is 0, the second position is 1, and so on).</p>
 	 */
-	public var caretIndex (get, null):Int;
+	public var caretIndex (get, never):Int;
 	
 	/**
 	 * Specifies the format applied to newly inserted text, such as text entered
@@ -289,7 +289,7 @@ extern class TextField extends InteractiveObject {
 	 * The number of characters in a text field. A character such as tab
 	 * (<code>\t</code>) counts as one character.
 	 */
-	public var length (get, null):Int;
+	public var length (get, never):Int;
 	
 	/**
 	 * The maximum number of characters that the text field can contain, as
@@ -305,12 +305,12 @@ extern class TextField extends InteractiveObject {
 	/**
 	 * The maximum value of <code>scrollH</code>.
 	 */
-	public var maxScrollH (get, null):Int;
+	public var maxScrollH (get, never):Int;
 	
 	/**
 	 * The maximum value of <code>scrollV</code>.
 	 */
-	public var maxScrollV (get, null):Int;
+	public var maxScrollV (get, never):Int;
 	
 	/**
 	 * Indicates whether field is a multiline text field. If the value is
@@ -331,7 +331,7 @@ extern class TextField extends InteractiveObject {
 	 * <code>wordWrap</code> property is set to <code>true</code>, the number of
 	 * lines increases when text wraps.
 	 */
-	public var numLines (get, null):Int;
+	public var numLines (get, never):Int;
 	
 	/**
 	 * Indicates the set of characters that a user can enter into the text field.
@@ -441,7 +441,7 @@ extern class TextField extends InteractiveObject {
 	 * 1, and so on. If no text is selected, this property is the value of
 	 * <code>caretIndex</code>.
 	 */
-	public var selectionBeginIndex (get, null):Int;
+	public var selectionBeginIndex (get, never):Int;
 	
 	/**
 	 * The zero-based character index value of the last character in the current
@@ -449,7 +449,7 @@ extern class TextField extends InteractiveObject {
 	 * 1, and so on. If no text is selected, this property is the value of
 	 * <code>caretIndex</code>.
 	 */
-	public var selectionEndIndex (get, null):Int;
+	public var selectionEndIndex (get, never):Int;
 	
 	/**
 	 * The sharpness of the glyph edges in this text field. This property applies
@@ -487,12 +487,12 @@ extern class TextField extends InteractiveObject {
 	/**
 	 * The height of the text in pixels.
 	 */
-	public var textHeight (get, null):Float;
+	public var textHeight (get, never):Float;
 	
 	/**
 	 * The width of the text in pixels.
 	 */
-	public var textWidth (get, null):Float;
+	public var textWidth (get, never):Float;
 	
 	/**
 	 * The type of the text field. Either one of the following TextFieldType

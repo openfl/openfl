@@ -8,8 +8,8 @@ import openfl.utils.ByteArray;
 
 @:final extern class RectangleTexture extends TextureBase {
 
-    public var width(get, null):Int;
-    public var height(get, null):Int;
+    public var width(get, never):Int;
+    public var height(get, never):Int;
     private var mWidth(default, null):Int;
     private var mHeight(default, null):Int;
     private var mFormat(default, null):String;

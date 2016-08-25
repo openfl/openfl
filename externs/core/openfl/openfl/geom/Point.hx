@@ -29,7 +29,7 @@ extern class Point {
 	/**
 	 * The length of the line segment from(0,0) to this point.
 	 */
-	public var length (get, null):Float;
+	public var length (get, never):Float;
 	
 	/**
 	 * The horizontal coordinate of the point. The default value is 0.

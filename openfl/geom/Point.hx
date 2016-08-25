@@ -7,7 +7,7 @@ import lime.math.Vector2;
 class Point {
 	
 	
-	public var length (get, null):Float;
+	public var length (get, never):Float;
 	public var x:Float;
 	public var y:Float;
 	

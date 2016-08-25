@@ -7,7 +7,7 @@ package openfl.display;
 class Shape extends DisplayObject {
 	
 	
-	public var graphics (get, null):Graphics;
+	public var graphics (get, never):Graphics;
 	
 	
 	public function new () {

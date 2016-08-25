@@ -22,7 +22,7 @@ extern class Shape extends DisplayObject {
 	 * Specifies the Graphics object belonging to this Shape object, where vector
 	 * drawing commands can occur.
 	 */
-	public var graphics (get, null):Graphics;
+	public var graphics (get, never):Graphics;
 	
 	
 	/**
