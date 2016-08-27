@@ -146,7 +146,7 @@ import haxe.macro.Compiler;
 			
 			if (display != null) {
 				
-				resolutionY = display.currentMode.width;
+				resolutionY = display.currentMode.height;
 				
 			}
 			
