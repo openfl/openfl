@@ -1,3 +1,23 @@
+4.1.0 (08/29/2016)
+------------------
+
+* Added new Stage3D code migrated from the (now defunct) PlayScript project
+* Added support for ENTER_FRAME, EXIT_FRAME and RENDER if not on the stage
+* Added openfl.ui.MouseCursor and Mouse.cursor support
+* Made minor changes to read-only getter properties to reduce code
+* Added to/from UInt conversion for standard enum types
+* Added duration to HTML5 NetStream onMetaData object
+* Added vector.insertAt
+* Added dictionary.exists
+* Improved stroking in graphics API
+* Improved openfl.Vector for better accuracy/performance
+* Fixed the order of ADDED and ADDED_TO_STAGE events
+* Fixed the behavior of vector.concat with no arguments
+* Fixed netStream.seek on HTML5
+* Fixed Capabilities.screenResolutionY
+* Fixed an issue with HTML5 shape positioning
+
+
 4.0.3 (07/27/2016)
 ------------------
 

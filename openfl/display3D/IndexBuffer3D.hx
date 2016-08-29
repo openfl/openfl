@@ -82,6 +82,7 @@ import openfl.Vector;
 		// TODO: Optimize more
 		
 		var length = startOffset + count;
+		
 		var buffer = new Int16Array (count);
 		
 		for (i in startOffset...length) {
