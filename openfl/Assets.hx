@@ -549,11 +549,11 @@ class Assets {
 			promise.future.onComplete (handler);
 			promise.future.onError (function (_) handler (null));
 			
-			future.onComplete (function (bytes) promise.complete (bytes));
-			future.onProgress (function (progress) promise.progress (progress));
-			future.onError (function (msg) promise.error (msg));
-			
 		}
+		
+		future.onComplete (function (bytes) promise.complete (bytes));
+		future.onProgress (function (progress) promise.progress (progress));
+		future.onError (function (msg) promise.error (msg));
 		
 		return promise.future;
 		
