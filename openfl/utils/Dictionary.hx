@@ -135,7 +135,7 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	
 	public inline function remove (key:K):Bool {
 		
-		var exists = this.exists (key);
+		var exists = (this:Dictionary<K, V>).exists (key);
 		untyped __delete__ (this, key);
 		return exists;
 		
