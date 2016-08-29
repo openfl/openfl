@@ -100,9 +100,9 @@ class StencilManager {
 			GraphicsRenderer.updateGraphics(object, maskGraphics, renderSession.gl);
 		}
 		
-		var func = stencilMask == 1 ? gl.NEVER : gl.EQUAL;
+		var func = stencilMask == 1 ? gl.NEVER : gl.LEQUAL;
 		var ref = stencilMask;
-		var mask = 0xFF - stencilMask;
+		var mask = 0xFF;
 		
 		gl.stencilMask(0xFF);
 		gl.colorMask(false, false, false, false);
@@ -132,7 +132,7 @@ class StencilManager {
 		
 		gl.colorMask(true, true, true, renderSession.renderer.transparent);
 		gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-		gl.stencilFunc(gl.EQUAL, stencilMask, 0xFF);
+		gl.stencilFunc(gl.LEQUAL, stencilMask, mask);
 	}
 	
 	public function popMask(object:DisplayObject, renderSession:RenderSession) {
@@ -147,6 +147,8 @@ class StencilManager {
 		if (stencilMask <= 0) {
 			gl.disable (gl.STENCIL_TEST);
 			stencilMask = 0;
+		} else {
+			gl.stencilFunc(gl.LEQUAL, stencilMask, 0xFF);
 		}
 	}
 	
