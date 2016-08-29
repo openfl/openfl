@@ -9,12 +9,14 @@ import lime.math.Matrix3;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class CairoTilemap {
@@ -27,6 +29,10 @@ class CairoTilemap {
 		var cairo = renderSession.cairo;
 		
 		renderSession.maskManager.pushObject (tilemap);
+		
+		var rect = Rectangle.__temp;
+		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
 		var transform = tilemap.__worldTransform;
 		var roundPixels = renderSession.roundPixels;
@@ -110,6 +116,7 @@ class CairoTilemap {
 			
 		}
 		
+		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
 		
 	}

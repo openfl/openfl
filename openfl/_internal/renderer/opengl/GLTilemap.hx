@@ -14,6 +14,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
+@:access(openfl.geom.Rectangle)
 
 
 class GLTilemap {
@@ -39,6 +40,10 @@ class GLTilemap {
 		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
 		renderSession.shaderManager.setShader (shader);
 		renderSession.maskManager.pushObject (tilemap);
+		
+		var rect = Rectangle.__temp;
+		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
 		
@@ -267,6 +272,7 @@ class GLTilemap {
 		
 		tilemap.__dirty = false;
 		tilemap.__cacheAlpha = worldAlpha;
+		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
 		
 	}
