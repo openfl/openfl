@@ -156,8 +156,10 @@ class Shader {
 	
 	public function enableVertexAttribute(attribute:VertexAttribute, stride:Int, offset:Int) {
 		var location = getAttribLocation(attribute.name);
-		gl.enableVertexAttribArray(location);
-		gl.vertexAttribPointer(location, attribute.components, attribute.type, attribute.normalized, stride, offset * 4);
+		if (location >= 0) {
+			gl.enableVertexAttribArray(location);
+			gl.vertexAttribPointer(location, attribute.components, attribute.type, attribute.normalized, stride, offset * 4);
+		}
 	}
 	
 	public function disableVertexAttribute(attribute:VertexAttribute, setDefault:Bool = true) {
