@@ -588,8 +588,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		var x = __cachedBitmapBounds.x;
-		var y = __cachedBitmapBounds.y;
+		var x = Math.round(__cachedBitmapBounds.x);
+		var y = Math.round(__cachedBitmapBounds.y);
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
 
