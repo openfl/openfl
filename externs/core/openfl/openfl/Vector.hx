@@ -1671,7 +1671,7 @@ abstract Vector<T>(IVector<T>) {
 			
 			if (value > currentLength) {
 				
-				for (i in currentLength...length) {
+				for (i in currentLength...value) {
 					
 					__array.push (null);
 					
