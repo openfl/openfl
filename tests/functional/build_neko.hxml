@@ -12,6 +12,7 @@
 -D lime-native
 -D lime-curl
 -D openfl-native
+-D lime-cffi
 -D linux
 -D desktop
 -lib lime
