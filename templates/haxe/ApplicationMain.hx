@@ -209,19 +209,20 @@ class ApplicationMain {
 		// Copy from https://github.com/HaxeFoundation/haxe/blob/development/std/neko/_std/Sys.hx#L164
 		// since Sys.programPath () isn't available in __init__
 		var sys_program_path = {
-		var m = neko.vm.Module.local().name;
-		try {
-			sys.FileSystem.fullPath(m);
-		} catch (e:Dynamic) {
-			// maybe the neko module name was supplied without .n extension...
-			if (!StringTools.endsWith(m, ".n")) {
-				try {
-					sys.FileSystem.fullPath(m + ".n");
-				} catch (e:Dynamic) {
+			var m = neko.vm.Module.local().name;
+			try {
+				sys.FileSystem.fullPath(m);
+			} catch (e:Dynamic) {
+				// maybe the neko module name was supplied without .n extension...
+				if (!StringTools.endsWith(m, ".n")) {
+					try {
+						sys.FileSystem.fullPath(m + ".n");
+					} catch (e:Dynamic) {
+						m;
+					}
+				} else {
 					m;
 				}
-			} else {
-				m;
 			}
 		};
 		
