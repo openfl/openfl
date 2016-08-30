@@ -186,11 +186,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	#if !cs
 	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool):FunctionVector {
 		
 		return new FunctionVector (length, fixed);
 		
 	}
+	#end
 	
 	
 	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool):ObjectVector<T> {
@@ -221,11 +223,13 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
+	#if !cs
 	@:from static inline function fromFunctionVector<T> (vector:FunctionVector):Vector<T> {
 		
 		return cast vector;
 		
 	}
+	#end
 	
 	
 	@:from static inline function fromObjectVector<T> (vector:ObjectVector<T>):Vector<T> {
@@ -847,6 +851,7 @@ abstract Vector<T>(IVector<T>) {
 
 
 
+#if !cs
 @:dox(hide) private class FunctionVector implements IVector<Function> {
 	
 	
@@ -1133,6 +1138,7 @@ abstract Vector<T>(IVector<T>) {
 	
 	
 }
+#end
 
 
 

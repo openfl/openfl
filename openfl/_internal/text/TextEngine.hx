@@ -163,7 +163,7 @@ class TextEngine {
 	
 	private static function findFont (name:String):Font {
 		
-		#if (cpp || neko || nodejs)
+		#if (lime_cffi)
 		
 		for (registeredFont in Font.__registeredFonts) {
 			
@@ -227,7 +227,7 @@ class TextEngine {
 	
 	public static function getFontInstance (format:TextFormat):Font {
 		
-		#if (cpp || neko || nodejs)
+		#if (lime_cffi)
 		
 		var instance = null;
 		var fontList = null;
@@ -720,7 +720,7 @@ class TextEngine {
 				
 				heightValue = ascent + descent + leading;
 				
-				#elseif (cpp || neko || nodejs)
+				#elseif (lime_cffi)
 				
 				font = getFontInstance (currentFormat);
 				

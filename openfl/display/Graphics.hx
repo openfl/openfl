@@ -649,7 +649,7 @@ import js.html.CanvasRenderingContext2D;
 				
 				#if (js && html5)
 				return CanvasGraphics.hitTest (this, px, py);
-				#elseif (cpp || neko)
+				#elseif (lime_cffi)
 				return CairoGraphics.hitTest (this, px, py);
 				#end
 				

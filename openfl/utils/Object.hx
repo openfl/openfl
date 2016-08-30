@@ -89,6 +89,7 @@ package openfl.utils;
 }
 
 
+#if !cs
 @:keep @:native('haxe.lang.Iterator') private interface Iterator_<T> {
 	
 	public function hasNext ():Bool;
@@ -102,6 +103,10 @@ package openfl.utils;
 	public function iterator ():Iterator_<T>;
 	
 }
+#else
+typedef Iterator_<T> = cs.internal.Iterator<T>;
+typedef Iterable_<T> = cs.internal.Iterator.Iterable<T>;
+#end
 
 
 #if !flash

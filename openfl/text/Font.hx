@@ -34,7 +34,7 @@ class Font extends LimeFont {
 		var font = new Font ();
 		font.__fromBytes (bytes);
 		
-		#if (cpp || neko || nodejs)
+		#if (lime_cffi)
 		return (font.src != null) ? font : null;
 		#else
 		return font;
@@ -48,7 +48,7 @@ class Font extends LimeFont {
 		var font = new Font ();
 		font.__fromFile (path);
 		
-		#if (cpp || neko || nodejs)
+		#if (lime_cffi)
 		return (font.src != null) ? font : null;
 		#else
 		return font;
