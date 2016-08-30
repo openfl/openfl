@@ -206,8 +206,27 @@ class ApplicationMain {
 	#if neko
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
+		// Copy from https://github.com/HaxeFoundation/haxe/blob/development/std/neko/_std/Sys.hx#L164
+		// since Sys.programPath () isn't available in __init__
+		var sys_program_path = {
+		var m = neko.vm.Module.local().name;
+		try {
+			sys.FileSystem.fullPath(m);
+		} catch (e:Dynamic) {
+			// maybe the neko module name was supplied without .n extension...
+			if (!StringTools.endsWith(m, ".n")) {
+				try {
+					sys.FileSystem.fullPath(m + ".n");
+				} catch (e:Dynamic) {
+					m;
+				}
+			} else {
+				m;
+			}
+		};
+		
 		var loader = new neko.vm.Loader (untyped $loader);
-		loader.addPath (haxe.io.Path.directory (#if (haxe_ver >= 3.3) new String (@:privateAccess Sys.sys_exe_path ()) #else Sys.executablePath () #end));
+		loader.addPath (haxe.io.Path.directory (#if (haxe_ver >= 3.3) sys_program_path #else Sys.executablePath () #end));
 		loader.addPath ("./");
 		loader.addPath ("@executable_path/");
 		
