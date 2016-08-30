@@ -1,4 +1,4 @@
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 
 
 /*

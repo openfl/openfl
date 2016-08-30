@@ -427,7 +427,7 @@ import lime.Assets;
 #if (windows || mac || linux || ios || android || blackberry)
 
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import cpp.abi.Abi;
 import cpp.abi.CDecl;
 import cpp.abi.FastCall;
@@ -461,7 +461,7 @@ import cpp.zip.Compress;
 import cpp.zip.Flush;
 import cpp.zip.Uncompress;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import cpp.Callable;
 import cpp.CastCharStar;
 import cpp.Char;
@@ -495,7 +495,7 @@ import cpp.Random;
 #end
 
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import haxe.crypto.Hmac;
 import haxe.crypto.Sha224;
 import haxe.crypto.Sha256;
@@ -507,7 +507,7 @@ import haxe.crypto.Crc32;
 import haxe.crypto.Md5;
 import haxe.crypto.Sha1;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import haxe.ds.Either;
 #end
 import haxe.ds.ArraySort;
@@ -523,7 +523,7 @@ import haxe.ds.StringMap;
 import haxe.ds.Vector;
 import haxe.ds.WeakMap;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import haxe.extern.EitherType;
 import haxe.extern.Rest;
 #end
@@ -531,7 +531,7 @@ import haxe.extern.Rest;
 import haxe.format.JsonParser;
 import haxe.format.JsonPrinter;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 //import haxe.io.ArrayBufferView;
 //import haxe.io.Float32Array;
 //import haxe.io.Float64Array;
@@ -554,7 +554,7 @@ import haxe.io.Output;
 import haxe.io.Path;
 import haxe.io.StringInput;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import haxe.macro.PositionTools;
 #end
 import haxe.macro.Compiler;
@@ -595,7 +595,7 @@ import haxe.remoting.SocketProtocol;
 import haxe.remoting.SyncSocketConnection;
 #end
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import haxe.rtti.Rtti;
 #end
 import haxe.rtti.CType;
@@ -626,7 +626,7 @@ import haxe.zip.Tools;
 import haxe.zip.Uncompress;
 import haxe.zip.Writer;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import haxe.DynamicAccess;
 #end
 import haxe.CallStack;
@@ -651,7 +651,7 @@ import haxe.Utf8;
 #if html5
 
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.html.audio.BiquadFilterType;
 import js.html.audio.ChannelCountMode;
 import js.html.audio.ChannelInterpretation;
@@ -696,7 +696,7 @@ import js.html.audio.WaveShaperNode;
 import js.html.audio.BiquadFilterNode;
 import js.html.audio.ChannelMergerNode;
 
-#if (haxe_ver < "3.2")
+#if (haxe_ver < 3.2)
 import js.html.fs.DirectoryEntry;
 import js.html.fs.EntryCallback;
 import js.html.fs.FileSystem;
@@ -723,7 +723,7 @@ import js.html.fs.FileException;
 import js.html.fs.MetadataCallback;
 #end
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.html.idb.CursorDirection;
 import js.html.idb.FileHandle;
 import js.html.idb.FileMetadataParameters;
@@ -754,7 +754,7 @@ import js.html.idb.OpenDBRequest;
 import js.html.idb.Factory;
 import js.html.idb.Request;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.html.rtc.Configuration;
 import js.html.rtc.DataChannelInit;
 import js.html.rtc.DataChannelState;
@@ -794,7 +794,7 @@ import js.html.rtc.PeerConnection;
 import js.html.rtc.SessionDescription;
 import js.html.rtc.StatsReport;
 
-#if (haxe_ver < "3.2")
+#if (haxe_ver < 3.2)
 import js.html.sql.Database;
 import js.html.sql.StatementCallback;
 import js.html.sql.DatabaseCallback;
@@ -811,7 +811,7 @@ import js.html.sql.ResultSetRowList;
 import js.html.sql.TransactionSyncCallback;
 #end
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.html.svg.BoundingBoxOptions;
 import js.html.svg.GraphicsElement;
 import js.html.svg.IFrameElement;
@@ -970,7 +970,7 @@ import js.html.svg.GradientElement;
 import js.html.svg.ZoomAndPan;
 import js.html.svg.ZoomEvent;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.html.webgl.ContextEventInit;
 import js.html.webgl.ExtensionBlendMinMax;
 import js.html.webgl.ExtensionColorBufferFloat;
@@ -1024,7 +1024,7 @@ import js.html.webgl.Texture;
 import js.html.webgl.GL;
 import js.html.webgl.UniformLocation;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.html.AlignSetting;
 import js.html.AnimationEffect;
 import js.html.AnimationEventInit;
@@ -1481,7 +1481,7 @@ import js.html.HeadingElement;
 import js.html.VideoElement;
 import js.html.VideoElement;
 import js.html.History;
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 //import js.html.HTMLElement;
 #else
 import js.html.HtmlElement;
@@ -1518,7 +1518,7 @@ import js.html.MediaElement;
 import js.html.MediaError;
 import js.html.MediaKeyError;
 
-#if (haxe_ver >= "3.2")
+#if (haxe_ver >= 3.2)
 import js.Promise;
 import js.RegExp;
 #end

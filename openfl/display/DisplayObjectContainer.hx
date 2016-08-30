@@ -312,7 +312,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child1.parent == this && child2.parent == this) {
 			
-			#if (haxe_ver > 3.100)
+			#if (haxe_ver > 3.1)
 			
 			var index1 = __children.indexOf (child1);
 			var index2 = __children.indexOf (child2);
