@@ -1,7 +1,9 @@
 package openfl.filters; #if !openfl_legacy
 
 
+import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.filters.commands.*;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -76,9 +78,11 @@ import js.html.ImageData;
 	#end
 	
 	
-	private override function __preparePass (pass:Int):Shader {
+	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 		
-		return __colorMatrixShader;
+		throw ":TODO: implement color matrix command";
+		
+		return [];
 		
 	}
 	

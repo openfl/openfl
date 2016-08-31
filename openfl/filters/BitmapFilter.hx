@@ -112,9 +112,6 @@ class BitmapFilter {
 		
 	}
 	
-	// :TODO: remove me
-	private function __preparePass (pass:Int):Shader { return null; }
-	
 }
 
 
