@@ -3,13 +3,13 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoShape;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.canvas.CanvasShape;
-import openfl._internal.renderer.dom.DOMShape;
+import openfl._internal.renderer.dom.DOMDisplayObject;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.GLShape;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -517,11 +517,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __renderCairo (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			CairoShape.render (this, renderSession);
-			
-		}
+		CairoDisplayObject.render (this, renderSession);
 		
 	}
 	
@@ -539,11 +535,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			CanvasShape.render (this, renderSession);
-			
-		}
+		CanvasDisplayObject.render (this, renderSession);
 		
 	}
 	
@@ -561,22 +553,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __renderDOM (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			DOMShape.render (this, renderSession);
-			
-		}
+		DOMDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
 	public function __renderGL (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			GLShape.render (this, renderSession);
-			
-		}
+		GLDisplayObject.render (this, renderSession);
 		
 	}
 	
