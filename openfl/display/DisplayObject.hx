@@ -645,7 +645,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 			if (__updateFilters) {
-				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap, __cachedBitmap, null, null);
+				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap);
 				__updateFilters = false;
 			}
 

@@ -103,13 +103,6 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __useLastFilter (pass:Int):Bool {
-		
-		return pass == __passes - 1;
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods
@@ -119,7 +112,6 @@ import openfl.geom.Rectangle;
 	
 	private function set_knockout (value:Bool):Bool {
 		
-		__saveLastFilter = !value;
 		return knockout = value;
 		
 	}
@@ -127,7 +119,6 @@ import openfl.geom.Rectangle;
 	
 	private function set_hideObject (value:Bool):Bool {
 		
-		__saveLastFilter = !value;
 		return hideObject = value;
 		
 	}
@@ -174,7 +165,7 @@ private class DropShadowShader extends Shader {
 			'vec2 texcoord_delta = uTexCoordDelta / ${Shader.uTextureSize};', // :TODO: move to VS
 			'int fetch_count = int(uFetchCountInverseFetchCount.x);',
 			'float a = 0.0;',
-			'for(int i = 0; i < ${GlowFilter.MAXIMUM_FETCH_COUNT}; ++i){',
+			'for(int i = 0; i < ${DropShadowFilter.MAXIMUM_FETCH_COUNT}; ++i){',
 			'    if (i >= fetch_count) break;',
 			'    a += texture2D(${Shader.uSampler}, ${Shader.vTexCoord} + texcoord_delta * float(i)).a;',
 			'}',
