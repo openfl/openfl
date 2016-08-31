@@ -18,6 +18,7 @@ import openfl.geom.Rectangle;
 	public var strength:Float;
 	
 	private var __glowBitmapData:BitmapData;
+	private static var __inverseAlphaMatrix = [ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 255.0 ];
 	
 	public function new (color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false, knockout:Bool = false) {
 		
@@ -60,11 +61,17 @@ import openfl.geom.Rectangle;
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 		
 		var commands:Array<CommandType> = [];
+		var src = bitmap;
 			
 		@:privateAccess __glowBitmapData.__resize(bitmap.width, bitmap.height);
 			
+		if (inner) {
+			commands.push (ColorTransform (__glowBitmapData, bitmap, __inverseAlphaMatrix));
+			src = __glowBitmapData;
+		}
+
 		for( quality_index in 0...quality ) {
-			commands.push (Blur1D (__glowBitmapData, quality_index == 0 ? bitmap : __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
+			commands.push (Blur1D (__glowBitmapData, quality_index == 0 ? src : __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
 			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 		}
 			

@@ -21,6 +21,7 @@ import openfl.filters.commands.*;
 	public var strength:Float;
 	
 	private var __shadowBitmapData:BitmapData;
+	private static var __inverseAlphaMatrix = [ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 255.0 ];
 	
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
 		
@@ -65,14 +66,20 @@ import openfl.filters.commands.*;
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 
 		var commands:Array<CommandType> = [];
-	
+		var src = bitmap;
+		
 		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
+		
+		if (inner) {
+			commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
+			src = __shadowBitmapData;
+		}
 		
 		for( quality_index in 0...quality ) {
 			var first_pass = quality_index == 0;
 			
 			if (first_pass) {
-				commands.push (Blur1D (__shadowBitmapData, bitmap, blurX, true, 1.0, distance, angle));
+				commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle));
 			}
 			else {
 				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
