@@ -130,7 +130,7 @@ class CanvasTextField {
 			
 		}
 		
-		graphics.__update ();
+		graphics.__update (transform);
 		
 		if (textField.__dirty || graphics.__dirty) {
 			
