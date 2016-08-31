@@ -4,18 +4,11 @@ import lime.math.color.ARGB;
 
 import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.filters.commands.*;
 import openfl.geom.Rectangle;
 import openfl.gl.GL;
 
-#if (js && html5)
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.Browser;
-#end
-
 @:final class GradientGlowFilter extends BitmapFilter {
-	
-	public static inline var MAXIMUM_FETCH_COUNT = 20;
 	
 	public var alpha:Float;
 	public var angle:Float;
@@ -31,11 +24,9 @@ import js.Browser;
 	public var quality (default, set):Int;
 	public var strength:Float;
 	
-	private var __gradientGlowShader:GradientGlowShader;
-	private var __gradientGlowShader2:GradientGlowShaderLookupPass;
-	private var __gradientGlowShaderInner:GradientGlowShaderInner;
 	private var __lookupTextureIsDirty:Bool = true;
 	private var __lookupTexture:BitmapData;
+	private var __glowBitmapData:BitmapData;
 	
 	public function new (distance:Float = 4, angle:Float = 45, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Float>, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, type:BitmapFilterType = BitmapFilterType.INNER, knockout:Bool = false) {
 		
@@ -53,14 +44,7 @@ import js.Browser;
 		this.type = type;
 		this.knockout = knockout;
 		
-		__gradientGlowShader = new GradientGlowShader ();
-		__gradientGlowShader.smooth = true;
-		
-		__gradientGlowShader2 = new GradientGlowShaderLookupPass ();
-		__gradientGlowShader2.smooth = true;
-
-		__gradientGlowShaderInner = new GradientGlowShaderInner ();
-		__gradientGlowShaderInner.smooth = true;
+		__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 	}
 	
 	
@@ -173,230 +157,67 @@ import js.Browser;
 	}
 	
 	
-	private override function __preparePass (pass:Int):Shader {
-		
-		if (pass == __passes - 1) {
+	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 			
-			switch (type) {
-				
-				case BitmapFilterType.FULL:
-					throw ":TODO: render full effect on top of object";
-					return null;
-				case BitmapFilterType.INNER:
-					// :HACK: temporary hack until we switch to render commands for filters (blend mode manager must be reset in BitmapFilter)
-					var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
-					var gl = renderSession.gl;
-					gl.blendEquation (GL.FUNC_ADD);
-					gl.blendFunc (GL.DST_COLOR, GL.ZERO);
-					__gradientGlowShaderInner.blendMode = renderSession.blendModeManager.currentBlendMode;
-					return __gradientGlowShaderInner;
-				case BitmapFilterType.OUTER:
-					return null;
-				default:
-					return null;
-				
-			}
+		var commands:Array<CommandType> = [];
 			
-		} else if (pass == __passes - 2) {
+		if (__lookupTextureIsDirty) {
 			
-			if (__lookupTextureIsDirty) {
-				
-				updateLookupTexture();
-				__lookupTextureIsDirty = false;
-				
-			}
-			
-			var horizontal_pass = pass % 2 == 0;
-			var blur = horizontal_pass ? blurX : blurY;
-			var fetch_count = Math.min(Math.ceil(blur), MAXIMUM_FETCH_COUNT);
-			var pass_width = horizontal_pass ? blur - 1 : 0;
-			var pass_height = horizontal_pass ? 0 : blur - 1;
-			__gradientGlowShader2.uFetchCountInverseFetchCount[0] = fetch_count;
-			__gradientGlowShader2.uFetchCountInverseFetchCount[1] = 1.0 / fetch_count;
-			__gradientGlowShader2.uTexCoordDelta[0] = fetch_count > 1 ? pass_width / (fetch_count - 1) : 0;
-			__gradientGlowShader2.uTexCoordDelta[1] = fetch_count > 1 ? pass_height / (fetch_count - 1) : 0;
-			__gradientGlowShader2.uRadius[0] = 0.5 * pass_width;
-			__gradientGlowShader2.uRadius[1] = 0.5 * pass_height;
-			__gradientGlowShader2.uStrength = strength;
-			__gradientGlowShader2.uColorLookupSampler = __lookupTexture;
-			
-			return __gradientGlowShader2;
-			
-		} else {
-			
-			// :TODO: reduce the number of tex fetches  using texture HW filtering
-			
-			var horizontal_pass = pass % 2 == 0;
-			var blur = horizontal_pass ? blurX : blurY;
-			var fetch_count = Math.min(Math.ceil(blur), MAXIMUM_FETCH_COUNT);
-			var pass_width = horizontal_pass ? blur - 1 : 0;
-			var pass_height = horizontal_pass ? 0 : blur - 1;
-			__gradientGlowShader.uFetchCountInverseFetchCount[0] = fetch_count;
-			__gradientGlowShader.uFetchCountInverseFetchCount[1] = 1.0 / fetch_count;
-			__gradientGlowShader.uShift[0] = pass == 0 ? distance * Math.cos (angle * Math.PI / 180) : 0;
-			__gradientGlowShader.uShift[1] = pass == 0 ? distance * Math.sin (angle * Math.PI / 180) : 0;
-			__gradientGlowShader.uTexCoordDelta[0] = fetch_count > 1 ? pass_width / (fetch_count - 1) : 0;
-			__gradientGlowShader.uTexCoordDelta[1] = fetch_count > 1 ? pass_height / (fetch_count - 1) : 0;
-			__gradientGlowShader.uRadius[0] = 0.5 * pass_width;
-			__gradientGlowShader.uRadius[1] = 0.5 * pass_height;
-			
-			return __gradientGlowShader;
+			updateLookupTexture();
+			__lookupTextureIsDirty = false;
 			
 		}
+			
+		@:privateAccess __glowBitmapData.__resize(bitmap.width, bitmap.height);
+	
+		for( quality_index in 0...quality ) {
+			var first_pass = quality_index == 0;
+	
+			if (first_pass) {
+				commands.push (Blur1D (__glowBitmapData, bitmap, blurX, true, 1.0, distance, angle));
+			}
+			else {
+				commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
+			}
+	
+			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+		}
+
+		commands.push (ColorLookup (__glowBitmapData, __glowBitmapData, __lookupTexture));
+
+		switch (type) {
+			
+			case BitmapFilterType.FULL:
+				commands.push (Combine (bitmap, bitmap, __glowBitmapData));
+	
+			case BitmapFilterType.INNER:
+				commands.push (CombineInner (bitmap, bitmap, __glowBitmapData));
+	
+			case BitmapFilterType.OUTER:
+				commands.push (Combine (bitmap, __glowBitmapData, bitmap));
 		
+			default:
+		
+		}
+	
+		return commands;
+	
 	}
-	
-	
-	
-	
+
 	// Get & Set Methods
-	
-	
-	
-	
+		
+		
 	private function set_knockout (value:Bool):Bool {
-		
-		return knockout = value;
-		
-	}
 	
+		return knockout = value;
+	
+	}
+
 	
 	private function set_quality (value:Int):Int {
-		
+	
 		__passes = value * 2 + 1;
 		return quality = value;
-		
-	}
-	
-	
-}
-
-
-private class GradientGlowShader extends Shader {
-	
-	
-	@vertex var vertex = [
-		'uniform vec2 uRadius;',
-		'uniform vec2 uShift;',
-		
-		'void main(void)',
-		'{',
-		
-			'vec2 r = uRadius / ${Shader.uTextureSize};',
-			'vec2 tc = ${Shader.aTexCoord} - (uShift / ${Shader.uTextureSize});',
-			'${Shader.vTexCoord} = tc - r;',
-			'${Shader.vColor} = ${Shader.aColor};',
-			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
-		'}',
-	];
-	
-	
-	@fragment var fragment = [
-		'uniform vec2 uTexCoordDelta;',
-		'uniform vec2 uFetchCountInverseFetchCount;',
-		
-		'void main(void)',
-		'{',
-			'vec2 texcoord_delta = uTexCoordDelta / ${Shader.uTextureSize};', // :TODO: move to VS
-			'int fetch_count = int(uFetchCountInverseFetchCount.x);',
-			'float a = 0.0;',
-			'for(int i = 0; i < ${GradientGlowFilter.MAXIMUM_FETCH_COUNT}; ++i){',
-			'    if (i >= fetch_count) break;',
-			'    a += texture2D(${Shader.uSampler}, ${Shader.vTexCoord} + texcoord_delta * float(i)).a;',
-			'}',
-			'a = clamp(a * uFetchCountInverseFetchCount.y, 0.0, 1.0);',
-			
-		'	gl_FragColor = vec4(a, a, a, a);',
-		'}',
-	];
-	
-	
-	public function new () {
-		
-		super ();
-		
-	}
-	
-	
-}
-
-// :TODO: factorize common code (need support from openfl._internal.macros.MacroShader)
-
-private class GradientGlowShaderLookupPass extends Shader {
-	
-	
-	@vertex var vertex = [
-		'uniform vec2 uRadius;',
-		
-		'void main(void)',
-		'{',
-		
-			'vec2 r = uRadius / ${Shader.uTextureSize};',
-			'vec2 tc = ${Shader.aTexCoord};',
-			'${Shader.vTexCoord} = tc - r;',
-			'${Shader.vColor} = ${Shader.aColor};',
-			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
-		'}',
-	];
-	
-	
-	@fragment var fragment = [
-		'uniform float uStrength;',
-		'uniform vec2 uTexCoordDelta;',
-		'uniform vec2 uFetchCountInverseFetchCount;',
-		'uniform sampler2D uColorLookupSampler;',
-		
-		'void main(void)',
-		'{',
-			'vec2 texcoord_delta = uTexCoordDelta / ${Shader.uTextureSize};', // :TODO: move to VS
-			'int fetch_count = int(uFetchCountInverseFetchCount.x);',
-			'float a = 0.0;',
-			'for(int i = 0; i < ${GradientGlowFilter.MAXIMUM_FETCH_COUNT}; ++i){',
-			'    if (i >= fetch_count) break;',
-			'    a += texture2D(${Shader.uSampler}, ${Shader.vTexCoord} + texcoord_delta * float(i)).a;',
-			'}',
-			'a = clamp(a * uFetchCountInverseFetchCount.y * uStrength, 0.0, 1.0);',
-			
-		'	gl_FragColor = texture2D(uColorLookupSampler, vec2(a, 0.5));',
-		'}',
-	];
-	
-	
-	public function new () {
-		
-		super ();
-		
-	}
-	
-	
-}
-
-private class GradientGlowShaderInner extends Shader {
-	
-	
-	@vertex var vertex = [
-		'void main(void)',
-		'{',
-		
-			'${Shader.vTexCoord} = ${Shader.aTexCoord};',
-			'${Shader.vColor} = ${Shader.aColor};',
-			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
-		'}',
-	];
-	
-	
-	@fragment var fragment = [
-		'void main(void)',
-		'{',
-			'float a = texture2D(${Shader.uSampler}, ${Shader.vTexCoord}).a;',
-			'gl_FragColor = vec4(a, a, a, a);',
-		'}',
-	];
-	
-	
-	public function new () {
-		
-		super ();
 		
 	}
 	

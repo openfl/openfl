@@ -62,6 +62,12 @@ class BitmapFilter {
 					case Colorize (target, source, color, alpha) :
 						ColorizeCommand.apply (renderSession, target, source, color, alpha);
 	
+					case ColorLookup (target, source, colorLookup) :
+						ColorLookupCommand.apply (renderSession, target, source, colorLookup);
+
+					case CombineInner (target, source1, source2) :
+						CombineInnerCommand.apply (renderSession, target, source1, source2);
+
 					case Combine (target, source1, source2) :
 						CombineCommand.apply (renderSession, target, source1, source2);
 
