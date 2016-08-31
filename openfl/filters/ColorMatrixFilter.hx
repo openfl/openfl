@@ -2,7 +2,6 @@ package openfl.filters; #if !openfl_legacy
 
 
 import openfl.display.BitmapData;
-import openfl.display.Shader;
 import openfl.filters.commands.*;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -17,16 +16,11 @@ import js.html.ImageData;
 	
 	public var matrix (default, set):Array<Float>;
 	
-	private var __colorMatrixShader:ColorMatrixShader;
-	
 	
 	public function new (matrix:Array<Float> = null) {
 		
 		super ();
-		
-		__colorMatrixShader = new ColorMatrixShader ();
-		__passes = 1;
-		
+				
 		this.matrix = matrix;
 		
 	}
@@ -80,18 +74,12 @@ import js.html.ImageData;
 	
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 		
-		throw ":TODO: implement color matrix command";
-		
-		return [];
+		return [ColorTransform (bitmap, bitmap, matrix)];
 		
 	}
 	
 	
-	
-	
 	// Get & Set Methods
-	
-	
 	
 	
 	private function set_matrix (value:Array<Float>):Array<Float> {
@@ -102,36 +90,7 @@ import js.html.ImageData;
 			
 		}
 		
-		//__colorMatrixShader.uMultipliers = [ value[0], value[1], value[2], value[3], value[5], value[6], value[7], value[8], value[10], value[11], value[12], value[13], value[15], value[16], value[17], value[18] ];
-		//__colorMatrixShader.uOffsets = [ value[4] / 255., value[9] / 255., value[14] / 255., value[19] / 255. ];
-		
 		return matrix = value;
-		
-	}
-	
-	
-}
-
-
-private class ColorMatrixShader extends Shader {
-	
-	
-	@fragment var fragment = [
-		'uniform mat4 uMultipliers;',
-		'uniform vec4 uOffsets;',
-		'void main(void) {',
-		'	vec4 color = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
-		'	color = vec4(color.rgb / color.a, color.a);',
-		'	color = uOffsets + color * uMultipliers;',
-		'	color = vec4(color.rgb * color.a, color.a);',
-		'	gl_FragColor = color;',
-		'}',
-	];
-	
-	
-	public function new () {
-		
-		super ();
 		
 	}
 	
