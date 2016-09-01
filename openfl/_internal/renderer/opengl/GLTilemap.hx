@@ -135,6 +135,9 @@ class GLTilemap {
 			if (tileset == null) continue;
 			
 			tileData = tileset.__data[tile.id];
+			
+			if (tileData == null) continue;
+			
 			tileWidth = tileData.width;
 			tileHeight = tileData.height;
 			
@@ -204,7 +207,7 @@ class GLTilemap {
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 		
-		var smoothing = (renderSession.smoothing && tilemap.smoothing);
+		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		var cacheBitmapData = null;
 		var lastIndex = 0;
 		
@@ -298,6 +301,9 @@ class GLTilemap {
 	private static function __updateTileUV (tile:Tile, tileset:Tileset, tileOffset:Int, bufferData:Float32Array):Void {
 		
 		var tileData = tileset.__data[tile.id];
+		
+		if (tileData == null) return;
+		
 		var x = tileData.__uvX;
 		var y = tileData.__uvY;
 		var x2 = tileData.__uvWidth;
