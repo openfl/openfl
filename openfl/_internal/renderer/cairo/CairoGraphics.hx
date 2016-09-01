@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
@@ -37,6 +38,7 @@ class CairoGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
+	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
@@ -146,6 +148,7 @@ class CairoGraphics {
 	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
 		
 		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
+		pattern.filter = allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 		
 		if (bitmapRepeat) {
 			
@@ -993,6 +996,7 @@ class CairoGraphics {
 		#if lime_cairo
 		
 		CairoGraphics.graphics = graphics;
+		CairoGraphics.allowSmoothing = renderSession.allowSmoothing;
 		graphics.__update ();
 		
 		if (!graphics.__dirty) return;
