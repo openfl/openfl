@@ -312,6 +312,8 @@ extern class TextField extends InteractiveObject {
 	 */
 	public var maxScrollV (get, never):Int;
 	
+	public var mouseWheelEnabled (get, set):Bool;
+	
 	/**
 	 * Indicates whether field is a multiline text field. If the value is
 	 * <code>true</code>, the text field is multiline; if the value is

@@ -55,6 +55,7 @@ class TextField extends InteractiveObject {
 	public var maxChars (get, set):Int;
 	public var maxScrollH (get, never):Int;
 	public var maxScrollV (get, never):Int;
+	public var mouseWheelEnabled (get, set):Bool;
 	public var multiline (get, set):Bool;
 	public var numLines (get, never):Int;
 	public var restrict (get, set):String;
@@ -78,6 +79,7 @@ class TextField extends InteractiveObject {
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
 	private var __layoutDirty:Bool;
+	private var __mouseWheelEnabled:Bool;
 	private var __selectionIndex:Int;
 	private var __showCursor:Bool;
 	private var __textEngine:TextEngine;
@@ -97,6 +99,7 @@ class TextField extends InteractiveObject {
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		__tabEnabled = true;
+		__mouseWheelEnabled = true;
 		
 		if (__defaultTextFormat == null) {
 			
@@ -1390,6 +1393,20 @@ class TextField extends InteractiveObject {
 		__updateLayout ();
 		
 		return __textEngine.maxScrollV;
+		
+	}
+	
+	
+	private function get_mouseWheelEnabled ():Bool {
+		
+		return __mouseWheelEnabled;
+		
+	}
+	
+	
+	private function set_mouseWheelEnabled (value:Bool):Bool {
+		
+		return __mouseWheelEnabled = value;
 		
 	}
 	
