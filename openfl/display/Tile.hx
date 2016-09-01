@@ -10,7 +10,7 @@ class Tile {
 	public var alpha (default, set):Float;
 	public var data:Dynamic;
 	public var id (default, set):Int;
-	public var matrix:Matrix;
+	public var matrix (default, set):Matrix;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
@@ -76,6 +76,14 @@ class Tile {
 		
 		__sourceDirty = true;
 		return id = value;
+		
+	}
+	
+	
+	private function set_matrix (value:Matrix):Matrix {
+		
+		__transformDirty = true;
+		return this.matrix = value;
 		
 	}
 	
