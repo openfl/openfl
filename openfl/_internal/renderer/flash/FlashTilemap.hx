@@ -56,6 +56,9 @@ class FlashTilemap {
 				if (tileset == null) continue;
 				
 				tileData = tileset.__data[tile.id];
+				
+				if (tileData == null) continue;
+				
 				sourceBitmapData = tileset.bitmapData;
 				matrix = tile.matrix;
 				

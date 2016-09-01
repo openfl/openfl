@@ -64,6 +64,9 @@ class CairoTilemap {
 			if (tileset == null) continue;
 			
 			tileData = tileset.__data[tile.id];
+			
+			if (tileData == null) continue;
+			
 			bitmapData = tileset.bitmapData;
 			
 			if (bitmapData == null) continue;
