@@ -140,7 +140,7 @@ class Sound extends EventDispatcher {
 		
 		#else
 		
-		openfl.Lib.notImplemented ("Sound.loadCompressedDataFromByteArray");
+		openfl.Lib.notImplemented ();
 		
 		#end
 		
@@ -157,7 +157,7 @@ class Sound extends EventDispatcher {
 		
 		#else
 		
-		openfl.Lib.notImplemented ("Sound.loadPCMFromByteArray");
+		openfl.Lib.notImplemented ();
 		
 		#end
 		

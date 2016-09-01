@@ -36,7 +36,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function close ():Void {
 		
-		openfl.Lib.notImplemented ("Loader.close");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
@@ -177,7 +177,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function unloadAndStop (gc:Bool = true):Void {
 		
-		openfl.Lib.notImplemented ("Loader.unloadAndStop");
+		openfl.Lib.notImplemented ();
 		
 	}
 	

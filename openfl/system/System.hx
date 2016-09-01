@@ -37,14 +37,14 @@ import cpp.vm.Gc;
 	
 	public static function pause ():Void {
 		
-		openfl.Lib.notImplemented ("System.pause");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
 	
 	public static function resume ():Void {
 		
-		openfl.Lib.notImplemented ("System.resume");
+		openfl.Lib.notImplemented ();
 		
 	}
 	

@@ -441,7 +441,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawRoundRectComplex");
+		openfl.Lib.notImplemented ();
 		
 	}
 	

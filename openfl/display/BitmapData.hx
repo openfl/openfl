@@ -1132,7 +1132,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
-		openfl.Lib.notImplemented ("BitmapData.perlinNoise");
+		openfl.Lib.notImplemented ();
 		
 	}
 	

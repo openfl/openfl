@@ -7,6 +7,7 @@ import haxe.Unserializer;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.text.Font in LimeFont;
+import lime.utils.Log;
 import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
@@ -221,19 +222,19 @@ class Assets {
 					
 				} else {
 					
-					printError ("[openfl.Assets] MovieClip asset \"" + id + "\" exists, but only asynchronously");
+					Log.info ("MovieClip asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
 				
 			} else {
 				
-				printError ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				Log.info ("There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			printError ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			Log.info ("There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
@@ -865,18 +866,6 @@ class Assets {
 	}
 	
 	
-	private static inline function printError (message:String):Void {
-
-		#if debug
-		var callstack = CallStack.callStack ();
-		callstack.reverse();
-		trace (CallStack.toString (callstack) + "\n" + message);
-		#else
-		trace (message);
-		#end
-
-	}
-
 	
 	
 	// Event Handlers

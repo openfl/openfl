@@ -1,7 +1,9 @@
 package openfl; #if !macro
 
 
+import haxe.PosInfos;
 import lime.system.System;
+import lime.utils.Log;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
@@ -106,13 +108,15 @@ import js.Browser;
 	}
 	
 	
-	public static function notImplemented (api:String):Void {
+	public static function notImplemented (?posInfo:PosInfos):Void {
+		
+		var api = posInfo.className + "." + posInfo.methodName;
 		
 		if (!__sentWarnings.exists (api)) {
 			
 			__sentWarnings.set (api, true);
 			
-			trace ("Warning: " + api + " is not implemented");
+			Log.warn (posInfo.methodName + " is not implemented", posInfo);
 			
 		}
 		
