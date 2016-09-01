@@ -35,7 +35,7 @@ class CanvasTilemap {
 		var transform = tilemap.__worldTransform;
 		var roundPixels = renderSession.roundPixels;
 		
-		if (!tilemap.smoothing) {
+		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = false;
 			//untyped (context).webkitImageSmoothingEnabled = false;
@@ -105,7 +105,7 @@ class CanvasTilemap {
 			
 		}
 		
-		if (!tilemap.smoothing) {
+		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = true;
 			//untyped (context).webkitImageSmoothingEnabled = true;

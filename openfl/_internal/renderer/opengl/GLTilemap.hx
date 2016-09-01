@@ -204,6 +204,7 @@ class GLTilemap {
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 		
+		var smoothing = (renderSession.smoothing && tilemap.smoothing);
 		var cacheBitmapData = null;
 		var lastIndex = 0;
 		
@@ -225,7 +226,7 @@ class GLTilemap {
 					
 					gl.bindTexture (gl.TEXTURE_2D, cacheBitmapData.getTexture (gl));
 					
-					if (tilemap.smoothing /*|| tilemap.stage.__displayMatrix.a != 1 || tilemap.stage.__displayMatrix.d != 1*/) {
+					if (smoothing) {
 						
 						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -250,7 +251,7 @@ class GLTilemap {
 				
 				gl.bindTexture (gl.TEXTURE_2D, tileset.bitmapData.getTexture (gl));
 				
-				if (tilemap.smoothing /*|| tilemap.stage.__displayMatrix.a != 1 || tilemap.stage.__displayMatrix.d != 1*/) {
+				if (smoothing) {
 					
 					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

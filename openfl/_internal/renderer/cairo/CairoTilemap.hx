@@ -72,7 +72,7 @@ class CairoTilemap {
 				
 				surface = bitmapData.getSurface ();
 				pattern = CairoPattern.createForSurface (surface);
-				pattern.filter = tilemap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = (renderSession.allowSmoothing && tilemap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				cairo.source = pattern;
 				cacheBitmapData = bitmapData;

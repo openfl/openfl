@@ -47,7 +47,7 @@ class CairoBitmap {
 			if (surface != null) {
 				
 				var pattern = CairoPattern.createForSurface (surface);
-				pattern.filter = bitmap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = (renderSession.allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				cairo.source = pattern;
 				

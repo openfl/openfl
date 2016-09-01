@@ -145,6 +145,8 @@ class DOMRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 		
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		
 		if (!stage.__transparent) {
 			
 			element.style.background = stage.__colorString;

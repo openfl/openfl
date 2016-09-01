@@ -19,6 +19,7 @@ import openfl.geom.Point;
 class RenderSession {
 	
 	
+	public var allowSmoothing:Bool;
 	public var cairo:CairoRenderContext;
 	public var context:CanvasRenderContext;
 	public var element:DOMRenderContext;
@@ -27,6 +28,7 @@ class RenderSession {
 	public var roundPixels:Bool;
 	public var transformProperty:String;
 	public var transformOriginProperty:String;
+	public var upscaled:Bool;
 	public var vendorPrefix:String;
 	public var z:Int;
 	public var projectionMatrix:Matrix;
@@ -48,6 +50,7 @@ class RenderSession {
 	
 	public function new () {
 		
+		allowSmoothing = true;
 		//maskManager = new MaskManager (this);
 		
 	}

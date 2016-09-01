@@ -36,6 +36,8 @@ class CairoRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 		
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		
 		cairo.identityMatrix ();
 		
 		if (stage.__clearBeforeRender) {

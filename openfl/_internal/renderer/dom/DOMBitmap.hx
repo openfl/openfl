@@ -72,7 +72,7 @@ class DOMBitmap {
 			bitmap.__canvas = cast Browser.document.createElement ("canvas");
 			bitmap.__context = bitmap.__canvas.getContext ("2d");
 			
-			if (!bitmap.smoothing) {
+			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
 				untyped (bitmap.__context).mozImageSmoothingEnabled = false;
 				//untyped (bitmap.__context).webkitImageSmoothingEnabled = false;

@@ -45,7 +45,7 @@ class GLBitmap {
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
 			
-			if (bitmap.smoothing || (bitmap.stage != null && (bitmap.stage.__displayMatrix.a != 1 || bitmap.stage.__displayMatrix.d != 1))) {
+			if (renderSession.allowSmoothing && (bitmap.smoothing || renderSession.upscaled)) {
 				
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

@@ -100,6 +100,9 @@ class GLRenderer extends AbstractRenderer {
 		windowWidth = stage.window.width;
 		windowHeight = stage.window.height;
 		
+		renderSession.allowSmoothing = (stage.quality != LOW);
+		renderSession.upscaled = (displayMatrix.a != 1 || displayMatrix.d != 1);
+		
 		stage.__renderGL (renderSession);
 		
 		if (offsetX > 0 || offsetY > 0) {
