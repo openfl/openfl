@@ -857,9 +857,11 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (this.stage != stage) {
 			
+			var stack = __getDisplayStack( this );
+
 			if (this.stage != null) {
 				
-				__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
 				__releaseResources();
 
 			}
@@ -868,8 +870,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
-				__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
-				
+				Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
 			}
 			
 			if (__children != null) {
