@@ -97,11 +97,7 @@ class GLMaskManager extends AbstractMaskManager {
 			
 		}
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		
-		gl.enable (gl.SCISSOR_TEST);
-		gl.scissor (Math.floor (clipRect.x), Math.floor (renderer.windowHeight - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
-		
+		scissorRect (clipRect);
 		numClipRects++;
 		
 	}
@@ -135,17 +131,33 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (numClipRects > 0) {
 			
-			var clipRect = clipRects[numClipRects - 1];
-			var renderer:GLRenderer = cast renderSession.renderer;
-			
-			gl.enable (gl.SCISSOR_TEST);
-			gl.scissor (Math.floor (clipRect.x), Math.floor (renderer.windowHeight - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
-			
 			numClipRects--;
+			
+			if (numClipRects > 0) {
+				
+				scissorRect (clipRects[numClipRects - 1]);
+				
+			} else {
+				
+				scissorRect ();
+				
+			}
 			
 		}
 		
-		if (numClipRects == 0) {
+	}
+	
+	
+	private function scissorRect (rect:Rectangle = null):Void {
+		
+		if (rect != null) {
+			
+			var renderer:GLRenderer = cast renderSession.renderer;
+			
+			gl.enable (gl.SCISSOR_TEST);
+			gl.scissor (Math.floor (rect.x), Math.floor (renderer.windowHeight - rect.y - rect.height), Math.ceil (rect.width), Math.ceil (rect.height));
+			
+		} else {
 			
 			gl.disable (gl.SCISSOR_TEST);
 			
