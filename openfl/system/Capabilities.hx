@@ -65,7 +65,7 @@ import lime.system.Locale;
 			
 			language = language.toLowerCase ();
 			
-			switch (language)) {
+			switch (language) {
 				
 				case "cs", "da", "nl", "en", "fi", "fr", "de", "hu", "it", "ja", "ko", "nb", "pl", "pt", "ru", "es", "sv", "tr":
 					
