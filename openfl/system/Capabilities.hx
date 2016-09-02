@@ -2,6 +2,7 @@ package openfl.system;
 
 
 import haxe.macro.Compiler;
+import lime.system.Locale;
 
 
 @:final class Capabilities {
@@ -56,6 +57,13 @@ import haxe.macro.Compiler;
 	
 	
 	
+	private static function get_language ():String {
+		
+		return Locale.currentLocale.language;
+	
+	}
+	
+	
 	private static inline function get_os ():String {
 		
 		// TODO: OS version, too?
@@ -85,7 +93,13 @@ import haxe.macro.Compiler;
 	}
 	
 	
-	private static function get_pixelAspectRatio ():Float { return 1; }
+	private static function get_pixelAspectRatio ():Float {
+		
+		return 1;
+		
+	}
+	
+	
 	private static function get_screenDPI ():Float {
 		
 		var window = Lib.application.window;
@@ -160,21 +174,6 @@ import haxe.macro.Compiler;
 		
 		return stage.stageHeight;
 		
-	}
-	
-	
-	private static function get_language ():String {
-		
-		#if (js && html5)
-		
-		return untyped navigator.language;
-		
-		#else
-		
-		return "en-US";
-		
-		#end
-	
 	}
 	
 	
