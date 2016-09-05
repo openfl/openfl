@@ -1012,29 +1012,31 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var event, localPoint;
 		
-		if ( stack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != stack[stack.length-1] ) {
+		if ( stack.length > 0 && ( __mouseOutStack.length == 0 || __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != stack[stack.length-1] ) ) {
 			var outElements: Array<DisplayObject> = [];
 			var inElements: Array<DisplayObject> = [];
 			
-			if ( __mouseOutStack.length == 0 ) {
-				inElements = stack;
-			}
-				
-			var smallestStackCount = Std.int(Math.min(stack.length, __mouseOutStack.length));
-			for(i in 0...smallestStackCount) {
-				if ( stack[i] != __mouseOutStack[i] ) {
-					outElements = __mouseOutStack.slice(i);
-					inElements = stack.slice(i);
+			inline function diffStacks() {
+				if ( __mouseOutStack.length == 0 ) {
+					inElements = stack;
+				}
+
+				var smallestStackCount = Std.int(Math.min(stack.length, __mouseOutStack.length));
+				for(i in 0...smallestStackCount) {
+					if ( stack[i] != __mouseOutStack[i] ) {
+						outElements = __mouseOutStack.slice(i);
+						inElements = stack.slice(i);
+					}
 				}
 			}
-				
+
 			inline function mouseOut(target:DisplayObject) {
 				localPoint = target.globalToLocal (targetPoint);
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
 			}
-			
+
 			inline function rollOut(target:DisplayObject) {
 				if ( target.hasEventListener(MouseEvent.ROLL_OUT) ) {
 					localPoint = target.globalToLocal (targetPoint);
@@ -1043,7 +1045,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					target.__dispatchEvent (event);
 				}
 			}
-		
+
 			inline function rollOver(target:DisplayObject) {
 				if ( target.hasEventListener(MouseEvent.ROLL_OVER) ) {
 					localPoint = target.globalToLocal (targetPoint);
@@ -1052,34 +1054,32 @@ class Stage extends DisplayObjectContainer implements IModule {
 					target.__dispatchEvent (event);
 				}
 			}
-					
+
 			inline function mouseOver(target:DisplayObject) {
 				localPoint = target.globalToLocal (targetPoint);
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
 			}
-				
-			if (__mouseOutStack.length > 0 ) {
-				mouseOut( __mouseOutStack[__mouseOutStack.length-1] );
-					
-				if ( outElements.length == 0 ) {
-					rollOut( __mouseOutStack[__mouseOutStack.length-1] );
-				}
+
+			diffStacks();
+
+			if (outElements.length > 0 ) {
+				mouseOut( __mouseOutStack[outElements.length-1] );
 			}
-					
+
 			var i = outElements.length - 1;
 			while(i >= 0) {
 				rollOut(outElements[i]);
 				--i;
 			}
-				
+
 			for (target in inElements) {
 				rollOver(target);
 			}
-			
-			for (target in inElements) {
-				mouseOver(target);
+
+			if (inElements.length > 0 ) {
+				mouseOver( inElements[inElements.length-1] );
 			}
 		}
 
@@ -1089,7 +1089,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			__drag (targetPoint);
 			
 		}
-		
+
 		__mouseOutStack = stack;
 
 	}
