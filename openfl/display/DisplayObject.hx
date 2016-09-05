@@ -663,11 +663,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 	}
 
+	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {
+		var element : DisplayObject = object;
+		var result : Array<DisplayObject> = [];
+		while(element != null) {
+			result.push(element);
+			element = element.parent;
+		}
+		result.reverse();
+		return result;
+	}
 
 	private function __setStageReference (stage:Stage):Void {
 		
 		if (this.stage != stage) {
 			
+			var stack = __getDisplayStack( this );
+
 			if (this.stage != null) {
 				
 				if (this.stage.focus == this) {
@@ -676,7 +688,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					
 				}
 				
-				dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
+				#else
+					dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#end
 
 				__releaseResources();
 
@@ -686,7 +702,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			if (stage != null) {
 				
-				dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
+				#else
+					dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				#end
 				
 			}
 			

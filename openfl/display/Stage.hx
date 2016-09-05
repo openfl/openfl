@@ -445,7 +445,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (stack.length > 0) {
 			
 			stack.reverse ();
-			__fireEvent (event, stack);
+			fireEvent (event, stack);
 			
 		} else {
 			
@@ -714,50 +714,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 	}
 	
-	
-	private function __drag (mouse:Point):Void {
-		
-		var parent = __dragObject.parent;
-		if (parent != null) {
-			
-			mouse = parent.globalToLocal (mouse);
-			
-		}
-		
-		var x = mouse.x + __dragOffsetX;
-		var y = mouse.y + __dragOffsetY;
-		
-		if (__dragBounds != null) {
-			
-			if (x < __dragBounds.x) {
-				
-				x = __dragBounds.x;
-				
-			} else if (x > __dragBounds.right) {
-				
-				x = __dragBounds.right;
-				
-			}
-			
-			if (y < __dragBounds.y) {
-				
-				y = __dragBounds.y;
-				
-			} else if (y > __dragBounds.bottom) {
-				
-				y = __dragBounds.bottom;
-				
-			}
-			
-		}
-		
-		__dragObject.x = x;
-		__dragObject.y = y;
-		
-	}
-	
-	
-	private function __fireEvent (event:Event, stack:Array<DisplayObject>):Void {
+	public static function fireEvent (event:Event, stack:Array<DisplayObject>):Void {
 		
 		var length = stack.length;
 		
@@ -818,6 +775,47 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private function __drag (mouse:Point):Void {
+
+		var parent = __dragObject.parent;
+		if (parent != null) {
+
+			mouse = parent.globalToLocal (mouse);
+
+		}
+
+		var x = mouse.x + __dragOffsetX;
+		var y = mouse.y + __dragOffsetY;
+
+		if (__dragBounds != null) {
+
+			if (x < __dragBounds.x) {
+
+				x = __dragBounds.x;
+
+			} else if (x > __dragBounds.right) {
+
+				x = __dragBounds.right;
+
+			}
+
+			if (y < __dragBounds.y) {
+
+				y = __dragBounds.y;
+
+			} else if (y > __dragBounds.bottom) {
+
+				y = __dragBounds.bottom;
+
+			}
+
+		}
+
+		__dragObject.x = x;
+		__dragObject.y = y;
+
+	}
+
 	private override function __getInteractive (stack:Array<DisplayObject>):Bool {
 		
 		if (stack != null) {
@@ -859,7 +857,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var event = new KeyboardEvent (type, true, false, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 			
 			stack.reverse ();
-			__fireEvent (event, stack);
+			fireEvent (event, stack);
 			
 			if (event.__isCanceled) {
 				
@@ -967,18 +965,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		
-		__fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+		fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 		
 		if (clickType != null) {
 			
-			__fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+			fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 			
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 				
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 					
-					__fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
 					__lastClickTime = 0;
 					
 				} else {
@@ -1078,7 +1076,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var targetPoint = new Point (x, y);
 		var delta = Std.int (deltaY);
 		
-		__fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
+		fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
 		
 	}
 	
@@ -1103,7 +1101,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			__fireEvent (touchEvent, __stack);
+			fireEvent (touchEvent, __stack);
 			
 		} else {
 			
@@ -1112,7 +1110,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 			
-			__fireEvent (touchEvent, [ stage ]);
+			fireEvent (touchEvent, [ stage ]);
 			
 		}
 		
@@ -1412,7 +1410,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__stack = [];
 				oldFocus.__getInteractive (__stack);
 				__stack.reverse ();
-				__fireEvent (event, __stack);
+				fireEvent (event, __stack);
 				
 			}
 			
@@ -1422,7 +1420,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__stack = [];
 				value.__getInteractive (__stack);
 				__stack.reverse ();
-				__fireEvent (event, __stack);
+				fireEvent (event, __stack);
 				
 			}
 			
