@@ -1012,7 +1012,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var event, localPoint;
 		
-		if ( stack.length > 0 && ( __mouseOutStack.length == 0 || __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != stack[stack.length-1] ) ) {
+		if ( stack.length > 0 && ( __mouseOutStack.length == 0 || ( __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != stack[stack.length-1] ) ) ) {
 			var outElements: Array<DisplayObject> = [];
 			var inElements: Array<DisplayObject> = [];
 			
