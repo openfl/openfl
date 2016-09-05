@@ -65,7 +65,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
-		
+
 		if (hitArea != null) {
 
 			if (!hitArea.mouseEnabled)
@@ -83,12 +83,12 @@ class Sprite extends DisplayObjectContainer {
 			
 		} else {
 			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
 			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
-				return interactiveOnly;
+				return true;
 				
 			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
 				
