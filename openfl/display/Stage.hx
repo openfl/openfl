@@ -1064,8 +1064,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			diffStacks();
 
-			if (outElements.length > 0 ) {
-				mouseOut( __mouseOutStack[outElements.length-1] );
+			if (__mouseOutStack.length > 0 ) {
+				mouseOut( __mouseOutStack[__mouseOutStack.length-1] );
 			}
 
 			var i = outElements.length - 1;
