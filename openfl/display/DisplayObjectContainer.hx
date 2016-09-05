@@ -43,12 +43,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child != null) {
 			
-			if (child.parent != null) {
-				child.parent.removeChild (child);
+			if (child.parent == this) {
+				var childIndex = __children.indexOf(child);
+				__children.splice(childIndex,1);
+				__children.push(child);
+			} else {
+				if (child.parent != null) {
+					child.parent.removeChild (child);
+				}
+				__children.push (child);
+				initParent(child);
 			}
-			__children.push (child);
-			initParent(child);
-
 		}
 		return child;
 		
