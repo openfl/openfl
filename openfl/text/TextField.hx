@@ -1237,8 +1237,16 @@ class TextField extends InteractiveObject {
 						
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
+			value = new EReg ("</br>", "g").replace (value, "\n");
 					
-			var data = Xml.parse(value);
+			var data;
+			try {
+				data = Xml.parse(value);
+			} catch( e : Dynamic ) {
+				trace("Unable to parse html: " + e );
+				value = new EReg ("<.*?>", "g").replace (value, "");
+				data = Xml.parse(value);
+			}
 				
 			__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 			var result_data = parseTags(data, __textFormat.clone(), 0);
