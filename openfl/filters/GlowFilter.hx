@@ -74,17 +74,17 @@ import openfl.geom.Rectangle;
 			commands.push (Blur1D (__glowBitmapData, quality_index == 0 ? src : __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
 			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 		}
-			
+
 		commands.push (Colorize (__glowBitmapData, __glowBitmapData, color, alpha));
-			
-		if (inner) {
-			
-			commands.push (CombineInner (bitmap, bitmap, __glowBitmapData));
-			
+
+		if (knockout) {
+
+			commands.push (Knockout(bitmap, __glowBitmapData, __glowBitmapData, inner));
 		}
-		else if (knockout) {
-		
-			throw ":TODO: support knockout command";
+		else if (inner) {
+
+			commands.push (CombineInner (bitmap, bitmap, __glowBitmapData));
+
 		}
 		else {
 	

@@ -92,7 +92,7 @@ import openfl.filters.commands.*;
 			
 		if (hideObject || knockout) {
 			
-			throw ":TODO: support knockout/hideObject commands";
+			commands.push (Knockout(bitmap,__shadowBitmapData, __shadowBitmapData, inner));
 			
 		}
 		else if (inner) {
