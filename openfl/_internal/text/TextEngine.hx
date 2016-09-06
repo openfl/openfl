@@ -773,7 +773,6 @@ class TextEngine {
 			itHasAddedAdvance = false;
 			var char = this.text.charAt(textIndex);
 			if ( char == "\n" ) {
-				addAdvance(text,textIndex);
 				pushNewLine(textIndex);
 			}
 			// remove the space.
