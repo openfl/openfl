@@ -825,7 +825,7 @@ class TextEngine {
 			}
 
 			// add text advance and check for updated format range.
-			if ( ( textIndex == formatRange.end && text.charAt(textIndex+1) != " " ) || ( textIndex - 1 == formatRange.end && char == " " )) {
+			if ( ( textIndex == formatRange.end ) ) {
 				layoutGroup.advances = advances;
 				layoutGroup.width = widthValue;
 				offsetX = layoutGroup.offsetX + layoutGroup.width;
