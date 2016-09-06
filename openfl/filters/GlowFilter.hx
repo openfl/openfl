@@ -79,7 +79,7 @@ import openfl.geom.Rectangle;
 
 		if (knockout) {
 
-			commands.push (Knockout(bitmap, __glowBitmapData, __glowBitmapData, !inner));
+			commands.push (Knockout(bitmap, bitmap, __glowBitmapData, !inner));
 		}
 		else if (inner) {
 

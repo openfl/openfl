@@ -77,6 +77,9 @@ class BitmapFilter {
 					case Knockout (target, source1, source2, outer) :
 						KnockoutCommand.apply(renderSession, target, source1, source2, outer);
 
+					case Overwrite(target,source) :
+						OverwriteCommand.apply(renderSession, target, source);
+
 					default :
 				}
 			
