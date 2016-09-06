@@ -237,8 +237,9 @@ class CanvasTextField {
 						offsetY = fontData.ascent * group.format.size + ( group.format.leading * group.lineIndex );
 						context.font = fontData.name;
 						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
-
-						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
+						var trimmed_text = text.substring (group.startIndex, group.endIndex);
+						trimmed_text = new EReg ("\n", "g").replace (trimmed_text, "");
+						context.fillText (trimmed_text, group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
 							
