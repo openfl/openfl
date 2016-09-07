@@ -2,7 +2,7 @@ package openfl.system;
 
 
 import haxe.macro.Compiler;
-import lime.system.Locale;
+//import lime.system.Locale;
 
 
 @:final class Capabilities {
@@ -59,7 +59,7 @@ import lime.system.Locale;
 	
 	private static function get_language ():String {
 		
-		var language = Locale.currentLocale.language;
+		/*var language = Locale.currentLocale.language;
 		
 		if (language != null) {
 			
@@ -97,7 +97,7 @@ import lime.system.Locale;
 				
 			}
 			
-		}
+		}*/
 		
 		return "en";
 	
