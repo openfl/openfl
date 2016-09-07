@@ -22,7 +22,7 @@ install:
   - haxelib dev openfl $(pwd)
   - git clone --recursive https://github.com/openfl/lime ~/lime > log.txt || cat log.txt
   - cd ~/lime
-  - git reset --hard c046d3d39d7d9a275cb14c496f7fb6bf094bd674
+  - git reset --hard 3127e4a0b94f229f190db076aa40cff0159780ff
   - haxelib dev lime ~/lime
   - haxelib install compiletime
   - haxelib install hxcpp > log.txt || cat log.txt
