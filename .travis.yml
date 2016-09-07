@@ -20,10 +20,10 @@ before_install:
 
 install:
   - haxelib dev openfl $(pwd)
-  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
-  #- git clone --recursive https://github.com/openfl/lime ~/lime > log.txt || cat log.txt
-  #- cd ~/lime
-  #- git reset --hard 3127e4a0b94f229f190db076aa40cff0159780ff
+  #- git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
+  - git clone --recursive https://github.com/openfl/lime ~/lime > log.txt || cat log.txt
+  - cd ~/lime
+  - git reset --hard 1b34b83d80898588508dd3050c2225dda35d38aa
   - haxelib dev lime ~/lime
   - haxelib install compiletime
   - haxelib install hxcpp > log.txt || cat log.txt
