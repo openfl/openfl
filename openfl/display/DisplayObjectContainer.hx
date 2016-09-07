@@ -74,8 +74,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			var addedToStage = (stage != null && child.stage == null);
 			
 			if (addedToStage) {
-
-				this.__setStageReference(stage);
+				
+				this.__setStageReference (stage);
 				
 			}
 			
@@ -89,19 +89,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (addedToStage) {
 				
-				var event = new Event (Event.ADDED_TO_STAGE, false, false);
-				
-				child.dispatchEvent (event);
-				
-				if (child.__children != null) {
-					
-					for (_child in child.__children) {
-						
-						_child.dispatchEvent (event);
-						
-					}
-					
-				}
+				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false));
 				
 			}
 			
@@ -190,20 +178,13 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
-				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
-				
-				child.dispatchEvent (event);
-				
-				if (child.__children != null) {
+				if (child.stage != null && stage.focus == child) {
 					
-					for (_child in child.__children) {
-						
-						_child.dispatchEvent (event);
-						
-					}
+					stage.focus = null;
 					
 				}
 				
+				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false));
 				child.__setStageReference (null);
 				
 			}
@@ -352,6 +333,31 @@ class DisplayObjectContainer extends InteractiveObject {
 		__children[index1] = __children[index2];
 		__children[index2] = swap;
 		swap = null;
+		
+	}
+	
+	
+	private override function __dispatchChildren (event:Event):Bool {
+		
+		var success = __dispatchEvent (event);
+		
+		if (success) {
+			
+			for (child in __children) {
+				
+				event.target = child;
+				
+				if (!child.__dispatchChildren (event)) {
+					
+					return false;
+					
+				}
+				
+			}
+			
+		}
+		
+		return success;
 		
 	}
 	
@@ -738,7 +744,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	
 	private override function __setStageReference (stage:Stage):Void {
-	
+		
 		super.__setStageReference (stage);
 		
 		if (__children != null) {
