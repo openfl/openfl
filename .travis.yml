@@ -19,7 +19,7 @@ before_install:
   - export AUDIODEV=null
 
 install:
-  - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
+  - git clone --recursive https://github.com/openfl/lime ~/lime > log.txt || cat log.txt
   - cd ~/lime
   - git reset --hard 87573bb26119cb4be4b3c4ef0ebc4042ecba59e3
   - haxelib dev lime ~/lime
