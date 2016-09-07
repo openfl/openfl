@@ -2,7 +2,7 @@ package openfl.system;
 
 
 import haxe.macro.Compiler;
-//import lime.system.Locale;
+import lime.system.Locale;
 
 
 @:final class Capabilities {
