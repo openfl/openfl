@@ -114,11 +114,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseDownLeft:InteractiveObject;
 	private var __mouseDownMiddle:InteractiveObject;
 	private var __mouseDownRight:InteractiveObject;
-	private var __mouseOutStack:Array<DisplayObject>;
+	private var __mouseOverTarget:InteractiveObject;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
+	private var __rollOutStack:Array<DisplayObject>;
 	private var __stack:Array<DisplayObject>;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
@@ -184,7 +185,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		__clearBeforeRender = true;
 		__stack = [];
-		__mouseOutStack = [];
+		__rollOutStack = [];
 		
 		if (Lib.current.stage == null) {
 			
@@ -1149,14 +1150,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var event, localPoint;
 		
-		for (target in __mouseOutStack) {
+		if (target != __mouseOverTarget) {
+			
+			if (__mouseOverTarget != null) {
+				
+				localPoint = (__mouseOverTarget == this ? targetPoint : __mouseOverTarget.globalToLocal (targetPoint));
+				
+				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast __mouseOverTarget);
+				__mouseOverTarget.__dispatchEvent (event);
+				
+			}
+			
+		}
+		
+		for (target in __rollOutStack) {
 			
 			if (stack.indexOf (target) == -1) {
 				
-				__mouseOutStack.remove (target);
+				__rollOutStack.remove (target);
 				
-				localPoint = target.globalToLocal (targetPoint);
-				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast target);
+				localPoint = __mouseOverTarget.globalToLocal (targetPoint);
+				event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, localPoint, cast __mouseOverTarget);
 				event.bubbles = false;
 				target.__dispatchEvent (event);
 				
@@ -1166,24 +1180,40 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		for (target in stack) {
 			
-			if (__mouseOutStack.indexOf (target) == -1) {
+			if (__rollOutStack.indexOf (target) == -1) {
 				
-				if (target.hasEventListener (MouseEvent.MOUSE_OVER)) {
+				if (target.hasEventListener (MouseEvent.ROLL_OVER)) {
 					
 					localPoint = target.globalToLocal (targetPoint);
-					event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, localPoint, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
 					
 				}
 				
-				if (target.hasEventListener (MouseEvent.MOUSE_OUT)) {
+				if (target.hasEventListener (MouseEvent.ROLL_OUT)) {
 					
-					__mouseOutStack.push (target);
+					__rollOutStack.push (target);
 					
 				}
 				
 			}
+			
+		}
+		
+		if (target != __mouseOverTarget) {
+			
+			if (target != null) {
+				
+				localPoint = (target == this ? targetPoint : target.globalToLocal (targetPoint));
+				
+				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+				event.bubbles = true;
+				target.__dispatchEvent (event);
+				
+			}
+			
+			__mouseOverTarget = target;
 			
 		}
 		
