@@ -20,6 +20,8 @@ before_install:
 
 install:
   - git clone --recursive https://github.com/openfl/lime ~/lime --depth 1 > log.txt || cat log.txt
+  - cd ~/lime
+  - git reset --hard 87573bb26119cb4be4b3c4ef0ebc4042ecba59e3
   - haxelib dev lime ~/lime
   - haxelib install compiletime
   - haxelib install hxcpp > log.txt || cat log.txt
@@ -34,6 +36,7 @@ install:
   - cd ~/munit/tool
   - haxe build.hxml
   - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -release -64 -nocffi > log.txt || cat log.txt; fi
+  - if [[ $TARGET == 'cpp' ]] || [[ $TARGET == 'neko' ]]; then haxelib run lime rebuild linux -debug -64 -nocffi > log.txt || cat log.txt; fi
   - haxelib run lime rebuild tools -nocffi
 
 before_script:
