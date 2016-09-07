@@ -91,7 +91,8 @@ import openfl.filters.commands.*;
 		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
 
 		if ( hideObject && !knockout && !inner ) {
-			commands.push (Overwrite(bitmap, __shadowBitmapData ));
+
+			commands.push (Combine (bitmap, __shadowBitmapData, __shadowBitmapData ));
 
 		} else if ( knockout || ( hideObject && inner ) ) {
 

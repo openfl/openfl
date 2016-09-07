@@ -11,6 +11,5 @@ enum CommandType {
 	CombineInner (target:BitmapData, source1:BitmapData, source2:BitmapData );
 	Combine (target:BitmapData, source1:BitmapData, source2:BitmapData);
 	Knockout(target:BitmapData,source1:BitmapData, source2:BitmapData, outer:Bool);
-	Overwrite(target:BitmapData,source:BitmapData);
 
 }
