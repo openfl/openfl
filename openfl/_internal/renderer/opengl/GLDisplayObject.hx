@@ -30,7 +30,7 @@ class GLDisplayObject {
 			renderSession.maskManager.pushRect (rect, displayObject.__worldTransform);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
-			gl.clearColor (color.r, color.g, color.b, 1);
+			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
 			gl.clear (gl.COLOR_BUFFER_BIT);
 			
 			renderSession.maskManager.popRect ();

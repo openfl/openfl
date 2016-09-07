@@ -38,7 +38,7 @@ class CairoDisplayObject {
 			}
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
-			cairo.setSourceRGB (color.r, color.g, color.b);
+			cairo.setSourceRGB (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF);
 			cairo.rectangle (0, 0, displayObject.width, displayObject.height);
 			cairo.fill ();
 			
