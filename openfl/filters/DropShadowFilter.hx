@@ -88,13 +88,17 @@ import openfl.filters.commands.*;
 			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 		}
 
-		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
-
 		if ( hideObject && !knockout && !inner ) {
 
-			commands.push (Combine (bitmap, __shadowBitmapData, __shadowBitmapData ));
+			commands.push (Colorize (bitmap, __shadowBitmapData, color, alpha));
+		}
+		else {
 
-		} else if ( knockout || ( hideObject && inner ) ) {
+			commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
+
+		}
+
+		if ( knockout || ( hideObject && inner ) ) {
 
 			commands.push (Knockout(bitmap, bitmap, __shadowBitmapData, !inner ));
 
