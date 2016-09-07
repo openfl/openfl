@@ -2,6 +2,7 @@
 
 
 @:access(lime.app.Application)
+@:access(lime.system.Locale)
 @:access(lime.Assets)
 @:access(openfl.display.Stage)
 
@@ -14,6 +15,8 @@ class ApplicationMain {
 	
 	
 	public static function create ():Void {
+		
+		lime.system.Locale.__init ();
 		
 		var app = new openfl.display.Application ();
 		app.create (config);

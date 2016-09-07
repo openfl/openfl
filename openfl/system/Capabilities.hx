@@ -59,7 +59,7 @@ import haxe.macro.Compiler;
 	
 	private static function get_language ():String {
 		
-		/*var language = Locale.currentLocale.language;
+		var language = Locale.currentLocale.language;
 		
 		if (language != null) {
 			
@@ -97,7 +97,7 @@ import haxe.macro.Compiler;
 				
 			}
 			
-		}*/
+		}
 		
 		return "en";
 	
