@@ -259,11 +259,23 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		return __height;
 		
 	}
+	#end
 	
 	
+	#if !flash
 	private override function set_height (value:Float):Float {
 		
 		return __height = Std.int (value);
+		
+	}
+	#else
+	@:setter(height) private function set_height (value:Float):Void {
+		
+		if (value != bitmapData.height) {
+			
+			bitmapData = new BitmapData (bitmapData.width, Std.int (value), true, 0);
+			
+		}
 		
 	}
 	#end
@@ -283,11 +295,23 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		return __width;
 		
 	}
+	#end
 	
 	
+	#if !flash
 	private override function set_width (value:Float):Float {
 		
 		return __width = Std.int (value);
+		
+	}
+	#else
+	@:setter(width) private function set_width (value:Float):Void {
+		
+		if (value != bitmapData.width) {
+			
+			bitmapData = new BitmapData (Std.int (value), bitmapData.height, true, 0);
+			
+		}
 		
 	}
 	#end
