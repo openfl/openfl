@@ -46,6 +46,23 @@ class Tileset {
 	}
 	
 	
+	public function clone ():Tileset {
+		
+		var tileset = new Tileset (bitmapData, null);
+		var rect = new Rectangle ();
+		
+		for (tileData in __data) {
+			
+			rect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+			tileset.addRect (rect);
+			
+		}
+		
+		return tileset;
+		
+	}
+	
+	
 	public function getRect (id:Int):Rectangle {
 		
 		if (id < __data.length && id >= 0) {
