@@ -87,20 +87,24 @@ import openfl.filters.commands.*;
 			
 			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 		}
-			
-		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
-			
-		if (hideObject || knockout) {
-			
-			throw ":TODO: support knockout/hideObject commands";
-			
+
+		if ( hideObject && !knockout && !inner ) {
+
+			commands.push (Colorize (bitmap, __shadowBitmapData, color, alpha));
+			return commands;
 		}
-		else if (inner) {
+
+		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
+
+		if ( knockout || ( hideObject && inner ) ) {
+
+			commands.push (Knockout(bitmap, bitmap, __shadowBitmapData, !inner ));
+
+		} else if (inner) {
 
 			commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
-		
-	}
-		else {
+
+		} else {
 	
 			commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
 	
