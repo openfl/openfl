@@ -7,6 +7,7 @@ import lime.math.Rectangle in LimeRectangle;
 class Rectangle {
 	
 	
+	private static var __limeRectangle:LimeRectangle;
 	private static var __temp = new Rectangle ();
 	
 	public var bottom (get, set):Float;
@@ -272,7 +273,14 @@ class Rectangle {
 	
 	private function __toLimeRectangle ():LimeRectangle {
 		
-		return new LimeRectangle (x, y, width, height);
+		if (__limeRectangle == null) {
+			
+			__limeRectangle = new LimeRectangle ();
+			
+		}
+		
+		__limeRectangle.setTo (x, y, width, height);
+		return __limeRectangle;
 		
 	}
 	

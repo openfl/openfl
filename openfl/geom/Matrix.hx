@@ -10,6 +10,7 @@ class Matrix {
 	
 	
 	private static var __identity = new Matrix ();
+	private static var __matrix3 = new Matrix3 ();
 	private static var __temp = new Matrix ();
 	
 	public var a:Float;
@@ -479,7 +480,8 @@ class Matrix {
 	
 	private function __toMatrix3 ():Matrix3 {
 		
-		return new Matrix3 (a, b, c, d, tx, ty);
+		__matrix3.setTo (a, b, c, d, tx, ty);
+		return __matrix3;
 		
 	}
 	

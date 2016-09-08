@@ -780,7 +780,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		var overrided = overrideTransform != null;
-		var local = overrided ? overrideTransform.clone () : __transform;
+		var local = overrided ? overrideTransform : __transform;
 		
 		if (__worldTransform == null) {
 			
