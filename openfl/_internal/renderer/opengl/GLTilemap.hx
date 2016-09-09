@@ -20,6 +20,9 @@ import openfl.geom.Rectangle;
 class GLTilemap {
 	
 	
+	private static var __skippedTiles = new Map<Int, Bool> ();
+	
+	
 	public static function render (tilemap:Tilemap, renderSession:RenderSession):Void {
 		
 		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
@@ -121,27 +124,44 @@ class GLTilemap {
 		
 		gl.bindBuffer (gl.ARRAY_BUFFER, tilemap.__buffer);
 		
+		var drawCount = 0;
+		
 		for (i in 0...count) {
+			
+			offset = i * 30;
 			
 			tile = tiles[i];
 			
 			alpha = tile.alpha;
 			visible = tile.visible;
 			
-			if (!visible || alpha <= 0) continue;
+			if (!visible || alpha <= 0) {
+				
+				__skipTile (tile, i, offset, bufferData);
+				continue;
+				
+			}
 			
 			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
 			
-			if (tileset == null) continue;
+			if (tileset == null) {
+				
+				__skipTile (tile, i, offset, bufferData);
+				continue;
+				
+			}
 			
 			tileData = tileset.__data[tile.id];
 			
-			if (tileData == null) continue;
+			if (tileData == null) {
+				
+				__skipTile (tile, i, offset, bufferData);
+				continue;
+				
+			}
 			
 			tileWidth = tileData.width;
 			tileHeight = tileData.height;
-			
-			offset = i * 30;
 			
 			// TODO: Handle all cases where tileset may change for the tile?
 			
@@ -199,6 +219,10 @@ class GLTilemap {
 			bufferData[offset + 25] = x4;
 			bufferData[offset + 26] = y4;
 			
+			drawCount = i;
+			
+			__skippedTiles.set (i, false);
+			
 		}
 		
 		gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
@@ -211,17 +235,16 @@ class GLTilemap {
 		var cacheBitmapData = null;
 		var lastIndex = 0;
 		
-		for (i in 0...count) {
+		for (i in 0...(drawCount + 1)) {
 			
-			tile = tiles[i];
-			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
-			
-			if (tileset == null) {
+			if (__skippedTiles.get (i)) {
 				
-				cacheBitmapData = null;
 				continue;
 				
 			}
+			
+			tile = tiles[i];
+			tileset = (tile.tileset != null) ? tile.tileset : defaultTileset;
 			
 			if (tileset.bitmapData != cacheBitmapData) {
 				
@@ -250,7 +273,7 @@ class GLTilemap {
 				
 			}
 			
-			if (i == count - 1 && tileset.bitmapData != null) {
+			if (i == drawCount && tileset.bitmapData != null) {
 				
 				gl.bindTexture (gl.TEXTURE_2D, tileset.bitmapData.getTexture (gl));
 				
@@ -278,6 +301,23 @@ class GLTilemap {
 		tilemap.__cacheAlpha = worldAlpha;
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		
+	}
+	
+	
+	private static function __skipTile (tile:Tile, i:Int, tileOffset:Int, bufferData:Float32Array):Void {
+		
+		var tileOffset = i * 30;
+		
+		bufferData[tileOffset + 4] = 0;
+		bufferData[tileOffset + 9] = 0;
+		bufferData[tileOffset + 14] = 0;
+		bufferData[tileOffset + 19] = 0;
+		bufferData[tileOffset + 24] = 0;
+		bufferData[tileOffset + 29] = 0;
+		
+		__skippedTiles.set (i, true);
+		tile.__alphaDirty = true;
 		
 	}
 	
