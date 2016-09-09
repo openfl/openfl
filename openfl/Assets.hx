@@ -254,24 +254,9 @@ class Assets {
 	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
 		
-		#if flash
-		var buffer = LimeAssets.getAudioBuffer (id, useCache);
-		return (buffer != null) ? buffer.src : null;
-		#else
-		#if !html5
-		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
-		#else
-		var path = LimeAssets.getPath (id);
+		// TODO: Streaming sound
 		
-		if (path != null) {
-			
-			return new Sound (new URLRequest (path));
-			
-		}
-		
-		return null;
-		#end
-		#end
+		return getSound (id, useCache);
 		
 	}
 	
@@ -673,10 +658,18 @@ class Assets {
 			if (buffer != null) {
 				
 				#if flash
-				promise.complete (buffer.src);
+				var sound = buffer.src;
 				#else
-				promise.complete (Sound.fromAudioBuffer (buffer));
+				var sound = Sound.fromAudioBuffer (buffer);
 				#end
+				
+				if (useCache && cache.enabled) {
+					
+					cache.setSound (id, sound);
+					
+				}
+				
+				promise.complete (sound);
 				
 			} else {
 				
@@ -767,10 +760,18 @@ class Assets {
 			if (buffer != null) {
 				
 				#if flash
-				promise.complete (buffer.src);
+				var sound = buffer.src;
 				#else
-				promise.complete (Sound.fromAudioBuffer (buffer));
+				var sound = Sound.fromAudioBuffer (buffer);
 				#end
+				
+				if (useCache && cache.enabled) {
+					
+					cache.setSound (id, sound);
+					
+				}
+				
+				promise.complete (sound);
 				
 			} else {
 				
@@ -947,7 +948,7 @@ class Assets {
 				
 				if (StringTools.startsWith (key, prefix)) {
 					
-					bitmapData.remove (key);
+					removeBitmapData (key);
 					
 				}
 				
@@ -959,7 +960,7 @@ class Assets {
 				
 				if (StringTools.startsWith (key, prefix)) {
 					
-					font.remove (key);
+					removeFont (key);
 					
 				}
 				
@@ -971,7 +972,7 @@ class Assets {
 				
 				if (StringTools.startsWith (key, prefix)) {
 					
-					sound.remove (key);
+					removeSound (key);
 					
 				}
 				
@@ -1026,6 +1027,7 @@ class Assets {
 	
 	public function removeBitmapData (id:String):Bool {
 		
+		LimeAssets.cache.image.remove (id);
 		return bitmapData.remove (id);
 		
 	}
@@ -1033,6 +1035,7 @@ class Assets {
 	
 	public function removeFont (id:String):Bool {
 		
+		LimeAssets.cache.font.remove (id);
 		return font.remove (id);
 		
 	}
@@ -1040,6 +1043,7 @@ class Assets {
 	
 	public function removeSound (id:String):Bool {
 		
+		LimeAssets.cache.audio.remove (id);
 		return sound.remove (id);
 		
 	}
