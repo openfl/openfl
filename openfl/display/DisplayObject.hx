@@ -612,6 +612,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
+		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		__updateTransforms ();
 		
 		if (updateChildren && __transformDirty) {
@@ -739,6 +740,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __updateChildren (transformOnly:Bool):Void {
 		
+		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		__worldAlpha = alpha;
 		
 		if (__transformDirty) {
