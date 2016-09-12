@@ -435,12 +435,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 				
 			} else {
 				
-				while (current.parent != null) {
+				while (current != null) {
 					
 					list.push (current);
 					current = current.parent;
 					
-					if (current.__transformDirty) {
+					if (current != null && current.__transformDirty) {
 						
 						transformDirty = true;
 						
@@ -612,8 +612,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		
 		__updateTransforms ();
 		
 		if (updateChildren && __transformDirty) {
@@ -741,8 +739,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __updateChildren (transformOnly:Bool):Void {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		if (!__renderable && !__isMask) return;
 		__worldAlpha = alpha;
 		
 		if (__transformDirty) {
