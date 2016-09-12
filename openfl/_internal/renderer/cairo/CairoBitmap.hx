@@ -27,7 +27,7 @@ class CairoBitmap {
 			
 			renderSession.maskManager.pushObject (bitmap);
 			
-			var transform = bitmap.__worldTransform;
+			var transform = bitmap.__renderTransform;
 			
 			if (renderSession.roundPixels) {
 				

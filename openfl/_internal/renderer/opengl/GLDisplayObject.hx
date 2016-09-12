@@ -27,7 +27,7 @@ class GLDisplayObject {
 			
 			var rect = Rectangle.__temp;
 			rect.setTo (0, 0, displayObject.width, displayObject.height);
-			renderSession.maskManager.pushRect (rect, displayObject.__worldTransform);
+			renderSession.maskManager.pushRect (rect, displayObject.__renderTransform);
 			
 			var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);

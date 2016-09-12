@@ -9,6 +9,7 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 
 @:access(openfl.display.Stage)
+@:access(openfl.geom.Matrix)
 
 
 class GLRenderer extends AbstractRenderer {
@@ -16,6 +17,7 @@ class GLRenderer extends AbstractRenderer {
 	
 	public var projection:Matrix4;
 	
+	private var displayMatrix:Matrix;
 	private var gl:GLRenderContext;
 	private var matrix:Matrix4;
 	private var windowHeight:Int;
@@ -44,13 +46,17 @@ class GLRenderer extends AbstractRenderer {
 	
 	public function getMatrix (transform:Matrix):Matrix4 {
 		
+		var _matrix = Matrix.__temp;
+		_matrix.copyFrom (transform);
+		_matrix.concat (displayMatrix);
+		
 		matrix.identity ();
-		matrix[0] = transform.a;
-		matrix[1] = transform.b;
-		matrix[4] = transform.c;
-		matrix[5] = transform.d;
-		matrix[12] = transform.tx;
-		matrix[13] = transform.ty;
+		matrix[0] = _matrix.a;
+		matrix[1] = _matrix.b;
+		matrix[4] = _matrix.c;
+		matrix[5] = _matrix.d;
+		matrix[12] = _matrix.tx;
+		matrix[13] = _matrix.ty;
 		matrix.append (projection);
 		
 		return matrix;
@@ -89,7 +95,7 @@ class GLRenderer extends AbstractRenderer {
 	
 	public override function render (stage:Stage):Void {
 		
-		var displayMatrix = stage.__displayMatrix;
+		displayMatrix = stage.__displayMatrix;
 		var offsetX = Math.round (displayMatrix.__transformX (0, 0));
 		var offsetY = Math.round (displayMatrix.__transformY (0, 0));
 		var displayWidth = Math.round (displayMatrix.__transformX (width, 0) - offsetX);

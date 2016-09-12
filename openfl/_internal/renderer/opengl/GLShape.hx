@@ -28,9 +28,9 @@ class GLShape {
 		if (graphics != null) {
 			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
 			#end
 			
 			var bounds = graphics.__bounds;

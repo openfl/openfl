@@ -238,7 +238,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		if (parent != null) {
 			
 			var bounds = new Rectangle ();
-			__getBounds (bounds, __getWorldTransform ());
+			__getBounds (bounds, __getRenderTransform ());
 			
 			return bounds.containsPoint (new Point (x, y));
 			
@@ -475,7 +475,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			if (!hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
-			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
+			if (__graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 				
 				if (stack != null && !interactiveOnly) {
 					
@@ -498,7 +498,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		
 		if (__graphics != null) {
 			
-			if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
+			if (__graphics.__hitTest (x, y, true, __getRenderTransform ())) {
 				
 				return true;
 				
@@ -786,6 +786,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			
 		}
 		
+		if (__renderTransform == null) {
+			
+			__renderTransform = new Matrix ();
+			
+		}
+		
 		if (!overrided && parent != null) {
 			
 			var parentTransform = parent.__worldTransform;
@@ -797,23 +803,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 			
+			parentTransform = parent.__renderTransform;
+			
+			__renderTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
+			__renderTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
+			__renderTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
+			__renderTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
+			__renderTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
+			__renderTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			
 		} else {
 			
 			__worldTransform.copyFrom (local);
+			__renderTransform.copyFrom (local);
 			
 		}
 		
 		if (__scrollRect != null) {
 			
-			__worldTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
-			
-		}
-		
-		__renderTransform.copyFrom (__worldTransform);
-		
-		if (stage != null) {
-			
-			__renderTransform.concat (stage.__displayMatrix);
+			__renderTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
 			
 		}
 		
@@ -998,7 +1006,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return __getWorldTransform ().__transformInverseX (mouseX, mouseY);
+		return __getRenderTransform ().__transformInverseX (mouseX, mouseY);
 		
 	}
 	
@@ -1008,7 +1016,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return __getWorldTransform ().__transformInverseY (mouseX, mouseY);
+		return __getRenderTransform ().__transformInverseY (mouseX, mouseY);
 		
 	}
 	

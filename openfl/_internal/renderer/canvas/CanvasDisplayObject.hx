@@ -22,7 +22,7 @@ class CanvasDisplayObject {
 			renderSession.maskManager.pushObject (displayObject);
 			
 			var context = renderSession.context;
-			var transform = displayObject.__worldTransform;
+			var transform = displayObject.__renderTransform;
 			
 			if (renderSession.roundPixels) {
 				

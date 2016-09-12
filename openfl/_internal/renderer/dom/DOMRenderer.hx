@@ -71,7 +71,7 @@ class DOMRenderer extends AbstractRenderer {
 		
 		if (setTransform && displayObject.__worldTransformChanged) {
 			
-			style.setProperty (renderSession.transformProperty, displayObject.__worldTransform.to3DString (renderSession.roundPixels), null);
+			style.setProperty (renderSession.transformProperty, displayObject.__renderTransform.to3DString (renderSession.roundPixels), null);
 			
 		}
 		
@@ -107,7 +107,7 @@ class DOMRenderer extends AbstractRenderer {
 				var clip = Rectangle.__temp;
 				var matrix = Matrix.__temp;
 				
-				matrix.copyFrom (displayObject.__worldTransform);
+				matrix.copyFrom (displayObject.__renderTransform);
 				matrix.invert ();
 				
 				displayObject.__worldClip.__transform (clip, matrix);

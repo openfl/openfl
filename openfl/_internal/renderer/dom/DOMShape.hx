@@ -72,7 +72,7 @@ class DOMShape {
 					var transform = Matrix.__temp;
 					transform.identity ();
 					transform.translate (graphics.__bounds.x, graphics.__bounds.y);
-					transform.concat (shape.__worldTransform);
+					transform.concat (shape.__renderTransform);
 					
 					shape.__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
 					

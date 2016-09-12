@@ -26,14 +26,14 @@ class CairoDisplayObject {
 			
 			if (renderSession.roundPixels) {
 				
-				var matrix = displayObject.__worldTransform.__toMatrix3 ();
+				var matrix = displayObject.__renderTransform.__toMatrix3 ();
 				matrix.tx = Math.round (matrix.tx);
 				matrix.ty = Math.round (matrix.ty);
 				cairo.matrix = matrix;
 				
 			} else {
 				
-				cairo.matrix = displayObject.__worldTransform.__toMatrix3 ();
+				cairo.matrix = displayObject.__renderTransform.__toMatrix3 ();
 				
 			}
 			

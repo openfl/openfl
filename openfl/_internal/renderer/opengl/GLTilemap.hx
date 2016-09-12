@@ -51,7 +51,7 @@ class GLTilemap {
 		var renderer:GLRenderer = cast renderSession.renderer;
 		
 		gl.enableVertexAttribArray (shader.data.aAlpha.index);
-		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__worldTransform));
+		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__renderTransform));
 		
 		var defaultTileset = tilemap.tileset;
 		var worldAlpha = tilemap.__worldAlpha;

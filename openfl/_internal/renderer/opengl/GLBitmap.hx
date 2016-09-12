@@ -41,7 +41,7 @@ class GLBitmap {
 			var renderer:GLRenderer = cast renderSession.renderer;
 			
 			gl.enableVertexAttribArray (shader.data.aAlpha.index);
-			gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (bitmap.__worldTransform));
+			gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (bitmap.__renderTransform));
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
 			

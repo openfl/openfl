@@ -8,6 +8,7 @@ class Point {
 	
 	
 	private static var __limeVector2:Vector2;
+	private static var __temp = new Point ();
 	
 	public var length (get, never):Float;
 	public var x:Float;

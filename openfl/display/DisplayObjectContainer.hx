@@ -15,6 +15,7 @@ import openfl.Vector;
 
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
+@:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 
 
@@ -446,7 +447,20 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
-		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
+		
+		if (__scrollRect != null) {
+			
+			var point = Point.__temp;
+			point.setTo (x, y);
+			__getRenderTransform ().__transformInversePoint (point);
+			
+			if (!__scrollRect.containsPoint (point)) {
+				
+				return false;
+				
+			}
+			
+		}
 		
 		var i = __children.length;
 		if (interactiveOnly) {

@@ -867,7 +867,7 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform.d = 1 / __renderTransform.d;
 		__worldTransform.tx = __bounds.x;
 		__worldTransform.ty = __bounds.y;
-		__worldTransform.concat (__owner.__worldTransform);
+		__worldTransform.concat (__owner.__renderTransform);
 		
 	}
 	

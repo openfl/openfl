@@ -34,7 +34,7 @@ class CairoTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		var transform = tilemap.__worldTransform;
+		var transform = tilemap.__renderTransform;
 		var roundPixels = renderSession.roundPixels;
 		
 		var defaultTileset = tilemap.tileset;

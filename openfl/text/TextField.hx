@@ -640,11 +640,11 @@ class TextField extends InteractiveObject {
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		__updateLayout ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (__textEngine.bounds.contains (px, py)) {
 			
@@ -665,11 +665,11 @@ class TextField extends InteractiveObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		__updateLayout ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (__textEngine.bounds.contains (px, py)) {
 			
