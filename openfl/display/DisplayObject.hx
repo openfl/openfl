@@ -435,12 +435,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 				
 			} else {
 				
-				while (current != null) {
+				while (current != stage) {
 					
 					list.push (current);
 					current = current.parent;
 					
-					if (current != null && current.__transformDirty) {
+					if (current != stage && current.__transformDirty) {
 						
 						transformDirty = true;
 						
