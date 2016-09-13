@@ -384,8 +384,9 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		
 		if (colorTransform != null) {
-			
-			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+			var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
+			var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
+			var copy = new BitmapData (width, height, true, 0);
 			copy.draw (source);
 			copy.colorTransform (copy.rect, colorTransform);
 			source = copy;
