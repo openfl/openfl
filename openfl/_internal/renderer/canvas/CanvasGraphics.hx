@@ -464,9 +464,6 @@ class CanvasGraphics {
 		#if (js && html5)
 		bounds = graphics.__bounds;
 		
-		var offsetX = bounds.x;
-		var offsetY = bounds.y;
-		
 		var positionX = 0.0;
 		var positionY = 0.0;
 		
@@ -483,18 +480,18 @@ class CanvasGraphics {
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
-					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+					context.bezierCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
-					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+					context.quadraticCurveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				
 				case DRAW_CIRCLE:
 					
 					var c = data.readDrawCircle ();
-					context.moveTo (c.x - offsetX + c.radius, c.y - offsetY);
-					context.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2, true);
+					context.moveTo (c.x + c.radius, c.y);
+					context.arc (c.x, c.y, c.radius, 0, Math.PI * 2, true);
 				
 				case DRAW_ELLIPSE:
 					
@@ -503,8 +500,6 @@ class CanvasGraphics {
 					var y = c.y;
 					var width = c.width;
 					var height = c.height;
-					x -= offsetX;
-					y -= offsetY;
 					
 					var kappa = .5522848,
 						ox = (width / 2) * kappa, // control point offset horizontal
@@ -523,12 +518,12 @@ class CanvasGraphics {
 				case DRAW_ROUND_RECT:
 					
 					var c = data.readDrawRoundRect ();
-					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
-					context.lineTo (c.x - offsetX, c.y - offsetY);
+					context.lineTo (c.x, c.y);
 					
 					positionX = c.x;
 					positionY = c.y;
@@ -536,7 +531,7 @@ class CanvasGraphics {
 				case MOVE_TO:
 					
 					var c = data.readMoveTo ();
-					context.moveTo (c.x - offsetX, c.y - offsetY);
+					context.moveTo (c.x, c.y);
 					
 					positionX = c.x;
 					positionY = c.y;
@@ -566,7 +561,7 @@ class CanvasGraphics {
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					context.moveTo (positionX, positionY);
 					
 					if (c.thickness == null) {
 						
@@ -611,7 +606,7 @@ class CanvasGraphics {
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					context.moveTo (positionX, positionY);
 					context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
 					hasStroke = true;
@@ -625,7 +620,7 @@ class CanvasGraphics {
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					context.moveTo (positionX, positionY);
 					context.strokeStyle = createBitmapFill (c.bitmap, c.repeat);
 					
 					hasStroke = true;
@@ -729,14 +724,14 @@ class CanvasGraphics {
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
 							
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x, c.y, c.width, c.height);
 							
 						}
 					}
 					
 					if (!optimizationUsed) {
 						
-						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
+						context.rect (c.x, c.y, c.width, c.height);
 						
 					}
 				
@@ -754,7 +749,7 @@ class CanvasGraphics {
 
 			if (hasFill && closeGap) {
 				
-				context.lineTo (startX - offsetX, startY - offsetY);
+				context.lineTo (startX, startY);
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
@@ -766,18 +761,12 @@ class CanvasGraphics {
 
 			if (hasFill || bitmapFill != null) {
 				context.save();
-				context.setTransform(1, 0, 0, 1, 0, 0);
-				
-				context.translate (-bounds.x, -bounds.y);
-				
+
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
 					pendingMatrix = null;
 				}
-
-				var scaleTransform = graphics.__owner.__renderScaleTransform;
-				context.transform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
 
 				if (!hitTesting) context.fill ();
 
@@ -839,7 +828,11 @@ class CanvasGraphics {
 					
 					graphics.__canvas.width = Math.ceil (bounds.width);
 					graphics.__canvas.height = Math.ceil (bounds.height);
- 					context.setTransform (scaleX, 0, 0, scaleY, 0, 0);
+
+					var scaleTransform = graphics.__owner.__renderScaleTransform;
+					context.resetTransform ();
+					context.transform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
+					context.translate (-bounds.x, -bounds.y);
 				}
 
 				fillStrokeCommands.clear ();

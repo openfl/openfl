@@ -606,15 +606,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
 		} else {
 
+			if (__updateCachedBitmap || __updateFilters) {
+
 			var stencil_test_name = renderSession.gl.STENCIL_TEST;
 			var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
 
-			if ( (__updateCachedBitmap || __updateFilters)  && stencil_test ) {
+				if ( stencil_test ) {
 				renderSession.gl.disable(stencil_test_name);
 			}
-
-
-			if (__updateCachedBitmap || __updateFilters) {
 
 				if (__cachedFilterBounds != null) {
 					w += __cachedFilterBounds.width;
@@ -637,15 +636,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				this.__shader = shader;
 
 				__updateCachedBitmap = false;
-			}
 
 			if (__updateFilters) {
 				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap);
 				__updateFilters = false;
 			}
 
-			if ( (__updateCachedBitmap || __updateFilters)  && stencil_test ) {
+				if ( stencil_test ) {
 				renderSession.gl.enable(stencil_test_name);
+			}
 			}
 
 			// Calculate the correct position
