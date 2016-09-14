@@ -65,6 +65,24 @@ class BitmapTest {
 		
 		Assert.isTrue (bitmap.smoothing);
 		
+		var bitmapData = new BitmapData (1, 1);
+		bitmap.bitmapData = bitmapData;
+		
+		Assert.isFalse (bitmap.smoothing);
+		
+		bitmap.smoothing = true;
+		
+		Assert.isTrue (bitmap.smoothing);
+		
+		bitmap.bitmapData = bitmapData;
+		
+		Assert.isFalse (bitmap.smoothing);
+		
+		bitmap.smoothing = true;
+		bitmap.bitmapData = new BitmapData (1, 1);
+		
+		Assert.isFalse (bitmap.smoothing);
+		
 	}
 	
 	

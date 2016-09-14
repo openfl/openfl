@@ -187,6 +187,7 @@ class Bitmap extends DisplayObject {
 	private function set_bitmapData (value:BitmapData):BitmapData {
 		
 		bitmapData = value;
+		smoothing = false;
 		
 		if (__filters != null && __filters.length > 0) {
 			

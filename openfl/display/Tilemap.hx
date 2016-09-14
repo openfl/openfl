@@ -56,6 +56,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__height = height;
 		#else
 		bitmapData = new BitmapData (width, height, true, 0);
+		this.smoothing = smoothing;
 		FlashRenderer.register (this);
 		#end
 		
@@ -273,7 +274,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		if (value != bitmapData.height) {
 			
+			var cacheSmoothing = smoothing;
 			bitmapData = new BitmapData (bitmapData.width, Std.int (value), true, 0);
+			smoothing = cacheSmoothing;
 			
 		}
 		
@@ -309,7 +312,9 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 		if (value != bitmapData.width) {
 			
+			var cacheSmoothing = smoothing;
 			bitmapData = new BitmapData (Std.int (value), bitmapData.height, true, 0);
+			smoothing = cacheSmoothing;
 			
 		}
 		
