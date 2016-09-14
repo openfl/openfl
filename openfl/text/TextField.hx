@@ -22,6 +22,7 @@ import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
+import Xml;
 
 #if (js && html5)
 import js.html.DivElement;
@@ -1177,111 +1178,83 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
+	private function parseTags(value:Xml, format:TextFormat, startIndex:Int, ?formatRanges:Array<TextFormatRange>):Dynamic {
+
+		if( formatRanges == null ) {
+			formatRanges = [];
+		}
+		var result = "";
+		for( element in value.iterator() ) {
+			if ( element.nodeType != XmlType.Element || element.firstChild() == null ) {
+				// It's a normal element. Insert into the formatRanges with the pushed format.
+				formatRanges.push (new TextFormatRange (format, startIndex, startIndex + element.nodeValue.length));
+				result += element.nodeValue;
+				startIndex += element.nodeValue.length;
+			} else {
+				var tag = element.nodeName;
+				var copied_format = format.clone ();
+				switch tag {
+					case "b":
+						copied_format.bold = true;
+					case "i":
+						copied_format.italic = true;
+					case "font":	
+						for( attribute in element.attributes() ) {
+							if ( attribute == "face" ) {
+								copied_format.font = element.get(attribute);
+							} else if ( attribute == "color" ) {
+								copied_format.color = Std.parseInt("0x" + element.get(attribute));
+							} else if ( attribute == "size" ) {
+								copied_format.size = Std.parseInt(element.get(attribute));
+							} else {
+								throw "encountered unsupported attribute when parsing html font.";
+							}
+						}
+					default:
+						throw "trying to parse unsupported tag from html text";
+					}
+				var result_data = parseTags(element, copied_format, startIndex, formatRanges);
+				result += result_data.text;
+				startIndex = result_data.start_index;
+			}
+		}
+		return { text:result, start_index: startIndex, format_ranges: formatRanges  };
+	}
+						
+						
 	private function set_htmlText (value:String):String {
-		
+						
 		if (!__isHTML || __textEngine.text != value) {
-			
+							
 			__dirty = true;
 			__layoutDirty = true;
-			
+							
 		}
-		
+						
 		__isHTML = true;
-		
+						
 		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
-			
+						
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
-			
-			// crude solution
-			
-			var segments = value.split ("<font");
-			
-			if (segments.length == 1) {
-				
+			value = new EReg ("</br>", "g").replace (value, "\n");
+					
+			var data;
+			try {
+				data = Xml.parse(value);
+			} catch( e : Dynamic ) {
+				trace("Unable to parse html: " + e );
 				value = new EReg ("<.*?>", "g").replace (value, "");
-				
-				if (__textEngine.textFormatRanges.length > 1) {
-					
-					__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-					
-				}
-				
-				var range = __textEngine.textFormatRanges[0];
-				range.format = __textFormat;
-				range.start = 0;
-				range.end = value.length;
-				
-				return __textEngine.text = value;
-				
-			} else {
-				
-				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
-				
-				value = "";
-				
-				// crude search for font
-				
-				for (segment in segments) {
-					
-					if (segment == "") continue;
-					
-					var closeFontIndex = segment.indexOf ("</font>");
-					
-					if (closeFontIndex > -1) {
-						
-						var start = segment.indexOf (">") + 1;
-						var end = closeFontIndex;
-						var format = __textFormat.clone ();
-						
-						var faceIndex = segment.indexOf ("face=");
-						var colorIndex = segment.indexOf ("color=");
-						var sizeIndex = segment.indexOf ("size=");
-						
-						if (faceIndex > -1 && faceIndex < start) {
-							
-							format.font = segment.substr (faceIndex + 6, segment.indexOf ("\"", faceIndex));
-							
-						}
-						
-						if (colorIndex > -1 && colorIndex < start) {
-							
-							format.color = Std.parseInt ("0x" + segment.substr (colorIndex + 8, 6));
-							
-						}
-						
-						if (sizeIndex > -1 && sizeIndex < start) {
-							
-							format.size = Std.parseInt (segment.substr (sizeIndex + 6, segment.indexOf ("\"", sizeIndex)));
-							
-						}
-						
-						var sub = segment.substring (start, end);
-						sub = new EReg ("<.*?>", "g").replace (sub, "");
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-						value += sub;
-						
-						if (closeFontIndex + 7 < segment.length) {
-							
-							sub = segment.substr (closeFontIndex + 7);
-							__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
-							value += sub;
-							
-						}
-						
-					} else {
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
-						value += segment;
-						
-					}
-					
-				}
-				
+				data = Xml.parse(value);
 			}
+				
+			__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
+			var result_data = parseTags(data, __textFormat.clone(), 0);
 			
+			value = result_data.text;
+			__textEngine.textFormatRanges = result_data.format_ranges;
+
+			return __textEngine.text = value;
 		}
 		
 		return __textEngine.text = value;

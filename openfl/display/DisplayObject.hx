@@ -596,8 +596,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		var x = __cachedBitmapBounds.x;
-		var y = __cachedBitmapBounds.y;
+		var x = Math.round(__cachedBitmapBounds.x);
+		var y = Math.round(__cachedBitmapBounds.y);
 		var w = __cachedBitmapBounds.width;
 		var h = __cachedBitmapBounds.height;
 		
@@ -605,64 +605,76 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (w <= 0 && h <= 0) {
 			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
 		} else {
-		
-		if (__updateCachedBitmap || __updateFilters) {
-			
-			if (__cachedFilterBounds != null) {
-				w += __cachedFilterBounds.width;
-				h += __cachedFilterBounds.height;
-			}
-
-			if (__cachedBitmap == null) {
-				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			}
-			@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
-			
-			// we need to position the drawing origin to 0,0 in the texture
-			var m = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderScaleTransform).clone();
-			m.translate( -x, -y);
-			//Disable mask
 
 			var stencil_test_name = renderSession.gl.STENCIL_TEST;
 			var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
 
-			if ( stencil_test ) {
+			if ( (__updateCachedBitmap || __updateFilters)  && stencil_test ) {
 				renderSession.gl.disable(stencil_test_name);
 			}
 
-			// we disable the container shader, it will be applied to the final texture
-			var shader = __shader;
-			this.__shader = null;
-			@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
-			this.__shader = shader;
 
-			if( stencil_test ){
+			if (__updateCachedBitmap || __updateFilters) {
+
+				if (__cachedFilterBounds != null) {
+					w += __cachedFilterBounds.width;
+					h += __cachedFilterBounds.height;
+				}
+
+				if (__cachedBitmap == null) {
+					__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+				}
+				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
+
+				// we need to position the drawing origin to 0,0 in the texture
+				var m = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderScaleTransform).clone();
+				m.translate( -x, -y);
+
+				// we disable the container shader, it will be applied to the final texture
+				var shader = __shader;
+				this.__shader = null;
+				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
+				this.__shader = shader;
+
+				__updateCachedBitmap = false;
+			}
+
+			if (__updateFilters) {
+				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap);
+				__updateFilters = false;
+			}
+
+			if ( (__updateCachedBitmap || __updateFilters)  && stencil_test ) {
 				renderSession.gl.enable(stencil_test_name);
 			}
 
-			__updateCachedBitmap = false;
+			// Calculate the correct position
+			__cacheGLMatrix.identity();
+			__cacheGLMatrix.translate(x, y);
+			__cacheGLMatrix.concat(__renderTransform);
+			__cacheGLMatrix.translate ( __offset.x, __offset.y);
+			
+			renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 		}
-		
-		if (__updateFilters) {
-			@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap, __cachedBitmap, null, null);
-			__updateFilters = false;
+	}
+
+	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {
+		var element : DisplayObject = object;
+		var result : Array<DisplayObject> = [];
+		while(element != null) {
+			result.push(element);
+			element = element.parent;
 		}
-		
-		// Calculate the correct position
-		__cacheGLMatrix.identity();
-		__cacheGLMatrix.translate(x, y);
-		__cacheGLMatrix.concat(__renderTransform);
-		__cacheGLMatrix.translate ( __offset.x, __offset.y);
-		
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+		result.reverse();
+		return result;
 	}
-	}
-	
-	
+
 	private function __setStageReference (stage:Stage):Void {
 		
 		if (this.stage != stage) {
 			
+			var stack = __getDisplayStack( this );
+
 			if (this.stage != null) {
 				
 				if (this.stage.focus == this) {
@@ -671,7 +683,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 					
 				}
 				
-				dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
+				#else
+					dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#end
 
 				__releaseResources();
 
@@ -681,7 +697,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			if (stage != null) {
 				
-				dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
+				#else
+					dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				#end
 				
 			}
 			
@@ -1217,19 +1237,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	
 	private function set_mask (value:DisplayObject):DisplayObject {
-		
-		if (value != __mask) {
-			__setTransformDirty ();
-			__setRenderDirty ();
+
+		if (value == __mask) {
+			return value;
 		}
+
+		__setTransformDirty ();
+		__setRenderDirty ();
+
 		if (__mask != null) {
 			__mask.__isMask = false;
 			__mask.__maskCached = false;
 			__mask.__setTransformDirty();
 			__mask.__setRenderDirty();
+			__maskGraphics.dispose();
 			__maskGraphics = null;
 		}
-		if (value != null) value.__isMask = true;
+
+		if (value != null) {
+			value.__isMask = true;
+			value.__maskCached = false;
+			value.__setTransformDirty();
+			value.__setRenderDirty();
+		}
+
 		return __mask = value;
 		
 	}

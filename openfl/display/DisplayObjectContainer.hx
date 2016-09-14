@@ -43,12 +43,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child != null) {
 			
-			if (child.parent != null) {
-				child.parent.removeChild (child);
+			if (child.parent == this) {
+				var childIndex = __children.indexOf(child);
+				__children.splice(childIndex,1);
+				__children.push(child);
+			} else {
+				if (child.parent != null) {
+					child.parent.removeChild (child);
+				}
+				__children.push (child);
+				initParent(child);
 			}
-			__children.push (child);
-			initParent(child);
-
 		}
 		return child;
 		
@@ -492,7 +497,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
@@ -503,7 +508,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 
-					if (__children[i] != null && __children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
+					if (__children[i] != null && __children[i].__hitTest (x, y, shapeFlag, null, mouseChildren, cast __children[i])) {
 
 						if (stack != null) {
 							
@@ -526,7 +531,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 
-					if (__children[i] == null) continue;
 					interactive = __children[i].__getInteractive (null);
 					
 					if (interactive || (mouseEnabled && !hitTest)) {
@@ -560,8 +564,15 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			while (--i >= 0) {
 
-				if (__children[i] == null ) continue;
-				__children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]);
+				if ( __children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]) ) {
+					if (stack != null) {
+
+						stack.push (hitObject);
+
+					}
+
+					return true;
+				};
 				
 			}
 			
@@ -857,9 +868,15 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (this.stage != stage) {
 			
+			var stack = __getDisplayStack( this );
+
 			if (this.stage != null) {
 				
-				__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
+				#else
+					__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#end
 				__releaseResources();
 
 			}
@@ -868,8 +885,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
-				__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
-				
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
+				#else
+					__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				#end
 			}
 			
 			if (__children != null) {
