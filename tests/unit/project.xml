@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="Validation" package="org.openfl.validation" version="1.0.0" company="OpenFL" />
-	<app file="TestMain" main="TestMain" path="build" />
+	<meta title="Validation" package="org.openfl.tests.unit" version="1.0.0" company="OpenFL" />
+	<app file="TestMain" main="TestMain" path="build" swf-version="12.0" />
 	
 	<source path="test" />
 	
@@ -12,6 +12,4 @@
 	<haxelib name="hamcrest" />
 	<haxelib name="format" />
 	
-	<!-- <template path="src/index.html" rename="index.html" if="html5" />
-	-->
 </project>

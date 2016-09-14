@@ -1,8 +1,11 @@
 package openfl.display;
 
 
+#if !flash
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
+#end
+
 import openfl.display.Sprite;
 import openfl.display.Stage;
 
@@ -27,6 +30,7 @@ class DOMSprite extends Sprite {
 	}
 	
 	
+	#if !flash
 	public override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
@@ -56,6 +60,7 @@ class DOMSprite extends Sprite {
 		#end
 		
 	}
+	#end
 	
 	
 }

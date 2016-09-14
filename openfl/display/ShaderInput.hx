@@ -13,7 +13,10 @@ package openfl.display;
 	
 	public function new () {
 		
-		
+		channels = 0;
+		height = 0;
+		index = 0;
+		width = 0;
 		
 	}
 	

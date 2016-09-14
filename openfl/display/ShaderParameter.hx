@@ -11,7 +11,7 @@ package openfl.display;
 	
 	public function new () {
 		
-		
+		index = 0;
 		
 	}
 	

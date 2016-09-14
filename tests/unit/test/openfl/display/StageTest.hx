@@ -30,6 +30,28 @@ class StageTest {
 	}
 	
 	
+	@Test public function allowsFullScreenInteractive () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = Lib.current.stage.allowsFullScreenInteractive;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function application () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = Lib.current.stage.application;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
 	@Test public function color () {
 		
 		// TODO: Confirm functionality
@@ -96,6 +118,17 @@ class StageTest {
 	}
 	
 	
+	@Test public function stage3Ds () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = Lib.current.stage.stage3Ds;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
 	@Test public function stageFocusRect () {
 		
 		// TODO: Confirm functionality
@@ -123,6 +156,17 @@ class StageTest {
 		// TODO: Confirm functionality
 		
 		var exists = Lib.current.stage.stageWidth;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	@Test public function window () {
+		
+		// TODO: Confirm functionality
+		
+		var exists = Lib.current.stage.window;
 		
 		Assert.isNotNull (exists);
 		

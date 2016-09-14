@@ -21,6 +21,18 @@ class InteractiveObjectTest {
 	}
 	
 	
+	@Test public function focusRect () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.focusRect;
+		
+		Assert.isNull (exists);
+		
+	}
+	
+	
 	@Test public function mouseEnabled () {
 		
 		// TODO: Confirm functionality
@@ -41,6 +53,42 @@ class InteractiveObjectTest {
 		var exists = sprite.needsSoftKeyboard;
 		
 		Assert.isFalse (exists);
+		
+	}
+	
+	
+	@Test public function softKeyboardInputAreaOfInterest () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.softKeyboardInputAreaOfInterest;
+		
+		Assert.isNull (exists);
+		
+	}
+	
+	
+	@Test public function tabEnabled () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.tabEnabled;
+		
+		Assert.isFalse (exists);
+		
+	}
+	
+	
+	@Test public function tabIndex () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.tabIndex;
+		
+		//Assert.isNotNull (exists);
 		
 	}
 	

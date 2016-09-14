@@ -43,7 +43,7 @@ class Stage3D extends EventDispatcher {
 	#end
 	
 	
-	public function new () {
+	private function new () {
 		
 		super ();
 		
