@@ -615,6 +615,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
 
 			if ( (__updateCachedBitmap || __updateFilters)  && stencil_test ) {
+				renderSession.spriteBatch.stop();
 				renderSession.gl.disable(stencil_test_name);
 			}
 
