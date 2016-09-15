@@ -113,6 +113,7 @@ class ApplicationMain {
 			windows: [
 				::foreach windows::
 				{
+					allowHighDPI: ::allowHighDPI::,
 					antialiasing: ::antialiasing::,
 					background: ::background::,
 					borderless: ::borderless::,
