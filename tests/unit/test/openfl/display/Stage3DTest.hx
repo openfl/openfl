@@ -3,6 +3,7 @@ package openfl.display;
 
 import massive.munit.Assert;
 import openfl.display.Stage3D;
+import openfl.display3D.Context3D;
 
 
 class Stage3DTest {
@@ -88,6 +89,36 @@ class Stage3DTest {
 		var exists = stage3D.requestContext3DMatchingProfiles;
 		
 		Assert.isNotNull (exists);
+		
+	}
+	
+	
+	public static function __getContext3D ():Context3D {
+		
+		// TODO: Create the context in advance?
+		
+		var stage3D = Lib.current.stage.stage3Ds[0];
+		
+		if (stage3D != null) {
+			
+			if (stage3D.context3D == null) {
+				
+				// munit template does not have the correct wmode for Stage3D
+				
+				#if !flash
+				
+				stage3D.addEventListener ("context3DCreate", function (_) {});
+				stage3D.requestContext3D ();
+				
+				#end
+				
+			}
+			
+			return stage3D.context3D;
+			
+		}
+		
+		return null;
 		
 	}
 	
