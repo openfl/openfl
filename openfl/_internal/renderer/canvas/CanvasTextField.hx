@@ -234,7 +234,7 @@ class CanvasTextField {
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
 						var fontData = TextEngine.getFont (group.format);
-						offsetY = fontData.ascent * group.format.size + ( group.format.leading * group.lineIndex );
+						offsetY = fontData.ascent * group.format.size;
 						context.font = fontData.name;
 						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
 						var trimmed_text = text.substring (group.startIndex, group.endIndex);
