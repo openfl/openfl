@@ -538,12 +538,11 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
 		__updateLayout ();
-		var bounds = Rectangle.__temp;
-		__textEngine.bounds.__transform (bounds, matrix);
-		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
+		rect.__expand (__textEngine.bounds.x, __textEngine.bounds.y, __textEngine.bounds.width, __textEngine.bounds.height);
 		
 	}
 	

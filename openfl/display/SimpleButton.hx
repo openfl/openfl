@@ -53,25 +53,11 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
-		super.__getBounds (rect, matrix);
+		super.__getBounds (rect);
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
-		
-		__currentState.__getBounds (rect, __currentState.__worldTransform);
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getTransformedBounds (rect, __currentState.__worldTransform);
 		
 	}
 	

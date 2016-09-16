@@ -187,13 +187,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 		} else {
 			
-			matrix = Matrix.__temp;
-			matrix.identity ();
+			matrix = Matrix.__identity;
 			
 		}
 		
 		var bounds = new Rectangle ();
-		__getBounds (bounds, matrix);
+		__getTransformedBounds (bounds, matrix);
 		
 		return bounds;
 		
@@ -238,7 +237,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (parent != null) {
 			
 			var bounds = new Rectangle ();
-			__getBounds (bounds, __getWorldTransform ());
+			__getTransformedBounds (bounds, __getWorldTransform ());
 			
 			return bounds.containsPoint (new Point (x, y));
 			
@@ -322,16 +321,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
-	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private function __getBounds (rect:Rectangle):Void {
 		
 		if (__graphics != null) {
 			
-			__graphics.__getBounds (rect, matrix);
+			__graphics.__getBounds (rect);
 			
 		}
 		
 	}
 	
+	private function __getTransformedBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		__getBounds (rect);
+		rect.__transform (rect, matrix);
+		
+	}
 	
 	private function __getCursor ():MouseCursor {
 		
@@ -349,7 +354,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	private inline function __getLocalBounds (rect:Rectangle):Void {
 		
-		__getBounds (rect, __transform);
+		__getTransformedBounds (rect, __transform);
 		
 	}
 	
@@ -371,7 +376,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		if (__scrollRect == null) {
 			
-			__getBounds (rect, transform);
+			__getTransformedBounds (rect, transform);
 			
 		} else {
 			
@@ -989,7 +994,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				
 			}
 			
-			__graphics.__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
+			__graphics.__getBounds (maskGraphics.__bounds);
 			
 		}
 		
@@ -1216,10 +1221,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		var bounds = new Rectangle ();
 		
-		var matrix = Matrix.__temp;
-		matrix.identity ();
-		
-		__getBounds (bounds, matrix);
+		__getBounds (bounds);
 		
 		if (value != bounds.height) {
 			
@@ -1537,10 +1539,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		var bounds = new Rectangle ();
 		
-		var matrix = Matrix.__temp;
-		matrix.identity ();
-		
-		__getBounds (bounds, matrix);
+		__getBounds (bounds);
 		
 		if (value != bounds.width) {
 			

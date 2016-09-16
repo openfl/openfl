@@ -64,11 +64,10 @@ class Video extends DisplayObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
 		var bounds = Rectangle.__temp;
 		bounds.setTo (0, 0, __width, __height);
-		bounds.__transform (bounds, matrix);
 		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		

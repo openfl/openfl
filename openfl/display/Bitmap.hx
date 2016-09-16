@@ -50,14 +50,12 @@ class Bitmap extends DisplayObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
 		if (bitmapData != null) {
 			
 			var bounds = Rectangle.__temp;
 			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
-			bounds.__transform (bounds, matrix);
-			
 			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 			
 		}
@@ -174,7 +172,7 @@ class Bitmap extends DisplayObject {
 			
 		}
 		
-		__getBounds (maskGraphics.__bounds, @:privateAccess Matrix.__identity);
+		__getBounds (maskGraphics.__bounds);
 		
 		super.__updateMask (maskGraphics);
 		
