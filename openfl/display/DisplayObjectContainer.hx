@@ -455,20 +455,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle, ?matrix:Matrix):Void {
 		
-		if (__scrollRect != null) {
+		super.__getRenderBounds (rect, matrix);
 			
-			super.__getRenderBounds (rect, matrix);
+		if (__scrollRect != null || __children.length == 0) {
+			
 			return;
 			
-		} else {
-			
-			super.__getBounds (rect, matrix);
-			
 		}
-		
-		if (__children.length == 0) return;
 		
 		if (matrix != null) {
 			

@@ -354,18 +354,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
-	private function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private function __getRenderBounds (rect:Rectangle, ?matrix:Matrix):Void {
+		
+		var transform:Matrix;
+		
+		
+		if (matrix != null) {
+			
+			transform = matrix;
+			
+		} else {
+			
+			transform = __renderScaleTransform;
+			
+		}
 		
 		if (__scrollRect == null) {
 			
-			__getBounds (rect, matrix);
+			__getBounds (rect, transform);
 			
 		} else {
 			
 			var r = openfl.geom.Rectangle.__temp;
 			r.copyFrom (__scrollRect);
-			r.__transform (r, matrix);
-			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
+			r.__transform (r, transform);
+			rect.__expand (transform.tx, transform.ty, r.width, r.height);
 			
 		}
 		
@@ -626,7 +639,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
 
 				// we need to position the drawing origin to 0,0 in the texture
-				var m = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderScaleTransform).clone();
+				var m = __renderScaleTransform.clone();
 				m.translate( -x, -y);
 
 				// we disable the container shader, it will be applied to the final texture
@@ -812,10 +825,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				if (__cachedBitmapBounds == null) {
 					__cachedBitmapBounds = new Rectangle();
 				}
-				
 					
 				__cachedBitmapBounds.setEmpty();
-				__getRenderBounds(__cachedBitmapBounds, __cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderScaleTransform);
+				__getRenderBounds(__cachedBitmapBounds);
 				
 				if (__filters != null) {
 					
@@ -1041,25 +1053,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		
 		__renderScaleTransform.identity();
-		__renderTransform.identity();
-		
-		if (__useSeparateRenderScaleTransform)
-		{
+			
+		if (__cacheAsBitmapMatrix != null) {
+
+			__renderScaleTransform.copyFrom (__cacheAsBitmapMatrix);
+
+		} else if (__useSeparateRenderScaleTransform) {
+			
 			var renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
 			var renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
 			__renderScaleTransform.scale(renderScaleX, renderScaleY);
-
-			
-
-			__renderTransform.scale(1.0 / renderScaleX, 1.0 / renderScaleY);
-		}
-
-		if (__cacheAsBitmapMatrix != null) {
-			
-			throw ":TODO: take __cacheAsBitmapMatrix inverse into account";
 			
 		}
 
+		__renderTransform.copyFrom (__renderScaleTransform);
+		__renderTransform.invert ();
 		__renderTransform.concat (__worldTransform);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}

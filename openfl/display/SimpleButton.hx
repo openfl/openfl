@@ -76,16 +76,13 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle, ?matrix:Matrix):Void {
+		
+		super.__getRenderBounds (rect, matrix);
 		
 		if (__scrollRect != null) {
 			
-			super.__getRenderBounds (rect, matrix);
 			return;
-			
-		} else {
-			
-			super.__getBounds (rect, matrix);
 			
 		}
 		
