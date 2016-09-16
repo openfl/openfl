@@ -835,7 +835,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var parent = __dragObject.parent;
 		if (parent != null) {
 			
-			mouse = parent.globalToLocal (mouse);
+			parent.__getWorldTransform ().__transformInversePoint (mouse);
 			
 		}
 		
@@ -1386,8 +1386,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (lockCenter) {
 				
-				__dragOffsetX = -__dragObject.width / 2;
-				__dragOffsetY = -__dragObject.height / 2;
+				__dragOffsetX = 0;
+				__dragOffsetY = 0;
 				
 			} else {
 				
@@ -1396,7 +1396,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 				if (parent != null) {
 					
-					mouse = parent.globalToLocal (mouse);
+					parent.__getWorldTransform ().__transformInversePoint (mouse);
 					
 				}
 				
