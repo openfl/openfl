@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.1.0",
-	"releasenote": "New Stage3D implementation, Mouse.cursor support, new openfl.Vector",
+	"version": "4.2.0",
+	"releasenote": "Rewrote support for scrollRect, added support for disabling smoothing using StageQuality.LOW",
 	"contributors": [ "singmajesty" ]
 }
