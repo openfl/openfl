@@ -62,9 +62,9 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, ?matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle):Void {
 		
-		super.__getRenderBounds (rect, matrix);
+		super.__getRenderBounds (rect);
 		
 		if (__scrollRect != null) {
 			
@@ -72,21 +72,7 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
-		
-		__currentState.__getRenderBounds (rect, __currentState.__worldTransform);
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getTransformedRenderBounds (rect, __currentState.__worldTransform);
 		
 	}
 	

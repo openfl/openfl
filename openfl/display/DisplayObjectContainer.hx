@@ -446,9 +446,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, ?matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle):Void {
 		
-		super.__getRenderBounds (rect, matrix);
+		super.__getRenderBounds (rect);
 			
 		if (__scrollRect != null || __children.length == 0) {
 			
@@ -456,25 +456,16 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childRect = new Rectangle(); 
 		
 		for (child in __children) {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			child.__getRenderBounds (rect, child.__worldTransform);
-			
-		}
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
+			childRect.setEmpty ();
+			child.__getRenderBounds (childRect);
+			childRect.__transform (childRect, child.__transform);
+			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 			
 		}
 		

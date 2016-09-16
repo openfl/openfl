@@ -359,37 +359,41 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
-	private function __getRenderBounds (rect:Rectangle, ?matrix:Matrix):Void {
-		
-		var transform:Matrix;
-		
-		
-		if (matrix != null) {
-			
-			transform = matrix;
-			
-		} else {
-			
-			transform = __renderScaleTransform;
-			
-		}
+	private function __getRenderBounds (rect:Rectangle):Void {
 		
 		if (__scrollRect == null) {
 			
-			__getTransformedBounds (rect, transform);
+			__getBounds (rect);
 			
 		} else {
 			
-			var r = openfl.geom.Rectangle.__temp;
-			r.copyFrom (__scrollRect);
-			r.__transform (r, transform);
-			rect.__expand (transform.tx, transform.ty, r.width, r.height);
+			rect.copyFrom (__scrollRect);
+			
+		}
+		
+		rect.__transform (rect, __renderScaleTransform);
+		
+	}
+	
+	private function __getTransformedRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+		
+		var r = openfl.geom.Rectangle.__temp;
+		__getRenderBounds (r);
+		r.__transform (r, matrix);
+		
+		if (__scrollRect == null) {
+			
+			rect.__expand (r.x, r.y, r.width, r.height);
+			
+		} else {
+		
+			// :TODO: check this (kept as original for compatibility)
+			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
 			
 		}
 		
 	}
-	
-	
+		
 	private function __getWorldTransform ():Matrix {
 		
 		if (__transformDirty || __worldTransformDirty > 0) {
