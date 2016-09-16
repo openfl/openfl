@@ -1,3 +1,28 @@
+4.2.0 (09/16/2016)
+------------------
+
+* Rewrote support for scrollRect
+* Added support for disabling smoothing using StageQuality.LOW
+* Added initial changes to support the C# target
+* Added support for ROLL_OVER/ROLL_OUT events
+* Added tileset.clone
+* Implemented support for opaqueBackground
+* Cleaned up the renderer with GC optimizations
+* Updated Capabilities.language to use lime.system.Locale
+* Updated iOS templates for Xcode 8
+* Improved Tilemap rendering and consistency
+* Improved support for high-DPI windowing
+* Improved support for disabled smoothing throughout the renderer
+* Improved the behavior of MOUSE_OVER/MOUSE_OUT events
+* Improved the removal of items from the openfl.Assets cache
+* Improved stage.focus when the object of focus has been removed
+* Improved bitmap.bitmapData to set smoothing to false (like Flash)
+* Improved Utils3D.projectVectors
+* Fixed bitmapData.draw when using colorTransform on canvas
+* Fixed coordinate calculation for some off-stage objects
+* Fixed an issue when resizing object vectors
+
+
 4.1.0 (08/29/2016)
 ------------------
 
