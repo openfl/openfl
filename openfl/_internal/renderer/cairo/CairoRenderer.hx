@@ -18,9 +18,9 @@ class CairoRenderer extends AbstractRenderer {
 	private var cairo:Cairo;
 	
 	
-	public function new (width:Int, height:Int, cairo:Cairo) {
+	public function new (stage:Stage, cairo:Cairo) {
 		
-		super (width, height);
+		super (stage);
 		
 		this.cairo = cairo;
 		
@@ -34,7 +34,7 @@ class CairoRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function render ():Void {
 		
 		renderSession.allowSmoothing = (stage.quality != LOW);
 		
@@ -49,14 +49,6 @@ class CairoRenderer extends AbstractRenderer {
 		
 		stage.__renderCairo (renderSession);
 		
-	}
-
-
-	public function renderDisplayObject (object:DisplayObject):Void {
-
-		cairo.identityMatrix ();
-		object.__renderCairo (renderSession);
-
 	}
 	
 	

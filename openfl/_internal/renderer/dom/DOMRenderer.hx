@@ -25,9 +25,9 @@ class DOMRenderer extends AbstractRenderer {
 	private var element:DOMRenderContext;
 	
 	
-	public function new (width:Int, height:Int, element:DOMRenderContext) {
+	public function new (stage:Stage, element:DOMRenderContext) {
 		
-		super (width, height);
+		super (stage);
 		
 		this.element = element;
 		
@@ -143,7 +143,7 @@ class DOMRenderer extends AbstractRenderer {
 	#end
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function render ():Void {
 		
 		renderSession.allowSmoothing = (stage.quality != LOW);
 		

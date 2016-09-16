@@ -590,27 +590,27 @@ class Stage extends DisplayObjectContainer implements IModule {
 				case OPENGL (gl):
 					
 					#if (!disable_cffi && (!html5 || !canvas))
-					__renderer = new GLRenderer (stageWidth, stageHeight, gl);
+					__renderer = new GLRenderer (this, gl);
 					#end
 				
 				case CANVAS (context):
 					
-					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
+					__renderer = new CanvasRenderer (this, context);
 				
 				case DOM (element):
 					
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
+					__renderer = new DOMRenderer (this, element);
 				
 				case CAIRO (cairo):
 					
 					#if !html5
-					__renderer = new CairoRenderer (stageWidth, stageHeight, cairo);
+					__renderer = new CairoRenderer (this, cairo);
 					#end
 				
 				case CONSOLE (ctx):
 					
 					#if !html5
-					__renderer = new ConsoleRenderer (stageWidth, stageHeight, ctx);
+					__renderer = new ConsoleRenderer (this, ctx);
 					#end
 				
 				default:
@@ -668,9 +668,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
+		__resize ();
+		
 		if (__displayState == NORMAL) {
 			
 			__displayState = FULL_SCREEN_INTERACTIVE;
+			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
 			
 		}
 		
@@ -704,15 +707,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
+		__resize ();
+		
 		if (__displayState != NORMAL && !window.fullscreen) {
 			
 			__displayState = NORMAL;
+			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 			
 		}
-		
-		__resize ();
-		
-		__dispatchEvent (new Event (Event.RESIZE));
 		
 	}
 	
@@ -720,6 +722,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function onWindowRestore (window:Window):Void {
 		
 		//if (this.window == null || this.window != window) return;
+		
+		//__resize ();
 		
 	}
 	
@@ -746,7 +750,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			__renderer.init (this);
+			__renderer.clear ();
 			
 		}
 		
@@ -788,7 +792,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			__renderer.render (this);
+			__renderer.render ();
 			
 		}
 		
@@ -1312,6 +1316,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __resize ():Void {
 		
+		var cacheWidth = stageWidth;
+		var cacheHeight = stageHeight;
+		
 		var windowWidth = Std.int (window.width * window.scale);
 		var windowHeight = Std.int (window.height * window.scale);
 		
@@ -1347,7 +1354,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (__renderer != null) {
 			
-			__renderer.resize (stageWidth, stageHeight);
+			__renderer.resize (windowWidth, windowHeight);
+			
+		}
+		
+		if (stageWidth != cacheWidth || stageHeight != cacheHeight) {
+			
+			__dispatchEvent (new Event (Event.RESIZE));
 			
 		}
 		
@@ -1508,11 +1521,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 						//window.minimized = false;
 						window.fullscreen = false;
 						
-						__resize ();
-						
-						dispatchEvent (new Event (Event.FULLSCREEN));
-						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
-						
 					}
 				
 				default:
@@ -1521,11 +1529,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						//window.minimized = false;
 						window.fullscreen = true;
-						
-						__resize ();
-						
-						dispatchEvent (new Event (Event.FULLSCREEN));
-						dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
 						
 					}
 				

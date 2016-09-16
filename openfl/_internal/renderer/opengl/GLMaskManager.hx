@@ -22,7 +22,7 @@ class GLMaskManager extends AbstractMaskManager {
 	private var clipRects:Array<Rectangle>;
 	private var gl:GLRenderContext;
 	private var numClipRects:Int;
-	
+	private var tempRect:Rectangle;
 	
 	
 	public function new (renderSession:RenderSession) {
@@ -33,6 +33,7 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		clipRects = new Array ();
 		numClipRects = 0;
+		tempRect = new Rectangle ();
 		
 	}
 	
@@ -155,7 +156,19 @@ class GLMaskManager extends AbstractMaskManager {
 			var renderer:GLRenderer = cast renderSession.renderer;
 			
 			gl.enable (gl.SCISSOR_TEST);
-			gl.scissor (Math.floor (rect.x), Math.floor (renderer.windowHeight - rect.y - rect.height), Math.ceil (rect.width), Math.ceil (rect.height));
+			
+			var clipRect = tempRect;
+			rect.__transform (clipRect, renderer.displayMatrix);
+			
+			var x = Math.floor (clipRect.x);
+			var y = Math.floor (renderer.height - clipRect.y - clipRect.height);
+			var width = Math.ceil (clipRect.width);
+			var height = Math.ceil (clipRect.height);
+			
+			if (width < 0) width = 0;
+			if (height < 0) height = 0;
+			
+			gl.scissor (x, y, width, height);
 			
 		} else {
 			
