@@ -181,7 +181,15 @@ class ApplicationMain {
 			
 		} else {
 			
-			var instance:DocumentClass = Type.createInstance (DocumentClass, []);
+			try {
+
+				var instance:DocumentClass = Type.createInstance (DocumentClass, []);
+
+			} catch (e:Dynamic) {
+
+				trace("Warning: couldn't create an instance of ::APP_MAIN:: or it doesn't have a constructor");
+
+			}
 			
 			/*if (Std.is (instance, openfl.display.DisplayObject)) {
 				
