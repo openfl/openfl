@@ -1,5 +1,7 @@
-#if !macro
-
+#if macro
+import haxe.macro.Context;
+import haxe.macro.Expr;
+#end
 
 @:access(lime.app.Application)
 @:access(lime.Assets)
@@ -8,6 +10,7 @@
 
 class ApplicationMain {
 	
+	#if !macro
 	
 	public static var config:lime.app.Config;
 	public static var preloader:openfl.display.Preloader;
@@ -155,49 +158,13 @@ class ApplicationMain {
 		#end
 		
 	}
-	
-	
+
+
 	public static function start ():Void {
 		
-		var hasMain = false;
-		var entryPoint = Type.resolveClass ("::APP_MAIN::");
-		
-		for (methodName in Type.getClassFields (entryPoint)) {
-			
-			if (methodName == "main") {
-				
-				hasMain = true;
-				break;
-				
-			}
-			
-		}
-		
 		lime.Assets.initialize ();
-		
-		if (hasMain) {
-			
-			Reflect.callMethod (entryPoint, Reflect.field (entryPoint, "main"), []);
-			
-		} else {
-			
-			try {
 
-				var instance:DocumentClass = Type.createInstance (DocumentClass, []);
-
-			} catch (e:Dynamic) {
-
-				trace("Warning: couldn't create an instance of ::APP_MAIN:: or it doesn't have a constructor");
-
-			}
-			
-			/*if (Std.is (instance, openfl.display.DisplayObject)) {
-				
-				openfl.Lib.current.addChild (cast instance);
-				
-			}*/
-			
-		}
+		ApplicationMain.getEntryPoint ();
 		
 		#if !flash
 		openfl.Lib.current.stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
@@ -210,9 +177,57 @@ class ApplicationMain {
 		#end
 		
 	}
-	
-	
-	#if neko
+
+
+	#end
+
+
+	macro public static function getEntryPoint () {
+
+		var hasMain = false;
+
+		switch (Context.follow (Context.getType ("::APP_MAIN::"))) {
+
+			case TInst (t, p):
+				var t = t.get ();
+
+				for (method in t.statics.get ()) {
+
+					if (method.name == "main") {
+
+						hasMain = true;
+						break;
+
+					}
+
+				}
+
+				if (hasMain) {
+
+					return macro { var entryPoint = Type.resolveClass ("::APP_MAIN::"); Reflect.callMethod (entryPoint, Reflect.field (entryPoint, "main"), []); };
+
+				} else if (t.constructor != null) {
+
+					return macro { new DocumentClass (); };
+
+				} else {
+
+					Context.fatalError ("Main class \"::APP_MAIN::\" has neither a static main nor a constructor.", Context.currentPos ());
+
+				}
+
+			default:
+
+				Context.fatalError ("Main class \"::APP_MAIN::\" isn't a class.", Context.currentPos ());
+
+		}
+
+		return null;
+
+	}
+
+
+	#if (neko && !macro)
 	@:noCompletion @:dox(hide) public static function __init__ () {
 		
 		// Copy from https://github.com/HaxeFoundation/haxe/blob/development/std/neko/_std/Sys.hx#L164
@@ -246,16 +261,13 @@ class ApplicationMain {
 	
 }
 
+#if !macro
 
 @:build(DocumentClass.build())
 @:keep class DocumentClass extends ::APP_MAIN:: {}
 
 
 #else
-
-
-import haxe.macro.Context;
-import haxe.macro.Expr;
 
 
 class DocumentClass {
@@ -291,7 +303,7 @@ class DocumentClass {
 		}
 		
 		return null;
-		
+
 	}
 	
 	
