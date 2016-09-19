@@ -1197,20 +1197,22 @@ class TextField extends InteractiveObject {
 						copied_format.bold = true;
 					case "i":
 						copied_format.italic = true;
-					case "font":	
+					case "font":
 						for( attribute in element.attributes() ) {
-							if ( attribute == "face" ) {
-								copied_format.font = element.get(attribute);
-							} else if ( attribute == "color" ) {
-								copied_format.color = Std.parseInt("0x" + element.get(attribute));
-							} else if ( attribute == "size" ) {
-								copied_format.size = Std.parseInt(element.get(attribute));
-							} else {
-								throw "encountered unsupported attribute when parsing html font.";
+							switch(attribute){
+								case "face": copied_format.font = element.get(attribute);
+								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
+								case "size": copied_format.size = Std.parseInt(element.get(attribute));
+								default:
+								#if debug
+									trace ("encountered unsupported attribute when parsing html font.");
+								#end
 							}
 						}
 					default:
-						throw "trying to parse unsupported tag from html text";
+						#if debug
+							trace ("trying to parse unsupported tag ( $tag ) from html text");
+						#end
 					}
 				var result_data = parseTags(element, copied_format, startIndex, formatRanges);
 				result += result_data.text;
@@ -1219,8 +1221,17 @@ class TextField extends InteractiveObject {
 		}
 		return { text:result, start_index: startIndex, format_ranges: formatRanges  };
 	}
-						
-						
+
+	private function stripHexPrefix(value:String):String
+	{
+	    if (value.indexOf('#') == 0)
+	        return value.substring(1);
+	    if (value.indexOf('0x') == 0)
+	        return value.substring(2);
+		return value;
+	}
+
+
 	private function set_htmlText (value:String):String {
 						
 		if (!__isHTML || __textEngine.text != value) {
