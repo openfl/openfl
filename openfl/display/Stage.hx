@@ -1078,9 +1078,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				rollOver(target);
 			}
 
-			if (inElements.length > 0 ) {
-				mouseOver( inElements[inElements.length-1] );
-			}
+			mouseOver(stack[stack.length-1]);
 		}
 
 		
