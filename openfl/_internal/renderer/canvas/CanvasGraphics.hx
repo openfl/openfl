@@ -43,9 +43,7 @@ class CanvasGraphics {
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
-	private static var bounds:Rectangle;
 	private static var fillStrokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
@@ -224,6 +222,8 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
+		
+		var bounds = graphics.__bounds;
 		
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
@@ -462,7 +462,6 @@ class CanvasGraphics {
 	private static function playCommands (commands:DrawCommandBuffer):Void {
 
 		#if (js && html5)
-		bounds = graphics.__bounds;
 		
 		var positionX = 0.0;
 		var positionY = 0.0;
@@ -794,8 +793,7 @@ class CanvasGraphics {
 			
 			hitTesting = false;
 			
-			CanvasGraphics.graphics = graphics;
-			bounds = graphics.__bounds;
+			var bounds = graphics.__bounds;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 				
@@ -813,9 +811,9 @@ class CanvasGraphics {
 				} else {
 					var scaleX = graphics.__owner.renderScaleX;
 					var scaleY = graphics.__owner.renderScaleY;
-					var bounds = graphics.__bounds.clone();
-					bounds.width *= scaleX;
-					bounds.height *= scaleY;
+					var local_bounds = graphics.__bounds.clone();
+					local_bounds.width *= scaleX;
+					local_bounds.height *= scaleY;
 					
 					if (graphics.__canvas == null) {
 						
@@ -826,13 +824,13 @@ class CanvasGraphics {
 					
 					context = graphics.__context;
 					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
+					graphics.__canvas.width = Math.ceil (local_bounds.width);
+					graphics.__canvas.height = Math.ceil (local_bounds.height);
 
 					var scaleTransform = graphics.__owner.__renderScaleTransform;
 					context.resetTransform ();
 					context.transform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
-					context.translate (-bounds.x, -bounds.y);
+					context.translate (-local_bounds.x, -local_bounds.y);
 				}
 
 				fillStrokeCommands.clear ();
