@@ -105,11 +105,7 @@ class CanvasGraphics {
 
 			case LINEAR:
 				
-				var matrix = matrix != null ? matrix : new Matrix ();
-				var point1 = matrix.transformPoint (new Point (-819.2, 0));
-				var point2 = matrix.transformPoint (new Point (819.2, 0));
-				
-				gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
+				gradientFill = context.createLinearGradient (-819.2, 0, 819.2, 0);
 
 		}
 		
@@ -602,7 +598,7 @@ class CanvasGraphics {
 					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
 					context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-					
+
 					hasStroke = true;
 				
 				case LINE_BITMAP_STYLE:
