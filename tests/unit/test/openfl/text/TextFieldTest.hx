@@ -162,14 +162,14 @@ class TextFieldTest {
 		Assert.areNotEqual (textField3.textWidth, textField2.textWidth);
 		
 		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
-		var bitmapData2 = new BitmapData (Math.ceil (textField2.width), Math.ceil (textField2.height), true);
-		var bitmapData3 = new BitmapData (Math.ceil (textField3.width), Math.ceil (textField3.height), true);
+		var bitmapData2 = bitmapData.clone ();
+		var bitmapData3 = bitmapData.clone ();
 		
 		bitmapData.draw (textField);
 		bitmapData2.draw (textField2);
 		bitmapData3.draw (textField3);
 		
-		Assert.areNotEqual (0, bitmapData2.compare (bitmapData));
+		Assert.isTrue (Std.is (bitmapData2.compare (bitmapData), BitmapData));
 		Assert.areEqual (0, bitmapData2.compare (bitmapData3));
 		
 	}
@@ -253,7 +253,9 @@ class TextFieldTest {
 		
 		textField.text = "Hello\n\nWorld\n\nHello\n\nWorld\n\n";
 		
+		#if !html5
 		Assert.areEqual (2, textField.maxScrollV);
+		#end
 		
 		textField.height = 10;
 		
@@ -321,6 +323,37 @@ class TextFieldTest {
 		textField.text = "Hello";
 		
 		Assert.areEqual (1, textField.scrollV);
+		
+		textField.text = "Hello\nWorld";
+		textField.height = 20;
+		textField.multiline = true;
+		
+		#if flash
+		textField.text = textField.text;
+		#end
+		
+		var textField2 = new TextField ();
+		textField2.height = 20;
+		textField2.text = "World";
+		
+		textField.scrollV = 2;
+		
+		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
+		var bitmapData2 = bitmapData.clone ();
+		
+		bitmapData.draw (textField);
+		bitmapData2.draw (textField2);
+		
+		Assert.areEqual (0, bitmapData.compare (bitmapData2));
+		
+		textField.scrollV = 1000;
+		
+		Assert.areEqual (textField.maxScrollV, textField.scrollV);
+		
+		var bitmapData = new BitmapData (Math.ceil (textField.width), Math.ceil (textField.height), true);
+		bitmapData.draw (textField);
+		
+		Assert.areEqual (0, bitmapData.compare (bitmapData2));
 		
 	}
 	
