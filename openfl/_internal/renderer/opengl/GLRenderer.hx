@@ -85,6 +85,13 @@ class GLRenderer extends AbstractRenderer {
 		_matrix.copyFrom (transform);
 		_matrix.concat (displayMatrix);
 		
+		if (renderSession.roundPixels) {
+			
+			_matrix.tx = Math.round (_matrix.tx);
+			_matrix.ty = Math.round (_matrix.ty);
+			
+		}
+		
 		matrix.identity ();
 		matrix[0] = _matrix.a;
 		matrix[1] = _matrix.b;
