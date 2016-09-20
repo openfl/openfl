@@ -95,33 +95,18 @@ class CanvasGraphics {
 	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float) {
 	
 		#if (js && html5)
-		
+
 		var gradientFill = null;
-		
+
 		switch (type) {
-			
+
 			case RADIAL:
-				
-				if (matrix == null) matrix = new Matrix ();
-				var squared_x_scale = matrix.a * matrix.a + matrix.b * matrix.b;
-				#if debug
-					var squared_y_scale = matrix.c * matrix.c + matrix.d * matrix.d;
-					
-					if ( Math.abs( squared_x_scale - squared_y_scale ) > 0.001 ) {
-						throw ":TODO: unsupported non uniform scale";
-					}
-				#end
-				var radius = Math.sqrt( squared_x_scale ) * 819.2;
-				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, radius);
-			
+				gradientFill = context.createRadialGradient (0, 0, 0, 0, 0, 819.2);
+
 			case LINEAR:
 				
-				var matrix = matrix != null ? matrix : new Matrix ();
-				var point1 = matrix.transformPoint (new Point (-819.2, 0));
-				var point2 = matrix.transformPoint (new Point (819.2, 0));
-				
-				gradientFill = context.createLinearGradient (point1.x, point1.y, point2.x, point2.y);
-			
+				gradientFill = context.createLinearGradient (-819.2, 0, 819.2, 0);
+
 		}
 		
 		for (i in 0...colors.length) {
@@ -613,7 +598,7 @@ class CanvasGraphics {
 					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
 					context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-					
+
 					hasStroke = true;
 				
 				case LINE_BITMAP_STYLE:
@@ -678,10 +663,11 @@ class CanvasGraphics {
 					}
 				
 				case BEGIN_GRADIENT_FILL:
-					
+
 					var c = data.readBeginGradientFill ();
+			
 					context.fillStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-					
+					pendingMatrix = c.matrix;
 					bitmapFill = null;
 					hasFill = true;
 				
