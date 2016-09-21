@@ -167,21 +167,6 @@ class CairoTextField {
 			
 			var text = textEngine.text;
 			
-			if (textEngine.displayAsPassword) {
-				
-				var length = text.length;
-				var mask = "";
-				
-				for (i in 0...length) {
-					
-					mask += "*";
-					
-				}
-				
-				text = mask;
-				
-			}
-			
 			var scrollX = -textField.scrollH;
 			var scrollY = 0.0;
 			

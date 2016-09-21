@@ -174,21 +174,6 @@ class CanvasTextField {
 					
 					var text = textEngine.text;
 					
-					if (textEngine.displayAsPassword) {
-						
-						var length = text.length;
-						var mask = "";
-						
-						for (i in 0...length) {
-							
-							mask += "*";
-							
-						}
-						
-						text = mask;
-						
-					}
-					
 					if (!renderSession.allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
 						
 						untyped (graphics.__context).mozImageSmoothingEnabled = false;

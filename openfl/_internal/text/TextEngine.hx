@@ -63,7 +63,6 @@ class TextEngine {
 	public var bottomScrollV (default, null):Int;
 	public var bounds:Rectangle;
 	public var caretIndex:Int;
-	public var displayAsPassword:Bool;
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var height:Float;
@@ -129,7 +128,6 @@ class TextEngine {
 		
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
-		displayAsPassword = false;
 		embedFonts = false;
 		selectable = true;
 		borderColor = 0x000000;

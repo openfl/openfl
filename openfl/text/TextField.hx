@@ -76,12 +76,14 @@ class TextField extends InteractiveObject {
 	private var __caretIndex:Int;
 	private var __cursorTimer:Timer;
 	private var __dirty:Bool;
+	private var __displayAsPassword:Bool;
 	private var __inputEnabled:Bool;
 	private var __isHTML:Bool;
 	private var __layoutDirty:Bool;
 	private var __mouseWheelEnabled:Bool;
 	private var __selectionIndex:Int;
 	private var __showCursor:Bool;
+	private var __text:String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
 	
@@ -95,6 +97,7 @@ class TextField extends InteractiveObject {
 		super ();
 		
 		__caretIndex = -1;
+		__displayAsPassword = false;
 		__graphics = new Graphics (this);
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
@@ -121,8 +124,8 @@ class TextField extends InteractiveObject {
 	
 	public function appendText (text:String):Void {
 		
-		__textEngine.text += text;
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+		__text += text;
+		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 		
 		__dirty = true;
 		__layoutDirty = true;
@@ -132,7 +135,7 @@ class TextField extends InteractiveObject {
 	
 	public function getCharBoundaries (charIndex:Int):Rectangle {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+		if (charIndex < 0 || charIndex > __text.length - 1) return null;
 		
 		__updateLayout ();
 		
@@ -208,7 +211,7 @@ class TextField extends InteractiveObject {
 	
 	public function getFirstCharInParagraph (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
+		if (charIndex < 0 || charIndex > __text.length - 1) return 0;
 		
 		var index = __textEngine.getLineBreakIndex ();
 		var startIndex = 0;
@@ -263,7 +266,7 @@ class TextField extends InteractiveObject {
 	
 	public function getLineIndexOfChar (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return -1;
+		if (charIndex < 0 || charIndex > __text.length - 1) return -1;
 		
 		__updateLayout ();
 		
@@ -306,7 +309,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (endIndex == -1) endIndex = __textEngine.text.length;
+		if (endIndex == -1) endIndex = __text.length;
 		return endIndex - startIndex;
 		
 	}
@@ -382,7 +385,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (endIndex == -1) endIndex = __textEngine.text.length;
+		if (endIndex == -1) endIndex = __text.length;
 		
 		return __textEngine.text.substring (startIndex, endIndex);
 		
@@ -391,12 +394,12 @@ class TextField extends InteractiveObject {
 	
 	public function getParagraphLength (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return 0;
+		if (charIndex < 0 || charIndex > __text.length - 1) return 0;
 		
 		var startIndex = getFirstCharInParagraph (charIndex);
 		var endIndex = __textEngine.getLineBreakIndex (charIndex) + 1;
 		
-		if (endIndex == 0) endIndex = __textEngine.text.length;
+		if (endIndex == 0) endIndex = __text.length;
 		return endIndex - startIndex;
 		
 	}
@@ -463,9 +466,9 @@ class TextField extends InteractiveObject {
 	
 	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
 		
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 		
-		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
+		__updateText (__text.substring (0, beginIndex) + newText + __text.substring (endIndex));
 		
 		var offset = newText.length - (endIndex - beginIndex);
 		
@@ -630,7 +633,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __textEngine.text.length;
+		return __text.length;
 		
 	}
 	
@@ -760,7 +763,7 @@ class TextField extends InteractiveObject {
 		
 		if (__caretIndex < 0) {
 			
-			__caretIndex = __textEngine.text.length;
+			__caretIndex = __text.length;
 			__selectionIndex = __caretIndex;
 			
 		}
@@ -886,6 +889,32 @@ class TextField extends InteractiveObject {
 			}
 			
 			__layoutDirty = false;
+			
+		}
+		
+	}
+	
+	
+	private function __updateText (value:String):Void {
+		
+		__text = value;
+		
+		if (!__displayAsPassword) {
+			
+			__textEngine.text = __text;
+			
+		} else {
+			
+			var length = text.length;
+			var mask = "";
+			
+			for (i in 0...length) {
+				
+				mask += "*";
+				
+			}
+			
+			__textEngine.text = mask;
 			
 		}
 		
@@ -1057,21 +1086,24 @@ class TextField extends InteractiveObject {
 	
 	private function get_displayAsPassword ():Bool {
 		
-		return __textEngine.displayAsPassword;
+		return __displayAsPassword;
 		
 	}
 	
 	
 	private function set_displayAsPassword (value:Bool):Bool {
 		
-		if (value != __textEngine.displayAsPassword) {
+		if (value != __displayAsPassword) {
 			
 			__dirty = true;
 			__layoutDirty = true;
 			
+			__displayAsPassword = value;
+			__updateText (__text);
+			
 		}
 		
-		return __textEngine.displayAsPassword = value;
+		return value;
 		
 	}
 	
@@ -1144,14 +1176,14 @@ class TextField extends InteractiveObject {
 	
 	private function get_htmlText ():String {
 		
-		return __textEngine.text;
+		return __text;
 		
 	}
 	
 	
 	private function set_htmlText (value:String):String {
 		
-		if (!__isHTML || __textEngine.text != value) {
+		if (!__isHTML || __text != value) {
 			
 			__dirty = true;
 			__layoutDirty = true;
@@ -1205,7 +1237,9 @@ class TextField extends InteractiveObject {
 				range.start = 0;
 				range.end = value.length;
 				
-				return __textEngine.text = value;
+				__updateText (value);
+				
+				return value;
 				
 			} else {
 				
@@ -1340,16 +1374,18 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __textEngine.text = value;
+		__updateText (value);
+		
+		return value;
 		
 	}
 	
 	
 	private function get_length ():Int {
 		
-		if (__textEngine.text != null) {
+		if (__text != null) {
 			
-			return __textEngine.text.length;
+			return __text.length;
 			
 		}
 		
@@ -1565,14 +1601,14 @@ class TextField extends InteractiveObject {
 	
 	private function get_text ():String {
 		
-		return __textEngine.text;
+		return __text;
 		
 	}
 	
 	
 	private function set_text (value:String):String {
 		
-		if (__isHTML || __textEngine.text != value) {
+		if (__isHTML || __text != value) {
 			
 			__dirty = true;
 			__layoutDirty = true;
@@ -1596,7 +1632,9 @@ class TextField extends InteractiveObject {
 		
 		__isHTML = false;
 		
-		return __textEngine.text = value;
+		__updateText (value);
+		
+		return value;
 		
 	}
 	
@@ -1853,7 +1891,7 @@ class TextField extends InteractiveObject {
 			
 			case DELETE:
 				
-				if (__selectionIndex == __caretIndex && __caretIndex < __textEngine.text.length) {
+				if (__selectionIndex == __caretIndex && __caretIndex < __text.length) {
 					
 					__selectionIndex = __caretIndex + 1;
 					
@@ -1905,7 +1943,7 @@ class TextField extends InteractiveObject {
 				
 				if (modifier.shiftKey) {
 					
-					if (__caretIndex < __textEngine.text.length) {
+					if (__caretIndex < __text.length) {
 						
 						__caretIndex++;
 						
@@ -1915,7 +1953,7 @@ class TextField extends InteractiveObject {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						if (__caretIndex < __textEngine.text.length) {
+						if (__caretIndex < __text.length) {
 							
 							__caretIndex++;
 							
@@ -1938,7 +1976,7 @@ class TextField extends InteractiveObject {
 				
 				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
 					
-					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
+					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
 				}
 			
@@ -1946,7 +1984,7 @@ class TextField extends InteractiveObject {
 				
 				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
 					
-					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
+					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
 					if (__caretIndex != __selectionIndex) {
 						
@@ -1975,8 +2013,10 @@ class TextField extends InteractiveObject {
 					
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
-				}else{
-					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+				} else {
+					
+					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+					
 				}
 			
 			default:
