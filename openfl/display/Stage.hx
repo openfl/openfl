@@ -1558,20 +1558,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (oldFocus != null) {
 				
 				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, __focus, false, 0);
-				__stack = [];
-				oldFocus.__getInteractive (__stack);
-				__stack.reverse ();
-				__fireEvent (event, __stack);
+				var stack = new Array <DisplayObject> ();
+				oldFocus.__getInteractive (stack);
+				stack.reverse ();
+				__fireEvent (event, stack);
 				
 			}
 			
 			if (__focus != null) {
 				
 				var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
-				__stack = [];
-				value.__getInteractive (__stack);
-				__stack.reverse ();
-				__fireEvent (event, __stack);
+				var stack = new Array <DisplayObject> ();
+				value.__getInteractive (stack);
+				stack.reverse ();
+				__fireEvent (event, stack);
 				
 			}
 			
