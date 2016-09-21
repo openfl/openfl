@@ -203,6 +203,43 @@ class TextEngine {
 	}
 	
 	
+	public static function getFormatHeight (format:TextFormat):Float {
+		
+		var ascent, descent, leading;
+		
+		#if (js && html5)
+		
+		__context.font = getFont (format);
+		
+		ascent = format.size;
+		descent = format.size * 0.185;
+		leading = format.leading;
+		
+		#elseif (lime_cffi)
+		
+		var font = getFontInstance (format);
+		
+		if (font != null) {
+			
+			ascent = (font.ascender / font.unitsPerEM) * format.size;
+			descent = Math.abs ((font.descender / font.unitsPerEM) * format.size);
+			leading = format.leading;
+			
+		} else {
+			
+			ascent = format.size;
+			descent = format.size * 0.185;
+			leading = format.leading;
+			
+		}
+		
+		#end
+		
+		return ascent + descent + leading;
+		
+	}
+	
+	
 	public static function getFont (format:TextFormat):String {
 		
 		var font = format.italic ? "italic " : "normal ";

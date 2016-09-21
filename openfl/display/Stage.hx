@@ -658,8 +658,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__cacheFocus = focus;
+		var currentFocus = focus;
 		focus = null;
+		__cacheFocus = currentFocus;
 		
 	}
 	
@@ -1554,6 +1555,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			var oldFocus = __focus;
 			__focus = value;
+			__cacheFocus = value;
 			
 			if (oldFocus != null) {
 				

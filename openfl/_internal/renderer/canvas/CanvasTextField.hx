@@ -137,7 +137,7 @@ class CanvasTextField {
 			var width = graphics.__width;
 			var height = graphics.__height;
 			
-			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
+			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus && (textEngine.type != INPUT || !textEngine.selectable)) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
@@ -360,6 +360,27 @@ class CanvasTextField {
 							context.stroke ();
 							
 						}
+						
+					}
+					
+					if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor) {
+						
+						var scrollX = -textField.scrollH;
+						var scrollY = 0.0;
+						
+						for (i in 0...textField.scrollV - 1) {
+							
+							scrollY -= textEngine.lineHeights[i];
+							
+						}
+						
+						context.beginPath ();
+						context.strokeStyle = "#" + StringTools.hex (textField.defaultTextFormat.color, 6);
+						context.moveTo (scrollX + 2.5, scrollY + 2.5);
+						context.lineWidth = 1;
+						context.lineTo (scrollX + 2.5, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
+						context.stroke ();
+						context.closePath ();
 						
 					}
 					
