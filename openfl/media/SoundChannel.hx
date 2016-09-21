@@ -202,6 +202,8 @@ import openfl.media.Sound;
 	#if html5
 	private function soundInstance_onComplete (_):Void {
 		
+		SoundMixer.__unregisterSoundChannel (this);
+		
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));
 		
 	}
@@ -209,6 +211,8 @@ import openfl.media.Sound;
 	
 	
 	private function source_onComplete ():Void {
+		
+		SoundMixer.__unregisterSoundChannel (this);
 		
 		__dispose ();
 		dispatchEvent (new Event (Event.SOUND_COMPLETE));
