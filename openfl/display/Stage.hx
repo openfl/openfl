@@ -1237,14 +1237,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var y = __mouseY;
 		
 		var stack = [];
+		var target:InteractiveObject = null;
 		
-		if (!__hitTest (x, y, false, stack, true, this)) {
+		if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
 			
+			target = cast stack[stack.length - 1];
+			
+		} else {
+			
+			target = this;
 			stack = [ this ];
 			
 		}
 		
-		var target:InteractiveObject = cast stack[stack.length - 1];
+		if (target == null) target = this;
 		var targetPoint = new Point (x, y);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		var delta = Std.int (deltaY);
