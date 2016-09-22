@@ -814,8 +814,7 @@ class CanvasGraphics {
 					graphics.__canvas.height = Math.ceil (local_bounds.height);
 
 					var scaleTransform = graphics.__owner.__renderScaleTransform;
-					context.resetTransform ();
-					context.transform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
+					context.setTransform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
 					context.translate (-local_bounds.x, -local_bounds.y);
 				}
 
