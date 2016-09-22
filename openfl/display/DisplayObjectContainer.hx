@@ -424,71 +424,48 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
-		super.__getBounds (rect, matrix);
+		super.__getBounds (rect);
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childRect = new Rectangle(); 
 		
 		for (child in __children) {
-
+			
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			child.__getBounds (rect, child.__worldTransform);
-			
-		}
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
+			childRect.setEmpty ();
+			child.__getBounds (childRect);
+			childRect.__transform (childRect, child.__transform);
+			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 			
 		}
 		
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle):Void {
 		
-		if (__scrollRect != null) {
+		super.__getRenderBounds (rect);
 			
-			super.__getRenderBounds (rect, matrix);
+		if (__scrollRect != null || __children.length == 0) {
+			
 			return;
 			
-		} else {
-			
-			super.__getBounds (rect, matrix);
-			
 		}
 		
-		if (__children.length == 0) return;
-		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childRect = new Rectangle(); 
 		
 		for (child in __children) {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			child.__getRenderBounds (rect, child.__worldTransform);
-			
-		}
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
+			childRect.setEmpty ();
+			child.__getRenderBounds (childRect);
+			childRect.__transform (childRect, child.__transform);
+			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 			
 		}
 		

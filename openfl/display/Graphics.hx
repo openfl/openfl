@@ -831,13 +831,11 @@ import js.html.CanvasRenderingContext2D;
 	}
 	
 	
-	private function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private function __getBounds (rect:Rectangle):Void {
 		
 		if (__bounds == null) return;
 		
-		var bounds = openfl.geom.Rectangle.__temp;
-		__bounds.__transform (bounds, matrix);
-		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		rect.__expand (__bounds.x, __bounds.y, __bounds.width, __bounds.height);
 		
 	}
 	

@@ -43,9 +43,7 @@ class CanvasGraphics {
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
-	private static var bounds:Rectangle;
 	private static var fillStrokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var graphics:Graphics;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
@@ -209,6 +207,8 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
+		
+		var bounds = graphics.__bounds;
 		
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
@@ -447,10 +447,6 @@ class CanvasGraphics {
 	private static function playCommands (commands:DrawCommandBuffer):Void {
 
 		#if (js && html5)
-		bounds = graphics.__bounds;
-		
-		var offsetX = bounds.x;
-		var offsetY = bounds.y;
 		
 		var positionX = 0.0;
 		var positionY = 0.0;
@@ -468,18 +464,18 @@ class CanvasGraphics {
 				case CUBIC_CURVE_TO:
 					
 					var c = data.readCubicCurveTo ();
-					context.bezierCurveTo (c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+					context.bezierCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 				
 				case CURVE_TO:
 					
 					var c = data.readCurveTo ();
-					context.quadraticCurveTo (c.controlX - offsetX, c.controlY - offsetY, c.anchorX - offsetX, c.anchorY - offsetY);
+					context.quadraticCurveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
 				
 				case DRAW_CIRCLE:
 					
 					var c = data.readDrawCircle ();
-					context.moveTo (c.x - offsetX + c.radius, c.y - offsetY);
-					context.arc (c.x - offsetX, c.y - offsetY, c.radius, 0, Math.PI * 2, true);
+					context.moveTo (c.x + c.radius, c.y);
+					context.arc (c.x, c.y, c.radius, 0, Math.PI * 2, true);
 				
 				case DRAW_ELLIPSE:
 					
@@ -488,8 +484,6 @@ class CanvasGraphics {
 					var y = c.y;
 					var width = c.width;
 					var height = c.height;
-					x -= offsetX;
-					y -= offsetY;
 					
 					var kappa = .5522848,
 						ox = (width / 2) * kappa, // control point offset horizontal
@@ -508,12 +502,12 @@ class CanvasGraphics {
 				case DRAW_ROUND_RECT:
 					
 					var c = data.readDrawRoundRect ();
-					drawRoundRect (c.x - offsetX, c.y - offsetY, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+					drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				
 				case LINE_TO:
 					
 					var c = data.readLineTo ();
-					context.lineTo (c.x - offsetX, c.y - offsetY);
+					context.lineTo (c.x, c.y);
 					
 					positionX = c.x;
 					positionY = c.y;
@@ -521,7 +515,7 @@ class CanvasGraphics {
 				case MOVE_TO:
 					
 					var c = data.readMoveTo ();
-					context.moveTo (c.x - offsetX, c.y - offsetY);
+					context.moveTo (c.x, c.y);
 					
 					positionX = c.x;
 					positionY = c.y;
@@ -551,7 +545,7 @@ class CanvasGraphics {
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					context.moveTo (positionX, positionY);
 					
 					if (c.thickness == null) {
 						
@@ -596,7 +590,7 @@ class CanvasGraphics {
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					context.moveTo (positionX, positionY);
 					context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 
 					hasStroke = true;
@@ -610,7 +604,7 @@ class CanvasGraphics {
 						
 					}
 					
-					context.moveTo (positionX - offsetX, positionY - offsetY);
+					context.moveTo (positionX, positionY);
 					context.strokeStyle = createBitmapFill (c.bitmap, c.repeat);
 					
 					hasStroke = true;
@@ -715,14 +709,14 @@ class CanvasGraphics {
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
 							
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x, c.y, c.width, c.height);
 							
 						}
 					}
 					
 					if (!optimizationUsed) {
 						
-						context.rect (c.x - offsetX, c.y - offsetY, c.width, c.height);
+						context.rect (c.x, c.y, c.width, c.height);
 						
 					}
 				
@@ -740,7 +734,7 @@ class CanvasGraphics {
 
 			if (hasFill && closeGap) {
 				
-				context.lineTo (startX - offsetX, startY - offsetY);
+				context.lineTo (startX, startY);
 				
 			} else if (closeGap && positionX == startX && positionY == startY) {
 				
@@ -752,10 +746,7 @@ class CanvasGraphics {
 
 			if (hasFill || bitmapFill != null) {
 				context.save();
-				context.setTransform(1, 0, 0, 1, 0, 0);
-				
-				context.translate (-bounds.x, -bounds.y);
-				
+
 				if (pendingMatrix != null) {
 					
 					context.transform (pendingMatrix.a, pendingMatrix.b, pendingMatrix.c, pendingMatrix.d, pendingMatrix.tx, pendingMatrix.ty);
@@ -788,8 +779,7 @@ class CanvasGraphics {
 			
 			hitTesting = false;
 			
-			CanvasGraphics.graphics = graphics;
-			bounds = graphics.__bounds;
+			var bounds = graphics.__bounds;
 			
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 				
@@ -805,6 +795,11 @@ class CanvasGraphics {
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
 					
 				} else {
+					var scaleX = graphics.__owner.renderScaleX;
+					var scaleY = graphics.__owner.renderScaleY;
+					var local_bounds = graphics.__bounds.clone();
+					local_bounds.width *= scaleX;
+					local_bounds.height *= scaleY;
 					
 					if (graphics.__canvas == null) {
 						
@@ -815,9 +810,13 @@ class CanvasGraphics {
 					
 					context = graphics.__context;
 					
-					graphics.__canvas.width = Math.ceil (bounds.width);
-					graphics.__canvas.height = Math.ceil (bounds.height);
-					
+					graphics.__canvas.width = Math.ceil (local_bounds.width);
+					graphics.__canvas.height = Math.ceil (local_bounds.height);
+
+					var scaleTransform = graphics.__owner.__renderScaleTransform;
+					context.resetTransform ();
+					context.transform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
+					context.translate (-local_bounds.x, -local_bounds.y);
 				}
 
 				fillStrokeCommands.clear ();
