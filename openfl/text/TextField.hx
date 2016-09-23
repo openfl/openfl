@@ -103,6 +103,7 @@ class TextField extends InteractiveObject {
 		__layoutDirty = true;
 		__tabEnabled = true;
 		__mouseWheelEnabled = true;
+		__text = "";
 		
 		if (__defaultTextFormat == null) {
 			
