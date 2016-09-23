@@ -1,12 +1,15 @@
 package openfl.display;
 
 
-@:final class ShaderParameter implements Dynamic {
+@:final @:generic class ShaderParameter<T> /*implements Dynamic*/ {
 	
 	
 	public var index (default, null):Dynamic;
 	public var type (default, null):ShaderParameterType;
-	public var value:Array<Dynamic>;
+	public var value:Array<T>;
+	
+	private var __isUniform:Bool;
+	private var __name:String;
 	
 	
 	public function new () {
