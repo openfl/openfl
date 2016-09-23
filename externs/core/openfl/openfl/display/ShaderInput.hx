@@ -7,7 +7,7 @@ package openfl.display; #if (display || !flash)
 	public var channels (default, null):Int;
 	public var height:Int;
 	public var index (default, null):Int;
-	public var input:Dynamic;
+	public var input (get, set):Dynamic;
 	public var width:Int;
 	
 	

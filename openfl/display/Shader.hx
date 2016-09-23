@@ -23,10 +23,8 @@ class Shader {
 	
 	private var gl:GLRenderContext;
 	
-	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
-	private var __paramBool:Array<ShaderParameter<Bool>>;
-	private var __paramInt:Array<ShaderParameter<Int>>;
-	private var __paramFloat:Array<ShaderParameter<Float>>;
+	private var __inputs:Array<ShaderInput>;
+	private var __parameters:Array<ShaderParameter>;
 	private var __uniformMatrix2:Float32Array;
 	private var __uniformMatrix3:Float32Array;
 	private var __uniformMatrix4:Float32Array;
@@ -103,41 +101,13 @@ class Shader {
 	
 	private function __disableGL ():Void {
 		
-		for (param in __paramBool) {
+		for (parameter in __parameters) {
 			
-			switch (param.type) {
+			switch (parameter.type) {
 				
-				case BOOL2, BOOL3, BOOL4:
+				case BOOL2, BOOL3, BOOL4, FLOAT2, FLOAT3, FLOAT4, INT2, INT3, INT4:
 					
-					gl.disableVertexAttribArray (param.index);
-				
-				default:
-				
-			}
-			
-		}
-		
-		for (param in __paramFloat) {
-			
-			switch (param.type) {
-				
-				case FLOAT2, FLOAT3, FLOAT4:
-					
-					gl.disableVertexAttribArray (param.index);
-				
-				default:
-				
-			}
-			
-		}
-		
-		for (param in __paramInt) {
-			
-			switch (param.type) {
-				
-				case INT2, INT3, INT4:
-					
-					gl.disableVertexAttribArray (param.index);
+					gl.disableVertexAttribArray (parameter.index);
 				
 				default:
 				
@@ -172,7 +142,7 @@ class Shader {
 		
 		var textureCount = 0;
 		
-		for (input in __inputBitmapData) {
+		for (input in __inputs) {
 			
 			#if desktop
 			if (textureCount == 0) {
@@ -187,7 +157,7 @@ class Shader {
 			if (input.input != null) {
 				
 				gl.activeTexture (gl.TEXTURE0 + textureCount);
-				gl.bindTexture (gl.TEXTURE_2D, input.input.getTexture (gl));
+				gl.bindTexture (gl.TEXTURE_2D, input.__bitmapData.getTexture (gl));
 				
 			}
 			
@@ -195,85 +165,76 @@ class Shader {
 			
 		}
 		
-		var boolValue, floatValue, intValue;
+		var index, boolValues, floatValues, intValues;
 		
-		for (param in __paramBool) {
+		for (parameter in __parameters) {
 			
-			boolValue = param.value;
-			
-			if (boolValue != null) {
+			if (parameter.value != null) {
 				
-				switch (param.type) {
+				index = parameter.index;
+				boolValues = parameter.__boolValues;
+				floatValues = parameter.__floatValues;
+				intValues = parameter.__intValues;
+				
+				switch (parameter.type) {
 					
 					case BOOL:
 						
-						gl.uniform1i (param.index, boolValue[0] ? 1 : 0);
+						gl.uniform1i (index, boolValues[0] ? 1 : 0);
 					
 					case BOOL2:
 						
-						gl.uniform2i (param.index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0);
+						gl.uniform2i (index, boolValues[0] ? 1 : 0, boolValues[1] ? 1 : 0);
 					
 					case BOOL3:
 						
-						gl.uniform3i (param.index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0);
+						gl.uniform3i (index, boolValues[0] ? 1 : 0, boolValues[1] ? 1 : 0, boolValues[2] ? 1 : 0);
 					
 					case BOOL4:
 						
-						gl.uniform4i (param.index, boolValue[0] ? 1 : 0, boolValue[1] ? 1 : 0, boolValue[2] ? 1 : 0, boolValue[3] ? 1 : 0);
-					
-					default:
-					
-				}
-				
-			} else {
-				
-				switch (param.type) {
-					
-					case BOOL2, BOOL3, BOOL4:
-						
-						gl.enableVertexAttribArray (param.index);
-					
-					default:
-					
-				}
-				
-			}
-			
-		}
-		
-		for (param in __paramFloat) {
-			
-			floatValue = param.value;
-			
-			if (floatValue != null) {
-				
-				switch (param.type) {
+						gl.uniform4i (index, boolValues[0] ? 1 : 0, boolValues[1] ? 1 : 0, boolValues[2] ? 1 : 0, boolValues[3] ? 1 : 0);
 					
 					case FLOAT:
 						
-						gl.uniform1f (param.index, floatValue[0]);
+						gl.uniform1f (index, floatValues[0]);
 					
 					case FLOAT2:
 						
-						gl.uniform2f (param.index, floatValue[0], floatValue[1]);
+						gl.uniform2f (index, floatValues[0], floatValues[1]);
 					
 					case FLOAT3:
 						
-						gl.uniform3f (param.index, floatValue[0], floatValue[1], floatValue[2]);
+						gl.uniform3f (index, floatValues[0], floatValues[1], floatValues[2]);
 					
 					case FLOAT4:
 						
-						gl.uniform4f (param.index, floatValue[0], floatValue[1], floatValue[2], floatValue[3]);
+						gl.uniform4f (index, floatValues[0], floatValues[1], floatValues[2], floatValues[3]);
+					
+					case INT:
+						
+						gl.uniform1i (index, intValues[0]);
+					
+					case INT2:
+						
+						gl.uniform2i (index, intValues[0], intValues[1]);
+					
+					case INT3:
+						
+						gl.uniform3i (index, intValues[0], intValues[1], intValues[2]);
+					
+					case INT4:
+						
+						gl.uniform4i (index, intValues[0], intValues[1], intValues[2], intValues[3]);
 					
 					case MATRIX2X2:
 						
 						for (i in 0...4) {
 							
-							__uniformMatrix2[i] = floatValue[i];
+							__uniformMatrix2[i] = floatValues[i];
 							
 						}
 						
-						gl.uniformMatrix2fv (param.index, false, __uniformMatrix2);
+						gl.uniformMatrix2fv (index, false, __uniformMatrix2);
 					
 					//case MATRIX2X3:
 					//case MATRIX2X4:
@@ -283,11 +244,11 @@ class Shader {
 						
 						for (i in 0...9) {
 							
-							__uniformMatrix3[i] = floatValue[i];
+							__uniformMatrix3[i] = floatValues[i];
 							
 						}
 						
-						gl.uniformMatrix3fv (param.index, false, __uniformMatrix3);
+						gl.uniformMatrix3fv (index, false, __uniformMatrix3);
 					
 					//case MATRIX3X4:
 					//case MATRIX4X2:
@@ -297,13 +258,11 @@ class Shader {
 						
 						for (i in 0...16) {
 							
-							__uniformMatrix4[i] = floatValue[i];
+							__uniformMatrix4[i] = floatValues[i];
 							
 						}
 						
-						trace (__uniformMatrix4);
-						
-						gl.uniformMatrix4fv (param.index, false, __uniformMatrix4);
+						gl.uniformMatrix4fv (index, false, __uniformMatrix4);
 					
 					default:
 					
@@ -311,55 +270,11 @@ class Shader {
 				
 			} else {
 				
-				switch (param.type) {
+				switch (parameter.type) {
 					
-					case FLOAT2, FLOAT3, FLOAT4:
+					case BOOL2, BOOL3, BOOL4, FLOAT2, FLOAT3, FLOAT4, INT2, INT3, INT4:
 						
-						gl.enableVertexAttribArray (param.index);
-					
-					default:
-					
-				}
-				
-			}
-			
-		}
-		
-		for (param in __paramInt) {
-			
-			intValue = param.value;
-			
-			if (intValue != null) {
-				
-				switch (param.type) {
-					
-					case INT:
-						
-						gl.uniform1i (param.index, intValue[0]);
-					
-					case INT2:
-						
-						gl.uniform2i (param.index, intValue[0], intValue[1]);
-					
-					case INT3:
-						
-						gl.uniform3i (param.index, intValue[0], intValue[1], intValue[2]);
-					
-					case INT4:
-						
-						gl.uniform4i (param.index, intValue[0], intValue[1], intValue[2], intValue[3]);
-					
-					default:
-					
-				}
-				
-			} else {
-				
-				switch (param.type) {
-					
-					case INT2, INT3, INT4:
-						
-						gl.enableVertexAttribArray (param.index);
+						gl.enableVertexAttribArray (parameter.index);
 					
 					default:
 					
@@ -391,12 +306,11 @@ class Shader {
 	
 	private function __initGL ():Void {
 		
-		if (__paramBool == null) {
+		if (__inputs == null) {
 			
-			__inputBitmapData = new Array ();
-			__paramBool = new Array ();
-			__paramInt = new Array ();
-			__paramFloat = new Array ();
+			__inputs = new Array ();
+			__parameters = new Array ();
+			
 			__uniformMatrix2 = new Float32Array (4);
 			__uniformMatrix3 = new Float32Array (9);
 			__uniformMatrix4 = new Float32Array (16);
@@ -420,7 +334,7 @@ class Shader {
 			
 			if (glProgram != null) {
 				
-				for (input in __inputBitmapData) {
+				for (input in __inputs) {
 					
 					if (input.__isUniform) {
 						
@@ -434,43 +348,15 @@ class Shader {
 					
 				}
 				
-				for (param in __paramBool) {
+				for (parameter in __parameters) {
 					
-					if (param.__isUniform) {
+					if (parameter.__isUniform) {
 						
-						param.index = gl.getUniformLocation (glProgram, param.__name);
+						parameter.index = gl.getUniformLocation (glProgram, parameter.__name);
 						
 					} else {
 						
-						param.index = gl.getAttribLocation (glProgram, param.__name);
-						
-					}
-					
-				}
-				
-				for (param in __paramFloat) {
-					
-					if (param.__isUniform) {
-						
-						param.index = gl.getUniformLocation (glProgram, param.__name);
-						
-					} else {
-						
-						param.index = gl.getAttribLocation (glProgram, param.__name);
-						
-					}
-					
-				}
-				
-				for (param in __paramInt) {
-					
-					if (param.__isUniform) {
-						
-						param.index = gl.getUniformLocation (glProgram, param.__name);
-						
-					} else {
-						
-						param.index = gl.getAttribLocation (glProgram, param.__name);
+						parameter.index = gl.getAttribLocation (glProgram, parameter.__name);
 						
 					}
 					
@@ -504,15 +390,17 @@ class Shader {
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
-				var input = new ShaderInput<BitmapData> ();
+				var input = new ShaderInput ();
 				input.__isUniform = (storageType == "uniform");
 				input.__name = name;
-				__inputBitmapData.push (input);
+				__inputs.push (input);
 				Reflect.setField (data, name, input);
 				
 			} else {
 				
-				var paramType:ShaderParameterType = switch (type) {
+				var parameter = new ShaderParameter ();
+				
+				parameter.type = switch (type) {
 					
 					case "bool": BOOL;
 					case "double", "float": FLOAT;
@@ -539,38 +427,10 @@ class Shader {
 					
 				}
 				
-				var isUniform = (storageType == "uniform");
-				
-				switch (paramType) {
-					
-					case BOOL, BOOL2, BOOL3, BOOL4:
-						
-						var param = new ShaderParameter<Bool> ();
-						param.type = paramType;
-						param.__isUniform = isUniform;
-						param.__name = name;
-						__paramBool.push (param);
-						Reflect.setField (data, name, param);
-					
-					case INT, INT2, INT3, INT4:
-						
-						var param = new ShaderParameter<Int> ();
-						param.type = paramType;
-						param.__isUniform = isUniform;
-						param.__name = name;
-						__paramInt.push (param);
-						Reflect.setField (data, name, param);
-					
-					default:
-						
-						var param = new ShaderParameter<Float> ();
-						param.type = paramType;
-						param.__isUniform = isUniform;
-						param.__name = name;
-						__paramFloat.push (param);
-						Reflect.setField (data, name, param);
-					
-				}
+				parameter.__isUniform = (storageType == "uniform");
+				parameter.__name = name;
+				__parameters.push (parameter);
+				Reflect.setField (data, name, parameter);
 				
 			}
 			
