@@ -64,6 +64,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
+		if (buffer == null) return null;
+		
 		#if display
 		return null;
 		#elseif js
@@ -78,6 +80,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+		
+		if (bytes == null) return null;
 		
 		#if display
 		
@@ -106,6 +110,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromBytesData (bytesData:BytesData):ByteArray {
 		
+		if (bytesData == null) return null;
+		
 		#if display
 		return null;
 		#elseif flash
@@ -113,6 +119,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#else
 		return ByteArrayData.fromBytes (Bytes.ofData (bytesData));
 		#end
+		
+	}
+	
+	
+	public static function fromFile (path:String):ByteArray {
+		
+		return LimeBytes.readFile (path);
 		
 	}
 	

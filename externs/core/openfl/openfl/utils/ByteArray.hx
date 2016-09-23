@@ -64,6 +64,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
+		if (buffer == null) return null;
+		
 		#if display
 		return null;
 		#elseif js
@@ -78,6 +80,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+		
+		if (bytes == null) return null;
 		
 		#if display
 		
@@ -106,6 +110,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromBytesData (bytesData:BytesData):ByteArray {
 		
+		if (bytesData == null) return null;
+		
 		#if display
 		return null;
 		#elseif flash
@@ -113,6 +119,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#else
 		return ByteArrayData.fromBytes (Bytes.ofData (bytesData));
 		#end
+		
+	}
+	
+	
+	public static function fromFile (path:String):ByteArray {
+		
+		return LimeBytes.readFile (path);
 		
 	}
 	
@@ -184,10 +197,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		#if display
 		return 0;
-		#elseif flash
-		return this.length;
 		#else
-		return this.__length;
+		return this.length;
 		#end
 		
 	}
@@ -205,7 +216,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		
-		this.__length = value;
+		this.length = value;
 		#end
 		
 		return value;
@@ -252,7 +263,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function clear ():Void {
 		
-		__length = 0;
+		length = 0;
 		position = 0;
 		
 	}
@@ -351,15 +362,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readBytes (bytes:ByteArray, offset:Int = 0, length:Int = 0):Void {
 		
-		if (length == 0) length = __length - position;
+		if (length == 0) length = this.length - position;
 		
-		if (position + length > __length) {
+		if (position + length > this.length) {
 			
 			throw new EOFError ();
 			
 		}
 		
-		if ((bytes:ByteArrayData).__length < offset + length) {
+		if ((bytes:ByteArrayData).length < offset + length) {
 			
 			(bytes:ByteArrayData).__resize (offset + length);
 			
@@ -373,7 +384,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		if (position + 8 > __length) {
+		if (position + 8 > length) {
 			
 			throw new EOFError ();
 			
@@ -387,7 +398,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readFloat ():Float {
 		
-		if (position + 4 > __length) {
+		if (position + 4 > length) {
 			
 			throw new EOFError ();
 			
@@ -458,7 +469,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readUnsignedByte ():Int {
 		
-		if (position < __length) {
+		if (position < length) {
 			
 			return get (position++);
 			
@@ -520,7 +531,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readUTFBytes (length:Int):String {
 		
-		if (position + length > __length) {
+		if (position + length > this.length) {
 			
 			throw new EOFError ();
 			
@@ -691,24 +702,27 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	private function __fromBytes (bytes:Bytes):Void {
 		
 		__setData (bytes);
-		__length = bytes.length;
+		length = bytes.length;
 		
 	}
 	
 	
 	private function __resize (size:Int) {
 		
-		if (size > this.length) {
+		if (size > __length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
-			bytes.blit (0, this, 0, this.length);
+			var cacheLength = length;
+			length = __length;
+			bytes.blit (0, this, 0, __length);
+			length = cacheLength;
 			__setData (bytes);
 			
 		}
 		
-		if (__length < size) {
+		if (length < size) {
 			
-			__length = size;
+			length = size;
 			
 		}
 		
@@ -718,7 +732,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	private inline function __setData (bytes:Bytes):Void {
 		
 		b = bytes.b;
-		length = bytes.length;
+		__length = bytes.length;
 		
 		#if js
 		data = bytes.data;
@@ -821,8 +835,7 @@ extern class ByteArrayData implements IDataOutput implements IDataInput implemen
 	#if (flash && !display)
 	public var bytesAvailable (default, null):UInt;
 	#else
-	public var bytesAvailable (get, never):UInt;
-	private inline function get_bytesAvailable ():UInt { return length - position; }
+	public var bytesAvailable (get, never):UInt; private inline function get_bytesAvailable ():UInt { return 0; }
 	#end
 	
 	/**
