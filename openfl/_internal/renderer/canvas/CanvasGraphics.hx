@@ -924,49 +924,7 @@ class CanvasGraphics {
 							var ind = c.indices;
 							var uvt = c.uvtData;
 							var pattern:CanvasElement = null;
-							var colorFill = bitmapFill == null;
-							
-							if (colorFill && uvt != null) {
-								
-								// Flash doesn't draw anything if the fill isn't a bitmap and there are uvt values
-								break;
-								
-							}
-							
-							if (!colorFill) {
-								
-								//TODO move this to Graphics?
-								
-								if (uvt == null) {
-									
-									uvt = new Vector<Float> ();
-									
-									for (i in 0...(Std.int (v.length / 2))) {
-										
-										uvt.push (v[i * 2] / bitmapFill.width);
-										uvt.push (v[i * 2 + 1] / bitmapFill.height);
-										
-									}
-									
-								}
-								
-								var skipT = uvt.length != v.length;
-								var normalizedUVT = normalizeUVT (uvt, skipT);
-								var maxUVT = normalizedUVT.max;
-								uvt = normalizedUVT.uvt;
-								
-								if (maxUVT > 1) {
-									
-									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, Std.int (bounds.width), Std.int (bounds.height));
-									
-								} else {
-									
-									pattern = createTempPatternCanvas (bitmapFill, bitmapRepeat, bitmapFill.width, bitmapFill.height);
-									
-								}
-								
-							}
-							
+						
 							var i = 0;
 							var l = ind.length;
 							
@@ -1022,19 +980,6 @@ class CanvasGraphics {
 										
 									
 								}
-								
-								if (colorFill) {
-									
-									context.beginPath ();
-									context.moveTo (x1, y1);
-									context.lineTo (x2, y2);
-									context.lineTo (x3, y3);
-									context.closePath ();
-									if (!hitTesting) context.fill ();
-									i += 3;
-									continue;
-									
-								} 
 								
 								context.save ();
 								context.beginPath ();
