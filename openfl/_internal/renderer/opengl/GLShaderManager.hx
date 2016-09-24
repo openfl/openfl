@@ -30,7 +30,12 @@ class GLShaderManager extends AbstractShaderManager {
 	
 	public override function setShader (shader:Shader):Void {
 		
-		if (currentShader == shader) return;
+		if (currentShader == shader) {
+			
+			currentShader.__update ();
+			return;
+			
+		}
 		
 		if (currentShader != null) {
 			
@@ -57,6 +62,7 @@ class GLShaderManager extends AbstractShaderManager {
 		
 		gl.useProgram (shader.glProgram);
 		currentShader.__enable ();
+		currentShader.__update ();
 		
 	}
 	

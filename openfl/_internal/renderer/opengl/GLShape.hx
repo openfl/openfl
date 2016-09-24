@@ -6,12 +6,12 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
-import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
+@:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.Matrix)
 
 
@@ -39,9 +39,9 @@ class GLShape {
 				
 				var shader;
 				
-				if (shape.__filters != null && Std.is (shape.__filters[0], ShaderFilter)) {
+				if (shape.__filters != null && shape.__filters.length > 0) {
 					
-					shader = cast (shape.__filters[0], ShaderFilter).shader;
+					shader = shape.__filters[0].__initShader (renderSession);
 					
 				} else {
 					

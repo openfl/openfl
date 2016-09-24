@@ -23,6 +23,7 @@ class Shader {
 	
 	private var gl:GLRenderContext;
 	
+	private var __isUniform:Map<String, Bool>;
 	private var __inputs:Array<ShaderInput>;
 	private var __parameters:Array<ShaderParameter>;
 	private var __uniformMatrix2:Float32Array;
@@ -31,6 +32,8 @@ class Shader {
 	
 	
 	public function new (code:ByteArray = null) {
+		
+		// TODO: Consider a macro generic build
 		
 		byteCode = code;
 		precisionHint = FULL;
@@ -103,15 +106,7 @@ class Shader {
 		
 		for (parameter in __parameters) {
 			
-			switch (parameter.type) {
-				
-				case BOOL2, BOOL3, BOOL4, FLOAT2, FLOAT3, FLOAT4, INT2, INT3, INT4:
-					
-					gl.disableVertexAttribArray (parameter.index);
-				
-				default:
-				
-			}
+			gl.disableVertexAttribArray (parameter.index);
 			
 		}
 		
@@ -144,15 +139,205 @@ class Shader {
 		
 		for (input in __inputs) {
 			
-			#if desktop
-			if (textureCount == 0) {
+			gl.uniform1i (input.index, textureCount);
+			textureCount++;
+			
+		}
+		
+		#if desktop
+		if (textureCount > 0) {
+			
+			gl.enable (gl.TEXTURE_2D);
+			
+		}
+		#end
+		
+		for (parameter in __parameters) {
+			
+			if (parameter.value == null) {
 				
-				gl.enable (gl.TEXTURE_2D);
+				gl.enableVertexAttribArray (parameter.index);
 				
 			}
-			#end
 			
-			gl.uniform1i (input.index, textureCount);
+		}
+		
+	}
+	
+	
+	private function __init ():Void {
+		
+		if (data == null) {
+			
+			data = new ShaderData (null);
+			
+		}
+		
+		if (glFragmentSource != null && glVertexSource != null) {
+			
+			__initGL ();
+			
+		}
+		
+	}
+	
+	
+	private function __initGL ():Void {
+		
+		if (__inputs == null) {
+			
+			__isUniform = new Map ();
+			
+			__inputs = new Array ();
+			__parameters = new Array ();
+			
+			__uniformMatrix2 = new Float32Array (4);
+			__uniformMatrix3 = new Float32Array (9);
+			__uniformMatrix4 = new Float32Array (16);
+			
+			__processGLData (glVertexSource, "attribute");
+			__processGLData (glVertexSource, "uniform");
+			__processGLData (glFragmentSource, "uniform");
+			
+		}
+		
+		if (gl != null && glProgram == null && glFragmentSource != null && glVertexSource != null) {
+			
+			var fragment = 
+				
+				"#ifdef GL_ES
+				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
+				#endif
+				" + glFragmentSource;
+			
+			glProgram = GLUtils.createProgram (glVertexSource, fragment);
+			
+			if (glProgram != null) {
+				
+				for (input in __inputs) {
+					
+					if (__isUniform.get (input.name)) {
+						
+						input.index = gl.getUniformLocation (glProgram, input.name);
+						
+					} else {
+						
+						input.index = gl.getAttribLocation (glProgram, input.name);
+						
+					}
+					
+				}
+				
+				for (parameter in __parameters) {
+					
+					if (__isUniform.get (parameter.name)) {
+						
+						parameter.index = gl.getUniformLocation (glProgram, parameter.name);
+						
+					} else {
+						
+						parameter.index = gl.getAttribLocation (glProgram, parameter.name);
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
+	private function __processGLData (source:String, storageType:String):Void {
+		
+		var lastMatch = 0, position, regex, name, type;
+		
+		if (storageType == "uniform") {
+			
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			
+		} else {
+			
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			
+		}
+		
+		while (regex.matchSub (source, lastMatch)) {
+			
+			type = regex.matched (1);
+			name = regex.matched (2);
+			
+			if (StringTools.startsWith (type, "sampler")) {
+				
+				var input = new ShaderInput ();
+				input.name = name;
+				__inputs.push (input);
+				Reflect.setField (data, name, input);
+				
+			} else {
+				
+				var parameter = new ShaderParameter ();
+				
+				parameter.type = switch (type) {
+					
+					case "bool": BOOL;
+					case "double", "float": FLOAT;
+					case "int", "uint": INT;
+					case "bvec2": BOOL2;
+					case "bvec3": BOOL3;
+					case "bvec4": BOOL4;
+					case "ivec2", "uvec2": INT2;
+					case "ivec3", "uvec3": INT3;
+					case "ivec4", "uvec4": INT4;
+					case "vec2", "dvec2": FLOAT2;
+					case "vec3", "dvec3": FLOAT3;
+					case "vec4", "dvec4": FLOAT4;
+					case "mat2", "mat2x2": MATRIX2X2;
+					case "mat2x3": MATRIX2X3;
+					case "mat2x4": MATRIX2X4;
+					case "mat3x2": MATRIX3X2;
+					case "mat3", "mat3x3": MATRIX3X3;
+					case "mat3x4": MATRIX3X4;
+					case "mat4x2": MATRIX4X2;
+					case "mat4x3": MATRIX4X3;
+					case "mat4", "mat4x4": MATRIX4X4;
+					default: null;
+					
+				}
+				
+				parameter.name = name;
+				__parameters.push (parameter);
+				Reflect.setField (data, name, parameter);
+				
+			}
+			
+			__isUniform.set (name, storageType == "uniform");
+			
+			position = regex.matchedPos ();
+			lastMatch = position.pos + position.len;
+			
+		}
+		
+	}
+	
+	
+	private function __update ():Void {
+		
+		if (glProgram != null) {
+			
+			__updateGL ();
+			
+		}
+		
+	}
+	
+	
+	private function __updateGL ():Void {
+		
+		var textureCount = 0;
+		
+		for (input in __inputs) {
 			
 			if (input.input != null) {
 				
@@ -165,16 +350,29 @@ class Shader {
 			
 		}
 		
-		var index, boolValues, floatValues, intValues;
+		var index, boolValues:Array<Bool> = null, floatValues:Array<Float> = null, intValues:Array<Int> = null;
 		
 		for (parameter in __parameters) {
 			
 			if (parameter.value != null) {
 				
+				switch (parameter.type) {
+					
+					case BOOL, BOOL2, BOOL3, BOOL4:
+						
+						boolValues = cast parameter.value;
+					
+					case INT, INT2, INT3, INT4:
+						
+						intValues = cast parameter.value;
+					
+					default:
+						
+						floatValues = cast parameter.value;
+					
+				}
+				
 				index = parameter.index;
-				boolValues = parameter.__boolValues;
-				floatValues = parameter.__floatValues;
-				intValues = parameter.__intValues;
 				
 				switch (parameter.type) {
 					
@@ -268,174 +466,7 @@ class Shader {
 					
 				}
 				
-			} else {
-				
-				switch (parameter.type) {
-					
-					case BOOL2, BOOL3, BOOL4, FLOAT2, FLOAT3, FLOAT4, INT2, INT3, INT4:
-						
-						gl.enableVertexAttribArray (parameter.index);
-					
-					default:
-					
-				}
-				
 			}
-			
-		}
-		
-	}
-	
-	
-	private function __init ():Void {
-		
-		if (data == null) {
-			
-			data = new ShaderData (null);
-			
-		}
-		
-		if (glFragmentSource != null && glVertexSource != null) {
-			
-			__initGL ();
-			
-		}
-		
-	}
-	
-	
-	private function __initGL ():Void {
-		
-		if (__inputs == null) {
-			
-			__inputs = new Array ();
-			__parameters = new Array ();
-			
-			__uniformMatrix2 = new Float32Array (4);
-			__uniformMatrix3 = new Float32Array (9);
-			__uniformMatrix4 = new Float32Array (16);
-			
-			__processGLData (glVertexSource, "attribute");
-			__processGLData (glVertexSource, "uniform");
-			__processGLData (glFragmentSource, "uniform");
-			
-		}
-		
-		if (gl != null && glProgram == null && glFragmentSource != null && glVertexSource != null) {
-			
-			var fragment = 
-				
-				"#ifdef GL_ES
-				precision " + (precisionHint == FULL ? "mediump" : "lowp") + " float;
-				#endif
-				" + glFragmentSource;
-			
-			glProgram = GLUtils.createProgram (glVertexSource, fragment);
-			
-			if (glProgram != null) {
-				
-				for (input in __inputs) {
-					
-					if (input.__isUniform) {
-						
-						input.index = gl.getUniformLocation (glProgram, input.__name);
-						
-					} else {
-						
-						input.index = gl.getAttribLocation (glProgram, input.__name);
-						
-					}
-					
-				}
-				
-				for (parameter in __parameters) {
-					
-					if (parameter.__isUniform) {
-						
-						parameter.index = gl.getUniformLocation (glProgram, parameter.__name);
-						
-					} else {
-						
-						parameter.index = gl.getAttribLocation (glProgram, parameter.__name);
-						
-					}
-					
-				}
-				
-			}
-			
-		}
-		
-	}
-	
-	
-	private function __processGLData (source:String, storageType:String):Void {
-		
-		var lastMatch = 0, position, regex, name, type;
-		
-		if (storageType == "uniform") {
-			
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
-			
-		} else {
-			
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
-			
-		}
-		
-		while (regex.matchSub (source, lastMatch)) {
-			
-			type = regex.matched (1);
-			name = regex.matched (2);
-			
-			if (StringTools.startsWith (type, "sampler")) {
-				
-				var input = new ShaderInput ();
-				input.__isUniform = (storageType == "uniform");
-				input.__name = name;
-				__inputs.push (input);
-				Reflect.setField (data, name, input);
-				
-			} else {
-				
-				var parameter = new ShaderParameter ();
-				
-				parameter.type = switch (type) {
-					
-					case "bool": BOOL;
-					case "double", "float": FLOAT;
-					case "int", "uint": INT;
-					case "bvec2": BOOL2;
-					case "bvec3": BOOL3;
-					case "bvec4": BOOL4;
-					case "ivec2", "uvec2": INT2;
-					case "ivec3", "uvec3": INT3;
-					case "ivec4", "uvec4": INT4;
-					case "vec2", "dvec2": FLOAT2;
-					case "vec3", "dvec3": FLOAT3;
-					case "vec4", "dvec4": FLOAT4;
-					case "mat2", "mat2x2": MATRIX2X2;
-					case "mat2x3": MATRIX2X3;
-					case "mat2x4": MATRIX2X4;
-					case "mat3x2": MATRIX3X2;
-					case "mat3", "mat3x3": MATRIX3X3;
-					case "mat3x4": MATRIX3X4;
-					case "mat4x2": MATRIX4X2;
-					case "mat4x3": MATRIX4X3;
-					case "mat4", "mat4x4": MATRIX4X4;
-					default: null;
-					
-				}
-				
-				parameter.__isUniform = (storageType == "uniform");
-				parameter.__name = name;
-				__parameters.push (parameter);
-				Reflect.setField (data, name, parameter);
-				
-			}
-			
-			position = regex.matchedPos ();
-			lastMatch = position.pos + position.len;
 			
 		}
 		

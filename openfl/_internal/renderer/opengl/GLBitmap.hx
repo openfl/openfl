@@ -4,11 +4,11 @@ package openfl._internal.renderer.opengl;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
-import openfl.filters.ShaderFilter;
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)
+@:access(openfl.filters.BitmapFilter)
 
 
 class GLBitmap {
@@ -24,9 +24,9 @@ class GLBitmap {
 			
 			var shader;
 			
-			if (bitmap.__filters != null && Std.is (bitmap.__filters[0], ShaderFilter)) {
+			if (bitmap.__filters != null && bitmap.__filters.length > 0) {
 				
-				shader = cast (bitmap.__filters[0], ShaderFilter).shader;
+				shader = bitmap.__filters[0].__initShader (renderSession);
 				
 			} else {
 				

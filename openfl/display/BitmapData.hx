@@ -49,6 +49,7 @@ import js.Browser;
 @:access(lime.math.Rectangle)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
+@:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)

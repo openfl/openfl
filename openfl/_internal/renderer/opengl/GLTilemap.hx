@@ -6,7 +6,6 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.display.Tile;
-import openfl.filters.ShaderFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -14,6 +13,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
+@:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.Rectangle)
 
 
@@ -30,9 +30,9 @@ class GLTilemap {
 		var gl = renderSession.gl;
 		var shader;
 		
-		if (tilemap.__filters != null && Std.is (tilemap.__filters[0], ShaderFilter)) {
+		if (tilemap.__filters != null && tilemap.__filters.length > 0) {
 			
-			shader = cast (tilemap.__filters[0], ShaderFilter).shader;
+			shader = tilemap.__filters[0].__initShader (renderSession);
 			
 		} else {
 			

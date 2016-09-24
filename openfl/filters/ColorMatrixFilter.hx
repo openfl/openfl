@@ -2,13 +2,17 @@ package openfl.filters;
 
 
 import lime.graphics.utils.ImageCanvasUtil;
+import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 
 @:final class ColorMatrixFilter extends BitmapFilter {
 	
+	
+	private static var __colorMatrixShader = new ColorMatrixShader ();
 	
 	public var matrix (default, set):Array<Float>;
 	
@@ -29,7 +33,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	public override function __applyFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
+	private override function __applyFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):Void {
 		
 		#if (js && html5)
 		ImageCanvasUtil.convertToCanvas (sourceBitmapData.image);
@@ -75,6 +79,14 @@ import openfl.geom.Rectangle;
 	}
 	
 	
+	private override function __initShader (renderSession:RenderSession):Shader {
+		
+		__colorMatrixShader.init (matrix);
+		return __colorMatrixShader;
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods
@@ -91,6 +103,95 @@ import openfl.geom.Rectangle;
 		}
 		
 		return matrix = value;
+		
+	}
+	
+	
+}
+
+
+private class ColorMatrixShader extends Shader {
+	
+	
+	private var multipliers:Array<Float>;
+	private var offsets:Array<Float>;
+	
+	
+	public function new () {
+		
+		glFragmentSource = 
+			
+			"varying float vAlpha;
+			varying vec2 vTexCoord;
+			uniform sampler2D uImage0;
+			
+			uniform mat4 uMultipliers;
+			uniform vec4 uOffsets;
+			
+			void main(void) {
+				
+				vec4 color = texture2D (uImage0, vTexCoord);
+				
+				if (color.a == 0.0) {
+					
+					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+					
+				} else {
+					
+					color = vec4 (color.rgb / color.a, color.a);
+					color = uOffsets + color * uMultipliers;
+					
+					gl_FragColor = vec4 (color.rgb * color.a, color.a * vAlpha);
+					
+				}
+				
+			}";
+		
+		super ();
+		
+	}
+	
+	
+	public function init (matrix:Array<Float>):Void {
+		
+		multipliers[0] = matrix[0];
+		multipliers[1] = matrix[1];
+		multipliers[2] = matrix[2];
+		multipliers[3] = matrix[3];
+		multipliers[4] = matrix[5];
+		multipliers[5] = matrix[6];
+		multipliers[6] = matrix[7];
+		multipliers[7] = matrix[8];
+		multipliers[8] = matrix[10];
+		multipliers[9] = matrix[11];
+		multipliers[10] = matrix[12];
+		multipliers[11] = matrix[13];
+		multipliers[12] = matrix[15];
+		multipliers[13] = matrix[16];
+		multipliers[14] = matrix[17];
+		multipliers[15] = matrix[18];
+		
+		offsets[0] = matrix[4] / 255.0;
+		offsets[1] = matrix[9] / 255.0;
+		offsets[2] = matrix[14] / 255.0;
+		offsets[3] = matrix[19] / 255.0;
+		
+	}
+	
+	
+	private override function __init ():Void {
+		
+		super.__init ();
+		
+		if (data.uMultipliers != null && data.uMultipliers.value == null) {
+			
+			data.uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
+			data.uOffsets.value = [ 0, 0, 0, 0 ];
+			
+			multipliers = cast data.uMultipliers.value;
+			offsets = cast data.uOffsets.value;
+			
+		}
 		
 	}
 	
