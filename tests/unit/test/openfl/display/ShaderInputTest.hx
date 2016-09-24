@@ -13,7 +13,7 @@ class ShaderInputTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderInput = new ShaderInput ();
+		var shaderInput = new ShaderInput<BitmapData> ();
 		var exists = shaderInput.channels;
 		
 		Assert.isNotNull (exists);
@@ -25,7 +25,7 @@ class ShaderInputTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderInput = new ShaderInput ();
+		var shaderInput = new ShaderInput<BitmapData> ();
 		var exists = shaderInput.height;
 		
 		Assert.isNotNull (exists);
@@ -37,7 +37,7 @@ class ShaderInputTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderInput = new ShaderInput ();
+		var shaderInput = new ShaderInput<BitmapData> ();
 		var exists = shaderInput.index;
 		
 		Assert.isNotNull (exists);
@@ -49,7 +49,7 @@ class ShaderInputTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderInput = new ShaderInput ();
+		var shaderInput = new ShaderInput<BitmapData> ();
 		var exists = shaderInput.input;
 		
 		Assert.isNull (exists);
@@ -61,7 +61,7 @@ class ShaderInputTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderInput = new ShaderInput ();
+		var shaderInput = new ShaderInput<BitmapData> ();
 		var exists = shaderInput.width;
 		
 		Assert.isNotNull (exists);
@@ -73,7 +73,7 @@ class ShaderInputTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderInput = new ShaderInput ();
+		var shaderInput = new ShaderInput<BitmapData> ();
 		var exists = shaderInput;
 		
 		Assert.isNotNull (exists);

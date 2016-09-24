@@ -113,39 +113,62 @@ import openfl.geom.Rectangle;
 private class ColorMatrixShader extends Shader {
 	
 	
+	private static var GL_FRAGMENT_SOURCE = 
+		
+		"varying float vAlpha;
+		varying vec2 vTexCoord;
+		uniform sampler2D uImage0;
+		
+		uniform mat4 uMultipliers;
+		uniform vec4 uOffsets;
+		
+		void main(void) {
+			
+			vec4 color = texture2D (uImage0, vTexCoord);
+			
+			if (color.a == 0.0) {
+				
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else {
+				
+				color = vec4 (color.rgb / color.a, color.a);
+				color = uOffsets + color * uMultipliers;
+				
+				gl_FragColor = vec4 (color.rgb * color.a, color.a * vAlpha);
+				
+			}
+			
+		}";
+	
+	//private static var GL_VERTEX_SOURCE = Shader.GL_VERTEX_SOURCE;
+	
+	private static var GL_VERTEX_SOURCE = 
+		
+		"attribute float aAlpha;
+		attribute vec4 aPosition;
+		attribute vec2 aTexCoord;
+		varying float vAlpha;
+		varying vec2 vTexCoord;
+		
+		uniform mat4 uMatrix;
+		
+		void main(void) {
+			
+			vAlpha = aAlpha;
+			vTexCoord = aTexCoord;
+			gl_Position = uMatrix * aPosition;
+			
+		}";
+	
 	private var multipliers:Array<Float>;
 	private var offsets:Array<Float>;
 	
 	
 	public function new () {
 		
-		glFragmentSource = 
-			
-			"varying float vAlpha;
-			varying vec2 vTexCoord;
-			uniform sampler2D uImage0;
-			
-			uniform mat4 uMultipliers;
-			uniform vec4 uOffsets;
-			
-			void main(void) {
-				
-				vec4 color = texture2D (uImage0, vTexCoord);
-				
-				if (color.a == 0.0) {
-					
-					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-					
-				} else {
-					
-					color = vec4 (color.rgb / color.a, color.a);
-					color = uOffsets + color * uMultipliers;
-					
-					gl_FragColor = vec4 (color.rgb * color.a, color.a * vAlpha);
-					
-				}
-				
-			}";
+		glVertexSource = GL_VERTEX_SOURCE;
+		glFragmentSource = GL_FRAGMENT_SOURCE;
 		
 		super ();
 		

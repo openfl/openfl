@@ -12,7 +12,7 @@ class ShaderParameterTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderParameter = new ShaderParameter ();
+		var shaderParameter = new ShaderParameter<Float> ();
 		var exists = shaderParameter.index;
 		
 		Assert.isNotNull (exists);
@@ -24,7 +24,7 @@ class ShaderParameterTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderParameter = new ShaderParameter ();
+		var shaderParameter = new ShaderParameter<Float> ();
 		var exists = shaderParameter.type;
 		
 		Assert.isNull (exists);
@@ -36,7 +36,7 @@ class ShaderParameterTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderParameter = new ShaderParameter ();
+		var shaderParameter = new ShaderParameter<Float> ();
 		var exists = shaderParameter.value;
 		
 		Assert.isNull (exists);
@@ -48,7 +48,7 @@ class ShaderParameterTest {
 		
 		// TODO: Confirm functionality
 		
-		var shaderParameter = new ShaderParameter ();
+		var shaderParameter = new ShaderParameter<Float> ();
 		var exists = shaderParameter;
 		
 		Assert.isNotNull (exists);

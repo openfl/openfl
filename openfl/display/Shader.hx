@@ -1,4 +1,4 @@
-package openfl.display;
+package openfl.display; #if !macro
 
 
 import lime.graphics.GLRenderContext;
@@ -10,9 +10,54 @@ import openfl.utils.ByteArray;
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 
+#if !display
+@:autoBuild(openfl.display.Shader.build())
+@:build(openfl.display.Shader.build())
+#end
+
 
 class Shader {
 	
+	
+	@:noCompletion private static var GL_FRAGMENT_SOURCE = 
+		
+		"varying float vAlpha;
+		varying vec2 vTexCoord;
+		uniform sampler2D uImage0;
+		
+		void main(void) {
+			
+			vec4 color = texture2D (uImage0, vTexCoord);
+			
+			if (color.a == 0.0) {
+				
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else {
+				
+				gl_FragColor = vec4 (color.rgb / color.a, color.a * vAlpha);
+				
+			}
+			
+		}";
+	
+	@:noCompletion private static var GL_VERTEX_SOURCE = 
+		
+		"attribute float aAlpha;
+		attribute vec4 aPosition;
+		attribute vec2 aTexCoord;
+		varying float vAlpha;
+		varying vec2 vTexCoord;
+		
+		uniform mat4 uMatrix;
+		
+		void main(void) {
+			
+			vAlpha = aAlpha;
+			vTexCoord = aTexCoord;
+			gl_Position = uMatrix * aPosition;
+			
+		}";
 	
 	public var byteCode (null, default):ByteArray;
 	public var data:ShaderData;
@@ -24,8 +69,10 @@ class Shader {
 	private var gl:GLRenderContext;
 	
 	private var __isUniform:Map<String, Bool>;
-	private var __inputs:Array<ShaderInput>;
-	private var __parameters:Array<ShaderParameter>;
+	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
+	private var __paramBool:Array<ShaderParameter<Bool>>;
+	private var __paramFloat:Array<ShaderParameter<Float>>;
+	private var __paramInt:Array<ShaderParameter<Int>>;
 	private var __uniformMatrix2:Float32Array;
 	private var __uniformMatrix3:Float32Array;
 	private var __uniformMatrix4:Float32Array;
@@ -40,50 +87,14 @@ class Shader {
 		
 		if (glVertexSource == null) {
 			
-			glVertexSource =
-				
-				"attribute float aAlpha;
-				attribute vec4 aPosition;
-				attribute vec2 aTexCoord;
-				varying float vAlpha;
-				varying vec2 vTexCoord;
-				
-				uniform mat4 uMatrix;
-				
-				void main(void) {
-					
-					vAlpha = aAlpha;
-					vTexCoord = aTexCoord;
-					gl_Position = uMatrix * aPosition;
-					
-				}";
+			glVertexSource = GL_VERTEX_SOURCE;
 			
 		}
 		
 		if (glFragmentSource == null) {
 			
-			glFragmentSource = 
-				
-				"varying float vAlpha;
-				varying vec2 vTexCoord;
-				uniform sampler2D uImage0;
-				
-				void main(void) {
-					
-					vec4 color = texture2D (uImage0, vTexCoord);
-					
-					if (color.a == 0.0) {
-						
-						gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-						
-					} else {
-						
-						gl_FragColor = vec4 (color.rgb / color.a, color.a * vAlpha);
-						
-					}
-					
-				}";
-				
+			glFragmentSource = GL_FRAGMENT_SOURCE;
+			
 		}
 		
 		__init ();
@@ -104,7 +115,19 @@ class Shader {
 	
 	private function __disableGL ():Void {
 		
-		for (parameter in __parameters) {
+		for (parameter in __paramBool) {
+			
+			gl.disableVertexAttribArray (parameter.index);
+			
+		}
+		
+		for (parameter in __paramFloat) {
+			
+			gl.disableVertexAttribArray (parameter.index);
+			
+		}
+		
+		for (parameter in __paramInt) {
 			
 			gl.disableVertexAttribArray (parameter.index);
 			
@@ -137,7 +160,7 @@ class Shader {
 		
 		var textureCount = 0;
 		
-		for (input in __inputs) {
+		for (input in __inputBitmapData) {
 			
 			gl.uniform1i (input.index, textureCount);
 			textureCount++;
@@ -152,7 +175,27 @@ class Shader {
 		}
 		#end
 		
-		for (parameter in __parameters) {
+		for (parameter in __paramBool) {
+			
+			if (parameter.value == null) {
+				
+				gl.enableVertexAttribArray (parameter.index);
+				
+			}
+			
+		}
+		
+		for (parameter in __paramFloat) {
+			
+			if (parameter.value == null) {
+				
+				gl.enableVertexAttribArray (parameter.index);
+				
+			}
+			
+		}
+		
+		for (parameter in __paramInt) {
 			
 			if (parameter.value == null) {
 				
@@ -167,11 +210,11 @@ class Shader {
 	
 	private function __init ():Void {
 		
-		if (data == null) {
+		/*if (data == null) {
 			
 			data = new ShaderData (null);
 			
-		}
+		}*/
 		
 		if (glFragmentSource != null && glVertexSource != null) {
 			
@@ -184,12 +227,14 @@ class Shader {
 	
 	private function __initGL ():Void {
 		
-		if (__inputs == null) {
+		if (__inputBitmapData == null) {
 			
 			__isUniform = new Map ();
 			
-			__inputs = new Array ();
-			__parameters = new Array ();
+			__inputBitmapData = new Array ();
+			__paramBool = new Array ();
+			__paramFloat = new Array ();
+			__paramInt = new Array ();
 			
 			__uniformMatrix2 = new Float32Array (4);
 			__uniformMatrix3 = new Float32Array (9);
@@ -214,7 +259,7 @@ class Shader {
 			
 			if (glProgram != null) {
 				
-				for (input in __inputs) {
+				for (input in __inputBitmapData) {
 					
 					if (__isUniform.get (input.name)) {
 						
@@ -228,7 +273,35 @@ class Shader {
 					
 				}
 				
-				for (parameter in __parameters) {
+				for (parameter in __paramBool) {
+					
+					if (__isUniform.get (parameter.name)) {
+						
+						parameter.index = gl.getUniformLocation (glProgram, parameter.name);
+						
+					} else {
+						
+						parameter.index = gl.getAttribLocation (glProgram, parameter.name);
+						
+					}
+					
+				}
+				
+				for (parameter in __paramFloat) {
+					
+					if (__isUniform.get (parameter.name)) {
+						
+						parameter.index = gl.getUniformLocation (glProgram, parameter.name);
+						
+					} else {
+						
+						parameter.index = gl.getAttribLocation (glProgram, parameter.name);
+						
+					}
+					
+				}
+				
+				for (parameter in __paramInt) {
 					
 					if (__isUniform.get (parameter.name)) {
 						
@@ -270,16 +343,14 @@ class Shader {
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
-				var input = new ShaderInput ();
+				var input = new ShaderInput<BitmapData> ();
 				input.name = name;
-				__inputs.push (input);
+				__inputBitmapData.push (input);
 				Reflect.setField (data, name, input);
 				
 			} else {
 				
-				var parameter = new ShaderParameter ();
-				
-				parameter.type = switch (type) {
+				var parameterType:ShaderParameterType = switch (type) {
 					
 					case "bool": BOOL;
 					case "double", "float": FLOAT;
@@ -306,9 +377,33 @@ class Shader {
 					
 				}
 				
-				parameter.name = name;
-				__parameters.push (parameter);
-				Reflect.setField (data, name, parameter);
+				switch (parameterType) {
+					
+					case BOOL, BOOL2, BOOL3, BOOL4:
+						
+						var parameter = new ShaderParameter<Bool> ();
+						parameter.name = name;
+						parameter.type = parameterType;
+						__paramBool.push (parameter);
+						Reflect.setField (data, name, parameter);
+					
+					case INT, INT2, INT3, INT4:
+						
+						var parameter = new ShaderParameter<Int> ();
+						parameter.name = name;
+						parameter.type = parameterType;
+						__paramInt.push (parameter);
+						Reflect.setField (data, name, parameter);
+					
+					default:
+						
+						var parameter = new ShaderParameter<Float> ();
+						parameter.name = name;
+						parameter.type = parameterType;
+						__paramFloat.push (parameter);
+						Reflect.setField (data, name, parameter);
+					
+				}
 				
 			}
 			
@@ -337,12 +432,12 @@ class Shader {
 		
 		var textureCount = 0;
 		
-		for (input in __inputs) {
+		for (input in __inputBitmapData) {
 			
 			if (input.input != null) {
 				
 				gl.activeTexture (gl.TEXTURE0 + textureCount);
-				gl.bindTexture (gl.TEXTURE_2D, input.__bitmapData.getTexture (gl));
+				gl.bindTexture (gl.TEXTURE_2D, input.input.getTexture (gl));
 				
 			}
 			
@@ -350,85 +445,71 @@ class Shader {
 			
 		}
 		
-		var index, boolValues:Array<Bool> = null, floatValues:Array<Float> = null, intValues:Array<Int> = null;
+		var index:Dynamic = 0;
 		
-		for (parameter in __parameters) {
+		for (parameter in __paramBool) {
 			
-			if (parameter.value != null) {
-				
-				switch (parameter.type) {
-					
-					case BOOL, BOOL2, BOOL3, BOOL4:
-						
-						boolValues = cast parameter.value;
-					
-					case INT, INT2, INT3, INT4:
-						
-						intValues = cast parameter.value;
-					
-					default:
-						
-						floatValues = cast parameter.value;
-					
-				}
-				
-				index = parameter.index;
+			var value = parameter.value;
+			index = parameter.index;
+			
+			if (value != null) {
 				
 				switch (parameter.type) {
 					
 					case BOOL:
 						
-						gl.uniform1i (index, boolValues[0] ? 1 : 0);
+						gl.uniform1i (index, value[0] ? 1 : 0);
 					
 					case BOOL2:
 						
-						gl.uniform2i (index, boolValues[0] ? 1 : 0, boolValues[1] ? 1 : 0);
+						gl.uniform2i (index, value[0] ? 1 : 0, value[1] ? 1 : 0);
 					
 					case BOOL3:
 						
-						gl.uniform3i (index, boolValues[0] ? 1 : 0, boolValues[1] ? 1 : 0, boolValues[2] ? 1 : 0);
+						gl.uniform3i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0);
 					
 					case BOOL4:
 						
-						gl.uniform4i (index, boolValues[0] ? 1 : 0, boolValues[1] ? 1 : 0, boolValues[2] ? 1 : 0, boolValues[3] ? 1 : 0);
+						gl.uniform4i (index, value[0] ? 1 : 0, value[1] ? 1 : 0, value[2] ? 1 : 0, value[3] ? 1 : 0);
+					
+					default:
+					
+				}
+				
+			}
+			
+		}
+		
+		for (parameter in __paramFloat) {
+			
+			var value = parameter.value;
+			index = parameter.index;
+			
+			if (value != null) {
+				
+				switch (parameter.type) {
 					
 					case FLOAT:
 						
-						gl.uniform1f (index, floatValues[0]);
+						gl.uniform1f (index, value[0]);
 					
 					case FLOAT2:
 						
-						gl.uniform2f (index, floatValues[0], floatValues[1]);
+						gl.uniform2f (index, value[0], value[1]);
 					
 					case FLOAT3:
 						
-						gl.uniform3f (index, floatValues[0], floatValues[1], floatValues[2]);
+						gl.uniform3f (index, value[0], value[1], value[2]);
 					
 					case FLOAT4:
 						
-						gl.uniform4f (index, floatValues[0], floatValues[1], floatValues[2], floatValues[3]);
-					
-					case INT:
-						
-						gl.uniform1i (index, intValues[0]);
-					
-					case INT2:
-						
-						gl.uniform2i (index, intValues[0], intValues[1]);
-					
-					case INT3:
-						
-						gl.uniform3i (index, intValues[0], intValues[1], intValues[2]);
-					
-					case INT4:
-						
-						gl.uniform4i (index, intValues[0], intValues[1], intValues[2], intValues[3]);
+						gl.uniform4f (index, value[0], value[1], value[2], value[3]);
 					
 					case MATRIX2X2:
 						
 						for (i in 0...4) {
 							
-							__uniformMatrix2[i] = floatValues[i];
+							__uniformMatrix2[i] = value[i];
 							
 						}
 						
@@ -442,7 +523,7 @@ class Shader {
 						
 						for (i in 0...9) {
 							
-							__uniformMatrix3[i] = floatValues[i];
+							__uniformMatrix3[i] = value[i];
 							
 						}
 						
@@ -456,7 +537,7 @@ class Shader {
 						
 						for (i in 0...16) {
 							
-							__uniformMatrix4[i] = floatValues[i];
+							__uniformMatrix4[i] = value[i];
 							
 						}
 						
@@ -470,7 +551,263 @@ class Shader {
 			
 		}
 		
+		for (parameter in __paramInt) {
+			
+			var value = parameter.value;
+			
+			if (value != null) {
+				
+				switch (parameter.type) {
+					
+					case INT:
+						
+						gl.uniform1i (index, value[0]);
+					
+					case INT2:
+						
+						gl.uniform2i (index, value[0], value[1]);
+					
+					case INT3:
+						
+						gl.uniform3i (index, value[0], value[1], value[2]);
+					
+					case INT4:
+						
+						gl.uniform4i (index, value[0], value[1], value[2], value[3]);
+					
+					default:
+					
+				}
+				
+			}
+			
+		}
+		
 	}
 	
 	
 }
+
+
+#else
+
+
+import haxe.macro.Context;
+import haxe.macro.Expr;
+import haxe.macro.Type;
+using haxe.macro.Tools;
+
+
+class Shader {
+	
+	
+	public static function build ():Array<Field> {
+		
+		var fields = Context.getBuildFields ();
+		
+		var glFragmentSource = null;
+		var glVertexSource = null;
+		
+		for (field in fields) {
+			
+			if (field.name == "GL_FRAGMENT_SOURCE") {
+				
+				switch (field.kind) {
+					
+					case FVar (_, expr):
+						
+						switch (expr.expr) {
+							
+							case EConst (CString (value)):
+								
+								glFragmentSource = value;
+							
+							//case EField (expr, _):
+								//
+								//switch (expr.expr) {
+									//
+									//case EConst (CString (value)):
+										//
+										//glFragmentSource = value;
+									//
+									//default:
+									//
+								//}
+							
+							default:
+								
+								//trace (expr.expr);
+							
+						}
+					
+					default:
+						
+					
+				}
+				
+			} else if (field.name == "GL_VERTEX_SOURCE") {
+				
+				switch (field.kind) {
+					
+					case FVar (_, expr):
+						
+						if (expr == null) continue;
+						
+						switch (expr.expr) {
+							
+							case EConst (CString (value)):
+								
+								glVertexSource = value;
+							
+							//case EField (expr, _):
+								//
+								//trace (expr);
+								//
+								//switch (expr.expr) {
+									//
+									//case EConst (CString (value)):
+										//
+										//glVertexSource = value;
+									//
+									//default:
+									//
+								//}
+							
+							default:
+							
+						}
+					
+					default:
+						
+					
+				}
+				
+			}
+			
+		}
+		
+		if (glVertexSource != null && glFragmentSource != null) {
+			
+			var pos = Context.currentPos ();
+			var className = Context.getLocalClass ().get ().name;
+			
+			var shaderDataFields = new Array<Field> ();
+			
+			processFields (glVertexSource, "attribute", shaderDataFields, pos);
+			processFields (glVertexSource, "uniform", shaderDataFields, pos);
+			processFields (glFragmentSource, "uniform", shaderDataFields, pos);
+			
+			Context.defineType ({
+				
+				pos: pos,
+				pack: [ "openfl", "display" ],
+				name: "_" + className + "_ShaderData",
+				kind: TDClass ({ pack: [ "openfl", "display" ], name: "ShaderData", params: [] }, null, false),
+				fields: shaderDataFields,
+				params: [],
+				meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":hack", pos: pos } ]
+				
+			});
+			
+			for (field in fields) {
+				
+				if (field.name == "data") {
+					
+					field.kind = FVar (TPath ({ name: "_" + className + "_ShaderData", pack: [ "openfl", "display" ], params: [] }), Context.parse ("new openfl.display._" + className + "_ShaderData (null)", pos));
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+		return fields;
+		
+	}
+	
+	
+	private static function processFields (source:String, storageType:String, fields:Array<Field>, pos:Position):Void {
+		
+		var lastMatch = 0, position, regex, name, type;
+		
+		if (storageType == "uniform") {
+			
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			
+		} else {
+			
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9]+)/;
+			
+		}
+		
+		while (regex.matchSub (source, lastMatch)) {
+			
+			type = regex.matched (1);
+			name = regex.matched (2);
+			
+			if (StringTools.startsWith (type, "sampler")) {
+				
+				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderInput<BitmapData>), pos: pos } );
+				
+			} else {
+				
+				var parameterType:ShaderParameterType = switch (type) {
+					
+					case "bool": BOOL;
+					case "double", "float": FLOAT;
+					case "int", "uint": INT;
+					case "bvec2": BOOL2;
+					case "bvec3": BOOL3;
+					case "bvec4": BOOL4;
+					case "ivec2", "uvec2": INT2;
+					case "ivec3", "uvec3": INT3;
+					case "ivec4", "uvec4": INT4;
+					case "vec2", "dvec2": FLOAT2;
+					case "vec3", "dvec3": FLOAT3;
+					case "vec4", "dvec4": FLOAT4;
+					case "mat2", "mat2x2": MATRIX2X2;
+					case "mat2x3": MATRIX2X3;
+					case "mat2x4": MATRIX2X4;
+					case "mat3x2": MATRIX3X2;
+					case "mat3", "mat3x3": MATRIX3X3;
+					case "mat3x4": MATRIX3X4;
+					case "mat4x2": MATRIX4X2;
+					case "mat4x3": MATRIX4X3;
+					case "mat4", "mat4x4": MATRIX4X4;
+					default: null;
+					
+				}
+				
+				switch (parameterType) {
+					
+					case BOOL, BOOL2, BOOL3, BOOL4:
+						
+						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderParameter<Bool>), pos: pos } );
+					
+					case INT, INT2, INT3, INT4:
+						
+						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderParameter<Int>), pos: pos } );
+					
+					default:
+						
+						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderParameter<Float>), pos: pos } );
+					
+				}
+				
+				
+				
+			}
+			
+			position = regex.matchedPos ();
+			lastMatch = position.pos + position.len;
+			
+		}
+		
+	}
+	
+	
+}
+
+
+#end
