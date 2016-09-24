@@ -19,46 +19,6 @@ import openfl.utils.ByteArray;
 class Shader {
 	
 	
-	@:noCompletion private static var GL_FRAGMENT_SOURCE = 
-		
-		"varying float vAlpha;
-		varying vec2 vTexCoord;
-		uniform sampler2D uImage0;
-		
-		void main(void) {
-			
-			vec4 color = texture2D (uImage0, vTexCoord);
-			
-			if (color.a == 0.0) {
-				
-				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
-				
-			} else {
-				
-				gl_FragColor = vec4 (color.rgb / color.a, color.a * vAlpha);
-				
-			}
-			
-		}";
-	
-	@:noCompletion private static var GL_VERTEX_SOURCE = 
-		
-		"attribute float aAlpha;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
-		varying float vAlpha;
-		varying vec2 vTexCoord;
-		
-		uniform mat4 uMatrix;
-		
-		void main(void) {
-			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
-			gl_Position = uMatrix * aPosition;
-			
-		}";
-	
 	public var byteCode (null, default):ByteArray;
 	public var data:ShaderData;
 	public var glFragmentSource:String;
@@ -78,24 +38,56 @@ class Shader {
 	private var __uniformMatrix4:Float32Array;
 	
 	
-	public function new (code:ByteArray = null) {
+	@:glFragmentSource(
 		
-		// TODO: Consider a macro generic build
+		"varying float vAlpha;
+		varying vec2 vTexCoord;
+		uniform sampler2D uImage0;
+		
+		void main(void) {
+			
+			vec4 color = texture2D (uImage0, vTexCoord);
+			
+			if (color.a == 0.0) {
+				
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else {
+				
+				gl_FragColor = vec4 (color.rgb / color.a, color.a * vAlpha);
+				
+			}
+			
+		}"
+		
+	)
+	
+	
+	@:glVertexSource(
+		
+		"attribute float aAlpha;
+		attribute vec4 aPosition;
+		attribute vec2 aTexCoord;
+		varying float vAlpha;
+		varying vec2 vTexCoord;
+		
+		uniform mat4 uMatrix;
+		
+		void main(void) {
+			
+			vAlpha = aAlpha;
+			vTexCoord = aTexCoord;
+			gl_Position = uMatrix * aPosition;
+			
+		}"
+		
+	)
+	
+	
+	public function new (code:ByteArray = null) {
 		
 		byteCode = code;
 		precisionHint = FULL;
-		
-		if (glVertexSource == null) {
-			
-			glVertexSource = GL_VERTEX_SOURCE;
-			
-		}
-		
-		if (glFragmentSource == null) {
-			
-			glFragmentSource = GL_FRAGMENT_SOURCE;
-			
-		}
 		
 		__init ();
 		
@@ -595,6 +587,7 @@ class Shader {
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+using haxe.macro.ExprTools;
 using haxe.macro.Tools;
 
 
@@ -610,75 +603,19 @@ class Shader {
 		
 		for (field in fields) {
 			
-			if (field.name == "GL_FRAGMENT_SOURCE") {
+			for (meta in field.meta) {
 				
-				switch (field.kind) {
+				switch (meta.name) {
 					
-					case FVar (_, expr):
+					case "glFragmentSource", ":glFragmentSource":
 						
-						switch (expr.expr) {
-							
-							case EConst (CString (value)):
-								
-								glFragmentSource = value;
-							
-							//case EField (expr, _):
-								//
-								//switch (expr.expr) {
-									//
-									//case EConst (CString (value)):
-										//
-										//glFragmentSource = value;
-									//
-									//default:
-									//
-								//}
-							
-							default:
-								
-								//trace (expr.expr);
-							
-						}
+						glFragmentSource = meta.params[0].getValue ();
+					
+					case "glVertexSource", ":glVertexSource":
+						
+						glVertexSource = meta.params[0].getValue ();
 					
 					default:
-						
-					
-				}
-				
-			} else if (field.name == "GL_VERTEX_SOURCE") {
-				
-				switch (field.kind) {
-					
-					case FVar (_, expr):
-						
-						if (expr == null) continue;
-						
-						switch (expr.expr) {
-							
-							case EConst (CString (value)):
-								
-								glVertexSource = value;
-							
-							//case EField (expr, _):
-								//
-								//trace (expr);
-								//
-								//switch (expr.expr) {
-									//
-									//case EConst (CString (value)):
-										//
-										//glVertexSource = value;
-									//
-									//default:
-									//
-								//}
-							
-							default:
-							
-						}
-					
-					default:
-						
 					
 				}
 				
@@ -689,7 +626,7 @@ class Shader {
 		if (glVertexSource != null && glFragmentSource != null) {
 			
 			var pos = Context.currentPos ();
-			var className = Context.getLocalClass ().get ().name;
+			var localClass = Context.getLocalClass ().get ();
 			
 			var shaderDataFields = new Array<Field> ();
 			
@@ -697,11 +634,13 @@ class Shader {
 			processFields (glVertexSource, "uniform", shaderDataFields, pos);
 			processFields (glFragmentSource, "uniform", shaderDataFields, pos);
 			
+			var dataClassName = "_" + localClass.name + "_ShaderData";
+			
 			Context.defineType ({
 				
 				pos: pos,
-				pack: [ "openfl", "display" ],
-				name: "_" + className + "_ShaderData",
+				pack: localClass.pack,
+				name: dataClassName,
 				kind: TDClass ({ pack: [ "openfl", "display" ], name: "ShaderData", params: [] }, null, false),
 				fields: shaderDataFields,
 				params: [],
@@ -711,10 +650,35 @@ class Shader {
 			
 			for (field in fields) {
 				
-				if (field.name == "data") {
+				switch (field.name) {
 					
-					field.kind = FVar (TPath ({ name: "_" + className + "_ShaderData", pack: [ "openfl", "display" ], params: [] }), Context.parse ("new openfl.display._" + className + "_ShaderData (null)", pos));
-					break;
+					case "new":
+						
+						var block = switch (field.kind) {
+							
+							case FFun (f):
+								
+								if (f.expr == null) null;
+								
+								switch (f.expr.expr) {
+									
+									case EBlock (e): e;
+									default: null;
+									
+								}
+							
+							default: null;
+							
+						}
+						
+						block.unshift (macro if (glVertexSource == null) glVertexSource = $v{glVertexSource});
+						block.unshift (macro if (glFragmentSource == null) glFragmentSource = $v{glFragmentSource});
+					
+					case "data":
+						
+						field.kind = FVar (TPath ({ name: dataClassName, pack: localClass.pack, params: [] }), Context.parse ("new " + dataClassName + " (null)", pos));
+					
+					default:
 					
 				}
 				
@@ -748,7 +712,7 @@ class Shader {
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
-				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderInput<BitmapData>), pos: pos } );
+				fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderInput<openfl.display.BitmapData>), pos: pos } );
 				
 			} else {
 				
@@ -783,15 +747,15 @@ class Shader {
 					
 					case BOOL, BOOL2, BOOL3, BOOL4:
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderParameter<Bool>), pos: pos } );
+						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Bool>), pos: pos } );
 					
 					case INT, INT2, INT3, INT4:
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderParameter<Int>), pos: pos } );
+						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Int>), pos: pos } );
 					
 					default:
 						
-						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :ShaderParameter<Float>), pos: pos } );
+						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos } );
 					
 				}
 				

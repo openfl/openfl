@@ -113,7 +113,7 @@ import openfl.geom.Rectangle;
 private class ColorMatrixShader extends Shader {
 	
 	
-	private static var GL_FRAGMENT_SOURCE = 
+	@:glFragmentSource( 
 		
 		"varying float vAlpha;
 		varying vec2 vTexCoord;
@@ -139,11 +139,11 @@ private class ColorMatrixShader extends Shader {
 				
 			}
 			
-		}";
+		}"
+		
+	)
 	
-	//private static var GL_VERTEX_SOURCE = Shader.GL_VERTEX_SOURCE;
-	
-	private static var GL_VERTEX_SOURCE = 
+	@:glVertexSource(
 		
 		"attribute float aAlpha;
 		attribute vec4 aPosition;
@@ -159,16 +159,16 @@ private class ColorMatrixShader extends Shader {
 			vTexCoord = aTexCoord;
 			gl_Position = uMatrix * aPosition;
 			
-		}";
+		}"
+		
+	)
+	
 	
 	private var multipliers:Array<Float>;
 	private var offsets:Array<Float>;
 	
 	
 	public function new () {
-		
-		glVertexSource = GL_VERTEX_SOURCE;
-		glFragmentSource = GL_FRAGMENT_SOURCE;
 		
 		super ();
 		
