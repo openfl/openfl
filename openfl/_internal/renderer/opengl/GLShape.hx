@@ -41,7 +41,7 @@ class GLShape {
 				
 				if (shape.__filters != null && shape.__filters.length > 0) {
 					
-					shader = shape.__filters[0].__initShader (renderSession);
+					shader = shape.__filters[0].__initShader (renderSession, shape);
 					
 				} else {
 					
