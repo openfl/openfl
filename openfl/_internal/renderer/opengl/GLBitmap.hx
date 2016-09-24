@@ -26,7 +26,7 @@ class GLBitmap {
 			
 			if (bitmap.__filters != null && bitmap.__filters.length > 0) {
 				
-				shader = bitmap.__filters[0].__initShader (renderSession);
+				shader = bitmap.__filters[0].__initShader (renderSession, bitmap);
 				
 			} else {
 				

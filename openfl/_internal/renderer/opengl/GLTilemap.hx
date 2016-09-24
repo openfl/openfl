@@ -32,7 +32,7 @@ class GLTilemap {
 		
 		if (tilemap.__filters != null && tilemap.__filters.length > 0) {
 			
-			shader = tilemap.__filters[0].__initShader (renderSession);
+			shader = tilemap.__filters[0].__initShader (renderSession, tilemap);
 			
 		} else {
 			

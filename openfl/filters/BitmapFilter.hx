@@ -3,6 +3,7 @@ package openfl.filters;
 
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -32,7 +33,7 @@ class BitmapFilter {
 	}
 	
 	
-	private function __initShader (renderSession:RenderSession):Shader {
+	private function __initShader (renderSession:RenderSession, object:DisplayObject):Shader {
 		
 		return renderSession.shaderManager.defaultShader;
 		
