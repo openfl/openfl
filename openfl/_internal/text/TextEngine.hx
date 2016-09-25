@@ -643,16 +643,8 @@ class TextEngine {
 			
 			var advances = [];
 			
-			#if (js && html5)
-			
-			for (i in startIndex...endIndex) {
-				
-				advances.push (__context.measureText (text.charAt (i)).width);
-				
-			}
-			
-			#else
-			
+			#if !(js && html5)
+
 			if (__textLayout == null) {
 				
 				__textLayout = new TextLayout ();
@@ -799,14 +791,18 @@ class TextEngine {
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
-				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
 				layoutGroup.offsetX = offsetX;
 				layoutGroup.ascent = ascent;
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
 				layoutGroup.lineIndex = lineIndex;
 				layoutGroup.offsetY = offsetY;
+				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
+				#if (js && html5)
+				layoutGroup.width = getTextWidth (text.substring(textIndex, breakIndex));
+				#else
 				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+				#end
 				layoutGroup.height = heightValue;
 				layoutGroups.push (layoutGroup);
 				
@@ -845,7 +841,11 @@ class TextEngine {
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
 					advances = getAdvances (text, textIndex, spaceIndex);
+					#if (js && html5)
+					widthValue = getTextWidth (text.substring(textIndex, spaceIndex));
+					#else
 					widthValue = getAdvancesWidth (advances);
+					#end
 					
 					if (wordWrap) {
 						
@@ -973,19 +973,15 @@ class TextEngine {
 						
 						layoutGroup = null;
 						nextFormatRange ();
-						
-					}
-					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
-						if (spaceIndex > formatRange.end) {
-							
+
+                        if (spaceIndex == -1 && textIndex <= text.length) {
 							textIndex--;
-							
+							offsetX-=spaceWidth;
 						}
-						
+					}
+
+					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
 						break;
-						
 					}
 					
 				}
@@ -1008,7 +1004,11 @@ class TextEngine {
 					layoutGroup.leading = leading;
 					layoutGroup.lineIndex = lineIndex;
 					layoutGroup.offsetY = offsetY;
+					#if (js && html5)
+					layoutGroup.width = getTextWidth(text.substring(textIndex, formatRange.end));
+					#else
 					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+					#end
 					layoutGroup.height = heightValue;
 					layoutGroups.push (layoutGroup);
 					
