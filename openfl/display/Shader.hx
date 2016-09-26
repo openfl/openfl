@@ -202,11 +202,11 @@ class Shader {
 	
 	private function __init ():Void {
 		
-		/*if (data == null) {
+		if (data == null) {
 			
-			data = new ShaderData (null);
+			data = cast new ShaderData (null);
 			
-		}*/
+		}
 		
 		if (glFragmentSource != null && glVertexSource != null) {
 			
@@ -623,7 +623,7 @@ class Shader {
 			
 		}
 		
-		if (glVertexSource != null && glFragmentSource != null) {
+		if (glVertexSource != null || glFragmentSource != null) {
 			
 			var pos = Context.currentPos ();
 			var localClass = Context.getLocalClass ().get ();
@@ -671,8 +671,8 @@ class Shader {
 							
 						}
 						
-						block.unshift (macro if (glVertexSource == null) glVertexSource = $v{glVertexSource});
-						block.unshift (macro if (glFragmentSource == null) glFragmentSource = $v{glFragmentSource});
+						if (glVertexSource != null) block.unshift (macro if (glVertexSource == null) glVertexSource = $v{glVertexSource});
+						if (glFragmentSource != null) block.unshift (macro if (glFragmentSource == null) glFragmentSource = $v{glFragmentSource});
 					
 					case "data":
 						
@@ -692,6 +692,8 @@ class Shader {
 	
 	
 	private static function processFields (source:String, storageType:String, fields:Array<Field>, pos:Position):Void {
+		
+		if (source == null) return;
 		
 		var lastMatch = 0, position, regex, name, type;
 		
