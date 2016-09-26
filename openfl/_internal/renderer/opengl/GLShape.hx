@@ -37,25 +37,13 @@ class GLShape {
 			
 			if (graphics.__bitmap != null && graphics.__visible) {
 				
-				var shader;
-				
-				if (shape.__filters != null && shape.__filters.length > 0) {
-					
-					shader = shape.__filters[0].__initShader (renderSession);
-					
-				} else {
-					
-					shader = renderSession.shaderManager.defaultShader;
-					
-				}
-				
 				renderSession.blendModeManager.setBlendMode (shape.blendMode);
-				renderSession.shaderManager.setShader (shader);
+				renderSession.filterManager.pushObject (shape);
 				renderSession.maskManager.pushObject (shape);
 				
 				var renderer:GLRenderer = cast renderSession.renderer;
+				var shader = renderSession.shaderManager.currentShader;
 				
-				gl.enableVertexAttribArray (shader.data.aAlpha.index);
 				gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (graphics.__worldTransform));
 				
 				gl.bindTexture (gl.TEXTURE_2D, graphics.__bitmap.getTexture (gl));
@@ -80,6 +68,7 @@ class GLShape {
 				gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 				
 				renderSession.maskManager.popObject (shape);
+				renderSession.filterManager.popObject (shape);
 				
 			}
 			

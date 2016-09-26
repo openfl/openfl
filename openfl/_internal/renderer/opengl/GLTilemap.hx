@@ -28,20 +28,9 @@ class GLTilemap {
 		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
 		var gl = renderSession.gl;
-		var shader;
-		
-		if (tilemap.__filters != null && tilemap.__filters.length > 0) {
-			
-			shader = tilemap.__filters[0].__initShader (renderSession);
-			
-		} else {
-			
-			shader = renderSession.shaderManager.defaultShader;
-			
-		}
 		
 		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
-		renderSession.shaderManager.setShader (shader);
+		renderSession.filterManager.pushObject (tilemap);
 		renderSession.maskManager.pushObject (tilemap);
 		
 		var rect = Rectangle.__temp;
@@ -49,8 +38,8 @@ class GLTilemap {
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
 		var renderer:GLRenderer = cast renderSession.renderer;
+		var shader = renderSession.shaderManager.currentShader;
 		
-		gl.enableVertexAttribArray (shader.data.aAlpha.index);
 		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__renderTransform));
 		
 		var defaultTileset = tilemap.tileset;
@@ -301,6 +290,7 @@ class GLTilemap {
 		tilemap.__cacheAlpha = worldAlpha;
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
+		renderSession.filterManager.popObject (tilemap);
 		
 	}
 	

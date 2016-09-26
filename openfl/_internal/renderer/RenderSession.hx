@@ -39,6 +39,7 @@ class RenderSession {
 	
 	//public var shaderManager:ShaderManager;
 	public var blendModeManager:AbstractBlendModeManager;
+	public var filterManager:AbstractFilterManager;
 	public var maskManager:AbstractMaskManager;
 	public var shaderManager:AbstractShaderManager;
 	//public var filterManager:FilterManager;

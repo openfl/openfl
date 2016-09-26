@@ -11,7 +11,6 @@ import openfl.display.Shader;
 class GLShaderManager extends AbstractShaderManager {
 	
 	
-	private var currentShader:Shader;
 	private var gl:GLRenderContext;
 	
 	

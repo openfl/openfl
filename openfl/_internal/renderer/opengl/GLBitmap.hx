@@ -22,25 +22,13 @@ class GLBitmap {
 		
 		if (bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
-			var shader;
-			
-			if (bitmap.__filters != null && bitmap.__filters.length > 0) {
-				
-				shader = bitmap.__filters[0].__initShader (renderSession);
-				
-			} else {
-				
-				shader = renderSession.shaderManager.defaultShader;
-				
-			}
-			
 			renderSession.blendModeManager.setBlendMode (bitmap.blendMode);
-			renderSession.shaderManager.setShader (shader);
+			renderSession.filterManager.pushObject (bitmap);
 			renderSession.maskManager.pushObject (bitmap);
 			
 			var renderer:GLRenderer = cast renderSession.renderer;
+			var shader = renderSession.shaderManager.currentShader;
 			
-			gl.enableVertexAttribArray (shader.data.aAlpha.index);
 			gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (bitmap.__renderTransform));
 			
 			gl.bindTexture (gl.TEXTURE_2D, bitmap.bitmapData.getTexture (gl));
@@ -65,6 +53,7 @@ class GLBitmap {
 			gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 			
 			renderSession.maskManager.popObject (bitmap);
+			renderSession.filterManager.popObject (bitmap);
 			
 		}
 		

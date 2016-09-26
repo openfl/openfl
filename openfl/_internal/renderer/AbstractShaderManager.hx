@@ -7,6 +7,7 @@ import openfl.display.Shader;
 class AbstractShaderManager {
 	
 	
+	public var currentShader:Shader;
 	public var defaultShader:Shader;
 	
 	

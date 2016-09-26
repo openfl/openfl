@@ -594,6 +594,9 @@ using haxe.macro.Tools;
 class Shader {
 	
 	
+	private static var defaultFields = new Map<String, Bool> ();
+	
+	
 	public static function build ():Array<Field> {
 		
 		var fields = Context.getBuildFields ();
@@ -628,25 +631,36 @@ class Shader {
 			var pos = Context.currentPos ();
 			var localClass = Context.getLocalClass ().get ();
 			
+			var isBaseClass = (localClass.name == "Shader" && localClass.pack.length == 2 && localClass.pack[0] == "openfl" && localClass.pack[1] == "display");
+			
 			var shaderDataFields = new Array<Field> ();
+			var dataClassName;
 			
-			processFields (glVertexSource, "attribute", shaderDataFields, pos);
-			processFields (glVertexSource, "uniform", shaderDataFields, pos);
-			processFields (glFragmentSource, "uniform", shaderDataFields, pos);
+			processFields (glVertexSource, "attribute", shaderDataFields, isBaseClass, pos);
+			processFields (glVertexSource, "uniform", shaderDataFields, isBaseClass, pos);
+			processFields (glFragmentSource, "uniform", shaderDataFields, isBaseClass, pos);
 			
-			var dataClassName = "_" + localClass.name + "_ShaderData";
-			
-			Context.defineType ({
+			if (shaderDataFields.length > 0) {
 				
-				pos: pos,
-				pack: localClass.pack,
-				name: dataClassName,
-				kind: TDClass ({ pack: [ "openfl", "display" ], name: "ShaderData", params: [] }, null, false),
-				fields: shaderDataFields,
-				params: [],
-				meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":hack", pos: pos } ]
+				dataClassName = "_" + localClass.name + "_ShaderData";
 				
-			});
+				Context.defineType ({
+					
+					pos: pos,
+					pack: localClass.pack,
+					name: dataClassName,
+					kind: TDClass ({ pack: [ "openfl", "display" ], name: isBaseClass ? "ShaderData" : "_Shader_ShaderData", params: [] }, null, false),
+					fields: shaderDataFields,
+					params: [],
+					meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":hack", pos: pos } ]
+					
+				});
+				
+			} else {
+				
+				dataClassName = "_Shader_ShaderData";
+				
+			}
 			
 			for (field in fields) {
 				
@@ -691,7 +705,7 @@ class Shader {
 	}
 	
 	
-	private static function processFields (source:String, storageType:String, fields:Array<Field>, pos:Position):Void {
+	private static function processFields (source:String, storageType:String, fields:Array<Field>, isBaseClass:Bool, pos:Position):Void {
 		
 		if (source == null) return;
 		
@@ -711,6 +725,18 @@ class Shader {
 			
 			type = regex.matched (1);
 			name = regex.matched (2);
+			
+			if (isBaseClass) {
+				
+				defaultFields.set (name, true);
+				
+			} else if (defaultFields.exists (name)) {
+				
+				position = regex.matchedPos ();
+				lastMatch = position.pos + position.len;
+				continue;
+				
+			}
 			
 			if (StringTools.startsWith (type, "sampler")) {
 				
@@ -760,8 +786,6 @@ class Shader {
 						fields.push ( { name: name, access: [ APublic ], kind: FVar (macro :openfl.display.ShaderParameter<Float>), pos: pos } );
 					
 				}
-				
-				
 				
 			}
 			
