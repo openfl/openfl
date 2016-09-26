@@ -4,7 +4,7 @@ package openfl.display;
 import openfl.utils.ByteArray;
 
 
-@:final class ShaderData implements Dynamic {
+#if (!cs || display) @:final #end class ShaderData implements Dynamic {
 	
 	
 	public function new (byteArray:ByteArray) {
