@@ -822,7 +822,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (parentTransform.b == 0) {
 			
-			scaleX = parentTransform.a;
+			scaleX = Math.abs(parentTransform.a);
 			
 		} else {
 			
@@ -832,7 +832,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (parentTransform.c == 0) {
 			
-			scaleY = parentTransform.d;
+			scaleY = Math.abs(parentTransform.d);
 			
 		} else {
 			
