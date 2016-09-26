@@ -143,26 +143,6 @@ private class ColorMatrixShader extends Shader {
 		
 	)
 	
-	@:glVertexSource(
-		
-		"attribute float aAlpha;
-		attribute vec4 aPosition;
-		attribute vec2 aTexCoord;
-		varying float vAlpha;
-		varying vec2 vTexCoord;
-		
-		uniform mat4 uMatrix;
-		
-		void main(void) {
-			
-			vAlpha = aAlpha;
-			vTexCoord = aTexCoord;
-			gl_Position = uMatrix * aPosition;
-			
-		}"
-		
-	)
-	
 	
 	private var multipliers:Array<Float>;
 	private var offsets:Array<Float>;
