@@ -766,7 +766,7 @@ class CanvasGraphics {
 	}
 	
 	
-	public static function render (graphics:Graphics, renderSession:RenderSession):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, matrix:Matrix = null):Void {
 		
 		#if (js && html5)
 		
@@ -795,11 +795,23 @@ class CanvasGraphics {
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
 					
 				} else {
-					var scaleX = graphics.__owner.renderScaleX;
-					var scaleY = graphics.__owner.renderScaleY;
-					var local_bounds = graphics.__bounds.clone();
-					local_bounds.width *= scaleX;
-					local_bounds.height *= scaleY;
+					var scaled_bounds:Rectangle;
+					
+					if (matrix != null) {
+						
+						var scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+						var scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+						
+						scaled_bounds = graphics.__bounds.clone();
+						scaled_bounds.width *= scaleX;
+						scaled_bounds.height *= scaleY;
+						
+					} else {
+						
+						scaled_bounds = graphics.__bounds;
+						matrix = @:privateAccess Matrix.__identity;
+						
+					}
 					
 					if (graphics.__canvas == null) {
 						
@@ -810,12 +822,11 @@ class CanvasGraphics {
 					
 					context = graphics.__context;
 					
-					graphics.__canvas.width = Math.ceil (local_bounds.width);
-					graphics.__canvas.height = Math.ceil (local_bounds.height);
+					graphics.__canvas.width = Math.ceil (scaled_bounds.width);
+					graphics.__canvas.height = Math.ceil (scaled_bounds.height);
 
-					var scaleTransform = graphics.__owner.__renderScaleTransform;
-					context.setTransform (scaleTransform.a, scaleTransform.b, scaleTransform.c, scaleTransform.d, scaleTransform.tx, scaleTransform.ty);
-					context.translate (-local_bounds.x, -local_bounds.y);
+					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 				}
 
 				fillStrokeCommands.clear ();

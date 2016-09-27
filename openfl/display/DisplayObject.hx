@@ -508,33 +508,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			CanvasShape.render (this, renderSession);
-			
-		}
+		throw ":TODO: remove me";
 		
 	}
 	
 	
 	public function __renderCanvasMask (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			CanvasGraphics.renderMask (__graphics, renderSession);
-			
-		}
+		throw ":TODO: remove me";
 		
 	}
 	
 	
 	public function __renderDOM (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			DOMShape.render (this, renderSession);
-			
-		}
+		throw ":TODO: remove me";
 		
 	}
 	
@@ -567,7 +555,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			} else {
 				
 				#if (js && html5)
-				CanvasGraphics.render (__graphics, renderSession);
+				CanvasGraphics.render (__graphics, renderSession, __renderScaleTransform);
 				#elseif lime_cairo
 				CairoGraphics.render (__graphics, renderSession);
 				#end
@@ -1430,29 +1418,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	private function get_renderScaleX ():Float {
 		
-		if (__cacheAsBitmapMatrix != null) {
-			
-			return Math.sqrt (__cacheAsBitmapMatrix.a * __cacheAsBitmapMatrix.a + __cacheAsBitmapMatrix.b * __cacheAsBitmapMatrix.b);
-			
-		} else {
-			
-			return __renderScaleTransform.a;
-			
-		}
+		return Math.sqrt (__renderScaleTransform.a * __renderScaleTransform.a + __renderScaleTransform.b * __renderScaleTransform.b);
 		
 	}
 
 	private function get_renderScaleY ():Float {
 		
-		if (__cacheAsBitmapMatrix != null) {
-			
-			return Math.sqrt (__cacheAsBitmapMatrix.c * __cacheAsBitmapMatrix.c + __cacheAsBitmapMatrix.d * __cacheAsBitmapMatrix.d);
-			
-		} else {
-			
-			return __renderScaleTransform.d;
-			
-		}
+		return Math.sqrt (__renderScaleTransform.c * __renderScaleTransform.c + __renderScaleTransform.d * __renderScaleTransform.d);
 		
 	}
 		
