@@ -167,36 +167,6 @@ class Shader {
 		}
 		#end
 		
-		for (parameter in __paramBool) {
-			
-			if (parameter.value == null) {
-				
-				gl.enableVertexAttribArray (parameter.index);
-				
-			}
-			
-		}
-		
-		for (parameter in __paramFloat) {
-			
-			if (parameter.value == null) {
-				
-				gl.enableVertexAttribArray (parameter.index);
-				
-			}
-			
-		}
-		
-		for (parameter in __paramInt) {
-			
-			if (parameter.value == null) {
-				
-				gl.enableVertexAttribArray (parameter.index);
-				
-			}
-			
-		}
-		
 	}
 	
 	
@@ -468,6 +438,10 @@ class Shader {
 					
 				}
 				
+			} else if (!__isUniform.get (parameter.name)) {
+				
+				gl.enableVertexAttribArray (parameter.index);
+				
 			}
 			
 		}
@@ -539,6 +513,10 @@ class Shader {
 					
 				}
 				
+			} else if (!__isUniform.get (parameter.name)) {
+				
+				gl.enableVertexAttribArray (parameter.index);
+				
 			}
 			
 		}
@@ -570,6 +548,10 @@ class Shader {
 					default:
 					
 				}
+				
+			} else if (!__isUniform.get (parameter.name)) {
+				
+				gl.enableVertexAttribArray (parameter.index);
 				
 			}
 			
