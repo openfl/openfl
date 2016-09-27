@@ -7,6 +7,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.display.BitmapData;
 
 
 class GLMaskManager extends AbstractMaskManager {
@@ -17,8 +18,12 @@ class GLMaskManager extends AbstractMaskManager {
 	private var clips:Array<Rectangle>;
 	private var currentClip:Rectangle;
 	private var savedClip:Rectangle;
-	
-	
+
+
+	private var maskBitmapTable:Array<BitmapData>;
+	private var maskMatrixTable:Array<Matrix>;
+
+
 	public function new (renderSession:RenderSession) {
 		
 		super (renderSession);
@@ -26,7 +31,9 @@ class GLMaskManager extends AbstractMaskManager {
 		setContext (renderSession.gl);
 		
 		clips = [];
-		
+		maskBitmapTable = [];
+		maskMatrixTable = [];
+
 	}
 	
 	
@@ -61,8 +68,12 @@ class GLMaskManager extends AbstractMaskManager {
 		if (restartBatch) {
 			
 			renderSession.spriteBatch.stop ();
-			renderSession.spriteBatch.start (currentClip);
-			
+			renderSession.spriteBatch.start (
+				currentClip,
+				maskBitmapTable.length > 0 ? maskBitmapTable[ maskBitmapTable.length - 1] : null,
+				maskMatrixTable.length > 0 ? maskMatrixTable[ maskMatrixTable.length - 1] : null
+			 );
+
 		}
 		
 	}
@@ -71,18 +82,57 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function pushMask (mask:DisplayObject) {
 		
 		renderSession.spriteBatch.stop ();
-		renderSession.stencilManager.pushMask (mask, renderSession);
-		renderSession.spriteBatch.start (currentClip);
-		
+
+		#if mask_as_bitmap
+
+			var maskBounds = mask.getBounds (null);
+
+			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
+
+			var m = mask.__renderScaleTransform.clone();
+			m.translate(-maskBounds.x, -maskBounds.y);
+
+			mask.visible = true;
+			@:privateAccess mask.__isMask = false;
+
+			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
+			bitmap.draw(mask);
+
+			var maskMatrix = mask.__worldTransform.clone();
+			maskMatrix.invert();
+			maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
+
+			maskBitmapTable.push (bitmap);
+			maskMatrixTable.push (maskMatrix);
+			renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
+
+			mask.visible = false;
+			@:privateAccess mask.__isMask = true;
+		#else
+			renderSession.stencilManager.pushMask (mask, renderSession);
+			renderSession.spriteBatch.start (currentClip);
+		#end
+
+
 	}
 	
 	
 	public override function popMask () {
 		
 		renderSession.spriteBatch.stop ();
-		renderSession.stencilManager.popMask (null, renderSession);
-		renderSession.spriteBatch.start (currentClip);
-		
+		#if mask_as_bitmap
+			var bitmap = maskBitmapTable.pop();
+			maskMatrixTable.pop();
+
+			bitmap.dispose();
+
+			renderSession.spriteBatch.start (currentClip, maskBitmapTable.length > 0 ? maskBitmapTable[maskBitmapTable.length - 1] : null,  maskMatrixTable[maskMatrixTable.length - 1]);
+		#else
+			renderSession.stencilManager.popMask (null, renderSession);
+			renderSession.spriteBatch.start (currentClip);
+		#end
+
 	}
 	
 	override public function popRect():Void {
@@ -91,9 +141,9 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		clips.pop ();
 		currentClip = clips[clips.length - 1];
-		
-		renderSession.spriteBatch.start (currentClip);
-		
+
+		renderSession.spriteBatch.start (currentClip, maskBitmapTable.length > 0 ? maskBitmapTable[maskBitmapTable.length - 1] : null,  maskMatrixTable[maskMatrixTable.length - 1]);
+
 	}
 	
 	override public function saveState():Void {

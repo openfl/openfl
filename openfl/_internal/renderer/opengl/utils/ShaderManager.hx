@@ -13,6 +13,7 @@ class ShaderManager {
 	public var currentShader:Shader;
 	
 	public var defaultShader:DefaultShader;
+	public var defaultMaskedShader:DefaultMaskedShader;
 	public var fillShader:FillShader;
 	public var patternFillShader:PatternFillShader;
 	public var drawTrianglesShader:DrawTrianglesShader;
@@ -26,6 +27,7 @@ class ShaderManager {
 		this.gl = gl;
 		
 		defaultShader = new DefaultShader(gl);
+		defaultMaskedShader = new DefaultMaskedShader(gl);
 		fillShader = new FillShader(gl);
 		patternFillShader = new PatternFillShader(gl);
 		drawTrianglesShader = new DrawTrianglesShader(gl);
