@@ -141,6 +141,7 @@ class CanvasTextField {
 				
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
+				textField.__graphics.__bitmap = null;
 				textField.__graphics.__dirty = false;
 				textField.__dirty = false;
 				
