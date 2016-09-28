@@ -152,7 +152,7 @@ class SpriteBatch {
 		drawing = false;
 	}
 
-	public function start(clipRect:Rectangle, mask: BitmapData, maskMatrix:Matrix) {
+	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
 		if (!drawing) {
 			stop();
 		}
