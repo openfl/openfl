@@ -119,6 +119,9 @@ class CanvasTextField {
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
 				textField.__graphics.__dirty = false;
+				if( textField.__graphics.__bitmap != null ) {
+					textField.__graphics.__bitmap.dispose();
+				}
 				textField.__dirty = false;
 				
 			} else {
