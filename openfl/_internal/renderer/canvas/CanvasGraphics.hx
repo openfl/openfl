@@ -276,6 +276,12 @@ class CanvasGraphics {
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
+			// CocoonJS (and maybe some other platforms) does not support isPointInPath or isPointInStroke.
+			// So if we don't have isPointInPath/Stroke, we just assume this was a hit if we made it through Graphics.hitTest()
+			// TODO: safe to call this once and cache result?
+			var hasPointInPath = Reflect.isFunction( context.isPointInPath );
+			var hasPointInStroke = Reflect.isFunction( context.isPointInStroke );
+			
 			for (type in graphics.__commands.types) {
 				
 				switch (type) {
@@ -325,14 +331,14 @@ class CanvasGraphics {
 						endFill ();
 						endStroke ();
 						
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && (!hasPointInPath || context.isPointInPath (x, y))) {
 							
 							data.destroy ();
 							return true;
 							
 						}
 						
-						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
+						if (hasStroke && (!hasPointInStroke || context.isPointInStroke (x, y))) {
 							
 							data.destroy ();
 							return true;
@@ -347,14 +353,14 @@ class CanvasGraphics {
 						endFill ();
 						endStroke ();
 						
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && (!hasPointInPath || context.isPointInPath (x, y))) {
 							
 							data.destroy ();
 							return true;
 							
 						}
 						
-						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
+						if (hasStroke && (!hasPointInStroke || context.isPointInStroke (x, y))) {
 							
 							data.destroy ();
 							return true;
@@ -427,13 +433,13 @@ class CanvasGraphics {
 			
 			data.destroy ();
 			
-			if (hasFill && context.isPointInPath (x, y)) {
+			if (hasFill && (!hasPointInPath || context.isPointInPath (x, y))) {
 				
 				return true;
 				
 			}
 			
-			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
+			if (hasStroke && (!hasPointInStroke || context.isPointInStroke (x, y))) {
 				
 				return true;
 				
