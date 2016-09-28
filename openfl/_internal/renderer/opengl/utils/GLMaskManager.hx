@@ -1,5 +1,6 @@
 package openfl._internal.renderer.opengl.utils;
 
+import haxe.ds.GenericStack;
 
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractMaskManager;
@@ -20,8 +21,8 @@ class GLMaskManager extends AbstractMaskManager {
 	private var savedClip:Rectangle;
 
 
-	private var maskBitmapTable:Array<BitmapData>;
-	private var maskMatrixTable:Array<Matrix>;
+	private var maskBitmapTable:GenericStack<BitmapData>;
+	private var maskMatrixTable:GenericStack<Matrix>;
 
 
 	public function new (renderSession:RenderSession) {
@@ -31,8 +32,8 @@ class GLMaskManager extends AbstractMaskManager {
 		setContext (renderSession.gl);
 		
 		clips = [];
-		maskBitmapTable = [];
-		maskMatrixTable = [];
+		maskBitmapTable = new GenericStack<BitmapData> ();
+		maskMatrixTable = new GenericStack<Matrix> ();
 
 	}
 	
@@ -70,8 +71,8 @@ class GLMaskManager extends AbstractMaskManager {
 			renderSession.spriteBatch.stop ();
 			renderSession.spriteBatch.start (
 				currentClip,
-				maskBitmapTable.length > 0 ? maskBitmapTable[ maskBitmapTable.length - 1] : null,
-				maskMatrixTable.length > 0 ? maskMatrixTable[ maskMatrixTable.length - 1] : null
+				maskBitmapTable.first(),
+				maskMatrixTable.first()
 			 );
 
 		}
@@ -103,8 +104,8 @@ class GLMaskManager extends AbstractMaskManager {
 			maskMatrix.invert();
 			maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
 
-			maskBitmapTable.push (bitmap);
-			maskMatrixTable.push (maskMatrix);
+			maskBitmapTable.add (bitmap);
+			maskMatrixTable.add (maskMatrix);
 			renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
 
 			mask.visible = false;
@@ -127,7 +128,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 			bitmap.dispose();
 
-			renderSession.spriteBatch.start (currentClip, maskBitmapTable.length > 0 ? maskBitmapTable[maskBitmapTable.length - 1] : null,  maskMatrixTable[maskMatrixTable.length - 1]);
+			renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
 		#else
 			renderSession.stencilManager.popMask (null, renderSession);
 			renderSession.spriteBatch.start (currentClip);
@@ -142,7 +143,7 @@ class GLMaskManager extends AbstractMaskManager {
 		clips.pop ();
 		currentClip = clips[clips.length - 1];
 
-		renderSession.spriteBatch.start (currentClip, maskBitmapTable.length > 0 ? maskBitmapTable[maskBitmapTable.length - 1] : null,  maskMatrixTable[maskMatrixTable.length - 1]);
+		renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
 
 	}
 	
