@@ -51,8 +51,7 @@ class SpriteBatch {
 	public var drawing:Bool = false;
 	
 	var clipRect:Rectangle;
-	var maskTexture:GLTexture;
-	var maskTextureUVScale: Vector2;
+	var maskBitmap:BitmapData;
 	var maskMatrix:Matrix;
 
 	var maxSprites:Int;
@@ -157,15 +156,9 @@ class SpriteBatch {
 			stop();
 		}
 		dirty = true;
-		if (mask != null){
-			this.maskTexture = mask.getTexture(gl);
-			this.maskTextureUVScale = new Vector2( @:privateAccess mask.__uvData.x1, @:privateAccess mask.__uvData.y2 );
-			this.maskMatrix = maskMatrix;
-		} else {
-			this.maskTexture = null;
-			this.maskTextureUVScale = null;
-			this.maskMatrix = null;
-		}
+
+		this.maskBitmap = mask;
+		this.maskMatrix = maskMatrix;
 		this.clipRect = clipRect;
 	}
 	
@@ -614,16 +607,7 @@ class SpriteBatch {
 
 		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
-		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0);
-
-		if (state.maskTexture != null){
-			gl.activeTexture(gl.TEXTURE0 + 1);
-			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);
-			gl.uniform1i(shader.getUniformLocation(MaskedUniform.MaskSampler), 1);
-
-			gl.uniformMatrix3fv(shader.getUniformLocation(MaskedUniform.MaskMatrix), false, maskMatrix.toArray(true));
-			gl.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
-		}
+		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0); // DefUniform or MaskedUniform?
 
 		if ((shader.smooth != null && shader.smooth) || state.textureSmooth) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -636,6 +620,15 @@ class SpriteBatch {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
 		
+		if (state.maskTexture != null){
+			gl.activeTexture(gl.TEXTURE0 + 1);
+			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);
+			gl.uniform1i(shader.getUniformLocation(MaskedUniform.MaskSampler), 1);
+
+			gl.uniformMatrix3fv(shader.getUniformLocation(MaskedUniform.MaskMatrix), false, state.maskMatrix.toArray(true));
+			gl.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
+		}
+
 		shader.applyData(state.shaderData, renderSession);
 		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
@@ -651,9 +644,13 @@ class SpriteBatch {
 			state = states[index] = new State();
 		}
 		state.texture = texture;
-		state.maskTexture = maskTexture;
-		state.maskTextureUVScale = maskTextureUVScale;
-		state.maskMatrix = maskMatrix;
+		if (maskBitmap != null) {			
+			state.maskTexture = maskBitmap.getTexture(gl);
+			state.maskTextureUVScale = new Vector2( @:privateAccess maskBitmap.__uvData.x1, @:privateAccess maskBitmap.__uvData.y2 );
+			state.maskMatrix = maskMatrix;
+		} else {
+			state.maskTexture = null;
+		}
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
 		
