@@ -31,7 +31,7 @@ class GLShaderManager extends AbstractShaderManager {
 		
 		if (currentShader == shader) {
 			
-			currentShader.__update ();
+			if (currentShader != null) currentShader.__update ();
 			return;
 			
 		}
