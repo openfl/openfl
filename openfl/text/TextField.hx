@@ -841,29 +841,12 @@ class TextField extends InteractiveObject {
 		
 		if (__layoutDirty) {
 			
+			var cacheWidth = __textEngine.width;
+			var cacheHeight = __textEngine.height;
+				
 			__textEngine.update ();
 			
 			if (__textEngine.autoSize != NONE) {
-				
-				var cacheWidth = __textEngine.width;
-				var cacheHeight = __textEngine.height;
-				
-				switch (__textEngine.autoSize) {
-					
-					case LEFT, RIGHT, CENTER:
-						
-						if (!__textEngine.wordWrap) {
-							
-							__textEngine.width = __textEngine.textWidth + 4;
-							
-						}
-						
-						__textEngine.height = __textEngine.textHeight + 4;
-					
-					default:
-						
-					
-				}
 				
 				if (__textEngine.width != cacheWidth) {
 					
