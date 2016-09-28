@@ -33,7 +33,7 @@ class RunScript {
 		
 		if (args.length > 1 && args[0] == "create") {
 			
-			args[1] = "openfl:" + args[1];
+			//args[1] = "openfl:" + args[1];
 			
 		} else if (args[0] == "setup") {
 			
