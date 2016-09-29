@@ -89,18 +89,28 @@ class GLMaskManager extends AbstractMaskManager {
 			var maskBounds = new Rectangle();
 			@:privateAccess mask.__getRenderBounds (maskBounds);
 
-			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
 
-			var m = mask.__renderScaleTransform.clone();
-			m.translate(-maskBounds.x, -maskBounds.y);
+			if( @:privateAccess mask.__cachedBitmap == null ){
+				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
+				@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
 
-			mask.visible = true;
-			@:privateAccess mask.__isMask = false;
+				var m = mask.__renderScaleTransform.clone();
+				m.translate(-maskBounds.x, -maskBounds.y);
 
-			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
+				mask.visible = true;
+				@:privateAccess mask.__isMask = false;
+
+				@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
+				@:privateAccess mask.__cachedBitmap = bitmap;
+
+				mask.visible = false;
+				@:privateAccess mask.__isMask = true;
+			}
+
+			var bitmap = @:privateAccess mask.__cachedBitmap;
 
 			var maskMatrix = mask.__renderTransform.clone();
+
 			maskMatrix.invert();
 			maskMatrix.translate( -maskBounds.x, -maskBounds.y );
 			maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
@@ -109,8 +119,6 @@ class GLMaskManager extends AbstractMaskManager {
 			maskMatrixTable.add (maskMatrix);
 			renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
 
-			mask.visible = false;
-			@:privateAccess mask.__isMask = true;
 		#else
 			renderSession.stencilManager.pushMask (mask, renderSession);
 			renderSession.spriteBatch.start (currentClip);
@@ -124,10 +132,8 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		renderSession.spriteBatch.stop ();
 		#if mask_as_bitmap
-			var bitmap = maskBitmapTable.pop();
+			maskBitmapTable.pop();
 			maskMatrixTable.pop();
-
-			bitmap.dispose();
 
 			renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
 		#else

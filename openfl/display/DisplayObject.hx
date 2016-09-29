@@ -577,11 +577,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
 			
 		}
-		
-		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
-			
-			renderSession.maskManager.pushMask (this);
-			
+
+		if (__mask != null) {
+
+			if( !__mask.__maskCached ){
+				if (__mask.__maskGraphics == null) {
+
+					__mask.__maskGraphics = new Graphics ();
+
+				}
+
+				__mask.__maskGraphics.clear ();
+
+				__mask.__isMask = true;
+				__mask.__update (true, true, __mask.__maskGraphics);
+
+				__mask.__maskCached = true;
+			}
+
+			renderSession.maskManager.pushMask (__mask);
 		}
 		
 	}
@@ -589,7 +603,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public inline function __postRenderGL (renderSession:RenderSession):Void {
 		
-		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
+		if (__mask != null) {
 			
 			renderSession.maskManager.popMask ();
 			
@@ -797,21 +811,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			__transformDirty = false;
 			__worldTransformDirty--;
-			
-		}
-		
-		if (!transformOnly && __mask != null && !__mask.__maskCached) {
-			
-			if (__maskGraphics == null) {
-				
-				__maskGraphics = new Graphics ();
-				
-			}
-			
-			__maskGraphics.clear ();
-			
-			__mask.__update (true, true, __maskGraphics);
-			__mask.__maskCached = true;
 			
 		}
 		
