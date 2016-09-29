@@ -143,6 +143,39 @@ class GLMaskManager extends AbstractMaskManager {
 
 	}
 	
+	public override function disableMask(){
+		#if mask_as_bitmap
+			renderSession.spriteBatch.stop();
+			maskBitmapTable.add(null);
+			maskMatrixTable.add(null);
+		#else
+			var stencil_test_name = renderSession.gl.STENCIL_TEST;
+			var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
+
+			if ( stencil_test ) {
+				renderSession.spriteBatch.stop();
+				renderSession.gl.disable(stencil_test_name);
+			}
+		#end
+
+	}
+
+	public override function enableMask(){
+		#if mask_as_bitmap
+
+			renderSession.spriteBatch.stop();
+			maskBitmapTable.pop();
+			maskMatrixTable.pop();
+			renderSession.spriteBatch.start( currentClip, maskBitmapTable.first(), maskMatrixTable.first());
+
+		#else
+			if ( stencil_test ) {
+				renderSession.gl.enable(stencil_test_name);
+			}
+		#end
+	}
+
+
 	override public function popRect():Void {
 		
 		renderSession.spriteBatch.stop ();
