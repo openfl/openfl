@@ -51,7 +51,17 @@ import openfl.gl.GL;
 	public override function clone ():BitmapFilter {
 		
 		return new GradientGlowFilter (distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout);
-		
+
+	}
+
+	public override function dispose(): Void{
+		if (__glowBitmapData != null){
+			__glowBitmapData.dispose();
+		}
+
+		if (__lookupTexture != null){
+			__lookupTexture.dispose();
+		}
 	}
 	
 	private function updateLookupTexture():Void {

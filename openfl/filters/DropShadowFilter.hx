@@ -46,7 +46,13 @@ import openfl.filters.commands.*;
 	public override function clone ():BitmapFilter {
 		
 		return new DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject);
-		
+
+	}
+
+	public override function dispose(): Void{
+		if (__shadowBitmapData != null){
+			__shadowBitmapData.dispose();
+		}
 	}
 	
 	

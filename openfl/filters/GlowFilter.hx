@@ -43,8 +43,14 @@ import openfl.geom.Rectangle;
 		return new GlowFilter (color, alpha, blurX, blurY, strength, quality, inner, knockout);
 		
 	}
-	
-	
+
+	public override function dispose(): Void{
+		if (__glowBitmapData != null){
+			__glowBitmapData.dispose();
+		}
+	}
+
+
 	private override function __growBounds (rect:Rectangle):Void {
 		
 

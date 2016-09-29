@@ -33,7 +33,11 @@ class BitmapFilter {
 	public function clone ():BitmapFilter {
 		
 		return new BitmapFilter ();
-		
+
+	}
+
+	public function dispose():Void{
+
 	}
 	
 	#if (js && html5)

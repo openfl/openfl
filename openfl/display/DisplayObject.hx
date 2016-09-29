@@ -739,6 +739,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			dirty = true;
 		}
 
+		if (__filters != null ){
+			for ( filter in filters ){
+				filter.dispose();
+			}
+		}
+
 		if (dirty) {
 			__setRenderDirty();
 		}
@@ -1176,23 +1182,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	
 	private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
-		
-		if (value != null && value.length > 0) {
-			
-			__filters = value;
-			__forceCacheAsBitmap = true;
-			cacheAsBitmap = true;
-			__updateFilters = true;
-			
-		} else {
-			
-			__filters = null;
-			__forceCacheAsBitmap = false;
-			cacheAsBitmap = false;
-			__updateFilters = false;
-			
+
+		if (__filters != null){
+			for( filter in __filters ){
+				filter.dispose();
+			}
 		}
-		
+
+		__filters = value;
+		__forceCacheAsBitmap = cacheAsBitmap = __updateFilters = value != null && value.length > 0;
 		__setRenderDirty ();
 		
 		return value;
