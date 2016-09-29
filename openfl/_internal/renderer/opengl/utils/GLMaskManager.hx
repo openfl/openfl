@@ -86,7 +86,8 @@ class GLMaskManager extends AbstractMaskManager {
 
 		#if mask_as_bitmap
 
-			var maskBounds = mask.getBounds (null);
+			var maskBounds = new Rectangle();
+			@:privateAccess mask.__getRenderBounds (maskBounds);
 
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
 			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
@@ -99,8 +100,9 @@ class GLMaskManager extends AbstractMaskManager {
 
 			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
 
-			var maskMatrix = mask.__worldTransform.clone();
+			var maskMatrix = mask.__renderTransform.clone();
 			maskMatrix.invert();
+			maskMatrix.translate( -maskBounds.x, -maskBounds.y );
 			maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
 
 			maskBitmapTable.add (bitmap);
