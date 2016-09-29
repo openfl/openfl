@@ -98,7 +98,6 @@ class GLMaskManager extends AbstractMaskManager {
 			@:privateAccess mask.__isMask = false;
 
 			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
-			bitmap.draw(mask);
 
 			var maskMatrix = mask.__worldTransform.clone();
 			maskMatrix.invert();
