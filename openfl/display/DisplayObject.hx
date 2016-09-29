@@ -754,9 +754,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		if (__filters != null ){
-			for ( filter in filters ){
+			for ( filter in __filters ){
 				filter.dispose();
 			}
+			dirty = true;
 		}
 
 		if (dirty) {

@@ -43,8 +43,6 @@ import openfl.gl.GL;
 		this.quality = quality;
 		this.type = type;
 		this.knockout = knockout;
-		
-		__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 	}
 	
 	
@@ -57,6 +55,7 @@ import openfl.gl.GL;
 	public override function dispose(): Void{
 		if (__glowBitmapData != null){
 			__glowBitmapData.dispose();
+			__glowBitmapData = null;
 		}
 
 		if (__lookupTexture != null){
@@ -171,6 +170,9 @@ import openfl.gl.GL;
 			
 		var commands:Array<CommandType> = [];
 			
+		if(__glowBitmapData==null)
+			__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
+
 		if (__lookupTextureIsDirty) {
 			
 			updateLookupTexture();

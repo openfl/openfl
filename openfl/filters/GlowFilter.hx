@@ -32,9 +32,6 @@ import openfl.geom.Rectangle;
 		this.quality = quality;
 		this.inner = inner;
 		this.knockout = knockout;
-		
-		__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
-		
 	}
 	
 	
@@ -47,6 +44,7 @@ import openfl.geom.Rectangle;
 	public override function dispose(): Void{
 		if (__glowBitmapData != null){
 			__glowBitmapData.dispose();
+			__glowBitmapData = null;
 		}
 	}
 
@@ -66,6 +64,9 @@ import openfl.geom.Rectangle;
 	
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 		
+		if(__glowBitmapData==null)
+			__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
+
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
 			
