@@ -140,7 +140,6 @@ class SpriteBatch {
 		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
-		drawing = true;
 		start(clipRect, null, null);
 
 	}
@@ -148,13 +147,14 @@ class SpriteBatch {
 	public function finish() {
 		stop();
 		clipRect = null;
-		drawing = false;
 	}
 
 	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
-		if (!drawing) {
+		if (drawing) {
 			stop();
 		}
+
+		drawing = true;
 		dirty = true;
 
 		this.maskBitmap = mask;
@@ -163,6 +163,7 @@ class SpriteBatch {
 	}
 	
 	public function stop() {
+		drawing = false;
 		flush();
 	}
 	
