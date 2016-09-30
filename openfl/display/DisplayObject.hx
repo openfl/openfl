@@ -131,7 +131,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
 	private var __clipDepth : Int;
-	private var __clippedAt : Int;
+	private var __clippedAt : Null<Int>;
 	private var __useSeparateRenderScaleTransform = true;
 
 	#if (js && html5)
