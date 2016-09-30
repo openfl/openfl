@@ -17,7 +17,6 @@ import js.html.ImageData;
 @:access(openfl.display.BitmapData)
 @:access(openfl.geom.Rectangle)
 
-
 class BitmapFilter {
 	
 	private var __dirty:Bool = true;

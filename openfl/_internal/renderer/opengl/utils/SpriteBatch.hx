@@ -608,6 +608,7 @@ class SpriteBatch {
 
 		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
+
 		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0); // DefUniform or MaskedUniform?
 
 		if ((shader.smooth != null && shader.smooth) || state.textureSmooth) {
@@ -621,6 +622,7 @@ class SpriteBatch {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
 		
+
 		if (state.maskTexture != null){
 			gl.activeTexture(gl.TEXTURE0 + 1);
 			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);

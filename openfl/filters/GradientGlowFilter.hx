@@ -63,6 +63,7 @@ import openfl.gl.GL;
 		}
 	}
 	
+
 	private function updateLookupTexture():Void {
 		
 		inline function alpha(color:UInt):Float {

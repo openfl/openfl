@@ -84,46 +84,38 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		renderSession.spriteBatch.stop ();
 
-		#if mask_as_bitmap
-
-			var maskBounds = new Rectangle();
-			@:privateAccess mask.__getRenderBounds (maskBounds);
+		var maskBounds = new Rectangle();
+		@:privateAccess mask.__getRenderBounds (maskBounds);
 
 
-			if( @:privateAccess mask.__cachedBitmap == null ){
-				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-				@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
+		if( @:privateAccess mask.__cachedBitmap == null ){
+			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
 
-				var m = mask.__renderScaleTransform.clone();
-				m.translate(-maskBounds.x, -maskBounds.y);
+			var m = mask.__renderScaleTransform.clone();
+			m.translate(-maskBounds.x, -maskBounds.y);
 
-				mask.visible = true;
-				@:privateAccess mask.__isMask = false;
+			mask.visible = true;
+			@:privateAccess mask.__isMask = false;
 
-				@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
-				@:privateAccess mask.__cachedBitmap = bitmap;
+			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
+			@:privateAccess mask.__cachedBitmap = bitmap;
 
-				mask.visible = false;
-				@:privateAccess mask.__isMask = true;
-			}
+			mask.visible = false;
+			@:privateAccess mask.__isMask = true;
+		}
 
-			var bitmap = @:privateAccess mask.__cachedBitmap;
+		var bitmap = @:privateAccess mask.__cachedBitmap;
 
-			var maskMatrix = mask.__renderTransform.clone();
+		var maskMatrix = mask.__renderTransform.clone();
 
-			maskMatrix.invert();
-			maskMatrix.translate( -maskBounds.x, -maskBounds.y );
-			maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
+		maskMatrix.invert();
+		maskMatrix.translate( -maskBounds.x, -maskBounds.y );
+		maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
 
-			maskBitmapTable.add (bitmap);
-			maskMatrixTable.add (maskMatrix);
-			renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
-
-		#else
-			renderSession.stencilManager.pushMask (mask, renderSession);
-			renderSession.spriteBatch.start (currentClip);
-		#end
-
+		maskBitmapTable.add (bitmap);
+		maskMatrixTable.add (maskMatrix);
+		renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
 
 	}
 	
@@ -131,48 +123,25 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function popMask () {
 		
 		renderSession.spriteBatch.stop ();
-		#if mask_as_bitmap
-			maskBitmapTable.pop();
-			maskMatrixTable.pop();
+		maskBitmapTable.pop();
+		maskMatrixTable.pop();
 
-			renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
-		#else
-			renderSession.stencilManager.popMask (null, renderSession);
-			renderSession.spriteBatch.start (currentClip);
-		#end
-
+		renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
 	}
 	
 	public override function disableMask(){
-		#if mask_as_bitmap
-			renderSession.spriteBatch.stop();
-			maskBitmapTable.add(null);
-			maskMatrixTable.add(null);
-		#else
-			var stencil_test_name = renderSession.gl.STENCIL_TEST;
-			var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
 
-			if ( stencil_test ) {
-				renderSession.spriteBatch.stop();
-				renderSession.gl.disable(stencil_test_name);
-			}
-		#end
+		renderSession.spriteBatch.stop();
+		maskBitmapTable.add(null);
+		maskMatrixTable.add(null);
 
 	}
 
 	public override function enableMask(){
-		#if mask_as_bitmap
-
-			renderSession.spriteBatch.stop();
-			maskBitmapTable.pop();
-			maskMatrixTable.pop();
-			renderSession.spriteBatch.start( currentClip, maskBitmapTable.first(), maskMatrixTable.first());
-
-		#else
-			if ( stencil_test ) {
-				renderSession.gl.enable(stencil_test_name);
-			}
-		#end
+		renderSession.spriteBatch.stop();
+		maskBitmapTable.pop();
+		maskMatrixTable.pop();
+		renderSession.spriteBatch.start( currentClip, maskBitmapTable.first(), maskMatrixTable.first());
 	}
 
 
@@ -216,127 +185,3 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	
 }
-
-/*
-class MaskManager {
-	
-	
-	public var count:Int;
-	public var gl:GLRenderContext;
-	public var maskPosition:Int;
-	public var maskStack:Array<Dynamic>;
-	public var reverse:Bool;
-	
-	
-	public function new (gl:GLRenderContext) {
-		
-		maskStack = [];
-		maskPosition = 0;
-		
-		setContext (gl);
-		
-		reverse = false;
-		count = 0;
-		
-	}
-	
-	
-	public function destroy ():Void {
-		
-		maskStack = null;
-		gl = null;
-		
-	}
-	
-	
-	public function popMask (maskData:Dynamic, renderSession:RenderSession):Void {
-		
-		var gl = this.gl;
-		renderSession.stencilManager.popStencil (maskData, maskData._webGL[GLRenderer.glContextId].data[0], renderSession);
-		
-	}
-	
-	
-	public function pushMask (maskData:Dynamic, renderSession:RenderSession):Void {
-		
-		var gl = renderSession.gl;
-		
-		if (maskData.dirty) {
-			
-			GraphicsRenderer.updateGraphics (maskData, gl);
-			
-		}
-		
-		if (maskData._webGL[GLRenderer.glContextId].data.length == 0) return;
-		renderSession.stencilManager.pushStencil (maskData, maskData._webGL[GLRenderer.glContextId].data[0], renderSession);
-		
-	}
-	
-	
-	public function setContext (gl:GLRenderContext):Void {
-		
-		this.gl = gl;
-		
-	}
-	
-	
-}
-*/
-
-/*class MaskManager {
-	
-	
-	private var renderSession:RenderSession;
-	
-	
-	public function new (renderSession:RenderSession) {
-		
-		this.renderSession = renderSession;
-		
-	}
-	
-	
-	public function pushMask (mask:IBitmapDrawable):Void {
-		
-		var context = renderSession.context;
-		
-		context.save ();
-		
-		//var cacheAlpha = mask.__worldAlpha;
-		var transform = mask.__worldTransform;
-		if (transform == null) transform = new Matrix ();
-		
-		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
-		
-		context.beginPath ();
-		mask.__renderMask (renderSession);
-		
-		context.clip ();
-		
-		//mask.worldAlpha = cacheAlpha;
-		
-	}
-	
-	
-	public function pushRect (rect:Rectangle, transform:Matrix):Void {
-		
-		var context = renderSession.context;
-		context.save ();
-		
-		context.setTransform (transform.a, transform.c, transform.b, transform.d, transform.tx, transform.ty);
-		
-		context.beginPath ();
-		context.rect (rect.x, rect.y, rect.width, rect.height);
-		context.clip ();
-		
-	}
-	
-	
-	public function popMask ():Void {
-		
-		renderSession.context.restore ();
-		
-	}
-	
-	
-}*/
