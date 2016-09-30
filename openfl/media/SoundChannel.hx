@@ -123,7 +123,7 @@ import openfl.media.Sound;
 		if (!__isValid) return 0;
 		
 		#if !html5
-		return (__source.currentTime + __source.offset) / 1000;
+		return __source.currentTime + __source.offset;
 		#else
 		return __soundInstance.getPosition ();
 		#end
@@ -136,7 +136,7 @@ import openfl.media.Sound;
 		if (!__isValid) return 0;
 		
 		#if !html5
-		__source.currentTime = Std.int (value * 1000) - __source.offset;
+		__source.currentTime = Std.int (value) - __source.offset;
 		return value;
 		#else
 		__soundInstance.setPosition (Std.int (value));
