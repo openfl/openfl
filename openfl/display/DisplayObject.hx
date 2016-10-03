@@ -131,6 +131,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
 	private var __clipDepth : Int;
+	private var __clippedAt : Null<Int>;
 	private var __useSeparateRenderScaleTransform = true;
 
 	#if (js && html5)
@@ -577,11 +578,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
 			
 		}
-		
-		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
-			
-			renderSession.maskManager.pushMask (this);
-			
+
+		if (__mask != null) {
+
+			if( !__mask.__maskCached ){
+				if (__mask.__maskGraphics == null) {
+
+					__mask.__maskGraphics = new Graphics ();
+
+				}
+
+				__mask.__maskGraphics.clear ();
+
+				__mask.__isMask = true;
+				__mask.__update (true, true, __mask.__maskGraphics);
+
+				__mask.__maskCached = true;
+			}
+
+			renderSession.maskManager.pushMask (__mask);
 		}
 		
 	}
@@ -589,7 +604,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public inline function __postRenderGL (renderSession:RenderSession):Void {
 		
-		if (__mask != null && __maskGraphics != null && __maskGraphics.__commands.length > 0) {
+		if (__mask != null) {
 			
 			renderSession.maskManager.popMask ();
 			
@@ -618,13 +633,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			if (__updateCachedBitmap || __updateFilters) {
 
-				var stencil_test_name = renderSession.gl.STENCIL_TEST;
-				var stencil_test:Bool = renderSession.stencilManager.stencilMask > 0;
-
-				if ( stencil_test ) {
-					renderSession.spriteBatch.stop();
-					renderSession.gl.disable(stencil_test_name);
-				}
+				renderSession.maskManager.disableMask();
 
 				if (__cachedFilterBounds != null) {
 					w += __cachedFilterBounds.width;
@@ -653,9 +662,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__updateFilters = false;
 			}
 
-				if ( stencil_test ) {
-				renderSession.gl.enable(stencil_test_name);
-			}
+				renderSession.maskManager.enableMask();
 			}
 
 			// Calculate the correct position
@@ -739,6 +746,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			dirty = true;
 		}
 
+		if (__filters != null ){
+			for ( filter in __filters ){
+				filter.dispose();
+			}
+			dirty = true;
+		}
+
 		if (dirty) {
 			__setRenderDirty();
 		}
@@ -791,21 +805,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			
 			__transformDirty = false;
 			__worldTransformDirty--;
-			
-		}
-		
-		if (!transformOnly && __mask != null && !__mask.__maskCached) {
-			
-			if (__maskGraphics == null) {
-				
-				__maskGraphics = new Graphics ();
-				
-			}
-			
-			__maskGraphics.clear ();
-			
-			__mask.__update (true, true, __maskGraphics);
-			__mask.__maskCached = true;
 			
 		}
 		
@@ -1176,23 +1175,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	
 	private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
-		
-		if (value != null && value.length > 0) {
-			
-			__filters = value;
-			__forceCacheAsBitmap = true;
-			cacheAsBitmap = true;
-			__updateFilters = true;
-			
-		} else {
-			
-			__filters = null;
-			__forceCacheAsBitmap = false;
-			cacheAsBitmap = false;
-			__updateFilters = false;
-			
+
+		if (__filters != null){
+			for( filter in __filters ){
+				filter.dispose();
+			}
 		}
-		
+
+		__filters = value;
+		__forceCacheAsBitmap = cacheAsBitmap = __updateFilters = value != null && value.length > 0;
 		__setRenderDirty ();
 		
 		return value;

@@ -787,7 +787,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var textureImage = image;
 
-			#if !webgl
+			#if (!webgl || !js)
 				if ((!textureImage.premultiplied && textureImage.transparent) ) {
 
 					textureImage = textureImage.clone ();

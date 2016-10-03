@@ -43,17 +43,29 @@ import openfl.gl.GL;
 		this.quality = quality;
 		this.type = type;
 		this.knockout = knockout;
-		
-		__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 	}
 	
 	
 	public override function clone ():BitmapFilter {
 		
 		return new GradientGlowFilter (distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout);
-		
+
+	}
+
+	public override function dispose(): Void{
+		if (__glowBitmapData != null){
+			__glowBitmapData.dispose();
+			__glowBitmapData = null;
+		}
+
+		if (__lookupTexture != null){
+			__lookupTexture.dispose();
+			__lookupTexture = null;
+			__lookupTextureIsDirty = true;
+		}
 	}
 	
+
 	private function updateLookupTexture():Void {
 		
 		inline function alpha(color:UInt):Float {
@@ -100,7 +112,9 @@ import openfl.gl.GL;
 			return bi | (gi << 8) | (ri << 16) | (alphai << 24);
 		}
 		
-		__lookupTexture = new BitmapData (256, 1);
+		if (__lookupTexture == null ){
+			__lookupTexture = new BitmapData (256, 1);
+		}
 		
 		var upperBoundIndex = 0;
 		var lowerBound = 0.0;
@@ -161,6 +175,9 @@ import openfl.gl.GL;
 			
 		var commands:Array<CommandType> = [];
 			
+		if(__glowBitmapData==null)
+			__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
+
 		if (__lookupTextureIsDirty) {
 			
 			updateLookupTexture();

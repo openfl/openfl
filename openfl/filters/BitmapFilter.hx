@@ -17,7 +17,6 @@ import js.html.ImageData;
 @:access(openfl.display.BitmapData)
 @:access(openfl.geom.Rectangle)
 
-
 class BitmapFilter {
 	
 	private var __dirty:Bool = true;
@@ -33,7 +32,11 @@ class BitmapFilter {
 	public function clone ():BitmapFilter {
 		
 		return new BitmapFilter ();
-		
+
+	}
+
+	public function dispose():Void{
+
 	}
 	
 	#if (js && html5)

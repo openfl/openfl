@@ -119,8 +119,8 @@ class GLBitmap {
 			spritebatch.stop ();
 			if (target.__texture != null) gl.deleteTexture (target.__texture);
 			target.__texture = null;
-			spritebatch.start (tmpRect);
-			
+			spritebatch.start (tmpRect, null, null);
+
 		}
 		
 		var ctCache = source.__worldColorTransform;

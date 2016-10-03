@@ -39,14 +39,20 @@ import openfl.filters.commands.*;
 		this.knockout = knockout;
 		this.hideObject = hideObject;
 		
-		__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 	}
 	
 	
 	public override function clone ():BitmapFilter {
 		
 		return new DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject);
-		
+
+	}
+
+	public override function dispose(): Void{
+		if (__shadowBitmapData != null){
+			__shadowBitmapData.dispose();
+			__shadowBitmapData = null;
+		}
 	}
 	
 	
@@ -68,6 +74,9 @@ import openfl.filters.commands.*;
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
 		
+		if(__shadowBitmapData == null)
+			__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
+
 		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
 		
 		if (inner) {

@@ -32,9 +32,6 @@ import openfl.geom.Rectangle;
 		this.quality = quality;
 		this.inner = inner;
 		this.knockout = knockout;
-		
-		__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
-		
 	}
 	
 	
@@ -43,8 +40,15 @@ import openfl.geom.Rectangle;
 		return new GlowFilter (color, alpha, blurX, blurY, strength, quality, inner, knockout);
 		
 	}
-	
-	
+
+	public override function dispose(): Void{
+		if (__glowBitmapData != null){
+			__glowBitmapData.dispose();
+			__glowBitmapData = null;
+		}
+	}
+
+
 	private override function __growBounds (rect:Rectangle):Void {
 		
 
@@ -60,6 +64,9 @@ import openfl.geom.Rectangle;
 	
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 		
+		if(__glowBitmapData==null)
+			__glowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
+
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
 			
@@ -96,6 +103,8 @@ import openfl.geom.Rectangle;
 	
 	}
 	
+
+
 	// Get & Set Methods
 	
 	

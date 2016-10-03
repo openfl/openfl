@@ -483,9 +483,21 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stack == null || !mouseChildren) {
 				
+
 				while (--i >= 0) {
 
-					if (__children[i] != null && __children[i].__hitTest (x, y, shapeFlag, null, mouseChildren, cast __children[i])) {
+					var child = __children[i];
+					var clippedAt = child.__clippedAt;
+
+					if (clippedAt != null) {
+						// :TODO: Do not recheck the mask several times.
+						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+							i = clippedAt;
+							continue;
+						}
+					}
+
+					if (child != null && child.__hitTest (x, y, shapeFlag, null, mouseChildren, cast child)) {
 
 						if (stack != null) {
 							
@@ -508,11 +520,22 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 
-					interactive = __children[i].__getInteractive (null);
+					var child = __children[i];
+					var clippedAt = child.__clippedAt;
+
+					if (clippedAt != null) {
+						// :TODO: Do not recheck the mask several times.
+						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+							i = clippedAt;
+							continue;
+						}
+					}
+
+					interactive = child.__getInteractive (null);
 					
 					if (interactive || (mouseEnabled && !hitTest)) {
 						
-						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
+						if (child.__hitTest (x, y, shapeFlag, stack, true, cast child)) {
 							
 							hitTest = true;
 							
