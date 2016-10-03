@@ -60,6 +60,8 @@ import openfl.gl.GL;
 
 		if (__lookupTexture != null){
 			__lookupTexture.dispose();
+			__lookupTexture = null;
+			__lookupTextureIsDirty = true;
 		}
 	}
 	
@@ -110,7 +112,9 @@ import openfl.gl.GL;
 			return bi | (gi << 8) | (ri << 16) | (alphai << 24);
 		}
 		
-		__lookupTexture = new BitmapData (256, 1);
+		if (__lookupTexture == null ){
+			__lookupTexture = new BitmapData (256, 1);
+		}
 		
 		var upperBoundIndex = 0;
 		var lowerBound = 0.0;
