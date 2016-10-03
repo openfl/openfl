@@ -569,7 +569,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 	}
 	
-	public function __preRenderGL (renderSession:RenderSession):Void {
+	public inline function __preRenderGL (renderSession:RenderSession):Void {
 		
 		if (__scrollRect != null) {
 			
@@ -602,7 +602,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
-	public function __postRenderGL (renderSession:RenderSession):Void {
+	public inline function __postRenderGL (renderSession:RenderSession):Void {
 		
 		if (__mask != null) {
 			
