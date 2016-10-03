@@ -127,7 +127,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __updateCachedBitmap:Bool;
 	private var __cachedBitmap:BitmapData;
 	private var __cachedBitmapBounds:Rectangle;
-	private var __cachedFilterBounds:Rectangle;
 	private var __cacheGLMatrix:Matrix;
 	private var __updateFilters:Bool;
 	private var __clipDepth : Int;
@@ -621,58 +620,49 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		var x = Math.round(__cachedBitmapBounds.x);
-		var y = Math.round(__cachedBitmapBounds.y);
-		var w = __cachedBitmapBounds.width;
-		var h = __cachedBitmapBounds.height;
-		
-				
-		if (w <= 0 && h <= 0) {
-			//throw 'Error creating a cached bitmap. The texture size is ${w}x${h}';
-		} else {
+		if (__updateCachedBitmap || __updateFilters) {
 
-			if (__updateCachedBitmap || __updateFilters) {
+			__updateCachedBitmapBounds ();
 
-				renderSession.maskManager.disableMask();
+			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
+				throw'Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}';
+			}
 
-				if (__cachedFilterBounds != null) {
-					w += __cachedFilterBounds.width;
-					h += __cachedFilterBounds.height;
-				}
+			renderSession.maskManager.disableMask ();
 
-				if (__cachedBitmap == null) {
-					__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
-				}
-				@:privateAccess __cachedBitmap.__resize(Math.ceil(w), Math.ceil(h));
+			if (__cachedBitmap == null) {
+				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			}
 
-				// we need to position the drawing origin to 0,0 in the texture
-				var m = __renderScaleTransform.clone();
-				m.translate( -x, -y);
+			@:privateAccess __cachedBitmap.__resize (Std.int (__cachedBitmapBounds.width), Std.int (__cachedBitmapBounds.height));
 
-				// we disable the container shader, it will be applied to the final texture
-				var shader = __shader;
-				this.__shader = null;
-				@:privateAccess __cachedBitmap.__drawGL(renderSession, this, m, true, false, true);
-				this.__shader = shader;
+			// we need to position the drawing origin to 0,0 in the texture
+			var m = __renderScaleTransform.clone ();
+			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
 
-				__updateCachedBitmap = false;
+			// we disable the container shader, it will be applied to the final texture
+			var shader = __shader;
+			this.__shader = null;
+			@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
+			this.__shader = shader;
+
+			__updateCachedBitmap = false;
 
 			if (__updateFilters) {
-				@:privateAccess BitmapFilter.__applyFilters(__filters, renderSession, __cachedBitmap);
+				@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap);
 				__updateFilters = false;
 			}
 
-				renderSession.maskManager.enableMask();
-			}
-
-			// Calculate the correct position
-			__cacheGLMatrix.identity();
-			__cacheGLMatrix.translate(x, y);
-			__cacheGLMatrix.concat(__renderTransform);
-			__cacheGLMatrix.translate ( __offset.x, __offset.y);
-			
-			renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+			renderSession.maskManager.enableMask ();
 		}
+
+		// Calculate the correct position
+		__cacheGLMatrix.identity ();
+		__cacheGLMatrix.translate (__cachedBitmapBounds.x, __cachedBitmapBounds.y);
+		__cacheGLMatrix.concat (__renderTransform);
+		__cacheGLMatrix.translate (__offset.x, __offset.y);
+		
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 
 	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {
@@ -787,6 +777,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 	}
 	
+	private function __updateCachedBitmapBounds():Void {
+		
+		if (__cachedBitmapBounds == null) {
+			__cachedBitmapBounds = new Rectangle ();
+		}
+			
+		__cachedBitmapBounds.setEmpty();
+		__getRenderBounds (__cachedBitmapBounds);
+
+		if (__filters != null) {
+			
+			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, @:privateAccess Matrix.__identity);
+			
+		}
+
+		__cachedBitmapBounds.x = Math.round (__cachedBitmapBounds.x);
+		__cachedBitmapBounds.y = Math.round (__cachedBitmapBounds.y);
+		__cachedBitmapBounds.width = Math.ceil (__cachedBitmapBounds.width);
+		__cachedBitmapBounds.height = Math.ceil (__cachedBitmapBounds.height);
+		
+	}
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
@@ -811,35 +822,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (maskGraphics != null) {
 			
 			__updateMask (maskGraphics);
-			
-		}
-
-		if (!transformOnly && __cacheAsBitmap) {
-
-			// we need to update the bounds
-			if (__updateCachedBitmap || __updateFilters) {
-				
-				if (__cachedBitmapBounds == null) {
-					__cachedBitmapBounds = new Rectangle();
-				}
-					
-				__cachedBitmapBounds.setEmpty();
-				__getRenderBounds(__cachedBitmapBounds);
-				
-				if (__filters != null) {
-					
-					if (__cachedFilterBounds == null) {
-						__cachedFilterBounds = new Rectangle();
-					}
-					__cachedFilterBounds.setEmpty();
-					@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedFilterBounds, @:privateAccess Matrix.__identity);
-					
-					__cachedBitmapBounds.x += __cachedFilterBounds.x;
-					__cachedBitmapBounds.y += __cachedFilterBounds.y;
-					
-				}
-				
-			}
 			
 		}
 		
