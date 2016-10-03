@@ -56,7 +56,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var cacheAsBitmapSmooth (get, set):Bool;
 	public var filters (get, set):Array<BitmapFilter>;
 	public var height (get, set):Float;
-	public var loaderInfo (default, null):LoaderInfo;
+	public var loaderInfo (get, null):LoaderInfo;
 	public var mask (get, set):DisplayObject;
 	public var mouseX (get, null):Float;
 	public var mouseY (get, null):Float;
@@ -1231,6 +1231,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 	
 	
+	private function get_loaderInfo():LoaderInfo{
+		if( loaderInfo == null ){
+			loaderInfo = LoaderInfo.create (null);
+		}
+
+		return loaderInfo;
+	}
+
 	private function get_mask ():DisplayObject {
 		
 		return __mask;

@@ -30,8 +30,6 @@ class Sprite extends DisplayObjectContainer {
 		
 		buttonMode = false;
 		useHandCursor = true;
-		loaderInfo = LoaderInfo.create (null);
-		
 	}
 	
 	
