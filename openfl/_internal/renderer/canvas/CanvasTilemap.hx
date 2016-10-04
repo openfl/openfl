@@ -91,8 +91,8 @@ class CanvasTilemap {
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
-			tileTransform.copyFrom (transform);
-			tileTransform.concat (tile.matrix);
+			tileTransform.copyFrom (tile.matrix);
+			tileTransform.concat (transform);
 			
 			if (roundPixels) {
 				
