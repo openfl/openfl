@@ -257,7 +257,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function get_height ():Float {
 		
-		return __height;
+		return __height * scaleX;
 		
 	}
 	#end
@@ -266,11 +266,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function set_height (value:Float):Float {
 		
+		scaleY = 1;
 		return __height = Std.int (value);
 		
 	}
 	#else
 	@:setter(height) private function set_height (value:Float):Void {
+		
+		scaleY = 1;
 		
 		if (value != bitmapData.height) {
 			
@@ -295,7 +298,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function get_width ():Float {
 		
-		return __width;
+		return __width * scaleY;
 		
 	}
 	#end
@@ -304,11 +307,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function set_width (value:Float):Float {
 		
+		scaleX = 1;
 		return __width = Std.int (value);
 		
 	}
 	#else
 	@:setter(width) private function set_width (value:Float):Void {
+		
+		scaleX = 1;
 		
 		if (value != bitmapData.width) {
 			
