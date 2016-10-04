@@ -950,13 +950,18 @@ class TextEngine {
 							marginRight = spaceWidth;
 							
 						} else {
-							
+
+							#if (js&&html5)
+							var oldWidth = getTextWidth (text.substring(layoutGroup.startIndex, layoutGroup.endIndex));
+							#end
 							layoutGroup.endIndex = spaceIndex;
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
+							#if (js&&html5)
+							layoutGroup.width = getTextWidth (text.substring(layoutGroup.startIndex, layoutGroup.endIndex));
+							widthValue = layoutGroup.width - oldWidth - spaceWidth;
+							#else
 							layoutGroup.width += marginRight + widthValue;
-							
-							layoutGroup.advances.push (spaceWidth);
-							marginRight = spaceWidth;
+							#end
 							
 						}
 						
