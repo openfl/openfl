@@ -851,15 +851,16 @@ import js.html.CanvasRenderingContext2D;
 		if (Math.abs (width - __width) > 2 || Math.abs (height - __height) > 2) {
 			
 			__dirty = true;
-			__width = Math.floor (width);
-			__height = Math.floor (height);
-			
-			__renderTransform.a = width / __bounds.width;
-			__renderTransform.d = height / __bounds.height;
 			
 		}
 		
+		__width = Math.floor (width);
+		__height = Math.floor (height);
+		
 		if (__width <= 0 || __height <= 0) return;
+		
+		__renderTransform.a = __width / __bounds.width;
+		__renderTransform.d = __height / __bounds.height;
 		
 		__worldTransform.a = 1 / __renderTransform.a;
 		__worldTransform.b = 0;
