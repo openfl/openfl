@@ -2,16 +2,15 @@ package openfl.media;
 
 
 import haxe.io.Path;
+import lime.app.Preloader;
 import lime.audio.AudioBuffer;
 import lime.audio.AudioSource;
-import openfl.display.Preloader;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 
-@:access(openfl.display.Preloader)
 @:access(openfl.media.SoundMixer)
 
 @:autoBuild(openfl.Assets.embedSound())
@@ -79,17 +78,23 @@ class Sound extends EventDispatcher {
 		
 		url = stream.url;
 		
-		var soundName = Path.withoutExtension (url);
+		#if (js && html5)
 		
-		if (Preloader.__preloadedSounds.exists (soundName)) {
+		if (Preloader.audioBuffers.exists (url)) {
 			
-			AudioBuffer_onURLLoad (Preloader.__preloadedSounds.get (soundName).__buffer);
+			AudioBuffer_onURLLoad (Preloader.audioBuffers.get (url));
 			
 		} else {
 			
-			AudioBuffer.fromURL (stream.url, AudioBuffer_onURLLoad);
+			AudioBuffer.fromURL (url, AudioBuffer_onURLLoad);
 			
 		}
+		
+		#else
+		
+		AudioBuffer.fromURL (url, AudioBuffer_onURLLoad);
+		
+		#end
 		
 	}
 	

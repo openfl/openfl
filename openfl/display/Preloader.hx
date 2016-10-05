@@ -14,8 +14,6 @@ import openfl.Lib;
 class Preloader extends LimePreloader {
 	
 	
-	private static var __preloadedSounds = new Map<String, Sound> ();
-	
 	private var display:Sprite;
 	private var displayComplete:Bool;
 	
@@ -36,68 +34,6 @@ class Preloader extends LimePreloader {
 			}
 			
 		}
-		
-	}
-	
-	
-	public override function load (urls:Array<String>, types:Array<AssetType>):Void {
-		
-		#if (js && html5)
-		
-		var sounds = [];
-		var url = null;
-		
-		for (i in 0...urls.length) {
-			
-			url = urls[i];
-			
-			switch (types[i]) {
-				
-				case MUSIC, SOUND:
-					
-					var sound = Path.withoutExtension (url);
-					
-					if (!sounds.remove (sound)) {
-						
-						total++;
-						
-					}
-					
-					sounds.push (sound);
-				
-				default:
-				
-			}
-			
-		}
-		
-		total++;
-		
-		for (soundName in sounds) {
-			
-			var sound = new Sound ();
-			sound.addEventListener (Event.COMPLETE, sound_onComplete);
-			sound.addEventListener (IOErrorEvent.IO_ERROR, sound_onIOError);
-			sound.load (new URLRequest (soundName + ".ogg"));
-			__preloadedSounds.set (soundName, sound);
-			
-		}
-		
-		#end
-		
-		super.load (urls, types);
-		
-		#if (js && html5)
-		
-		total--;
-		
-		if (loaded == total) {
-			
-			start ();
-			
-		}
-		
-		#end
 		
 	}
 	
@@ -146,40 +82,6 @@ class Preloader extends LimePreloader {
 		super.start ();
 		
 	}
-	
-	
-	#if (js && html5)
-	@:noCompletion private function sound_onComplete (event:Event):Void {
-		
-		loaded++;
-		
-		onProgress.dispatch (loaded, total);
-		
-		if (loaded == total) {
-			
-			start ();
-			
-		}
-		
-	}
-	
-	
-	@:noCompletion private function sound_onIOError (event:IOErrorEvent):Void {
-		
-		// if it is actually valid, it will load later when requested
-		
-		loaded++;
-		
-		onProgress.dispatch (loaded, total);
-		
-		if (loaded == total) {
-			
-			start ();
-			
-		}
-		
-	}
-	#end
 	
 	
 }
