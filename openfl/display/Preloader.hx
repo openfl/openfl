@@ -87,6 +87,8 @@ class Preloader extends LimePreloader {
 		
 		super.load (urls, types);
 		
+		#if (js && html5)
+		
 		total--;
 		
 		if (loaded == total) {
@@ -94,6 +96,8 @@ class Preloader extends LimePreloader {
 			start ();
 			
 		}
+		
+		#end
 		
 	}
 	
