@@ -62,7 +62,6 @@
 			<set name="openfl-html5" />
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
-			<dependency path="dependencies/soundjs.min.js" />
 			
 		</section>
 		

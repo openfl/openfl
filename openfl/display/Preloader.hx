@@ -14,6 +14,8 @@ import openfl.Lib;
 class Preloader extends LimePreloader {
 	
 	
+	private static var __preloadedSounds = new Map<String, Sound> ();
+	
 	private var display:Sprite;
 	private var displayComplete:Bool;
 	
@@ -69,18 +71,29 @@ class Preloader extends LimePreloader {
 			
 		}
 		
+		total++;
+		
 		for (soundName in sounds) {
 			
 			var sound = new Sound ();
 			sound.addEventListener (Event.COMPLETE, sound_onComplete);
 			sound.addEventListener (IOErrorEvent.IO_ERROR, sound_onIOError);
 			sound.load (new URLRequest (soundName + ".ogg"));
+			__preloadedSounds.set (soundName, sound);
 			
 		}
 		
 		#end
 		
 		super.load (urls, types);
+		
+		total--;
+		
+		if (loaded == total) {
+			
+			start ();
+			
+		}
 		
 	}
 	
