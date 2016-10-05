@@ -25,11 +25,6 @@ THE SOFTWARE.
 
 -------
 
-This product bundles SoundJS 0.6, which is available under an
-"MIT" license. For details, see [dependencies/soundjs.min.js](dependencies/soundjs.min.js).
-
--------
-
 Modifications and source-repository versions of Haxe core files are included in the
 [haxe/](haxe/) folder, which are available under an "MIT" license. For details, see
 https://github.com/haxefoundation/haxe
