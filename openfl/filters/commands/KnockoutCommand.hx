@@ -30,7 +30,7 @@ private class KnockoutShader extends Shader {
 		'{',
 			'vec4 src2 = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
 			'vec4 src1 = texture2D(uSource1Sampler, ${Shader.vTexCoord});', // target image
-			'src2 *= ( outer * 2.0 - 1.0 ) * ( outer - src1.a );',
+			'src2 *= ( outer * 2.0 - 1.0 ) * ( outer - ( outer * step(0.0001, src1.a) + ( 1. - outer ) * src1.a ) );',
 			'gl_FragColor = src2;',
 		'}',
 	];
