@@ -509,7 +509,12 @@ class URLLoader extends EventDispatcher {
 	
 	private function readFunction (max:Int, input:ByteArray):Bytes {
 		
-		return input;
+		var len:Int = max > input.bytesAvailable?input.bytesAvailable:max;
+		var bytes:Bytes = Bytes.alloc(len);
+		for (i in 0...len) {
+			bytes.set(i,input.readByte());
+		}
+		return bytes;
 		
 	}
 	
