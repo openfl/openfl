@@ -37,6 +37,19 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
+	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
+	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
+	private static var __regexBreakTag = ~/<br\s*\/?>/gi;
+	private static var __regexEntities = [ ~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g ];
+	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
+	private static var __regexHTMLTag = ~/<.*?>/g;
+	private static var __regexIndent = ~/ indent=("([^"]+)"|'([^']+)')/i;
+	private static var __regexLeading = ~/leading=("([^"]+)"|'([^']+)')/i;
+	private static var __regexLeftMargin = ~/leftmargin=("([^"]+)"|'([^']+)')/i;
+	private static var __regexRightMargin = ~/rightmargin=("([^"]+)"|'([^']+)')/i;
+	private static var __regexTabStops = ~/tabstops=("([^"]+)"|'([^']+)')/i;
+	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')/i;
 	
 	public var antiAliasType (get, set):AntiAliasType;
 	public var autoSize (get, set):TextFieldAutoSize;
@@ -540,6 +553,13 @@ class TextField extends InteractiveObject {
 		
 		__dirty = true;
 		__layoutDirty = true;
+		
+	}
+	
+	
+	private function __getAttributeMatch (regex:EReg):String {
+		
+		return regex.matched (2) != null ? regex.matched (2) : regex.matched (3);
 		
 	}
 	
@@ -1178,29 +1198,10 @@ class TextField extends InteractiveObject {
 		
 		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
 			
-			inline function decodeHTMLEntities (text) {
-				
-				var entities = [
-					[ 'quot', '"' ],
-					[ 'apos', '\'' ],
-					[ 'amp', '&' ],
-					[ 'lt', '<' ],
-					[ 'gt', '>' ]
-				];
-				
-				for (i in 0...entities.length) {
-					
-					text = new EReg ('&' + entities[i][0] + ';', 'g').replace (text, entities[i][1]);
-					
-				}
-				
-				return text;
-				
-			}
-			
-			value = new EReg ("<br>", "g").replace (value, "\n");
-			value = new EReg ("<br/>", "g").replace (value, "\n");
-			value = decodeHTMLEntities (value);
+			value = __regexBreakTag.replace (value, "\n");
+			value = __regexEntities[0].replace (value, "\"");
+			value = __regexEntities[1].replace (value, "'");
+			value = __regexEntities[2].replace (value, "&");
 			
 			// crude solution
 			
@@ -1208,13 +1209,16 @@ class TextField extends InteractiveObject {
 			
 			if (segments.length == 1) {
 				
-				value = new EReg ("<.*?>", "g").replace (value, "");
+				value = __regexHTMLTag.replace (value, "");
 				
 				if (__textEngine.textFormatRanges.length > 1) {
 					
 					__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
 					
 				}
+				
+				value = __regexEntities[3].replace (value, "<");
+				value = __regexEntities[4].replace (value, ">");
 				
 				var range = __textEngine.textFormatRanges[0];
 				range.format = __textFormat;
@@ -1230,11 +1234,20 @@ class TextField extends InteractiveObject {
 				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 				
 				value = "";
+				var segment;
 				
-				var formatStack:Array<TextFormat> = [__textFormat.clone()];
+				for (i in 0...segments.length) {
+					
+					segment = segments[i];
+					segment = __regexEntities[3].replace (segment, "<");
+					segment = __regexEntities[4].replace (segment, ">");
+					segments[i] = segment;
+					
+				}
+				
+				var formatStack = [ __textFormat.clone () ];
 				var sub:String;
-				var match:String;
-				var noLineBreak:Bool = false;
+				var noLineBreak = false;
 				
 				for (segment in segments) {
 					
@@ -1244,7 +1257,7 @@ class TextField extends InteractiveObject {
 					var tagEndIndex = segment.indexOf (">");
 					var start = tagEndIndex + 1;
 					var spaceIndex = segment.indexOf (" ");
-					var tagName:String = segment.substring (isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+					var tagName = segment.substring (isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
 					var format:TextFormat;
 					
 					if (isClosingTag) {
@@ -1284,49 +1297,29 @@ class TextField extends InteractiveObject {
 										
 									}
 									
-									var alignEreg = ~/align="([^"]+)|align='([^']+)/i;
-									
-									if (alignEreg.match (segment)) {
+									if (__regexAlign.match (segment)) {
 										
-										match = alignEreg.matched (1);
-										if (match == null) match = alignEreg.matched (2);
-										
-										format.align = match.toLowerCase ();
+										format.align = __getAttributeMatch (__regexAlign).toLowerCase ();
 										
 									}
 								
 								case "font":
 									
-									var faceEreg = ~/face="([^"]+)|face='([^']+)/i;
-									
-									if (faceEreg.match (segment)) {
+									if (__regexFace.match (segment)) {
 										
-										match = faceEreg.matched (1);
-										if (match == null) match = faceEreg.matched (2);
-										
-										format.font = match;
+										format.font = __getAttributeMatch (__regexFace);
 										
 									}
 									
-									var colorEreg = ~/color="#([^"]+)|color='#([^']+)/i;
-									
-									if (colorEreg.match (segment)) {
+									if (__regexColor.match (segment)) {
 										
-										match = colorEreg.matched (1);
-										if (match == null) match = colorEreg.matched (2);
-										
-										format.color = Std.parseInt ("0x" + match);
+										format.color = Std.parseInt ("0x" + __getAttributeMatch (__regexColor));
 										
 									}
 									
-									var sizeEreg = ~/size="([^"]+)|size='([^']+)/i;
-									
-									if (sizeEreg.match (segment)) {
+									if (__regexSize.match (segment)) {
 										
-										match = sizeEreg.matched (1);
-										if (match == null) match = sizeEreg.matched (2);
-										
-										format.size = Std.parseInt (match);
+										format.size = Std.parseInt (__getAttributeMatch (__regexSize));
 										
 									}
 								
@@ -1341,6 +1334,53 @@ class TextField extends InteractiveObject {
 								case "i", "em":
 									
 									format.italic = true;
+								
+								case "textformat":
+									
+									if (__regexBlockIndent.match (segment)) {
+										
+										format.blockIndent = Std.parseInt (__getAttributeMatch (__regexBlockIndent));
+										
+									}
+									
+									if (__regexIndent.match (segment)) {
+										
+										format.indent = Std.parseInt (__getAttributeMatch (__regexIndent));
+										
+									}
+									
+									if (__regexLeading.match (segment)) {
+										
+										format.leading = Std.parseInt (__getAttributeMatch (__regexLeading));
+										
+									}
+									
+									if (__regexLeftMargin.match (segment)) {
+										
+										format.leftMargin = Std.parseInt (__getAttributeMatch (__regexLeftMargin));
+										
+									}
+									
+									if (__regexRightMargin.match (segment)) {
+										
+										format.rightMargin = Std.parseInt (__getAttributeMatch (__regexRightMargin));
+										
+									}
+									
+									if (__regexTabStops.match (segment)) {
+										
+										var values = __getAttributeMatch (__regexTabStops).split (" ");
+										var tabStops = [];
+										
+										for (stop in values) {
+											
+											tabStops.push (Std.parseInt (stop));
+											
+										}
+										
+										format.tabStops = tabStops;
+										
+									}
 								
 							}
 							
