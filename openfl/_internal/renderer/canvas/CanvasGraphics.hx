@@ -223,19 +223,16 @@ class CanvasGraphics {
 			
 			hitTesting = true;
 			
-			x -= bounds.x;
-			y -= bounds.y;
-			
-			if (graphics.__canvas == null) {
-				
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
 				graphics.__context = graphics.__canvas.getContext ("2d");
 				
-			}
-			
 			context = graphics.__context;
 
 			var context = canvasGraphics.context;
+			context.translate (-bounds.x, -bounds.y);
+
+			x -= bounds.x;
+			y -= bounds.y;
 
 			canvasGraphics.fillStrokeCommands.clear();
 
