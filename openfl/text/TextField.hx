@@ -1283,37 +1283,37 @@ class TextField extends InteractiveObject {
 										
 									}
 									
-									var alignEreg = ~/align="([^"]+)/i;
+									var alignEreg = ~/align=("([^"]+)"|'([^']+)')/i;
 									
 									if (alignEreg.match (segment)) {
 										
-										format.align = alignEreg.matched (1).toLowerCase ();
+										format.align = (alignEreg.matched (2) != null ? alignEreg.matched (2) : alignEreg.matched (3)).toLowerCase ();
 										
 									}
 								
 								case "font":
 									
-									var faceEreg = ~/face="([^"]+)/i;
+									var faceEreg = ~/face=("([^"]+)"|'([^']+)')/i;
 									
 									if (faceEreg.match (segment)) {
 										
-										format.font = faceEreg.matched (1);
+										format.font = faceEreg.matched (2) != null ? faceEreg.matched (2) : faceEreg.matched (3);
 										
 									}
 									
-									var colorEreg = ~/color="#([^"]+)/i;
+									var colorEreg = ~/color=("#([^"]+)"|'#([^']+)')/i;
 									
 									if (colorEreg.match (segment)) {
 										
-										format.color = Std.parseInt ("0x" + colorEreg.matched (1));
+										format.color = Std.parseInt ("0x" + (colorEreg.matched (2) != null ? colorEreg.matched (2) : colorEreg.matched (3)));
 										
 									}
 									
-									var sizeEreg = ~/size="([^"]+)/i;
+									var sizeEreg = ~/size=("([^"]+)"|'([^']+)')/i;
 									
 									if (sizeEreg.match (segment)) {
 										
-										format.size = Std.parseInt (sizeEreg.matched (1));
+										format.size = Std.parseInt (sizeEreg.matched (2) != null ? sizeEreg.matched (2) : sizeEreg.matched (3));
 										
 									}
 								
@@ -1328,7 +1328,62 @@ class TextField extends InteractiveObject {
 								case "i", "em":
 									
 									format.italic = true;
-								
+
+								case "textformat":
+									
+									var blockindentEreg = ~/blockindent=("([^"]+)"|'([^']+)')/i;
+									
+									if (blockindentEreg.match (segment)) {
+										
+										format.blockIndent = Std.parseInt ( blockindentEreg.matched (2) != null ? blockindentEreg.matched (2) : blockindentEreg.matched (3) );
+										
+									}
+
+									var indentEreg = ~/ indent=("([^"]+)"|'([^']+)')/i;
+									
+									if (indentEreg.match (segment)) {
+										
+										format.indent = Std.parseInt ( indentEreg.matched (2) != null ? indentEreg.matched (2) : indentEreg.matched (3) );
+										
+									}
+
+									var leadingEreg = ~/leading=("([^"]+)"|'([^']+)')/i;
+									
+									if (leadingEreg.match (segment)) {
+										
+										format.leading = Std.parseInt ( leadingEreg.matched (2) != null ? leadingEreg.matched (2) : leadingEreg.matched (3) );
+										
+									}
+
+									var leftmarginEreg = ~/leftmargin=("([^"]+)"|'([^']+)')/i;
+									
+									if (leftmarginEreg.match (segment)) {
+										
+										format.leftMargin = Std.parseInt ( leftmarginEreg.matched (2) != null ? leftmarginEreg.matched (2) : leftmarginEreg.matched (3) );
+										
+									}
+
+									var rightmarginEreg = ~/rightmargin=("([^"]+)"|'([^']+)')/i;
+									
+									if (rightmarginEreg.match (segment)) {
+										
+										format.rightMargin = Std.parseInt ( rightmarginEreg.matched (2) != null ? rightmarginEreg.matched (2) : rightmarginEreg.matched (3) );
+										
+									}
+
+									var tabstopsEreg = ~/tabstops=("([^"]+)"|'([^']+)')/i;
+									
+									if (tabstopsEreg.match (segment)) {
+										
+										var stops = (tabstopsEreg.matched (2) != null ? tabstopsEreg.matched (2) : tabstopsEreg.matched (3)).split(" ");
+										var stopsInt:Array<Int> = [];
+										for (stop in stops)
+											stopsInt.push( Std.parseInt(stop) );
+											
+										format.tabStops = stopsInt;
+										
+									}
+
 							}
 							
 							formatStack.push (format);
