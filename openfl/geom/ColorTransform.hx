@@ -91,7 +91,29 @@ class ColorTransform {
 	}
 	
 	
+	public function setFromCombination(a:ColorTransform, b:ColorTransform):Void {
+		redMultiplier = a.redMultiplier * b.redMultiplier;
+		greenMultiplier = a.greenMultiplier * b.greenMultiplier;
+		blueMultiplier = a.blueMultiplier * b.blueMultiplier;
+		alphaMultiplier = a.alphaMultiplier * b.alphaMultiplier;
+
+		redOffset = a.redOffset + b.redOffset;
+		greenOffset = a.greenOffset + b.greenOffset;
+		blueOffset = a.blueOffset + b.blueOffset;
+		alphaOffset = a.alphaOffset + b.alphaOffset;
+	}
+
+	public function copyFrom(other:ColorTransform):Void {
+		redMultiplier = other.redMultiplier;
+		greenMultiplier = other.greenMultiplier;
+		blueMultiplier = other.blueMultiplier;
+		alphaMultiplier = other.alphaMultiplier;
 	
+		redOffset = other.redOffset;
+		greenOffset = other.greenOffset;
+		blueOffset = other.blueOffset;
+		alphaOffset = other.alphaOffset;
+	}
 	
 	// Getters & Setters
 	
