@@ -39,8 +39,8 @@ class GLTilemap {
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		shader.uMatrix.value = renderer.getMatrix (tilemap.__renderTransform);
-		shader.uImage.smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
+		shader.data.uMatrix.value = renderer.getMatrix (tilemap.__renderTransform);
+		shader.data.uImage0.smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		
 		var defaultTileset = tilemap.tileset;
 		var worldAlpha = tilemap.__worldAlpha;
@@ -238,7 +238,7 @@ class GLTilemap {
 				
 				if (cacheBitmapData != null) {
 					
-					shader.uImage0.input = cacheBitmapData;
+					shader.data.uImage0.input = cacheBitmapData;
 					renderSession.shaderManager.setShader (shader);
 					
 					gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
@@ -252,7 +252,7 @@ class GLTilemap {
 			
 			if (i == drawCount && tileset.bitmapData != null) {
 				
-				shader.uImage0.input = tileset.bitmapData;
+				shader.data.uImage0.input = tileset.bitmapData;
 				renderSession.shaderManager.setShader (shader);
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1 - lastIndex) * 6);
