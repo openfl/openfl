@@ -8,7 +8,7 @@ import openfl.utils.ByteArray;
 	
 	
 	public function dispose () : Void;
-	public function upload (vertexProgram:Dynamic, fragmentProgram:Dynamic):Void;
+	public function upload (vertexProgram:ByteArray, fragmentProgram:ByteArray):Void;
 	
 	
 }

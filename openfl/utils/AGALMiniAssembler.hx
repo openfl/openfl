@@ -1,7 +1,7 @@
 package openfl.utils;
 
 
-import lime.graphics.opengl.GL;
+import haxe.ds.StringMap;
 import openfl._internal.aglsl.assembler.FS;
 import openfl._internal.aglsl.assembler.Part;
 import openfl._internal.aglsl.assembler.Opcode;
@@ -9,11 +9,6 @@ import openfl._internal.aglsl.assembler.OpcodeMap;
 import openfl._internal.aglsl.assembler.RegMap;
 import openfl._internal.aglsl.assembler.Sampler;
 import openfl._internal.aglsl.assembler.SamplerMap;
-import openfl._internal.aglsl.AGALTokenizer;
-import openfl._internal.aglsl.AGLSLCompiler;
-import openfl._internal.aglsl.AGLSLParser;
-import openfl._internal.aglsl.Description;
-import openfl.display3D.Context3DProgramType;
 import openfl.errors.Error;
 
 
@@ -21,12 +16,12 @@ class AGALMiniAssembler {
 	
 	
 	public var cur:Part;
-	public var r:Map<String, Part>;
+	public var r:StringMap<Part>;
 	
 	
 	public function new () {
 		
-		this.r = new Map<String, Part> ();
+		this.r = new StringMap<Part> ();
 		this.cur = new Part ();
 		
 	}
@@ -56,81 +51,32 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function assemble (programType:Context3DProgramType, source:String):Dynamic {
+	public function assemble (source:String, ext_part = null, ext_version = null):Dynamic {
 		
-		#if flash
-		
-		var agalMiniAssembler:AGALMiniAssembler = new AGALMiniAssembler ();
-		var data:ByteArray = null;
-		var concatSource:String;
-		
-		switch (programType) {
+		if (ext_version == 0) {
 			
-			case VERTEX:
-				
-				concatSource = "part vertex 1 \n" + source + "endpart";
-				agalMiniAssembler.__assemble (concatSource);
-				data = agalMiniAssembler.r.get ("vertex").data;
-			
-			case FRAGMENT:
-				
-				concatSource = "part fragment 1 \n" + source + "endpart";
-				agalMiniAssembler.__assemble (concatSource);
-				data = agalMiniAssembler.r.get ("fragment").data;
-			
-			default:
-				
-				throw "Unknown Context3DProgramType";
+			ext_version = 1;
 			
 		}
 		
-		return data;
-		
-		#elseif (cpp || neko || js)
-		
-		var aglsl:AGLSLCompiler = new AGLSLCompiler ();
-		var glType:Int;
-		var shaderType:String;
-		
-		switch (programType) {
+		if (ext_part != null) {
 			
-			case VERTEX:
-				
-				glType = GL.VERTEX_SHADER;
-				shaderType = "vertex";
-			
-			case FRAGMENT:
-				
-				glType = GL.FRAGMENT_SHADER;
-				shaderType = "fragment";
+			this.addHeader (ext_part, ext_version);
 			
 		}
 		
-		//trace ("--- AGAL ---\n" + shaderSource);
+		var reg = ~/[\n\r]+/g;
+		var lines = reg.split (source); // handle breaks, then split into lines        
 		
-		var shaderSourceString = aglsl.compile (shaderType, source);
-		var shader = GL.createShader (glType);
+		var i:UInt;
 		
-		GL.shaderSource (shader, shaderSourceString);
-		GL.compileShader (shader);
-		
-		if (GL.getShaderParameter (shader, GL.COMPILE_STATUS) == 0) {
+		for (i in 0...lines.length) {
 			
-			trace("--- ERR ---\n" + shaderSourceString);
-			var err = GL.getShaderInfoLog (shader);
-			if (err != "") throw err;
+			this.processLine (lines[i], i);
 			
-		} 
+		}
 		
-		//trace ("--- GLSL ---\n" + shaderSourceString);
-		
-		return shader;
-		
-		#else
-		
-		return null;
-		
-		#end
+		return this.r;
 		
 	}
 	
@@ -395,7 +341,7 @@ class AGALMiniAssembler {
 		}
 		
 		// get opcode/command
-		var tokens = getMatches (~/([\w\.\+\[\]]+)/gi, line);         
+		var tokens = getMatches (~/([\w\.\+\[\]]+)/gi, line);			            
 		if (tokens.length == 0) {
 			
 			if (line.length >= 3) {
@@ -576,36 +522,6 @@ class AGALMiniAssembler {
 		}
 		
 		return sw;
-		
-	}
-	
-	
-	private function __assemble (source:String, ext_part = null, ext_version = null):Dynamic {
-		
-		if (ext_version == 0) {
-			
-			ext_version = 1;
-			
-		}
-		
-		if (ext_part != null) {
-			
-			this.addHeader (ext_part, ext_version);
-			
-		}
-		
-		var reg = ~/[\n\r]+/g;
-		var lines = reg.split (source); // handle breaks, then split into lines
-		
-		var i:UInt;
-		
-		for (i in 0...lines.length) {
-			
-			this.processLine (lines[i], i);
-			
-		}
-		
-		return this.r;
 		
 	}
 	

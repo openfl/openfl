@@ -1,14 +1,11 @@
 package openfl.display3D;
 
 
-import lime.graphics.opengl.GL;
-import lime.graphics.opengl.GLActiveInfo;
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
-import lime.graphics.opengl.GLUniformLocation;
-import openfl._internal.aglsl.AGLSLCompiler;
-import openfl.utils.ByteArray;
-
+import openfl.gl.GL;
+import openfl.gl.GLActiveInfo;
+import openfl.gl.GLProgram;
+import openfl.gl.GLShader;
+import openfl.gl.GLUniformLocation;
 
 @:final class Program3D {
 	
@@ -20,8 +17,7 @@ import openfl.utils.ByteArray;
 	private var glVCLocationMap:Array<GLUniformLocation>;
 	private var glFSLocationMap:Array<GLUniformLocation>; // sampler
 	private var glVALocationMap:Array<Int>;
-	
-	
+
 	public function new (context:Context3D, program:GLProgram) {
 		
 		this.context = context;
@@ -41,7 +37,9 @@ import openfl.utils.ByteArray;
 	}
 	
 	
-	public function upload (vertexShader:Dynamic, fragmentShader:Dynamic):Void {
+	public function upload (vertexShader:GLShader, fragmentShader:GLShader):Void {
+		
+		// TODO: Use ByteArray instead of Shader?
 		
 		GL.attachShader (glProgram, vertexShader);
 		GL.attachShader (glProgram, fragmentShader);
@@ -138,6 +136,4 @@ import openfl.utils.ByteArray;
 		}
 		
 	}
-	
-	
 }
