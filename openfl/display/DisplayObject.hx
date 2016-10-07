@@ -843,18 +843,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			var worldClip:Rectangle = null;
 			#end
 			
-			if (!__worldColorTransform.__equals (transform.colorTransform)) {
-				
-				__worldColorTransform = transform.colorTransform.__clone ();
-				
-			}
-			
 			if (parent != null) {
 				
 				#if !dom
 				
 				__worldAlpha = alpha * parent.__worldAlpha;
-				__worldColorTransform.__combine (parent.__worldColorTransform);
+				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
 				
 				if ((blendMode == null || blendMode == NORMAL)) {
 					
@@ -901,6 +895,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				
 			} else {
 				
+
+				__worldColorTransform.copyFrom(transform.colorTransform);
 				__worldAlpha = alpha;
 				
 				#if dom
@@ -1164,8 +1160,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 		}
 
-		__filters = value;
-		__forceCacheAsBitmap = cacheAsBitmap = __updateFilters = value != null && value.length > 0;
+		if(value != null && value.length > 0) {
+			__forceCacheAsBitmap = true;
+			cacheAsBitmap = true;
+			__updateFilters = true;
+			__filters = value;
+		} else {
+			__forceCacheAsBitmap = false;
+			cacheAsBitmap = false;
+			__updateFilters = false;
+			__filters = null;
+		}
+
 		__setRenderDirty ();
 		
 		return value;

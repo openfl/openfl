@@ -293,11 +293,10 @@ class SimpleButton extends InteractiveObject {
 		
 		state.__updateTransforms (cacheTransform);
 		state.__updateChildren (false);
-		
 	}
 	
 	
-	private function __updateTransform (state:DisplayObject):Matrix {
+	private function __updateTransform (state:DisplayObject, transformOnly:Bool = true):Matrix {
 		
 		var cacheTransform = state.__worldTransform;
 		
@@ -313,7 +312,7 @@ class SimpleButton extends InteractiveObject {
 		overrideTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 		
 		state.__updateTransforms (overrideTransform);
-		state.__updateChildren (true);
+		state.__updateChildren (transformOnly);
 		
 		return cacheTransform;
 		
@@ -324,11 +323,24 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__updateTransforms (overrideTransform);
 		
-		__updateTransform (__currentState);
-		
+		__updateTransform (__currentState, false);
 	}
 	
 	
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+
+		if (parent != null) {
+			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
+		}
+		else {
+			__worldColorTransform.copyFrom(transform.colorTransform);
+		}
+
+		__currentState.__worldColorTransform.setFromCombination(__currentState.transform.colorTransform, __worldColorTransform);
+
+		super.__update(transformOnly, updateChildren, maskGraphics);
+	}
+
 	
 	
 	// Getters & Setters
