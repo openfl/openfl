@@ -1,7 +1,10 @@
 package openfl.display; #if (display || !flash)
 
 
-@:final #if !js @:generic #end  extern class ShaderInput<T> /*implements Dynamic*/ {
+#if !js @:generic #end
+
+
+@:final extern class ShaderInput<T> /*implements Dynamic*/ {
 	
 	
 	public var channels (default, null):Int;

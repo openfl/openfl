@@ -1,7 +1,10 @@
 package openfl.display;
 
 
-@:final #if !js @:generic #end  class ShaderParameter<T> /*implements Dynamic*/ {
+#if !js @:generic #end
+
+
+@:final class ShaderParameter<T> /*implements Dynamic*/ {
 	
 	
 	public var index (default, null):Dynamic;
