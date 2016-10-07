@@ -235,16 +235,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool {
 		
-		if (parent != null) {
+		if (stage != null) {
 			
-			var bounds = new Rectangle ();
-			__getBounds (bounds, __getRenderTransform ());
+			return __hitTest (x, y, shapeFlag, null, false, this);
 			
-			return bounds.containsPoint (new Point (x, y));
+		} else {
+			
+			return false;
 			
 		}
-		
-		return false;
 		
 	}
 	
