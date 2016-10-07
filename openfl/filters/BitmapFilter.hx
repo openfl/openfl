@@ -91,19 +91,13 @@ class BitmapFilter {
 	}
 	
 	
-	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, matrix:Matrix) {
-		
-		var r = Rectangle.__temp;
-		r.setEmpty ();
+	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle) {
 		
 		for (filter in filters) {
 			
-			filter.__growBounds (r);
+			filter.__growBounds (rect);
 			
 		}
-		
-		r.__transform (r, matrix);
-		rect.__expand (r.x, r.y, r.width, r.height);
 		
 	}
 	
