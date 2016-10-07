@@ -117,6 +117,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseOverTarget:InteractiveObject;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
+	private var __primaryTouch:Touch;
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
 	private var __rollOutStack:Array<DisplayObject>;
@@ -547,12 +548,24 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onTouchEnd (touch:Touch):Void {
 		
+		if (__primaryTouch == touch) {
+			
+			__primaryTouch = null;
+			
+		}
+		
 		__onTouch (TouchEvent.TOUCH_END, touch);
 		
 	}
 	
 	
 	public function onTouchStart (touch:Touch):Void {
+		
+		if (__primaryTouch == null) {
+			
+			__primaryTouch = touch;
+			
+		}
 		
 		__onTouch (TouchEvent.TOUCH_BEGIN, touch);
 		
@@ -626,6 +639,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
+		__primaryTouch = null;
 		__broadcastEvent (new Event (Event.DEACTIVATE));
 		
 	}
@@ -1262,31 +1276,31 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (touch.x * window.width, touch.y * window.height);
+		var point = new Point (Math.round (touch.x * window.width), Math.round (touch.y * window.height));
 		__displayMatrix.__transformInversePoint (point);
 		
-		__mouseX = point.x;
-		__mouseY = point.y;
+		var touchX = point.x;
+		var touchY = point.y;
 		
 		var __stack = [];
 		
-		if (__hitTest (__mouseX, __mouseY, false, __stack, true, this)) {
+		if (__hitTest (touchX, touchY, false, __stack, true, this)) {
 			
 			var target = __stack[__stack.length - 1];
 			if (target == null) target = this;
 			var localPoint = target.globalToLocal (point);
 			
-			var touchEvent = TouchEvent.__create (type, null, __mouseX, __mouseY, localPoint, cast target);
+			var touchEvent = TouchEvent.__create (type, null, touchX, touchY, localPoint, cast target);
 			touchEvent.touchPointID = touch.id;
-			touchEvent.isPrimaryTouchPoint = true;
+			touchEvent.isPrimaryTouchPoint = (__primaryTouch == touch);
 			
 			__fireEvent (touchEvent, __stack);
 			
 		} else {
 			
-			var touchEvent = TouchEvent.__create (type, null, __mouseX, __mouseY, point, this);
+			var touchEvent = TouchEvent.__create (type, null, touchX, touchY, point, this);
 			touchEvent.touchPointID = touch.id;
-			touchEvent.isPrimaryTouchPoint = true;
+			touchEvent.isPrimaryTouchPoint = (__primaryTouch == touch);
 			
 			__fireEvent (touchEvent, [ stage ]);
 			
