@@ -144,18 +144,20 @@ private class ColorMatrixShader extends Shader {
 	)
 	
 	
-	private var multipliers:Array<Float>;
-	private var offsets:Array<Float>;
-	
-	
 	public function new () {
 		
 		super ();
+		
+		data.uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
+		data.uOffsets.value = [ 0, 0, 0, 0 ];
 		
 	}
 	
 	
 	public function init (matrix:Array<Float>):Void {
+		
+		var multipliers = data.uMultipliers.value;
+		var offsets = data.uOffsets.value;
 		
 		multipliers[0] = matrix[0];
 		multipliers[1] = matrix[1];
@@ -178,23 +180,6 @@ private class ColorMatrixShader extends Shader {
 		offsets[1] = matrix[9] / 255.0;
 		offsets[2] = matrix[14] / 255.0;
 		offsets[3] = matrix[19] / 255.0;
-		
-	}
-	
-	
-	private override function __init ():Void {
-		
-		super.__init ();
-		
-		if (data.uMultipliers != null && data.uMultipliers.value == null) {
-			
-			data.uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
-			data.uOffsets.value = [ 0, 0, 0, 0 ];
-			
-			multipliers = cast data.uMultipliers.value;
-			offsets = cast data.uOffsets.value;
-			
-		}
 		
 	}
 	
