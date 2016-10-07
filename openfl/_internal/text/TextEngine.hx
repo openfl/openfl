@@ -593,6 +593,27 @@ class TextEngine {
 			
 		}
 		
+		if (autoSize != NONE) {
+			
+			switch (autoSize) {
+				
+				case LEFT, RIGHT, CENTER:
+					
+					if (!wordWrap && (width < textWidth + 4)) {
+						
+						width = textWidth + 4;
+						
+					}
+					
+					height = textHeight + 4;
+					bottomScrollV = numLines;
+				
+				default:
+					
+				
+			}
+		}
+		
 		if (textWidth > width - 4) {
 			
 			maxScrollH = Std.int (textWidth - width + 4);
@@ -604,27 +625,6 @@ class TextEngine {
 		}
 		
 		maxScrollV = numLines - bottomScrollV + 1;
-
-
-		if (autoSize != NONE) {
-			
-			switch (autoSize) {
-				
-				case LEFT, RIGHT, CENTER:
-					
-					if (!wordWrap && width < (textWidth + 4)) {
-						
-						width = textWidth + 4;
-						
-					}
-					
-					height = textHeight + 4;
-				
-				default:
-					
-				
-			}
-		}
 		
 	}
 	
