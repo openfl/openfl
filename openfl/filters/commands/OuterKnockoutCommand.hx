@@ -5,14 +5,13 @@ import openfl.display.Shader;
 
 import openfl._internal.renderer.RenderSession;
 
-class KnockoutCommand {
+class OuterKnockoutCommand {
 
-	private static var __shader = new KnockoutShader ();
+	private static var __shader = new OuterKnockoutShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData, outer:Bool) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData) {
 
 		__shader.uSource1Sampler = source1;
-		__shader.outer = outer ? 1.0 : 0.0;
 
 		CommandHelper.apply (renderSession, target, source2, __shader, source1 == target || source2 == target);
 
@@ -20,7 +19,7 @@ class KnockoutCommand {
 
 }
 
-private class KnockoutShader extends Shader {
+private class OuterKnockoutShader extends Shader {
 
 	@fragment var fragment = [
 		'uniform sampler2D uSource1Sampler;',
@@ -30,7 +29,7 @@ private class KnockoutShader extends Shader {
 		'{',
 			'vec4 src2 = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
 			'vec4 src1 = texture2D(uSource1Sampler, ${Shader.vTexCoord});', // target image
-			'src2 *= ( outer * 2.0 - 1.0 ) * ( outer - ( outer * step(0.0001, src1.a) + ( 1. - outer ) * src1.a ) );',
+			'src2 *=  1. - step(0.0001, src1.a);',
 			'gl_FragColor = src2;',
 		'}',
 	];

@@ -10,6 +10,7 @@ enum CommandType {
 	ColorTransform (target:BitmapData, source:BitmapData, colorMatrix:Array<Float>);
 	CombineInner (target:BitmapData, source1:BitmapData, source2:BitmapData );
 	Combine (target:BitmapData, source1:BitmapData, source2:BitmapData);
-	Knockout(target:BitmapData,source1:BitmapData, source2:BitmapData, outer:Bool);
+	InnerKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
+	OuterKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
 
 }
