@@ -20,6 +20,9 @@ class Tile {
 	public var y (get, set):Float;
 	
 	private var __alphaDirty:Bool;
+	private var __rotation:Null<Float>;
+	private var __rotationCosine:Float;
+	private var __rotationSine:Float;
 	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
@@ -82,6 +85,7 @@ class Tile {
 	
 	private function set_matrix (value:Matrix):Matrix {
 		
+		__rotation = null;
 		__transformDirty = true;
 		return this.matrix = value;
 		
@@ -90,26 +94,51 @@ class Tile {
 	
 	private function get_rotation ():Float {
 		
-		return (180 / Math.PI) * Math.atan2 (matrix.d, matrix.c) - 90;
+		if (__rotation == null) {
+			
+			if (matrix.b == 0 && matrix.c == 0) {
+				
+				__rotation = 0;
+				__rotationSine = 0;
+				__rotationCosine = 1;
+				
+			} else {
+				
+				var radians = Math.atan2 (matrix.d, matrix.c) - (Math.PI / 2);
+				
+				__rotation = radians * (180 / Math.PI);
+				__rotationSine = Math.sin (radians);
+				__rotationCosine = Math.cos (radians);
+				
+			}
+			
+		}
+		
+		return __rotation;
 		
 	}
 	
 	
 	private function set_rotation (value:Float):Float {
 		
-		var radians = value * (Math.PI / 180);
-		var rotationSine = Math.sin (radians);
-		var rotationCosine = Math.cos (radians);
-		
-		var __scaleX = this.scaleX;
-		var __scaleY = this.scaleY;
-		
-		matrix.a = rotationCosine * __scaleX;
-		matrix.b = rotationSine * __scaleX;
-		matrix.c = -rotationSine * __scaleY;
-		matrix.d = rotationCosine * __scaleY;
-		
-		__transformDirty = true;
+		if (value != __rotation) {
+			
+			__rotation = value;
+			var radians = value * (Math.PI / 180);
+			__rotationSine = Math.sin (radians);
+			__rotationCosine = Math.cos (radians);
+			
+			var __scaleX = this.scaleX;
+			var __scaleY = this.scaleY;
+			
+			matrix.a = __rotationCosine * __scaleX;
+			matrix.b = __rotationSine * __scaleX;
+			matrix.c = -__rotationSine * __scaleY;
+			matrix.d = __rotationCosine * __scaleY;
+			
+			__transformDirty = true;
+			
+		}
 		
 		return value;
 		
@@ -140,12 +169,9 @@ class Tile {
 		} else {
 			
 			var rotation = this.rotation;
-			var radians = value * (Math.PI / 180);
-			var rotationSine = Math.sin (radians);
-			var rotationCosine = Math.cos (radians);
 			
-			var a = rotationCosine * value;
-			var b = rotationSine * value;
+			var a = __rotationCosine * value;
+			var b = __rotationSine * value;
 			
 			matrix.a = a;
 			matrix.b = b;
@@ -183,12 +209,9 @@ class Tile {
 		} else {
 			
 			var rotation = this.rotation;
-			var radians = value * (Math.PI / 180);
-			var rotationSine = Math.sin (radians);
-			var rotationCosine = Math.cos (radians);
 			
-			var c = -rotationSine * value;
-			var d = rotationCosine * value;
+			var c = -__rotationSine * value;
+			var d = __rotationCosine * value;
 			
 			matrix.c = c;
 			matrix.d = d;
