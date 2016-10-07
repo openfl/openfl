@@ -24,6 +24,7 @@ class GLRenderer extends AbstractRenderer {
 	private var matrix:Matrix4;
 	private var offsetX:Int;
 	private var offsetY:Int;
+	private var values:Array<Float>;
 	
 	
 	public function new (stage:Stage, gl:GLRenderContext) {
@@ -32,6 +33,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		this.gl = gl;
 		matrix = new Matrix4 ();
+		values = new Array ();
 		
 		renderSession = new RenderSession ();
 		renderSession.gl = gl;
@@ -80,7 +82,7 @@ class GLRenderer extends AbstractRenderer {
 	}
 	
 	
-	public function getMatrix (transform:Matrix):Matrix4 {
+	public function getMatrix (transform:Matrix):Array<Float> {
 		
 		var _matrix = Matrix.__temp;
 		_matrix.copyFrom (transform);
@@ -102,7 +104,13 @@ class GLRenderer extends AbstractRenderer {
 		matrix[13] = _matrix.ty;
 		matrix.append (projection);
 		
-		return matrix;
+		for (i in 0...16) {
+			
+			values[i] = matrix[i];
+			
+		}
+		
+		return values;
 		
 	}
 	

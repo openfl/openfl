@@ -2,6 +2,7 @@ package openfl._internal.renderer;
 
 
 import openfl.display.DisplayObject;
+import openfl.display.Shader;
 
 @:access(openfl.display.DisplayObject)
 @:keep
@@ -20,9 +21,9 @@ class AbstractFilterManager {
 	}
 	
 	
-	public function pushObject (object:DisplayObject):Void {
+	public function pushObject (object:DisplayObject):Shader {
 		
-		
+		return null;
 		
 	}
 	

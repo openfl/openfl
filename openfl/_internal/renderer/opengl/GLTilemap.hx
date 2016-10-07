@@ -27,20 +27,20 @@ class GLTilemap {
 		
 		if (!tilemap.__renderable || tilemap.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 		
+		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;
 		
 		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
-		renderSession.filterManager.pushObject (tilemap);
 		renderSession.maskManager.pushObject (tilemap);
+		
+		var shader = renderSession.filterManager.pushObject (tilemap);
 		
 		var rect = Rectangle.__temp;
 		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
 		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		var shader = renderSession.shaderManager.currentShader;
-		
-		gl.uniformMatrix4fv (shader.data.uMatrix.index, false, renderer.getMatrix (tilemap.__renderTransform));
+		shader.uMatrix.value = renderer.getMatrix (tilemap.__renderTransform);
+		shader.uImage.smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		
 		var defaultTileset = tilemap.tileset;
 		var worldAlpha = tilemap.__worldAlpha;
@@ -220,7 +220,6 @@ class GLTilemap {
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 4 * Float32Array.BYTES_PER_ELEMENT);
 		
-		var smoothing = (renderSession.allowSmoothing && tilemap.smoothing);
 		var cacheBitmapData = null;
 		var lastIndex = 0;
 		
@@ -239,19 +238,8 @@ class GLTilemap {
 				
 				if (cacheBitmapData != null) {
 					
-					gl.bindTexture (gl.TEXTURE_2D, cacheBitmapData.getTexture (gl));
-					
-					if (smoothing) {
-						
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-						
-					} else {
-						
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-						gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-						
-					}
+					shader.uImage0.input = cacheBitmapData;
+					renderSession.shaderManager.setShader (shader);
 					
 					gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 					
@@ -264,19 +252,8 @@ class GLTilemap {
 			
 			if (i == drawCount && tileset.bitmapData != null) {
 				
-				gl.bindTexture (gl.TEXTURE_2D, tileset.bitmapData.getTexture (gl));
-				
-				if (smoothing) {
-					
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-					
-				} else {
-					
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-					
-				}
+				shader.uImage0.input = tileset.bitmapData;
+				renderSession.shaderManager.setShader (shader);
 				
 				gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i + 1 - lastIndex) * 6);
 				
@@ -288,9 +265,10 @@ class GLTilemap {
 		
 		tilemap.__dirty = false;
 		tilemap.__cacheAlpha = worldAlpha;
+		
+		renderSession.filterManager.popObject (tilemap);
 		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
-		renderSession.filterManager.popObject (tilemap);
 		
 	}
 	

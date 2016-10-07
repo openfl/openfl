@@ -4,6 +4,7 @@ package openfl._internal.renderer.opengl;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractFilterManager;
 import openfl.display.DisplayObject;
+import openfl.display.Shader;
 
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.DisplayObject)
@@ -26,21 +27,17 @@ class GLFilterManager extends AbstractFilterManager {
 	}
 	
 	
-	public override function pushObject (object:DisplayObject):Void {
-		
-		var shader;
+	public override function pushObject (object:DisplayObject):Shader {
 		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
-			shader = object.__filters[0].__initShader (renderSession);
+			return object.__filters[0].__initShader (renderSession);
 			
 		} else {
 			
-			shader = renderSession.shaderManager.defaultShader;
+			return renderSession.shaderManager.defaultShader;
 			
 		}
-		
-		renderSession.shaderManager.setShader (shader);
 		
 	}
 	

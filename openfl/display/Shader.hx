@@ -107,6 +107,8 @@ class Shader {
 	
 	private function __disableGL ():Void {
 		
+		data.uImage0.input = null;
+		
 		for (parameter in __paramBool) {
 			
 			gl.disableVertexAttribArray (parameter.index);
@@ -400,6 +402,18 @@ class Shader {
 				
 				gl.activeTexture (gl.TEXTURE0 + textureCount);
 				gl.bindTexture (gl.TEXTURE_2D, input.input.getTexture (gl));
+				
+				if (input.smoothing) {
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+					
+				} else {
+					
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+					gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+					
+				}
 				
 			}
 			

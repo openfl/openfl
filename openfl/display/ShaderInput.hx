@@ -1,7 +1,7 @@
 package openfl.display;
 
 
-@:final #if !js @:generic #end  class ShaderInput<T> /*implements Dynamic*/ {
+@:final #if !js @:generic #end class ShaderInput<T> /*implements Dynamic*/ {
 	
 	
 	public var channels (default, null):Int;
@@ -9,6 +9,7 @@ package openfl.display;
 	public var index (default, null):Dynamic;
 	public var input:T;
 	@:noCompletion public var name:String;
+	public var smoothing:Bool;
 	public var width:Int;
 	
 	
