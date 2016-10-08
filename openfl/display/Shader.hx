@@ -107,7 +107,11 @@ class Shader {
 	
 	private function __disableGL ():Void {
 		
-		data.uImage0.input = null;
+		if (data.uImage0 != null) {
+			
+			data.uImage0.input = null;
+			
+		}
 		
 		for (parameter in __paramBool) {
 			
