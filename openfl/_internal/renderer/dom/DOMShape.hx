@@ -24,6 +24,10 @@ class DOMShape {
 		
 		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null) {
 			
+			if (graphics.__dirty && shape.__canvas != null) {
+				shape.__worldTransformChanged = true;
+			}
+			
 			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas == null && graphics.__canvas != null)) {
 				
 				var matrix = Matrix.__temp;
