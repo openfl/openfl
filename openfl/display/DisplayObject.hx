@@ -16,6 +16,7 @@ import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.EventDispatcher;
+import openfl.events.MouseEvent;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -172,6 +173,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		}
 		
 		super.addEventListener (type, listener, useCapture, priority, useWeakReference);
+		
+	}
+	
+	
+	public override function dispatchEvent (event:Event):Bool {
+		
+		if (Std.is (event, MouseEvent)) {
+			
+			var mouseEvent:MouseEvent = cast event;
+			mouseEvent.stageX = __getRenderTransform ().__transformX (mouseEvent.localX, mouseEvent.localY);
+			mouseEvent.stageY = __getRenderTransform ().__transformY (mouseEvent.localX, mouseEvent.localY);
+			
+		}
+		
+		return super.dispatchEvent (event);
 		
 	}
 	
