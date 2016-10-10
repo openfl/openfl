@@ -204,7 +204,7 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			return bitmapData.height * scaleY;
+			return bitmapData.height * Math.abs (scaleY);
 			
 		}
 		
@@ -236,7 +236,7 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			return bitmapData.width * scaleX;
+			return bitmapData.width * Math.abs (scaleX);
 			
 		}
 		
