@@ -1,3 +1,40 @@
+4.3.0 (10/10/2016)
+------------------
+
+* Added support for ColorMatrixFilter and ConvolutionFilter
+* Added support for custom shaders with additional uniforms/samplers
+* Added ByteArray.fromFile and improved conversion from null values
+* Added support for rounding coordinates in the GL renderer
+* Updated Sound to rely only on lime.sound.AudioSource
+* Updated Capabilities.language to use lime.system.Locale
+* Updated HTML5 templates for favicon support
+* Updated Flash web template to enable Stage3D support
+* Improved the behavior of displayAsPassword input text
+* Improved the behavior of Tile rotation
+* Improved Graphics to be more efficient with garbage collection
+* Improved the behavior of touch events
+* Improved use of "-lib openfl" from plain HXML
+* Implemented hitTestPoint with shapeFlag
+* Fixed width and height values when scaleX or scaleY is negative
+* Fixed set of stageX and stageY when dispatching a custom MouseEvent
+* Fixed Tilemap smoothing on Flash
+* Fixed TextField auto-size remaining too small and cropping text
+* Fixed the return value of Multitouch.supportsTouchEvents on macOS
+* Fixed retained references after changing stage.focus
+* Fixed the "target" field of mouse wheel events
+* Fixed unregistration of sound channels when complete
+* Fixed display of TextField caret when no text has been entered yet
+* Fixed support for AGAL shader sampler states
+* Fixed drawTriangles support for HTML5
+* Fixed rendering of Graphics with negative scale values
+* Fixed Assets.loadBytes to always return a lime.app.Future
+* Fixed the behavior of -Dopenfl-disable-graphics-upscaling
+* Fixed Tilemap width/height to reflect the scaled value
+* Fixed some issues with scaled Cairo and Canvas Tilemap rendering
+* Fixed soundChannel.position on native platforms
+* Fixed support for "openfl create <lib>"
+
+
 4.2.0 (09/19/2016)
 ------------------
 
