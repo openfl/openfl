@@ -93,6 +93,8 @@ class Shader {
 		byteCode = code;
 		precisionHint = FULL;
 		
+		__glSourceDirty = true;
+		
 	}
 	
 	
