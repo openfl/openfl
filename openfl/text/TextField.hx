@@ -1233,6 +1233,7 @@ class TextField extends InteractiveObject {
 				
 				var formatStack:Array<TextFormat> = [__textFormat.clone()];
 				var sub:String;
+				var match:String;
 				var noLineBreak:Bool = false;
 				
 				for (segment in segments) {
@@ -1283,37 +1284,49 @@ class TextField extends InteractiveObject {
 										
 									}
 									
-									var alignEreg = ~/align="([^"]+)/i;
+									var alignEreg = ~/align="([^"]+)|align='([^']+)/i;
 									
 									if (alignEreg.match (segment)) {
 										
-										format.align = alignEreg.matched (1).toLowerCase ();
+										match = alignEreg.matched (1);
+										if (match == null) match = alignEreg.matched (2);
+										
+										format.align = match.toLowerCase ();
 										
 									}
 								
 								case "font":
 									
-									var faceEreg = ~/face="([^"]+)/i;
+									var faceEreg = ~/face="([^"]+)|face='([^']+)/i;
 									
 									if (faceEreg.match (segment)) {
 										
-										format.font = faceEreg.matched (1);
+										match = faceEreg.matched (1);
+										if (match == null) match = faceEreg.matched (2);
+										
+										format.font = match;
 										
 									}
 									
-									var colorEreg = ~/color="#([^"]+)/i;
+									var colorEreg = ~/color="#([^"]+)|color='#([^']+)/i;
 									
 									if (colorEreg.match (segment)) {
 										
-										format.color = Std.parseInt ("0x" + colorEreg.matched (1));
+										match = colorEreg.matched (1);
+										if (match == null) match = colorEreg.matched (2);
+										
+										format.color = Std.parseInt ("0x" + match);
 										
 									}
 									
-									var sizeEreg = ~/size="([^"]+)/i;
+									var sizeEreg = ~/size="([^"]+)|size='([^']+)/i;
 									
 									if (sizeEreg.match (segment)) {
 										
-										format.size = Std.parseInt (sizeEreg.matched (1));
+										match = sizeEreg.matched (1);
+										if (match == null) match = sizeEreg.matched (2);
+										
+										format.size = Std.parseInt (match);
 										
 									}
 								
