@@ -52,6 +52,7 @@ class CanvasGraphics {
 
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
+	private static var canvasWindingRule = js.html.CanvasWindingRule.EVENODD;
 	#end
 	
 	
@@ -151,7 +152,7 @@ class CanvasGraphics {
 		context.lineTo (width, 0);
 		context.lineTo (0, 0);
 		context.closePath ();
-		if (!hitTesting) context.fill ();
+		if (!hitTesting) context.fill (canvasWindingRule);
 		return canvas;
 		#end
 		
@@ -294,7 +295,7 @@ class CanvasGraphics {
 						data.readEndFill ();
 						endFillStroke ();
 
-						if (canvasGraphics.hasFill && context.isPointInPath (x, y)) {
+						if (canvasGraphics.hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
 							
 							data.destroy ();
 							return true;
@@ -315,7 +316,7 @@ class CanvasGraphics {
 
 						endFillStroke ();
 
-						if (hasFill && context.isPointInPath (x, y)) {
+						if (hasFill && context.isPointInPath (x, y, canvasWindingRule)) {
 							
 							data.destroy ();
 							return true;
@@ -382,7 +383,7 @@ class CanvasGraphics {
 			
 			data.destroy ();
 			
-			if (hasFill && context.isPointInPath (x, y)) {
+			if (hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
 				
 				return true;
 				
@@ -548,7 +549,7 @@ class CanvasGraphics {
 							}
 
 							if(canvasGraphics.hasFill) {
-								context.fill();
+								context.fill(canvasGraphics.canvasWindingRule);
 							}
 						}
 
@@ -764,7 +765,7 @@ class CanvasGraphics {
 					canvasGraphics.pendingMatrix = null;
 				}
 
-				if (!canvasGraphics.hitTesting) context.fill ();
+				if (!canvasGraphics.hitTesting) context.fill (canvasGraphics.canvasWindingRule);
 
 				context.restore();
 				context.closePath ();
