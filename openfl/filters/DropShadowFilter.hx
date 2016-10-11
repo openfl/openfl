@@ -107,7 +107,7 @@ import openfl.filters.commands.*;
 
 		if ( knockout || ( hideObject && inner ) ) {
 
-			commands.push (Knockout(bitmap, bitmap, __shadowBitmapData, !inner ));
+			commands.push (InnerKnockout(bitmap, bitmap, __shadowBitmapData));
 
 		} else if (inner) {
 

@@ -85,8 +85,11 @@ import openfl.geom.Rectangle;
 		commands.push (Colorize (__glowBitmapData, __glowBitmapData, color, alpha));
 
 		if (knockout) {
-
-			commands.push (Knockout(bitmap, bitmap, __glowBitmapData, !inner));
+			if ( inner ) {
+				commands.push (InnerKnockout(bitmap, bitmap, __glowBitmapData));
+			} else {
+				commands.push (OuterKnockout(bitmap, bitmap, __glowBitmapData));
+			}
 		}
 		else if (inner) {
 

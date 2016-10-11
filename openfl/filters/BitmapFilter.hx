@@ -77,8 +77,11 @@ class BitmapFilter {
 					case Combine (target, source1, source2) :
 						CombineCommand.apply (renderSession, target, source1, source2);
 
-					case Knockout (target, source1, source2, outer) :
-						KnockoutCommand.apply(renderSession, target, source1, source2, outer);
+					case InnerKnockout (target, source1, source2) :
+						InnerKnockoutCommand.apply(renderSession, target, source1, source2);
+
+					case OuterKnockout (target, source1, source2) :
+						OuterKnockoutCommand.apply(renderSession, target, source1, source2);
 
 					default :
 				}
