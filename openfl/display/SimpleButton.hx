@@ -28,6 +28,7 @@ class SimpleButton extends InteractiveObject {
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
 	private var __soundTransform:SoundTransform;
+	private var __childRect = new Rectangle();
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -72,8 +73,10 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		__currentState.__getTransformedRenderBounds (rect, __currentState.__worldTransform);
-		
+		__childRect.setEmpty ();
+		__currentState.__getRenderBounds (__childRect);
+		@:privateAccess __childRect.__transform (__childRect, @:privateAccess __currentState.__transform);
+		rect.__expand (__childRect.x, __childRect.y, __childRect.width, __childRect.height);
 	}
 	
 	
