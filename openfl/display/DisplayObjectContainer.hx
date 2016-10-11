@@ -58,8 +58,10 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child.parent == this) {
 			
-			__children.remove (child);
-			__children.insert (index, child);
+			if (__children[index] != child) {
+				__children.remove (child);
+				__children.insert (index, child);
+			}
 			
 		} else {
 			
