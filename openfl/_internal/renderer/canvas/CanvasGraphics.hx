@@ -223,19 +223,21 @@ class CanvasGraphics {
 			
 			hitTesting = true;
 			
-			x -= bounds.x;
-			y -= bounds.y;
-			
-			if (graphics.__canvas == null) {
-				
+			if ( graphics.__canvas == null ) {
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
 				graphics.__context = graphics.__canvas.getContext ("2d");
-				
+			} else {
+				graphics.__context.setTransform(1,0,0,1,0,0);
+				graphics.__context.clearRect(0,0,graphics.__canvas.width,graphics.__canvas.height);
 			}
-			
+				
 			context = graphics.__context;
 
 			var context = canvasGraphics.context;
+			context.translate (-bounds.x, -bounds.y);
+
+			x -= bounds.x;
+			y -= bounds.y;
 
 			canvasGraphics.fillStrokeCommands.clear();
 
