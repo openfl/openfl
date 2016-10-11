@@ -32,7 +32,7 @@
 * Fixed Tilemap width/height to reflect the scaled value
 * Fixed some issues with scaled Cairo and Canvas Tilemap rendering
 * Fixed soundChannel.position on native platforms
-* Fixed support for "openfl create <lib>"
+* Fixed support for `openfl create <lib>`
 
 
 4.2.0 (09/19/2016)
@@ -198,7 +198,7 @@
 ------------------
 
 * Formalized the extern classes more, fixed some Flash behaviors
-* Improved the standard HTML5 template for <window resizable="false" />
+* Improved the standard HTML5 template for `<window resizable="false" />`
 * Fixed the use of binary request data in HTML5 URLLoaders
 * Improved compatibility for ByteArrayData (legacy)
 
