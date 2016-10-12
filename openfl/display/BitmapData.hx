@@ -25,6 +25,7 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.utils.PerlinNoise;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
@@ -1136,7 +1137,9 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
-		openfl.Lib.notImplemented ();
+		if (!__isValid) return;
+		var noise = new PerlinNoise (randomSeed, numOctaves, 0.01);
+		noise.fill (this, baseX, baseY, 0);
 		
 	}
 	
