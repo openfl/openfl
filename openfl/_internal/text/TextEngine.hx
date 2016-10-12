@@ -46,7 +46,11 @@ class TextEngine {
 	private static inline var UTF8_ENDLINE = 10;
 	private static inline var UTF8_SPACE = 32;
 	private static inline var UTF8_HYPHEN = 0x2D;
-	
+	#if (js && html5)
+	private static inline var DECIMAL_PRECISION_MULTIPLIER = 100;
+	private static inline var DECIMAL_PRECISION_DIVIDER = 0.01;
+	#end
+
 	private static var __defaultFonts = new Map<String, Font> ();
 	
 	#if (js && html5)
@@ -112,6 +116,11 @@ class TextEngine {
 	@:noCompletion @:dox(hide) public var __font:Font;
 	
 	#if (js && html5)
+	private static var __isIE11:Null<Bool>;
+
+	private static var __currentFormatUpscaledFont:Null<String>;
+	private static var __currentFormatFont:Null<String>;
+
 	private var __hiddenInput:InputElement;
 	#end
 	
@@ -159,6 +168,22 @@ class TextEngine {
 	}
 	
 	
+	#if (js && html5)
+	private static function isIE11():Bool {
+
+		if (__isIE11 != null) return __isIE11;
+
+		var navigator = Browser.navigator;
+
+		var isTrident = ~/Trident\/7.0/.match(navigator.userAgent);
+		var hasRevision = navigator.userAgent.indexOf("rv:11") >= 0;
+
+		return (__isIE11 = (isTrident && hasRevision));
+
+	}
+	#end
+
+
 	private static function findFont (name:String):Font {
 		
 		#if (lime_cffi)
@@ -238,13 +263,13 @@ class TextEngine {
 	}
 	
 	
-	public static function getFont (format:TextFormat):String {
+	public static function getFont (format:TextFormat, scale:Float = 1):String {
 		
 		var font = format.italic ? "italic " : "normal ";
 		font += "normal ";
 		font += format.bold ? "bold " : "normal ";
-		font += format.size + "px";
-		font += "/" + (format.size + format.leading + 6) + "px ";
+		font += format.size * scale + "px";
+		font += "/" + (format.size * scale + format.leading + 6) + "px ";
 		
 		font += "" + switch (format.font) {
 			
@@ -666,9 +691,23 @@ class TextEngine {
 			
 			#if (js && html5)
 			
+			var divider = 1.0;
+
+			if (isIE11 ()) {
+				divider = DECIMAL_PRECISION_DIVIDER;
+
+				__context.font = __currentFormatUpscaledFont;
+			}
+
 			for (i in startIndex...endIndex) {
 				
-				advances.push (__context.measureText (text.charAt (i)).width);
+				advances.push (__context.measureText(text.charAt (i)).width * divider);
+
+			}
+
+			if (isIE11 ()) {
+
+				__context.font = __currentFormatFont;
 				
 			}
 			
@@ -723,7 +762,24 @@ class TextEngine {
 			
 			#if (js && html5)
 			
-			return __context.measureText (text).width;
+			var result:Float = 0;
+			var divider = 1.0;
+
+			if (isIE11 ()) {
+				divider = DECIMAL_PRECISION_DIVIDER;
+
+				__context.font = __currentFormatUpscaledFont;
+			}
+
+			result = __context.measureText(text).width * divider;
+
+			if (isIE11 ()) {
+
+				__context.font = __currentFormatFont;
+
+			}
+
+			return result;
 			
 			#else
 			
@@ -768,7 +824,13 @@ class TextEngine {
 				
 				#if (js && html5)
 				
-				__context.font = getFont (currentFormat);
+				__context.font = __currentFormatFont = getFont (currentFormat);
+
+				if (isIE11()) {
+
+					__currentFormatUpscaledFont = getFont(currentFormat, DECIMAL_PRECISION_MULTIPLIER);
+
+				}
 				
 				ascent = currentFormat.size;
 				descent = currentFormat.size * 0.185;
@@ -996,16 +1058,16 @@ class TextEngine {
 						layoutGroup = null;
 						nextFormatRange ();
 						
+						if (spaceIndex == -1 && textIndex <= text.length) {
+
+							textIndex--;
+							offsetX -= spaceWidth;
+
+						}
 					}
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
-						if (spaceIndex > formatRange.end) {
-							
-							textIndex--;
-							
-						}
-						
+
 						break;
 						
 					}
