@@ -197,35 +197,35 @@ private class SamplerReg {
 		var minFilter:Int /*TextureMinFilter*/ = 0;
 		var wrapModeS:Int /*TextureWrapMode*/ = 0;
 		var wrapModeT:Int /*TextureWrapMode*/ = 0;
-
+		
 		// translate mag filter
 		switch (f)
 		{
 			case 0:
 				magFilter = GL.NEAREST; //TextureMagFilter.Nearest;
-
+			
 			case 1:
 				magFilter = GL.LINEAR; //TextureMagFilter.Linear;
-
+			
 			default:
 				throw new IllegalOperationError(); //NotImplementedException();
 		}
-
+		
 		// translate min filter
 		switch (m)
 		{
 			// disable
 			case 0:
-				minFilter = (f != 0) ? GL.NEAREST : GL.LINEAR;
-
+				minFilter = (f != 0) ? GL.LINEAR : GL.NEAREST;
+			
 			// nearest
 			case 1:
 				minFilter = (f != 0) ? GL.NEAREST_MIPMAP_LINEAR : GL.NEAREST_MIPMAP_NEAREST;
-
+			
 			// linear
 			case 2:
 				minFilter = (f != 0) ? GL.LINEAR_MIPMAP_LINEAR : GL.LINEAR_MIPMAP_NEAREST;
-
+			
 			default:
 				throw new IllegalOperationError();
 		}

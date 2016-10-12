@@ -744,26 +744,26 @@ import openfl.profiler.Telemetry;
 				
 				state.wrapModeS = GL.CLAMP_TO_EDGE;
 				state.wrapModeT = GL.CLAMP_TO_EDGE;
-				
+			
 			case Context3DWrapMode.CLAMP_U_REPEAT_V:
 				
 				state.wrapModeS = GL.CLAMP_TO_EDGE;
 				state.wrapModeT = GL.REPEAT;
-				
+			
 			case Context3DWrapMode.REPEAT:
 				
 				state.wrapModeS = GL.REPEAT;
 				state.wrapModeT = GL.REPEAT;
-				
+			
 			case Context3DWrapMode.REPEAT_U_CLAMP_V:
 				
 				state.wrapModeS = GL.REPEAT;
 				state.wrapModeT = GL.CLAMP_TO_EDGE;
-				
+			
 			default:
 				
 				throw new Error ("wrap bad enum");
-				
+			
 		}
 		
 		switch (filter) {
@@ -771,21 +771,21 @@ import openfl.profiler.Telemetry;
 			case Context3DTextureFilter.LINEAR:
 				
 				state.magFilter = GL.LINEAR;
-				
+			
 			case Context3DTextureFilter.NEAREST:
 				
 				state.magFilter = GL.NEAREST;
-				
+			
 			case Context3DTextureFilter.ANISOTROPIC2X:
-					
-				// TODO
-				state.magFilter = GL.LINEAR;
-				 
-			case Context3DTextureFilter.ANISOTROPIC4X:
-					
-				// TODO
-				state.magFilter = GL.LINEAR;
 				
+				// TODO
+				state.magFilter = GL.LINEAR;
+			
+			case Context3DTextureFilter.ANISOTROPIC4X:
+				
+				// TODO
+				state.magFilter = GL.LINEAR;
+			
 			case Context3DTextureFilter.ANISOTROPIC8X:
 				
 				// TODO
@@ -795,15 +795,15 @@ import openfl.profiler.Telemetry;
 				
 				// TODO
 				state.magFilter = GL.LINEAR;
-				
+			
 			default:
 				
 				throw new Error ("filter bad enum");
-				
+			
 		}
 		
 		switch (mipfilter) {
-						
+			
 			case Context3DMipFilter.MIPLINEAR:
 				
 				state.minFilter = GL.LINEAR_MIPMAP_LINEAR;
@@ -815,11 +815,11 @@ import openfl.profiler.Telemetry;
 			case Context3DMipFilter.MIPNONE:
 				
 				state.minFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST : GL.LINEAR;
-				
+			
 			default:
 				
 				throw new Error ("mipfiter bad enum");
-				
+			
 		}
 		
 	}
