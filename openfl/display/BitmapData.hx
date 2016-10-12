@@ -812,7 +812,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if (js && html5)
 			
-			if (textureImage.type == CANVAS && !textureImage.premultiplied) {
+			if (textureImage.type != DATA && !textureImage.premultiplied) {
 				
 				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 				
@@ -1357,7 +1357,11 @@ class BitmapData implements IBitmapDrawable {
 		#if (js && html5)
 		if (!__isValid) return;
 		
-		ImageCanvasUtil.convertToCanvas (image);
+		if (image.type == DATA) {
+			
+			ImageCanvasUtil.convertToCanvas (image);
+			
+		}
 		
 		var context = renderSession.context;
 		
