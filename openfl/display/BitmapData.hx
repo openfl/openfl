@@ -812,13 +812,15 @@ class BitmapData implements IBitmapDrawable {
 			
 			#if (js && html5)
 			
-			if (textureImage.premultiplied) {
-				
-				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-				
-			} else {
+			if (textureImage.type == CANVAS && !textureImage.premultiplied) {
 				
 				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+				
+			} else if (!textureImage.premultiplied && textureImage.transparent) {
+				
+				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+				textureImage = textureImage.clone ();
+				textureImage.premultiplied = true;
 				
 			}
 			

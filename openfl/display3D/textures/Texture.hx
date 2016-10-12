@@ -96,13 +96,6 @@ import haxe.Timer;
 		
 		var image = source.image;
 		
-		if (!image.premultiplied && image.transparent) {
-			
-			image = image.clone ();
-			image.premultiplied = true;
-			
-		}
-		
 		uploadFromTypedArray (image.data);
 		
 	}

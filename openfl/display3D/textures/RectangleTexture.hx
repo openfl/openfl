@@ -42,13 +42,6 @@ import openfl.utils.ByteArray;
 		
 		if (image == null) return;
 		
-		if (!image.premultiplied && image.transparent) {
-			
-			image = image.clone ();
-			image.premultiplied = true;
-			
-		}
-		
 		uploadFromTypedArray (image.data);
 		
 	}
