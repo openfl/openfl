@@ -4,7 +4,6 @@ package openfl._internal.stage3D.assembler;
 class Opcode {
 	
 	
-	
 	public var a:FS;
 	public var b:FS;
 	public var dest:String;

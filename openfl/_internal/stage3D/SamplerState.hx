@@ -39,11 +39,11 @@ class SamplerState {
 		}
 		
 		return this.minFilter == other.minFilter &&
-				this.magFilter == other.magFilter &&
-				this.wrapModeS == other.wrapModeS &&
-				this.wrapModeT == other.wrapModeT &&
-				this.lodBias == other.lodBias &&
-				maxAniso == other.maxAniso;
+			this.magFilter == other.magFilter &&
+			this.wrapModeS == other.wrapModeS &&
+			this.wrapModeT == other.wrapModeT &&
+			this.lodBias == other.lodBias &&
+			maxAniso == other.maxAniso;
 		
 	}
 	
