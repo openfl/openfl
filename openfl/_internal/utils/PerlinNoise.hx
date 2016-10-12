@@ -10,7 +10,7 @@ and some help from http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
 AS3 optimizations by Mario Klingemann http://www.quasimondo.com
 Haxe port and optimization by Nicolas Cannasse http://haxe.org
 */
-import flash.display.BitmapData;
+import openfl.display.BitmapData;
 
 class PerlinNoise {
 
