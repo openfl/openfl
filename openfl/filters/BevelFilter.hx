@@ -21,12 +21,9 @@ import openfl.filters.commands.*;
 	public var strength:Float;
 	public var type: BitmapFilterType;
 
-	private var __highlightBitmapDataInner:BitmapData;
-	private var __clonedHighlightBitmapDataInner:BitmapData;
-	private var __shadowBitmapDataInner:BitmapData;
-	private var __highlightBitmapDataOuter:BitmapData;
-	private var __clonedHighlightBitmapDataOuter:BitmapData;
-	private var __shadowBitmapDataOuter:BitmapData;
+	private var __highlightBitmapData:BitmapData;
+	private var __clonedHighlightBitmapData:BitmapData;
+	private var __shadowBitmapData:BitmapData;
 	private static var __inverseAlphaMatrix = [ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 255.0 ];
 
 	public function new (distance:Float = 4, angle:Float = 45, highlightColor:Int = 0xFFFFFF, highlightAlpha:Float = 1, shadowColor: Int = 0x000000, shadowAlpha: Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, type: BitmapFilterType = BitmapFilterType.INNER, knockout:Bool = false) {
@@ -56,29 +53,17 @@ import openfl.filters.commands.*;
 	}
 
 	public override function dispose(): Void{
-		if (__highlightBitmapDataInner != null){
-			__highlightBitmapDataInner.dispose();
-			__highlightBitmapDataInner = null;
+		if (__highlightBitmapData != null){
+			__highlightBitmapData.dispose();
+			__highlightBitmapData = null;
 		}
-		if (__clonedHighlightBitmapDataInner != null){
-			__clonedHighlightBitmapDataInner.dispose();
-			__clonedHighlightBitmapDataInner = null;
+		if (__clonedHighlightBitmapData != null){
+			__clonedHighlightBitmapData.dispose();
+			__clonedHighlightBitmapData = null;
 		}
-		if (__shadowBitmapDataInner != null){
-			__shadowBitmapDataInner.dispose();
-			__shadowBitmapDataInner = null;
-		}
-		if (__highlightBitmapDataOuter != null){
-			__highlightBitmapDataOuter.dispose();
-			__highlightBitmapDataOuter = null;
-		}
-		if (__clonedHighlightBitmapDataOuter != null){
-			__clonedHighlightBitmapDataOuter.dispose();
-			__clonedHighlightBitmapDataOuter = null;
-		}
-		if (__shadowBitmapDataOuter != null){
-			__shadowBitmapDataOuter.dispose();
-			__shadowBitmapDataOuter = null;
+		if (__shadowBitmapData != null){
+			__shadowBitmapData.dispose();
+			__shadowBitmapData = null;
 		}
 	}
 
@@ -101,105 +86,66 @@ import openfl.filters.commands.*;
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
 
-		if (type != BitmapFilterType.OUTER ) {
-			if(__highlightBitmapDataInner == null)
-				__highlightBitmapDataInner = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
-			if(__shadowBitmapDataInner == null)
-				__shadowBitmapDataInner = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
-			if ( __clonedHighlightBitmapDataInner == null )
-				__clonedHighlightBitmapDataInner = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+		if(__highlightBitmapData == null)
+			__highlightBitmapData = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+		if(__shadowBitmapData == null)
+			__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+		if ( __clonedHighlightBitmapData == null )
+			__clonedHighlightBitmapData = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
 
-			// create 2 dropshadow filters.
-			commands.push (ColorTransform (__clonedHighlightBitmapDataInner, bitmap, __inverseAlphaMatrix));
-			commands.push (ColorTransform (__shadowBitmapDataInner, bitmap, __inverseAlphaMatrix));
+		// create 2 dropshadow filters.
+		commands.push (ColorTransform (__clonedHighlightBitmapData, bitmap, __inverseAlphaMatrix));
+		commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
 
-			for( quality_index in 0...quality ) {
-				var first_pass = quality_index == 0;
+		for( quality_index in 0...quality ) {
+			var first_pass = quality_index == 0;
 
-				if (first_pass) {
-					commands.push (Blur1D (__clonedHighlightBitmapDataInner, src, blurX, true, 1.0, distance, angle));
-					commands.push (Blur1D (__shadowBitmapDataInner, src, blurX, true, 1.0, distance, angle+180));
-				}
-				else {
-					commands.push (Blur1D (__clonedHighlightBitmapDataInner, __clonedHighlightBitmapDataInner, blurX, true, 1.0, 0.0, 0.0));
-					commands.push (Blur1D (__shadowBitmapDataInner, __shadowBitmapDataInner, blurX, true, 1.0, 0.0, 0.0));
-				}
-
-				commands.push (Blur1D (__clonedHighlightBitmapDataInner, __clonedHighlightBitmapDataInner, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-				commands.push (Blur1D (__shadowBitmapDataInner, __shadowBitmapDataInner, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+			if (first_pass) {
+				commands.push (Blur1D (__clonedHighlightBitmapData, src, blurX, true, 1.0, distance, angle));
+				commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle+180));
+			}
+			else {
+				commands.push (Blur1D (__clonedHighlightBitmapData, __clonedHighlightBitmapData, blurX, true, 1.0, 0.0, 0.0));
+				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
 			}
 
-			commands.push (Colorize (__clonedHighlightBitmapDataInner, __clonedHighlightBitmapDataInner, highlightColor, highlightAlpha));
-			commands.push (Colorize (__shadowBitmapDataInner, __shadowBitmapDataInner, shadowColor, shadowAlpha));
-
-			commands.push ( DestOut( __highlightBitmapDataInner, __shadowBitmapDataInner, __clonedHighlightBitmapDataInner));
-			commands.push ( DestOut( __shadowBitmapDataInner, __clonedHighlightBitmapDataInner, __shadowBitmapDataInner ));
-
+			commands.push (Blur1D (__clonedHighlightBitmapData, __clonedHighlightBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 		}
 
-		if (type != BitmapFilterType.INNER ) {
-			if(__highlightBitmapDataOuter == null)
-				__highlightBitmapDataOuter = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
-			if(__shadowBitmapDataOuter == null)
-				__shadowBitmapDataOuter = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
-			if ( __clonedHighlightBitmapDataOuter == null )
-				__clonedHighlightBitmapDataOuter = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+		commands.push (Colorize (__clonedHighlightBitmapData, __clonedHighlightBitmapData, highlightColor, highlightAlpha));
+		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, shadowColor, shadowAlpha));
 
-			// create 2 dropshadow filters.
+		commands.push ( DestOut( __highlightBitmapData, __shadowBitmapData, __clonedHighlightBitmapData));
+		commands.push ( DestOut( __shadowBitmapData, __clonedHighlightBitmapData, __shadowBitmapData ));
 
-			for( quality_index in 0...quality ) {
-				var first_pass = quality_index == 0;
 
-				if (first_pass) {
-					commands.push (Blur1D (__clonedHighlightBitmapDataOuter, src, blurX, true, 1.0, distance, angle));
-					commands.push (Blur1D (__shadowBitmapDataOuter, src, blurX, true, 1.0, distance, angle+180));
-				}
-				else {
-					commands.push (Blur1D (__clonedHighlightBitmapDataOuter, __clonedHighlightBitmapDataOuter, blurX, true, 1.0, 0.0, 0.0));
-					commands.push (Blur1D (__shadowBitmapDataOuter, __shadowBitmapDataOuter, blurX, true, 1.0, 0.0, 0.0));
-				}
-
-				commands.push (Blur1D (__clonedHighlightBitmapDataOuter, __clonedHighlightBitmapDataOuter, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-				commands.push (Blur1D (__shadowBitmapDataOuter, __shadowBitmapDataOuter, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-			}
-
-			commands.push (Colorize (__clonedHighlightBitmapDataOuter, __clonedHighlightBitmapDataOuter, highlightColor, highlightAlpha));
-			commands.push (Colorize (__shadowBitmapDataOuter, __shadowBitmapDataOuter, shadowColor, shadowAlpha));
-
-			commands.push ( DestOut( __highlightBitmapDataOuter, __shadowBitmapDataOuter, __clonedHighlightBitmapDataOuter));
-			commands.push ( DestOut( __shadowBitmapDataOuter, __clonedHighlightBitmapDataOuter, __shadowBitmapDataOuter ));
-
-		}
 
 		switch type {
 		case BitmapFilterType.INNER:
 			if ( knockout ) {
-				commands.push (Combine(__highlightBitmapDataInner, __highlightBitmapDataInner, __shadowBitmapDataInner));
-				commands.push (InnerKnockout(bitmap, bitmap, __highlightBitmapDataInner ));
+				commands.push (Combine(__highlightBitmapData, __highlightBitmapData, __shadowBitmapData));
+				commands.push (InnerKnockout(bitmap, bitmap, __highlightBitmapData ));
 			} else {
-				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapDataInner));
-				commands.push (CombineInner (bitmap, bitmap, __highlightBitmapDataInner));
+				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
+				commands.push (CombineInner (bitmap, bitmap, __highlightBitmapData));
 			}
 		case BitmapFilterType.OUTER:
 			if ( knockout ) {
-				commands.push (Combine(__highlightBitmapDataOuter, __highlightBitmapDataOuter, __shadowBitmapDataOuter));
-				commands.push (OuterKnockoutTransparency(bitmap, bitmap, __highlightBitmapDataOuter, true ));
+				commands.push (Combine(__highlightBitmapData, __highlightBitmapData, __shadowBitmapData));
+				commands.push (OuterKnockoutTransparency(bitmap, bitmap, __highlightBitmapData, true ));
 			} else {
-				commands.push (Combine (bitmap, __shadowBitmapDataOuter, bitmap));
-				commands.push (Combine (bitmap, __highlightBitmapDataOuter, bitmap));
+				commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
+				commands.push (Combine (bitmap, __highlightBitmapData, bitmap));
 			}
 		case BitmapFilterType.FULL:
 			if ( knockout ) {
-				commands.push (Combine(__highlightBitmapDataOuter, __highlightBitmapDataOuter, __shadowBitmapDataOuter));
-				commands.push (Combine(__highlightBitmapDataInner, __highlightBitmapDataInner, __shadowBitmapDataInner));
-				commands.push (InnerKnockout(__highlightBitmapDataInner, bitmap, __highlightBitmapDataInner ));
-				commands.push (OuterKnockoutTransparency(__highlightBitmapDataOuter, bitmap, __highlightBitmapDataOuter, true ));
-				commands.push (Combine(bitmap, __highlightBitmapDataInner, __highlightBitmapDataOuter));
+				commands.push (Combine(bitmap, __highlightBitmapData, __shadowBitmapData));
 			} else {
-				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapDataInner));
-				commands.push (CombineInner (bitmap, bitmap, __highlightBitmapDataInner));
-				commands.push (Combine (bitmap, __shadowBitmapDataOuter, bitmap));
-				commands.push (Combine (bitmap, __highlightBitmapDataOuter, bitmap));
+				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
+				commands.push (CombineInner (bitmap, bitmap, __highlightBitmapData));
+				commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
+				commands.push (Combine (bitmap, __highlightBitmapData, bitmap));
 			}
 		}
 
