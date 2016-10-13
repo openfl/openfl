@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.3.0",
-	"releasenote": "Improved custom shader support, ConvolutionFilter and ColorMatrixFilter",
+	"version": "4.3.1",
+	"releasenote": "Added basic Perlin noise, fixes for Stage3D, improved htmlText",
 	"contributors": [ "singmajesty" ]
 }
