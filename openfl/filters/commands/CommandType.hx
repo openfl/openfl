@@ -12,5 +12,6 @@ enum CommandType {
 	Combine (target:BitmapData, source1:BitmapData, source2:BitmapData);
 	InnerKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
 	OuterKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
+	DestOut(target:BitmapData,source1:BitmapData, source2:BitmapData);
 
 }
