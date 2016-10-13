@@ -925,7 +925,6 @@ class TextEngine {
 				
 				while (true) {
 					
-					if (textIndex == formatRange.end) break;
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
 					advances = getAdvances (text, textIndex, spaceIndex);
