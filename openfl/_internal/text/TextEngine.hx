@@ -856,7 +856,7 @@ class TextEngine {
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
 				
-			} else if (formatRange.end >= spaceIndex && spaceIndex > -1) {
+			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
 				
 				layoutGroup = null;
 				wrap = false;
@@ -1018,9 +1018,7 @@ class TextEngine {
 					
 					break;
 					
-				}
-				
-				if (textIndex < formatRange.end) {
+				} else if (textIndex < formatRange.end) {
 					
 					layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
 					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
@@ -1041,6 +1039,13 @@ class TextEngine {
 				}
 				
 				nextFormatRange ();
+				
+				if (textIndex == formatRange.end) {
+					
+					textIndex++;
+					break;
+					
+				}
 				
 			}
 			
