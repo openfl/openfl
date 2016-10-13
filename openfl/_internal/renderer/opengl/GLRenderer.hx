@@ -9,6 +9,8 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 
 @:access(openfl.display.Stage)
+@:access(openfl.display3D.Context3D)
+@:access(openfl.display3D.Program3D)
 @:access(openfl.geom.Matrix)
 
 
@@ -71,9 +73,19 @@ class GLRenderer extends AbstractRenderer {
 			
 			if (stage3D.context3D != null) {
 				
-				renderSession.shaderManager.setShader (null);
 				renderSession.blendModeManager.setBlendMode (null);
-				break;
+				
+				if (renderSession.shaderManager.currentShader != null) {
+					
+					renderSession.shaderManager.setShader (null);
+					
+					if (stage3D.context3D.__program != null) {
+						
+						stage3D.context3D.__program.__use ();
+						
+					}
+					
+				}
 				
 			}
 			
