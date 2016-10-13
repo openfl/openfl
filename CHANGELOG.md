@@ -10,6 +10,7 @@
 * Fixed htmlText parsing when attributes use single quotes
 * Fixed a rendering issue where changing text format could omit one letter
 * Fixed the default GL min filter value for Stage3D samplers
+* Fixed an GL error caused by switching Stage3D and display list shaders
 
 
 4.3.0 (10/10/2016)
