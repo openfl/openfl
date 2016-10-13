@@ -1,3 +1,17 @@
+4.3.1 (10/13/2016)
+------------------
+
+* Added basic support for bitmapData.perlinNoise
+* Added initial support for `<textformat>` in TextField htmlText
+* Improved the behavior of premultiplied alpha on HTML5
+* Optimized addChild/addChildAt if child remains at the same depth
+* Optimized conversion of Image to Canvas in some cases
+* Fixed an issue with cached scissor rectangles in Stage3D
+* Fixed htmlText parsing when attributes use single quotes
+* Fixed a rendering issue where changing text format could omit one letter
+* Fixed the default GL min filter value for Stage3D samplers
+
+
 4.3.0 (10/10/2016)
 ------------------
 
