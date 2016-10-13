@@ -12,6 +12,7 @@ enum CommandType {
 	Combine (target:BitmapData, source1:BitmapData, source2:BitmapData);
 	InnerKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
 	OuterKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
+	OuterKnockoutTransparency(target:BitmapData,source1:BitmapData, source2:BitmapData, allowTransparency:Bool);
 	DestOut(target:BitmapData,source1:BitmapData, source2:BitmapData);
 
 }

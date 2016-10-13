@@ -183,7 +183,7 @@ import openfl.filters.commands.*;
 		case BitmapFilterType.OUTER:
 			if ( knockout ) {
 				commands.push (Combine(__highlightBitmapDataOuter, __highlightBitmapDataOuter, __shadowBitmapDataOuter));
-				commands.push (OuterKnockout(bitmap, bitmap, __highlightBitmapDataOuter ));
+				commands.push (OuterKnockoutTransparency(bitmap, bitmap, __highlightBitmapDataOuter, true ));
 			} else {
 				commands.push (Combine (bitmap, __shadowBitmapDataOuter, bitmap));
 				commands.push (Combine (bitmap, __highlightBitmapDataOuter, bitmap));
@@ -193,7 +193,7 @@ import openfl.filters.commands.*;
 				commands.push (Combine(__highlightBitmapDataOuter, __highlightBitmapDataOuter, __shadowBitmapDataOuter));
 				commands.push (Combine(__highlightBitmapDataInner, __highlightBitmapDataInner, __shadowBitmapDataInner));
 				commands.push (InnerKnockout(__highlightBitmapDataInner, bitmap, __highlightBitmapDataInner ));
-				commands.push (OuterKnockout(__highlightBitmapDataOuter, bitmap, __highlightBitmapDataOuter ));
+				commands.push (OuterKnockoutTransparency(__highlightBitmapDataOuter, bitmap, __highlightBitmapDataOuter, true ));
 				commands.push (Combine(bitmap, __highlightBitmapDataInner, __highlightBitmapDataOuter));
 			} else {
 				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapDataInner));

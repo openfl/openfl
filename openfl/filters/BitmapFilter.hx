@@ -83,6 +83,9 @@ class BitmapFilter {
 					case OuterKnockout (target, source1, source2) :
 						OuterKnockoutCommand.apply(renderSession, target, source1, source2);
 
+					case OuterKnockoutTransparency (target, source1, source2, allowTransparency) :
+						OuterKnockoutCommand.apply(renderSession, target, source1, source2, allowTransparency);
+
 					case DestOut (target, source1, source2) :
 						DestOutCommand.apply(renderSession, target, source1, source2);
 
