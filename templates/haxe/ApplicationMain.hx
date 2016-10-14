@@ -190,11 +190,11 @@ class ApplicationMain {
 		
 		switch (Context.follow (Context.getType ("::APP_MAIN::"))) {
 			
-			case TInst (t, p):
+			case TInst (t, params):
 				
-				var t = t.get ();
+				var type = t.get ();
 				
-				for (method in t.statics.get ()) {
+				for (method in type.statics.get ()) {
 					
 					if (method.name == "main") {
 						
@@ -207,9 +207,9 @@ class ApplicationMain {
 				
 				if (hasMain) {
 					
-					return macro { var entryPoint = Type.resolveClass ("::APP_MAIN::"); Reflect.callMethod (entryPoint, Reflect.field (entryPoint, "main"), []); };
+					return Context.parse ("::APP_MAIN::.main ()", Context.currentPos ());
 					
-				} else if (t.constructor != null) {
+				} else if (type.constructor != null) {
 					
 					return macro { new DocumentClass (); };
 					
