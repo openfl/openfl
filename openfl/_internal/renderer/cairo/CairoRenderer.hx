@@ -34,6 +34,17 @@ class CairoRenderer extends AbstractRenderer {
 	}
 	
 	
+	public override function clear ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCairo (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
 	public override function render ():Void {
 		
 		renderSession.allowSmoothing = (stage.quality != LOW);

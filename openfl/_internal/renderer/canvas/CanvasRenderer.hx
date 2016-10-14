@@ -32,6 +32,17 @@ class CanvasRenderer extends AbstractRenderer {
 	}
 	
 	
+	public override function clear ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCanvas (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
 	public override function render ():Void {
 		
 		renderSession.allowSmoothing = (stage.quality != LOW);

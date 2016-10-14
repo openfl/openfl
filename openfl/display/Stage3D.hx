@@ -76,6 +76,41 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
+	private function __dispatchError ():Void {
+		
+		dispatchEvent (new ErrorEvent (ErrorEvent.ERROR, false, false, "Context3D not available"));
+		
+	}
+	
+	
+	public function __renderCairo (stage:Stage, renderSession:RenderSession):Void {
+		
+		if (!visible) return;
+		
+		if (__contextRequested) {
+			
+			__dispatchError ();
+			__contextRequested = false;
+			
+		}
+		
+	}
+	
+	
+	public function __renderCanvas (stage:Stage, renderSession:RenderSession):Void {
+		
+		if (!visible) return;
+		
+		if (__contextRequested) {
+			
+			__dispatchError ();
+			__contextRequested = false;
+			
+		}
+		
+	}
+	
+	
 	public function __renderDOM (stage:Stage, renderSession:RenderSession):Void {
 		
 		if (!visible) return;
@@ -134,7 +169,7 @@ class Stage3D extends EventDispatcher {
 					
 				} else {
 					
-					dispatchEvent (new ErrorEvent (ErrorEvent.ERROR));
+					__dispatchError ();
 					
 				}
 				

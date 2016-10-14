@@ -121,6 +121,17 @@ class DOMRenderer extends AbstractRenderer {
 	}
 	
 	
+	public override function clear ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderDOM (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
 	#if (js && html5)
 	public static function initializeElement (displayObject:DisplayObject, element:Element, renderSession:RenderSession):Void {
 		
