@@ -1322,19 +1322,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
-		
-		for (stage3D in stage3Ds) {
-			
-			stage3D.__renderGL (this, renderSession);
-			
-		}
-		
-		super.__renderGL (renderSession);
-		
-	}
-	
-	
 	private function __resize ():Void {
 		
 		var cacheWidth = stageWidth;

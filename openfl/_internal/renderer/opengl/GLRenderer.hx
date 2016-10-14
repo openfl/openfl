@@ -71,23 +71,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		for (stage3D in stage.stage3Ds) {
 			
-			if (stage3D.context3D != null) {
-				
-				renderSession.blendModeManager.setBlendMode (null);
-				
-				if (renderSession.shaderManager.currentShader != null) {
-					
-					renderSession.shaderManager.setShader (null);
-					
-					if (stage3D.context3D.__program != null) {
-						
-						stage3D.context3D.__program.__use ();
-						
-					}
-					
-				}
-				
-			}
+			stage3D.__renderGL (stage, renderSession);
 			
 		}
 		
