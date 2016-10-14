@@ -10,13 +10,14 @@ import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.Context3DStateCache;
 import openfl._internal.stage3D.GLUtils;
 import openfl._internal.stage3D.SamplerState;
+import openfl.display.BitmapData;
 import openfl.display.Stage3D;
-import openfl.display3D.textures.TextureBase;
-import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.Texture;
+import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures.VideoTexture;
 import openfl.display3D.Context3DProgramType;
-import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl.errors.IllegalOperationError;
@@ -43,7 +44,7 @@ import openfl.profiler.Telemetry;
 @:final class Context3D extends EventDispatcher {
 	
 	
-	public static var supportsVideoTexture (default, null):Bool = false;
+	public static var supportsVideoTexture (default, null):Bool = #if (js && html5) true #else false #end;
 	
 	private static inline var MAX_SAMPLERS = 8;
 	private static inline var MAX_ATTRIBUTES = 16;
@@ -271,6 +272,17 @@ import openfl.profiler.Telemetry;
 	public function createVertexBuffer (numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):VertexBuffer3D {
 		
 		return new VertexBuffer3D (this, numVertices, data32PerVertex, bufferUsage);
+		
+	}
+	
+	
+	public function createVideoTexture ():VideoTexture {
+		
+		#if (js && html5)
+		return new VideoTexture (this);
+		#else
+		throw new Error ("Video textures are not supported on this platform");
+		#end
 		
 	}
 	
@@ -946,7 +958,7 @@ import openfl.profiler.Telemetry;
 					
 					var target = texture.__textureTarget;
 					
-					GL.bindTexture (target, texture.__textureID);
+					GL.bindTexture (target, texture.__getTexture ());
 					GLUtils.CheckGLError ();
 					
 					var state = __program.__getSamplerState(sampler);

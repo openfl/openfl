@@ -113,6 +113,13 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
+	private function __getTexture ():GLTexture {
+		
+		return __textureID;
+		
+	}
+	
+	
 	private function __setSamplerState (state:SamplerState):Void {
 		
 		if (!state.equals (__samplerState)) {
