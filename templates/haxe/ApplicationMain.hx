@@ -207,7 +207,7 @@ class ApplicationMain {
 				
 				if (hasMain) {
 					
-					return Context.parse ("::APP_MAIN::.main ()", Context.currentPos ());
+					return Context.parse ("@:privateAccess ::APP_MAIN::.main ()", Context.currentPos ());
 					
 				} else if (type.constructor != null) {
 					
