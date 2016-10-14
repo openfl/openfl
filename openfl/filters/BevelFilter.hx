@@ -113,12 +113,11 @@ import openfl.filters.commands.*;
 			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 		}
 
-		commands.push (Colorize (__clonedHighlightBitmapData, __clonedHighlightBitmapData, highlightColor, highlightAlpha));
-		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, shadowColor, shadowAlpha));
-
 		commands.push ( DestOut( __highlightBitmapData, __shadowBitmapData, __clonedHighlightBitmapData));
 		commands.push ( DestOut( __shadowBitmapData, __clonedHighlightBitmapData, __shadowBitmapData ));
 
+		commands.push (Colorize (__highlightBitmapData, __highlightBitmapData, highlightColor, highlightAlpha));
+		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, shadowColor, shadowAlpha));
 
 
 		switch type {
