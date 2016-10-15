@@ -20,7 +20,7 @@ import openfl.Vector;
 class DrawCommandBuffer {
 	
 	
-	private static var empty = new DrawCommandBuffer();
+	private static var empty:DrawCommandBuffer = new DrawCommandBuffer ();
 	
 	public var length (get, never):Int; 
 	public var types:Array<DrawCommandType>;
