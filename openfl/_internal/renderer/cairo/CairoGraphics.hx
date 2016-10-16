@@ -458,6 +458,12 @@ class CairoGraphics {
 			}
 			
 		}
+
+		if ( !skipT ) {
+
+			return { max: max, uvt: uvt };
+		
+		}		
 		
 		var result = new Vector<Float> ();
 		
@@ -469,7 +475,7 @@ class CairoGraphics {
 				
 			}
 			
-			result.push ((uvt[t - 1] / max));
+			result.push (uvt[t - 1]);
 			
 		}
 		
@@ -745,6 +751,7 @@ class CairoGraphics {
 					
 					var width = 0;
 					var height = 0;
+					var currentMatrix = graphics.__renderTransform.__toMatrix3 ();
 					
 					if (!colorFill) {
 						
@@ -879,6 +886,13 @@ class CairoGraphics {
 							
 						}
 						
+						x1*=currentMatrix.a;
+						x2*=currentMatrix.a;
+						x3*=currentMatrix.a;
+						y1*=currentMatrix.d;
+						y2*=currentMatrix.d;
+						y3*=currentMatrix.d;
+
 						t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
 						t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
 						t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
