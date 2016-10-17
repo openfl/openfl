@@ -4,6 +4,7 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.*;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefAttrib;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl._internal.renderer.opengl.shaders2.DefaultMaskedShader.MaskedUniform;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
@@ -20,6 +21,7 @@ import openfl.gl.GLBuffer;
 import openfl.gl.GLTexture;
 import openfl.display.BlendMode;
 import lime.utils.*;
+import lime.math.Vector2;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
@@ -49,7 +51,9 @@ class SpriteBatch {
 	public var drawing:Bool = false;
 	
 	var clipRect:Rectangle;
-	
+	var maskBitmap:BitmapData;
+	var maskMatrix:Matrix;
+
 	var maxSprites:Int;
 	var batchedSprites:Int;
 	var vertexArraySize:Int;
@@ -136,26 +140,30 @@ class SpriteBatch {
 		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
-		drawing = true;
-		start(clipRect);
-		
+		start(clipRect, null, null);
+
 	}
 	
 	public function finish() {
 		stop();
 		clipRect = null;
-		drawing = false;
 	}
-	
-	public function start(?clipRect:Rectangle = null) {
-		if (!drawing) {
+
+	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
+		if (drawing) {
 			stop();
 		}
+
+		drawing = true;
 		dirty = true;
+
+		this.maskBitmap = mask;
+		this.maskMatrix = maskMatrix;
 		this.clipRect = clipRect;
 	}
 	
 	public function stop() {
+		drawing = false;
 		flush();
 	}
 	
@@ -522,6 +530,9 @@ class SpriteBatch {
 		currentState.shader = null;
 		currentState.shaderData = null;
 		currentState.texture = null;
+		currentState.maskTexture = null;
+		currentState.maskTextureUVScale = null;
+		currentState.maskMatrix = null;
 		currentState.textureSmooth = false;
 		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
 		currentState.colorTransform = null;
@@ -543,6 +554,9 @@ class SpriteBatch {
 				currentState.shader = nextState.shader;
 				currentState.shaderData = nextState.shaderData;
 				currentState.texture = nextState.texture;
+				currentState.maskTexture = nextState.maskTexture;
+				currentState.maskTextureUVScale = nextState.maskTextureUVScale;
+				currentState.maskMatrix = nextState.maskMatrix;
 				currentState.textureSmooth = nextState.textureSmooth;
 				currentState.blendMode = nextState.blendMode;
 				currentState.skipColorTransform = nextState.skipColorTransform;
@@ -566,8 +580,10 @@ class SpriteBatch {
 	
 	function renderBatch(state:State, size:Int, start:Int) {
 		if (size == 0 || state.texture == null) return;
-		
-		var shader:Shader = state.shader == null ? renderSession.shaderManager.defaultShader : state.shader;
+
+		var shader:Shader = state.shader == null ?
+			( state.maskTexture != null ? renderSession.shaderManager.defaultMaskedShader : renderSession.shaderManager.defaultShader )
+			: state.shader;
 		renderSession.shaderManager.setShader(shader);
 		
 		// TODO cache this somehow?, don't do each state change?
@@ -589,11 +605,12 @@ class SpriteBatch {
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
-		
+
 		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
-		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0);
-		
+
+		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0); // DefUniform or MaskedUniform?
+
 		if ((shader.smooth != null && shader.smooth) || state.textureSmooth) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -605,6 +622,16 @@ class SpriteBatch {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
 		
+
+		if (state.maskTexture != null){
+			gl.activeTexture(gl.TEXTURE0 + 1);
+			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);
+			gl.uniform1i(shader.getUniformLocation(MaskedUniform.MaskSampler), 1);
+
+			gl.uniformMatrix3fv(shader.getUniformLocation(MaskedUniform.MaskMatrix), false, state.maskMatrix.toArray(true));
+			gl.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
+		}
+
 		shader.applyData(state.shaderData, renderSession);
 		
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
@@ -620,6 +647,13 @@ class SpriteBatch {
 			state = states[index] = new State();
 		}
 		state.texture = texture;
+		if (maskBitmap != null) {			
+			state.maskTexture = maskBitmap.getTexture(gl);
+			state.maskTextureUVScale = new Vector2( @:privateAccess maskBitmap.__uvData.x1, @:privateAccess maskBitmap.__uvData.y2 );
+			state.maskMatrix = maskMatrix;
+		} else {
+			state.maskTexture = null;
+		}
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
 		
@@ -709,7 +743,11 @@ private class State {
 	public var skipColorTransformAlpha:Bool = false;
 	public var shader:Shader;
 	public var shaderData:GLShaderData;
-	
+
+	public var maskTexture:GLTexture;
+	public var maskTextureUVScale : Vector2;
+	public var maskMatrix:Matrix;
+
 	public function new() { }
 	
 	public inline function equals(other:State) {
@@ -717,6 +755,7 @@ private class State {
 				// if both shaders are null we are using the DefaultShader, if not, check the id
 				((shader == null && other.shader == null) || (shader != null && other.shader != null && shader.ID == other.shader.ID)) &&
 				texture == other.texture &&
+				maskTexture == other.maskTexture && /* :TRICKY: if masks are equal, we expect on matrices being equal as well */
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
@@ -728,5 +767,7 @@ private class State {
 	public function destroy() {
 		texture = null;
 		colorTransform = null;
+		maskTexture = null;
+		maskMatrix = null;
 	}
 }

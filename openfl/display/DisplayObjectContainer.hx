@@ -43,12 +43,17 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (child != null) {
 			
-			if (child.parent != null) {
-				child.parent.removeChild (child);
+			if (child.parent == this) {
+				var childIndex = __children.indexOf(child);
+				__children.splice(childIndex,1);
+				__children.push(child);
+			} else {
+				if (child.parent != null) {
+					child.parent.removeChild (child);
+				}
+				__children.push (child);
+				initParent(child);
 			}
-			__children.push (child);
-			initParent(child);
-
 		}
 		return child;
 		
@@ -419,71 +424,48 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
-		super.__getBounds (rect, matrix);
+		super.__getBounds (rect);
 		
 		if (__children.length == 0) return;
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childRect = new Rectangle(); 
 		
 		for (child in __children) {
-
+			
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			child.__getBounds (rect, child.__worldTransform);
-			
-		}
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
+			childRect.setEmpty ();
+			child.__getBounds (childRect);
+			childRect.__transform (childRect, child.__transform);
+			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 			
 		}
 		
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle):Void {
 		
-		if (__scrollRect != null) {
+		super.__getRenderBounds (rect);
 			
-			super.__getRenderBounds (rect, matrix);
+		if (__scrollRect != null || __children.length == 0) {
+			
 			return;
 			
-		} else {
-			
-			super.__getBounds (rect, matrix);
-			
 		}
 		
-		if (__children.length == 0) return;
-		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
+		var childRect = new Rectangle(); 
 		
 		for (child in __children) {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			child.__getRenderBounds (rect, child.__worldTransform);
-			
-		}
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
+			childRect.setEmpty ();
+			child.__getRenderBounds (childRect);
+			childRect.__transform (childRect, child.__transform);
+			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 			
 		}
 		
@@ -492,7 +474,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
@@ -501,9 +483,21 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stack == null || !mouseChildren) {
 				
+
 				while (--i >= 0) {
 
-					if (__children[i] != null && __children[i].__hitTest (x, y, shapeFlag, null, true, cast __children[i])) {
+					var child = __children[i];
+					var clippedAt = child.__clippedAt;
+
+					if (clippedAt != null) {
+						// :TODO: Do not recheck the mask several times.
+						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+							i = clippedAt;
+							continue;
+						}
+					}
+
+					if (child != null && child.__hitTest (x, y, shapeFlag, null, mouseChildren, cast child)) {
 
 						if (stack != null) {
 							
@@ -526,12 +520,22 @@ class DisplayObjectContainer extends InteractiveObject {
 				
 				while (--i >= 0) {
 
-					if (__children[i] == null) continue;
-					interactive = __children[i].__getInteractive (null);
+					var child = __children[i];
+					var clippedAt = child.__clippedAt;
+
+					if (clippedAt != null) {
+						// :TODO: Do not recheck the mask several times.
+						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+							i = clippedAt;
+							continue;
+						}
+					}
+
+					interactive = child.__getInteractive (null);
 					
 					if (interactive || (mouseEnabled && !hitTest)) {
 						
-						if (__children[i].__hitTest (x, y, shapeFlag, stack, true, cast __children[i])) {
+						if (child.__hitTest (x, y, shapeFlag, stack, true, cast child)) {
 							
 							hitTest = true;
 							
@@ -560,8 +564,15 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			while (--i >= 0) {
 
-				if (__children[i] == null ) continue;
-				__children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]);
+				if ( __children[i].__hitTest (x, y, shapeFlag, stack, false, cast __children[i]) ) {
+					if (stack != null) {
+
+						stack.push (hitObject);
+
+					}
+
+					return true;
+				};
 				
 			}
 			
@@ -857,9 +868,15 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		if (this.stage != stage) {
 			
+			var stack = __getDisplayStack( this );
+
 			if (this.stage != null) {
 				
-				__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
+				#else
+					__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				#end
 				__releaseResources();
 
 			}
@@ -868,8 +885,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (stage != null) {
 				
-				__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
-				
+				#if compliant_stage_events
+					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
+				#else
+					__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+				#end
 			}
 			
 			if (__children != null) {

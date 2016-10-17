@@ -41,6 +41,8 @@ class CanvasShape {
 					context.globalAlpha = shape.__worldAlpha;
 					var transform = shape.__renderTransform;
 					
+					throw ":TODO: take __renderScaleTransform into account";
+					
 					if (renderSession.roundPixels) {
 						
 						context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));

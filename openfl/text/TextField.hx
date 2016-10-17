@@ -22,6 +22,7 @@ import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
+import Xml;
 
 #if (js && html5)
 import js.html.DivElement;
@@ -537,12 +538,11 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
 		__updateLayout ();
-		var bounds = Rectangle.__temp;
-		__textEngine.bounds.__transform (bounds, matrix);
-		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		
+		rect.__expand (__textEngine.bounds.x, __textEngine.bounds.y, __textEngine.bounds.width, __textEngine.bounds.height);
 		
 	}
 	
@@ -1177,111 +1177,94 @@ class TextField extends InteractiveObject {
 		
 	}
 	
-	
+	private function parseTags(value:Xml, format:TextFormat, startIndex:Int, ?formatRanges:Array<TextFormatRange>):Dynamic {
+
+		if( formatRanges == null ) {
+			formatRanges = [];
+		}
+		var result = "";
+		for( element in value.iterator() ) {
+			if ( element.nodeType != XmlType.Element || element.firstChild() == null ) {
+				// It's a normal element. Insert into the formatRanges with the pushed format.
+				formatRanges.push (new TextFormatRange (format, startIndex, startIndex + element.nodeValue.length));
+				result += element.nodeValue;
+				startIndex += element.nodeValue.length;
+			} else {
+				var tag = element.nodeName;
+				var copied_format = format.clone ();
+				switch tag {
+					case "b":
+						copied_format.bold = true;
+					case "i":
+						copied_format.italic = true;
+					case "font":
+						for( attribute in element.attributes() ) {
+							switch(attribute){
+								case "face": copied_format.font = element.get(attribute);
+								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
+								case "size": copied_format.size = Std.parseInt(element.get(attribute));
+								default:
+								#if debug
+									trace ("encountered unsupported attribute when parsing html font.");
+								#end
+							}
+						}
+					default:
+						#if debug
+							trace ("trying to parse unsupported tag ( $tag ) from html text");
+						#end
+					}
+				var result_data = parseTags(element, copied_format, startIndex, formatRanges);
+				result += result_data.text;
+				startIndex = result_data.start_index;
+			}
+		}
+		return { text:result, start_index: startIndex, format_ranges: formatRanges  };
+	}
+
+	private function stripHexPrefix(value:String):String
+	{
+	    if (value.indexOf('#') == 0)
+	        return value.substring(1);
+	    if (value.indexOf('0x') == 0)
+	        return value.substring(2);
+		return value;
+	}
+
+
 	private function set_htmlText (value:String):String {
-		
+						
 		if (!__isHTML || __textEngine.text != value) {
-			
+							
 			__dirty = true;
 			__layoutDirty = true;
-			
+							
 		}
-		
+						
 		__isHTML = true;
-		
+						
 		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
-			
+						
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");
-			
-			// crude solution
-			
-			var segments = value.split ("<font");
-			
-			if (segments.length == 1) {
-				
+			value = new EReg ("</br>", "g").replace (value, "\n");
+					
+			var data;
+			try {
+				data = Xml.parse(value);
+			} catch( e : Dynamic ) {
+				trace("Unable to parse html: " + e );
 				value = new EReg ("<.*?>", "g").replace (value, "");
-				
-				if (__textEngine.textFormatRanges.length > 1) {
-					
-					__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length - 1);
-					
-				}
-				
-				var range = __textEngine.textFormatRanges[0];
-				range.format = __textFormat;
-				range.start = 0;
-				range.end = value.length;
-				
-				return __textEngine.text = value;
-				
-			} else {
-				
-				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
-				
-				value = "";
-				
-				// crude search for font
-				
-				for (segment in segments) {
-					
-					if (segment == "") continue;
-					
-					var closeFontIndex = segment.indexOf ("</font>");
-					
-					if (closeFontIndex > -1) {
-						
-						var start = segment.indexOf (">") + 1;
-						var end = closeFontIndex;
-						var format = __textFormat.clone ();
-						
-						var faceIndex = segment.indexOf ("face=");
-						var colorIndex = segment.indexOf ("color=");
-						var sizeIndex = segment.indexOf ("size=");
-						
-						if (faceIndex > -1 && faceIndex < start) {
-							
-							format.font = segment.substr (faceIndex + 6, segment.indexOf ("\"", faceIndex));
-							
-						}
-						
-						if (colorIndex > -1 && colorIndex < start) {
-							
-							format.color = Std.parseInt ("0x" + segment.substr (colorIndex + 8, 6));
-							
-						}
-						
-						if (sizeIndex > -1 && sizeIndex < start) {
-							
-							format.size = Std.parseInt (segment.substr (sizeIndex + 6, segment.indexOf ("\"", sizeIndex)));
-							
-						}
-						
-						var sub = segment.substring (start, end);
-						sub = new EReg ("<.*?>", "g").replace (sub, "");
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (format, value.length, value.length + sub.length));
-						value += sub;
-						
-						if (closeFontIndex + 7 < segment.length) {
-							
-							sub = segment.substr (closeFontIndex + 7);
-							__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + sub.length));
-							value += sub;
-							
-						}
-						
-					} else {
-						
-						__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, value.length, value.length + segment.length));
-						value += segment;
-						
-					}
-					
-				}
-				
+				data = Xml.parse(value);
 			}
+				
+			__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
+			var result_data = parseTags(data, __textFormat.clone(), 0);
 			
+			value = result_data.text;
+			__textEngine.textFormatRanges = result_data.format_ranges;
+
+			return __textEngine.text = value;
 		}
 		
 		return __textEngine.text = value;

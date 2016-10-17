@@ -28,6 +28,7 @@ class SimpleButton extends InteractiveObject {
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
 	private var __soundTransform:SoundTransform;
+	private var __childRect = new Rectangle();
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -53,58 +54,29 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getBounds (rect:Rectangle):Void {
 		
-		super.__getBounds (rect, matrix);
+		super.__getBounds (rect);
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
-		
-		__currentState.__getBounds (rect, __currentState.__worldTransform);
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
+		__currentState.__getTransformedBounds (rect, __currentState.__worldTransform);
 		
 	}
 	
 	
-	private override function __getRenderBounds (rect:Rectangle, matrix:Matrix):Void {
+	private override function __getRenderBounds (rect:Rectangle):Void {
+		
+		super.__getRenderBounds (rect);
 		
 		if (__scrollRect != null) {
 			
-			super.__getRenderBounds (rect, matrix);
 			return;
 			
-		} else {
-			
-			super.__getBounds (rect, matrix);
-			
 		}
 		
-		if (matrix != null) {
-			
-			__updateTransforms (matrix);
-			__updateChildren (true);
-			
-		}
-		
-		__currentState.__getRenderBounds (rect, __currentState.__worldTransform);
-		
-		if (matrix != null) {
-			
-			__updateTransforms ();
-			__updateChildren (true);
-			
-		}
-		
+		__childRect.setEmpty ();
+		__currentState.__getRenderBounds (__childRect);
+		@:privateAccess __childRect.__transform (__childRect, @:privateAccess __currentState.__transform);
+		rect.__expand (__childRect.x, __childRect.y, __childRect.width, __childRect.height);
 	}
 	
 	
@@ -324,11 +296,10 @@ class SimpleButton extends InteractiveObject {
 		
 		state.__updateTransforms (cacheTransform);
 		state.__updateChildren (false);
-		
 	}
 	
 	
-	private function __updateTransform (state:DisplayObject):Matrix {
+	private function __updateTransform (state:DisplayObject, transformOnly:Bool = true):Matrix {
 		
 		var cacheTransform = state.__worldTransform;
 		
@@ -344,7 +315,7 @@ class SimpleButton extends InteractiveObject {
 		overrideTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 		
 		state.__updateTransforms (overrideTransform);
-		state.__updateChildren (true);
+		state.__updateChildren (transformOnly);
 		
 		return cacheTransform;
 		
@@ -355,11 +326,24 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__updateTransforms (overrideTransform);
 		
-		__updateTransform (__currentState);
-		
+		__updateTransform (__currentState, false);
 	}
 	
 	
+	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+
+		if (parent != null) {
+			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
+		}
+		else {
+			__worldColorTransform.copyFrom(transform.colorTransform);
+		}
+
+		__currentState.__worldColorTransform.setFromCombination(__currentState.transform.colorTransform, __worldColorTransform);
+
+		super.__update(transformOnly, updateChildren, maskGraphics);
+	}
+
 	
 	
 	// Getters & Setters

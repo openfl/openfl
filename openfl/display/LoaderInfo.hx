@@ -15,6 +15,7 @@ class LoaderInfo extends EventDispatcher {
 	
 	
 	private static var __rootURL = #if (js && html5) Browser.document.URL #else "" #end;
+	private static var __parameters:Dynamic<String>;
 	
 	public var applicationDomain (default, null):ApplicationDomain;
 	public var bytes (default, null):ByteArray;
@@ -45,7 +46,7 @@ class LoaderInfo extends EventDispatcher {
 		bytesLoaded = 0;
 		bytesTotal = 0;
 		childAllowsParent = true;
-		parameters = {};
+		parameters = __parameters == null ? {} : __parameters;
 		
 	}
 	
