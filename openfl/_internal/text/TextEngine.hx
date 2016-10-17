@@ -217,9 +217,7 @@ class TextEngine {
 		logicalFontName += format.bold ? " Bold" : "";
 		logicalFontName += format.italic ? " Italic" : "";
 
-		var font = format.italic ? "italic " : "normal ";
-		font += "normal ";
-		font += format.bold ? "bold " : "normal ";
+		var font = "normal normal normal ";
 		font += format.size + "px";
 		font += "/" + (format.size + format.leading + 6) + "px ";
 		
@@ -228,14 +226,21 @@ class TextEngine {
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: "'" + format.font + "'";
+			default: "'" + logicalFontName + "'";
 			
 		}
+
 		var fontData: Dynamic = Reflect.getProperty( @:privateAccess Assets.getLibrary("default"), "fontData" ).get( logicalFontName );
 
 		if (fontData == null){
 			trace("Warning: No font data found for font: " + logicalFontName + ". Falling back to " + format.font );
 			fontData = Reflect.getProperty( @:privateAccess Assets.getLibrary("default"), "fontData" ).get( format.font );
+			font = format.italic ? "italic " : "normal ";
+			font += "normal ";
+			font += format.bold ? "bold " : "normal ";
+			font += format.size + "px";
+			font += "/" + (format.size + format.leading + 6) + "px ";
+
 			if ( fontData == null ) {
 				trace("Fallback didn't contain font data. Falling back to defaults." );
 				return {name:font, ascent: 0.825, descent:0.175};
