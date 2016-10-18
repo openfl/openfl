@@ -863,7 +863,7 @@ class TextField extends InteractiveObject {
 			
 			var cacheWidth = __textEngine.width;
 			var cacheHeight = __textEngine.height;
-				
+			
 			__textEngine.update ();
 			
 			if (__textEngine.autoSize != NONE) {
