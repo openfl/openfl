@@ -192,8 +192,9 @@ class EventDispatcher implements IEventDispatcher {
 		
 		var type = event.type;
 		var list;
+		var wasDispatchingThisType = ( __dispatching.get (type) == true );
 		
-		if (__dispatching.get (type) == true) {
+		if (wasDispatchingThisType) {
 			
 			list = __newEventMap.get (type);
 			if (list == null) list = __eventMap.get (type);
@@ -253,34 +254,44 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (__newEventMap != null && __newEventMap.exists (type)) {
+		if (!wasDispatchingThisType) {
 			
-			var list = __newEventMap.get (type);
+			// This was the outermost nested dispatch;
+			// we're now returning to "not dispatching this type".
 			
-			if (list.length > 0) {
+			// Merge changes from newEventMap back to eventMap,
+			// if necessary, and clean up.
+			if (__newEventMap != null && __newEventMap.exists (type)) {
 				
-				__eventMap.set (type, list);
+				var list = __newEventMap.get (type);
 				
-			} else {
+				if (list.length > 0) {
+					
+					__eventMap.set (type, list);
+					
+				} else {
+					
+					__eventMap.remove (type);
+					
+				}
 				
-				__eventMap.remove (type);
+				if (!__eventMap.iterator ().hasNext ()) {
+					
+					__eventMap = null;
+					__newEventMap = null;
+					
+				} else {
+					
+					__newEventMap.remove (type);
+					
+				}
 				
 			}
 			
-			if (!__eventMap.iterator ().hasNext ()) {
-				
-				__eventMap = null;
-				__newEventMap = null;
-				
-			} else {
-				
-				__newEventMap.remove (type);
-				
-			}
+			// Reset dispatching.
+			__dispatching.set (type, false);
 			
 		}
-		
-		__dispatching.set (event.type, false);
 		
 		return true;
 		
