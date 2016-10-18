@@ -101,7 +101,7 @@ import openfl.filters.commands.*;
 		commands.push (ColorTransform (__clonedHighlightBitmapData, bitmap, __inverseAlphaMatrix));
 		commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
 
-		if ( blurX > 0 || blurY > 0 ) {
+		if ( blurX > 1 || blurY > 1 ) {
 			for( quality_index in 0...quality ) {
 				var first_pass = quality_index == 0;
 

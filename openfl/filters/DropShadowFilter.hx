@@ -84,7 +84,7 @@ import openfl.filters.commands.*;
 			src = __shadowBitmapData;
 		}
 
-		if ( blurX > 0 || blurY > 0 ) {
+		if ( blurX > 1 || blurY > 1 ) {
 			for( quality_index in 0...quality ) {
 				var first_pass = quality_index == 0;
 

@@ -7,7 +7,6 @@ import openfl._internal.renderer.RenderSession;
 
 class OffsetCommand {
 
-	public static inline var MAXIMUM_FETCH_COUNT = 20;
 	private static var __shader = new OffsetShader ();
 
 	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, strength:Float, distance:Float, angle:Float) {
