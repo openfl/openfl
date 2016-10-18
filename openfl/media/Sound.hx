@@ -169,10 +169,17 @@ class Sound extends EventDispatcher {
 	private function get_length ():Int {
 		
 		if (__buffer != null) {
+
+			#if (js && html5 && howlerjs)
+			
+			return Std.int(__buffer.src.duration() * 1000);
+
+			#else
 			
 			var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
 			return Std.int (samples / __buffer.sampleRate * 1000);
 			
+			#end
 		}
 		
 		return 0;
