@@ -87,11 +87,15 @@ import openfl.filters.commands.*;
 		var src = bitmap;
 
 		if(__highlightBitmapData == null)
-			__highlightBitmapData = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+			__highlightBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 		if(__shadowBitmapData == null)
-			__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+			__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 		if ( __clonedHighlightBitmapData == null )
-			__clonedHighlightBitmapData = @:privateAccess BitmapData.__asRenderTexture (bitmap.width, bitmap.height);
+			__clonedHighlightBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
+
+		@:privateAccess __highlightBitmapData.__resize(bitmap.width, bitmap.height);
+		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
+		@:privateAccess __clonedHighlightBitmapData.__resize(bitmap.width, bitmap.height);
 
 		// create 2 dropshadow filters.
 		commands.push (ColorTransform (__clonedHighlightBitmapData, bitmap, __inverseAlphaMatrix));
