@@ -7,7 +7,7 @@ import openfl.filters.commands.*;
 
 
 @:final class DropShadowFilter extends BitmapFilter {
-	
+
 	public var alpha:Float;
 	public var angle:Float;
 	public var blurX:Float;
@@ -19,14 +19,14 @@ import openfl.filters.commands.*;
 	public var knockout (default, set):Bool;
 	public var quality (default, set):Int;
 	public var strength:Float;
-	
+
 	private var __shadowBitmapData:BitmapData;
 	private static var __inverseAlphaMatrix = [ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 255.0 ];
-	
+
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
-		
+
 		super ();
-		
+
 		this.distance = distance;
 		this.angle = angle;
 		this.color = color;
@@ -38,12 +38,12 @@ import openfl.filters.commands.*;
 		this.inner = inner;
 		this.knockout = knockout;
 		this.hideObject = hideObject;
-		
+
 	}
-	
-	
+
+
 	public override function clone ():BitmapFilter {
-		
+
 		return new DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject);
 
 	}
@@ -54,10 +54,10 @@ import openfl.filters.commands.*;
 			__shadowBitmapData = null;
 		}
 	}
-	
-	
+
+
 	private override function __growBounds (rect:Rectangle):Void {
-		
+
 		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
 		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
 		var sX = distance * Math.cos (angle * Math.PI / 180);
@@ -66,35 +66,39 @@ import openfl.filters.commands.*;
 		rect.y -= Math.abs (sY) + halfBlurY;
 		rect.width += 2.0 * (Math.abs (sX) + halfBlurX);
 		rect.height += 2.0 * (Math.abs (sY) + halfBlurY);
-		
+
 	}
-	
+
 	private override function __getCommands (bitmap:BitmapData):Array<CommandType> {
 
 		var commands:Array<CommandType> = [];
 		var src = bitmap;
-		
+
 		if(__shadowBitmapData == null)
 			__shadowBitmapData = @:privateAccess BitmapData.__asRenderTexture ();
 
 		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
-		
+
 		if (inner) {
 			commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
 			src = __shadowBitmapData;
 		}
-		
-		for( quality_index in 0...quality ) {
-			var first_pass = quality_index == 0;
-			
-			if (first_pass) {
-				commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle));
+
+		if ( blurX > 0 || blurY > 0 ) {
+			for( quality_index in 0...quality ) {
+				var first_pass = quality_index == 0;
+
+				if (first_pass) {
+					commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle));
+				}
+				else {
+					commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
+				}
+
+				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
 			}
-			else {
-				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-			}
-			
-			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+		} else {
+			commands.push (Offset (__shadowBitmapData, src, strength, distance, angle));
 		}
 
 		if ( hideObject && !knockout && !inner ) {
@@ -114,42 +118,42 @@ import openfl.filters.commands.*;
 			commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
 
 		} else {
-	
+
 			commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
-	
+
 		}
 
 		return commands;
-	
+
 	}
-	
+
 	// Get & Set Methods
-	
-	
-	
-	
+
+
+
+
 	private function set_knockout (value:Bool):Bool {
-		
+
 		return knockout = value;
-		
+
 	}
-	
-	
+
+
 	private function set_hideObject (value:Bool):Bool {
-		
+
 		return hideObject = value;
-		
+
 	}
-	
-	
+
+
 	private function set_quality (value:Int):Int {
-		
+
 		__passes = value * 2 + 1;
 		return quality = value;
-		
+
 	}
-	
-	
+
+
 }
 
 #else
