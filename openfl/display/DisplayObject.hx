@@ -572,9 +572,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		if (__scrollRect != null) {
 			
-			throw ":TODO: take __renderScaleTransform into account";
-			
-			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
+			var scaledScrollRect = openfl.geom.Rectangle.__temp;
+			__scrollRect.__transform (scaledScrollRect, __renderScaleTransform);
+			renderSession.maskManager.pushRect (scaledScrollRect, __renderTransform);
 			
 		}
 
