@@ -21,7 +21,6 @@ import haxe.Timer;
 	
 	//private var __format:Context3DTextureFormat;
 	private var __height:Int;
-	private var __miplevel:Int;
 	private var __optimizeForRenderToTexture:Bool;
 	private var __streamingLevels:Int;
 	private var __width:Int;
@@ -37,7 +36,7 @@ import haxe.Timer;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 		
-		uploadFromTypedArray (null);
+		//uploadFromTypedArray (null);
 		
 	}
 	
@@ -92,18 +91,14 @@ import haxe.Timer;
 			}
 			*/
 		
-		__miplevel = miplevel;
-		
 		var image = source.image;
 		
-		uploadFromTypedArray (image.data);
+		uploadFromTypedArray (image.data, source.width, source.height, miplevel);
 		
 	}
 	
 	
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void {
-		
-		__miplevel = miplevel;
 		
 		#if js
 		if (byteArrayOffset == 0) {
@@ -114,23 +109,28 @@ import haxe.Timer;
 		}
 		#end
 		
-		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset));
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), 0, 0, miplevel);
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, width:Int = 0, height:Int = 0, miplevel:UInt = 0):Void {
+		
+		if (data == null) return;
 		
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
+		if (width == 0) width = __width;
+		if (height == 0) height = __height;
+		
+		GL.texImage2D (__textureTarget, miplevel, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
 		GL.bindTexture (__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
-		var memUsage = (__width * __height) * 4;
+		var memUsage = (width * height) * 4;
 		__trackMemoryUsage (memUsage);
 		
 	}
