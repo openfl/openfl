@@ -478,6 +478,12 @@ class CanvasGraphics {
 			}
 			
 		}
+
+		if ( !skipT ) {
+
+			return { max: max, uvt: uvt };
+		
+		}
 		
 		var result = new Vector<Float> ();
 		
@@ -489,7 +495,7 @@ class CanvasGraphics {
 				
 			}
 			
-			result.push ((uvt[t - 1] / max));
+			result.push (uvt[t - 1]);
 			
 		}
 		
