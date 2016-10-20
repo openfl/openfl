@@ -834,6 +834,10 @@ class DisplayObjectContainer extends InteractiveObject {
 					}
 
 					child.__maskGraphics.clear ();
+					if( child.__cachedBitmap != null ){
+						child.__cachedBitmap.dispose();
+					}
+					child.__cachedBitmap = null;
 
 					child.__isMask = true;
 					child.__update (true, true, child.__maskGraphics);
