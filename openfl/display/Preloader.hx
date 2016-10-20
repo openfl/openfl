@@ -87,15 +87,10 @@ class Preloader extends LimePreloader {
 }
 
 
-#if tools
-typedef OpenFLPreloader = NMEPreloader
-#else
-private class OpenFLPreloader extends Sprite {
+class OpenFLPreloader extends Sprite {
 	
-	public function new () { super (); }
 	public function onInit ():Void {};
 	public function onUpdate (loaded:Int, total:Int):Void {};
 	public function onLoaded ():Void {};
 	
 }
-#end

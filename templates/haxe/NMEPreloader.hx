@@ -1,11 +1,12 @@
 package;
 
 
+import openfl.display.Preloader.OpenFLPreloader;
 import openfl.display.Sprite;
 import openfl.events.Event;
 
 
-class NMEPreloader extends Sprite {
+class NMEPreloader extends OpenFLPreloader {
 	
 	
 	private var outline:Sprite;
@@ -95,21 +96,21 @@ class NMEPreloader extends Sprite {
 	}
 	
 	
-	public function onInit () {
+	override public function onInit () {
 		
 		
 		
 	}
 	
 	
-	public function onLoaded () {
+	override public function onLoaded () {
 		
 		dispatchEvent (new Event (Event.COMPLETE));
 		
 	}
 	
 	
-	public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
+	override public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
 		
 		var percentLoaded = bytesLoaded / bytesTotal;
 		
