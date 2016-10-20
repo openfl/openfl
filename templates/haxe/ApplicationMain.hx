@@ -1,4 +1,5 @@
 #if macro
+import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 #end
@@ -16,91 +17,6 @@ class ApplicationMain {
 	
 	public static var config:lime.app.Config;
 	public static var preloader:openfl.display.Preloader;
-	
-	
-	public static function create ():Void {
-		
-		var app = new openfl.display.Application ();
-		app.create (config);
-		
-		var display = ::if (PRELOADER_NAME != "")::new ::PRELOADER_NAME:: ()::else::new NMEPreloader ()::end::;
-		
-		preloader = new openfl.display.Preloader (display);
-		app.setPreloader (preloader);
-		preloader.onComplete.add (init);
-		preloader.create (config);
-		
-		#if (js && html5)
-		var urls = [];
-		var types = [];
-		
-		::foreach assets::::if (embed)::
-		urls.push (::if (type == "font")::"::fontName::"::else::"::resourceName::"::end::);
-		::if (type == "image")::types.push (lime.Assets.AssetType.IMAGE);
-		::elseif (type == "binary")::types.push (lime.Assets.AssetType.BINARY);
-		::elseif (type == "text")::types.push (lime.Assets.AssetType.TEXT);
-		::elseif (type == "font")::types.push (lime.Assets.AssetType.FONT);
-		::elseif (type == "sound")::types.push (lime.Assets.AssetType.SOUND);
-		::elseif (type == "music")::types.push (lime.Assets.AssetType.MUSIC);
-		::else::types.push (null);::end::
-		::end::::end::
-		
-		if (config.assetsPrefix != null) {
-			
-			for (i in 0...urls.length) {
-				
-				if (types[i] != lime.Assets.AssetType.FONT) {
-					
-					urls[i] = config.assetsPrefix + urls[i];
-					
-				}
-				
-			}
-			
-		}
-		
-		preloader.load (urls, types);
-		#end
-		
-		var result = app.exec ();
-		
-		#if (sys && !ios && !nodejs && !emscripten)
-		lime.system.System.exit (result);
-		#end
-		
-	}
-	
-	
-	public static function init ():Void {
-		
-		var loaded = 0;
-		var total = 0;
-		var library_onLoad = function (__) {
-			
-			loaded++;
-			
-			if (loaded == total) {
-				
-				start ();
-				
-			}
-			
-		}
-		
-		preloader = null;
-		
-		::if (libraries != null)::::foreach libraries::::if (preload)::total++;
-		::end::::end::::end::
-		::if (libraries != null)::::foreach libraries::::if (preload)::openfl.Assets.loadLibrary ("::name::").onComplete (library_onLoad);
-		::end::::end::::end::
-		
-		if (total == 0) {
-			
-			start ();
-			
-		}
-		
-	}
 	
 	
 	public static function main () {
@@ -158,6 +74,159 @@ class ApplicationMain {
 		#else
 		create ();
 		#end
+		
+	}
+	
+	
+	public static function create ():Void {
+		
+		var app = new openfl.display.Application ();
+		app.create (config);
+		
+		preloader = new openfl.display.Preloader (getPreloaderDisplay ());
+		app.setPreloader (preloader);
+		preloader.onComplete.add (init);
+		preloader.create (config);
+		
+		#if (js && html5)
+		var urls = [];
+		var types = [];
+		
+		::foreach assets::::if (embed)::
+		urls.push (::if (type == "font")::"::fontName::"::else::"::resourceName::"::end::);
+		::if (type == "image")::types.push (lime.Assets.AssetType.IMAGE);
+		::elseif (type == "binary")::types.push (lime.Assets.AssetType.BINARY);
+		::elseif (type == "text")::types.push (lime.Assets.AssetType.TEXT);
+		::elseif (type == "font")::types.push (lime.Assets.AssetType.FONT);
+		::elseif (type == "sound")::types.push (lime.Assets.AssetType.SOUND);
+		::elseif (type == "music")::types.push (lime.Assets.AssetType.MUSIC);
+		::else::types.push (null);::end::
+		::end::::end::
+		
+		if (config.assetsPrefix != null) {
+			
+			for (i in 0...urls.length) {
+				
+				if (types[i] != lime.Assets.AssetType.FONT) {
+					
+					urls[i] = config.assetsPrefix + urls[i];
+					
+				}
+				
+			}
+			
+		}
+		
+		preloader.load (urls, types);
+		#end
+		
+		var result = app.exec ();
+		
+		#if (sys && !ios && !nodejs && !emscripten)
+		lime.system.System.exit (result);
+		#end
+		
+	}
+	
+	
+	#if (js && html5)
+	@:keep @:expose("lime.embed")
+	public static function embed (element:Dynamic, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
+		
+		var htmlElement:js.html.Element = null;
+		
+		if (Std.is (element, String)) {
+			
+			htmlElement = cast js.Browser.document.getElementById (cast (element, String));
+			
+		} else if (element == null) {
+			
+			htmlElement = cast js.Browser.document.createElement ("div");
+			
+		} else {
+			
+			htmlElement = cast element;
+			
+		}
+		
+		var color = null;
+		
+		if (background != null && background != "") {
+			
+			background = StringTools.replace (background, "#", "");
+			
+			if (background.indexOf ("0x") > -1) {
+				
+				color = Std.parseInt (background);
+				
+			} else {
+				
+				color = Std.parseInt ("0x" + background);
+				
+			}
+			
+		}
+		
+		if (width == null) {
+			
+			width = 0;
+			
+		}
+		
+		if (height == null) {
+			
+			height = 0;
+			
+		}
+		
+		config.windows[0].background = color;
+		config.windows[0].element = htmlElement;
+		config.windows[0].width = width;
+		config.windows[0].height = height;
+		config.assetsPrefix = assetsPrefix;
+		
+		create ();
+		
+	}
+	
+	
+	@:keep @:expose("openfl.embed")
+	public static function _embed (element:Dynamic, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
+		
+		embed (element, width, height, background, assetsPrefix);
+		
+	}
+	#end
+	
+	
+	public static function init ():Void {
+		
+		var loaded = 0;
+		var total = 0;
+		var library_onLoad = function (__) {
+			
+			loaded++;
+			
+			if (loaded == total) {
+				
+				start ();
+				
+			}
+			
+		}
+		
+		preloader = null;
+		
+		::if (libraries != null)::::foreach libraries::::if (preload)::total++;
+		::end::::end::::end::
+		::if (libraries != null)::::foreach libraries::::if (preload)::openfl.Assets.loadLibrary ("::name::").onComplete (library_onLoad);
+		::end::::end::::end::
+		
+		if (total == 0) {
+			
+			start ();
+			
+		}
 		
 	}
 	
@@ -226,6 +295,36 @@ class ApplicationMain {
 		}
 		
 		return null;
+		
+	}
+	
+	
+	macro public static function getPreloaderDisplay () {
+		
+		::if (PRELOADER_NAME != "")::
+		Compiler.keep ("::PRELOADER_NAME::");
+		return macro { new ::PRELOADER_NAME:: (); }
+		::else::
+		
+		try {
+			
+			Context.resolvePath ("OpenFLPreloader.hx");
+			Compiler.keep ("OpenFLPreloader");
+			return macro { new OpenFLPreloader (); };
+			
+		} catch (e:Dynamic) {}
+		
+		try {
+			
+			Context.resolvePath ("NMEPreloader.hx");
+			Compiler.keep ("OpenFLPreloader");
+			return macro { new NMEPreloader (); };
+			
+		} catch (e:Dynamic) {}
+		
+		return macro { new openfl.display.Preloader.DefaultPreloader (); };
+		
+		::end::
 		
 	}
 	

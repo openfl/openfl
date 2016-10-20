@@ -50,16 +50,6 @@ import js.Browser;
 	}
 	
 	
-	#if (js && html5)
-	@:keep @:expose("openfl.embed")
-	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
-		
-		System.embed (elementName, width, height, background, assetsPrefix);
-		
-	}
-	#end
-	
-	
 	#if flash
 	public static function eval (path:String):Dynamic {
 		
