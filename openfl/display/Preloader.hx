@@ -193,7 +193,7 @@ class Preloader extends LimePreloader {
 			
 		} else {
 			
-			return flash.Lib.current.stage.stageHeight;
+			return Lib.current.stage.stageHeight;
 			
 		}
 		
@@ -210,7 +210,7 @@ class Preloader extends LimePreloader {
 			
 		} else {
 			
-			return flash.Lib.current.stage.stageWidth;
+			return Lib.current.stage.stageWidth;
 			
 		}
 		
