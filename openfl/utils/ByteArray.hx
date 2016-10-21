@@ -242,7 +242,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private var __endian:Endian;
 	private var __length:Int;
-	
+	private var __float:Bytes;
 	
 	public function new (length:Int = 0) {
 		
@@ -404,8 +404,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			
 		}
 		
-		position += 4;
-		return getFloat (position - 4);
+		if (endian == LITTLE_ENDIAN) {
+			position += 4;
+			return getFloat (position - 4);
+		} else {
+			if (__float == null) {
+				__float = Bytes.alloc(4);
+			}
+			__float.set(3, get(position++));
+			__float.set(2, get(position++));
+			__float.set(1, get(position++));
+			__float.set(0, get(position++));
+			return __float.getFloat(0);
+		}
 		
 	}
 	
@@ -619,8 +630,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function writeFloat (value:Float):Void {
 		
 		__resize (position + 4);
-		setFloat (position, value);
-		position += 4;
+		if (endian == LITTLE_ENDIAN) {
+			setFloat (position, value);
+			position += 4;
+		} else {
+			if (__float == null) {
+				__float = Bytes.alloc(4);
+			}
+			__float.setFloat(0, value);
+			set(position++, __float.get(3));
+			set(position++, __float.get(2));
+			set(position++, __float.get(1));
+			set(position++, __float.get(0));
+		}
 		
 	}
 	
