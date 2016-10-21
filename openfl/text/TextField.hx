@@ -1909,6 +1909,11 @@ class TextField extends InteractiveObject {
 		
 		switch (key) {
 			
+			case RETURN, NUMPAD_ENTER:
+
+				replaceSelectedText ("\n");
+				dispatchEvent (new Event (Event.CHANGE, true));
+
 			case BACKSPACE:
 				
 				if (__selectionIndex == __caretIndex && __caretIndex > 0) {
