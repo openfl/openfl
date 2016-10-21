@@ -14,15 +14,14 @@ extern class Preloader extends LimePreloader {
 }
 
 
-#if tools
-typedef OpenFLPreloader = NMEPreloader
-#else
-private extern class OpenFLPreloader extends Sprite {
+@:dox(hide) extern class DefaultPreloader extends Sprite {
 	
-	public function new () { super (); }
-	public function onInit ():Void {};
-	public function onUpdate (loaded:Int, total:Int):Void {};
-	public function onLoaded ():Void {};
+	public function new ():Void;
+	public function getBackgroundColor ():Int;
+	public function getHeight ():Float;
+	public function getWidth ():Float;
+	public function onInit ():Void;
+	public function onLoaded ():Void;
+	public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void;
 	
 }
-#end

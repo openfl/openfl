@@ -217,14 +217,14 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	@:keep public function onInit () {
+	@:keep public function onInit ():Void {
 		
 		addEventListener (Event.ENTER_FRAME, this_onEnterFrame);
 		
 	}
 	
 	
-	@:keep public function onLoaded () {
+	@:keep public function onLoaded ():Void {
 		
 		removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
 		dispatchEvent (new Event (Event.COMPLETE));
