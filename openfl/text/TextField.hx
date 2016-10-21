@@ -526,7 +526,9 @@ class TextField extends InteractiveObject {
 		
 		__selectionIndex = beginIndex;
 		__caretIndex = endIndex;
-		
+		__stopCursorTimer ();
+		__startCursorTimer ();
+
 	}
 	
 	
