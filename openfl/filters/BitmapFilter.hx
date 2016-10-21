@@ -18,19 +18,19 @@ import js.html.ImageData;
 @:access(openfl.geom.Rectangle)
 
 class BitmapFilter {
-	
+
 	private var __dirty:Bool = true;
 	private var __passes:Int = 0;
-	
+
 	public function new () {
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 	public function clone ():BitmapFilter {
-		
+
 		return new BitmapFilter ();
 
 	}
@@ -38,25 +38,25 @@ class BitmapFilter {
 	public function dispose():Void{
 
 	}
-	
+
 	#if (js && html5)
 	public function __applyFilter (sourceData:ImageData, targetData:ImageData, sourceRect:Rectangle, destPoint:Point):Void {
 	}
 	#end
-		
-		
+
+
 	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, bitmap:BitmapData) {
-		
+
 		if (!bitmap.__usingPingPongTexture) {
 			throw ":TODO: unsupported mode";
 		}
-	
-	
+
+
 		for (filter in filters) {
 			var useLastFilter = false;
-		
+
 			var commands = filter.__getCommands (bitmap);
-		
+
 			for (command in commands) {
 				switch (command) {
 					case Blur1D (target, source, blur, horizontal, strength, distance, angle) :
@@ -64,7 +64,7 @@ class BitmapFilter {
 
 					case Colorize (target, source, color, alpha) :
 						ColorizeCommand.apply (renderSession, target, source, color, alpha);
-	
+
 					case ColorLookup (target, source, colorLookup) :
 						ColorLookupCommand.apply (renderSession, target, source, colorLookup);
 
@@ -83,41 +83,48 @@ class BitmapFilter {
 					case OuterKnockout (target, source1, source2) :
 						OuterKnockoutCommand.apply(renderSession, target, source1, source2);
 
+					case OuterKnockoutTransparency (target, source1, source2, allowTransparency) :
+						OuterKnockoutCommand.apply(renderSession, target, source1, source2, allowTransparency);
+
+					case DestOut (target, source1, source2) :
+						DestOutCommand.apply(renderSession, target, source1, source2);
+
 					default :
+						throw("Unsupported command!");
 				}
-			
+
 			}
-			
+
 		}
-		
-		
+
+
 	}
-	
-	
+
+
 	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle) {
-		
+
 		for (filter in filters) {
-			
+
 			filter.__growBounds (rect);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function __growBounds (rect:Rectangle) {
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 	private function __getCommands (bitmap:BitmapData):Array<CommandType> {
-		
+
 		return [];
-		
+
 	}
-	
+
 }
 
 

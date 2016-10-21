@@ -2,8 +2,8 @@ package openfl._legacy.filters; #if openfl_legacy
 
 
 class GlowFilter extends BitmapFilter {
-	
-	
+
+
 	public var alpha:Float;
 	public var blurX:Float;
 	public var blurY:Float;
@@ -12,16 +12,16 @@ class GlowFilter extends BitmapFilter {
 	public var knockout:Bool;
 	public var quality:Int;
 	public var strength:Float;
-	
+
 	private var angle:Float;
 	private var distance:Float;
 	public var hideObject:Bool;
-	
-	
+
+
 	public function new (color:Int = 0, alpha:Float = 1.0, blurX:Float = 4.0, blurY:Float = 4.0, strength:Float = 1.0, quality:Int = 1, inner:Bool = false, knockout:Bool = false) {
-		
-		super ("DropShadowFilter");
-		
+
+		super ("GlowFilter");
+
 		this.distance = 0;
 		this.angle = 0;
 		this.color = color;
@@ -33,17 +33,17 @@ class GlowFilter extends BitmapFilter {
 		this.inner = inner;
 		this.knockout = knockout;
 		this.hideObject = false;
-		
+
 	}
-	
-	
+
+
 	override public function clone ():BitmapFilter {
-		
+
 		return new GlowFilter (color, alpha, blurX, blurY, strength, quality, inner, knockout);
-		
+
 	}
-	
-	
+
+
 }
 
 

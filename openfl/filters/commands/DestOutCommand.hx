@@ -5,14 +5,13 @@ import openfl.display.Shader;
 
 import openfl._internal.renderer.RenderSession;
 
-class OuterKnockoutCommand {
+class DestOutCommand {
 
-	private static var __shader = new OuterKnockoutShader ();
+	private static var __shader = new DestOutShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData, allowTransparency:Bool = false) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData) {
 
 		__shader.uSource1Sampler = source1;
-		__shader.allow_transparency = allowTransparency ? 1.0 : 0.0;
 
 		CommandHelper.apply (renderSession, target, source2, __shader, source1 == target || source2 == target);
 
@@ -20,17 +19,18 @@ class OuterKnockoutCommand {
 
 }
 
-private class OuterKnockoutShader extends Shader {
+private class DestOutShader extends Shader {
 
 	@fragment var fragment = [
 		'uniform sampler2D uSource1Sampler;',
-		'uniform float allow_transparency;',
+		'uniform float outer;',
 
 		'void main(void)',
 		'{',
 			'vec4 src2 = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
 			'vec4 src1 = texture2D(uSource1Sampler, ${Shader.vTexCoord});', // target image
-			'src2 *=  1. - ( allow_transparency * src1.a + ( 1. - allow_transparency ) * step(0.0001, src1.a) );',
+			'src2 -= src1.a;',
+			'src2 = clamp(src2,0.,1.);',
 			'gl_FragColor = src2;',
 		'}',
 	];
