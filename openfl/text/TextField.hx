@@ -1537,6 +1537,8 @@ class TextField extends InteractiveObject {
 	
 	private function set_scrollH (value:Int):Int {
 		
+		__updateLayout ();
+		
 		if (value > __textEngine.maxScrollH) value = __textEngine.maxScrollH;
 		if (value < 0) value = 0;
 		
@@ -1559,6 +1561,8 @@ class TextField extends InteractiveObject {
 	
 	
 	private function set_scrollV (value:Int):Int {
+		
+		__updateLayout ();
 		
 		if (value > __textEngine.maxScrollV) value = __textEngine.maxScrollV;
 		if (value < 1) value = 1;

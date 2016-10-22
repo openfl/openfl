@@ -108,7 +108,13 @@ class Preloader extends LimePreloader {
 	@:noCompletion private function display_onComplete (event:Event):Void {
 		
 		display.removeEventListener (Event.COMPLETE, display_onComplete);
-		Lib.current.removeChild (display);
+		
+		if (display.parent == Lib.current) {
+			
+			Lib.current.removeChild (display);
+			
+		}
+		
 		Lib.current.stage.focus = null;
 		display = null;
 		

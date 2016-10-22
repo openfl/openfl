@@ -71,7 +71,7 @@ class ApplicationMain {
 		
 		#if (js && html5)
 		#if (munit || utest)
-		lime.system.System.embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
+		embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 		#end
 		#else
 		create ();

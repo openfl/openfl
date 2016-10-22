@@ -599,7 +599,7 @@ class TextEngine {
 				
 				case LEFT, RIGHT, CENTER:
 					
-					if (!wordWrap && (width < textWidth + 4)) {
+					if (!wordWrap /*&& (width < textWidth + 4)*/) {
 						
 						width = textWidth + 4;
 						
@@ -612,6 +612,7 @@ class TextEngine {
 					
 				
 			}
+			
 		}
 		
 		if (textWidth > width - 4) {
