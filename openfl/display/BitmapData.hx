@@ -594,10 +594,10 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
-	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
+	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null, onprog:Float -> Float -> Void = null):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true);
-		bitmapData.__fromFile (path, onload, onerror);
+		bitmapData.__fromFile (path, onload, onerror, onprog);
 		return bitmapData;
 		
 	}
@@ -1262,7 +1262,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __fromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
+	private function __fromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void, onprog:Float -> Float -> Void = null):Void {
 		
 		Image.fromFile (path, function (image) {
 			
@@ -1274,7 +1274,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-		}, onerror);
+		}, onerror, onprog);
 		
 	}
 	

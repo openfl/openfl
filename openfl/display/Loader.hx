@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import flash.events.ProgressEvent;
 import lime.system.BackgroundWorker;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -104,6 +105,8 @@ class Loader extends DisplayObjectContainer {
 			
 			var worker = new BackgroundWorker ();
 			
+			var doProgress = contentLoaderInfo.hasEventListener(ProgressEvent.PROGRESS);
+			
 			worker.doWork.add (function (_) {
 				
 				var path = request.url;
@@ -118,10 +121,15 @@ class Loader extends DisplayObjectContainer {
 				}
 				#end
 				
-				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
+				var prog = null;
+				if (doProgress){
+					prog = function (prog:Float, total:Float) worker.sendProgress ({prog:prog, total:total});
+				}
+				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR), prog);
 				
 			});
 			
+			if(doProgress)worker.onProgress.add(BitmapData_onProgress);
 			worker.onError.add (BitmapData_onError);
 			worker.onComplete.add (BitmapData_onLoad);
 			worker.run ();
@@ -203,6 +211,17 @@ class Loader extends DisplayObjectContainer {
 	}
 	
 	
+	private function BitmapData_onProgress (info:{prog:Float, total:Float}):Void {
+		
+		if (!contentLoaderInfo.hasEventListener(ProgressEvent.PROGRESS)) return;
+		
+		var event = new ProgressEvent (ProgressEvent.PROGRESS);
+		event.bytesLoaded = info.prog;
+		event.bytesTotal = info.total;
+		event.target = contentLoaderInfo;
+		event.currentTarget = contentLoaderInfo;
+		contentLoaderInfo.dispatchEvent (event);
+	}
 	private function BitmapData_onError (_):Void {
 		
 		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
