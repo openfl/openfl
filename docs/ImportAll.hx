@@ -718,7 +718,7 @@ import js.html.rtc.StatsReport;
 
 import js.html.svg.BoundingBoxOptions;
 import js.html.svg.GraphicsElement;
-import js.html.svg.IFrameElement;
+//import js.html.svg.IFrameElement;
 import js.html.svg.AElement;
 import js.html.svg.ImageElement;
 import js.html.svg.AltGlyphElement;
@@ -1339,15 +1339,15 @@ import neko.Web;
 
 
 import sys.db.Connection;
-import sys.db.Manager;
+//import sys.db.Manager;
 import sys.db.Mysql;
-import sys.db.Object;
+//import sys.db.Object;
 import sys.db.RecordInfos;
-import sys.db.RecordMacros;
+//import sys.db.RecordMacros;
 import sys.db.ResultSet;
 import sys.db.Sqlite;
-import sys.db.TableCreate;
-import sys.db.Transaction;
+//import sys.db.TableCreate;
+//import sys.db.Transaction;
 import sys.db.Types;
 
 import sys.io.File;

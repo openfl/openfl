@@ -12,6 +12,10 @@ env:
   - TARGET=html5
   - TARGET=docs
 
+matrix:
+  allow_failures:
+  - haxe: development
+
 sudo: false
 
 before_install:
