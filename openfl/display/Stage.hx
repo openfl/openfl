@@ -889,12 +889,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __fireEvent (event:Event, stack:Array<DisplayObject>):Void {
 		
+		var target:DisplayObject;
 		var length = stack.length;
 		
 		if (length == 0) {
 			
 			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__dispatch (event);
+			target = cast event.target;
+			target.__dispatch (event);
 			
 		} else {
 			
@@ -914,7 +916,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 			event.eventPhase = EventPhase.AT_TARGET;
-			event.target.__dispatch (event);
+			target = cast event.target;
+			target.__dispatch (event);
 			
 			if (event.__isCanceled) {
 				

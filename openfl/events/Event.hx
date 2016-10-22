@@ -1,7 +1,6 @@
 package openfl.events;
 
 
-import haxe.macro.Expr;
 import openfl.display.InteractiveObject;
 
 
@@ -47,9 +46,9 @@ class Event {
 	
 	public var bubbles (default, null):Bool;
 	public var cancelable (default, null):Bool;
-	public var currentTarget (default, null):Dynamic;
+	public var currentTarget (default, null):IEventDispatcher;
 	public var eventPhase (default, null):EventPhase;
-	public var target (default, null):Dynamic;
+	public var target (default, null):IEventDispatcher;
 	public var type (default, null):String;
 	
 	private var __isCanceled:Bool;

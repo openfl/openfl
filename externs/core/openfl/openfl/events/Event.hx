@@ -364,7 +364,7 @@ extern class Event {
 	 * could be the node containing that button or one of its ancestors that has
 	 * registered an event listener for that event.
 	 */
-	public var currentTarget (default, null):Dynamic;
+	public var currentTarget (default, null):IEventDispatcher;
 	
 	/**
 	 * The current phase in the event flow. This property can contain the
@@ -382,7 +382,7 @@ extern class Event {
 	 * a user clicks an OK button, the target node is the display list node
 	 * containing that button.
 	 */
-	public var target (default, null):Dynamic;
+	public var target (default, null):IEventDispatcher;
 	
 	/**
 	 * The type of event. The type is case-sensitive.
