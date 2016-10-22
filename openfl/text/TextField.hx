@@ -902,8 +902,14 @@ class TextField extends InteractiveObject {
 	private function __updateText (value:String):Void {
 		
 		__text = value;
-		
-		if (!__displayAsPassword) {
+
+        if (__text.length < __caretIndex) {
+
+            __selectionIndex = __caretIndex = __text.length;
+
+        }
+
+        if (!__displayAsPassword) {
 			
 			__textEngine.text = __text;
 			
