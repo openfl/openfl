@@ -1070,7 +1070,7 @@ extern class InteractiveObject extends DisplayObject {
 	 */
 	public var doubleClickEnabled:Bool;
 	
-	public var focusRect:Dynamic;
+	public var focusRect:Null<Bool>;
 	
 	/**
 	 * Specifies whether this object receives mouse, or other user input,

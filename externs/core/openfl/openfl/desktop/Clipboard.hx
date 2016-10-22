@@ -16,7 +16,7 @@ extern class Clipboard {
 	public function getData (format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object;
 	public function hasFormat (format:ClipboardFormats):Bool;
 	public function setData (format:ClipboardFormats, data:Object, serializable:Bool = true):Bool;
-	public function setDataHandler (format:ClipboardFormats, handler:Dynamic, serializable:Bool = true):Bool;
+	public function setDataHandler (format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool;
 	
 	
 }
