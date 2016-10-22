@@ -14,6 +14,8 @@ class FunctionalTest {
 
 	static function main () {
 
+		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
+
 		// Import all test groups
 		CompileTime.importPackage ("ftests");
 
