@@ -244,4 +244,71 @@ class EventDispatcherTest {
 	}
 	
 	
+	@Test
+	public function testSimpleNestedDispatch()
+	{
+		var test01aCallCount = 0;
+		var o = new EventDispatcher();
+		
+		var test01a = function (e:Event):Void {
+			++test01aCallCount;
+			if ( test01aCallCount == 1 ) { // avoid infinite recursion, but we still should get a second call
+				o.dispatchEvent( new Event("Test01Event") );
+			}
+		}
+		
+		o.addEventListener( "Test01Event", test01a );
+		o.dispatchEvent( new Event( "Test01Event" ) );
+		
+		Assert.areEqual(2, test01aCallCount);
+	}
+	
+	
+	@Test
+	public function testDispatchingRemainsTrue()
+	{
+		var test02aCallCount = 0;
+		var test02Sequence:String = "";
+		var o = new EventDispatcher();
+		
+		var test02b = function (e:Event):Void {
+			test02Sequence += "b";
+		}
+		
+		var test02c = function (e:Event):Void {
+			test02Sequence += "c";
+		}
+		
+		var test02a = function (e:Event):Void {
+			test02Sequence += "a";
+			++test02aCallCount;
+			if ( test02aCallCount == 1 ) {
+				test02Sequence += "(";
+				o.dispatchEvent( new Event( "Test02Event" ) );
+				test02Sequence += ")";
+				
+				// dispatching should still be true here, so this shouldn't modify the list we're traversing over
+				// ...but it does...
+				o.removeEventListener( "Test02Event", test02b );
+				o.addEventListener( "Test02Event", test02c, false, 4 );
+				o.addEventListener( "Test02Event", test02b, false, 5 );
+			}
+		}
+
+		
+		// Test 02: Dispatching goes false too soon.
+		// The reset of dispatching at the tail of __dispatchEvent,
+		// namely the __dispatching.set (event.type, false); line,
+		// is unconditional. Clearly we want to keep dispatching true
+		// if we're nested, so we should only unset that if we're the
+		// "outermost" dispatcher.
+		o.addEventListener( "Test02Event", test02a, false, 3 );
+		o.addEventListener( "Test02Event", test02b, false, 2 );
+		o.addEventListener( "Test02Event", test02c, false, 1 );
+		o.dispatchEvent( new Event( "Test02Event" ) );
+		
+		Assert.areEqual("a(abc)bc", test02Sequence);
+	}
+	
+	
 }
