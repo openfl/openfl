@@ -51,7 +51,7 @@ class EventDispatcherTest {
 		
 		// Capture is true
 		
-		var correctPhase = true;
+		var correctPhase = false; // fail unless we see correct event
 		var dispatcher = new EventDispatcher ();
 		
 		var listener = function (event:Event) {
@@ -63,7 +63,11 @@ class EventDispatcherTest {
 		dispatcher.addEventListener ("event", listener, true);
 		dispatcher.dispatchEvent (new Event ("event"));
 		
-		Assert.isTrue (correctPhase);
+		// TODO: this dispatchEvent will never go through CAPTURING_PHASE.
+		// It needs to come from Stage
+		// (or possibly through e.g. DisplayObject.__fireEvent)
+		// See FocusEventTest for an example.
+		//DISABLED//Assert.isTrue (correctPhase);
 		
 		// Capture is false
 		
