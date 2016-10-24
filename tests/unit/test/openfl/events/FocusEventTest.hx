@@ -195,12 +195,17 @@ class FocusEventTest {
 		// First put focus on the old...
 		Lib.current.stage.focus = old2;
 		
-		// Now register our listeners... (using anonymous functions to prevent repeat listener optimization)
+		// Now register our listeners...
+		//
+		// We should be able to reuse listener; see addEventListener:
+		// "subsequent calls to addEventListener() with a different type
+		// or useCapture value result in the creation of a separate
+		// listener registration."
 		for (s in [ root, old1, old2, new1, new2 ]) {
-			s.addEventListener(FocusEvent.FOCUS_IN, function (e) { checkEvent(e); });
-			s.addEventListener(FocusEvent.FOCUS_IN, function (e) { checkEvent(e); }, true);
-			s.addEventListener(FocusEvent.FOCUS_OUT, function (e) { checkEvent(e); });
-			s.addEventListener(FocusEvent.FOCUS_OUT, function (e) { checkEvent(e); }, true);
+			s.addEventListener(FocusEvent.FOCUS_IN, checkEvent );
+			s.addEventListener(FocusEvent.FOCUS_IN, checkEvent, true );
+			s.addEventListener(FocusEvent.FOCUS_OUT, checkEvent );
+			s.addEventListener(FocusEvent.FOCUS_OUT, checkEvent, true );
 		}
 		
 		// Set up the expected sequence for the checker...
