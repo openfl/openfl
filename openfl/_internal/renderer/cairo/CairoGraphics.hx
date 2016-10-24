@@ -692,11 +692,14 @@ class CairoGraphics {
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
+
+					CairoGraphics.allowSmoothing = c.smooth;
+
 					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
 					
 					bitmapFill = c.bitmap;
 					bitmapRepeat = c.repeat;
-					
+
 					hasFill = true;
 				
 				case BEGIN_FILL:

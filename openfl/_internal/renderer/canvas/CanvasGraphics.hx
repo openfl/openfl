@@ -667,6 +667,7 @@ class CanvasGraphics {
 					
 					var c = data.readBeginBitmapFill ();
 					bitmapFill = c.bitmap;
+					context.imageSmoothingEnabled = c.smooth;
 					context.fillStyle = createBitmapFill (c.bitmap, true);
 					hasFill = true;
 					
