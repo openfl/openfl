@@ -51,7 +51,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 			for (i in 0...list.length) {
 				
-				if (Reflect.compareMethods (list[i].callback, listener)) return;
+				if (list[i].match (listener, useCapture)) return;
 				
 			}
 			
