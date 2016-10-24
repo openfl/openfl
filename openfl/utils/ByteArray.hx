@@ -3,6 +3,7 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import haxe.io.FPHelper;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
@@ -242,7 +243,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	private var __endian:Endian;
 	private var __length:Int;
-	private var __float:Bytes;
+	
 	
 	public function new (length:Int = 0) {
 		
@@ -384,39 +385,25 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		if (position + 8 > length) {
+		var ch1 = readInt ();
+		var ch2 = readInt ();
+		
+		if (endian == LITTLE_ENDIAN) {
 			
-			throw new EOFError ();
+			return FPHelper.i64ToDouble (ch1, ch2);
+			
+		} else {
+			
+			return FPHelper.i64ToDouble (ch2, ch1);
 			
 		}
-		
-		position += 8;
-		return getDouble (position - 8);
 		
 	}
 	
 	
 	public function readFloat ():Float {
 		
-		if (position + 4 > length) {
-			
-			throw new EOFError ();
-			
-		}
-		
-		if (endian == LITTLE_ENDIAN) {
-			position += 4;
-			return getFloat (position - 4);
-		} else {
-			if (__float == null) {
-				__float = Bytes.alloc(4);
-			}
-			__float.set(3, get(position++));
-			__float.set(2, get(position++));
-			__float.set(1, get(position++));
-			__float.set(0, get(position++));
-			return __float.getFloat(0);
-		}
+		return FPHelper.i32ToFloat (readInt ());
 		
 	}
 	
@@ -550,6 +537,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		position += length;
 		
+		
 		return getString (position - length, length);
 		
 	}
@@ -620,29 +608,27 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeDouble (value:Float):Void {
 		
-		__resize (position + 8);
-		setDouble (position, value);
-		position += 8;
+		var int64 = FPHelper.doubleToI64 (value);
+		
+		if (endian == LITTLE_ENDIAN) {
+			
+			writeInt (int64.low);
+			writeInt (int64.high);
+			
+		} else {
+			
+			writeInt (int64.high);
+			writeInt (int64.low);
+			
+		}
 		
 	}
 	
 	
 	public function writeFloat (value:Float):Void {
 		
-		__resize (position + 4);
-		if (endian == LITTLE_ENDIAN) {
-			setFloat (position, value);
-			position += 4;
-		} else {
-			if (__float == null) {
-				__float = Bytes.alloc(4);
-			}
-			__float.setFloat(0, value);
-			set(position++, __float.get(3));
-			set(position++, __float.get(2));
-			set(position++, __float.get(1));
-			set(position++, __float.get(0));
-		}
+		var int = FPHelper.floatToI32 (value);
+		writeInt (int);
 		
 	}
 	
