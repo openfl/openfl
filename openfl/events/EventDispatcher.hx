@@ -10,10 +10,9 @@ import openfl.events.IEventDispatcher;
 class EventDispatcher implements IEventDispatcher {
 	
 	
-	private var __dispatching:Map<String, Bool>;
-	private var __targetDispatcher:IEventDispatcher;
 	private var __eventMap:Map<String, Array<Listener>>;
-	private var __newEventMap:Map<String, Array<Listener>>;
+	private var __iterators:Map<String, DispatchIterator>;
+	private var __targetDispatcher:IEventDispatcher;
 	
 	
 	public function new (target:IEventDispatcher = null):Void {
@@ -31,9 +30,8 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (__eventMap == null) {
 			
-			__dispatching = new Map ();
 			__eventMap = new Map ();
-			__newEventMap = new Map ();
+			__iterators = new Map ();
 			
 		}
 		
@@ -41,36 +39,23 @@ class EventDispatcher implements IEventDispatcher {
 			
 			var list = new Array<Listener> ();
 			list.push (new Listener (listener, useCapture, priority));
+			
+			var iterator = new DispatchIterator (list);
+			
 			__eventMap.set (type, list);
+			__iterators.set (type, iterator);
 			
 		} else {
 			
-			var list;
-			
-			if (__dispatching.get (type) == true) {
-				
-				if (!__newEventMap.exists (type)) {
-					
-					list = __eventMap.get (type).copy ();
-					__newEventMap.set (type, list);
-					
-				} else {
-					
-					list = __newEventMap.get (type);
-					
-				}
-				
-			} else {
-				
-				list = __eventMap.get (type);
-				
-			}
+			var list = __eventMap.get (type);
 			
 			for (i in 0...list.length) {
 				
 				if (Reflect.compareMethods (list[i].callback, listener)) return;
 				
 			}
+			
+			__iterators.get (type).copy ();
 			
 			list.push (new Listener (listener, useCapture, priority));
 			list.sort (__sortByPriority);
@@ -101,15 +86,7 @@ class EventDispatcher implements IEventDispatcher {
 		
 		if (__eventMap == null) return false;
 		
-		if (__dispatching.get (type) == true && __newEventMap.exists (type)) {
-			
-			return __newEventMap.get (type).length > 0;
-			
-		} else {
-			
-			return __eventMap.exists (type);
-			
-		}
+		return __eventMap.exists (type);
 		
 	}
 	
@@ -121,22 +98,7 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		var dispatching = (__dispatching.get (type) == true);
-		
-		if (dispatching) {
-			
-			if (!__newEventMap.exists (type)) {
-				
-				list = __eventMap.get (type).copy ();
-				__newEventMap.set (type, list);
-				
-			} else {
-				
-				list = __newEventMap.get (type);
-				
-			}
-			
-		}
+		__iterators.get (type).copy ();
 		
 		for (i in 0...list.length) {
 			
@@ -149,20 +111,17 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (!dispatching) {
+		if (list.length == 0) {
 			
-			if (list.length == 0) {
-				
-				__eventMap.remove (type);
-				
-			}
+			__eventMap.remove (type);
+			__iterators.remove (type);
 			
-			if (!__eventMap.iterator ().hasNext ()) {
-				
-				__eventMap = null;
-				__newEventMap = null;
-				
-			}
+		}
+		
+		if (!__eventMap.iterator ().hasNext ()) {
+			
+			__eventMap = null;
+			__iterators = null;
 			
 		}
 		
@@ -191,22 +150,9 @@ class EventDispatcher implements IEventDispatcher {
 		if (__eventMap == null || event == null) return false;
 		
 		var type = event.type;
-		var list;
 		
-		if (__dispatching.get (type) == true) {
-			
-			list = __newEventMap.get (type);
-			if (list == null) list = __eventMap.get (type);
-			if (list == null) return false;
-			list = list.copy ();
-			
-		} else {
-			
-			list = __eventMap.get (type);
-			if (list == null) return false;
-			__dispatching.set (type, true);
-			
-		}
+		var list = __eventMap.get (type);
+		if (list == null) return false;
 		
 		if (event.target == null) {
 			
@@ -226,11 +172,19 @@ class EventDispatcher implements IEventDispatcher {
 		
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 		var index = 0;
-		var listener;
 		
-		while (index < list.length) {
+		var iterator = __iterators.get (type);
+		
+		if (iterator.isActive) {
 			
-			listener = list[index];
+			list = list.copy ();
+			iterator = new DispatchIterator (list);
+			
+		}
+		
+		iterator.reset (list);
+		
+		for (listener in iterator) {
 			
 			if (listener.useCapture == capture) {
 				
@@ -245,42 +199,7 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			if (listener == list[index]) {
-				
-				index++;
-				
-			}
-			
 		}
-		
-		if (__newEventMap != null && __newEventMap.exists (type)) {
-			
-			var list = __newEventMap.get (type);
-			
-			if (list.length > 0) {
-				
-				__eventMap.set (type, list);
-				
-			} else {
-				
-				__eventMap.remove (type);
-				
-			}
-			
-			if (!__eventMap.iterator ().hasNext ()) {
-				
-				__eventMap = null;
-				__newEventMap = null;
-				
-			} else {
-				
-				__newEventMap.remove (type);
-				
-			}
-			
-		}
-		
-		__dispatching.set (event.type, false);
 		
 		return true;
 		
@@ -290,6 +209,70 @@ class EventDispatcher implements IEventDispatcher {
 	private static function __sortByPriority (l1:Listener, l2:Listener):Int {
 		
 		return l1.priority == l2.priority ? 0 : (l1.priority > l2.priority ? -1 : 1);
+		
+	}
+	
+	
+}
+
+
+@:dox(hide) private class DispatchIterator {
+	
+	
+	public var isActive:Bool;
+	
+	private var index:Int;
+	private var list:Array<Listener>;
+	
+	
+	public function new (list:Array<Listener>) {
+		
+		this.list = list;
+		index = list.length;
+		
+	}
+	
+	
+	public function copy ():Void {
+		
+		if (index < list.length) {
+			
+			list = list.copy ();
+			
+		}
+		
+	}
+	
+	
+	public function hasNext ():Bool {
+		
+		if (index < list.length) {
+			
+			return true;
+			
+		} else {
+			
+			isActive = false;
+			return false;
+			
+		}
+		
+	}
+	
+	
+	public function next ():Listener {
+		
+		return list[index++];
+		
+	}
+	
+	
+	public function reset (list:Array<Listener>):Void {
+		
+		this.list = list;
+		
+		index = 0;
+		isActive = true;
 		
 	}
 	
