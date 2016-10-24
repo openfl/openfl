@@ -40,6 +40,7 @@ class CanvasGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
+	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
@@ -89,11 +90,12 @@ class CanvasGraphics {
 	}
 	
 	
-	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool) {
+	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool) {
 		
 		#if (js && html5)
 		
 		ImageCanvasUtil.convertToCanvas (bitmap.image);
+		setSmoothing (smooth);
 		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
 		#else
@@ -519,6 +521,8 @@ class CanvasGraphics {
 		var startX = 0.0;
 		var startY = 0.0;
 		
+		setSmoothing (true);
+		
 		var data = new DrawCommandReader (commands);
 		
 		for (type in commands.types) {
@@ -631,6 +635,7 @@ class CanvasGraphics {
 							
 						}
 						
+						setSmoothing (true);
 						hasStroke = true;
 						
 					}
@@ -647,6 +652,7 @@ class CanvasGraphics {
 					context.moveTo (positionX - offsetX, positionY - offsetY);
 					context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
+					setSmoothing (true);
 					hasStroke = true;
 				
 				case LINE_BITMAP_STYLE:
@@ -659,7 +665,7 @@ class CanvasGraphics {
 					}
 					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
-					context.strokeStyle = createBitmapFill (c.bitmap, c.repeat);
+					context.strokeStyle = createBitmapFill (c.bitmap, c.repeat, c.smooth);
 					
 					hasStroke = true;
 				
@@ -667,7 +673,7 @@ class CanvasGraphics {
 					
 					var c = data.readBeginBitmapFill ();
 					bitmapFill = c.bitmap;
-					context.fillStyle = createBitmapFill (c.bitmap, true);
+					context.fillStyle = createBitmapFill (c.bitmap, true, c.smooth);
 					hasFill = true;
 					
 					if (c.matrix != null) {
@@ -707,6 +713,7 @@ class CanvasGraphics {
 						}
 						
 						bitmapFill = null;
+						setSmoothing (true);
 						hasFill = true;
 						
 					}
@@ -717,6 +724,7 @@ class CanvasGraphics {
 					context.fillStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
 					bitmapFill = null;
+					setSmoothing (true);
 					hasFill = true;
 				
 				case DRAW_RECT:
@@ -840,6 +848,7 @@ class CanvasGraphics {
 			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
+			CanvasGraphics.allowSmoothing = renderSession.allowSmoothing;
 			bounds = graphics.__bounds;
 			
 			var width = graphics.__width;
@@ -1274,6 +1283,30 @@ class CanvasGraphics {
 			}
 			
 			data.destroy ();
+			
+		}
+		
+		#end
+		
+	}
+	
+	
+	private static function setSmoothing (smooth:Bool):Void {
+		
+		#if (js && html5)
+		
+		if (!allowSmoothing) {
+			
+			smooth = false;
+			
+		}
+		
+		if (untyped (context).imageSmoothingEnabled != smooth) {
+			
+			untyped (context).mozImageSmoothingEnabled = smooth;
+			//untyped (context).webkitImageSmoothingEnabled = smooth;
+			untyped (context).msImageSmoothingEnabled = smooth;
+			untyped (context).imageSmoothingEnabled = smooth;
 			
 		}
 		

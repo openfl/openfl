@@ -145,10 +145,10 @@ class CairoGraphics {
 	}
 	
 	
-	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
+	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern {
 		
 		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
-		pattern.filter = allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 		
 		if (bitmapRepeat) {
 			
@@ -685,14 +685,14 @@ class CairoGraphics {
 					}
 					
 					cairo.moveTo (positionX - offsetX, positionY - offsetY);
-					strokePattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
+					strokePattern = createImagePattern (c.bitmap, c.matrix, c.repeat, c.smooth);
 					
 					hasStroke = true;
 				
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
-					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
+					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat, c.smooth);
 					
 					bitmapFill = c.bitmap;
 					bitmapRepeat = c.repeat;
