@@ -36,7 +36,7 @@ install:
   - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then git clone https://github.com/haxefoundation/hxcpp ~/hxcpp --depth 1 > log.txt || cat log.txt ; fi
   - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then haxelib dev hxcpp ~/hxcpp ; fi
   - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then cd ~/hxcpp/tools/hxcpp && haxe compile.hxml ; fi
-  - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then cd ~/hxcpp/project && neko build.n ; fi
+  - if [[ $TRAVIS_HAXE_VERSION == 'development' ]]; then cd ~/hxcpp/project && neko build.n linux -m64 ; fi
   - haxelib install format > log.txt || cat log.txt
   - if [[ $TARGET == 'docs' ]]; then git clone https://github.com/openfl/dox ~/dox --depth 1 > log.txt || cat log.txt ; fi
   - if [[ $TARGET == 'docs' ]]; then haxelib dev dox ~/dox ; fi
