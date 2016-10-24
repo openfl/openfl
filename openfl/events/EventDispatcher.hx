@@ -98,11 +98,17 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		__iterators.get (type).copy ();
+		var iterator = __iterators.get (type);
 		
 		for (i in 0...list.length) {
 			
 			if (list[i].match (listener, useCapture)) {
+				
+				if (i > iterator.index) {
+					
+					iterator.copy ();
+					
+				}
 				
 				list.splice (i, 1);
 				break;
@@ -219,9 +225,9 @@ class EventDispatcher implements IEventDispatcher {
 @:dox(hide) private class DispatchIterator {
 	
 	
+	public var index (default, null):Int;
 	public var isActive:Bool;
 	
-	private var index:Int;
 	private var list:Array<Listener>;
 	
 	

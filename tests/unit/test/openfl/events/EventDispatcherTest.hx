@@ -311,7 +311,8 @@ class EventDispatcherTest {
 		o.addEventListener( "Test02Event", test02c, false, 1 );
 		o.dispatchEvent( new Event( "Test02Event" ) );
 		
-		Assert.areEqual("a(abc)bc", test02Sequence);
+		//Assert.areEqual("a(abc)bc", test02Sequence);
+		Assert.areEqual("a(abc)c", test02Sequence);
 	}
 	
 	
