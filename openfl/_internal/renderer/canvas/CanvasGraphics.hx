@@ -759,9 +759,10 @@ class CanvasGraphics {
 			if (canvasGraphics.hasFill || canvasGraphics.bitmapFill != null) {
 				context.save();
 
-				if (canvasGraphics.pendingMatrix != null) {
+				var pending_matrix = canvasGraphics.pendingMatrix;
+				if (pending_matrix != null && pending_matrix.a * pending_matrix.d - pending_matrix.c * pending_matrix.b != 0  ) {
 					
-					context.transform (canvasGraphics.pendingMatrix.a, canvasGraphics.pendingMatrix.b, canvasGraphics.pendingMatrix.c, canvasGraphics.pendingMatrix.d, canvasGraphics.pendingMatrix.tx, canvasGraphics.pendingMatrix.ty);
+					context.transform (pending_matrix.a, pending_matrix.b, pending_matrix.c, pending_matrix.d, pending_matrix.tx, pending_matrix.ty);
 					canvasGraphics.pendingMatrix = null;
 				}
 

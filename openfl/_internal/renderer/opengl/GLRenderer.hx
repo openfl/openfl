@@ -319,9 +319,9 @@ class GLRenderer extends AbstractRenderer {
 		shape.__getRenderBounds(bounds);
 		matrix.translate (bounds.x, bounds.y);
 		matrix.concat (shape.__renderTransform);
-		
-		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, ALWAYS);
-		
+
+		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );
+
 	}
 	
 	

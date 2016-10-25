@@ -636,7 +636,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateCachedBitmapBounds ();
 
 			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
-				throw'Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}';
+				trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
+				return;
 			}
 
 			renderSession.maskManager.disableMask ();
@@ -672,8 +673,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.translate (__cachedBitmapBounds.x, __cachedBitmapBounds.y);
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
-		
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, renderSession.roundPixels ? ALWAYS : NEVER);
 	}
 
 	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {

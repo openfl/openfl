@@ -472,8 +472,15 @@ class BitmapData implements IBitmapDrawable {
 		#elseif (js && html5) //webgl
 
 		var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
+		var cached_visible = true;
+		if ( Std.is( source, DisplayObject ) ) {
+			cached_visible = cast(source,DisplayObject).visible;
+			cast(source,DisplayObject).visible = true;
+		}
 		__drawGL ( renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
-
+		if ( Std.is( source, DisplayObject ) ) {
+			cast(source,DisplayObject).visible = cached_visible;
+		}
 		#else
 		
 		if (colorTransform != null) {
