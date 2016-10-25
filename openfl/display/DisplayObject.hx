@@ -636,7 +636,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateCachedBitmapBounds ();
 
 			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
-				throw'Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}';
+				trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
+				return;
 			}
 
 			renderSession.maskManager.disableMask ();
