@@ -101,20 +101,25 @@ import openfl.filters.commands.*;
 		commands.push (ColorTransform (__clonedHighlightBitmapData, bitmap, __inverseAlphaMatrix));
 		commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
 
-		for( quality_index in 0...quality ) {
-			var first_pass = quality_index == 0;
+		if ( blurX > 1 || blurY > 1 ) {
+			for( quality_index in 0...quality ) {
+				var first_pass = quality_index == 0;
 
-			if (first_pass) {
-				commands.push (Blur1D (__clonedHighlightBitmapData, src, blurX, true, 1.0, distance, angle));
-				commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle+180));
-			}
-			else {
-				commands.push (Blur1D (__clonedHighlightBitmapData, __clonedHighlightBitmapData, blurX, true, 1.0, 0.0, 0.0));
-				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-			}
+				if (first_pass) {
+					commands.push (Blur1D (__clonedHighlightBitmapData, src, blurX, true, 1.0, distance, angle));
+					commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle+180));
+				}
+				else {
+					commands.push (Blur1D (__clonedHighlightBitmapData, __clonedHighlightBitmapData, blurX, true, 1.0, 0.0, 0.0));
+					commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
+				}
 
-			commands.push (Blur1D (__clonedHighlightBitmapData, __clonedHighlightBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+				commands.push (Blur1D (__clonedHighlightBitmapData, __clonedHighlightBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
+			}
+		} else {
+			commands.push (Offset (__clonedHighlightBitmapData, src, 1.0, distance, angle));
+			commands.push (Offset (__shadowBitmapData, src, 1.0, distance, angle+180));
 		}
 
 		commands.push ( DestOut( __highlightBitmapData, __shadowBitmapData, __clonedHighlightBitmapData));

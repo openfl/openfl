@@ -62,6 +62,9 @@ class BitmapFilter {
 					case Blur1D (target, source, blur, horizontal, strength, distance, angle) :
 						Blur1DCommand.apply (renderSession, target, source, blur, horizontal, strength, distance, angle);
 
+					case Offset (target, source, strength, distance, angle) :
+						OffsetCommand.apply (renderSession, target, source, strength, distance, angle);
+
 					case Colorize (target, source, color, alpha) :
 						ColorizeCommand.apply (renderSession, target, source, color, alpha);
 
