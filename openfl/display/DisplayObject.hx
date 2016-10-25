@@ -547,9 +547,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public inline function __drawGraphicsGL (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
-			
-			if (#if !disable_cairo_graphics __graphics.__hardware #else true #end) {
-				
+
+			if (
+				#if (js && html5)
+				false
+				#elseif !disable_cairo_graphics
+				__graphics.__hardware
+				#else
+				true
+				#end) {
+
 				GraphicsRenderer.render (this, renderSession);
 				
 			} else {
@@ -572,9 +579,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		
 		if (__scrollRect != null) {
 			
-			throw ":TODO: take __renderScaleTransform into account";
-			
-			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
+			var scaledScrollRect = openfl.geom.Rectangle.__temp;
+			__scrollRect.__transform (scaledScrollRect, __renderScaleTransform);
+			renderSession.maskManager.pushRect (scaledScrollRect, __renderTransform);
 			
 		}
 
@@ -588,6 +595,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 
 				__mask.__maskGraphics.clear ();
+				if( __mask.__cachedBitmap != null ){
+					__mask.__cachedBitmap.dispose();
+				}
+				__mask.__cachedBitmap = null;
 
 				__mask.__isMask = true;
 				__mask.__update (true, true, __mask.__maskGraphics);
@@ -625,7 +636,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateCachedBitmapBounds ();
 
 			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
-				throw'Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}';
+				trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
+				return;
 			}
 
 			renderSession.maskManager.disableMask ();
@@ -757,6 +769,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateFilters = filters != null && filters.length > 0;
 			__renderDirty = true;
 			__worldRenderDirty++;
+
+			if( __isMask ){
+				__maskCached = false;
+			}
 			if (__cachedParent != null) {
 				__cachedParent.__setRenderDirty();
 			}
