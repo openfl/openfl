@@ -11,7 +11,7 @@ class EventDispatcher implements IEventDispatcher {
 	
 	
 	private var __eventMap:Map<String, Array<Listener>>;
-	private var __iterators:Map<String, DispatchIterator>;
+	private var __iterators:Map<String, Array<DispatchIterator>>;
 	private var __targetDispatcher:IEventDispatcher;
 	
 	
@@ -43,7 +43,7 @@ class EventDispatcher implements IEventDispatcher {
 			var iterator = new DispatchIterator (list);
 			
 			__eventMap.set (type, list);
-			__iterators.set (type, iterator);
+			__iterators.set (type, [ iterator ]);
 			
 		} else {
 			
@@ -55,7 +55,17 @@ class EventDispatcher implements IEventDispatcher {
 				
 			}
 			
-			__iterators.get (type).copy ();
+			var iterators = __iterators.get (type);
+			
+			for (iterator in iterators) {
+				
+				if (iterator.active) {
+					
+					iterator.copy ();
+					
+				}
+				
+			}
 			
 			list.push (new Listener (listener, useCapture, priority));
 			list.sort (__sortByPriority);
@@ -98,15 +108,19 @@ class EventDispatcher implements IEventDispatcher {
 		var list = __eventMap.get (type);
 		if (list == null) return;
 		
-		var iterator = __iterators.get (type);
+		var iterators = __iterators.get (type);
 		
 		for (i in 0...list.length) {
 			
 			if (list[i].match (listener, useCapture)) {
 				
-				if (i > iterator.index) {
+				for (iterator in iterators) {
 					
-					iterator.copy ();
+					if (iterator.active) {
+						
+						iterator.remove (list[i]);
+						
+					}
 					
 				}
 				
@@ -179,12 +193,13 @@ class EventDispatcher implements IEventDispatcher {
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 		var index = 0;
 		
-		var iterator = __iterators.get (type);
+		var iterators = __iterators.get (type);
+		var iterator = iterators[0];
 		
-		if (iterator.isActive) {
+		if (iterator.active) {
 			
-			list = list.copy ();
 			iterator = new DispatchIterator (list);
+			iterators.push (iterator);
 			
 		}
 		
@@ -207,6 +222,12 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
+		if (iterator != iterators[0]) {
+			
+			iterators.remove (iterator);
+			
+		}
+		
 		return true;
 		
 	}
@@ -225,9 +246,10 @@ class EventDispatcher implements IEventDispatcher {
 @:dox(hide) private class DispatchIterator {
 	
 	
+	public var active:Bool;
 	public var index (default, null):Int;
-	public var isActive:Bool;
 	
+	private var isCopy:Bool;
 	private var list:Array<Listener>;
 	
 	
@@ -241,9 +263,10 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function copy ():Void {
 		
-		if (index < list.length) {
+		if (index < list.length && !isCopy) {
 			
 			list = list.copy ();
+			isCopy = true;
 			
 		}
 		
@@ -258,7 +281,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 		} else {
 			
-			isActive = false;
+			active = false;
 			return false;
 			
 		}
@@ -273,12 +296,32 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
+	public function remove (listener:Listener):Void {
+		
+		if (active && isCopy) {
+			
+			for (i in index...list.length) {
+				
+				if (list[i] == listener) {
+					
+					list.splice (i, 1);
+					break;
+					
+				}
+				
+			}
+			
+		}
+		
+	}
+	
+	
 	public function reset (list:Array<Listener>):Void {
 		
 		this.list = list;
 		
+		active = true;
 		index = 0;
-		isActive = true;
 		
 	}
 	
