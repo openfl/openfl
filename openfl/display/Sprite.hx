@@ -81,7 +81,7 @@ class Sprite extends DisplayObjectContainer {
 			
 		} else {
 			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
 			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
