@@ -146,7 +146,7 @@ class Stage3D extends EventDispatcher {
 				
 				if (__context != null) {
 					
-					#if debug
+					#if webgl_debug
 					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 					#end
 					

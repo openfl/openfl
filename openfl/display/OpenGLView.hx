@@ -61,7 +61,7 @@ class OpenGLView extends DirectRenderer {
 				
 			}
 			
-			#if debug
+			#if webgl_debug
 			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 			#end
 			
@@ -122,7 +122,7 @@ class OpenGLView extends DirectRenderer {
 						
 					}
 					
-					#if debug
+					#if webgl_debug
 					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 					#end
 					
