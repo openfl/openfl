@@ -325,7 +325,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		var success = __dispatchEvent (event);
 		
-		if (success) {
+		if (success && __children != null) {
 			
 			for (child in __children) {
 				

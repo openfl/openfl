@@ -329,7 +329,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			
 			if (event.__isCanceled) {
 				
-				return false;
+				return true;
 				
 			}
 			
@@ -355,7 +355,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		
 		if (event.__isCanceled) {
 			
-			return false;
+			return true;
 			
 		}
 		
