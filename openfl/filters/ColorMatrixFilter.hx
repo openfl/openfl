@@ -135,7 +135,7 @@ private class ColorMatrixShader extends Shader {
 				color = vec4 (color.rgb / color.a, color.a);
 				color = uOffsets + color * uMultipliers;
 				
-				gl_FragColor = vec4 (color.rgb * color.a, color.a * vAlpha);
+				gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
 				
 			}
 			

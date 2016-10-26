@@ -138,7 +138,7 @@ private class ConvolutionShader extends Shader {
 				
 			}
 			
-			gl_FragColor = vec4 (c.rgb, c.a * vAlpha);
+			gl_FragColor = c * vAlpha;
 			
 		}"
 		

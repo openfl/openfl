@@ -58,7 +58,7 @@ class Shader {
 				
 			} else {
 				
-				gl_FragColor = vec4 (color.rgb / color.a, color.a * vAlpha);
+				gl_FragColor = color * vAlpha;
 				
 			}
 			
