@@ -43,23 +43,19 @@ class OpenGLView extends DirectRenderer {
 			__canvas.height = Lib.current.stage.stageHeight;
 			
 			var window = Lib.current.stage.window;
+			
 			var options = {
 				
-				alpha: false, 
-				premultipliedAlpha: false, 
-				antialias: false, 
-				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
-				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
+				alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
+				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
+				premultipliedAlpha: true,
+				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
+				preserveDrawingBuffer: false
 				
-			}
+			};
 			
-			__context = cast __canvas.getContext ("webgl", options);
-			
-			if (__context == null) {
-				
-				__context = cast __canvas.getContext ("experimental-webgl", options);
-				
-			}
+			__context = cast __canvas.getContextWebGL (options);
 			
 			#if webgl_debug
 			__context = untyped WebGLDebugUtils.makeDebugContext (__context);

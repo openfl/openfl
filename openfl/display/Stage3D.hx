@@ -16,8 +16,8 @@ import openfl.events.EventDispatcher;
 import openfl.Vector;
 
 #if (js && html5)
+import js.html.webgl.RenderingContext;
 import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
 import js.html.CSSStyleDeclaration;
 import js.Browser;
 #end
@@ -38,8 +38,8 @@ class Stage3D extends EventDispatcher {
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
-	private var __context:CanvasRenderingContext2D;
 	private var __style:CSSStyleDeclaration;
+	private var __webgl:RenderingContext;
 	#end
 	
 	
@@ -126,33 +126,29 @@ class Stage3D extends EventDispatcher {
 				__canvas.height = stage.stageHeight;
 				
 				var window = stage.window;
+				
 				var options = {
 					
-					alpha: false, 
-					premultipliedAlpha: false, 
-					antialias: false, 
-					depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
-					stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
+					alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+					antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
+					depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
+					premultipliedAlpha: true,
+					stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
+					preserveDrawingBuffer: false
 					
-				}
+				};
 				
-				__context = cast __canvas.getContext ("webgl", options);
+				__webgl = cast __canvas.getContextWebGL (options);
 				
-				if (__context == null) {
-					
-					__context = cast __canvas.getContext ("experimental-webgl", options);
-					
-				}
-				
-				if (__context != null) {
+				if (__webgl != null) {
 					
 					#if webgl_debug
-					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
+					__webgl = untyped WebGLDebugUtils.makeDebugContext (__webgl);
 					#end
 					
 					// TODO: Need to handle renderSession/context better
 					
-					GL.context = cast __context;
+					GL.context = cast __webgl;
 					
 					context3D = new Context3D (this, renderSession);
 					
@@ -182,6 +178,10 @@ class Stage3D extends EventDispatcher {
 		}
 		
 		if (context3D != null) {
+			
+			#if (js && html5)
+			GL.context = cast __webgl;
+			#end
 			
 			__resetContext3DStates ();
 			//DOMStage3D.render (this, renderSession);
