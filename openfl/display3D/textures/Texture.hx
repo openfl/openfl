@@ -120,20 +120,22 @@ using openfl.display.BitmapData;
 	public function uploadFromUInt8Array (data:UInt8Array, miplevel:Int = 0):Void {
 		
 		GL.bindTexture (GL.TEXTURE_2D, glTexture);
-		
+
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
+
 		if (optimizeForRenderToTexture) {
-			
-			GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
+
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.CLAMP_TO_EDGE);
 			GL.texParameteri (GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
-			
+
 		}
-		
+
 		GL.texImage2D (GL.TEXTURE_2D, miplevel, internalFormat, width, height, 0, internalFormat, GL.UNSIGNED_BYTE, data);
 		GL.bindTexture (GL.TEXTURE_2D, null);
-		
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 0);
+
 	}
 	
 	
