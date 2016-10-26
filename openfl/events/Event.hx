@@ -68,7 +68,7 @@ class Event {
 	}
 	
 	
-	public function formatToString (className:String, ?p1:String, ?p2:String, ?p3:String, ?p4:String, ?p5:String):String {
+	public function formatToString (className:String, ?p1:String, ?p2:String, ?p3:String, ?p4:String, ?p5:String, ?p6:String):String {
 		
 		var parameters = [];
 		if (p1 != null) parameters.push (p1);
@@ -76,6 +76,7 @@ class Event {
 		if (p3 != null) parameters.push (p3);
 		if (p4 != null) parameters.push (p4);
 		if (p5 != null) parameters.push (p5);
+		if (p6 != null) parameters.push (p6);
 		
 		return Reflect.callMethod (this, __formatToString, [ className, parameters ]);
 		
