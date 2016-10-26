@@ -116,11 +116,7 @@ class EventDispatcher implements IEventDispatcher {
 				
 				for (iterator in iterators) {
 					
-					if (iterator.active) {
-						
-						iterator.remove (list[i]);
-						
-					}
+					iterator.remove (list[i], i);
 					
 				}
 				
@@ -296,16 +292,28 @@ class EventDispatcher implements IEventDispatcher {
 	}
 	
 	
-	public function remove (listener:Listener):Void {
+	public function remove (listener:Listener, listIndex:Int):Void {
 		
-		if (active && isCopy) {
+		if (active) {
 			
-			for (i in index...list.length) {
+			if (!isCopy) {
 				
-				if (list[i] == listener) {
+				if (listIndex <= index) {
 					
-					list.splice (i, 1);
-					break;
+					index--;
+					
+				}
+				
+			} else {
+				
+				for (i in index...list.length) {
+					
+					if (list[i] == listener) {
+						
+						list.splice (i, 1);
+						break;
+						
+					}
 					
 				}
 				
