@@ -91,7 +91,9 @@ import haxe.Timer;
 			}
 			*/
 		
-		var image = source.image;
+		var image = __getImage (source);
+		
+		if (image == null) return;
 		
 		uploadFromTypedArray (image.data, source.width, source.height, miplevel);
 		

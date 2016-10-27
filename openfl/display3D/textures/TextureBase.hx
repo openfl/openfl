@@ -1,12 +1,18 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.utils.ImageCanvasUtil;
+import lime.graphics.Image;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.stage3D.SamplerState;
 import openfl._internal.stage3D.GLUtils;
+import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
+
+@:access(openfl.display.BitmapData)
+@:access(openfl.display3D.Context3D)
 
 
 class TextureBase extends EventDispatcher {
@@ -34,7 +40,6 @@ class TextureBase extends EventDispatcher {
 		__textureTarget = target;
 		
 		__textureID = GL.createTexture ();
-		
 		
 		#if !sys
 		
@@ -109,6 +114,66 @@ class TextureBase extends EventDispatcher {
 			__memoryUsage = 0;
 			
 		}
+		
+	}
+	
+	
+	private function __getImage (bitmapData:BitmapData):Image {
+		
+		var image =	bitmapData.image;
+		
+		if (!bitmapData.__isValid || image == null) {
+			
+			return null;
+			
+		}
+		
+		#if (js && html5)
+		ImageCanvasUtil.sync (image, false);
+		#end
+		
+		#if (js && html5)
+		
+		if (image.type != DATA && !image.premultiplied) {
+			
+			GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+			
+		} else if (!image.premultiplied && image.transparent) {
+			
+			GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+			image = image.clone ();
+			image.premultiplied = true;
+			
+		}
+		
+		// TODO: Some way to support BGRA on WebGL?
+		
+		if (image.format != RGBA32) {
+			
+			image = image.clone ();
+			image.format = RGBA32;
+			image.buffer.premultiplied = true;
+			#if openfl_power_of_two
+			image.powerOfTwo = true;
+			#end
+			
+		}
+		
+		#else
+		
+		if (#if openfl_power_of_two !image.powerOfTwo || #end (!image.premultiplied && image.transparent)) {
+			
+			image = image.clone ();
+			image.premultiplied = true;
+			#if openfl_power_of_two
+			image.powerOfTwo = true;
+			#end
+			
+		}
+		
+		#end
+		
+		return image;
 		
 	}
 	
