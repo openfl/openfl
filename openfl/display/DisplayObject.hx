@@ -763,16 +763,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private inline function __setRenderDirty ():Void {
 
-		if (!__renderDirty) {
-
 			__updateCachedBitmap = true;
 			__updateFilters = filters != null && filters.length > 0;
-			__renderDirty = true;
-			__worldRenderDirty++;
 
 			if( __isMask ){
 				__maskCached = false;
 			}
+
+		if (!__renderDirty) {
+
+			__renderDirty = true;
+			__worldRenderDirty++;
+
 			if (__cachedParent != null) {
 				__cachedParent.__setRenderDirty();
 			}
