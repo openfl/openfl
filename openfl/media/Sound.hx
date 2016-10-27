@@ -200,7 +200,7 @@ class Sound extends EventDispatcher {
 		
 		if (untyped window.createjs != null) {
 			
-			SoundJS.alternateExtensions = [ "m4a", "ogg" ];
+			SoundJS.alternateExtensions = [ "m4a" ];
 			
 		}
 		
