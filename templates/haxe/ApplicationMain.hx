@@ -1,3 +1,6 @@
+package;
+
+
 #if macro
 import haxe.macro.Compiler;
 import haxe.macro.Context;
@@ -20,8 +23,6 @@ class ApplicationMain {
 	
 	
 	public static function main () {
-		
-		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
 		
 		config = {
 			
@@ -235,7 +236,7 @@ class ApplicationMain {
 	
 	public static function start ():Void {
 		
-		lime.Assets.initialize ();
+		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
 		
 		ApplicationMain.getEntryPoint ();
 		
