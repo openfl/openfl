@@ -491,7 +491,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					if (clippedAt != null) {
 						// :TODO: Do not recheck the mask several times.
-						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+						if ( __children[clippedAt] != null && !__children[clippedAt].__hitTestMask(x,y) ) {
 							i = clippedAt;
 							continue;
 						}
@@ -525,7 +525,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					if (clippedAt != null) {
 						// :TODO: Do not recheck the mask several times.
-						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+						if ( __children[clippedAt] != null && !__children[clippedAt].__hitTestMask(x,y) ) {
 							i = clippedAt;
 							continue;
 						}
