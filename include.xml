@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 	
-	<set name="openfl" />
-	
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
 	
@@ -25,6 +23,8 @@
 		<template path="templates" />
 		
 	</section>
+	
+	<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 3.4.* is required)" if="${lime < 3.4.0} || ${lime >= 3.5.0}" />
 	
 	<source path="externs/core/flash" if="flash" />
 	<source path="externs/core/openfl" if="display || flash" />
