@@ -474,7 +474,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		if (scrollRect != null && !scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
 		
@@ -491,7 +491,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					if (clippedAt != null) {
 						// :TODO: Do not recheck the mask several times.
-						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+						if ( __children[clippedAt] != null && !__children[clippedAt].__hitTestMask(x,y) ) {
 							i = clippedAt;
 							continue;
 						}
@@ -525,7 +525,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 					if (clippedAt != null) {
 						// :TODO: Do not recheck the mask several times.
-						if ( !__children[clippedAt].__hitTestMask(x,y) ) {
+						if ( __children[clippedAt] != null && !__children[clippedAt].__hitTestMask(x,y) ) {
 							i = clippedAt;
 							continue;
 						}
