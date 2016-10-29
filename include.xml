@@ -24,7 +24,11 @@
 		
 	</section>
 	
-	<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 3.4.* is required)" if="${lime < 3.4.0} || ${lime >= 3.5.0}" />
+	<section if="lime">
+		
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 3.4.* is required)" if="${lime < 3.4.0} || ${lime >= 3.5.0}" />
+		
+	</section>
 	
 	<source path="externs/core/flash" if="flash" />
 	<source path="externs/core/openfl" if="display || flash" />
