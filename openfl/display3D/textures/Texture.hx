@@ -91,11 +91,22 @@ import haxe.Timer;
 			}
 			*/
 		
+		if (source == null) return;
+		
+		var width = __width >> miplevel;
+		var height = __height >> miplevel;
+		
+		if (source.width != width || source.height != height) {
+			
+			var copy = new BitmapData (width, height, true, 0);
+			copy.draw (source);
+			source = copy;
+			
+		}
+		
 		var image = __getImage (source);
 		
-		if (image == null) return;
-		
-		uploadFromTypedArray (image.data, source.width, source.height, miplevel);
+		uploadFromTypedArray (image.data, miplevel);
 		
 	}
 	
@@ -111,20 +122,20 @@ import haxe.Timer;
 		}
 		#end
 		
-		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), 0, 0, miplevel);
+		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), miplevel);
 		
 	}
 	
 	
-	public function uploadFromTypedArray (data:ArrayBufferView, width:Int = 0, height:Int = 0, miplevel:UInt = 0):Void {
+	public function uploadFromTypedArray (data:ArrayBufferView, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
 		
+		var width = __width >> miplevel;
+		var height = __height >> miplevel;
+		
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
-		
-		if (width == 0) width = __width;
-		if (height == 0) height = __height;
 		
 		GL.texImage2D (__textureTarget, miplevel, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
