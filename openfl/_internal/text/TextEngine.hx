@@ -7,6 +7,7 @@ import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 import lime.text.TextLayout;
+import openfl.Vector;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
@@ -66,13 +67,13 @@ class TextEngine {
 	public var embedFonts:Bool;
 	public var gridFitType:GridFitType;
 	public var height:Float;
-	public var layoutGroups:Array<TextLayoutGroup>;
-	public var lineAscents:Array<Float>;
-	public var lineBreaks:Array<Int>;
-	public var lineDescents:Array<Float>;
-	public var lineLeadings:Array<Float>;
-	public var lineHeights:Array<Float>;
-	public var lineWidths:Array<Float>;
+	public var layoutGroups:Vector<TextLayoutGroup>;
+	public var lineAscents:Vector<Float>;
+	public var lineBreaks:Vector<Int>;
+	public var lineDescents:Vector<Float>;
+	public var lineLeadings:Vector<Float>;
+	public var lineHeights:Vector<Float>;
+	public var lineWidths:Vector<Float>;
 	public var maxChars:Int;
 	public var maxScrollH (default, null):Int;
 	public var maxScrollV (default, null):Int;
@@ -85,7 +86,7 @@ class TextEngine {
 	public var sharpness:Float;
 	public var text:String;
 	public var textHeight:Float;
-	public var textFormatRanges:Array<TextFormatRange>;
+	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
 	public var type:TextFieldType;
 	public var width:Float;
@@ -142,14 +143,14 @@ class TextEngine {
 		scrollV = 1;
 		wordWrap = false;
 		
-		lineAscents = new Array ();
-		lineBreaks = new Array ();
-		lineDescents = new Array ();
-		lineLeadings = new Array ();
-		lineHeights = new Array ();
-		lineWidths = new Array ();
-		layoutGroups = new Array ();
-		textFormatRanges = new Array ();
+		lineAscents = new Vector ();
+		lineBreaks = new Vector ();
+		lineDescents = new Vector ();
+		lineLeadings = new Vector ();
+		lineHeights = new Vector ();
+		lineWidths = new Vector ();
+		layoutGroups = new Vector ();
+		textFormatRanges = new Vector ();
 		
 		#if (js && html5)
 		__canvas = cast Browser.document.createElement ("canvas");
@@ -501,11 +502,11 @@ class TextEngine {
 	
 	private function getLineMeasurements ():Void {
 		
-		lineAscents.splice (0, lineAscents.length);
-		lineDescents.splice (0, lineDescents.length);
-		lineLeadings.splice (0, lineLeadings.length);
-		lineHeights.splice (0, lineHeights.length);
-		lineWidths.splice (0, lineWidths.length);
+		lineAscents.length = 0;
+		lineDescents.length = 0;
+		lineLeadings.length = 0;
+		lineHeights.length = 0;
+		lineWidths.length = 0;
 		
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
@@ -632,7 +633,7 @@ class TextEngine {
 	
 	private function getLayoutGroups ():Void {
 		
-		layoutGroups.splice (0, layoutGroups.length);
+		layoutGroups.length = 0;
 		
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
@@ -1161,13 +1162,13 @@ class TextEngine {
 		
 		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
 			
-			lineAscents.splice (0, lineAscents.length);
-			lineBreaks.splice (0, lineBreaks.length);
-			lineDescents.splice (0, lineDescents.length);
-			lineLeadings.splice (0, lineLeadings.length);
-			lineHeights.splice (0, lineHeights.length);
-			lineWidths.splice (0, lineWidths.length);
-			layoutGroups.splice (0, layoutGroups.length);
+			lineAscents.length = 0;
+			lineBreaks.length = 0;
+			lineDescents.length = 0;
+			lineLeadings.length = 0;
+			lineHeights.length = 0;
+			lineWidths.length = 0;
+			layoutGroups.length = 0;
 			
 			textWidth = 0;
 			textHeight = 0;
