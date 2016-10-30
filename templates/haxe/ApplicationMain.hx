@@ -304,6 +304,16 @@ class ApplicationMain {
 	
 	macro public static function getPreloaderDisplay () {
 		
+		try {
+			
+			Context.resolvePath ("NMEPreloader.hx");
+			
+		} catch (e:Dynamic) {
+			
+			Context.defineType ({ name: "NMEPreloader", pack: [], kind: TDAlias (TPath ({ name: "Preloader", sub: "DefaultPreloader", pack: [ "openfl", "display" ], params: [] })), fields: [], pos: Context.currentPos () });
+			
+		}
+		
 		::if (PRELOADER_NAME != "")::
 		Compiler.keep ("::PRELOADER_NAME::");
 		return macro { new ::PRELOADER_NAME:: (); }
