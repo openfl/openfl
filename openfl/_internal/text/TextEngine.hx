@@ -500,13 +500,13 @@ class TextEngine {
 	
 	
 	private function getLineMeasurements ():Void {
-		
-		lineAscents.splice (0, lineAscents.length);
-		lineDescents.splice (0, lineDescents.length);
-		lineLeadings.splice (0, lineLeadings.length);
-		lineHeights.splice (0, lineHeights.length);
-		lineWidths.splice (0, lineWidths.length);
-		
+
+		var ascentsIndex = 0,
+			descentsIndex = 0,
+			leadingsIndex = 0,
+			heightsIndex = 0,
+			widthsIndex = 0;
+
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
 		var currentLineLeading:Null<Int> = null;
@@ -523,11 +523,11 @@ class TextEngine {
 			
 			while (group.lineIndex > numLines - 1) {
 				
-				lineAscents.push (currentLineAscent);
-				lineDescents.push (currentLineDescent);
-				lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
-				lineHeights.push (currentLineHeight);
-				lineWidths.push (currentLineWidth);
+				lineAscents[ascentsIndex++] = currentLineAscent;
+				lineDescents[descentsIndex++] = currentLineDescent;
+				lineLeadings[leadingsIndex++] = currentLineLeading != null ? currentLineLeading : 0;
+				lineHeights[heightsIndex++] = currentLineHeight;
+				lineWidths[widthsIndex++] = currentLineWidth;
 				
 				currentLineAscent = 0;
 				currentLineDescent = 0;
@@ -570,12 +570,12 @@ class TextEngine {
 			textHeight = group.offsetY - 2 + group.ascent + group.descent;
 			
 		}
-		
-		lineAscents.push (currentLineAscent);
-		lineDescents.push (currentLineDescent);
-		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
-		lineHeights.push (currentLineHeight);
-		lineWidths.push (currentLineWidth);
+
+		lineAscents[ascentsIndex++] = currentLineAscent;
+		lineDescents[descentsIndex++] = currentLineDescent;
+		lineLeadings[leadingsIndex++] = currentLineLeading != null ? currentLineLeading : 0;
+		lineHeights[heightsIndex++] = currentLineHeight;
+		lineWidths[widthsIndex++] = currentLineWidth;
 		
 		if (numLines == 1) {
 			
@@ -626,13 +626,19 @@ class TextEngine {
 		}
 		
 		maxScrollV = numLines - bottomScrollV + 1;
-		
+
+		if (lineAscents.length > ascentsIndex) lineAscents.splice (ascentsIndex, lineAscents.length);
+		if (lineDescents.length > descentsIndex) lineDescents.splice (descentsIndex, lineDescents.length);
+		if (lineLeadings.length > leadingsIndex) lineLeadings.splice (leadingsIndex, lineLeadings.length);
+		if (lineHeights.length > heightsIndex) lineHeights.splice (heightsIndex, lineHeights.length);
+		if (lineWidths.length > widthsIndex) lineWidths.splice (widthsIndex, lineWidths.length);
+
 	}
 	
 	
 	private function getLayoutGroups ():Void {
 		
-		layoutGroups.splice (0, layoutGroups.length);
+		var layoutGroupIndex = 0;
 		
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
@@ -830,7 +836,7 @@ class TextEngine {
 				layoutGroup.offsetY = offsetY;
 				layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
 				layoutGroup.height = heightValue;
-				layoutGroups.push (layoutGroup);
+				layoutGroups[layoutGroupIndex++] = layoutGroup;
 				
 				offsetY += heightValue;
 				offsetX = 2;
@@ -884,7 +890,7 @@ class TextEngine {
 						
 						offsetY += heightValue;
 						
-						var i = layoutGroups.length - 1;
+						var i = layoutGroupIndex - 1;
 						var offsetCount = 0;
 						
 						while (true) {
@@ -911,9 +917,9 @@ class TextEngine {
 						
 						if (offsetCount > 0) {
 							
-							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
+							var bumpX = layoutGroups[layoutGroupIndex - offsetCount].offsetX;
 							
-							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length) {
+							for (i in (layoutGroupIndex - offsetCount)...layoutGroupIndex) {
 								
 								layoutGroup = layoutGroups[i];
 								layoutGroup.offsetX -= bumpX;
@@ -935,7 +941,7 @@ class TextEngine {
 						layoutGroup.offsetY = offsetY;
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
-						layoutGroups.push (layoutGroup);
+						layoutGroups[layoutGroupIndex++] = layoutGroup;
 						
 						offsetX = widthValue + spaceWidth;
 						marginRight = spaceWidth;
@@ -967,7 +973,7 @@ class TextEngine {
 							layoutGroup.offsetY = offsetY;
 							layoutGroup.width = widthValue;
 							layoutGroup.height = heightValue;
-							layoutGroups.push (layoutGroup);
+							layoutGroups[layoutGroupIndex++] = layoutGroup;
 							
 							layoutGroup.advances.push (spaceWidth);
 							marginRight = spaceWidth;
@@ -1031,7 +1037,7 @@ class TextEngine {
 					layoutGroup.offsetY = offsetY;
 					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
 					layoutGroup.height = heightValue;
-					layoutGroups.push (layoutGroup);
+					layoutGroups[layoutGroupIndex++] = layoutGroup;
 					
 					offsetX += layoutGroup.width;
 					
@@ -1051,7 +1057,9 @@ class TextEngine {
 			}
 			
 		}
-		
+
+		if (layoutGroups.length > layoutGroupIndex) layoutGroups.splice (layoutGroupIndex, layoutGroups.length);
+
 	}
 	
 	
