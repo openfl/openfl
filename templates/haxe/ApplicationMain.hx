@@ -312,7 +312,7 @@ class ApplicationMain {
 		try {
 			
 			Context.resolvePath ("NMEPreloader.hx");
-			Compiler.keep ("OpenFLPreloader");
+			Compiler.keep ("NMEPreloader");
 			return macro { new NMEPreloader (); };
 			
 		} catch (e:Dynamic) {}
