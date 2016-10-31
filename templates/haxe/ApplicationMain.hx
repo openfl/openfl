@@ -86,7 +86,7 @@ class ApplicationMain {
 		var app = new openfl.display.Application ();
 		app.create (config);
 		
-		preloader = new openfl.display.Preloader (getPreloaderDisplay ());
+		preloader = getPreloader ();
 		app.setPreloader (preloader);
 		preloader.onComplete.add (init);
 		preloader.create (config);
@@ -302,26 +302,71 @@ class ApplicationMain {
 	}
 	
 	
-	macro public static function getPreloaderDisplay () {
+	macro public static function getPreloader () {
 		
 		::if (PRELOADER_NAME != "")::
 		try {
 			
-			Context.getType ("::PRELOADER_NAME::");
+			Context.getType ("NMEPreloader");
 			
 		} catch (e:Dynamic) {
 			
-			Context.defineType ({ name: "NMEPreloader", pack: [], kind: TDAlias (TPath ({ name: "Preloader", sub: "DefaultPreloader", pack: [ "openfl", "display" ], params: [] })), fields: [], pos: Context.currentPos () });
-			
-			Context.getType ("::PRELOADER_NAME::");
-			Sys.println ("Warning: Usage of NMEPreloader has been deprecated");
+			Context.defineType ({
+				
+				name: "NMEPreloader",
+				pack: [],
+				kind: TDClass ({ pack: [ "openfl", "display" ], name: "Preloader", sub: "DefaultPreloader", params: [] }, null, false),
+				fields: [ { name: "new", access: [ APublic ], kind: FFun({ args: [], expr: macro { super (); }, params: [], ret: macro :Void }), pos: Context.currentPos () } ],
+				pos: Context.currentPos ()
+				
+			});
 			
 		}
 		
-		Compiler.keep ("::PRELOADER_NAME::");
-		return macro { new ::PRELOADER_NAME:: (); }
+		try {
+			
+			var type = Context.getType ("::PRELOADER_NAME::");
+			
+			switch (type) {
+				
+				case TInst (classType, _):
+					
+					var searchTypes = classType.get ();
+					
+					while (searchTypes != null) {
+						
+						if (searchTypes.pack.length == 2 && searchTypes.pack[0] == "openfl" && searchTypes.pack[1] == "display" && searchTypes.name == "Preloader") {
+							
+							return macro { new ::PRELOADER_NAME:: (); };
+							
+						} else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
+							
+							Sys.println ("Warning: Use of NMEPreloader has been deprecated");
+							break;
+							
+						}
+						
+						if (searchTypes.superClass != null) {
+							
+							searchTypes = searchTypes.superClass.t.get ();
+							
+						} else {
+							
+							searchTypes = null;
+							
+						}
+						
+					}
+				
+				default:
+				
+			}
+			
+		} catch (e:Dynamic) {}
+		
+		return macro { new openfl.display.Preloader (new ::PRELOADER_NAME:: ()); }
 		::else::
-		return macro { new openfl.display.Preloader.DefaultPreloader (); };
+		return macro { new openfl.display.Preloader (new openfl.display.Preloader.DefaultPreloader ()); };
 		::end::
 		
 	}
@@ -380,7 +425,7 @@ class DocumentClass {
 		var classType = Context.getLocalClass ().get ();
 		var searchTypes = classType;
 		
-		while (searchTypes.superClass != null) {
+		while (searchTypes != null) {
 			
 			if (searchTypes.pack.length == 2 && searchTypes.pack[1] == "display" && searchTypes.name == "DisplayObject") {
 				
@@ -400,7 +445,15 @@ class DocumentClass {
 				
 			}
 			
-			searchTypes = searchTypes.superClass.t.get ();
+			if (searchTypes.superClass != null) {
+				
+				searchTypes = searchTypes.superClass.t.get ();
+				
+			} else {
+				
+				searchTypes = null;
+				
+			}
 			
 		}
 		

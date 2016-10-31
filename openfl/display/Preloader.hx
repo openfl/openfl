@@ -5,19 +5,20 @@ import lime.app.Preloader in LimePreloader;
 import lime.Assets;
 import openfl.events.Event;
 import openfl.Lib;
+import openfl.events.IEventDispatcher;
 
 
 class Preloader extends LimePreloader {
 	
 	
-	private var display:Sprite;
+	private var display:Dynamic;
 	private var displayComplete:Bool;
 	private var displayHasInit:Bool;
 	private var displayHasLoaded:Bool;
 	private var displayHasUpdate:Bool;
 	
 	
-	public function new (display:Sprite = null) {
+	public function new (display:Dynamic = null) {
 		
 		super ();
 		
@@ -41,7 +42,11 @@ class Preloader extends LimePreloader {
 				
 			}
 			
-			Lib.current.addChild (display);
+			if (Std.is (display, DisplayObject)) {
+				
+				Lib.current.addChild (display);
+				
+			}
 			
 			if (displayHasInit) {
 				
@@ -71,8 +76,19 @@ class Preloader extends LimePreloader {
 		
 		if (displayHasLoaded) {
 			
-			display.addEventListener (Event.COMPLETE, display_onComplete);
+			if (Std.is (display, IEventDispatcher)) {
+				
+				(display:IEventDispatcher).addEventListener (Event.COMPLETE, display_onComplete);
+				
+			}
+			
 			Reflect.callMethod (display, Reflect.field (display, "onLoaded"), []);
+			
+			if (display != null && !Std.is (display, IEventDispatcher)) {
+				
+				display_onComplete (null);
+				
+			}
 			
 		} else if (display != null) {
 			
@@ -107,11 +123,19 @@ class Preloader extends LimePreloader {
 	
 	@:noCompletion private function display_onComplete (event:Event):Void {
 		
-		display.removeEventListener (Event.COMPLETE, display_onComplete);
-		
-		if (display.parent == Lib.current) {
+		if (display != null && Std.is (display, IEventDispatcher)) {
 			
-			Lib.current.removeChild (display);
+			(display:IEventDispatcher).removeEventListener (Event.COMPLETE, display_onComplete);
+			
+		}
+		
+		if (Std.is (display, DisplayObject)) {
+			
+			if (display.parent == Lib.current) {
+				
+				Lib.current.removeChild (display);
+				
+			}
 			
 		}
 		
@@ -126,7 +150,7 @@ class Preloader extends LimePreloader {
 }
 
 
-@:dox(hide) class DefaultPreloader extends Sprite {
+@:dox(hide) class DefaultPreloader extends Sprite implements IPreloader {
 	
 	
 	private var endAnimation:Int;
