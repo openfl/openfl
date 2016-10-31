@@ -1,3 +1,32 @@
+4.4.0 (10/31/2016)
+------------------
+
+* Added initial support for modular HTML5 builds (generates separate openfl.js)
+* Added initial support for VideoTexture in HTML5 Stage3D
+* Added initial high-DPI support for HTML5
+* Added an error when using a non-matching Lime version
+* Updated several fields with typed values for better performance
+* Updated event.target and event.currentTarget to be IEventDispatcher
+* Updated shaders to use premultiplied alpha blend mode by default
+* Improved behavior of non-renderable TextFields
+* Improved support for mipmapping in Stage3D Texture
+* Improved the behavior of graphics.drawTriangles
+* Improved re-entrant behavior in EventDispatcher
+* Improved removeEventListener when called during the same event dispatch
+* Improved premultiplied alpha in Stage3D textures
+* Improved the preloader system (deprecated NMEPreloader)
+* Fixed support for smoothing within sprite.graphics
+* Fixed dead-code-elimination when using a static main entry point
+* Fixed dispatch of Context3D creation error where Stage3D is not supported
+* Fixed sound.length on HTML5
+* Fixed support for using the same listener with multiple event phases
+* Fixed some issues with event bubbling
+* Fixed some issues with TextField caret positioning
+* Fixed BIG_ENDIAN support in ByteArray
+* Fixed use of ColorMatrixFilter on Flash
+* Fixed some issues with -Ddom OpenGL context creation
+
+
 4.3.1 (10/13/2016)
 ------------------
 
