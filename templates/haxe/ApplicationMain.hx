@@ -304,31 +304,24 @@ class ApplicationMain {
 	
 	macro public static function getPreloaderDisplay () {
 		
+		::if (PRELOADER_NAME != "")::
 		try {
 			
-			Context.resolvePath ("NMEPreloader.hx");
+			Context.getType ("::PRELOADER_NAME::");
 			
 		} catch (e:Dynamic) {
 			
 			Context.defineType ({ name: "NMEPreloader", pack: [], kind: TDAlias (TPath ({ name: "Preloader", sub: "DefaultPreloader", pack: [ "openfl", "display" ], params: [] })), fields: [], pos: Context.currentPos () });
 			
+			Context.getType ("::PRELOADER_NAME::");
+			Sys.println ("Warning: Usage of NMEPreloader has been deprecated");
+			
 		}
 		
-		::if (PRELOADER_NAME != "")::
 		Compiler.keep ("::PRELOADER_NAME::");
 		return macro { new ::PRELOADER_NAME:: (); }
 		::else::
-		
-		try {
-			
-			Context.resolvePath ("NMEPreloader.hx");
-			Compiler.keep ("NMEPreloader");
-			return macro { new NMEPreloader (); };
-			
-		} catch (e:Dynamic) {}
-		
 		return macro { new openfl.display.Preloader.DefaultPreloader (); };
-		
 		::end::
 		
 	}
