@@ -204,6 +204,8 @@ class ApplicationMain {
 	
 	public static function init ():Void {
 		
+		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
+		
 		var loaded = 0;
 		var total = 0;
 		var library_onLoad = function (__) {
@@ -235,8 +237,6 @@ class ApplicationMain {
 	
 	
 	public static function start ():Void {
-		
-		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
 		
 		ApplicationMain.getEntryPoint ();
 		
