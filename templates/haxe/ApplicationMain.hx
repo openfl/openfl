@@ -87,6 +87,7 @@ class ApplicationMain {
 		app.create (config);
 		
 		preloader = getPreloader ();
+		preloader.onComplete.add (registerLibrary);
 		app.setPreloader (preloader);
 		preloader.onComplete.add (init);
 		preloader.create (config);
@@ -204,8 +205,6 @@ class ApplicationMain {
 	
 	public static function init ():Void {
 		
-		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
-		
 		var loaded = 0;
 		var total = 0;
 		var library_onLoad = function (__) {
@@ -232,6 +231,13 @@ class ApplicationMain {
 			start ();
 			
 		}
+		
+	}
+	
+	
+	private static function registerLibrary ():Void {
+		
+		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
 		
 	}
 	
