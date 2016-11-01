@@ -28,6 +28,8 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
 		
+		if (listener == null) return;
+		
 		if (__eventMap == null) {
 			
 			__eventMap = new Map ();
@@ -103,7 +105,7 @@ class EventDispatcher implements IEventDispatcher {
 	
 	public function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void {
 		
-		if (__eventMap == null) return;
+		if (__eventMap == null || listener == null) return;
 		
 		var list = __eventMap.get (type);
 		if (list == null) return;
@@ -202,6 +204,8 @@ class EventDispatcher implements IEventDispatcher {
 		iterator.reset (list);
 		
 		for (listener in iterator) {
+			
+			if (listener == null) continue;
 			
 			if (listener.useCapture == capture) {
 				
