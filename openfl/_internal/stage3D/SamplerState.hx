@@ -4,6 +4,8 @@ package openfl._internal.stage3D;
 class SamplerState {
 	
 	
+	public var centroid:Bool;
+	public var ignoreSampler:Bool;
 	public var lodBias:Float;
 	public var magFilter:Int;
 	public var maxAniso:Float;
@@ -12,7 +14,7 @@ class SamplerState {
 	public var wrapModeT:Int;
 	
 	
-	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0) {
+	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0, ignoreSampler:Bool = false, centroid:Bool = false) {
 		
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
@@ -20,6 +22,23 @@ class SamplerState {
 		this.wrapModeT = wrapModeT;
 		this.lodBias = lodBias;
 		this.maxAniso = maxAniso;
+		this.ignoreSampler = ignoreSampler;
+		this.centroid = centroid;
+		
+	}
+	
+	
+	public function copyFrom (other:SamplerState):Void {
+		
+		if (other == null || other.ignoreSampler) return;
+		
+		this.minFilter = other.minFilter;
+		this.magFilter = other.magFilter;
+		this.wrapModeS = other.wrapModeS;
+		this.wrapModeT = other.wrapModeT;
+		this.lodBias = other.lodBias;
+		this.maxAniso = other.maxAniso;
+		this.centroid = other.centroid;
 		
 	}
 	
@@ -38,12 +57,7 @@ class SamplerState {
 			
 		}
 		
-		return this.minFilter == other.minFilter &&
-			this.magFilter == other.magFilter &&
-			this.wrapModeS == other.wrapModeS &&
-			this.wrapModeT == other.wrapModeT &&
-			this.lodBias == other.lodBias &&
-			maxAniso == other.maxAniso;
+		return (minFilter == other.minFilter && magFilter == other.magFilter && wrapModeS == other.wrapModeS && wrapModeT == other.wrapModeT && lodBias == other.lodBias && maxAniso == other.maxAniso);
 		
 	}
 	

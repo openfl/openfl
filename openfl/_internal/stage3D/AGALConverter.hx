@@ -948,11 +948,14 @@ private class SamplerRegister {
 			
 		}
 		
+		var ignoreSampler = (s & 4 == 4);
+		var centroid = (s & 1 == 1);
+		
 		// translate lod bias, sign extend and /8
 		var lodBias:Float = ((b << 24) >> 24) / 8.0;
 		var maxAniso:Float = 0.0;
 		
-		return new SamplerState (minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso);
+		return new SamplerState (minFilter, magFilter, wrapModeS, wrapModeT, lodBias, maxAniso, ignoreSampler, centroid);
 		
 	}
 	

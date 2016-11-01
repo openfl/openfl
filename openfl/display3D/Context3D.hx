@@ -462,6 +462,12 @@ import openfl.profiler.Telemetry;
 			
 			__samplerDirty |= __program.__samplerUsageMask;
 			
+			for (i in 0...MAX_SAMPLERS) {
+				
+				__samplerStates[i].copyFrom (__program.__getSamplerState (i));
+				
+			}
+			
 		}
 		
 	}
@@ -961,13 +967,7 @@ import openfl.profiler.Telemetry;
 					GL.bindTexture (target, texture.__getTexture ());
 					GLUtils.CheckGLError ();
 					
-					var state = __program.__getSamplerState(sampler);
-					
-					if (state != null) {
-						
-						texture.__setSamplerState (state);
-						
-					}
+					texture.__setSamplerState (__samplerStates[sampler]);
 					
 				} else {
 					
