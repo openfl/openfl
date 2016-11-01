@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.4.0",
-	"releasenote": "",
+	"version": "4.4.1",
+	"releasenote": "Modular HTML5 build support, improved HTML5 video, Stage3D improvements",
 	"contributors": [ "singmajesty" ]
 }
