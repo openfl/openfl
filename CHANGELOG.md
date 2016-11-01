@@ -1,3 +1,14 @@
+4.4.1 (11/01/2016)
+------------------
+
+* Added support for the "ignoresampler" AGAL sampler hint
+* Improved the behavior of context3D.setSamplerState
+* Minor change to better support Lime `onPreloadComplete` event
+* Fixed visibility of TextField cursor on a final blank line
+* Fixed a possible null error in EventDispatcher
+* Fixed support for -Dmodular
+
+
 4.4.0 (10/31/2016)
 ------------------
 
