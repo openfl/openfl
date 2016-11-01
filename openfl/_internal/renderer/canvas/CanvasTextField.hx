@@ -246,9 +246,6 @@ class CanvasTextField {
 							
 						}
 						
-						trace (scrollY);
-						trace (textField.scrollV);
-						
 						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {

@@ -472,8 +472,8 @@ class TextField extends InteractiveObject {
 		
 		replaceText (startIndex, endIndex, value);
 		
-		__caretIndex = startIndex + value.length;
-		__selectionIndex = __caretIndex;
+		var i = startIndex + value.length;
+		setSelection(i,i);
 		
 	}
 	
