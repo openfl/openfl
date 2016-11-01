@@ -1328,16 +1328,18 @@ class TextField extends InteractiveObject {
 									if (__regexSize.match (segment)) {
 										
 										var sizeAttr = __getAttributeMatch (__regexSize);
-										var firstChar = sizeAttr.charCodeAt(0);
+										var firstChar = sizeAttr.charCodeAt (0);
 										
 										if (firstChar == "+".code || firstChar == "-".code) {
 											
-											var parentFormat = formatStack.length >= 2? formatStack[formatStack.length - 2] : __textFormat;
+											var parentFormat = (formatStack.length >= 2) ? formatStack[formatStack.length - 2] : __textFormat;
 											format.size = parentFormat.size + Std.parseInt (sizeAttr);
 											
-										}
-										else
+										} else {
+											
 											format.size = Std.parseInt (sizeAttr);
+											
+										}
 										
 									}
 								
