@@ -1,4 +1,4 @@
-package openfl._internal.utils;
+package openfl._internal.utils; #if macro
 
 
 import haxe.macro.Compiler;
@@ -47,3 +47,6 @@ class ExtraParams {
 	
 	
 }
+
+
+#end
