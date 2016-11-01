@@ -1325,7 +1325,17 @@ class TextField extends InteractiveObject {
 									
 									if (__regexSize.match (segment)) {
 										
-										format.size = Std.parseInt (__getAttributeMatch (__regexSize));
+										var sizeAttr = __getAttributeMatch (__regexSize);
+										var firstChar = sizeAttr.charCodeAt(0);
+										
+										if (firstChar == "+".code || firstChar == "-".code) {
+											
+											var parentFormat = formatStack.length >= 2? formatStack[formatStack.length - 2] : __textFormat;
+											format.size = parentFormat.size + Std.parseInt (sizeAttr);
+											
+										}
+										else
+											format.size = Std.parseInt (sizeAttr);
 										
 									}
 								
