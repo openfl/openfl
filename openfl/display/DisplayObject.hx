@@ -41,14 +41,13 @@ import js.html.Element;
 
 
 class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
-	
-	
-	private static var __instanceCount = 0;
+
+
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
-	
+
 	private static var __cacheAsBitmapMode = false;
-	
+
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
@@ -78,13 +77,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var width (get, set):Float;
 	public var x (get, set):Float;
 	public var y (get, set):Float;
-	
+
 	public var __renderScaleTransform:Matrix;
 	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
 	public var __worldOffset:Point;
 	public var __worldTransform:Matrix;
-	
+
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __cairo:Cairo;
@@ -138,28 +137,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __context:CanvasRenderingContext2D;
 	private var __style:CSSStyleDeclaration;
 	#end
-	
-	
+
+
 	private function new () {
-		
+
 		super ();
-		
+
 		__alpha = 1;
 		__transform = new Matrix ();
 		__visible = true;
-		
+
 		__rotation = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
-		
+
 		__renderScaleTransform = new Matrix ();
 		__renderTransform = new Matrix ();
-		
+
 		__cacheGLMatrix = new Matrix();
-		
+
 		__offset = new Point ();
 		__worldOffset = new Point ();
-		
+
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
@@ -170,86 +169,83 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		#end
 
 		__cachedParent = null;
-
-		name = "instance" + (++__instanceCount);
-		
 	}
-	
-	
+
+
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
-		
+
 		var matrix;
-		
+
 		if (targetCoordinateSpace != null) {
-			
+
 			matrix = __getWorldTransform ().clone ();
 			matrix.concat (targetCoordinateSpace.__getWorldTransform ().clone ().invert ());
-			
+
 		} else {
-			
+
 			matrix = Matrix.__identity;
-			
+
 		}
-		
+
 		var bounds = new Rectangle ();
 		__getTransformedBounds (bounds, matrix);
-		
+
 		return bounds;
-		
+
 	}
-	
-	
+
+
 	public function getRect (targetCoordinateSpace:DisplayObject):Rectangle {
-		
+
 		// should not account for stroke widths, but is that possible?
 		return getBounds (targetCoordinateSpace);
-		
+
 	}
-	
-	
+
+
 	public function globalToLocal (pos:Point):Point {
-		
+
 		pos = pos.clone ();
 		__getWorldTransform ().__transformInversePoint (pos);
 		return pos;
-		
+
 	}
-	
-	
+
+
 	public function hitTestObject (obj:DisplayObject):Bool {
-		
+
 		if (obj != null && obj.parent != null && parent != null) {
-			
+
 			var currentBounds = getBounds (this);
 			var targetBounds = obj.getBounds (this);
-			
+
 			return currentBounds.intersects (targetBounds);
-			
+
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool {
-		
+
 		if (parent != null) {
-			
+
 			var bounds = new Rectangle ();
 			__getTransformedBounds (bounds, __getWorldTransform ());
-			
+
 			return bounds.containsPoint (new Point (x, y));
-			
+
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	public function localToGlobal (point:Point):Point {
-		
+
 		return __getWorldTransform ().transformPoint (point);
 
 	}
@@ -265,287 +261,287 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private function __broadcast (event:Event, notifyChilden:Bool):Bool {
-		
+
 		if (__eventMap != null && hasEventListener (event.type)) {
-			
+
 			var result = super.__dispatchEvent (event);
-			
+
 			if (event.__isCanceled) {
-				
+
 				return true;
-				
+
 			}
-			
+
 			return result;
-			
+
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	private override function __dispatchEvent (event:Event):Bool {
-		
+
 		var result = super.__dispatchEvent (event);
-		
+
 		if (event.__isCanceled) {
-			
+
 			return true;
-			
+
 		}
-		
+
 		if (event.bubbles && parent != null && parent != this) {
-			
+
 			event.eventPhase = EventPhase.BUBBLING_PHASE;
-			
+
 			if (event.target == null) {
-				
+
 				event.target = this;
-				
+
 			}
-			
+
 			parent.__dispatchEvent (event);
-			
+
 		}
-		
+
 		return result;
-		
+
 	}
-	
-	
+
+
 	private function __enterFrame (deltaTime:Int):Void {
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 	private function __getBounds (rect:Rectangle):Void {
-		
+
 		if (__graphics != null) {
-			
+
 			__graphics.__getBounds (rect);
-			
+
 		}
-		
+
 	}
-	
+
 	private function __getTransformedBounds (rect:Rectangle, matrix:Matrix):Void {
-		
+
 		__getBounds (rect);
 		rect.__transform (rect, matrix);
-		
+
 	}
-	
+
 	private function __getCursor ():MouseCursor {
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	private function __getInteractive (stack:Array<DisplayObject>):Bool {
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	private inline function __getLocalBounds (rect:Rectangle):Void {
-		
+
 		__getTransformedBounds (rect, __transform);
-		
+
 	}
-	
-	
+
+
 	private function __getRenderBounds (rect:Rectangle):Void {
-		
+
 		if (__scrollRect == null) {
-			
+
 			__getBounds (rect);
-			
+
 		} else {
-			
+
 			rect.copyFrom (__scrollRect);
-			
+
 		}
-		
+
 		rect.__transform (rect, __renderScaleTransform);
-		
+
 	}
-	
+
 	private function __getTransformedRenderBounds (rect:Rectangle, matrix:Matrix):Void {
-		
+
 		var r = openfl.geom.Rectangle.__temp;
 		__getRenderBounds (r);
 		r.__transform (r, matrix);
-		
+
 		if (__scrollRect == null) {
-			
+
 			rect.__expand (r.x, r.y, r.width, r.height);
-			
+
 		} else {
-		
+
 			// :TODO: check this (kept as original for compatibility)
 			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
-			
+
 		}
-		
+
 	}
-		
+
 	private function __getWorldTransform ():Matrix {
-		
+
 		if (__transformDirty || __worldTransformDirty > 0) {
-			
+
 			var list = [];
 			var current = this;
 			var transformDirty = __transformDirty;
-			
+
 			if (parent == null) {
-				
+
 				if (transformDirty) __update (true, false);
-				
+
 			} else {
-				
+
 				while (current.parent != null) {
-					
+
 					list.push (current);
 					current = current.parent;
-					
+
 					if (current.__transformDirty) {
-						
+
 						transformDirty = true;
-						
+
 					}
-					
+
 				}
-				
+
 			}
-			
+
 			if (transformDirty) {
-				
+
 				var i = list.length;
 				while (--i >= 0) {
-					
+
 					list[i].__update (true, false);
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		return __worldTransform;
-		
+
 	}
-	
-	
+
+
 	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
-		
+
 		if (__graphics != null) {
-			
+
 			if (!hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
-			
+
 			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
-				
+
 				if (stack != null && !interactiveOnly) {
-					
+
 					stack.push (hitObject);
-					
+
 				}
-				
+
 				return true;
-				
+
 			}
-			
+
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	private function __hitTestMask (x:Float, y:Float):Bool {
-		
+
 		if (__graphics != null) {
-			
+
 			if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
-				
+
 				return true;
-				
+
 			}
-			
+
 		}
-		
+
 		return false;
-		
+
 	}
-	
-	
+
+
 	public function __renderCairo (renderSession:RenderSession):Void {
-		
+
 		if (__graphics != null) {
-			
+
 			CairoShape.render (this, renderSession);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public function __renderCairoMask (renderSession:RenderSession):Void {
-		
+
 		if (__graphics != null) {
-			
+
 			CairoGraphics.renderMask (__graphics, renderSession);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public function __renderCanvas (renderSession:RenderSession):Void {
-		
+
 		throw ":TODO: remove me";
-		
+
 	}
-	
-	
+
+
 	public function __renderCanvasMask (renderSession:RenderSession):Void {
-		
+
 		throw ":TODO: remove me";
-		
+
 	}
-	
-	
+
+
 	public function __renderDOM (renderSession:RenderSession):Void {
-		
+
 		throw ":TODO: remove me";
-		
+
 	}
-	
-	
+
+
 	public function __renderGL (renderSession:RenderSession):Void {
-		
+
 		if (!__renderable || __worldAlpha <= 0) return;
-		
+
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
 			__isCachingAsBitmap = false;
 			return;
 		}
-		
+
 		__preRenderGL (renderSession);
 		__drawGraphicsGL (renderSession);
 		__postRenderGL (renderSession);
-		
+
 	}
-	
+
 	public inline function __drawGraphicsGL (renderSession:RenderSession):Void {
-		
+
 		if (__graphics != null) {
 
 			if (
@@ -558,31 +554,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				#end) {
 
 				GraphicsRenderer.render (this, renderSession);
-				
+
 			} else {
-				
+
 				#if (js && html5)
 				CanvasGraphics.render (__graphics, renderSession, __renderScaleTransform);
 				#elseif lime_cairo
 				CairoGraphics.render (__graphics, renderSession);
 				#end
-				
+
 				GLRenderer.renderBitmap (this, renderSession);
-				
+
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	public inline function __preRenderGL (renderSession:RenderSession):Void {
-		
+
 		if (__scrollRect != null) {
-			
+
 			var scaledScrollRect = openfl.geom.Rectangle.__temp;
 			__scrollRect.__transform (scaledScrollRect, __renderScaleTransform);
 			renderSession.maskManager.pushRect (scaledScrollRect, __renderTransform);
-			
+
 		}
 
 		if (__mask != null) {
@@ -608,27 +604,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			renderSession.maskManager.pushMask (__mask);
 		}
-		
+
 	}
-	
-	
+
+
 	public inline function __postRenderGL (renderSession:RenderSession):Void {
-		
+
 		if (__mask != null) {
-			
+
 			renderSession.maskManager.popMask ();
-			
+
 		}
-		
+
 		if (__scrollRect != null) {
-			
+
 			renderSession.maskManager.popRect ();
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
@@ -689,19 +685,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private function __setStageReference (stage:Stage):Void {
-		
+
 		if (this.stage != stage) {
-			
+
 			var stack = __getDisplayStack( this );
 
 			if (this.stage != null) {
-				
+
 				if (this.stage.focus == this) {
-					
+
 					this.stage.focus = null;
-					
+
 				}
-				
+
 				#if compliant_stage_events
 					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
 				#else
@@ -711,21 +707,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__releaseResources();
 
 			}
-			
+
 			this.stage = stage;
-			
+
 			if (stage != null) {
-				
+
 				#if compliant_stage_events
 					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
 				#else
 					dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
 				#end
-				
+
 			}
-			
+
 		}
-		
+
 	}
 
 	private function __releaseResources ():Void {
@@ -780,262 +776,262 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 		}
-		
+
 	}
-	
-	
+
+
 	private inline function __setTransformDirty ():Void {
-		
+
 		if (!__transformDirty) {
-			
+
 			__transformDirty = true;
 			__worldTransformDirty++;
-			
+
 		}
-		
+
 	}
-	
+
 	private function __updateCachedBitmapBounds():Void {
-		
+
 		if (__cachedBitmapBounds == null) {
 			__cachedBitmapBounds = new Rectangle ();
 		}
-			
+
 		__cachedBitmapBounds.setEmpty();
 		__getRenderBounds (__cachedBitmapBounds);
 
 		if (__filters != null) {
-			
+
 			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds);
-			
+
 		}
 
 		__cachedBitmapBounds.x = Math.round (__cachedBitmapBounds.x);
 		__cachedBitmapBounds.y = Math.round (__cachedBitmapBounds.y);
 		__cachedBitmapBounds.width = Math.ceil (__cachedBitmapBounds.width);
 		__cachedBitmapBounds.height = Math.ceil (__cachedBitmapBounds.height);
-		
+
 	}
-	
+
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
-		
+
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		
+
 		__updateTransforms ();
-		
+
 		// TODO this?
 		if (parent != null && __isMask) {
-			
+
 			__maskCached = false;
-			
+
 		}
-		
+
 		if (updateChildren && __transformDirty) {
-			
+
 			__transformDirty = false;
 			__worldTransformDirty--;
-			
+
 		}
-		
+
 		if (maskGraphics != null) {
-			
+
 			__updateMask (maskGraphics);
-			
+
 		}
-		
+
 		if (!transformOnly) {
-			
+
 			#if dom
 			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
-			
+
 			if (__worldTransformCache == null) {
-				
+
 				__worldTransformCache = __worldTransform.clone ();
-				
+
 			} else {
-				
+
 				__worldTransformCache.copyFrom (__worldTransform);
-				
+
 			}
-			
+
 			var worldClip:Rectangle = null;
 			#end
-			
+
 			if (parent != null) {
-				
+
 				#if !dom
-				
+
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
-				
+
 				if ((blendMode == null || blendMode == NORMAL)) {
-					
+
 					__blendMode = parent.__blendMode;
-					
+
 				}
-				
+
 				if (shader == null) {
 					__shader = parent.__shader;
 				}
-				
+
 				#else
-				
+
 				var worldVisible = (parent.__worldVisible && visible);
 				__worldVisibleChanged = (__worldVisible != worldVisible);
 				__worldVisible = worldVisible;
-				
+
 				var worldAlpha = alpha * parent.__worldAlpha;
 				__worldAlphaChanged = (__worldAlpha != worldAlpha);
 				__worldAlpha = worldAlpha;
-				
+
 				if (parent.__worldClip != null) {
-					
+
 					worldClip = parent.__worldClip.clone ();
-					
+
 				}
-				
+
 				if (scrollRect != null) {
-					
+
 					var bounds = scrollRect.clone ();
 					bounds.__transform (bounds, __worldTransform);
-					
+
 					if (worldClip != null) {
-						
+
 						bounds.__contract (worldClip.x - scrollRect.x, worldClip.y - scrollRect.y, worldClip.width, worldClip.height);
-						
+
 					}
-					
+
 					worldClip = bounds;
-					
+
 				}
-				
+
 				#end
-				
+
 			} else {
-				
+
 
 				__worldColorTransform.copyFrom(transform.colorTransform);
 				__worldAlpha = alpha;
-				
+
 				#if dom
-				
+
 				__worldVisibleChanged = (__worldVisible != visible);
 				__worldVisible = visible;
-				
+
 				__worldAlphaChanged = (__worldAlpha != alpha);
-				
+
 				if (scrollRect != null) {
-					
+
 					worldClip = scrollRect.clone ();
 					worldClip.__transform (worldClip, __worldTransform);
-					
+
 				}
-				
+
 				#end
-				
+
 			}
-			
+
 			#if dom
 			__worldClipChanged = ((worldClip == null && __worldClip != null) || (worldClip != null && !worldClip.equals (__worldClip)));
 			__worldClip = worldClip;
 			#end
-			
+
 			if (updateChildren && __renderDirty) {
-				
+
 				__renderDirty = false;
-				
+
 			}
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public function __updateChildren (transformOnly:Bool):Void {
-		
+
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 		if (!__renderable && !__isMask) return;
 		__worldAlpha = alpha;
-		
+
 		if (__transformDirty) {
-			
+
 			__transformDirty = false;
 			__worldTransformDirty--;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public function __updateMask (maskGraphics:Graphics):Void {
-		
+
 		if (__graphics != null) {
-			
+
 			maskGraphics.__commands.overrideMatrix (this.__worldTransform);
 			maskGraphics.__commands.append (__graphics.__commands);
 			maskGraphics.__dirty = true;
 			maskGraphics.__visible = true;
-			
+
 			if (maskGraphics.__bounds == null) {
-				
+
 				maskGraphics.__bounds = new Rectangle();
-				
+
 			}
-			
+
 			__graphics.__getBounds (maskGraphics.__bounds);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	public function __updateTransforms (overrideTransform:Matrix = null):Void {
-		
+
 		var overrided = overrideTransform != null;
 		var local = overrided ? overrideTransform.clone () : __transform;
-		
+
 		if (__worldTransform == null) {
-			
+
 			__worldTransform = new Matrix ();
-			
+
 		}
-		
+
 		var old_world_transform_a = __worldTransform.a;
 		var old_world_transform_b = __worldTransform.b;
 		var old_world_transform_c = __worldTransform.c;
 		var old_world_transform_d = __worldTransform.d;
 
 		if (!overrided && parent != null) {
-			
+
 			var parentTransform = parent.__worldTransform;
-			
+
 			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
 			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
 			__worldTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
 			__worldTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
 			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
-			
+
 			__worldOffset.copyFrom (parent.__worldOffset);
-			
+
 		} else {
-			
+
 			__worldTransform.copyFrom (local);
 			__worldOffset.setTo (0, 0);
-			
+
 		}
-		
+
 		if (__scrollRect != null) {
-			
+
 			__offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
 			__worldOffset.offset (__offset.x, __offset.y);
-			
+
 		} else {
-			
+
 			__offset.setTo (0, 0);
-			
+
 		}
-		
+
 		if (!__isCachingAsBitmap &&
 			(old_world_transform_a != __worldTransform.a ||
 			old_world_transform_d != __worldTransform.d ||
@@ -1043,20 +1039,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			old_world_transform_c != __worldTransform.c)) {
 			_onWorldTransformScaleRotationChanged ();
 		}
-		
-		
+
+
 		__renderScaleTransform.identity();
-			
+
 		if (__cacheAsBitmapMatrix != null) {
 
 			__renderScaleTransform.copyFrom (__cacheAsBitmapMatrix);
 
 		} else if (__useSeparateRenderScaleTransform) {
-			
+
 			var renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
 			var renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
 			__renderScaleTransform.scale(renderScaleX, renderScaleY);
-			
+
 		}
 
 		__renderTransform.copyFrom (__renderScaleTransform);
@@ -1064,7 +1060,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderTransform.concat (__worldTransform);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
-	
+
 	public function _onWorldTransformScaleRotationChanged ():Void {
 		__updateCachedBitmap = true;
 		__updateFilters = filters != null && filters.length > 0;
@@ -1073,48 +1069,48 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__graphics.__dirty = true;
 		}
 	}
-	
-	
+
+
 	// Get & Set Methods
-	
-	
-	
-	
+
+
+
+
 	private function get_alpha ():Float {
-		
+
 		return __alpha;
-		
+
 	}
-	
-	
+
+
 	private function set_alpha (value:Float):Float {
-		
+
 		if (value > 1.0) value = 1.0;
 		if (value != __alpha) __setRenderDirty ();
 		return __alpha = value;
-		
+
 	}
-	
-	
+
+
 	private function set_blendMode (value:BlendMode):BlendMode {
-		
+
 		__blendMode = value;
 		return blendMode = value;
-		
+
 	}
-	
+
 	private function set_shader (value:Shader):Shader {
-		
+
 		__shader = value;
 		return shader = value;
-		
+
 	}
-	
-	
+
+
 	private function get_cacheAsBitmap ():Bool {
-		
+
 		return __cacheAsBitmap;
-		
+
 	}
 
 
@@ -1125,51 +1121,51 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		return __cacheAsBitmap = __forceCacheAsBitmap ? true : cacheAsBitmap;
 
 	}
-	
+
 	private function get_cacheAsBitmapMatrix ():Matrix {
-		
+
 		return __cacheAsBitmapMatrix;
-		
+
 	}
-	
-	
+
+
 	private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
-		
+
 		__setRenderDirty ();
 		return __cacheAsBitmapMatrix = value.clone();
-		
+
 	}
-	
-	
+
+
 	private function get_cacheAsBitmapSmooth ():Bool {
-		
+
 		return __cacheAsBitmapSmooth;
-		
+
 	}
-	
-	
+
+
 	private function set_cacheAsBitmapSmooth (value:Bool):Bool {
-		
+
 		return __cacheAsBitmapSmooth = value;
-		
+
 	}
-	
-	
+
+
 	private function get_filters ():Array<BitmapFilter> {
-		
+
 		if (__filters == null) {
-			
+
 			return new Array ();
-			
+
 		} else {
-			
+
 			return __filters.copy ();
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter> {
 
 		if (__filters != null){
@@ -1191,43 +1187,43 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		__setRenderDirty ();
-		
+
 		return value;
-		
+
 	}
-	
-	
+
+
 	private function get_height ():Float {
-		
+
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
-		
+
 		return bounds.height;
-		
+
 	}
-	
-	
+
+
 	private function set_height (value:Float):Float {
-		
+
 		var bounds = new Rectangle ();
-		
+
 		__getBounds (bounds);
-		
+
 		if (value != bounds.height) {
-			
+
 			scaleY = value / bounds.height;
-			
+
 		} else {
-			
+
 			scaleY = 1;
-			
+
 		}
-		
+
 		return value;
-		
+
 	}
-	
-	
+
+
 	private function get_loaderInfo():LoaderInfo{
 		if( loaderInfo == null ){
 			loaderInfo = LoaderInfo.create (null);
@@ -1237,12 +1233,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private function get_mask ():DisplayObject {
-		
+
 		return __mask;
-		
+
 	}
-	
-	
+
+
 	private function set_mask (value:DisplayObject):DisplayObject {
 
 		if (value == __mask) {
@@ -1269,305 +1265,305 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		return __mask = value;
-		
+
 	}
-	
-	
+
+
 	private function get_mouseX ():Float {
-		
+
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
-		
+
 		return __getWorldTransform ().__transformInverseX (mouseX, mouseY);
-		
+
 	}
-	
-	
+
+
 	private function get_mouseY ():Float {
-		
+
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
-		
+
 		return __getWorldTransform ().__transformInverseY (mouseX, mouseY);
-		
+
 	}
-	
-	
+
+
 	private function get_name ():String {
-		
+
 		return __name;
-		
+
 	}
-	
-	
+
+
 	private function set_name (value:String):String {
-		
+
 		return __name = value;
-		
+
 	}
-	
-	
+
+
 	private function get_root ():DisplayObject {
-		
+
 		if (stage != null) {
-			
+
 			return Lib.current;
-			
+
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	private function get_rotation ():Float {
-		
+
 		return __rotation;
-		
+
 	}
-	
-	
+
+
 	private function set_rotation (value:Float):Float {
-		
+
 		if (value != __rotation) {
-			
+
 			__rotation = value;
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
-			
+
 			var __scaleX = this.scaleX;
 			var __scaleY = this.scaleY;
-			
+
 			__transform.a = __rotationCosine * __scaleX;
 			__transform.b = __rotationSine * __scaleX;
 			__transform.c = -__rotationSine * __scaleY;
 			__transform.d = __rotationCosine * __scaleY;
-			
+
 			__setTransformDirty ();
-			
+
 		}
-		
+
 		return value;
-		
+
 	}
-	
-	
+
+
 	private function get_scaleX ():Float {
-		
+
 		if (__transform.b == 0) {
-			
+
 			return __transform.a;
-			
+
 		} else {
-			
+
 			return Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function set_scaleX (value:Float):Float {
-		
+
 			var a = __rotationCosine * value;
 			var b = __rotationSine * value;
-			
+
 			if (__transform.a != a || __transform.b != b) {
-				
+
 				__setTransformDirty ();
-				
+
 			}
-			
+
 			__transform.a = a;
 			__transform.b = b;
-			
-		
+
+
 		return value;
-		
+
 	}
-	
-	
+
+
 	private function get_scaleY ():Float {
-		
+
 		if (__transform.c == 0) {
-			
+
 			return __transform.d;
-			
+
 		} else {
-			
+
 			return Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function set_scaleY (value:Float):Float {
-		
+
 			var c = -__rotationSine * value;
 			var d = __rotationCosine * value;
-			
+
 			if (__transform.d != d || __transform.c != c) {
-				
+
 				__setTransformDirty ();
-				
+
 			}
-			
+
 			__transform.c = c;
 			__transform.d = d;
-			
+
 		return value;
-		
+
 	}
-	
+
 	private function get_renderScaleX ():Float {
-		
+
 		return Math.sqrt (__renderScaleTransform.a * __renderScaleTransform.a + __renderScaleTransform.b * __renderScaleTransform.b);
-		
+
 	}
 
 	private function get_renderScaleY ():Float {
-		
+
 		return Math.sqrt (__renderScaleTransform.c * __renderScaleTransform.c + __renderScaleTransform.d * __renderScaleTransform.d);
-		
+
 	}
-		
+
 	private function get_scrollRect ():Rectangle {
-		
+
 		if ( __scrollRect == null ) return null;
-		
+
 		return __scrollRect.clone();
-		
+
 	}
-	
-	
+
+
 	private function set_scrollRect (value:Rectangle):Rectangle {
-		
+
 		if (value != __scrollRect) {
-			
+
 			__setTransformDirty ();
 			#if dom __setRenderDirty (); #end
-			
+
 		}
-		
+
 		return __scrollRect = value;
-		
+
 	}
-	
-	
+
+
 	private function get_transform ():Transform {
-		
+
 		if (__objectTransform == null) {
-			
+
 			__objectTransform = new Transform (this);
-			
+
 		}
-		
+
 		return __objectTransform;
-		
+
 	}
-	
-	
+
+
 	private function set_transform (value:Transform):Transform {
-		
+
 		if (value == null) {
-			
+
 			throw new TypeError ("Parameter transform must be non-null.");
-			
+
 		}
-		
+
 		if (__objectTransform == null) {
-			
+
 			__objectTransform = new Transform (this);
-			
+
 		}
-		
+
 		__setTransformDirty ();
 		__objectTransform.matrix = value.matrix;
 		__objectTransform.colorTransform = value.colorTransform.__clone();
-		
+
 		return __objectTransform;
-		
+
 	}
-	
-	
+
+
 	private function get_visible ():Bool {
-		
+
 		return __visible;
-		
+
 	}
-	
-	
+
+
 	private function set_visible (value:Bool):Bool {
-		
+
 		if (value != __visible) __setRenderDirty ();
 		return __visible = value;
-		
+
 	}
-	
-	
+
+
 	private function get_width ():Float {
-		
+
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
-		
+
 		return bounds.width;
-		
+
 	}
-	
-	
+
+
 	private function set_width (value:Float):Float {
-		
+
 		var bounds = new Rectangle ();
-		
+
 		__getBounds (bounds);
-		
+
 		if (value != bounds.width) {
-			
+
 			scaleX = value / bounds.width;
-			
+
 		} else {
-			
+
 			scaleX = 1;
-			
+
 		}
-		
+
 		return value;
-		
+
 	}
-	
-	
+
+
 	private function get_x ():Float {
-		
+
 		return __transform.tx;
-		
+
 	}
-	
-	
+
+
 	private function set_x (value:Float):Float {
-		
+
 		if (value != __transform.tx) __setTransformDirty ();
 		return __transform.tx = value;
-		
+
 	}
-	
-	
+
+
 	private function get_y ():Float {
-		
+
 		return __transform.ty;
-		
+
 	}
-	
-	
+
+
 	private function set_y (value:Float):Float {
-		
+
 		if (value != __transform.ty) __setTransformDirty ();
 		return __transform.ty = value;
-		
+
 	}
-	
-	
+
+
 }
 
 
