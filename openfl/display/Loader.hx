@@ -11,6 +11,11 @@ import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 
+#if (js && html5)
+import js.html.ScriptElement;
+import js.Browser;
+#end
+
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.events.Event)
 
@@ -70,6 +75,7 @@ class Loader extends DisplayObjectContainer {
 				case "jpg", "jpeg": transparent = false; "image/jpeg";
 				case "png": "image/png";
 				case "gif": "image/gif";
+				case "js": "application/javascript";
 				default: "application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
 				
 			}
@@ -77,6 +83,42 @@ class Loader extends DisplayObjectContainer {
 		} else {
 			
 			contentLoaderInfo.contentType = request.contentType;
+			
+		}
+		
+		if (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
+			
+			#if (js && html5)
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (e) {
+				
+				contentLoaderInfo.content = new Sprite ();
+				addChild (contentLoaderInfo.content);
+				
+				//var script:ScriptElement = cast Browser.document.createElement ("script");
+				//script.innerHTML = loader.data;
+				//Browser.document.head.appendChild (script);
+				
+				untyped __js__ ("eval") ('(function () {' + loader.data + '})()');
+				
+				var event = new Event (Event.COMPLETE);
+				event.target = contentLoaderInfo;
+				event.currentTarget = contentLoaderInfo;
+				contentLoaderInfo.dispatchEvent (event);
+				
+			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+				
+				BitmapData_onError (e);
+				
+			});
+			loader.dataFormat = URLLoaderDataFormat.TEXT;
+			loader.load (request);
+			#else
+			BitmapData_onError (null);
+			#end
+			
+			return;
 			
 		}
 		
