@@ -105,7 +105,6 @@
 		
 		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
-		<haxelib name="swf" />
 		
 	</section>
 	
