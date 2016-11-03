@@ -27,6 +27,7 @@ import haxe.Json;
 import haxe.Serializer;
 import haxe.Template;
 import haxe.Unserializer;
+import lime.tools.helpers.AssetHelper;
 import lime.tools.helpers.LogHelper;
 import lime.tools.helpers.PathHelper;
 import lime.tools.helpers.PlatformHelper;
@@ -589,6 +590,7 @@ class Tools {
 				
 				var cacheAvailable = false;
 				var cacheDirectory = null;
+				var merge = new HXProject ();
 				
 				if (targetDirectory != null) {
 					
@@ -625,7 +627,7 @@ class Tools {
 								
 							}
 							
-							output.assets.push (asset);
+							merge.assets.push (asset);
 							
 						}
 						
@@ -639,7 +641,7 @@ class Tools {
 						
 					}
 					
-					output.assets.push (swfLiteAsset);
+					merge.assets.push (swfLiteAsset);
 					
 					embeddedSWFLite = true;
 					
@@ -686,7 +688,7 @@ class Tools {
 							
 						}
 						
-						output.assets.push (asset);
+						merge.assets.push (asset);
 						
 						if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
 							
@@ -715,7 +717,7 @@ class Tools {
 								
 							}
 							
-							output.assets.push (asset);
+							merge.assets.push (asset);
 							
 						}
 						
@@ -748,7 +750,7 @@ class Tools {
 						
 					}
 					
-					output.assets.push (swfLiteAsset);
+					merge.assets.push (swfLiteAsset);
 					
 					if (library.generate) {
 						
@@ -760,10 +762,14 @@ class Tools {
 					
 				}
 				
+				output.merge (merge);
+				
 				var data:Dynamic = {};
 				data.version = 0.1;
 				data.type = "openfl._internal.swf.SWFLiteLibrary";
 				data.args = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+				data.name = library.name;
+				data.manifest = AssetHelper.createManifest (merge);
 				
 				var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
 				asset.id = "libraries/" + library.name + ".json";

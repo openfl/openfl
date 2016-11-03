@@ -1,7 +1,11 @@
 package openfl.display;
 
 
+import haxe.Json;
+import haxe.Unserializer;
 import lime.system.BackgroundWorker;
+import openfl._internal.swf.SWFLiteLibrary;
+import openfl._internal.swf.SWFLite;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
@@ -10,12 +14,15 @@ import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
+import openfl.Assets;
 
 #if (js && html5)
 import js.html.ScriptElement;
 import js.Browser;
 #end
 
+@:access(lime.Assets)
+@:access(openfl._internal.swf.SWFLiteLibrary)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.events.Event)
 
@@ -69,6 +76,7 @@ class Loader extends DisplayObjectContainer {
 			
 			contentLoaderInfo.contentType = switch (extension) {
 				
+				case "json": "application/json";
 				case "swf": "application/x-shockwave-flash";
 				case "jpg", "jpeg": "image/jpeg";
 				case "png": "image/png";
@@ -117,6 +125,112 @@ class Loader extends DisplayObjectContainer {
 			#end
 			
 			return;
+			
+		} else if (contentLoaderInfo.contentType.indexOf ("/json") > -1) {
+			
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (e) {
+				
+				var info = Json.parse (loader.data);
+				var library:SWFLiteLibrary = cast Type.createInstance (Type.resolveClass (info.type), [ null ]/*info.args*/);
+				
+				Assets.registerLibrary (info.name, library);
+				
+				var manifest:Array<Dynamic> = cast Unserializer.run (info.manifest);
+				var assetType:AssetType;
+				
+				var basePath = request.url;
+				basePath = StringTools.replace (basePath, "\\", "/");
+				var parts = basePath.split ("/");
+				parts.pop ();
+				parts.pop ();
+				basePath = parts.join ("/");
+				
+				var libraryData:String = null;
+				
+				var loaded = -1;
+				var total = 0;
+				
+				var checkLoaded = function () {
+					
+					if (loaded >= total) {
+						
+						library.swf = SWFLite.unserialize (libraryData);
+						
+						contentLoaderInfo.content = library.getMovieClip ("");
+						addChild (contentLoaderInfo.content);
+						
+						var event = new Event (Event.COMPLETE);
+						event.target = contentLoaderInfo;
+						event.currentTarget = contentLoaderInfo;
+						contentLoaderInfo.dispatchEvent (event);
+						
+					}
+					
+				}
+				
+				for (asset in manifest) {
+					
+					if (!Assets.exists (asset.id)) {
+						
+						assetType = asset.type;
+						
+						switch (assetType) {
+							
+							case IMAGE:
+								
+								total++;
+								
+								BitmapData.fromFile (basePath + "/" + asset.path, function (bitmapData) {
+									
+									loaded++;
+									checkLoaded ();
+									
+									Assets.cache.setBitmapData (asset.path, bitmapData);
+									
+								}, function () BitmapData_onError (null));
+							
+							case TEXT:
+								
+								total++;
+								
+								var textLoader = new URLLoader ();
+								textLoader.addEventListener (Event.COMPLETE, function (_) {
+									
+									libraryData = textLoader.data;
+									
+									loaded++;
+									checkLoaded ();
+									
+								});
+								textLoader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+									
+									BitmapData_onError (e);
+									
+								});
+								textLoader.dataFormat = URLLoaderDataFormat.TEXT;
+								textLoader.load (new URLRequest (basePath + "/" + asset.path));
+							
+							default:
+								
+							
+						}
+						
+					}
+					
+				}
+				
+				loaded++;
+				checkLoaded ();
+				
+			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+				
+				BitmapData_onError (e);
+				
+			});
+			loader.dataFormat = URLLoaderDataFormat.TEXT;
+			loader.load (request);
 			
 		}
 		
