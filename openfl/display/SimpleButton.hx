@@ -3,6 +3,8 @@ package openfl.display;
 
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.swf.SWFLite;
+import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
 import openfl.geom.Matrix;
@@ -28,6 +30,7 @@ class SimpleButton extends InteractiveObject {
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
 	private var __soundTransform:SoundTransform;
+	private var __symbol:ButtonSymbol;
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -49,6 +52,51 @@ class SimpleButton extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
 		
 		__currentState = this.upState;
+		
+	}
+	
+	
+	private function __fromSymbol (swf:SWFLite, symbol:ButtonSymbol):Void {
+		
+		__symbol = symbol;
+		
+		var clip:MovieClip;
+		
+		if (symbol.downState != null) {
+			
+			clip = new MovieClip ();
+			clip.__fromSymbol (swf, symbol.downState);
+			
+			downState = clip;
+			
+		}
+		
+		if (symbol.hitState != null) {
+			
+			clip = new MovieClip ();
+			clip.__fromSymbol (swf, symbol.hitState);
+			
+			hitTestState = clip;
+			
+		}
+		
+		if (symbol.overState != null) {
+			
+			clip = new MovieClip ();
+			clip.__fromSymbol (swf, symbol.overState);
+			
+			overState = clip;
+			
+		}
+		
+		if (symbol.upState != null) {
+			
+			clip = new MovieClip ();
+			clip.__fromSymbol (swf, symbol.upState);
+			
+			upState = clip;
+			
+		}
 		
 	}
 	

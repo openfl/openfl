@@ -1,6 +1,7 @@
 package openfl._internal.symbols;
 
 
+import openfl.display.Shape;
 import openfl.geom.Matrix;
 
 
@@ -9,6 +10,7 @@ class StaticTextSymbol extends SWFSymbol {
 	
 	public var matrix:Matrix;
 	public var records:Array<StaticTextRecord>;
+	public var rendered:Shape;
 	
 	
 	public function new () {

@@ -2,11 +2,11 @@ package openfl._internal.swf;
 
 
 import openfl.display.BitmapData;
+import openfl.display.MovieClip;
 import openfl.display.SimpleButton;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.SWFSymbol;
-import openfl._internal.swf.MovieClip;
 import haxe.io.Bytes;
 import haxe.Json;
 import haxe.Serializer;
@@ -22,7 +22,7 @@ import openfl.Assets;
 	
 	public var frameRate:Float;
 	public var root:SpriteSymbol;
-	public var symbols:Map <Int, SWFSymbol>;
+	public var symbols:Map<Int, SWFSymbol>;
 	
 	
 	public function new () {
@@ -45,7 +45,9 @@ import openfl.Assets;
 		
 		if (className == "") {
 			
-			return new MovieClip (this, root);
+			var movieClip = new MovieClip ();
+			movieClip.__fromSymbol (this, root);
+			return movieClip;
 			
 		} else {
 			
@@ -55,7 +57,9 @@ import openfl.Assets;
 					
 					if (Std.is (symbol, SpriteSymbol)) {
 						
-						return new MovieClip (this, cast symbol);
+						var movieClip = new MovieClip ();
+						movieClip.__fromSymbol (this, cast symbol);
+						return movieClip;
 						
 					}
 					
@@ -109,7 +113,7 @@ import openfl.Assets;
 	}
 	
 	
-	private static function resolveClass (name:String):Class <Dynamic> {
+	private static function resolveClass (name:String):Class<Dynamic> {
 		
 		var value = Type.resolveClass (name);
 		
@@ -135,7 +139,7 @@ import openfl.Assets;
 	}
 	
 	
-	private static function resolveEnum (name:String):Enum <Dynamic> {
+	private static function resolveEnum (name:String):Enum<Dynamic> {
 		
 		var value = Type.resolveEnum (name);
 		

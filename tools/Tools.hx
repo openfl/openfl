@@ -583,7 +583,7 @@ class Tools {
 					
 				}
 				
-				LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWFLite]");
+				LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 				
 				//project.haxelibs.push (new Haxelib ("swf"));
 				
