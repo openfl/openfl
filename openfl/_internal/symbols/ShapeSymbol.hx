@@ -9,7 +9,7 @@ class ShapeSymbol extends SWFSymbol {
 	
 	public var commands:Array<ShapeCommand>;
 
-	public var rendered:flash.display.Shape;
+	public var rendered:openfl.display.Shape;
 	
 	
 	public function new () {

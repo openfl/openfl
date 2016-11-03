@@ -1,6 +1,9 @@
 package openfl._internal.swf;
 
 
+import lime.graphics.Image;
+import lime.app.Future;
+import lime.app.Promise;
 import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
@@ -12,12 +15,6 @@ import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.swf.SWFLite;
 import haxe.Unserializer;
 import openfl.Assets;
-
-#if (lime && !lime_legacy)
-import lime.graphics.Image;
-import lime.app.Future;
-import lime.app.Promise;
-#end
 
 
 @:keep class SWFLiteLibrary extends AssetLibrary {
@@ -38,18 +35,14 @@ import lime.app.Promise;
 		
 		// Hack to include filter classes, macro.include is not working properly
 		
-		//var filter = flash.filters.BlurFilter;
-		//var filter = flash.filters.DropShadowFilter;
-		//var filter = flash.filters.GlowFilter;
+		//var filter = openfl.filters.BlurFilter;
+		//var filter = openfl.filters.DropShadowFilter;
+		//var filter = openfl.filters.GlowFilter;
 		
 	}
 	
 	
-	#if (!lime || lime_legacy)
-	public override function exists (id:String, type:AssetType):Bool {
-	#else
 	public override function exists (id:String, type:String):Bool {
-	#end
 		
 		if (id == "" && type == (cast AssetType.MOVIE_CLIP)) {
 			
@@ -68,19 +61,11 @@ import lime.app.Promise;
 	}
 	
 	
-	#if (!lime || lime_legacy)
-	public override function getBitmapData (id:String):BitmapData {
-		
-		return swf.getBitmapData (id);
-		
-	}
-	#else
 	public override function getImage (id:String):Image {
 		
 		return Image.fromBitmapData (swf.getBitmapData (id));
 		
 	}
-	#end
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
@@ -90,7 +75,6 @@ import lime.app.Promise;
 	}
 	
 	
-	#if !openfl_legacy
 	public override function load ():Future<lime.Assets.AssetLibrary> {
 		
 		var promise = new Promise<lime.Assets.AssetLibrary> ();
@@ -146,57 +130,6 @@ import lime.app.Promise;
 		return promise.future;
 		
 	}
-	#else
-	public override function load (handler:AssetLibrary->Void):Void {
-		
-		#if swflite_preload
-		var paths = [];
-		var bitmap:BitmapSymbol;
-		
-		for (symbol in swf.symbols) {
-			
-			if (Std.is (symbol, BitmapSymbol)) {
-				
-				bitmap = cast symbol;
-				paths.push (bitmap.path);
-				
-			}
-			
-		}
-		
-		if (paths.length == 0) {
-			
-			handler (this);
-			
-		} else {
-			
-			var loaded = 0;
-			
-			var onLoad = function (_) {
-				
-				loaded++;
-				
-				if (loaded == paths.length) {
-					
-					handler (this);
-					
-				}
-				
-			};
-			
-			for (path in paths) {
-				
-				Assets.loadBitmapData (path, onLoad);
-				
-			}
-			
-		}
-		#else
-		handler (this);
-		#end
-		
-	}
-	#end
 	
 	
 	public override function unload ():Void {

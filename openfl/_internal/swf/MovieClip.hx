@@ -42,7 +42,7 @@ import lime.Assets in LimeAssets;
 #end
 
 
-class MovieClip extends flash.display.MovieClip {
+class MovieClip extends openfl.display.MovieClip {
 	
 	
 	@:noCompletion private var __frameTime:Int;
@@ -148,7 +148,7 @@ class MovieClip extends flash.display.MovieClip {
 	}*/
 	
 	
-	public override function gotoAndPlay (frame:#if flash flash.utils.Object #else Dynamic #end, scene:String = null):Void {
+	public override function gotoAndPlay (frame:#if flash openfl.utils.Object #else Dynamic #end, scene:String = null):Void {
 		
 		__currentFrame = __getFrame (frame);
 		__updateFrame ();
@@ -157,7 +157,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 	
 	
-	public override function gotoAndStop (frame:#if flash flash.utils.Object #else Dynamic #end, scene:String = null):Void {
+	public override function gotoAndStop (frame:#if flash openfl.utils.Object #else Dynamic #end, scene:String = null):Void {
 		
 		__currentFrame = __getFrame (frame);
 		__updateFrame ();
@@ -407,7 +407,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 	
 	
-	@:noCompletion @:dox(hide) public #if (!flash && openfl && !openfl_legacy) override #end function __enterFrame (deltaTime:Int):Void {
+	@:noCompletion @:dox(hide) public #if !flash override #end function __enterFrame (deltaTime:Int):Void {
 		
 		if (__playing) {
 			

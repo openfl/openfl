@@ -4,7 +4,7 @@ package openfl._internal.swf;
 import openfl._internal.symbols.ButtonSymbol;
 
 
-class SimpleButton extends flash.display.SimpleButton {
+class SimpleButton extends openfl.display.SimpleButton {
 	
 	
 	@:noCompletion private var symbol:ButtonSymbol;
