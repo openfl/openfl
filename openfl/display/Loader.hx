@@ -63,8 +63,6 @@ class Loader extends DisplayObjectContainer {
 			
 		}
 		
-		var transparent = true;
-		
 		contentLoaderInfo.url = request.url;
 		
 		if (request.contentType == null || request.contentType == "") {
@@ -72,7 +70,7 @@ class Loader extends DisplayObjectContainer {
 			contentLoaderInfo.contentType = switch (extension) {
 				
 				case "swf": "application/x-shockwave-flash";
-				case "jpg", "jpeg": transparent = false; "image/jpeg";
+				case "jpg", "jpeg": "image/jpeg";
 				case "png": "image/png";
 				case "gif": "image/gif";
 				case "js": "application/javascript";
@@ -235,7 +233,7 @@ class Loader extends DisplayObjectContainer {
 		
 		contentLoaderInfo.content = new Bitmap (bitmapData);
 		content = contentLoaderInfo.content;
-		addChild (contentLoaderInfo.content);
+		addChild (content);
 		
 		var event = new Event (Event.COMPLETE);
 		event.target = contentLoaderInfo;

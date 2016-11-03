@@ -9,6 +9,10 @@ import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
 
+#if swf
+import openfl._internal.swf.SWFLiteLibrary; // workaround
+#end
+
 #if (js && html5)
 import js.Browser;
 #end

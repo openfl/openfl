@@ -110,7 +110,7 @@ class DrawCommandBuffer {
 	}
 	
 	
-	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+	public function beginBitmapFill (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 		
 		prepareWrite ();
 		

@@ -97,6 +97,10 @@
 		
 	</section>
 	
+	<library handler="openfl" type="swf" />
+	<library handler="openfl" type="swflite" />
+	<library handler="openfl" type="swf_lite" />
+	
 	<section if="setup">
 		
 		<haxelib name="lime" />

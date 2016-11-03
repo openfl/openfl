@@ -3,7 +3,9 @@ package;
 
 import lime.tools.helpers.LogHelper;
 import lime.tools.helpers.PathHelper;
+import lime.tools.helpers.ProcessHelper;
 import lime.project.Haxelib;
+import sys.FileSystem;
 
 
 class RunScript {
@@ -45,6 +47,17 @@ class RunScript {
 				
 			}
 			
+		} else if (args.length > 2 && args[0] == "process") {
+			
+			if (!FileSystem.exists ("tools/tools.n")) {
+				
+				rebuildTools ();
+				
+			}
+			
+			Sys.exit (Sys.command ("neko", [ "tools/tools.n" ].concat (Sys.args ())));
+			return;
+			
 		}
 		
 		var args = [ "run", "lime" ].concat (args);
@@ -60,6 +73,16 @@ class RunScript {
 		}
 		
 		Sys.exit (Sys.command ("haxelib", args.concat ([ "-openfl" ])));
+		
+	}
+	
+	
+	private static function rebuildTools (rebuildBinaries = true):Void {
+		
+		var openflDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"), true);
+		var toolsDirectory = PathHelper.combine (openflDirectory, "tools");
+		
+		ProcessHelper.runCommand (toolsDirectory, "haxe", [ "tools.hxml" ]);
 		
 	}
 	
