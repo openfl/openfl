@@ -42,7 +42,6 @@ import js.html.Element;
 
 class DisplayObject extends EventDispatcher implements IBitmapDrawable implements Dynamic<DisplayObject> {
 
-
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 
@@ -96,7 +95,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __mask:DisplayObject;
 	private var __maskGraphics:Graphics;
 	private var __maskCached:Bool = false;
-	private var __name:String;
+	private var __name:String = "";
 	private var __objectTransform:Transform;
 	private var __offset:Point;
 	private var __renderable:Bool;
@@ -171,6 +170,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cachedParent = null;
 	}
 
+	public function resolve (fieldName:String):DisplayObject {
+
+		return null;
+
+	}
 
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 
