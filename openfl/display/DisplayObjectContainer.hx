@@ -456,7 +456,19 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
 			childRect.setEmpty ();
 			child.__getRenderBounds (childRect);
-			childRect.__transform (childRect, child.__transform);
+
+			var cloned_transform = child.__transform;
+			if(child.__useSeparateRenderScaleTransform) {
+				cloned_transform = cloned_transform.clone();
+				var scaleX = child.scaleX;
+				var scaleY = child.scaleY;
+				cloned_transform.a /= scaleX;
+				cloned_transform.b /= scaleX;
+				cloned_transform.c /= scaleY;
+				cloned_transform.d /= scaleY;
+			}
+
+			childRect.__transform (childRect, cloned_transform);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
