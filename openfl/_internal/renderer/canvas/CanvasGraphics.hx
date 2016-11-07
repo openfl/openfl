@@ -541,16 +541,19 @@ class CanvasGraphics {
 					var c = data.readLineStyle ();
 					if (canvasGraphics.hasStroke || canvasGraphics.hasFill) {
 
-						context.closePath ();
 
 						if (!canvasGraphics.hitTesting) {
 							if(canvasGraphics.hasStroke) {
 								context.stroke ();
 							}
 
+							context.closePath ();
+
 							if(canvasGraphics.hasFill) {
 								context.fill(canvasGraphics.canvasWindingRule);
 							}
+						} else {
+							context.closePath ();
 						}
 
 						context.beginPath ();
@@ -743,6 +746,8 @@ class CanvasGraphics {
 
 		if (canvasGraphics.hasStroke || canvasGraphics.hasFill) {
 
+			if (!canvasGraphics.hitTesting && canvasGraphics.hasStroke) context.stroke ();
+
 			if (canvasGraphics.hasFill && closeGap) {
 
 				context.lineTo (startX, startY);
@@ -752,8 +757,6 @@ class CanvasGraphics {
 				context.closePath ();
 
 			}
-
-			if (!canvasGraphics.hitTesting && canvasGraphics.hasStroke) context.stroke ();
 
 			if (canvasGraphics.hasFill || canvasGraphics.bitmapFill != null) {
 				context.save();
