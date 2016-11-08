@@ -94,7 +94,6 @@ class TextEngine {
 	
 	private var textField:TextField;
 	
-	@:noCompletion private var __cursorPosition:Int;
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __hasFocus:Bool;
 	@:noCompletion private var __isKeyDown:Bool;
