@@ -50,8 +50,6 @@ class CanvasTextField {
 		
 		#if (js && html5)
 		
-		textEngine.__cursorPosition = -1;
-		
 		if (textEngine.__hiddenInput == null) {
 			
 			textEngine.__hiddenInput = cast Browser.document.createElement ('input');
