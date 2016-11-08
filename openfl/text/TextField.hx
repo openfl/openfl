@@ -684,7 +684,8 @@ class TextField extends InteractiveObject {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		return __textEngine.selectable ? TEXT : null;
+		var group = __getGroup(mouseX, mouseY, true);
+		return (group != null && group.format.url != "")? POINTER : (__textEngine.selectable ? TEXT : null);
 		
 	}
 	
