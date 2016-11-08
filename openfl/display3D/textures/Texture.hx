@@ -94,7 +94,7 @@ using openfl.display.BitmapData;
 
 			}
 
-			gl.texImage2D (GL.TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL.UNSIGNED_BYTE, textureImage.data);
+			GL.texImage2D (GL.TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, GL.UNSIGNED_BYTE, textureImage.data);
 		#else
 
 			GL.pixelStorei( GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, (!textureImage.premultiplied && textureImage.transparent) ? 1 : 0 );
