@@ -41,6 +41,7 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
+	private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
 	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
@@ -1761,6 +1762,15 @@ class TextField extends InteractiveObject {
 						if (tagEndIndex > -1) {
 							
 							switch (tagName.toLowerCase ()) {
+
+								case "a":
+									
+									if (__regexHref.match (segment)) {
+										
+										format.url = __getAttributeMatch (__regexHref).toLowerCase ();
+										
+									}
+
 								
 								case "p":
 									
