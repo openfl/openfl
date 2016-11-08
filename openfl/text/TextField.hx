@@ -1032,7 +1032,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function __getPosition (x:Float, y:Float):Int {
+	private function __getGroup (x:Float, y:Float) {
 		
 		__updateLayout ();
 		
@@ -1075,29 +1075,7 @@ class TextField extends InteractiveObject {
 				
 				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
 					
-					var advance = 0.0;
-					
-					for (i in 0...group.advances.length) {
-						
-						advance += group.advances[i];
-						
-						if (x <= group.offsetX + advance) {
-							
-							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
-								
-								return group.startIndex + i;
-								
-							} else {
-								
-								return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
-								
-							}
-							
-						}
-						
-					}
-					
-					return group.endIndex;
+					return group;
 					
 				}
 				
@@ -1105,8 +1083,41 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __text.length;
+		return null;
 		
+	}
+
+
+	private function __getPosition (x:Float, y:Float):Int {
+
+		var group = __getGroup(x,y);
+
+		if (group == null)
+			return __text.length;
+
+		var advance = 0.0;
+		
+		for (i in 0...group.advances.length) {
+			
+			advance += group.advances[i];
+			
+			if (x <= group.offsetX + advance) {
+				
+				if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+					
+					return group.startIndex + i;
+					
+				} else {
+					
+					return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
+					
+				}
+				
+			}
+			
+		}
+		
+		return group.endIndex;
 	}
 	
 	
