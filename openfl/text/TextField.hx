@@ -689,7 +689,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private function __getGroup (x:Float, y:Float) {
+	private function __getGroup (x:Float, y:Float, ?precise = false) {
 		
 		__updateLayout ();
 		
@@ -701,7 +701,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
+		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
 		
 		var firstGroup = true;
 		var group, nextGroup;
@@ -728,9 +728,9 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			if ((y >= group.offsetY && y <= group.offsetY + group.height) || nextGroup == null) {
+			if ((y >= group.offsetY && y <= group.offsetY + group.height) || (!precise && nextGroup == null)) {
 				
-				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
+				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (!precise && (nextGroup == null || nextGroup.lineIndex != group.lineIndex))) {
 					
 					return group;
 					
