@@ -169,8 +169,8 @@ class GLRenderer extends AbstractRenderer {
 		
 	}
 	
-	public override function setViewport(x:Int, y:Int, width:Int, height:Int) {
-		if (!(vpX == x && vpY == y && vpWidth == width && vpHeight == height)) {
+	public override function setViewport(x:Int, y:Int, width:Int, height:Int, force:Bool = false) {
+		if (force || !(vpX == x && vpY == y && vpWidth == width && vpHeight == height)) {
 			vpX = x;
 			vpY = y;
 			vpWidth = width;

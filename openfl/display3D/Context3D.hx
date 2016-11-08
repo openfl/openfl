@@ -90,11 +90,6 @@ import openfl.Lib;
 		ogl.height = stage.stageHeight;
 
 		stage.addChildAt(ogl, 0);
-
-		#if js
-		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
-		GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
-		#end
 	}
 
 
