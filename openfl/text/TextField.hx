@@ -23,6 +23,7 @@ import openfl.display.InteractiveObject;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
+import openfl.events.TextEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
@@ -140,6 +141,34 @@ class TextField extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		
 	}
+
+
+	override private function __dispatch (event:Event):Bool {
+
+		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP) {
+
+			var event : MouseEvent = cast event;
+			var group = __getGroup(mouseX, mouseY, true);
+
+			if (group != null) {
+
+				var url = group.format.url;
+				
+				if (StringTools.startsWith(url, "event:")) {
+					var e = new TextEvent(TextEvent.LINK, false, false, url.substr(6) /* event: */);
+					dispatchEvent(e);
+				}
+				else if (url != "") {
+					Lib.getURL(new openfl.net.URLRequest(url));
+				}
+
+			}
+
+		}
+
+		return super.__dispatch(event);
+	}
+
 	
 	
 	public function appendText (text:String):Void {
