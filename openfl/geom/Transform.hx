@@ -60,7 +60,7 @@ class Transform {
 
 		if (!__colorTransform.__equals (value)) {
 
-			__colorTransform = value;
+			__colorTransform.copyFrom(value);
 
 			if (value != null) {
 
