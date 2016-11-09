@@ -39,7 +39,7 @@ class AbstractRenderer {
 	}
 	
 
-	public function setViewport (x:Int, y:Int, width:Int, height:Int):Void {
+	public function setViewport (x:Int, y:Int, width:Int, height:Int, force:Bool = false):Void {
 		
 		
 		

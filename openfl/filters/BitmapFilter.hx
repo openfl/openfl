@@ -98,7 +98,9 @@ class BitmapFilter {
 
 			}
 
+			filter.dispose();
 		}
+
 
 
 	}

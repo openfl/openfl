@@ -196,6 +196,7 @@ class OpenGLView extends DirectRenderer {
 			
 			renderSession.shaderManager.setShader(null);
 			renderSession.blendModeManager.setBlendMode(null);
+			renderSession.renderer.setViewport(0,0,stage.stageWidth, stage.stageHeight, true);
 		}
 		
 	}
