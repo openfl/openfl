@@ -82,6 +82,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	@:to static inline function toClassMap<K:Class<Dynamic>,V> (t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V> {
+		
+		return new ClassMap<K, V> ();
+		
+	}
+	
+	
 	@:from static inline function fromStringMap<V> (map:StringMap<V>):Dictionary<String, V> {
 		
 		return cast map;
@@ -97,6 +104,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Dictionary<K, V> {
+		
+		return cast map;
+		
+	}
+	
+	
+	@:from static inline function fromClassMap<K:Class<Dynamic>, V> (map:ClassMap<K, V>):Dictionary<K, V> {
 		
 		return cast map;
 		
@@ -160,3 +174,74 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 
 
 #end
+
+
+@:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
+	
+	
+	private var types:Map<String, K>;
+	private var values:Map<String, V>;
+	
+	
+	public function new ():Void {
+		
+		types = new Map ();
+		values = new Map ();
+		
+	}
+	
+	
+	public function exists (key:K):Bool {
+		
+		return types.exists (Type.getClassName (key));
+		
+	}
+	
+	
+	public function get (key:K):Null<V> {
+		
+		return values.get (Type.getClassName (key));
+		
+	}
+	
+	
+	public function keys ():Iterator<K> {
+		
+		return types.iterator ();
+		
+	}
+	
+	
+	public function iterator ():Iterator<V> {
+		
+		return values.iterator ();
+		
+	}
+	
+	
+	public function remove (key:K):Bool {
+		
+		var name = Type.getClassName (key);
+		return (types.remove (name) || values.remove (name));
+		
+	}
+	
+	
+	public function set (key:K, value:V):Void {
+		
+		var name = Type.getClassName (key);
+		
+		types.set (name, key);
+		values.set (name, value);
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return values.toString ();
+		
+	}
+	
+	
+}
