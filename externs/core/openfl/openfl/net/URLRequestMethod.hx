@@ -6,7 +6,7 @@ package openfl.net; #if (display || !flash)
  * URLRequest object should use the <code>POST</code> method or the
  * <code>GET</code> method when sending data to a server.
  */
-@:enum abstract URLRequestMethod(Null<Int>) {
+@:enum abstract URLRequestMethod(String) from String to String {
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>DELETE</code>.
@@ -14,12 +14,12 @@ package openfl.net; #if (display || !flash)
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var DELETE = 0;
+	public var DELETE = "DELETE";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>GET</code>.
 	 */
-	public var GET = 1;
+	public var GET = "GET";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>HEAD</code>.
@@ -27,7 +27,7 @@ package openfl.net; #if (display || !flash)
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var HEAD = 2;
+	public var HEAD = "HEAD";
 	
 	/**
 	 * Specifies that the URLRequest object is <code>OPTIONS</code>.
@@ -35,7 +35,7 @@ package openfl.net; #if (display || !flash)
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var OPTIONS = 3;
+	public var OPTIONS = "OPTIONS";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>POST</code>.
@@ -45,7 +45,7 @@ package openfl.net; #if (display || !flash)
 	 * that uses the POST method(one that has its <code>method</code> property
 	 * set to <code>URLRequestMethod.POST</code>) as using the GET method.</p>
 	 */
-	public var POST = 4;
+	public var POST = "POST";
 	
 	/**
 	 * Specifies that the URLRequest object is a <code>PUT</code>.
@@ -53,39 +53,7 @@ package openfl.net; #if (display || !flash)
 	#if flash
 	@:require(flash10_1)
 	#end
-	public var PUT = 5;
-	
-	@:from private static function fromString (value:String):URLRequestMethod {
-		
-		return switch (value) {
-			
-			case "DELETE": DELETE;
-			case "GET": GET;
-			case "HEAD": HEAD;
-			case "OPTIONS": OPTIONS;
-			case "POST": POST;
-			case "PUT": PUT;
-			default: null;
-			
-		}
-		
-	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
-			case URLRequestMethod.DELETE: "DELETE";
-			case URLRequestMethod.GET: "GET";
-			case URLRequestMethod.HEAD: "HEAD";
-			case URLRequestMethod.OPTIONS: "OPTIONS";
-			case URLRequestMethod.POST: "POST";
-			case URLRequestMethod.PUT: "PUT";
-			default: null;
-			
-		}
-		
-	}
+	public var PUT = "PUT";
 	
 }
 
