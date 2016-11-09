@@ -1150,7 +1150,7 @@ class TextField extends InteractiveObject {
 	private override function get_height ():Float {
 		
 		__updateLayout ();
-		return __textEngine.height;
+		return super.get_height();
 		
 	}
 	
@@ -1592,7 +1592,7 @@ class TextField extends InteractiveObject {
 	override private function get_width ():Float {
 		
 		__updateLayout ();
-		return __textEngine.width;
+		return super.get_width();
 		
 	}
 	
