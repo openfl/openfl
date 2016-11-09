@@ -119,6 +119,12 @@ class Sound extends EventDispatcher {
 	
 	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel {
 		
+		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS) {
+			
+			return null;
+			
+		}
+		
 		if (sndTransform == null) {
 			
 			sndTransform = new SoundTransform ();

@@ -7,6 +7,8 @@ package openfl.media;
 @:final class SoundMixer {
 	
 	
+	private static inline var MAX_ACTIVE_CHANNELS = 32;
+	
 	public static var bufferTime:Int;
 	public static var soundTransform (get, set):SoundTransform;
 	
