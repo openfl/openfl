@@ -62,74 +62,34 @@ class URLLoader extends EventDispatcher {
 			var httpRequest = new HTTPRequest<ByteArray> ();
 			__prepareRequest (httpRequest, request);
 			
-			httpRequest.load ().onProgress (function (progress:Float):Void {
-				
-				// TODO: Need total download size
-				
-				var event = new ProgressEvent (ProgressEvent.PROGRESS);
-				event.bytesLoaded = progress * 100;
-				event.bytesTotal = 100;
-				dispatchEvent (event);
-				
-			}).onError (function (error:Dynamic):Void {
-				
-				if (error == 403) {
+			httpRequest.load ()
+				.onProgress (httpRequest_onProgress)
+				.onError (httpRequest_onError)
+				.onComplete (function (data:ByteArray):Void {
 					
-					var event = new SecurityErrorEvent (SecurityErrorEvent.SECURITY_ERROR);
+					this.data = data;
+					
+					var event = new Event (Event.COMPLETE);
 					dispatchEvent (event);
 					
-				} else {
-					
-					var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
-					dispatchEvent (event);
-					
-				}
-				
-			}).onComplete (function (data:ByteArray):Void {
-				
-				this.data = data;
-				
-				var event = new Event (Event.COMPLETE);
-				dispatchEvent (event);
-				
-			});
+				});
 			
 		} else {
 			
 			var httpRequest = new HTTPRequest<String> ();
 			__prepareRequest (httpRequest, request);
 			
-			httpRequest.load ().onProgress (function (progress:Float):Void {
-				
-				// TODO: Need total download size
-				
-				var event = new ProgressEvent (ProgressEvent.PROGRESS);
-				event.bytesLoaded = progress * 100;
-				event.bytesTotal = 100;
-				dispatchEvent (event);
-				
-			}).onError (function (error:Dynamic):Void {
-				
-				if (error == 403) {
+			httpRequest.load ()
+				.onProgress (httpRequest_onProgress)
+				.onError (httpRequest_onError)
+				.onComplete (function (data:String):Void {
 					
-					var event = new SecurityErrorEvent (SecurityErrorEvent.SECURITY_ERROR);
+					this.data = data;
+					
+					var event = new Event (Event.COMPLETE);
 					dispatchEvent (event);
 					
-				} else {
-					
-					var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
-					dispatchEvent (event);
-					
-				}
-				
-			}).onComplete (function (data:String):Void {
-				
-				this.data = data;
-				
-				var event = new Event (Event.COMPLETE);
-				dispatchEvent (event);
-				
-			});
+				});
 			
 		}
 		
@@ -189,6 +149,40 @@ class URLLoader extends EventDispatcher {
 		}
 		
 		__httpRequest.userAgent = request.userAgent;
+		
+	}
+	
+	
+	
+	
+	// Event Handlers
+	
+	
+	
+	
+	private function httpRequest_onError (error:Dynamic):Void {
+		
+		if (error == 403) {
+			
+			var event = new SecurityErrorEvent (SecurityErrorEvent.SECURITY_ERROR);
+			dispatchEvent (event);
+			
+		} else {
+			
+			var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
+			dispatchEvent (event);
+			
+		}
+		
+	}
+	
+	
+	private function httpRequest_onProgress (bytesLoaded:Int, bytesTotal:Int):Void {
+		
+		var event = new ProgressEvent (ProgressEvent.PROGRESS);
+		event.bytesLoaded = bytesLoaded;
+		event.bytesTotal = bytesTotal;
+		dispatchEvent (event);
 		
 	}
 	

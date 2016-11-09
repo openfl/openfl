@@ -542,7 +542,7 @@ class Assets {
 		}
 		
 		future.onComplete (function (bytes) promise.complete (bytes));
-		future.onProgress (function (progress) promise.progress (progress));
+		future.onProgress (function (progress, total) promise.progress (progress, total));
 		future.onError (function (msg) promise.error (msg));
 		
 		return promise.future;
