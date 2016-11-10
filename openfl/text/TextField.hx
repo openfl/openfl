@@ -505,7 +505,17 @@ class TextField extends InteractiveObject {
 				
 			} else if (range.start >= beginIndex && range.end <= endIndex) {
 				
-				__textEngine.textFormatRanges.splice (i, 1);
+				if (i > 0) {
+					
+					__textEngine.textFormatRanges.splice (i, 1);
+					
+				} else {
+					
+					range.start = 0;
+					range.end = 0;
+					
+				}
+				
 				offset -= (range.end - range.start);
 				
 			} else if (range.start > beginIndex && range.start <= endIndex) {
@@ -1344,7 +1354,7 @@ class TextField extends InteractiveObject {
 				
 			} else {
 				
-				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
+				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length);
 				
 				value = "";
 				var segment;
