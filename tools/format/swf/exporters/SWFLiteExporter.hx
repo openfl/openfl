@@ -232,7 +232,7 @@ class SWFLiteExporter {
 					
 				}
 				
-				var paddedWidth:Int = Math.ceil(data.bitmapWidth / 4) * 4;
+				var paddedWidth:Int = Math.ceil (data.bitmapWidth / 4) * 4;
 				var values = Bytes.alloc ((data.bitmapWidth + 1) * data.bitmapHeight);
 				index = 0;
 				
@@ -407,7 +407,11 @@ class SWFLiteExporter {
 		var handler = new ShapeCommandExporter (data);
 		tag.export (handler);
 		
+		#if enable_bitmap_optimization
 		var bitmaps = ShapeBitmapExporter.process (handler);
+		#else
+		var bitmaps:Array<Dynamic> = null;
+		#end
 		
 		if (bitmaps != null) {
 			

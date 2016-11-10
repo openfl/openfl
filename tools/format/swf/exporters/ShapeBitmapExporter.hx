@@ -80,6 +80,7 @@ class ShapeBitmapExporter {
 		if (transform == null) {
 			
 			transform = new Matrix ();
+			transform.translate (positionX, positionY);
 			
 		}
 		
