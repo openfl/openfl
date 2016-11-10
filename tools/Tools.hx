@@ -352,8 +352,8 @@ class Tools {
 								if (swfLite.symbols.exists (object.symbol)) {
 									
 									var childSymbol = swfLite.symbols.get (object.symbol);
-									var className = formatClassName (childSymbol.className, prefix);
-									//var className = null;
+									//var className = formatClassName (childSymbol.className, prefix);
+									var className = null;
 									
 									if (className == null) {
 										
