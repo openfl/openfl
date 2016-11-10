@@ -402,33 +402,65 @@ class SWFLiteExporter {
 	}
 	
 	
-	private function addShape (tag:TagDefineShape):ShapeSymbol {
-		
-		var symbol = new ShapeSymbol ();
-		symbol.id = tag.characterId;
+	private function addShape (tag:TagDefineShape):SWFSymbol {
 		
 		var handler = new ShapeCommandExporter (data);
 		tag.export (handler);
 		
-		symbol.commands = handler.commands;
+		var bitmaps = ShapeBitmapExporter.process (handler);
 		
-		for (command in handler.commands) {
+		if (bitmaps != null) {
 			
-			switch (command) {
+			var symbol = new SpriteSymbol ();
+			var frame = new Frame ();
+			var bitmap, frameObject;
+			
+			for (i in 0...bitmaps.length) {
 				
-				case BeginBitmapFill (bitmapID, _, _, _):
-					
-					processTag (cast data.getCharacter (bitmapID));
+				bitmap = bitmaps[i];
 				
-				default:
+				processTag (cast data.getCharacter (bitmap.id));
+				
+				frameObject = new FrameObject ();
+				frameObject.symbol = bitmap.id;
+				frameObject.id = i;
+				frameObject.depth = i;
+				frameObject.matrix = bitmap.transform;
+				frame.objects.push (frameObject);
 				
 			}
 			
+			symbol.frames.push (frame);
+			symbol.id = tag.characterId;
+			
+			swfLite.symbols.set (symbol.id, symbol);
+			return symbol;
+			
+		} else {
+			
+			var symbol = new ShapeSymbol ();
+			symbol.id = tag.characterId;
+			
+			symbol.commands = handler.commands;
+			
+			for (command in handler.commands) {
+				
+				switch (command) {
+					
+					case BeginBitmapFill (bitmapID, _, _, _):
+						
+						processTag (cast data.getCharacter (bitmapID));
+					
+					default:
+					
+				}
+				
+			}
+			
+			swfLite.symbols.set (symbol.id, symbol);
+			return symbol;
+			
 		}
-		
-		swfLite.symbols.set (symbol.id, symbol);
-		
-		return symbol;
 		
 	}
 	
