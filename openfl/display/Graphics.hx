@@ -39,6 +39,7 @@ import js.html.CanvasRenderingContext2D;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
 	private var __height:Int;
+	private var __managed:Bool;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __renderTransform:Matrix;
@@ -822,7 +823,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (parentTransform.b == 0) {
 			
-			scaleX = Math.abs(parentTransform.a);
+			scaleX = Math.abs (parentTransform.a);
 			
 		} else {
 			
@@ -832,7 +833,7 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (parentTransform.c == 0) {
 			
-			scaleY = Math.abs(parentTransform.d);
+			scaleY = Math.abs (parentTransform.d);
 			
 		} else {
 			

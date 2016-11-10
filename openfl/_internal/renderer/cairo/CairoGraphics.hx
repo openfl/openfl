@@ -1013,7 +1013,7 @@ class CairoGraphics {
 		CairoGraphics.allowSmoothing = renderSession.allowSmoothing;
 		graphics.__update ();
 		
-		if (!graphics.__dirty) return;
+		if (!graphics.__dirty || graphics.__managed) return;
 		
 		bounds = graphics.__bounds;
 		
