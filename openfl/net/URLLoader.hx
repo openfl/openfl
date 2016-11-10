@@ -24,7 +24,7 @@ class URLLoader extends EventDispatcher {
 	public var data:Dynamic;
 	public var dataFormat:URLLoaderDataFormat;
 	
-	private var __httpRequest:_IHTTPRequest;
+	private var __httpRequest:#if display Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 	
 	
 	public function new (request:URLRequest = null) {
@@ -96,7 +96,7 @@ class URLLoader extends EventDispatcher {
 	}
 	
 	
-	private function __prepareRequest (httpRequest:_IHTTPRequest, request:URLRequest):Void {
+	private function __prepareRequest (httpRequest:#if display Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
 		
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;
