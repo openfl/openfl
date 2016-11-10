@@ -267,6 +267,42 @@ class Tools {
 	}*/
 	
 	
+	private static function formatClassName (className:String, prefix:String = null):String {
+		
+		if (className == null) return null;
+		
+		var lastIndexOfPeriod = className.lastIndexOf (".");
+		
+		var packageName = "";
+		var name = "";
+		
+		if (lastIndexOfPeriod == -1) {
+			
+			name = prefix + className;
+			
+		} else {
+			
+			packageName = className.substr (0, lastIndexOfPeriod);
+			name = prefix + className.substr (lastIndexOfPeriod + 1);
+			
+		}
+		
+		packageName = packageName.toLowerCase ();
+		name = name.substr (0, 1).toUpperCase () + name.substr (1);
+		
+		if (packageName != "") {
+			
+			return packageName + "." + name;
+			
+		} else {
+			
+			return name;
+			
+		}
+		
+	}
+	
+	
 	private static function generateSWFLiteClasses (project:HXProject, output:HXProject, swfLite:SWFLite, swfLiteAsset:Asset, prefix:String = ""):Void {
 		
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
@@ -289,24 +325,17 @@ class Tools {
 			
 			if (templateData != null && symbol.className != null) {
 				
-				var lastIndexOfPeriod = symbol.className.lastIndexOf (".");
-				
+				var name = formatClassName (symbol.className, prefix);
 				var packageName = "";
-				var name = "";
 				
-				if (lastIndexOfPeriod == -1) {
+				var lastIndexOfPeriod = name.lastIndexOf (".");
+				
+				if (lastIndexOfPeriod > -1) {
 					
-					name = prefix + symbol.className;
-					
-				} else {
-					
-					packageName = symbol.className.substr (0, lastIndexOfPeriod);
-					name = prefix + symbol.className.substr (lastIndexOfPeriod + 1);
+					packageName = name.substr (0, lastIndexOfPeriod);
+					name = name.substr (lastIndexOfPeriod + 1);
 					
 				}
-				
-				packageName = packageName.toLowerCase ();
-				name = name.substr (0, 1).toUpperCase () + name.substr (1);
 				
 				var classProperties = [];
 				
@@ -323,8 +352,8 @@ class Tools {
 								if (swfLite.symbols.exists (object.symbol)) {
 									
 									var childSymbol = swfLite.symbols.get (object.symbol);
-									//var className = childSymbol.className;
-									var className = null;
+									var className = formatClassName (childSymbol.className, prefix);
+									//var className = null;
 									
 									if (className == null) {
 										
