@@ -1,8 +1,8 @@
 package ::PACKAGE_NAME::;
 
 
-import format.swf.lite.SimpleButton;
-import format.swf.lite.SWFLite;
+import openfl._internal.swf.SWFLite;
+import openfl.display.SimpleButton;
 import openfl.Assets;
 
 
@@ -10,6 +10,8 @@ class ::CLASS_NAME:: extends SimpleButton {
 	
 	
 	public function new () {
+		
+		super ();
 		
 		if (!SWFLite.instances.exists ("::SWF_ID::")) {
 			
@@ -20,7 +22,7 @@ class ::CLASS_NAME:: extends SimpleButton {
 		var swfLite = SWFLite.instances.get ("::SWF_ID::");
 		var symbol = swfLite.symbols.get (::SYMBOL_ID::);
 		
-		super (swfLite, cast symbol);
+		__fromSymbol (swfLite, cast symbol);
 		
 	}
 	
