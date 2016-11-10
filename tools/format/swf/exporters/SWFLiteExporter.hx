@@ -407,7 +407,7 @@ class SWFLiteExporter {
 		var handler = new ShapeCommandExporter (data);
 		tag.export (handler);
 		
-		#if enable_bitmap_optimization
+		#if !disable_bitmap_optimization
 		var bitmaps = ShapeBitmapExporter.process (handler);
 		#else
 		var bitmaps:Array<Dynamic> = null;
@@ -427,9 +427,12 @@ class SWFLiteExporter {
 				
 				frameObject = new FrameObject ();
 				frameObject.symbol = bitmap.id;
+				frameObject.type = FrameObjectType.CREATE;
 				frameObject.id = i;
 				frameObject.depth = i;
+				frameObject.clipDepth = 0;
 				frameObject.matrix = bitmap.transform;
+				
 				frame.objects.push (frameObject);
 				
 			}
