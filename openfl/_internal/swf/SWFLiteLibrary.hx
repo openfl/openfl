@@ -1,9 +1,15 @@
 package openfl._internal.swf;
 
 
-import lime.graphics.Image;
+import haxe.Unserializer;
 import lime.app.Future;
 import lime.app.Promise;
+import lime.graphics.Image;
+import lime.graphics.ImageChannel;
+import lime.math.Vector2;
+import lime.Assets in LimeAssets;
+import openfl._internal.swf.SWFLite;
+import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
@@ -11,9 +17,6 @@ import openfl.events.Event;
 import openfl.media.Sound;
 import openfl.text.Font;
 import openfl.utils.ByteArray;
-import openfl._internal.symbols.BitmapSymbol;
-import openfl._internal.swf.SWFLite;
-import haxe.Unserializer;
 import openfl.Assets;
 
 
@@ -35,9 +38,9 @@ import openfl.Assets;
 		
 		// Hack to include filter classes, macro.include is not working properly
 		
-		//var filter = openfl.filters.BlurFilter;
-		//var filter = openfl.filters.DropShadowFilter;
-		//var filter = openfl.filters.GlowFilter;
+		//var filter = flash.filters.BlurFilter;
+		//var filter = flash.filters.DropShadowFilter;
+		//var filter = flash.filters.GlowFilter;
 		
 	}
 	
@@ -79,36 +82,35 @@ import openfl.Assets;
 		
 		var promise = new Promise<lime.Assets.AssetLibrary> ();
 		
-		#if swflite_preload
-		var paths = [];
-		var bitmap:BitmapSymbol;
+		#if (swf_preload || swflite_preload)
+		
+		var bitmapSymbols:Array<BitmapSymbol> = [];
 		
 		for (symbol in swf.symbols) {
 			
 			if (Std.is (symbol, BitmapSymbol)) {
 				
-				bitmap = cast symbol;
-				paths.push (bitmap.path);
+				bitmapSymbols.push (cast symbol);
 				
 			}
 			
 		}
 		
-		if (paths.length == 0) {
+		if (bitmapSymbols.length == 0) {
 			
 			promise.complete (this);
 			
 		} else {
 			
-			var loaded = 0;
+			var loaded = -1;
 			
-			var onLoad = function (_) {
+			var onLoad = function () {
 				
 				loaded++;
 				
-				promise.progress (loaded / paths.length);
+				promise.progress (loaded, bitmapSymbols.length);
 				
-				if (loaded == paths.length) {
+				if (loaded == bitmapSymbols.length) {
 					
 					promise.complete (this);
 					
@@ -116,15 +118,72 @@ import openfl.Assets;
 				
 			};
 			
-			for (path in paths) {
+			for (symbol in bitmapSymbols) {
 				
-				Assets.loadBitmapData (path).onComplete (onLoad).onError (promise.error);
+				if (Assets.cache.hasBitmapData (symbol.path)) {
+					
+					onLoad ();
+					
+				} else {
+					
+					LimeAssets.loadImage (symbol.path, false).onComplete (function (image) {
+						
+						if (image != null) {
+							
+							if (symbol.alpha != null && symbol.alpha != "") {
+								
+								LimeAssets.loadImage (symbol.alpha, false).onComplete (function (alpha) {
+									
+									if (alpha != null) {
+										
+										image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+										image.buffer.premultiplied = true;
+										
+										#if !sys
+										image.premultiplied = true;
+										#end
+										
+										var bitmapData = BitmapData.fromImage (image);
+										Assets.cache.setBitmapData (symbol.path, bitmapData);
+										
+										onLoad ();
+										
+									} else {
+										
+										promise.error ('Failed to load image alpha : ${symbol.alpha}');
+										
+									}
+									
+								}).onError (promise.error);
+								
+							} else {
+								
+								var bitmapData = BitmapData.fromImage (image);
+								Assets.cache.setBitmapData (symbol.path, bitmapData);
+								onLoad ();
+								
+							}
+							
+						} else {
+							
+							promise.error ('Failed to load image : ${symbol.path}');
+							
+						}
+						
+					}).onError (promise.error);
+					
+				}
 				
 			}
 			
+			onLoad ();
+			
 		}
+		
 		#else
+		
 		promise.complete (this);
+		
 		#end
 		
 		return promise.future;
