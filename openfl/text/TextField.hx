@@ -1354,7 +1354,7 @@ class TextField extends InteractiveObject {
 				
 			} else {
 				
-				__textEngine.textFormatRanges.splice (1, __textEngine.textFormatRanges.length);
+				__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
 				
 				value = "";
 				var segment;
@@ -1539,6 +1539,12 @@ class TextField extends InteractiveObject {
 						}
 						
 					}
+					
+				}
+				
+				if (__textEngine.textFormatRanges.length == 0) {
+					
+					__textEngine.textFormatRanges.push (new TextFormatRange (formatStack[0], 0, 0));
 					
 				}
 				
