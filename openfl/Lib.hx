@@ -10,7 +10,11 @@ import openfl.display.Stage;
 import openfl.net.URLRequest;
 
 #if swf
+#if flash
+import openfl._internal.swf.SWFLibrary;
+#else
 import openfl._internal.swf.SWFLiteLibrary; // workaround
+#end
 #end
 
 #if (js && html5)

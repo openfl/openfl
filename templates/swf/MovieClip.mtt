@@ -1,4 +1,4 @@
-package ::PACKAGE_NAME::;
+package ::PACKAGE_NAME::; #if !flash
 
 
 import openfl._internal.swf.SWFLite;
@@ -32,3 +32,22 @@ class ::CLASS_NAME:: extends MovieClip {
 	
 	
 }
+
+
+#else
+@:bind @:native("::PACKAGE_NAME_DOT::::CLASS_NAME::") class ::PREFIX::::CLASS_NAME:: extends flash.display.MovieClip {
+	
+	
+	::foreach CLASS_PROPERTIES::public var ::name:: (default, null):::type::;
+	::end::
+	
+	
+	public function new () {
+		
+		super ();
+		
+	}
+	
+	
+}
+#end

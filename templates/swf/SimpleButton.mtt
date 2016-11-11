@@ -1,4 +1,4 @@
-package ::PACKAGE_NAME::;
+package ::PACKAGE_NAME::; #if !flash
 
 
 import openfl._internal.swf.SWFLite;
@@ -28,3 +28,18 @@ class ::CLASS_NAME:: extends SimpleButton {
 	
 	
 }
+
+
+#else
+@:bind @:native("::CLASS_NAME::") class ::PREFIX::::CLASS_NAME:: extends flash.display.SimpleButton {
+	
+	
+	public function new () {
+		
+		super ();
+		
+	}
+	
+	
+}
+#end

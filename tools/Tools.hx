@@ -8,6 +8,7 @@ import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.ShapeSymbol;
 import openfl._internal.symbols.SpriteSymbol;
 import openfl._internal.symbols.StaticTextSymbol;
+import openfl._internal.swf.SWFLibrary;
 import openfl._internal.swf.SWFLiteLibrary;
 import openfl._internal.swf.SWFLite;
 import format.swf.tags.TagDefineBits;
@@ -19,7 +20,6 @@ import format.swf.tags.TagDefineShape;
 import format.swf.tags.TagDefineSprite;
 import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
-import format.swf.SWFLibrary;
 import format.swf.SWFTimelineContainer;
 import format.SWF;
 import haxe.io.Path;
@@ -132,12 +132,54 @@ class Tools {
 	#end
 	
 	
-	/*private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Void {
+	private static function formatClassName (className:String, prefix:String = null):String {
+		
+		if (className == null) return null;
+		
+		var lastIndexOfPeriod = className.lastIndexOf (".");
+		
+		var packageName = "";
+		var name = "";
+		
+		if (lastIndexOfPeriod == -1) {
+			
+			name = prefix + className;
+			
+		} else {
+			
+			packageName = className.substr (0, lastIndexOfPeriod);
+			name = prefix + className.substr (lastIndexOfPeriod + 1);
+			
+		}
+		
+		packageName = packageName.toLowerCase ();
+		name = name.substr (0, 1).toUpperCase () + name.substr (1);
+		
+		if (packageName != "") {
+			
+			return packageName + "." + name;
+			
+		} else {
+			
+			return name;
+			
+		}
+		
+	}
+	
+	
+	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Void {
 		
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/SimpleButton.mtt");
 		
 		var swf = new SWF (ByteArray.fromBytes (File.getBytes (swfAsset.sourcePath)));
+		
+		if (prefix != "" && prefix != null) {
+			
+			prefix = prefix.substr (0, 1).toUpperCase () + prefix.substr (1);
+			
+		}
 		
 		for (className in swf.symbols.keys ()) {
 			
@@ -159,12 +201,6 @@ class Tools {
 			
 			packageName = packageName.toLowerCase ();
 			name = name.substr (0, 1).toUpperCase () + name.substr (1);
-			
-			if (prefix != "" && prefix != null) {
-				
-				prefix = prefix.substr (0, 1).toUpperCase () + prefix.substr (1);
-				
-			}
 			
 			var packageNameDot = packageName;
 			if (packageNameDot.length > 0) packageNameDot += ".";
@@ -261,42 +297,6 @@ class Tools {
 				output.assets.push (templateFile);
 				
 			}
-			
-		}
-		
-	}*/
-	
-	
-	private static function formatClassName (className:String, prefix:String = null):String {
-		
-		if (className == null) return null;
-		
-		var lastIndexOfPeriod = className.lastIndexOf (".");
-		
-		var packageName = "";
-		var name = "";
-		
-		if (lastIndexOfPeriod == -1) {
-			
-			name = prefix + className;
-			
-		} else {
-			
-			packageName = className.substr (0, lastIndexOfPeriod);
-			name = prefix + className.substr (lastIndexOfPeriod + 1);
-			
-		}
-		
-		packageName = packageName.toLowerCase ();
-		name = name.substr (0, 1).toUpperCase () + name.substr (1);
-		
-		if (packageName != "") {
-			
-			return packageName + "." + name;
-			
-		} else {
-			
-			return name;
 			
 		}
 		
@@ -541,195 +541,155 @@ class Tools {
 				
 				type = Path.extension (library.sourcePath).toLowerCase ();
 				
-				if (type == "swf" && (project.target != Platform.FLASH && !project.defines.exists ("openfl-legacy"))) {
-					
-					type = "swflite";
-					
-				}
-				
 			}
 			
-			if (type == "swf" /*&& project.target == Platform.HTML5*/) {
+			if (type == "swf" || type == "swf_lite" || type == "swflite") {
 				
-				type = "swflite";
-				
-			}
-			
-			if (type == "swf" && project.target != Platform.HTML5) {
-				
-				/*if (!FileSystem.exists (library.sourcePath)) {
+				if (project.target == Platform.FLASH) {
 					
-					LogHelper.warn ("Could not find library file: " + library.sourcePath);
-					continue;
-					
-				}
-				
-				LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
-				
-				var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-				
-				if (library.embed != null) {
-					
-					swf.embed = library.embed;
-					
-				}
-				
-				output.assets.push (swf);
-				
-				var data:Dynamic = {};
-				data.version = 0.1;
-				data.type = "format.swf.SWFLibrary";
-				data.args = [ "lib/" + library.name + "/" + library.name + ".swf" ];
-				
-				var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
-				asset.id = "libraries/" + library.name + ".json";
-				asset.data = Json.stringify (data);
-				
-				if (library.embed != null) {
-					
-					asset.embed = library.embed;
-					
-				}
-				
-				output.assets.push (asset);
-				
-				if (library.generate) {
-					
-					generateSWFClasses (project, output, swf, library.prefix);
-					
-				}
-				
-				embeddedSWF = true;
-				//project.haxelibs.push (new Haxelib ("swf"));
-				//output.assets.push (new Asset (library.sourcePath, "libraries/" + library.name + ".swf", AssetType.BINARY));
-				*/
-				
-			} else if (type == "swf_lite" || type == "swflite") {
-				
-				if (!FileSystem.exists (library.sourcePath)) {
-					
-					LogHelper.warn ("Could not find library file: " + library.sourcePath);
-					continue;
-					
-				}
-				
-				LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
-				
-				//project.haxelibs.push (new Haxelib ("swf"));
-				
-				var cacheAvailable = false;
-				var cacheDirectory = null;
-				var merge = new HXProject ();
-				
-				if (targetDirectory != null) {
-					
-					cacheDirectory = targetDirectory + "/obj/libraries/" + library.name;
-					var cacheFile = cacheDirectory + "/" + library.name + ".dat";
-					
-					if (FileSystem.exists (cacheFile)) {
+					if (!FileSystem.exists (library.sourcePath)) {
 						
-						var cacheDate = FileSystem.stat (cacheFile).mtime;
-						var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/tools/tools.n").mtime;
-						var sourceDate = FileSystem.stat (library.sourcePath).mtime;
-						
-						if (sourceDate.getTime () < cacheDate.getTime () && swfToolDate.getTime () < cacheDate.getTime ()) {
-							
-							cacheAvailable = true;
-							
-						}
+						LogHelper.warn ("Could not find library file: " + library.sourcePath);
+						continue;
 						
 					}
 					
-				}
-				
-				if (cacheAvailable) {
+					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
-					for (file in FileSystem.readDirectory (cacheDirectory)) {
-						
-						if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
-							
-							var asset = new Asset (cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
-							
-							if (library.embed != null) {
-								
-								asset.embed = library.embed;
-								
-							}
-							
-							merge.assets.push (asset);
-							
-						}
-						
-					}
-					
-					var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
 					
 					if (library.embed != null) {
 						
-						swfLiteAsset.embed = library.embed;
+						swf.embed = library.embed;
 						
 					}
 					
-					merge.assets.push (swfLiteAsset);
+					output.assets.push (swf);
 					
-					embeddedSWFLite = true;
+					var data:Dynamic = {};
+					data.version = 0.1;
+					data.type = "openfl._internal.swf.SWFLibrary";
+					data.args = [ "lib/" + library.name + "/" + library.name + ".swf" ];
+					
+					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
+					asset.id = "libraries/" + library.name + ".json";
+					asset.data = Json.stringify (data);
+					
+					if (library.embed != null) {
+						
+						asset.embed = library.embed;
+						
+					}
+					
+					output.assets.push (asset);
+					
+					if (library.generate) {
+						
+						generateSWFClasses (project, output, swf, library.prefix);
+						
+					}
+					
+					embeddedSWF = true;
+					//project.haxelibs.push (new Haxelib ("swf"));
+					//output.assets.push (new Asset (library.sourcePath, "libraries/" + library.name + ".swf", AssetType.BINARY));
 					
 				} else {
 					
-					if (cacheDirectory != null) {
+					if (!FileSystem.exists (library.sourcePath)) {
 						
-						PathHelper.mkdir (cacheDirectory);
+						LogHelper.warn ("Could not find library file: " + library.sourcePath);
+						continue;
 						
 					}
 					
-					var bytes:ByteArray = File.getBytes (library.sourcePath);
-					var swf = new SWF (bytes);
-					var exporter = new SWFLiteExporter (swf.data);
-					var swfLite = exporter.swfLite;
+					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
-					for (id in exporter.bitmaps.keys ()) {
+					//project.haxelibs.push (new Haxelib ("swf"));
+					
+					var cacheAvailable = false;
+					var cacheDirectory = null;
+					var merge = new HXProject ();
+					
+					if (targetDirectory != null) {
 						
-						var type = exporter.bitmapTypes.get (id) == BitmapType.PNG ? "png" : "jpg";
-						var symbol:BitmapSymbol = cast swfLite.symbols.get (id);
-						symbol.path = "lib/" + library.name + "/" + id + "." + type;
-						swfLite.symbols.set (id, symbol);
+						cacheDirectory = targetDirectory + "/obj/libraries/" + library.name;
+						var cacheFile = cacheDirectory + "/" + library.name + ".dat";
 						
-						var asset = new Asset ("", symbol.path, AssetType.IMAGE);
-						var assetData = exporter.bitmaps.get (id);
-						
-						if (cacheDirectory != null) {
+						if (FileSystem.exists (cacheFile)) {
 							
-							asset.sourcePath = cacheDirectory + "/" + id + "." + type;
-							asset.format = type;
-							File.saveBytes (asset.sourcePath, assetData);
+							var cacheDate = FileSystem.stat (cacheFile).mtime;
+							var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/tools/tools.n").mtime;
+							var sourceDate = FileSystem.stat (library.sourcePath).mtime;
 							
-						} else {
-							
-							asset.data = StringHelper.base64Encode (cast assetData);
-							//asset.data = bitmapData.encode ("png");
-							asset.encoding = AssetEncoding.BASE64;
+							if (sourceDate.getTime () < cacheDate.getTime () && swfToolDate.getTime () < cacheDate.getTime ()) {
+								
+								cacheAvailable = true;
+								
+							}
 							
 						}
+						
+					}
+					
+					if (cacheAvailable) {
+						
+						for (file in FileSystem.readDirectory (cacheDirectory)) {
+							
+							if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
+								
+								var asset = new Asset (cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
+								
+								if (library.embed != null) {
+									
+									asset.embed = library.embed;
+									
+								}
+								
+								merge.assets.push (asset);
+								
+							}
+							
+						}
+						
+						var swfLiteAsset = new Asset (cacheDirectory + "/" + library.name + ".dat", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
 						
 						if (library.embed != null) {
 							
-							asset.embed = library.embed;
+							swfLiteAsset.embed = library.embed;
 							
 						}
 						
-						merge.assets.push (asset);
+						merge.assets.push (swfLiteAsset);
 						
-						if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
+						embeddedSWFLite = true;
+						
+					} else {
+						
+						if (cacheDirectory != null) {
 							
-							symbol.alpha = "lib/" + library.name + "/" + id + "a.png";
+							PathHelper.mkdir (cacheDirectory);
 							
-							var asset = new Asset ("", symbol.alpha, AssetType.IMAGE);
-							var assetData = exporter.bitmapAlpha.get (id);
+						}
+						
+						var bytes:ByteArray = File.getBytes (library.sourcePath);
+						var swf = new SWF (bytes);
+						var exporter = new SWFLiteExporter (swf.data);
+						var swfLite = exporter.swfLite;
+						
+						for (id in exporter.bitmaps.keys ()) {
+							
+							var type = exporter.bitmapTypes.get (id) == BitmapType.PNG ? "png" : "jpg";
+							var symbol:BitmapSymbol = cast swfLite.symbols.get (id);
+							symbol.path = "lib/" + library.name + "/" + id + "." + type;
+							swfLite.symbols.set (id, symbol);
+							
+							var asset = new Asset ("", symbol.path, AssetType.IMAGE);
+							var assetData = exporter.bitmaps.get (id);
 							
 							if (cacheDirectory != null) {
 								
-								asset.sourcePath = cacheDirectory + "/" + id + "a.png";
-								asset.format = "png";
+								asset.sourcePath = cacheDirectory + "/" + id + "." + type;
+								asset.format = type;
 								File.saveBytes (asset.sourcePath, assetData);
 								
 							} else {
@@ -748,80 +708,112 @@ class Tools {
 							
 							merge.assets.push (asset);
 							
+							if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
+								
+								symbol.alpha = "lib/" + library.name + "/" + id + "a.png";
+								
+								var asset = new Asset ("", symbol.alpha, AssetType.IMAGE);
+								var assetData = exporter.bitmapAlpha.get (id);
+								
+								if (cacheDirectory != null) {
+									
+									asset.sourcePath = cacheDirectory + "/" + id + "a.png";
+									asset.format = "png";
+									File.saveBytes (asset.sourcePath, assetData);
+									
+								} else {
+									
+									asset.data = StringHelper.base64Encode (cast assetData);
+									//asset.data = bitmapData.encode ("png");
+									asset.encoding = AssetEncoding.BASE64;
+									
+								}
+								
+								if (library.embed != null) {
+									
+									asset.embed = library.embed;
+									
+								}
+								
+								merge.assets.push (asset);
+								
+							}
+							
 						}
 						
+						//for (filterClass in exporter.filterClasses.keys ()) {
+							
+							//filterClasses.remove (filterClass);
+							//filterClasses.push (filterClass);
+							
+						//}
+						
+						var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
+						var swfLiteAssetData = swfLite.serialize ();
+						
+						if (cacheDirectory != null) {
+							
+							swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + ".dat";
+							File.saveContent (swfLiteAsset.sourcePath, swfLiteAssetData);
+							
+						} else {
+							
+							swfLiteAsset.data = swfLiteAssetData;
+							
+						}
+						
+						if (library.embed != null) {
+							
+							swfLiteAsset.embed = library.embed;
+							
+						}
+						
+						merge.assets.push (swfLiteAsset);
+						
+						if (library.generate) {
+							
+							generateSWFLiteClasses (project, output, swfLite, swfLiteAsset, library.prefix);
+							
+						}
+						
+						embeddedSWFLite = true;
+						
 					}
 					
-					//for (filterClass in exporter.filterClasses.keys ()) {
-						
-						//filterClasses.remove (filterClass);
-						//filterClasses.push (filterClass);
-						
-					//}
+					output.merge (merge);
 					
-					var swfLiteAsset = new Asset ("", "lib/" + library.name + "/" + library.name + ".dat", AssetType.TEXT);
-					var swfLiteAssetData = swfLite.serialize ();
+					var data:Dynamic = {};
+					data.version = 0.1;
+					data.type = "openfl._internal.swf.SWFLiteLibrary";
+					data.args = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+					data.name = library.name;
+					data.manifest = AssetHelper.createManifest (merge);
 					
-					if (cacheDirectory != null) {
-						
-						swfLiteAsset.sourcePath = cacheDirectory + "/" + library.name + ".dat";
-						File.saveContent (swfLiteAsset.sourcePath, swfLiteAssetData);
-						
-					} else {
-						
-						swfLiteAsset.data = swfLiteAssetData;
-						
-					}
+					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
+					asset.id = "libraries/" + library.name + ".json";
+					asset.data = Json.stringify (data);
 					
 					if (library.embed != null) {
 						
-						swfLiteAsset.embed = library.embed;
+						asset.embed = library.embed;
 						
 					}
 					
-					merge.assets.push (swfLiteAsset);
-					
-					if (library.generate) {
-						
-						generateSWFLiteClasses (project, output, swfLite, swfLiteAsset, library.prefix);
-						
-					}
-					
-					embeddedSWFLite = true;
+					output.assets.push (asset);
 					
 				}
-				
-				output.merge (merge);
-				
-				var data:Dynamic = {};
-				data.version = 0.1;
-				data.type = "openfl._internal.swf.SWFLiteLibrary";
-				data.args = [ "lib/" + library.name + "/" + library.name + ".dat" ];
-				data.name = library.name;
-				data.manifest = AssetHelper.createManifest (merge);
-				
-				var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
-				asset.id = "libraries/" + library.name + ".json";
-				asset.data = Json.stringify (data);
-				
-				if (library.embed != null) {
-					
-					asset.embed = library.embed;
-					
-				}
-				
-				output.assets.push (asset);
 				
 			}
 			
 		}
 		
-		//if (embeddedSWF) {
-			//
+		if (embeddedSWF) {
+			
+			output.haxedefs.set ("swf", "1");
 			//output.haxelibs.push (new Haxelib ("format"));
 			//output.haxeflags.push ("format.swf.SWFLibrary");
-			//
-		//}
+			
+		}
 		
 		if (embeddedSWFLite) {
 			
