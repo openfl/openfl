@@ -3,6 +3,7 @@ package openfl.display;
 
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
+import lime.utils.Log;
 import lime.Assets in LimeAssets;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -25,6 +26,9 @@ import openfl.Assets;
 
 class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	
+	
+	private static var __initSWF:SWFLite;
+	private static var __initSymbol:SpriteSymbol;
 	
 	public var currentFrame (get, never):Int;
 	public var currentFrameLabel (get, never):String;
@@ -59,6 +63,18 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 		__currentLabels = [];
 		__totalFrames = 0;
 		enabled = true;
+		
+		if (__initSymbol != null) {
+			
+			__swf = __initSWF;
+			__symbol = __initSymbol;
+			
+			__initSWF = null;
+			__initSymbol = null;
+			
+			__fromSymbol (__swf, __symbol);
+			
+		}
 		
 	}
 	
@@ -190,6 +206,40 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	}
 	
 	
+	private static function __createClip (swf:SWFLite, symbol:SpriteSymbol):MovieClip {
+		
+		var movieClip:MovieClip = null;
+		
+		MovieClip.__initSWF = swf;
+		MovieClip.__initSymbol = symbol;
+		
+		if (symbol.className != null) {
+			
+			var symbolType = Type.resolveClass (symbol.className);
+			
+			if (symbolType != null) {
+				
+				movieClip = Type.createInstance (symbolType, []);
+				
+			} else {
+				
+				//Log.warn ("Could not resolve class \"" + symbol.className + "\"");
+				
+			}
+			
+		}
+		
+		if (movieClip == null) {
+			
+			movieClip = new MovieClip ();
+			
+		}
+		
+		return movieClip;
+		
+	}
+	
+	
 	private function __createObject (object:FrameObject):DisplayObject {
 		
 		if (__swf.symbols.exists (object.symbol)) {
@@ -198,9 +248,7 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 			
 			if (Std.is (symbol, SpriteSymbol)) {
 				
-				var movieClip = new MovieClip ();
-				movieClip.__fromSymbol (__swf, cast symbol);
-				return movieClip;
+				return __createClip (__swf, cast symbol);
 				
 			} else if (Std.is (symbol, ShapeSymbol)) {
 				
@@ -222,9 +270,7 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 				
 			} else if (Std.is (symbol, ButtonSymbol)) {
 				
-				var simpleButton = new SimpleButton ();
-				simpleButton.__fromSymbol (__swf, cast symbol);
-				return simpleButton;
+				return SimpleButton.__createButton (__swf, cast symbol);
 				
 			}
 			
@@ -469,7 +515,9 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 	}
 	
 	
-	public function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
+	private function __fromSymbol (swf:SWFLite, symbol:SpriteSymbol):Void {
+		
+		if (__objects != null) return;
 		
 		__swf = swf;
 		__symbol = symbol;

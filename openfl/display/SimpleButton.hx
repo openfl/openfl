@@ -12,11 +12,15 @@ import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 
+@:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 
 
 class SimpleButton extends InteractiveObject {
 	
+	
+	private static var __initSWF:SWFLite;
+	private static var __initSymbol:ButtonSymbol;
 	
 	public var downState (default, set):DisplayObject;
 	public var enabled:Bool;
@@ -53,6 +57,52 @@ class SimpleButton extends InteractiveObject {
 		
 		__currentState = this.upState;
 		
+		if (__initSymbol != null) {
+			
+			var swf = __initSWF;
+			__symbol = __initSymbol;
+			
+			__initSWF = null;
+			__initSymbol = null;
+			
+			__fromSymbol (swf, __symbol);
+			
+		}
+		
+	}
+	
+	
+	private static function __createButton (swf:SWFLite, symbol:ButtonSymbol):SimpleButton {
+		
+		var simpleButton:SimpleButton = null;
+		
+		SimpleButton.__initSWF = swf;
+		SimpleButton.__initSymbol = symbol;
+		
+		if (symbol.className != null) {
+			
+			var symbolType = Type.resolveClass (symbol.className);
+			
+			if (symbolType != null) {
+				
+				simpleButton = Type.createInstance (symbolType, []);
+				
+			} else {
+				
+				//Log.warn ("Could not resolve class \"" + symbol.className + "\"");
+				
+			}
+			
+		}
+		
+		if (simpleButton == null) {
+			
+			simpleButton = new SimpleButton ();
+			
+		}
+		
+		return simpleButton;
+		
 	}
 	
 	
@@ -60,41 +110,27 @@ class SimpleButton extends InteractiveObject {
 		
 		__symbol = symbol;
 		
-		var clip:MovieClip;
-		
 		if (symbol.downState != null) {
 			
-			clip = new MovieClip ();
-			clip.__fromSymbol (swf, symbol.downState);
-			
-			downState = clip;
+			downState = MovieClip.__createClip (swf, symbol.downState);
 			
 		}
 		
 		if (symbol.hitState != null) {
 			
-			clip = new MovieClip ();
-			clip.__fromSymbol (swf, symbol.hitState);
-			
-			hitTestState = clip;
+			hitTestState = MovieClip.__createClip (swf, symbol.hitState);
 			
 		}
 		
 		if (symbol.overState != null) {
 			
-			clip = new MovieClip ();
-			clip.__fromSymbol (swf, symbol.overState);
-			
-			overState = clip;
+			overState = MovieClip.__createClip (swf, symbol.overState);
 			
 		}
 		
 		if (symbol.upState != null) {
 			
-			clip = new MovieClip ();
-			clip.__fromSymbol (swf, symbol.upState);
-			
-			upState = clip;
+			upState = MovieClip.__createClip (swf, symbol.upState);
 			
 		}
 		

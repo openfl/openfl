@@ -168,7 +168,7 @@ class Tools {
 	}
 	
 	
-	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Void {
+	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String> {
 		
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/SimpleButton.mtt");
@@ -180,6 +180,8 @@ class Tools {
 			prefix = prefix.substr (0, 1).toUpperCase () + prefix.substr (1);
 			
 		}
+		
+		var generatedClasses = [];
 		
 		for (className in swf.symbols.keys ()) {
 			
@@ -284,11 +286,11 @@ class Tools {
 				
 				if (project.target == IOS) {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe";
+					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
 					
 				} else {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe";
+					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe/_generated";
 					
 				}
 				
@@ -296,17 +298,23 @@ class Tools {
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
+				generatedClasses.push (className);
+				
 			}
 			
 		}
 		
+		return generatedClasses;
+		
 	}
 	
 	
-	private static function generateSWFLiteClasses (project:HXProject, output:HXProject, swfLite:SWFLite, swfLiteAsset:Asset, prefix:String = ""):Void {
+	private static function generateSWFLiteClasses (project:HXProject, output:HXProject, swfLite:SWFLite, swfLiteAsset:Asset, prefix:String = ""):Array<String> {
 		
 		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
 		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/SimpleButton.mtt");
+		
+		var generatedClasses = [];
 		
 		for (symbolID in swfLite.symbols.keys ()) {
 			
@@ -325,15 +333,17 @@ class Tools {
 			
 			if (templateData != null && symbol.className != null) {
 				
-				var name = formatClassName (symbol.className, prefix);
+				var className = formatClassName (symbol.className, prefix);
+				
+				var name = className;
 				var packageName = "";
 				
-				var lastIndexOfPeriod = name.lastIndexOf (".");
+				var lastIndexOfPeriod = className.lastIndexOf (".");
 				
 				if (lastIndexOfPeriod > -1) {
 					
-					packageName = name.substr (0, lastIndexOfPeriod);
-					name = name.substr (lastIndexOfPeriod + 1);
+					packageName = className.substr (0, lastIndexOfPeriod);
+					name = className.substr (lastIndexOfPeriod + 1);
 					
 				}
 				
@@ -352,8 +362,8 @@ class Tools {
 								if (swfLite.symbols.exists (object.symbol)) {
 									
 									var childSymbol = swfLite.symbols.get (object.symbol);
-									//var className = formatClassName (childSymbol.className, prefix);
-									var className = null;
+									var className = formatClassName (childSymbol.className, prefix);
+									//var className = null;
 									
 									if (className == null) {
 										
@@ -403,11 +413,11 @@ class Tools {
 				
 				if (project.target == IOS) {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe";
+					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
 					
 				} else {
 					
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe";
+					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe/_generated";
 					
 				}
 				
@@ -415,9 +425,13 @@ class Tools {
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
+				generatedClasses.push (className);
+				
 			}
 			
 		}
+		
+		return generatedClasses;
 		
 	}
 	
@@ -585,7 +599,13 @@ class Tools {
 					
 					if (library.generate) {
 						
-						generateSWFClasses (project, output, swf, library.prefix);
+						var generatedClasses = generateSWFClasses (project, output, swf, library.prefix);
+						
+						for (className in generatedClasses) {
+							
+							output.haxeflags.push (className);
+							
+						}
 						
 					}
 					
@@ -660,6 +680,18 @@ class Tools {
 						}
 						
 						merge.assets.push (swfLiteAsset);
+						
+						if (FileSystem.exists (cacheDirectory + "/classNames.txt")) {
+							
+							var generatedClasses = File.getContent (cacheDirectory + "/classNames.txt").split ("\n");
+							
+							for (className in generatedClasses) {
+								
+								output.haxeflags.push (className);
+								
+							}
+							
+						}
 						
 						embeddedSWFLite = true;
 						
@@ -772,7 +804,19 @@ class Tools {
 						
 						if (library.generate) {
 							
-							generateSWFLiteClasses (project, output, swfLite, swfLiteAsset, library.prefix);
+							var generatedClasses = generateSWFLiteClasses (project, output, swfLite, swfLiteAsset, library.prefix);
+							
+							for (className in generatedClasses) {
+								
+								output.haxeflags.push (className);
+								
+							}
+							
+							if (cacheDirectory != null) {
+								
+								File.saveContent (cacheDirectory + "/classNames.txt", generatedClasses.join ("\n"));
+								
+							}
 							
 						}
 						
@@ -818,6 +862,7 @@ class Tools {
 		if (embeddedSWFLite) {
 			
 			output.haxedefs.set ("swf", "1");
+			
 			//output.haxeflags.push ("--macro include('openfl._internal.swf.SWFLiteLibrary')");
 			//output.haxeflags.push ("openfl._internal.swf.SWFLiteLibrary");
 			
@@ -830,6 +875,29 @@ class Tools {
 		}
 		
 		if (embeddedSWF || embeddedSWFLite) {
+			
+			var generatedPath;
+			
+			if (project.target == IOS) {
+				
+				generatedPath = PathHelper.combine (targetDirectory, project.app.file + "/" + "/haxe/_generated");
+				
+			} else {
+				
+				generatedPath = PathHelper.combine (targetDirectory, "/haxe/_generated");
+				
+			}
+			
+			output.sources.push (generatedPath);
+			
+			// add sources and haxelibs again, so that we can
+			// prepend the generated class path, to allow
+			// overrides if the class is defined elsewhere
+			
+			output.sources = output.sources.concat (project.sources);
+			output.haxelibs = output.haxelibs.concat (project.haxelibs);
+			
+			output.haxedefs.set ("swf", "1");
 			
 			return output;
 			

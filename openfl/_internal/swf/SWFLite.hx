@@ -12,7 +12,8 @@ import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.Assets;
-//import org.msgpack.MsgPack;
+
+@:access(openfl.display.MovieClip)
 
 
 @:keep class SWFLite {
@@ -45,9 +46,7 @@ import openfl.Assets;
 		
 		if (className == "") {
 			
-			var movieClip = new MovieClip ();
-			movieClip.__fromSymbol (this, root);
-			return movieClip;
+			return MovieClip.__createClip (this, root);
 			
 		} else {
 			
@@ -57,9 +56,7 @@ import openfl.Assets;
 					
 					if (Std.is (symbol, SpriteSymbol)) {
 						
-						var movieClip = new MovieClip ();
-						movieClip.__fromSymbol (this, cast symbol);
-						return movieClip;
+						return MovieClip.__createClip (this, cast symbol);
 						
 					}
 					
