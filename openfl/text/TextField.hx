@@ -1280,14 +1280,14 @@ class TextField extends InteractiveObject {
 	private override function get_height ():Float {
 		
 		__updateLayout ();
-		return __textEngine.height;
+		return __textEngine.height * Math.abs (scaleY);
 		
 	}
 	
 	
 	private override function set_height (value:Float):Float {
 		
-		if (scaleY != 1 || value != __textEngine.height) {
+		if (Math.abs (scaleY) != 1 || value != __textEngine.height) {
 			
 			__setTransformDirty ();
 			__dirty = true;
@@ -1295,7 +1295,16 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		scaleY = 1;
+		if (scaleY < 0) {
+			
+			scaleY = -1;
+			
+		} else {
+			
+			scaleY = 1;
+			
+		}
+		
 		return __textEngine.height = value;
 		
 	}
@@ -1899,14 +1908,14 @@ class TextField extends InteractiveObject {
 	override private function get_width ():Float {
 		
 		__updateLayout ();
-		return __textEngine.width;
+		return __textEngine.width * Math.abs (scaleX);
 		
 	}
 	
 	
 	override private function set_width (value:Float):Float {
 		
-		if (scaleX != 1 || __textEngine.width != value) {
+		if (Math.abs (scaleX) != 1 || __textEngine.width != value) {
 			
 			__setTransformDirty ();
 			__dirty = true;
@@ -1914,7 +1923,16 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		scaleX = 1;
+		if (scaleX < 0) {
+			
+			scaleX = -1;
+			
+		} else {
+			
+			scaleX = 1;
+			
+		}
+		
 		return __textEngine.width = value;
 		
 	}
