@@ -629,17 +629,6 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 			
 			displayObject.transform.matrix = frameObject.matrix;
 			
-			var dynamicTextField:TextField;
-			
-			if (Std.is (displayObject, TextField)) {
-				
-				dynamicTextField = cast displayObject;
-				
-				displayObject.x += dynamicTextField.__symbol.x;
-				displayObject.y += dynamicTextField.__symbol.y #if flash + 4 #end;
-				
-			}
-			
 		}
 		
 		if (frameObject.colorTransform != null) {

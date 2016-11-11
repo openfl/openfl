@@ -47,6 +47,9 @@ class CairoTextField {
 			
 			graphics.__bounds.copyFrom (bounds);
 			
+			graphics.__bounds.x += textField.__offsetX;
+			graphics.__bounds.y += textField.__offsetY;
+			
 		}
 		
 		graphics.__update ();
