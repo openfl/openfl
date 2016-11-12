@@ -153,7 +153,7 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 				
 				__playing = true;
 				
-				#if !swflite_parent_fps
+				#if (!swflite_parent_fps && !swf_parent_fps)
 				__frameTime = Std.int (1000 / __swf.frameRate);
 				__timeElapsed = 0;
 				#end
@@ -403,9 +403,6 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 								
 								case CurveTo (controlX, controlY, anchorX, anchorY):
 									
-									#if (cpp || neko)
-									cacheAsBitmap = true;
-									#end
 									graphics.curveTo (controlX * scale + offsetX, controlY * scale + offsetY, anchorX * scale + offsetX, anchorY * scale + offsetY);
 								
 								case EndFill:
@@ -463,7 +460,7 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 			
 			if (__playing) {
 				
-				#if !swflite_parent_fps
+				#if (!swflite_parent_fps && !swf_parent_fps)
 				__timeElapsed += deltaTime;
 				var advanceFrames = Math.floor (__timeElapsed / __frameTime);
 				__timeElapsed = (__timeElapsed % __frameTime);
@@ -600,11 +597,11 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 			
 			var label:String = cast frame;
 			
-			for (i in 0...__symbol.frames.length) {
+			for (frameLabel in __currentLabels) {
 				
-				if (__symbol.frames[i].label == label) {
+				if (frameLabel.name == label) {
 					
-					return i + 1;
+					return frameLabel.frame;
 					
 				}
 				
