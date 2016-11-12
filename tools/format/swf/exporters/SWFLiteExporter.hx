@@ -669,6 +669,7 @@ class SWFLiteExporter {
 		}
 		
 		symbol.wordWrap = tag.wordWrap;
+		symbol.input = !tag.readOnly;
 		
 		if (tag.hasFont) {
 			

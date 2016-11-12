@@ -16,6 +16,7 @@ class DynamicTextSymbol extends SWFSymbol {
 	public var height:Float;
 	public var html:Bool;
 	public var indent:Null<Int>;
+	public var input:Bool;
 	public var leading:Null<Int>;
 	public var leftMargin:Null<Int>;
 	public var multiline:Bool;

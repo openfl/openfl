@@ -592,6 +592,12 @@ class TextField extends InteractiveObject {
 		border = symbol.border;
 		selectable = symbol.selectable;
 		
+		if (symbol.input) {
+			
+			type = INPUT;
+			
+		}
+		
 		var format = new TextFormat ();
 		if (symbol.color != null) format.color = (symbol.color & 0x00FFFFFF);
 		format.size = Math.round (symbol.fontHeight / 20);
