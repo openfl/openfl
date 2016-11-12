@@ -108,7 +108,7 @@ class CanvasGraphics {
 	
 	
 	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float) {
-	
+		
 		#if (js && html5)
 		
 		var gradientFill = null;
@@ -119,7 +119,8 @@ class CanvasGraphics {
 				
 				if (matrix == null) matrix = new Matrix ();
 				var point = matrix.transformPoint (new Point (1638.4, 0));
-				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+				
+				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, Math.abs ((point.x - matrix.tx) / 2));
 			
 			case LINEAR:
 				

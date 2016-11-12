@@ -99,7 +99,7 @@ class CairoGraphics {
 				var x = matrix.tx + graphics.__bounds.x;
 				var y = matrix.ty + graphics.__bounds.y;
 				
-				pattern = CairoPattern.createRadial (x, y, 0, x, y, (point.x - matrix.tx) / 2);
+				pattern = CairoPattern.createRadial (x, y, 0, x, y, Math.abs ((point.x - matrix.tx) / 2));
 			
 			case LINEAR:
 				
