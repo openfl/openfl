@@ -158,6 +158,7 @@ class SWFLiteExporter {
 					
 					frameObject.depth = i;
 					frameObject.clipDepth = 0;
+					frameObject.visible = true;
 					
 					frame.objects.push (frameObject);
 					
@@ -432,6 +433,7 @@ class SWFLiteExporter {
 				frameObject.depth = i;
 				frameObject.clipDepth = 0;
 				frameObject.matrix = bitmap.transform;
+				frameObject.visible = true;
 				
 				frame.objects.push (frameObject);
 				
@@ -582,6 +584,7 @@ class SWFLiteExporter {
 				
 				frameObject.depth = placeTag.depth;
 				frameObject.clipDepth = (placeTag.hasClipDepth ? placeTag.clipDepth : 0);
+				frameObject.visible = (placeTag.hasVisible ? placeTag.visible != 0 : true);
 				
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
 				

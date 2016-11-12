@@ -669,6 +669,8 @@ class MovieClip extends Sprite implements Dynamic<DisplayObject> {
 			
 		}
 		
+		displayObject.visible = frameObject.visible;
+		
 		Reflect.setField (this, displayObject.name, displayObject);
 		
 	}

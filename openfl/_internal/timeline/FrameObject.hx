@@ -18,6 +18,7 @@ class FrameObject {
 	public var name:String;
 	public var symbol:Int;
 	public var type:FrameObjectType;
+	public var visible:Bool;
 	
 	
 	public function new () {
