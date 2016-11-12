@@ -71,7 +71,7 @@
 			
 			<module name="openfl" if="modular">
 				
-				<source path="" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics" />
+				<source path="" package="openfl" exclude="openfl._internal.renderer.console.*|*.GLGraphics|*.SWFLibrary" />
 				
 				<include type="openfl.display3D._Program3D.Uniform" />
 				<include type="openfl.display3D._Program3D.UniformMap" />
