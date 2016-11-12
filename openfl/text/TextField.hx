@@ -589,7 +589,14 @@ class TextField extends InteractiveObject {
 		multiline = symbol.multiline;
 		wordWrap = symbol.wordWrap;
 		displayAsPassword = symbol.password;
-		border = symbol.border;
+		
+		if (symbol.border) {
+			
+			border = true;
+			background = true;
+			
+		}
+		
 		selectable = symbol.selectable;
 		
 		if (symbol.input) {
