@@ -12,6 +12,9 @@ import openfl.utils.Endian;
 class AGALConverter {
 	
 	
+	private static var limitedProfile:Null<Bool> #if !desktop = true #end;
+	
+	
 	public static function prefixFromType (regType:RegisterType, programType:ProgramType):String {
 		
 		switch (regType) {
@@ -437,15 +440,27 @@ class AGALConverter {
 			
 		}
 		
+		if (limitedProfile == null) {
+			
+			var version:String = GL.getParameter (GL.VERSION);
+			limitedProfile = (version.indexOf ("OpenGL ES") > -1 || version.indexOf ("WebGL") > -1);
+			
+		}
+		
 		var glslVersion = 100;
 		
 		// combine parts into final progam
 		var glsl = new StringBuf ();
 		glsl.add ("// AGAL " + ((programType == ProgramType.VERTEX) ? "vertex" : "fragment") + " shader\n");
-		glsl.add ("#version " + glslVersion + "\n");
 		
-		// Required to set the default precision of vectors
-		glsl.add ("precision highp float;\n");
+		if (limitedProfile) {
+			
+			glsl.add ("#version " + glslVersion + "\n");
+			
+			// Required to set the default precision of vectors
+			glsl.add ("precision highp float;\n");
+			
+		}
 		
 		glsl.add (map.toGLSL (false));
 		
