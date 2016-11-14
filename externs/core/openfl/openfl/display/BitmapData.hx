@@ -82,6 +82,8 @@ extern class BitmapData implements IBitmapDrawable {
 	
 	public var image (get, never):Image;
 	
+	public var readable (default, null):Bool;
+	
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
 	 * top and left of the rectangle are 0; the width and height are equal to the
@@ -292,7 +294,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * collected by the garbage collector.</p>
 	 * 
 	 */
-	public function dispose ():Void;
+	public function dispose (releaseTexture:Bool = true):Void;
 	
 	
 	/**

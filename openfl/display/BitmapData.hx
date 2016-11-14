@@ -66,12 +66,13 @@ class BitmapData implements IBitmapDrawable {
 	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
+	public var readable (default, null):Bool;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
 	
-	public var __worldTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
+	public var __worldTransform:Matrix;
 	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
@@ -134,7 +135,9 @@ class BitmapData implements IBitmapDrawable {
 			#end
 			
 			image.transparent = transparent;
+			
 			__isValid = true;
+			readable = true;
 			
 		}
 		
@@ -146,7 +149,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function applyFilter (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void {
 		
-		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid) return;
+		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		
 		filter.__applyFilter (sourceBitmapData, this, sourceRect, destPoint);
 		
@@ -159,6 +162,19 @@ class BitmapData implements IBitmapDrawable {
 			
 			return new BitmapData (width, height, transparent);
 			
+		} else if (!readable && image == null) {
+			
+			var bitmapData = new BitmapData (0, 0, transparent);
+			
+			bitmapData.width = width;
+			bitmapData.height = height;
+			bitmapData.rect.copyFrom (rect);
+			
+			bitmapData.__texture = __texture;
+			bitmapData.__isValid = true;
+			
+			return bitmapData;
+			
 		} else {
 			
 			return BitmapData.fromImage (image.clone (), transparent);
@@ -170,7 +186,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		
 		image.colorTransform (rect.__toLimeRectangle (), colorTransform.__toLimeColorMatrix ());
 		
@@ -187,7 +203,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			return -1;
 			
-		} else if (__isValid == false || otherBitmapData.__isValid == false) {
+		} else if (readable == false || otherBitmapData.readable == false) {
 			
 			return -2;
 			
@@ -305,7 +321,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		
 		var sourceChannel = switch (sourceChannel) {
 			
@@ -334,7 +350,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void {
 		
-		if (!__isValid || sourceBitmapData == null) return;
+		if (!readable || sourceBitmapData == null) return;
 		
 		if (sourceBitmapData == this) {
 			
@@ -347,41 +363,48 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function dispose ():Void {
+	public function dispose (releaseTexture:Bool = true):Void {
 		
-		image = null;
-		
-		width = 0;
-		height = 0;
-		rect = null;
-		__isValid = false;
-		
-		if (__texture != null) {
+		if (releaseTexture) {
 			
-			var renderer = @:privateAccess Lib.current.stage.__renderer;
+			image = null;
 			
-			if(renderer != null) {
-				
-				var renderSession = @:privateAccess renderer.renderSession;
-				var gl = renderSession.gl;
-				
-				if (gl != null) {
-					
-					gl.deleteTexture (__texture);
-					__texture = null;
-					
-				}
-				
-			}
+			width = 0;
+			height = 0;
+			rect = null;
+			
+			__isValid = false;
 			
 		}
+		
+		readable = false;
+		
+		//if (__texture != null) {
+			//
+			//var renderer = @:privateAccess Lib.current.stage.__renderer;
+			//
+			//if(renderer != null) {
+				//
+				//var renderSession = @:privateAccess renderer.renderSession;
+				//var gl = renderSession.gl;
+				//
+				//if (gl != null) {
+					//
+					//gl.deleteTexture (__texture);
+					//__texture = null;
+					//
+				//}
+				//
+			//}
+			//
+		//}
 		
 	}
 	
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		
 		#if (js && html5)
 		
@@ -522,7 +545,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		// TODO: Support rect
 		
-		if (!__isValid || rect == null) return byteArray = null;
+		if (!readable || rect == null) return byteArray = null;
 		
 		if (Std.is (compressor, PNGEncoderOptions)) {
 			
@@ -541,7 +564,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
-		if (!__isValid || rect == null) return;
+		if (!readable || rect == null) return;
 		
 		if (transparent && (color & 0xFF000000) == 0) {
 			
@@ -556,7 +579,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function floodFill (x:Int, y:Int, color:Int):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		image.floodFill (x, y, color, ARGB32);
 		
 	}
@@ -689,7 +712,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getColorBoundsRect (mask:Int, color:Int, findColor:Bool = true):Rectangle {
 		
-		if (!__isValid) return new Rectangle (0, 0, width, height);
+		if (!readable) return new Rectangle (0, 0, width, height);
 		
 		if (!transparent || ((mask >> 24) & 0xFF) > 0) {
 			
@@ -706,7 +729,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getPixel (x:Int, y:Int):Int {
 		
-		if (!__isValid) return 0;
+		if (!readable) return 0;
 		return image.getPixel (x, y, ARGB32);
 		
 	}
@@ -714,7 +737,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getPixel32 (x:Int, y:Int):Int {
 		
-		if (!__isValid) return 0;
+		if (!readable) return 0;
 		return image.getPixel32 (x, y, ARGB32);
 		
 	}
@@ -722,7 +745,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getPixels (rect:Rectangle):ByteArray {
 		
-		if (!__isValid) return null;
+		if (!readable) return null;
 		if (rect == null) rect = this.rect;
 		return ByteArray.fromBytes (image.getPixels (rect.__toLimeRectangle (), ARGB32));
 		
@@ -731,7 +754,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getSurface ():CairoImageSurface {
 		
-		if (!__isValid) return null;
+		if (!readable) return null;
 		
 		if (__surface == null) {
 			
@@ -869,6 +892,13 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		if (!readable && image != null) {
+			
+			__surface = null;
+			image = null;
+			
+		}
+		
 		return __texture;
 		
 	}
@@ -910,7 +940,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function hitTest (firstPoint:Point, firstAlphaThreshold:Int, secondObject:Dynamic, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool {
 		
-		if (!__isValid) return false;
+		if (!readable) return false;
 		
 		if (Std.is (secondObject, Bitmap)) {
 			
@@ -1027,7 +1057,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function merge (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt):Void {
 		
-		if (!__isValid || sourceBitmapData == null || !sourceBitmapData.__isValid || sourceRect == null || destPoint == null) return;
+		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
 		image.merge (sourceBitmapData.image, sourceRect.__toLimeRectangle (), destPoint.__toLimeVector2 (), redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 		
 	}
@@ -1035,7 +1065,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function noise (randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		
 		//Seeded Random Number Generator
 		var rand:Void->Int = {
@@ -1086,7 +1116,8 @@ class BitmapData implements IBitmapDrawable {
 				
 				setPixel32(x, y, rgb);
 			}
-		}		
+		}
+		
 	}
 	
 	
@@ -1137,7 +1168,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		var noise = new PerlinNoise (randomSeed, numOctaves, 0.01);
 		noise.fill (this, baseX, baseY, 0);
 		
@@ -1146,7 +1177,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function scroll (x:Int, y:Int):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		image.scroll (x, y);
 		
 	}
@@ -1154,7 +1185,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function setPixel (x:Int, y:Int, color:Int):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		image.setPixel (x, y, color, ARGB32);
 		
 	}
@@ -1162,7 +1193,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function setPixel32 (x:Int, y:Int, color:Int):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		image.setPixel32 (x, y, color, ARGB32);
 		
 	}
@@ -1170,7 +1201,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void {
 		
-		if (!__isValid || rect == null) return;
+		if (!readable || rect == null) return;
 		image.setPixels (rect.__toLimeRectangle (), byteArray, ARGB32);
 		
 	}
@@ -1294,6 +1325,7 @@ class BitmapData implements IBitmapDrawable {
 			image.premultiplied = true;
 			#end
 			
+			readable = true;
 			__isValid = true;
 			
 		}
@@ -1303,7 +1335,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function __renderCairo (renderSession:RenderSession):Void {
 		
-		if (!__isValid) return;
+		if (!readable) return;
 		
 		var cairo = renderSession.cairo;
 		
@@ -1358,7 +1390,7 @@ class BitmapData implements IBitmapDrawable {
 	public function __renderCanvas (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
-		if (!__isValid) return;
+		if (!readable) return;
 		
 		if (image.type == DATA) {
 			
