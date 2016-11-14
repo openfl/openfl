@@ -844,8 +844,8 @@ class CanvasGraphics {
 					graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2;
 					graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2;
 
-					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
-					context.translate (-scaled_bounds.x + 1, -scaled_bounds.y + 1);
+					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + 1, matrix.ty + 1);
+					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 				}
 
 				fillStrokeCommands.clear ();
