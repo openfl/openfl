@@ -3,8 +3,8 @@ package;
 
 import lime.tools.helpers.LogHelper;
 import lime.tools.helpers.PathHelper;
+import lime.tools.helpers.ProcessHelper;
 import lime.project.Haxelib;
-
 
 class RunScript {
 	
@@ -44,6 +44,10 @@ class RunScript {
 				Sys.command ("haxelib", [ "install", "lime" ]);
 				
 			}
+		} else if (args.length > 2 && args[0] == "process") {
+
+			Sys.exit (Sys.command ("neko", [ "tools/tools.n" ].concat (Sys.args ())));
+			return;
 			
 		}
 		
