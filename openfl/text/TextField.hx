@@ -2230,6 +2230,15 @@ class TextField extends InteractiveObject {
 					
 				}
 			
+			case A:
+				
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
+					
+					__caretIndex = __text.length;
+					__selectionIndex = 0;
+					
+				}
+			
 			default:
 			
 		}
