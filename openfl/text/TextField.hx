@@ -2206,9 +2206,10 @@ class TextField extends InteractiveObject {
 					
 				}
 			
+			#if !js
 			case V:
 				
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end) {
 					
 					var text = Clipboard.text;
 					
@@ -2229,6 +2230,7 @@ class TextField extends InteractiveObject {
 					__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 					
 				}
+			#end
 			
 			case A:
 				
