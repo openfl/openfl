@@ -404,18 +404,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-
-	private override function __enterFrame (deltaTime:Int):Void {
-
-		for (child in __children) {
-			if(child == null ) continue;
-			child.__enterFrame (deltaTime);
-
-		}
-
-	}
-
-
 	private override function __getBounds (rect:Rectangle):Void {
 
 		super.__getBounds (rect);
