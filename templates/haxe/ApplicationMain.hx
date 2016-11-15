@@ -433,7 +433,7 @@ class DocumentClass {
 		
 		while (searchTypes != null) {
 			
-			if (searchTypes.pack.length == 2 && searchTypes.pack[1] == "display" && searchTypes.name == "DisplayObject") {
+			if (searchTypes.module == "openfl.display.DisplayObject" || searchTypes.module == "flash.display.DisplayObject") {
 				
 				var fields = Context.getBuildFields ();
 				
