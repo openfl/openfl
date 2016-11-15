@@ -855,13 +855,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__updateTransforms ();
 
-		// TODO this?
-		if (parent != null && __isMask) {
-
-			__maskCached = false;
-
-		}
-
 		if (updateChildren && __transformDirty) {
 
 			__transformDirty = false;
