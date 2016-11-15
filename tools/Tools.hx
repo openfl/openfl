@@ -597,7 +597,7 @@ class Tools {
 					if (FileSystem.exists (cacheFile)) {
 
 						var cacheDate = FileSystem.stat (cacheFile).mtime;
-						var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/swf.n").mtime;
+						var swfToolDate = FileSystem.stat (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/tools/tools.n").mtime;
 						var sourceDate = FileSystem.stat (library.sourcePath).mtime;
 
 						if (sourceDate.getTime () < cacheDate.getTime () && swfToolDate.getTime () < cacheDate.getTime ()) {
