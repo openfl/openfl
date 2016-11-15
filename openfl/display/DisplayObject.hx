@@ -178,21 +178,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 
-		var matrix;
+		var matrix = Matrix.pool.get();
 
 		if (targetCoordinateSpace != null) {
 
-			matrix = __getWorldTransform ().clone ();
-			matrix.concat (targetCoordinateSpace.__getWorldTransform ().clone ().invert ());
+			matrix.copyFrom(__getWorldTransform ());
+			var inversed_target_matrix = Matrix.pool.get();
+			inversed_target_matrix.copyFrom( targetCoordinateSpace.__getWorldTransform() );
+			inversed_target_matrix.invert();
+			matrix.concat (inversed_target_matrix);
+			Matrix.pool.put(inversed_target_matrix);
 
 		} else {
 
-			matrix = Matrix.__identity;
+			matrix.identity();
 
 		}
 
 		var bounds = new Rectangle ();
 		__getTransformedBounds (bounds, matrix);
+
+		Matrix.pool.put(matrix);
 
 		return bounds;
 
@@ -236,10 +242,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (parent != null) {
 
-			var bounds = new Rectangle ();
+			var bounds = openfl.geom.Rectangle.pool.get ();
+			bounds.setEmpty();
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
-			return bounds.containsPoint (new Point (x, y));
+			var hit_point = Point.pool.get();
+			hit_point.setTo (x, y);
+			var result = bounds.containsPoint (hit_point);
+			Point.pool.put(hit_point);
+			openfl.geom.Rectangle.pool.put(bounds);
+			return result;
 
 		}
 
@@ -649,13 +661,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			@:privateAccess __cachedBitmap.__resize (Std.int (__cachedBitmapBounds.width), Std.int (__cachedBitmapBounds.height));
 
 			// we need to position the drawing origin to 0,0 in the texture
-			var m = __renderScaleTransform.clone ();
+			var m = Matrix.pool.get();
+			m.copyFrom( __renderScaleTransform );
 			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
 
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
 			this.__shader = null;
 			@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
+			Matrix.pool.put(m);
 			this.__shader = shader;
 
 			__updateCachedBitmap = false;
@@ -992,7 +1006,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public function __updateTransforms (overrideTransform:Matrix = null):Void {
 
 		var overrided = overrideTransform != null;
-		var local = overrided ? overrideTransform.clone () : __transform;
+		var local = overrided ? overrideTransform : __transform;
 
 		if (__worldTransform == null) {
 
@@ -1136,7 +1150,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
 
 		__setRenderDirty ();
-		return __cacheAsBitmapMatrix = value.clone();
+		if ( __cacheAsBitmapMatrix != null ) {
+			__cacheAsBitmapMatrix.copyFrom(value);
+		} else {
+			__cacheAsBitmapMatrix = value.clone();
+		}
+		return __cacheAsBitmapMatrix;
 
 	}
 
@@ -1199,17 +1218,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_height ():Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get();
+		bounds.setEmpty();
 		__getLocalBounds (bounds);
 
-		return bounds.height;
+		var result = bounds.height;
+		openfl.geom.Rectangle.pool.put(bounds);
+		return result;
 
 	}
 
 
 	private function set_height (value:Float):Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get ();
+		bounds.setEmpty();
 
 		__getBounds (bounds);
 
@@ -1222,6 +1245,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			scaleY = 1;
 
 		}
+
+		openfl.geom.Rectangle.pool.put(bounds);
 
 		return value;
 
@@ -1509,17 +1534,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_width ():Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get ();
+		bounds.setEmpty();
 		__getLocalBounds (bounds);
 
-		return bounds.width;
+		var result = bounds.width;
+		openfl.geom.Rectangle.pool.put(bounds);
+		return result;
 
 	}
 
 
 	private function set_width (value:Float):Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get ();
+		bounds.setEmpty();
 
 		__getBounds (bounds);
 
@@ -1532,6 +1561,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			scaleX = 1;
 
 		}
+
+		openfl.geom.Rectangle.pool.put(bounds);
 
 		return value;
 

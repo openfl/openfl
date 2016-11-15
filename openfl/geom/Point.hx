@@ -2,11 +2,11 @@ package openfl.geom; #if !openfl_legacy
 
 
 import lime.math.Vector2;
-
+import openfl.ObjectPool;
 
 class Point {
 	
-	
+	public static var pool: ObjectPool<Point> = new ObjectPool<Point>( function() { return new Point(); } );
 	public var length (get, null):Float;
 	public var x:Float;
 	public var y:Float;

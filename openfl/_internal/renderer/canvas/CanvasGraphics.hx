@@ -701,8 +701,14 @@ class CanvasGraphics {
 
 							} else {
 
-								var stl = canvasGraphics.inversePendingMatrix.transformPoint (new Point (c.x, c.y));
-								var sbr = canvasGraphics.inversePendingMatrix.transformPoint (new Point (c.x + c.width, c.y + c.height));
+								var point1 = Point.pool.get();
+								point1.setTo(c.x, c.y);
+								var point2 = Point.pool.get();
+								point2.setTo(c.x + c.width, c.y + c.height);
+								var stl = canvasGraphics.inversePendingMatrix.transformPoint (point1);
+								Point.pool.put(point1);
+								var sbr = canvasGraphics.inversePendingMatrix.transformPoint (point2);
+								Point.pool.put(point2);
 
 								st = stl.y;
 								sl = stl.x;
@@ -811,14 +817,14 @@ class CanvasGraphics {
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
 
 				} else {
-					var scaled_bounds:Rectangle;
+					var scaled_bounds:Rectangle = Rectangle.pool.get();
 
 					if (matrix != null) {
 
 						var scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
 						var scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
 
-						scaled_bounds = graphics.__bounds.clone();
+						scaled_bounds.copyFrom(graphics.__bounds);
 						scaled_bounds.width *= scaleX;
 						scaled_bounds.height *= scaleY;
 
@@ -846,6 +852,7 @@ class CanvasGraphics {
 
 					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + 1, matrix.ty + 1);
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
+					Rectangle.pool.put(scaled_bounds);
 				}
 
 				fillStrokeCommands.clear ();
