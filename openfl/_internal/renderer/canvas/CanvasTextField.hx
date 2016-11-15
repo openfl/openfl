@@ -126,7 +126,8 @@ class CanvasTextField {
 				
 			} else {
 
-				var bounds = textEngine.bounds.clone();
+				var bounds = Rectangle.pool.get();
+				bounds.copyFrom( textEngine.bounds );
 				bounds.width *= scaleX;
 				bounds.height *= scaleY;
 
@@ -342,6 +343,8 @@ class CanvasTextField {
 				textField.__dirty = false;
 				graphics.__dirty = false;
 				
+				Rectangle.pool.put(bounds);
+
 			}
 			
 		} 

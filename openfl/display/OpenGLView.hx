@@ -143,13 +143,13 @@ class OpenGLView extends DirectRenderer {
 				
 				var rect = Rectangle.pool.get();
 				
-				if (scrollRect == null) {
+				if (__scrollRect == null) {
 					
 					rect.setTo (0, 0, stage.stageWidth, stage.stageHeight);
 					
 				} else {
 					
-					rect.setTo (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+					rect.setTo (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
 					
 				}
 				
@@ -184,13 +184,13 @@ class OpenGLView extends DirectRenderer {
 			
 			var rect = Rectangle.pool.get();
 			
-			if (scrollRect == null) {
+			if (__scrollRect == null) {
 				
 				rect.setTo (0, 0, stage.stageWidth, stage.stageHeight);
 				
 			} else {
 				
-				rect.setTo (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+				rect.setTo (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
 				
 			}
 			

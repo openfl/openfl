@@ -811,14 +811,14 @@ class CanvasGraphics {
 					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
 
 				} else {
-					var scaled_bounds:Rectangle;
+					var scaled_bounds:Rectangle = Rectangle.pool.get();
 
 					if (matrix != null) {
 
 						var scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
 						var scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
 
-						scaled_bounds = graphics.__bounds.clone();
+						scaled_bounds.copyFrom(graphics.__bounds);
 						scaled_bounds.width *= scaleX;
 						scaled_bounds.height *= scaleY;
 
@@ -846,6 +846,7 @@ class CanvasGraphics {
 
 					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + 1, matrix.ty + 1);
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
+					Rectangle.pool.put(scaled_bounds);
 				}
 
 				fillStrokeCommands.clear ();
