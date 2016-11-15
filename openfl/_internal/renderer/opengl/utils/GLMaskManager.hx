@@ -84,7 +84,8 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		renderSession.spriteBatch.stop ();
 
-		var maskBounds = new Rectangle();
+		var maskBounds = Rectangle.pool.get();
+		maskBounds.setEmpty();
 		@:privateAccess mask.__getRenderBounds (maskBounds);
 
 
@@ -112,6 +113,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 		maskMatrix.invert();
 		maskMatrix.translate( -maskBounds.x, -maskBounds.y );
+		Rectangle.pool.put(maskBounds);
 		maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
 
 		maskBitmapTable.add (bitmap);

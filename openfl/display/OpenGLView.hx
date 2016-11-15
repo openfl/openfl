@@ -141,20 +141,22 @@ class OpenGLView extends DirectRenderer {
 				
 				//GL.__context = __context;
 				
-				var rect = null;
+				var rect = Rectangle.pool.get();
 				
 				if (scrollRect == null) {
 					
-					rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
+					rect.setTo (0, 0, stage.stageWidth, stage.stageHeight);
 					
 				} else {
 					
-					rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+					rect.setTo (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
 					
 				}
 				
 				if (__render != null) __render (rect);
 				
+				Rectangle.pool.put(rect);
+
 			}
 			
 			//__applyStyle (renderSession, true, false, true);
@@ -180,19 +182,20 @@ class OpenGLView extends DirectRenderer {
 		
 		if (stage != null && __renderable) {
 			
-			var rect = null;
+			var rect = Rectangle.pool.get();
 			
 			if (scrollRect == null) {
 				
-				rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
+				rect.setTo (0, 0, stage.stageWidth, stage.stageHeight);
 				
 			} else {
 				
-				rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+				rect.setTo (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
 				
 			}
 			
 			if (__render != null) __render (rect);
+			Rectangle.pool.put(rect);
 			
 			renderSession.shaderManager.setShader(null);
 			renderSession.blendModeManager.setBlendMode(null);

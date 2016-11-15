@@ -422,7 +422,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (__children.length == 0) return;
 
-		var childRect = new Rectangle();
+		var childRect = Rectangle.pool.get ();
 
 		for (child in __children) {
 
@@ -434,6 +434,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
+
+		Rectangle.pool.put(childRect);
 
 	}
 
@@ -448,7 +450,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		}
 
-		var childRect = new Rectangle();
+		var childRect = Rectangle.pool.get();
 
 		for (child in __children) {
 
@@ -475,7 +477,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
-
+		Rectangle.pool.put(childRect);
 	}
 
 
@@ -745,10 +747,12 @@ class DisplayObjectContainer extends InteractiveObject {
 
 				}
 			} else {
-				var bounds = new Rectangle ();
+				var bounds = Rectangle.pool.get ();
+				bounds.setEmpty();
 				__getLocalBounds (bounds);
 
 				renderSession.context.rect (0, 0, bounds.width, bounds.height);
+				Rectangle.pool.put(bounds);
 			}
 		}
 	}

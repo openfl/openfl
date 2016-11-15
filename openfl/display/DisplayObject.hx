@@ -236,10 +236,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (parent != null) {
 
-			var bounds = new Rectangle ();
+			var bounds = openfl.geom.Rectangle.pool.get ();
+			bounds.setEmpty();
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
-			return bounds.containsPoint (new Point (x, y));
+			var result = bounds.containsPoint (new Point (x, y));
+			openfl.geom.Rectangle.pool.put(bounds);
+			return result;
 
 		}
 
@@ -1199,17 +1202,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_height ():Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get();
+		bounds.setEmpty();
 		__getLocalBounds (bounds);
 
-		return bounds.height;
+		var result = bounds.height;
+		openfl.geom.Rectangle.pool.put(bounds);
+		return result;
 
 	}
 
 
 	private function set_height (value:Float):Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get ();
+		bounds.setEmpty();
 
 		__getBounds (bounds);
 
@@ -1222,6 +1229,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			scaleY = 1;
 
 		}
+
+		openfl.geom.Rectangle.pool.put(bounds);
 
 		return value;
 
@@ -1509,17 +1518,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_width ():Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get ();
+		bounds.setEmpty();
 		__getLocalBounds (bounds);
 
-		return bounds.width;
+		var result = bounds.width;
+		openfl.geom.Rectangle.pool.put(bounds);
+		return result;
 
 	}
 
 
 	private function set_width (value:Float):Float {
 
-		var bounds = new Rectangle ();
+		var bounds = openfl.geom.Rectangle.pool.get ();
+		bounds.setEmpty();
 
 		__getBounds (bounds);
 
@@ -1532,6 +1545,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			scaleX = 1;
 
 		}
+
+		openfl.geom.Rectangle.pool.put(bounds);
 
 		return value;
 
