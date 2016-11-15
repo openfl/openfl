@@ -178,21 +178,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 
-		var matrix;
+		var matrix = Matrix.pool.get();
 
 		if (targetCoordinateSpace != null) {
 
-			matrix = __getWorldTransform ().clone ();
-			matrix.concat (targetCoordinateSpace.__getWorldTransform ().clone ().invert ());
+			matrix.copyFrom(__getWorldTransform ());
+			var inversed_target_matrix = Matrix.pool.get();
+			inversed_target_matrix.copyFrom( targetCoordinateSpace.__getWorldTransform() );
+			inversed_target_matrix.invert();
+			matrix.concat (inversed_target_matrix);
+			Matrix.pool.put(inversed_target_matrix);
 
 		} else {
 
-			matrix = Matrix.__identity;
+			matrix.identity();
 
 		}
 
 		var bounds = new Rectangle ();
 		__getTransformedBounds (bounds, matrix);
+
+		Matrix.pool.put(matrix);
 
 		return bounds;
 
@@ -655,13 +661,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			@:privateAccess __cachedBitmap.__resize (Std.int (__cachedBitmapBounds.width), Std.int (__cachedBitmapBounds.height));
 
 			// we need to position the drawing origin to 0,0 in the texture
-			var m = __renderScaleTransform.clone ();
+			var m = Matrix.pool.get();
+			m.copyFrom( __renderScaleTransform );
 			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
 
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
 			this.__shader = null;
 			@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
+			Matrix.pool.put(m);
 			this.__shader = shader;
 
 			__updateCachedBitmap = false;
@@ -998,7 +1006,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public function __updateTransforms (overrideTransform:Matrix = null):Void {
 
 		var overrided = overrideTransform != null;
-		var local = overrided ? overrideTransform.clone () : __transform;
+		var local = overrided ? overrideTransform : __transform;
 
 		if (__worldTransform == null) {
 
@@ -1142,7 +1150,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_cacheAsBitmapMatrix (value:Matrix):Matrix {
 
 		__setRenderDirty ();
-		return __cacheAsBitmapMatrix = value.clone();
+		if ( __cacheAsBitmapMatrix != null ) {
+			__cacheAsBitmapMatrix.copyFrom(value);
+		} else {
+			__cacheAsBitmapMatrix = value.clone();
+		}
+		return __cacheAsBitmapMatrix;
 
 	}
 
