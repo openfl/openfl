@@ -704,7 +704,8 @@ class MovieClip extends flash.display.MovieClip {
 		// :TODO: use dirty flag if need to update __9SliceBitmap
 
 		if (__symbol.scalingGridRect != null && __9SliceBitmap == null) {
-				var bounds:Rectangle = new Rectangle();
+				var bounds:Rectangle = Rectangle.pool.get();
+				bounds.setEmpty();
 				__getBounds (bounds);
 
 				if (bounds.width <= 0 && bounds.height <= 0) {
@@ -726,6 +727,7 @@ class MovieClip extends flash.display.MovieClip {
 
 				__renderTransform = new Matrix();
 				__renderTransform.translate(-bounds.x, -bounds.y);
+				Rectangle.pool.put(bounds);
 				@:privateAccess bitmap.__drawGL(renderSession, this, __renderTransform);
 
 				__renderTransform = previousTransform;
