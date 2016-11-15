@@ -1,0 +1,9 @@
+-main Tools
+-neko tools.n
+-lib lime
+-lib openfl
+-lib format
+-cp ..
+-D lime_cairo
+-D optional_cffi
+--remap flash:openfl
