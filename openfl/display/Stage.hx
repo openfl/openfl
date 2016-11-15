@@ -643,8 +643,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-	public override function __enterFrame(deltaTime:Int):Void {
-
+	private function __computeFlattenedChildren():Void {
 		var result = [];
 		var stack_id;
 		var i = 0;
@@ -659,13 +658,24 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		while (i < __allChildrenLength) {
 			stack_id = __allChildrenStack[i];
-			stack_id.__enterFrame(deltaTime);
 			if (stack_id.__children != null && stack_id.__children.length > 0) {
 				for(child in stack_id.__children) {
 					__allChildrenStack.set(__allChildrenLength,child);
 					__allChildrenLength++;
 				}
 			}
+			++i;
+		}
+	}
+
+	public override function __enterFrame(deltaTime:Int):Void {
+
+		var stack_id;
+		var i = 0;
+
+		while (i < __allChildrenLength) {
+			stack_id = __allChildrenStack[i];
+			stack_id.__enterFrame(deltaTime);
 			++i;
 		}
 	}
@@ -766,6 +776,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__deltaTime = deltaTime;
 
+		__computeFlattenedChildren();
 	}
 
 	public static function fireEvent (event:Event, stack:Array<DisplayObject>):Void {
