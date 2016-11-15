@@ -485,7 +485,14 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
-		if (__scrollRect != null && !__scrollRect.containsPoint (globalToLocal (new Point (x, y)))) return false;
+		var point = Point.pool.get();
+		point.setTo (x, y);
+		if (__scrollRect != null && !__scrollRect.containsPoint (globalToLocal (point))) {
+			Point.pool.put(point);
+			return false;
+		} else {
+			Point.pool.put(point);
+		}
 
 		var i = __children.length;
 		if (interactiveOnly) {

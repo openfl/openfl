@@ -701,8 +701,14 @@ class CanvasGraphics {
 
 							} else {
 
-								var stl = canvasGraphics.inversePendingMatrix.transformPoint (new Point (c.x, c.y));
-								var sbr = canvasGraphics.inversePendingMatrix.transformPoint (new Point (c.x + c.width, c.y + c.height));
+								var point1 = Point.pool.get();
+								point1.setTo(c.x, c.y);
+								var point2 = Point.pool.get();
+								point2.setTo(c.x + c.width, c.y + c.height);
+								var stl = canvasGraphics.inversePendingMatrix.transformPoint (point1);
+								Point.pool.put(point1);
+								var sbr = canvasGraphics.inversePendingMatrix.transformPoint (point2);
+								Point.pool.put(point2);
 
 								st = stl.y;
 								sl = stl.x;
