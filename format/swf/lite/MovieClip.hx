@@ -1044,7 +1044,8 @@ class MovieClip extends flash.display.MovieClip {
 		__SWFDepthData.set(displayObject, targetDepth);
 
 		for( i in 0 ... numChildren ){
-			if( __SWFDepthData.get(getChildAt(i)) > targetDepth){
+			var child = getChildAt(i);
+			if( __SWFDepthData.get(child) > targetDepth){
 				addChildAt (displayObject, i);
 
 				return;
