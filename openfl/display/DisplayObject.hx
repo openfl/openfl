@@ -778,7 +778,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private inline function __setRenderDirty ():Void {
 
 			__updateCachedBitmap = true;
-			__updateFilters = filters != null && filters.length > 0;
+			__updateFilters = __filters != null && __filters.length > 0;
 
 			if( __isMask ){
 				__maskCached = false;
@@ -1081,7 +1081,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function _onWorldTransformScaleRotationChanged ():Void {
 		__updateCachedBitmap = true;
-		__updateFilters = filters != null && filters.length > 0;
+		__updateFilters = __filters != null && __filters.length > 0;
 
 		if (__graphics != null) {
 			__graphics.__dirty = true;
