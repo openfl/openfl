@@ -842,9 +842,10 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else if (!textureImage.premultiplied && textureImage.transparent) {
 				
-				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-				textureImage = textureImage.clone ();
-				textureImage.premultiplied = true;
+				gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+				//gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+				//textureImage = textureImage.clone ();
+				//textureImage.premultiplied = true;
 				
 			}
 			
@@ -854,7 +855,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				textureImage = textureImage.clone ();
 				textureImage.format = RGBA32;
-				textureImage.buffer.premultiplied = true;
+				//textureImage.buffer.premultiplied = true;
 				#if openfl_power_of_two
 				textureImage.powerOfTwo = true;
 				#end
