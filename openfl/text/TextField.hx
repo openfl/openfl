@@ -704,10 +704,13 @@ class TextField extends InteractiveObject {
 	private override function __getBounds (rect:Rectangle, matrix:Matrix):Void {
 		
 		__updateLayout ();
+		
 		var bounds = Rectangle.__temp;
-		__textEngine.bounds.__transform (bounds, matrix);
+		bounds.copyFrom (__textEngine.bounds);
 		bounds.x += __offsetX;
 		bounds.y += __offsetY;
+		bounds.__transform (bounds, matrix);
+		
 		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
 		
 	}
