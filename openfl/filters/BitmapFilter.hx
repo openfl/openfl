@@ -116,18 +116,23 @@ class BitmapFilter {
 	}
 
 
-	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle) {
+	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, transform:Matrix) {
+
+		var inverseTransform = Matrix.pool.get ();
+		inverseTransform.copyFrom (transform);
+		inverseTransform.invert ();
 
 		for (filter in filters) {
 
-			filter.__growBounds (rect);
+			filter.__growBounds (rect, inverseTransform);
 
 		}
 
+		Matrix.pool.put (inverseTransform);
 	}
 
 
-	private function __growBounds (rect:Rectangle) {
+	private function __growBounds (rect:Rectangle, transform:Matrix) {
 
 
 

@@ -820,7 +820,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__filters != null) {
 
-			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds);
+			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, __renderTransform);
 
 		}
 
