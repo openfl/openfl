@@ -401,6 +401,18 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
+	public function dumpBits ():Void {
+	
+		__isValid = false;
+		image = null;
+		
+	}
+	
+	public function canBeDump ():Bool {
+		
+		return __isValid && __texture != null;
+		
+	}
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
@@ -769,7 +781,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getTexture (gl:GLRenderContext):GLTexture {
 		
-		if (!__isValid) return null;
+		if (!__isValid) return __texture;
 		
 		if (__texture == null) {
 			
