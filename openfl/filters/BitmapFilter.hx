@@ -45,11 +45,15 @@ class BitmapFilter {
 	#end
 
 
-	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, bitmap:BitmapData) {
+	private static function __applyFilters (filters:Array<BitmapFilter>, renderSession:RenderSession, bitmap:BitmapData, transform:Matrix) {
 
 		if (!bitmap.__usingPingPongTexture) {
 			throw ":TODO: unsupported mode";
 		}
+
+		var inverseTransform = Matrix.pool.get ();
+		inverseTransform.copyFrom (transform);
+		inverseTransform.invert ();
 
 
 		for (filter in filters) {
@@ -60,10 +64,16 @@ class BitmapFilter {
 			for (command in commands) {
 				switch (command) {
 					case Blur1D (target, source, blur, horizontal, strength, distance, angle) :
-						Blur1DCommand.apply (renderSession, target, source, blur, horizontal, strength, distance, angle);
+						var transformedOffset = Point.pool.get ();
+						_getTransformedOffset(transformedOffset, distance, angle, inverseTransform);
+						Blur1DCommand.apply (renderSession, target, source, blur, horizontal, strength, transformedOffset);
+						Point.pool.put (transformedOffset);
 
 					case Offset (target, source, strength, distance, angle) :
-						OffsetCommand.apply (renderSession, target, source, strength, distance, angle);
+						var transformedOffset = Point.pool.get ();
+						_getTransformedOffset(transformedOffset, distance, angle, inverseTransform);
+						OffsetCommand.apply (renderSession, target, source, strength, transformedOffset);
+						Point.pool.put (transformedOffset);
 
 					case Colorize (target, source, color, alpha) :
 						ColorizeCommand.apply (renderSession, target, source, color, alpha);
@@ -101,7 +111,7 @@ class BitmapFilter {
 			filter.dispose();
 		}
 
-
+		Matrix.pool.put (inverseTransform);
 
 	}
 
@@ -130,6 +140,22 @@ class BitmapFilter {
 
 	}
 
+	private static inline function _getTransformedOffset(transformedOffset:Point, distance:Float, angleInDegrees:Float, transform:Matrix) {
+		
+		var offset = Point.pool.get ();
+		offset.x = distance * Math.cos (angleInDegrees * Math.PI / 180);
+		offset.y = distance * Math.sin (angleInDegrees * Math.PI / 180);
+		
+		if (transform.a != 1.0  || transform.d != 1.0 || transform.b != 0.0 || transform.c != 0.0) {
+			
+			transformedOffset.copyFrom (transform.deltaTransformPoint (offset));
+			
+		} else {
+			transformedOffset.copyFrom (offset);
+		}
+		
+		Point.pool.put (offset);
+	}
 }
 
 

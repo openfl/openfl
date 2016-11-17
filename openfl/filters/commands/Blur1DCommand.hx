@@ -1,6 +1,7 @@
 package openfl.filters.commands;
 
 import openfl.display.BitmapData;
+import openfl.geom.Point;
 import openfl.display.Shader;
 
 import openfl._internal.renderer.RenderSession;
@@ -10,7 +11,7 @@ class Blur1DCommand {
 	public static inline var MAXIMUM_FETCH_COUNT = 20;
 	private static var __shader = new BlurShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, blur:Float, horizontal:Bool, strength:Float, distance:Float, angle:Float) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, blur:Float, horizontal:Bool, strength:Float, offset:Point) {
 		// :TODO: reduce the number of tex fetches using texture HW filtering
 
 		var fetch_count = Math.min(Math.ceil(blur), MAXIMUM_FETCH_COUNT);
@@ -20,8 +21,8 @@ class Blur1DCommand {
 		__shader.uFetchCountInverseFetchCount[1] = 1.0 / fetch_count;
 		__shader.uTexCoordDelta[0] = fetch_count > 1 ? pass_width / (fetch_count - 1) : 0;
 		__shader.uTexCoordDelta[1] = fetch_count > 1 ? pass_height / (fetch_count - 1) : 0;
-		__shader.uTexCoordOffset[0] = 0.5 * pass_width + distance * Math.cos (angle * Math.PI / 180);
-		__shader.uTexCoordOffset[1] = 0.5 * pass_height + distance * Math.sin (angle * Math.PI / 180);
+		__shader.uTexCoordOffset[0] = 0.5 * pass_width + offset.x;
+		__shader.uTexCoordOffset[1] = 0.5 * pass_height + offset.y;
 		__shader.uStrength = strength;
 
 		CommandHelper.apply (renderSession, target, source, __shader, source == target);
