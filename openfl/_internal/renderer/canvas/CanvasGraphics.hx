@@ -733,7 +733,7 @@ class CanvasGraphics {
 					var c = data.readDrawRect ();
 					var optimizationUsed = false;
 					
-					if (bitmapFill != null) {
+					if (bitmapFill != null && !hitTesting) {
 						
 						var st:Float = 0;
 						var sr:Float = 0;
