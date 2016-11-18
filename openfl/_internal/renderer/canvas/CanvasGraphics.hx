@@ -43,7 +43,6 @@ class CanvasGraphics {
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
-	private static var fillStrokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
@@ -201,18 +200,6 @@ class CanvasGraphics {
 
 	}
 
-
-	private static function endFillStroke ():Void {
-
-		#if (js && html5)
-		var context = context;
-		context.beginPath ();
-		playCommands (fillStrokeCommands);
-		context.closePath ();
-		fillStrokeCommands.clear();
-		#end
-	}
-
 	private static function beginRenderStep()
 	{
 		#if (js && html5)
@@ -303,14 +290,8 @@ class CanvasGraphics {
 			x -= bounds.x;
 			y -= bounds.y;
 
-			canvasGraphics.fillStrokeCommands.clear();
-
-			canvasGraphics.hasFill = false;
-			canvasGraphics.hasStroke = false;
-			canvasGraphics.bitmapFill = null;
-			canvasGraphics.bitmapRepeat = false;
-
-			context.beginPath ();
+			beginRenderStep();
+			resetFillStyle();
 
 			var data = new DrawCommandReader (graphics.__commands);
 
@@ -319,143 +300,89 @@ class CanvasGraphics {
 				switch (type) {
 
 					case CUBIC_CURVE_TO:
-
-						var c = data.readCubicCurveTo ();
-						canvasGraphics.fillStrokeCommands.cubicCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-
+						cubicCurveTo(data);
 					case CURVE_TO:
-
-						var c = data.readCurveTo ();
-						canvasGraphics.fillStrokeCommands.curveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
-
+						curveTo(data);
 					case LINE_TO:
-
-						var c = data.readLineTo ();
-						canvasGraphics.fillStrokeCommands.lineTo (c.x, c.y);
-
+						lineTo(data);
 					case MOVE_TO:
-
-						var c = data.readMoveTo ();
-						canvasGraphics.fillStrokeCommands.moveTo (c.x, c.y);
-
-					case LINE_GRADIENT_STYLE:
-
-						var c = data.readLineGradientStyle ();
-						canvasGraphics.fillStrokeCommands.lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-
-					case LINE_BITMAP_STYLE:
-
-						var c = data.readLineBitmapStyle ();
-						canvasGraphics.fillStrokeCommands.lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
-
-					case LINE_STYLE:
-
-						var c = data.readLineStyle ();
-						canvasGraphics.fillStrokeCommands.lineStyle (c.thickness, c.color, 1, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-
+						moveTo(data);
 					case END_FILL:
-
 						data.readEndFill ();
-						endFillStroke ();
-
+						endRenderStep();
 						if (canvasGraphics.hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
-
 							data.destroy ();
 							return true;
-
 						}
 
 						if (canvasGraphics.hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-
 							data.destroy ();
 							return true;
-
 						}
-
-						canvasGraphics.hasFill = false;
-						canvasGraphics.bitmapFill = null;
+						resetFillStyle();
+						beginRenderStep();
+					case LINE_STYLE:
+						lineStyle(data);
+					case LINE_GRADIENT_STYLE:
+						lineGradientStyle(data);
+					case LINE_BITMAP_STYLE:
+						lineBitmapStyle(data);
 
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 
-						endFillStroke ();
+						endRenderStep();
 
 						if (hasFill && context.isPointInPath (x, y, canvasWindingRule)) {
-
 							data.destroy ();
 							return true;
-
 						}
 
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-
 							data.destroy ();
 							return true;
-
 						}
+
+						beginRenderStep();
 
 						if (type == BEGIN_BITMAP_FILL) {
-
 							var c = data.readBeginBitmapFill ();
-							canvasGraphics.fillStrokeCommands.beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
-
 						} else if (type == BEGIN_GRADIENT_FILL) {
-
 							var c = data.readBeginGradientFill ();
-							canvasGraphics.fillStrokeCommands.beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-
 						} else {
-
 							var c = data.readBeginFill ();
-							canvasGraphics.fillStrokeCommands.beginFill (c.color, 1);
-
 						}
 
-					case DRAW_CIRCLE:
+						bitmapFill = null;
+						hasFill = true;
 
-						var c = data.readDrawCircle ();
-						canvasGraphics.fillStrokeCommands.drawCircle (c.x, c.y, c.radius);
+					case DRAW_CIRCLE:
+						drawCircle(data);
 
 					case DRAW_ELLIPSE:
-
-						var c = data.readDrawEllipse ();
-						canvasGraphics.fillStrokeCommands.drawEllipse (c.x, c.y, c.width, c.height);
+						drawEllipse(data);
 
 					case DRAW_RECT:
-
-						var c = data.readDrawRect ();
-						canvasGraphics.fillStrokeCommands.drawRect (c.x, c.y, c.width, c.height);
+						drawRect(data);
 
 					case DRAW_ROUND_RECT:
-
-						var c = data.readDrawRoundRect ();
-						canvasGraphics.fillStrokeCommands.drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
+						drawRoundRect2(data);
 
 					default:
-
 						data.skip (type);
-
 				}
 
 			}
 
-			if (canvasGraphics.fillStrokeCommands.length > 0) {
-
-				endFillStroke ();
-
-			}
+			endRenderStep();
 
 			data.destroy ();
 
 			if (hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
-
 				return true;
-
 			}
 
 			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-
 				return true;
-
 			}
 
 		}
