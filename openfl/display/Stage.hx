@@ -37,6 +37,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.EventPhase;
+import openfl.events.EventDispatcher;
 import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
@@ -680,12 +681,30 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 	}
 
-	public override function __broadcastFromStage(event:Event, notifyChilden:Bool) {
+	public function __broadcastFromStage(event:Event, notifyChilden:Bool) {
+		inline function broadcast(event:Event, element:DisplayObject) :Bool {
+			if (element.__eventMap != null && element.hasEventListener (event.type)) {
+
+				var result = EventDispatcher.__dispatchEventStatic (element, event);
+
+				if (event.__isCanceled) {
+
+					return true;
+
+				}
+
+				return result;
+
+			}
+
+			return false;
+		}
+
 		if (event.target == null) {
 			event.target = this;
 		}
 
-		var result = super.__broadcastFromStage (event, notifyChilden);
+		var result = broadcast (event, this);
 
 		if (!event.__isCanceled && notifyChilden) {
 
@@ -693,7 +712,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var stack_id;
 			while (i < __allChildrenLength) {
 				stack_id = __allChildrenStack[i];
-				stack_id.__broadcastFromStage(event, true);
+				broadcast(event, stack_id);
 
 				if (event.__isCanceled) {
 					return true;

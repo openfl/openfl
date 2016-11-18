@@ -188,40 +188,46 @@ class EventDispatcher implements IEventDispatcher {
 	
 	private function __dispatchEvent (event:Event):Bool {
 		
-		if (__eventMap == null || event == null) return false;
+		return EventDispatcher.__dispatchEventStatic(this, event);
+
+	}
+
+	private static function __dispatchEventStatic ( target: EventDispatcher, event:Event):Bool {
+
+		if (target.__eventMap == null || event == null) return false;
 		
 		var type = event.type;
 		var list;
 		
-		if (__dispatching.get (type) == true) {
+		if (target.__dispatching.get (type) == true) {
 			
-			list = __newEventMap.get (type);
+			list = target.__newEventMap.get (type);
 			if (list == null) return false;
 			list = list.copy ();
 			
 		} else {
 			
-			list = __eventMap.get (type);
+			list = target.__eventMap.get (type);
 			if (list == null) return false;
-			__dispatching.set (type, true);
+			target.__dispatching.set (type, true);
 			
 		}
 		
 		if (event.target == null) {
 			
-			if (__targetDispatcher != null) {
+			if (target.__targetDispatcher != null) {
 				
-				event.target = __targetDispatcher;
+				event.target = target.__targetDispatcher;
 				
 			} else {
 				
-				event.target = this;
+				event.target = target;
 				
 			}
 			
 		}
 		
-		event.currentTarget = this;
+		event.currentTarget = target;
 		
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 		var index = 0;
@@ -252,34 +258,34 @@ class EventDispatcher implements IEventDispatcher {
 			
 		}
 		
-		if (__newEventMap != null && __newEventMap.exists (type)) {
+		if (target.__newEventMap != null && target.__newEventMap.exists (type)) {
 			
-			var list = __newEventMap.get (type);
+			var list = target.__newEventMap.get (type);
 			
 			if (list.length > 0) {
 				
-				__eventMap.set (type, list);
+				target.__eventMap.set (type, list);
 				
 			} else {
 				
-				__eventMap.remove (type);
+				target.__eventMap.remove (type);
 				
 			}
 			
-			if (!__eventMap.iterator ().hasNext ()) {
+			if (!target.__eventMap.iterator ().hasNext ()) {
 				
-				__eventMap = null;
-				__newEventMap = null;
+				target.__eventMap = null;
+				target.__newEventMap = null;
 				
 			} else {
 				
-				__newEventMap.remove (type);
+				target.__newEventMap.remove (type);
 				
 			}
 			
 		}
 		
-		__dispatching.set (event.type, false);
+		target.__dispatching.set (event.type, false);
 		
 		return true;
 		
