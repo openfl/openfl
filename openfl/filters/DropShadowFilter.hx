@@ -109,17 +109,33 @@ import openfl.filters.commands.*;
 
 		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
 
-		if ( knockout || ( hideObject && inner ) ) {
+		if (inner) {
 
-			commands.push (OuterKnockout(bitmap, bitmap, __shadowBitmapData));
+			if ( knockout || hideObject ) {
+				
+				commands.push (InnerKnockout(bitmap, bitmap, __shadowBitmapData));
 
-		} else if (inner) {
-
-			commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
+			} else {
+				
+				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
+				
+			}
 
 		} else {
 
-			commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
+			if ( knockout ) {
+
+				commands.push (OuterKnockout(bitmap, bitmap, __shadowBitmapData));
+
+			} else if ( !hideObject ) {
+				
+				commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
+				
+			} else {
+				
+				throw "hideObject && !knockout && !inner combination should already have been handled";
+				
+			}
 
 		}
 
