@@ -14,7 +14,7 @@ abstract Vector<T>(IVector<T>) {
 	public var length (get, set):Int;
 	
 	
-	public function new (?length:Int, ?fixed:Bool):Void;
+	public function new (?length:Int, ?fixed:Bool, ?array:Array<Dynamic>):Void;
 	
 	
 	public inline function concat (?a:Vector<T>):Vector<T> {
@@ -143,7 +143,7 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	public inline static function ofArray<T> (a:Array<Dynamic>):Vector<T> {
+	public inline static function ofArray<T> (a:Array<T>):Vector<T> {
 		
 		var vector = new Vector<T> ();
 		
@@ -165,39 +165,39 @@ abstract Vector<T>(IVector<T>) {
 	}
 	
 	
-	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool):BoolVector {
+	@:to static #if (!js && !flash) inline #end function toBoolVector<T:Bool> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Dynamic>):BoolVector {
 		
-		return new BoolVector (length, fixed);
-		
-	}
-	
-	
-	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool):IntVector {
-		
-		return new IntVector (length, fixed);
+		return new BoolVector (length, fixed, cast array);
 		
 	}
 	
 	
-	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool):FloatVector {
+	@:to static #if (!js && !flash) inline #end function toIntVector<T:Int> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Dynamic>):IntVector {
 		
-		return new FloatVector (length, fixed);
+		return new IntVector (length, fixed, cast array);
+		
+	}
+	
+	
+	@:to static #if (!js && !flash) inline #end function toFloatVector<T:Float> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Dynamic>):FloatVector {
+		
+		return new FloatVector (length, fixed, cast array);
 		
 	}
 	
 	
 	#if !cs
-	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool):FunctionVector {
+	@:to static #if (!js && !flash) inline #end function toFunctionVector<T:Function> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Dynamic>):FunctionVector {
 		
-		return new FunctionVector (length, fixed);
+		return new FunctionVector (length, fixed, cast array);
 		
 	}
 	#end
 	
 	
-	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool):ObjectVector<T> {
+	@:to static #if (!js && !flash) inline #end function toObjectVector<T> (t:IVector<T>, length:Int, fixed:Bool, array:Array<Dynamic>):ObjectVector<T> {
 		
-		return new ObjectVector<T> (length, fixed);
+		return new ObjectVector<T> (length, fixed, cast array);
 		
 	}
 	
