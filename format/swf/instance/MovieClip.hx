@@ -160,7 +160,7 @@ class MovieClip extends flash.display.MovieClip {
 			
 			if (Std.is (child, MovieClip)) {
 				
-				untyped child.stop ();
+				cast (child, MovieClip).stop ();
 				
 			}
 			

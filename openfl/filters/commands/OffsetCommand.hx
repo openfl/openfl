@@ -1,6 +1,7 @@
 package openfl.filters.commands;
 
 import openfl.display.BitmapData;
+import openfl.geom.Point;
 import openfl.display.Shader;
 
 import openfl._internal.renderer.RenderSession;
@@ -9,10 +10,10 @@ class OffsetCommand {
 
 	private static var __shader = new OffsetShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, strength:Float, distance:Float, angle:Float) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, strength:Float, offset:Point) {
 
-		__shader.uTexCoordOffset[0] = distance * Math.cos (angle * Math.PI / 180);
-		__shader.uTexCoordOffset[1] = distance * Math.sin (angle * Math.PI / 180);
+		__shader.uTexCoordOffset[0] = offset.x;
+		__shader.uTexCoordOffset[1] = offset.y;
 		__shader.uStrength = strength;
 
 		CommandHelper.apply (renderSession, target, source, __shader, source == target);

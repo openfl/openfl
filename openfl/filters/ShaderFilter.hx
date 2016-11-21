@@ -33,7 +33,7 @@ class ShaderFilter extends BitmapFilter {
 		return f;
 	}
 	
-	override function __growBounds (rect:Rectangle) {
+	override function __growBounds (rect:Rectangle, transform:Matrix) {
 		
 		rect.x += -leftExtension;
 		rect.y += -topExtension;

@@ -3,6 +3,7 @@ package openfl.filters; #if !openfl_legacy
 
 import openfl.display.BitmapData;
 import openfl.filters.commands.*;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 
@@ -32,7 +33,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __growBounds (rect:Rectangle):Void {
+	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
 		
 		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
 		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
