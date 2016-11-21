@@ -66,7 +66,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
-	public var readable (default, null):Bool;
+	public var readable (default, set):Bool;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
@@ -137,7 +137,7 @@ class BitmapData implements IBitmapDrawable {
 			image.transparent = transparent;
 			
 			__isValid = true;
-			readable = true;
+			this.readable = true;
 			
 		}
 		
@@ -363,21 +363,16 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function dispose (releaseTexture:Bool = true):Void {
+	public function dispose ():Void {
 		
-		if (releaseTexture) {
-			
-			image = null;
-			
-			width = 0;
-			height = 0;
-			rect = null;
-			
-			__isValid = false;
-			
-		}
+		image = null;
 		
-		readable = false;
+		width = 0;
+		height = 0;
+		rect = null;
+		
+		__isValid = false;
+		this.readable = false;
 		
 		//if (__texture != null) {
 			//
@@ -1326,7 +1321,7 @@ class BitmapData implements IBitmapDrawable {
 			image.premultiplied = true;
 			#end
 			
-			readable = true;
+			this.readable = true;
 			__isValid = true;
 			
 		}
@@ -1480,6 +1475,26 @@ class BitmapData implements IBitmapDrawable {
 			__worldTransform = overrideTransform;
 			
 		}
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function set_readable (value:Bool):Bool {
+		
+		if (image == null) {
+			
+			value = false;
+			
+		}
+		
+		return this.readable = value;
 		
 	}
 	
