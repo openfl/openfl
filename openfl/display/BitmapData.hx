@@ -8,7 +8,9 @@ import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.GL;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
@@ -20,11 +22,13 @@ import lime.math.Rectangle in LimeRectangle;
 import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
+import openfl.Lib;
 import openfl._internal.renderer.cairo.CairoBlendModeManager;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.utils.PerlinNoise;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
@@ -45,9 +49,11 @@ import js.html.Uint8ClampedArray;
 import js.Browser;
 #end
 
+@:access(lime.graphics.opengl.GL)
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
+@:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.filters.BitmapFilter)
@@ -78,6 +84,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
 	private var __bufferData:Float32Array;
+	private var __framebuffer:GLFramebuffer;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
@@ -399,132 +406,174 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
-		if (!readable) return;
-		
-		#if (js && html5)
-		
-		if (colorTransform != null) {
-			var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
-			var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
-			var copy = new BitmapData (width, height, true, 0);
-			copy.draw (source);
-			copy.colorTransform (copy.rect, colorTransform);
-			source = copy;
+		if (!readable /*|| !source.readable*/) {
+			
+			if (GL.context != null) {
+				
+				var gl = GL.context;
+				
+				if (__framebuffer == null) {
+					
+					image = null;
+					getTexture (gl);
+					
+					__framebuffer = gl.createFramebuffer ();
+					
+					gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+					gl.bindTexture (gl.TEXTURE_2D, __texture);
+					gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+					gl.bindTexture (gl.TEXTURE_2D, null);
+					
+					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
+					
+				}
+				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+				
+				gl.viewport (0, 0, width, height);
+				gl.clear (gl.COLOR_BUFFER_BIT);
+				
+				var renderer = new GLRenderer (Lib.current.stage, gl, false);
+				
+				var matrixCache = source.__worldTransform;
+				source.__updateTransforms (matrix != null ? matrix : new Matrix ());
+				source.__updateChildren (false);
+				source.__renderGL (renderer.renderSession);
+				source.__updateTransforms (matrixCache);
+				source.__updateChildren (true);
+				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+				
+			}
+			
+		} else {
+			
+			#if (js && html5)
+			
+			if (colorTransform != null) {
+				var width:Int = Math.ceil (Reflect.getProperty (source, "width"));
+				var height:Int = Math.ceil (Reflect.getProperty (source, "height"));
+				var copy = new BitmapData (width, height, true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, colorTransform);
+				source = copy;
+				
+			}
+			
+			ImageCanvasUtil.convertToCanvas (image);
+			
+			var buffer = image.buffer;
+			
+			var renderSession = new RenderSession ();
+			renderSession.context = cast buffer.__srcContext;
+			renderSession.allowSmoothing = smoothing;
+			renderSession.roundPixels = true;
+			renderSession.maskManager = new CanvasMaskManager (renderSession);
+			
+			if (!smoothing) {
+				
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
+				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
+				untyped (buffer.__srcContext).imageSmoothingEnabled = false;
+				
+			}
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				
+			}
+			
+			var matrixCache = source.__worldTransform;
+			source.__updateTransforms (matrix != null ? matrix : new Matrix ());
+			source.__updateChildren (false);
+			source.__renderCanvas (renderSession);
+			source.__updateTransforms (matrixCache);
+			source.__updateChildren (true);
+			
+			if (!smoothing) {
+				
+				untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
+				//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
+				untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
+				untyped (buffer.__srcContext).imageSmoothingEnabled = true;
+				
+			}
+			
+			if (clipRect != null){
+				
+				renderSession.maskManager.popRect ();
+				
+			}
+			
+			buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
+			buffer.__srcImageData = null;
+			buffer.data = null;
+			
+			image.dirty = true;
+			image.version++;
+			
+			#else
+			
+			if (source == this) {
+				
+				source = clone ();
+				
+			}
+			
+			if (colorTransform != null) {
+				
+				var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+				copy.draw (source);
+				copy.colorTransform (copy.rect, colorTransform);
+				source = copy;
+				
+			}
+			
+			var surface = getSurface ();
+			var cairo = new Cairo (surface);
+			
+			if (!smoothing) {
+				
+				cairo.antialias = NONE;
+				
+			}
+			
+			var renderSession = new RenderSession ();
+			renderSession.cairo = cairo;
+			renderSession.allowSmoothing = smoothing;
+			renderSession.roundPixels = true;
+			renderSession.maskManager = new CairoMaskManager (renderSession);
+			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.pushRect (clipRect, new Matrix ());
+				
+			}
+			
+			var matrixCache = source.__worldTransform;
+			source.__updateTransforms (matrix != null ? matrix : new Matrix ());
+			source.__updateChildren (false);
+			source.__renderCairo (renderSession);
+			source.__updateTransforms (matrixCache);
+			source.__updateChildren (true);
+			
+			if (clipRect != null) {
+				
+				renderSession.maskManager.popRect ();
+				
+			}
+			
+			surface.flush ();
+			
+			image.dirty = true;
+			image.version++;
+			
+			#end
 			
 		}
-		
-		ImageCanvasUtil.convertToCanvas (image);
-		
-		var buffer = image.buffer;
-		
-		var renderSession = new RenderSession ();
-		renderSession.context = cast buffer.__srcContext;
-		renderSession.allowSmoothing = smoothing;
-		renderSession.roundPixels = true;
-		renderSession.maskManager = new CanvasMaskManager (renderSession);
-		
-		if (!smoothing) {
-			
-			untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-			//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-			untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
-			untyped (buffer.__srcContext).imageSmoothingEnabled = false;
-			
-		}
-		
-		if (clipRect != null) {
-			
-			renderSession.maskManager.pushRect (clipRect, new Matrix ());
-			
-		}
-		
-		var matrixCache = source.__worldTransform;
-		source.__updateTransforms (matrix != null ? matrix : new Matrix ());
-		source.__updateChildren (false);
-		source.__renderCanvas (renderSession);
-		source.__updateTransforms (matrixCache);
-		source.__updateChildren (true);
-		
-		if (!smoothing) {
-			
-			untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-			//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-			untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
-			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
-			
-		}
-		
-		if (clipRect != null){
-			
-			renderSession.maskManager.popRect ();
-			
-		}
-		
-		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-		buffer.__srcImageData = null;
-		buffer.data = null;
-		
-		image.dirty = true;
-		image.version++;
-		
-		#else
-		
-		if (source == this) {
-			
-			source = clone ();
-			
-		}
-		
-		if (colorTransform != null) {
-			
-			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
-			copy.draw (source);
-			copy.colorTransform (copy.rect, colorTransform);
-			source = copy;
-			
-		}
-		
-		var surface = getSurface ();
-		var cairo = new Cairo (surface);
-		
-		if (!smoothing) {
-			
-			cairo.antialias = NONE;
-			
-		}
-		
-		var renderSession = new RenderSession ();
-		renderSession.cairo = cairo;
-		renderSession.allowSmoothing = smoothing;
-		renderSession.roundPixels = true;
-		renderSession.maskManager = new CairoMaskManager (renderSession);
-		renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
-		
-		if (clipRect != null) {
-			
-			renderSession.maskManager.pushRect (clipRect, new Matrix ());
-			
-		}
-		
-		var matrixCache = source.__worldTransform;
-		source.__updateTransforms (matrix != null ? matrix : new Matrix ());
-		source.__updateChildren (false);
-		source.__renderCairo (renderSession);
-		source.__updateTransforms (matrixCache);
-		source.__updateChildren (true);
-		
-		if (clipRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
-		
-		surface.flush ();
-		
-		image.dirty = true;
-		image.version++;
-		
-		#end
 		
 	}
 	

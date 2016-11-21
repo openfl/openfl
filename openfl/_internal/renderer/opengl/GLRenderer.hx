@@ -22,6 +22,7 @@ class GLRenderer extends AbstractRenderer {
 	private var displayHeight:Int;
 	private var displayMatrix:Matrix;
 	private var displayWidth:Int;
+	private var flipped:Bool;
 	private var gl:GLRenderContext;
 	private var matrix:Matrix4;
 	private var offsetX:Int;
@@ -29,11 +30,13 @@ class GLRenderer extends AbstractRenderer {
 	private var values:Array<Float>;
 	
 	
-	public function new (stage:Stage, gl:GLRenderContext) {
+	public function new (stage:Stage, gl:GLRenderContext, flipped:Bool = true) {
 		
 		super (stage);
 		
 		this.gl = gl;
+		this.flipped = flipped;
+		
 		matrix = new Matrix4 ();
 		values = new Array ();
 		
@@ -163,7 +166,7 @@ class GLRenderer extends AbstractRenderer {
 		displayWidth = Math.round (displayMatrix.__transformX (stage.stageWidth, 0) - offsetX);
 		displayHeight = Math.round (displayMatrix.__transformY (0, stage.stageHeight) - offsetY);
 		
-		projection = Matrix4.createOrtho (offsetX, displayWidth + offsetX, displayHeight + offsetY, offsetY, -1000, 1000);
+		projection = Matrix4.createOrtho (offsetX, displayWidth + offsetX, flipped ? displayHeight + offsetY : offsetY, !flipped ? displayHeight + offsetY : offsetY, -1000, 1000);
 		
 	}
 	
