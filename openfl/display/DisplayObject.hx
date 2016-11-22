@@ -688,7 +688,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
 
-		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, renderSession.roundPixels ? ALWAYS : NEVER);
+		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 
 	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {
