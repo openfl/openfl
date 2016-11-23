@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <library xmlns="duell">
-	<haxelib name="hxcpp" version=""/>
-	<haxelib name="format" version=""/>
+	<haxelib name="hxcpp" />
+	<haxelib name="format" />
 </library>
