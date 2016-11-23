@@ -11,6 +11,7 @@ import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.IBitmapDrawable;
+import openfl.display.PixelSnapping;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -29,7 +30,38 @@ class GLBitmap {
 		
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null || !bitmap.bitmapData.__isValid) return;
 		
-		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, bitmap.__renderTransform, bitmap.__worldColorTransform, bitmap.__worldAlpha, bitmap.__blendMode, bitmap.__shader, bitmap.pixelSnapping);
+		var renderTransform = Matrix.pool.get ();
+		renderTransform.copyFrom (bitmap.__renderTransform);
+		
+		var resolvedPixelSnapping:PixelSnapping;
+		
+		if (bitmap.pixelSnapping == AUTO) {
+			
+			if ( renderTransform.b == 0
+				&& renderTransform.c == 0
+				&& Math.abs(1.0 - renderTransform.a) < 0.001
+				&& Math.abs(1.0 - renderTransform.d) < 0.001
+				) {
+				
+				renderTransform.a = 1.0;
+				renderTransform.d = 1.0;
+				resolvedPixelSnapping = ALWAYS;
+				
+			} else {
+				
+				resolvedPixelSnapping = NEVER;
+				
+			}
+			
+		} else {
+			
+			resolvedPixelSnapping = bitmap.pixelSnapping;
+			
+		}
+	
+		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__worldColorTransform, bitmap.__worldAlpha, bitmap.__blendMode, bitmap.__shader, resolvedPixelSnapping);
+		
+		Matrix.pool.put (renderTransform);
 	}
 	
 	/**
