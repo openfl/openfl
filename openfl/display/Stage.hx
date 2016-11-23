@@ -887,7 +887,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		var stack = [];
 		var target:InteractiveObject = null;
-		var targetPoint = new Point (x, y);
+		var targetPoint = Point.pool.get();
+		targetPoint.setTo (x, y);
 		
 		if (__hitTest (x, y, true, stack, true, this)) {
 			
@@ -1089,6 +1090,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 		__mouseOutStack = stack;
+		Point.pool.put(targetPoint);
 
 	}
 	
@@ -1107,17 +1109,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		var target:InteractiveObject = cast stack[stack.length - 1];
-		var targetPoint = new Point (x, y);
+		var targetPoint = Point.pool.get ();
+		targetPoint.setTo (x, y);
 		var delta = Std.int (deltaY);
 		
 		fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
 		
+		Point.pool.put(targetPoint);
 	}
 	
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (touch.x * stageWidth, touch.y * stageHeight);
+		var point = Point.pool.get();
+		point.setTo (touch.x * stageWidth, touch.y * stageHeight);
 		
 		__mouseX = point.x;
 		__mouseY = point.y;
@@ -1148,6 +1153,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 		}
 		
+		Point.pool.put(point);
 	}
 	
 	
@@ -1226,7 +1232,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			} else {
 				
-				var mouse = new Point (mouseX, mouseY);
+				var mouse = Point.pool.get ();
+				mouse.setTo (mouseX, mouseY);
 				var parent = __dragObject.parent;
 				
 				if (parent != null) {
@@ -1238,6 +1245,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 				__dragOffsetX = __dragObject.x - mouse.x;
 				__dragOffsetY = __dragObject.y - mouse.y;
 				
+				Point.pool.put(mouse);
+
 			}
 			
 		}

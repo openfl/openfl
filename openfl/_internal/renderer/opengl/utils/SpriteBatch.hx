@@ -457,12 +457,12 @@ class SpriteBatch {
 		} else {
 			positions[index + 0] 	= Math.fround(tx);
 			positions[index + 1] 	= Math.fround(ty);
-			positions[index + 5] 	= Math.fround(a * width + tx);
-			positions[index + 6] 	= Math.fround(b * width + ty);
-			positions[index + 10] 	= Math.fround(a * width + c * height + tx);
-			positions[index + 11] 	= Math.fround(d * height + b * width + ty);
-			positions[index + 15] 	= Math.fround(c * height + tx);
-			positions[index + 16] 	= Math.fround(d * height + ty);
+			positions[index + 5] 	= Math.fround(tx) + a * width;
+			positions[index + 6] 	= Math.fround(ty) + b * width;
+			positions[index + 10] 	= Math.fround(tx) + a * width + c * height;
+			positions[index + 11] 	= Math.fround(ty) + d * height + b * width;
+			positions[index + 15] 	= Math.fround(tx) + c * height;
+			positions[index + 16] 	= Math.fround(ty) + d * height;
 		}
 		
 		// COLOR

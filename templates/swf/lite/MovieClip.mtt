@@ -1,0 +1,32 @@
+package ::PACKAGE_NAME::;
+
+
+import format.swf.lite.MovieClip;
+import format.swf.lite.SWFLite;
+import openfl.Assets;
+
+
+class ::CLASS_NAME:: extends MovieClip {
+	
+	
+	::foreach CLASS_PROPERTIES::public var ::name:: (default, null):::type::;
+	::end::
+	
+	
+	public function new () {
+		
+		if (!SWFLite.instances.exists ("::SWF_ID::")) {
+			
+			SWFLite.instances.set ("::SWF_ID::", SWFLite.unserialize (Assets.getText ("::SWF_ID::")));
+			
+		}
+		
+		var swfLite = SWFLite.instances.get ("::SWF_ID::");
+		var symbol = swfLite.symbols.get (::SYMBOL_ID::);
+		
+		super (swfLite, cast symbol);
+		
+	}
+	
+	
+}

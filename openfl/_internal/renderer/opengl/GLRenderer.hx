@@ -315,9 +315,11 @@ class GLRenderer extends AbstractRenderer {
 		matrix.identity ();
 		
 		var bitmap = shape.__graphics.__bitmap;
-		var bounds:Rectangle = new Rectangle();
+		var bounds:Rectangle = Rectangle.pool.get();
+		bounds.setEmpty();
 		shape.__getRenderBounds(bounds);
 		matrix.translate (bounds.x, bounds.y);
+		Rectangle.pool.put(bounds);
 		matrix.concat (shape.__renderTransform);
 
 		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );

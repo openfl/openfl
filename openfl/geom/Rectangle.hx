@@ -2,13 +2,14 @@ package openfl.geom; #if !openfl_legacy
 
 
 import lime.math.Rectangle in LimeRectangle;
+import openfl.ObjectPool;
 
 
 class Rectangle {
-	
-	
+
+	public static var pool: ObjectPool<Rectangle>  = new ObjectPool<Rectangle>( function() { return new Rectangle(); } );
 	private static var __temp = new Rectangle ();
-	
+
 	public var bottom (get, set):Float;
 	public var bottomRight (get, set):Point;
 	public var height:Float;

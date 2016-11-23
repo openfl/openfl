@@ -1,0 +1,51 @@
+package ::PACKAGE_NAME::; #if !flash
+
+
+import format.swf.instance.MovieClip;
+import format.SWF;
+import openfl.Assets;
+
+
+class ::PREFIX::::CLASS_NAME:: extends MovieClip {
+	
+	
+	::foreach CLASS_PROPERTIES::public var ::name:: (default, null):::type::;
+	::end::
+	
+	
+	public function new () {
+		
+		if (!SWF.instances.exists ("::SWF_ID::")) {
+			
+			SWF.instances.set ("::SWF_ID::", new SWF (Assets.getBytes ("::SWF_ID::")));
+			
+		}
+		
+		var swf = SWF.instances.get ("::SWF_ID::");
+		var symbol = swf.data.getCharacter (::SYMBOL_ID::);
+		
+		super (cast symbol);
+		
+	}
+	
+	
+}
+
+
+#else
+@:bind @:native("::PACKAGE_NAME_DOT::::CLASS_NAME::") class ::PREFIX::::CLASS_NAME:: extends flash.display.MovieClip {
+	
+	
+	::foreach CLASS_PROPERTIES::public var ::name:: (default, null):::type::;
+	::end::
+	
+	
+	public function new () {
+		
+		super ();
+		
+	}
+	
+	
+}
+#end

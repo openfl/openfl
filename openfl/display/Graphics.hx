@@ -864,10 +864,6 @@ import js.html.CanvasRenderingContext2D;
 		if (__bounds == null) return;
 
 		rect.__expand (__bounds.x, __bounds.y, __bounds.width, __bounds.height);
-
-		// :NOTE: The - 1 comes from the inversed offset of growing the bounds of textures by 2 pixels to allow anti aliasing on the edges. ( CanvasGraphics )
-		rect.x -= 1;
-		rect.y -= 1;
 	}
 
 

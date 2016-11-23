@@ -1,9 +1,11 @@
 package openfl.filters; #if !openfl_legacy
 
 
-import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
 import openfl.filters.commands.*;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 
 @:final class DropShadowFilter extends BitmapFilter {
@@ -56,16 +58,17 @@ import openfl.filters.commands.*;
 	}
 
 
-	private override function __growBounds (rect:Rectangle):Void {
+	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
 
+		var offset = Point.pool.get ();
+		BitmapFilter._getTransformedOffset(offset, distance, angle, transform);
 		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
 		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
-		var sX = distance * Math.cos (angle * Math.PI / 180);
-		var sY = distance * Math.sin (angle * Math.PI / 180);
-		rect.x -= Math.abs (sX) + halfBlurX;
-		rect.y -= Math.abs (sY) + halfBlurY;
-		rect.width += 2.0 * (Math.abs (sX) + halfBlurX);
-		rect.height += 2.0 * (Math.abs (sY) + halfBlurY);
+		rect.x -= Math.abs (offset.x) + halfBlurX;
+		rect.y -= Math.abs (offset.y) + halfBlurY;
+		rect.width += 2.0 * (Math.abs (offset.x) + halfBlurX);
+		rect.height += 2.0 * (Math.abs (offset.y) + halfBlurY);
+		Point.pool.put (offset);
 
 	}
 
@@ -109,17 +112,33 @@ import openfl.filters.commands.*;
 
 		commands.push (Colorize (__shadowBitmapData, __shadowBitmapData, color, alpha));
 
-		if ( knockout || ( hideObject && inner ) ) {
+		if (inner) {
 
-			commands.push (OuterKnockout(bitmap, bitmap, __shadowBitmapData));
+			if ( knockout || hideObject ) {
+				
+				commands.push (InnerKnockout(bitmap, bitmap, __shadowBitmapData));
 
-		} else if (inner) {
-
-			commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
+			} else {
+				
+				commands.push (CombineInner (bitmap, bitmap, __shadowBitmapData));
+				
+			}
 
 		} else {
 
-			commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
+			if ( knockout ) {
+
+				commands.push (OuterKnockout(bitmap, bitmap, __shadowBitmapData));
+
+			} else if ( !hideObject ) {
+				
+				commands.push (Combine (bitmap, __shadowBitmapData, bitmap));
+				
+			} else {
+				
+				throw "hideObject && !knockout && !inner combination should already have been handled";
+				
+			}
 
 		}
 

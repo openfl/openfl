@@ -4,11 +4,11 @@ package openfl.geom; #if !openfl_legacy
 import lime.math.Matrix3;
 import lime.utils.Float32Array;
 import openfl.geom.Point;
-
+import openfl.ObjectPool;
 
 class Matrix {
 	
-	
+	public static var pool : ObjectPool<Matrix> = new ObjectPool<Matrix>( function() { return new Matrix(); } );
 	private static var __identity = new Matrix ();
 	private static var __temp = new Matrix ();
 	
