@@ -662,9 +662,9 @@ class MovieClip extends flash.display.MovieClip {
 
 						filters.push (new BlurFilter (blurX, blurY, quality));
 
-					case ColorMatrixFilter (matrix):
+					case ColorMatrixFilter (multipliers, offsets):
 
-						filters.push (new ColorMatrixFilter (matrix));
+						filters.push (new ColorMatrixFilter (multipliers.value, offsets.value));
 
 					case DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject):
 

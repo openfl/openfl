@@ -26,7 +26,6 @@ import openfl.geom.Rectangle;
 	private var __highlightBitmapData:BitmapData;
 	private var __clonedHighlightBitmapData:BitmapData;
 	private var __shadowBitmapData:BitmapData;
-	private static var __inverseAlphaMatrix = [ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 255.0 ];
 
 	public function new (distance:Float = 4, angle:Float = 45, highlightColor:Int = 0xFFFFFF, highlightAlpha:Float = 1, shadowColor: Int = 0x000000, shadowAlpha: Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, type: BitmapFilterType = BitmapFilterType.INNER, knockout:Bool = false) {
 
@@ -100,8 +99,8 @@ import openfl.geom.Rectangle;
 		@:privateAccess __clonedHighlightBitmapData.__resize(bitmap.width, bitmap.height);
 
 		// create 2 dropshadow filters.
-		commands.push (ColorTransform (__clonedHighlightBitmapData, bitmap, __inverseAlphaMatrix));
-		commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
+		commands.push (ColorTransform (__clonedHighlightBitmapData, bitmap, BitmapFilter.__inverseAlphaMultipliers, BitmapFilter.__inverseAlphaOffsets));
+		commands.push (ColorTransform (__shadowBitmapData, bitmap, BitmapFilter.__inverseAlphaMultipliers, BitmapFilter.__inverseAlphaOffsets));
 
 		if ( blurX > 1 || blurY > 1 ) {
 			for( quality_index in 0...quality ) {
