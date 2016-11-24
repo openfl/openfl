@@ -5,8 +5,8 @@ package format.swf.lite.symbols;
 
 
 class DynamicTextSymbol extends SWFSymbol {
-	
-	
+
+	public var variableName:String;
 	public var align:/*TextFormatAlign*/String;
 	public var border:Bool;
 	public var color:Null<Int>;
@@ -27,13 +27,13 @@ class DynamicTextSymbol extends SWFSymbol {
 	public var wordWrap:Bool;
 	public var x:Float;
 	public var y:Float;
-	
-	
+
+
 	public function new () {
-		
+
 		super ();
-		
+
 	}
-	
-	
+
+
 }
