@@ -24,7 +24,7 @@ import openfl.Assets;
 @:access(openfl.text.TextField)
 
 
-class MovieClip extends Sprite implements Dynamic<DisplayObject> {
+class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __initSWF:SWFLite;
