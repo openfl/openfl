@@ -15,12 +15,14 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display.Sprite;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.text.TextField;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -76,11 +78,19 @@ class RenderSession {
 		if (dirty) {
 
 			shape.__cachedBounds =  new Rectangle();
+							
+			if (Std.is(shape, Sprite)) {
+				shape.__cacheAsBitmapMatrix = shape.parent.__worldTransform.clone();
+				shape.__cacheAsBitmapMatrix.rotate( shape.rotation * Math.PI / 180 );
+				shape.__cacheAsBitmapMatrix.translate( -shape.__worldTransform.tx, -shape.__worldTransform.ty );
+			} else if (Std.is(shape, TextField)) {
+				shape.__cacheAsBitmapMatrix = new Matrix();
+				shape.__cacheAsBitmapMatrix.rotate( shape.rotation * Math.PI / 180 );
+			} else {
+				shape.__cacheAsBitmapMatrix = shape.__worldTransform.clone();
+				shape.__cacheAsBitmapMatrix.tx = shape.__cacheAsBitmapMatrix.ty = 0;
+			}
 
-			shape.__cacheAsBitmapMatrix = shape.parent.__worldTransform.clone();
-			shape.__cacheAsBitmapMatrix.rotate( shape.rotation * Math.PI / 180 );
-			shape.__cacheAsBitmapMatrix.translate( -shape.__worldTransform.tx, -shape.__worldTransform.ty );
-			
 			getCachedBitmapBounds( shape, shape.__cachedBounds, shape.__cacheAsBitmapMatrix );
 
 			shape.__cachedBitmap = new BitmapData( Std.int(shape.__cachedBounds.width), Std.int(shape.__cachedBounds.height), true, 0x00ffffff );
@@ -157,7 +167,7 @@ class RenderSession {
 		bounds.y = Math.min( bounds.y, top);
 		bounds.width = Math.max( bounds.width, right - left);
 		bounds.height = Math.max( bounds.height, bottom - top);
-		
+
 	}
 
 

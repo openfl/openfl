@@ -5,14 +5,17 @@ import openfl.geom.Rectangle;
 
 class FilterUtils {
 
-	private static inline function fromPreMult( col:Float, alpha:Float ) : Int {
-        var col = Std.int(col / alpha * 255);
+	private static inline function fromPreMult( col:Float, alpha:Float, strength:Float ) : Int {
+        var col = Std.int(col * strength / alpha * 255) ;
 		return col < 0 ? 0 : (col > 255 ? 255 : col);
 	}
 
-	public static function GaussianBlur ( imgA:UInt8Array, imgB:UInt8Array, w:Int, h:Int, bx:Float, by:Float, oX:Int = 0, oY:Int = 0) {
-		var bxs = boxesForGauss(bx * 0.5, 3);
-		var bys = boxesForGauss(by * 0.5, 3);
+	public static function GaussianBlur ( imgA:UInt8Array, imgB:UInt8Array, w:Int, h:Int, bx:Float, by:Float, quality:Int, strength:Float = 1, oX:Int = 0, oY:Int = 0) {
+		var n = (quality * 2) - 1;
+		var rng = Math.pow(2, quality) * 0.125;
+		
+		var bxs = boxesForGauss(bx * rng, n);
+		var bys = boxesForGauss(by * rng, n);
         var offset:Int = Std.int( (w * oY + oX) * 4 );
 
         boxBlur (imgA, imgB, w, h, (bxs[0]-1)/2, (bys[0]-1)/2);
@@ -22,18 +25,18 @@ class FilterUtils {
 		var i:Int = 0;
         if (offset < 0) {
             while (i < imgA.length) {
-                imgB[ i + offset] = fromPreMult( imgB[ i ], imgB[ i + 3 ]);
-                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], imgB[ i + 3 ]);
-                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], imgB[ i + 3 ]);
+                imgB[ i + offset] = fromPreMult( imgB[ i ], imgB[ i + 3 ], strength);
+                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], imgB[ i + 3 ], strength);
+                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], imgB[ i + 3 ], strength);
                 imgB[ i + 3 + offset] = imgB[ i + 3 ];
                 i += 4;
             }
         } else {
             i = imgA.length - 4;
             while (i >= 0) {
-                imgB[ i + offset] = fromPreMult( imgB[ i ], imgB[ i + 3 ]);
-                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], imgB[ i + 3 ]);
-                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], imgB[ i + 3 ]);
+                imgB[ i + offset] = fromPreMult( imgB[ i ], imgB[ i + 3 ], strength);
+                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], imgB[ i + 3 ], strength);
+                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], imgB[ i + 3 ], strength);
                 imgB[ i + 3 + offset] = imgB[ i + 3 ];
                 i -= 4;
             }
@@ -60,7 +63,7 @@ class FilterUtils {
 	private static function boxBlur ( imgA:UInt8Array, imgB:UInt8Array, w:Int, h:Int, bx:Float, by:Float ) {
 		for(i in 0...imgA.length)
 			imgB[i] = imgA[i];
-		
+
 		boxBlurH(imgB, imgA, w, h, Std.int(bx), 0);
 		boxBlurH(imgB, imgA, w, h, Std.int(bx), 1);
 		boxBlurH(imgB, imgA, w, h, Std.int(bx), 2);

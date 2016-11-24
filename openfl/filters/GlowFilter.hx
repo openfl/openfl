@@ -6,6 +6,7 @@ import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.filters.FilterUtils;
 import openfl.geom.Rectangle;
 
 
@@ -81,6 +82,13 @@ import openfl.geom.Rectangle;
 		
 	}
 	
+
+	public function toString ():String {
+		
+		return "GlowFilter: [ color:" + color + ", alpha:" + alpha + ", blurX:" + blurX + ", blurY:" + blurY + ", strength:" + strength + ", quality:" + quality + ", inner:" + inner + ", knockout:" + knockout + " ]";
+		
+	}
+	
 	
 	
 	
@@ -133,7 +141,7 @@ import openfl.geom.Rectangle;
 			i += 4;
 		}
 
-		FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY );
+        FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY, quality, strength );
 
 		tmpSrc = null;
 

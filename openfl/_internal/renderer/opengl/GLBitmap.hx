@@ -37,14 +37,9 @@ class GLBitmap {
 				// Render filter bitmap and draw it
 				renderSession.updateCachedBitmap( bitmap );
 				var filterBitmapData = renderSession.filterManager.renderFilters( bitmap, bitmap.__cachedBitmap );
-				// trace("GLBitmap-bitmap:"+bitmap.bitmapData.width+"/"+bitmap.bitmapData.height);
-				// trace("GLBitmap-filter:"+bitmap.__filterBounds);
-				// trace("GLBitmap-scale:"+(bitmap.__filterBounds.width/bitmap.bitmapData.width)+"/"+(bitmap.__filterBounds.height/bitmap.bitmapData.height));
 				var filterTransform = IDENTITY.clone();
-				filterTransform.scale( 1/bitmap.scaleX, 1/bitmap.scaleY );
 				var b = bitmap.__filterBounds;
 				filterTransform.scale( b.width / (b.width - b.x - b.x), b.height / (b.height - b.y - b.y) );
-				// trace("NewScale:"+( b.width / (b.width - b.x - b.x))+"/"+(b.height / (b.height - b.y - b.y) ));
 				filterTransform.translate( bitmap.__worldTransform.tx, bitmap.__worldTransform.ty );
 				filterTransform.translate( -bitmap.__filterBounds.x, -bitmap.__filterBounds.y );
 				filterTransform.translate( -bitmap.__cacheAsBitmapMatrix.tx, -bitmap.__cacheAsBitmapMatrix.ty );

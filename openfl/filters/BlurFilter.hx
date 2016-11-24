@@ -40,6 +40,12 @@ import openfl.geom.Rectangle;
 		
 	}
 	
+
+	public function toString ():String {
+		
+		return "BlurFilter: [ blurX:" + blurX + ", blurY:" + blurY + ", quality:" + quality + " ]";
+		
+	}
 	
 	
 	
@@ -79,7 +85,7 @@ import openfl.geom.Rectangle;
 		var source = sourceBitmapData.clone().image.data;
 		var target = destBitmapData.image.data;
 
-		FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY );
+		FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY, quality );
 
 		super.__renderFilter( sourceBitmapData, destBitmapData );
 	}
