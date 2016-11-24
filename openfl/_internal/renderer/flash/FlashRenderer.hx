@@ -43,6 +43,9 @@ class FlashRenderer {
 }
 
 
+@:allow(openfl._internal.renderer.flash.FlashRenderer)
+
+
 interface IDisplayObject {
 	
 	
