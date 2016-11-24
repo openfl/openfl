@@ -298,7 +298,7 @@ class Tools {
 				templateFile.data = template.execute (context);
 				output.assets.push (templateFile);
 				
-				generatedClasses.push (className);
+				generatedClasses.push (packageNameDot + prefix + name);
 				
 			}
 			
