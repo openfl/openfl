@@ -83,7 +83,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	public function __renderCairo (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderCairo (stage:Stage, renderSession:RenderSession):Void {
 		
 		if (!visible) return;
 		
@@ -97,7 +97,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	public function __renderCanvas (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderCanvas (stage:Stage, renderSession:RenderSession):Void {
 		
 		if (!visible) return;
 		
@@ -111,7 +111,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	public function __renderDOM (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderDOM (stage:Stage, renderSession:RenderSession):Void {
 		
 		if (!visible) return;
 		
@@ -191,7 +191,7 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	public function __renderGL (stage:Stage, renderSession:RenderSession):Void {
+	private function __renderGL (stage:Stage, renderSession:RenderSession):Void {
 		
 		if (!visible) return;
 		

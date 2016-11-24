@@ -209,21 +209,21 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		CairoTilemap.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTilemap.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMTilemap.render (this, renderSession);
 		
@@ -231,7 +231,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	public function __renderFlash ():Void {
+	private function __renderFlash ():Void {
 		
 		FlashTilemap.render (this);
 		
@@ -239,7 +239,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLTilemap.render (this, renderSession);
 		

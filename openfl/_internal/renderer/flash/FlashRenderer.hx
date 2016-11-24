@@ -46,7 +46,7 @@ class FlashRenderer {
 interface IDisplayObject {
 	
 	
-	public function __renderFlash ():Void;
+	private function __renderFlash ():Void;
 	
 	
 }

@@ -555,7 +555,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -590,7 +590,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -607,7 +607,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -646,7 +646,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -668,7 +668,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if !neko
 		
@@ -705,7 +705,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		

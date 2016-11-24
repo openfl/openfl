@@ -231,21 +231,21 @@ class Video extends DisplayObject {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasVideo.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMVideo.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLVideo.render (this, renderSession);
 		

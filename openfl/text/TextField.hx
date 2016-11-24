@@ -848,7 +848,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		CairoTextField.render (this, renderSession, __worldTransform);
 		super.__renderCairo (renderSession);
@@ -856,7 +856,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTextField.render (this, renderSession, __worldTransform);
 		
@@ -893,14 +893,14 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMTextField.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		CanvasTextField.render (this, renderSession, __worldTransform);

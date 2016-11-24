@@ -275,7 +275,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -286,14 +286,14 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		__currentState.__renderCairoMask (renderSession);
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -308,7 +308,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
@@ -320,7 +320,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if !neko
 		
@@ -335,7 +335,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		

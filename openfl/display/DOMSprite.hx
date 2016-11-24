@@ -31,7 +31,7 @@ class DOMSprite extends Sprite {
 	
 	
 	#if !flash
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {

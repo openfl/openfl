@@ -9,6 +9,7 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.geom.Matrix)

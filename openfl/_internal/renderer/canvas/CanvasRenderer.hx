@@ -7,6 +7,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 
 
 class CanvasRenderer extends AbstractRenderer {

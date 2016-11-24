@@ -76,9 +76,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	@:keep public var x (get, set):Float;
 	@:keep public var y (get, set):Float;
 	
-	public var __worldColorTransform:ColorTransform;
-	public var __worldTransform:Matrix;
-	
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
@@ -108,6 +105,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __worldAlphaChanged:Bool;
 	private var __worldClip:Rectangle;
 	private var __worldClipChanged:Bool;
+	private var __worldColorTransform:ColorTransform;
+	private var __worldTransform:Matrix;
 	private var __worldTransformCache:Matrix;
 	private var __worldTransformChanged:Bool;
 	private var __worldVisible:Bool;
@@ -544,14 +543,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	public function __renderCairo (renderSession:RenderSession):Void {
+	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		CairoDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
-	public function __renderCairoMask (renderSession:RenderSession):Void {
+	private function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -562,14 +561,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	public function __renderCanvas (renderSession:RenderSession):Void {
+	private function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
-	public function __renderCanvasMask (renderSession:RenderSession):Void {
+	private function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -580,14 +579,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	public function __renderDOM (renderSession:RenderSession):Void {
+	private function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
-	public function __renderGL (renderSession:RenderSession):Void {
+	private function __renderGL (renderSession:RenderSession):Void {
 		
 		GLDisplayObject.render (this, renderSession);
 		

@@ -77,9 +77,6 @@ class BitmapData implements IBitmapDrawable {
 	public var transparent (default, null):Bool;
 	public var width (default, null):Int;
 	
-	public var __worldColorTransform:ColorTransform;
-	public var __worldTransform:Matrix;
-	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
@@ -90,6 +87,8 @@ class BitmapData implements IBitmapDrawable {
 	private var __texture:GLTexture;
 	private var __textureVersion:Int;
 	private var __transform:Matrix;
+	private var __worldColorTransform:ColorTransform;
+	private var __worldTransform:Matrix;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -1396,7 +1395,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function __renderCairo (renderSession:RenderSession):Void {
+	private function __renderCairo (renderSession:RenderSession):Void {
 		
 		if (!readable) return;
 		
@@ -1443,14 +1442,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function __renderCairoMask (renderSession:RenderSession):Void {
+	private function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		
 		
 	}
 	
 	
-	public function __renderCanvas (renderSession:RenderSession):Void {
+	private function __renderCanvas (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (!readable) return;
@@ -1484,14 +1483,14 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function __renderCanvasMask (renderSession:RenderSession):Void {
+	private function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		
 		
 	}
 	
 	
-	public function __renderGL (renderSession:RenderSession):Void {
+	private function __renderGL (renderSession:RenderSession):Void {
 		
 		
 		

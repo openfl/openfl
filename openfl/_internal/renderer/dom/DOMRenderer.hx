@@ -15,6 +15,7 @@ import js.html.Element;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 

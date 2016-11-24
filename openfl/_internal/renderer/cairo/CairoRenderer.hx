@@ -9,6 +9,7 @@ import openfl.display.Stage;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 @:allow(openfl.display.Stage)
 
 
