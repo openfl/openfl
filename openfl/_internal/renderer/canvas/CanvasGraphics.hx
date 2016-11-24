@@ -243,10 +243,10 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-
+		
 		bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
-
+		
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
 			return false;
@@ -255,13 +255,32 @@ class CanvasGraphics {
 			
 			hitTesting = true;
 			
+			var renderTransform = graphics.__renderTransform;
+			
+			var px = renderTransform.__transformX (x, y);
+			var py = renderTransform.__transformY (x, y);
+			
+			x = px;
+			y = py;
+			
 			x -= bounds.x;
 			y -= bounds.y;
+			
+			var width = graphics.__width;
+			var height = graphics.__height;
+			var canvas = graphics.__canvas;
 			
 			if (graphics.__canvas == null) {
 				
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
 				graphics.__context = graphics.__canvas.getContext ("2d");
+				
+			}
+			
+			if (canvas.width != width || canvas.height != height) {
+				
+				canvas.width = width;
+				canvas.height = height;
 				
 			}
 			
