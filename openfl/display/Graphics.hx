@@ -818,26 +818,30 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 		
-		var parentTransform = __owner.__getRenderTransform ();
-		var scaleX, scaleY;
+		var parentTransform = __owner.__renderTransform;
+		var scaleX = 1.0, scaleY = 1.0;
 		
-		if (parentTransform.b == 0) {
+		if (parentTransform != null) {
 			
-			scaleX = Math.abs (parentTransform.a);
+			if (parentTransform.b == 0) {
+				
+				scaleX = Math.abs (parentTransform.a);
+				
+			} else {
+				
+				scaleX = Math.sqrt (parentTransform.a * parentTransform.a + parentTransform.b * parentTransform.b);
+				
+			}
 			
-		} else {
-			
-			scaleX = Math.sqrt (parentTransform.a * parentTransform.a + parentTransform.b * parentTransform.b);
-			
-		}
-		
-		if (parentTransform.c == 0) {
-			
-			scaleY = Math.abs (parentTransform.d);
-			
-		} else {
-			
-			scaleY = Math.sqrt (parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
+			if (parentTransform.c == 0) {
+				
+				scaleY = Math.abs (parentTransform.d);
+				
+			} else {
+				
+				scaleY = Math.sqrt (parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
+				
+			}
 			
 		}
 		

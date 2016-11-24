@@ -89,6 +89,7 @@ class BitmapData implements IBitmapDrawable {
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureVersion:Int;
+	private var __transform:Matrix;
 	
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
@@ -406,6 +407,20 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
+		if (matrix == null) {
+			
+			matrix = new Matrix ();
+			
+			if (source.__transform != null) {
+				
+				matrix.copyFrom (source.__transform);
+				matrix.tx = 0;
+				matrix.ty = 0;
+				
+			}
+			
+		}
+		
 		if (!readable /*|| !source.readable*/) {
 			
 			if (GL.context != null) {
@@ -439,7 +454,7 @@ class BitmapData implements IBitmapDrawable {
 				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
 				
 				var matrixCache = source.__worldTransform;
-				source.__updateTransforms (matrix != null ? matrix : new Matrix ());
+				source.__updateTransforms (matrix);
 				source.__updateChildren (false);
 				source.__renderGL (renderer.renderSession);
 				source.__updateTransforms (matrixCache);
@@ -489,7 +504,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var matrixCache = source.__worldTransform;
-			source.__updateTransforms (matrix != null ? matrix : new Matrix ());
+			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			source.__renderCanvas (renderSession);
 			source.__updateTransforms (matrixCache);
@@ -557,7 +572,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			
 			var matrixCache = source.__worldTransform;
-			source.__updateTransforms (matrix != null ? matrix : new Matrix ());
+			source.__updateTransforms (matrix);
 			source.__updateChildren (false);
 			source.__renderCairo (renderSession);
 			source.__updateTransforms (matrixCache);
