@@ -347,7 +347,7 @@ class ApplicationMain {
 							
 						} else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
 							
-							Sys.println ("Warning: Use of NMEPreloader has been deprecated");
+							Sys.println ("Warning: Use of NMEPreloader has been deprecated; use openfl.display.Preloader.DefaultPreloader for a drop-in replacement");
 							break;
 							
 						}
