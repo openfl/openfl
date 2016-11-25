@@ -53,17 +53,19 @@ class Loader extends DisplayObjectContainer {
 	public function load (request:URLRequest, context:LoaderContext = null):Void {
 		
 		var extension = "";
-		var parts = request.url.split (".");
+		var path = request.url;
 		
-		if (parts.length > 0) {
+		var queryIndex = path.indexOf ('?');
+		if (queryIndex > -1) {
 			
-			extension = parts[parts.length - 1].toLowerCase ();
+			path = path.substring (0, queryIndex);
 			
 		}
 		
-		if (extension.indexOf ('?') != -1) {
+		var extIndex = path.lastIndexOf('.');
+		if (extIndex > -1) {
 			
-			extension = extension.split ('?')[0];
+			extension = path.substring(extIndex + 1);
 			
 		}
 		
@@ -256,18 +258,6 @@ class Loader extends DisplayObjectContainer {
 			var worker = new BackgroundWorker ();
 			
 			worker.doWork.add (function (_) {
-				
-				var path = request.url;
-				
-				#if sys
-				var index = path.indexOf ("?");
-				
-				if (index > -1) {
-					
-					path = path.substring (0, index);
-					
-				}
-				#end
 				
 				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
 				
