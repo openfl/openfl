@@ -553,7 +553,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 						if (child.__hitTest (x, y, shapeFlag, stack, true, cast child)) {
 
-							hitTest = true;
+							if(mouseEnabled) {
+								hitTest = true;
+							}
 
 							if (interactive) {
 
