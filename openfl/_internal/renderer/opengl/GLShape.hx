@@ -102,7 +102,7 @@ class GLShape {
 
 		var transform = new Matrix();
 		transform.translate( graphics.__worldTransform.tx, graphics.__worldTransform.ty );
-		transform.translate( -shape.__filterBounds.x, -shape.__filterBounds.y );
+		transform.translate( -shape.__filterBounds.x + shape.__filterOffset.x , -shape.__filterBounds.y + shape.__filterOffset.y );
 		transform.translate( -shape.__cacheAsBitmapMatrix.tx, -shape.__cacheAsBitmapMatrix.ty );
 
 		shader.data.uImage0.input = targetBitmap;

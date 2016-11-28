@@ -5,8 +5,8 @@ import openfl.geom.Rectangle;
 
 class FilterUtils {
 
-	private static inline function fromPreMult( col:Float, alpha:Float, strength:Float ) : Int {
-        var col = Std.int(col * strength / alpha * 255) ;
+	private static inline function fromPreMult( col:Float, alpha:Float ) : Int {
+        var col = Std.int(col / alpha * 255) ;
 		return col < 0 ? 0 : (col > 255 ? 255 : col);
 	}
 
@@ -23,24 +23,35 @@ class FilterUtils {
 		boxBlur (imgA, imgB, w, h, (bxs[2]-1)/2, (bys[2]-1)/2);
 		
 		var i:Int = 0;
+		var a:Int;
         if (offset < 0) {
             while (i < imgA.length) {
-                imgB[ i + offset] = fromPreMult( imgB[ i ], imgB[ i + 3 ], strength);
-                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], imgB[ i + 3 ], strength);
-                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], imgB[ i + 3 ], strength);
-                imgB[ i + 3 + offset] = imgB[ i + 3 ];
+				a = Std.int(imgB[ i + 3 ] * strength );
+				a = a < 0 ? 0 : (a > 255 ? 255 : a);
+                imgB[ i ] = fromPreMult( imgB[ i ], a );
+                imgB[ i + 1 ] = fromPreMult( imgB[ i + 1 ], a );
+                imgB[ i + 2 ] = fromPreMult( imgB[ i + 2 ], a );
+                imgB[ i + 3 ] = a;
                 i += 4;
             }
+			for (i in imgA.length - offset...imgA.length)
+				imgB[ i ] = 0;
         } else {
             i = imgA.length - 4;
             while (i >= 0) {
-                imgB[ i + offset] = fromPreMult( imgB[ i ], imgB[ i + 3 ], strength);
-                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], imgB[ i + 3 ], strength);
-                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], imgB[ i + 3 ], strength);
-                imgB[ i + 3 + offset] = imgB[ i + 3 ];
+				a = Std.int(imgB[ i + 3 ] * strength );
+                a = a < 0 ? 0 : (a > 255 ? 255 : a);
+                imgB[ i + offset] = fromPreMult( imgB[ i ], a );
+                imgB[ i + 1 + offset] = fromPreMult( imgB[ i + 1 ], a );
+                imgB[ i + 2 + offset] = fromPreMult( imgB[ i + 2 ], a );
+                imgB[ i + 3 + offset] = a;
                 i -= 4;
             }
+ 			for (i in 0...offset)
+				imgB[ i ] = 0;
         }
+
+
 	}
 
 	// standard deviation, number of boxes

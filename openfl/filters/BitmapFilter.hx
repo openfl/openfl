@@ -16,6 +16,7 @@ class BitmapFilter {
 	private var __numPasses:Int;
 	private var __preserveOriginal:Bool;
 	private var __filterTransform:Matrix;
+	private var __filterOffset:Point;	
 	
 	
 	public function new () {
@@ -25,6 +26,8 @@ class BitmapFilter {
 		__preserveOriginal = false;
 
 		__filterTransform = new Matrix();
+
+		__filterOffset = new Point();
 		
 	}
 	

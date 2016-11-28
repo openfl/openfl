@@ -52,6 +52,8 @@ class GLFilterManager extends AbstractFilterManager {
 			
 			if (object.__filterBitmap == null || filtersDirty) {
 		
+				// Only support single filter at the moment for offsets
+				object.__filterOffset = object.__filters[0].__filterOffset;
 				var bounds:Rectangle = object.__filterBounds = new Rectangle( 0, 0, src.width, src.height );
 				var filterBounds:Rectangle;
 				for (filter in object.__filters) {

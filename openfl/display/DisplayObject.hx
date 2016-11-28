@@ -89,6 +89,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __filterBitmap:BitmapData;
 	private var __filterBounds:Rectangle;
 	private var __filterDirty:Bool;
+	private var __filterOffset:Point;
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
 	private var __isMask:Bool;

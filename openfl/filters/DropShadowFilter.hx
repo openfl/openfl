@@ -73,9 +73,8 @@ import openfl.geom.Rectangle;
 	private function set_distance (value:Float):Float {
 
 		if (value != distance) {
-			offsetX = Std.int( value * Math.sin( angle * Math.PI / 180 ) );
-			offsetY = Std.int( value * Math.cos( angle * Math.PI / 180 ) );
-
+			__filterOffset.x = Std.int( value * Math.cos( angle * Math.PI / 180 ) );
+			__filterOffset.y = Std.int( value * Math.sin( angle * Math.PI / 180 ) );
 			__filterDirty = true;
 		}
 		
@@ -87,8 +86,8 @@ import openfl.geom.Rectangle;
 	private function set_angle (value:Float):Float {
 
 		if (value != angle) {
-			offsetX = Std.int( distance * Math.sin( value * Math.PI / 180 ) );
-			offsetY = Std.int( distance * Math.cos( value * Math.PI / 180 ) );
+			__filterOffset.x = Std.int( distance * Math.cos( value * Math.PI / 180 ) );
+			__filterOffset.y = Std.int( distance * Math.sin( value * Math.PI / 180 ) );
 
 			__filterDirty = true;
 		}
@@ -98,35 +97,35 @@ import openfl.geom.Rectangle;
 	}
 
 
-	private function set_hideObject (value:Bool):Bool {
-		
-		return hideObject = value;
-		
-	}
-	
-	
-	private function set_knockout (value:Bool):Bool {
-		
-		return knockout = value;
-		
-	}
-	
-	
-	private function set_quality (value:Int):Int {
-		
-		// TODO: Quality effect with fewer passes?
-		
-		horizontalPasses = (blurX <= 0) ? 0 : Math.round (blurX * (value / 4)) + 1;
-		verticalPasses = (blurY <= 0) ? 0 : Math.round (blurY * (value / 4)) + 1;
-		
-		__numPasses = horizontalPasses + verticalPasses;
-		
-		return quality = value;
-		
-	}
+    private function set_hideObject (value:Bool):Bool {
+        
+        return hideObject = value;
+        
+    }
+    
+    
+    private function set_knockout (value:Bool):Bool {
+        
+        return knockout = value;
+        
+    }
+    
+    
+    private function set_quality (value:Int):Int {
+        
+        // TODO: Quality effect with fewer passes?
+        
+        horizontalPasses = (blurX <= 0) ? 0 : Math.round (blurX * (value / 4)) + 1;
+        verticalPasses = (blurY <= 0) ? 0 : Math.round (blurY * (value / 4)) + 1;
+        
+        __numPasses = horizontalPasses + verticalPasses;
+        
+        return quality = value;
+        
+    }
 
 
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+    private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
 		var data = __dropShadowShader.data;
 		
@@ -144,16 +143,6 @@ import openfl.geom.Rectangle;
 		
 		return __dropShadowShader;
 		
-	}
-
-
-	private override function __getFilterBounds( sourceBitmapData:BitmapData ) : Rectangle {
-
-		var offX = blurX + offsetX;
-		var offY = blurY + offsetY;
-		
-		return new Rectangle( blurX, blurY, sourceBitmapData.width + offX + blurX, sourceBitmapData.height + offY + blurY );
-
 	}
 
 
