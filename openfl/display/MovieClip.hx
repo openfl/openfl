@@ -292,6 +292,22 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		__updateFrame ();
 		
+		#if !openfl_dynamic
+		for (field in Type.getInstanceFields (Type.getClass (this))) {
+			
+			for (child in __children) {
+				
+				if (child.name == field) {
+					
+					Reflect.setField (this, field, child);
+					
+				}
+				
+			}
+			
+		}
+		#end
+		
 		if (__totalFrames > 1) {
 			
 			play ();
@@ -387,7 +403,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		displayObject.visible = frameObject.visible;
 		
-		//Reflect.setField (this, displayObject.name, displayObject);
+		#if openfl_dynamic
+		Reflect.setField (this, displayObject.name, displayObject);
+		#end
 		
 	}
 	

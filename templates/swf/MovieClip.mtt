@@ -27,9 +27,6 @@ class ::CLASS_NAME:: extends MovieClip {
 		
 		__fromSymbol (swfLite, cast symbol);
 		
-		::foreach CLASS_PROPERTIES::::name:: = cast getChildByName ("::name::");
-		::end::
-		
 	}
 	
 	
@@ -42,7 +39,6 @@ class ::CLASS_NAME:: extends MovieClip {
 	
 	::foreach CLASS_PROPERTIES::public var ::name:: (default, null):::type::;
 	::end::
-	
 	
 	public function new () {
 		

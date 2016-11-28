@@ -333,7 +333,8 @@ class Tools {
 			
 			if (templateData != null && symbol.className != null) {
 				
-				var className = formatClassName (symbol.className, prefix);
+				//var className = formatClassName (symbol.className, prefix);
+				var className = symbol.className;
 				
 				var name = className;
 				var packageName = "";
@@ -365,7 +366,8 @@ class Tools {
 								if (swfLite.symbols.exists (object.symbol)) {
 									
 									var childSymbol = swfLite.symbols.get (object.symbol);
-									var className = formatClassName (childSymbol.className, prefix);
+									//var className = formatClassName (childSymbol.className, prefix);
+									var className = childSymbol.className;
 									//var className = null;
 									
 									if (className == null) {
@@ -710,6 +712,22 @@ class Tools {
 						var swf = new SWF (bytes);
 						var exporter = new SWFLiteExporter (swf.data);
 						var swfLite = exporter.swfLite;
+						
+						if (library.prefix != null && library.prefix != "") {
+							
+							var prefix = library.prefix;
+							
+							for (symbol in swfLite.symbols) {
+								
+								if (symbol.className != null) {
+									
+									symbol.className = formatClassName (symbol.className, prefix);
+									
+								}
+								
+							}
+							
+						}
 						
 						for (id in exporter.bitmaps.keys ()) {
 							
