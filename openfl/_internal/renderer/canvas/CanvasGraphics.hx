@@ -266,23 +266,24 @@ class CanvasGraphics {
 			x -= bounds.x;
 			y -= bounds.y;
 			
-			var width = graphics.__width;
-			var height = graphics.__height;
-			var canvas = graphics.__canvas;
+			//var width = graphics.__width;
+			//var height = graphics.__height;
+			//var canvas = graphics.__canvas;
 			
 			if (graphics.__canvas == null) {
 				
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
 				graphics.__context = graphics.__canvas.getContext ("2d");
+				//canvas = graphics.__canvas;
 				
 			}
 			
-			if (canvas.width != width || canvas.height != height) {
+			//if (canvas.width != width || canvas.height != height) {
 				
-				canvas.width = width;
-				canvas.height = height;
+				//canvas.width = width;
+				//canvas.height = height;
 				
-			}
+			//}
 			
 			context = graphics.__context;
 			
