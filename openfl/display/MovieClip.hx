@@ -20,6 +20,7 @@ import openfl.filters.*;
 import openfl.text.TextField;
 import openfl.Assets;
 
+@:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.SimpleButton)
 @:access(openfl.text.TextField)
 
@@ -206,254 +207,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private static function __createClip (swf:SWFLite, symbol:SpriteSymbol):MovieClip {
-		
-		var movieClip:MovieClip = null;
-		
-		MovieClip.__initSWF = swf;
-		MovieClip.__initSymbol = symbol;
-		
-		if (symbol.className != null) {
-			
-			var symbolType = Type.resolveClass (symbol.className);
-			
-			if (symbolType != null) {
-				
-				movieClip = Type.createInstance (symbolType, []);
-				
-			} else {
-				
-				//Log.warn ("Could not resolve class \"" + symbol.className + "\"");
-				
-			}
-			
-		}
-		
-		if (movieClip == null) {
-			
-			movieClip = new MovieClip ();
-			
-		}
-		
-		return movieClip;
-		
-	}
-	
-	
-	private function __createObject (object:FrameObject):DisplayObject {
-		
-		if (__swf.symbols.exists (object.symbol)) {
-			
-			var symbol = __swf.symbols.get (object.symbol);
-			
-			if (Std.is (symbol, SpriteSymbol)) {
-				
-				return __createClip (__swf, cast symbol);
-				
-			} else if (Std.is (symbol, ShapeSymbol)) {
-				
-				return __createShape (cast symbol);
-				
-			} else if (Std.is (symbol, BitmapSymbol)) {
-				
-				return new Bitmap (__getBitmap (cast symbol), PixelSnapping.AUTO, true);
-				
-			} else if (Std.is (symbol, DynamicTextSymbol)) {
-				
-				var textField = new TextField ();
-				textField.__fromSymbol (__swf, cast symbol);
-				return textField;
-				
-			} else if (Std.is (symbol, StaticTextSymbol)) {
-				
-				return __createStaticTextField (cast symbol);
-				
-			} else if (Std.is (symbol, ButtonSymbol)) {
-				
-				return SimpleButton.__createButton (__swf, cast symbol);
-				
-			}
-			
-		}
-		
-		return null;
-		
-	}
-	
-	
-	private function __createShape (symbol:ShapeSymbol):Shape {
-		
-		var shape = new Shape ();
-		var graphics = shape.graphics;
-		
-		if (symbol.rendered != null) {
-			
-			graphics.copyFrom (symbol.rendered.graphics);
-			return shape;
-			
-		}
-		
-		for (command in symbol.commands) {
-			
-			switch (command) {
-				
-				case BeginFill (color, alpha):
-					
-					graphics.beginFill (color, alpha);
-				
-				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-					
-					var bitmap:BitmapSymbol = cast __swf.symbols.get (bitmapID);
-					
-					if (bitmap != null && bitmap.path != "") {
-						
-						graphics.beginBitmapFill (__getBitmap (bitmap), matrix, repeat, smooth);
-						
-					}
-				
-				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-					
-					graphics.beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-				
-				case CurveTo (controlX, controlY, anchorX, anchorY):
-					
-					graphics.curveTo (controlX, controlY, anchorX, anchorY);
-				
-				case EndFill:
-					
-					graphics.endFill ();
-				
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-					
-					if (thickness != null) {
-						
-						graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
-						
-					} else {
-						
-						graphics.lineStyle ();
-						
-					}
-				
-				case LineTo (x, y):
-					
-					graphics.lineTo (x, y);
-				
-				case MoveTo (x, y):
-					
-					graphics.moveTo (x, y);
-				
-			}
-			
-		}
-		
-		symbol.commands = null;
-		symbol.rendered = new Shape ();
-		symbol.rendered.graphics.copyFrom (shape.graphics);
-		
-		return shape;
-		
-	}
-	
-	
-	private function __createStaticTextField (symbol:StaticTextSymbol):Shape {
-		
-		var shape = new Shape ();
-		var graphics = shape.graphics;
-		
-		if (symbol.rendered != null) {
-			
-			graphics.copyFrom (symbol.rendered.graphics);
-			return shape;
-			
-		}
-		
-		if (symbol.records != null) {
-			
-			var font:FontSymbol = null;
-			var color = 0xFFFFFF;
-			var offsetX = symbol.matrix.tx;
-			var offsetY = symbol.matrix.ty;
-			
-			for (record in symbol.records) {
-				
-				if (record.fontID != null) font = cast __swf.symbols.get (record.fontID);
-				if (record.offsetX != null) offsetX = symbol.matrix.tx + record.offsetX * 0.05;
-				if (record.offsetY != null) offsetY = symbol.matrix.ty + record.offsetY * 0.05;
-				if (record.color != null) color = record.color;
-				
-				if (font != null) {
-					
-					var scale = (record.fontHeight / 1024) * 0.05;
-					
-					var index;
-					var code;
-					
-					for (i in 0...record.glyphs.length) {
-						
-						index = record.glyphs[i];
-						
-						for (command in font.glyphs[index]) {
-							
-							switch (command) {
-								
-								case BeginFill (_, alpha):
-									
-									graphics.beginFill (color & 0xFFFFFF, ((color >> 24) & 0xFF) / 0xFF);
-								
-								case CurveTo (controlX, controlY, anchorX, anchorY):
-									
-									graphics.curveTo (controlX * scale + offsetX, controlY * scale + offsetY, anchorX * scale + offsetX, anchorY * scale + offsetY);
-								
-								case EndFill:
-									
-									graphics.endFill ();
-								
-								case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-									
-									if (thickness != null) {
-										
-										graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
-										
-									} else {
-										
-										graphics.lineStyle ();
-										
-									}
-								
-								case LineTo (x, y):
-									
-									graphics.lineTo (x * scale + offsetX, y * scale + offsetY);
-								
-								case MoveTo (x, y):
-									
-									graphics.moveTo (x * scale + offsetX, y * scale + offsetY);
-								
-								default:
-								
-							}
-							
-						}
-						
-						offsetX += record.advances[i] * 0.05;
-						
-					}
-					
-				}
-				
-			}
-			
-		}
-		
-		symbol.records = null;
-		symbol.rendered = new Shape ();
-		symbol.rendered.graphics.copyFrom (shape.graphics);
-		
-		return shape;
-		
-	}
-	
-	
 	public override function __enterFrame (deltaTime:Int):Void {
 		
 		if (__symbol != null) {
@@ -548,40 +301,6 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	}
 	
 	
-	private function __getBitmap (symbol:BitmapSymbol):BitmapData {
-		
-		if (Assets.cache.hasBitmapData (symbol.path)) {
-			
-			return Assets.cache.getBitmapData (symbol.path);
-			
-		} else {
-			
-			var source = LimeAssets.getImage (symbol.path, false);
-			
-			if (source != null && symbol.alpha != null && symbol.alpha != "") {
-				
-				var alpha = LimeAssets.getImage (symbol.alpha, false);
-				source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-				
-				//symbol.alpha = null;
-				source.buffer.premultiplied = true;
-				
-				#if !sys
-				source.premultiplied = false;
-				#end
-				
-			}
-			
-			var bitmapData = BitmapData.fromImage (source);
-			
-			Assets.cache.setBitmapData (symbol.path, bitmapData);
-			return bitmapData;
-			
-		}
-		
-	}
-	
-	
 	private function __getFrame (frame:Dynamic):Int {
 		
 		if (Std.is (frame, Int)) {
@@ -668,7 +387,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 		
 		displayObject.visible = frameObject.visible;
 		
-		Reflect.setField (this, displayObject.name, displayObject);
+		//Reflect.setField (this, displayObject.name, displayObject);
 		
 	}
 	
@@ -721,7 +440,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 			
 		}
 		
-		var frame, timelineObject, displayObject, depth;
+		var frame, timelineObject, displayObject, depth, symbol;
 		var mask = null, maskObject = null;
 		var depthChange = false;
 		
@@ -748,14 +467,20 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 						__objectDepths.remove (__objects.get (0));
 						__objects.remove (0);
 						timelineObject = null;
-						displayObject = null;
 						__zeroSymbol = frameObject.symbol;
 						
 					}
 					
+					displayObject = null;
+					
 					if (!__objects.exists (frameObject.id)) {
 						
-						displayObject = __createObject (frameObject);
+						if (__swf.symbols.exists (frameObject.symbol)) {
+							
+							symbol = __swf.symbols.get (frameObject.symbol);
+							displayObject = symbol.__createObject (__swf);
+							
+						}
 						
 						if (displayObject != null) {
 							

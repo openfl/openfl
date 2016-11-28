@@ -1,6 +1,10 @@
 package openfl._internal.symbols;
 
 
+import openfl._internal.swf.SWFLite;
+import openfl.display.DisplayObject;
+
+
 @:keepSub class SWFSymbol {
 	
 	
@@ -11,6 +15,13 @@ package openfl._internal.symbols;
 	public function new () {
 		
 		
+		
+	}
+	
+	
+	private function __createObject (swf:SWFLite):DisplayObject {
+		
+		return null;
 		
 	}
 	

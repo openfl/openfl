@@ -12,6 +12,7 @@ import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 
+@:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 
@@ -72,65 +73,31 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private static function __createButton (swf:SWFLite, symbol:ButtonSymbol):SimpleButton {
-		
-		var simpleButton:SimpleButton = null;
-		
-		SimpleButton.__initSWF = swf;
-		SimpleButton.__initSymbol = symbol;
-		
-		if (symbol.className != null) {
-			
-			var symbolType = Type.resolveClass (symbol.className);
-			
-			if (symbolType != null) {
-				
-				simpleButton = Type.createInstance (symbolType, []);
-				
-			} else {
-				
-				//Log.warn ("Could not resolve class \"" + symbol.className + "\"");
-				
-			}
-			
-		}
-		
-		if (simpleButton == null) {
-			
-			simpleButton = new SimpleButton ();
-			
-		}
-		
-		return simpleButton;
-		
-	}
-	
-	
 	private function __fromSymbol (swf:SWFLite, symbol:ButtonSymbol):Void {
 		
 		__symbol = symbol;
 		
 		if (symbol.downState != null) {
 			
-			downState = MovieClip.__createClip (swf, symbol.downState);
+			downState = symbol.downState.__createObject (swf);
 			
 		}
 		
 		if (symbol.hitState != null) {
 			
-			hitTestState = MovieClip.__createClip (swf, symbol.hitState);
+			hitTestState = symbol.hitState.__createObject (swf);
 			
 		}
 		
 		if (symbol.overState != null) {
 			
-			overState = MovieClip.__createClip (swf, symbol.overState);
+			overState = symbol.overState.__createObject (swf);
 			
 		}
 		
 		if (symbol.upState != null) {
 			
-			upState = MovieClip.__createClip (swf, symbol.upState);
+			upState = symbol.upState.__createObject (swf);
 			
 		}
 		

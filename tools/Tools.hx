@@ -347,6 +347,9 @@ class Tools {
 					
 				}
 				
+				var packageNameDot = packageName;
+				if (packageNameDot.length > 0) packageNameDot += ".";
+				
 				var classProperties = [];
 				
 				if (Std.is (symbol, SpriteSymbol)) {
@@ -407,7 +410,7 @@ class Tools {
 					
 				}
 				
-				var context = { PACKAGE_NAME: packageName, CLASS_NAME: name, SWF_ID: swfLiteAsset.id, SYMBOL_ID: symbolID, CLASS_PROPERTIES: classProperties };
+				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfLiteAsset.id, SYMBOL_ID: symbolID, PREFIX: "", CLASS_PROPERTIES: classProperties };
 				var template = new Template (templateData);
 				var targetPath;
 				

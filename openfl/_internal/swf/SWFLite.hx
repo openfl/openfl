@@ -13,6 +13,7 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.Assets;
 
+@:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 
 
@@ -46,7 +47,7 @@ import openfl.Assets;
 		
 		if (className == "") {
 			
-			return MovieClip.__createClip (this, root);
+			return cast root.__createObject (this);
 			
 		} else {
 			
@@ -56,7 +57,7 @@ import openfl.Assets;
 					
 					if (Std.is (symbol, SpriteSymbol)) {
 						
-						return MovieClip.__createClip (this, cast symbol);
+						return cast symbol.__createObject (this);
 						
 					}
 					

@@ -1,7 +1,11 @@
 package openfl._internal.symbols;
 
 
-//import openfl.text.TextFormatAlign;
+import openfl._internal.swf.SWFLite;
+import openfl.display.DisplayObject;
+import openfl.text.TextField;
+
+@:access(openfl.text.TextField)
 
 
 class DynamicTextSymbol extends SWFSymbol {
@@ -33,6 +37,15 @@ class DynamicTextSymbol extends SWFSymbol {
 	public function new () {
 		
 		super ();
+		
+	}
+	
+	
+	private override function __createObject (swf:SWFLite):DisplayObject {
+		
+		var textField = new TextField ();
+		textField.__fromSymbol (swf, this);
+		return textField;
 		
 	}
 	
