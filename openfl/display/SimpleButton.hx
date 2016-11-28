@@ -149,9 +149,9 @@ class SimpleButton extends InteractiveObject {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
-		if (scrollRect != null) {
+		if (__scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			renderSession.maskManager.pushRect (__scrollRect, __worldTransform);
 			
 		}
 		
@@ -169,7 +169,7 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (scrollRect != null) {
+		if (__scrollRect != null) {
 			
 			renderSession.maskManager.popRect ();
 			
@@ -191,9 +191,9 @@ class SimpleButton extends InteractiveObject {
 		
 		#if !neko
 		
-		if (scrollRect != null) {
+		if (__scrollRect != null) {
 			
-			renderSession.maskManager.pushRect (scrollRect, __worldTransform);
+			renderSession.maskManager.pushRect (__scrollRect, __worldTransform);
 			
 		}
 		
@@ -211,7 +211,7 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		if (scrollRect != null) {
+		if (__scrollRect != null) {
 			
 			renderSession.maskManager.popRect ();
 			

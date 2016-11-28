@@ -1079,7 +1079,8 @@ class CairoGraphics {
 				
 				if (fillPatternMatrix != null) {
 					
-					var matrix = fillPatternMatrix.clone ();
+					var matrix = Matrix.pool.get ();
+					matrix.copyFrom(fillPatternMatrix);
 					matrix.invert ();
 					
 					if (pendingMatrix != null) {
@@ -1089,7 +1090,7 @@ class CairoGraphics {
 					}
 					
 					fillPattern.matrix = matrix.__toMatrix3 ();
-					
+					Matrix.pool.put(matrix);
 				}
 				
 				cairo.source = fillPattern;

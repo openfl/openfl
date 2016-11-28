@@ -85,7 +85,9 @@ import openfl.Lib;
 
 		ogl = new OpenGLView ();
 		ogl.scrollRect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
-		scrollRect = ogl.scrollRect.clone ();
+		//scrollRect = ogl.scrollRect.clone ();
+		// get_scrollRect already returns a clone.
+		scrollRect = ogl.scrollRect;
 		ogl.width = stage.stageWidth;
 		ogl.height = stage.stageHeight;
 
@@ -128,7 +130,7 @@ import openfl.Lib;
 		ogl.scrollRect = new Rectangle (0, 0, width, height);
 		ogl.width = width;
 		ogl.height = height;
-		scrollRect = ogl.scrollRect.clone ();
+		scrollRect = ogl.scrollRect;
 		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
 
 	}

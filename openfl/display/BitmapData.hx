@@ -439,12 +439,22 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (clipRect != null) {
 			
-			renderSession.maskManager.pushRect (clipRect, new Matrix ());
+			var matrix = Matrix.pool.get();
+			matrix.identity();
+			renderSession.maskManager.pushRect (clipRect, matrix);
+			Matrix.pool.put(matrix);
 			
 		}
 		
 		var matrixCache = source.__worldTransform;
-		source.__updateTransforms(matrix != null ? matrix : new Matrix ());
+		if ( matrix != null ) {
+			source.__updateTransforms(matrix);
+		} else {
+			var temp_matrix = Matrix.pool.get ();
+			temp_matrix.identity();
+			source.__updateTransforms(temp_matrix);
+			Matrix.pool.put( temp_matrix );
+		}
 		source.__updateChildren (false);
 		source.__renderCanvas (renderSession);
 		source.__updateTransforms(matrixCache);
@@ -511,12 +521,22 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (clipRect != null) {
 			
-			renderSession.maskManager.pushRect (clipRect, new Matrix ());
+			var temp_matrix = Matrix.pool.get();
+			temp_matrix.identity();
+			renderSession.maskManager.pushRect (clipRect, temp_matrix);
+			Matrix.pool.put( temp_matrix );
 			
 		}
 		
 		var matrixCache = source.__worldTransform;
-		source.__updateTransforms(matrix != null ? matrix : new Matrix ());
+
+		if ( matrix != null ) {
+			source.__updateTransforms(matrix);
+		} else {
+			var temp_matrix = Matrix.pool.get();
+			source.__updateTransforms(temp_matrix);
+			Matrix.pool.put( temp_matrix );
+		}
 		source.__updateChildren (false);
 		source.__renderCairo (renderSession);
 		source.__updateTransforms(matrixCache);

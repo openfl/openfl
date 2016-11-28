@@ -9,7 +9,7 @@ class OuterKnockoutCommand {
 
 	private static var __shader = new OuterKnockoutShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData, allowTransparency:Bool = false) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData, allowTransparency:Bool = true) {
 
 		__shader.uSource1Sampler = source1;
 		__shader.allow_transparency = allowTransparency ? 1.0 : 0.0;

@@ -79,7 +79,10 @@ class Video extends DisplayObject {
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		var point = globalToLocal (new Point (x, y));
+		var input_point = Point.pool.get();
+		input_point.setTo(x, y);
+		var point = globalToLocal (input_point);
+		Point.pool.put(input_point);
 		
 		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
 			
@@ -100,7 +103,10 @@ class Video extends DisplayObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
-		var point = globalToLocal (new Point (x, y));
+		var input_point = Point.pool.get();
+		input_point.setTo(x, y);
+		var point = globalToLocal (input_point);
+		Point.pool.put(input_point);
 		
 		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
 			
@@ -150,13 +156,13 @@ class Video extends DisplayObject {
 				
 			}
 			
-			if (scrollRect == null) {
+			if (__scrollRect == null) {
 				
 				context.drawImage (__stream.__video, 0, 0);
 				
 			} else {
 				
-				context.drawImage (__stream.__video, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+				context.drawImage (__stream.__video, __scrollRect.x, __scrollRect.y, __scrollRect.width, __scrollRect.height, __scrollRect.x, __scrollRect.y, __scrollRect.width, __scrollRect.height);
 				
 			}
 			

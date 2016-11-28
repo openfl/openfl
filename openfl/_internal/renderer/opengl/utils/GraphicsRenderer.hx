@@ -208,8 +208,10 @@ class GraphicsRenderer {
 		}
 		*/
 		
-		var firstPoint = new Point (points[0], points[1]);
-		var lastPoint = new Point (points[Std.int (points.length - 2)], points[Std.int (points.length - 1)]);
+		var firstPoint = Point.pool.get();
+		var lastPoint = Point.pool.get();
+		firstPoint.setTo (points[0], points[1]);
+		lastPoint.setTo (points[Std.int (points.length - 2)], points[Std.int (points.length - 1)]);
 		
 		if (firstPoint.x == lastPoint.x && firstPoint.y == lastPoint.y) {
 			
@@ -217,8 +219,6 @@ class GraphicsRenderer {
 			
 			points.pop ();
 			points.pop ();
-			
-			lastPoint = new Point (points[Std.int (points.length - 2)], points[Std.int (points.length - 1)]);
 			
 			var midPointX = lastPoint.x + (firstPoint.x - lastPoint.x) * 0.5;
 			var midPointY = lastPoint.y + (firstPoint.y - lastPoint.y) * 0.5;
@@ -230,6 +230,9 @@ class GraphicsRenderer {
 			
 		}
 		
+		Point.pool.put(firstPoint);
+		Point.pool.put(lastPoint);
+
 		var verts = line.verts;
 		var indices = line.indices;
 		var length = Std.int (points.length / 2);

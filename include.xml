@@ -102,10 +102,13 @@
 		
 		<haxelib name="lime" />
 		<haxelib name="openfl-samples" />
-		<haxelib name="swf" />
 		
 	</section>
 	
 	<include haxelib="openfl-samples" if="create" />
 	
+	<library handler="openfl" type="swf" />
+	<library handler="openfl" type="swflite" />
+	<library handler="openfl" type="swf_lite" />
+
 </extension>
