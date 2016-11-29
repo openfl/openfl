@@ -9,7 +9,7 @@ import openfl.display.BitmapData;
 import openfl.filters.commands.*;
 
 
-@:final class GradientBevelFilter extends BitmapFilter {
+class GradientBevelFilter extends BitmapFilter {
 
 	public var angle:Float;
 	public var blurX:Float;
