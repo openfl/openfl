@@ -512,7 +512,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			}
 			
-			if (clipRect != null){
+			if (clipRect != null) {
 				
 				renderSession.maskManager.popRect ();
 				

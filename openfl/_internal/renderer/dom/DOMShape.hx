@@ -4,6 +4,7 @@ package openfl._internal.renderer.dom;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 #if (js && html5)
 import js.Browser;
@@ -12,6 +13,7 @@ import js.Browser;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class DOMShape {
@@ -60,14 +62,39 @@ class DOMShape {
 			
 			if (shape.__canvas != null) {
 				
-				if (shape.__worldTransformChanged || graphics.__transformDirty) {
+				renderSession.maskManager.pushObject (shape);
+				
+				if (shape.__renderTransformChanged || graphics.__transformDirty) {
 					
 					graphics.__transformDirty = false;
 					shape.__style.setProperty (renderSession.transformProperty, graphics.__worldTransform.to3DString (renderSession.roundPixels), null);
 					
 				}
 				
-				DOMRenderer.applyStyle (shape, renderSession, false, false, true);
+				var domMaskManager:DOMMaskManager = cast renderSession.maskManager;
+				var currentClipRect = domMaskManager.currentClipRect;
+				
+				if (currentClipRect == null) {
+					
+					shape.__style.removeProperty ("clip");
+					
+				} else {
+					
+					var clip = Rectangle.__temp;
+					var matrix = Matrix.__temp;
+					
+					matrix.copyFrom (graphics.__worldTransform);
+					matrix.invert ();
+					
+					currentClipRect.__transform (clip, matrix);
+					
+					shape.__style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
+					
+				}
+				
+				DOMRenderer.applyStyle (shape, renderSession, false, false, false);
+				
+				renderSession.maskManager.popObject (shape);
 				
 			}
 			

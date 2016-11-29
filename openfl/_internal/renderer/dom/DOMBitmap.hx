@@ -23,6 +23,8 @@ class DOMBitmap {
 		#if (js && html5)
 		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.bitmapData != null && bitmap.bitmapData.__isValid) {
 			
+			renderSession.maskManager.pushObject (bitmap);
+			
 			if (bitmap.bitmapData.image.buffer.__srcImage != null) {
 				
 				renderImage (bitmap, renderSession);
@@ -32,6 +34,8 @@ class DOMBitmap {
 				renderCanvas (bitmap, renderSession);
 				
 			}
+			
+			renderSession.maskManager.popObject (bitmap);
 			
 		} else {
 			

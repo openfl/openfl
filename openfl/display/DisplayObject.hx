@@ -95,6 +95,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __renderDirty:Bool;
 	private var __renderParent:DisplayObject;
 	private var __renderTransform:Matrix;
+	private var __renderTransformCache:Matrix;
+	private var __renderTransformChanged:Bool;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
@@ -104,12 +106,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
-	private var __worldClip:Rectangle;
-	private var __worldClipChanged:Bool;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
-	private var __worldTransformCache:Matrix;
-	private var __worldTransformChanged:Bool;
 	private var __worldVisible:Bool;
 	private var __worldVisibleChanged:Bool;
 	private var __worldZ:Int;
@@ -653,19 +651,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		if (!transformOnly) {
 			
 			#if dom
-			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
+			__renderTransformChanged = !__renderTransform.equals (__renderTransformCache);
 			
-			if (__worldTransformCache == null) {
+			if (__renderTransformCache == null) {
 				
-				__worldTransformCache = __worldTransform.clone ();
+				__renderTransformCache = __renderTransform.clone ();
 				
 			} else {
 				
-				__worldTransformCache.copyFrom (__worldTransform);
+				__renderTransformCache.copyFrom (__renderTransform);
 				
 			}
-			
-			var worldClip:Rectangle = null;
 			#end
 			
 			if (!__worldColorTransform.__equals (transform.colorTransform)) {
@@ -699,27 +695,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__worldAlphaChanged = (__worldAlpha != worldAlpha);
 				__worldAlpha = worldAlpha;
 				
-				if (__parent.__worldClip != null) {
-					
-					worldClip = __parent.__worldClip.clone ();
-					
-				}
-				
-				if (scrollRect != null) {
-					
-					var bounds = scrollRect.clone ();
-					bounds.__transform (bounds, __worldTransform);
-					
-					if (worldClip != null) {
-						
-						bounds.__contract (worldClip.x - scrollRect.x, worldClip.y - scrollRect.y, worldClip.width, worldClip.height);
-						
-					}
-					
-					worldClip = bounds;
-					
-				}
-				
 				#end
 				
 			} else {
@@ -733,21 +708,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__worldAlphaChanged = (__worldAlpha != alpha);
 				
-				if (scrollRect != null) {
-					
-					worldClip = scrollRect.clone ();
-					worldClip.__transform (worldClip, __worldTransform);
-					
-				}
-				
 				#end
 				
 			}
-			
-			#if dom
-			__worldClipChanged = ((worldClip == null && __worldClip != null) || (worldClip != null && !worldClip.equals (__worldClip)));
-			__worldClip = worldClip;
-			#end
 			
 			if (updateChildren && __renderDirty) {
 				
@@ -1204,7 +1167,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_scrollRect ():Rectangle {
 		
-		if ( __scrollRect == null ) return null;
+		if (__scrollRect == null) {
+			
+			return null;
+			
+		}
 		
 		return __scrollRect.clone();
 		

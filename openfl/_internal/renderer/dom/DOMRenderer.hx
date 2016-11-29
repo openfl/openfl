@@ -70,7 +70,7 @@ class DOMRenderer extends AbstractRenderer {
 		#if (js && html5)
 		var style = displayObject.__style;
 		
-		if (setTransform && displayObject.__worldTransformChanged) {
+		if (setTransform && displayObject.__renderTransformChanged) {
 			
 			style.setProperty (renderSession.transformProperty, displayObject.__renderTransform.to3DString (renderSession.roundPixels), null);
 			
@@ -97,9 +97,14 @@ class DOMRenderer extends AbstractRenderer {
 			
 		}
 		
-		if (setClip && displayObject.__worldClipChanged) {
+		if (setClip) {
 			
-			if (displayObject.__worldClip == null) {
+			var domMaskManager:DOMMaskManager = cast renderSession.maskManager;
+			var currentClipRect = domMaskManager.currentClipRect;
+			
+			trace (currentClipRect);
+			
+			if (currentClipRect == null) {
 				
 				style.removeProperty ("clip");
 				
@@ -111,7 +116,8 @@ class DOMRenderer extends AbstractRenderer {
 				matrix.copyFrom (displayObject.__renderTransform);
 				matrix.invert ();
 				
-				displayObject.__worldClip.__transform (clip, matrix);
+				currentClipRect.__transform (clip, matrix);
+				
 				style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
 				
 			}
@@ -146,8 +152,7 @@ class DOMRenderer extends AbstractRenderer {
 		renderSession.element.appendChild (element);
 		
 		displayObject.__worldAlphaChanged = true;
-		displayObject.__worldClipChanged = true;
-		displayObject.__worldTransformChanged = true;
+		displayObject.__renderTransformChanged = true;
 		displayObject.__worldVisibleChanged = true;
 		displayObject.__worldZ = -1;
 		
