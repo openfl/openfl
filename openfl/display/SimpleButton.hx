@@ -11,6 +11,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
+import openfl.Vector;
 
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
@@ -34,7 +35,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
-	private var __previousStates:Array<DisplayObject>;
+	private var __previousStates:Vector<DisplayObject>;
 	private var __soundTransform:SoundTransform;
 	private var __symbol:ButtonSymbol;
 	
@@ -292,7 +293,7 @@ class SimpleButton extends InteractiveObject {
 		
 		#if !neko
 		
-		//if (!__renderable) return;
+		renderSession.maskManager.pushObject (this);
 		
 		for (previousState in __previousStates) {
 			
@@ -300,8 +301,9 @@ class SimpleButton extends InteractiveObject {
 			
 		}
 		
-		renderSession.maskManager.pushObject (this);
+		__previousStates.length = 0;
 		__currentState.__renderDOM (renderSession);
+		
 		renderSession.maskManager.popObject (this);
 		
 		#end
@@ -468,7 +470,7 @@ class SimpleButton extends InteractiveObject {
 		#if (js && html5 && dom)
 		if (__previousStates == null) {
 			
-			__previousStates = [];
+			__previousStates = new Vector<DisplayObject> ();
 			
 		}
 		
@@ -481,7 +483,14 @@ class SimpleButton extends InteractiveObject {
 				
 			}
 			
-			__previousStates.remove (value);
+			var index = __previousStates.indexOf (value);
+			
+			if (index > -1) {
+				
+				__previousStates.splice (index, 1);
+				
+			}
+			
 			value.__setStageReference (stage);
 			value.__worldAlphaChanged = true;
 			
