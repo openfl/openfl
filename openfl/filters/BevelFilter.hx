@@ -80,6 +80,7 @@ import openfl.geom.Rectangle;
 		rect.y -= Math.abs (offset.y) + halfBlurY;
 		rect.width += 2.0 * (Math.abs (offset.x) + halfBlurX);
 		rect.height += 2.0 * (Math.abs (offset.y) + halfBlurY);
+		Point.pool.put (offset);
 
 	}
 
