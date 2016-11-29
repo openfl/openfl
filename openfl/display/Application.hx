@@ -5,6 +5,8 @@ import lime.app.Application in LimeApplication;
 import lime.app.Config;
 import openfl.Lib;
 
+@:access(openfl.display.DisplayObject)
+
 
 class Application extends LimeApplication {
 	
@@ -27,6 +29,10 @@ class Application extends LimeApplication {
 		this.config = config;
 		
 		backend.create (config);
+		
+		#if !flash
+		Lib.current.__loaderInfo = LoaderInfo.create (null);
+		#end
 		
 		if (config != null) {
 			

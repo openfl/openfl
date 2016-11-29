@@ -342,7 +342,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable {
 	 * <code>this.root.loaderInfo.addEventListener(Event.COMPLETE,
 	 * func)</code>.</p>
 	 */
-	public var loaderInfo (default, null):LoaderInfo;
+	public var loaderInfo (get, never):LoaderInfo;
 	
 	/**
 	 * The calling display object is masked by the specified <code>mask</code>

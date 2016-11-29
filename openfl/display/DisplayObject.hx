@@ -56,7 +56,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	public var cacheAsBitmapMatrix (get, set):Matrix;
 	public var filters (get, set):Array<BitmapFilter>;
 	@:keep public var height (get, set):Float;
-	public var loaderInfo (default, null):LoaderInfo;
+	public var loaderInfo (get, never):LoaderInfo;
 	public var mask (get, set):DisplayObject;
 	public var mouseX (get, never):Float;
 	public var mouseY (get, never):Float;
@@ -87,6 +87,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
 	private var __isMask:Bool;
+	private var __loaderInfo:LoaderInfo;
 	private var __mask:DisplayObject;
 	private var __name:String;
 	private var __objectTransform:Transform;
@@ -983,6 +984,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return value;
+		
+	}
+	
+	
+	private function get_loaderInfo ():LoaderInfo {
+		
+		if (stage != null) {
+			
+			return Lib.current.__loaderInfo;
+			
+		}
+		
+		return null;
 		
 	}
 	
