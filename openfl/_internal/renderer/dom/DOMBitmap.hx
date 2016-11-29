@@ -104,6 +104,7 @@ class DOMBitmap {
 			
 		}
 		
+		DOMRenderer.updateClip (bitmap, renderSession);
 		DOMRenderer.applyStyle (bitmap, renderSession, true, false, true);
 		#end
 		
@@ -128,6 +129,7 @@ class DOMBitmap {
 			
 		}
 		
+		DOMRenderer.updateClip (bitmap, renderSession);
 		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
 		#end
 		

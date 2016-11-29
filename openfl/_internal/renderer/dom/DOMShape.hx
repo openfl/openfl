@@ -64,35 +64,20 @@ class DOMShape {
 				
 				renderSession.maskManager.pushObject (shape);
 				
-				if (shape.__renderTransformChanged || graphics.__transformDirty) {
+				var cacheTransform = shape.__renderTransform;
+				shape.__renderTransform = graphics.__worldTransform;
+				
+				if (graphics.__transformDirty) {
 					
 					graphics.__transformDirty = false;
-					shape.__style.setProperty (renderSession.transformProperty, graphics.__worldTransform.to3DString (renderSession.roundPixels), null);
+					shape.__renderTransformChanged = true;
 					
 				}
 				
-				var domMaskManager:DOMMaskManager = cast renderSession.maskManager;
-				var currentClipRect = domMaskManager.currentClipRect;
+				DOMRenderer.updateClip (shape, renderSession);
+				DOMRenderer.applyStyle (shape, renderSession, true, false, true);
 				
-				if (currentClipRect == null) {
-					
-					shape.__style.removeProperty ("clip");
-					
-				} else {
-					
-					var clip = Rectangle.__temp;
-					var matrix = Matrix.__temp;
-					
-					matrix.copyFrom (graphics.__worldTransform);
-					matrix.invert ();
-					
-					currentClipRect.__transform (clip, matrix);
-					
-					shape.__style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
-					
-				}
-				
-				DOMRenderer.applyStyle (shape, renderSession, false, false, false);
+				shape.__renderTransform = cacheTransform;
 				
 				renderSession.maskManager.popObject (shape);
 				

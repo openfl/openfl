@@ -198,6 +198,7 @@ class DOMTextField {
 			
 			if (textField.__div != null) {
 				
+				DOMRenderer.updateClip (textField, renderSession);
 				DOMRenderer.applyStyle (textField, renderSession, true, true, true);
 				
 			}

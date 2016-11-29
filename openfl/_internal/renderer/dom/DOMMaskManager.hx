@@ -140,4 +140,42 @@ class DOMMaskManager extends AbstractMaskManager {
 	}
 	
 	
+	public function updateClip (displayObject:DisplayObject):Void {
+		
+		if (currentClipRect == null) {
+			
+			displayObject.__worldClip = null;
+			
+		} else {
+			
+			if (displayObject.__worldClip == null) {
+				
+				displayObject.__worldClip = new Rectangle ();
+				
+			}
+			
+			var clip = Rectangle.__temp;
+			var matrix = Matrix.__temp;
+			
+			matrix.copyFrom (displayObject.__renderTransform);
+			matrix.invert ();
+			
+			currentClipRect.__transform (clip, matrix);
+			
+			if (clip.equals (displayObject.__worldClip)) {
+				
+				displayObject.__worldClipChanged = false;
+				
+			} else {
+				
+				displayObject.__worldClip.copyFrom (clip);
+				displayObject.__worldClipChanged = true;
+				
+			}
+			
+		}
+		
+	}
+	
+	
 }

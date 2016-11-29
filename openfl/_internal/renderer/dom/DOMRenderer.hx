@@ -97,27 +97,15 @@ class DOMRenderer extends AbstractRenderer {
 			
 		}
 		
-		if (setClip) {
+		if (setClip && displayObject.__worldClipChanged) {
 			
-			var domMaskManager:DOMMaskManager = cast renderSession.maskManager;
-			var currentClipRect = domMaskManager.currentClipRect;
-			
-			trace (currentClipRect);
-			
-			if (currentClipRect == null) {
+			if (displayObject.__worldClip == null) {
 				
 				style.removeProperty ("clip");
 				
 			} else {
 				
-				var clip = Rectangle.__temp;
-				var matrix = Matrix.__temp;
-				
-				matrix.copyFrom (displayObject.__renderTransform);
-				matrix.invert ();
-				
-				currentClipRect.__transform (clip, matrix);
-				
+				var clip = displayObject.__worldClip;
 				style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
 				
 			}
@@ -176,6 +164,14 @@ class DOMRenderer extends AbstractRenderer {
 		
 		renderSession.z = 1;
 		stage.__renderDOM (renderSession);
+		
+	}
+	
+	
+	public static function updateClip (displayObject:DisplayObject, renderSession:RenderSession):Void {
+		
+		var maskManager:DOMMaskManager = cast renderSession.maskManager;
+		maskManager.updateClip (displayObject);
 		
 	}
 	

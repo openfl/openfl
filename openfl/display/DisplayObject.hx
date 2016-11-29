@@ -106,6 +106,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
+	private var __worldClip:Rectangle;
+	private var __worldClipChanged:Bool;
 	private var __worldColorTransform:ColorTransform;
 	private var __worldTransform:Matrix;
 	private var __worldVisible:Bool;

@@ -34,6 +34,7 @@ class DOMVideo {
 				
 			}
 			
+			DOMRenderer.updateClip (video, renderSession);
 			DOMRenderer.applyStyle (video, renderSession, true, true, true);
 			
 		} else {

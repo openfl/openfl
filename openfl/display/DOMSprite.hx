@@ -43,6 +43,7 @@ class DOMSprite extends Sprite {
 				
 			}
 			
+			DOMRenderer.updateClip (this, renderSession);
 			DOMRenderer.applyStyle (this, renderSession, true, true, true);
 			
 		} else {
