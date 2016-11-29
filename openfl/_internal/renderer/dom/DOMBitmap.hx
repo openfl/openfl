@@ -85,15 +85,19 @@ class DOMBitmap {
 			
 		}
 		
-		// TODO: Cache if the image.version is the same as before
-		
-		ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
-		
-		bitmap.__canvas.width = bitmap.bitmapData.width;
-		bitmap.__canvas.height = bitmap.bitmapData.height;
-		
-		bitmap.__context.globalAlpha = bitmap.__worldAlpha;
-		bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
+		if (bitmap.__imageVersion != bitmap.bitmapData.image.version) {
+			
+			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
+			
+			bitmap.__canvas.width = bitmap.bitmapData.width;
+			bitmap.__canvas.height = bitmap.bitmapData.height;
+			
+			bitmap.__context.globalAlpha = bitmap.__worldAlpha;
+			bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
+			
+			bitmap.__imageVersion = bitmap.bitmapData.image.version;
+			
+		}
 		
 		DOMRenderer.applyStyle (bitmap, renderSession, true, false, true);
 		#end

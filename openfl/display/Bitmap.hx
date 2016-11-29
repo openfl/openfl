@@ -29,6 +29,7 @@ class Bitmap extends DisplayObject {
 	
 	#if (js && html5)
 	private var __image:ImageElement;
+	private var __imageVersion:Int;
 	#end
 	
 	
@@ -45,6 +46,10 @@ class Bitmap extends DisplayObject {
 			this.pixelSnapping = PixelSnapping.AUTO;
 			
 		}
+		
+		#if (js && html5 && dom)
+		__imageVersion = -1;
+		#end
 		
 	}
 	
@@ -194,6 +199,10 @@ class Bitmap extends DisplayObject {
 			//__updateFilters = true;
 			
 		}
+		
+		#if (js && html5 && dom)
+		__imageVersion = -1;
+		#end
 		
 		return bitmapData;
 		
