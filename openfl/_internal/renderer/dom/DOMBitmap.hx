@@ -71,6 +71,7 @@ class DOMBitmap {
 			
 			bitmap.__canvas = cast Browser.document.createElement ("canvas");
 			bitmap.__context = bitmap.__canvas.getContext ("2d");
+			bitmap.__imageVersion = -1;
 			
 			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				

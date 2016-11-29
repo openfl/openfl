@@ -47,10 +47,6 @@ class Bitmap extends DisplayObject {
 			
 		}
 		
-		#if (js && html5 && dom)
-		__imageVersion = -1;
-		#end
-		
 	}
 	
 	
