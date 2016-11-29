@@ -127,7 +127,8 @@ class DOMTextField {
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 					
-					textField.__div.innerHTML = textEngine.text;
+					//textField.__div.innerHTML = textEngine.text;
+					textField.__div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
 					
 					if (textEngine.background) {
 						
@@ -197,9 +198,7 @@ class DOMTextField {
 			
 			if (textField.__div != null) {
 				
-				// TODO: Enable scrollRect clipping
-				
-				DOMRenderer.applyStyle (textField, renderSession, true, true, false);
+				DOMRenderer.applyStyle (textField, renderSession, true, true, true);
 				
 			}
 			
