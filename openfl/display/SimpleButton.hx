@@ -34,6 +34,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
+	private var __previousStates:Array<DisplayObject>;
 	private var __soundTransform:SoundTransform;
 	private var __symbol:ButtonSymbol;
 	
@@ -293,6 +294,12 @@ class SimpleButton extends InteractiveObject {
 		
 		//if (!__renderable) return;
 		
+		for (previousState in __previousStates) {
+			
+			previousState.__renderDOM (renderSession);
+			
+		}
+		
 		renderSession.maskManager.pushObject (this);
 		__currentState.__renderDOM (renderSession);
 		renderSession.maskManager.popObject (this);
@@ -317,6 +324,19 @@ class SimpleButton extends InteractiveObject {
 		
 		state.__updateTransforms (cacheTransform);
 		state.__updateChildren (false);
+		
+	}
+	
+	
+	private override function __setStageReference (stage:Stage):Void {
+		
+		super.__setStageReference (stage);
+		
+		if (__currentState != null) {
+			
+			__currentState.__setStageReference (stage);
+			
+		}
 		
 	}
 	
@@ -444,6 +464,29 @@ class SimpleButton extends InteractiveObject {
 			value.parent.removeChild (value);
 			
 		}
+		
+		#if (js && html5 && dom)
+		if (__previousStates == null) {
+			
+			__previousStates = [];
+			
+		}
+		
+		if (value != __currentState) {
+			
+			if (__currentState != null) {
+				
+				__currentState.__setStageReference (null);
+				__previousStates.push (__currentState);
+				
+			}
+			
+			__previousStates.remove (value);
+			value.__setStageReference (stage);
+			value.__worldAlphaChanged = true;
+			
+		}
+		#end
 		
 		value.__renderParent = this;
 		return __currentState = value;
