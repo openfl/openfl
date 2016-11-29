@@ -438,7 +438,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 				
-				gl.viewport (0, 0, width, height);
+				gl.viewport (0, 0, Math.round(Lib.current.stage.stageWidth), Math.round(Lib.current.stage.stageHeight));
 				gl.clear (gl.COLOR_BUFFER_BIT);
 				
 				var renderer = new GLRenderer (Lib.current.stage, gl, false);
