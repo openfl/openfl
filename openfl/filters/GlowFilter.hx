@@ -25,6 +25,13 @@ import openfl.geom.Rectangle;
 		
 		super ();
 		
+		if (blurX == 0) {
+			blurX = 1;
+		}
+		if (blurY == 0) {
+			blurY = 1;
+		}
+
 		this.color = color;
 		this.alpha = alpha;
 		this.blurX = blurX;
