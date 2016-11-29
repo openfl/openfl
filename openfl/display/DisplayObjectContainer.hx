@@ -26,7 +26,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, never):Int;
 	public var tabChildren:Bool;
 	
-	private var __removedChildren:Array<DisplayObject>;
+	private var __removedChildren:Vector<DisplayObject>;
 	
 	
 	private function new () {
@@ -36,7 +36,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		mouseChildren = true;
 		
 		__children = new Array<DisplayObject> ();
-		__removedChildren = new Array<DisplayObject> ();
+		__removedChildren = new Vector<DisplayObject> ();
 		
 	}
 	
@@ -579,11 +579,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -633,11 +629,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -692,11 +684,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
@@ -729,11 +717,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 		}
 		
-		if (__removedChildren.length > 0) {
-			
-			__removedChildren.splice (0, __removedChildren.length);
-			
-		}
+		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
 		
