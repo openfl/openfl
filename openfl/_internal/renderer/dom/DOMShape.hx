@@ -26,12 +26,7 @@ class DOMShape {
 			
 			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas == null && graphics.__canvas != null)) {
 				
-				var matrix = Matrix.__temp;
-				matrix.identity ();
-				
-				// TODO: Implement scaling
-				
-				CanvasGraphics.render (graphics, renderSession, matrix);
+				CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
 				
 				if (graphics.__canvas != null) {
 					
@@ -72,7 +67,7 @@ class DOMShape {
 					var transform = Matrix.__temp;
 					transform.identity ();
 					transform.translate (graphics.__bounds.x, graphics.__bounds.y);
-					transform.concat (shape.__renderTransform);
+					transform.concat (graphics.__worldTransform);
 					
 					shape.__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
 					
