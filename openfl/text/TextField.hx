@@ -2188,7 +2188,7 @@ class TextField extends InteractiveObject {
 			
 			case C:
 				
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
 					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
@@ -2196,7 +2196,7 @@ class TextField extends InteractiveObject {
 			
 			case X:
 				
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
 					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
@@ -2237,7 +2237,7 @@ class TextField extends InteractiveObject {
 			
 			case A:
 				
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
 					
 					__caretIndex = __text.length;
 					__selectionIndex = 0;
