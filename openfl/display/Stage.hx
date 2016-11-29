@@ -44,6 +44,7 @@ import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
+import openfl.events.UncaughtErrorEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -303,35 +304,75 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onGamepadAxisMove (gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {
 		
-		GameInput.__onGamepadAxisMove (gamepad, axis, value);
+		try {
+			
+			GameInput.__onGamepadAxisMove (gamepad, axis, value);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadButtonDown (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		GameInput.__onGamepadButtonDown (gamepad, button);
+		try {
+			
+			GameInput.__onGamepadButtonDown (gamepad, button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadButtonUp (gamepad:Gamepad, button:GamepadButton):Void {
 		
-		GameInput.__onGamepadButtonUp (gamepad, button);
+		try {
+			
+			GameInput.__onGamepadButtonUp (gamepad, button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadConnect (gamepad:Gamepad):Void {
 		
-		GameInput.__onGamepadConnect (gamepad);
+		try {
+			
+			GameInput.__onGamepadConnect (gamepad);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onGamepadDisconnect (gamepad:Gamepad):Void {
 		
-		GameInput.__onGamepadDisconnect (gamepad);
+		try {
+			
+			GameInput.__onGamepadDisconnect (gamepad);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -389,7 +430,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
+		try {
+			
+			__onKey (KeyboardEvent.KEY_DOWN, keyCode, modifier);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -398,7 +447,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
+		try {
+			
+			__onKey (KeyboardEvent.KEY_UP, keyCode, modifier);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -407,7 +464,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (window != null) {
 			
-			__broadcastEvent (new Event (Event.DEACTIVATE));
+			try {
+				
+				__broadcastEvent (new Event (Event.DEACTIVATE));
+				
+			} catch (e:Dynamic) {
+				
+				__handleError (e);
+				
+			}
 			
 		}
 		
@@ -418,15 +483,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var type = switch (button) {
+		try {
 			
-			case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
-			case 2: MouseEvent.RIGHT_MOUSE_DOWN;
-			default: MouseEvent.MOUSE_DOWN;
+			var type = switch (button) {
+				
+				case 1: MouseEvent.MIDDLE_MOUSE_DOWN;
+				case 2: MouseEvent.RIGHT_MOUSE_DOWN;
+				default: MouseEvent.MOUSE_DOWN;
+				
+			}
+			
+			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
 	}
 	
@@ -435,7 +508,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+		try {
+			
+			__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -451,15 +532,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var type = switch (button) {
+		try {
 			
-			case 1: MouseEvent.MIDDLE_MOUSE_UP;
-			case 2: MouseEvent.RIGHT_MOUSE_UP;
-			default: MouseEvent.MOUSE_UP;
+			var type = switch (button) {
+				
+				case 1: MouseEvent.MIDDLE_MOUSE_UP;
+				case 2: MouseEvent.RIGHT_MOUSE_UP;
+				default: MouseEvent.MOUSE_UP;
+				
+			}
+			
+			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
 		
 	}
 	
@@ -468,7 +557,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+		try {
+			
+			__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -512,27 +609,35 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var stack = new Array <DisplayObject> ();
-		
-		if (__focus == null) {
+		try {
 			
-			__getInteractive (stack);
+			var stack = new Array <DisplayObject> ();
 			
-		} else {
+			if (__focus == null) {
+				
+				__getInteractive (stack);
+				
+			} else {
+				
+				__focus.__getInteractive (stack);
+				
+			}
 			
-			__focus.__getInteractive (stack);
+			var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
+			if (stack.length > 0) {
+				
+				stack.reverse ();
+				__fireEvent (event, stack);
+				
+			} else {
+				
+				__dispatchEvent (event);
+				
+			}
 			
-		}
-		
-		var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
-		if (stack.length > 0) {
+		} catch (e:Dynamic) {
 			
-			stack.reverse ();
-			__fireEvent (event, stack);
-			
-		} else {
-			
-			__dispatchEvent (event);
+			__handleError (e);
 			
 		}
 		
@@ -541,33 +646,57 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onTouchMove (touch:Touch):Void {
 		
-		__onTouch (TouchEvent.TOUCH_MOVE, touch);
+		try {
+			
+			__onTouch (TouchEvent.TOUCH_MOVE, touch);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
 	
 	public function onTouchEnd (touch:Touch):Void {
 		
-		if (__primaryTouch == touch) {
+		try {
 			
-			__primaryTouch = null;
+			if (__primaryTouch == touch) {
+				
+				__primaryTouch = null;
+				
+			}
+			
+			__onTouch (TouchEvent.TOUCH_END, touch);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__onTouch (TouchEvent.TOUCH_END, touch);
 		
 	}
 	
 	
 	public function onTouchStart (touch:Touch):Void {
 		
-		if (__primaryTouch == null) {
+		try {
 			
-			__primaryTouch = touch;
+			if (__primaryTouch == null) {
+				
+				__primaryTouch = touch;
+				
+			}
+			
+			__onTouch (TouchEvent.TOUCH_BEGIN, touch);
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		__onTouch (TouchEvent.TOUCH_BEGIN, touch);
 		
 	}
 	
@@ -576,7 +705,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__broadcastEvent (new Event (Event.ACTIVATE));
+		try {
+			
+			__broadcastEvent (new Event (Event.ACTIVATE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -596,39 +733,47 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		if (window.renderer != null) {
+		try {
 			
-			switch (window.renderer.context) {
+			if (window.renderer != null) {
 				
-				case OPENGL (gl):
+				switch (window.renderer.context) {
 					
-					#if (!disable_cffi && (!html5 || !canvas))
-					__renderer = new GLRenderer (this, gl);
-					#end
-				
-				case CANVAS (context):
+					case OPENGL (gl):
+						
+						#if (!disable_cffi && (!html5 || !canvas))
+						__renderer = new GLRenderer (this, gl);
+						#end
 					
-					__renderer = new CanvasRenderer (this, context);
-				
-				case DOM (element):
+					case CANVAS (context):
+						
+						__renderer = new CanvasRenderer (this, context);
 					
-					__renderer = new DOMRenderer (this, element);
-				
-				case CAIRO (cairo):
+					case DOM (element):
+						
+						__renderer = new DOMRenderer (this, element);
 					
-					#if !html5
-					__renderer = new CairoRenderer (this, cairo);
-					#end
-				
-				case CONSOLE (ctx):
+					case CAIRO (cairo):
+						
+						#if !html5
+						__renderer = new CairoRenderer (this, cairo);
+						#end
 					
-					#if !html5
-					__renderer = new ConsoleRenderer (this, ctx);
-					#end
-				
-				default:
+					case CONSOLE (ctx):
+						
+						#if !html5
+						__renderer = new ConsoleRenderer (this, ctx);
+						#end
+					
+					default:
+					
+				}
 				
 			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
 		
@@ -639,8 +784,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__primaryTouch = null;
-		__broadcastEvent (new Event (Event.DEACTIVATE));
+		try {
+			
+			__primaryTouch = null;
+			__broadcastEvent (new Event (Event.DEACTIVATE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -663,7 +816,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		focus = __cacheFocus;
+		try {
+			
+			focus = __cacheFocus;
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -672,9 +833,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		var currentFocus = focus;
-		focus = null;
-		__cacheFocus = currentFocus;
+		try {
+			
+			var currentFocus = focus;
+			focus = null;
+			__cacheFocus = currentFocus;
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -683,12 +852,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__resize ();
-		
-		if (__displayState == NORMAL) {
+		try {
 			
-			__displayState = FULL_SCREEN_INTERACTIVE;
-			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
+			__resize ();
+			
+			if (__displayState == NORMAL) {
+				
+				__displayState = FULL_SCREEN_INTERACTIVE;
+				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, false, true));
+				
+			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
 		
@@ -699,7 +876,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
+		try {
+			
+			__dispatchEvent (new Event (Event.MOUSE_LEAVE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -722,12 +907,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		__resize ();
-		
-		if (__displayState != NORMAL && !window.fullscreen) {
+		try {
 			
-			__displayState = NORMAL;
-			__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
+			__resize ();
+			
+			if (__displayState != NORMAL && !window.fullscreen) {
+				
+				__displayState = NORMAL;
+				__dispatchEvent (new FullScreenEvent (FullScreenEvent.FULL_SCREEN, false, false, true, true));
+				
+			}
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
 		
@@ -747,76 +940,84 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (renderer.window == null || renderer.window != window) return;
 		
-		// TODO: Fix multiple stages more gracefully
-		
-		if (application != null && application.windows.length > 0) {
+		try {
 			
-			__setTransformDirty ();
-			__setRenderDirty ();
+			// TODO: Fix multiple stages more gracefully
 			
-		}
-		
-		if (__rendering) return;
-		__rendering = true;
-		
-		#if hxtelemetry
-		Telemetry.__advanceFrame ();
-		#end
-		
-		if (__renderer != null) {
-			
-			__renderer.clear ();
-			
-		}
-		
-		__broadcastEvent (new Event (Event.ENTER_FRAME));
-		__broadcastEvent (new Event (Event.EXIT_FRAME));
-		
-		if (__invalidated) {
-			
-			__invalidated = false;
-			__broadcastEvent (new Event (Event.RENDER));
-			
-		}
-		
-		#if hxtelemetry
-		var stack = Telemetry.__unwindStack ();
-		Telemetry.__startTiming (TelemetryCommandName.RENDER);
-		#end
-		
-		__renderable = true;
-		
-		__enterFrame (__deltaTime);
-		__deltaTime = 0;
-		__update (false, true);
-		
-		if (__renderer != null) {
-			
-			if (renderer.type == CAIRO) {
+			if (application != null && application.windows.length > 0) {
 				
-				switch (renderer.context) {
-					
-					case CAIRO (cairo):
-						
-						cast (__renderer, CairoRenderer).cairo = cairo;
-						@:privateAccess (__renderer.renderSession).cairo = cairo;
-					
-					default:
-						
-				}
+				__setTransformDirty ();
+				__setRenderDirty ();
 				
 			}
 			
-			__renderer.render ();
+			if (__rendering) return;
+			__rendering = true;
+			
+			#if hxtelemetry
+			Telemetry.__advanceFrame ();
+			#end
+			
+			if (__renderer != null) {
+				
+				__renderer.clear ();
+				
+			}
+			
+			__broadcastEvent (new Event (Event.ENTER_FRAME));
+			__broadcastEvent (new Event (Event.EXIT_FRAME));
+			
+			if (__invalidated) {
+				
+				__invalidated = false;
+				__broadcastEvent (new Event (Event.RENDER));
+				
+			}
+			
+			#if hxtelemetry
+			var stack = Telemetry.__unwindStack ();
+			Telemetry.__startTiming (TelemetryCommandName.RENDER);
+			#end
+			
+			__renderable = true;
+			
+			__enterFrame (__deltaTime);
+			__deltaTime = 0;
+			__update (false, true);
+			
+			if (__renderer != null) {
+				
+				if (renderer.type == CAIRO) {
+					
+					switch (renderer.context) {
+						
+						case CAIRO (cairo):
+							
+							cast (__renderer, CairoRenderer).cairo = cairo;
+							@:privateAccess (__renderer.renderSession).cairo = cairo;
+						
+						default:
+							
+					}
+					
+				}
+				
+				__renderer.render ();
+				
+			}
+			
+			#if hxtelemetry
+			Telemetry.__endTiming (TelemetryCommandName.RENDER);
+			Telemetry.__rewindStack (stack);
+			#end
+			
+			__rendering = false;
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
-		
-		#if hxtelemetry
-		Telemetry.__endTiming (TelemetryCommandName.RENDER);
-		Telemetry.__rewindStack (stack);
-		#end
-		
-		__rendering = false;
 		
 	}
 	
@@ -962,6 +1163,31 @@ class Stage extends DisplayObjectContainer implements IModule {
 		return true;
 		
 	}
+	
+	
+	private function __handleError (e:Dynamic):Void {
+		
+		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
+		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
+		
+		if (!event.__preventDefault) {
+			
+			#if cpp
+			untyped __cpp__ ("throw e");
+			#elseif neko
+			neko.Lib.rethrow (e);
+			#elseif js
+			untyped __js__ ("throw e");
+			#elseif cs
+			cs.Lib.rethrow (e);
+			#else
+			throw e;
+			#end
+			
+		}
+		
+	}
+	
 	
 	
 	private function __onKey (type:String, keyCode:KeyCode, modifier:KeyModifier):Void {

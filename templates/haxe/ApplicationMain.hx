@@ -244,9 +244,22 @@ class ApplicationMain {
 	
 	public static function start ():Void {
 		
+		#if flash
+		
 		ApplicationMain.getEntryPoint ();
 		
-		#if !flash
+		#else
+		
+		try {
+			
+			ApplicationMain.getEntryPoint ();
+			
+		} catch (e:Dynamic) {
+			
+			openfl.Lib.current.stage.__handleError (e);
+			
+		}
+		
 		openfl.Lib.current.stage.dispatchEvent (new openfl.events.Event (openfl.events.Event.RESIZE, false, false));
 		
 		if (openfl.Lib.current.stage.window.fullscreen) {
