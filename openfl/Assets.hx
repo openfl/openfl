@@ -394,7 +394,7 @@ class Assets {
 	}
 	
 	
-	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
+	@:analyzer(ignore) private static function isValidBitmapData (bitmapData:BitmapData):Bool {
 		
 		#if (tools && !display)
 		#if flash
