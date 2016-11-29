@@ -63,13 +63,7 @@ class DOMShape {
 				if (shape.__worldTransformChanged || graphics.__transformDirty) {
 					
 					graphics.__transformDirty = false;
-					
-					var transform = Matrix.__temp;
-					transform.identity ();
-					transform.translate (graphics.__bounds.x, graphics.__bounds.y);
-					transform.concat (graphics.__worldTransform);
-					
-					shape.__style.setProperty (renderSession.transformProperty, transform.to3DString (renderSession.roundPixels), null);
+					shape.__style.setProperty (renderSession.transformProperty, graphics.__worldTransform.to3DString (renderSession.roundPixels), null);
 					
 				}
 				
