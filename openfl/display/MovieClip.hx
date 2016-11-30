@@ -1,10 +1,7 @@
 package openfl.display;
 
 
-import lime.graphics.ImageChannel;
-import lime.math.Vector2;
 import lime.utils.Log;
-import lime.Assets in LimeAssets;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.symbols.ButtonSymbol;
@@ -18,11 +15,8 @@ import openfl._internal.timeline.FrameObjectType;
 import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
-import openfl.Assets;
 
 @:access(openfl._internal.symbols.SWFSymbol)
-@:access(openfl.display.SimpleButton)
-@:access(openfl.text.TextField)
 
 
 class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObject> #end {
@@ -491,9 +485,9 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 					
 					if (!__objects.exists (frameObject.id)) {
 						
-						if (__swf.symbols.exists (frameObject.symbol)) {
+						var symbol = __swf.symbols.get (frameObject.symbol);
+						if (symbol != null) {
 							
-							symbol = __swf.symbols.get (frameObject.symbol);
 							displayObject = symbol.__createObject (__swf);
 							
 						}

@@ -14,7 +14,6 @@ import haxe.Unserializer;
 import openfl.Assets;
 
 @:access(openfl._internal.symbols.SWFSymbol)
-@:access(openfl.display.MovieClip)
 
 
 @:keep class SWFLite {
@@ -57,7 +56,7 @@ import openfl.Assets;
 					
 					if (Std.is (symbol, SpriteSymbol)) {
 						
-						return cast symbol.__createObject (this);
+						return cast (symbol, SpriteSymbol).__createObject (this);
 						
 					}
 					

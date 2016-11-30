@@ -23,7 +23,7 @@ class ShapeSymbol extends SWFSymbol {
 	}
 	
 	
-	private override function __createObject (swf:SWFLite):DisplayObject {
+	private override function __createObject (swf:SWFLite):Shape {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;

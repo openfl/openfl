@@ -3,7 +3,6 @@ package openfl._internal.symbols;
 
 import openfl._internal.swf.SWFLite;
 import openfl._internal.timeline.Frame;
-import openfl.display.DisplayObject;
 import openfl.display.MovieClip;
 
 @:access(openfl.display.MovieClip)
@@ -24,7 +23,7 @@ class SpriteSymbol extends SWFSymbol {
 	}
 	
 	
-	private override function __createObject (swf:SWFLite):DisplayObject {
+	private override function __createObject (swf:SWFLite):MovieClip {
 		
 		var movieClip:MovieClip = null;
 		
@@ -41,7 +40,7 @@ class SpriteSymbol extends SWFSymbol {
 				
 			} else {
 				
-				//Log.warn ("Could not resolve class \"" + symbol.className + "\"");
+				//Log.warn ("Could not resolve class \"" + className + "\"");
 				
 			}
 			
