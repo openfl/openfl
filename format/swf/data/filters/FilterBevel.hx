@@ -73,8 +73,9 @@ class FilterBevel extends Filter implements IFilter
 	}
 
 	override public function parse(data:SWFData):Void {
-		shadowColor = data.readRGBA();
+		// :TRICKY: opposite of what's stated in the documentation
 		highlightColor = data.readRGBA();
+		shadowColor = data.readRGBA();
 		blurX = data.readFIXED();
 		blurY = data.readFIXED();
 		angle = data.readFIXED();

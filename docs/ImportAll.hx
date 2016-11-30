@@ -120,6 +120,7 @@ import openfl.filters.ColorMatrixFilter;
 //import openfl.filters.ConvolutionFilter;
 import openfl.filters.DropShadowFilter;
 import openfl.filters.BevelFilter;
+import openfl.filters.GradientBevelFilter;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
