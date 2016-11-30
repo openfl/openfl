@@ -144,6 +144,7 @@ class DOMMaskManager extends AbstractMaskManager {
 		
 		if (currentClipRect == null) {
 			
+			displayObject.__worldClipChanged = (displayObject.__worldClip != null);
 			displayObject.__worldClip = null;
 			
 		} else {
