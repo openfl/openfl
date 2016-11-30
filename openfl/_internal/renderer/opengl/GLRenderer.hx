@@ -164,8 +164,8 @@ class GLRenderer extends AbstractRenderer {
 		
 		offsetX = Math.round (displayMatrix.__transformX (0, 0));
 		offsetY = Math.round (displayMatrix.__transformY (0, 0));
-		displayWidth = Math.round (displayMatrix.__transformX (stage.stageWidth, 0) - offsetX);
-		displayHeight = Math.round (displayMatrix.__transformY (0, stage.stageHeight) - offsetY);
+		displayWidth = Math.round (displayMatrix.__transformX (width, 0) - offsetX);
+		displayHeight = Math.round (displayMatrix.__transformY (0, height) - offsetY);
 		
 		projection = Matrix4.createOrtho (offsetX, displayWidth + offsetX, flipped ? displayHeight + offsetY : offsetY, !flipped ? displayHeight + offsetY : offsetY, -1000, 1000);
 		

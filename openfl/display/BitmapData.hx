@@ -455,9 +455,7 @@ class BitmapData implements IBitmapDrawable {
 				gl.clear (gl.COLOR_BUFFER_BIT);
 				
 				var renderer = new GLRenderer (Lib.current.stage, gl, false);
-				
-				var renderSession = renderer.renderSession;
-				renderSession.shaderManager = cast (Lib.current.stage.__renderer, GLRenderer).renderSession.shaderManager;
+				renderer.resize (width, height);
 				
 				var matrixCache = source.__worldTransform;
 				source.__updateTransforms (matrix);
@@ -1499,7 +1497,25 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __renderGL (renderSession:RenderSession):Void {
 		
+		var renderer:GLRenderer = cast renderSession.renderer;
+		var gl = renderSession.gl;
 		
+		renderSession.blendModeManager.setBlendMode (NORMAL);
+		
+		var shader = renderSession.shaderManager.defaultShader;
+		
+		shader.data.uImage0.input = this;
+		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
+		shader.data.uMatrix.value = renderer.getMatrix (__worldTransform);
+		
+		renderSession.shaderManager.setShader (shader);
+		
+		gl.bindBuffer (gl.ARRAY_BUFFER, getBuffer (gl, 1));
+		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		
+		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
 	}
 	

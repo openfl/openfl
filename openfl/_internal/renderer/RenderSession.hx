@@ -30,8 +30,8 @@ class RenderSession {
 	public var transformOriginProperty:String;
 	public var upscaled:Bool;
 	public var vendorPrefix:String;
-	public var z:Int;
 	public var projectionMatrix:Matrix;
+	public var z:Int;
 	
 	public var drawCount:Int;
 	public var currentBlendMode:BlendMode;
