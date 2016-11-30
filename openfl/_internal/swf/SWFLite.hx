@@ -79,8 +79,7 @@ import openfl.Assets;
 				
 				if (Std.is (symbol, BitmapSymbol)) {
 					
-					var bitmap:BitmapSymbol = cast symbol;
-					return Assets.getBitmapData (bitmap.path);
+					return cast (symbol, BitmapSymbol).getBitmapData ();
 					
 				}
 				

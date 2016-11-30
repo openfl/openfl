@@ -6,8 +6,6 @@ import openfl._internal.swf.SWFLite;
 import openfl.display.DisplayObject;
 import openfl.display.Shape;
 
-@:access(openfl._internal.symbols.BitmapSymbol)
-
 
 class ShapeSymbol extends SWFSymbol {
 	
@@ -49,7 +47,7 @@ class ShapeSymbol extends SWFSymbol {
 					
 					if (bitmap != null && bitmap.path != "") {
 						
-						graphics.beginBitmapFill (bitmap.__getBitmap (), matrix, repeat, smooth);
+						graphics.beginBitmapFill (bitmap.getBitmapData (), matrix, repeat, smooth);
 						
 					}
 				

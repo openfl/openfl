@@ -17,6 +17,7 @@ class BitmapSymbol extends SWFSymbol {
 	
 	public var alpha:String;
 	public var path:String;
+	public var hasAlpha (get,never) : Bool;
 	
 	
 	public function new () {
@@ -26,43 +27,94 @@ class BitmapSymbol extends SWFSymbol {
 	}
 	
 	
-	private override function __createObject (swf:SWFLite):DisplayObject {
+	private override function __createObject (swf:SWFLite):Bitmap {
 		
-		return new Bitmap (__getBitmap (), PixelSnapping.AUTO, true);
+		return new Bitmap (getBitmapData (), PixelSnapping.AUTO, true);
 		
 	}
 	
 	
-	private function __getBitmap ():BitmapData {
+	public function getBitmapDataFromCache () : Null<BitmapData> {
 		
 		if (Assets.cache.hasBitmapData (path)) {
 			
-			return Assets.cache.getBitmapData (path);
+			var bitmap = Assets.cache.getBitmapData (path);
+			
+			if (bitmap != null && this.hasAlpha && !(bitmap.image.buffer.premultiplied #if sys && bitmap.image.premultiplied #end))
+			{
+				throw bitmap + " alpha channel should be premultiplied";
+			}
+			
+			return bitmap;
+		
+		} else {
+		
+			return null;
+		
+		}
+		
+	}
+	
+	
+	public function getBitmapData () : BitmapData {
+		
+		var bitmap = getBitmapDataFromCache ();
+		
+		if (bitmap != null) {
+		
+			return bitmap;
 			
 		} else {
 			
 			var source = LimeAssets.getImage (path, false);
+			var alphaBitmapData = null;
 			
-			if (source != null && alpha != null && alpha != "") {
+			if (source != null && this.hasAlpha) {
 				
-				var alphaBitmapData = LimeAssets.getImage (alpha, false);
-				source.copyChannel (alphaBitmapData, alphaBitmapData.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-				
-				//alpha = null;
-				source.buffer.premultiplied = true;
-				
-				#if !sys
-				source.premultiplied = false;
-				#end
+				alphaBitmapData = LimeAssets.getImage (alpha, false);
 				
 			}
 			
-			var bitmapData = BitmapData.fromImage (source);
-			
-			Assets.cache.setBitmapData (path, bitmapData);
-			return bitmapData;
+			return cachedAsBitmapData (source, alphaBitmapData);
 			
 		}
+		
+	}
+	
+	
+	
+	
+	private function cachedAsBitmapData (image : Image, ?alpha : Image) : BitmapData {
+		
+		if (alpha != null) {
+			
+			image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+			image.buffer.premultiplied = true;
+			
+			#if !sys
+			image.premultiplied = true;
+			#end
+			
+		}
+		
+		var bitmapData = BitmapData.fromImage (image);
+		Assets.cache.setBitmapData (path, bitmapData);
+		
+		return bitmapData;
+		
+	}
+	
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	@:noCompletion private inline function get_hasAlpha () : Bool {
+		
+		return (alpha != null && alpha != "");
 		
 	}
 	
