@@ -1,6 +1,9 @@
 package openfl._internal.symbols;
 
 
+import lime.app.Future;
+import lime.app.Promise;
+import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 import lime.Assets in LimeAssets;
@@ -78,6 +81,51 @@ class BitmapSymbol extends SWFSymbol {
 			return cachedAsBitmapData (source, alphaBitmapData);
 			
 		}
+		
+	}
+	
+	
+	public function loadBitmapData () : Future<BitmapData> {
+		
+		var promise = new Promise<BitmapData> ();
+		
+		LimeAssets.loadImage (path, false).onComplete (function (image) {
+			
+			if (image != null) {
+				
+				if (this.hasAlpha) {
+					
+					LimeAssets.loadImage (alpha, false).onComplete (function (alpha) {
+						
+						if (alpha != null) {
+							
+							var bitmapData = cachedAsBitmapData (image, alpha);
+							promise.complete (bitmapData);
+							
+						} else {
+							
+							promise.error ('Failed to load image alpha : ${alpha}');
+							
+						}
+						
+					}).onError (promise.error);
+					
+				} else {
+					
+					var bitmapData = cachedAsBitmapData (image);
+					promise.complete (bitmapData);
+					
+				}
+				
+			} else {
+				
+				promise.error ('Failed to load image : ${path}');
+				
+			}
+			
+		});
+		
+		return promise.future;
 		
 	}
 	
