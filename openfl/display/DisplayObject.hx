@@ -296,7 +296,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-
 	private override function __dispatchEvent (event:Event):Bool {
 
 		var result = super.__dispatchEvent (event);
@@ -836,13 +835,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 
 		__updateTransforms ();
-
-		// TODO this?
-		if (parent != null && __isMask) {
-
-			__maskCached = false;
-
-		}
 
 		if (updateChildren && __transformDirty) {
 
