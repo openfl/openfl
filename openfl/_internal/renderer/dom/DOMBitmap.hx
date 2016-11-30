@@ -97,15 +97,13 @@ class DOMBitmap {
 			bitmap.__canvas.width = bitmap.bitmapData.width;
 			bitmap.__canvas.height = bitmap.bitmapData.height;
 			
-			bitmap.__context.globalAlpha = bitmap.__worldAlpha;
 			bitmap.__context.drawImage (bitmap.bitmapData.image.buffer.__srcCanvas, 0, 0);
-			
 			bitmap.__imageVersion = bitmap.bitmapData.image.version;
 			
 		}
 		
 		DOMRenderer.updateClip (bitmap, renderSession);
-		DOMRenderer.applyStyle (bitmap, renderSession, true, false, true);
+		DOMRenderer.applyStyle (bitmap, renderSession, true, true, true);
 		#end
 		
 	}
