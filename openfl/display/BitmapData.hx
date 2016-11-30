@@ -1240,10 +1240,11 @@ class BitmapData implements IBitmapDrawable {
 				#end
 				
 				var data = image.buffer.data;
+				var rawAlphaData:ByteArrayData = cast rawAlpha;
 				
 				for (i in 0...rawAlpha.length) {
 					
-					data[i * 4 + 3] = rawAlpha.readUnsignedByte ();
+					data[i * 4 + 3] = rawAlphaData.readUnsignedByte ();
 					
 				}
 				
