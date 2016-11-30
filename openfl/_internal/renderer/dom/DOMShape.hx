@@ -34,6 +34,12 @@ class DOMShape {
 					
 					if (shape.__canvas != graphics.__canvas) {
 						
+						if (shape.__canvas != null) {
+							
+							renderSession.element.removeChild (shape.__canvas);
+							
+						}
+						
 						shape.__canvas = graphics.__canvas;
 						shape.__context = graphics.__context;
 						

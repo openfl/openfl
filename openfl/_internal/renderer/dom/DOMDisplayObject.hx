@@ -14,6 +14,7 @@ class DOMDisplayObject {
 	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
 		
 		#if (js && html5)
+		
 		//if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		//if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 		
@@ -27,11 +28,7 @@ class DOMDisplayObject {
 			
 		}
 		
-		if (displayObject.__graphics != null) {
-			
-			DOMShape.render (displayObject, renderSession);
-			
-		}
+		DOMShape.render (displayObject, renderSession);
 		#end
 		
 	}
