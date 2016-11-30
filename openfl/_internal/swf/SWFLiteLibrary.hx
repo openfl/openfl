@@ -8,6 +8,7 @@ import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 import lime.Assets in LimeAssets;
+import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.BitmapData;
@@ -107,11 +108,30 @@ import openfl.Assets;
 		
 	}
 	
-	public override function load ():Future<lime.Assets.AssetLibrary> {
+	
+	public override function preload (manifest:Array<{type:String, id:String}>) : Future<LimeAssetLibrary> {
 		
-		var promise = new Promise<lime.Assets.AssetLibrary> ();
+		var library : LimeAssetLibrary = this; 
+		var preloadedLibrary = Future.withValue(library);
 		
-		#if (swf_preload || swflite_preload)
+		for (asset in manifest) {
+			
+			if (asset.type == cast TEXT) {
+				
+				return loadText (asset.id).then (function (_) return preloadedLibrary);
+				
+			}
+			
+		}
+		
+		return preloadedLibrary;
+		
+	}
+	
+	
+	public override function load ():Future<LimeAssetLibrary> {
+		
+		var promise = new Promise<LimeAssetLibrary> ();
 		
 		var bitmapSymbols:Array<BitmapSymbol> = [];
 		
@@ -133,7 +153,7 @@ import openfl.Assets;
 			
 			var loaded = -1;
 			
-			var onLoad = function () {
+			var onLoad = function (?bitmapData) {
 				
 				loaded++;
 				
@@ -149,57 +169,15 @@ import openfl.Assets;
 			
 			for (symbol in bitmapSymbols) {
 				
-				if (Assets.cache.hasBitmapData (symbol.path)) {
+				if (symbol.getBitmapDataFromCache() != null) {
 					
 					onLoad ();
 					
 				} else {
 					
-					LimeAssets.loadImage (symbol.path, false).onComplete (function (image) {
-						
-						if (image != null) {
-							
-							if (symbol.alpha != null && symbol.alpha != "") {
-								
-								LimeAssets.loadImage (symbol.alpha, false).onComplete (function (alpha) {
-									
-									if (alpha != null) {
-										
-										image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-										image.buffer.premultiplied = true;
-										
-										#if !sys
-										image.premultiplied = true;
-										#end
-										
-										var bitmapData = BitmapData.fromImage (image);
-										Assets.cache.setBitmapData (symbol.path, bitmapData);
-										
-										onLoad ();
-										
-									} else {
-										
-										promise.error ('Failed to load image alpha : ${symbol.alpha}');
-										
-									}
-									
-								}).onError (promise.error);
-								
-							} else {
-								
-								var bitmapData = BitmapData.fromImage (image);
-								Assets.cache.setBitmapData (symbol.path, bitmapData);
-								onLoad ();
-								
-							}
-							
-						} else {
-							
-							promise.error ('Failed to load image : ${symbol.path}');
-							
-						}
-						
-					}).onError (promise.error);
+					symbol.loadBitmapData()
+						.onComplete(onLoad)
+						.onError(promise.error);
 					
 				}
 				
@@ -208,12 +186,6 @@ import openfl.Assets;
 			onLoad ();
 			
 		}
-		
-		#else
-		
-		promise.complete (this);
-		
-		#end
 		
 		return promise.future;
 		
