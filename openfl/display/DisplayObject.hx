@@ -45,8 +45,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 
-	private static var __cacheAsBitmapMode = false;
-
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;

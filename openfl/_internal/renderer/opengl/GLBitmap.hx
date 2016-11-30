@@ -159,15 +159,28 @@ class GLBitmap {
 		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
 
-		var m = matrix != null ? matrix.clone () : new Matrix ();
+		var m = Matrix.pool.get ();
+		
+		if (matrix != null) {
+			
+			m.copyFrom (matrix);
+			
+		} else {
+			
+			m.identity();
+			
+		}
 
-		GLBitmap.flipMatrix (m, viewPort.height);
+		if (mustFlipMatrix()) {
+			GLBitmap.flipMatrix (m, viewPort.height);
+			
+		}
 
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
-		DisplayObject.__cacheAsBitmapMode = true;
 
 		source.__updateTransforms(m);
+		Matrix.pool.put (m);
 		source.__updateChildren (false);
 
 		source.__cacheAsBitmap = false;
@@ -176,7 +189,6 @@ class GLBitmap {
 
 		source.__worldColorTransform = ctCache;
 		source.__blendMode = blendModeCache;
-		DisplayObject.__cacheAsBitmapMode = false;
 
 		source.__updateTransforms();
 		source.__updateChildren (false);
@@ -270,4 +282,9 @@ class GLBitmap {
 
 	}
 
+	private static inline function mustFlipMatrix ():Bool {
+
+		return fbData.length == 2;
+
+	}
 }
