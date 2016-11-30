@@ -9,6 +9,7 @@ import lime.app.Promise;
 import lime.text.Font in LimeFont;
 import lime.utils.Log;
 import lime.Assets.AssetLibrary in LimeAssetLibrary;
+import lime.Assets.AssetType in LimeAssetType;
 import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -702,25 +703,30 @@ class Assets {
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library:AssetLibrary = cast getLibrary (libraryName);
-		
-		if (library != null) {
+		loadLibrary (libraryName).onComplete (function (library:LimeAssetLibrary) {
 			
-			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+			var library:AssetLibrary = cast library;
+
+			if (library != null) {
 				
-				promise.completeWith (library.loadMovieClip (symbolName));
+				if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+					
+					promise.completeWith (library.loadMovieClip (symbolName));
+					
+				} else {
+					
+					promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+					
+				}
 				
 			} else {
 				
-				promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				promise.error ("[Assets] There is no asset library named \"" + libraryName + "\"");
 				
 			}
+
 			
-		} else {
-			
-			promise.error ("[Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
+		});
 		
 		#end
 		
@@ -890,6 +896,23 @@ class Assets {
 	}
 	
 	
+	override public function getAsset (id:String, type:String):Dynamic {
+		
+		var type : AssetType = cast type;
+		return switch (type) {
+			case BINARY:     getBytes(id);
+			case FONT:       getFont(id);
+			case IMAGE:      getImage(id);
+			case MUSIC:      getAudioBuffer(id);
+			case SOUND:      getAudioBuffer(id);
+			case TEMPLATE:   throw "Not sure how to get template: " + id;
+			case TEXT:       getText(id);
+			case MOVIE_CLIP: getMovieClip(id);
+		}
+		
+	}
+	
+	
 }
 
 
@@ -910,6 +933,31 @@ class Assets {
 		bitmapData = new Map<String, BitmapData> ();
 		font = new Map<String, Font> ();
 		sound = new Map<String, Sound> ();
+		
+	}
+	
+	
+	public function exists (id:String, ?type:AssetType):Bool {
+		
+		if (type == AssetType.IMAGE || type == null) {
+			
+			if (bitmapData.exists (id)) return true;
+			
+		}
+		
+		if (type == AssetType.FONT || type == null) {
+			
+			if (font.exists (id)) return true;
+			
+		}
+		
+		if (type == AssetType.SOUND || type == AssetType.MUSIC || type == null) {
+			
+			if (sound.exists (id)) return true;
+			
+		}
+		
+		return false;
 		
 	}
 	
@@ -1080,6 +1128,7 @@ class Assets {
 	
 	public var enabled (get, set):Bool;
 	
+	public function exists (id:String, ?type:AssetType):Bool;
 	public function clear (prefix:String = null):Void;
 	public function getBitmapData (id:String):BitmapData;
 	public function getFont (id:String):Font;

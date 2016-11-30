@@ -55,7 +55,7 @@ import openfl.Assets;
 		
 		if (type == (cast AssetType.IMAGE) || type == (cast AssetType.MOVIE_CLIP)) {
 			
-			return swf.hasSymbol (id);
+			return swf != null && swf.hasSymbol (id);
 			
 		}
 		
@@ -66,17 +66,46 @@ import openfl.Assets;
 	
 	public override function getImage (id:String):Image {
 		
-		return Image.fromBitmapData (swf.getBitmapData (id));
+		return swf != null? Image.fromBitmapData (swf.getBitmapData (id)) : null;
 		
 	}
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
 		
-		return swf.createMovieClip (id);
+		return swf != null? swf.createMovieClip (id) : null;
 		
 	}
 	
+	
+	public override function isLocal (id:String, type:String):Bool {
+		
+		return swf != null && switch (cast(type, Assets.AssetType)) {
+			
+			case MOVIE_CLIP: true;
+			
+			default:         Assets.cache.exists(id, cast type);
+			
+		}
+		
+	}
+	
+	
+	public override function loadText (id:String):Future<String> {
+		
+		var text = super.loadText (id);
+		
+		if (swf == null) {
+			
+			return text.onComplete (function(text) {
+				swf = SWFLite.unserialize(text);
+			});
+			
+		}
+			
+		return text;
+		
+	}
 	
 	public override function load ():Future<lime.Assets.AssetLibrary> {
 		
