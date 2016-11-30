@@ -201,8 +201,8 @@ class EventDispatcher implements IEventDispatcher {
 
 		if (target.__dispatching.get (type) == true) {
 
-			list = __newEventMap.get (type);
-			if (list == null) list = __eventMap.get (type);
+			list = target.__newEventMap.get (type);
+			if (list == null) list = target.__eventMap.get (type);
 			if (list == null) return false;
 			list = list.copy ();
 
