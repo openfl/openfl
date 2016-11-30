@@ -90,6 +90,13 @@ class DOMTextField {
 							if (textField.htmlText != textField.__div.innerHTML) {
 								
 								textField.htmlText = textField.__div.innerHTML;
+								
+								if (textField.__displayAsPassword) {
+									
+									// TODO: Enable display as password
+									
+								}
+								
 								textField.__dirty = false;
 								
 							}

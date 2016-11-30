@@ -1051,7 +1051,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (!__displayAsPassword) {
+		if (!__displayAsPassword #if (js && html5 && dom) || true #end) {
 			
 			__textEngine.text = __text;
 			
