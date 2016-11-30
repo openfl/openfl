@@ -435,16 +435,11 @@ class BitmapData implements IBitmapDrawable {
 				
 				if (__framebuffer == null) {
 					
-					image = null;
 					getTexture (gl);
 					
 					__framebuffer = gl.createFramebuffer ();
 					
 					gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-					gl.bindTexture (gl.TEXTURE_2D, __texture);
-					gl.texImage2D (gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-					gl.bindTexture (gl.TEXTURE_2D, null);
-					
 					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
 					
 				}
@@ -452,7 +447,6 @@ class BitmapData implements IBitmapDrawable {
 				gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
 				
 				gl.viewport (0, 0, width, height);
-				gl.clear (gl.COLOR_BUFFER_BIT);
 				
 				var renderer = new GLRenderer (Lib.current.stage, gl, false);
 				renderer.resize (width, height);
@@ -633,7 +627,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function fillRect (rect:Rectangle, color:Int):Void {
 		
-		if (!readable || rect == null) return;
+		if (rect == null) return;
 		
 		if (transparent && (color & 0xFF000000) == 0) {
 			
@@ -641,7 +635,37 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
-		image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
+		if (readable) {
+			
+			image.fillRect (rect.__toLimeRectangle (), color, ARGB32);
+			
+		} else if (__framebuffer != null) {
+			
+			var gl = GL.context;
+			var color:ARGB = (color:ARGB);
+			var useScissor = !this.rect.equals (rect);
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			
+			if (useScissor) {
+				
+				gl.enable (gl.SCISSOR_TEST);
+				gl.scissor (Math.round (rect.x), Math.round (rect.y), Math.round (rect.width), Math.round (rect.height));
+				
+			}
+			
+			gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, color.a / 0xFF);
+			gl.clear (gl.COLOR_BUFFER_BIT);
+			
+			if (useScissor) {
+				
+				gl.disable (gl.SCISSOR_TEST);
+				
+			}
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, null);
+			
+		}
 		
 	}
 	
