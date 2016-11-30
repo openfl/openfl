@@ -143,6 +143,7 @@ class DOMRenderer extends AbstractRenderer {
 		displayObject.__renderTransformChanged = true;
 		displayObject.__worldVisibleChanged = true;
 		displayObject.__worldClipChanged = true;
+		displayObject.__worldClip = null;
 		displayObject.__worldZ = -1;
 		
 	}
