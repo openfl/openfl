@@ -20,9 +20,8 @@ extern class BitmapData implements IBitmapDrawable {
 	public var image (get, never):Image;
 	private inline function get_image ():Image { return null; }
 	
-	public var readable (get, set):Bool;
+	public var readable (get, never):Bool;
 	private inline function get_readable ():Bool { return true; }
-	private inline function set_readable (value:Bool):Bool { return true; }
 	
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
@@ -41,6 +40,9 @@ extern class BitmapData implements IBitmapDrawable {
 	#end
 	
 	public function dispose ():Void;
+	
+	public inline function disposeImage ():Void {}
+	
 	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void;
 	@:require(flash11_3) public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null) : Void;
 	@:require(flash11_3) public function encode (rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
