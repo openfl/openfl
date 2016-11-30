@@ -32,19 +32,14 @@ class DOMShape {
 				
 				if (graphics.__canvas != null) {
 					
-					if (shape.__canvas == null) {
+					if (shape.__canvas != graphics.__canvas) {
 						
-						shape.__canvas = cast Browser.document.createElement ("canvas");
-						shape.__context = shape.__canvas.getContext ("2d");
+						shape.__canvas = graphics.__canvas;
+						shape.__context = graphics.__context;
+						
 						DOMRenderer.initializeElement (shape, shape.__canvas, renderSession);
 						
 					}
-					
-					shape.__canvas.width = graphics.__canvas.width;
-					shape.__canvas.height = graphics.__canvas.height;
-					
-					shape.__context.globalAlpha = shape.__worldAlpha;
-					shape.__context.drawImage (graphics.__canvas, 0, 0);
 					
 				} else {
 					
@@ -75,7 +70,7 @@ class DOMShape {
 				}
 				
 				DOMRenderer.updateClip (shape, renderSession);
-				DOMRenderer.applyStyle (shape, renderSession, true, false, true);
+				DOMRenderer.applyStyle (shape, renderSession, true, true, true);
 				
 				shape.__renderTransform = cacheTransform;
 				
