@@ -95,12 +95,10 @@ import js.Browser;
 			
 		}
 		
-		#if (js && html5)
-		Browser.window.open (request.url, target);
-		#elseif flash
+		#if flash
 		return flash.Lib.getURL (request, target);
-		#elseif desktop
-		lime.tools.helpers.ProcessHelper.openURL (request.url);
+		#else
+		System.openURL (request.url, target);
 		#end
 		
 	}
