@@ -109,22 +109,19 @@ import openfl.Assets;
 	}
 	
 	
-	public override function preload (manifest:Array<{type:String, id:String}>) : Future<LimeAssetLibrary> {
-		
-		var library : LimeAssetLibrary = this; 
-		var preloadedLibrary = Future.withValue(library);
+	public override function loadFromManifest (manifest:Array<{type:String, id:String}>):Future<LimeAssetLibrary> {
 		
 		for (asset in manifest) {
 			
 			if (asset.type == cast TEXT) {
 				
-				return loadText (asset.id).then (function (_) return preloadedLibrary);
+				return loadText (asset.id).then (function (_) return this.load ());
 				
 			}
 			
 		}
 		
-		return preloadedLibrary;
+		return load ();
 		
 	}
 	
