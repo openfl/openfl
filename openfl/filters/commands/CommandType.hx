@@ -15,8 +15,8 @@ enum CommandType {
 	ColorTransform (target:BitmapData, source:BitmapData, multipliers:Float32Array, offsets:Float32Array);
 	CombineInner (target:BitmapData, source1:BitmapData, source2:BitmapData );
 	Combine (target:BitmapData, source1:BitmapData, source2:BitmapData);
-	InnerKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
-	OuterKnockout(target:BitmapData,source1:BitmapData, source2:BitmapData);
-	OuterKnockoutTransparency(target:BitmapData,source1:BitmapData, source2:BitmapData, allowTransparency:Bool);
-	DestOut(target:BitmapData,source1:BitmapData, source2:BitmapData);
+	InnerKnockout(target:BitmapData, source1:BitmapData, source2:BitmapData);
+	OuterKnockout(target:BitmapData, source1:BitmapData, source2:BitmapData);
+	OuterKnockoutTransparency(target:BitmapData, source1:BitmapData, source2:BitmapData, allowTransparency:Bool);
+	DestOut(target:BitmapData, highlightSource:BitmapData, shadowSource:BitmapData);
 }

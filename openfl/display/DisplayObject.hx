@@ -296,7 +296,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-
 	private override function __dispatchEvent (event:Event):Bool {
 
 		var result = super.__dispatchEvent (event);
@@ -406,11 +405,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	private static var __parentList = new haxe.ds.Vector(32);
 	private function __getWorldTransform ():Matrix {
 
 		if (__transformDirty || __worldTransformDirty > 0) {
 
-			var list = [];
+			var list = __parentList;
+			var listIndex = 0;
 			var current = this;
 			var transformDirty = __transformDirty;
 
@@ -422,7 +423,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 				while (current.parent != null) {
 
-					list.push (current);
+					#if !js
+					if(listIndex + 1 >= list.length)
+					{
+						throw "DisplayObject.__parentList is too small.";
+					}
+					#end
+
+					list[listIndex++] = current;
 					current = current.parent;
 
 					if (current.__transformDirty) {
@@ -437,7 +445,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			if (transformDirty) {
 
-				var i = list.length;
+				var i = listIndex;
 				while (--i >= 0) {
 
 					list[i].__update (true, false);
@@ -836,13 +844,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 
 		__updateTransforms ();
-
-		// TODO this?
-		if (parent != null && __isMask) {
-
-			__maskCached = false;
-
-		}
 
 		if (updateChildren && __transformDirty) {
 

@@ -104,8 +104,8 @@ class BitmapFilter {
 					case OuterKnockoutTransparency (target, source1, source2, allowTransparency) :
 						OuterKnockoutCommand.apply(renderSession, target, source1, source2, allowTransparency);
 
-					case DestOut (target, source1, source2) :
-						DestOutCommand.apply(renderSession, target, source1, source2);
+					case DestOut (target, highlightSource, shadowSource) :
+						DestOutCommand.apply(renderSession, target, highlightSource, shadowSource);
 
 					default :
 						throw("Unsupported command!");

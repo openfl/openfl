@@ -82,25 +82,32 @@ class MovieClip extends flash.display.MovieClip {
 		__zeroSymbol = -1;
 
 		__currentFrame = 1;
-		__totalFrames = __symbol.frames.length;
+
+		if ( __symbol != null ) {
+			__totalFrames = __symbol.frames.length;
+		} else {
+			__totalFrames = 0;
+		}
 
 		__SWFDepthData = new Map();
 		__maskData = new Map();
 
 		__currentLabels = [];
 
-		for (i in 0...__symbol.frames.length) {
+		if ( __symbol != null ) {
+			for (i in 0...__symbol.frames.length) {
 
-			if (__symbol.frames[i].label != null) {
+				if (__symbol.frames[i].label != null) {
 
-				__currentLabels.push (new FrameLabel (__symbol.frames[i].label, i + 1));
+					__currentLabels.push (new FrameLabel (__symbol.frames[i].label, i + 1));
+
+				}
 
 			}
 
-		}
-
-		if (__symbol.scalingGridRect != null ) {
-			__useSeparateRenderScaleTransform = false;
+			if (__symbol.scalingGridRect != null ) {
+				__useSeparateRenderScaleTransform = false;
+			}
 		}
 
 		#if (!flash && openfl && !openfl_legacy)
@@ -559,16 +566,17 @@ class MovieClip extends flash.display.MovieClip {
 
 			var label:String = cast frame;
 
-			for (i in 0...__symbol.frames.length) {
+			if ( __symbol != null ) {
+				for (i in 0...__symbol.frames.length) {
 
-				if (__symbol.frames[i].label == label) {
+					if (__symbol.frames[i].label == label) {
 
-					index = i + 1;
-					break;
+						index = i + 1;
+						break;
+					}
+
 				}
-
 			}
-
 		}
 
 		if(index < 1){
@@ -678,6 +686,10 @@ class MovieClip extends flash.display.MovieClip {
 
 						filters.push (new GradientGlowFilter (distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout));
 
+					case GradientBevelFilter(distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout):
+
+						filters.push (new GradientBevelFilter(distance, angle, colors, alphas, ratios, blurX, blurY, strength, quality, type, knockout));
+
 					case BevelFilter(distance, angle, highlightColor, highlightAlpha, shadowColor, shadowAlpha, blurX, blurY, strength, quality, type, knockout):
 
 						filters.push (new BevelFilter(distance, angle, highlightColor, highlightAlpha, shadowColor, shadowAlpha, blurX, blurY, strength, quality, type, knockout));
@@ -703,7 +715,7 @@ class MovieClip extends flash.display.MovieClip {
 		// :TODO: should be in a prerender phase
 		// :TODO: use dirty flag if need to update __9SliceBitmap
 
-		if (__symbol.scalingGridRect != null && __9SliceBitmap == null) {
+		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap == null) {
 				var bounds:Rectangle = Rectangle.pool.get();
 				bounds.setEmpty();
 				__getBounds (bounds);
@@ -806,7 +818,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
-		if (__symbol.scalingGridRect != null && __9SliceBitmap != null) {
+		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
 			if (!__renderable || __worldAlpha <= 0) return;
 
 			drawScale9Bitmap(renderSession);
@@ -817,6 +829,10 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	private function frame0ChildrenUpdate():Void {
+
+		if ( __symbol == null ) {
+			return;
+		}
 
 		var frame = __symbol.frames[0];
 
@@ -859,6 +875,10 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	@:noCompletion private function __renderFrame (index:Int):Bool {
+
+		if (__symbol == null || __symbol.frames.length == 0) {
+			return false;
+		}
 
 		if (index == 0) {
 			frame0ChildrenUpdate();
@@ -1039,6 +1059,53 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+#if as2_depth_accessors
+	public function getNextHighestDepthExternal() : Int {
+		if (numChildren > 0) {
+			return __SWFDepthData.get(getChildAt(numChildren-1)) - 0x3FFE;
+		}
+		return 0;
+	}
+
+	public function getDepth() : Int {
+		return cast(parent, MovieClip).__SWFDepthData.get(this);
+	}
+
+	public function addChildAtSwfDepthExternal(displayObject:DisplayObject, targetDepth:Int):Void {
+		__addChildAtSwfDepth(displayObject, targetDepth + 0x3FFF);
+	}
+
+	public function swapDepths(target: Dynamic) {
+		var object_to_swap : DisplayObject = null;
+		var target_depth : Int;
+		if ( Std.is(target, Int) || Std.is(target, Float) ) {
+			target_depth = Std.int(target);
+			for( i in 0 ... numChildren ){
+				if( __SWFDepthData.get(getChildAt(i)) == target_depth){
+					object_to_swap = getChildAt(i);
+
+					break;
+				}
+			}
+		} else if ( Std.is(target, DisplayObject) ) {
+			object_to_swap = target;
+			target_depth = __SWFDepthData.get(target);
+		} else {
+			throw("Trying to swap depths with unknown type.. " + Type.getClassName(target));
+		}
+
+
+		var swf_parent = cast(parent, MovieClip);
+		var my_depth = getDepth();
+		if ( object_to_swap != null ) {
+			swf_parent.removeChild(object_to_swap);
+			swf_parent.addChildAtSwfDepthExternal(object_to_swap, my_depth);
+		}
+        swf_parent.removeChild(this);
+        swf_parent.addChildAtSwfDepthExternal(this, target_depth);
+    }
+#end
+
 	@:noCompletion private function __addChildAtSwfDepth(displayObject: DisplayObject, targetDepth:Int):Void{
 
 		__SWFDepthData.set(displayObject, targetDepth);
@@ -1066,6 +1133,10 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	@:noCompletion private function __debugPrintChildren( parentSymbolID: Int = -1 ):Void {
+
+		if ( __symbol == null ) {
+			return;
+		}
 
 		var print :Bool = false;
 		if(parentSymbolID < 0 || parentSymbolID == __symbol.id){
@@ -1144,6 +1215,4 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 	#end
-
-
 }

@@ -10,11 +10,11 @@ class DestOutCommand {
 
 	private static var __shader = new DestOutShader ();
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source1:BitmapData, source2:BitmapData) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, highlightSource:BitmapData, shadowSource:BitmapData) {
 
-		__shader.uSource1Sampler = source1;
+		__shader.uShadowSourceSampler = shadowSource;
 
-		CommandHelper.apply (renderSession, target, source2, __shader, source1 == target || source2 == target);
+		CommandHelper.apply (renderSession, target, highlightSource, __shader, highlightSource == target || shadowSource == target);
 
 	}
 
@@ -23,16 +23,16 @@ class DestOutCommand {
 private class DestOutShader extends Shader {
 
 	@fragment var fragment = [
-		'uniform sampler2D uSource1Sampler;',
+		'uniform sampler2D uShadowSourceSampler;',
 		'uniform float outer;',
 
 		'void main(void)',
 		'{',
-			'vec4 src2 = texture2D(${Shader.uSampler}, ${Shader.vTexCoord});',
-			'vec4 src1 = texture2D(uSource1Sampler, ${Shader.vTexCoord});', // target image
-			'src2 -= src1.a;',
-			'src2 = clamp(src2,0.,1.);',
-			'gl_FragColor = src2;',
+			'float highlight = texture2D(${Shader.uSampler}, ${Shader.vTexCoord}).a;',
+			'float shadow = texture2D(uShadowSourceSampler, ${Shader.vTexCoord}).a;',
+			'float high = clamp(highlight - shadow, 0., 1.);',
+			'float low = clamp(shadow - highlight, 0., 1.);',
+			'gl_FragColor = vec4(0.5 * ( 1. + high - low ));',
 		'}',
 	];
 
