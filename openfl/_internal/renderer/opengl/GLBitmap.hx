@@ -156,6 +156,7 @@ class GLBitmap {
 		}
 
 		var ctCache = source.__worldColorTransform;
+		var alphaCache = source.__worldAlpha;
 		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
 
@@ -174,13 +175,14 @@ class GLBitmap {
 		source.__renderGL (renderSession);
 		source.__cacheAsBitmap = cached;
 
-		source.__worldColorTransform = ctCache;
-		source.__blendMode = blendModeCache;
 		DisplayObject.__cacheAsBitmapMode = false;
 
 		source.__updateTransforms();
 		source.__updateChildren (false);
 
+		source.__worldColorTransform = ctCache;
+		source.__blendMode = blendModeCache;
+		source.__worldAlpha = alphaCache;
 	}
 
 	/**
