@@ -194,6 +194,8 @@ import openfl.Assets;
 	
 	public override function unload ():Void {
 		
+		if (swf == null) return;
+		
 		var bitmap:BitmapSymbol;
 		
 		for (symbol in swf.symbols) {
