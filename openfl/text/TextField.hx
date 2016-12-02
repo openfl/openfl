@@ -2082,9 +2082,13 @@ class TextField extends InteractiveObject {
 		switch (key) {
 			
 			case RETURN, NUMPAD_ENTER:
-
-				replaceSelectedText ("\n");
-				dispatchEvent (new Event (Event.CHANGE, true));
+				
+				if (__textEngine.multiline) {
+					
+					replaceSelectedText ("\n");
+					dispatchEvent (new Event (Event.CHANGE, true));
+					
+				}
 
 			case BACKSPACE:
 				
