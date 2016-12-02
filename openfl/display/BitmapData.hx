@@ -609,14 +609,17 @@ class BitmapData implements IBitmapDrawable {
 		// TODO: Support rect
 		
 		if (!readable || rect == null) return byteArray = null;
+		if (byteArray == null) byteArray = new ByteArray();
 		
 		if (Std.is (compressor, PNGEncoderOptions)) {
 			
-			return byteArray = ByteArray.fromBytes (image.encode ("png"));
+			byteArray.writeBytes(ByteArray.fromBytes (image.encode ("png")));
+			return byteArray;
 			
 		} else if (Std.is (compressor, JPEGEncoderOptions)) {
 			
-			return byteArray = ByteArray.fromBytes (image.encode ("jpg", cast (compressor, JPEGEncoderOptions).quality));
+			byteArray.writeBytes(ByteArray.fromBytes (image.encode ("jpg", cast (compressor, JPEGEncoderOptions).quality)));
+			return byteArray;
 			
 		}
 		
