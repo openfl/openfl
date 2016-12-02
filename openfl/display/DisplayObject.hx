@@ -82,7 +82,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __cacheAsBitmap:Bool;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cachedBitmap:BitmapData;
-	private var __cachedBounds:Rectangle;
+	private var __cachedShapeBounds:Rectangle;
+	private var __minCacheAsBitmapBounds:Point;
+	private var __maxCacheAsBitmapBounds:Point;
 	private var __cairo:Cairo;
 	private var __children:Array<DisplayObject>;
 	private var __filters:Array<BitmapFilter>;
@@ -863,7 +865,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_cacheAsBitmap ():Bool {
 		
-		return (__filters == null ? __cacheAsBitmap : true);
+		return (__filters == null || __filters.length == 0 ? __cacheAsBitmap : true);
 		
 	}
 	

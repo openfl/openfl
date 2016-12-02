@@ -16,7 +16,7 @@ class GLDisplayObject {
 	
 	public static inline function render (displayObject:DisplayObject, renderSession:RenderSession):Void {
 		
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
+		if (displayObject.opaqueBackground == null && displayObject.__graphics == null && !displayObject.cacheAsBitmap) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 		
 		if (displayObject.opaqueBackground != null && displayObject.width > 0 && displayObject.height > 0) {
@@ -38,7 +38,7 @@ class GLDisplayObject {
 			
 		}
 		
-		if (displayObject.__graphics != null) {
+		if (displayObject.__graphics != null || displayObject.mask != null || displayObject.cacheAsBitmap ) {
 			
 			GLShape.render (displayObject, renderSession);
 			
