@@ -80,7 +80,7 @@ class Assets {
 	 */
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
-		return LimeAssets.exists (id, cast type);
+		return LimeAssets.exists (id, type);
 		
 	}
 	
@@ -215,9 +215,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+			if (library.exists (symbolName, AssetType.MOVIE_CLIP)) {
 				
-				if (library.isLocal (symbolName, cast AssetType.MOVIE_CLIP)) {
+				if (library.isLocal (symbolName, AssetType.MOVIE_CLIP)) {
 					
 					return library.getMovieClip (symbolName);
 					
@@ -384,7 +384,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			return library.isLocal (symbolName, cast type);
+			return library.isLocal (symbolName, type);
 			
 		}
 		
@@ -448,7 +448,7 @@ class Assets {
 	 */
 	public static function list (type:AssetType = null):Array<String> {
 		
-		return LimeAssets.list (cast type);
+		return LimeAssets.list (type);
 		
 	}
 	
@@ -709,7 +709,7 @@ class Assets {
 
 			if (library != null) {
 				
-				if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+				if (library.exists (symbolName, AssetType.MOVIE_CLIP)) {
 					
 					promise.completeWith (library.loadMovieClip (symbolName));
 					
@@ -898,17 +898,14 @@ class Assets {
 	
 	override public function getAsset (id:String, type:String):Dynamic {
 		
-		var type : AssetType = cast type;
-		return switch (type) {
-			case BINARY:     getBytes(id);
-			case FONT:       getFont(id);
-			case IMAGE:      getImage(id);
-			case MUSIC:      getAudioBuffer(id);
-			case SOUND:      getAudioBuffer(id);
-			case TEMPLATE:   throw "Not sure how to get template: " + id;
-			case TEXT:       getText(id);
-			case MOVIE_CLIP: getMovieClip(id);
-		}
+		return if (type == MOVIE_CLIP) getMovieClip(id) else super.getAsset(id, type);
+		
+	}
+	
+	
+	override public function loadAsset (id:String, type:String):Future<Dynamic> {
+		
+		return if (type == MOVIE_CLIP) loadMovieClip(id) else super.loadAsset(id, type);
 		
 	}
 	
@@ -1146,7 +1143,7 @@ class Assets {
 }
 
 
-@:dox(hide) @:enum abstract AssetType(String) {
+@:dox(hide) @:enum abstract AssetType(String) to String {
 	
 	var BINARY = "BINARY";
 	var FONT = "FONT";
@@ -1156,6 +1153,19 @@ class Assets {
 	var SOUND = "SOUND";
 	var TEMPLATE = "TEMPLATE";
 	var TEXT = "TEXT";
+	
+	@:to function toLimeAssetType () : LimeAssetType {
+		
+		return switch (this) {
+			
+			case BINARY, FONT, IMAGE, MUSIC, SOUND, TEMPLATE, TEXT:
+				cast this;
+			
+			default:
+				throw "Unknown lime.AssetType: " + this;
+		}
+		
+	}
 	
 }
 
