@@ -85,17 +85,17 @@ class BitmapSymbol extends SWFSymbol {
 	}
 	
 	
-	public function loadBitmapData () : Future<BitmapData> {
+	public function loadBitmapData (library:AssetLibrary) : Future<BitmapData> {
 		
 		var promise = new Promise<BitmapData> ();
 		
-		LimeAssets.loadImage (path, false).onComplete (function (image) {
+		library.loadImage (path).onComplete (function (image) {
 			
 			if (image != null) {
 				
 				if (this.hasAlpha) {
 					
-					LimeAssets.loadImage (alpha, false).onComplete (function (alpha) {
+					library.loadImage (alpha).onComplete (function (alpha) {
 						
 						if (alpha != null) {
 							

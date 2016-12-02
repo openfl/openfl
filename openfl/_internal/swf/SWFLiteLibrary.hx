@@ -172,9 +172,9 @@ import openfl.Assets;
 					
 				} else {
 					
-					symbol.loadBitmapData()
-						.onComplete(onLoad)
-						.onError(promise.error);
+					symbol.loadBitmapData (this)
+						.onComplete (onLoad)
+						.onError (promise.error);
 					
 				}
 				
