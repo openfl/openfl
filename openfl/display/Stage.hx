@@ -66,6 +66,8 @@ import js.html.Element;
 import js.Browser;
 #end
 
+@:access(openfl._internal.renderer.AbstractRenderer)
+@:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
@@ -751,6 +753,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						#if (!disable_cffi && (!html5 || !canvas))
 						__renderer = new GLRenderer (this, gl);
+						stage3Ds[0].__createContext (this, __renderer.renderSession);
 						#end
 					
 					case CANVAS (context):

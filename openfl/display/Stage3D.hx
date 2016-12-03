@@ -69,9 +69,68 @@ class Stage3D extends EventDispatcher {
 	}
 	
 	
-	private function __createContext (renderSession:RenderSession):Void {
+	private function __createContext (stage:Stage, renderSession:RenderSession):Void {
 		
-		
+		if (renderSession.gl != null) {
+			
+			context3D = new Context3D (this, renderSession);
+			dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+			
+		} else {
+			
+			#if (js && html5)
+			
+			__canvas = cast Browser.document.createElement ("canvas");
+			__canvas.width = stage.stageWidth;
+			__canvas.height = stage.stageHeight;
+			
+			var window = stage.window;
+			
+			var options = {
+				
+				alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
+				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
+				premultipliedAlpha: true,
+				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
+				preserveDrawingBuffer: false
+				
+			};
+			
+			__webgl = cast __canvas.getContextWebGL (options);
+			
+			if (__webgl != null) {
+				
+				#if webgl_debug
+				__webgl = untyped WebGLDebugUtils.makeDebugContext (__webgl);
+				#end
+				
+				// TODO: Need to handle renderSession/context better
+				
+				GL.context = cast __webgl;
+				
+				context3D = new Context3D (this, renderSession);
+				
+				renderSession.element.appendChild (__canvas);
+				
+				__style = __canvas.style;
+				__style.setProperty ("position", "absolute", null);
+				__style.setProperty ("top", "0", null);
+				__style.setProperty ("left", "0", null);
+				__style.setProperty (renderSession.transformOriginProperty, "0 0 0", null);
+				__style.setProperty ("z-index", "-1", null);
+				
+				dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+				
+			} else {
+				
+				__dispatchError ();
+				
+			}
+			
+			#end
+			
+		}
 		
 	}
 	
@@ -119,57 +178,7 @@ class Stage3D extends EventDispatcher {
 			
 			if (context3D == null) {
 				
-				#if (js && html5)
-				
-				__canvas = cast Browser.document.createElement ("canvas");
-				__canvas.width = stage.stageWidth;
-				__canvas.height = stage.stageHeight;
-				
-				var window = stage.window;
-				
-				var options = {
-					
-					alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
-					antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
-					depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
-					premultipliedAlpha: true,
-					stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
-					preserveDrawingBuffer: false
-					
-				};
-				
-				__webgl = cast __canvas.getContextWebGL (options);
-				
-				if (__webgl != null) {
-					
-					#if webgl_debug
-					__webgl = untyped WebGLDebugUtils.makeDebugContext (__webgl);
-					#end
-					
-					// TODO: Need to handle renderSession/context better
-					
-					GL.context = cast __webgl;
-					
-					context3D = new Context3D (this, renderSession);
-					
-					renderSession.element.appendChild (__canvas);
-					
-					__style = __canvas.style;
-					__style.setProperty ("position", "absolute", null);
-					__style.setProperty ("top", "0", null);
-					__style.setProperty ("left", "0", null);
-					__style.setProperty (renderSession.transformOriginProperty, "0 0 0", null);
-					__style.setProperty ("z-index", "-1", null);
-					
-					dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
-					
-				} else {
-					
-					__dispatchError ();
-					
-				}
-				
-				#end
+				__createContext (stage, renderSession);
 				
 			}
 			
@@ -199,8 +208,7 @@ class Stage3D extends EventDispatcher {
 			
 			if (context3D == null) {
 				
-				context3D = new Context3D (this, renderSession);
-				dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+				__createContext (stage, renderSession);
 				
 			}
 			
