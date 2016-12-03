@@ -85,6 +85,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var frameRate (get, set):Float;
 	public var quality:StageQuality;
 	public var scaleMode:StageScaleMode;
+	public var showDefaultContextMenu:Bool;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
@@ -177,6 +178,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
+		showDefaultContextMenu = true;
 		stageFocusRect = true;
 		
 		#if mac
@@ -543,6 +545,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			
+			if (!showDefaultContextMenu && button == 2) {
+				
+				window.onMouseUp.cancel ();
+				
+			}
 			
 		} catch (e:Dynamic) {
 			
@@ -1220,7 +1228,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack.reverse ();
 			__fireEvent (event, stack);
 			
-			if (event.__isCanceled) {
+			if (event.__preventDefault) {
 				
 				if (type == KeyboardEvent.KEY_DOWN) {
 					

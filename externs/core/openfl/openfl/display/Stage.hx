@@ -423,9 +423,7 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var scaleMode:StageScaleMode;
 	
-	#if flash
-	@:noCompletion @:dox(hide) public var showDefaultContextMenu:Bool;
-	#end
+	public var showDefaultContextMenu:Bool;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect (default, null):Rectangle;
