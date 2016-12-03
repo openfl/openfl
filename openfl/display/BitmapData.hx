@@ -30,6 +30,8 @@ import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.utils.PerlinNoise;
+import openfl.display3D.textures.RectangleTexture;
+import openfl.display3D.textures.Texture;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
@@ -54,6 +56,8 @@ import js.Browser;
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
 @:access(openfl._internal.renderer.opengl.GLRenderer)
+@:access(openfl.display3D.textures.RectangleTexture)
+@:access(openfl.display3D.textures.Texture)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.filters.BitmapFilter)
@@ -167,16 +171,17 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) {
 			
-			return new BitmapData (width, height, transparent);
+			return new BitmapData (width, height, transparent, 0);
 			
 		} else if (!readable && image == null) {
 			
-			var bitmapData = new BitmapData (0, 0, transparent);
+			var bitmapData = new BitmapData (0, 0, transparent, 0);
 			
 			bitmapData.width = width;
 			bitmapData.height = height;
 			bitmapData.rect.copyFrom (rect);
 			
+			bitmapData.__framebuffer = __framebuffer;
 			bitmapData.__texture = __texture;
 			bitmapData.__isValid = true;
 			
@@ -683,7 +688,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void = null):BitmapData {
 		
-		var bitmapData = new BitmapData (0, 0, true);
+		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromBase64 (base64, type, onload);
 		return bitmapData;
 		
@@ -692,7 +697,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData {
 		
-		var bitmapData = new BitmapData (0, 0, true);
+		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromBytes (bytes, rawAlpha, onload);
 		return bitmapData;
 		
@@ -704,7 +709,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (canvas == null) return null;
 		
-		var bitmapData = new BitmapData (0, 0, transparent);
+		var bitmapData = new BitmapData (0, 0, transparent, 0);
 		bitmapData.__fromImage (Image.fromCanvas (canvas));
 		bitmapData.image.transparent = transparent;
 		return bitmapData;
@@ -715,7 +720,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
 		
-		var bitmapData = new BitmapData (0, 0, true);
+		var bitmapData = new BitmapData (0, 0, true, 0);
 		bitmapData.__fromFile (path, onload, onerror);
 		return bitmapData;
 		
@@ -726,9 +731,35 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (image == null || image.buffer == null) return null;
 		
-		var bitmapData = new BitmapData (0, 0, transparent);
+		var bitmapData = new BitmapData (0, 0, transparent, 0);
 		bitmapData.__fromImage (image);
 		bitmapData.image.transparent = transparent;
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromRectangleTexture (texture:RectangleTexture):BitmapData {
+		
+		if (texture == null) return null;
+		
+		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
+		bitmapData.readable = false;
+		bitmapData.__texture = texture.__textureID;
+		bitmapData.image = null;
+		return bitmapData;
+		
+	}
+	
+	
+	public static function fromTexture (texture:Texture):BitmapData {
+		
+		if (texture == null) return null;
+		
+		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
+		bitmapData.readable = false;
+		bitmapData.__texture = texture.__textureID;
+		bitmapData.image = null;
 		return bitmapData;
 		
 	}

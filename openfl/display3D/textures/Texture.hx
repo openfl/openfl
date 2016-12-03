@@ -44,7 +44,7 @@ import haxe.Timer;
 		
 		GL.bindTexture (__textureTarget, null);
 		
-		//uploadFromTypedArray (null);
+		uploadFromTypedArray (null);
 		
 	}
 	
