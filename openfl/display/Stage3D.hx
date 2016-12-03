@@ -59,6 +59,12 @@ class Stage3D extends EventDispatcher {
 		
 		__contextRequested = true;
 		
+		if (context3D != null) {
+			
+			Timer.delay (__dispatchCreate, 1);
+			
+		}
+		
 	}
 	
 	
@@ -74,7 +80,7 @@ class Stage3D extends EventDispatcher {
 		if (renderSession.gl != null) {
 			
 			context3D = new Context3D (this, renderSession);
-			dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+			__dispatchCreate ();
 			
 		} else {
 			
@@ -120,7 +126,7 @@ class Stage3D extends EventDispatcher {
 				__style.setProperty (renderSession.transformOriginProperty, "0 0 0", null);
 				__style.setProperty ("z-index", "-1", null);
 				
-				dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+				__dispatchCreate ();
 				
 			} else {
 				
@@ -137,7 +143,20 @@ class Stage3D extends EventDispatcher {
 	
 	private function __dispatchError ():Void {
 		
+		__contextRequested = false;
 		dispatchEvent (new ErrorEvent (ErrorEvent.ERROR, false, false, "Context3D not available"));
+		
+	}
+	
+	
+	private function __dispatchCreate ():Void {
+		
+		if (__contextRequested) {
+			
+			__contextRequested = false;
+			dispatchEvent (new Event (Event.CONTEXT3D_CREATE));
+			
+		}
 		
 	}
 	
@@ -174,15 +193,9 @@ class Stage3D extends EventDispatcher {
 		
 		if (!visible) return;
 		
-		if (__contextRequested) {
+		if (__contextRequested && context3D == null) {
 			
-			if (context3D == null) {
-				
-				__createContext (stage, renderSession);
-				
-			}
-			
-			__contextRequested = false;
+			__createContext (stage, renderSession);
 			
 		}
 		
@@ -204,15 +217,9 @@ class Stage3D extends EventDispatcher {
 		
 		if (!visible) return;
 		
-		if (__contextRequested) {
+		if (__contextRequested && context3D == null) {
 			
-			if (context3D == null) {
-				
-				__createContext (stage, renderSession);
-				
-			}
-			
-			__contextRequested = false;
+			__createContext (stage, renderSession);
 			
 		}
 		
