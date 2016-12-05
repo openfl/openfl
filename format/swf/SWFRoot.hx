@@ -35,7 +35,10 @@ class SWFRoot extends SWFTimelineContainer
 	private static inline var COMPRESSION_START_POS:Int = 8;
 	
 	public function new(ba:ByteArray = null) {
+		_scalingGrids = new Map<Int, Int>();
+		
 		super ();
+		
 		bytes = new SWFData();
 		if (ba != null) {
 			loadBytes(ba);
