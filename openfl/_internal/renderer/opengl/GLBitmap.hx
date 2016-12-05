@@ -102,6 +102,7 @@ class GLBitmap {
 		renderSession.maskManager.saveState();
 
 		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.framebuffer);
+		cast (renderer, GLRenderer).renderToTexture = true;
 		renderer.setViewport (x, y, width, height);
 
 		// enable writing to all the colors and alpha
@@ -168,11 +169,6 @@ class GLBitmap {
 		} else {
 			
 			m.identity();
-			
-		}
-
-		if (mustFlipMatrix()) {
-			GLBitmap.flipMatrix (m, viewPort.height);
 			
 		}
 
@@ -260,6 +256,7 @@ class GLBitmap {
 		}
 
 		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : data.texture.framebuffer);
+		cast (renderSession.renderer, GLRenderer).renderToTexture = fbData.length > 1;
 		renderSession.renderer.setViewport (x, y, width, height);
 		renderSession.renderer.transparent = data.transparent;
 
@@ -282,9 +279,4 @@ class GLBitmap {
 
 	}
 
-	private static inline function mustFlipMatrix ():Bool {
-
-		return fbData.length == 2;
-
-	}
 }
