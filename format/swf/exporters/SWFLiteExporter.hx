@@ -10,7 +10,6 @@ import format.swf.data.consts.BitmapFormat;
 import format.swf.data.SWFButtonRecord;
 import format.swf.exporters.core.FilterType;
 import format.swf.exporters.core.ShapeCommand;
-import format.swf.instance.Bitmap;
 import format.swf.lite.symbols.BitmapSymbol;
 import format.swf.lite.symbols.ButtonSymbol;
 import format.swf.lite.symbols.DynamicTextSymbol;

@@ -19,7 +19,6 @@ import format.swf.tags.TagDefineShape;
 import format.swf.tags.TagDefineSprite;
 import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
-import format.swf.SWFLibrary;
 import format.swf.SWFTimelineContainer;
 import format.SWF;
 import haxe.io.Path;
@@ -499,7 +498,6 @@ class Tools {
 	private static function processLibraries (project:HXProject):HXProject {
 
 		var output = new HXProject ();
-		var embeddedSWF = false;
 		var embeddedSWFLite = false;
 		//var filterClasses = [];
 
@@ -525,55 +523,7 @@ class Tools {
 
 			}
 
-			if (type == "swf" && project.target != Platform.HTML5) {
-
-				if (!FileSystem.exists (library.sourcePath)) {
-
-					LogHelper.warn ("Could not find library file: " + library.sourcePath);
-					continue;
-
-				}
-
-				LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
-
-				var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-
-				if (library.embed != null) {
-
-					swf.embed = library.embed;
-
-				}
-
-				output.assets.push (swf);
-
-				var data:Dynamic = {};
-				data.version = 0.1;
-				data.type = "format.swf.SWFLibrary";
-				data.args = [ "lib/" + library.name + "/" + library.name + ".swf" ];
-
-				var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
-				asset.id = "libraries/" + library.name + ".json";
-				asset.data = Json.stringify (data);
-
-				if (library.embed != null) {
-
-					asset.embed = library.embed;
-
-				}
-
-				output.assets.push (asset);
-
-				if (library.generate) {
-
-					generateSWFClasses (project, output, swf, library.prefix);
-
-				}
-
-				embeddedSWF = true;
-				//project.haxelibs.push (new Haxelib ("openfl"));
-				//output.assets.push (new Asset (library.sourcePath, "libraries/" + library.name + ".swf", AssetType.BINARY));
-
-			} else if (type == "swf_lite" || type == "swflite") {
+			if (type == "swf_lite" || type == "swflite") {
 
 				if (!FileSystem.exists (library.sourcePath)) {
 
@@ -783,13 +733,6 @@ class Tools {
 
 		}
 
-		if (embeddedSWF) {
-
-			output.haxelibs.push (new Haxelib ("format"));
-			output.haxeflags.push ("format.swf.SWFLibrary");
-
-		}
-
 		if (embeddedSWFLite) {
 
 			output.haxeflags.push ("format.swf.lite.SWFLiteLibrary");
@@ -802,7 +745,7 @@ class Tools {
 
 		}
 
-		if (embeddedSWF || embeddedSWFLite) {
+		if (embeddedSWFLite) {
 
 			return output;
 
