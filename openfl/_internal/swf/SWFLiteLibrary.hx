@@ -98,9 +98,7 @@ import openfl.Assets;
 		
 		if (swf == null) {
 			
-			return text.onComplete (function(text) {
-				swf = SWFLite.unserialize(text);
-			});
+			text.onComplete (function (text) this.swf = SWFLite.unserialize (text));
 			
 		}
 			
@@ -132,7 +130,7 @@ import openfl.Assets;
 		
 		var bitmapSymbols:Array<BitmapSymbol> = [];
 		
-		for (symbol in swf.symbols) {
+		if (swf != null) for (symbol in swf.symbols) {
 			
 			if (Std.is (symbol, BitmapSymbol)) {
 				
