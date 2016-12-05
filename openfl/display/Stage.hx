@@ -794,6 +794,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function update (deltaTime:Int):Void {
 
 		__deltaTime = deltaTime;
+		__onMouse (null, __mouseX, __mouseY, 0);
 
 		__computeFlattenedChildren();
 	}
