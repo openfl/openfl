@@ -82,7 +82,7 @@ class Shader {
 		
 		var param:GLShaderParameter;
 		var u:GLUniformLocation;
-		var v:Array<Float>;
+		var v:Float32Array;
 		var bd:BitmapData;
 		for (key in shaderData.keys()) {
 			u = getUniformLocation(key);
@@ -109,9 +109,9 @@ class Shader {
 					}
 				case MAT:
 					switch(param.size) {
-						case 2: gl.uniformMatrix2fv(u, param.transpose, new Float32Array(param.value));
-						case 3: gl.uniformMatrix3fv(u, param.transpose, new Float32Array(param.value));
-						case 4: gl.uniformMatrix4fv(u, param.transpose, new Float32Array(param.value));
+						case 2: gl.uniformMatrix2fv(u, param.transpose, (param.value));
+						case 3: gl.uniformMatrix3fv(u, param.transpose, (param.value));
+						case 4: gl.uniformMatrix4fv(u, param.transpose, (param.value));
 					}
 				case SAMPLER:
 					if (bd == null ||  @:privateAccess !bd.__isValid) continue;

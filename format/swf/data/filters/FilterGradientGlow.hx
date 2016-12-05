@@ -1,4 +1,4 @@
-﻿package format.swf.data.filters;
+package format.swf.data.filters;
 
 import format.swf.exporters.core.FilterType;
 import format.swf.SWFData;
@@ -25,7 +25,6 @@ class FilterGradientGlow extends Filter implements IFilter
 
 	public var gradientColors (default, null):Array<Int>;
 	public var gradientRatios (default, null):Array<Int>;
-	public var filterName (get_filterName, null):String;
 
 	public function new(id:Int) {
 		super(id);
@@ -165,7 +164,7 @@ class FilterGradientGlow extends Filter implements IFilter
 
 	override public function toString(indent:Int = 0):String {
 		var i:Int;
-		var str:String = "[" + filterName + "] " +
+		var str:String = "[GradientGlowFilter] " +
 			"BlurX: " + blurX + ", " +
 			"BlurY: " + blurY + ", " +
 			"Angle: " + angle + ", " +
@@ -194,6 +193,4 @@ class FilterGradientGlow extends Filter implements IFilter
 		}
 		return str;
 	}
-
-	private function get_filterName():String { return "GradientGlowFilter"; }
 }

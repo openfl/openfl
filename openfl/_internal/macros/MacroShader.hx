@@ -18,6 +18,7 @@ import haxe.macro.Expr.Binop;
 import haxe.macro.Expr.TypePath;
 import haxe.macro.Expr.Error;
 import haxe.macro.Expr.ComplexType;
+import lime.utils.Float32Array;
 
 using haxe.macro.ExprTools;
 using haxe.macro.ComplexTypeTools;
@@ -141,9 +142,9 @@ class MacroShader
 				case "float":
 					extType = macro:Float;
 				case v if (v.indexOf("vec") > -1):
-					extType = macro:Array<Float>;
+					extType = macro:Float32Array;
 				case m if (m.indexOf("mat") > -1):
-					extType = macro:Array<Float>;
+					extType = macro:Float32Array;
 				case "sampler2D" | "samplerCube":
 					extType = macro:openfl.display.BitmapData;
 				case _: 
@@ -215,13 +216,14 @@ class MacroShader
 				/**
 				 * return o.value;
 				 */
-				case "Array":
+				case "Float32Array":
 					macro $p { ['__$name', 'value'] };
 				/**
 				 * return o.bitmap;
 				 */
 				case "BitmapData":
 					macro $p { ['__$name', 'bitmap'] };
+
 				case _:
 					null;
 				}
@@ -294,7 +296,7 @@ class MacroShader
 				/**
 				 * return o.value = v;
 				 */
-				case "Array":
+				case "Float32Array":
 					{
 						pos: currentPos,
 						expr: EBinop(Binop.OpAssign, macro $p { ['__$name', 'value'] }, macro $i{'v'})
@@ -348,4 +350,3 @@ class MacroShader
 }	
 
 #end
-	

@@ -75,6 +75,7 @@ class BitmapData implements IBitmapDrawable {
 	public var __cacheAsBitmap:Bool;
 	
 	private var __blendMode:BlendMode;
+	private var __worldAlpha:Float;
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __isValid:Bool;

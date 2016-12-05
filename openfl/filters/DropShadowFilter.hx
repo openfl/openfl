@@ -7,6 +7,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+import openfl.utils.Float32ArrayContainer;
+
 
 @:final class DropShadowFilter extends BitmapFilter {
 
@@ -23,8 +25,6 @@ import openfl.geom.Rectangle;
 	public var strength:Float;
 
 	private var __shadowBitmapData:BitmapData;
-	private static var __inverseAlphaMatrix = [ 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 255.0 ];
-
 	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false) {
 
 		super ();
@@ -83,7 +83,7 @@ import openfl.geom.Rectangle;
 		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
 
 		if (inner) {
-			commands.push (ColorTransform (__shadowBitmapData, bitmap, __inverseAlphaMatrix));
+			commands.push (ColorTransform (__shadowBitmapData, bitmap, BitmapFilter.__inverseAlphaMultipliers, BitmapFilter.__inverseAlphaOffsets));
 			src = __shadowBitmapData;
 		}
 

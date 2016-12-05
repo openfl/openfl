@@ -9,6 +9,7 @@ import openfl.filters.commands.*;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import lime.utils.Float32Array;
 
 #if (js && html5)
 import js.html.ImageData;
@@ -21,6 +22,10 @@ class BitmapFilter {
 
 	private var __dirty:Bool = true;
 	private var __passes:Int = 0;
+
+	public static var __inverseAlphaMultipliers = new Float32Array([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0]);
+	public static var __inverseAlphaOffsets = new Float32Array([0.0, 0.0, 0.0, 1.0]);
+
 
 	public function new () {
 
@@ -81,8 +86,8 @@ class BitmapFilter {
 					case ColorLookup (target, source, colorLookup) :
 						ColorLookupCommand.apply (renderSession, target, source, colorLookup);
 
-					case ColorTransform (target, source, colorMatrix) :
-						ColorTransformCommand.apply (renderSession, target, source, colorMatrix);
+					case ColorTransform (target, source, multipliers, offsets) :
+						ColorTransformCommand.apply (renderSession, target, source, multipliers, offsets);
 
 					case CombineInner (target, source1, source2) :
 						CombineInnerCommand.apply (renderSession, target, source1, source2);
@@ -99,8 +104,8 @@ class BitmapFilter {
 					case OuterKnockoutTransparency (target, source1, source2, allowTransparency) :
 						OuterKnockoutCommand.apply(renderSession, target, source1, source2, allowTransparency);
 
-					case DestOut (target, source1, source2) :
-						DestOutCommand.apply(renderSession, target, source1, source2);
+					case DestOut (target, highlightSource, shadowSource) :
+						DestOutCommand.apply(renderSession, target, highlightSource, shadowSource);
 
 					default :
 						throw("Unsupported command!");

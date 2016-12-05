@@ -97,14 +97,14 @@ class GLMaskManager extends AbstractMaskManager {
 			m.copyFrom(mask.__renderScaleTransform);
 			m.translate(-maskBounds.x, -maskBounds.y);
 
-			mask.visible = true;
+			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;
 
 			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
 			Matrix.pool.put(m);
 			@:privateAccess mask.__cachedBitmap = bitmap;
 
-			mask.visible = false;
+			@:privateAccess mask.__visible = false;
 			@:privateAccess mask.__isMask = true;
 			@:privateAccess mask.__renderable = false;
 		}

@@ -36,7 +36,7 @@ class VertexArray {
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 	}
 	
-	public function upload(view:ArrayBufferView) {
+	public inline function upload(view:ArrayBufferView) {
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
 	}
 	

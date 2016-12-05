@@ -516,12 +516,7 @@ class SpriteBatch {
 			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		}
 		
-		if(writtenVertexBytes > (vertexArraySize * 0.5)) {
-			vertexArray.upload(positions);
-		} else {
-			var view = positions.subarray(0, writtenVertexBytes);
-			vertexArray.upload(view);
-		}
+		vertexArray.upload(positions);
 		
 		var nextState:State;
 		var batchSize:Int = 0;
@@ -531,7 +526,6 @@ class SpriteBatch {
 		currentState.shaderData = null;
 		currentState.texture = null;
 		currentState.maskTexture = null;
-		currentState.maskTextureUVScale = null;
 		currentState.maskMatrix = null;
 		currentState.textureSmooth = false;
 		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
@@ -555,7 +549,8 @@ class SpriteBatch {
 				currentState.shaderData = nextState.shaderData;
 				currentState.texture = nextState.texture;
 				currentState.maskTexture = nextState.maskTexture;
-				currentState.maskTextureUVScale = nextState.maskTextureUVScale;
+				var maskTextureUVScale = nextState.maskTextureUVScale;
+				currentState.maskTextureUVScale.setTo(maskTextureUVScale.x, maskTextureUVScale.y);
 				currentState.maskMatrix = nextState.maskMatrix;
 				currentState.textureSmooth = nextState.textureSmooth;
 				currentState.blendMode = nextState.blendMode;
@@ -649,7 +644,8 @@ class SpriteBatch {
 		state.texture = texture;
 		if (maskBitmap != null) {			
 			state.maskTexture = maskBitmap.getTexture(gl);
-			state.maskTextureUVScale = new Vector2( @:privateAccess maskBitmap.__uvData.x1, @:privateAccess maskBitmap.__uvData.y2 );
+			var uvData = @:privateAccess maskBitmap.__uvData;
+			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
 			state.maskMatrix = maskMatrix;
 		} else {
 			state.maskTexture = null;
@@ -745,7 +741,7 @@ private class State {
 	public var shaderData:GLShaderData;
 
 	public var maskTexture:GLTexture;
-	public var maskTextureUVScale : Vector2;
+	public var maskTextureUVScale:Vector2 = new Vector2();
 	public var maskMatrix:Matrix;
 
 	public function new() { }
