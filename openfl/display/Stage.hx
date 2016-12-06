@@ -165,13 +165,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		this.stage = this;
 
 		align = StageAlign.TOP_LEFT;
-		#if html5
-		allowsFullScreen = false;
-		allowsFullScreenInteractive = false;
-		#else
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
-		#end
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
