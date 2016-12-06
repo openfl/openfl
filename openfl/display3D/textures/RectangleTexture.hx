@@ -14,12 +14,6 @@ import openfl.utils.ByteArray;
 @:final class RectangleTexture extends TextureBase {
 	
 	
-	//private var __format:Context3DTextureFormat;
-	private var __height:Int;
-	private var __optimizeForRenderToTexture:Bool;
-	private var __width:Int;
-	
-	
 	private function new (context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool) {
 		
 		super (context, GL.TEXTURE_2D);

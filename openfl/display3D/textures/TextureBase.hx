@@ -24,12 +24,16 @@ class TextureBase extends EventDispatcher {
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
 	private var __format:Int;
+	private var __height:Int;
 	private var __internalFormat:Int;
 	private var __memoryUsage:Int;
+	private var __optimizeForRenderToTexture:Bool;
 	private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
+	private var __streamingLevels:Int;
 	private var __textureID:GLTexture;
 	private var __textureTarget:Int;
+	private var __width:Int;
 	
 	
 	private function new (context:Context3D, target:Int) {

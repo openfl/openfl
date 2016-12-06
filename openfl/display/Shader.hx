@@ -34,6 +34,7 @@ class Shader {
 	private var __glVertexSource:String;
 	private var __isUniform:Map<String, Bool>;
 	private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
+	private var __numPasses:Int;
 	private var __paramBool:Array<ShaderParameter<Bool>>;
 	private var __paramFloat:Array<ShaderParameter<Float>>;
 	private var __paramInt:Array<ShaderParameter<Int>>;
@@ -94,6 +95,7 @@ class Shader {
 		precisionHint = FULL;
 		
 		__glSourceDirty = true;
+		__numPasses = 1;
 		
 	}
 	

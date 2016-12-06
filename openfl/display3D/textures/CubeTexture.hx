@@ -10,10 +10,7 @@ import openfl.utils.ByteArray;
 @:final class CubeTexture extends TextureBase {
 	
 	
-	//private var __format:Context3DTextureFormat;
-	private var __optimizeForRenderToTexture:Bool;
 	private var __size:Int;
-	private var __streamingLevels:Int;
 	private var __uploadedSides:Int;
 	
 	

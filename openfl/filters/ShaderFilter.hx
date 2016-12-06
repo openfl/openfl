@@ -21,6 +21,8 @@ class ShaderFilter extends BitmapFilter {
 		
 		this.shader = shader;
 		
+		__numPasses = 1;
+		
 	}
 	
 	
@@ -36,7 +38,7 @@ class ShaderFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession):Shader {
+	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
 		return shader;
 		

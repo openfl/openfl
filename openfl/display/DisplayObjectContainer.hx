@@ -700,6 +700,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__renderGL (renderSession);
 		
 		renderSession.maskManager.pushObject (this);
+		renderSession.filterManager.pushObject (this);
 		
 		for (child in __children) {
 			
@@ -719,6 +720,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__removedChildren.length = 0;
 		
+		renderSession.filterManager.popObject (this);
 		renderSession.maskManager.popObject (this);
 		
 	}

@@ -30,8 +30,7 @@ import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.utils.PerlinNoise;
-import openfl.display3D.textures.RectangleTexture;
-import openfl.display3D.textures.Texture;
+import openfl.display3D.textures.TextureBase;
 import openfl.errors.IOError;
 import openfl.errors.TypeError;
 import openfl.filters.BitmapFilter;
@@ -56,8 +55,7 @@ import js.Browser;
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
 @:access(openfl._internal.renderer.opengl.GLRenderer)
-@:access(openfl.display3D.textures.RectangleTexture)
-@:access(openfl.display3D.textures.Texture)
+@:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.filters.BitmapFilter)
@@ -438,19 +436,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				var gl = GL.context;
 				
-				if (__framebuffer == null) {
-					
-					getTexture (gl);
-					
-					__framebuffer = gl.createFramebuffer ();
-					
-					gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-					gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
-					
-				}
-				
-				gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
-				
+				gl.bindFramebuffer (gl.FRAMEBUFFER, __getFramebuffer (gl));
 				gl.viewport (0, 0, width, height);
 				
 				var renderer = new GLRenderer (Lib.current.stage, gl, false);
@@ -739,20 +725,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromRectangleTexture (texture:RectangleTexture):BitmapData {
-		
-		if (texture == null) return null;
-		
-		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
-		bitmapData.readable = false;
-		bitmapData.__texture = texture.__textureID;
-		bitmapData.image = null;
-		return bitmapData;
-		
-	}
-	
-	
-	public static function fromTexture (texture:Texture):BitmapData {
+	public static function fromTexture (texture:TextureBase):BitmapData {
 		
 		if (texture == null) return null;
 		
@@ -1457,6 +1430,24 @@ class BitmapData implements IBitmapDrawable {
 			__isValid = true;
 			
 		}
+		
+	}
+	
+	
+	private function __getFramebuffer (gl:GLRenderContext):GLFramebuffer {
+		
+		if (__framebuffer == null) {
+			
+			getTexture (gl);
+			
+			__framebuffer = gl.createFramebuffer ();
+			
+			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);
+			gl.framebufferTexture2D (gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, __texture, 0);
+			
+		}
+		
+		return __framebuffer;
 		
 	}
 	

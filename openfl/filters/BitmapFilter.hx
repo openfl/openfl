@@ -11,9 +11,13 @@ import openfl.geom.Rectangle;
 class BitmapFilter {
 	
 	
+	private var __cacheObject:Bool;
+	private var __numPasses:Int;
+	
+	
 	public function new () {
 		
-		
+		__numPasses = 0;
 		
 	}
 	
@@ -32,7 +36,7 @@ class BitmapFilter {
 	}
 	
 	
-	private function __initShader (renderSession:RenderSession):Shader {
+	private function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
 		return renderSession.shaderManager.defaultShader;
 		

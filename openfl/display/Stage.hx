@@ -753,7 +753,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						#if (!disable_cffi && (!html5 || !canvas))
 						__renderer = new GLRenderer (this, gl);
-						stage3Ds[0].__createContext (this, __renderer.renderSession);
 						#end
 					
 					case CANVAS (context):

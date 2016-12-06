@@ -23,6 +23,8 @@ import openfl.geom.Rectangle;
 		
 		this.matrix = matrix;
 		
+		__numPasses = 1;
+		
 	}
 	
 	
@@ -79,7 +81,7 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession):Shader {
+	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
 		__colorMatrixShader.init (matrix);
 		return __colorMatrixShader;

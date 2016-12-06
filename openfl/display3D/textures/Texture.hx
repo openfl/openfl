@@ -19,12 +19,6 @@ import haxe.Timer;
 	
 	private static var __lowMemoryMode:Bool = false;
 	
-	//private var __format:Context3DTextureFormat;
-	private var __height:Int;
-	private var __optimizeForRenderToTexture:Bool;
-	private var __streamingLevels:Int;
-	private var __width:Int;
-	
 	
 	private function new (context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
 		

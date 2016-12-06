@@ -39,6 +39,8 @@ class ConvolutionFilter extends BitmapFilter {
 		this.color = color;
 		this.alpha = alpha;
 		
+		__numPasses = 1;
+		
 	}
 	
 	
@@ -49,7 +51,7 @@ class ConvolutionFilter extends BitmapFilter {
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession):Shader {
+	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
 		
 		var data = __convolutionShader.data;
 		
