@@ -61,6 +61,8 @@ import openfl.Vector;
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
+		if (data == null) return;
+		
 		GL.bindBuffer (GL.ELEMENT_ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		

@@ -16,7 +16,9 @@ class Stage3DTest {
 		var stage3D = Lib.current.stage.stage3Ds[0];
 		var exists = stage3D.context3D;
 		
+		#if flash
 		Assert.isNull (exists);
+		#end
 		
 	}
 	

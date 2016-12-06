@@ -639,17 +639,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (endian == LITTLE_ENDIAN) {
 			
-			set (position++, value);
-			set (position++, value >> 8);
-			set (position++, value >> 16);
-			set (position++, value >> 24);
+			set (position++, value & 0xFF);
+			set (position++, (value >> 8) & 0xFF);
+			set (position++, (value >> 16) & 0xFF);
+			set (position++, (value >> 24) & 0xFF);
 			
 		} else {
 			
-			set (position++, value >> 24);
-			set (position++, value >> 16);
-			set (position++, value >> 8);
-			set (position++, value);
+			set (position++, (value >> 24) & 0xFF);
+			set (position++, (value >> 16) & 0xFF);
+			set (position++, (value >> 8) & 0xFF);
+			set (position++, value & 0xFF);
 			
 		}
 		

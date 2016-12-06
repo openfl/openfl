@@ -302,7 +302,7 @@ class EventDispatcher implements IEventDispatcher {
 			
 			if (!isCopy) {
 				
-				if (listIndex <= index) {
+				if (listIndex < index) {
 					
 					index--;
 					
