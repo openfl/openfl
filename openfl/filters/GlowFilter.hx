@@ -85,7 +85,7 @@ import openfl.geom.Rectangle;
 
 	public function toString ():String {
 		
-		return "GlowFilter: [ color:" + color + ", alpha:" + alpha + ", blurX:" + blurX + ", blurY:" + blurY + ", strength:" + strength + ", quality:" + quality + ", inner:" + inner + ", knockout:" + knockout + " ]";
+		return "GlowFilter: [ color:0x" + StringTools.hex(color,6) + ", alpha:" + alpha + ", blurX:" + blurX + ", blurY:" + blurY + ", strength:" + strength + ", quality:" + quality + ", inner:" + inner + ", knockout:" + knockout + " ]";
 		
 	}
 	
@@ -142,6 +142,9 @@ import openfl.geom.Rectangle;
 		}
 
         FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY, quality, strength );
+
+		if (blurX==5)
+			com.geepers.DebugUtils.debugBitmap( destBitmapData );
 
 		tmpSrc = null;
 

@@ -60,7 +60,7 @@ import openfl.geom.Rectangle;
 	
 	public function toString ():String {
 		
-		return "DropShadowFilter: [ distance:" + distance + ", angle:" + angle + ", color:" + color + ", alpha:" + alpha + ", blurX:" + blurX + ", blurY:" + blurY + ", strength:" + strength + ", quality:" + quality + ", inner:" + inner + ", knockout:" + knockout + ", hideObject:" + hideObject + " ]";
+		return "DropShadowFilter: [ distance:" + distance + ", angle:" + angle + ", color:" + StringTools.hex(color,6) + ", alpha:" + alpha + ", blurX:" + blurX + ", blurY:" + blurY + ", strength:" + strength + ", quality:" + quality + ", inner:" + inner + ", knockout:" + knockout + ", hideObject:" + hideObject + " ]";
 		
 	}
 	

@@ -29,41 +29,39 @@ class GLShape {
 
 	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
+		trace("render:"+shape.__name+" rndbl:"+shape.__renderable+" alph:"+shape.__worldAlpha+" rndasCAB:"+shape.__renderedAsCachedBitmap);
 		if (!shape.__renderable || shape.__worldAlpha <= 0 || shape.__renderedAsCachedBitmap) return;
 		
 		var graphics = shape.__graphics;
-		
-		if (graphics != null) {
+	
+		var mask:DisplayObject;
+		var maskGraphics:Graphics = null;
+		var gl = renderSession.gl;
+		var stdRender = true;
 
-			var mask:DisplayObject;
-			var maskGraphics:Graphics = null;
-			var gl = renderSession.gl;
-			var stdRender = true;
+		// Render cache as bitmap
+		if ( shape.cacheAsBitmap ) {
+			
+			renderSession.updateCachedBitmap( shape );
 
-			// Render cache as bitmap
-			if ( shape.cacheAsBitmap ) {
+			renderSession.maskManager.pushObject (shape);
+
+			if (renderSession.filterManager.useCPUFilters && shape.filters != null && shape.filters.length > 0) {
 				
-				
-				renderSession.updateCachedBitmap( shape );
+				renderFilterBitmap( shape, renderSession );
 
-				renderSession.maskManager.pushObject (shape);
-				renderSession.filterManager.pushObject (shape);
+				stdRender = shape.filters[0].__preserveOriginal;
 
-				if (renderSession.filterManager.useCPUFilters && shape.filters != null && shape.filters.length > 0) {
-					
-					renderFilterBitmap( shape, renderSession );
+			} 
 
-					stdRender = shape.filters[0].__preserveOriginal;
+			if (stdRender)
+				renderCacheAsBitmap( shape, renderSession );
+			
+			renderSession.maskManager.popObject (shape);
 
-				} 
+		} else {
 
-				if (stdRender)
-					renderCacheAsBitmap( shape, renderSession );
-				
-				renderSession.filterManager.popObject (shape);
-				renderSession.maskManager.popObject (shape);
-
-			} else {
+		if (graphics != null && stdRender) {
 
 				#if (js && html5)
 				CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
@@ -74,6 +72,7 @@ class GLShape {
 				if (graphics.__bitmap != null && graphics.__visible) {
 
 					var renderer:GLRenderer = cast renderSession.renderer;
+					var gl = renderSession.gl;
 					
 					var shader;
 					var targetBitmap = graphics.__bitmap;
@@ -82,31 +81,24 @@ class GLShape {
                     renderSession.blendModeManager.setBlendMode (shape.blendMode);
                     renderSession.maskManager.pushObject (shape);
                 
-                
                     var shader = renderSession.filterManager.pushObject (shape);
-                
                 
                     shader.data.uImage0.input = graphics.__bitmap;
                     shader.data.uImage0.smoothing = renderSession.allowSmoothing;
                     shader.data.uMatrix.value = renderer.getMatrix (graphics.__worldTransform);
                 
-                
                     renderSession.shaderManager.setShader (shader);
-                
                 
                     gl.bindBuffer (gl.ARRAY_BUFFER, graphics.__bitmap.getBuffer (gl, shape.__worldAlpha));
                     gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
                     gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
                     gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
                 
-                
                     gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
-                
                 
                     renderSession.filterManager.popObject (shape);
                     renderSession.maskManager.popObject (shape);
-
-                
+               
                 }
 
             }
@@ -148,12 +140,6 @@ class GLShape {
 		var gl = renderSession.gl;
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var shader = renderSession.shaderManager.defaultShader;
-
-					if (targetBitmap.width==512) {
-						trace("RENDERING SQUIGGLE");
-						var aa=1;
-						aa++;
-					}
 
 		shader.data.uImage0.input = targetBitmap;
 		shader.data.uImage0.smoothing = renderSession.allowSmoothing;
