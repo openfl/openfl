@@ -83,8 +83,8 @@ class Video extends DisplayObject {
 	
 	private function __getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
 		
-		var width = videoWidth;
-		var height = videoHeight;
+		var width = __width;
+		var height = __height;
 		
 		if (width == 0 || height == 0) return null;
 		
