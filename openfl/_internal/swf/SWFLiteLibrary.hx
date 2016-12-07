@@ -113,8 +113,39 @@ import openfl.Assets;
 			
 			if (asset.type == cast TEXT) {
 				
-				return loadText (asset.id).then (function (_) return this.load ());
+				var promise = new Promise<LimeAssetLibrary> ();
 				
+				var text = loadText (asset.id);
+				var textSize:Int = 0;
+				
+				// We count loading the TEXT asset as half the work.
+				//
+				// The other half is loading BitmapData assets.
+				// To account for this, we integer divide the progress by 2
+				// using: >> 1
+				text.onProgress (function (a,b) {
+					textSize = b;
+					promise.progress (a >> 1, b);
+				});
+				
+				text.onComplete (function (text) {
+					
+					var rest = this.load ();
+					
+					// When text is loaded, the work is half done.
+					//
+					// To account for this:
+					// - start counting from half of total (b)
+					// - divide progress (a) by 2
+					rest.onProgress (function (a,b) promise.progress ((b >> 1) + (a >> 1), b));
+					rest.onComplete (promise.complete);
+					rest.onError    (promise.error);
+					
+				});
+				
+				text.onError (promise.error);
+				
+				return promise.future;
 			}
 			
 		}
@@ -146,37 +177,46 @@ import openfl.Assets;
 			
 		} else {
 			
-			var loaded = -1;
+			var loaded = -1, total = bitmapSymbols.length;
 			
-			var onLoad = function (?bitmapData) {
+			var onLoad : ?Dynamic -> Void;
+			onLoad = function (?bitmapData) {
 				
 				loaded++;
+				trace("SWFLiteLibrary onLoad", loaded, total);
 				
-				promise.progress (loaded, bitmapSymbols.length);
+				promise.progress (loaded * 1000, total * 1000);
 				
-				if (loaded == bitmapSymbols.length) {
+				if (loaded == total) {
 					
 					promise.complete (this);
 					
+				} else {
+					
+					var symbol = bitmapSymbols[loaded];
+						
+					if (symbol.getBitmapDataFromCache() != null) {
+						
+						onLoad ();
+						
+					} else {
+					
+						
+						symbol.loadBitmapData (this)
+							.onComplete (onLoad)
+							.onProgress (function (bytesLoaded, bytesTotal) {
+								
+								var weightedLoad  : Int = (loaded * 1000) + Std.int((bytesLoaded / bytesTotal) * 1000);
+								var weightedTotal : Int = total * 1000;
+								trace ("BitmapData loaded", bytesLoaded, bytesTotal, weightedLoad, weightedTotal, weightedLoad/weightedTotal);
+								promise.progress (weightedLoad, weightedTotal);
+								
+							}).onError (promise.error);
+					
+					}
 				}
 				
 			};
-			
-			for (symbol in bitmapSymbols) {
-				
-				if (symbol.getBitmapDataFromCache() != null) {
-					
-					onLoad ();
-					
-				} else {
-					
-					symbol.loadBitmapData (this)
-						.onComplete (onLoad)
-						.onError (promise.error);
-					
-				}
-				
-			}
 			
 			onLoad ();
 			
