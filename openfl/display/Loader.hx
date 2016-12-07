@@ -116,11 +116,7 @@ class Loader extends DisplayObjectContainer {
 				contentLoaderInfo.dispatchEvent (event);
 				
 			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, BitmapData_onError);
 			loader.dataFormat = URLLoaderDataFormat.TEXT;
 			loader.load (request);
 			#else
@@ -163,11 +159,7 @@ class Loader extends DisplayObjectContainer {
 				libraryLoading.onError (BitmapData_onError);
 				
 			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, BitmapData_onError);
 			loader.dataFormat = URLLoaderDataFormat.TEXT;
 			loader.load (request);
 			
@@ -182,11 +174,7 @@ class Loader extends DisplayObjectContainer {
 				BitmapData_onLoad (BitmapData.fromBytes (loader.data));
 				
 			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, BitmapData_onError);
 			loader.dataFormat = URLLoaderDataFormat.BINARY;
 			loader.load (request);
 			return;
@@ -199,7 +187,7 @@ class Loader extends DisplayObjectContainer {
 			
 			worker.doWork.add (function (_) {
 				
-				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
+				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function (e) worker.sendError (IOErrorEvent.IO_ERROR));
 				
 			});
 			
