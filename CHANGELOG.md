@@ -1,3 +1,67 @@
+4.5.0 (12/06/2016)
+------------------
+
+* Merged the "swf" library into OpenFL
+* Enabled "strict mode" by default (MovieClip and Event are not Dynamic)
+* Context3D is now automatically initialized on OpenGL targets
+* Added tools for support of SWF assets
+* Added core support for SWF-based symbols
+* Added performance optimizations for SWF-based bitmaps
+* Added optimizations when objects are re-used during timeline animation
+* Added support for custom Haxe base classes from Adobe Animate
+* Added support for the `visible` property from Adobe Animate
+* Added support for input TextFields from Adobe Animate
+* Added support for dynamic child access using -Dopenfl-dynamic
+* Added bitmapData.disposeImage() to reduce memory use (beta)
+* Added bitmapData.readable for GPU-only BitmapData (beta)
+* Added BitmapData.fromTexture() for render-to-texture (experimental)
+* Added framebuffer-based bitmapData.draw and fillRect (experimental)
+* Added stage.showDefaultContextMenu and implemented for HTML5
+* Added a 32 SoundChannel limit (similar to Flash) for better performance
+* Added `new Vector([1, 2, 3])` (to approximate `<Vector>[1, 2, 3]`)
+* Added initial support for runtime JS script loading
+* Added "select all" keyboard shortcut support to TextField
+* Added initial support for BlurFilter
+* Added support for filters on display object containers
+* Updated openfl.Lib.getURL use lime.system.System.openURL
+* Updated openfl.net.URLLoader to use lime.net.HTTPRequest
+* Updated tilemap width/height to behave similar to TextField
+* Improved the behavior of SWF-based library preloading
+* Improved SWF class generation to use more exact types
+* Improved the behavior of displayObject.loaderInfo
+* Improved the behavior of premultiplied alpha on HTML5
+* Improved the performance of -Ddom when using canvas-based bitmaps
+* Improved support for UncaughtErrorEvents
+* Fixed the calculation of textField.bounds
+* Fixed an issue in Stage3D that caused flickering in Away3D samples
+* Fixed the position of shape.graphics when using bitmapData.draw
+* Fixed hit testing for scaled shape.graphics on HTML5
+* Fixed repeated dispatching of Event.CONTEXT3D_CREATE
+* Fixed support for Stage3D empty textures
+* Fixed an issue with document classes extending starling.display.Sprite
+* Fixed hit testing on bitmapFill shapes
+* Fixed an issue with keyboard shortcut support on TextField for macOS
+* Fixed the size of video playback on WebGL
+* Fixed hitting the enter key on a single-line TextField
+* Fixed optional argument in bitmapData.encode
+* Fixed behavior of the border property on SWF-based TextFields
+* Fixed support for copy-and-paste on HTML5
+* Fixed a crash issue when using Stage3D shaders on macOS
+* Fixed the behavior of textField width/height when scaled
+* Fixed ByteArray.writeFloat on Neko
+* Fixed a minor issue when removing event listeners while dispatching
+* Fixed some glyphs that disappeared when using textField.htmlText
+* Fixed an issue that could cause textFields to disappear when scaled
+* Fixed support for using Class as a key type for openfl.utils.Dictionary
+* Fixed support for scaled shape.graphics on -Ddom
+* Fixed the position of shape.graphics on -Ddom
+* Fixed support for SimpleButton on -Ddom
+* Fixed some issues with TextField on -Ddom
+* Fixed support for scrollRect on -Ddom
+* Fixed sprite.visible support on -Ddom
+* Fixed hiding of mask objects on -Ddom
+
+
 4.4.1 (11/01/2016)
 ------------------
 
