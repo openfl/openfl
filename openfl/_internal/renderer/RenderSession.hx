@@ -76,8 +76,6 @@ class RenderSession {
 	}
 	
 
-	private var done:Bool = false;
-	private var stop:Bool = false;
 	public function updateCachedBitmap( shape:DisplayObject ) {
 
 		var dirty = (shape.__cachedShapeBounds == null) || hierarchyDirty( shape );
@@ -98,24 +96,22 @@ class RenderSession {
 			bounds.height = shape.__maxCacheAsBitmapBounds.y - shape.__minCacheAsBitmapBounds.y;
 
 			var offset = new Point( bounds.x, bounds.y );
-			if (shape.__cachedShapeBounds == null) {
-				trace("THIS IS NULL");
-				var aa = 1;
-				aa++;
-			}
 			offset.x -= shape.__cachedShapeBounds.x;
 			offset.y -= shape.__cachedShapeBounds.y;
 
-			if (!done) {
-				trace("MAXBOUNDS:"+bounds);
-				trace(" - offset:"+offset);
-			}
-
 			offsetCachedBitmapBounds( shape, offset );
 
-			shape.__cachedBitmap = new BitmapData( Std.int(bounds.width), Std.int(bounds.height), true, 0x0 );
+			if (bounds.width > 0 && bounds.height > 0) {
 
-			flatten( shape, shape.__cachedBitmap );
+				shape.__cachedBitmap = new BitmapData( Std.int(bounds.width), Std.int(bounds.height), true, 0x0 );
+
+				flatten( shape, shape.__cachedBitmap );
+			
+			} else {
+
+				shape.__cachedBitmap = null;
+
+			}
 
 			shape.__filterDirty = true;
 
@@ -124,54 +120,49 @@ class RenderSession {
 
 
 	private function hierarchyDirty( shape:DisplayObject ):Bool {
-		
+
+		var dirty = false;
+
 		if (Std.is(shape, DisplayObjectContainer)) {
 			var cont:DisplayObjectContainer = cast shape;
 			for (i in 0...cont.numChildren) {
-				if (hierarchyDirty( cont.getChildAt( i ) )) 
-					return true;
+				dirty = dirty || hierarchyDirty( cont.getChildAt( i ) ); 
 			}
 		}
-
-		if (!done)
-			trace("  - shape:"+shape.name+" mask:"+shape.__mask+" scrollRect:"+shape.__scrollRect);
-
-		if (!done && shape.__mask != null) {
-			com.geepers.DebugUtils.debugSprite( cast shape.__mask );
-			var a = 1;
-			a++;
-		}
-
+		
 		if (shape.__filterDirty) {
 			shape.__filterDirty = false;
-			return true;
+			dirty = true;
 		}
 
 		if (shape.__transformDirty) {
 			shape.__transformDirty = false;
-			return true;
+			dirty = true;
 		}
 
 		if (shape.__renderDirty) {
 			shape.__renderDirty = false;
-			return true;
+			dirty = true;
 		}
 
 		if (shape.__graphics != null && shape.__graphics.__dirty) {
 			shape.__graphics.__dirty = false;
-			return true;
+			dirty = true;
 		}
 
 		var bitmap:Bitmap = cast shape;
-		if (bitmap == null || !bitmap.__renderable || bitmap.__worldAlpha <= 0 || bitmap.bitmapData == null) 
-			return false;
-
-		if (bitmap.bitmapData != null && bitmap.bitmapData.image.dirty) {
+		if (Std.is(shape, Bitmap) && bitmap.__renderable && bitmap.__worldAlpha > 0 && bitmap.bitmapData != null && bitmap.bitmapData.image.dirty) {
 			bitmap.bitmapData.image.dirty = false;
-			return true;
+			dirty = true;
 		}
 
-		return false;
+		var textField:TextField = cast shape;
+		if ( Std.is(shape, TextField) && textField.__dirty) {
+			dirty = true;
+		}
+
+
+		return dirty;
 	}
 
 	private function getCachedBitmapBounds (shape:DisplayObject, cacheAsBitmapShape:DisplayObject, point:Point = null ) {
@@ -189,7 +180,6 @@ class RenderSession {
 
 		if (graphics!=null) {
 			
-			// CanvasGraphics.render (graphics, this, null, shape.__worldColorTransform.__isDefault() ? null : shape.__worldColorTransform);
 			#if (js && html5)
 			CanvasGraphics.render (graphics, this, null);
 			#elseif lime_cairo
@@ -205,7 +195,7 @@ class RenderSession {
 				
 				shape.__cacheAsBitmapMatrix.tx -= point.x;
 				shape.__cacheAsBitmapMatrix.ty -= point.y;
-									
+
 				updateBoundsRectangle( shape, graphics.__bitmap, cacheAsBitmapShape, point );
 
 			}
@@ -312,10 +302,10 @@ class RenderSession {
 	
 	}
 
+
 	private function flatten (shape:DisplayObject, flattendBmd:BitmapData  ) {
 
 		if (!shape.__renderable || !shape.__visible || shape.__worldAlpha <= 0 || shape.__isMask) return;
-
 
 		var layer = new BitmapData( flattendBmd.width, flattendBmd.height, true, 0x0 );
 
@@ -328,7 +318,7 @@ class RenderSession {
 			CairoGraphics.render (graphics, this, null);
 			#end
 			
-			if (graphics.__bitmap!=null) {
+			if (graphics.__bitmap != null) {
 
 				layer.draw( graphics.__bitmap, shape.__cacheAsBitmapMatrix, null, null, null, true );
 
@@ -336,6 +326,7 @@ class RenderSession {
 		}
 
 		var bitmap:Bitmap = cast shape;
+		
 		if (bitmap != null && (bitmap.__renderable || bitmap.__worldAlpha > 0) && bitmap.bitmapData != null) {
 
 			layer.draw( bitmap.bitmapData, shape.__cacheAsBitmapMatrix, null, null, null, true );
@@ -345,6 +336,7 @@ class RenderSession {
 		if (Std.is(shape, DisplayObjectContainer)) {
 
 			var cont:DisplayObjectContainer = cast shape;
+			
 			for (i in 0...cont.numChildren) {
 
 				flatten( cont.getChildAt( i ), layer );
@@ -389,6 +381,7 @@ class RenderSession {
 
 		layer.dispose();
 		layer = null;
+
 	}	
 	
 }

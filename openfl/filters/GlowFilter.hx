@@ -143,9 +143,6 @@ import openfl.geom.Rectangle;
 
         FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY, quality, strength );
 
-		if (blurX==5)
-			com.geepers.DebugUtils.debugBitmap( destBitmapData );
-
 		tmpSrc = null;
 
 		__filterDirty = false;

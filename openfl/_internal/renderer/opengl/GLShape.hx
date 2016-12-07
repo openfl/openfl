@@ -29,7 +29,6 @@ class GLShape {
 
 	public static inline function render (shape:DisplayObject, renderSession:RenderSession):Void {
 		
-		trace("render:"+shape.__name+" rndbl:"+shape.__renderable+" alph:"+shape.__worldAlpha+" rndasCAB:"+shape.__renderedAsCachedBitmap);
 		if (!shape.__renderable || shape.__worldAlpha <= 0 || shape.__renderedAsCachedBitmap) return;
 		
 		var graphics = shape.__graphics;
@@ -46,31 +45,38 @@ class GLShape {
 
 			renderSession.maskManager.pushObject (shape);
 
-			if (renderSession.filterManager.useCPUFilters && shape.filters != null && shape.filters.length > 0) {
+			if (shape.__cachedBitmap != null) {
+
+				if (renderSession.filterManager.useCPUFilters && shape.filters != null && shape.filters.length > 0) {
 				
-				renderFilterBitmap( shape, renderSession );
+					renderFilterBitmap( shape, renderSession );
 
-				stdRender = shape.filters[0].__preserveOriginal;
+					stdRender = shape.filters[0].__preserveOriginal;
 
-			} 
+				} 
 
-			if (stdRender)
-				renderCacheAsBitmap( shape, renderSession );
+				if (stdRender)
+					renderCacheAsBitmap( shape, renderSession );
 			
+			}
+
 			renderSession.maskManager.popObject (shape);
 
-		} else {
+        } else {
 
-		if (graphics != null && stdRender) {
+			//// Render mask
+			if (shape.mask != null) {
+				mask = shape.__mask;
+				maskGraphics = shape.__mask.__graphics;
 
 				#if (js && html5)
-				CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
+				CanvasGraphics.render (maskGraphics, renderSession, shape.__renderTransform);
 				#elseif lime_cairo
-				CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
+				CairoGraphics.render (maskGraphics, renderSession, shape.__renderTransform);
 				#end
 
 				if (graphics.__bitmap != null && graphics.__visible) {
-
+					
 					var renderer:GLRenderer = cast renderSession.renderer;
 					var gl = renderSession.gl;
 					
