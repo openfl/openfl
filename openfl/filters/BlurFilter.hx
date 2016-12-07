@@ -1,9 +1,12 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.filters.BitmapFilter;
+import openfl.filters.FilterUtils;
 import openfl.geom.Rectangle;
 
 
@@ -38,29 +41,6 @@ import openfl.geom.Rectangle;
 	}
 	
 	
-	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
-		
-		var data = __blurShader.data;
-		
-		if (pass <= horizontalPasses) {
-			
-			var scale = Math.pow (0.5, pass >> 1);
-			data.uRadius.value[0] = blurX * scale;
-			data.uRadius.value[1] = 0;
-			
-		} else {
-			
-			var scale = Math.pow (0.5, (pass - horizontalPasses) >> 1);
-			data.uRadius.value[0] = 0;
-			data.uRadius.value[1] = blurY * scale;
-			
-		}
-		
-		return __blurShader;
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods
@@ -80,10 +60,31 @@ import openfl.geom.Rectangle;
 		return quality = value;
 		
 	}
-	
-	
-}
 
+
+	private override function __getFilterBounds( sourceBitmapData:BitmapData ) : Rectangle {
+
+		return new Rectangle( blurX, blurY, sourceBitmapData.width + blurX + blurX, sourceBitmapData.height + blurY + blurY );
+
+	}
+
+
+	private override function __renderFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData):Void {
+
+		#if (js && html5)
+		ImageCanvasUtil.convertToData (sourceBitmapData.image);
+		ImageCanvasUtil.convertToData (destBitmapData.image);
+		#end
+
+		var source = sourceBitmapData.clone().image.data;
+		var target = destBitmapData.image.data;
+
+		FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY );
+
+		super.__renderFilter( sourceBitmapData, destBitmapData );
+	}
+
+}
 
 private class BlurShader extends Shader {
 	

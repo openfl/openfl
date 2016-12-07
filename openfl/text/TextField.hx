@@ -151,6 +151,7 @@ class TextField extends InteractiveObject {
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 		
 		__dirty = true;
+		__filterDirty = true;
 		__layoutDirty = true;
 		
 	}
@@ -536,6 +537,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		__dirty = true;
+		__filterDirty = true;
 		__layoutDirty = true;
 		
 	}
@@ -571,6 +573,7 @@ class TextField extends InteractiveObject {
 		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
 		
 		__dirty = true;
+		__filterDirty = true;
 		__layoutDirty = true;
 		
 	}
@@ -1112,6 +1115,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.autoSize) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 		}
@@ -1133,7 +1137,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.background) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.background = value;
@@ -1153,7 +1158,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.backgroundColor) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.backgroundColor = value;
@@ -1173,7 +1179,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.border) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.border = value;
@@ -1193,7 +1200,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.borderColor) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.borderColor = value;
@@ -1230,7 +1238,8 @@ class TextField extends InteractiveObject {
 		
 		__layoutDirty = true;
 		__dirty = true;
-		
+		__filterDirty = true;
+
 		return value;
 		
 	}
@@ -1248,6 +1257,7 @@ class TextField extends InteractiveObject {
 		if (value != __displayAsPassword) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 			__displayAsPassword = value;
@@ -1316,6 +1326,7 @@ class TextField extends InteractiveObject {
 			
 			__setTransformDirty ();
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 			__textEngine.height = value;
@@ -1339,6 +1350,7 @@ class TextField extends InteractiveObject {
 		if (!__isHTML || __text != value) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 		}
@@ -1610,6 +1622,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.maxChars) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 		}
@@ -1663,6 +1676,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.multiline) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 		}
@@ -1712,7 +1726,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.scrollH) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.scrollH = value;
@@ -1737,7 +1752,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.scrollV) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.scrollV = value;
@@ -1799,7 +1815,8 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.sharpness) {
 			
 			__dirty = true;
-			
+			__filterDirty = true;
+
 		}
 		
 		return __textEngine.sharpness = value;
@@ -1819,6 +1836,7 @@ class TextField extends InteractiveObject {
 		if (__isHTML || __text != value) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 		} else {
@@ -1856,7 +1874,10 @@ class TextField extends InteractiveObject {
 	
 	private function set_textColor (value:Int):Int {
 		
-		if (value != __textFormat.color) __dirty = true;
+		if (value != __textFormat.color) {
+			__dirty = true;
+			__filterDirty = true;
+		}
 		
 		for (range in __textEngine.textFormatRanges) {
 			
@@ -1914,6 +1935,7 @@ class TextField extends InteractiveObject {
 			}
 			
 			__dirty = true;
+			__filterDirty = true;
 			
 		}
 		
@@ -1936,6 +1958,7 @@ class TextField extends InteractiveObject {
 			
 			__setTransformDirty ();
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 			__textEngine.width = value;
@@ -1959,6 +1982,7 @@ class TextField extends InteractiveObject {
 		if (value != __textEngine.wordWrap) {
 			
 			__dirty = true;
+			__filterDirty = true;
 			__layoutDirty = true;
 			
 		}
@@ -2082,13 +2106,9 @@ class TextField extends InteractiveObject {
 		switch (key) {
 			
 			case RETURN, NUMPAD_ENTER:
-				
-				if (__textEngine.multiline) {
-					
-					replaceSelectedText ("\n");
-					dispatchEvent (new Event (Event.CHANGE, true));
-					
-				}
+
+				replaceSelectedText ("\n");
+				dispatchEvent (new Event (Event.CHANGE, true));
 
 			case BACKSPACE:
 				
@@ -2192,7 +2212,7 @@ class TextField extends InteractiveObject {
 			
 			case C:
 				
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
 					
 					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
@@ -2200,7 +2220,7 @@ class TextField extends InteractiveObject {
 			
 			case X:
 				
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
 					
 					Clipboard.text = __text.substring (__caretIndex, __selectionIndex);
 					
@@ -2241,7 +2261,7 @@ class TextField extends InteractiveObject {
 			
 			case A:
 				
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end) {
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || #end modifier.ctrlKey) {
 					
 					__caretIndex = __text.length;
 					__selectionIndex = 0;

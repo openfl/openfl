@@ -76,14 +76,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	@:keep public var x (get, set):Float;
 	@:keep public var y (get, set):Float;
 	
+	private var __renderedAsCachedBitmap:Bool;
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
 	private var __cacheAsBitmapMatrix:Matrix;
+	private var __cachedBitmap:BitmapData;
+	private var __cachedBounds:Rectangle;
 	private var __cairo:Cairo;
 	private var __children:Array<DisplayObject>;
 	private var __filters:Array<BitmapFilter>;
-	private var __forceCacheAsBitmap:Bool;
+	private var __filterBitmap:BitmapData;
+	private var __filterBounds:Rectangle;
+	private var __filterDirty:Bool;
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
 	private var __isMask:Bool;
@@ -97,12 +102,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __renderTransform:Matrix;
 	private var __renderTransformCache:Matrix;
 	private var __renderTransformChanged:Bool;
+	private var __renderedMask:BitmapData;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
 	private var __scrollRect:Rectangle;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
+	private var __transformedBitmap:BitmapData;
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
@@ -598,7 +605,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (!__renderDirty) {
 			
-			__renderDirty = true;
+			__renderDirty = __filterDirty = true;
 			__worldRenderDirty++;
 			
 		}
@@ -617,7 +624,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (!__transformDirty) {
 			
-			__transformDirty = true;
+			__transformDirty = __filterDirty = true;
 			__worldTransformDirty++;
 			
 		}
