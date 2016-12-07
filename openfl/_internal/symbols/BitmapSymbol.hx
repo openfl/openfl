@@ -89,13 +89,35 @@ class BitmapSymbol extends SWFSymbol {
 		
 		var promise = new Promise<BitmapData> ();
 		
-		library.loadImage (path).onComplete (function (image) {
+		var mainBytesLoaded = 0, mainBytesTotal = 0, alphaBytesLoaded = 0, alphaBytesTotal = 0, alphaBitmap = null;
+		
+		if (this.hasAlpha) {
+			
+			alphaBitmap = library.loadImage (alpha).onProgress(function (loaded, total) {
+				
+				alphaBytesLoaded = loaded;
+				alphaBytesTotal  = total;
+				
+				promise.progress (mainBytesTotal + alphaBytesLoaded, mainBytesTotal + alphaBytesTotal);
+				
+			}).onError (promise.error);
+			
+		}
+		
+		library.loadImage (path).onProgress(function (loaded, total) {
+			
+			mainBytesLoaded = loaded;
+			mainBytesTotal  = total;
+			
+			promise.progress (mainBytesTotal + alphaBytesLoaded, mainBytesTotal + alphaBytesTotal);
+			
+		}).onComplete (function (image) {
 			
 			if (image != null) {
 				
-				if (this.hasAlpha) {
+				if (alphaBitmap != null) {
 					
-					library.loadImage (alpha).onComplete (function (alpha) {
+					alphaBitmap.onComplete (function (alpha) {
 						
 						if (alpha != null) {
 							
@@ -108,7 +130,7 @@ class BitmapSymbol extends SWFSymbol {
 							
 						}
 						
-					}).onError (promise.error);
+					});
 					
 				} else {
 					
@@ -123,7 +145,7 @@ class BitmapSymbol extends SWFSymbol {
 				
 			}
 			
-		});
+		}).onError (promise.error);
 		
 		return promise.future;
 		
