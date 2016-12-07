@@ -14,7 +14,7 @@ enum ShapeCommand {
 	
 	BeginBitmapFill (bitmap:Int, matrix:Matrix, repeat:Bool, smooth:Bool);
 	BeginFill (color:Int, alpha:Float);
-	BeginGradientFill (fillType:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float);
+	BeginGradientFill (fillType:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float);
 	//CubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float);
 	CurveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float);
 	//DrawCircle (x:Float, y:Float, radius:Float);

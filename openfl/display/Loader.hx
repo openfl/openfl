@@ -33,9 +33,6 @@ class Loader extends DisplayObjectContainer {
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
 	
-	private var mImage:BitmapData;
-	private var mShape:Shape;
-	
 	
 	public function new () {
 		
