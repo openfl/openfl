@@ -1189,7 +1189,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			#elseif js
 			untyped __js__ ("throw e");
 			#elseif cs
-			cs.Lib.rethrow (e);
+			throw e;
+			//cs.Lib.rethrow (e);
 			#else
 			throw e;
 			#end
