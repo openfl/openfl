@@ -88,7 +88,7 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		// TODO: Support one-pass filters?
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		if (object.__filters != null && object.__filters.length > 0 && !renderSession.filterManager.useCPUFilters ) {
 			
 			renderer.getRenderTarget (true);
 			filterDepth++;

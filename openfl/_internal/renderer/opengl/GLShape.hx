@@ -64,15 +64,12 @@ class GLShape {
 
         } else {
 
-			//// Render mask
-			if (shape.mask != null) {
-				mask = shape.__mask;
-				maskGraphics = shape.__mask.__graphics;
+			if (graphics != null) {
 
 				#if (js && html5)
-				CanvasGraphics.render (maskGraphics, renderSession, shape.__renderTransform);
+				CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
 				#elseif lime_cairo
-				CairoGraphics.render (maskGraphics, renderSession, shape.__renderTransform);
+				CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
 				#end
 
 				if (graphics.__bitmap != null && graphics.__visible) {
