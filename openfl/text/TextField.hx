@@ -576,6 +576,15 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+		
+		super.__updateTransforms (overrideTransform);
+		
+		__renderTransform.__translateTransformed (__offsetX, __offsetY);
+		
+	}
+	
+	
 	private function __fromSymbol (swf:SWFLite, symbol:DynamicTextSymbol):Void {
 		
 		__symbol = symbol;
