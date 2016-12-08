@@ -1079,7 +1079,7 @@ class MovieClip extends flash.display.MovieClip {
 		var object_to_swap : DisplayObject = null;
 		var target_depth : Int;
 		if ( Std.is(target, Int) || Std.is(target, Float) ) {
-			target_depth = Std.int(target);
+			target_depth = Std.int(target) + 0x3FFF;
 			for( i in 0 ... numChildren ){
 				if( __SWFDepthData.get(getChildAt(i)) == target_depth){
 					object_to_swap = getChildAt(i);
@@ -1099,10 +1099,10 @@ class MovieClip extends flash.display.MovieClip {
 		var my_depth = getDepth();
 		if ( object_to_swap != null ) {
 			swf_parent.removeChild(object_to_swap);
-			swf_parent.addChildAtSwfDepthExternal(object_to_swap, my_depth);
+			swf_parent.__addChildAtSwfDepth(object_to_swap, my_depth);
 		}
         swf_parent.removeChild(this);
-        swf_parent.addChildAtSwfDepthExternal(this, target_depth);
+        swf_parent.__addChildAtSwfDepth(this, target_depth);
     }
 #end
 
