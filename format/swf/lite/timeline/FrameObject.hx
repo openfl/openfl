@@ -9,6 +9,7 @@ import flash.geom.Matrix;
 class FrameObject {
 
 
+	public var cacheAsBitmap:Bool = false;
 	public var clipDepth:Int;
 	public var colorTransform:ColorTransform;
 	public var depth:Int;
