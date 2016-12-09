@@ -66,8 +66,8 @@ script:
   - if [[ $TARGET == 'docs' ]]; then cd $TRAVIS_BUILD_DIR/docs && haxe build.hxml ; fi
 
   # Functional testing
-  - if [[ $TARGET == 'neko' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_neko.hxml && neko tests.n ; fi
-  - if [[ $TARGET == 'cpp' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_cpp.hxml && ./bin/FunctionalTest ; fi
+  #- if [[ $TARGET == 'neko' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_neko.hxml && neko tests.n ; fi
+  #- if [[ $TARGET == 'cpp' ]]; then cd $TRAVIS_BUILD_DIR/tests/functional && haxe build_cpp.hxml && ./bin/FunctionalTest ; fi
 
 notifications:
   slack: openfl:sBwVO0kgB7EuWLYzZzUezVIz

@@ -239,6 +239,8 @@ class ApplicationMain {
 	
 	private static function registerLibrary ():Void {
 		
+		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
+		
 		var classReference = Type.resolveClass ("DefaultAssetLibrary");
 		
 		if (classReference != null) {
