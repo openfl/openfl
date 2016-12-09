@@ -64,8 +64,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var scale9Grid:Rectangle;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	public var renderScaleX (get, null):Float;
-	public var renderScaleY (get, null):Float;
+	public var renderScaleX (default, null):Float = 1.0;
+	public var renderScaleY (default, null):Float = 1.0;
 	public var scrollRect (get, set):Rectangle;
 	public var shader (default, set):Shader;
 	public var stage (default, null):Stage;
@@ -75,7 +75,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 
-	public var __renderScaleTransform:Matrix;
 	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
 	public var __worldOffset:Point;
@@ -148,7 +147,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__rotationSine = 0;
 		__rotationCosine = 1;
 
-		__renderScaleTransform = new Matrix ();
 		__renderTransform = new Matrix ();
 
 		__cacheGLMatrix = new Matrix();
@@ -393,8 +391,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		rect.__transform (rect, __renderScaleTransform);
-
 	}
 
 	private function __getTransformedRenderBounds (rect:Rectangle, matrix:Matrix):Void {
@@ -593,7 +589,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			} else {
 
 				#if (js && html5)
-				CanvasGraphics.render (__graphics, renderSession, __renderScaleTransform);
+				CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY);
 				#elseif lime_cairo
 				CairoGraphics.render (__graphics, renderSession);
 				#end
@@ -610,9 +606,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__scrollRect != null) {
 
-			var scaledScrollRect = openfl.geom.Rectangle.__temp;
-			__scrollRect.__transform (scaledScrollRect, __renderScaleTransform);
-			renderSession.maskManager.pushRect (scaledScrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
 
 		}
 
@@ -665,8 +659,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__updateCachedBitmap || __updateFilters) {
 			
 			var filterTransform = Matrix.pool.get ();
-			
-			filterTransform.copyFrom (__renderTransform);
+			filterTransform.identity ();
+			filterTransform.a = __renderTransform.a / renderScaleX;
+			filterTransform.b = __renderTransform.b / renderScaleX;
+			filterTransform.c = __renderTransform.c / renderScaleY;
+			filterTransform.d = __renderTransform.d / renderScaleY;
 			filterTransform.invert ();
 
 			__updateCachedBitmapBounds (filterTransform);
@@ -682,12 +679,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 			}
 
-			@:privateAccess __cachedBitmap.__resize (Std.int (__cachedBitmapBounds.width), Std.int (__cachedBitmapBounds.height));
+			// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
+			@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width * renderScaleX), Math.ceil (__cachedBitmapBounds.height * renderScaleY));
 
-			// we need to position the drawing origin to 0,0 in the texture
 			var m = Matrix.pool.get();
-			m.copyFrom( __renderScaleTransform );
-			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+			m.identity ();
+			m.a = renderScaleX;
+			m.d = renderScaleY;
+			m.translate (-__cachedBitmapBounds.x * renderScaleX, -__cachedBitmapBounds.y * renderScaleY);
 
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
@@ -704,16 +703,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 			Matrix.pool.put (filterTransform);
+			
+			@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
+			@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
+			
 			renderSession.maskManager.enableMask ();
+
 		}
 
-		// Calculate the correct position
 		__cacheGLMatrix.identity ();
 		__cacheGLMatrix.translate (__cachedBitmapBounds.x, __cachedBitmapBounds.y);
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
-
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+
 	}
 
 	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {
@@ -1077,23 +1080,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 
-		__renderScaleTransform.identity();
-
 		if (__cacheAsBitmapMatrix != null) {
 
-			__renderScaleTransform.copyFrom (__cacheAsBitmapMatrix);
+			throw ":TODO: fill renderScaleX, renderScaleY and use __cacheAsBitmapMatrix where appropriate";
 
 		} else if (__useSeparateRenderScaleTransform) {
 
-			var renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
-			var renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
-			__renderScaleTransform.scale(renderScaleX, renderScaleY);
+			renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
+			renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
 
 		}
 
-		__renderTransform.copyFrom (__renderScaleTransform);
-		__renderTransform.invert ();
-		__renderTransform.concat (__worldTransform);
+		__renderTransform.copyFrom (__worldTransform);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
 
@@ -1461,18 +1459,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__transform.d = d;
 
 		return value;
-
-	}
-
-	private function get_renderScaleX ():Float {
-
-		return Math.sqrt (__renderScaleTransform.a * __renderScaleTransform.a + __renderScaleTransform.b * __renderScaleTransform.b);
-
-	}
-
-	private function get_renderScaleY ():Float {
-
-		return Math.sqrt (__renderScaleTransform.c * __renderScaleTransform.c + __renderScaleTransform.d * __renderScaleTransform.d);
 
 	}
 

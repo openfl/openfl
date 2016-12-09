@@ -94,8 +94,8 @@ class GLMaskManager extends AbstractMaskManager {
 			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
 
 			var m = Matrix.pool.get();
-			m.copyFrom(mask.__renderScaleTransform);
-			m.translate(-maskBounds.x, -maskBounds.y);
+			m.identity ();
+			m.translate (-maskBounds.x, -maskBounds.y);
 
 			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;

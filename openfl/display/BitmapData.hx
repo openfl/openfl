@@ -64,11 +64,11 @@ class BitmapData implements IBitmapDrawable {
 	
 	private static var __isGLES:Null<Bool> = null;
 	
-	public var height (default, null):Int;
+	public var height (get, never):Int;
 	public var image (default, null):Image;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
-	public var width (default, null):Int;
+	public var width (get, never):Int;
 	
 	public var __worldTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
@@ -78,14 +78,17 @@ class BitmapData implements IBitmapDrawable {
 	private var __worldAlpha:Float;
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
+	private var __height:Int;
 	private var __isValid:Bool;
+	private var __scaleX:Float = 1.0;
+	private var __scaleY:Float = 1.0;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
 	private var __textureImage:Image;
 	private var __pingPongTexture:PingPongTexture;
 	private var __usingPingPongTexture:Bool = false;
 	private var __uvData:TextureUvs;
-	
+	private var __width:Int;
 	
 	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF) {
 		
@@ -99,8 +102,8 @@ class BitmapData implements IBitmapDrawable {
 		width = width < 0 ? 0 : width;
 		height = height < 0 ? 0 : height;
 		
-		this.width = width;
-		this.height = height;
+		__width = width;
+		__height = height;
 		rect = new Rectangle (0, 0, width, height);
 		
 		if (width > 0 && height > 0) {
@@ -172,15 +175,22 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function clone ():BitmapData {
 		
+		var cloned:BitmapData;
+		
 		if (!__isValid) {
 			
-			return new BitmapData (width, height, transparent);
+			cloned = new BitmapData (__width, __height, transparent);
 			
 		} else {
 			
-			return BitmapData.fromImage (image.clone (), transparent);
+			cloned = BitmapData.fromImage (image.clone (), transparent);
 			
 		}
+		
+		cloned.__scaleX = __scaleX;
+		cloned.__scaleY = __scaleY;
+		
+		return cloned;
 		
 	}
 	
@@ -209,11 +219,11 @@ class BitmapData implements IBitmapDrawable {
 			
 			return -2;
 			
-		} else if (width != otherBitmapData.width) {
+		} else if (__width != otherBitmapData.__width) {
 			
 			return -3;
 			
-		} else if (height != otherBitmapData.height) {
+		} else if (__height != otherBitmapData.__height) {
 			
 			return -4;
 			
@@ -246,9 +256,9 @@ class BitmapData implements IBitmapDrawable {
 		var bitmapData = null;
 		var foundDifference, pixel:ARGB, otherPixel:ARGB, comparePixel:ARGB, r, g, b, a;
 		
-		for (y in 0...height) {
+		for (y in 0...__height) {
 			
-			for (x in 0...width) {
+			for (x in 0...__width) {
 				
 				foundDifference = false;
 				
@@ -298,7 +308,7 @@ class BitmapData implements IBitmapDrawable {
 					
 					if (bitmapData == null) {
 						
-						bitmapData = new BitmapData (width, height, transparent || otherBitmapData.transparent, 0x00000000);
+						bitmapData = new BitmapData (__width, __height, transparent || otherBitmapData.transparent, 0x00000000);
 						
 					}
 					
@@ -365,8 +375,8 @@ class BitmapData implements IBitmapDrawable {
 		
 		image = null;
 		
-		width = 0;
-		height = 0;
+		__width = 0;
+		__height = 0;
 		rect = null;
 		__isValid = false;
 		
@@ -412,7 +422,7 @@ class BitmapData implements IBitmapDrawable {
 
 		if (colorTransform != null) {
 			
-			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+			var copy = new BitmapData (Reflect.getProperty (source, "__width"), Reflect.getProperty (source, "__height"), true, 0);
 			copy.draw (source);
 			copy.colorTransform (copy.rect, colorTransform);
 			source = copy;
@@ -496,7 +506,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (colorTransform != null) {
 			
-			var copy = new BitmapData (Reflect.getProperty (source, "width"), Reflect.getProperty (source, "height"), true, 0);
+			var copy = new BitmapData (Reflect.getProperty (source, "__width"), Reflect.getProperty (source, "__height"), true, 0);
 			copy.draw (source);
 			copy.colorTransform (copy.rect, colorTransform);
 			source = copy;
@@ -623,13 +633,15 @@ class BitmapData implements IBitmapDrawable {
 	
 	
 	#if (js && html5)
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData {
+	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true, scaleX:Float = 1.0, scaleY:Float = 1.0):BitmapData {
 		
 		if (canvas == null) return null;
 		
 		var bitmapData = new BitmapData (0, 0, transparent);
 		bitmapData.__fromImage (Image.fromCanvas (canvas));
 		bitmapData.image.transparent = transparent;
+		bitmapData.__scaleX = scaleX;
+		bitmapData.__scaleY = scaleY;
 		return bitmapData;
 		
 	}
@@ -826,7 +838,7 @@ class BitmapData implements IBitmapDrawable {
 
 				}
 
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, __width, __height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 			#else
 
 				gl.pixelStorei( gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, (!textureImage.premultiplied && textureImage.transparent) ? 1 : 0 );
@@ -834,7 +846,7 @@ class BitmapData implements IBitmapDrawable {
 				var glCompatibleBuffer : Dynamic = textureImage.buffer.glCompatibleBuffer;
 
 				if( glCompatibleBuffer == null ){
-					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
+					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, __width, __height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 				} else {
 
 					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
@@ -870,7 +882,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function histogram (hRect:Rectangle = null) {
 		
-		var rect = hRect != null ? hRect : new Rectangle (0, 0, width, height);
+		var rect = hRect != null ? hRect : new Rectangle (0, 0, __width, __height);
 		var pixels = getPixels (rect);
 		var result = [for (i in 0...4) [for (j in 0...256) 0]];
 		
@@ -1034,9 +1046,9 @@ class BitmapData implements IBitmapDrawable {
 		var blueChannel:Bool = ((channelOptions & ( 1 << 2 )) >> 2) == 1;
 		var alphaChannel:Bool = ((channelOptions & ( 1 << 3 )) >> 3) == 1;
 		
-		for (y in 0...height)
+		for (y in 0...__height)
 		{
-			for (x in 0...width)
+			for (x in 0...__width)
 			{
 				//Default channel colours if all channel options are false.
 				var red:Int = 0;
@@ -1305,8 +1317,8 @@ class BitmapData implements IBitmapDrawable {
 			
 			this.image = image;
 			
-			width = image.width;
-			height = image.height;
+			__width = image.width;
+			__height = image.height;
 			rect = new Rectangle (0, 0, image.width, image.height);
 			
 			#if sys
@@ -1422,12 +1434,15 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	function __resize (width:Int, height:Int) {
+	function __resize (width:Int, height:Int, scaleX:Float = 1.0, scaleY:Float = 1.0) {
 		
-		this.width = width;
-		this.height = height;
+		__width = width;
+		__height = height;
 		this.rect.width = width;
 		this.rect.height = height;
+		
+		__scaleX = scaleX;
+		__scaleY = scaleY;
 		
 	}
 	
@@ -1469,7 +1484,17 @@ class BitmapData implements IBitmapDrawable {
 		
 	}
 	
-	
+	public function get_width ():Int {
+		
+		return Math.ceil (__width / __scaleX);
+		
+	}
+
+	public function get_height ():Int {
+		
+		return Math.ceil (__height / __scaleY);
+		
+	}
 }
 
 
