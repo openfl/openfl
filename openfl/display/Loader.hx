@@ -3,6 +3,7 @@ package openfl.display;
 
 import haxe.Json;
 import haxe.Unserializer;
+import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import lime.system.BackgroundWorker;
 import openfl._internal.swf.SWFLiteLibrary;
 import openfl._internal.swf.SWFLite;
@@ -53,17 +54,19 @@ class Loader extends DisplayObjectContainer {
 	public function load (request:URLRequest, context:LoaderContext = null):Void {
 		
 		var extension = "";
-		var parts = request.url.split (".");
+		var path = request.url;
 		
-		if (parts.length > 0) {
+		var queryIndex = path.indexOf ('?');
+		if (queryIndex > -1) {
 			
-			extension = parts[parts.length - 1].toLowerCase ();
+			path = path.substring (0, queryIndex);
 			
 		}
 		
-		if (extension.indexOf ('?') != -1) {
+		var extIndex = path.lastIndexOf('.');
+		if (extIndex > -1) {
 			
-			extension = extension.split ('?')[0];
+			extension = path.substring(extIndex + 1);
 			
 		}
 		
@@ -110,11 +113,7 @@ class Loader extends DisplayObjectContainer {
 				contentLoaderInfo.dispatchEvent (event);
 				
 			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, BitmapData_onError);
 			loader.dataFormat = URLLoaderDataFormat.TEXT;
 			loader.load (request);
 			#else
@@ -128,14 +127,6 @@ class Loader extends DisplayObjectContainer {
 			var loader = new URLLoader ();
 			loader.addEventListener (Event.COMPLETE, function (e) {
 				
-				var info = Json.parse (loader.data);
-				var library:SWFLiteLibrary = cast Type.createInstance (Type.resolveClass (info.type), [ null ]/*info.args*/);
-				
-				Assets.registerLibrary (info.name, library);
-				
-				var manifest:Array<Dynamic> = cast Unserializer.run (info.manifest);
-				var assetType:AssetType;
-				
 				var basePath = request.url;
 				basePath = StringTools.replace (basePath, "\\", "/");
 				var parts = basePath.split ("/");
@@ -143,89 +134,29 @@ class Loader extends DisplayObjectContainer {
 				parts.pop ();
 				basePath = parts.join ("/");
 				
-				var libraryData:String = null;
+				var libraryLoading = LimeAssetLibrary.loadFromString (loader.data, basePath);
 				
-				var loaded = -1;
-				var total = 0;
-				
-				var checkLoaded = function () {
+				var loadComplete = function (library) {
 					
-					if (loaded >= total) {
+					if (Std.is(SWFLiteLibrary, library)) {
 						
-						library.swf = SWFLite.unserialize (libraryData);
-						
+						var library:SWFLiteLibrary = cast library;
 						contentLoaderInfo.content = library.getMovieClip ("");
 						addChild (contentLoaderInfo.content);
 						
-						var event = new Event (Event.COMPLETE);
-						event.target = contentLoaderInfo;
-						event.currentTarget = contentLoaderInfo;
-						contentLoaderInfo.dispatchEvent (event);
-						
 					}
 					
-				}
+					var event = new Event (Event.COMPLETE);
+					event.target = contentLoaderInfo;
+					event.currentTarget = contentLoaderInfo;
+					contentLoaderInfo.dispatchEvent (event);
+				};
 				
-				for (asset in manifest) {
-					
-					if (!Assets.exists (asset.id)) {
-						
-						assetType = asset.type;
-						
-						switch (assetType) {
-							
-							case IMAGE:
-								
-								total++;
-								
-								BitmapData.fromFile (basePath + "/" + asset.path, function (bitmapData) {
-									
-									loaded++;
-									checkLoaded ();
-									
-									Assets.cache.setBitmapData (asset.path, bitmapData);
-									
-								}, function () BitmapData_onError (null));
-							
-							case TEXT:
-								
-								total++;
-								
-								var textLoader = new URLLoader ();
-								textLoader.addEventListener (Event.COMPLETE, function (_) {
-									
-									libraryData = textLoader.data;
-									
-									loaded++;
-									checkLoaded ();
-									
-								});
-								textLoader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-									
-									BitmapData_onError (e);
-									
-								});
-								textLoader.dataFormat = URLLoaderDataFormat.TEXT;
-								textLoader.load (new URLRequest (basePath + "/" + asset.path));
-							
-							default:
-								
-							
-						}
-						
-					}
-					
-				}
-				
-				loaded++;
-				checkLoaded ();
+				libraryLoading.onComplete (loadComplete);
+				libraryLoading.onError (BitmapData_onError);
 				
 			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, BitmapData_onError);
 			loader.dataFormat = URLLoaderDataFormat.TEXT;
 			loader.load (request);
 			
@@ -240,11 +171,7 @@ class Loader extends DisplayObjectContainer {
 				BitmapData_onLoad (BitmapData.fromBytes (loader.data));
 				
 			});
-			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
-				
-				BitmapData_onError (e);
-				
-			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, BitmapData_onError);
 			loader.dataFormat = URLLoaderDataFormat.BINARY;
 			loader.load (request);
 			return;
@@ -257,19 +184,7 @@ class Loader extends DisplayObjectContainer {
 			
 			worker.doWork.add (function (_) {
 				
-				var path = request.url;
-				
-				#if sys
-				var index = path.indexOf ("?");
-				
-				if (index > -1) {
-					
-					path = path.substring (0, index);
-					
-				}
-				#end
-				
-				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function () worker.sendError (IOErrorEvent.IO_ERROR));
+				BitmapData.fromFile (path, function (bitmapData) worker.sendComplete (bitmapData), function (e) worker.sendError (IOErrorEvent.IO_ERROR));
 				
 			});
 			

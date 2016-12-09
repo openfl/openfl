@@ -8,6 +8,7 @@ import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 import lime.Assets in LimeAssets;
+import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.BitmapData;
@@ -55,7 +56,7 @@ import openfl.Assets;
 		
 		if (type == (cast AssetType.IMAGE) || type == (cast AssetType.MOVIE_CLIP)) {
 			
-			return swf.hasSymbol (id);
+			return swf != null && swf.hasSymbol (id);
 			
 		}
 		
@@ -66,27 +67,101 @@ import openfl.Assets;
 	
 	public override function getImage (id:String):Image {
 		
-		return Image.fromBitmapData (swf.getBitmapData (id));
+		return swf != null? Image.fromBitmapData (swf.getBitmapData (id)) : null;
 		
 	}
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
 		
-		return swf.createMovieClip (id);
+		return swf != null? swf.createMovieClip (id) : null;
 		
 	}
 	
 	
-	public override function load ():Future<lime.Assets.AssetLibrary> {
+	public override function isLocal (id:String, type:String):Bool {
 		
-		var promise = new Promise<lime.Assets.AssetLibrary> ();
+		return swf != null && switch (cast(type, Assets.AssetType)) {
+			
+			case MOVIE_CLIP: true;
+			
+			default:         Assets.cache.exists(id, cast type);
+			
+		}
 		
-		#if (swf_preload || swflite_preload)
+	}
+	
+	
+	public override function loadText (id:String):Future<String> {
+		
+		var text = super.loadText (id);
+		
+		if (swf == null) {
+			
+			text.onComplete (function (text) this.swf = SWFLite.unserialize (text));
+			
+		}
+			
+		return text;
+		
+	}
+	
+	
+	public override function loadFromManifest (manifest:Array<{type:String, id:String}>):Future<LimeAssetLibrary> {
+		
+		for (asset in manifest) {
+			
+			if (asset.type == cast TEXT) {
+				
+				var promise = new Promise<LimeAssetLibrary> ();
+				
+				var text = loadText (asset.id);
+				var textSize:Int = 0;
+				
+				// We count loading the TEXT asset as half the work.
+				//
+				// The other half is loading BitmapData assets.
+				// To account for this, we integer divide the progress by 2
+				// using: >> 1
+				text.onProgress (function (a,b) {
+					textSize = b;
+					promise.progress (a >> 1, b);
+				});
+				
+				text.onComplete (function (text) {
+					
+					var rest = this.load ();
+					
+					// When text is loaded, the work is half done.
+					//
+					// To account for this:
+					// - start counting from half of total (b)
+					// - divide progress (a) by 2
+					rest.onProgress (function (a,b) promise.progress ((b >> 1) + (a >> 1), b));
+					rest.onComplete (promise.complete);
+					rest.onError    (promise.error);
+					
+				});
+				
+				text.onError (promise.error);
+				
+				return promise.future;
+			}
+			
+		}
+		
+		return load ();
+		
+	}
+	
+	
+	public override function load ():Future<LimeAssetLibrary> {
+		
+		var promise = new Promise<LimeAssetLibrary> ();
 		
 		var bitmapSymbols:Array<BitmapSymbol> = [];
 		
-		for (symbol in swf.symbols) {
+		if (swf != null) for (symbol in swf.symbols) {
 			
 			if (Std.is (symbol, BitmapSymbol)) {
 				
@@ -102,89 +177,50 @@ import openfl.Assets;
 			
 		} else {
 			
-			var loaded = -1;
+			var loaded = -1, total = bitmapSymbols.length;
 			
-			var onLoad = function () {
+			var onLoad : ?Dynamic -> Void;
+			onLoad = function (?bitmapData) {
 				
 				loaded++;
+				trace("SWFLiteLibrary onLoad", loaded, total);
 				
-				promise.progress (loaded, bitmapSymbols.length);
+				promise.progress (loaded * 1000, total * 1000);
 				
-				if (loaded == bitmapSymbols.length) {
+				if (loaded == total) {
 					
 					promise.complete (this);
 					
+				} else {
+					
+					var symbol = bitmapSymbols[loaded];
+						
+					if (symbol.getBitmapDataFromCache() != null) {
+						
+						onLoad ();
+						
+					} else {
+					
+						
+						symbol.loadBitmapData (this)
+							.onComplete (onLoad)
+							.onProgress (function (bytesLoaded, bytesTotal) {
+								
+								var weightedLoad  : Int = (loaded * 1000) + Std.int((bytesLoaded / bytesTotal) * 1000);
+								var weightedTotal : Int = total * 1000;
+								trace ("BitmapData loaded", bytesLoaded, bytesTotal, weightedLoad, weightedTotal, weightedLoad/weightedTotal);
+								promise.progress (weightedLoad, weightedTotal);
+								
+							}).onError (promise.error);
+					
+					}
 				}
 				
 			};
 			
-			for (symbol in bitmapSymbols) {
-				
-				if (Assets.cache.hasBitmapData (symbol.path)) {
-					
-					onLoad ();
-					
-				} else {
-					
-					LimeAssets.loadImage (symbol.path, false).onComplete (function (image) {
-						
-						if (image != null) {
-							
-							if (symbol.alpha != null && symbol.alpha != "") {
-								
-								LimeAssets.loadImage (symbol.alpha, false).onComplete (function (alpha) {
-									
-									if (alpha != null) {
-										
-										image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-										image.buffer.premultiplied = true;
-										
-										#if !sys
-										image.premultiplied = true;
-										#end
-										
-										var bitmapData = BitmapData.fromImage (image);
-										Assets.cache.setBitmapData (symbol.path, bitmapData);
-										
-										onLoad ();
-										
-									} else {
-										
-										promise.error ('Failed to load image alpha : ${symbol.alpha}');
-										
-									}
-									
-								}).onError (promise.error);
-								
-							} else {
-								
-								var bitmapData = BitmapData.fromImage (image);
-								Assets.cache.setBitmapData (symbol.path, bitmapData);
-								onLoad ();
-								
-							}
-							
-						} else {
-							
-							promise.error ('Failed to load image : ${symbol.path}');
-							
-						}
-						
-					}).onError (promise.error);
-					
-				}
-				
-			}
-			
 			onLoad ();
 			
 		}
-		
-		#else
-		
-		promise.complete (this);
-		
-		#end
 		
 		return promise.future;
 		
@@ -192,6 +228,8 @@ import openfl.Assets;
 	
 	
 	public override function unload ():Void {
+		
+		if (swf == null) return;
 		
 		var bitmap:BitmapSymbol;
 		

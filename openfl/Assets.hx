@@ -9,6 +9,7 @@ import lime.app.Promise;
 import lime.text.Font in LimeFont;
 import lime.utils.Log;
 import lime.Assets.AssetLibrary in LimeAssetLibrary;
+import lime.Assets.AssetType in LimeAssetType;
 import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -79,7 +80,7 @@ class Assets {
 	 */
 	public static function exists (id:String, type:AssetType = null):Bool {
 		
-		return LimeAssets.exists (id, cast type);
+		return LimeAssets.exists (id, type);
 		
 	}
 	
@@ -214,9 +215,9 @@ class Assets {
 		
 		if (library != null) {
 			
-			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+			if (library.exists (symbolName, AssetType.MOVIE_CLIP)) {
 				
-				if (library.isLocal (symbolName, cast AssetType.MOVIE_CLIP)) {
+				if (library.isLocal (symbolName, AssetType.MOVIE_CLIP)) {
 					
 					return library.getMovieClip (symbolName);
 					
@@ -383,7 +384,7 @@ class Assets {
 		
 		if (library != null) {
 			
-			return library.isLocal (symbolName, cast type);
+			return library.isLocal (symbolName, type);
 			
 		}
 		
@@ -447,7 +448,7 @@ class Assets {
 	 */
 	public static function list (type:AssetType = null):Array<String> {
 		
-		return LimeAssets.list (cast type);
+		return LimeAssets.list (type);
 		
 	}
 	
@@ -702,25 +703,30 @@ class Assets {
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library:AssetLibrary = cast getLibrary (libraryName);
-		
-		if (library != null) {
+		loadLibrary (libraryName).onComplete (function (library:LimeAssetLibrary) {
 			
-			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+			var library:AssetLibrary = cast library;
+
+			if (library != null) {
 				
-				promise.completeWith (library.loadMovieClip (symbolName));
+				if (library.exists (symbolName, AssetType.MOVIE_CLIP)) {
+					
+					promise.completeWith (library.loadMovieClip (symbolName));
+					
+				} else {
+					
+					promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+					
+				}
 				
 			} else {
 				
-				promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				promise.error ("[Assets] There is no asset library named \"" + libraryName + "\"");
 				
 			}
+
 			
-		} else {
-			
-			promise.error ("[Assets] There is no asset library named \"" + libraryName + "\"");
-			
-		}
+		});
 		
 		#end
 		
@@ -890,6 +896,20 @@ class Assets {
 	}
 	
 	
+	override public function getAsset (id:String, type:String):Dynamic {
+		
+		return if (type == MOVIE_CLIP) getMovieClip(id) else super.getAsset(id, type);
+		
+	}
+	
+	
+	override public function loadAsset (id:String, type:String):Future<Dynamic> {
+		
+		return if (type == MOVIE_CLIP) loadMovieClip(id) else super.loadAsset(id, type);
+		
+	}
+	
+	
 }
 
 
@@ -910,6 +930,31 @@ class Assets {
 		bitmapData = new Map<String, BitmapData> ();
 		font = new Map<String, Font> ();
 		sound = new Map<String, Sound> ();
+		
+	}
+	
+	
+	public function exists (id:String, ?type:AssetType):Bool {
+		
+		if (type == AssetType.IMAGE || type == null) {
+			
+			if (bitmapData.exists (id)) return true;
+			
+		}
+		
+		if (type == AssetType.FONT || type == null) {
+			
+			if (font.exists (id)) return true;
+			
+		}
+		
+		if (type == AssetType.SOUND || type == AssetType.MUSIC || type == null) {
+			
+			if (sound.exists (id)) return true;
+			
+		}
+		
+		return false;
 		
 	}
 	
@@ -1080,6 +1125,7 @@ class Assets {
 	
 	public var enabled (get, set):Bool;
 	
+	public function exists (id:String, ?type:AssetType):Bool;
 	public function clear (prefix:String = null):Void;
 	public function getBitmapData (id:String):BitmapData;
 	public function getFont (id:String):Font;
@@ -1097,7 +1143,7 @@ class Assets {
 }
 
 
-@:dox(hide) @:enum abstract AssetType(String) {
+@:dox(hide) @:enum abstract AssetType(String) to String {
 	
 	var BINARY = "BINARY";
 	var FONT = "FONT";
@@ -1107,6 +1153,19 @@ class Assets {
 	var SOUND = "SOUND";
 	var TEMPLATE = "TEMPLATE";
 	var TEXT = "TEXT";
+	
+	@:to function toLimeAssetType () : LimeAssetType {
+		
+		return switch (this) {
+			
+			case BINARY, FONT, IMAGE, MUSIC, SOUND, TEMPLATE, TEXT:
+				cast this;
+			
+			default:
+				throw "Unknown lime.AssetType: " + this;
+		}
+		
+	}
 	
 }
 
