@@ -340,24 +340,6 @@ class ApplicationMain {
 		::if (PRELOADER_NAME != "")::
 		try {
 			
-			Context.getType ("NMEPreloader");
-			
-		} catch (e:Dynamic) {
-			
-			Context.defineType ({
-				
-				name: "NMEPreloader",
-				pack: [],
-				kind: TDClass ({ pack: [ "openfl", "display" ], name: "Preloader", sub: "DefaultPreloader", params: [] }, null, false),
-				fields: [ { name: "new", access: [ APublic ], kind: FFun({ args: [], expr: macro { super (); }, params: [], ret: macro :Void }), pos: Context.currentPos () } ],
-				pos: Context.currentPos ()
-				
-			});
-			
-		}
-		
-		try {
-			
 			var type = Context.getType ("::PRELOADER_NAME::");
 			
 			switch (type) {
@@ -371,11 +353,6 @@ class ApplicationMain {
 						if (searchTypes.pack.length == 2 && searchTypes.pack[0] == "openfl" && searchTypes.pack[1] == "display" && searchTypes.name == "Preloader") {
 							
 							return macro { new ::PRELOADER_NAME:: (); };
-							
-						} else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
-							
-							Sys.println ("Warning: Use of NMEPreloader has been deprecated");
-							break;
 							
 						}
 						
