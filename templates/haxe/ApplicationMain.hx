@@ -5,6 +5,8 @@ package;
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
+#else
+import DefaultAssetLibrary;
 #end
 
 @:access(lime.app.Application)
@@ -237,7 +239,17 @@ class ApplicationMain {
 	
 	private static function registerLibrary ():Void {
 		
-		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
+		var classReference = Type.resolveClass ("DefaultAssetLibrary");
+		
+		if (classReference != null) {
+			
+			lime.Assets.registerLibrary ("default", Type.createInstance (classReference, []));
+			
+		} else {
+			
+			lime.utils.Log.warn ("Could not load DefaultAssetLibrary (class not found)");
+			
+		}
 		
 	}
 	

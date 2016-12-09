@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import lime.app.Config;
 import lime.app.Preloader in LimePreloader;
 import lime.Assets;
 import openfl.events.Event;
@@ -23,6 +24,17 @@ class Preloader extends LimePreloader {
 		super ();
 		
 		this.display = display;
+		
+	}
+	
+	
+	public override function create (config:Config):Void {
+		
+		super.create (config);
+		
+		#if flash
+		init ();
+		#end
 		
 	}
 	
