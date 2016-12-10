@@ -1,6 +1,7 @@
 package openfl.utils;
 
 
+import haxe.Int64;
 import massive.munit.Assert;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
@@ -61,11 +62,11 @@ class ByteArrayTest {
 		ba.writeUTFBytes("TEST");
 		Assert.areEqual(4, ba.length);
 		Assert.areEqual(4, ba.position);
-
+		
 		ba.writeInt(0x12345678);
 		Assert.areEqual(8, ba.length);
 		Assert.areEqual(8, ba.position);
-
+		
 		ba.writeShort(0x1234);
 		Assert.areEqual(10, ba.length);
 		Assert.areEqual(10, ba.position);
@@ -98,11 +99,11 @@ class ByteArrayTest {
 		data.writeByte(127);
 		data.position = 0;
 		Assert.areEqual( 127, data.readByte() );
-
+		
 		data.writeByte(34);
 		data.position = 1;
 		Assert.areEqual( 34, data.readByte() );
-
+		
 		Assert.areEqual( 2, data.length );
 		
 	}
@@ -118,27 +119,27 @@ class ByteArrayTest {
 		input.writeByte( 19 );
 		input.writeByte( 17 );
 		var data = new ByteArray();
-	
+		
 		data.writeBytes( input, 0, 4 );
 		Assert.areEqual( 4, data.length );
-
+		
 		data.position = 0;
 		var output = new ByteArray();
 		data.readBytes( output, 0, 2 );
-
+		
 		Assert.areEqual( 2, output.length );
 		Assert.areEqual( 118, output.readByte() );
 		Assert.areEqual( 38, output.readByte() );
-
+		
 		data.position = 2;
 		data.writeBytes( input, 2, 4 );
 		Assert.areEqual( 6, data.length );
-
+		
 		data.position = 4;
 		data.readBytes( output, 2, 2 );
 		Assert.areEqual( 4, output.length );
 		output.position = 2;
-
+		
 		Assert.areEqual( 19, output.readByte() );
 		Assert.areEqual( 17, output.readByte() );
 		
@@ -150,31 +151,31 @@ class ByteArrayTest {
 		var data = new ByteArray();
 		data.writeDouble( Math.PI );
 		data.position = 0;
-
+		
 		Assert.areEqual( Math.PI, data.readDouble() );
 		Assert.areEqual( 8, data.position );
-
+		
 		data.position = 0;
 		Assert.areEqual( Math.PI, data.readDouble() );
-
+		
 		data.writeDouble( 6 );
 		data.position = 8;
-
+		
 		Assert.areEqual( 6., data.readDouble() );
-
+		
 		data.writeDouble( 3.121244489 );
 		data.position = 16;
-
+		
 		Assert.areEqual( 3.121244489, data.readDouble() );
-
+		
 		data.writeDouble( -0.000244489 );
 		data.position = 24;
-
+		
 		Assert.areEqual( -0.000244489, data.readDouble() );
-
+		
 		data.writeDouble( -99.026771 );
 		data.position = 32;
-
+		
 		Assert.areEqual( -99.026771, data.readDouble() );
 		
 	}
@@ -185,10 +186,10 @@ class ByteArrayTest {
 		var data = new ByteArray();
 		data.writeFloat( 2);
 		data.position = 0;
-
+		
 		Assert.areEqual( 2., data.readFloat() );
 		Assert.areEqual( 4, data.position );
-
+		
 		data.writeFloat( .18 );
 		data.position = 4;
 		var actual = data.readFloat();
@@ -200,19 +201,19 @@ class ByteArrayTest {
 		var actual = data.readFloat();
 		Assert.isTrue( 3.452220 < actual );
 		Assert.isTrue( 3.452222 > actual );
-
+		
 		data.writeFloat( 39.19442 );
 		data.position = 12;
 		var actual = data.readFloat();
 		Assert.isTrue( 39.19441 < actual );
 		Assert.isTrue( 39.19443 > actual );
-
+		
 		data.writeFloat( .994423 );
 		data.position = 16;
 		var actual = data.readFloat();
 		Assert.isTrue( .994422 < actual );
 		Assert.isTrue( .994424 > actual );
-
+		
 		data.writeFloat( -.434423 );
 		data.position = 20;
 		var actual = data.readFloat();
@@ -228,20 +229,20 @@ class ByteArrayTest {
 		data.writeInt( 0xFFCC );
 		Assert.areEqual( 4, data.length );
 		data.position = 0;
-
+		
 		Assert.areEqual( 0xFFCC, data.readInt() );
 		Assert.areEqual( 4, data.position );
-
+		
 		data.writeInt( 0xFFCC99 );
 		Assert.areEqual( 8, data.length );
 		data.position = 4;
-
+		
 		Assert.areEqual( 0xFFCC99, data.readInt() );
-
+		
 		data.writeInt( 0xFFCC99AA );
 		Assert.areEqual( 12, data.length );
 		data.position = 8;
-
+		
 		Assert.areEqual( 0xFFCC99AA, data.readInt() );
 		
 	}
@@ -255,7 +256,7 @@ class ByteArrayTest {
 		data.writeMultiByte("a", encoding);
 		Assert.areEqual(4, data.length );
 		data.position = 0;
-
+		
 		Assert.areEqual( "a", data.readMultiByte(4, encoding));
 	} */
 	
@@ -277,13 +278,13 @@ class ByteArrayTest {
 		var data = new ByteArray();
 		data.writeShort( 5 );
 		data.position = 0;
-
+		
 		Assert.areEqual( 5, data.readShort() );
 		Assert.areEqual( 2, data.length );
-
+		
 		data.writeShort( 0xFC );
 		data.position = 2;
-
+		
 		Assert.areEqual( 0xFC, data.readShort() );
 		
 	}
@@ -325,7 +326,7 @@ class ByteArrayTest {
 		
 		var data = new ByteArray();
 		data.writeUTF("\xE9");
-
+		
 		data.position = 0;
 		#if (flash || js)
 		Assert.areEqual(2, data.readUnsignedShort() );
@@ -333,7 +334,7 @@ class ByteArrayTest {
 		Assert.areEqual(1, data.readUnsignedShort() );
 		#end
 		data.position = 0;
-
+		
 		Assert.areEqual( "\xE9", data.readUTF() );
 		
 	}
@@ -387,18 +388,190 @@ class ByteArrayTest {
 		data.position = 0;
 		Assert.areEqual( 4, data.readUnsignedByte() );
 		data.position = 4;
-
+		
 		data.writeShort( 200 );
 		Assert.areEqual( 6, data.length );
 		data.position = 4;
-
+		
 		Assert.areEqual( 200, data.readUnsignedShort() );
-
+		
 		data.writeUnsignedInt( 65000 );
 		Assert.areEqual( 10, data.length );
 		data.position = 6;
-
+		
 		Assert.areEqual( 65000, data.readUnsignedInt() );
+		
+	}
+	
+	
+	private function flipBytes (read:ByteArray, write:ByteArray, readOffset:Int, writeLength:Int):Void {
+		
+		for (i in 0...writeLength) {
+			
+			read.position = readOffset + (writeLength - 1 - i);
+			write.writeByte (read.readByte ());
+			
+		}
+		
+	}
+	
+	
+	private function nearEquals (a:Float, b:Float):Bool {
+		
+		if (a == b) return true;
+		
+		var diff = (b / a);
+		if (diff < 1.001 && diff > 0.999) return true;
+		
+		trace ("Value [" + b + "] was not near expected value [" + a + "]");
+		return false;
+		
+	}
+	
+	
+	@Test public function testEndianness () {
+		
+		var short:Int = 3000;
+		var int:Int = 200000000;
+		var float:Float = 3.0E+38;
+		var double = 1.7E+308;
+		var utf = "Hello World";
+		
+		var byteArray = new ByteArray ();
+		byteArray.endian = LITTLE_ENDIAN;
+		
+		byteArray.writeShort (short);
+		byteArray.writeInt (int);
+		byteArray.writeFloat (float);
+		byteArray.writeDouble (double);
+		byteArray.writeUTFBytes (utf);
+		
+		var stringLength = byteArray.length - 18;
+		
+		var flip = new ByteArray ();
+		flipBytes (byteArray, flip, 0, 2);
+		flipBytes (byteArray, flip, 2, 4);
+		flipBytes (byteArray, flip, 6, 4);
+		flipBytes (byteArray, flip, 10, 8);
+		
+		byteArray.position = byteArray.length - stringLength;
+		flip.writeBytes (byteArray, flip.position, stringLength);
+		//flipBytes (byteArray, flip, 18, stringLength);
+		
+		flip.endian = BIG_ENDIAN;
+		flip.position = 0;
+		
+		Assert.areEqual (short, flip.readShort ());
+		Assert.areEqual (int, flip.readInt ());
+		Assert.isTrue (nearEquals (float, flip.readFloat ()));
+		Assert.areEqual (double, flip.readDouble ());
+		Assert.areEqual (utf, flip.readUTFBytes (stringLength));
+		
+		var byteArray = new ByteArray ();
+		byteArray.endian = BIG_ENDIAN;
+		
+		byteArray.writeShort (short);
+		byteArray.writeInt (int);
+		byteArray.writeFloat (float);
+		byteArray.writeDouble (double);
+		byteArray.writeUTFBytes (utf);
+		
+		var flip = new ByteArray ();
+		flipBytes (byteArray, flip, 0, 2);
+		flipBytes (byteArray, flip, 2, 4);
+		flipBytes (byteArray, flip, 6, 4);
+		flipBytes (byteArray, flip, 10, 8);
+		
+		byteArray.position = byteArray.length - stringLength;
+		flip.writeBytes (byteArray, flip.position, stringLength);
+		//flipBytes (byteArray, flip, 18, stringLength);
+		
+		flip.endian = LITTLE_ENDIAN;
+		flip.position = 0;
+		
+		Assert.areEqual (short, flip.readShort ());
+		Assert.areEqual (int, flip.readInt ());
+		Assert.isTrue (nearEquals (float, flip.readFloat ()));
+		Assert.areEqual (double, flip.readDouble ());
+		Assert.areEqual (utf, flip.readUTFBytes (stringLength));
+		
+		var littleEndian = new ByteArray ();
+		littleEndian.endian = LITTLE_ENDIAN;
+		
+		var bigEndian = new ByteArray ();
+		bigEndian.endian = BIG_ENDIAN;
+		
+		littleEndian.writeByte (0x12);
+		littleEndian.writeByte (0xCD);
+		
+		bigEndian.writeByte (0xCD);
+		bigEndian.writeByte (0x12);
+		
+		littleEndian.position = 0;
+		bigEndian.position = 0;
+		
+		Assert.areEqual (littleEndian.readShort (), bigEndian.readShort ());
+		
+		littleEndian.position = 0;
+		Assert.areEqual (-13038, littleEndian.readShort ());
+		
+		littleEndian.position = 0;
+		bigEndian.position = 0;
+		
+		littleEndian.writeByte (0x90);
+		littleEndian.writeByte (0xAB);
+		littleEndian.writeByte (0x12);
+		littleEndian.writeByte (0xCD);
+		
+		bigEndian.writeByte (0xCD);
+		bigEndian.writeByte (0x12);
+		bigEndian.writeByte (0xAB);
+		bigEndian.writeByte (0x90);
+		
+		littleEndian.position = 0;
+		bigEndian.position = 0;
+		
+		Assert.areEqual (littleEndian.readInt (), bigEndian.readInt ());
+		
+		littleEndian.position = 0;
+		Assert.areEqual (0xCD12AB90, littleEndian.readInt ());
+		
+		littleEndian.position = 0;
+		bigEndian.position = 0;
+		
+		Assert.areEqual (littleEndian.readFloat (), bigEndian.readFloat ());
+		
+		littleEndian.position = 0;
+		Assert.areEqual (-153794816, littleEndian.readFloat ());
+		
+		littleEndian.position = 0;
+		bigEndian.position = 0;
+		
+		littleEndian.writeByte (0x0D);
+		littleEndian.writeByte (0x0C);
+		littleEndian.writeByte (0x0B);
+		littleEndian.writeByte (0x0A);
+		littleEndian.writeByte (0x90);
+		littleEndian.writeByte (0xAB);
+		littleEndian.writeByte (0x12);
+		littleEndian.writeByte (0xCD);
+		
+		bigEndian.writeByte (0xCD);
+		bigEndian.writeByte (0x12);
+		bigEndian.writeByte (0xAB);
+		bigEndian.writeByte (0x90);
+		bigEndian.writeByte (0x0A);
+		bigEndian.writeByte (0x0B);
+		bigEndian.writeByte (0x0C);
+		bigEndian.writeByte (0x0D);
+		
+		littleEndian.position = 0;
+		bigEndian.position = 0;
+		
+		Assert.areEqual (littleEndian.readDouble (), bigEndian.readDouble ());
+		
+		littleEndian.position = 0;
+		Assert.isTrue (nearEquals (-1.92011526560524e+63, littleEndian.readDouble ()));
 		
 	}
 	

@@ -9,12 +9,14 @@ import lime.math.Matrix3;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class CairoTilemap {
@@ -28,7 +30,11 @@ class CairoTilemap {
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var transform = tilemap.__worldTransform;
+		var rect = Rectangle.__temp;
+		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		
+		var transform = tilemap.__renderTransform;
 		var roundPixels = renderSession.roundPixels;
 		
 		var defaultTileset = tilemap.tileset;
@@ -58,6 +64,9 @@ class CairoTilemap {
 			if (tileset == null) continue;
 			
 			tileData = tileset.__data[tile.id];
+			
+			if (tileData == null) continue;
+			
 			bitmapData = tileset.bitmapData;
 			
 			if (bitmapData == null) continue;
@@ -66,15 +75,15 @@ class CairoTilemap {
 				
 				surface = bitmapData.getSurface ();
 				pattern = CairoPattern.createForSurface (surface);
-				pattern.filter = tilemap.smoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = (renderSession.allowSmoothing && tilemap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 				
 				cairo.source = pattern;
 				cacheBitmapData = bitmapData;
 				
 			}
 			
-			tileTransform.copyFrom (transform);
-			tileTransform.concat (tile.matrix);
+			tileTransform.copyFrom (tile.matrix);
+			tileTransform.concat (transform);
 			
 			if (roundPixels) {
 				
@@ -110,6 +119,7 @@ class CairoTilemap {
 			
 		}
 		
+		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
 		
 	}

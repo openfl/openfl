@@ -8,7 +8,6 @@ import openfl.utils.ByteArray;
 @:final extern class RectangleTexture extends TextureBase {
 	
 	
-	public function new ():Void;
 	public function uploadFromBitmapData (source:BitmapData):Void;
 	public function uploadFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void;
 	

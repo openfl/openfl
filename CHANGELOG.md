@@ -1,3 +1,204 @@
+4.5.0 (12/07/2016)
+------------------
+
+* Merged the "swf" library into OpenFL
+* Enabled "strict mode" by default (MovieClip and Event are not Dynamic)
+* Context3D is now automatically initialized on OpenGL targets
+* Added tools for support of SWF assets
+* Added core support for SWF-based symbols
+* Added performance optimizations for SWF-based bitmaps
+* Added optimizations when objects are re-used during timeline animation
+* Added support for custom Haxe base classes from Adobe Animate
+* Added support for the `visible` property from Adobe Animate
+* Added support for input TextFields from Adobe Animate
+* Added support for dynamic child access using -Dopenfl-dynamic
+* Added bitmapData.disposeImage() to reduce memory use (beta)
+* Added bitmapData.readable for GPU-only BitmapData (beta)
+* Added BitmapData.fromTexture() for render-to-texture (experimental)
+* Added framebuffer-based bitmapData.draw and fillRect (experimental)
+* Added stage.showDefaultContextMenu and implemented for HTML5
+* Added a 32 SoundChannel limit (similar to Flash) for better performance
+* Added `new Vector([1, 2, 3])` (to approximate `<Vector>[1, 2, 3]`)
+* Added initial support for runtime JS script loading
+* Added "select all" keyboard shortcut support to TextField
+* Added initial support for BlurFilter
+* Added support for filters on display object containers
+* Updated openfl.Lib.getURL use lime.system.System.openURL
+* Updated openfl.net.URLLoader to use lime.net.HTTPRequest
+* Updated tilemap width/height to behave similar to TextField
+* Improved the behavior of SWF-based library preloading
+* Improved SWF class generation to use more exact types
+* Improved the behavior of displayObject.loaderInfo
+* Improved the behavior of premultiplied alpha on HTML5
+* Improved the performance of -Ddom when using canvas-based bitmaps
+* Improved support for UncaughtErrorEvents
+* Fixed the calculation of textField.bounds
+* Fixed an issue in Stage3D that caused flickering in Away3D samples
+* Fixed the position of shape.graphics when using bitmapData.draw
+* Fixed hit testing for scaled shape.graphics on HTML5
+* Fixed repeated dispatching of Event.CONTEXT3D_CREATE
+* Fixed support for Stage3D empty textures
+* Fixed an issue with document classes extending starling.display.Sprite
+* Fixed hit testing on bitmapFill shapes
+* Fixed an issue with keyboard shortcut support on TextField for macOS
+* Fixed the size of video playback on WebGL
+* Fixed hitting the enter key on a single-line TextField
+* Fixed optional argument in bitmapData.encode
+* Fixed behavior of the border property on SWF-based TextFields
+* Fixed support for copy-and-paste on HTML5
+* Fixed a crash issue when using Stage3D shaders on macOS
+* Fixed the behavior of textField width/height when scaled
+* Fixed ByteArray.writeFloat on Neko
+* Fixed a minor issue when removing event listeners while dispatching
+* Fixed some glyphs that disappeared when using textField.htmlText
+* Fixed an issue that could cause textFields to disappear when scaled
+* Fixed support for using Class as a key type for openfl.utils.Dictionary
+* Fixed support for scaled shape.graphics on -Ddom
+* Fixed the position of shape.graphics on -Ddom
+* Fixed support for SimpleButton on -Ddom
+* Fixed some issues with TextField on -Ddom
+* Fixed support for scrollRect on -Ddom
+* Fixed sprite.visible support on -Ddom
+* Fixed hiding of mask objects on -Ddom
+
+
+4.4.1 (11/01/2016)
+------------------
+
+* Added support for the "ignoresampler" AGAL sampler hint
+* Improved the behavior of context3D.setSamplerState
+* Minor change to better support Lime `onPreloadComplete` event
+* Fixed visibility of TextField cursor on a final blank line
+* Fixed a possible null error in EventDispatcher
+* Fixed support for -Dmodular
+
+
+4.4.0 (10/31/2016)
+------------------
+
+* Added initial support for modular HTML5 builds (generates separate openfl.js)
+* Added initial support for VideoTexture in HTML5 Stage3D
+* Added initial high-DPI support for HTML5
+* Added an error when using a non-matching Lime version
+* Updated several fields with typed values for better performance
+* Updated event.target and event.currentTarget to be IEventDispatcher
+* Updated shaders to use premultiplied alpha blend mode by default
+* Improved behavior of non-renderable TextFields
+* Improved support for mipmapping in Stage3D Texture
+* Improved the behavior of graphics.drawTriangles
+* Improved re-entrant behavior in EventDispatcher
+* Improved removeEventListener when called during the same event dispatch
+* Improved premultiplied alpha in Stage3D textures
+* Improved the preloader system (deprecated NMEPreloader)
+* Fixed support for smoothing within sprite.graphics
+* Fixed dead-code-elimination when using a static main entry point
+* Fixed dispatch of Context3D creation error where Stage3D is not supported
+* Fixed sound.length on HTML5
+* Fixed support for using the same listener with multiple event phases
+* Fixed some issues with event bubbling
+* Fixed some issues with TextField caret positioning
+* Fixed BIG_ENDIAN support in ByteArray
+* Fixed use of ColorMatrixFilter on Flash
+* Fixed some issues with -Ddom OpenGL context creation
+
+
+4.3.1 (10/13/2016)
+------------------
+
+* Added basic support for bitmapData.perlinNoise
+* Added initial support for `<textformat>` in TextField htmlText
+* Improved the behavior of premultiplied alpha on HTML5
+* Optimized addChild/addChildAt if child remains at the same depth
+* Optimized conversion of Image to Canvas in some cases
+* Fixed an issue with cached scissor rectangles in Stage3D
+* Fixed htmlText parsing when attributes use single quotes
+* Fixed a rendering issue where changing text format could omit one letter
+* Fixed the default GL min filter value for Stage3D samplers
+* Fixed an GL error caused by switching Stage3D and display list shaders
+
+
+4.3.0 (10/10/2016)
+------------------
+
+* Added support for ColorMatrixFilter and ConvolutionFilter
+* Added support for custom shaders with additional uniforms/samplers
+* Added ByteArray.fromFile and improved conversion from null values
+* Added support for rounding coordinates in the GL renderer
+* Updated Sound to rely only on lime.sound.AudioSource
+* Updated Capabilities.language to use lime.system.Locale
+* Updated HTML5 templates for favicon support
+* Updated Flash web template to enable Stage3D support
+* Improved the behavior of displayAsPassword input text
+* Improved the behavior of Tile rotation
+* Improved Graphics to be more efficient with garbage collection
+* Improved the behavior of touch events
+* Improved use of "-lib openfl" from plain HXML
+* Implemented hitTestPoint with shapeFlag
+* Fixed width and height values when scaleX or scaleY is negative
+* Fixed set of stageX and stageY when dispatching a custom MouseEvent
+* Fixed Tilemap smoothing on Flash
+* Fixed TextField auto-size remaining too small and cropping text
+* Fixed the return value of Multitouch.supportsTouchEvents on macOS
+* Fixed retained references after changing stage.focus
+* Fixed the "target" field of mouse wheel events
+* Fixed unregistration of sound channels when complete
+* Fixed display of TextField caret when no text has been entered yet
+* Fixed support for AGAL shader sampler states
+* Fixed drawTriangles support for HTML5
+* Fixed rendering of Graphics with negative scale values
+* Fixed Assets.loadBytes to always return a lime.app.Future
+* Fixed the behavior of -Dopenfl-disable-graphics-upscaling
+* Fixed Tilemap width/height to reflect the scaled value
+* Fixed some issues with scaled Cairo and Canvas Tilemap rendering
+* Fixed soundChannel.position on native platforms
+* Fixed support for `openfl create <lib>`
+
+
+4.2.0 (09/19/2016)
+------------------
+
+* Rewrote support for scrollRect
+* Added support for disabling smoothing using StageQuality.LOW
+* Added initial changes to support the C# target
+* Added support for ROLL_OVER/ROLL_OUT events
+* Added tileset.clone
+* Implemented support for opaqueBackground
+* Cleaned up the renderer with GC optimizations
+* Updated Capabilities.language to use lime.system.Locale
+* Updated iOS templates for Xcode 8
+* Improved Tilemap rendering and consistency
+* Improved support for high-DPI windowing
+* Improved support for disabled smoothing throughout the renderer
+* Improved the behavior of MOUSE_OVER/MOUSE_OUT events
+* Improved the removal of items from the openfl.Assets cache
+* Improved stage.focus when the object of focus has been removed
+* Improved bitmap.bitmapData to set smoothing to false (like Flash)
+* Improved Utils3D.projectVectors
+* Fixed bitmapData.draw when using colorTransform on canvas
+* Fixed coordinate calculation for some off-stage objects
+* Fixed an issue when resizing object vectors
+
+
+4.1.0 (08/29/2016)
+------------------
+
+* Added new Stage3D code migrated from the (now defunct) PlayScript project
+* Added support for ENTER_FRAME, EXIT_FRAME and RENDER if not on the stage
+* Added openfl.ui.MouseCursor and Mouse.cursor support
+* Made minor changes to read-only getter properties to reduce code
+* Added to/from UInt conversion for standard enum types
+* Added duration to HTML5 NetStream onMetaData object
+* Added vector.insertAt
+* Added dictionary.exists
+* Improved stroking in graphics API
+* Improved openfl.Vector for better accuracy/performance
+* Fixed the order of ADDED and ADDED_TO_STAGE events
+* Fixed the behavior of vector.concat with no arguments
+* Fixed netStream.seek on HTML5
+* Fixed Capabilities.screenResolutionY
+* Fixed an issue with HTML5 shape positioning
+
+
 4.0.3 (07/27/2016)
 ------------------
 
@@ -116,7 +317,7 @@
 ------------------
 
 * Formalized the extern classes more, fixed some Flash behaviors
-* Improved the standard HTML5 template for <window resizable="false" />
+* Improved the standard HTML5 template for `<window resizable="false" />`
 * Fixed the use of binary request data in HTML5 URLLoaders
 * Improved compatibility for ByteArrayData (legacy)
 

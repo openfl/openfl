@@ -11,7 +11,7 @@ import openfl.Vector;
 	public static var maxTouchPoints (default, null):Int;
 	public static var supportedGestures (default, null):Vector<String>;
 	public static var supportsGestureEvents (default, null):Bool;
-	public static var supportsTouchEvents (get, null):Bool;
+	public static var supportsTouchEvents (get, never):Bool;
 	
 	
 	public static function __init__ () {
@@ -43,9 +43,13 @@ import openfl.Vector;
 		
 		return false;
 		
-		#else
+		#elseif !mac
 		
 		return true;
+		
+		#else
+		
+		return false;
 		
 		#end
 		

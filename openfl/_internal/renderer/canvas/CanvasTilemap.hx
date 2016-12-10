@@ -1,16 +1,18 @@
 package openfl._internal.renderer.canvas;
 
 
-import flash.geom.Matrix;
 import lime.graphics.utils.ImageCanvasUtil;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Tilemap;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 
 
 class CanvasTilemap {
@@ -26,10 +28,14 @@ class CanvasTilemap {
 		
 		renderSession.maskManager.pushObject (tilemap);
 		
-		var transform = tilemap.__worldTransform;
+		var rect = Rectangle.__temp;
+		rect.setTo (0, 0, tilemap.__width, tilemap.__height);
+		renderSession.maskManager.pushRect (rect, tilemap.__renderTransform);
+		
+		var transform = tilemap.__renderTransform;
 		var roundPixels = renderSession.roundPixels;
 		
-		if (!tilemap.smoothing) {
+		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = false;
 			//untyped (context).webkitImageSmoothingEnabled = false;
@@ -63,6 +69,9 @@ class CanvasTilemap {
 			if (tileset == null) continue;
 			
 			tileData = tileset.__data[tile.id];
+			
+			if (tileData == null) continue;
+			
 			bitmapData = tileset.bitmapData;
 			
 			if (bitmapData == null) continue;
@@ -82,8 +91,8 @@ class CanvasTilemap {
 			
 			context.globalAlpha = tilemap.__worldAlpha * alpha;
 			
-			tileTransform.copyFrom (transform);
-			tileTransform.concat (tile.matrix);
+			tileTransform.copyFrom (tile.matrix);
+			tileTransform.concat (transform);
 			
 			if (roundPixels) {
 				
@@ -99,7 +108,7 @@ class CanvasTilemap {
 			
 		}
 		
-		if (!tilemap.smoothing) {
+		if (!renderSession.allowSmoothing || !tilemap.smoothing) {
 			
 			untyped (context).mozImageSmoothingEnabled = true;
 			//untyped (context).webkitImageSmoothingEnabled = true;
@@ -108,6 +117,7 @@ class CanvasTilemap {
 			
 		}
 		
+		renderSession.maskManager.popRect ();
 		renderSession.maskManager.popObject (tilemap);
 		
 		#end

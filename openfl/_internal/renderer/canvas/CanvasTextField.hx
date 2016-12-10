@@ -137,10 +137,11 @@ class CanvasTextField {
 			var width = graphics.__width;
 			var height = graphics.__height;
 			
-			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
+			if (((textEngine.text == null || textEngine.text == "") && !textEngine.background && !textEngine.border && !textEngine.__hasFocus && (textEngine.type != INPUT || !textEngine.selectable)) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE)) {
 				
 				textField.__graphics.__canvas = null;
 				textField.__graphics.__context = null;
+				textField.__graphics.__bitmap = null;
 				textField.__graphics.__dirty = false;
 				textField.__dirty = false;
 				
@@ -174,34 +175,19 @@ class CanvasTextField {
 					
 					var text = textEngine.text;
 					
-					if (textEngine.displayAsPassword) {
-						
-						var length = text.length;
-						var mask = "";
-						
-						for (i in 0...length) {
-							
-							mask += "*";
-							
-						}
-						
-						text = mask;
-						
-					}
-					
-					if (textEngine.antiAliasType != ADVANCED || textEngine.gridFitType != PIXEL) {
-						
-						untyped (graphics.__context).mozImageSmoothingEnabled = true;
-						//untyped (graphics.__context).webkitImageSmoothingEnabled = true;
-						untyped (graphics.__context).msImageSmoothingEnabled = true;
-						untyped (graphics.__context).imageSmoothingEnabled = true;
-						
-					} else {
+					if (!renderSession.allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400)) {
 						
 						untyped (graphics.__context).mozImageSmoothingEnabled = false;
 						//untyped (graphics.__context).webkitImageSmoothingEnabled = false;
 						untyped (graphics.__context).msImageSmoothingEnabled = false;
 						untyped (graphics.__context).imageSmoothingEnabled = false;
+						
+					} else {
+						
+						untyped (graphics.__context).mozImageSmoothingEnabled = true;
+						//untyped (graphics.__context).webkitImageSmoothingEnabled = true;
+						untyped (graphics.__context).msImageSmoothingEnabled = true;
+						untyped (graphics.__context).imageSmoothingEnabled = true;
 						
 					}
 					
@@ -360,6 +346,27 @@ class CanvasTextField {
 							context.stroke ();
 							
 						}
+						
+					}
+					
+					if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor) {
+						
+						var scrollX = -textField.scrollH;
+						var scrollY = 0.0;
+						
+						for (i in 0...textField.scrollV - 1) {
+							
+							scrollY -= textEngine.lineHeights[i];
+							
+						}
+						
+						context.beginPath ();
+						context.strokeStyle = "#" + StringTools.hex (textField.defaultTextFormat.color, 6);
+						context.moveTo (scrollX + 2.5, scrollY + 2.5);
+						context.lineWidth = 1;
+						context.lineTo (scrollX + 2.5, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
+						context.stroke ();
+						context.closePath ();
 						
 					}
 					

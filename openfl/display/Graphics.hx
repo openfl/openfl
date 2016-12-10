@@ -39,6 +39,7 @@ import js.html.CanvasRenderingContext2D;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
 	private var __height:Int;
+	private var __managed:Bool;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __renderTransform:Matrix;
@@ -441,7 +442,7 @@ import js.html.CanvasRenderingContext2D;
 	
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void {
 		
-		openfl.Lib.notImplemented ("Graphics.drawRoundRectComplex");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
@@ -649,7 +650,7 @@ import js.html.CanvasRenderingContext2D;
 				
 				#if (js && html5)
 				return CanvasGraphics.hitTest (this, px, py);
-				#elseif (cpp || neko)
+				#elseif (lime_cffi)
 				return CairoGraphics.hitTest (this, px, py);
 				#end
 				
@@ -817,26 +818,30 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 		
-		var parentTransform = __owner.__getRenderTransform ();
-		var scaleX, scaleY;
+		var parentTransform = __owner.__renderTransform;
+		var scaleX = 1.0, scaleY = 1.0;
 		
-		if (parentTransform.b == 0) {
+		if (parentTransform != null) {
 			
-			scaleX = parentTransform.a;
+			if (parentTransform.b == 0) {
+				
+				scaleX = Math.abs (parentTransform.a);
+				
+			} else {
+				
+				scaleX = Math.sqrt (parentTransform.a * parentTransform.a + parentTransform.b * parentTransform.b);
+				
+			}
 			
-		} else {
-			
-			scaleX = Math.sqrt (parentTransform.a * parentTransform.a + parentTransform.b * parentTransform.b);
-			
-		}
-		
-		if (parentTransform.c == 0) {
-			
-			scaleY = parentTransform.d;
-			
-		} else {
-			
-			scaleY = Math.sqrt (parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
+			if (parentTransform.c == 0) {
+				
+				scaleY = Math.abs (parentTransform.d);
+				
+			} else {
+				
+				scaleY = Math.sqrt (parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
+				
+			}
 			
 		}
 		
@@ -851,15 +856,16 @@ import js.html.CanvasRenderingContext2D;
 		if (Math.abs (width - __width) > 2 || Math.abs (height - __height) > 2) {
 			
 			__dirty = true;
-			__width = Math.floor (width);
-			__height = Math.floor (height);
-			
-			__renderTransform.a = width / __bounds.width;
-			__renderTransform.d = height / __bounds.height;
 			
 		}
 		
+		__width = Math.floor (width);
+		__height = Math.floor (height);
+		
 		if (__width <= 0 || __height <= 0) return;
+		
+		__renderTransform.a = __width / __bounds.width;
+		__renderTransform.d = __height / __bounds.height;
 		
 		__worldTransform.a = 1 / __renderTransform.a;
 		__worldTransform.b = 0;
@@ -867,7 +873,7 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform.d = 1 / __renderTransform.d;
 		__worldTransform.tx = __bounds.x;
 		__worldTransform.ty = __bounds.y;
-		__worldTransform.concat (__owner.__worldTransform);
+		__worldTransform.concat (__owner.__renderTransform);
 		
 	}
 	

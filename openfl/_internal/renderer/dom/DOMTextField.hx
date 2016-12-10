@@ -90,6 +90,13 @@ class DOMTextField {
 							if (textField.htmlText != textField.__div.innerHTML) {
 								
 								textField.htmlText = textField.__div.innerHTML;
+								
+								if (textField.__displayAsPassword) {
+									
+									// TODO: Enable display as password
+									
+								}
+								
 								textField.__dirty = false;
 								
 							}
@@ -99,11 +106,15 @@ class DOMTextField {
 					}
 					
 					if (!textEngine.multiline) {
-					  textField.__style.setProperty ("white-space", "nowrap", null);
+						
+						textField.__style.setProperty ("white-space", "nowrap", null);
+						
+					} else {
+						
+						textField.__style.setProperty ("word-wrap", "break-word", null);
+						
 					}
-					else {
-					  textField.__style.setProperty ("word-wrap", "break-word", null);
-					}
+					
 					textField.__style.setProperty ("overflow", "hidden", null);
 					
 					if (textEngine.selectable) {
@@ -123,7 +134,8 @@ class DOMTextField {
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 					
-					textField.__div.innerHTML = textEngine.text;
+					//textField.__div.innerHTML = textEngine.text;
+					textField.__div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
 					
 					if (textEngine.background) {
 						
@@ -193,9 +205,8 @@ class DOMTextField {
 			
 			if (textField.__div != null) {
 				
-				// TODO: Enable scrollRect clipping
-				
-				DOMRenderer.applyStyle (textField, renderSession, true, true, false);
+				DOMRenderer.updateClip (textField, renderSession);
+				DOMRenderer.applyStyle (textField, renderSession, true, true, true);
 				
 			}
 			

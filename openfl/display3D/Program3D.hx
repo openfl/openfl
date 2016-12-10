@@ -68,8 +68,8 @@ import openfl.Vector;
 		//var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState> ();
 		
-		var glslVertex = AGALConverter.ConvertToGLSL (vertexProgram, null);
-		var glslFragment = AGALConverter.ConvertToGLSL (fragmentProgram, samplerStates);
+		var glslVertex = AGALConverter.convertToGLSL (vertexProgram, null);
+		var glslFragment = AGALConverter.convertToGLSL (fragmentProgram, samplerStates);
 		
 		__uploadFromGLSL (glslVertex, glslFragment);
 		

@@ -7,6 +7,7 @@ import haxe.Unserializer;
 import lime.app.Future;
 import lime.app.Promise;
 import lime.text.Font in LimeFont;
+import lime.utils.Log;
 import lime.Assets.AssetLibrary in LimeAssetLibrary;
 import lime.Assets in LimeAssets;
 import openfl.display.Bitmap;
@@ -221,19 +222,19 @@ class Assets {
 					
 				} else {
 					
-					printError ("[openfl.Assets] MovieClip asset \"" + id + "\" exists, but only asynchronously");
+					Log.info ("MovieClip asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
 				
 			} else {
 				
-				printError ("[openfl.Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				Log.info ("There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			printError ("[openfl.Assets] There is no asset library named \"" + libraryName + "\"");
+			Log.info ("There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
@@ -253,24 +254,9 @@ class Assets {
 	 */
 	public static function getMusic (id:String, useCache:Bool = true):Sound {
 		
-		#if flash
-		var buffer = LimeAssets.getAudioBuffer (id, useCache);
-		return (buffer != null) ? buffer.src : null;
-		#else
-		#if !html5
-		return Sound.fromAudioBuffer (LimeAssets.getAudioBuffer (id, useCache));
-		#else
-		var path = LimeAssets.getPath (id);
+		// TODO: Streaming sound
 		
-		if (path != null) {
-			
-			return new Sound (new URLRequest (path));
-			
-		}
-		
-		return null;
-		#end
-		#end
+		return getSound (id, useCache);
 		
 	}
 	
@@ -311,7 +297,6 @@ class Assets {
 			
 		}
 		
-		#if !html5
 		var buffer = LimeAssets.getAudioBuffer (id, false);
 		
 		if (buffer != null) {
@@ -331,15 +316,6 @@ class Assets {
 			return sound;
 			
 		}
-		#else
-		var path = LimeAssets.getPath (id);
-		
-		if (path != null) {
-			
-			return new Sound (new URLRequest (path));
-			
-		}
-		#end
 		
 		#end
 		
@@ -418,7 +394,7 @@ class Assets {
 	}
 	
 	
-	private static function isValidBitmapData (bitmapData:BitmapData):Bool {
+	@:analyzer(ignore) private static function isValidBitmapData (bitmapData:BitmapData):Bool {
 		
 		#if (tools && !display)
 		#if flash
@@ -563,11 +539,11 @@ class Assets {
 			promise.future.onComplete (handler);
 			promise.future.onError (function (_) handler (null));
 			
-			future.onComplete (function (bytes) promise.complete (bytes));
-			future.onProgress (function (progress) promise.progress (progress));
-			future.onError (function (msg) promise.error (msg));
-			
 		}
+		
+		future.onComplete (function (bytes) promise.complete (bytes));
+		future.onProgress (function (progress, total) promise.progress (progress, total));
+		future.onError (function (msg) promise.error (msg));
 		
 		return promise.future;
 		
@@ -672,10 +648,18 @@ class Assets {
 			if (buffer != null) {
 				
 				#if flash
-				promise.complete (buffer.src);
+				var sound = buffer.src;
 				#else
-				promise.complete (Sound.fromAudioBuffer (buffer));
+				var sound = Sound.fromAudioBuffer (buffer);
 				#end
+				
+				if (useCache && cache.enabled) {
+					
+					cache.setSound (id, sound);
+					
+				}
+				
+				promise.complete (sound);
 				
 			} else {
 				
@@ -757,8 +741,6 @@ class Assets {
 		
 		if (useCache == null) useCache = true;
 		
-		#if !html5
-		
 		var promise = new Promise<Sound> ();
 		
 		LimeAssets.loadAudioBuffer (id, useCache).onComplete (function (buffer) {
@@ -766,10 +748,18 @@ class Assets {
 			if (buffer != null) {
 				
 				#if flash
-				promise.complete (buffer.src);
+				var sound = buffer.src;
 				#else
-				promise.complete (Sound.fromAudioBuffer (buffer));
+				var sound = Sound.fromAudioBuffer (buffer);
 				#end
+				
+				if (useCache && cache.enabled) {
+					
+					cache.setSound (id, sound);
+					
+				}
+				
+				promise.complete (sound);
 				
 			} else {
 				
@@ -779,12 +769,6 @@ class Assets {
 			
 		}).onError (promise.error).onProgress (promise.progress);
 		return promise.future;
-		
-		#else
-		
-		return new Future<Sound> (function () return getSound (id, useCache));
-		
-		#end
 		
 	}
 	
@@ -865,18 +849,6 @@ class Assets {
 	}
 	
 	
-	private static inline function printError (message:String):Void {
-
-		#if debug
-		var callstack = CallStack.callStack ();
-		callstack.reverse();
-		trace (CallStack.toString (callstack) + "\n" + message);
-		#else
-		trace (message);
-		#end
-
-	}
-
 	
 	
 	// Event Handlers
@@ -958,7 +930,7 @@ class Assets {
 				
 				if (StringTools.startsWith (key, prefix)) {
 					
-					bitmapData.remove (key);
+					removeBitmapData (key);
 					
 				}
 				
@@ -970,7 +942,7 @@ class Assets {
 				
 				if (StringTools.startsWith (key, prefix)) {
 					
-					font.remove (key);
+					removeFont (key);
 					
 				}
 				
@@ -982,7 +954,7 @@ class Assets {
 				
 				if (StringTools.startsWith (key, prefix)) {
 					
-					sound.remove (key);
+					removeSound (key);
 					
 				}
 				
@@ -1037,6 +1009,7 @@ class Assets {
 	
 	public function removeBitmapData (id:String):Bool {
 		
+		LimeAssets.cache.image.remove (id);
 		return bitmapData.remove (id);
 		
 	}
@@ -1044,6 +1017,7 @@ class Assets {
 	
 	public function removeFont (id:String):Bool {
 		
+		LimeAssets.cache.font.remove (id);
 		return font.remove (id);
 		
 	}
@@ -1051,6 +1025,7 @@ class Assets {
 	
 	public function removeSound (id:String):Bool {
 		
+		LimeAssets.cache.audio.remove (id);
 		return sound.remove (id);
 		
 	}

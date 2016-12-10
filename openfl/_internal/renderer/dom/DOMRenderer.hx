@@ -15,6 +15,7 @@ import js.html.Element;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
@@ -25,9 +26,9 @@ class DOMRenderer extends AbstractRenderer {
 	private var element:DOMRenderContext;
 	
 	
-	public function new (width:Int, height:Int, element:DOMRenderContext) {
+	public function new (stage:Stage, element:DOMRenderContext) {
 		
-		super (width, height);
+		super (stage);
 		
 		this.element = element;
 		
@@ -69,9 +70,9 @@ class DOMRenderer extends AbstractRenderer {
 		#if (js && html5)
 		var style = displayObject.__style;
 		
-		if (setTransform && displayObject.__worldTransformChanged) {
+		if (setTransform && displayObject.__renderTransformChanged) {
 			
-			style.setProperty (renderSession.transformProperty, displayObject.__worldTransform.to3DString (renderSession.roundPixels), null);
+			style.setProperty (renderSession.transformProperty, displayObject.__renderTransform.to3DString (renderSession.roundPixels), null);
 			
 		}
 		
@@ -104,19 +105,24 @@ class DOMRenderer extends AbstractRenderer {
 				
 			} else {
 				
-				var clip = Rectangle.__temp;
-				var matrix = Matrix.__temp;
-				
-				matrix.copyFrom (displayObject.__worldTransform);
-				matrix.invert ();
-				
-				displayObject.__worldClip.__transform (clip, matrix);
+				var clip = displayObject.__worldClip;
 				style.setProperty ("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
 				
 			}
 			
 		}
 		#end
+		
+	}
+	
+	
+	public override function clear ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderDOM (stage, renderSession);
+			
+		}
 		
 	}
 	
@@ -134,16 +140,19 @@ class DOMRenderer extends AbstractRenderer {
 		renderSession.element.appendChild (element);
 		
 		displayObject.__worldAlphaChanged = true;
-		displayObject.__worldClipChanged = true;
-		displayObject.__worldTransformChanged = true;
+		displayObject.__renderTransformChanged = true;
 		displayObject.__worldVisibleChanged = true;
+		displayObject.__worldClipChanged = true;
+		displayObject.__worldClip = null;
 		displayObject.__worldZ = -1;
 		
 	}
 	#end
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function render ():Void {
+		
+		renderSession.allowSmoothing = (stage.quality != LOW);
 		
 		if (!stage.__transparent) {
 			
@@ -157,6 +166,14 @@ class DOMRenderer extends AbstractRenderer {
 		
 		renderSession.z = 1;
 		stage.__renderDOM (renderSession);
+		
+	}
+	
+	
+	public static function updateClip (displayObject:DisplayObject, renderSession:RenderSession):Void {
+		
+		var maskManager:DOMMaskManager = cast renderSession.maskManager;
+		maskManager.updateClip (displayObject);
 		
 	}
 	

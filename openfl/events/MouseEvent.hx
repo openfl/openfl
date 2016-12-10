@@ -61,6 +61,9 @@ class MouseEvent extends Event {
 		this.commandKey = commandKey;
 		this.clickCount = clickCount;
 		
+		stageX = Math.NaN;
+		stageY = Math.NaN;
+		
 	}
 	
 	

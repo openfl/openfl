@@ -1,7 +1,11 @@
 package openfl.display;
 
 
+import haxe.Json;
+import haxe.Unserializer;
 import lime.system.BackgroundWorker;
+import openfl._internal.swf.SWFLiteLibrary;
+import openfl._internal.swf.SWFLite;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
@@ -10,7 +14,15 @@ import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
+import openfl.Assets;
 
+#if (js && html5)
+import js.html.ScriptElement;
+import js.Browser;
+#end
+
+@:access(lime.Assets)
+@:access(openfl._internal.swf.SWFLiteLibrary)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.events.Event)
 
@@ -20,9 +32,6 @@ class Loader extends DisplayObjectContainer {
 	
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
-	
-	private var mImage:BitmapData;
-	private var mShape:Shape;
 	
 	
 	public function new () {
@@ -36,7 +45,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function close ():Void {
 		
-		openfl.Lib.notImplemented ("Loader.close");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
@@ -58,18 +67,18 @@ class Loader extends DisplayObjectContainer {
 			
 		}
 		
-		var transparent = true;
-		
 		contentLoaderInfo.url = request.url;
 		
 		if (request.contentType == null || request.contentType == "") {
 			
 			contentLoaderInfo.contentType = switch (extension) {
 				
+				case "json": "application/json";
 				case "swf": "application/x-shockwave-flash";
-				case "jpg", "jpeg": transparent = false; "image/jpeg";
+				case "jpg", "jpeg": "image/jpeg";
 				case "png": "image/png";
 				case "gif": "image/gif";
+				case "js": "application/javascript";
 				default: "application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
 				
 			}
@@ -77,6 +86,148 @@ class Loader extends DisplayObjectContainer {
 		} else {
 			
 			contentLoaderInfo.contentType = request.contentType;
+			
+		}
+		
+		if (contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
+			
+			#if (js && html5)
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (e) {
+				
+				contentLoaderInfo.content = new Sprite ();
+				addChild (contentLoaderInfo.content);
+				
+				//var script:ScriptElement = cast Browser.document.createElement ("script");
+				//script.innerHTML = loader.data;
+				//Browser.document.head.appendChild (script);
+				
+				untyped __js__ ("eval") ('(function () {' + loader.data + '})()');
+				
+				var event = new Event (Event.COMPLETE);
+				event.target = contentLoaderInfo;
+				event.currentTarget = contentLoaderInfo;
+				contentLoaderInfo.dispatchEvent (event);
+				
+			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+				
+				BitmapData_onError (e);
+				
+			});
+			loader.dataFormat = URLLoaderDataFormat.TEXT;
+			loader.load (request);
+			#else
+			BitmapData_onError (null);
+			#end
+			
+			return;
+			
+		} else if (contentLoaderInfo.contentType.indexOf ("/json") > -1) {
+			
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (e) {
+				
+				var info = Json.parse (loader.data);
+				var library:SWFLiteLibrary = cast Type.createInstance (Type.resolveClass (info.type), [ null ]/*info.args*/);
+				
+				Assets.registerLibrary (info.name, library);
+				
+				var manifest:Array<Dynamic> = cast Unserializer.run (info.manifest);
+				var assetType:AssetType;
+				
+				var basePath = request.url;
+				basePath = StringTools.replace (basePath, "\\", "/");
+				var parts = basePath.split ("/");
+				parts.pop ();
+				parts.pop ();
+				basePath = parts.join ("/");
+				
+				var libraryData:String = null;
+				
+				var loaded = -1;
+				var total = 0;
+				
+				var checkLoaded = function () {
+					
+					if (loaded >= total) {
+						
+						library.swf = SWFLite.unserialize (libraryData);
+						
+						contentLoaderInfo.content = library.getMovieClip ("");
+						addChild (contentLoaderInfo.content);
+						
+						var event = new Event (Event.COMPLETE);
+						event.target = contentLoaderInfo;
+						event.currentTarget = contentLoaderInfo;
+						contentLoaderInfo.dispatchEvent (event);
+						
+					}
+					
+				}
+				
+				for (asset in manifest) {
+					
+					if (!Assets.exists (asset.id)) {
+						
+						assetType = asset.type;
+						
+						switch (assetType) {
+							
+							case IMAGE:
+								
+								total++;
+								
+								BitmapData.fromFile (basePath + "/" + asset.path, function (bitmapData) {
+									
+									loaded++;
+									checkLoaded ();
+									
+									Assets.cache.setBitmapData (asset.path, bitmapData);
+									
+								}, function () BitmapData_onError (null));
+							
+							case TEXT:
+								
+								total++;
+								
+								var textLoader = new URLLoader ();
+								textLoader.addEventListener (Event.COMPLETE, function (_) {
+									
+									libraryData = textLoader.data;
+									
+									loaded++;
+									checkLoaded ();
+									
+								});
+								textLoader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+									
+									BitmapData_onError (e);
+									
+								});
+								textLoader.dataFormat = URLLoaderDataFormat.TEXT;
+								textLoader.load (new URLRequest (basePath + "/" + asset.path));
+							
+							default:
+								
+							
+						}
+						
+					}
+					
+				}
+				
+				loaded++;
+				checkLoaded ();
+				
+			});
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) {
+				
+				BitmapData_onError (e);
+				
+			});
+			loader.dataFormat = URLLoaderDataFormat.TEXT;
+			loader.load (request);
 			
 		}
 		
@@ -177,7 +328,7 @@ class Loader extends DisplayObjectContainer {
 	
 	public function unloadAndStop (gc:Bool = true):Void {
 		
-		openfl.Lib.notImplemented ("Loader.unloadAndStop");
+		openfl.Lib.notImplemented ();
 		
 	}
 	
@@ -193,7 +344,7 @@ class Loader extends DisplayObjectContainer {
 		
 		contentLoaderInfo.content = new Bitmap (bitmapData);
 		content = contentLoaderInfo.content;
-		addChild (contentLoaderInfo.content);
+		addChild (content);
 		
 		var event = new Event (Event.COMPLETE);
 		event.target = contentLoaderInfo;

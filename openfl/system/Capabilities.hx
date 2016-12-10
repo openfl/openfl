@@ -2,6 +2,7 @@ package openfl.system;
 
 
 import haxe.macro.Compiler;
+import lime.system.Locale;
 
 
 @:final class Capabilities {
@@ -24,22 +25,22 @@ import haxe.macro.Compiler;
 	public static var hasVideoEncoder (default, null) = false;
 	public static var isDebugger (default, null) = #if debug true #else false #end;
 	public static var isEmbeddedInAcrobat (default, null) = false;
-	public static var language (get, null):String;
+	public static var language (get, never):String;
 	public static var localFileReadDisable (default, null) = #if html5 true #else false #end;
 	public static var manufacturer (default, null) = "OpenFL Contributors";
 	public static var maxLevelIDC (default, null) = 0;
-	public static var os (get, null):String;
-	public static var pixelAspectRatio (get, null):Float;
+	public static var os (get, never):String;
+	public static var pixelAspectRatio (get, never):Float;
 	public static var playerType (default, null) = "OpenFL";
 	public static var screenColor (default, null) = "color";
-	public static var screenDPI (get, null):Float;
-	public static var screenResolutionX (get, null):Float;
-	public static var screenResolutionY (get, null):Float;
+	public static var screenDPI (get, never):Float;
+	public static var screenResolutionX (get, never):Float;
+	public static var screenResolutionY (get, never):Float;
 	public static var serverString (default, null) = ""; // TODO
 	public static var supports32BitProcesses (default, null) = #if sys true #else false #end;
 	public static var supports64BitProcesses (default, null) = #if desktop true #else false #end; // TODO
 	public static var touchscreenType (default, null) = TouchscreenType.FINGER; // TODO
-	public static var version (get, null):String;
+	public static var version (get, never):String;
 	
 	
 	public static function hasMultiChannelAudio (type:String):Bool {
@@ -54,6 +55,53 @@ import haxe.macro.Compiler;
 	// Getters & Setters
 	
 	
+	
+	
+	private static function get_language ():String {
+		
+		var language = Locale.currentLocale.language;
+		
+		if (language != null) {
+			
+			language = language.toLowerCase ();
+			
+			switch (language) {
+				
+				case "cs", "da", "nl", "en", "fi", "fr", "de", "hu", "it", "ja", "ko", "nb", "pl", "pt", "ru", "es", "sv", "tr":
+					
+					return language;
+				
+				case "zh":
+					
+					var region = Locale.currentLocale.region;
+					
+					if (region != null) {
+						
+						switch (region.toUpperCase ()) {
+							
+							case "TW", "HANT":
+								
+								return "zh-TW";
+							
+							default:
+							
+						}
+						
+					}
+					
+					return "zh-CN";
+				
+				default:
+					
+					return "xu";
+				
+			}
+			
+		}
+		
+		return "en";
+	
+	}
 	
 	
 	private static inline function get_os ():String {
@@ -85,7 +133,13 @@ import haxe.macro.Compiler;
 	}
 	
 	
-	private static function get_pixelAspectRatio ():Float { return 1; }
+	private static function get_pixelAspectRatio ():Float {
+		
+		return 1;
+		
+	}
+	
+	
 	private static function get_screenDPI ():Float {
 		
 		var window = Lib.application.window;
@@ -146,7 +200,7 @@ import haxe.macro.Compiler;
 			
 			if (display != null) {
 				
-				resolutionY = display.currentMode.width;
+				resolutionY = display.currentMode.height;
 				
 			}
 			
@@ -160,21 +214,6 @@ import haxe.macro.Compiler;
 		
 		return stage.stageHeight;
 		
-	}
-	
-	
-	private static function get_language ():String {
-		
-		#if (js && html5)
-		
-		return untyped navigator.language;
-		
-		#else
-		
-		return "en-US";
-		
-		#end
-	
 	}
 	
 	

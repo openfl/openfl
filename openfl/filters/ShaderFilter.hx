@@ -1,6 +1,7 @@
 package openfl.filters;
 
 
+import openfl._internal.renderer.RenderSession;
 import openfl.display.Shader;
 
 
@@ -20,6 +21,8 @@ class ShaderFilter extends BitmapFilter {
 		
 		this.shader = shader;
 		
+		__numPasses = 1;
+		
 	}
 	
 	
@@ -31,6 +34,13 @@ class ShaderFilter extends BitmapFilter {
 		filter.rightExtension = rightExtension;
 		filter.topExtension = topExtension;
 		return filter;
+		
+	}
+	
+	
+	private override function __initShader (renderSession:RenderSession, pass:Int):Shader {
+		
+		return shader;
 		
 	}
 	

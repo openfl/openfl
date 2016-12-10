@@ -3,18 +3,26 @@ package openfl.display;
 
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.RenderSession;
+import openfl._internal.swf.SWFLite;
+import openfl._internal.symbols.ButtonSymbol;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
+import openfl.Vector;
 
+@:access(openfl._internal.symbols.SWFSymbol)
+@:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 
 
 class SimpleButton extends InteractiveObject {
 	
+	
+	private static var __initSWF:SWFLite;
+	private static var __initSymbol:ButtonSymbol;
 	
 	public var downState (default, set):DisplayObject;
 	public var enabled:Bool;
@@ -27,7 +35,9 @@ class SimpleButton extends InteractiveObject {
 	
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
+	private var __previousStates:Vector<DisplayObject>;
 	private var __soundTransform:SoundTransform;
+	private var __symbol:ButtonSymbol;
 	
 	
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
@@ -49,6 +59,49 @@ class SimpleButton extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
 		
 		__currentState = this.upState;
+		
+		if (__initSymbol != null) {
+			
+			var swf = __initSWF;
+			__symbol = __initSymbol;
+			
+			__initSWF = null;
+			__initSymbol = null;
+			
+			__fromSymbol (swf, __symbol);
+			
+		}
+		
+	}
+	
+	
+	private function __fromSymbol (swf:SWFLite, symbol:ButtonSymbol):Void {
+		
+		__symbol = symbol;
+		
+		if (symbol.downState != null) {
+			
+			downState = symbol.downState.__createObject (swf);
+			
+		}
+		
+		if (symbol.hitState != null) {
+			
+			hitTestState = symbol.hitState.__createObject (swf);
+			
+		}
+		
+		if (symbol.overState != null) {
+			
+			overState = symbol.overState.__createObject (swf);
+			
+		}
+		
+		if (symbol.upState != null) {
+			
+			upState = symbol.upState.__createObject (swf);
+			
+		}
 		
 	}
 	
@@ -191,7 +244,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -202,14 +255,14 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
+	private override function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		__currentState.__renderCairoMask (renderSession);
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -224,7 +277,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderCanvasMask (renderSession:RenderSession):Void {
+	private override function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		var bounds = new Rectangle ();
 		__getLocalBounds (bounds);
@@ -236,14 +289,21 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if !neko
 		
-		//if (!__renderable) return;
-		
 		renderSession.maskManager.pushObject (this);
+		
+		for (previousState in __previousStates) {
+			
+			previousState.__renderDOM (renderSession);
+			
+		}
+		
+		__previousStates.length = 0;
 		__currentState.__renderDOM (renderSession);
+		
 		renderSession.maskManager.popObject (this);
 		
 		#end
@@ -251,7 +311,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;
 		
@@ -266,6 +326,19 @@ class SimpleButton extends InteractiveObject {
 		
 		state.__updateTransforms (cacheTransform);
 		state.__updateChildren (false);
+		
+	}
+	
+	
+	private override function __setStageReference (stage:Stage):Void {
+		
+		super.__setStageReference (stage);
+		
+		if (__currentState != null) {
+			
+			__currentState.__setStageReference (stage);
+			
+		}
 		
 	}
 	
@@ -393,6 +466,36 @@ class SimpleButton extends InteractiveObject {
 			value.parent.removeChild (value);
 			
 		}
+		
+		#if (js && html5 && dom)
+		if (__previousStates == null) {
+			
+			__previousStates = new Vector<DisplayObject> ();
+			
+		}
+		
+		if (value != __currentState) {
+			
+			if (__currentState != null) {
+				
+				__currentState.__setStageReference (null);
+				__previousStates.push (__currentState);
+				
+			}
+			
+			var index = __previousStates.indexOf (value);
+			
+			if (index > -1) {
+				
+				__previousStates.splice (index, 1);
+				
+			}
+			
+			value.__setStageReference (stage);
+			value.__worldAlphaChanged = true;
+			
+		}
+		#end
 		
 		value.__renderParent = this;
 		return __currentState = value;

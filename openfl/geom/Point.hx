@@ -7,7 +7,10 @@ import lime.math.Vector2;
 class Point {
 	
 	
-	public var length (get, null):Float;
+	private static var __limeVector2:Vector2;
+	private static var __temp = new Point ();
+	
+	public var length (get, never):Float;
 	public var x:Float;
 	public var y:Float;
 	
@@ -120,7 +123,14 @@ class Point {
 	
 	private function __toLimeVector2 ():Vector2 {
 		
-		return new Vector2 (x, y);
+		if (__limeVector2 == null) {
+			
+			__limeVector2 = new Vector2 ();
+			
+		}
+		
+		__limeVector2.setTo (x, y);
+		return __limeVector2;
 		
 	}
 	

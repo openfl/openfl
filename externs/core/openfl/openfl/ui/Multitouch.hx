@@ -106,7 +106,7 @@ import openfl.Vector;
 	 * Indicates whether the current environment supports basic touch input, such
 	 * as a single finger tap. Touch events are listed in the TouchEvent class.
 	 */
-	public static var supportsTouchEvents (get, null):Bool;
+	public static var supportsTouchEvents (get, never):Bool;
 	
 	
 }

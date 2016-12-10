@@ -4,7 +4,7 @@ package openfl.errors;
 import haxe.CallStack;
 
 
-class Error {
+class Error #if openfl_dynamic implements Dynamic #end {
 	
 	
 	private static inline var DEFAULT_TO_STRING = "Error";

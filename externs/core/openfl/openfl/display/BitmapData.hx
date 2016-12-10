@@ -80,7 +80,26 @@ extern class BitmapData implements IBitmapDrawable {
 	 */
 	public var height (default, null):Int;
 	
-	public var image (get, never):Image;
+	/**
+	 * The Lime image that holds the pixels for the current image.
+	 * 
+	 * In Flash Player, this property is always <code>null</code>.
+	 */
+	public var image (get, null):Image;
+	
+	/**
+	 * Defines whether the bitmap image is readable. Hardware-only bitmap images
+	 * do not support <code>getPixels</code>, <code>setPixels</code> and other 
+	 * BitmapData methods, though they can still be used inside a Bitmap object 
+	 * or other display objects that do not need to modify the pixels.
+	 * 
+	 * As an exception to the rule, <code>bitmapData.draw</code> is supported for
+	 * non-readable bitmap images.
+	 * 
+	 * Since non-readable bitmap images do not have a software image buffer, they
+	 * will need to be recreated if the current hardware rendering context is lost.
+	 */
+	public var readable (default, null):Bool;
 	
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
@@ -293,6 +312,21 @@ extern class BitmapData implements IBitmapDrawable {
 	 * 
 	 */
 	public function dispose ():Void;
+	
+	
+	/**
+	 * Frees the backing Lime image buffer, if possible.
+	 * 
+	 * When using a software renderer, such as Flash Player or desktop targets
+	 * without OpenGL, the software buffer will be retained so that the BitmapData
+	 * will work properly. When using a hardware renderer, the Lime image
+	 * buffer will be available to garbage collection after a hardware texture
+	 * has been created internally.
+	 * 
+	 * <code>BitmapData.disposeImage()</code> will immediately change the value of 
+	 * the <code>readable</code> property to <code>false</code>.
+	 */
+	public function disposeImage ():Void;
 	
 	
 	/**

@@ -1,11 +1,21 @@
-package openfl; #if !macro
+package openfl;
 
 
+import haxe.PosInfos;
 import lime.system.System;
+import lime.utils.Log;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLRequest;
+
+#if swf
+#if flash
+import openfl._internal.swf.SWFLibrary;
+#else
+import openfl._internal.swf.SWFLiteLibrary; // workaround
+#end
+#end
 
 #if (js && html5)
 import js.Browser;
@@ -48,16 +58,6 @@ import js.Browser;
 	}
 	
 	
-	#if (js && html5)
-	@:keep @:expose("openfl.embed")
-	public static function embed (elementName:String, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
-		
-		System.embed (elementName, width, height, background, assetsPrefix);
-		
-	}
-	#end
-	
-	
 	#if flash
 	public static function eval (path:String):Dynamic {
 		
@@ -95,24 +95,24 @@ import js.Browser;
 			
 		}
 		
-		#if (js && html5)
-		Browser.window.open (request.url, target);
-		#elseif flash
+		#if flash
 		return flash.Lib.getURL (request, target);
-		#elseif desktop
-		lime.tools.helpers.ProcessHelper.openURL (request.url);
+		#else
+		System.openURL (request.url, target);
 		#end
 		
 	}
 	
 	
-	public static function notImplemented (api:String):Void {
+	public static function notImplemented (?posInfo:PosInfos):Void {
+		
+		var api = posInfo.className + "." + posInfo.methodName;
 		
 		if (!__sentWarnings.exists (api)) {
 			
 			__sentWarnings.set (api, true);
 			
-			trace ("Warning: " + api + " is not implemented");
+			Log.warn (posInfo.methodName + " is not implemented", posInfo);
 			
 		}
 		
@@ -172,31 +172,3 @@ import js.Browser;
 	
 	
 }
-
-
-#else
-
-
-import haxe.macro.Compiler;
-import haxe.macro.Context;
-
-
-class Lib {
-	
-	
-	public static function includeExterns ():Void {
-		
-		var childPath = Context.resolvePath ("extern/openfl");
-		
-		var parts = StringTools.replace (childPath, "\\", "/").split ("/");
-		parts.pop ();
-		
-		Compiler.addClassPath (parts.join ("/"));
-		
-	}
-	
-	
-}
-
-
-#end

@@ -21,7 +21,7 @@ class CanvasShape {
 		
 		if (graphics != null) {
 			
-			CanvasGraphics.render (graphics, renderSession, shape.__worldTransform);
+			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
 			
 			var bounds = graphics.__bounds;
 			var width = graphics.__width;
@@ -30,7 +30,7 @@ class CanvasShape {
 			if (graphics.__canvas != null) {
 				
 				var context = renderSession.context;
-				var scrollRect = shape.scrollRect;
+				var scrollRect = shape.__scrollRect;
 				
 				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))) {
 					

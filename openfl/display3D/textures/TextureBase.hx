@@ -1,12 +1,18 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.utils.ImageCanvasUtil;
+import lime.graphics.Image;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
 import openfl._internal.stage3D.SamplerState;
 import openfl._internal.stage3D.GLUtils;
+import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
+
+@:access(openfl.display.BitmapData)
+@:access(openfl.display3D.Context3D)
 
 
 class TextureBase extends EventDispatcher {
@@ -18,12 +24,16 @@ class TextureBase extends EventDispatcher {
 	private var __compressedMemoryUsage:Int;
 	private var __context:Context3D;
 	private var __format:Int;
+	private var __height:Int;
 	private var __internalFormat:Int;
 	private var __memoryUsage:Int;
+	private var __optimizeForRenderToTexture:Bool;
 	private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
+	private var __streamingLevels:Int;
 	private var __textureID:GLTexture;
 	private var __textureTarget:Int;
+	private var __width:Int;
 	
 	
 	private function new (context:Context3D, target:Int) {
@@ -34,7 +44,6 @@ class TextureBase extends EventDispatcher {
 		__textureTarget = target;
 		
 		__textureID = GL.createTexture ();
-		
 		
 		#if !sys
 		
@@ -109,6 +118,73 @@ class TextureBase extends EventDispatcher {
 			__memoryUsage = 0;
 			
 		}
+		
+	}
+	
+	
+	private function __getImage (bitmapData:BitmapData):Image {
+		
+		var image =	bitmapData.image;
+		
+		if (!bitmapData.__isValid || image == null) {
+			
+			return null;
+			
+		}
+		
+		#if (js && html5)
+		ImageCanvasUtil.sync (image, false);
+		#end
+		
+		#if (js && html5)
+		
+		if (image.type != DATA && !image.premultiplied) {
+			
+			GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+			
+		} else if (!image.premultiplied && image.transparent) {
+			
+			GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+			image = image.clone ();
+			image.premultiplied = true;
+			
+		}
+		
+		// TODO: Some way to support BGRA on WebGL?
+		
+		if (image.format != RGBA32) {
+			
+			image = image.clone ();
+			image.format = RGBA32;
+			image.buffer.premultiplied = true;
+			#if openfl_power_of_two
+			image.powerOfTwo = true;
+			#end
+			
+		}
+		
+		#else
+		
+		if (#if openfl_power_of_two !image.powerOfTwo || #end (!image.premultiplied && image.transparent)) {
+			
+			image = image.clone ();
+			image.premultiplied = true;
+			#if openfl_power_of_two
+			image.powerOfTwo = true;
+			#end
+			
+		}
+		
+		#end
+		
+		return image;
+		
+	}
+	
+	
+	private function __getTexture ():GLTexture {
+		
+		return __textureID;
 		
 	}
 	

@@ -3,19 +3,21 @@ package openfl.display;
 
 import lime.graphics.cairo.Cairo;
 import lime.ui.MouseCursor;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
 import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.cairo.CairoShape;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.canvas.CanvasShape;
-import openfl._internal.renderer.dom.DOMShape;
+import openfl._internal.renderer.dom.DOMDisplayObject;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.GLShape;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventPhase;
 import openfl.events.EventDispatcher;
+import openfl.events.MouseEvent;
+import openfl.events.TouchEvent;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -40,7 +42,7 @@ import js.html.Element;
 @:access(openfl.geom.Rectangle)
 
 
-class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disable_dynamic_child_access implements Dynamic<DisplayObject> #end {
+class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openfl_dynamic implements Dynamic<DisplayObject> #end {
 	
 	
 	private static var __broadcastEvents = new Map<String, Array<DisplayObject>> ();
@@ -54,14 +56,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public var cacheAsBitmapMatrix (get, set):Matrix;
 	public var filters (get, set):Array<BitmapFilter>;
 	@:keep public var height (get, set):Float;
-	public var loaderInfo (default, null):LoaderInfo;
+	public var loaderInfo (get, never):LoaderInfo;
 	public var mask (get, set):DisplayObject;
-	public var mouseX (get, null):Float;
-	public var mouseY (get, null):Float;
+	public var mouseX (get, never):Float;
+	public var mouseY (get, never):Float;
 	public var name (get, set):String;
 	public var opaqueBackground:Null <Int>;
 	public var parent (default, null):DisplayObjectContainer;
-	public var root (get, null):DisplayObject;
+	public var root (get, never):DisplayObject;
 	@:keep public var rotation (get, set):Float;
 	public var scale9Grid:Rectangle;
 	@:keep public var scaleX (get, set):Float;
@@ -74,9 +76,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	@:keep public var x (get, set):Float;
 	@:keep public var y (get, set):Float;
 	
-	public var __worldColorTransform:ColorTransform;
-	public var __worldTransform:Matrix;
-	
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
@@ -88,6 +87,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __graphics:Graphics;
 	private var __interactive:Bool;
 	private var __isMask:Bool;
+	private var __loaderInfo:LoaderInfo;
 	private var __mask:DisplayObject;
 	private var __name:String;
 	private var __objectTransform:Transform;
@@ -95,6 +95,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __renderDirty:Bool;
 	private var __renderParent:DisplayObject;
 	private var __renderTransform:Matrix;
+	private var __renderTransformCache:Matrix;
+	private var __renderTransformChanged:Bool;
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
@@ -106,8 +108,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	private var __worldAlphaChanged:Bool;
 	private var __worldClip:Rectangle;
 	private var __worldClipChanged:Bool;
-	private var __worldTransformCache:Matrix;
-	private var __worldTransformChanged:Bool;
+	private var __worldColorTransform:ColorTransform;
+	private var __worldTransform:Matrix;
 	private var __worldVisible:Bool;
 	private var __worldVisibleChanged:Bool;
 	private var __worldZ:Int;
@@ -176,6 +178,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
+	public override function dispatchEvent (event:Event):Bool {
+		
+		if (Std.is (event, MouseEvent)) {
+			
+			var mouseEvent:MouseEvent = cast event;
+			mouseEvent.stageX = __getRenderTransform ().__transformX (mouseEvent.localX, mouseEvent.localY);
+			mouseEvent.stageY = __getRenderTransform ().__transformY (mouseEvent.localX, mouseEvent.localY);
+			
+		} else if (Std.is (event, TouchEvent)) {
+			
+			var touchEvent:TouchEvent = cast event;
+			touchEvent.stageX = __getRenderTransform ().__transformX (touchEvent.localX, touchEvent.localY);
+			touchEvent.stageY = __getRenderTransform ().__transformY (touchEvent.localX, touchEvent.localY);
+			
+		}
+		
+		return super.dispatchEvent (event);
+		
+	}
+	
+	
 	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle {
 		
 		var matrix;
@@ -211,7 +234,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public function globalToLocal (pos:Point):Point {
 		
 		pos = pos.clone ();
-		__getWorldTransform ().__transformInversePoint (pos);
+		__getRenderTransform ().__transformInversePoint (pos);
 		return pos;
 		
 	}
@@ -235,23 +258,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool {
 		
-		if (parent != null) {
+		if (stage != null) {
 			
-			var bounds = new Rectangle ();
-			__getBounds (bounds, __getWorldTransform ());
+			return __hitTest (x, y, shapeFlag, null, false, this);
 			
-			return bounds.containsPoint (new Point (x, y));
+		} else {
+			
+			return false;
 			
 		}
-		
-		return false;
 		
 	}
 	
 	
 	public function localToGlobal (point:Point):Point {
 		
-		return __getWorldTransform ().transformPoint (point);
+		return __getRenderTransform ().transformPoint (point);
 		
 	}
 	
@@ -315,7 +337,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			
 		}
 		
-		return false;
+		return true;
+		
+	}
+	
+	
+	private function __dispatchChildren (event:Event):Bool {
+		
+		return __dispatchEvent (event);
 		
 	}
 	
@@ -428,12 +457,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 				
 			} else {
 				
-				while (current.parent != null) {
+				while (current != stage) {
 					
 					list.push (current);
 					current = current.parent;
 					
-					if (current.__transformDirty) {
+					if (current != stage && current.__transformDirty) {
 						
 						transformDirty = true;
 						
@@ -468,7 +497,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			if (!hitObject.visible || __isMask) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
-			if (__graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
+			if (__graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 				
 				if (stack != null && !interactiveOnly) {
 					
@@ -491,7 +520,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		
 		if (__graphics != null) {
 			
-			if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
+			if (__graphics.__hitTest (x, y, true, __getRenderTransform ())) {
 				
 				return true;
 				
@@ -515,18 +544,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	public function __renderCairo (renderSession:RenderSession):Void {
+	private function __renderCairo (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			CairoShape.render (this, renderSession);
-			
-		}
+		CairoDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
-	public function __renderCairoMask (renderSession:RenderSession):Void {
+	private function __renderCairoMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -537,18 +562,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	public function __renderCanvas (renderSession:RenderSession):Void {
+	private function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			CanvasShape.render (this, renderSession);
-			
-		}
+		CanvasDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
-	public function __renderCanvasMask (renderSession:RenderSession):Void {
+	private function __renderCanvasMask (renderSession:RenderSession):Void {
 		
 		if (__graphics != null) {
 			
@@ -559,24 +580,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
-	public function __renderDOM (renderSession:RenderSession):Void {
+	private function __renderDOM (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			DOMShape.render (this, renderSession);
-			
-		}
+		DOMDisplayObject.render (this, renderSession);
 		
 	}
 	
 	
-	public function __renderGL (renderSession:RenderSession):Void {
+	private function __renderGL (renderSession:RenderSession):Void {
 		
-		if (__graphics != null) {
-			
-			GLShape.render (this, renderSession);
-			
-		}
+		GLDisplayObject.render (this, renderSession);
 		
 	}
 	
@@ -589,6 +602,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			__worldRenderDirty++;
 			
 		}
+		
+	}
+	
+	
+	private function __setStageReference (stage:Stage):Void {
+		
+		this.stage = stage;
 		
 	}
 	
@@ -614,8 +634,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		
+		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
 		__updateTransforms ();
 		
 		if (updateChildren && __transformDirty) {
@@ -634,19 +653,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		if (!transformOnly) {
 			
 			#if dom
-			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
+			__renderTransformChanged = !__renderTransform.equals (__renderTransformCache);
 			
-			if (__worldTransformCache == null) {
+			if (__renderTransformCache == null) {
 				
-				__worldTransformCache = __worldTransform.clone ();
+				__renderTransformCache = __renderTransform.clone ();
 				
 			} else {
 				
-				__worldTransformCache.copyFrom (__worldTransform);
+				__renderTransformCache.copyFrom (__renderTransform);
 				
 			}
-			
-			var worldClip:Rectangle = null;
 			#end
 			
 			if (!__worldColorTransform.__equals (transform.colorTransform)) {
@@ -680,27 +697,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 				__worldAlphaChanged = (__worldAlpha != worldAlpha);
 				__worldAlpha = worldAlpha;
 				
-				if (__parent.__worldClip != null) {
-					
-					worldClip = __parent.__worldClip.clone ();
-					
-				}
-				
-				if (scrollRect != null) {
-					
-					var bounds = scrollRect.clone ();
-					bounds.__transform (bounds, __worldTransform);
-					
-					if (worldClip != null) {
-						
-						bounds.__contract (worldClip.x - scrollRect.x, worldClip.y - scrollRect.y, worldClip.width, worldClip.height);
-						
-					}
-					
-					worldClip = bounds;
-					
-				}
-				
 				#end
 				
 			} else {
@@ -714,21 +710,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 				
 				__worldAlphaChanged = (__worldAlpha != alpha);
 				
-				if (scrollRect != null) {
-					
-					worldClip = scrollRect.clone ();
-					worldClip.__transform (worldClip, __worldTransform);
-					
-				}
-				
 				#end
 				
 			}
-			
-			#if dom
-			__worldClipChanged = ((worldClip == null && __worldClip != null) || (worldClip != null && !worldClip.equals (__worldClip)));
-			__worldClip = worldClip;
-			#end
 			
 			if (updateChildren && __renderDirty) {
 				
@@ -743,8 +727,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	public function __updateChildren (transformOnly:Bool):Void {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
-		if (!__renderable && !__isMask) return;
+		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
 		__worldAlpha = alpha;
 		
 		if (__transformDirty) {
@@ -782,11 +765,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	public function __updateTransforms (overrideTransform:Matrix = null):Void {
 		
 		var overrided = overrideTransform != null;
-		var local = overrided ? overrideTransform.clone () : __transform;
+		var local = overrided ? overrideTransform : __transform;
 		
 		if (__worldTransform == null) {
 			
 			__worldTransform = new Matrix ();
+			
+		}
+		
+		if (__renderTransform == null) {
+			
+			__renderTransform = new Matrix ();
 			
 		}
 		
@@ -801,23 +790,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 			
+			parentTransform = parent.__renderTransform;
+			
+			__renderTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
+			__renderTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
+			__renderTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
+			__renderTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
+			__renderTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
+			__renderTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			
 		} else {
 			
 			__worldTransform.copyFrom (local);
+			__renderTransform.copyFrom (local);
 			
 		}
 		
 		if (__scrollRect != null) {
 			
-			__worldTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
-			
-		}
-		
-		__renderTransform.copyFrom (__worldTransform);
-		
-		if (stage != null) {
-			
-			__renderTransform.concat (stage.__displayMatrix);
+			__renderTransform.__translateTransformed (-__scrollRect.x, -__scrollRect.y);
 			
 		}
 		
@@ -962,6 +953,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	}
 	
 	
+	private function get_loaderInfo ():LoaderInfo {
+		
+		if (stage != null) {
+			
+			return Lib.current.__loaderInfo;
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
 	private function get_mask ():DisplayObject {
 		
 		return __mask;
@@ -1002,7 +1006,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return __getWorldTransform ().__transformInverseX (mouseX, mouseY);
+		return __getRenderTransform ().__transformInverseX (mouseX, mouseY);
 		
 	}
 	
@@ -1012,7 +1016,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
 		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
 		
-		return __getWorldTransform ().__transformInverseY (mouseX, mouseY);
+		return __getRenderTransform ().__transformInverseY (mouseX, mouseY);
 		
 	}
 	
@@ -1165,7 +1169,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if !disa
 	
 	private function get_scrollRect ():Rectangle {
 		
-		if ( __scrollRect == null ) return null;
+		if (__scrollRect == null) {
+			
+			return null;
+			
+		}
 		
 		return __scrollRect.clone();
 		

@@ -67,6 +67,8 @@ class VertexBuffer3D {
 	
 	public function uploadFromTypedArray (data:ArrayBufferView):Void {
 		
+		if (data == null) return;
+		
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		

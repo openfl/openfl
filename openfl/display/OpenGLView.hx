@@ -24,7 +24,7 @@ class OpenGLView extends DirectRenderer {
 	public static inline var CONTEXT_LOST = "glcontextlost";
 	public static inline var CONTEXT_RESTORED = "glcontextrestored";
 	
-	public static var isSupported (get, null):Bool;
+	public static var isSupported (get, never):Bool;
 	
 	private var __added:Bool;
 	private var __initialized:Bool;
@@ -43,25 +43,21 @@ class OpenGLView extends DirectRenderer {
 			__canvas.height = Lib.current.stage.stageHeight;
 			
 			var window = Lib.current.stage.window;
+			
 			var options = {
 				
-				alpha: false, 
-				premultipliedAlpha: false, 
-				antialias: false, 
-				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
-				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
+				alpha: (Reflect.hasField (window.config, "background") && window.config.background == null) ? true : false,
+				antialias: Reflect.hasField (window.config, "antialiasing") ? window.config.antialiasing > 0 : false,
+				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true,
+				premultipliedAlpha: true,
+				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false,
+				preserveDrawingBuffer: false
 				
-			}
+			};
 			
-			__context = cast __canvas.getContext ("webgl", options);
+			__context = cast __canvas.getContextWebGL (options);
 			
-			if (__context == null) {
-				
-				__context = cast __canvas.getContext ("experimental-webgl", options);
-				
-			}
-			
-			#if debug
+			#if webgl_debug
 			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 			#end
 			
@@ -85,7 +81,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		/*if (!__added) {
 			
@@ -101,7 +97,7 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		#if (js && html5)
 		if (stage != null && __worldVisible && __renderable) {
@@ -122,7 +118,7 @@ class OpenGLView extends DirectRenderer {
 						
 					}
 					
-					#if debug
+					#if webgl_debug
 					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
 					#end
 					
@@ -144,13 +140,13 @@ class OpenGLView extends DirectRenderer {
 				
 				var rect = null;
 				
-				if (scrollRect == null) {
+				if (__scrollRect == null) {
 					
 					rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
 					
 				} else {
 					
-					rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+					rect = new Rectangle (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
 					
 				}
 				
@@ -177,19 +173,19 @@ class OpenGLView extends DirectRenderer {
 	
 	
 	#if !flash
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (stage != null && __renderable) {
 			
 			var rect = null;
 			
-			if (scrollRect == null) {
+			if (__scrollRect == null) {
 				
 				rect = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
 				
 			} else {
 				
-				rect = new Rectangle (x + scrollRect.x, y + scrollRect.y, scrollRect.width, scrollRect.height);
+				rect = new Rectangle (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
 				
 			}
 			

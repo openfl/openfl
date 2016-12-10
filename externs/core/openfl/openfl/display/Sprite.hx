@@ -61,7 +61,7 @@ extern class Sprite extends DisplayObjectContainer {
 	 * Specifies the Graphics object that belongs to this sprite where vector
 	 * drawing commands can occur.
 	 */
-	public var graphics (get, null):Graphics;
+	public var graphics (get, never):Graphics;
 	
 	public var hitArea:Sprite;
 	

@@ -10,6 +10,9 @@
 	<meta id="viewport" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	
+	::if favicons::::foreach (favicons)::
+	<link rel="::__current__.rel::" type="::__current__.type::" href="::__current__.href::">::end::::end::
+	
 	::if linkedLibraries::::foreach (linkedLibraries)::
 	<script type="text/javascript" src="::__current__::"></script>::end::::end::
 	<script type="text/javascript" src="./::APP_FILE::.js"></script>

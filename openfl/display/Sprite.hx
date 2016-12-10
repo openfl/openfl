@@ -12,13 +12,14 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.geom.Point)
 
 
 class Sprite extends DisplayObjectContainer {
 	
 	
 	public var buttonMode:Bool;
-	public var graphics (get, null):Graphics;
+	public var graphics (get, never):Graphics;
 	public var hitArea:Sprite;
 	public var useHandCursor:Bool;
 	
@@ -29,7 +30,6 @@ class Sprite extends DisplayObjectContainer {
 		
 		buttonMode = false;
 		useHandCursor = true;
-		loaderInfo = LoaderInfo.create (null);
 		
 	}
 	
@@ -66,18 +66,21 @@ class Sprite extends DisplayObjectContainer {
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (hitArea != null) {
-
-			if (!hitArea.mouseEnabled)
-			{
+			
+			if (!hitArea.mouseEnabled) {
+				
 				hitArea.mouseEnabled = true;
 				var hitTest = hitArea.__hitTest (x, y, shapeFlag, null, true, hitObject);
 				hitArea.mouseEnabled = false;
-
-				if( hitTest ){
+				
+				if (hitTest) {
+					
 					stack[stack.length] = hitObject;
+					
 				}
-
+				
 				return hitTest;
+				
 			}
 			
 		} else {
@@ -85,11 +88,25 @@ class Sprite extends DisplayObjectContainer {
 			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
 			if (mask != null && !mask.__hitTestMask (x, y)) return false;
 			
+			if (__scrollRect != null) {
+				
+				var point = Point.__temp;
+				point.setTo (x, y);
+				__getRenderTransform ().__transformInversePoint (point);
+				
+				if (!__scrollRect.containsPoint (point)) {
+					
+					return false;
+					
+				}
+				
+			}
+			
 			if (super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
 				
 				return interactiveOnly;
 				
-			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getWorldTransform ())) {
+			} else if ((!interactiveOnly || mouseEnabled) && __graphics != null && __graphics.__hitTest (x, y, shapeFlag, __getRenderTransform ())) {
 				
 				if (stack != null) {
 					
@@ -114,7 +131,7 @@ class Sprite extends DisplayObjectContainer {
 			
 			return true;
 			
-		} else if (__graphics != null && __graphics.__hitTest (x, y, true, __getWorldTransform ())) {
+		} else if (__graphics != null && __graphics.__hitTest (x, y, true, __getRenderTransform ())) {
 			
 			return true;
 			

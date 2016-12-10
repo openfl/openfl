@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 
@@ -42,6 +43,23 @@ class Tileset {
 		__data.push (tileData);
 		
 		return __data.length - 1;
+		
+	}
+	
+	
+	public function clone ():Tileset {
+		
+		var tileset = new Tileset (bitmapData, null);
+		var rect = new Rectangle ();
+		
+		for (tileData in __data) {
+			
+			rect.setTo (tileData.x, tileData.y, tileData.width, tileData.height);
+			tileset.addRect (rect);
+			
+		}
+		
+		return tileset;
 		
 	}
 	
@@ -92,6 +110,7 @@ class Tileset {
 	public var x:Int;
 	public var y:Int;
 	
+	public var __bitmapData:BitmapData;
 	public var __uvHeight:Float;
 	public var __uvWidth:Float;
 	public var __uvX:Float;
@@ -120,6 +139,11 @@ class Tileset {
 			__uvY = y / bitmapData.height;
 			__uvWidth = (x + width) / bitmapData.width;
 			__uvHeight = (y + height) / bitmapData.height;
+			
+			#if flash
+			__bitmapData = new BitmapData (width, height);
+			__bitmapData.copyPixels (bitmapData, new Rectangle (x, y, width, height), new Point ());
+			#end
 			
 		}
 		

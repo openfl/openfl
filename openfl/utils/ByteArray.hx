@@ -3,6 +3,7 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 import haxe.io.BytesData;
+import haxe.io.FPHelper;
 import lime.utils.compress.Deflate;
 import lime.utils.compress.LZMA;
 import lime.utils.compress.Zlib;
@@ -64,6 +65,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromArrayBuffer (buffer:ArrayBuffer):ByteArray {
 		
+		if (buffer == null) return null;
+		
 		#if display
 		return null;
 		#elseif js
@@ -78,6 +81,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	
 	@:from @:noCompletion public static function fromBytes (bytes:Bytes):ByteArray {
+		
+		if (bytes == null) return null;
 		
 		#if display
 		
@@ -106,6 +111,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:from @:noCompletion public static function fromBytesData (bytesData:BytesData):ByteArray {
 		
+		if (bytesData == null) return null;
+		
 		#if display
 		return null;
 		#elseif flash
@@ -113,6 +120,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		#else
 		return ByteArrayData.fromBytes (Bytes.ofData (bytesData));
 		#end
+		
+	}
+	
+	
+	public static function fromFile (path:String):ByteArray {
+		
+		return LimeBytes.readFile (path);
 		
 	}
 	
@@ -371,28 +385,25 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function readDouble ():Float {
 		
-		if (position + 8 > length) {
+		var ch1 = readInt ();
+		var ch2 = readInt ();
+		
+		if (endian == LITTLE_ENDIAN) {
 			
-			throw new EOFError ();
+			return FPHelper.i64ToDouble (ch1, ch2);
+			
+		} else {
+			
+			return FPHelper.i64ToDouble (ch2, ch1);
 			
 		}
-		
-		position += 8;
-		return getDouble (position - 8);
 		
 	}
 	
 	
 	public function readFloat ():Float {
 		
-		if (position + 4 > length) {
-			
-			throw new EOFError ();
-			
-		}
-		
-		position += 4;
-		return getFloat (position - 4);
+		return FPHelper.i32ToFloat (readInt ());
 		
 	}
 	
@@ -526,6 +537,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		position += length;
 		
+		
 		return getString (position - length, length);
 		
 	}
@@ -596,18 +608,27 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public function writeDouble (value:Float):Void {
 		
-		__resize (position + 8);
-		setDouble (position, value);
-		position += 8;
+		var int64 = FPHelper.doubleToI64 (value);
+		
+		if (endian == LITTLE_ENDIAN) {
+			
+			writeInt (int64.low);
+			writeInt (int64.high);
+			
+		} else {
+			
+			writeInt (int64.high);
+			writeInt (int64.low);
+			
+		}
 		
 	}
 	
 	
 	public function writeFloat (value:Float):Void {
 		
-		__resize (position + 4);
-		setFloat (position, value);
-		position += 4;
+		var int = FPHelper.floatToI32 (value);
+		writeInt (int);
 		
 	}
 	
@@ -618,17 +639,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		if (endian == LITTLE_ENDIAN) {
 			
-			set (position++, value);
-			set (position++, value >> 8);
-			set (position++, value >> 16);
-			set (position++, value >> 24);
+			set (position++, value & 0xFF);
+			set (position++, (value >> 8) & 0xFF);
+			set (position++, (value >> 16) & 0xFF);
+			set (position++, (value >> 24) & 0xFF);
 			
 		} else {
 			
-			set (position++, value >> 24);
-			set (position++, value >> 16);
-			set (position++, value >> 8);
-			set (position++, value);
+			set (position++, (value >> 24) & 0xFF);
+			set (position++, (value >> 16) & 0xFF);
+			set (position++, (value >> 8) & 0xFF);
+			set (position++, value & 0xFF);
 			
 		}
 		

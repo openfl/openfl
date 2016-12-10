@@ -3,6 +3,7 @@ package openfl._internal.renderer.cairo;
 
 import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
@@ -37,6 +38,7 @@ class CairoGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
+	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
@@ -97,7 +99,7 @@ class CairoGraphics {
 				var x = matrix.tx + graphics.__bounds.x;
 				var y = matrix.ty + graphics.__bounds.y;
 				
-				pattern = CairoPattern.createRadial (x, y, 0, x, y, (point.x - matrix.tx) / 2);
+				pattern = CairoPattern.createRadial (x, y, 0, x, y, Math.abs ((point.x - matrix.tx) / 2));
 			
 			case LINEAR:
 				
@@ -143,9 +145,10 @@ class CairoGraphics {
 	}
 	
 	
-	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool):CairoPattern {
+	private static function createImagePattern (bitmapFill:BitmapData, matrix:Matrix, bitmapRepeat:Bool, smooth:Bool):CairoPattern {
 		
 		var pattern = CairoPattern.createForSurface (bitmapFill.getSurface ());
+		pattern.filter = (smooth && allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 		
 		if (bitmapRepeat) {
 			
@@ -455,6 +458,12 @@ class CairoGraphics {
 			}
 			
 		}
+
+		if ( !skipT ) {
+
+			return { max: max, uvt: uvt };
+		
+		}		
 		
 		var result = new Vector<Float> ();
 		
@@ -466,7 +475,7 @@ class CairoGraphics {
 				
 			}
 			
-			result.push ((uvt[t - 1] / max));
+			result.push (uvt[t - 1]);
 			
 		}
 		
@@ -676,14 +685,14 @@ class CairoGraphics {
 					}
 					
 					cairo.moveTo (positionX - offsetX, positionY - offsetY);
-					strokePattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
+					strokePattern = createImagePattern (c.bitmap, c.matrix, c.repeat, c.smooth);
 					
 					hasStroke = true;
 				
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
-					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
+					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat, c.smooth);
 					
 					bitmapFill = c.bitmap;
 					bitmapRepeat = c.repeat;
@@ -742,6 +751,7 @@ class CairoGraphics {
 					
 					var width = 0;
 					var height = 0;
+					var currentMatrix = graphics.__renderTransform.__toMatrix3 ();
 					
 					if (!colorFill) {
 						
@@ -876,6 +886,13 @@ class CairoGraphics {
 							
 						}
 						
+						x1*=currentMatrix.a;
+						x2*=currentMatrix.a;
+						x3*=currentMatrix.a;
+						y1*=currentMatrix.d;
+						y2*=currentMatrix.d;
+						y3*=currentMatrix.d;
+
 						t1 = - (uvy1 * (x3 - x2) - uvy2 * x3 + uvy3 * x2 + (uvy2 - uvy3) * x1) / denom;
 						t2 = (uvy2 * y3 + uvy1 * (y2 - y3) - uvy3 * y2 + (uvy3 - uvy2) * y1) / denom;
 						t3 = (uvx1 * (x3 - x2) - uvx2 * x3 + uvx3 * x2 + (uvx2 - uvx3) * x1) / denom;
@@ -993,9 +1010,10 @@ class CairoGraphics {
 		#if lime_cairo
 		
 		CairoGraphics.graphics = graphics;
+		CairoGraphics.allowSmoothing = renderSession.allowSmoothing;
 		graphics.__update ();
 		
-		if (!graphics.__dirty) return;
+		if (!graphics.__dirty || graphics.__managed) return;
 		
 		bounds = graphics.__bounds;
 		

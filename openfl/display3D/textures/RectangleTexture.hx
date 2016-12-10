@@ -14,12 +14,6 @@ import openfl.utils.ByteArray;
 @:final class RectangleTexture extends TextureBase {
 	
 	
-	//private var __format:Context3DTextureFormat;
-	private var __height:Int;
-	private var __optimizeForRenderToTexture:Bool;
-	private var __width:Int;
-	
-	
 	private function new (context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool) {
 		
 		super (context, GL.TEXTURE_2D);
@@ -38,16 +32,9 @@ import openfl.utils.ByteArray;
 		
 		if (source == null) return;
 		
-		var image = source.image;
+		var image = __getImage (source);
 		
 		if (image == null) return;
-		
-		if (!image.premultiplied && image.transparent) {
-			
-			image = image.clone ();
-			image.premultiplied = true;
-			
-		}
 		
 		uploadFromTypedArray (image.data);
 		

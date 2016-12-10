@@ -9,6 +9,7 @@ import openfl.display.Stage;
 
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 @:allow(openfl.display.Stage)
 
 
@@ -18,9 +19,9 @@ class CairoRenderer extends AbstractRenderer {
 	private var cairo:Cairo;
 	
 	
-	public function new (width:Int, height:Int, cairo:Cairo) {
+	public function new (stage:Stage, cairo:Cairo) {
 		
-		super (width, height);
+		super (stage);
 		
 		this.cairo = cairo;
 		
@@ -34,7 +35,20 @@ class CairoRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function clear ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCairo (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
+	public override function render ():Void {
+		
+		renderSession.allowSmoothing = (stage.quality != LOW);
 		
 		cairo.identityMatrix ();
 		
@@ -47,14 +61,6 @@ class CairoRenderer extends AbstractRenderer {
 		
 		stage.__renderCairo (renderSession);
 		
-	}
-
-
-	public function renderDisplayObject (object:DisplayObject):Void {
-
-		cairo.identityMatrix ();
-		object.__renderCairo (renderSession);
-
 	}
 	
 	

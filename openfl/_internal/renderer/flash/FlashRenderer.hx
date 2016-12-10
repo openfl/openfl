@@ -43,10 +43,13 @@ class FlashRenderer {
 }
 
 
+@:allow(openfl._internal.renderer.flash.FlashRenderer)
+
+
 interface IDisplayObject {
 	
 	
-	public function __renderFlash ():Void;
+	private function __renderFlash ():Void;
 	
 	
 }

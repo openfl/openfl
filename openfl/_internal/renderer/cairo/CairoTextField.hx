@@ -47,6 +47,9 @@ class CairoTextField {
 			
 			graphics.__bounds.copyFrom (bounds);
 			
+			graphics.__bounds.x += textField.__offsetX;
+			graphics.__bounds.y += textField.__offsetY;
+			
 		}
 		
 		graphics.__update ();
@@ -54,13 +57,16 @@ class CairoTextField {
 		var width = graphics.__width;
 		var height = graphics.__height;
 		
+		var renderable = (textEngine.border || textEngine.background || (textEngine.text != null && textEngine.text != ""));
+		
 		if (cairo != null) {
 			
 			var surface:CairoImageSurface = cast cairo.target;
 			
-			if (width != surface.width || height != surface.height) {
+			if (!renderable || (graphics.__dirty && (width != surface.width || height != surface.height))) {
 				
 				graphics.__cairo = null;
+				graphics.__bitmap = null;
 				graphics.__visible = false;
 				cairo = null;
 				
@@ -68,7 +74,7 @@ class CairoTextField {
 			
 		}
 		
-		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__dirty)) {
+		if (width <= 0 || height <= 0 || (!textField.__dirty && !graphics.__dirty) || !renderable) {
 			
 			textField.__dirty = false;
 			return;
@@ -81,6 +87,7 @@ class CairoTextField {
 			var surface = bitmap.getSurface ();
 			graphics.__cairo = new Cairo (surface);
 			graphics.__visible = true;
+			graphics.__managed = true;
 			
 			graphics.__bitmap = bitmap;
 			
@@ -166,21 +173,6 @@ class CairoTextField {
 			cairo.clip ();
 			
 			var text = textEngine.text;
-			
-			//if (textEngine.displayAsPassword) {
-				//
-				//var length = text.length;
-				//var mask = "";
-				//
-				//for (i in 0...length) {
-					//
-					//mask += "*";
-					//
-				//}
-				//
-				//text = mask;
-				//
-			//}
 			
 			var scrollX = -textField.scrollH;
 			var scrollY = 0.0;
@@ -329,6 +321,31 @@ class CairoTextField {
 				}
 				
 			}
+			
+		} else if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor) {
+			
+			var scrollX = -textField.scrollH;
+			var scrollY = 0.0;
+			
+			for (i in 0...textField.scrollV - 1) {
+				
+				scrollY -= textEngine.lineHeights[i];
+				
+			}
+			
+			var color = textField.defaultTextFormat.color;
+			var r = ((color & 0xFF0000) >>> 16) / 0xFF;
+			var g = ((color & 0x00FF00) >>> 8) / 0xFF;
+			var b = (color & 0x0000FF) / 0xFF;
+			
+			cairo.setSourceRGB (r, g, b);
+			
+			cairo.newPath ();
+			cairo.moveTo (scrollX + 2.5, scrollY + 2.5);
+			cairo.lineWidth = 1;
+			cairo.lineTo (scrollX + 2.5, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
+			cairo.stroke ();
+			cairo.closePath ();
 			
 		}
 		

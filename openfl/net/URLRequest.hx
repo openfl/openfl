@@ -1,9 +1,6 @@
 package openfl.net;
 
 
-import openfl.utils.ByteArray;
-
-
 @:final class URLRequest {
 	
 	
@@ -15,36 +12,17 @@ import openfl.utils.ByteArray;
 	public var userAgent:String;
 	
 	
-	public function new (inURL:String = null) {
+	public function new (url:String = null) {
 		
-		if (inURL != null) {
+		if (url != null) {
 			
-			url = inURL;
+			this.url = url;
 			
 		}
 		
 		requestHeaders = [];
 		method = URLRequestMethod.GET;
 		contentType = null; // "application/x-www-form-urlencoded";
-		
-	}
-	
-	
-	public function formatRequestHeaders ():Array<URLRequestHeader> {
-		
-		var res = requestHeaders;
-		if (res == null) res = [];
-		
-		if (method == URLRequestMethod.GET || data == null) return res;
-		
-		if (Std.is (data, String) || Std.is (data, ByteArrayData)) {
-			
-			res = res.copy ();
-			res.push (new URLRequestHeader ("Content-Type", contentType != null ? contentType : "application/x-www-form-urlencoded"));
-			
-		}
-		
-		return res;
 		
 	}
 	

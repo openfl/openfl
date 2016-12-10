@@ -26,8 +26,8 @@ class CanvasBitmap {
 			ImageCanvasUtil.convertToCanvas (bitmap.bitmapData.image);
 			
 			context.globalAlpha = bitmap.__worldAlpha;
-			var transform = bitmap.__worldTransform;
-			var scrollRect = bitmap.scrollRect;
+			var transform = bitmap.__renderTransform;
+			var scrollRect = bitmap.__scrollRect;
 			
 			if (renderSession.roundPixels) {
 				
@@ -39,7 +39,7 @@ class CanvasBitmap {
 				
 			}
 			
-			if (!bitmap.smoothing) {
+			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
 				untyped (context).mozImageSmoothingEnabled = false;
 				//untyped (context).webkitImageSmoothingEnabled = false;
@@ -58,7 +58,7 @@ class CanvasBitmap {
 				
 			}
 			
-			if (!bitmap.smoothing) {
+			if (!renderSession.allowSmoothing || !bitmap.smoothing) {
 				
 				untyped (context).mozImageSmoothingEnabled = true;
 				//untyped (context).webkitImageSmoothingEnabled = true;

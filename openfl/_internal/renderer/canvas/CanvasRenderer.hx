@@ -7,6 +7,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 
 @:access(openfl.display.Stage)
+@:access(openfl.display.Stage3D)
 
 
 class CanvasRenderer extends AbstractRenderer {
@@ -15,9 +16,9 @@ class CanvasRenderer extends AbstractRenderer {
 	private var context:CanvasRenderContext;
 	
 	
-	public function new (width:Int, height:Int, context:CanvasRenderContext) {
+	public function new (stage:Stage, context:CanvasRenderContext) {
 		
-		super (width, height);
+		super (stage);
 		
 		this.context = context;
 		
@@ -32,7 +33,20 @@ class CanvasRenderer extends AbstractRenderer {
 	}
 	
 	
-	public override function render (stage:Stage):Void {
+	public override function clear ():Void {
+		
+		for (stage3D in stage.stage3Ds) {
+			
+			stage3D.__renderCanvas (stage, renderSession);
+			
+		}
+		
+	}
+	
+	
+	public override function render ():Void {
+		
+		renderSession.allowSmoothing = (stage.quality != LOW);
 		
 		context.setTransform (1, 0, 0, 1, 0, 0);
 		context.globalAlpha = 1;

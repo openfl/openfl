@@ -56,6 +56,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__height = height;
 		#else
 		bitmapData = new BitmapData (width, height, true, 0);
+		this.smoothing = smoothing;
 		FlashRenderer.register (this);
 		#end
 		
@@ -184,10 +185,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		__getWorldTransform ();
+		__getRenderTransform ();
 		
-		var px = __worldTransform.__transformInverseX (x, y);
-		var py = __worldTransform.__transformInverseY (x, y);
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
 		
 		if (px > 0 && py > 0 && px <= __width && py <= __height) {
 			
@@ -208,21 +209,21 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	public override function __renderCairo (renderSession:RenderSession):Void {
+	private override function __renderCairo (renderSession:RenderSession):Void {
 		
 		CairoTilemap.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
+	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
 		CanvasTilemap.render (this, renderSession);
 		
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
+	private override function __renderDOM (renderSession:RenderSession):Void {
 		
 		DOMTilemap.render (this, renderSession);
 		
@@ -230,7 +231,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	
-	public function __renderFlash ():Void {
+	private function __renderFlash ():Void {
 		
 		FlashTilemap.render (this);
 		
@@ -238,7 +239,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	
 	
 	#if !flash
-	public override function __renderGL (renderSession:RenderSession):Void {
+	private override function __renderGL (renderSession:RenderSession):Void {
 		
 		GLTilemap.render (this, renderSession);
 		
@@ -256,14 +257,29 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function get_height ():Float {
 		
-		return __height;
+		return __height * Math.abs (scaleY);
 		
 	}
+	#end
 	
 	
+	#if !flash
 	private override function set_height (value:Float):Float {
 		
-		return __height = Std.int (value);
+		__height = Std.int (value);
+		return __height * Math.abs (scaleY);
+		
+	}
+	#else
+	@:setter(height) private function set_height (value:Float):Void {
+		
+		if (value != bitmapData.height) {
+			
+			var cacheSmoothing = smoothing;
+			bitmapData = new BitmapData (bitmapData.width, Std.int (value), true, 0);
+			smoothing = cacheSmoothing;
+			
+		}
 		
 	}
 	#end
@@ -280,14 +296,29 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function get_width ():Float {
 		
-		return __width;
+		return __width * Math.abs (scaleX);
 		
 	}
+	#end
 	
 	
+	#if !flash
 	private override function set_width (value:Float):Float {
 		
-		return __width = Std.int (value);
+		__width = Std.int (value);
+		return __width * Math.abs (scaleX);
+		
+	}
+	#else
+	@:setter(width) private function set_width (value:Float):Void {
+		
+		if (value != bitmapData.width) {
+			
+			var cacheSmoothing = smoothing;
+			bitmapData = new BitmapData (Std.int (value), bitmapData.height, true, 0);
+			smoothing = cacheSmoothing;
+			
+		}
 		
 	}
 	#end

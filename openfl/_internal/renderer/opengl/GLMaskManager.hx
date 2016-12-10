@@ -22,7 +22,7 @@ class GLMaskManager extends AbstractMaskManager {
 	private var clipRects:Array<Rectangle>;
 	private var gl:GLRenderContext;
 	private var numClipRects:Int;
-	
+	private var tempRect:Rectangle;
 	
 	
 	public function new (renderSession:RenderSession) {
@@ -33,6 +33,7 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		clipRects = new Array ();
 		numClipRects = 0;
+		tempRect = new Rectangle ();
 		
 	}
 	
@@ -48,9 +49,9 @@ class GLMaskManager extends AbstractMaskManager {
 	
 	public override function pushObject (object:DisplayObject, handleScrollRect:Bool = true):Void {
 		
-		if (handleScrollRect && object.scrollRect != null) {
+		if (handleScrollRect && object.__scrollRect != null) {
 			
-			pushRect (object.scrollRect, object.__renderTransform);
+			pushRect (object.__scrollRect, object.__renderTransform);
 			
 		}
 		
@@ -97,11 +98,7 @@ class GLMaskManager extends AbstractMaskManager {
 			
 		}
 		
-		var renderer:GLRenderer = cast renderSession.renderer;
-		
-		gl.enable (gl.SCISSOR_TEST);
-		gl.scissor (Math.floor (clipRect.x), Math.floor (renderer.windowHeight - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
-		
+		scissorRect (clipRect);
 		numClipRects++;
 		
 	}
@@ -122,7 +119,7 @@ class GLMaskManager extends AbstractMaskManager {
 			
 		}
 		
-		if (handleScrollRect && object.scrollRect != null) {
+		if (handleScrollRect && object.__scrollRect != null) {
 			
 			popRect ();
 			
@@ -135,17 +132,45 @@ class GLMaskManager extends AbstractMaskManager {
 		
 		if (numClipRects > 0) {
 			
-			var clipRect = clipRects[numClipRects - 1];
-			var renderer:GLRenderer = cast renderSession.renderer;
-			
-			gl.enable (gl.SCISSOR_TEST);
-			gl.scissor (Math.floor (clipRect.x), Math.floor (renderer.windowHeight - clipRect.y - clipRect.height), Math.ceil (clipRect.width), Math.ceil (clipRect.height));
-			
 			numClipRects--;
+			
+			if (numClipRects > 0) {
+				
+				scissorRect (clipRects[numClipRects - 1]);
+				
+			} else {
+				
+				scissorRect ();
+				
+			}
 			
 		}
 		
-		if (numClipRects == 0) {
+	}
+	
+	
+	private function scissorRect (rect:Rectangle = null):Void {
+		
+		if (rect != null) {
+			
+			var renderer:GLRenderer = cast renderSession.renderer;
+			
+			gl.enable (gl.SCISSOR_TEST);
+			
+			var clipRect = tempRect;
+			rect.__transform (clipRect, renderer.displayMatrix);
+			
+			var x = Math.floor (clipRect.x);
+			var y = Math.floor (renderer.height - clipRect.y - clipRect.height);
+			var width = Math.ceil (clipRect.width);
+			var height = Math.ceil (clipRect.height);
+			
+			if (width < 0) width = 0;
+			if (height < 0) height = 0;
+			
+			gl.scissor (x, y, width, height);
+			
+		} else {
 			
 			gl.disable (gl.SCISSOR_TEST);
 			

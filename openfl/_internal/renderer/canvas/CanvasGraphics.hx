@@ -40,6 +40,7 @@ class CanvasGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 	
+	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapStroke:BitmapData;
 	private static var bitmapRepeat:Bool;
@@ -89,11 +90,12 @@ class CanvasGraphics {
 	}
 	
 	
-	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool) {
+	private static function createBitmapFill (bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool) {
 		
 		#if (js && html5)
 		
 		ImageCanvasUtil.convertToCanvas (bitmap.image);
+		setSmoothing (smooth);
 		return context.createPattern (bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
 		
 		#else
@@ -106,7 +108,7 @@ class CanvasGraphics {
 	
 	
 	private static function createGradientPattern (type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float) {
-	
+		
 		#if (js && html5)
 		
 		var gradientFill = null;
@@ -117,7 +119,8 @@ class CanvasGraphics {
 				
 				if (matrix == null) matrix = new Matrix ();
 				var point = matrix.transformPoint (new Point (1638.4, 0));
-				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, (point.x - matrix.tx) / 2);
+				
+				gradientFill = context.createRadialGradient (matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, Math.abs ((point.x - matrix.tx) / 2));
 			
 			case LINEAR:
 				
@@ -240,10 +243,10 @@ class CanvasGraphics {
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
 		#if (js && html5)
-
+		
 		bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
-
+		
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0) {
 			
 			return false;
@@ -252,15 +255,35 @@ class CanvasGraphics {
 			
 			hitTesting = true;
 			
+			var renderTransform = graphics.__renderTransform;
+			
+			var px = renderTransform.__transformX (x, y);
+			var py = renderTransform.__transformY (x, y);
+			
+			x = px;
+			y = py;
+			
 			x -= bounds.x;
 			y -= bounds.y;
+			
+			//var width = graphics.__width;
+			//var height = graphics.__height;
+			//var canvas = graphics.__canvas;
 			
 			if (graphics.__canvas == null) {
 				
 				graphics.__canvas = cast Browser.document.createElement ("canvas");
 				graphics.__context = graphics.__canvas.getContext ("2d");
+				//canvas = graphics.__canvas;
 				
 			}
+			
+			//if (canvas.width != width || canvas.height != height) {
+				
+				//canvas.width = width;
+				//canvas.height = height;
+				
+			//}
 			
 			context = graphics.__context;
 			
@@ -478,6 +501,12 @@ class CanvasGraphics {
 			}
 			
 		}
+
+		if ( !skipT ) {
+
+			return { max: max, uvt: uvt };
+		
+		}
 		
 		var result = new Vector<Float> ();
 		
@@ -489,7 +518,7 @@ class CanvasGraphics {
 				
 			}
 			
-			result.push ((uvt[t - 1] / max));
+			result.push (uvt[t - 1]);
 			
 		}
 		
@@ -512,6 +541,8 @@ class CanvasGraphics {
 		var closeGap = false;
 		var startX = 0.0;
 		var startY = 0.0;
+		
+		setSmoothing (true);
 		
 		var data = new DrawCommandReader (commands);
 		
@@ -625,6 +656,7 @@ class CanvasGraphics {
 							
 						}
 						
+						setSmoothing (true);
 						hasStroke = true;
 						
 					}
@@ -641,6 +673,7 @@ class CanvasGraphics {
 					context.moveTo (positionX - offsetX, positionY - offsetY);
 					context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
+					setSmoothing (true);
 					hasStroke = true;
 				
 				case LINE_BITMAP_STYLE:
@@ -653,14 +686,15 @@ class CanvasGraphics {
 					}
 					
 					context.moveTo (positionX - offsetX, positionY - offsetY);
-					context.strokeStyle = createBitmapFill (c.bitmap, c.repeat);
+					context.strokeStyle = createBitmapFill (c.bitmap, c.repeat, c.smooth);
 					
 					hasStroke = true;
 				
 				case BEGIN_BITMAP_FILL:
 					
 					var c = data.readBeginBitmapFill ();
-					context.fillStyle = createBitmapFill (c.bitmap, true);
+					bitmapFill = c.bitmap;
+					context.fillStyle = createBitmapFill (c.bitmap, true, c.smooth);
 					hasFill = true;
 					
 					if (c.matrix != null) {
@@ -700,6 +734,7 @@ class CanvasGraphics {
 						}
 						
 						bitmapFill = null;
+						setSmoothing (true);
 						hasFill = true;
 						
 					}
@@ -710,6 +745,7 @@ class CanvasGraphics {
 					context.fillStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					
 					bitmapFill = null;
+					setSmoothing (true);
 					hasFill = true;
 				
 				case DRAW_RECT:
@@ -717,7 +753,7 @@ class CanvasGraphics {
 					var c = data.readDrawRect ();
 					var optimizationUsed = false;
 					
-					if (bitmapFill != null) {
+					if (bitmapFill != null && !hitTesting) {
 						
 						var st:Float = 0;
 						var sr:Float = 0;
@@ -833,6 +869,7 @@ class CanvasGraphics {
 			hitTesting = false;
 			
 			CanvasGraphics.graphics = graphics;
+			CanvasGraphics.allowSmoothing = renderSession.allowSmoothing;
 			bounds = graphics.__bounds;
 			
 			var width = graphics.__width;
@@ -1267,6 +1304,30 @@ class CanvasGraphics {
 			}
 			
 			data.destroy ();
+			
+		}
+		
+		#end
+		
+	}
+	
+	
+	private static function setSmoothing (smooth:Bool):Void {
+		
+		#if (js && html5)
+		
+		if (!allowSmoothing) {
+			
+			smooth = false;
+			
+		}
+		
+		if (untyped (context).imageSmoothingEnabled != smooth) {
+			
+			untyped (context).mozImageSmoothingEnabled = smooth;
+			//untyped (context).webkitImageSmoothingEnabled = smooth;
+			untyped (context).msImageSmoothingEnabled = smooth;
+			untyped (context).imageSmoothingEnabled = smooth;
 			
 		}
 		

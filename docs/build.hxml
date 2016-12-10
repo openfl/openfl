@@ -19,6 +19,7 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
+-D lime-cffi
 -D windows
 -D doc_gen
 ImportAll
@@ -34,6 +35,7 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
+-D lime-cffi
 -D mac
 -D doc_gen
 ImportAll
@@ -49,6 +51,7 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
+-D lime-cffi
 -D linux
 -D doc_gen
 ImportAll
@@ -64,6 +67,7 @@ ImportAll
 -neko obj/docs
 -D display
 -D native
+-D lime-cffi
 -D doc_gen
 ImportAll
 -lib lime
@@ -78,6 +82,7 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
+-D lime-cffi
 -D ios
 -D doc_gen
 ImportAll
@@ -93,6 +98,7 @@ ImportAll
 -cpp obj/docs
 -D display
 -D native
+-D lime-cffi
 -D android
 -D doc_gen
 ImportAll
@@ -108,6 +114,7 @@ ImportAll
 #-cpp obj/docs
 #-D display
 #-D native
+#-D lime-cffi
 #-D blackberry
 #-D doc_gen
 #ImportAll
@@ -123,6 +130,7 @@ ImportAll
 #-cpp obj/docs
 #-D display
 #-D native
+#-D lime-cffi
 #-D tizen
 #ImportAll
 #-lib lime

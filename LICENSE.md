@@ -22,18 +22,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
--------
-
-This product bundles SoundJS 0.6, which is available under an
-"MIT" license. For details, see [dependencies/soundjs.min.js](dependencies/soundjs.min.js).
-
--------
-
-Modifications and source-repository versions of Haxe core files are included in the
-[haxe/](haxe/) folder, which are available under an "MIT" license. For details, see
-https://github.com/haxefoundation/haxe
-
-Excerpts of the Adobe ActionScript 3.0 Reference are used, with modification,
-which is available under the "CC BY-NC-SA 3.0" license. For details, see
-http://creativecommons.org/licenses/by-nc-sa/3.0/

@@ -314,6 +314,18 @@ class DisplayObjectContainerTest {
 	}
 	
 	
+	@Test public function removeChildren () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.removeChildren;
+		
+		Assert.isNotNull (exists);
+		
+	}
+	
+	
 	@Test public function setChildIndex () {
 		
 		var sprite = new Sprite ();
@@ -338,6 +350,18 @@ class DisplayObjectContainerTest {
 			Assert.fail ("");
 			
 		} catch (e:Dynamic) {}
+		
+	}
+	
+	
+	@Test public function stopAllMovieClips () {
+		
+		// TODO: Confirm functionality
+		
+		var sprite = new Sprite ();
+		var exists = sprite.stopAllMovieClips;
+		
+		Assert.isNotNull (exists);
 		
 	}
 	
