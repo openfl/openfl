@@ -550,65 +550,65 @@ class TextField extends InteractiveObject {
 	
 	
 	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
-        if (endIndex > length || (endIndex == 0 && beginIndex > 0))
-            endIndex = length - 1;
-        
-        if (beginIndex < 0)
-            beginIndex = 0;
-        
-        if (__textEngine.textFormatRanges.length > 0)
-        {
-            var newFormatRanges = new Array<TextFormatRange>();
-            
-            for (i in 0...__textEngine.textFormatRanges.length)
-            {
-                var range = __textEngine.textFormatRanges[i];
-                if ((beginIndex > range.end && endIndex > range.start) || (beginIndex < range.start && endIndex < range.end))
-                {
-                    newFormatRanges.push(range);
-                    continue;
-                }
-                
-                var formatRange = new TextFormatRange(format, beginIndex, endIndex);
-                if (!(range.start < endIndex && range.end > beginIndex) || beginIndex == 0)
-                {
-                    newFormatRanges.push(formatRange);
-                    
-                    if (range.start < endIndex)
-                    {
-                        range.start = endIndex + 1 > length - 1 ? length - 1 : endIndex + 1;
-                    }
-                    else if (range.end > beginIndex)
-                    {
-                        range.end = beginIndex - 1 < 0 ? 0 : beginIndex - 1;
-                    }
-                    
-                    newFormatRanges.push(range);
-                }
-                else
-                {
-                    if (range.start < endIndex)
-                    {
-                        range.start = endIndex + 1 > length - 1 ? length - 1 : endIndex + 1;
-                        range.end = __textEngine.textFormatRanges[i + 1] != null ? __textEngine.textFormatRanges[i + 1].start - 1 : length;
-                    }
-                    
-                    var leftRange = new TextFormatRange(range.format, range.start, beginIndex - 1);
-                    newFormatRanges.push(leftRange);
-                    newFormatRanges.push(formatRange);
-                    newFormatRanges.push(range);
-                }
-            }
-            
-            __textEngine.textFormatRanges = newFormatRanges;
-        }
-        else
-        {
-            var formatRange = new TextFormatRange(format, beginIndex, endIndex);
-            __textEngine.textFormatRanges.push(formatRange);
-        }
+		if (endIndex > length || (endIndex == 0 && beginIndex > 0))
+		    endIndex = length - 1;
 
-        __layoutDirty = true;
+		if (beginIndex < 0)
+		    beginIndex = 0;
+
+		if (__textEngine.textFormatRanges.length > 0)
+		{
+		    var newFormatRanges = new Vector<TextFormatRange>();
+
+		    for (i in 0...__textEngine.textFormatRanges.length)
+		    {
+			var range = __textEngine.textFormatRanges[i];
+			if ((beginIndex > range.end && endIndex > range.start) || (beginIndex < range.start && endIndex < range.end))
+			{
+			    newFormatRanges.push(range);
+			    continue;
+			}
+
+			var formatRange = new TextFormatRange(format, beginIndex, endIndex);
+			if (!(range.start < endIndex && range.end > beginIndex) || beginIndex == 0)
+			{
+			    newFormatRanges.push(formatRange);
+
+			    if (range.start < endIndex)
+			    {
+				range.start = endIndex + 1 > length - 1 ? length - 1 : endIndex + 1;
+			    }
+			    else if (range.end > beginIndex)
+			    {
+				range.end = beginIndex - 1 < 0 ? 0 : beginIndex - 1;
+			    }
+
+			    newFormatRanges.push(range);
+			}
+			else
+			{
+			    if (range.start < endIndex)
+			    {
+				range.start = endIndex + 1 > length - 1 ? length - 1 : endIndex + 1;
+				range.end = __textEngine.textFormatRanges[i + 1] != null ? __textEngine.textFormatRanges[i + 1].start - 1 : length;
+			    }
+
+			    var leftRange = new TextFormatRange(range.format, range.start, beginIndex - 1);
+			    newFormatRanges.push(leftRange);
+			    newFormatRanges.push(formatRange);
+			    newFormatRanges.push(range);
+			}
+		    }
+
+		    __textEngine.textFormatRanges = newFormatRanges;
+		}
+		else
+		{
+		    var formatRange = new TextFormatRange(format, beginIndex, endIndex);
+		    __textEngine.textFormatRanges.push(formatRange);
+		}
+
+		__layoutDirty = true;
 		
 	}
 	
