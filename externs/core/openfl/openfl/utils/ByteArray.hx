@@ -126,7 +126,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	public static function fromFile (path:String):ByteArray {
 		
-		return LimeBytes.readFile (path);
+		return LimeBytes.fromFile (path);
+		
+	}
+	
+	
+	@:from @:noCompletion public static function fromLimeBytes (bytes:LimeBytes):ByteArray {
+		
+		return fromBytes (bytes);
 		
 	}
 	
@@ -176,13 +183,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:to @:noCompletion private static function toLimeBytes (byteArray:ByteArray):LimeBytes {
 		
-		#if display
-		return null;
-		#elseif flash
-		return LimeBytes.ofData (byteArray);
-		#else
-		return new LimeBytes (byteArray.length, (byteArray:ByteArrayData).getData ());
-		#end
+		return fromBytes (byteArray);
 		
 	}
 	
@@ -231,7 +232,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
-@:autoBuild(lime.Assets.embedByteArray())
+@:autoBuild(lime.utils.Assets.embedByteArray())
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	

@@ -88,43 +88,15 @@ class ApplicationMain {
 		var app = new openfl.display.Application ();
 		app.create (config);
 		
+		var library = new DefaultAssetLibrary ();
+		lime.utils.Assets.registerLibrary ("default", library);
+		
 		preloader = getPreloader ();
-		preloader.onComplete.add (registerLibrary);
 		app.setPreloader (preloader);
-		preloader.onComplete.add (init);
 		preloader.create (config);
-		
-		#if (js && html5)
-		var urls = [];
-		var types = [];
-		
-		::foreach assets::::if (embed)::
-		urls.push (::if (type == "font")::"::fontName::"::else::"::resourceName::"::end::);
-		::if (type == "image")::types.push (lime.Assets.AssetType.IMAGE);
-		::elseif (type == "binary")::types.push (lime.Assets.AssetType.BINARY);
-		::elseif (type == "text")::types.push (lime.Assets.AssetType.TEXT);
-		::elseif (type == "font")::types.push (lime.Assets.AssetType.FONT);
-		::elseif (type == "sound")::types.push (lime.Assets.AssetType.SOUND);
-		::elseif (type == "music")::types.push (lime.Assets.AssetType.MUSIC);
-		::else::types.push (null);::end::
-		::end::::end::
-		
-		if (config.assetsPrefix != null) {
-			
-			for (i in 0...urls.length) {
-				
-				if (types[i] != lime.Assets.AssetType.FONT) {
-					
-					urls[i] = config.assetsPrefix + urls[i];
-					
-				}
-				
-			}
-			
-		}
-		
-		preloader.load (urls, types);
-		#end
+		preloader.onComplete.add (init);
+		preloader.addLibrary (library);
+		preloader.load ();
 		
 		var result = app.exec ();
 		
@@ -231,25 +203,6 @@ class ApplicationMain {
 		if (total == 0) {
 			
 			start ();
-			
-		}
-		
-	}
-	
-	
-	private static function registerLibrary ():Void {
-		
-		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
-		
-		var classReference = Type.resolveClass ("DefaultAssetLibrary");
-		
-		if (classReference != null) {
-			
-			lime.Assets.registerLibrary ("default", Type.createInstance (classReference, []));
-			
-		} else {
-			
-			lime.utils.Log.warn ("Could not load DefaultAssetLibrary (class not found)");
 			
 		}
 		

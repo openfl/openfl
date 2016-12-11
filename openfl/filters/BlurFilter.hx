@@ -152,7 +152,9 @@ private class BlurShader extends Shader {
 		
 		super ();
 		
+		#if !macro
 		data.uRadius.value = [ 0, 0 ];
+		#end
 		
 	}
 	

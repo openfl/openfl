@@ -7,7 +7,8 @@ import lime.app.Promise;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
-import lime.Assets in LimeAssets;
+import lime.utils.AssetLibrary;
+import lime.utils.Assets in LimeAssets;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.BitmapData;
@@ -78,9 +79,9 @@ import openfl.Assets;
 	}
 	
 	
-	public override function load ():Future<lime.Assets.AssetLibrary> {
+	public override function load ():Future<lime.utils.AssetLibrary> {
 		
-		var promise = new Promise<lime.Assets.AssetLibrary> ();
+		var promise = new Promise<lime.utils.AssetLibrary> ();
 		
 		#if (swf_preload || swflite_preload)
 		

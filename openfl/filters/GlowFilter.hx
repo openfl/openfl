@@ -178,8 +178,10 @@ private class GlowShader extends Shader {
 		
 		super ();
 		
+		#if !macro
 		data.uRadius.value = [ 0, 0 ];
 		data.uColor.value = [ 0, 0, 0, 0 ];
+		#end
 		
 	}
 	

@@ -150,8 +150,10 @@ private class ColorMatrixShader extends Shader {
 		
 		super ();
 		
+		#if !macro
 		data.uMultipliers.value = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 ];
 		data.uOffsets.value = [ 0, 0, 0, 0 ];
+		#end
 		
 	}
 	

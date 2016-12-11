@@ -77,9 +77,9 @@ import lime.app.Promise;
 	}
 	
 	
-	public override function load ():Future<lime.Assets.AssetLibrary> {
+	public override function load ():Future<lime.utils.AssetLibrary> {
 		
-		var promise = new Promise<lime.Assets.AssetLibrary> ();
+		var promise = new Promise<lime.utils.AssetLibrary> ();
 		
 		context = new LoaderContext (false, ApplicationDomain.currentDomain, null);
 		context.allowCodeImport = true;

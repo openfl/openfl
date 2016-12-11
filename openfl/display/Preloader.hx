@@ -3,7 +3,7 @@ package openfl.display;
 
 import lime.app.Config;
 import lime.app.Preloader in LimePreloader;
-import lime.Assets;
+import lime.utils.AssetType;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
@@ -25,22 +25,6 @@ class Preloader extends LimePreloader {
 		
 		this.display = display;
 		
-	}
-	
-	
-	public override function create (config:Config):Void {
-		
-		super.create (config);
-		
-		#if (!js || !html5)
-		init ();
-		#end
-		
-	}
-	
-	
-	private function init ():Void {
-		
 		if (display != null) {
 			
 			display.addEventListener (Event.COMPLETE, display_onComplete);
@@ -51,34 +35,15 @@ class Preloader extends LimePreloader {
 	}
 	
 	
-	public override function load (urls:Array<String>, types:Array<AssetType>):Void {
-		
-		#if !flash
-		Lib.current.loaderInfo.__update (0, urls.length); // TODO: bytes
-		#end
-		
-		if (urls.length > 0) {
-			
-			init ();
-			
-		}
-		
-		super.load (urls, types);
-		
-	}
-	
-	
 	private override function start ():Void {
 		
 		ready = true;
 		
-		if (display != null) {
-			
-			#if !flash
-			Lib.current.loaderInfo.__complete ();
-			#end
-			
-		} else {
+		#if !flash
+		Lib.current.loaderInfo.__complete ();
+		#end
+		
+		if (display == null) {
 			
 			super.start ();
 			
