@@ -363,6 +363,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
+	#if as2_depth_accessors
+		public function getAssetPrefix() : String {
+			if ( !Reflect.hasField(this, "assetPrefix") ) {
+				if ( parent != null ) {
+					return parent.getAssetPrefix();
+				}
+				return "";
+			} else {
+				return Reflect.field(this, "assetPrefix");
+			}
+		}
+	#end
+
 	private inline function __getLocalBounds (rect:Rectangle):Void {
 
 		__getTransformedBounds (rect, __transform);
