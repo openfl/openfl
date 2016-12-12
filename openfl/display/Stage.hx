@@ -789,6 +789,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function update (deltaTime:Int):Void {
 
 		__deltaTime = deltaTime;
+		// :TRICKY: Update mouse each frame, to show the correct cursor at all times.
+		if ( !__calledOnMouseThisFrame) {
+			__onMouse (null, __mouseX, __mouseY, 0);
+		}
+		__calledOnMouseThisFrame = false;
 
 		__computeFlattenedChildren();
 	}
@@ -956,10 +961,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
+	private static var __calledOnMouseThisFrame = false;
 
 	private function __onMouse (type:String, x:Float, y:Float, button:Int):Void {
 
 		if (button > 2) return;
+
+		__calledOnMouseThisFrame = true;
 
 		__mouseX = x;
 		__mouseY = y;
