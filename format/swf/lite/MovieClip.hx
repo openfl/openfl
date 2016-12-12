@@ -1060,6 +1060,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 #if as2_depth_accessors
+
 	public function getNextHighestDepthExternal() : Int {
 		if (numChildren > 0) {
 			return __SWFDepthData.get(getChildAt(numChildren-1)) - 0x3FFE;
@@ -1069,6 +1070,10 @@ class MovieClip extends flash.display.MovieClip {
 
 	public function getDepth() : Int {
 		return cast(parent, MovieClip).__SWFDepthData.get(this);
+	}
+
+	public function getDepthExternal() : Int {
+		return getDepth()  - 0x3FFE;
 	}
 
 	public function addChildAtSwfDepthExternal(displayObject:DisplayObject, targetDepth:Int):Void {
