@@ -905,7 +905,7 @@ class Tools {
 				
 			} else {
 				
-				generatedPath = PathHelper.combine (targetDirectory, "/haxe/_generated");
+				generatedPath = PathHelper.combine (targetDirectory, "haxe/_generated");
 				
 			}
 			
