@@ -7,7 +7,8 @@ import lime.app.Promise;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
-import lime.Assets in LimeAssets;
+import lime.utils.AssetLibrary;
+import lime.utils.Assets in LimeAssets;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.BitmapData;
@@ -23,6 +24,7 @@ import openfl.Assets;
 @:keep class SWFLiteLibrary extends AssetLibrary {
 	
 	
+	private var id:String;
 	private var swf:SWFLite;
 	
 	
@@ -30,11 +32,7 @@ import openfl.Assets;
 		
 		super ();
 		
-		if (id != null) {
-			
-			swf = SWFLite.unserialize (Assets.getText (id));
-			
-		}
+		this.id = id;
 		
 		// Hack to include filter classes, macro.include is not working properly
 		
@@ -47,6 +45,8 @@ import openfl.Assets;
 	
 	public override function exists (id:String, type:String):Bool {
 		
+		if (swf == null) return false;
+		
 		if (id == "" && type == (cast AssetType.MOVIE_CLIP)) {
 			
 			return true;
@@ -55,7 +55,7 @@ import openfl.Assets;
 		
 		if (type == (cast AssetType.IMAGE) || type == (cast AssetType.MOVIE_CLIP)) {
 			
-			return swf.hasSymbol (id);
+			return (swf != null && swf.hasSymbol (id));
 			
 		}
 		
@@ -66,127 +66,167 @@ import openfl.Assets;
 	
 	public override function getImage (id:String):Image {
 		
-		return Image.fromBitmapData (swf.getBitmapData (id));
+		if (paths.exists (id)) {
+			
+			return super.getImage (id);
+			
+		} else {
+			
+			return (swf != null) ? Image.fromBitmapData (swf.getBitmapData (id)) : null;
+			
+		}
 		
 	}
 	
 	
 	public override function getMovieClip (id:String):MovieClip {
 		
-		return swf.createMovieClip (id);
+		return (swf != null) ? swf.createMovieClip (id) : null;
 		
 	}
 	
 	
-	public override function load ():Future<lime.Assets.AssetLibrary> {
+	public override function isLocal (id:String, type:String):Bool {
 		
-		var promise = new Promise<lime.Assets.AssetLibrary> ();
+		return true;
 		
-		#if (swf_preload || swflite_preload)
+	}
+	
+	
+	public override function load ():Future<lime.utils.AssetLibrary> {
 		
-		var bitmapSymbols:Array<BitmapSymbol> = [];
-		
-		for (symbol in swf.symbols) {
+		if (id != null) {
 			
-			if (Std.is (symbol, BitmapSymbol)) {
-				
-				bitmapSymbols.push (cast symbol);
-				
-			}
+			preload.set (id, true);
 			
 		}
 		
-		if (bitmapSymbols.length == 0) {
+		#if (js && html5)
+		for (id in paths.keys ()) {
 			
-			promise.complete (this);
+			preload.set (id, true);
 			
-		} else {
+		}
+		#end
+		
+		return super.load ().then (function (_) {
 			
-			var loaded = -1;
-			
-			var onLoad = function () {
+			if (id != null) {
 				
-				loaded++;
+				swf = SWFLite.unserialize (getText (id));
+				swf.library = this;
 				
-				promise.progress (loaded, bitmapSymbols.length);
+			}
+			
+			var promise = new Promise<lime.utils.AssetLibrary> ();
+			
+			#if (swf_preload || swflite_preload)
+			
+			var bitmapSymbols:Array<BitmapSymbol> = [];
+			
+			for (symbol in swf.symbols) {
 				
-				if (loaded == bitmapSymbols.length) {
+				if (Std.is (symbol, BitmapSymbol)) {
 					
-					promise.complete (this);
+					bitmapSymbols.push (cast symbol);
 					
 				}
 				
-			};
+			}
 			
-			for (symbol in bitmapSymbols) {
+			if (bitmapSymbols.length == 0) {
 				
-				if (Assets.cache.hasBitmapData (symbol.path)) {
+				promise.complete (this);
+				
+			} else {
+				
+				var loaded = -1;
+				
+				var onLoad = function () {
 					
-					onLoad ();
+					loaded++;
 					
-				} else {
+					promise.progress (loaded, bitmapSymbols.length);
 					
-					LimeAssets.loadImage (symbol.path, false).onComplete (function (image) {
+					if (loaded == bitmapSymbols.length) {
 						
-						if (image != null) {
+						promise.complete (this);
+						
+					}
+					
+				};
+				
+				for (symbol in bitmapSymbols) {
+					
+					if (Assets.cache.hasBitmapData (symbol.path)) {
+						
+						onLoad ();
+						
+					} else {
+						
+						LimeAssets.loadImage (symbol.path, false).onComplete (function (image) {
 							
-							if (symbol.alpha != null && symbol.alpha != "") {
+							if (image != null) {
 								
-								LimeAssets.loadImage (symbol.alpha, false).onComplete (function (alpha) {
+								if (symbol.alpha != null && symbol.alpha != "") {
 									
-									if (alpha != null) {
+									LimeAssets.loadImage (symbol.alpha, false).onComplete (function (alpha) {
 										
-										image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-										image.buffer.premultiplied = true;
+										if (alpha != null) {
+											
+											image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+											image.buffer.premultiplied = true;
+											
+											#if !sys
+											image.premultiplied = true;
+											#end
+											
+											var bitmapData = BitmapData.fromImage (image);
+											Assets.cache.setBitmapData (symbol.path, bitmapData);
+											
+											onLoad ();
+											
+										} else {
+											
+											promise.error ('Failed to load image alpha : ${symbol.alpha}');
+											
+										}
 										
-										#if !sys
-										image.premultiplied = true;
-										#end
-										
-										var bitmapData = BitmapData.fromImage (image);
-										Assets.cache.setBitmapData (symbol.path, bitmapData);
-										
-										onLoad ();
-										
-									} else {
-										
-										promise.error ('Failed to load image alpha : ${symbol.alpha}');
-										
-									}
+									}).onError (promise.error);
 									
-								}).onError (promise.error);
+								} else {
+									
+									var bitmapData = BitmapData.fromImage (image);
+									Assets.cache.setBitmapData (symbol.path, bitmapData);
+									onLoad ();
+									
+								}
 								
 							} else {
 								
-								var bitmapData = BitmapData.fromImage (image);
-								Assets.cache.setBitmapData (symbol.path, bitmapData);
-								onLoad ();
+								promise.error ('Failed to load image : ${symbol.path}');
 								
 							}
 							
-						} else {
-							
-							promise.error ('Failed to load image : ${symbol.path}');
-							
-						}
+						}).onError (promise.error);
 						
-					}).onError (promise.error);
+					}
 					
 				}
 				
+				onLoad ();
+				
 			}
 			
-			onLoad ();
+			#else
 			
-		}
-		
-		#else
-		
-		promise.complete (this);
-		
-		#end
-		
-		return promise.future;
+			promise.complete (this);
+			
+			#end
+			
+			return promise.future;
+			
+		});
 		
 	}
 	

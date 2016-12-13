@@ -24,7 +24,7 @@ class URLLoader extends EventDispatcher {
 	public var data:Dynamic;
 	public var dataFormat:URLLoaderDataFormat;
 	
-	private var __httpRequest:#if display Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
+	private var __httpRequest:#if (display || macro) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 	
 	
 	public function new (request:URLRequest = null) {
@@ -57,6 +57,7 @@ class URLLoader extends EventDispatcher {
 	
 	public function load (request:URLRequest):Void {
 		
+		#if !macro
 		if (dataFormat == BINARY) {
 			
 			var httpRequest = new HTTPRequest<ByteArray> ();
@@ -92,11 +93,12 @@ class URLLoader extends EventDispatcher {
 				});
 			
 		}
+		#end
 		
 	}
 	
 	
-	private function __prepareRequest (httpRequest:#if display Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
+	private function __prepareRequest (httpRequest:#if (display || macro) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void {
 		
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;

@@ -1,98 +1,51 @@
 package openfl.display;
 
 
+import lime.app.Config;
 import lime.app.Preloader in LimePreloader;
-import lime.Assets;
+import lime.utils.AssetType;
+import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.ProgressEvent;
 import openfl.Lib;
-import openfl.events.IEventDispatcher;
+
+@:access(openfl.display.LoaderInfo)
 
 
 class Preloader extends LimePreloader {
 	
 	
-	private var display:Dynamic;
-	private var displayComplete:Bool;
-	private var displayHasInit:Bool;
-	private var displayHasLoaded:Bool;
-	private var displayHasUpdate:Bool;
+	private var display:Sprite;
+	private var ready:Bool;
 	
 	
-	public function new (display:Dynamic = null) {
+	public function new (display:Sprite = null) {
 		
 		super ();
 		
 		this.display = display;
 		
-	}
-	
-	
-	private function init ():Void {
-		
-		if (!complete && display != null) {
+		if (display != null) {
 			
-			var classType = Type.getClass (display);
-			var fields = Type.getInstanceFields (classType);
-			
-			for (field in fields) {
-				
-				if (field == "onInit") displayHasInit = true;
-				if (field == "onUpdate") displayHasUpdate = true;
-				if (field == "onLoaded") displayHasLoaded = true;
-				
-			}
-			
-			if (Std.is (display, DisplayObject)) {
-				
-				Lib.current.addChild (display);
-				
-			}
-			
-			if (displayHasInit) {
-				
-				Reflect.callMethod (display, Reflect.field (display, "onInit"), []);
-				
-			}
+			display.addEventListener (Event.COMPLETE, display_onComplete, false, -1000);
+			Lib.current.addChild (display);
 			
 		}
-		
-	}
-	
-	
-	public override function load (urls:Array<String>, types:Array<AssetType>):Void {
-		
-		if (urls.length > 0) {
-			
-			init ();
-			
-		}
-		
-		super.load (urls, types);
 		
 	}
 	
 	
 	private override function start ():Void {
 		
-		if (displayHasLoaded) {
+		ready = true;
+		
+		#if !flash
+		Lib.current.loaderInfo.__complete ();
+		#end
+		
+		if (display != null) {
 			
-			if (Std.is (display, IEventDispatcher)) {
-				
-				(display:IEventDispatcher).addEventListener (Event.COMPLETE, display_onComplete);
-				
-			}
-			
-			Reflect.callMethod (display, Reflect.field (display, "onLoaded"), []);
-			
-			if (display != null && !Std.is (display, IEventDispatcher)) {
-				
-				display_onComplete (null);
-				
-			}
-			
-		} else if (display != null) {
-			
-			display_onComplete (null);
+			display.dispatchEvent (new Event (Event.COMPLETE, true, true));
 			
 		} else {
 			
@@ -105,9 +58,13 @@ class Preloader extends LimePreloader {
 	
 	private override function update (loaded:Int, total:Int):Void {
 		
-		if (displayHasUpdate) {
+		#if !flash
+		Lib.current.loaderInfo.__update (loaded, total);
+		#end
+		
+		if (display != null) {
 			
-			Reflect.callMethod (display, Reflect.field (display, "onUpdate"), [ loaded, total ]);
+			display.dispatchEvent (new ProgressEvent (ProgressEvent.PROGRESS, true, true, loaded, total));
 			
 		}
 		
@@ -123,13 +80,15 @@ class Preloader extends LimePreloader {
 	
 	@:noCompletion private function display_onComplete (event:Event):Void {
 		
-		if (display != null && Std.is (display, IEventDispatcher)) {
+		if (event.isDefaultPrevented ()) {
 			
-			(display:IEventDispatcher).removeEventListener (Event.COMPLETE, display_onComplete);
+			return;
 			
 		}
 		
-		if (Std.is (display, DisplayObject)) {
+		if (display != null) {
+			
+			display.removeEventListener (Event.COMPLETE, display_onComplete);
 			
 			if (display.parent == Lib.current) {
 				
@@ -137,12 +96,16 @@ class Preloader extends LimePreloader {
 				
 			}
 			
+			Lib.current.stage.focus = null;
+			display = null;
+			
 		}
 		
-		Lib.current.stage.focus = null;
-		display = null;
-		
-		super.start ();
+		if (ready) {
+			
+			super.start ();
+			
+		}
 		
 	}
 	
@@ -150,7 +113,7 @@ class Preloader extends LimePreloader {
 }
 
 
-@:dox(hide) class DefaultPreloader extends Sprite implements IPreloader {
+@:dox(hide) class DefaultPreloader extends Sprite {
 	
 	
 	private var endAnimation:Int;
@@ -202,6 +165,8 @@ class Preloader extends LimePreloader {
 		
 		startAnimation = Lib.getTimer () + 100;
 		endAnimation = startAnimation + 1000;
+		
+		addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 		
 	}
 	
@@ -257,6 +222,7 @@ class Preloader extends LimePreloader {
 	@:keep public function onLoaded ():Void {
 		
 		removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 		dispatchEvent (new Event (Event.COMPLETE));
 		
 	}
@@ -264,11 +230,17 @@ class Preloader extends LimePreloader {
 	
 	@:keep public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
 		
-		var percentLoaded = bytesLoaded / bytesTotal;
+		var percentLoaded = 0.0;
 		
-		if (percentLoaded > 1) {
+		if (bytesTotal > 0) {
 			
-			percentLoaded = 1;
+			percentLoaded = bytesLoaded / bytesTotal;
+			
+			if (percentLoaded > 1) {
+				
+				percentLoaded = 1;
+				
+			}
 			
 		}
 		
@@ -284,6 +256,31 @@ class Preloader extends LimePreloader {
 	
 	
 	
+	private function this_onAddedToStage (event:Event):Void {
+		
+		removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
+		
+		onInit ();
+		onUpdate (loaderInfo.bytesLoaded, loaderInfo.bytesTotal);
+		
+		addEventListener (ProgressEvent.PROGRESS, this_onProgress);
+		addEventListener (Event.COMPLETE, this_onComplete);
+		
+	}
+	
+	
+	private function this_onComplete (event:Event):Void {
+		
+		event.preventDefault ();
+		
+		removeEventListener (ProgressEvent.PROGRESS, this_onProgress);
+		removeEventListener (Event.COMPLETE, this_onComplete);
+		
+		onLoaded ();
+		
+	}
+	
+	
 	private function this_onEnterFrame (event:Event):Void {
 		
 		var elapsed = Lib.getTimer () - startAnimation;
@@ -296,6 +293,13 @@ class Preloader extends LimePreloader {
 		
 		outline.alpha = percent;
 		progress.alpha = percent;
+		
+	}
+	
+	
+	private function this_onProgress (event:ProgressEvent):Void {
+		
+		onUpdate (Std.int (event.bytesLoaded), Std.int (event.bytesTotal));
 		
 	}
 	

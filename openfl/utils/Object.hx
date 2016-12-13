@@ -89,7 +89,7 @@ package openfl.utils;
 }
 
 
-#if (cs && haxe_ver >= "3.4.0")
+#if (!cs || haxe_ver >= "3.4.0")
 
 @:keep @:native('haxe.lang.Iterator') private interface Iterator_<T> {
 	

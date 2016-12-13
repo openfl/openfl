@@ -5,6 +5,8 @@ package;
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
+#else
+import DefaultAssetLibrary;
 #end
 
 @:access(lime.app.Application)
@@ -86,43 +88,15 @@ class ApplicationMain {
 		var app = new openfl.display.Application ();
 		app.create (config);
 		
+		var library = new DefaultAssetLibrary ();
+		lime.utils.Assets.registerLibrary ("default", library);
+		
 		preloader = getPreloader ();
-		preloader.onComplete.add (registerLibrary);
 		app.setPreloader (preloader);
-		preloader.onComplete.add (init);
 		preloader.create (config);
-		
-		#if (js && html5)
-		var urls = [];
-		var types = [];
-		
-		::foreach assets::::if (embed)::
-		urls.push (::if (type == "font")::"::fontName::"::else::"::resourceName::"::end::);
-		::if (type == "image")::types.push (lime.Assets.AssetType.IMAGE);
-		::elseif (type == "binary")::types.push (lime.Assets.AssetType.BINARY);
-		::elseif (type == "text")::types.push (lime.Assets.AssetType.TEXT);
-		::elseif (type == "font")::types.push (lime.Assets.AssetType.FONT);
-		::elseif (type == "sound")::types.push (lime.Assets.AssetType.SOUND);
-		::elseif (type == "music")::types.push (lime.Assets.AssetType.MUSIC);
-		::else::types.push (null);::end::
-		::end::::end::
-		
-		if (config.assetsPrefix != null) {
-			
-			for (i in 0...urls.length) {
-				
-				if (types[i] != lime.Assets.AssetType.FONT) {
-					
-					urls[i] = config.assetsPrefix + urls[i];
-					
-				}
-				
-			}
-			
-		}
-		
-		preloader.load (urls, types);
-		#end
+		preloader.onComplete.add (init);
+		preloader.addLibrary (library);
+		preloader.load ();
 		
 		var result = app.exec ();
 		
@@ -209,6 +183,8 @@ class ApplicationMain {
 		var total = 0;
 		var library_onLoad = function (__) {
 			
+			trace ("library load");
+			
 			loaded++;
 			
 			if (loaded == total) {
@@ -231,13 +207,6 @@ class ApplicationMain {
 			start ();
 			
 		}
-		
-	}
-	
-	
-	private static function registerLibrary ():Void {
-		
-		lime.Assets.registerLibrary ("default", new DefaultAssetLibrary ());
 		
 	}
 	
@@ -326,24 +295,6 @@ class ApplicationMain {
 		::if (PRELOADER_NAME != "")::
 		try {
 			
-			Context.getType ("NMEPreloader");
-			
-		} catch (e:Dynamic) {
-			
-			Context.defineType ({
-				
-				name: "NMEPreloader",
-				pack: [],
-				kind: TDClass ({ pack: [ "openfl", "display" ], name: "Preloader", sub: "DefaultPreloader", params: [] }, null, false),
-				fields: [ { name: "new", access: [ APublic ], kind: FFun({ args: [], expr: macro { super (); }, params: [], ret: macro :Void }), pos: Context.currentPos () } ],
-				pos: Context.currentPos ()
-				
-			});
-			
-		}
-		
-		try {
-			
 			var type = Context.getType ("::PRELOADER_NAME::");
 			
 			switch (type) {
@@ -357,11 +308,6 @@ class ApplicationMain {
 						if (searchTypes.pack.length == 2 && searchTypes.pack[0] == "openfl" && searchTypes.pack[1] == "display" && searchTypes.name == "Preloader") {
 							
 							return macro { new ::PRELOADER_NAME:: (); };
-							
-						} else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
-							
-							Sys.println ("Warning: Use of NMEPreloader has been deprecated");
-							break;
 							
 						}
 						
