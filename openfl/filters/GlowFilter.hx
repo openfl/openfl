@@ -118,6 +118,13 @@ import openfl.geom.Rectangle;
 	}
 	
 
+    private override function __getFilterBounds( sourceBitmapData:BitmapData ) : Rectangle {
+
+        return new Rectangle( blurX, blurY, sourceBitmapData.width + blurX + blurX, sourceBitmapData.height + blurY + blurY );
+
+    }
+
+
 	private override function __renderFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData):Void {
 
 		var tmpSrc = sourceBitmapData.clone();
