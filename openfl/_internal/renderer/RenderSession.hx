@@ -106,7 +106,9 @@ class RenderSession {
 				shape.__cachedBitmap = new BitmapData( Std.int(bounds.width), Std.int(bounds.height), true, 0x0 );
 
 				flatten( shape, shape.__cachedBitmap );
-			
+
+				clearDirtyFlags( shape );
+
 			} else {
 
 				shape.__cachedBitmap = null;
@@ -121,49 +123,56 @@ class RenderSession {
 
 	private function hierarchyDirty( shape:DisplayObject ):Bool {
 
-		var dirty = false;
-
 		if (Std.is(shape, DisplayObjectContainer)) {
 			var cont:DisplayObjectContainer = cast shape;
 			for (i in 0...cont.numChildren) {
-				dirty = dirty || hierarchyDirty( cont.getChildAt( i ) ); 
+				return hierarchyDirty( cont.getChildAt( i ) ); 
 			}
 		}
 		
-		if (shape.__filterDirty) {
-			shape.__filterDirty = false;
-			dirty = true;
-		}
-
-		if (shape.__transformDirty) {
-			shape.__transformDirty = false;
-			dirty = true;
-		}
-
-		if (shape.__renderDirty) {
-			shape.__renderDirty = false;
-			dirty = true;
+		if (shape.__filterDirty || shape.__transformDirty || shape.__renderDirty) {
+			return true;
 		}
 
 		if (shape.__graphics != null && shape.__graphics.__dirty) {
-			shape.__graphics.__dirty = false;
-			dirty = true;
+			return true;
 		}
 
 		var bitmap:Bitmap = cast shape;
 		if (Std.is(shape, Bitmap) && bitmap.__renderable && bitmap.__worldAlpha > 0 && bitmap.bitmapData != null && bitmap.bitmapData.image.dirty) {
-			bitmap.bitmapData.image.dirty = false;
-			dirty = true;
+			return true;
 		}
 
 		var textField:TextField = cast shape;
 		if ( Std.is(shape, TextField) && textField.__dirty) {
-			dirty = true;
+			return true;
 		}
 
-
-		return dirty;
+		return false;
 	}
+
+
+	private function clearDirtyFlags( shape:DisplayObject ) {
+
+		if (Std.is(shape, DisplayObjectContainer)) {
+			var cont:DisplayObjectContainer = cast shape;
+			for (i in 0...cont.numChildren) {
+				clearDirtyFlags( cont.getChildAt( i ) ); 
+			}
+		}
+		
+		shape.__filterDirty = shape.__transformDirty = shape.__renderDirty = false;
+
+		if (shape.__graphics != null) {
+			shape.__graphics.__dirty = false;
+		}
+
+		var bitmap:Bitmap = cast shape;
+		if (Std.is(shape, Bitmap) && bitmap.__renderable && bitmap.__worldAlpha > 0 && bitmap.bitmapData != null) {
+			bitmap.bitmapData.image.dirty = false;
+		}
+	}
+
 
 	private function getCachedBitmapBounds (shape:DisplayObject, cacheAsBitmapShape:DisplayObject, point:Point = null ) {
 
@@ -332,7 +341,7 @@ class RenderSession {
 			layer.draw( bitmap.bitmapData, shape.__cacheAsBitmapMatrix, shape.__worldColorTransform, null, null, true );
 
 		}
-				
+
 		if (Std.is(shape, DisplayObjectContainer)) {
 
 			var cont:DisplayObjectContainer = cast shape;

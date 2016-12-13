@@ -19,8 +19,13 @@ class FilterUtils {
         var offset:Int = Std.int( (w * oY + oX) * 4 );
 
         boxBlur (imgA, imgB, w, h, (bxs[0]-1)/2, (bys[0]-1)/2);
-		boxBlur (imgB, imgA, w, h, (bxs[1]-1)/2, (bys[1]-1)/2);
-		boxBlur (imgA, imgB, w, h, (bxs[2]-1)/2, (bys[2]-1)/2);
+		var bIndex:Int = 1;
+		for (i in 0...Std.int(n / 2)) {
+			boxBlur (imgB, imgA, w, h, (bxs[bIndex]-1)/2, (bys[bIndex]-1)/2);
+			boxBlur (imgA, imgB, w, h, (bxs[bIndex+1]-1)/2, (bys[bIndex+1]-1)/2);
+
+			bIndex += 2;
+		}
 		
 		var i:Int = 0;
 		var a:Int;
