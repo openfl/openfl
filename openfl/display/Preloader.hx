@@ -27,7 +27,7 @@ class Preloader extends LimePreloader {
 		
 		if (display != null) {
 			
-			display.addEventListener (Event.COMPLETE, display_onComplete);
+			display.addEventListener (Event.COMPLETE, display_onComplete, false, -1000);
 			Lib.current.addChild (display);
 			
 		}
@@ -43,7 +43,11 @@ class Preloader extends LimePreloader {
 		Lib.current.loaderInfo.__complete ();
 		#end
 		
-		if (display == null) {
+		if (display != null) {
+			
+			display.dispatchEvent (new Event (Event.COMPLETE, true, true));
+			
+		} else {
 			
 			super.start ();
 			
@@ -58,6 +62,12 @@ class Preloader extends LimePreloader {
 		Lib.current.loaderInfo.__update (loaded, total);
 		#end
 		
+		if (display != null) {
+			
+			display.dispatchEvent (new ProgressEvent (ProgressEvent.PROGRESS, true, true, loaded, total));
+			
+		}
+		
 	}
 	
 	
@@ -70,20 +80,26 @@ class Preloader extends LimePreloader {
 	
 	@:noCompletion private function display_onComplete (event:Event):Void {
 		
+		if (event.isDefaultPrevented ()) {
+			
+			return;
+			
+		}
+		
 		if (display != null) {
 			
 			display.removeEventListener (Event.COMPLETE, display_onComplete);
 			
-		}
-		
-		if (display.parent == Lib.current) {
+			if (display.parent == Lib.current) {
+				
+				Lib.current.removeChild (display);
+				
+			}
 			
-			Lib.current.removeChild (display);
+			Lib.current.stage.focus = null;
+			display = null;
 			
 		}
-		
-		Lib.current.stage.focus = null;
-		display = null;
 		
 		if (ready) {
 			
@@ -206,6 +222,7 @@ class Preloader extends LimePreloader {
 	@:keep public function onLoaded ():Void {
 		
 		removeEventListener (Event.ENTER_FRAME, this_onEnterFrame);
+		
 		dispatchEvent (new Event (Event.COMPLETE));
 		
 	}
@@ -213,11 +230,17 @@ class Preloader extends LimePreloader {
 	
 	@:keep public function onUpdate (bytesLoaded:Int, bytesTotal:Int):Void {
 		
-		var percentLoaded = bytesLoaded / bytesTotal;
+		var percentLoaded = 0.0;
 		
-		if (percentLoaded > 1) {
+		if (bytesTotal > 0) {
 			
-			percentLoaded = 1;
+			percentLoaded = bytesLoaded / bytesTotal;
+			
+			if (percentLoaded > 1) {
+				
+				percentLoaded = 1;
+				
+			}
 			
 		}
 		
@@ -240,26 +263,20 @@ class Preloader extends LimePreloader {
 		onInit ();
 		onUpdate (loaderInfo.bytesLoaded, loaderInfo.bytesTotal);
 		
-		if (loaderInfo.bytesLoaded == loaderInfo.bytesTotal) {
-			
-			onLoaded ();
-			
-		} else {
-			
-			loaderInfo.addEventListener (ProgressEvent.PROGRESS, function (e) {
-				
-				onUpdate (e.bytesLoaded, e.bytesTotal);
-				
-			});
-			
-			loaderInfo.addEventListener (Event.COMPLETE, function (_) {
-				
-				onUpdate (loaderInfo.bytesLoaded, loaderInfo.bytesTotal);
-				onLoaded ();
-				
-			});
-			
-		}
+		addEventListener (ProgressEvent.PROGRESS, this_onProgress);
+		addEventListener (Event.COMPLETE, this_onComplete);
+		
+	}
+	
+	
+	private function this_onComplete (event:Event):Void {
+		
+		event.preventDefault ();
+		
+		removeEventListener (ProgressEvent.PROGRESS, this_onProgress);
+		removeEventListener (Event.COMPLETE, this_onComplete);
+		
+		onLoaded ();
 		
 	}
 	
@@ -276,6 +293,13 @@ class Preloader extends LimePreloader {
 		
 		outline.alpha = percent;
 		progress.alpha = percent;
+		
+	}
+	
+	
+	private function this_onProgress (event:ProgressEvent):Void {
+		
+		onUpdate (Std.int (event.bytesLoaded), Std.int (event.bytesTotal));
 		
 	}
 	
