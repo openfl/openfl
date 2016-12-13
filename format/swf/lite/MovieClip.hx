@@ -658,6 +658,8 @@ class MovieClip extends flash.display.MovieClip {
 			displayObject.blendMode = frameObject.blendMode;
 		}
 
+		displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
+
 		if (frameObject.filters != null) {
 
 			var filters:Array<BitmapFilter> = [];

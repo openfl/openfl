@@ -62,6 +62,7 @@ class GLRenderer extends AbstractRenderer {
 	public var stencilManager:StencilManager;
 	public var view:Dynamic;
 	public var projectionMatrix:Matrix;
+	public var renderToTexture(null, set):Bool = false;
 	
 	private var __stage:Dynamic;
 	
@@ -188,6 +189,10 @@ class GLRenderer extends AbstractRenderer {
 		o.d = -1 / height * 2;
 		o.tx = -1 - x * o.a;
 		o.ty = 1 - y * o.d;
+		
+		if (renderToTexture) {
+			@:privateAccess GLBitmap.flipMatrix (o, 0);
+		}
 	}
 	
 	/*private static function destroyTexture (texture:BaseTexture):Void {
@@ -384,6 +389,20 @@ class GLRenderer extends AbstractRenderer {
 		Texture.frameUpdates = [];
 		
 	}*/
+	
+	public function set_renderToTexture(renderToTexture:Bool):Bool {
+		
+		var mustReevaluateProjectionMatrix = this.renderToTexture != renderToTexture;
+
+		this.renderToTexture = renderToTexture;
+
+		if (mustReevaluateProjectionMatrix) {
+			setOrtho (vpX, vpY, vpWidth, vpHeight);
+		}
+
+		return renderToTexture;
+
+	}
 	
 	
 }

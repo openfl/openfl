@@ -672,6 +672,7 @@ class SWFLiteExporter {
 
 				frameObject.depth = placeTag.depth;
 				frameObject.clipDepth = (placeTag.hasClipDepth ? placeTag.clipDepth : 0);
+				frameObject.cacheAsBitmap = placeTag.hasCacheAsBitmap;
 
 				lastModified.set (object.placedAtIndex, object.lastModifiedAtIndex);
 
