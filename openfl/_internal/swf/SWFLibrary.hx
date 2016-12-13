@@ -77,6 +77,13 @@ import lime.app.Promise;
 	}
 	
 	
+	public override function isLocal (id:String, type:String):Bool {
+		
+		return true;
+		
+	}
+	
+	
 	public override function load ():Future<lime.utils.AssetLibrary> {
 		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
@@ -84,27 +91,13 @@ import lime.app.Promise;
 		context = new LoaderContext (false, ApplicationDomain.currentDomain, null);
 		context.allowCodeImport = true;
 		
-		if (Assets.isLocal (id, AssetType.BINARY)) {
+		loader = new Loader ();
+		loader.contentLoaderInfo.addEventListener (Event.COMPLETE, function (_) {
 			
-			loader = new Loader ();
-			loader.contentLoaderInfo.addEventListener (Event.COMPLETE, function (_) {
-				
-				promise.complete (this);
-				
-			});
-			loader.loadBytes (Assets.getBytes (id), context);
+			promise.complete (this);
 			
-		} else {
-			
-			loader = new Loader ();
-			loader.contentLoaderInfo.addEventListener (Event.COMPLETE, function (_) {
-				
-				promise.complete (this);
-				
-			});
-			loader.load (new URLRequest (Assets.getPath (id)), context);
-			
-		}
+		});
+		loader.load (new URLRequest (paths.get (id)), context);
 		
 		return promise.future;
 		

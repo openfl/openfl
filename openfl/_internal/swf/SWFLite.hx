@@ -23,6 +23,7 @@ import openfl.Assets;
 	public static var instances = new Map<String, SWFLite> ();
 	
 	public var frameRate:Float;
+	public var library:SWFLiteLibrary;
 	public var root:SpriteSymbol;
 	public var symbols:Map<Int, SWFSymbol>;
 	

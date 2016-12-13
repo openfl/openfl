@@ -2,15 +2,6 @@ package;
 
 
 import format.swf.exporters.SWFLiteExporter;
-import openfl._internal.symbols.BitmapSymbol;
-import openfl._internal.symbols.ButtonSymbol;
-import openfl._internal.symbols.DynamicTextSymbol;
-import openfl._internal.symbols.ShapeSymbol;
-import openfl._internal.symbols.SpriteSymbol;
-import openfl._internal.symbols.StaticTextSymbol;
-import openfl._internal.swf.SWFLibrary;
-import openfl._internal.swf.SWFLiteLibrary;
-import openfl._internal.swf.SWFLite;
 import format.swf.tags.TagDefineBits;
 import format.swf.tags.TagDefineBitsLossless;
 import format.swf.tags.TagDefineButton2;
@@ -39,6 +30,16 @@ import lime.project.AssetType;
 import lime.project.Haxelib;
 import lime.project.HXProject;
 import lime.project.Platform;
+import lime.utils.AssetManifest;
+import openfl._internal.symbols.BitmapSymbol;
+import openfl._internal.symbols.ButtonSymbol;
+import openfl._internal.symbols.DynamicTextSymbol;
+import openfl._internal.symbols.ShapeSymbol;
+import openfl._internal.symbols.SpriteSymbol;
+import openfl._internal.symbols.StaticTextSymbol;
+import openfl._internal.swf.SWFLibrary;
+import openfl._internal.swf.SWFLiteLibrary;
+import openfl._internal.swf.SWFLite;
 import openfl.display.PNGEncoderOptions;
 import openfl.utils.ByteArray;
 import sys.io.File;
@@ -575,7 +576,7 @@ class Tools {
 					
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
-					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
+					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.TEMPLATE);
 					
 					if (library.embed != null) {
 						
@@ -585,14 +586,14 @@ class Tools {
 					
 					output.assets.push (swf);
 					
-					var data:Dynamic = {};
-					data.version = 0.1;
-					data.type = "openfl._internal.swf.SWFLibrary";
-					data.args = [ "lib/" + library.name + "/" + library.name + ".swf" ];
+					var data = new AssetManifest ();
+					data.assets = [ { id: swf.id, path: swf.resourceName, type: Std.string (AssetType.BINARY) } ];
+					data.libraryType = "openfl._internal.swf.SWFLibrary";
+					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					
 					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
 					asset.id = "libraries/" + library.name + ".json";
-					asset.data = Json.stringify (data);
+					asset.data = data.serialize ();
 					
 					if (library.embed != null) {
 						
@@ -845,18 +846,22 @@ class Tools {
 						
 					}
 					
-					output.merge (merge);
-					
-					var data:Dynamic = {};
-					data.version = 0.1;
-					data.type = "openfl._internal.swf.SWFLiteLibrary";
-					data.args = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+					var data = AssetHelper.createManifest (merge);
+					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
 					data.name = library.name;
-					data.manifest = AssetHelper.createManifest (merge);
+					
+					for (asset in merge.assets) {
+						
+						asset.type = TEMPLATE;
+						
+					}
+					
+					output.merge (merge);
 					
 					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
 					asset.id = "libraries/" + library.name + ".json";
-					asset.data = Json.stringify (data);
+					asset.data = data.serialize ();
 					
 					if (library.embed != null) {
 						

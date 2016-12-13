@@ -28,8 +28,10 @@ class SpriteSymbol extends SWFSymbol {
 		
 		var movieClip:MovieClip = null;
 		
+		#if !macro
 		MovieClip.__initSWF = swf;
 		MovieClip.__initSymbol = this;
+		#end
 		
 		if (className != null) {
 			

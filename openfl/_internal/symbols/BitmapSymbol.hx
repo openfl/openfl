@@ -28,12 +28,14 @@ class BitmapSymbol extends SWFSymbol {
 	
 	private override function __createObject (swf:SWFLite):DisplayObject {
 		
-		return new Bitmap (__getBitmap (), PixelSnapping.AUTO, true);
+		return new Bitmap (__getBitmap (swf), PixelSnapping.AUTO, true);
 		
 	}
 	
 	
-	private function __getBitmap ():BitmapData {
+	private function __getBitmap (swf:SWFLite):BitmapData {
+		
+		// TODO: Handle in library
 		
 		if (Assets.cache.hasBitmapData (path)) {
 			
@@ -41,11 +43,11 @@ class BitmapSymbol extends SWFSymbol {
 			
 		} else {
 			
-			var source = LimeAssets.getImage (path, false);
+			var source = swf.library.getImage (path);
 			
 			if (source != null && alpha != null && alpha != "") {
 				
-				var alphaBitmapData = LimeAssets.getImage (alpha, false);
+				var alphaBitmapData = swf.library.getImage (alpha);
 				source.copyChannel (alphaBitmapData, alphaBitmapData.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
 				
 				//alpha = null;

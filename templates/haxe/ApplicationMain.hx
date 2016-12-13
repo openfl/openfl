@@ -183,6 +183,8 @@ class ApplicationMain {
 		var total = 0;
 		var library_onLoad = function (__) {
 			
+			trace ("library load");
+			
 			loaded++;
 			
 			if (loaded == total) {

@@ -47,7 +47,7 @@ class Assets {
 	
 	public static var cache:IAssetCache = new AssetCache ();
 	
-	private static var dispatcher = new EventDispatcher ();
+	private static var dispatcher:EventDispatcher #if !macro = new EventDispatcher () #end;
 	
 	
 	public static function addEventListener (type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void {
@@ -154,7 +154,7 @@ class Assets {
 	 */
 	public static function getFont (id:String, useCache:Bool = true):Font {
 		
-		#if (tools && !display)
+		#if (tools && !display && !macro)
 		
 		if (useCache && cache.enabled && cache.hasFont (id)) {
 			
@@ -189,7 +189,7 @@ class Assets {
 	}
 	
 	
-	private static function getLibrary (name:String):LimeAssetLibrary {
+	public static function getLibrary (name:String):LimeAssetLibrary {
 		
 		return LimeAssets.getLibrary (name);
 		
@@ -569,7 +569,7 @@ class Assets {
 			
 		}
 		
-		#if (tools && !display)
+		#if (tools && !display && !macro)
 		
 		if (useCache && cache.enabled && cache.hasFont (id)) {
 			

@@ -49,7 +49,7 @@ class ShapeSymbol extends SWFSymbol {
 					
 					if (bitmap != null && bitmap.path != "") {
 						
-						graphics.beginBitmapFill (bitmap.__getBitmap (), matrix, repeat, smooth);
+						graphics.beginBitmapFill (bitmap.__getBitmap (swf), matrix, repeat, smooth);
 						
 					}
 				
