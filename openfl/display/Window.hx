@@ -23,7 +23,7 @@ class Window extends LimeWindow {
 		
 		super.create (application);
 		
-		#if !flash
+		#if (!flash && !macro)
 		
 		stage = new Stage (this, Reflect.hasField (config, "background") ? config.background : 0xFFFFFF);
 		

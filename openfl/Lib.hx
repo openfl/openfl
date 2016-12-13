@@ -28,7 +28,7 @@ import js.Browser;
 	public static var application:Application;
 	
 	#if !flash
-	public static var current (default, null):MovieClip = new MovieClip ();
+	public static var current (default, null):MovieClip #if !macro = new MovieClip () #end;
 	#else
 	public static var current (get, set):MovieClip;
 	#end
