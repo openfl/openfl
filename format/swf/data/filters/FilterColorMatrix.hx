@@ -7,9 +7,14 @@ import format.swf.utils.StringUtils;
 import flash.filters.BitmapFilter;
 import flash.filters.ColorMatrixFilter;
 
+import openfl.utils.Float32ArrayContainer;
+import lime.utils.Float32Array;
+
 class FilterColorMatrix extends Filter implements IFilter
 {
 	public var colorMatrix (default, null):Array<Float>;
+	public var multipliers:Float32ArrayContainer;
+	public var offsets:Float32ArrayContainer;
 	
 	public function new(id:Int) {
 		super(id);
@@ -17,27 +22,20 @@ class FilterColorMatrix extends Filter implements IFilter
 	}
 	
 	override private function get_filter():BitmapFilter {
-		return new ColorMatrixFilter([
-			colorMatrix[0], colorMatrix[1], colorMatrix[2], colorMatrix[3], colorMatrix[4], 
-			colorMatrix[5], colorMatrix[6], colorMatrix[7], colorMatrix[8], colorMatrix[9], 
-			colorMatrix[10], colorMatrix[11], colorMatrix[12], colorMatrix[13], colorMatrix[14], 
-			colorMatrix[15], colorMatrix[16], colorMatrix[17], colorMatrix[18], colorMatrix[19] 
-		]);
+		return new ColorMatrixFilter(multipliers.value, offsets.value);
 	}
 	
 	override private function get_type():FilterType {
-		return ColorMatrixFilter([
-			colorMatrix[0], colorMatrix[1], colorMatrix[2], colorMatrix[3], colorMatrix[4], 
-			colorMatrix[5], colorMatrix[6], colorMatrix[7], colorMatrix[8], colorMatrix[9], 
-			colorMatrix[10], colorMatrix[11], colorMatrix[12], colorMatrix[13], colorMatrix[14], 
-			colorMatrix[15], colorMatrix[16], colorMatrix[17], colorMatrix[18], colorMatrix[19] 
-		]);
+		return ColorMatrixFilter(multipliers, offsets);
 	}
 	
 	override public function parse(data:SWFData):Void {
 		for (i in 0...20) {
 			colorMatrix.push(data.readFLOAT());
 		}
+
+		multipliers = new Float32ArrayContainer(new Float32Array([ colorMatrix[0], colorMatrix[1], colorMatrix[2], colorMatrix[3], colorMatrix[5], colorMatrix[6], colorMatrix[7], colorMatrix[8], colorMatrix[10], colorMatrix[11], colorMatrix[12], colorMatrix[13], colorMatrix[15], colorMatrix[16], colorMatrix[17], colorMatrix[18] ]));
+		offsets = new Float32ArrayContainer(new Float32Array([ colorMatrix[4] / 255., colorMatrix[9] / 255., colorMatrix[14] / 255., colorMatrix[19] / 255. ]));
 	}
 	
 	override public function publish(data:SWFData):Void {

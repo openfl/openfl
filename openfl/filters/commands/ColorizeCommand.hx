@@ -2,6 +2,7 @@ package openfl.filters.commands;
 
 import openfl.display.BitmapData;
 import openfl.display.Shader;
+import lime.utils.Float32Array;
 
 import openfl._internal.renderer.RenderSession;
 

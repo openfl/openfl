@@ -5,6 +5,7 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.Shader in InternalShader;
 import openfl.geom.Matrix;
 import openfl.gl.GL;
+import lime.utils.Float32Array;
 
 using StringTools;
 
@@ -212,7 +213,7 @@ class GLShaderParameter {
 	/**
 	 * The value of the parameter when the type isn't a sampler2D
 	 */
-	public var value(default, set):Array<Float>;
+	public var value(default, set):Float32Array;
 	/**
 	 * The BitmapData to be used when the type is a sampler2D
 	 */
@@ -249,19 +250,19 @@ class GLShaderParameter {
 				internalType = INT;
 				size = 1;
 				
-				value = [0.0];
+				value = new Float32Array([0.0]);
 				
 			case "int": 
 				internalType = INT;
 				size = 1;
 				
-				value = [0.0];
+				value = new Float32Array([0.0]);
 				
 			case "float":
 				internalType = FLOAT;
 				size = 1;
 				
-				value = [0.0];
+				value = new Float32Array([0.0]);
 				
 			case v if (v.indexOf("vec") > -1):
 				if(type.startsWith("b") || type.startsWith("i"))
@@ -272,14 +273,14 @@ class GLShaderParameter {
 				var s = Std.parseInt(type.charAt(type.length - 1));
 				size = s;
 				
-				value = [for (i in 0...size) 0.0];
+				value = new Float32Array([for (i in 0...size) 0.0]);
 				
 			case m if (m.indexOf("mat") > -1):
 				internalType = MAT;
 				var s = Std.parseInt(type.charAt(type.length - 1));
 				size = s;
 				
-				value = switch(size) {
+				value = new Float32Array( switch(size) {
 					case 2:
 						[	1, 0,
 							1, 0
@@ -297,7 +298,7 @@ class GLShaderParameter {
 						];
 					case _:
 						[0];
-				};
+				});
 				
 			case "sampler2D" | "samplerCube":
 				internalType = SAMPLER;

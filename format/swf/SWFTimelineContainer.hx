@@ -63,7 +63,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public static var TIMEOUT:Int = 50;
 	public static var AUTOBUILD_LAYERS:Bool = false;
 	public static var EXTRACT_SOUND_STREAM:Bool = true;
-	public static var scalingGrids(default, null):Map<Int, Int>;
 
 	public var tags(default, null):Array<ITag>;
 	public var tagsRaw(default, null):Array<SWFRawTag>;
@@ -75,6 +74,9 @@ class SWFTimelineContainer extends SWFEventDispatcher
 
 	public var frameLabels(default, null):Map<Int, String>;
 	public var frameIndexes(default, null):Map<String, Int>;
+	
+	public var scalingGrids(get, null):Map<Int, Int>;
+	private var _scalingGrids:Map<Int, Int>;
 
 	private var currentFrame:Frame;
 	private var hasSoundStream:Bool;
@@ -104,8 +106,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	{
 		super();
 
-		if (scalingGrids == null) scalingGrids = new Map<Int, Int>();
-
 		backgroundColor = 0xffffff;
 		tags = new Array<ITag>();
 		tagsRaw = new Array<SWFRawTag>();
@@ -129,6 +129,10 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			return cast rootTimelineContainer.tags[tagIndex];
 		}
 		return null;
+	}
+
+	public function get_scalingGrids ():Map<Int, Int> {
+		return rootTimelineContainer._scalingGrids;
 	}
 
 	public function getScalingGrid(characterId:Int):TagDefineScalingGrid {

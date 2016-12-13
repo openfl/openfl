@@ -672,9 +672,9 @@ class MovieClip extends flash.display.MovieClip {
 
 						filters.push (new BlurFilter (blurX, blurY, quality));
 
-					case ColorMatrixFilter (matrix):
+					case ColorMatrixFilter (multipliers, offsets):
 
-						filters.push (new ColorMatrixFilter (matrix));
+						filters.push (new ColorMatrixFilter (multipliers.value, offsets.value));
 
 					case DropShadowFilter (distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject):
 
@@ -1062,6 +1062,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 #if as2_depth_accessors
+
 	public function getNextHighestDepthExternal() : Int {
 		if (numChildren > 0) {
 			return __SWFDepthData.get(getChildAt(numChildren-1)) - 0x3FFE;
@@ -1073,6 +1074,10 @@ class MovieClip extends flash.display.MovieClip {
 		return cast(parent, MovieClip).__SWFDepthData.get(this);
 	}
 
+	public function getDepthExternal() : Int {
+		return getDepth()  - 0x3FFE;
+	}
+
 	public function addChildAtSwfDepthExternal(displayObject:DisplayObject, targetDepth:Int):Void {
 		__addChildAtSwfDepth(displayObject, targetDepth + 0x3FFF);
 	}
@@ -1081,7 +1086,7 @@ class MovieClip extends flash.display.MovieClip {
 		var object_to_swap : DisplayObject = null;
 		var target_depth : Int;
 		if ( Std.is(target, Int) || Std.is(target, Float) ) {
-			target_depth = Std.int(target);
+			target_depth = Std.int(target) + 0x3FFF;
 			for( i in 0 ... numChildren ){
 				if( __SWFDepthData.get(getChildAt(i)) == target_depth){
 					object_to_swap = getChildAt(i);
@@ -1101,10 +1106,10 @@ class MovieClip extends flash.display.MovieClip {
 		var my_depth = getDepth();
 		if ( object_to_swap != null ) {
 			swf_parent.removeChild(object_to_swap);
-			swf_parent.addChildAtSwfDepthExternal(object_to_swap, my_depth);
+			swf_parent.__addChildAtSwfDepth(object_to_swap, my_depth);
 		}
         swf_parent.removeChild(this);
-        swf_parent.addChildAtSwfDepthExternal(this, target_depth);
+        swf_parent.__addChildAtSwfDepth(this, target_depth);
     }
 #end
 
