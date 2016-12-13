@@ -197,11 +197,14 @@ class Video extends DisplayObject {
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
 		
-		var point = globalToLocal (new Point (x, y));
+		__getRenderTransform ();
 		
-		if (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height) {
+		var px = __renderTransform.__transformInverseX (x, y);
+		var py = __renderTransform.__transformInverseY (x, y);
+		
+		if (px > 0 && py > 0 && px <= __width && py <= __height) {
 			
-			if (stack != null) {
+			if (stack != null && !interactiveOnly) {
 				
 				stack.push (hitObject);
 				
