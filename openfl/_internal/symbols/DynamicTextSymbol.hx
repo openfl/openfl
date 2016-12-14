@@ -2,7 +2,6 @@ package openfl._internal.symbols;
 
 
 import openfl._internal.swf.SWFLite;
-import openfl.display.DisplayObject;
 import openfl.text.TextField;
 
 @:access(openfl.text.TextField)
@@ -41,7 +40,7 @@ class DynamicTextSymbol extends SWFSymbol {
 	}
 	
 	
-	private override function __createObject (swf:SWFLite):DisplayObject {
+	private override function __createObject (swf:SWFLite):TextField {
 		
 		var textField = new TextField ();
 		textField.__fromSymbol (swf, this);
