@@ -1516,7 +1516,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	private function __onTouch (type:String, touch:Touch):Void {
 		
-		var point = new Point (Math.round (touch.x * window.width), Math.round (touch.y * window.height));
+		var point = new Point (Math.round (touch.x * window.width * window.scale), Math.round (touch.y * window.height * window.scale));
 		__displayMatrix.__transformInversePoint (point);
 		
 		var touchX = point.x;
