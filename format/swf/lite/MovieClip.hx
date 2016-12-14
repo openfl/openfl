@@ -1077,7 +1077,9 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function __updateSwfMaskData(){
 
-		for( i in 0 ... numChildren ){
+		var children_length = __children.length;
+
+		for( i in 0 ... children_length ){
 			__children[i].__clippedAt = null;
 		}
 
@@ -1086,9 +1088,9 @@ class MovieClip extends flash.display.MovieClip {
 
 			var depthValue = __maskData.get(mask);
 
-			var result = numChildren;
+			var result = children_length;
 
-			for( i in maskIndex ... numChildren ){
+			for( i in maskIndex ... children_length ){
 				var sibling = getChildAt(i);
 				if( __SWFDepthData.get(sibling) > depthValue){
 					result = i;
