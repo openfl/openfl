@@ -65,7 +65,7 @@ class GLRenderer extends AbstractRenderer {
 				
 			}
 			
-			resize (stage.window.width, stage.window.height);
+			resize (Math.ceil (stage.window.width * stage.window.scale), Math.ceil (stage.window.height * stage.window.scale));
 			
 		}
 		
