@@ -1,6 +1,7 @@
 package openfl.display; #if !openfl_legacy
 
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 
 @:access(openfl.display.Graphics)
@@ -39,14 +40,15 @@ class Shape extends DisplayObject {
 		
 	}
 	
-	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+	private override function __getRenderBounds (rect:Rectangle):Void {
 		
-		super.__updateTransforms (overrideTransform);
+		super.__getRenderBounds (rect);
 		
-		// :TRICKY: account for the extra offset added to allow anti aliasing on the edges (see CanvasGraphics.render())
-		__renderTransform.tx -= 1;
-		__renderTransform.ty -= 1;
-	}	
+		rect.x -= __graphics.__padding;
+		rect.y -= __graphics.__padding;
+		
+	}
+
 }
 
 
