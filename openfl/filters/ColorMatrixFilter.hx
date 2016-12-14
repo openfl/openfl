@@ -23,7 +23,8 @@ import openfl.geom.Rectangle;
 		
 		this.matrix = matrix;
 		
-		__numPasses = 1;
+		// __numPasses = 1;
+		__numPasses = 0;
 		
 	}
 	

@@ -21,7 +21,8 @@ class ShaderFilter extends BitmapFilter {
 		
 		this.shader = shader;
 		
-		__numPasses = 1;
+		// __numPasses = 1;
+		__numPasses = 0;
 		
 	}
 	
