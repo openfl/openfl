@@ -161,31 +161,16 @@ class GLBitmap {
 		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
 
-		var m = Matrix.pool.get ();
-		
-		if (matrix != null) {
-			
-			m.copyFrom (matrix);
-			
-		} else {
-			
-			m.identity();
-			
-		}
-
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
 
-		source.__updateTransforms(m);
-		Matrix.pool.put (m);
-		source.__updateChildren (false);
+		renderSession.pushRenderTargetBaseTransform (source, matrix);
 
 		source.__cacheAsBitmap = false;
 		source.__renderGL (renderSession);
 		source.__cacheAsBitmap = cached;
 
-		source.__updateTransforms();
-		source.__updateChildren (false);
+		renderSession.popRenderTargetBaseTransform ();
 
 		source.__worldColorTransform = ctCache;
 		source.__blendMode = blendModeCache;

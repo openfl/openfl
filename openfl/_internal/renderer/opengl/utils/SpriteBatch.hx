@@ -436,13 +436,21 @@ class SpriteBatch {
 	
 	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
 		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
+				
+		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
+		var localMatrix = Matrix.pool.get ();
+
+		localMatrix.copyFrom (matrix);
+		localMatrix.concat (renderTargetBaseTransform);
+
+		var a = localMatrix.a;
+		var b = localMatrix.b;
+		var c = localMatrix.c;
+		var d = localMatrix.d;
+		var tx = localMatrix.tx;
+		var ty = localMatrix.ty;
 		
-		var a = matrix.a;
-		var b = matrix.b;
-		var c = matrix.c;
-		var d = matrix.d;
-		var tx = matrix.tx;
-		var ty = matrix.ty;
+		Matrix.pool.put (localMatrix);
 		
 		// POSITION
 		if (pixelSnapping == null || pixelSnapping == NEVER) {
