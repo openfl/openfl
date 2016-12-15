@@ -7,7 +7,7 @@ import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.display.Shader.GLShaderData;
+import openfl.display.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
 import openfl.display.Shader.RepeatMode;
 import openfl.gl.GLProgram;
@@ -84,9 +84,15 @@ class Shader {
 		var u:GLUniformLocation;
 		var v:Float32Array;
 		var bd:BitmapData;
-		for (key in shaderData.keys()) {
+
+		for(i in 0...shaderData.keys.length)
+		{
+			var key = shaderData.keys[i];
+
 			u = getUniformLocation(key);
-			param = shaderData.get(key);
+
+			param = shaderData.values[i];
+
 			if (param == null) continue;
 			v = param.value;
 			bd = param.bitmap;
