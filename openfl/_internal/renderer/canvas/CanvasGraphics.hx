@@ -501,12 +501,13 @@ class CanvasGraphics {
 					context = graphics.__context;
 
 					var context = context;
-
+					var padding = graphics.__padding;
+					
 					// :NOTE: Grow the bounds of textures by 2 pixels to allow anti aliasing on the edges.
-					graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2;
-					graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2;
+					graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2 * padding;
+					graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2 * padding;
 
-					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + 1, matrix.ty + 1);
+					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + padding, matrix.ty + padding);
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 					Rectangle.pool.put(scaled_bounds);
 				}
