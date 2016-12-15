@@ -65,6 +65,7 @@ import js.html.CanvasRenderingContext2D;
 	private var __glStack:Array<GLStack> = [];
 	private var __drawPaths:Array<DrawPath>;
 	private var __image:Image;
+	private var __padding:Int;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __strokePadding:Float;
@@ -89,6 +90,7 @@ import js.html.CanvasRenderingContext2D;
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
+		__padding = 1;
 		__hardware = true;
 
 		#if (js && html5)
