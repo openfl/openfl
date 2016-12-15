@@ -393,24 +393,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function __getTransformedRenderBounds (rect:Rectangle, matrix:Matrix):Void {
-
-		var r = openfl.geom.Rectangle.__temp;
-		__getRenderBounds (r);
-		r.__transform (r, matrix);
-
-		if (__scrollRect == null) {
-
-			rect.__expand (r.x, r.y, r.width, r.height);
-
-		} else {
-
-			// :TODO: check this (kept as original for compatibility)
-			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
-
-		}
-
-	}
 
 	private static var __parentList = new haxe.ds.Vector(32);
 	private function __getWorldTransform ():Matrix {
