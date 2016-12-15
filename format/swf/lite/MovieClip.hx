@@ -359,13 +359,12 @@ class MovieClip extends flash.display.MovieClip {
 	@:noCompletion private function __createShape (symbol:ShapeSymbol):Shape {
 
 		var shape = new Shape ();
-		@:privateAccess shape.__graphics = new Graphics();
+		var graphics = shape.graphics;
 
 		if ( symbol.graphics != null && symbol.graphics.readOnly == true ) {
-			@:privateAccess shape.__graphics.shallowCopyFrom( symbol.graphics );
+			@:privateAccess graphics.shallowCopyFrom( symbol.graphics );
 			return shape;
 		}
-		var graphics = shape.__graphics;
 
 		for (command in symbol.commands) {
 
