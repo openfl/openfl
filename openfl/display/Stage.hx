@@ -165,13 +165,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		this.stage = this;
 
 		align = StageAlign.TOP_LEFT;
-		#if html5
-		allowsFullScreen = false;
-		allowsFullScreenInteractive = false;
-		#else
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
-		#end
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
@@ -794,6 +789,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public function update (deltaTime:Int):Void {
 
 		__deltaTime = deltaTime;
+		// :TRICKY: Update mouse each frame, to show the correct cursor at all times.
+		if ( !__calledOnMouseThisFrame) {
+			__onMouse (null, __mouseX, __mouseY, 0);
+		}
+		__calledOnMouseThisFrame = false;
 
 		__computeFlattenedChildren();
 	}
@@ -961,10 +961,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
+	private static var __calledOnMouseThisFrame = false;
 
 	private function __onMouse (type:String, x:Float, y:Float, button:Int):Void {
 
 		if (button > 2) return;
+
+		__calledOnMouseThisFrame = true;
 
 		__mouseX = x;
 		__mouseY = y;

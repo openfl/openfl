@@ -56,11 +56,6 @@ class BitmapFilter {
 			throw ":TODO: unsupported mode";
 		}
 
-		var inverseTransform = Matrix.pool.get ();
-		inverseTransform.copyFrom (transform);
-		inverseTransform.invert ();
-
-
 		for (filter in filters) {
 			var useLastFilter = false;
 
@@ -70,13 +65,13 @@ class BitmapFilter {
 				switch (command) {
 					case Blur1D (target, source, blur, horizontal, strength, distance, angle) :
 						var transformedOffset = Point.pool.get ();
-						_getTransformedOffset(transformedOffset, distance, angle, inverseTransform);
+						_getTransformedOffset(transformedOffset, distance, angle, transform);
 						Blur1DCommand.apply (renderSession, target, source, blur, horizontal, strength, transformedOffset);
 						Point.pool.put (transformedOffset);
 
 					case Offset (target, source, strength, distance, angle) :
 						var transformedOffset = Point.pool.get ();
-						_getTransformedOffset(transformedOffset, distance, angle, inverseTransform);
+						_getTransformedOffset(transformedOffset, distance, angle, transform);
 						OffsetCommand.apply (renderSession, target, source, strength, transformedOffset);
 						Point.pool.put (transformedOffset);
 
@@ -116,24 +111,17 @@ class BitmapFilter {
 			filter.dispose();
 		}
 
-		Matrix.pool.put (inverseTransform);
-
 	}
 
 
 	private static function __expandBounds (filters:Array<BitmapFilter>, rect:Rectangle, transform:Matrix) {
 
-		var inverseTransform = Matrix.pool.get ();
-		inverseTransform.copyFrom (transform);
-		inverseTransform.invert ();
-
 		for (filter in filters) {
 
-			filter.__growBounds (rect, inverseTransform);
+			filter.__growBounds (rect, transform);
 
 		}
 
-		Matrix.pool.put (inverseTransform);
 	}
 
 

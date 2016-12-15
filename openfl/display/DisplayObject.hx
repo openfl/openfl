@@ -45,8 +45,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
 
-	private static var __cacheAsBitmapMode = false;
-
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
 	public var cacheAsBitmap (get, set):Bool;
@@ -363,6 +361,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
+	#if as2_depth_accessors
+		public function getAssetPrefix() : String {
+			if ( !Reflect.hasField(this, "assetPrefix") ) {
+				if ( parent != null ) {
+					return parent.getAssetPrefix();
+				}
+				return "";
+			} else {
+				return Reflect.field(this, "assetPrefix");
+			}
+		}
+	#end
+
 	private inline function __getLocalBounds (rect:Rectangle):Void {
 
 		__getTransformedBounds (rect, __transform);
@@ -652,8 +663,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
+			
+			var filterTransform = Matrix.pool.get ();
+			
+			filterTransform.copyFrom (__renderTransform);
+			filterTransform.invert ();
 
-			__updateCachedBitmapBounds ();
+			__updateCachedBitmapBounds (filterTransform);
 
 			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
 				trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
@@ -683,10 +699,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__updateCachedBitmap = false;
 
 			if (__updateFilters) {
-				@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, __renderTransform);
+				@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
 				__updateFilters = false;
 			}
 
+			Matrix.pool.put (filterTransform);
 			renderSession.maskManager.enableMask ();
 		}
 
@@ -817,7 +834,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function __updateCachedBitmapBounds():Void {
+	private function __updateCachedBitmapBounds (filterTransform:Matrix):Void {
 
 		if (__cachedBitmapBounds == null) {
 			__cachedBitmapBounds = new Rectangle ();
@@ -828,7 +845,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__filters != null) {
 
-			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, __renderTransform);
+			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, filterTransform);
 
 		}
 

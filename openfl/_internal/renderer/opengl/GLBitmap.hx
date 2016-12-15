@@ -102,6 +102,7 @@ class GLBitmap {
 		renderSession.maskManager.saveState();
 
 		gl.bindFramebuffer (gl.FRAMEBUFFER, texture.framebuffer);
+		cast (renderer, GLRenderer).renderToTexture = true;
 		renderer.setViewport (x, y, width, height);
 
 		// enable writing to all the colors and alpha
@@ -160,22 +161,28 @@ class GLBitmap {
 		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
 
-		var m = matrix != null ? matrix.clone () : new Matrix ();
-
-		GLBitmap.flipMatrix (m, viewPort.height);
+		var m = Matrix.pool.get ();
+		
+		if (matrix != null) {
+			
+			m.copyFrom (matrix);
+			
+		} else {
+			
+			m.identity();
+			
+		}
 
 		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
 		source.__blendMode = blendMode;
-		DisplayObject.__cacheAsBitmapMode = true;
 
 		source.__updateTransforms(m);
+		Matrix.pool.put (m);
 		source.__updateChildren (false);
 
 		source.__cacheAsBitmap = false;
 		source.__renderGL (renderSession);
 		source.__cacheAsBitmap = cached;
-
-		DisplayObject.__cacheAsBitmapMode = false;
 
 		source.__updateTransforms();
 		source.__updateChildren (false);
@@ -250,6 +257,7 @@ class GLBitmap {
 		}
 
 		gl.bindFramebuffer (gl.FRAMEBUFFER, data.texture == null ? renderSession.defaultFramebuffer : data.texture.framebuffer);
+		cast (renderSession.renderer, GLRenderer).renderToTexture = fbData.length > 1;
 		renderSession.renderer.setViewport (x, y, width, height);
 		renderSession.renderer.transparent = data.transparent;
 

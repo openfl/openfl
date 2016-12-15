@@ -1,15 +1,5 @@
 package format.swf;
 
-#if test_abc
-import format.abc.Data.ABCData;
-import format.abc.Data.ClassDef;
-import format.abc.Data.Field;
-import format.abc.Data.IName;
-import format.abc.Data.Index;
-import format.abc.Data.Name;
-import format.abc.Data.Namespace;
-#end
-import format.SWF;
 import format.swf.data.SWFFrameLabel;
 import format.swf.data.SWFRawTag;
 import format.swf.data.SWFRecordHeader;
@@ -63,7 +53,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public static var TIMEOUT:Int = 50;
 	public static var AUTOBUILD_LAYERS:Bool = false;
 	public static var EXTRACT_SOUND_STREAM:Bool = true;
-	public static var scalingGrids(default, null):Map<Int, Int>;
 
 	public var tags(default, null):Array<ITag>;
 	public var tagsRaw(default, null):Array<SWFRawTag>;
@@ -75,6 +64,9 @@ class SWFTimelineContainer extends SWFEventDispatcher
 
 	public var frameLabels(default, null):Map<Int, String>;
 	public var frameIndexes(default, null):Map<String, Int>;
+	
+	public var scalingGrids(get, null):Map<Int, Int>;
+	private var _scalingGrids:Map<Int, Int>;
 
 	private var currentFrame:Frame;
 	private var hasSoundStream:Bool;
@@ -93,18 +85,9 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public var backgroundColor:Int;
 	public var jpegTablesTag:TagJPEGTables;
 
-	#if test_abc
-	public var abcTag:TagDoABC;
-	public var abcData:ABCData;
-	public var abcClasses(default, null):Map<Int, ClassDef>;
-	#end
-
-
 	public function new()
 	{
 		super();
-
-		if (scalingGrids == null) scalingGrids = new Map<Int, Int>();
 
 		backgroundColor = 0xffffff;
 		tags = new Array<ITag>();
@@ -129,6 +112,10 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			return cast rootTimelineContainer.tags[tagIndex];
 		}
 		return null;
+	}
+
+	public function get_scalingGrids ():Map<Int, Int> {
+		return rootTimelineContainer._scalingGrids;
 	}
 
 	public function getScalingGrid(characterId:Int):TagDefineScalingGrid {
@@ -361,11 +348,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			// Scale-9 grids
 			case TagDefineScalingGrid.TYPE:
 				processScalingGridTag(cast tag, currentTagIndex);
-			// Actionscript 3
-			#if test_abc
-			case TagDoABC.TYPE:
-				if (SWF.parseABC) processAS3Tag(cast tag, currentTagIndex);
-			#end
 		}
 	}
 
@@ -469,26 +451,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	private function processScalingGridTag(tag:TagDefineScalingGrid, currentTagIndex:Int):Void {
 		scalingGrids.set (tag.characterId, currentTagIndex);
 	}
-
-	#if test_abc
-
-	private function processAS3Tag(tag:TagDoABC, currentTagIndex:Int):Void {
-		// Just store it for now
-		abcTag = tag;
-
-		//trace("ABC: " + tag);
-
-		var bytes = #if flash haxe.io.Bytes.ofData(tag.bytes) #else tag.bytes #end;
-		var input = new haxe.io.BytesInput(bytes);
-		var reader = new format.abc.Reader(input);
-
-		//trace("Reading...");
-		abcData = reader.read();
-
-
-	}
-
-	#end
 
 	public function buildLayers():Void {
 		var i:Int;

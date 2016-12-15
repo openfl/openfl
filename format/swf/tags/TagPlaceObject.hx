@@ -27,7 +27,7 @@ class TagPlaceObject implements IDisplayListTag
 	public var hasVisible:Bool;
 	public var hasImage:Bool;
 	public var hasClassName:Bool;
-	public var hasCacheAsBitmap:Bool;
+	public var hasCacheAsBitmap:Bool = false;
 	public var hasBlendMode:Bool;
 	public var hasFilterList:Bool;
 	

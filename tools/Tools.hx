@@ -19,7 +19,6 @@ import format.swf.tags.TagDefineShape;
 import format.swf.tags.TagDefineSprite;
 import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
-import format.swf.SWFLibrary;
 import format.swf.SWFTimelineContainer;
 import format.SWF;
 import haxe.io.Path;
@@ -129,142 +128,6 @@ class Tools {
 
 	}
 	#end
-
-
-	private static function generateSWFClasses (project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Void {
-
-		var movieClipTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent (PathHelper.getHaxelib (new Haxelib ("openfl")) + "/templates/swf/SimpleButton.mtt");
-
-		var swf = new SWF (ByteArray.fromBytes (File.getBytes (swfAsset.sourcePath)));
-
-		for (className in swf.symbols.keys ()) {
-
-			var lastIndexOfPeriod = className.lastIndexOf (".");
-
-			var packageName = "";
-			var name = "";
-
-			if (lastIndexOfPeriod == -1) {
-
-				name = className;
-
-			} else {
-
-				packageName = className.substr (0, lastIndexOfPeriod);
-				name = className.substr (lastIndexOfPeriod + 1);
-
-			}
-
-			packageName = packageName.toLowerCase ();
-			name = name.substr (0, 1).toUpperCase () + name.substr (1);
-
-			if (prefix != "" && prefix != null) {
-
-				prefix = prefix.substr (0, 1).toUpperCase () + prefix.substr (1);
-
-			}
-
-			var packageNameDot = packageName;
-			if (packageNameDot.length > 0) packageNameDot += ".";
-
-			var symbolID = swf.symbols.get (className);
-			var templateData = null;
-			var symbol = swf.data.getCharacter (symbolID);
-
-			if (Std.is (symbol, TagDefineButton2)) {
-
-				templateData = simpleButtonTemplate;
-
-			} else if (Std.is (symbol, SWFTimelineContainer)) {
-
-				templateData = movieClipTemplate;
-
-			}
-
-			if (templateData != null) {
-
-				var classProperties = [];
-
-				if (Std.is (symbol, SWFTimelineContainer)) {
-
-					var timelineContainer:SWFTimelineContainer = cast symbol;
-
-					if (timelineContainer.frames.length > 0) {
-
-						for (frameObject in timelineContainer.frames[0].objects) {
-
-							var placeObject:TagPlaceObject = cast timelineContainer.tags[frameObject.placedAtIndex];
-
-							if (placeObject != null && placeObject.instanceName != null) {
-
-								var childSymbol = timelineContainer.getCharacter (frameObject.characterId);
-								var className = null;
-
-								if (childSymbol != null) {
-
-									if (Std.is (childSymbol, TagDefineSprite)) {
-
-										className = "openfl.display.MovieClip";
-
-									} else if (Std.is (childSymbol, TagDefineBitsLossless) || Std.is (childSymbol, TagDefineBits)) {
-
-										className = "openfl.display.Bitmap";
-
-									} else if (Std.is (childSymbol, TagDefineShape) || Std.is (childSymbol, TagDefineMorphShape)) {
-
-										className = "openfl.display.Shape";
-
-									} else if (Std.is (childSymbol, TagDefineText) || Std.is (childSymbol, TagDefineEditText)) {
-
-										className = "openfl.text.TextField";
-
-									} else if (Std.is (childSymbol, TagDefineButton2)) {
-
-										className = "openfl.display.SimpleButton";
-
-									}
-
-									if (className != null) {
-
-										classProperties.push ( { name: placeObject.instanceName, type: className } );
-
-									}
-
-								}
-
-							}
-
-						}
-
-					}
-
-				}
-
-				var context = { PACKAGE_NAME: packageName, PACKAGE_NAME_DOT: packageNameDot, CLASS_NAME: name, SWF_ID: swfAsset.id, SYMBOL_ID: symbolID, PREFIX: prefix, CLASS_PROPERTIES: classProperties };
-				var template = new Template (templateData);
-				var targetPath;
-
-				if (project.target == IOS) {
-
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/" + project.app.file + "/" + "/haxe";
-
-				} else {
-
-					targetPath = PathHelper.tryFullPath (targetDirectory) + "/haxe";
-
-				}
-
-				var templateFile = new Asset ("", PathHelper.combine (targetPath, Path.directory (className.split (".").join ("/"))) + "/" + prefix + name + ".hx", AssetType.TEMPLATE);
-				templateFile.data = template.execute (context);
-				output.assets.push (templateFile);
-
-			}
-
-		}
-
-	}
-
 
 	private static function generateSWFLiteClasses (project:HXProject, output:HXProject, swfLite:SWFLite, swfLiteAsset:Asset, prefix:String = ""):Void {
 
@@ -499,7 +362,6 @@ class Tools {
 	private static function processLibraries (project:HXProject):HXProject {
 
 		var output = new HXProject ();
-		var embeddedSWF = false;
 		var embeddedSWFLite = false;
 		//var filterClasses = [];
 
@@ -525,55 +387,7 @@ class Tools {
 
 			}
 
-			if (type == "swf" && project.target != Platform.HTML5) {
-
-				if (!FileSystem.exists (library.sourcePath)) {
-
-					LogHelper.warn ("Could not find library file: " + library.sourcePath);
-					continue;
-
-				}
-
-				LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
-
-				var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-
-				if (library.embed != null) {
-
-					swf.embed = library.embed;
-
-				}
-
-				output.assets.push (swf);
-
-				var data:Dynamic = {};
-				data.version = 0.1;
-				data.type = "format.swf.SWFLibrary";
-				data.args = [ "lib/" + library.name + "/" + library.name + ".swf" ];
-
-				var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
-				asset.id = "libraries/" + library.name + ".json";
-				asset.data = Json.stringify (data);
-
-				if (library.embed != null) {
-
-					asset.embed = library.embed;
-
-				}
-
-				output.assets.push (asset);
-
-				if (library.generate) {
-
-					generateSWFClasses (project, output, swf, library.prefix);
-
-				}
-
-				embeddedSWF = true;
-				//project.haxelibs.push (new Haxelib ("openfl"));
-				//output.assets.push (new Asset (library.sourcePath, "libraries/" + library.name + ".swf", AssetType.BINARY));
-
-			} else if (type == "swf_lite" || type == "swflite") {
+			if (type == "swf_lite" || type == "swflite") {
 
 				if (!FileSystem.exists (library.sourcePath)) {
 
@@ -783,13 +597,6 @@ class Tools {
 
 		}
 
-		if (embeddedSWF) {
-
-			output.haxelibs.push (new Haxelib ("format"));
-			output.haxeflags.push ("format.swf.SWFLibrary");
-
-		}
-
 		if (embeddedSWFLite) {
 
 			output.haxeflags.push ("format.swf.lite.SWFLiteLibrary");
@@ -802,7 +609,7 @@ class Tools {
 
 		}
 
-		if (embeddedSWF || embeddedSWFLite) {
+		if (embeddedSWFLite) {
 
 			return output;
 
