@@ -58,7 +58,6 @@ class RenderSession {
 		
 		var matrix = Matrix.pool.get ();
 		
-		var top = renderTargetBaseTransformStack.first ();
 		var renderTransform:Matrix = Reflect.field (source, "__renderTransform");
 		
 		if (renderTransform != null) {

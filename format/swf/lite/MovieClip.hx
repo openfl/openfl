@@ -66,6 +66,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	private var __9SliceBitmap:BitmapData;
 	private var __scale9Rect:Rectangle;
+	private var __updating9SliceBitmap:Bool = false;
 
 	private var __SWFDepthData:Map<DisplayObject, Int>;
 	private var __maskData:Map<DisplayObject, Int>;
@@ -362,7 +363,7 @@ class MovieClip extends flash.display.MovieClip {
 		var graphics = shape.graphics;
 
 		if ( symbol.graphics != null && symbol.graphics.readOnly == true ) {
-			@:privateAccess graphics.shallowCopyFrom( symbol.graphics );
+			graphics.shallowCopyFrom( symbol.graphics );
 			return shape;
 		}
 
@@ -709,14 +710,13 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
-
-		super.__update(transformOnly, updateChildren, maskGraphics);
+	private function __update9SliceBitmap ():Void {
 
 		// :TODO: should be in a prerender phase
 		// :TODO: use dirty flag if need to update __9SliceBitmap
 
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap == null) {
+				__updating9SliceBitmap = true;
 				var bounds:Rectangle = Rectangle.pool.get();
 				bounds.setEmpty();
 				__getBounds (bounds);
@@ -736,16 +736,14 @@ class MovieClip extends flash.display.MovieClip {
 				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
 				@:privateAccess bitmap.__resize (Math.ceil (bounds.width), Math.ceil (bounds.height));
 
-				var previousTransform = __renderTransform;
-
-				__renderTransform = new Matrix();
-				__renderTransform.translate(-bounds.x, -bounds.y);
-				Rectangle.pool.put(bounds);
-				@:privateAccess bitmap.__drawGL(renderSession, this, __renderTransform);
-
-				__renderTransform = previousTransform;
+				var renderTransform = Matrix.pool.get ();
+				renderTransform.identity ();
+				renderTransform.translate(-bounds.x, -bounds.y);
+				@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
+				Matrix.pool.put (renderTransform);
 
 				__9SliceBitmap = bitmap;
+				__updating9SliceBitmap = false;
 		}
 	}
 
@@ -819,6 +817,11 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
+		
+		if (!__updating9SliceBitmap) {
+			__update9SliceBitmap ();
+		}
+
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
 			if (!__renderable || __worldAlpha <= 0) return;
 
