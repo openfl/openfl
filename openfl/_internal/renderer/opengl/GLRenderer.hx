@@ -28,7 +28,7 @@ class GLRenderer extends AbstractRenderer {
 	public var projection:Matrix4;
 	public var projectionFlipped:Matrix4;
 	
-	private var cacheObject:BitmapData;
+	// private var cacheObject:BitmapData;
 	private var currentRenderTarget:BitmapData;
 	private var displayHeight:Int;
 	private var displayMatrix:Matrix;
@@ -102,12 +102,12 @@ class GLRenderer extends AbstractRenderer {
 	
 	public function getCacheObject ():Void {
 		
-		gl.bindFramebuffer (gl.FRAMEBUFFER, cacheObject.__getFramebuffer (gl));
-		gl.viewport (0, 0, width, height);
-		gl.clearColor (0, 0, 0, 0);
-		gl.clear (gl.COLOR_BUFFER_BIT);
+		// gl.bindFramebuffer (gl.FRAMEBUFFER, cacheObject.__getFramebuffer (gl));
+		// gl.viewport (0, 0, width, height);
+		// gl.clearColor (0, 0, 0, 0);
+		// gl.clear (gl.COLOR_BUFFER_BIT);
 		
-		flipped = false;
+		// flipped = false;
 		
 	}
 	
@@ -148,6 +148,26 @@ class GLRenderer extends AbstractRenderer {
 	public function getRenderTarget (framebuffer:Bool):Void {
 		
 		if (framebuffer) {
+			
+			if (renderTargetA == null) {
+				
+				renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
+				
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetA.getTexture (gl));
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				
+			}
+			
+			if (renderTargetB == null) {
+				
+				renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
+				
+				gl.bindTexture (gl.TEXTURE_2D, renderTargetB.getTexture (gl));
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				
+			}
 			
 			if (currentRenderTarget == renderTargetA) {
 				
@@ -222,17 +242,17 @@ class GLRenderer extends AbstractRenderer {
 		
 		super.resize (width, height);
 		
-		if (cacheObject == null || cacheObject.width != width || cacheObject.height != height) {
+		// if (cacheObject == null || cacheObject.width != width || cacheObject.height != height) {
 			
-			cacheObject = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
+		// 	cacheObject = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 			
-			gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl));
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+		// 	gl.bindTexture (gl.TEXTURE_2D, cacheObject.getTexture (gl));
+		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+		// 	gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			
-		}
+		// }
 		
-		if (renderTargetA == null || renderTargetA.width != width || renderTargetA.height != height) {
+		if (renderTargetA != null && (renderTargetA.width != width || renderTargetA.height != height)) {
 			
 			renderTargetA = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 			
@@ -242,7 +262,7 @@ class GLRenderer extends AbstractRenderer {
 			
 		}
 		
-		if (renderTargetB == null || renderTargetB.width != width || renderTargetB.height != height) {
+		if (renderTargetB != null && (renderTargetB.width != width || renderTargetB.height != height)) {
 			
 			renderTargetB = BitmapData.fromTexture (stage.stage3Ds[0].context3D.createRectangleTexture (width, height, BGRA, true));
 			

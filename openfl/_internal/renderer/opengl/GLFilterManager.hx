@@ -79,14 +79,14 @@ class GLFilterManager extends AbstractFilterManager {
 			
 			if (object.__filters.length > 1 || filter.__numPasses > 0) {
 				
-				if (filter.__cacheObject) {
+				// if (filter.__cacheObject) {
 					
-					currentTarget = renderer.currentRenderTarget;
-					renderer.getCacheObject ();
+				// 	currentTarget = renderer.currentRenderTarget;
+				// 	renderer.getCacheObject ();
 					
-					renderPass (currentTarget, renderSession.shaderManager.defaultShader);
+				// 	renderPass (currentTarget, renderSession.shaderManager.defaultShader);
 					
-				}
+				// }
 				
 				for (i in 0...filter.__numPasses) {
 					
