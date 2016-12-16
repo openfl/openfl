@@ -86,7 +86,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 		var maskBounds = Rectangle.pool.get();
 		maskBounds.setEmpty();
-		@:privateAccess mask.__getRenderBounds (maskBounds);
+		@:privateAccess mask.__getBounds (maskBounds);
 
 
 		if( @:privateAccess mask.__cachedBitmap == null ){
@@ -99,6 +99,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;
+			mask.__update (true, false);
 
 			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
 			Matrix.pool.put(m);
