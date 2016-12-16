@@ -222,16 +222,7 @@ class DOMTextField {
 					
 					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color & 0xFFFFFF, 6), null);
 					
-					if (textEngine.autoSize != TextFieldAutoSize.NONE) {
-						
-						style.setProperty ("width", "auto", null);
-						
-					} else {
-						
-						style.setProperty ("width", w + "px", null);
-						
-					}
-					
+					style.setProperty ("width",  w + "px", null);
 					style.setProperty ("height", h + "px", null);
 					
 					switch (textField.__textFormat.align) {
