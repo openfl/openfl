@@ -5,6 +5,11 @@ import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.AbstractShaderManager;
 import openfl.display.Shader;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Shader)
 
 

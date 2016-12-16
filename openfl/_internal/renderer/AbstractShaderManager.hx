@@ -3,6 +3,11 @@ package openfl._internal.renderer;
 
 import openfl.display.Shader;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class AbstractShaderManager {
 	

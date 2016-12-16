@@ -4,6 +4,11 @@ package openfl._internal.renderer;
 import openfl.display.*;
 import openfl.geom.*;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:keep
 

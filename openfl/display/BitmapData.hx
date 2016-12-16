@@ -64,6 +64,11 @@ import js.Browser;
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:autoBuild(openfl.Assets.embedBitmap())
 
 

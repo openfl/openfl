@@ -11,6 +11,11 @@ import openfl.filters.BitmapFilter;
 import openfl.geom.Matrix;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)

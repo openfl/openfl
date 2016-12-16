@@ -3,6 +3,11 @@ package openfl.geom;
 
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Utils3D {
 	

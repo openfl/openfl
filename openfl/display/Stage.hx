@@ -66,6 +66,11 @@ import js.html.Element;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.renderer.AbstractRenderer)
 @:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
@@ -1180,7 +1185,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
 		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
 		
-		if (!event.__preventDefault) {
+		if (false && !event.__preventDefault) {
 			
 			#if cpp
 			untyped __cpp__ ("throw e");

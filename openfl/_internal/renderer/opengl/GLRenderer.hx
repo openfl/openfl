@@ -9,6 +9,11 @@ import openfl.display.OpenGLView;
 import openfl.display.Stage;
 import openfl.geom.Matrix;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)

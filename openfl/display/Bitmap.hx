@@ -14,6 +14,10 @@ import openfl.geom.Rectangle;
 import js.html.ImageElement;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)

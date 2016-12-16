@@ -5,6 +5,11 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Bitmap;
 
+#if !openfl_debug
+@:fileXml(' tags="haxe,release" ')
+@:noDebug
+#end
+
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)

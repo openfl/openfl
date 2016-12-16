@@ -5,6 +5,11 @@ import lime.math.Matrix3;
 import lime.utils.Float32Array;
 import openfl.geom.Point;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Matrix {
 	

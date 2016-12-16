@@ -16,6 +16,11 @@ import openfl._internal.renderer.dom.DOMTilemap;
 import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.geom.Rectangle)
 
 

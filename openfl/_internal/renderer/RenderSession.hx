@@ -15,6 +15,11 @@ import openfl.display.BlendMode;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class RenderSession {
 	

@@ -3,6 +3,11 @@ package openfl.geom;
 
 import openfl.display.DisplayObject;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.ColorTransform)
 

@@ -4,6 +4,11 @@ package openfl._internal.renderer.opengl;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage3D;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
 
