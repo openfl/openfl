@@ -105,7 +105,7 @@ class DOMTextField {
 						
 					}
 					
-					if (!textEngine.multiline) {
+					if (!textEngine.wordWrap) {
 						
 						textField.__style.setProperty ("white-space", "nowrap", null);
 						
