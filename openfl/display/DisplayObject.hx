@@ -466,12 +466,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			} else {
 				
-				while (current != stage && current != null) {
+				while (current != null) {
 					
 					list.push (current);
 					current = current.parent;
 					
-					if (current != stage && current.__transformDirty) {
+					if (current != null && current.__transformDirty) {
 						
 						transformDirty = true;
 						
@@ -807,6 +807,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__renderTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
 			__renderTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__renderTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			
+			if (parent == stage) {
+				__renderTransform.tx = local.tx;
+				__renderTransform.ty = local.ty;
+			}
 			
 		} else {
 			
