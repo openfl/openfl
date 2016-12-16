@@ -150,10 +150,14 @@ class DOMTextField {
 					if (textEngine.border) {
 						
 						style.setProperty ("border", "solid 1px #" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6), null);
+						textField.__renderTransform.translate (-1, -1);
+						textField.__renderTransformChanged = true;
+						textField.__transformDirty = true;
 						
-					} else {
+					} else if (style.border != "") {
 						
 						style.removeProperty ("border");
+						textField.__renderTransformChanged = true;
 						
 					}
 					
