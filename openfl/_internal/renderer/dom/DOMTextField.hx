@@ -71,7 +71,7 @@ class DOMTextField {
 		
 		if (textField.stage != null && textField.__worldVisible && textField.__renderable) {
 			
-			if (textField.__dirty || textField.__div == null) {
+			if (textField.__dirty || textField.__renderTransformChanged || textField.__div == null) {
 				
 				if (textEngine.text != "" || textEngine.background || textEngine.border || textEngine.type == INPUT) {
 					
@@ -147,6 +147,65 @@ class DOMTextField {
 						
 					}
 					
+					var w = textEngine.width;
+					var h = textEngine.height;
+					
+					var t = textField.__renderTransform;
+					if (t.a != 1.0 || t.d != 1.0) {
+						
+						var scale:Float;
+						if (t.a == t.d) {
+							scale = t.a;
+							t.a = t.d = 1.0;
+						} else if (t.a > t.d) {
+							scale = t.a;
+							t.d /= t.a;
+							t.a = 1.0;
+						} else {
+							scale = t.d;
+							t.a /= t.d;
+							t.d = 1.0;
+						}
+						var realSize = textField.__textFormat.size;
+						var scaledFontSize  : Float = realSize * scale;
+						
+					#if !openfl_dont_half_round_font_sizes
+						
+						var roundedFontSize = Math.fceil(scaledFontSize * 2) / 2;
+						if (roundedFontSize > scaledFontSize) {
+							
+							var adjustment = (scaledFontSize / roundedFontSize);
+							if (adjustment < 1 && (1 - adjustment) < 0.1) {
+								t.a = 1;
+								t.d = 1;
+							} else {
+								scale *= adjustment;
+								t.a *= adjustment;
+								t.d *= adjustment;
+							}
+							
+						}
+						untyped textField.__textFormat.size = roundedFontSize;
+						
+					#else
+						
+						untyped textField.__textFormat.size = scaledFontSize;
+						
+					#end
+						
+						w = Math.ceil(w * scale);
+						h = Math.ceil(h * scale);
+						
+						style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+						
+						textField.__textFormat.size = realSize;
+					
+					} else {
+						
+						style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+						
+					}
+					
 					if (textEngine.border) {
 						
 						style.setProperty ("border", "solid 1px #" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6), null);
@@ -161,7 +220,6 @@ class DOMTextField {
 						
 					}
 					
-					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
 					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color & 0xFFFFFF, 6), null);
 					
 					if (textEngine.autoSize != TextFieldAutoSize.NONE) {
@@ -170,11 +228,11 @@ class DOMTextField {
 						
 					} else {
 						
-						style.setProperty ("width", textEngine.width + "px", null);
+						style.setProperty ("width", w + "px", null);
 						
 					}
 					
-					style.setProperty ("height", textEngine.height + "px", null);
+					style.setProperty ("height", h + "px", null);
 					
 					switch (textField.__textFormat.align) {
 						
