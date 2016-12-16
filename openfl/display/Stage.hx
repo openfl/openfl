@@ -506,7 +506,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			__onMouse (type, Std.int (x), Std.int (y), button);
 			
 		} catch (e:Dynamic) {
 			
@@ -523,7 +523,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
-			__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+			__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x), Std.int (y), 0);
 			
 		} catch (e:Dynamic) {
 			
@@ -555,7 +555,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			__onMouse (type, Std.int (x), Std.int (y), button);
 			
 			if (!showDefaultContextMenu && button == 2) {
 				
@@ -578,7 +578,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
-			__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+			__onMouseWheel (Std.int (deltaX), Std.int (deltaY));
 			
 		} catch (e:Dynamic) {
 			
@@ -1298,6 +1298,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (button > 2) return;
 		
 		var targetPoint = new Point (x, y);
+		__transform.__transformPoint (targetPoint);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		
 		__mouseX = targetPoint.x;
@@ -1641,7 +1642,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var offsetX = Math.round ((windowWidth - (stageWidth * targetScale)) / 2);
 			var offsetY = Math.round ((windowHeight - (stageHeight * targetScale)) / 2);
 			
-			__displayMatrix.scale (targetScale, targetScale);
+			__transform.a = __transform.d = targetScale;
 			__displayMatrix.translate (offsetX, offsetY);
 			
 		}

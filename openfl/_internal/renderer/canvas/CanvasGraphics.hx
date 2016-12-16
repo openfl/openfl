@@ -890,12 +890,41 @@ class CanvasGraphics {
 				}
 				
 				context = graphics.__context;
-				
-				graphics.__canvas.width = width;
-				graphics.__canvas.height = height;
-				
 				var transform = graphics.__renderTransform;
-				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				
+				#if dom
+					
+					var devicePixelRatio = untyped window.devicePixelRatio || 1;
+					if (devicePixelRatio > 1) {
+						
+						graphics.__canvas.width  = Std.int( width * devicePixelRatio);
+						graphics.__canvas.height = Std.int(height * devicePixelRatio);
+						graphics.__canvas.style.width  =  width + "px";
+						graphics.__canvas.style.height = height + "px";	
+						
+						var transform = graphics.__renderTransform;
+						context.setTransform (transform.a  * devicePixelRatio,
+						                      transform.b  * devicePixelRatio,
+						                      transform.c  * devicePixelRatio,
+						                      transform.d  * devicePixelRatio,
+						                      transform.tx * devicePixelRatio,
+						                      transform.ty * devicePixelRatio);
+						
+					} else {
+						
+						graphics.__canvas.width  = width;
+						graphics.__canvas.height = height;
+						context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+						
+					}
+					
+				#else
+					
+					graphics.__canvas.width  = width;
+					graphics.__canvas.height = height;
+					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					
+				#end
 				
 				fillCommands.clear ();
 				strokeCommands.clear ();
