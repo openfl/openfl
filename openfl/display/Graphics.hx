@@ -849,13 +849,18 @@ import js.html.CanvasRenderingContext2D;
 			}
 			
 		}
+		else {
+			
+			return;
+			
+		}
 		
 		#if openfl_disable_graphics_upscaling
 		if (scaleX > 1) scaleX = 1;
 		if (scaleY > 1) scaleY = 1;
 		#end
 		
-		var width = __bounds.width * scaleX;
+		var width  = __bounds.width  * scaleX;
 		var height = __bounds.height * scaleY;
 		
 		if (Math.abs (width - __width) > 2 || Math.abs (height - __height) > 2) {
@@ -864,21 +869,41 @@ import js.html.CanvasRenderingContext2D;
 			
 		}
 		
-		__width = Math.floor (width);
-		__height = Math.floor (height);
+		if (width < 1 || height < 1) {
+			
+			__width  = Std.int (width);
+			__height = Std.int (height);
+			return;
+			
+		}
 		
-		if (__width <= 0 || __height <= 0) return;
+		__renderTransform.a = width  / __bounds.width;
+		__renderTransform.d = height / __bounds.height;
+		var inverseA = (1 / __renderTransform.a);
+		var inverseD = (1 / __renderTransform.d);
 		
-		__renderTransform.a = __width / __bounds.width;
-		__renderTransform.d = __height / __bounds.height;
+		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
+		__worldTransform.a = inverseA * parentTransform.a;
+		__worldTransform.b = inverseD * parentTransform.b;
+		__worldTransform.c = inverseA * parentTransform.c;
+		__worldTransform.d = inverseD * parentTransform.d;
 		
-		__worldTransform.a = 1 / __renderTransform.a;
-		__worldTransform.b = 0;
-		__worldTransform.c = 0;
-		__worldTransform.d = 1 / __renderTransform.d;
-		__worldTransform.tx = __bounds.x;
-		__worldTransform.ty = __bounds.y;
-		__worldTransform.concat (__owner.__renderTransform);
+		var x = __bounds.x;
+		var y = __bounds.y;
+		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
+		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
+		
+		// Floor the world position for crisp graphics rendering
+		__worldTransform.tx = Math.ffloor (tx);
+		__worldTransform.ty = Math.ffloor (ty);
+		
+		// Offset the rendering with the subpixel offset removed by Math.floor above
+		__renderTransform.tx = (tx - __worldTransform.tx);
+		__renderTransform.ty = (ty - __worldTransform.ty);
+		
+		// Grow the canvas bounds to contain the graphics and the extra subpixel
+		__width  = Math.ceil(width  + __renderTransform.tx);
+		__height = Math.ceil(height + __renderTransform.ty);
 		
 	}
 	
