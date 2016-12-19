@@ -4,6 +4,11 @@ package openfl.geom;
 import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class ColorTransform {
 	

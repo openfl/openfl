@@ -10,6 +10,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
 @:access(openfl.geom.Point)

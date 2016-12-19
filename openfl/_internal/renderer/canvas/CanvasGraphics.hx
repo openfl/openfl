@@ -255,16 +255,16 @@ class CanvasGraphics {
 			
 			hitTesting = true;
 			
-			var renderTransform = graphics.__renderTransform;
+			var transform = graphics.__renderTransform;
 			
-			var px = renderTransform.__transformX (x, y);
-			var py = renderTransform.__transformY (x, y);
+			var px = transform.__transformX (x, y);
+			var py = transform.__transformY (x, y);
 			
 			x = px;
 			y = py;
 			
-			x -= bounds.x;
-			y -= bounds.y;
+			x -= transform.__transformX (bounds.x, bounds.y);
+			y -= transform.__transformY (bounds.x, bounds.y);
 			
 			//var width = graphics.__width;
 			//var height = graphics.__height;
@@ -286,6 +286,7 @@ class CanvasGraphics {
 			//}
 			
 			context = graphics.__context;
+			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 			
 			fillCommands.clear ();
 			strokeCommands.clear ();
@@ -294,8 +295,6 @@ class CanvasGraphics {
 			hasStroke = false;
 			bitmapFill = null;
 			bitmapRepeat = false;
-			
-			context.beginPath ();
 			
 			var data = new DrawCommandReader (graphics.__commands);
 			
@@ -618,9 +617,9 @@ class CanvasGraphics {
 				case LINE_STYLE:
 					
 					var c = data.readLineStyle ();
-					if (stroke) {
+					if (stroke && hasStroke) {
 						
-						closePath (hasStroke);
+						closePath (c.thickness == null);
 						
 					}
 					

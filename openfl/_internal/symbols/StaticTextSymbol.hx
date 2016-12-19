@@ -2,7 +2,6 @@ package openfl._internal.symbols;
 
 
 import openfl._internal.swf.SWFLite;
-import openfl.display.DisplayObject;
 import openfl.display.Shape;
 import openfl.geom.Matrix;
 
@@ -22,7 +21,7 @@ class StaticTextSymbol extends SWFSymbol {
 	}
 	
 	
-	private override function __createObject (swf:SWFLite):DisplayObject {
+	private override function __createObject (swf:SWFLite):Shape {
 		
 		var shape = new Shape ();
 		var graphics = shape.graphics;

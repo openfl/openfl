@@ -13,6 +13,11 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Point)

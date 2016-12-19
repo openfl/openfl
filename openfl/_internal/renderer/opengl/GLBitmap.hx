@@ -7,6 +7,11 @@ import openfl.display.Bitmap;
 import openfl.geom.Point;
 import openfl.geom.Matrix;
 
+#if !openfl_debug
+@:fileXml(' tags="haxe,release" ')
+@:noDebug
+#end
+
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)

@@ -5,6 +5,11 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:keep
 

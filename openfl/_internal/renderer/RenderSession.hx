@@ -30,6 +30,11 @@ import openfl.text.TextField;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class RenderSession {
 	

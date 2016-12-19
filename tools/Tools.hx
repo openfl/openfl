@@ -576,13 +576,14 @@ class Tools {
 					
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
-					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.TEMPLATE);
+					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
+					swf.embed = false;
 					
-					if (library.embed != null) {
+					// if (library.embed != null) {
 						
-						swf.embed = library.embed;
+					// 	swf.embed = library.embed;
 						
-					}
+					// }
 					
 					output.assets.push (swf);
 					
@@ -754,11 +755,13 @@ class Tools {
 								
 							}
 							
-							if (library.embed != null) {
+							asset.embed = false;
+							
+							// if (library.embed != null) {
 								
-								asset.embed = library.embed;
+							// 	asset.embed = library.embed;
 								
-							}
+							// }
 							
 							merge.assets.push (asset);
 							
@@ -783,11 +786,13 @@ class Tools {
 									
 								}
 								
-								if (library.embed != null) {
+								asset.embed = false;
+								
+								// if (library.embed != null) {
 									
-									asset.embed = library.embed;
+								// 	asset.embed = library.embed;
 									
-								}
+								// }
 								
 								merge.assets.push (asset);
 								
@@ -850,12 +855,6 @@ class Tools {
 					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
 					data.name = library.name;
-					
-					for (asset in merge.assets) {
-						
-						asset.type = TEMPLATE;
-						
-					}
 					
 					output.merge (merge);
 					

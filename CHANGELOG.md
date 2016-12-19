@@ -1,3 +1,23 @@
+4.5.1 (12/16/2016)
+------------------
+
+* Revised the custom preloader system to use an ordinary Sprite
+* Preloader Sprites now receives PROGRESS events and a cancelable COMPLETE
+* Improved SWF-based assets to use self-contained asset libraries
+* Removed support for `new Vector<T> ([])` as it breaks on C++
+* Improved C++ performance on debug builds, added -Dopenfl-debug
+* Fixed support for custom preloaders on the Flash target
+* Fixed issues with hit testing on scaled vector graphics
+* Fixed hit testing for Video objects and some other hit test issues
+* Fixed support for centered SWF-based text
+* Fixed file-type detection in Loader when using a query string
+* Fixed support for single-pass custom shader filters
+* Fixed the initial scale for high DPI windows on OpenGL rendering
+* Fixed the position of touch events on high DPI windows
+* Fixed creation of framebuffers if filters are not used
+* Fixed a regression in shape.graphics quality
+
+
 4.5.0 (12/07/2016)
 ------------------
 

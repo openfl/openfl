@@ -39,7 +39,8 @@ class ConvolutionFilter extends BitmapFilter {
 		this.color = color;
 		this.alpha = alpha;
 		
-		__numPasses = 1;
+		// __numPasses = 1;
+		__numPasses = 0;
 		
 	}
 	

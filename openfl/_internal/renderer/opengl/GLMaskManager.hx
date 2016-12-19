@@ -8,6 +8,11 @@ import openfl.display.Stage;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Stage)

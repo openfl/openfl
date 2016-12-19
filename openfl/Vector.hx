@@ -277,6 +277,10 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class BoolVector implements IVector<Bool> {
@@ -567,6 +571,10 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class FloatVector implements IVector<Float> {
@@ -849,9 +857,15 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
-
-
 #if !cs
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class FunctionVector implements IVector<Function> {
 	
 	
@@ -1141,6 +1155,10 @@ abstract Vector<T>(IVector<T>) {
 #end
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class IntVector implements IVector<Int> {
@@ -1423,6 +1441,10 @@ abstract Vector<T>(IVector<T>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class ObjectVector<T> implements IVector<T> {

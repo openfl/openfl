@@ -14,6 +14,11 @@ import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:allow(openfl._internal.renderer.DrawCommandReader)
 
 

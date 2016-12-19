@@ -6,6 +6,11 @@ import openfl._internal.renderer.RenderSession;
 import openfl.media.Video;
 import openfl.net.NetStream;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
 

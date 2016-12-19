@@ -3,6 +3,11 @@ package openfl.geom;
 
 import lime.math.Vector2;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Point {
 	

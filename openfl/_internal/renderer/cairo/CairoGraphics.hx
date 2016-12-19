@@ -593,9 +593,9 @@ class CairoGraphics {
 				case LINE_STYLE:
 					
 					var c = data.readLineStyle ();
-					if (stroke) {
+					if (stroke && hasStroke) {
 						
-						closePath (hasStroke);
+						closePath (c.thickness == null);
 						
 					}
 					

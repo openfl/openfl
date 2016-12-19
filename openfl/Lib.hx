@@ -21,6 +21,11 @@ import openfl._internal.swf.SWFLiteLibrary; // workaround
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:access(openfl.display.Stage) class Lib {
 	

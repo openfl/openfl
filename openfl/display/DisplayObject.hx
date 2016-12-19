@@ -34,6 +34,11 @@ import js.html.CSSStyleDeclaration;
 import js.html.Element;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Stage)
@@ -270,7 +275,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		if (stage != null) {
 			
-			return __hitTest (x, y, shapeFlag, null, false, this);
+			return __hitTest (x, y, shapeFlag, null, true, this);
 			
 		} else {
 			

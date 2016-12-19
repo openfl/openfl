@@ -12,6 +12,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.renderer.opengl.GLRenderer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
@@ -90,7 +95,16 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		if (object.__filters != null && object.__filters.length > 0 && !renderSession.filterManager.useCPUFilters ) {
 			
-			renderer.getRenderTarget (true);
+			if (object.__filters.length == 1 && object.__filters[0].__numPasses == 0) {
+				
+				return object.__filters[0].__initShader (renderSession, 0);
+				
+			} else {
+				
+				renderer.getRenderTarget (true);
+				
+			}
+			
 			filterDepth++;
 			
 		}
@@ -107,31 +121,39 @@ class GLFilterManager extends AbstractFilterManager {
 			var filter =  object.__filters[0];
 			var currentTarget, shader;
 			
-			if (filter.__cacheObject) {
+			if (object.__filters.length > 1 || filter.__numPasses > 0) {
 				
-				currentTarget = renderer.currentRenderTarget;
-				renderer.getCacheObject ();
+				// if (filter.__cacheObject) {
+					
+				// 	currentTarget = renderer.currentRenderTarget;
+				// 	renderer.getCacheObject ();
+					
+				// 	renderPass (currentTarget, renderSession.shaderManager.defaultShader);
+					
+				// }
 				
-				renderPass (currentTarget, renderSession.shaderManager.defaultShader);
+				for (i in 0...filter.__numPasses) {
+					
+					currentTarget = renderer.currentRenderTarget;
+					renderer.getRenderTarget (true);
+					shader = filter.__initShader (renderSession, i);
+					
+					renderPass (currentTarget, shader);
+					
+				}
+				
+				// TODO: Properly handle filter-within-filter rendering
+				
+				filterDepth--;
+				renderer.getRenderTarget (filterDepth > 0);
+				
+				renderPass (renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
+				
+			} else {
+				
+				filterDepth--;
 				
 			}
-			
-			for (i in 0...filter.__numPasses) {
-				
-				currentTarget = renderer.currentRenderTarget;
-				renderer.getRenderTarget (true);
-				shader = filter.__initShader (renderSession, i);
-				
-				renderPass (currentTarget, shader);
-				
-			}
-			
-			// TODO: Properly handle filter-within-filter rendering
-			
-			filterDepth--;
-			renderer.getRenderTarget (filterDepth > 0);
-			
-			renderPass (renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
 			
 		}
 		

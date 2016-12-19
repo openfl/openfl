@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.5.0",
-	"releasenote": "Merged SWF library, many DOM renderer improvements, better framebuffer support",
+	"version": "4.5.1",
+	"releasenote": "Improved preloader, improved SWF libraries, fixes for hit testing",
 	"contributors": [ "singmajesty" ]
 }

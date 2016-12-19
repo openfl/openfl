@@ -7,6 +7,11 @@ import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Graphics)
 
 
