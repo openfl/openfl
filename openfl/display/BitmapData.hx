@@ -69,7 +69,7 @@ import js.Browser;
 @:noDebug
 #end
 
-@:autoBuild(openfl.Assets.embedBitmap())
+@:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
 
 
 class BitmapData implements IBitmapDrawable {

@@ -14,7 +14,7 @@ import openfl.utils.ByteArray;
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
 
-@:autoBuild(openfl.Assets.embedSound())
+@:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
 
 
 class Sound extends EventDispatcher {
