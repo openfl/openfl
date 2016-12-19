@@ -906,7 +906,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowMinimize (window:Window):Void {
 		
-		//if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		
+		try {
+			
+			__primaryTouch = null;
+			__broadcastEvent (new Event (Event.DEACTIVATE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
@@ -944,9 +955,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onWindowRestore (window:Window):Void {
 		
-		//if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
 		
-		//__resize ();
+		try {
+			
+			__broadcastEvent (new Event (Event.ACTIVATE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
+			
+		}
 		
 	}
 	
