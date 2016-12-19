@@ -863,12 +863,6 @@ import js.html.CanvasRenderingContext2D;
 		var width  = __bounds.width  * scaleX;
 		var height = __bounds.height * scaleY;
 		
-		if (Math.abs (width - __width) > 2 || Math.abs (height - __height) > 2) {
-			
-			__dirty = true;
-			
-		}
-		
 		if (width < 1 || height < 1) {
 			
 			__width  = Std.int (width);
@@ -901,9 +895,19 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.tx = (tx - __worldTransform.tx);
 		__renderTransform.ty = (ty - __worldTransform.ty);
 		
-		// Grow the canvas bounds to contain the graphics and the extra subpixel
-		__width  = Math.ceil(width  + __renderTransform.tx);
-		__height = Math.ceil(height + __renderTransform.ty);
+		// Calculate the size to contain the graphics and the extra subpixel
+		var newWidth  = Math.ceil(width  + __renderTransform.tx);
+		var newHeight = Math.ceil(height + __renderTransform.ty);
+		
+		// Mark dirty if render size changed
+		if (newWidth != __width || newHeight != __height) {
+			
+			__dirty = true;
+			
+		}
+		
+		__width  = newWidth;
+		__height = newHeight;
 		
 	}
 	
