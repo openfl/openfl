@@ -24,6 +24,7 @@ class Sprite extends DisplayObjectContainer {
 	
 	
 	public var buttonMode:Bool;
+	public var dropTarget (default, null):DisplayObject;
 	public var graphics (get, never):Graphics;
 	public var hitArea:Sprite;
 	public var useHandCursor:Bool;

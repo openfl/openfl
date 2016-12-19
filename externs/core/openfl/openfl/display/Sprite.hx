@@ -53,9 +53,7 @@ extern class Sprite extends DisplayObjectContainer {
 	 */
 	public var buttonMode:Bool;
 	
-	#if flash
-	@:noCompletion @:dox(hide) public var dropTarget (default, null):DisplayObject;
-	#end
+	public var dropTarget (default, null):DisplayObject;
 	
 	/**
 	 * Specifies the Graphics object that belongs to this sprite where vector

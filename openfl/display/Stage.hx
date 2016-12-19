@@ -72,6 +72,7 @@ import js.Browser;
 #end
 
 @:access(openfl._internal.renderer.AbstractRenderer)
+@:access(openfl.display.Sprite)
 @:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
 @:access(openfl.ui.GameInput)
@@ -1503,6 +1504,35 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (__dragObject != null) {
 			
 			__drag (targetPoint);
+			
+			var dropTarget = null;
+			
+			if (__mouseOverTarget == __dragObject) {
+				
+				var cacheMouseEnabled = __dragObject.mouseEnabled;
+				var cacheMouseChildren = __dragObject.mouseChildren;
+				
+				__dragObject.mouseEnabled = false;
+				__dragObject.mouseChildren = false;
+				
+				var stack = [];
+				
+				if (__hitTest (__mouseX, __mouseY, true, stack, true, this)) {
+					
+					dropTarget = stack[stack.length - 1];
+					
+				}
+				
+				__dragObject.mouseEnabled = cacheMouseEnabled;
+				__dragObject.mouseChildren = cacheMouseChildren;
+				
+			} else if (__mouseOverTarget != this) {
+				
+				dropTarget = __mouseOverTarget;
+				
+			}
+			
+			__dragObject.dropTarget = dropTarget;
 			
 		}
 		
