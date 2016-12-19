@@ -83,7 +83,7 @@ class RenderSession {
 
 	public function updateCachedBitmap( shape:DisplayObject ) {
 
-		var dirty = (shape.__cachedShapeBounds == null) || hierarchyDirty( shape );
+		var dirty = hierarchyDirty( shape );
 
 		if (dirty) {
 
@@ -92,7 +92,7 @@ class RenderSession {
 			shape.__minCacheAsBitmapBounds = new Point( Math.POSITIVE_INFINITY,  Math.POSITIVE_INFINITY );
 			shape.__maxCacheAsBitmapBounds = new Point( Math.NEGATIVE_INFINITY,  Math.NEGATIVE_INFINITY );
 
-			getCachedBitmapBounds( shape, shape );
+			var initialOffset = getCachedBitmapBounds( shape, shape );
 
 			var bounds =  new Rectangle();
 			bounds.x = shape.__minCacheAsBitmapBounds.x;
@@ -100,13 +100,13 @@ class RenderSession {
 			bounds.width = shape.__maxCacheAsBitmapBounds.x - shape.__minCacheAsBitmapBounds.x;
 			bounds.height = shape.__maxCacheAsBitmapBounds.y - shape.__minCacheAsBitmapBounds.y;
 
-			var offset = new Point( bounds.x, bounds.y );
-			offset.x -= shape.__cachedShapeBounds.x;
-			offset.y -= shape.__cachedShapeBounds.y;
-
-			offsetCachedBitmapBounds( shape, offset );
-
 			if (bounds.width > 0 && bounds.height > 0) {
+
+				var offset = new Point( bounds.x, bounds.y );
+				offset.x -= initialOffset.x;
+				offset.y -= initialOffset.y;
+
+				offsetCachedBitmapBounds( shape, offset );
 
 				shape.__cachedBitmap = new BitmapData( Std.int(bounds.width), Std.int(bounds.height), true, 0x0 );
 
@@ -128,13 +128,6 @@ class RenderSession {
 
 	private function hierarchyDirty( shape:DisplayObject ):Bool {
 
-		if (Std.is(shape, DisplayObjectContainer)) {
-			var cont:DisplayObjectContainer = cast shape;
-			for (i in 0...cont.numChildren) {
-				return hierarchyDirty( cont.getChildAt( i ) ); 
-			}
-		}
-		
 		if (shape.__filterDirty || shape.__transformDirty || shape.__renderDirty) {
 			return true;
 		}
@@ -151,6 +144,15 @@ class RenderSession {
 		var textField:TextField = cast shape;
 		if ( Std.is(shape, TextField) && textField.__dirty) {
 			return true;
+		}
+
+		if (Std.is(shape, DisplayObjectContainer)) {
+			var cont:DisplayObjectContainer = cast shape;
+			var dirty = false;
+			for (i in 0...cont.numChildren) {
+				dirty = dirty || hierarchyDirty( cont.getChildAt( i ) ); 
+			}
+			return dirty;
 		}
 
 		return false;
@@ -179,10 +181,10 @@ class RenderSession {
 	}
 
 
-	private function getCachedBitmapBounds (shape:DisplayObject, cacheAsBitmapShape:DisplayObject, point:Point = null ) {
+	private function getCachedBitmapBounds (shape:DisplayObject, cacheAsBitmapShape:DisplayObject, point:Point = null ) : Point {
 
 		var graphics = shape.__graphics;
-		
+	
 		var textField:TextField = cast shape;
 		if ( Std.is(shape, TextField) && textField.__dirty) {
 			#if (js && html5)
@@ -218,8 +220,8 @@ class RenderSession {
 		if (point == null) {
 			point = new Point( shape.__worldTransform.tx,  shape.__worldTransform.ty );
 
-			if (cacheAsBitmapShape.__cachedShapeBounds == null) {
-				cacheAsBitmapShape.__cachedShapeBounds = new Rectangle( point.x, point.y, 0, 0 );
+			if (shape.__cachedShapeBounds == null) {
+				shape.__cachedShapeBounds = new Rectangle( point.x, point.y, 0, 0 );
 			}
 
 		}
@@ -230,9 +232,11 @@ class RenderSession {
 			var bitmap:Bitmap = cast shape;
 			if (bitmap != null && (bitmap.__renderable || bitmap.__worldAlpha > 0) && bitmap.bitmapData != null) {
 
+				if (point == null) {
+					point = new Point( shape.__worldTransform.tx,  shape.__worldTransform.ty );
+				}
+
 				bitmap.__cacheAsBitmapMatrix = bitmap.__worldTransform.clone();
-				bitmap.__cacheAsBitmapMatrix.tx -= point.x;
-				bitmap.__cacheAsBitmapMatrix.ty -= point.y;
 
 				updateBoundsRectangle( bitmap, bitmap.bitmapData, cacheAsBitmapShape, point );
 			}
@@ -262,11 +266,11 @@ class RenderSession {
 
 				var child = cont.getChildAt( i );
 
-				getCachedBitmapBounds( child, cacheAsBitmapShape, point );
+				point = getCachedBitmapBounds( child, cacheAsBitmapShape, point );
 			}
 		}
 				
-
+		return point;
 	}
 
 	
@@ -300,7 +304,7 @@ class RenderSession {
 
 		shape.__cacheAsBitmapMatrix.tx += -boundsOffset.x;	
 		shape.__cacheAsBitmapMatrix.ty += -boundsOffset.y;
-	
+
 		if (Std.is(shape, DisplayObjectContainer)) {
 			
 			var cont:DisplayObjectContainer = cast shape;
