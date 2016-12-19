@@ -34,7 +34,7 @@ class OpenGLView extends DirectRenderer {
 		
 		super ("OpenGLView");
 		
-		#if html5
+		#if (js && html5)
 		#if dom
 		if (!__initialized) {
 			
@@ -253,7 +253,7 @@ class OpenGLView extends DirectRenderer {
 	}
 	
 	
-	#if (html5 && dom)
+	#if (js && html5 && dom)
 	private override function set_width (value:Float):Float {
 		
 		super.set_width (value);
