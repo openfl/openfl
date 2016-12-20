@@ -878,8 +878,8 @@ import js.html.CanvasRenderingContext2D;
 		
 		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
 		__worldTransform.a = inverseA * parentTransform.a;
-		__worldTransform.b = inverseD * parentTransform.b;
-		__worldTransform.c = inverseA * parentTransform.c;
+		__worldTransform.b = inverseA * parentTransform.b;
+		__worldTransform.c = inverseD * parentTransform.c;
 		__worldTransform.d = inverseD * parentTransform.d;
 		
 		var x = __bounds.x;
