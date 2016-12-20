@@ -1,3 +1,13 @@
+4.5.2 (12/19/2016)
+------------------
+
+* Added sprite.dropTarget
+* Improved dispatch of stage ACTIVATE/DEACTIVATE on desktop
+* Fixed issues related to @:bitmap, @:file and @:sound
+* Fixed issues when marking SWF libraries as embedded
+* Fixed an error when compiling to HTML5 -Ddom
+
+
 4.5.1 (12/16/2016)
 ------------------
 
