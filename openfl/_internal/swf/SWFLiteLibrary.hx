@@ -66,7 +66,7 @@ import openfl.Assets;
 	
 	public override function getImage (id:String):Image {
 		
-		if (paths.exists (id)) {
+		if (cachedImages.exists (id) || classTypes.exists (id) || paths.exists (id)) {
 			
 			return super.getImage (id);
 			

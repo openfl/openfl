@@ -598,7 +598,7 @@ class Tools {
 					
 					if (library.embed != null) {
 						
-						asset.embed = library.embed;
+						// asset.embed = library.embed;
 						
 					}
 					
@@ -665,10 +665,11 @@ class Tools {
 							if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
 								
 								var asset = new Asset (cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
+								asset.embed = false;
 								
 								if (library.embed != null) {
 									
-									asset.embed = library.embed;
+									// asset.embed = library.embed;
 									
 								}
 								
@@ -682,7 +683,7 @@ class Tools {
 						
 						if (library.embed != null) {
 							
-							swfLiteAsset.embed = library.embed;
+							// swfLiteAsset.embed = library.embed;
 							
 						}
 						
@@ -823,7 +824,7 @@ class Tools {
 						
 						if (library.embed != null) {
 							
-							swfLiteAsset.embed = library.embed;
+							// swfLiteAsset.embed = library.embed;
 							
 						}
 						
@@ -864,7 +865,7 @@ class Tools {
 					
 					if (library.embed != null) {
 						
-						asset.embed = library.embed;
+						// asset.embed = library.embed;
 						
 					}
 					
