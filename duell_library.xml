@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<library xmlns="duell">
+	<haxelib name="hxcpp" />
+	<haxelib name="format" />
+	<haxelib name="openfl-samples" />
+</library>

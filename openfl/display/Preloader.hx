@@ -149,11 +149,10 @@ class Preloader extends LimePreloader {
 	
 	@:noCompletion private function sound_onIOError (event:IOErrorEvent):Void {
 
-
 		onError.dispatch( event.target.url );
-		// if it is actually valid, it will load later when requested
 
-		/*
+		// even if a sound fails >> the loader needs to proceed >> the sound will be 
+		// requested again if needed
 		loaded++;
 		
 		onProgress.dispatch (loaded, total);
@@ -161,9 +160,8 @@ class Preloader extends LimePreloader {
 		if (loaded == total) {
 			
 			start ();
-			
+		
 		}
-		*/
 
 	}
 	#end
