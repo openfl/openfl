@@ -108,6 +108,13 @@ class ApplicationMain {
 	
 	
 	#if (js && html5)
+	@:keep @:expose("lime.::APP_FILE::.embed")
+	public static function __embed (element:Dynamic, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
+		
+		embed (element, width, height, background, assetsPrefix);
+		
+	}
+	
 	@:keep @:expose("lime.embed")
 	public static function embed (element:Dynamic, width:Null<Int> = null, height:Null<Int> = null, background:String = null, assetsPrefix:String = null) {
 		
