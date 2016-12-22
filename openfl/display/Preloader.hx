@@ -81,11 +81,19 @@ class Preloader extends LimePreloader {
 	
 	private function display_onComplete (event:Event):Void {
 		
-		display.removeEventListener (Event.COMPLETE, display_onComplete);
-		
-		if (event.isDefaultPrevented ()) {
+		if (display != null) {
 			
-			display.dispatchEvent (new Event (Event.UNLOAD));
+			display.removeEventListener (Event.COMPLETE, display_onComplete);
+			
+			if (event.isDefaultPrevented ()) {
+				
+				display.dispatchEvent (new Event (Event.UNLOAD));
+				
+			}
+			
+		} else {
+			
+			display_onUnload (null);
 			
 		}
 		
@@ -94,16 +102,20 @@ class Preloader extends LimePreloader {
 	
 	private function display_onUnload (event:Event):Void {
 		
-		display.removeEventListener (Event.UNLOAD, display_onUnload);
-		
-		if (display.parent == Lib.current) {
+		if (display != null) {
 			
-			Lib.current.removeChild (display);
+			display.removeEventListener (Event.UNLOAD, display_onUnload);
+			
+			if (display.parent == Lib.current) {
+				
+				Lib.current.removeChild (display);
+				
+			}
+			
+			Lib.current.stage.focus = null;
+			display = null;
 			
 		}
-		
-		Lib.current.stage.focus = null;
-		display = null;
 		
 		if (ready) {
 			
