@@ -113,7 +113,7 @@ class FileReference extends EventDispatcher {
 		
 		if (__path != null) {
 			
-			data = Bytes.readFile (__path);
+			data = Bytes.fromFile (__path);
 			openFileDialog_onComplete();
 			
 		}
