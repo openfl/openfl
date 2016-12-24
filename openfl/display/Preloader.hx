@@ -27,7 +27,6 @@ class Preloader extends LimePreloader {
 		
 		if (display != null) {
 			
-			display.addEventListener (Event.COMPLETE, display_onComplete, false, -1000);
 			display.addEventListener (Event.UNLOAD, display_onUnload);
 			Lib.current.addChild (display);
 			
@@ -46,7 +45,14 @@ class Preloader extends LimePreloader {
 		
 		if (display != null) {
 			
-			display.dispatchEvent (new Event (Event.COMPLETE, true, true));
+			var complete = new Event (Event.COMPLETE, true, true);
+			display.dispatchEvent (complete);
+			
+			if (!complete.isDefaultPrevented ()) {
+				
+				display.dispatchEvent (new Event (Event.UNLOAD));
+				
+			}
 			
 		} else {
 			
@@ -77,27 +83,6 @@ class Preloader extends LimePreloader {
 	// Event Handlers
 	
 	
-	
-	
-	private function display_onComplete (event:Event):Void {
-		
-		if (display != null) {
-			
-			display.removeEventListener (Event.COMPLETE, display_onComplete);
-			
-			if (event.isDefaultPrevented ()) {
-				
-				display.dispatchEvent (new Event (Event.UNLOAD));
-				
-			}
-			
-		} else {
-			
-			display_onUnload (null);
-			
-		}
-		
-	}
 	
 	
 	private function display_onUnload (event:Event):Void {
