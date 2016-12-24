@@ -26,6 +26,7 @@ import openfl.Assets;
 	
 	private var alphaCheck:Map<String, Bool>;
 	private var id:String;
+	private var preloading:Bool;
 	private var swf:SWFLite;
 	
 	
@@ -135,6 +136,7 @@ import openfl.Assets;
 		#end
 		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
+		preloading = true;
 		
 		loadText (id).onError (promise.error).onComplete (function (data) {
 			
@@ -143,61 +145,12 @@ import openfl.Assets;
 			
 			SWFLite.instances.set (id, swf);
 			
-			#if (swf_preload || swflite_preload)
-			
-			__load ().onError (promise.error).onComplete (function (_) {
-			
-				var bitmapSymbols:Array<BitmapSymbol> = [];
+			__load ().onProgress (promise.progress).onError (promise.error).onComplete (function (_) {
 				
-				for (symbol in swf.symbols) {
-					
-					if (Std.is (symbol, BitmapSymbol)) {
-						
-						bitmapSymbols.push (cast symbol);
-						
-					}
-					
-				}
-				
-				if (bitmapSymbols.length == 0) {
-					
-					promise.complete (this);
-					
-				} else {
-					
-					var loaded = -1;
-					
-					var onLoad = function (?_) {
-						
-						loaded++;
-						
-						promise.progress (loaded, bitmapSymbols.length);
-						
-						if (loaded == bitmapSymbols.length) {
-							
-							promise.complete (this);
-							
-						}
-						
-					};
-					
-					for (symbol in bitmapSymbols) {
-						
-						loadImage (symbol.path).onComplete (onLoad);
-						
-					}
-					
-					onLoad ();
-					
-				}
+				preloading = false;
+				promise.complete (this);
 				
 			});
-			
-			#else
-			
-			promise.completeWith (__load ());
-			
-			#end
 			
 		});
 		
@@ -210,7 +163,7 @@ import openfl.Assets;
 		
 		// TODO: Better system?
 		
-		if (!alphaCheck.exists (id)) {
+		if (#if (swf_preload || swflite_preload) true #else !preloading #end && !alphaCheck.exists (id)) {
 			
 			for (symbol in swf.symbols) {
 				

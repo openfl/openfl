@@ -94,8 +94,10 @@ class ApplicationMain {
 		preloader = getPreloader ();
 		app.setPreloader (preloader);
 		preloader.create (config);
-		preloader.onComplete.add (init);
+		preloader.onComplete.add (start);
 		preloader.addLibrary (library);
+		::if (libraries != null)::::foreach libraries::::if (preload)::preloader.addLibraryName ("::name::");
+		::end::::end::::end::
 		preloader.load ();
 		
 		var result = app.exec ();
@@ -183,38 +185,6 @@ class ApplicationMain {
 		
 	}
 	#end
-	
-	
-	public static function init ():Void {
-		
-		var loaded = 0;
-		var total = 0;
-		var library_onLoad = function (__) {
-			
-			loaded++;
-			
-			if (loaded == total) {
-				
-				start ();
-				
-			}
-			
-		}
-		
-		preloader = null;
-		
-		::if (libraries != null)::::foreach libraries::::if (preload)::total++;
-		::end::::end::::end::
-		::if (libraries != null)::::foreach libraries::::if (preload)::openfl.Assets.loadLibrary ("::name::").onComplete (library_onLoad);
-		::end::::end::::end::
-		
-		if (total == 0) {
-			
-			start ();
-			
-		}
-		
-	}
 	
 	
 	public static function start ():Void {
