@@ -24,6 +24,7 @@ import openfl.Assets;
 @:keep class SWFLiteLibrary extends AssetLibrary {
 	
 	
+	private var alphaCheck:Map<String, Bool>;
 	private var id:String;
 	private var swf:SWFLite;
 	
@@ -33,6 +34,8 @@ import openfl.Assets;
 		super ();
 		
 		this.id = id;
+		
+		alphaCheck = new Map ();
 		
 		// Hack to include filter classes, macro.include is not working properly
 		
@@ -66,15 +69,37 @@ import openfl.Assets;
 	
 	public override function getImage (id:String):Image {
 		
-		if (cachedImages.exists (id) || classTypes.exists (id) || paths.exists (id)) {
+		// TODO: Better system?
+		
+		if (!alphaCheck.exists (id)) {
 			
-			return super.getImage (id);
-			
-		} else {
-			
-			return (swf != null) ? Image.fromBitmapData (swf.getBitmapData (id)) : null;
+			for (symbol in swf.symbols) {
+				
+				if (Std.is (symbol, BitmapSymbol) && cast (symbol, BitmapSymbol).path == id) {
+					
+					var bitmapSymbol:BitmapSymbol = cast symbol;
+					
+					if (bitmapSymbol.alpha != null) {
+						
+						var image = super.getImage (id);
+						var alpha = super.getImage (bitmapSymbol.alpha);
+						
+						__copyChannel (image, alpha);
+						
+						cachedImages.set (id, image);
+						alphaCheck.set (id, true);
+						
+						return image;
+						
+					}
+					
+				}
+				
+			}
 			
 		}
+		
+		return super.getImage (id);
 		
 	}
 	
@@ -109,126 +134,120 @@ import openfl.Assets;
 		}
 		#end
 		
-		return super.load ().then (function (_) {
+		var promise = new Promise<lime.utils.AssetLibrary> ();
+		
+		loadText (id).onError (promise.error).onComplete (function (data) {
 			
-			if (id != null) {
-				
-				swf = SWFLite.unserialize (getText (id));
-				swf.library = this;
-				
-				SWFLite.instances.set (id, swf);
-				
-			}
+			swf = SWFLite.unserialize (data);
+			swf.library = this;
 			
-			var promise = new Promise<lime.utils.AssetLibrary> ();
+			SWFLite.instances.set (id, swf);
 			
 			#if (swf_preload || swflite_preload)
 			
-			var bitmapSymbols:Array<BitmapSymbol> = [];
+			__load ().onError (promise.error).onComplete (function (_) {
 			
-			for (symbol in swf.symbols) {
+				var bitmapSymbols:Array<BitmapSymbol> = [];
 				
-				if (Std.is (symbol, BitmapSymbol)) {
+				for (symbol in swf.symbols) {
 					
-					bitmapSymbols.push (cast symbol);
-					
-				}
-				
-			}
-			
-			if (bitmapSymbols.length == 0) {
-				
-				promise.complete (this);
-				
-			} else {
-				
-				var loaded = -1;
-				
-				var onLoad = function () {
-					
-					loaded++;
-					
-					promise.progress (loaded, bitmapSymbols.length);
-					
-					if (loaded == bitmapSymbols.length) {
+					if (Std.is (symbol, BitmapSymbol)) {
 						
-						promise.complete (this);
-						
-					}
-					
-				};
-				
-				for (symbol in bitmapSymbols) {
-					
-					if (Assets.cache.hasBitmapData (symbol.path)) {
-						
-						onLoad ();
-						
-					} else {
-						
-						LimeAssets.loadImage (symbol.path, false).onComplete (function (image) {
-							
-							if (image != null) {
-								
-								if (symbol.alpha != null && symbol.alpha != "") {
-									
-									LimeAssets.loadImage (symbol.alpha, false).onComplete (function (alpha) {
-										
-										if (alpha != null) {
-											
-											image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-											image.buffer.premultiplied = true;
-											
-											#if !sys
-											image.premultiplied = true;
-											#end
-											
-											var bitmapData = BitmapData.fromImage (image);
-											Assets.cache.setBitmapData (symbol.path, bitmapData);
-											
-											onLoad ();
-											
-										} else {
-											
-											promise.error ('Failed to load image alpha : ${symbol.alpha}');
-											
-										}
-										
-									}).onError (promise.error);
-									
-								} else {
-									
-									var bitmapData = BitmapData.fromImage (image);
-									Assets.cache.setBitmapData (symbol.path, bitmapData);
-									onLoad ();
-									
-								}
-								
-							} else {
-								
-								promise.error ('Failed to load image : ${symbol.path}');
-								
-							}
-							
-						}).onError (promise.error);
+						bitmapSymbols.push (cast symbol);
 						
 					}
 					
 				}
 				
-				onLoad ();
+				if (bitmapSymbols.length == 0) {
+					
+					promise.complete (this);
+					
+				} else {
+					
+					var loaded = -1;
+					
+					var onLoad = function (?_) {
+						
+						loaded++;
+						
+						promise.progress (loaded, bitmapSymbols.length);
+						
+						if (loaded == bitmapSymbols.length) {
+							
+							promise.complete (this);
+							
+						}
+						
+					};
+					
+					for (symbol in bitmapSymbols) {
+						
+						loadImage (symbol.path).onComplete (onLoad);
+						
+					}
+					
+					onLoad ();
+					
+				}
 				
-			}
+			});
 			
 			#else
 			
-			promise.complete (this);
+			promise.completeWith (__load ());
 			
 			#end
 			
-			return promise.future;
-			
 		});
+		
+		return promise.future;
+		
+	}
+	
+	
+	public override function loadImage (id:String):Future<Image> {
+		
+		// TODO: Better system?
+		
+		if (!alphaCheck.exists (id)) {
+			
+			for (symbol in swf.symbols) {
+				
+				if (Std.is (symbol, BitmapSymbol) && cast (symbol, BitmapSymbol).path == id) {
+					
+					var bitmapSymbol:BitmapSymbol = cast symbol;
+					
+					if (bitmapSymbol.alpha != null) {
+						
+						var promise = new Promise<Image> ();
+						
+						__loadImage (id).onError (promise.error).onComplete (function (image) {
+							
+							__loadImage (bitmapSymbol.alpha).onError (promise.error).onComplete (function (alpha) {
+								
+								__copyChannel (image, alpha);
+								
+								cachedImages.set (id, image);
+								alphaCheck.set (id, true);
+								
+								promise.complete (image);
+								
+							});
+							
+						});
+						
+						return promise.future;
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		return super.loadImage (id);
 		
 	}
 	
@@ -247,6 +266,37 @@ import openfl.Assets;
 			}
 			
 		}
+		
+	}
+	
+	
+	private function __copyChannel (image:Image, alpha:Image):Void {
+		
+		if (alpha != null) {
+			
+			image.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+			
+		}
+		
+		image.buffer.premultiplied = true;
+		
+		#if !sys
+		image.premultiplied = false;
+		#end
+		
+	}
+	
+	
+	private function __load ():Future<lime.utils.AssetLibrary> {
+		
+		return super.load ();
+		
+	}
+	
+	
+	private function __loadImage (id:String):Future<Image> {
+		
+		return super.loadImage (id);
 		
 	}
 	

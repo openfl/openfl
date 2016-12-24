@@ -3,6 +3,7 @@ package openfl._internal.symbols;
 
 import openfl._internal.swf.ShapeCommand;
 import openfl._internal.swf.SWFLite;
+import openfl.display.BitmapData;
 import openfl.display.Shape;
 
 @:access(openfl._internal.symbols.BitmapSymbol)
@@ -44,11 +45,12 @@ class ShapeSymbol extends SWFSymbol {
 				
 				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
 					
-					var bitmap:BitmapSymbol = cast swf.symbols.get (bitmapID);
+					var bitmapSymbol:BitmapSymbol = cast swf.symbols.get (bitmapID);
+					var bitmap = swf.library.getImage (bitmapSymbol.path);
 					
-					if (bitmap != null && bitmap.path != "") {
+					if (bitmap != null) {
 						
-						graphics.beginBitmapFill (bitmap.__getBitmap (swf), matrix, repeat, smooth);
+						graphics.beginBitmapFill (BitmapData.fromImage (bitmap), matrix, repeat, smooth);
 						
 					}
 				

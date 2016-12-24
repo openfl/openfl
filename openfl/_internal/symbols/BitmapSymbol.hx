@@ -27,43 +27,7 @@ class BitmapSymbol extends SWFSymbol {
 	
 	private override function __createObject (swf:SWFLite):Bitmap {
 		
-		return new Bitmap (__getBitmap (swf), PixelSnapping.AUTO, true);
-		
-	}
-	
-	
-	private function __getBitmap (swf:SWFLite):BitmapData {
-		
-		// TODO: Handle in library
-		
-		if (Assets.cache.hasBitmapData (path)) {
-			
-			return Assets.cache.getBitmapData (path);
-			
-		} else {
-			
-			var source = swf.library.getImage (path);
-			
-			if (source != null && alpha != null && alpha != "") {
-				
-				var alphaBitmapData = swf.library.getImage (alpha);
-				source.copyChannel (alphaBitmapData, alphaBitmapData.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-				
-				//alpha = null;
-				source.buffer.premultiplied = true;
-				
-				#if !sys
-				source.premultiplied = false;
-				#end
-				
-			}
-			
-			var bitmapData = BitmapData.fromImage (source);
-			
-			Assets.cache.setBitmapData (path, bitmapData);
-			return bitmapData;
-			
-		}
+		return new Bitmap (BitmapData.fromImage (swf.library.getImage (path)), PixelSnapping.AUTO, true);
 		
 	}
 	
