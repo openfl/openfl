@@ -116,6 +116,8 @@ import openfl.Assets;
 				swf = SWFLite.unserialize (getText (id));
 				swf.library = this;
 				
+				SWFLite.instances.set (id, swf);
+				
 			}
 			
 			var promise = new Promise<lime.utils.AssetLibrary> ();
