@@ -462,7 +462,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 			} else {
 				
-				while (current != stage) {
+				while (current != stage && current != null) {
 					
 					list.push (current);
 					current = current.parent;
