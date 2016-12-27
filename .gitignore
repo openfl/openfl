@@ -18,4 +18,5 @@ docs/*.xml
 docs/pages
 haxedoc.xml
 .temp
+.setupExecuted
 *.n
