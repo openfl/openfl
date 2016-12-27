@@ -54,11 +54,11 @@ class CanvasRenderer extends AbstractRenderer {
 		if (!stage.__transparent && stage.__clearBeforeRender) {
 			
 			context.fillStyle = stage.__colorString;
-			context.fillRect (0, 0, stage.stageWidth, stage.stageHeight);
+			context.fillRect (0, 0, stage.stageWidth * stage.window.scale, stage.stageHeight * stage.window.scale);
 			
 		} else if (stage.__transparent && stage.__clearBeforeRender) {
 			
-			context.clearRect (0, 0, stage.stageWidth, stage.stageHeight);
+			context.clearRect (0, 0, stage.stageWidth * stage.window.scale, stage.stageHeight * stage.window.scale);
 			
 		}
 		
