@@ -13,6 +13,7 @@ import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
 import openfl._internal.renderer.opengl.utils.StencilManager;
 import openfl.display.BlendMode;
+import openfl.display.IBitmapDrawable;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 
@@ -51,10 +52,10 @@ class RenderSession {
 		
 		//maskManager = new MaskManager (this);
 		renderTargetBaseTransformStack = new GenericStack<Matrix> ();
-		pushRenderTargetBaseTransform (@:privateAccess Matrix.__identity, null);
+		pushRenderTargetBaseTransform (null, null);
 	}
-	
-	public function pushRenderTargetBaseTransform (source:Dynamic, renderTargetBaseTransform:Matrix) {
+	 
+	public function pushRenderTargetBaseTransform (source:IBitmapDrawable, renderTargetBaseTransform:Matrix) {
 		
 		var matrix = Matrix.pool.get ();
 		

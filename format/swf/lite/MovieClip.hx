@@ -712,7 +712,6 @@ class MovieClip extends flash.display.MovieClip {
 
 	private function __update9SliceBitmap ():Void {
 
-		// :TODO: should be in a prerender phase
 		// :TODO: use dirty flag if need to update __9SliceBitmap
 
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap == null) {
@@ -722,6 +721,7 @@ class MovieClip extends flash.display.MovieClip {
 				__getBounds (bounds);
 
 				if (bounds.width <= 0 && bounds.height <= 0) {
+					Rectangle.pool.put (bounds);
 					throw 'Error creating a cached bitmap. The texture size is ${bounds.width}x${bounds.height}';
 				}
 
@@ -741,6 +741,7 @@ class MovieClip extends flash.display.MovieClip {
 				renderTransform.translate(-bounds.x, -bounds.y);
 				@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
 				Matrix.pool.put (renderTransform);
+				Rectangle.pool.put (bounds);
 
 				__9SliceBitmap = bitmap;
 				__updating9SliceBitmap = false;
@@ -756,7 +757,7 @@ class MovieClip extends flash.display.MovieClip {
 			return;
 		}
 
-		var bounds:Rectangle = new Rectangle();
+		var bounds:Rectangle = Rectangle.pool.get();
 		__getBounds (bounds);
 
 		var bordersReservedWidth = __9SliceBitmap.width - __scale9Rect.width;
@@ -814,6 +815,8 @@ class MovieClip extends flash.display.MovieClip {
 
 			}
 		}
+
+		Rectangle.pool.put (bounds);
 	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {

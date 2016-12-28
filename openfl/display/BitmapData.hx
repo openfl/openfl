@@ -422,7 +422,7 @@ class BitmapData implements IBitmapDrawable {
 
 		if (colorTransform != null) {
 			
-			var copy = new BitmapData (Reflect.getProperty (source, "__width"), Reflect.getProperty (source, "__height"), true, 0);
+			var copy = new BitmapData (Reflect.field (source, "__width"), Reflect.field (source, "__height"), true, 0);
 			copy.draw (source);
 			copy.colorTransform (copy.rect, colorTransform);
 			source = copy;
@@ -506,7 +506,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (colorTransform != null) {
 			
-			var copy = new BitmapData (Reflect.getProperty (source, "__width"), Reflect.getProperty (source, "__height"), true, 0);
+			var copy = new BitmapData (Reflect.field (source, "__width"), Reflect.field (source, "__height"), true, 0);
 			copy.draw (source);
 			copy.colorTransform (copy.rect, colorTransform);
 			source = copy;
