@@ -140,7 +140,12 @@ class GLBitmap {
 		var spritebatch = renderSession.spriteBatch;
 		var drawTarget = target != null;
 
-		var tmpRect = clipRect == null ? new Rectangle (viewPort.x, viewPort.y, viewPort.width, viewPort.height) : clipRect.clone ();
+		var tmpRect = Rectangle.pool.get();
+		if ( clipRect != null ) {
+			tmpRect.copyFrom(clipRect);
+		} else {
+			tmpRect.setTo(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
+		}
 
 		spritebatch.begin (renderSession, drawTarget ? null : tmpRect);
 
@@ -162,18 +167,24 @@ class GLBitmap {
 		var cached = source.__cacheAsBitmap;
 
 		var m = Matrix.pool.get ();
-		
+
 		if (matrix != null) {
-			
+
 			m.copyFrom (matrix);
-			
+
 		} else {
-			
+
 			m.identity();
-			
+
 		}
 
-		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
+		var new_color_transform = ColorTransform.pool.get();
+		if ( colorTransform != null ) {
+			new_color_transform.copyFrom(colorTransform);
+		} else {
+			new_color_transform.reset();
+		}
+		source.__worldColorTransform = new_color_transform;
 		source.__blendMode = blendMode;
 
 		source.__updateTransforms(m);
@@ -190,6 +201,11 @@ class GLBitmap {
 		source.__worldColorTransform = ctCache;
 		source.__blendMode = blendModeCache;
 		source.__worldAlpha = alphaCache;
+
+		spritebatch.finish ();
+
+		ColorTransform.pool.put(new_color_transform);
+		Rectangle.pool.put(tmpRect);
 	}
 
 	/**
