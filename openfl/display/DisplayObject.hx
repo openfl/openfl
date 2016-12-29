@@ -731,7 +731,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (this.stage != stage) {
 
-			var stack = __getDisplayStack( this );
+			#if compliant_stage_events
+				var stack = __getDisplayStack( this );
+			#end
 
 			if (this.stage != null) {
 

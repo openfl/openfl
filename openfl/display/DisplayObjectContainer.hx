@@ -880,7 +880,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (this.stage != stage) {
 
-			var stack = __getDisplayStack( this );
+			#if compliant_stage_events
+				var stack = __getDisplayStack( this );
+			#end
 
 			if (this.stage != null) {
 
