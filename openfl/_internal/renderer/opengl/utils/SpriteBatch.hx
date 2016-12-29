@@ -159,12 +159,12 @@ class SpriteBatch {
 
 		gl = null;
 	}
-
-	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null):Void {
-
+	
+	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null, ?maskBitmap:BitmapData, ?maskMatrix:Matrix):Void {
+		
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
-		start(clipRect, null, null);
+		start(clipRect, maskBitmap, maskMatrix);
 
 	}
 
