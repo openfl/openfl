@@ -12,6 +12,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+import openfl.utils.UnshrinkableArray;
+
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Rectangle)
@@ -180,9 +182,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	public function getObjectsUnderPoint (point:Point):Array<DisplayObject> {
+	public function getObjectsUnderPoint (point:Point):UnshrinkableArray<DisplayObject> {
 
-		var stack = new Array<DisplayObject> ();
+		var stack = new UnshrinkableArray<DisplayObject>(32);
 		__hitTest (point.x, point.y, false, stack, false, this);
 		stack.reverse ();
 		return stack;
@@ -469,7 +471,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;

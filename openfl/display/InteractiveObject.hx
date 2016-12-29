@@ -2,7 +2,7 @@ package openfl.display; #if !openfl_legacy
 
 
 import openfl.geom.Rectangle;
-
+import openfl.utils.UnshrinkableArray;
 
 class InteractiveObject extends DisplayObject {
 	
@@ -41,7 +41,7 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
-	private override function __getInteractive (stack:Array<DisplayObject>):Bool {
+	private override function __getInteractive (stack:UnshrinkableArray<DisplayObject>):Bool {
 		
 		if (stack != null) {
 			
@@ -60,7 +60,7 @@ class InteractiveObject extends DisplayObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		return super.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject);

@@ -51,6 +51,7 @@ import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+import openfl.utils.UnshrinkableArray;
 
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -107,14 +108,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __mouseDownLeft:InteractiveObject;
 	private var __mouseDownMiddle:InteractiveObject;
 	private var __mouseDownRight:InteractiveObject;
-	private var __mouseOutStack:Array<DisplayObject>;
+	private var __mouseOutStack:UnshrinkableArray<DisplayObject>;
 	private var __mouseX:Float;
 	private var __mouseY:Float;
 	private var __originalWidth:Int;
 	private var __originalHeight:Int;
 	private var __renderer:AbstractRenderer;
 	private var __rendering:Bool;
-	private var __stack:Array<DisplayObject>;
+	private var __stack:UnshrinkableArray<DisplayObject>;
+	private var __focusStack:UnshrinkableArray<DisplayObject>;
 	private var __allChildrenStack:HaxeVector<DisplayObject> = new HaxeVector<DisplayObject>(4096);
 	private var __allChildrenLength: Int;
 	private var __transparent:Bool;
@@ -178,8 +180,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		#end
 
 		__clearBeforeRender = true;
-		__stack = [];
-		__mouseOutStack = [];
+		__stack = new openfl.utils.UnshrinkableArray(128);
+		__focusStack = new openfl.utils.UnshrinkableArray(16);
+		__mouseOutStack = new openfl.utils.UnshrinkableArray(128);
 
 		stage3Ds = new Vector ();
 		stage3Ds.push (new Stage3D ());
@@ -428,23 +431,23 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		// TODO: Move to TextField
 
-		var stack = new Array <DisplayObject> ();
+		__stack.clear();
 
 		if (__focus == null) {
 
-			__getInteractive (stack);
+			__getInteractive (__stack);
 
 		} else {
 
-			__focus.__getInteractive (stack);
+			__focus.__getInteractive (__stack);
 
 		}
 
 		var event = new TextEvent (TextEvent.TEXT_INPUT, true, false, text);
-		if (stack.length > 0) {
+		if (__stack.length > 0) {
 
-			stack.reverse ();
-			fireEvent (event, stack);
+			__stack.reverse ();
+			fireEvent (event, __stack);
 
 		} else {
 
@@ -798,7 +801,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__computeFlattenedChildren();
 	}
 
-	public static function fireEvent (event:Event, stack:Array<DisplayObject>):Void {
+	public static function fireEvent (event:Event, stack:UnshrinkableArray<DisplayObject>):Void {
 
 		var length = stack.length;
 
@@ -828,7 +831,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
-
 				return;
 
 			}
@@ -843,7 +845,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
-
 						return;
 
 					}
@@ -855,7 +856,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 
 		}
-
 	}
 
 
@@ -900,7 +900,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-	private override function __getInteractive (stack:Array<DisplayObject>):Bool {
+	private override function __getInteractive (stack:UnshrinkableArray<DisplayObject>):Bool {
 
 		if (stack != null) {
 
@@ -920,19 +920,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 		MouseEvent.__ctrlKey = modifier.ctrlKey;
 		MouseEvent.__shiftKey = modifier.shiftKey;
 
-		var stack = new Array <DisplayObject> ();
+		__stack.clear();
 
 		if (__focus == null) {
 
-			__getInteractive (stack);
+			__getInteractive (__stack);
 
 		} else {
 
-			__focus.__getInteractive (stack);
+			__focus.__getInteractive (__stack);
 
 		}
 
-		if (stack.length > 0) {
+		if (__stack.length > 0) {
 
 			var keyLocation = Keyboard.__getKeyLocation (keyCode);
 			var keyCode = Keyboard.__convertKeyCode (keyCode);
@@ -940,8 +940,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			var event = new KeyboardEvent (type, true, false, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
-			stack.reverse ();
-			fireEvent (event, stack);
+			__stack.reverse ();
+			fireEvent (event, __stack);
 
 			if (event.__isCanceled) {
 
@@ -972,20 +972,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseX = x;
 		__mouseY = y;
 
-		var stack = [];
 		var target:InteractiveObject = null;
 		var targetPoint = Point.pool.get();
 		targetPoint.setTo (x, y);
 
-		if (__hitTest (x, y, true, stack, true, this)) {
+		__stack.clear();
 
-			target = cast stack[stack.length - 1];
+		if (__hitTest (x, y, true, __stack, true, this)) {
+
+			target = cast __stack[__stack.length - 1];
 
 		} else {
 
 			target = this;
-			stack = [ this ];
-
+			__stack.clear();
+			__stack.push(this);
 		}
 
 		if (target == null) target = this;
@@ -1053,18 +1054,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 
-		fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+		fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), __stack);
 
 		if (clickType != null) {
 
-			fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+			fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), __stack);
 
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 
-					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), stack);
+					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), __stack);
 					__lastClickTime = 0;
 
 				} else {
@@ -1079,8 +1080,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		var cursor = null;
 
-		for (target in stack) {
-
+		for (t in 0...__stack.length) {
+			var target = __stack[t];
 			cursor = target.__getCursor ();
 
 			if (cursor != null) {
@@ -1100,20 +1101,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		var event, localPoint;
 
-		if ( stack.length > 0 && ( __mouseOutStack.length == 0 || ( __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != stack[stack.length-1] ) ) ) {
-			var outElements: Array<DisplayObject> = [];
-			var inElements: Array<DisplayObject> = [];
+		if ( __stack.length > 0 && ( __mouseOutStack.length == 0 || ( __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != __stack[__stack.length-1] ) ) ) {
+			var outElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
+			var inElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
 
 			inline function diffStacks() {
 				if ( __mouseOutStack.length == 0 ) {
-					inElements = stack;
+					inElements.copyFrom(__stack);
 				}
 
-				var smallestStackCount = Std.int(Math.min(stack.length, __mouseOutStack.length));
+				var smallestStackCount = Std.int(Math.min(__stack.length, __mouseOutStack.length));
 				for(i in 0...smallestStackCount) {
-					if ( stack[i] != __mouseOutStack[i] ) {
-						outElements = __mouseOutStack.slice(i);
-						inElements = stack.slice(i);
+					if ( __stack[i] != __mouseOutStack[i] ) {
+						outElements.copyFrom(__mouseOutStack, i);
+						inElements.copyFrom(__stack, i);
 					}
 				}
 			}
@@ -1166,7 +1167,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				rollOver(target);
 			}
 
-			mouseOver(stack[stack.length-1]);
+			mouseOver(__stack[__stack.length-1]);
 		}
 
 
@@ -1176,7 +1177,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		__mouseOutStack = stack;
+		__mouseOutStack.copyFrom(__stack);
 		Point.pool.put(targetPoint);
 
 	}
@@ -1187,20 +1188,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var x = __mouseX;
 		var y = __mouseY;
 
-		var stack = [];
+		__stack.clear();
 
-		if (!__hitTest (x, y, false, stack, true, this)) {
+		if (!__hitTest (x, y, false, __stack, true, this)) {
 
-			stack = [ this ];
+			__stack.clear();
+			__stack.push(this);
 
 		}
 
-		var target:InteractiveObject = cast stack[stack.length - 1];
+		var target:InteractiveObject = cast __stack[__stack.length - 1];
 		var targetPoint = Point.pool.get ();
 		targetPoint.setTo (x, y);
 		var delta = Std.int (deltaY);
 
-		fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), stack);
+		fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), __stack);
 
 		Point.pool.put(targetPoint);
 	}
@@ -1214,7 +1216,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseX = point.x;
 		__mouseY = point.y;
 
-		var __stack = [];
+		__stack.clear();
 
 		if (__hitTest (__mouseX, __mouseY, false, __stack, true, this)) {
 
@@ -1236,7 +1238,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			//touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.isPrimaryTouchPoint = true;
 
-			fireEvent (touchEvent, [ stage ]);
+			__stack.clear();
+			__stack.push(stage);
+			fireEvent (touchEvent, __stack);
 
 		}
 
@@ -1538,20 +1542,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 			if (oldFocus != null) {
 
 				var event = new FocusEvent (FocusEvent.FOCUS_OUT, true, false, __focus, false, 0);
-				__stack = [];
-				oldFocus.__getInteractive (__stack);
-				__stack.reverse ();
-				fireEvent (event, __stack);
+				__focusStack.clear();
+				oldFocus.__getInteractive (__focusStack);
+				__focusStack.reverse ();
+				fireEvent (event, __focusStack);
 
 			}
 
 			if (__focus != null) {
 
 				var event = new FocusEvent (FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
-				__stack = [];
-				value.__getInteractive (__stack);
-				__stack.reverse ();
-				fireEvent (event, __stack);
+				__focusStack.clear();
+				value.__getInteractive (__focusStack);
+				__focusStack.reverse ();
+				fireEvent (event, __focusStack);
 
 			}
 
