@@ -3,10 +3,12 @@ package openfl.geom; #if !openfl_legacy
 
 import lime.math.ColorMatrix;
 import lime.utils.Float32Array;
+import openfl.ObjectPool;
 
 
 class ColorTransform {
 
+	public static var pool: ObjectPool<ColorTransform>  = new ObjectPool<ColorTransform>( function() { return new ColorTransform(); } );
 
 	public var alphaMultiplier:Float;
 	public var alphaOffset:Float;
