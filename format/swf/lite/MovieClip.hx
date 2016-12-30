@@ -811,7 +811,7 @@ class MovieClip extends flash.display.MovieClip {
 				uvs.y0 = uvs.y1 = vs[row] * v_scale;
 				uvs.y2 = uvs.y3 = vs[row+1] * v_scale;
 
-				renderSession.spriteBatch.renderBitmapDataEx (__9SliceBitmap, w, h, uvs, true, matrix, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader, null);
+				renderSession.spriteBatch.renderBitmapDataEx (__9SliceBitmap, w, h, uvs, true, matrix, __worldColorTransform, 1.0, __blendMode, __shader, null);
 
 			}
 		}
