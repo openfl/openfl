@@ -1000,6 +1000,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 			
 			__broadcastEvent (new Event (Event.ENTER_FRAME));
+			__broadcastEvent (new Event (Event.FRAME_CONSTRUCTED));
 			__broadcastEvent (new Event (Event.EXIT_FRAME));
 			
 			if (__invalidated) {
