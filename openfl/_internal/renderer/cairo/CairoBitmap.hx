@@ -75,13 +75,13 @@ class CairoBitmap {
 					
 				}
 				
-				if (bitmap.__worldAlpha == 1) {
+				if (bitmap.__renderAlpha == 1) {
 					
 					cairo.paint ();
 					
 				} else {
 					
-					cairo.paintWithAlpha (bitmap.__worldAlpha);
+					cairo.paintWithAlpha (bitmap.__renderAlpha);
 					
 				}
 				

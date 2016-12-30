@@ -134,7 +134,7 @@ class Video extends DisplayObject {
 				
 			}
 			
-			context.globalAlpha = __worldAlpha;
+			context.globalAlpha = __renderAlpha;
 			var transform = __worldTransform;
 			
 			if (renderSession.roundPixels) {

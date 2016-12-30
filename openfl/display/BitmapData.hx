@@ -70,12 +70,12 @@ class BitmapData implements IBitmapDrawable {
 	public var transparent (default, null):Bool;
 	public var width (get, never):Int;
 	
-	public var __worldTransform:Matrix;
-	public var __worldColorTransform:ColorTransform;
 	public var __cacheAsBitmap:Bool;
+	public var __renderAlpha:Float;
+	public var __renderColorTransform:ColorTransform;
+	public var __worldTransform:Matrix;
 	
 	private var __blendMode:BlendMode;
-	private var __worldAlpha:Float;
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
 	private var __height:Int;
@@ -148,7 +148,7 @@ class BitmapData implements IBitmapDrawable {
 		__createUVs ();	
 		
 		__worldTransform = new Matrix();
-		__worldColorTransform = new ColorTransform();
+		__renderColorTransform = new ColorTransform();
 		
 	}
 	
@@ -414,7 +414,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
+	public function draw (source:IBitmapDrawable, matrix:Matrix = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		if (!__isValid) return;
 
@@ -498,21 +498,12 @@ class BitmapData implements IBitmapDrawable {
 			cached_visible = cast(source,DisplayObject).visible;
 			cast(source,DisplayObject).visible = true;
 		}
-		__drawGL ( renderSession, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
+		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, true);
 		if ( Std.is( source, DisplayObject ) ) {
 			cast(source,DisplayObject).visible = cached_visible;
 		}
 		#else
-		
-		if (colorTransform != null) {
-			
-			var copy = new BitmapData (Reflect.field (source, "__width"), Reflect.field (source, "__height"), true, 0);
-			copy.draw (source);
-			copy.colorTransform (copy.rect, colorTransform);
-			source = copy;
-			
-		}
-		
+				
 		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
 		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
 		
@@ -1226,10 +1217,10 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?colorTransform:ColorTransform = null, ?blendMode:BlendMode = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
+	private function __drawGL (renderSession:RenderSession, source:IBitmapDrawable, ?matrix:Matrix = null, ?clipRect:Rectangle = null, ?smoothing:Bool = false, ?drawSelf:Bool = false, ?clearBuffer:Bool = false, ?readPixels:Bool = false, ?powerOfTwo:Bool = true) {
 		
 		__pingPongTexture = GLBitmap.pushFramebuffer(renderSession, __pingPongTexture, rect, smoothing, transparent, clearBuffer, powerOfTwo);
-		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, colorTransform, blendMode, clipRect);
+		GLBitmap.drawBitmapDrawable(renderSession, drawSelf ? this : null, source, matrix, clipRect);
 		GLBitmap.popFramebuffer(renderSession, readPixels ? image : null);
 		
 		var uv = @:privateAccess __pingPongTexture.renderTexture.__uvData;
@@ -1429,7 +1420,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function __renderGL (renderSession:RenderSession):Void {
 		
-		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __worldColorTransform, 1.0, __blendMode, __shader);
+		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __renderColorTransform, 1.0, __blendMode, __shader);
 		
 	}
 	

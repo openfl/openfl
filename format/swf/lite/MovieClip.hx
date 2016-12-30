@@ -1187,6 +1187,12 @@ class MovieClip extends flash.display.MovieClip {
 		}
 	}
 
+	private override function mustResetRenderColorTransform():Bool {
+		
+		return super.mustResetRenderColorTransform() || (__symbol != null && __symbol.scalingGridRect != null);
+		
+	}
+
 	// Get & Set Methods
 
 

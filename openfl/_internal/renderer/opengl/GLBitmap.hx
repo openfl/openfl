@@ -59,7 +59,7 @@ class GLBitmap {
 
 		}
 
-		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__worldColorTransform, bitmap.__worldAlpha, bitmap.__blendMode, bitmap.__shader, resolvedPixelSnapping);
+		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__renderColorTransform, bitmap.__renderAlpha, bitmap.__blendMode, bitmap.__shader, resolvedPixelSnapping);
 
 		Matrix.pool.put (renderTransform);
 	}
@@ -128,7 +128,7 @@ class GLBitmap {
 	 * @param	blendMode
 	 * @param	clipRect
 	 */
-	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?colorTransform:ColorTransform, ?blendMode:BlendMode, ?clipRect:Rectangle) {
+	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?clipRect:Rectangle) {
 		var data = fbData[fbData.length - 1];
 		if (data == null) throw "No data to draw to";
 
@@ -161,19 +161,7 @@ class GLBitmap {
 
 		}
 
-		var ctCache = source.__worldColorTransform;
-		var alphaCache = source.__worldAlpha;
-		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
-
-		var new_color_transform = ColorTransform.pool.get();
-		if ( colorTransform != null ) {
-			new_color_transform.copyFrom(colorTransform);
-		} else {
-			new_color_transform.reset();
-		}
-		source.__worldColorTransform = new_color_transform;
-		source.__blendMode = blendMode;
 
 		renderSession.pushRenderTargetBaseTransform (source, matrix);
 
@@ -183,13 +171,8 @@ class GLBitmap {
 
 		renderSession.popRenderTargetBaseTransform ();
 
-		source.__worldColorTransform = ctCache;
-		source.__blendMode = blendModeCache;
-		source.__worldAlpha = alphaCache;
-
 		spritebatch.finish ();
 
-		ColorTransform.pool.put(new_color_transform);
 		Rectangle.pool.put(tmpRect);
 	}
 

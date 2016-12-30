@@ -75,6 +75,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 
+	public var __renderAlpha:Float;
+	public var __renderColorTransform:ColorTransform;
 	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
 	public var __worldOffset:Point;
@@ -155,8 +157,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldOffset = new Point ();
 
 		__worldAlpha = 1;
+		__renderAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
+		__renderColorTransform = new ColorTransform ();
+		
 		__clipDepth = 0;
 
 		#if dom
@@ -885,6 +890,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
 
+				if (mustResetRenderColorTransform()) {
+					__renderAlpha = 1.0;
+					__renderColorTransform.reset ();
+				} else {
+					__renderAlpha = alpha * parent.__renderAlpha;
+					__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
+				}
+
 				if ((blendMode == null || blendMode == NORMAL)) {
 
 					__blendMode = parent.__blendMode;
@@ -933,6 +946,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 				__worldColorTransform.copyFrom(transform.colorTransform);
 				__worldAlpha = alpha;
+
+				if (mustResetRenderColorTransform()) {
+					__renderAlpha = 1.0;
+					__renderColorTransform.reset ();
+				} else {
+					__renderAlpha = alpha;
+					__renderColorTransform.copyFrom(transform.colorTransform);
+				}
 
 				#if dom
 
@@ -1584,7 +1605,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-
+	private function mustResetRenderColorTransform():Bool {
+		
+		return __cacheAsBitmap;
+		
+	}
 }
 
 

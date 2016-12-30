@@ -9,11 +9,9 @@ import openfl.geom.Matrix;
 interface IBitmapDrawable {
 	
 	public var __worldTransform:Matrix;
-	public var __worldColorTransform:ColorTransform;
 	
 	private var __blendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
-	private var __worldAlpha:Float;
 	
 	public function __renderCairo (renderSession:RenderSession):Void;
 	public function __renderCairoMask (renderSession:RenderSession):Void;

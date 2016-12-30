@@ -332,6 +332,8 @@ class SimpleButton extends InteractiveObject {
 	
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 
+		// :TODO: update __renderColorTransform ?
+		
 		if (parent != null) {
 			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
 		}

@@ -327,7 +327,7 @@ class GLRenderer extends AbstractRenderer {
 		Rectangle.pool.put(bounds);
 		matrix.concat (shape.__renderTransform);
 
-		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );
+		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );
 
 	}
 	
