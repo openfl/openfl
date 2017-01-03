@@ -70,6 +70,7 @@ import openfl.media.Sound;
 		
 		if (!__isValid) return;
 		
+		__source.onComplete.remove (source_onComplete);
 		__source.dispose ();
 		__isValid = false;
 		
