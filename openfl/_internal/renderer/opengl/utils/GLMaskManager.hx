@@ -86,6 +86,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 		var maskBounds = Rectangle.pool.get();
 		@:privateAccess mask.__getBounds (maskBounds);
+		var maskMatrix = mask.__renderTransform.clone();
 
 		if( @:privateAccess mask.__cachedBitmap == null ||
 			( @:privateAccess mask.__graphics != null &&
@@ -94,8 +95,11 @@ class GLMaskManager extends AbstractMaskManager {
 				) || @:privateAccess mask.__updateCachedBitmap
 			)
 		{
+			var transformed_mask_bounds:Rectangle = Rectangle.pool.get();
+			@:privateAccess maskBounds.__transform(transformed_mask_bounds, maskMatrix);
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width), Math.ceil (maskBounds.height));
+			@:privateAccess bitmap.__resize (Math.ceil (transformed_mask_bounds.width), Math.ceil (transformed_mask_bounds.height));
+			Rectangle.pool.put(transformed_mask_bounds);
 
 			var m = Matrix.pool.get();
 			m.identity ();
@@ -106,6 +110,10 @@ class GLMaskManager extends AbstractMaskManager {
 			mask.__update (true, false);
 
 			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
+
+			@:privateAccess bitmap.__scaleX = mask.renderScaleX;
+			@:privateAccess bitmap.__scaleY = mask.renderScaleY;
+
 			Matrix.pool.put(m);
 			@:privateAccess mask.__cachedBitmap = bitmap;
 
@@ -116,7 +124,6 @@ class GLMaskManager extends AbstractMaskManager {
 
 		var bitmap = @:privateAccess mask.__cachedBitmap;
 
-		var maskMatrix = mask.__renderTransform.clone();
 
 		maskMatrix.invert();
 		maskMatrix.translate( -maskBounds.x, -maskBounds.y );
