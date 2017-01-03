@@ -91,7 +91,7 @@ class GLMaskManager extends AbstractMaskManager {
 			( @:privateAccess mask.__graphics != null &&
 				( @:privateAccess mask.__graphics.__bounds.width != maskBounds.width ||
 					@:privateAccess mask.__graphics.__bounds.height != maskBounds.height )
-				)
+				) || @:privateAccess mask.__updateCachedBitmap
 			)
 		{
 			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
