@@ -161,7 +161,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderColorTransform = new ColorTransform ();
-		
+
 		__clipDepth = 0;
 
 		#if dom
@@ -205,6 +205,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	private function __getMaskGraphics ():Graphics {
+
+		return __graphics;
+
+	}
 
 	public function getRect (targetCoordinateSpace:DisplayObject):Rectangle {
 
@@ -647,7 +652,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
-			
+
 			var filterTransform = Matrix.pool.get ();
 			filterTransform.identity ();
 			filterTransform.a = __renderTransform.a / renderScaleX;
@@ -693,10 +698,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 			Matrix.pool.put (filterTransform);
-			
+
 			@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
 			@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
-			
+
 			renderSession.maskManager.enableMask ();
 
 		}
@@ -1607,9 +1612,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private function mustResetRenderColorTransform():Bool {
-		
+
 		return __cacheAsBitmap;
-		
+
 	}
 }
 

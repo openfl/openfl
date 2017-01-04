@@ -9,6 +9,7 @@ import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
+import openfl.display.Graphics;
 
 
 class GLMaskManager extends AbstractMaskManager {
@@ -88,13 +89,23 @@ class GLMaskManager extends AbstractMaskManager {
 		@:privateAccess mask.__getBounds (maskBounds);
 		var maskMatrix = mask.__renderTransform.clone();
 
+		var graphics = @:privateAccess mask.__getMaskGraphics();
+
 		if( @:privateAccess mask.__cachedBitmap == null ||
-			( @:privateAccess mask.__graphics != null &&
-				( @:privateAccess mask.__graphics.__bounds.width != maskBounds.width ||
-					@:privateAccess mask.__graphics.__bounds.height != maskBounds.height )
+			(  graphics != null &&
+				( @:privateAccess graphics.__bounds.width != maskBounds.width ||
+					@:privateAccess graphics.__bounds.height != maskBounds.height )
 				) || @:privateAccess mask.__updateCachedBitmap
 			)
 		{
+			if ( graphics != null ) {
+				var padding = @:privateAccess graphics.__padding;
+				maskBounds.x -= padding;
+				maskBounds.y -= padding;
+				maskBounds.width += padding * 2;
+				maskBounds.height += padding * 2;
+			}
+
 			var bitmap;
 			if(@:privateAccess mask.__cachedBitmap == null) {
 				bitmap = @:privateAccess BitmapData.__asRenderTexture ();
