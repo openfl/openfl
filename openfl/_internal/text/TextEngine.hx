@@ -113,6 +113,7 @@ class TextEngine {
 	//@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	//@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	//@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
+	private var __useIntAdvances:Null<Bool>;
 	
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
@@ -673,9 +674,36 @@ class TextEngine {
 			
 			#if (js && html5)
 			
-			for (i in startIndex...endIndex) {
+			if (__useIntAdvances == null) {
 				
-				advances.push (__context.measureText (text.charAt (i)).width);
+				__useIntAdvances = ~/Trident\/7.0/.match (Browser.navigator.userAgent); // IE
+				
+			}
+			
+			if (__useIntAdvances) {
+				
+				// slower, but more accurate if browser returns Int measurements
+				
+				var previousWidth = 0.0;
+				var width;
+				
+				for (i in startIndex...endIndex) {
+					
+					width = __context.measureText (text.substring (startIndex, i + 1)).width;
+					
+					advances.push (width - previousWidth);
+					
+					previousWidth = width;
+					
+				}
+				
+			} else {
+				
+				for (i in startIndex...endIndex) {
+					
+					advances.push (__context.measureText (text.charAt (i)).width);
+					
+				}
 				
 			}
 			
