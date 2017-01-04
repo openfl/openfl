@@ -865,8 +865,9 @@ import js.html.CanvasRenderingContext2D;
 		
 		if (width < 1 || height < 1) {
 			
-			__width  = Std.int (width);
-			__height = Std.int (height);
+			if (__width >= 1 || __height >= 1) __dirty = true;
+			__width  = 0;
+			__height = 0;
 			return;
 			
 		}
