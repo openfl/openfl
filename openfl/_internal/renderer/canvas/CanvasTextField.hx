@@ -33,6 +33,7 @@ class CanvasTextField {
 	
 	#if (js && html5)
 	private static var context:CanvasRenderingContext2D;
+	private static var clearRect:Null<Bool>;
 	#end
 	
 	
@@ -158,6 +159,18 @@ class CanvasTextField {
 				
 				graphics.__canvas.width = width;
 				graphics.__canvas.height = height;
+				
+				if (clearRect == null) {
+					
+					clearRect = untyped __js__ ("(typeof navigator !== 'undefined' && typeof navigator['isCocoonJS'] !== 'undefined')");
+					
+				}
+				
+				if (clearRect) {
+					
+					context.clearRect (0, 0, graphics.__canvas.width, graphics.__canvas.height);
+					
+				}
 				
 				var transform = graphics.__renderTransform;
 				
