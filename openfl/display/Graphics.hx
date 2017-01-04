@@ -893,8 +893,8 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform.ty = Math.ffloor (ty);
 		
 		// Offset the rendering with the subpixel offset removed by Math.floor above
-		__renderTransform.tx = (tx - __worldTransform.tx);
-		__renderTransform.ty = (ty - __worldTransform.ty);
+		__renderTransform.tx = __worldTransform.__transformInverseX (tx, ty);
+		__renderTransform.ty = __worldTransform.__transformInverseY (tx, ty);
 		
 		// Calculate the size to contain the graphics and the extra subpixel
 		var newWidth  = Math.ceil(width  + __renderTransform.tx);
