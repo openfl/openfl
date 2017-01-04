@@ -550,27 +550,64 @@ class TextField extends InteractiveObject {
 	
 	
 	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void {
-		
-		if (format.font != null) __textFormat.font = format.font;
-		if (format.size != null) __textFormat.size = format.size;
-		if (format.color != null) __textFormat.color = format.color;
-		if (format.bold != null) __textFormat.bold = format.bold;
-		if (format.italic != null) __textFormat.italic = format.italic;
-		if (format.underline != null) __textFormat.underline = format.underline;
-		if (format.url != null) __textFormat.url = format.url;
-		if (format.target != null) __textFormat.target = format.target;
-		if (format.align != null) __textFormat.align = format.align;
-		if (format.leftMargin != null) __textFormat.leftMargin = format.leftMargin;
-		if (format.rightMargin != null) __textFormat.rightMargin = format.rightMargin;
-		if (format.indent != null) __textFormat.indent = format.indent;
-		if (format.leading != null) __textFormat.leading = format.leading;
-		if (format.blockIndent != null) __textFormat.blockIndent = format.blockIndent;
-		if (format.bullet != null) __textFormat.bullet = format.bullet;
-		if (format.kerning != null) __textFormat.kerning = format.kerning;
-		if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
-		if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
-		
-		__dirty = true;
+		if (endIndex > length || (endIndex == 0 && beginIndex > 0))
+		    endIndex = length - 1;
+
+		if (beginIndex < 0)
+		    beginIndex = 0;
+
+		if (__textEngine.textFormatRanges.length > 0)
+		{
+		    var newFormatRanges = new Vector<TextFormatRange>();
+
+		    for (i in 0...__textEngine.textFormatRanges.length)
+		    {
+			var range = __textEngine.textFormatRanges[i];
+			if ((beginIndex > range.end && endIndex > range.start) || (beginIndex < range.start && endIndex < range.end))
+			{
+			    newFormatRanges.push(range);
+			    continue;
+			}
+
+			var formatRange = new TextFormatRange(format, beginIndex, endIndex);
+			if (!(range.start < endIndex && range.end > beginIndex) || beginIndex == 0)
+			{
+			    newFormatRanges.push(formatRange);
+
+			    if (range.start < endIndex)
+			    {
+				range.start = endIndex + 1 > length - 1 ? length - 1 : endIndex + 1;
+			    }
+			    else if (range.end > beginIndex)
+			    {
+				range.end = beginIndex - 1 < 0 ? 0 : beginIndex - 1;
+			    }
+
+			    newFormatRanges.push(range);
+			}
+			else
+			{
+			    if (range.start < endIndex)
+			    {
+				range.start = endIndex + 1 > length - 1 ? length - 1 : endIndex + 1;
+				range.end = __textEngine.textFormatRanges[i + 1] != null ? __textEngine.textFormatRanges[i + 1].start - 1 : length;
+			    }
+
+			    var leftRange = new TextFormatRange(range.format, range.start, beginIndex - 1);
+			    newFormatRanges.push(leftRange);
+			    newFormatRanges.push(formatRange);
+			    newFormatRanges.push(range);
+			}
+		    }
+
+		    __textEngine.textFormatRanges = newFormatRanges;
+		}
+		else
+		{
+		    var formatRange = new TextFormatRange(format, beginIndex, endIndex);
+		    __textEngine.textFormatRanges.push(formatRange);
+		}
+
 		__layoutDirty = true;
 		
 	}
