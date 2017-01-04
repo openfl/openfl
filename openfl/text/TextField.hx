@@ -1664,7 +1664,7 @@ class TextField extends InteractiveObject {
 		
 		__isHTML = true;
 		
-		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
+		if (#if (js && html5) __div == null #else true #end) {
 			
 			value = __regexBreakTag.replace (value, "\n");
 			value = __regexEntities[0].replace (value, "\"");
