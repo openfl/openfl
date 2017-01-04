@@ -232,7 +232,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 #if (!display && !flash)
 
 
-@:autoBuild(lime.utils.Assets.embedByteArray())
+@:autoBuild(lime._macros.AssetsMacro.embedByteArray())
 
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput {
 	
@@ -249,6 +249,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	public function new (length:Int = 0) {
 		
 		var bytes = Bytes.alloc (length);
+		
+		#if sys
+		if (length > 0) {
+			
+			bytes.fill (0, length, 0);
+			
+		}
+		#end
 		
 		#if js
 		super (bytes.b.buffer);
@@ -721,6 +729,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (size > __length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
+			#if sys
+			bytes.fill (length, size, 0);
+			#end
 			var cacheLength = length;
 			length = __length;
 			bytes.blit (0, this, 0, __length);

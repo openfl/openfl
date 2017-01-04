@@ -250,6 +250,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		
 		var bytes = Bytes.alloc (length);
 		
+		#if sys
+		if (length > 0) {
+			
+			bytes.fill (0, length, 0);
+			
+		}
+		#end
+		
 		#if js
 		super (bytes.b.buffer);
 		#else
@@ -721,6 +729,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 		if (size > __length) {
 			
 			var bytes = Bytes.alloc (((size + 1) * 3) >> 1);
+			#if sys
+			bytes.fill (length, size, 0);
+			#end
 			var cacheLength = length;
 			length = __length;
 			bytes.blit (0, this, 0, __length);
