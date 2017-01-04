@@ -87,7 +87,6 @@ class GLMaskManager extends AbstractMaskManager {
 
 		var maskBounds = Rectangle.pool.get();
 		@:privateAccess mask.__getBounds (maskBounds);
-		var maskMatrix = mask.__renderTransform.clone();
 
 		var graphics = @:privateAccess mask.__getMaskGraphics();
 
@@ -140,6 +139,7 @@ class GLMaskManager extends AbstractMaskManager {
 		var bitmap = @:privateAccess mask.__cachedBitmap;
 
 
+		var maskMatrix = mask.__renderTransform.clone();
 		maskMatrix.invert();
 		maskMatrix.translate( -maskBounds.x, -maskBounds.y );
 		Rectangle.pool.put(maskBounds);
