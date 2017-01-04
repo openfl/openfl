@@ -60,7 +60,16 @@ class TextureBase extends EventDispatcher {
 		if (__isGLES == null) {
 			
 			var version:String = GL.getParameter (GL.VERSION);
-			__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+			
+			if (version == null) {
+				
+				__isGLES = false;
+				
+			} else {
+				
+				__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+				
+			}
 			
 		}
 		
