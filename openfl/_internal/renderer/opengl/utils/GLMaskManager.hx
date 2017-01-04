@@ -105,7 +105,9 @@ class GLMaskManager extends AbstractMaskManager {
 
 			var m = Matrix.pool.get();
 			m.identity ();
-			m.translate (-maskBounds.x, -maskBounds.y);
+			m.a = mask.renderScaleX;
+			m.d = mask.renderScaleY;
+			m.translate (-maskBounds.x * mask.renderScaleX, -maskBounds.y * mask.renderScaleY);
 
 			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;
