@@ -1094,7 +1094,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else {
 			
-			return Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
+			if (__transform.b > 0) {
+				
+				return Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
+				
+			} else {
+				
+				return -Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
+				
+			}
 			
 		}
 		
@@ -1137,7 +1145,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 		} else {
 			
-			return Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
+			if (__transform.c > 0) {
+				
+				return Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
+				
+			} else {
+				
+				return -Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
+				
+			}
 			
 		}
 		

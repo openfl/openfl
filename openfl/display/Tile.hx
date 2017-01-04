@@ -153,7 +153,15 @@ class Tile {
 			
 		} else {
 			
-			return Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+			if (matrix.b > 0) {
+				
+				return Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+				
+			} else {
+				
+				return -Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+				
+			}
 			
 		}
 		
@@ -193,7 +201,15 @@ class Tile {
 			
 		} else {
 			
-			return Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+			if (matrix.c > 0) {
+				
+				return Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+				
+			} else {
+				
+				return -Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+				
+			}
 			
 		}
 		
