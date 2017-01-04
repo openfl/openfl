@@ -97,8 +97,9 @@ class GLMaskManager extends AbstractMaskManager {
 				) || @:privateAccess mask.__updateCachedBitmap
 			)
 		{
+			var padding = 0;
 			if ( graphics != null ) {
-				var padding = @:privateAccess graphics.__padding;
+				padding = @:privateAccess graphics.__padding;
 				maskBounds.x -= padding;
 				maskBounds.y -= padding;
 				maskBounds.width += padding * 2;
@@ -117,7 +118,7 @@ class GLMaskManager extends AbstractMaskManager {
 			m.identity ();
 			m.a = mask.renderScaleX;
 			m.d = mask.renderScaleY;
-			m.translate (-maskBounds.x * mask.renderScaleX, -maskBounds.y * mask.renderScaleY);
+			m.translate (-maskBounds.x * mask.renderScaleX - padding * mask.renderScaleX, -maskBounds.y * mask.renderScaleY - padding * mask.renderScaleX);
 
 			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;
