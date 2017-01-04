@@ -2098,7 +2098,7 @@ class TextField extends InteractiveObject {
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				}
-
+			
 			case BACKSPACE:
 				
 				if (__selectionIndex == __caretIndex && __caretIndex > 0) {

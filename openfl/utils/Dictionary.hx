@@ -82,6 +82,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	@:to static inline function toUtilsObjectMap<K:Object,V> (t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V> {
+		
+		return new UtilsObjectMap<K, V> ();
+		
+	}
+	
+	
 	@:to static inline function toClassMap<K:Class<Dynamic>,V> (t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V> {
 		
 		return new ClassMap<K, V> ();
@@ -104,6 +111,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Dictionary<K, V> {
+		
+		return cast map;
+		
+	}
+	
+	
+	@:from static inline function fromUtilsObjectMap<K:Object, V> (map:UtilsObjectMap<K, V>):Dictionary<K, V> {
 		
 		return cast map;
 		
@@ -240,6 +254,71 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	public function toString ():String {
 		
 		return values.toString ();
+		
+	}
+	
+	
+}
+
+
+@:dox(hide) private class UtilsObjectMap<K:Object, V> implements Map.IMap<K, V> {
+	
+	
+	private var map:ObjectMap<{}, V>;
+	
+	
+	public function new ():Void {
+		
+		map = new ObjectMap<{}, V> ();
+		
+	}
+	
+	
+	public function exists (key:K):Bool {
+		
+		return map.exists (cast key);
+		
+	}
+	
+	
+	public function get (key:K):Null<V> {
+		
+		return map.get (cast key);
+		
+	}
+	
+	
+	public function keys ():Iterator<K> {
+		
+		return cast map.keys ();
+		
+	}
+	
+	
+	public function iterator ():Iterator<V> {
+		
+		return cast map.iterator ();
+		
+	}
+	
+	
+	public function remove (key:K):Bool {
+		
+		return map.remove (cast key);
+		
+	}
+	
+	
+	public function set (key:K, value:V):Void {
+		
+		map.set (cast key, value);
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return map.toString ();
 		
 	}
 	
