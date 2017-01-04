@@ -1,8 +1,12 @@
 package openfl.filters;
 
 
+import lime.graphics.utils.ImageCanvasUtil;
+import lime.utils.UInt8Array;
 import openfl._internal.renderer.RenderSession;
+import openfl.display.BitmapData;
 import openfl.display.Shader;
+import openfl.filters.FilterUtils;
 import openfl.geom.Rectangle;
 
 
@@ -28,6 +32,8 @@ import openfl.geom.Rectangle;
 		
 		super ();
 		
+		__preserveOriginal = true;
+
 		this.color = color;
 		this.alpha = alpha;
 		this.blurX = blurX;
@@ -76,6 +82,13 @@ import openfl.geom.Rectangle;
 		
 	}
 	
+
+	public function toString ():String {
+		
+		return "GlowFilter: [ color:0x" + StringTools.hex(color,6) + ", alpha:" + alpha + ", blurX:" + blurX + ", blurY:" + blurY + ", strength:" + strength + ", quality:" + quality + ", inner:" + inner + ", knockout:" + knockout + " ]";
+		
+	}
+	
 	
 	
 	
@@ -104,6 +117,43 @@ import openfl.geom.Rectangle;
 		
 	}
 	
+
+    private override function __getFilterBounds( sourceBitmapData:BitmapData ) : Rectangle {
+
+        return new Rectangle( blurX, blurY, sourceBitmapData.width + blurX + blurX, sourceBitmapData.height + blurY + blurY );
+
+    }
+
+
+	private override function __renderFilter (sourceBitmapData:BitmapData, destBitmapData:BitmapData):Void {
+
+		var tmpSrc = sourceBitmapData.clone();
+		#if (js && html5)
+		ImageCanvasUtil.convertToData (tmpSrc.image);
+		ImageCanvasUtil.convertToData (destBitmapData.image);
+		#end
+
+		var source = sourceBitmapData.image.data;
+		var target = destBitmapData.image.data;
+
+		var i = 0;
+		var cR = (color >> 16) & 0xff;
+		var cG = (color >> 8) & 0xff;
+		var cB = color & 0xff;
+		var cA = Std.int(alpha * 0xff);
+		while (i < source.length) {
+			source[ i ] = target[ i ] = cR;
+			source[ i+1 ] = target[ i+1 ] = cG;
+			source[ i+2 ] = target[ i+2 ] = cB;
+			i += 4;
+		}
+
+        FilterUtils.GaussianBlur( source, target, sourceBitmapData.width, sourceBitmapData.height, blurX, blurY, quality, strength );
+
+		tmpSrc = null;
+
+		__filterDirty = false;
+	}
 	
 }
 

@@ -7,8 +7,9 @@ import openfl._internal.renderer.AbstractFilterManager;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Shader;
-import openfl.filters.BitmapFilter;
+import openfl.geom.Rectangle;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.Vector;
 
 #if !openfl_debug
@@ -45,11 +46,54 @@ class GLFilterManager extends AbstractFilterManager {
 	}
 	
 	
+	public override function renderFilters (object:DisplayObject, src:BitmapData):BitmapData {
+
+		if (object.__filters != null && object.__filters.length > 0) {
+
+			var filtersDirty:Bool = object.__filterDirty;
+			for (filter in object.__filters) {
+				filtersDirty = filtersDirty || filter.__filterDirty;
+			}
+			
+			if (object.__filterBitmap == null || filtersDirty) {
+		
+				// Only support single filter at the moment for offsets
+				object.__filterOffset = object.__filters[0].__filterOffset;
+				var bounds:Rectangle = object.__filterBounds = new Rectangle( 0, 0, src.width, src.height );
+				var filterBounds:Rectangle;
+				for (filter in object.__filters) {
+					filterBounds = filter.__getFilterBounds( src );
+					bounds.x = Math.max( bounds.x, filterBounds.x);
+					bounds.y = Math.max( bounds.y, filterBounds.y);
+					bounds.width = Math.max( bounds.width, filterBounds.width);
+					bounds.height = Math.max( bounds.height, filterBounds.height);
+				}
+				
+				var displacedSource = new BitmapData(Std.int(bounds.width), Std.int(bounds.height), src.transparent, 0x0);
+				displacedSource.copyPixels( src, src.rect, new Point( bounds.x, bounds.y ) );
+				object.__filterBitmap = new BitmapData(Std.int(bounds.width), Std.int(bounds.height), src.transparent, 0x0);
+
+				for (filter in object.__filters) {
+					filter.__renderFilter( displacedSource, object.__filterBitmap );
+				}
+
+				displacedSource = null;
+
+				object.__filterDirty = false;
+				
+			}
+			
+		}
+
+		return object.__filterBitmap;
+	}
+
+
 	public override function pushObject (object:DisplayObject):Shader {
 		
 		// TODO: Support one-pass filters?
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		if (object.__filters != null && object.__filters.length > 0 && !renderSession.filterManager.useCPUFilters ) {
 			
 			if (object.__filters.length == 1 && object.__filters[0].__numPasses == 0) {
 				
@@ -72,7 +116,7 @@ class GLFilterManager extends AbstractFilterManager {
 	
 	public override function popObject (object:DisplayObject):Void {
 		
-		if (object.__filters != null && object.__filters.length > 0) {
+		if (object.__filters != null && object.__filters.length > 0 && !renderSession.filterManager.useCPUFilters ) {
 			
 			var filter =  object.__filters[0];
 			var currentTarget, shader;

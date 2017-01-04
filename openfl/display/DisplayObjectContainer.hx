@@ -377,7 +377,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		for (child in __children) {
 			
-			if (child.scaleX == 0 || child.scaleY == 0) continue;
+			if (child.visible == false || child.scaleX == 0 || child.scaleY == 0) continue;
 			child.__getBounds (rect, child.__worldTransform);
 			
 		}
@@ -707,23 +707,26 @@ class DisplayObjectContainer extends InteractiveObject {
 		renderSession.maskManager.pushObject (this);
 		renderSession.filterManager.pushObject (this);
 		
-		for (child in __children) {
-			
-			child.__renderGL (renderSession);
-			
-		}
-		
-		for (orphan in __removedChildren) {
-			
-			if (orphan.stage == null) {
+		if (!cacheAsBitmap) {
+			for (child in __children) {
 				
-				orphan.__cleanup ();
+				child.__renderGL (renderSession);
 				
 			}
 			
-		}
+			for (orphan in __removedChildren) {
+				
+				if (orphan.stage == null) {
+					
+					orphan.__cleanup ();
+					
+				}
+				
+			}
+			
+			__removedChildren.length = 0;
 		
-		__removedChildren.length = 0;
+		}
 		
 		renderSession.filterManager.popObject (this);
 		renderSession.maskManager.popObject (this);
