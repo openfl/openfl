@@ -720,7 +720,7 @@ class CanvasGraphics {
 						
 						if (c.alpha == 1) {
 							
-							context.fillStyle = "#" + StringTools.hex (c.color, 6);
+							context.fillStyle = "#" + StringTools.hex (c.color & 0xFFFFFF, 6);
 							
 						} else {
 							

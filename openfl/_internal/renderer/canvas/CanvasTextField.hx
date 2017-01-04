@@ -197,7 +197,7 @@ class CanvasTextField {
 						
 						if (textEngine.background) {
 							
-							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor, 6);
+							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor & 0xFFFFFF, 6);
 							context.fill ();
 							
 						}
@@ -205,7 +205,7 @@ class CanvasTextField {
 						if (textEngine.border) {
 							
 							context.lineWidth = 1;
-							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor, 6);
+							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6);
 							context.stroke ();
 							
 						}
@@ -238,7 +238,7 @@ class CanvasTextField {
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
 						
 						context.font = TextEngine.getFont (group.format);
-						context.fillStyle = "#" + StringTools.hex (group.format.color, 6);
+						context.fillStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
 						
 						if (applyHack) {
 							
@@ -333,7 +333,7 @@ class CanvasTextField {
 						
 						if (textEngine.background) {
 							
-							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor, 6);
+							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor & 0xFFFFFF, 6);
 							context.fill ();
 							
 						}
@@ -342,7 +342,7 @@ class CanvasTextField {
 							
 							context.lineWidth = 1;
 							context.lineCap = "square";
-							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor, 6);
+							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6);
 							context.stroke ();
 							
 						}
@@ -361,7 +361,7 @@ class CanvasTextField {
 						}
 						
 						context.beginPath ();
-						context.strokeStyle = "#" + StringTools.hex (textField.defaultTextFormat.color, 6);
+						context.strokeStyle = "#" + StringTools.hex (textField.defaultTextFormat.color & 0xFFFFFF, 6);
 						context.moveTo (scrollX + 2.5, scrollY + 2.5);
 						context.lineWidth = 1;
 						context.lineTo (scrollX + 2.5, scrollY + TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);

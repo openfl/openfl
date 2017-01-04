@@ -139,7 +139,7 @@ class DOMTextField {
 					
 					if (textEngine.background) {
 						
-						style.setProperty ("background-color", "#" + StringTools.hex (textEngine.backgroundColor, 6), null);
+						style.setProperty ("background-color", "#" + StringTools.hex (textEngine.backgroundColor & 0xFFFFFF, 6), null);
 						
 					} else {
 						
@@ -149,7 +149,7 @@ class DOMTextField {
 					
 					if (textEngine.border) {
 						
-						style.setProperty ("border", "solid 1px #" + StringTools.hex (textEngine.borderColor, 6), null);
+						style.setProperty ("border", "solid 1px #" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6), null);
 						
 					} else {
 						
@@ -158,7 +158,7 @@ class DOMTextField {
 					}
 					
 					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
-					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color, 6), null);
+					style.setProperty ("color", "#" + StringTools.hex (textField.__textFormat.color & 0xFFFFFF, 6), null);
 					
 					if (textEngine.autoSize != TextFieldAutoSize.NONE) {
 						

@@ -1789,7 +1789,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var b = (value & 0x0000FF);
 		
 		__colorSplit = [ r / 0xFF, g / 0xFF, b / 0xFF ];
-		__colorString = "#" + StringTools.hex (value, 6);
+		__colorString = "#" + StringTools.hex (value & 0xFFFFFF, 6);
 		
 		return __color = value;
 		
