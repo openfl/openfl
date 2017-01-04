@@ -143,6 +143,12 @@ class ByteArrayTest {
 		Assert.areEqual( 19, output.readByte() );
 		Assert.areEqual( 17, output.readByte() );
 		
+		var data = new ByteArray ();
+		//data.writeBytes (input, 0, input.length * 2);
+		data.writeBytes (input, 0, input.length); // docs say it should clamp to size?
+		
+		Assert.areEqual (input.length, data.length);
+		
 	}
 	
 	
@@ -572,6 +578,26 @@ class ByteArrayTest {
 		
 		littleEndian.position = 0;
 		Assert.isTrue (nearEquals (-1.92011526560524e+63, littleEndian.readDouble ()));
+		
+	}
+	
+	
+	@Test public function testZeroMemory () {
+		
+		var byteArray:ByteArray;
+		var length = 20;
+		
+		for (i in 0...100) {
+			
+			byteArray = new ByteArray (length);
+			
+			for (i in 0...length) {
+				
+				Assert.areEqual (0, byteArray.readByte ());
+				
+			}
+			
+		}
 		
 	}
 	
