@@ -95,11 +95,13 @@ class GLMaskManager extends AbstractMaskManager {
 				) || @:privateAccess mask.__updateCachedBitmap
 			)
 		{
-			var transformed_mask_bounds:Rectangle = Rectangle.pool.get();
-			@:privateAccess maskBounds.__transform(transformed_mask_bounds, maskMatrix);
-			var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			@:privateAccess bitmap.__resize (Math.ceil (transformed_mask_bounds.width), Math.ceil (transformed_mask_bounds.height));
-			Rectangle.pool.put(transformed_mask_bounds);
+			var bitmap;
+			if(@:privateAccess mask.__cachedBitmap == null) {
+				bitmap = @:privateAccess BitmapData.__asRenderTexture ();
+			} else {
+				bitmap = @:privateAccess mask.__cachedBitmap;
+			}
+			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width * mask.renderScaleX), Math.ceil (maskBounds.height * mask.renderScaleY));
 
 			var m = Matrix.pool.get();
 			m.identity ();
