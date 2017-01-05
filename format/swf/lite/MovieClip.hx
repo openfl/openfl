@@ -129,6 +129,15 @@ class MovieClip extends flash.display.MovieClip {
 
 		__renderFrame (0);
 
+		if (!__useSeparateRenderScaleTransform) {
+			
+			for( i in 0 ... numChildren ){
+				var child = getChildAt(i);
+				child.__useSeparateRenderScaleTransform = false;
+			}
+			
+		}
+
 	}
 
 
