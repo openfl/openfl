@@ -1175,6 +1175,14 @@ class MovieClip extends flash.display.MovieClip {
 		addChild (displayObject);
 	}
 
+	public override function removeChild (child:DisplayObject):DisplayObject {
+		var object = super.removeChild(child);
+		__SWFDepthData.remove(object);
+		__maskData.remove(object);
+		__updateSwfMaskData();
+		return object;
+	}
+
 	@:noCompletion override private function __releaseResources(){
 
 		super.__releaseResources();
