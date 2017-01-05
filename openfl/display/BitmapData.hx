@@ -414,7 +414,7 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public function draw (source:IBitmapDrawable, matrix:Matrix = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
+	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false):Void {
 		
 		if (!__isValid) return;
 
@@ -491,6 +491,10 @@ class BitmapData implements IBitmapDrawable {
 		buffer.data = null;
 
 		#elseif (js && html5) //webgl
+
+		if ( colorTransform != null || blendMode != null ) {
+			throw ":TODO: Not supported";
+		}
 
 		var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 		var cached_visible = true;
