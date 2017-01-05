@@ -542,7 +542,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		rect.__expand (__textEngine.bounds.x, __textEngine.bounds.y, __textEngine.bounds.width, __textEngine.bounds.height);
+		rect.setTo (__textEngine.bounds.x, __textEngine.bounds.y, __textEngine.bounds.width, __textEngine.bounds.height);
 		
 	}
 	

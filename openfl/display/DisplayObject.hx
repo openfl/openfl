@@ -244,14 +244,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (parent != null) {
 
 			var bounds = openfl.geom.Rectangle.pool.get ();
-			bounds.setEmpty();
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
 			var hit_point = Point.pool.get();
 			hit_point.setTo (x, y);
 			var result = bounds.containsPoint (hit_point);
 			Point.pool.put(hit_point);
-			openfl.geom.Rectangle.pool.put(bounds);
+			openfl.geom.Rectangle.pool.put (bounds);
 			return result;
 
 		}
@@ -338,6 +337,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__graphics != null) {
 
 			__graphics.__getBounds (rect);
+
+		} else {
+
+			rect.setEmpty ();
 
 		}
 
@@ -1241,12 +1244,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_height ():Float {
 
-		var bounds = openfl.geom.Rectangle.pool.get();
-		bounds.setEmpty();
+		var bounds = openfl.geom.Rectangle.pool.get ();
 		__getLocalBounds (bounds);
 
 		var result = bounds.height;
-		openfl.geom.Rectangle.pool.put(bounds);
+		openfl.geom.Rectangle.pool.put (bounds);
 		return result;
 
 	}
@@ -1255,8 +1257,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_height (value:Float):Float {
 
 		var bounds = openfl.geom.Rectangle.pool.get ();
-		bounds.setEmpty();
-
 		__getBounds (bounds);
 
 		if (value != bounds.height) {
@@ -1546,7 +1546,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function get_width ():Float {
 
 		var bounds = openfl.geom.Rectangle.pool.get ();
-		bounds.setEmpty();
 		__getLocalBounds (bounds);
 
 		var result = bounds.width;
@@ -1559,8 +1558,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_width (value:Float):Float {
 
 		var bounds = openfl.geom.Rectangle.pool.get ();
-		bounds.setEmpty();
-
 		__getBounds (bounds);
 
 		if (value != bounds.width) {

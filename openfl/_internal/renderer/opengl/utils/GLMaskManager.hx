@@ -85,7 +85,6 @@ class GLMaskManager extends AbstractMaskManager {
 		renderSession.spriteBatch.stop ();
 
 		var maskBounds = Rectangle.pool.get();
-		maskBounds.setEmpty();
 		@:privateAccess mask.__getBounds (maskBounds);
 
 		if( @:privateAccess mask.__cachedBitmap == null ||

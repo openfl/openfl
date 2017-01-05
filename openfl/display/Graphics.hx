@@ -865,7 +865,7 @@ import js.html.CanvasRenderingContext2D;
 
 		if (__bounds == null) return;
 
-		rect.__expand (__bounds.x, __bounds.y, __bounds.width, __bounds.height);
+		rect.copyFrom (__bounds);
 	}
 
 

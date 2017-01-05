@@ -321,7 +321,6 @@ class GLRenderer extends AbstractRenderer {
 		
 		var bitmap = shape.__graphics.__bitmap;
 		var bounds:Rectangle = Rectangle.pool.get();
-		bounds.setEmpty();
 		shape.__getRenderBounds(bounds);
 		matrix.translate (bounds.x, bounds.y);
 		Rectangle.pool.put(bounds);

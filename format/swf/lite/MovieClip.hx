@@ -726,7 +726,6 @@ class MovieClip extends flash.display.MovieClip {
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap == null) {
 				__updating9SliceBitmap = true;
 				var bounds:Rectangle = Rectangle.pool.get();
-				bounds.setEmpty();
 				__getBounds (bounds);
 
 				if (bounds.width <= 0 && bounds.height <= 0) {

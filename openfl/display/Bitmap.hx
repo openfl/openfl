@@ -54,9 +54,7 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			var bounds = Rectangle.__temp;
-			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
-			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+			rect.setTo (0, 0, bitmapData.width, bitmapData.height);
 			
 		}
 		

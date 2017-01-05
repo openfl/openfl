@@ -416,9 +416,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			childRect.setEmpty ();
-			child.__getBounds (childRect);
-			childRect.__transform (childRect, child.__transform);
+			child.__getTransformedBounds (childRect, child.__transform);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
@@ -444,7 +442,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			childRect.setEmpty ();
 			child.__getRenderBounds (childRect);
 
 			var temp_transform = null;
@@ -745,7 +742,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 			} else {
 				var bounds = Rectangle.pool.get ();
-				bounds.setEmpty();
 				__getLocalBounds (bounds);
 
 				renderSession.context.rect (0, 0, bounds.width, bounds.height);
