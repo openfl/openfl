@@ -667,13 +667,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 			// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
-			@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width * renderScaleX), Math.ceil (__cachedBitmapBounds.height * renderScaleY));
+			@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width), Math.ceil (__cachedBitmapBounds.height));
 
 			var m = Matrix.pool.get();
 			m.identity ();
 			m.a = renderScaleX;
 			m.d = renderScaleY;
-			m.translate (-__cachedBitmapBounds.x * renderScaleX, -__cachedBitmapBounds.y * renderScaleY);
+			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
 
 			// we disable the container shader, it will be applied to the final texture
 			var shader = __shader;
@@ -699,9 +699,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		__cacheGLMatrix.identity ();
-		__cacheGLMatrix.translate (__cachedBitmapBounds.x, __cachedBitmapBounds.y);
+		__cacheGLMatrix.translate (__cachedBitmapBounds.x / renderScaleX, __cachedBitmapBounds.y / renderScaleY);
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
+
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 
 	}
@@ -833,16 +834,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cachedBitmapBounds.setEmpty();
 		__getRenderBounds (__cachedBitmapBounds);
 
+		__cachedBitmapBounds.x *= renderScaleX;
+		__cachedBitmapBounds.y *= renderScaleY;
+		__cachedBitmapBounds.width *= renderScaleX;
+		__cachedBitmapBounds.height *= renderScaleY;
+
 		if (__filters != null) {
 
 			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, filterTransform);
 
 		}
 
-		__cachedBitmapBounds.x = Math.round (__cachedBitmapBounds.x);
-		__cachedBitmapBounds.y = Math.round (__cachedBitmapBounds.y);
-		__cachedBitmapBounds.width = Math.ceil (__cachedBitmapBounds.width);
-		__cachedBitmapBounds.height = Math.ceil (__cachedBitmapBounds.height);
+		__cachedBitmapBounds.x = Math.floor (__cachedBitmapBounds.x);
+		__cachedBitmapBounds.y = Math.floor (__cachedBitmapBounds.y);
 
 	}
 
