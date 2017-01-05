@@ -793,32 +793,29 @@ class TextEngine {
 				var iterator = textIndex-1;
 				var width_till_next_word = getAdvance(text,iterator);
 				iterator++;
-				if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width - 2 ) {
+				if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width + 2 ) {
 					removeLastAdvance();
 					pushNewLine(textIndex);
 				} else {
-					var next_space = text.indexOf(" ", textIndex);
-					var next_hyphen = text.indexOf("-", textIndex);
-					var next_break = -1;
-					if ( next_space > -1 ) {
-						if ( next_hyphen > -1 ) {
-							next_break = Std.int(Math.min(next_space, next_hyphen));
-						} else {
-							next_break = next_space;
+					var next_space :Float = text.indexOf(" ", textIndex);
+					var next_hyphen :Float= text.indexOf("-", textIndex);
+					var next_break :Float= text.indexOf("\n", textIndex);
+					if ( next_space == -1 ) {
+						next_space = Math.POSITIVE_INFINITY;
 						}
-					} else {
-						if ( next_hyphen > -1 ) {
-							next_break = next_hyphen;
-						} else {
-							next_break = text.length;
+					if ( next_hyphen == -1 ) {
+						next_hyphen = Math.POSITIVE_INFINITY;
 						}
+					if ( next_break == -1 ) {
+						next_break = Math.POSITIVE_INFINITY;
 					}
+					next_break = Math.min(Math.min(Math.min(next_space, next_hyphen), next_break), text.length);
 
 					while(iterator < next_break) {
 						width_till_next_word += getAdvance(text,iterator);
 						iterator++;
 					}
-					if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width - 2 ) {
+					if ( wordWrap && Math.floor( layoutGroup.offsetX + widthValue + width_till_next_word ) > width + 2 ) {
 						removeLastAdvance();
 						pushNewLine(textIndex);
 					} else if ( formatRange.format.align == JUSTIFY ) {
@@ -832,7 +829,7 @@ class TextEngine {
 				}
 			} else {
 				// :NOTE: Why the offset by 2 pixels?
-				if ( wordWrap && layoutGroup.offsetX + widthValue > width - 2 ) {
+				if ( wordWrap && layoutGroup.offsetX + widthValue > width + 2 ) {
 					pushNewLine(textIndex);
 				}
 			}
