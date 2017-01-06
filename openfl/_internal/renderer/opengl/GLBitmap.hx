@@ -162,11 +162,14 @@ class GLBitmap {
 		}
 
 		var cached = source.__cacheAsBitmap;
-
+		var blendMode = source.__blendMode;
+		
 		renderSession.pushRenderTargetBaseTransform (source, matrix);
 
 		source.__cacheAsBitmap = false;
+		source.__blendMode = null;
 		source.__renderGL (renderSession);
+		source.__blendMode = blendMode;
 		source.__cacheAsBitmap = cached;
 
 		renderSession.popRenderTargetBaseTransform ();
