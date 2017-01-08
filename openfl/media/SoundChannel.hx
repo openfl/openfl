@@ -1,7 +1,7 @@
 package openfl.media;
 
 
-import lime.audio.AudioSource;
+import lime.media.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
