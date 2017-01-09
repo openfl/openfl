@@ -104,10 +104,14 @@ class CanvasGraphics {
 		var gradientFill = null;
 
 		var context = context;
+		if ( focalPointRatio != 0 ) {
+
+			focalPointRatio = Math.max(Math.min(focalPointRatio, -1), 1);
+		}
 		switch (type) {
 
 			case RADIAL:
-				gradientFill = context.createRadialGradient (0, 0, 0, 0, 0, 819.2);
+				gradientFill = context.createRadialGradient (819.2 * focalPointRatio , 0, 0, 0, 0, 819.2);
 
 			case LINEAR:
 
