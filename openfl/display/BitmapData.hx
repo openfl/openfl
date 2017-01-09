@@ -492,7 +492,7 @@ class BitmapData implements IBitmapDrawable {
 
 		#elseif (js && html5) //webgl
 
-		if ( colorTransform != null || blendMode != null ) {
+		if ( colorTransform != null && @:privateAccess !colorTransform.__isDefault() || blendMode != null ) {
 			throw ":TODO: Not supported";
 		}
 
