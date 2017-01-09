@@ -17,6 +17,7 @@ class MovieClip extends Sprite {
 	private var __currentLabel:String;
 	private var __currentLabels:Array<FrameLabel>;
 	private var __frameScripts:Map<Int, Void->Void>;
+	private var __staticFrameScripts:Map<Int, MovieClip->Void>;
 	private var __totalFrames:Int;
 	
 	
@@ -52,6 +53,25 @@ class MovieClip extends Sprite {
 		
 	}
 	
+	public function addStaticFrameScript (index:Int, method:MovieClip->Void):Void {
+
+		if (method != null) {
+
+			if (__staticFrameScripts == null) {
+
+				__staticFrameScripts = new Map ();
+
+			}
+
+			__staticFrameScripts.set (index, method);
+
+		} else if (__staticFrameScripts != null) {
+
+			__staticFrameScripts.remove (index);
+
+		}
+
+	}
 	
 	public function gotoAndPlay (frame:Dynamic, scene:String = null):Void {
 		

@@ -1011,6 +1011,18 @@ class MovieClip extends flash.display.MovieClip {
 			}
 
 		}
+		if (__staticFrameScripts != null) {
+
+			if (__staticFrameScripts.exists (index)) {
+				__currentLabel = __symbol.frames[index].label;
+				__staticFrameScripts.get (index) (this);
+
+				if(index  + 1 != __currentFrame){
+					return true;
+				}
+			}
+
+		}
 		#end
 
 		return false;
