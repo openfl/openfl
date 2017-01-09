@@ -90,13 +90,7 @@ class GLMaskManager extends AbstractMaskManager {
 
 		var graphics = @:privateAccess mask.__getMaskGraphics();
 
-		if( @:privateAccess mask.__cachedBitmap == null ||
-			(  graphics != null &&
-				( @:privateAccess graphics.__bounds.width != maskBounds.width ||
-					@:privateAccess graphics.__bounds.height != maskBounds.height )
-				) || @:privateAccess mask.__updateCachedBitmap
-			)
-		{
+		if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap ) {
 			var padding = 0;
 			if ( graphics != null ) {
 				padding = @:privateAccess graphics.__padding;
