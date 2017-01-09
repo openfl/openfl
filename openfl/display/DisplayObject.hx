@@ -1069,8 +1069,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
 			
-			var __scaleX = this.scaleX;
-			var __scaleY = this.scaleY;
+			var __scaleX = Math.abs (this.scaleX);
+			var __scaleY = Math.abs (this.scaleY);
 			
 			__transform.a = __rotationCosine * __scaleX;
 			__transform.b = __rotationSine * __scaleX;
