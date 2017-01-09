@@ -112,13 +112,15 @@ class GLMaskManager extends AbstractMaskManager {
 			} else {
 				bitmap = @:privateAccess mask.__cachedBitmap;
 			}
-			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width * mask.renderScaleX), Math.ceil (maskBounds.height * mask.renderScaleY));
+			var render_scale_x = mask.renderScaleX;
+			var render_scale_y = mask.renderScaleY;
+			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width * render_scale_x), Math.ceil (maskBounds.height * render_scale_y));
 
 			var m = Matrix.pool.get();
 			m.identity ();
-			m.a = mask.renderScaleX;
-			m.d = mask.renderScaleY;
-			m.translate (-maskBounds.x * mask.renderScaleX - padding * mask.renderScaleX, -maskBounds.y * mask.renderScaleY - padding * mask.renderScaleX);
+			m.a = render_scale_x;
+			m.d = render_scale_y;
+			m.translate (-maskBounds.x * render_scale_x - padding * render_scale_x, -maskBounds.y * render_scale_y - padding * render_scale_x);
 
 			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;
@@ -126,8 +128,8 @@ class GLMaskManager extends AbstractMaskManager {
 
 			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
 
-			@:privateAccess bitmap.__scaleX = mask.renderScaleX;
-			@:privateAccess bitmap.__scaleY = mask.renderScaleY;
+			@:privateAccess bitmap.__scaleX = render_scale_x;
+			@:privateAccess bitmap.__scaleY = render_scale_y;
 
 			Matrix.pool.put(m);
 			@:privateAccess mask.__cachedBitmap = bitmap;
