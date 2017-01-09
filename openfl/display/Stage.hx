@@ -1206,7 +1206,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var event = new UncaughtErrorEvent (UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
 		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
 		
-		if (false && !event.__preventDefault) {
+		if (!event.__preventDefault) {
 			
 			#if cpp
 			untyped __cpp__ ("throw e");
