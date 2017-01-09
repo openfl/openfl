@@ -85,48 +85,13 @@ class GLMaskManager extends AbstractMaskManager {
 
 		renderSession.spriteBatch.stop ();
 
-		var maskBounds = Rectangle.pool.get();
-		@:privateAccess mask.__getBounds (maskBounds);
-
-		var graphics = @:privateAccess mask.__getMaskGraphics();
-
 		if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap ) {
-			var padding = 0;
-			if ( graphics != null ) {
-				padding = @:privateAccess graphics.__padding;
-				maskBounds.x -= padding;
-				maskBounds.y -= padding;
-				maskBounds.width += padding * 2;
-				maskBounds.height += padding * 2;
-			}
-
-			var bitmap;
-			if(@:privateAccess mask.__cachedBitmap == null) {
-				bitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			} else {
-				bitmap = @:privateAccess mask.__cachedBitmap;
-			}
-			var render_scale_x = mask.renderScaleX;
-			var render_scale_y = mask.renderScaleY;
-			@:privateAccess bitmap.__resize (Math.ceil (maskBounds.width * render_scale_x), Math.ceil (maskBounds.height * render_scale_y));
-
-			var m = Matrix.pool.get();
-			m.identity ();
-			m.a = render_scale_x;
-			m.d = render_scale_y;
-			m.translate (-maskBounds.x * render_scale_x - padding * render_scale_x, -maskBounds.y * render_scale_y - padding * render_scale_x);
 
 			@:privateAccess mask.__visible = true;
 			@:privateAccess mask.__isMask = false;
 			mask.__update (true, false);
 
-			@:privateAccess bitmap.__drawGL(renderSession, mask, m, true, false, true);
-
-			@:privateAccess bitmap.__scaleX = render_scale_x;
-			@:privateAccess bitmap.__scaleY = render_scale_y;
-
-			Matrix.pool.put(m);
-			@:privateAccess mask.__cachedBitmap = bitmap;
+			mask.__updateCachedBitmapFn (renderSession);
 
 			@:privateAccess mask.__visible = false;
 			@:privateAccess mask.__isMask = true;
@@ -135,12 +100,15 @@ class GLMaskManager extends AbstractMaskManager {
 
 		var bitmap = @:privateAccess mask.__cachedBitmap;
 
+		var maskMatrix = Matrix.pool.get ();
+		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 
-		var maskMatrix = mask.__renderTransform.clone();
-		maskMatrix.invert();
-		maskMatrix.translate( -maskBounds.x, -maskBounds.y );
-		Rectangle.pool.put(maskBounds);
-		maskMatrix.scale( 1.0 / bitmap.width, 1.0 / bitmap.height );
+		maskMatrix.identity ();
+		maskMatrix.translate (@:privateAccess mask.__cachedBitmapBounds.x / mask.renderScaleX, @:privateAccess mask.__cachedBitmapBounds.y / mask.renderScaleY);
+		maskMatrix.concat (@:privateAccess mask.__renderTransform);
+		maskMatrix.concat (renderTargetBaseTransform);
+		maskMatrix.invert ();
+		maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
 
 		maskBitmapTable.add (bitmap);
 		maskMatrixTable.add (maskMatrix);
@@ -153,8 +121,13 @@ class GLMaskManager extends AbstractMaskManager {
 
 		renderSession.spriteBatch.stop ();
 		maskBitmapTable.pop();
-		maskMatrixTable.pop();
-
+		
+		var maskMatrix = maskMatrixTable.pop();
+		
+		if (maskMatrix != null) {
+			Matrix.pool.put (maskMatrix);
+		}
+		
 		renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
 	}
 
@@ -169,7 +142,12 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function enableMask(){
 		renderSession.spriteBatch.stop();
 		maskBitmapTable.pop();
-		maskMatrixTable.pop();
+		var maskMatrix = maskMatrixTable.pop();
+		
+		if (maskMatrix != null) {
+			throw "maskMatrix should always be null here";
+			Matrix.pool.put (maskMatrix);
+		}
 		renderSession.spriteBatch.start( currentClip, maskBitmapTable.first(), maskMatrixTable.first());
 	}
 

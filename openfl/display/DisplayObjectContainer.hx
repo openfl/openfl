@@ -425,27 +425,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	}
 
-	private override function __getMaskGraphics ():Graphics {
-
-		var graphics : Graphics = null;
-		graphics = super.__getMaskGraphics ();
-
-		if ( __isMask && graphics == null && __children.length != 0) {
-
-			for (child in __children) {
-
-				if (child == null ) continue;
-				graphics = child.__getMaskGraphics ();
-				if ( graphics != null ) {
-					break;
-				}
-			}
-		}
-
-		return graphics;
-	}
-
-
 
 	private override function __getRenderBounds (rect:Rectangle):Void {
 
