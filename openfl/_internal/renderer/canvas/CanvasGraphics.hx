@@ -5,7 +5,6 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
-import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
@@ -59,6 +58,13 @@ class CanvasGraphics {
 	private static var closeGap = false;
 	private static var startX = 0.0;
 	private static var startY = 0.0;
+
+	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
+		function()
+		{
+			return new DrawCommandReader(null);
+		}
+	);
 
 
 	private static function closePath ():Void {
@@ -297,7 +303,8 @@ class CanvasGraphics {
 			beginRenderStep();
 			resetFillStyle();
 
-			var data = new DrawCommandReader (graphics.__commands);
+			var data = drawCommandReaderPool.get();
+			data.reset(graphics.__commands);
 
 			for (type in graphics.__commands.types) {
 
@@ -315,12 +322,12 @@ class CanvasGraphics {
 						data.readEndFill ();
 						endRenderStep();
 						if (canvasGraphics.hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 
 						if (canvasGraphics.hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 						resetFillStyle();
@@ -337,12 +344,12 @@ class CanvasGraphics {
 						endRenderStep();
 
 						if (hasFill && context.isPointInPath (x, y, canvasWindingRule)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 
@@ -379,7 +386,7 @@ class CanvasGraphics {
 
 			endRenderStep();
 
-			data.destroy ();
+			drawCommandReaderPool.put(data);
 
 			if (hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
 				return true;
@@ -519,7 +526,8 @@ class CanvasGraphics {
 				beginRenderStep();
 				resetFillStyle();
 
-				var data = new DrawCommandReader (graphics.__commands);
+				var data = drawCommandReaderPool.get();
+				data.reset(graphics.__commands);
 
 				for (type in graphics.__commands.types) {
 
@@ -831,7 +839,7 @@ class CanvasGraphics {
 
 				endRenderStep();
 
-				data.destroy ();
+				drawCommandReaderPool.put(data);
 				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
 
 			}
@@ -854,7 +862,8 @@ class CanvasGraphics {
 			context = cast renderSession.context;
 
 
-			var data = new DrawCommandReader (graphics.__commands);
+			var data = drawCommandReaderPool.get();
+			data.reset(graphics.__commands);
 			var context = context;
 
 			for (type in graphics.__commands.types) {
@@ -929,7 +938,7 @@ class CanvasGraphics {
 
 			}
 
-			data.destroy ();
+			drawCommandReaderPool.put(data);
 
 		}
 
