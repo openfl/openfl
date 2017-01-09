@@ -23,6 +23,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.Lib;
+import openfl.utils.UnshrinkableArray;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -354,7 +355,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function __getInteractive (stack:Array<DisplayObject>):Bool {
+	private function __getInteractive (stack:UnshrinkableArray<DisplayObject>):Bool {
 
 		return false;
 
@@ -472,7 +473,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
 		if (__graphics != null) {
 
@@ -716,9 +717,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
 	}
 
-	private function __getDisplayStack(object:DisplayObject):Array<DisplayObject> {
+	private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
 		var element : DisplayObject = object;
-		var result : Array<DisplayObject> = [];
+		var result:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
 		while(element != null) {
 			result.push(element);
 			element = element.parent;
@@ -731,7 +732,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (this.stage != stage) {
 
-			var stack = __getDisplayStack( this );
+			#if compliant_stage_events
+				var stack = __getDisplayStack( this );
+			#end
 
 			if (this.stage != null) {
 
