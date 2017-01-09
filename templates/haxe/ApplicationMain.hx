@@ -14,7 +14,7 @@ import DefaultAssetLibrary;
 @:access(openfl.display.Stage)
 
 
-class ApplicationMain {
+@:dox(hide) class ApplicationMain {
 	
 	
 	#if !macro
@@ -352,7 +352,7 @@ class ApplicationMain {
 
 
 @:build(DocumentClass.build())
-@:keep class DocumentClass extends ::APP_MAIN:: {}
+@:keep @:dox(hide) class DocumentClass extends ::APP_MAIN:: {}
 
 
 #else
