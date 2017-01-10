@@ -1481,13 +1481,13 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function get_width ():Int {
 		
-		return Math.ceil (__width / __scaleX);
+		return Math.round (__width / __scaleX);
 		
 	}
 
 	public function get_height ():Int {
 		
-		return Math.ceil (__height / __scaleY);
+		return Math.round (__height / __scaleY);
 		
 	}
 }
