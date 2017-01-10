@@ -16,15 +16,37 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+class FrameBufferDataItem
+{
+	public var texture:PingPongTexture;
+	public var viewPort:Rectangle;
+	public var transparent:Bool;
+
+	public function new()
+	{
+	}
+
+	inline public function set(texture, viewPort, transparent)
+	{
+		this.texture = texture;
+		this.viewPort = viewPort;
+		this.transparent = transparent;
+	}
+}
+
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.IBitmapDrawable)
-
-
 class GLBitmap {
+	private static var fbDataPool:ObjectPool<FrameBufferDataItem> = new ObjectPool<FrameBufferDataItem>(
+		function()
+		{
+			return new FrameBufferDataItem();
+		}
+	);
 
-	private static var fbData:Array<{texture:PingPongTexture, viewPort:Rectangle, transparent:Bool}> = [];
+	private static var fbData:Array<FrameBufferDataItem> = [];
 
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 
@@ -88,7 +110,9 @@ class GLBitmap {
 
 		// push the default framebuffer
 		if (fbData.length <= 0) {
-			fbData.push( { texture: null, viewPort: null, transparent: renderer.transparent } );
+			var item = fbDataPool.get();
+			item.set(null, null, renderer.transparent);
+			fbData.push(item);
 		}
 
 		if (texture == null) {
@@ -113,7 +137,9 @@ class GLBitmap {
 			texture.clear();
 		}
 
-		fbData.push( { texture:texture, viewPort:viewPort, transparent: transparent } );
+		var item = fbDataPool.get();
+		item.set(texture, viewPort, transparent);
+		fbData.push(item);
 
 		return texture;
 	}
@@ -224,7 +250,7 @@ class GLBitmap {
 		}
 
 		// remove the actual binded framebuffer from the array
-		fbData.pop();
+		fbDataPool.put(fbData.pop());
 		var data = fbData[fbData.length - 1];
 		if (data == null) {
 			throw "oh";

@@ -70,6 +70,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	private var __SWFDepthData:Map<DisplayObject, Int>;
 	private var __maskData:Map<DisplayObject, Int>;
+	private var __maskDataKeys:Array<DisplayObject>;
 
 	public function new (swf:SWFLite, symbol:SpriteSymbol) {
 
@@ -92,6 +93,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		__SWFDepthData = new Map();
 		__maskData = new Map();
+		__maskDataKeys = new Array();
 
 		__currentLabels = [];
 
@@ -875,7 +877,7 @@ class MovieClip extends flash.display.MovieClip {
 					if(displayObject != null){
 
 							removeChild(displayObject);
-
+							__maskDataKeys.remove(displayObject);
 							__maskData.remove(displayObject);
 							__SWFDepthData.remove(displayObject);
 					}
@@ -930,6 +932,7 @@ class MovieClip extends flash.display.MovieClip {
 						var oldObject : DisplayObject = displayObject;
 
 						var clipDepth = __maskData.get(displayObject);
+						__maskDataKeys.remove(displayObject);
 						__maskData.remove(displayObject);
 						__SWFDepthData.remove(displayObject);
 						removeChild(displayObject);
@@ -944,6 +947,7 @@ class MovieClip extends flash.display.MovieClip {
 						}
 
 						if( clipDepth != null ) {
+							__maskDataKeys.push(displayObject);
 							__maskData.set( displayObject, clipDepth );
 						}
 
@@ -962,6 +966,8 @@ class MovieClip extends flash.display.MovieClip {
 						displayObject.visible = false;
 
 						__maskData.set( displayObject, frameObject.clipDepth );
+						__maskDataKeys.push(displayObject);
+
 					}
 
 				}
@@ -977,6 +983,7 @@ class MovieClip extends flash.display.MovieClip {
 						removeChild (displayObject);
 						__SWFDepthData.remove(displayObject);
 						__maskData.remove(displayObject);
+						__maskDataKeys.remove(displayObject);
 
 					}
 
@@ -988,7 +995,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		for( mask in __maskData.keys() ){
+		for( mask in __maskDataKeys ){
 			var maskIndex = getChildIndex( mask );
 
 			var depthValue = __maskData.get(mask);
@@ -1017,6 +1024,18 @@ class MovieClip extends flash.display.MovieClip {
 			if (__frameScripts.exists (index)) {
 				__currentLabel = __symbol.frames[index].label;
 				__frameScripts.get (index) ();
+
+				if(index  + 1 != __currentFrame){
+					return true;
+				}
+			}
+
+		}
+		if (__staticFrameScripts != null) {
+
+			if (__staticFrameScripts.exists (index)) {
+				__currentLabel = __symbol.frames[index].label;
+				__staticFrameScripts.get (index) (this);
 
 				if(index  + 1 != __currentFrame){
 					return true;

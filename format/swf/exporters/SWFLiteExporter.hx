@@ -265,6 +265,9 @@ class SWFLiteExporter {
 				var png = new List ();
 				png.add (CHeader ( { width: data.bitmapWidth, height: data.bitmapHeight, colbits: 8, color: ColIndexed, interlaced: false } ));
 				png.add (CPalette (palette));
+				if( alpha != null ) {
+					png.add (CUnknown("tRNS", alpha));
+				}
 				png.add (CData (Deflate.run (values)));
 				png.add (CEnd);
 
