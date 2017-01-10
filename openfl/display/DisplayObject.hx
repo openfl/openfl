@@ -161,7 +161,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderColorTransform = new ColorTransform ();
-		
+
 		__clipDepth = 0;
 
 		#if dom
@@ -644,60 +644,66 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
+	public inline function __updateCachedBitmapFn (renderSession:RenderSession):Void {
+
+		var filterTransform = Matrix.pool.get ();
+		filterTransform.identity ();
+		filterTransform.a = __renderTransform.a / renderScaleX;
+		filterTransform.b = __renderTransform.b / renderScaleX;
+		filterTransform.c = __renderTransform.c / renderScaleY;
+		filterTransform.d = __renderTransform.d / renderScaleY;
+		filterTransform.invert ();
+
+		__updateCachedBitmapBounds (filterTransform);
+
+		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
+			trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
+			return;
+		}
+
+		renderSession.maskManager.disableMask ();
+
+		if (__cachedBitmap == null) {
+			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+		}
+
+		// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
+		@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width), Math.ceil (__cachedBitmapBounds.height));
+
+		var m = Matrix.pool.get();
+		m.identity ();
+		m.a = renderScaleX;
+		m.d = renderScaleY;
+		m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+
+		// we disable the container shader, it will be applied to the final texture
+		var shader = __shader;
+		this.__shader = null;
+		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
+		Matrix.pool.put(m);
+		this.__shader = shader;
+
+		__updateCachedBitmap = false;
+
+		if (__updateFilters) {
+			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
+			__updateFilters = false;
+		}
+
+		Matrix.pool.put (filterTransform);
+
+		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
+		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
+
+		renderSession.maskManager.enableMask ();
+
+	}
+	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
-			
-			var filterTransform = Matrix.pool.get ();
-			filterTransform.identity ();
-			filterTransform.a = __renderTransform.a / renderScaleX;
-			filterTransform.b = __renderTransform.b / renderScaleX;
-			filterTransform.c = __renderTransform.c / renderScaleY;
-			filterTransform.d = __renderTransform.d / renderScaleY;
-			filterTransform.invert ();
 
-			__updateCachedBitmapBounds (filterTransform);
-
-			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
-				trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
-				return;
-			}
-
-			renderSession.maskManager.disableMask ();
-
-			if (__cachedBitmap == null) {
-				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			}
-
-			// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
-			@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width), Math.ceil (__cachedBitmapBounds.height));
-
-			var m = Matrix.pool.get();
-			m.identity ();
-			m.a = renderScaleX;
-			m.d = renderScaleY;
-			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
-
-			// we disable the container shader, it will be applied to the final texture
-			var shader = __shader;
-			this.__shader = null;
-			@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
-			Matrix.pool.put(m);
-			this.__shader = shader;
-
-			__updateCachedBitmap = false;
-
-			if (__updateFilters) {
-				@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
-				__updateFilters = false;
-			}
-
-			Matrix.pool.put (filterTransform);
-			
-			@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
-			@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
-			
-			renderSession.maskManager.enableMask ();
+ 			__updateCachedBitmapFn (renderSession);
 
 		}
 
@@ -1607,9 +1613,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private function mustResetRenderColorTransform():Bool {
-		
+
 		return __cacheAsBitmap;
-		
+
 	}
 }
 
