@@ -44,6 +44,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function addChild (child:DisplayObject):DisplayObject {
 
 		if (child != null) {
+			if (!__useSeparateRenderScaleTransform) {
+				child.__useSeparateRenderScaleTransform = false;
+			}
 
 			if (child.parent == this) {
 				var childIndex = __children.indexOf(child);
@@ -67,6 +70,10 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (index < 0 || index > __children.length) {
 			throw "Invalid index position " + index;
 
+		}
+
+		if (!__useSeparateRenderScaleTransform) {
+			child.__useSeparateRenderScaleTransform = false;
 		}
 
 		if (child.parent == this) {
