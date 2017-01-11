@@ -1252,7 +1252,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var keyCode = Keyboard.__convertKeyCode (keyCode);
 			var charCode = Keyboard.__getCharCode (keyCode, modifier.shiftKey);
 			
-			var event = new KeyboardEvent (type, true, false, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
+			// Flash Player events are not cancelable, should we make only some events (like APP_CONTROL_BACK) cancelable?
+			
+			var event = new KeyboardEvent (type, true, true, charCode, keyCode, keyLocation, __macKeyboard ? modifier.ctrlKey || modifier.metaKey : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 			
 			stack.reverse ();
 			__fireEvent (event, stack);
