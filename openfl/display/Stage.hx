@@ -222,7 +222,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (this.window != window) return;
 		
 		window.onActivate.add (onWindowActivate.bind (window));
-		window.onClose.add (onWindowClose.bind (window));
+		window.onClose.add (onWindowClose.bind (window), false, -9000);
 		window.onCreate.add (onWindowCreate.bind (window));
 		window.onDeactivate.add (onWindowDeactivate.bind (window));
 		window.onDropFile.add (onWindowDropFile.bind (window));
