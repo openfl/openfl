@@ -65,8 +65,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var scale9Grid:Rectangle;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
-	public var renderScaleX (get, null):Float;
-	public var renderScaleY (get, null):Float;
+	public var renderScaleX (default, null):Float = 1.0;
+	public var renderScaleY (default, null):Float = 1.0;
 	public var scrollRect (get, set):Rectangle;
 	public var shader (default, set):Shader;
 	public var stage (default, null):Stage;
@@ -76,7 +76,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	public var x (get, set):Float;
 	public var y (get, set):Float;
 
-	public var __renderScaleTransform:Matrix;
+	public var __renderAlpha:Float;
+	public var __renderColorTransform:ColorTransform;
 	public var __renderTransform:Matrix;
 	public var __worldColorTransform:ColorTransform;
 	public var __worldOffset:Point;
@@ -149,7 +150,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__rotationSine = 0;
 		__rotationCosine = 1;
 
-		__renderScaleTransform = new Matrix ();
 		__renderTransform = new Matrix ();
 
 		__cacheGLMatrix = new Matrix();
@@ -158,8 +158,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__worldOffset = new Point ();
 
 		__worldAlpha = 1;
+		__renderAlpha = 1;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
+		__renderColorTransform = new ColorTransform ();
+
 		__clipDepth = 0;
 
 		#if dom
@@ -242,14 +245,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (parent != null) {
 
 			var bounds = openfl.geom.Rectangle.pool.get ();
-			bounds.setEmpty();
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
 			var hit_point = Point.pool.get();
 			hit_point.setTo (x, y);
 			var result = bounds.containsPoint (hit_point);
 			Point.pool.put(hit_point);
-			openfl.geom.Rectangle.pool.put(bounds);
+			openfl.geom.Rectangle.pool.put (bounds);
 			return result;
 
 		}
@@ -337,6 +339,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			__graphics.__getBounds (rect);
 
+		} else {
+
+			rect.setEmpty ();
+
 		}
 
 	}
@@ -394,28 +400,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		rect.__transform (rect, __renderScaleTransform);
-
 	}
 
-	private function __getTransformedRenderBounds (rect:Rectangle, matrix:Matrix):Void {
-
-		var r = openfl.geom.Rectangle.__temp;
-		__getRenderBounds (r);
-		r.__transform (r, matrix);
-
-		if (__scrollRect == null) {
-
-			rect.__expand (r.x, r.y, r.width, r.height);
-
-		} else {
-
-			// :TODO: check this (kept as original for compatibility)
-			rect.__expand (matrix.tx, matrix.ty, r.width, r.height);
-
-		}
-
-	}
 
 	private static var __parentList = new haxe.ds.Vector(32);
 	private function __getWorldTransform ():Matrix {
@@ -594,7 +580,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			} else {
 
 				#if (js && html5)
-				CanvasGraphics.render (__graphics, renderSession, __renderScaleTransform);
+				CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY);
 				#elseif lime_cairo
 				CairoGraphics.render (__graphics, renderSession);
 				#end
@@ -611,9 +597,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__scrollRect != null) {
 
-			var scaledScrollRect = openfl.geom.Rectangle.__temp;
-			__scrollRect.__transform (scaledScrollRect, __renderScaleTransform);
-			renderSession.maskManager.pushRect (scaledScrollRect, __renderTransform);
+			renderSession.maskManager.pushRect (__scrollRect, __renderTransform);
 
 		}
 
@@ -661,60 +645,76 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
+	public inline function __updateCachedBitmapFn (renderSession:RenderSession):Void {
+
+		var filterTransform = Matrix.pool.get ();
+		filterTransform.identity ();
+		filterTransform.a = __renderTransform.a / renderScaleX;
+		filterTransform.b = __renderTransform.b / renderScaleX;
+		filterTransform.c = __renderTransform.c / renderScaleY;
+		filterTransform.d = __renderTransform.d / renderScaleY;
+		filterTransform.invert ();
+
+		__updateCachedBitmapBounds (filterTransform);
+
+		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
+			trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
+			return;
+		}
+
+		renderSession.maskManager.disableMask ();
+
+		if (__cachedBitmap == null) {
+			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
+		}
+
+		// :TRICKY: scale factor on BitmapData must be set AFTER the filters have been rendered
+		@:privateAccess __cachedBitmap.__resize (Math.ceil (__cachedBitmapBounds.width), Math.ceil (__cachedBitmapBounds.height));
+
+		var m = Matrix.pool.get();
+		m.identity ();
+		m.a = renderScaleX;
+		m.d = renderScaleY;
+		m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
+
+		// we disable the container shader, it will be applied to the final texture
+		var shader = __shader;
+		this.__shader = null;
+		@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
+		Matrix.pool.put(m);
+		this.__shader = shader;
+
+		__updateCachedBitmap = false;
+
+		if (__updateFilters) {
+			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
+			__updateFilters = false;
+		}
+
+		Matrix.pool.put (filterTransform);
+
+		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
+		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
+
+		renderSession.maskManager.enableMask ();
+
+	}
+	
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
-			
-			var filterTransform = Matrix.pool.get ();
-			
-			filterTransform.copyFrom (__renderTransform);
-			filterTransform.invert ();
 
-			__updateCachedBitmapBounds (filterTransform);
+ 			__updateCachedBitmapFn (renderSession);
 
-			if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
-				trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
-				return;
-			}
-
-			renderSession.maskManager.disableMask ();
-
-			if (__cachedBitmap == null) {
-				__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
-			}
-
-			@:privateAccess __cachedBitmap.__resize (Std.int (__cachedBitmapBounds.width), Std.int (__cachedBitmapBounds.height));
-
-			// we need to position the drawing origin to 0,0 in the texture
-			var m = Matrix.pool.get();
-			m.copyFrom( __renderScaleTransform );
-			m.translate (-__cachedBitmapBounds.x, -__cachedBitmapBounds.y);
-
-			// we disable the container shader, it will be applied to the final texture
-			var shader = __shader;
-			this.__shader = null;
-			@:privateAccess __cachedBitmap.__drawGL (renderSession, this, m, true, false, true);
-			Matrix.pool.put(m);
-			this.__shader = shader;
-
-			__updateCachedBitmap = false;
-
-			if (__updateFilters) {
-				@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
-				__updateFilters = false;
-			}
-
-			Matrix.pool.put (filterTransform);
-			renderSession.maskManager.enableMask ();
 		}
 
-		// Calculate the correct position
 		__cacheGLMatrix.identity ();
-		__cacheGLMatrix.translate (__cachedBitmapBounds.x, __cachedBitmapBounds.y);
+		__cacheGLMatrix.translate (__cachedBitmapBounds.x / renderScaleX, __cachedBitmapBounds.y / renderScaleY);
 		__cacheGLMatrix.concat (__renderTransform);
 		__cacheGLMatrix.translate (__offset.x, __offset.y);
 
 		renderSession.spriteBatch.renderBitmapData(__cachedBitmap, __cacheAsBitmapSmooth, __cacheGLMatrix, __worldColorTransform, __worldAlpha, blendMode, __shader, ALWAYS);
+
 	}
 
 	private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
@@ -846,16 +846,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__cachedBitmapBounds.setEmpty();
 		__getRenderBounds (__cachedBitmapBounds);
 
+		__cachedBitmapBounds.x *= renderScaleX;
+		__cachedBitmapBounds.y *= renderScaleY;
+		__cachedBitmapBounds.width *= renderScaleX;
+		__cachedBitmapBounds.height *= renderScaleY;
+
 		if (__filters != null) {
 
 			@:privateAccess BitmapFilter.__expandBounds (__filters, __cachedBitmapBounds, filterTransform);
 
 		}
 
-		__cachedBitmapBounds.x = Math.round (__cachedBitmapBounds.x);
-		__cachedBitmapBounds.y = Math.round (__cachedBitmapBounds.y);
-		__cachedBitmapBounds.width = Math.ceil (__cachedBitmapBounds.width);
-		__cachedBitmapBounds.height = Math.ceil (__cachedBitmapBounds.height);
+		__cachedBitmapBounds.x = Math.floor (__cachedBitmapBounds.x);
+		__cachedBitmapBounds.y = Math.floor (__cachedBitmapBounds.y);
 
 	}
 
@@ -902,6 +905,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 				__worldAlpha = alpha * parent.__worldAlpha;
 				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
+
+				if (mustResetRenderColorTransform()) {
+					__renderAlpha = 1.0;
+					__renderColorTransform.reset ();
+				} else {
+					__renderAlpha = alpha * parent.__renderAlpha;
+					__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
+				}
 
 				if ((blendMode == null || blendMode == NORMAL)) {
 
@@ -951,6 +962,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 				__worldColorTransform.copyFrom(transform.colorTransform);
 				__worldAlpha = alpha;
+
+				if (mustResetRenderColorTransform()) {
+					__renderAlpha = 1.0;
+					__renderColorTransform.reset ();
+				} else {
+					__renderAlpha = alpha;
+					__renderColorTransform.copyFrom(transform.colorTransform);
+				}
 
 				#if dom
 
@@ -1080,23 +1099,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 
-		__renderScaleTransform.identity();
-
 		if (__cacheAsBitmapMatrix != null) {
 
-			__renderScaleTransform.copyFrom (__cacheAsBitmapMatrix);
+			throw ":TODO: fill renderScaleX, renderScaleY and use __cacheAsBitmapMatrix where appropriate";
 
 		} else if (__useSeparateRenderScaleTransform) {
 
-			var renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
-			var renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
-			__renderScaleTransform.scale(renderScaleX, renderScaleY);
+			renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
+			renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
 
 		}
 
-		__renderTransform.copyFrom (__renderScaleTransform);
-		__renderTransform.invert ();
-		__renderTransform.concat (__worldTransform);
+		__renderTransform.copyFrom (__worldTransform);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
 
@@ -1239,12 +1253,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_height ():Float {
 
-		var bounds = openfl.geom.Rectangle.pool.get();
-		bounds.setEmpty();
+		var bounds = openfl.geom.Rectangle.pool.get ();
 		__getLocalBounds (bounds);
 
 		var result = bounds.height;
-		openfl.geom.Rectangle.pool.put(bounds);
+		openfl.geom.Rectangle.pool.put (bounds);
 		return result;
 
 	}
@@ -1253,8 +1266,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_height (value:Float):Float {
 
 		var bounds = openfl.geom.Rectangle.pool.get ();
-		bounds.setEmpty();
-
 		__getBounds (bounds);
 
 		if (value != bounds.height) {
@@ -1467,18 +1478,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function get_renderScaleX ():Float {
-
-		return Math.sqrt (__renderScaleTransform.a * __renderScaleTransform.a + __renderScaleTransform.b * __renderScaleTransform.b);
-
-	}
-
-	private function get_renderScaleY ():Float {
-
-		return Math.sqrt (__renderScaleTransform.c * __renderScaleTransform.c + __renderScaleTransform.d * __renderScaleTransform.d);
-
-	}
-
 	private function get_scrollRect ():Rectangle {
 
 		if ( __scrollRect == null ) return null;
@@ -1556,7 +1555,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function get_width ():Float {
 
 		var bounds = openfl.geom.Rectangle.pool.get ();
-		bounds.setEmpty();
 		__getLocalBounds (bounds);
 
 		var result = bounds.width;
@@ -1569,8 +1567,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_width (value:Float):Float {
 
 		var bounds = openfl.geom.Rectangle.pool.get ();
-		bounds.setEmpty();
-
 		__getBounds (bounds);
 
 		if (value != bounds.width) {
@@ -1619,7 +1615,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	private function mustResetRenderColorTransform():Bool {
 
+		return __cacheAsBitmap;
+
+	}
 }
 
 

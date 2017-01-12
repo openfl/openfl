@@ -61,7 +61,7 @@ class CairoShape {
 					
 				}
 				
-				cairo.paintWithAlpha (shape.__worldAlpha);
+				cairo.paintWithAlpha (shape.__renderAlpha);
 				
 				if (shape.__mask != null) {
 					

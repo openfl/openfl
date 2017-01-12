@@ -66,10 +66,7 @@ class Video extends DisplayObject {
 	
 	private override function __getBounds (rect:Rectangle):Void {
 		
-		var bounds = Rectangle.__temp;
-		bounds.setTo (0, 0, __width, __height);
-		
-		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		rect.setTo (0, 0, __width, __height);
 		
 	}
 	
@@ -134,7 +131,7 @@ class Video extends DisplayObject {
 				
 			}
 			
-			context.globalAlpha = __worldAlpha;
+			context.globalAlpha = __renderAlpha;
 			var transform = __worldTransform;
 			
 			if (renderSession.roundPixels) {

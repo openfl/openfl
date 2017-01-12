@@ -44,8 +44,8 @@ class Shape extends DisplayObject {
 		
 		super.__getRenderBounds (rect);
 		
-		rect.x -= __graphics.__padding;
-		rect.y -= __graphics.__padding;
+		rect.x -= __graphics.__padding / renderScaleX;
+		rect.y -= __graphics.__padding / renderScaleY;
 		
 	}
 

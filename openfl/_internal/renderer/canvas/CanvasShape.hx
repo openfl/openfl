@@ -38,10 +38,8 @@ class CanvasShape {
 						
 					}
 					
-					context.globalAlpha = shape.__worldAlpha;
+					context.globalAlpha = shape.__renderAlpha;
 					var transform = shape.__renderTransform;
-					
-					throw ":TODO: take __renderScaleTransform into account";
 					
 					if (renderSession.roundPixels) {
 						

@@ -45,7 +45,7 @@ class DOMShape {
 					shape.__canvas.width = graphics.__canvas.width;
 					shape.__canvas.height = graphics.__canvas.height;
 					
-					shape.__context.globalAlpha = shape.__worldAlpha;
+					shape.__context.globalAlpha = shape.__renderAlpha;
 					shape.__context.drawImage (graphics.__canvas, 0, 0);
 					
 				} else {

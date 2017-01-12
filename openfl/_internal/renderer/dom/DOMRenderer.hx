@@ -84,9 +84,9 @@ class DOMRenderer extends AbstractRenderer {
 		
 		if (setAlpha && displayObject.__worldAlphaChanged) {
 			
-			if (displayObject.__worldAlpha < 1) {
+			if (displayObject.__renderAlpha < 1) {
 				
-				style.setProperty ("opacity", Std.string (displayObject.__worldAlpha), null);
+				style.setProperty ("opacity", Std.string (displayObject.__renderAlpha), null);
 				
 			} else {
 				

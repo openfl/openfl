@@ -59,7 +59,10 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__getBounds (rect);
 		
-		__currentState.__getTransformedBounds (rect, __currentState.__worldTransform);
+		var tmpRect = Rectangle.pool.get ();
+		__currentState.__getTransformedBounds (tmpRect, __currentState.__worldTransform);
+		rect.__expand (tmpRect.x, tmpRect.y, tmpRect.width, tmpRect.height);
+		Rectangle.pool.put (tmpRect);
 		
 	}
 	
@@ -333,6 +336,8 @@ class SimpleButton extends InteractiveObject {
 	
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 
+		// :TODO: update __renderColorTransform ?
+		
 		if (parent != null) {
 			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
 		}

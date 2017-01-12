@@ -454,7 +454,7 @@ class CanvasGraphics {
 
 	}
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, matrix:Matrix = null):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0):Void {
 
 		#if (js && html5)
 
@@ -486,21 +486,9 @@ class CanvasGraphics {
 				} else {
 					var scaled_bounds:Rectangle = Rectangle.pool.get();
 
-					if (matrix != null) {
-
-						var scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
-						var scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
-
-						scaled_bounds.copyFrom(graphics.__bounds);
-						scaled_bounds.width *= scaleX;
-						scaled_bounds.height *= scaleY;
-
-					} else {
-
-						scaled_bounds = graphics.__bounds;
-						matrix = @:privateAccess Matrix.__identity;
-
-					}
+					scaled_bounds.copyFrom(graphics.__bounds);
+					scaled_bounds.width *= scaleX;
+					scaled_bounds.height *= scaleY;
 
 					if (graphics.__canvas == null) {
 
@@ -518,7 +506,7 @@ class CanvasGraphics {
 					graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2 * padding;
 					graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2 * padding;
 
-					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + padding, matrix.ty + padding);
+					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 					Rectangle.pool.put(scaled_bounds);
 				}
@@ -840,7 +828,7 @@ class CanvasGraphics {
 				endRenderStep();
 
 				drawCommandReaderPool.put(data);
-				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
+				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
 
 			}
 
