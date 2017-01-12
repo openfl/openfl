@@ -21,7 +21,8 @@ import openfl.utils.UnsafeStringMap;
 class Shader {
 	
 	private static var UID:Int = 0;
-	
+	private static var currentVertexArray:VertexArray = null;
+ 	
 	public var gl:GLRenderContext;
 	
 	public var vertexSrc:Array<String>;
@@ -40,7 +41,6 @@ class Shader {
 	
 	private var vertexString:String;
 	private var fragmentString:String;
-	private var currentVertexArray:VertexArray;
 	
 	public function new(gl:GLRenderContext) {
 		ID = UID++;
