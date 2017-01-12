@@ -120,6 +120,10 @@ class DOMTextField {
 					if (textEngine.selectable) {
 						
 						textField.__style.setProperty ("cursor", "text", null);
+						textField.__style.setProperty ("-webkit-user-select", "text", null);
+						textField.__style.setProperty ("-moz-user-select", "text", null);
+						textField.__style.setProperty ("-ms-user-select", "text", null);
+						textField.__style.setProperty ("-o-user-select", "text", null);
 						
 					} else {
 						

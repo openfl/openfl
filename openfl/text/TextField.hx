@@ -2309,7 +2309,9 @@ class TextField extends InteractiveObject {
 			if (position != __caretIndex) {
 				
 				__caretIndex = position;
+				#if !dom
 				__dirty = true;
+				#end
 				
 			}
 			
@@ -2390,7 +2392,9 @@ class TextField extends InteractiveObject {
 		
 		__caretIndex = __getPosition (mouseX, mouseY);
 		__selectionIndex = __caretIndex;
+		#if !dom
 		__dirty = true;
+		#end
 		
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
