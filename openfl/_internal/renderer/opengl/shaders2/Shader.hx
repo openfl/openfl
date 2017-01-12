@@ -21,7 +21,8 @@ import openfl.utils.UnsafeStringMap;
 class Shader {
 	
 	private static var UID:Int = 0;
-	
+	private static var currentVertexArray:VertexArray = null;
+ 	
 	public var gl:GLRenderContext;
 	
 	public var vertexSrc:Array<String>;
@@ -186,6 +187,10 @@ class Shader {
 	}
 	
 	public function bindVertexArray(va:VertexArray) {
+		if (va == currentVertexArray) {
+			return;
+		}
+
 		var offset = 0;
 		var stride = va.stride;
 		
@@ -197,12 +202,16 @@ class Shader {
 				disableVertexAttribute(attribute, true);
 			}
 		}
+		
+		currentVertexArray = va;
 	}
 	
 	public function unbindVertexArray(va:VertexArray) {
 		for (attribute in va.attributes) {
 			disableVertexAttribute(attribute, false);
 		}
+
+		currentVertexArray = null;
 	}
 	
 	
