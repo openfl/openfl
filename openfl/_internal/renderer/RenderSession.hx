@@ -44,7 +44,8 @@ class RenderSession {
 	public var spriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
 	public var defaultFramebuffer:GLFramebuffer;
-
+	public var usesMainSpriteBatch(get, never):Bool;
+	
 	private var renderTargetBaseTransformStack:GenericStack<Matrix>;
 	
 	
@@ -93,6 +94,13 @@ class RenderSession {
 	public function getRenderTargetBaseTransform ():Matrix {
 		
 		return renderTargetBaseTransformStack.first ();
+		
+	}
+	
+	public inline function get_usesMainSpriteBatch ():Bool {
+		
+		var glRenderer:openfl._internal.renderer.opengl.GLRenderer = cast renderer;
+		return spriteBatch == glRenderer.mainSpriteBatch;
 		
 	}
 

@@ -662,8 +662,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return;
 		}
 
-		renderSession.maskManager.disableMask ();
-
 		if (__cachedBitmap == null) {
 			__cachedBitmap = @:privateAccess BitmapData.__asRenderTexture ();
 		}
@@ -695,8 +693,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		@:privateAccess __cachedBitmap.__scaleX = renderScaleX;
 		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
-
-		renderSession.maskManager.enableMask ();
 
 	}
 	
