@@ -18,6 +18,11 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         this._items[this._length++] = item;
     }
 
+    public inline function pop():T
+    {
+        return this._items[--this._length];
+    }
+
     public inline function insert(index:Int, item:T)
     {
         var i = this._length - 1;
@@ -58,6 +63,11 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         {
             this._items[i] = other[startIndex + i];
         }
+    }
+
+    public inline function last():T
+    {
+        return this._items[this._length - 1];
     }
 
     @:arrayAccess

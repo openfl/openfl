@@ -112,7 +112,7 @@ class CanvasGraphics {
 		var context = context;
 		if ( focalPointRatio != 0 ) {
 
-			focalPointRatio = Math.max(Math.min(focalPointRatio, -1), 1);
+			focalPointRatio = Math.min(Math.max(focalPointRatio, -1), 1);
 		}
 		switch (type) {
 
