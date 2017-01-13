@@ -862,6 +862,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	public inline function __updateColor()
+	{
+		if (parent != null) {
+
+			__worldAlpha = alpha * parent.__worldAlpha;
+			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
+
+			if (mustResetRenderColorTransform()) {
+				__renderAlpha = 1.0;
+				__renderColorTransform.reset ();
+			} else {
+				__renderAlpha = alpha * parent.__renderAlpha;
+				__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
+			}
+
+		} else {
+
+
+			__worldColorTransform.copyFrom(transform.colorTransform);
+			__worldAlpha = alpha;
+
+			if (mustResetRenderColorTransform()) {
+				__renderAlpha = 1.0;
+				__renderColorTransform.reset ();
+			} else {
+				__renderAlpha = alpha;
+				__renderColorTransform.copyFrom(transform.colorTransform);
+			}
+		}
+
+	}
+
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
@@ -883,37 +915,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!transformOnly) {
 
-			#if dom
-			__worldTransformChanged = !__worldTransform.equals (__worldTransformCache);
+			__updateColor();
 
-			if (__worldTransformCache == null) {
-
-				__worldTransformCache = __worldTransform.clone ();
-
-			} else {
-
-				__worldTransformCache.copyFrom (__worldTransform);
-
-			}
-
-			var worldClip:Rectangle = null;
-			#end
-
-			if (parent != null) {
-
-				#if !dom
-
-				__worldAlpha = alpha * parent.__worldAlpha;
-				__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
-
-				if (mustResetRenderColorTransform()) {
-					__renderAlpha = 1.0;
-					__renderColorTransform.reset ();
-				} else {
-					__renderAlpha = alpha * parent.__renderAlpha;
-					__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
-				}
-
+			if(parent != null)
+			{
 				if ((blendMode == null || blendMode == NORMAL)) {
 
 					__blendMode = parent.__blendMode;
@@ -923,83 +928,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				if (shader == null) {
 					__shader = parent.__shader;
 				}
-
-				#else
-
-				var worldVisible = (parent.__worldVisible && visible);
-				__worldVisibleChanged = (__worldVisible != worldVisible);
-				__worldVisible = worldVisible;
-
-				var worldAlpha = alpha * parent.__worldAlpha;
-				__worldAlphaChanged = (__worldAlpha != worldAlpha);
-				__worldAlpha = worldAlpha;
-
-				if (parent.__worldClip != null) {
-
-					worldClip = parent.__worldClip.clone ();
-
-				}
-
-				if (scrollRect != null) {
-
-					var bounds = scrollRect.clone ();
-					bounds.__transform (bounds, __worldTransform);
-
-					if (worldClip != null) {
-
-						bounds.__contract (worldClip.x - scrollRect.x, worldClip.y - scrollRect.y, worldClip.width, worldClip.height);
-
-					}
-
-					worldClip = bounds;
-
-				}
-
-				#end
-
-			} else {
-
-
-				__worldColorTransform.copyFrom(transform.colorTransform);
-				__worldAlpha = alpha;
-
-				if (mustResetRenderColorTransform()) {
-					__renderAlpha = 1.0;
-					__renderColorTransform.reset ();
-				} else {
-					__renderAlpha = alpha;
-					__renderColorTransform.copyFrom(transform.colorTransform);
-				}
-
-				#if dom
-
-				__worldVisibleChanged = (__worldVisible != visible);
-				__worldVisible = visible;
-
-				__worldAlphaChanged = (__worldAlpha != alpha);
-
-				if (scrollRect != null) {
-
-					worldClip = scrollRect.clone ();
-					worldClip.__transform (worldClip, __worldTransform);
-
-				}
-
-				#end
-
 			}
-
-			#if dom
-			__worldClipChanged = ((worldClip == null && __worldClip != null) || (worldClip != null && !worldClip.equals (__worldClip)));
-			__worldClip = worldClip;
-			#end
 
 			if (updateChildren && __renderDirty) {
 
 				__renderDirty = false;
 
 			}
-
 		}
 
 	}

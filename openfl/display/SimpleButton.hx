@@ -336,13 +336,14 @@ class SimpleButton extends InteractiveObject {
 	
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 
-		// :TODO: update __renderColorTransform ?
+		__updateColor();
 		
-		if (parent != null) {
-			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
-		}
-		else {
-			__worldColorTransform.copyFrom(transform.colorTransform);
+		if(__currentState.mustResetRenderColorTransform()) {
+			__currentState.__renderAlpha = 1.0;
+			__currentState.__renderColorTransform.reset();
+		} else {
+			__currentState.__renderAlpha = __currentState.get_alpha() * __renderAlpha;
+			__currentState.__renderColorTransform.setFromCombination(__currentState.transform.colorTransform, __renderColorTransform);
 		}
 
 		__currentState.__worldColorTransform.setFromCombination(__currentState.transform.colorTransform, __worldColorTransform);
