@@ -499,11 +499,16 @@ class BitmapData implements IBitmapDrawable {
 		var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 		var cached_visible = true;
 		if ( Std.is( source, DisplayObject ) ) {
-			cached_visible = cast(source,DisplayObject).visible;
-			cast(source,DisplayObject).visible = true;
+			var src_display_object = cast(source,DisplayObject);
+			cached_visible = src_display_object.visible;
+			if ( !cached_visible ) {
+				src_display_object.visible = true;
+				// :NOTE: Need to call __update here to refresh the __renderable flag
+				src_display_object.__update(true, true);
+			}
 		}
 		__drawGL ( renderSession, source, matrix, clipRect, smoothing, !__usingPingPongTexture, false, true);
-		if ( Std.is( source, DisplayObject ) ) {
+		if ( Std.is( source, DisplayObject ) && !cached_visible ) {
 			cast(source,DisplayObject).visible = cached_visible;
 		}
 		#else
