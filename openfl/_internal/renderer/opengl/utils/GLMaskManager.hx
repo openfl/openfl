@@ -10,6 +10,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
+import openfl.utils.UnshrinkableArray;
 
 
 class GLMaskManager extends AbstractMaskManager {
@@ -22,8 +23,8 @@ class GLMaskManager extends AbstractMaskManager {
 	private var savedClip:Rectangle;
 
 
-	private var maskBitmapTable:GenericStack<BitmapData>;
-	private var maskMatrixTable:GenericStack<Matrix>;
+	private var maskBitmapTable:UnshrinkableArray<BitmapData>;
+	private var maskMatrixTable:UnshrinkableArray<Matrix>;
 
 
 	public function new (renderSession:RenderSession) {
@@ -33,8 +34,8 @@ class GLMaskManager extends AbstractMaskManager {
 		setContext (renderSession.gl);
 
 		clips = [];
-		maskBitmapTable = new GenericStack<BitmapData> ();
-		maskMatrixTable = new GenericStack<Matrix> ();
+		maskBitmapTable = new UnshrinkableArray<BitmapData> (128);
+		maskMatrixTable = new UnshrinkableArray<Matrix> (128);
 
 	}
 
@@ -72,8 +73,8 @@ class GLMaskManager extends AbstractMaskManager {
 			renderSession.spriteBatch.stop ();
 			renderSession.spriteBatch.start (
 				currentClip,
-				maskBitmapTable.first(),
-				maskMatrixTable.first()
+				maskBitmapTable.last(),
+				maskMatrixTable.last()
 			 );
 
 		}
@@ -110,8 +111,8 @@ class GLMaskManager extends AbstractMaskManager {
 		maskMatrix.invert ();
 		maskMatrix.scale ( 1.0 / bitmap.width, 1.0 / bitmap.height );
 
-		maskBitmapTable.add (bitmap);
-		maskMatrixTable.add (maskMatrix);
+		maskBitmapTable.push(bitmap);
+		maskMatrixTable.push(maskMatrix);
 		renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
 
 	}
@@ -121,21 +122,21 @@ class GLMaskManager extends AbstractMaskManager {
 
 		renderSession.spriteBatch.stop ();
 		maskBitmapTable.pop();
-		
+
 		var maskMatrix = maskMatrixTable.pop();
-		
+
 		if (maskMatrix != null) {
 			Matrix.pool.put (maskMatrix);
 		}
-		
-		renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
+
+		renderSession.spriteBatch.start (currentClip, maskBitmapTable.last(),  maskMatrixTable.last());
 	}
 
 	public override function disableMask(){
 
 		renderSession.spriteBatch.stop();
-		maskBitmapTable.add(null);
-		maskMatrixTable.add(null);
+		maskBitmapTable.push(null);
+		maskMatrixTable.push(null);
 
 	}
 
@@ -143,12 +144,12 @@ class GLMaskManager extends AbstractMaskManager {
 		renderSession.spriteBatch.stop();
 		maskBitmapTable.pop();
 		var maskMatrix = maskMatrixTable.pop();
-		
+
 		if (maskMatrix != null) {
 			throw "maskMatrix should always be null here";
 			Matrix.pool.put (maskMatrix);
 		}
-		renderSession.spriteBatch.start( currentClip, maskBitmapTable.first(), maskMatrixTable.first());
+		renderSession.spriteBatch.start( currentClip, maskBitmapTable.last(), maskMatrixTable.last());
 	}
 
 
@@ -159,7 +160,7 @@ class GLMaskManager extends AbstractMaskManager {
 		clips.pop ();
 		currentClip = clips[clips.length - 1];
 
-		renderSession.spriteBatch.start (currentClip, maskBitmapTable.first (),  maskMatrixTable.first ());
+		renderSession.spriteBatch.start (currentClip, maskBitmapTable.last(),  maskMatrixTable.last());
 
 	}
 
