@@ -70,7 +70,6 @@ class GLMaskManager extends AbstractMaskManager {
 
 		if (restartBatch) {
 
-			renderSession.spriteBatch.stop ();
 			renderSession.spriteBatch.start (
 				currentClip,
 				maskBitmapTable.last(),
@@ -84,7 +83,11 @@ class GLMaskManager extends AbstractMaskManager {
 
 	public override function pushMask (mask:DisplayObject) {
 
-		renderSession.spriteBatch.stop ();
+		if (!renderSession.usesMainSpriteBatch) {
+			
+			renderSession.spriteBatch.stop ();
+		
+		}
 
 		if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap ) {
 
@@ -113,14 +116,14 @@ class GLMaskManager extends AbstractMaskManager {
 
 		maskBitmapTable.push(bitmap);
 		maskMatrixTable.push(maskMatrix);
-		renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
 
+		renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
+		
 	}
 
 
 	public override function popMask () {
 
-		renderSession.spriteBatch.stop ();
 		maskBitmapTable.pop();
 
 		var maskMatrix = maskMatrixTable.pop();
@@ -132,30 +135,7 @@ class GLMaskManager extends AbstractMaskManager {
 		renderSession.spriteBatch.start (currentClip, maskBitmapTable.last(),  maskMatrixTable.last());
 	}
 
-	public override function disableMask(){
-
-		renderSession.spriteBatch.stop();
-		maskBitmapTable.push(null);
-		maskMatrixTable.push(null);
-
-	}
-
-	public override function enableMask(){
-		renderSession.spriteBatch.stop();
-		maskBitmapTable.pop();
-		var maskMatrix = maskMatrixTable.pop();
-
-		if (maskMatrix != null) {
-			throw "maskMatrix should always be null here";
-			Matrix.pool.put (maskMatrix);
-		}
-		renderSession.spriteBatch.start( currentClip, maskBitmapTable.last(), maskMatrixTable.last());
-	}
-
-
 	override public function popRect():Void {
-
-		renderSession.spriteBatch.stop ();
 
 		clips.pop ();
 		currentClip = clips[clips.length - 1];

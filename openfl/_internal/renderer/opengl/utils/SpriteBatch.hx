@@ -49,6 +49,7 @@ class SpriteBatch {
 	
 	var dirty:Bool = true;
 	public var drawing:Bool = false;
+	public var preventFlush:Bool = false;
 	
 	var clipRect:Rectangle;
 	var maskBitmap:BitmapData;
@@ -150,10 +151,6 @@ class SpriteBatch {
 	}
 
 	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
-		if (drawing) {
-			stop();
-		}
-
 		drawing = true;
 		dirty = true;
 
@@ -505,6 +502,9 @@ class SpriteBatch {
 	}
 	
 	function flush() {
+		
+		if (preventFlush) throw "SpriteBatch flush forbidden";
+		
 		if (batchedSprites == 0) return;
 		
 		if (clipRect != null) {
@@ -654,7 +654,8 @@ class SpriteBatch {
 			state.maskTexture = maskBitmap.getTexture(gl);
 			var uvData = @:privateAccess maskBitmap.__uvData;
 			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
-			state.maskMatrix = maskMatrix;
+			state.maskMatrix = Matrix.pool.get ();
+			state.maskMatrix.copyFrom (maskMatrix);
 		} else {
 			state.maskTexture = null;
 		}
@@ -772,6 +773,10 @@ private class State {
 		texture = null;
 		colorTransform = null;
 		maskTexture = null;
-		maskMatrix = null;
+		
+		if (maskMatrix != null) {
+			Matrix.pool.put (maskMatrix);
+			maskMatrix = null;
+		}
 	}
 }

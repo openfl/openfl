@@ -99,14 +99,17 @@ class GLBitmap {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return null;
 
+		if (!renderSession.usesMainSpriteBatch) {
+			
+			renderSession.spriteBatch.stop ();
+		
+		}
+
 		var renderer = renderSession.renderer;
-		var spritebatch = renderSession.spriteBatch;
 		var x:Int = Std.int(viewPort.x);
 		var y:Int = Std.int(viewPort.y);
 		var width:Int = Std.int(viewPort.width);
 		var height:Int = Std.int(viewPort.height);
-
-		spritebatch.finish();
 
 		// push the default framebuffer
 		if (fbData.length <= 0) {

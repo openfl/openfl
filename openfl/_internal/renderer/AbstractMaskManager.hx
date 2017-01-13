@@ -41,14 +41,6 @@ class AbstractMaskManager {
 		
 	}
 	
-	public function disableMask(){
-
-	}
-
-	public function enableMask(){
-
-	}
-
 	
 	public function popRect ():Void {
 		
