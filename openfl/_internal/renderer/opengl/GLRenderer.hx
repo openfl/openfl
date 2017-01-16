@@ -60,7 +60,6 @@ class GLRenderer extends AbstractRenderer {
 	public var shaderManager:ShaderManager;
 	public var mainSpriteBatch:SpriteBatch;
 	public var offscreenSpriteBatch:SpriteBatch;
-	public var stencilManager:StencilManager;
 	public var view:Dynamic;
 	public var projectionMatrix:Matrix;
 	public var renderToTexture(null, set):Bool = false;
@@ -117,7 +116,6 @@ class GLRenderer extends AbstractRenderer {
 		mainSpriteBatch = new SpriteBatch (gl);
 		offscreenSpriteBatch = new SpriteBatch (gl);
 		filterManager = new FilterManager (gl, this.transparent);
-		stencilManager = new StencilManager (gl);
 		blendModeManager = new BlendModeManager (gl);
 		
 		renderSession = new RenderSession ();
@@ -127,7 +125,6 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.filterManager = this.filterManager;
 		renderSession.blendModeManager = this.blendModeManager;
 		renderSession.spriteBatch = this.mainSpriteBatch;
-		renderSession.stencilManager = this.stencilManager;
 		renderSession.renderer = this;
 		renderSession.defaultFramebuffer = this.defaultFramebuffer;
 		renderSession.projectionMatrix = this.projectionMatrix;

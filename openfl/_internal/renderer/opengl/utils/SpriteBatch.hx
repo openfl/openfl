@@ -12,7 +12,6 @@ import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
 import openfl.display.Shader in FlashShader;
 import openfl.display.GLShaderData;
-import openfl.display.Tilesheet;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -26,7 +25,6 @@ import lime.math.Vector2;
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.Tilesheet)
 @:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
 
@@ -194,242 +192,6 @@ class SpriteBatch {
 		batchedSprites++;
 	}
 	
-	public function renderTiles(object:DisplayObject, sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?flashShader:FlashShader, count:Int = -1) {
-		
-		var texture = sheet.__bitmap.getTexture(gl);
-		if (texture == null) return;
-		
-		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
-		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
-		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
-		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
-		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
-		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
-		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
-		var useRGBOffset = ((flags & Tilesheet.TILE_TRANS_COLOR) > 0);
-		
-		var blendMode:BlendMode = switch(flags & 0xF0000) {
-			case Tilesheet.TILE_BLEND_ADD:                ADD;
-			case Tilesheet.TILE_BLEND_MULTIPLY:           MULTIPLY;
-			case Tilesheet.TILE_BLEND_SCREEN:             SCREEN;
-			case Tilesheet.TILE_BLEND_SUBTRACT:           SUBTRACT;
-			case _: switch(flags & 0xF00000) {
-				case Tilesheet.TILE_BLEND_DARKEN:         DARKEN;
-				case Tilesheet.TILE_BLEND_LIGHTEN:        LIGHTEN;
-				case Tilesheet.TILE_BLEND_OVERLAY:        OVERLAY;
-				case Tilesheet.TILE_BLEND_HARDLIGHT:      HARDLIGHT;
-				case _: switch(flags & 0xF000000) {
-					case Tilesheet.TILE_BLEND_DIFFERENCE: DIFFERENCE;
-					case Tilesheet.TILE_BLEND_INVERT:     INVERT;
-					case _:                               NORMAL;
-				}
-			}
-		};
-		
-		if (useTransform) { useScale = false; useRotation = false; }
-		
-		var scaleIndex = 0;
-		var rotationIndex = 0;
-		var rgbIndex = 0;
-		var rgbOffsetIndex = 0;
-		var alphaIndex = 0;
-		var transformIndex = 0;
-		
-		var numValues = 3;
-		
-		if (useRect) { numValues = useOrigin ? 8 : 6; }
-		if (useScale) { scaleIndex = numValues; numValues ++; }
-		if (useRotation) { rotationIndex = numValues; numValues ++; }
-		if (useTransform) { transformIndex = numValues; numValues += 4; }
-		if (useRGB) { rgbIndex = numValues; numValues += 3; }
-		if (useAlpha) { alphaIndex = numValues; numValues ++; }
-		if (useRGBOffset) { rgbOffsetIndex = numValues; numValues += 4; }
-		
-		var totalCount = tileData.length;
-		if (count >= 0 && totalCount > count) totalCount = count;
-		var itemCount = Math.ceil (totalCount / numValues);
-		var iIndex = 0;
-		
-		var tileID = -1;
-		var rect:Rectangle = sheet.__rectTile;
-		var tileUV:Rectangle = sheet.__rectUV;
-		var center:Point = sheet.__point;
-		var x = 0.0, y = 0.0;
-		var alpha = 1.0, tint = 0xFFFFFF, color = 0xFFFFFFFF;
-		var scale = 1.0, rotation = 0.0;
-		var cosTheta = 1.0, sinTheta = 0.0;
-		var a = 0.0, b = 0.0, c = 0.0, d = 0.0, tx = 0.0, ty = 0.0;
-		var ox = 0.0, oy = 0.0;
-		
-		var oMatrix = object.__worldTransform;
-		
-		var bIndex = 0;
-		var tMa  = 1.0, tMb  = 0.0;
-		var tMc  = 0.0, tMd  = 1.0;
-		var tMtx = 0.0, tMty = 0.0;
-		
-		var oMa  = oMatrix.a;
-		var oMb  = oMatrix.b;
-		var oMc  = oMatrix.c;
-		var oMd  = oMatrix.d;
-		var oMtx = oMatrix.tx;
-		var oMty = oMatrix.ty;
-		
-		var rx = 0.0, ry = 0.0, rw = 0.0, rh = 0.0;
-		var tuvx = 0.0, tuvy = 0.0, tuvw = 0.0, tuvh = 0.0;
-		
-		//enableAttributes((useRGB || useAlpha) ? 0 : 0xFFFFFFFF);
-		enableAttributes(0);
-		
-		prepareShader(flashShader);
-		
-		while (iIndex < totalCount) {
-			
-			if (batchedSprites >= maxSprites) {
-				flush ();
-			}
-			
-			x = tileData[iIndex + 0];
-			y = tileData[iIndex + 1];
-			
-			if (useRect) {
-				tileID = -1;
-				
-				rect.x = tileData[iIndex + 2];
-				rect.y = tileData[iIndex + 3];
-				rect.width = tileData[iIndex + 4];
-				rect.height = tileData[iIndex + 5];
-				
-				if (useOrigin) {
-					center.x = tileData[iIndex + 6];
-					center.y = tileData[iIndex + 7];
-				} else {
-					center.setTo(0, 0);
-				}
-				
-				rw = rect.width; rh = rect.height;
-				tuvx = rect.left / sheet.__bitmap.width;
-				tuvy = rect.top / sheet.__bitmap.height;
-				tuvw = rect.right / sheet.__bitmap.width;
-				tuvh = rect.bottom / sheet.__bitmap.height;
-			} else {
-				tileID = Std.int(#if (neko || js) tileData[iIndex + 2] == null ? 0 : #end tileData[iIndex + 2]);
-				rect = sheet.getTileRect(tileID);
-				center = sheet.getTileCenter(tileID);
-				tileUV = sheet.getTileUVs(tileID);
-				
-				if (rect != null) {
-					rw = rect.width; rh = rect.height;
-					tuvx = tileUV.x; tuvy = tileUV.y; tuvw = tileUV.width; tuvh = tileUV.height;
-				}
-			}
-			
-			if (rect != null && rect.width > 0 && rect.height > 0 && center != null) {
-				
-				alpha = 1;
-				tint = 0xFFFFFF;
-				scale = 1.0;
-				rotation = 0.0;
-				cosTheta = 1.0;
-				sinTheta = 0.0;
-				
-				if (useAlpha) {
-					alpha = tileData[iIndex + alphaIndex] * object.__renderAlpha;
-				} else {
-					alpha = object.__renderAlpha;
-				}
-				
-				if (useRGB) {
-					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
-				}
-				
-				var wct = object.__renderColorTransform;
-				colorTransform.redMultiplier   = wct.redMultiplier;
-				colorTransform.greenMultiplier = wct.greenMultiplier;
-				colorTransform.blueMultiplier  = wct.blueMultiplier;
-				colorTransform.alphaMultiplier = wct.alphaMultiplier;
-				colorTransform.redOffset       = wct.redOffset;
-				colorTransform.greenOffset     = wct.greenOffset;
-				colorTransform.blueOffset      = wct.blueOffset;
-				colorTransform.alphaOffset     = wct.alphaOffset;
-				
-				if (useRGBOffset) {
-					colorTransform.redOffset   += tileData[iIndex + rgbOffsetIndex + 0];
-					colorTransform.greenOffset += tileData[iIndex + rgbOffsetIndex + 1];
-					colorTransform.blueOffset  += tileData[iIndex + rgbOffsetIndex + 2];
-					colorTransform.alphaOffset += tileData[iIndex + rgbOffsetIndex + 3];
-				}
-				
-				if (useScale) {
-					scale = tileData[iIndex + scaleIndex];
-				}
-				
-				if (useRotation) {
-					rotation = tileData[iIndex + rotationIndex];
-					cosTheta = Math.cos(rotation);
-					sinTheta = Math.sin(rotation);
-				}
-				
-				if (useTransform) {
-					a = tileData[iIndex + transformIndex + 0];
-					b = tileData[iIndex + transformIndex + 1];
-					c = tileData[iIndex + transformIndex + 2];
-					d = tileData[iIndex + transformIndex + 3];
-				} else {
-					a = scale * cosTheta;
-					b = scale * sinTheta;
-					c = -b;
-					d = a;
-				}
-				
-				ox = center.x * a + center.y * c;
-				oy = center.x * b + center.y * d;
-				
-				tx = x - ox;
-				ty = y - oy;
-				
-				// expanded fillVertices here since it doesn't need to access matrix or uvs
-				
-				tMa = (a * oMa + b * oMc) * rw;
-				tMb = (a * oMb + b * oMd) * rw;
-				tMc = (c * oMa + d * oMc) * rh;
-				tMd = (c * oMb + d * oMd) * rh;
-				tMtx = tx * oMa + ty * oMc + oMtx;
-				tMty = tx * oMb + ty * oMd + oMty;
-				
-				bIndex = batchedSprites * 4 * elementsPerVertex;
-				// POSITIONS
-				positions[bIndex + 0] 	= (tMtx);
-				positions[bIndex + 1] 	= (tMty);
-				positions[bIndex + 5] 	= (tMa + tMtx);
-				positions[bIndex + 6] 	= (tMb + tMty);
-				positions[bIndex + 10] 	= (tMa + tMc + tMtx);
-				positions[bIndex + 11] 	= (tMd + tMb + tMty);
-				positions[bIndex + 15] 	= (tMc + tMtx);
-				positions[bIndex + 16] 	= (tMd + tMty);
-				//COLORS
-				colors[bIndex + 4] = colors[bIndex + 9] = colors[bIndex + 14] = colors[bIndex + 19] = ((Std.int(alpha * 255)) & 0xFF) << 24 | tint;
-				// UVS
-				positions[bIndex + 2]  = tuvx;
-				positions[bIndex + 3]  = tuvy;
-				positions[bIndex + 7]  = tuvw;
-				positions[bIndex + 8]  = tuvy;
-				positions[bIndex + 12] = tuvw;
-				positions[bIndex + 13] = tuvh;
-				positions[bIndex + 17] = tuvx;
-				positions[bIndex + 18] = tuvh;
-				
-				writtenVertexBytes = bIndex + 20;
-				
-				setState(batchedSprites, texture, smooth, blendMode, colorTransform, flashShader, false);
-				
-				batchedSprites++;
-			}
-			
-			iIndex += numValues;
-			
-		}
-	}
 	
 	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
 		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
@@ -538,13 +300,10 @@ class SpriteBatch {
 		currentState.textureSmooth = false;
 		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
 		currentState.colorTransform = null;
-		currentState.skipColorTransformAlpha = false;
 		
 		for (i in 0...batchedSprites) {
 			
 			nextState = states[i];
-			
-			currentState.skipColorTransformAlpha = nextState.skipColorTransformAlpha;
 			
 			if (!nextState.equals(currentState)) {
 				
