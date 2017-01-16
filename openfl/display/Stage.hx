@@ -1374,30 +1374,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 				if (updateChildren) {
 
-					#if dom
-					__wasDirty = true;
-					#end
-
 					DisplayObject.__worldTransformDirty = 0;
 					DisplayObject.__worldRenderDirty = 0;
 					__dirty = false;
 
 				}
 
-			} #if dom else if (__wasDirty) {
-
-				// If we were dirty last time, we need at least one more
-				// update in order to clear "changed" properties
-
-				super.__update (false, updateChildren, maskGrahpics);
-
-				if (updateChildren) {
-
-					__wasDirty = false;
-
-				}
-
-			} #end
+			}
 
 		}
 

@@ -163,10 +163,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		__clipDepth = 0;
 
-		#if dom
-		__worldVisible = true;
-		#end
-
 		__cachedParent = null;
 	}
 
@@ -1399,7 +1395,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (value != __scrollRect) {
 
 			__setTransformDirty ();
-			#if dom __setRenderDirty (); #end
 
 		}
 

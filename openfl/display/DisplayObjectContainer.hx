@@ -883,7 +883,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		super.__update (transformOnly, updateChildren, maskGraphics);
 
 		// nested objects into a mask are non renderables but are part of the mask
-		if (!__renderable && !__isMask #if dom && !__worldAlphaChanged && !__worldClipChanged && !__worldTransformChanged && !__worldVisibleChanged #end) {
+		if (!__renderable && !__isMask) {
 
 			return;
 

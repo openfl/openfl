@@ -33,52 +33,6 @@ class OpenGLView extends DirectRenderer {
 		
 		super ("OpenGLView");
 		
-		#if html5
-		#if dom
-		if (!__initialized) {
-			
-			__canvas = cast Browser.document.createElement ("canvas");
-			__canvas.width = Lib.current.stage.stageWidth;
-			__canvas.height = Lib.current.stage.stageHeight;
-			
-			var window = Lib.current.stage.window;
-			
-			__context = cast __canvas.getContext ("webgl", {
-				
-				alpha: false, 
-				premultipliedAlpha: false, 
-				antialias: false, 
-				depth: Reflect.hasField (window.config, "depthBuffer") ? window.config.depthBuffer : true, 
-				stencil: Reflect.hasField (window.config, "stencilBuffer") ? window.config.stencilBuffer : false
-				
-			});
-			
-			if (__context == null) {
-				
-				__context = cast __canvas.getContext ("experimental-webgl");
-				
-			}
-			
-			#if debug
-			__context = untyped WebGLDebugUtils.makeDebugContext (__context);
-			#end
-			
-			GL.context = cast __context;
-			__initialized = true;
-			
-		}
-		#elseif !webgl
-		if (!__added) {
-			
-			__added = true;
-			
-			trace ("Warning: OpenGLView is not available in HTML5 canvas rendering mode");
-			trace ("Please compile your project using -Ddom or -Dwebgl (beta) to enable");
-			
-		}
-		#end
-		#end
-		
 	}
 	
 	

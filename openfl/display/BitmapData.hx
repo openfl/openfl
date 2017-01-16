@@ -418,79 +418,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return;
 
-		#if (js && html5 && !webgl)
-
-		if (colorTransform != null) {
-			
-			var copy = new BitmapData (Reflect.field (source, "__width"), Reflect.field (source, "__height"), true, 0);
-			copy.draw (source);
-			copy.colorTransform (copy.rect, colorTransform);
-			source = copy;
-			
-		}
-		
-		ImageCanvasUtil.convertToCanvas (image);
-		ImageCanvasUtil.sync (image, true);
-		
-		var buffer = image.buffer;
-		
-		var renderSession = new RenderSession ();
-		renderSession.context = cast buffer.__srcContext;
-		renderSession.roundPixels = true;
-		renderSession.maskManager = new CanvasMaskManager (renderSession);
-		
-		if (!smoothing) {
-			
-			untyped (buffer.__srcContext).mozImageSmoothingEnabled = false;
-			//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = false;
-			untyped (buffer.__srcContext).msImageSmoothingEnabled = false;
-			untyped (buffer.__srcContext).imageSmoothingEnabled = false;
-			
-		}
-		
-		if (clipRect != null) {
-			
-			var matrix = Matrix.pool.get();
-			matrix.identity();
-			renderSession.maskManager.pushRect (clipRect, matrix);
-			Matrix.pool.put(matrix);
-			
-		}
-		
-		var matrixCache = source.__worldTransform;
-		if ( matrix != null ) {
-			source.__updateTransforms(matrix);
-		} else {
-			var temp_matrix = Matrix.pool.get ();
-			temp_matrix.identity();
-			source.__updateTransforms(temp_matrix);
-			Matrix.pool.put( temp_matrix );
-		}
-		source.__updateChildren (false);
-		source.__renderCanvas (renderSession);
-		source.__updateTransforms(matrixCache);
-		source.__updateChildren (true);
-		
-		if (!smoothing) {
-			
-			untyped (buffer.__srcContext).mozImageSmoothingEnabled = true;
-			//untyped (buffer.__srcContext).webkitImageSmoothingEnabled = true;
-			untyped (buffer.__srcContext).msImageSmoothingEnabled = true;
-			untyped (buffer.__srcContext).imageSmoothingEnabled = true;
-			
-		}
-		
-		if (clipRect != null){
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		buffer.__srcContext.setTransform (1, 0, 0, 1, 0, 0);
-		buffer.__srcImageData = null;
-		buffer.data = null;
-
-		#elseif (js && html5) //webgl
+		#if (js && html5) //webgl
 
 		if ( colorTransform != null && @:privateAccess !colorTransform.__isDefault() || blendMode != null ) {
 			throw ":TODO: Not supported";
@@ -827,7 +755,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			var textureImage = image;
 
-			#if (!webgl || !js)
+			#if (!js)
 				if ((!textureImage.premultiplied && textureImage.transparent) ) {
 
 					textureImage = textureImage.clone ();
