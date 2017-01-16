@@ -147,11 +147,14 @@ class TextField extends InteractiveObject {
 	
 	public function appendText (text:String):Void {
 		
-		__text += text;
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+		if (text == null || text == "") return;
 		
 		__dirty = true;
 		__layoutDirty = true;
+		
+		__updateText (__text + text);
+		
+		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 		
 	}
 	
