@@ -7,7 +7,6 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
-import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
@@ -531,13 +530,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 
 	public function __renderCanvasMask (renderSession:RenderSession):Void {
-
-		throw ":TODO: remove me";
-
-	}
-
-
-	public function __renderDOM (renderSession:RenderSession):Void {
 
 		throw ":TODO: remove me";
 

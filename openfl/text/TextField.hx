@@ -8,7 +8,6 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
@@ -721,13 +720,6 @@ class TextField extends InteractiveObject {
 			super.__renderCanvas (renderSession);
 			
 		}
-		
-	}
-	
-	
-	public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		DOMTextField.render (this, renderSession);
 		
 	}
 	

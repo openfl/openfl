@@ -3,7 +3,6 @@ package openfl.display; #if !openfl_legacy
 
 import openfl._internal.renderer.cairo.CairoBitmap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
-import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.opengl.GLBitmap;
 import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
@@ -136,14 +135,7 @@ class Bitmap extends DisplayObject {
 		
 	}
 	
-	
-	public override function __renderDOM (renderSession:RenderSession):Void {
 		
-		DOMBitmap.render (this, renderSession);
-		
-	}
-	
-	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (__cacheAsBitmap) {

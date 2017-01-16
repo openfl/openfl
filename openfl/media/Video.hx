@@ -11,7 +11,6 @@ import openfl.geom.Rectangle;
 import openfl.net.NetStream;
 
 #if (js && html5)
-import openfl._internal.renderer.dom.DOMRenderer;
 import js.html.MediaElement;
 import js.Browser;
 #end
@@ -182,46 +181,6 @@ class Video extends DisplayObject {
 		#end
 		
 	}
-	
-	
-	public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		#if (js && html5)
-		if (stage != null && __worldVisible && __renderable) {
-			
-			if (!__active) {
-				
-				DOMRenderer.initializeElement (this, __stream.__video, renderSession);
-				__active = true;
-				__dirty = true;
-				
-			}
-			
-			if (__dirty) {
-				
-				__stream.__video.width = Std.int (__width);
-				__stream.__video.height = Std.int (__height);
-				__dirty = false;
-				
-			}
-			
-			DOMRenderer.applyStyle (this, renderSession, true, true, true);
-			
-		} else {
-			
-			if (__active) {
-				
-				renderSession.element.removeChild (__stream.__video);
-				__active = false;
-				
-			}
-			
-		}
-		#end
-		
-	}
-	
-	
 	
 	
 	// Get & Set Methods

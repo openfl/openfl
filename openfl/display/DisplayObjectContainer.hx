@@ -760,55 +760,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	public override function __renderDOM (renderSession:RenderSession):Void {
-
-		#if !neko
-
-		//if (!__renderable) return;
-
-		super.__renderDOM (renderSession);
-
-		if (__mask != null) {
-
-			renderSession.maskManager.pushMask (__mask);
-
-		}
-
-		// TODO: scrollRect
-
-		for (child in __children) {
-			if (child == null ) continue;
-			child.__renderDOM (renderSession);
-
-		}
-
-		for (orphan in __removedChildren) {
-
-			if (orphan.stage == null) {
-
-				orphan.__renderDOM (renderSession);
-
-			}
-
-		}
-
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
-
-		}
-
-		if (__mask != null) {
-
-			renderSession.maskManager.popMask ();
-
-		}
-
-		#end
-
-	}
-
-
 	public override function __renderGL (renderSession:RenderSession):Void {
 
 		if (!__renderable || __worldAlpha <= 0) return;

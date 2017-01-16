@@ -2,7 +2,6 @@ package openfl.display; #if !display #if !openfl_legacy
 
 
 #if !flash
-import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.RenderSession;
 #end
 import openfl.display.Stage;
@@ -94,84 +93,6 @@ class OpenGLView extends DirectRenderer {
 			trace ("Please compile your project using -Ddom (on the command-line) or <haxedef name=\"dom\" /> to enable");
 			
 		}*/
-		
-	}
-	#end
-	
-	
-	#if !flash
-	public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		#if (js && html5)
-		if (stage != null && __worldVisible && __renderable) {
-			
-			if (!__added) {
-				
-				/*if (!__initialized) {
-					
-					__canvas = cast Browser.document.createElement ("canvas");
-					__canvas.width = Lib.current.stage.stageWidth;
-					__canvas.height = Lib.current.stage.stageHeight;
-					
-					__context = cast __canvas.getContext ("webgl");
-					
-					if (__context == null) {
-						
-						__context = cast __canvas.getContext ("experimental-webgl");
-						
-					}
-					
-					#if debug
-					__context = untyped WebGLDebugUtils.makeDebugContext (__context);
-					#end
-					
-					//GL.__context = __context;
-					__initialized = true;
-					
-				}*/
-				
-				renderSession.element.appendChild (__canvas);
-				__added = true;
-				
-				DOMRenderer.initializeElement (this, __canvas, renderSession);
-				
-			}
-			
-			if (__context != null) {
-				
-				//GL.__context = __context;
-				
-				var rect = Rectangle.pool.get();
-				
-				if (__scrollRect == null) {
-					
-					rect.setTo (0, 0, stage.stageWidth, stage.stageHeight);
-					
-				} else {
-					
-					rect.setTo (x + __scrollRect.x, y + __scrollRect.y, __scrollRect.width, __scrollRect.height);
-					
-				}
-				
-				if (__render != null) __render (rect);
-				
-				Rectangle.pool.put(rect);
-
-			}
-			
-			//__applyStyle (renderSession, true, false, true);
-			
-		} else {
-			
-			if (__added) {
-				
-				renderSession.element.removeChild (__canvas);
-				__added = false;
-				
-			}
-			
-		}
-		#end
 		
 	}
 	#end

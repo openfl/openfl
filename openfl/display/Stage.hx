@@ -31,7 +31,6 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.console.ConsoleRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
@@ -516,10 +515,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				case CANVAS (context):
 
 					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-
-				case DOM (element):
-
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
 
 				case CAIRO (cairo):
 
