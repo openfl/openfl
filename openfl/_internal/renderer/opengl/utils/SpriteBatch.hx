@@ -189,7 +189,7 @@ class SpriteBatch {
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, width, height, matrix, uvs, color, pixelSnapping);
 		
-		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader, true);
+		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader);
 		
 		batchedSprites++;
 	}
@@ -600,7 +600,7 @@ class SpriteBatch {
 			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 1);
 			var ct = state.colorTransform;
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier),
-						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, state.skipColorTransformAlpha ? 1 : ct.alphaMultiplier);
+						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, 1);
 			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset),
 						ct.redOffset / 255., ct.greenOffset / 255., ct.blueOffset / 255., ct.alphaOffset / 255.);
 		} else {
@@ -643,7 +643,7 @@ class SpriteBatch {
 		
 	}
 	
-	inline function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:FlashShader, ?skipAlpha:Bool = false) {
+	inline function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:FlashShader) {
 		
 		var state:State = states[index];
 		if (state == null) {
@@ -676,7 +676,6 @@ class SpriteBatch {
 			state.colorTransform.alphaOffset     = colorTransform.alphaOffset;
 		}
 		
-		state.skipColorTransformAlpha = skipAlpha;
 		if (shader == null) {
 			state.shader = null;
 			state.shaderData = null;
@@ -745,7 +744,6 @@ private class State {
 	public var blendMode:BlendMode;
 	public var colorTransform:ColorTransform = new ColorTransform();
 	public var skipColorTransform:Bool = false;
-	public var skipColorTransformAlpha:Bool = false;
 	public var shader:Shader;
 	public var shaderData:GLShaderData;
 
@@ -764,7 +762,7 @@ private class State {
 				textureSmooth == other.textureSmooth &&
 				blendMode == other.blendMode &&
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
-				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform, skipColorTransformAlpha)))
+				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform, true)))
 				
 		);
 	}
