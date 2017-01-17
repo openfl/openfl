@@ -1,3 +1,28 @@
+4.5.3 (01/16/2017)
+------------------
+
+* Updated for Lime 3.6
+* Updated AGALMiniAssembler to a fresh port of Adobe's last release
+* Added missing Event.FRAME_CONSTRUCTED event
+* Added Dictionary<Object, Object> support
+* Improved support for textField.setTextFormat
+* Updated preloader to use Event.UNLOAD instead of Event.COMPLETE to unload
+* Updated SWFLite library to preload with the parent application
+* Fixed support for slashes in SharedObject names
+* Fixed support for preventing default on keyboard events
+* Fixed a regression in displaying stack traces on crash errors
+* Fixed text measurement on IE 11
+* Fixed return value when scaleX or scaleY is negative
+* Fixed issues where `new ByteArray` may have values other than zero 
+* Fixed an issue with SWFLite assets when using the "generate" option
+* Fixed a possible null crash when updating object transforms
+* Fixed support for garbage collecting Sound when SoundChannel is finished
+* Fixed problems with using textField.appendText
+* Fixed the default template for HTML5 when multiple projects are embedded
+* Fixed wrong colors when values were larger than expected
+* Fixed an issue with needing clearRect on CocoonJS
+
+
 4.5.2 (12/19/2016)
 ------------------
 
