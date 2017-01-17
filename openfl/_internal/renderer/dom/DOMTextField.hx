@@ -173,7 +173,7 @@ class DOMTextField {
 						var realSize = textField.__textFormat.size;
 						var scaledFontSize  : Float = realSize * scale;
 						
-					#if !openfl_dont_half_round_font_sizes
+					#if openfl_half_round_font_sizes
 						
 						var roundedFontSize = Math.fceil(scaledFontSize * 2) / 2;
 						if (roundedFontSize > scaledFontSize) {
