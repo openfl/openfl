@@ -51,7 +51,15 @@ import cpp.vm.Gc;
 	
 	public static function setClipboard (string:String):Void {
 		
+		#if html5 // HTML5 needs focus on <input> field for clipboard events to work
+		flash.Lib.current.stage.window.enableTextEvents = true;
+		#end
+		
 		Clipboard.text = string;
+		
+		#if html5
+		flash.Lib.current.stage.window.enableTextEvents = false;
+		#end
 		
 	}
 	
