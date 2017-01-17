@@ -139,7 +139,14 @@ class DOMTextField {
 					// TODO: Vertical align
 					
 					//textField.__div.innerHTML = textEngine.text;
-					textField.__div.innerHTML = new EReg ("\n", "g").replace (textEngine.text, "<br>");
+					
+					var text = textEngine.text;
+					if (!textField.__isHTML) {
+						
+						text = StringTools.htmlEscape (text);
+						
+					}
+					textField.__div.innerHTML = new EReg ("\n", "g").replace (text, "<br>");
 					
 					if (textEngine.background) {
 						
