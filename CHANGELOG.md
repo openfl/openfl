@@ -4,7 +4,7 @@
 * Updated for Lime 3.6
 * Updated AGALMiniAssembler to a fresh port of Adobe's last release
 * Added missing Event.FRAME_CONSTRUCTED event
-* Added Dictionary<Object, Object> support
+* Added `Dictionary<Object, Object>` support
 * Improved support for textField.setTextFormat
 * Updated preloader to use Event.UNLOAD instead of Event.COMPLETE to unload
 * Updated SWFLite library to preload with the parent application
