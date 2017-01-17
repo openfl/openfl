@@ -500,7 +500,7 @@ class BitmapData implements IBitmapDrawable {
 		var cached_visible = true;
 		if ( Std.is( source, DisplayObject ) ) {
 			var src_display_object = cast(source,DisplayObject);
-			cached_visible = src_display_object.visible;
+			cached_visible = src_display_object.visible && src_display_object.__renderable;
 			if ( !cached_visible ) {
 				src_display_object.visible = true;
 				// :NOTE: Need to call __update here to refresh the __renderable flag
