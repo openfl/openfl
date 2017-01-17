@@ -16,15 +16,37 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+class FrameBufferDataItem
+{
+	public var texture:PingPongTexture;
+	public var viewPort:Rectangle;
+	public var transparent:Bool;
+
+	public function new()
+	{
+	}
+
+	inline public function set(texture, viewPort, transparent)
+	{
+		this.texture = texture;
+		this.viewPort = viewPort;
+		this.transparent = transparent;
+	}
+}
+
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.IBitmapDrawable)
-
-
 class GLBitmap {
+	private static var fbDataPool:ObjectPool<FrameBufferDataItem> = new ObjectPool<FrameBufferDataItem>(
+		function()
+		{
+			return new FrameBufferDataItem();
+		}
+	);
 
-	private static var fbData:Array<{texture:PingPongTexture, viewPort:Rectangle, transparent:Bool}> = [];
+	private static var fbData:Array<FrameBufferDataItem> = [];
 
 	public static inline function render (bitmap:Bitmap, renderSession:RenderSession):Void {
 
@@ -59,7 +81,7 @@ class GLBitmap {
 
 		}
 
-		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__worldColorTransform, bitmap.__worldAlpha, bitmap.__blendMode, bitmap.__shader, resolvedPixelSnapping);
+		renderSession.spriteBatch.renderBitmapData(bitmap.bitmapData, bitmap.smoothing, renderTransform, bitmap.__renderColorTransform, bitmap.__renderAlpha, bitmap.__blendMode, bitmap.__shader, resolvedPixelSnapping);
 
 		Matrix.pool.put (renderTransform);
 	}
@@ -77,18 +99,23 @@ class GLBitmap {
 		var gl:GLRenderContext = renderSession.gl;
 		if (gl == null) return null;
 
+		if (!renderSession.usesMainSpriteBatch) {
+			
+			renderSession.spriteBatch.stop ();
+		
+		}
+
 		var renderer = renderSession.renderer;
-		var spritebatch = renderSession.spriteBatch;
 		var x:Int = Std.int(viewPort.x);
 		var y:Int = Std.int(viewPort.y);
 		var width:Int = Std.int(viewPort.width);
 		var height:Int = Std.int(viewPort.height);
 
-		spritebatch.finish();
-
 		// push the default framebuffer
 		if (fbData.length <= 0) {
-			fbData.push( { texture: null, viewPort: null, transparent: renderer.transparent } );
+			var item = fbDataPool.get();
+			item.set(null, null, renderer.transparent);
+			fbData.push(item);
 		}
 
 		if (texture == null) {
@@ -113,7 +140,9 @@ class GLBitmap {
 			texture.clear();
 		}
 
-		fbData.push( { texture:texture, viewPort:viewPort, transparent: transparent } );
+		var item = fbDataPool.get();
+		item.set(texture, viewPort, transparent);
+		fbData.push(item);
 
 		return texture;
 	}
@@ -128,7 +157,7 @@ class GLBitmap {
 	 * @param	blendMode
 	 * @param	clipRect
 	 */
-	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?colorTransform:ColorTransform, ?blendMode:BlendMode, ?clipRect:Rectangle) {
+	public static function drawBitmapDrawable (renderSession:RenderSession, target:BitmapData, source:IBitmapDrawable, ?matrix:Matrix, ?clipRect:Rectangle) {
 		var data = fbData[fbData.length - 1];
 		if (data == null) throw "No data to draw to";
 
@@ -140,7 +169,12 @@ class GLBitmap {
 		var spritebatch = renderSession.spriteBatch;
 		var drawTarget = target != null;
 
-		var tmpRect = clipRect == null ? new Rectangle (viewPort.x, viewPort.y, viewPort.width, viewPort.height) : clipRect.clone ();
+		var tmpRect = Rectangle.pool.get();
+		if ( clipRect != null ) {
+			tmpRect.copyFrom(clipRect);
+		} else {
+			tmpRect.setTo(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
+		}
 
 		spritebatch.begin (renderSession, drawTarget ? null : tmpRect);
 
@@ -156,40 +190,22 @@ class GLBitmap {
 
 		}
 
-		var ctCache = source.__worldColorTransform;
-		var alphaCache = source.__worldAlpha;
-		var blendModeCache = source.__blendMode;
 		var cached = source.__cacheAsBitmap;
-
-		var m = Matrix.pool.get ();
+		var blendMode = source.__blendMode;
 		
-		if (matrix != null) {
-			
-			m.copyFrom (matrix);
-			
-		} else {
-			
-			m.identity();
-			
-		}
-
-		source.__worldColorTransform = colorTransform != null ? colorTransform : new ColorTransform ();
-		source.__blendMode = blendMode;
-
-		source.__updateTransforms(m);
-		Matrix.pool.put (m);
-		source.__updateChildren (false);
+		renderSession.pushRenderTargetBaseTransform (source, matrix);
 
 		source.__cacheAsBitmap = false;
+		source.__blendMode = null;
 		source.__renderGL (renderSession);
+		source.__blendMode = blendMode;
 		source.__cacheAsBitmap = cached;
 
-		source.__updateTransforms();
-		source.__updateChildren (false);
+		renderSession.popRenderTargetBaseTransform ();
 
-		source.__worldColorTransform = ctCache;
-		source.__blendMode = blendModeCache;
-		source.__worldAlpha = alphaCache;
+		spritebatch.finish ();
+
+		Rectangle.pool.put(tmpRect);
 	}
 
 	/**
@@ -237,7 +253,7 @@ class GLBitmap {
 		}
 
 		// remove the actual binded framebuffer from the array
-		fbData.pop();
+		fbDataPool.put(fbData.pop());
 		var data = fbData[fbData.length - 1];
 		if (data == null) {
 			throw "oh";

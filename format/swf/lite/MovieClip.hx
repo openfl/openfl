@@ -66,9 +66,11 @@ class MovieClip extends flash.display.MovieClip {
 
 	private var __9SliceBitmap:BitmapData;
 	private var __scale9Rect:Rectangle;
+	private var __updating9SliceBitmap:Bool = false;
 
 	private var __SWFDepthData:Map<DisplayObject, Int>;
 	private var __maskData:Map<DisplayObject, Int>;
+	private var __maskDataKeys:Array<DisplayObject>;
 
 	public function new (swf:SWFLite, symbol:SpriteSymbol) {
 
@@ -91,6 +93,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		__SWFDepthData = new Map();
 		__maskData = new Map();
+		__maskDataKeys = new Array();
 
 		__currentLabels = [];
 
@@ -359,13 +362,12 @@ class MovieClip extends flash.display.MovieClip {
 	@:noCompletion private function __createShape (symbol:ShapeSymbol):Shape {
 
 		var shape = new Shape ();
-		@:privateAccess shape.__graphics = new Graphics();
+		var graphics = shape.graphics;
 
 		if ( symbol.graphics != null && symbol.graphics.readOnly == true ) {
-			@:privateAccess shape.__graphics.shallowCopyFrom( symbol.graphics );
+			graphics.shallowCopyFrom( symbol.graphics );
 			return shape;
 		}
-		var graphics = shape.__graphics;
 
 		for (command in symbol.commands) {
 
@@ -710,19 +712,17 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	private function __update9SliceBitmap ():Void {
 
-		super.__update(transformOnly, updateChildren, maskGraphics);
-
-		// :TODO: should be in a prerender phase
 		// :TODO: use dirty flag if need to update __9SliceBitmap
 
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap == null) {
+				__updating9SliceBitmap = true;
 				var bounds:Rectangle = Rectangle.pool.get();
-				bounds.setEmpty();
 				__getBounds (bounds);
 
 				if (bounds.width <= 0 && bounds.height <= 0) {
+					Rectangle.pool.put (bounds);
 					throw 'Error creating a cached bitmap. The texture size is ${bounds.width}x${bounds.height}';
 				}
 
@@ -737,16 +737,15 @@ class MovieClip extends flash.display.MovieClip {
 				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
 				@:privateAccess bitmap.__resize (Math.ceil (bounds.width), Math.ceil (bounds.height));
 
-				var previousTransform = __renderTransform;
-
-				__renderTransform = new Matrix();
-				__renderTransform.translate(-bounds.x, -bounds.y);
-				Rectangle.pool.put(bounds);
-				@:privateAccess bitmap.__drawGL(renderSession, this, __renderTransform);
-
-				__renderTransform = previousTransform;
+				var renderTransform = Matrix.pool.get ();
+				renderTransform.identity ();
+				renderTransform.translate(-bounds.x, -bounds.y);
+				@:privateAccess bitmap.__drawGL(renderSession, this, renderTransform);
+				Matrix.pool.put (renderTransform);
+				Rectangle.pool.put (bounds);
 
 				__9SliceBitmap = bitmap;
+				__updating9SliceBitmap = false;
 		}
 	}
 
@@ -759,7 +758,7 @@ class MovieClip extends flash.display.MovieClip {
 			return;
 		}
 
-		var bounds:Rectangle = new Rectangle();
+		var bounds:Rectangle = Rectangle.pool.get();
 		__getBounds (bounds);
 
 		var bordersReservedWidth = __9SliceBitmap.width - __scale9Rect.width;
@@ -813,13 +812,20 @@ class MovieClip extends flash.display.MovieClip {
 				uvs.y0 = uvs.y1 = vs[row] * v_scale;
 				uvs.y2 = uvs.y3 = vs[row+1] * v_scale;
 
-				renderSession.spriteBatch.renderBitmapDataEx (__9SliceBitmap, w, h, uvs, true, matrix, __worldColorTransform, __worldColorTransform.alphaMultiplier, __blendMode, __shader, null);
+				renderSession.spriteBatch.renderBitmapDataEx (__9SliceBitmap, w, h, uvs, true, matrix, __worldColorTransform, 1.0, __blendMode, __shader, null);
 
 			}
 		}
+
+		Rectangle.pool.put (bounds);
 	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
+		
+		if (!__updating9SliceBitmap) {
+			__update9SliceBitmap ();
+		}
+
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
 			if (!__renderable || __worldAlpha <= 0) return;
 
@@ -862,7 +868,7 @@ class MovieClip extends flash.display.MovieClip {
 					if(displayObject != null){
 
 							removeChild(displayObject);
-
+							__maskDataKeys.remove(displayObject);
 							__maskData.remove(displayObject);
 							__SWFDepthData.remove(displayObject);
 					}
@@ -917,6 +923,7 @@ class MovieClip extends flash.display.MovieClip {
 						var oldObject : DisplayObject = displayObject;
 
 						var clipDepth = __maskData.get(displayObject);
+						__maskDataKeys.remove(displayObject);
 						__maskData.remove(displayObject);
 						__SWFDepthData.remove(displayObject);
 						removeChild(displayObject);
@@ -931,6 +938,7 @@ class MovieClip extends flash.display.MovieClip {
 						}
 
 						if( clipDepth != null ) {
+							__maskDataKeys.push(displayObject);
 							__maskData.set( displayObject, clipDepth );
 						}
 
@@ -949,6 +957,8 @@ class MovieClip extends flash.display.MovieClip {
 						displayObject.visible = false;
 
 						__maskData.set( displayObject, frameObject.clipDepth );
+						__maskDataKeys.push(displayObject);
+
 					}
 
 				}
@@ -964,6 +974,7 @@ class MovieClip extends flash.display.MovieClip {
 						removeChild (displayObject);
 						__SWFDepthData.remove(displayObject);
 						__maskData.remove(displayObject);
+						__maskDataKeys.remove(displayObject);
 
 					}
 
@@ -975,7 +986,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		for( mask in __maskData.keys() ){
+		for( mask in __maskDataKeys ){
 			var maskIndex = getChildIndex( mask );
 
 			var depthValue = __maskData.get(mask);
@@ -1004,6 +1015,18 @@ class MovieClip extends flash.display.MovieClip {
 			if (__frameScripts.exists (index)) {
 				__currentLabel = __symbol.frames[index].label;
 				__frameScripts.get (index) ();
+
+				if(index  + 1 != __currentFrame){
+					return true;
+				}
+			}
+
+		}
+		if (__staticFrameScripts != null) {
+
+			if (__staticFrameScripts.exists (index)) {
+				__currentLabel = __symbol.frames[index].label;
+				__staticFrameScripts.get (index) (this);
 
 				if(index  + 1 != __currentFrame){
 					return true;
@@ -1180,6 +1203,12 @@ class MovieClip extends flash.display.MovieClip {
 
 			trace("-");
 		}
+	}
+
+	private override function mustResetRenderColorTransform():Bool {
+		
+		return super.mustResetRenderColorTransform() || (__symbol != null && __symbol.scalingGridRect != null);
+		
 	}
 
 	// Get & Set Methods

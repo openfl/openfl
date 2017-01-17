@@ -23,6 +23,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 import Xml;
+import openfl.utils.UnshrinkableArray;
 
 #if (js && html5)
 import js.html.DivElement;
@@ -542,7 +543,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		rect.__expand (__textEngine.bounds.x, __textEngine.bounds.y, __textEngine.bounds.width, __textEngine.bounds.height);
+		rect.setTo (__textEngine.bounds.x, __textEngine.bounds.y, __textEngine.bounds.width, __textEngine.bounds.height);
 		
 	}
 	
@@ -632,7 +633,7 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;

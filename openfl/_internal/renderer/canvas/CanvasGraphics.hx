@@ -5,7 +5,6 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.CapsStyle;
 import openfl.display.DisplayObject;
-import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.DrawCommandType;
 import openfl.display.GradientType;
@@ -60,6 +59,13 @@ class CanvasGraphics {
 	private static var startX = 0.0;
 	private static var startY = 0.0;
 
+	public static var drawCommandReaderPool: ObjectPool<DrawCommandReader>  = new ObjectPool<DrawCommandReader>(
+		function()
+		{
+			return new DrawCommandReader(null);
+		}
+	);
+
 
 	private static function closePath ():Void {
 
@@ -104,10 +110,14 @@ class CanvasGraphics {
 		var gradientFill = null;
 
 		var context = context;
+		if ( focalPointRatio != 0 ) {
+
+			focalPointRatio = Math.min(Math.max(focalPointRatio, -1), 1);
+		}
 		switch (type) {
 
 			case RADIAL:
-				gradientFill = context.createRadialGradient (0, 0, 0, 0, 0, 819.2);
+				gradientFill = context.createRadialGradient (819.2 * focalPointRatio , 0, 0, 0, 0, 819.2);
 
 			case LINEAR:
 
@@ -293,7 +303,8 @@ class CanvasGraphics {
 			beginRenderStep();
 			resetFillStyle();
 
-			var data = new DrawCommandReader (graphics.__commands);
+			var data = drawCommandReaderPool.get();
+			data.reset(graphics.__commands);
 
 			for (type in graphics.__commands.types) {
 
@@ -311,12 +322,12 @@ class CanvasGraphics {
 						data.readEndFill ();
 						endRenderStep();
 						if (canvasGraphics.hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 
 						if (canvasGraphics.hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 						resetFillStyle();
@@ -333,12 +344,12 @@ class CanvasGraphics {
 						endRenderStep();
 
 						if (hasFill && context.isPointInPath (x, y, canvasWindingRule)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
-							data.destroy ();
+							drawCommandReaderPool.put(data);
 							return true;
 						}
 
@@ -375,7 +386,7 @@ class CanvasGraphics {
 
 			endRenderStep();
 
-			data.destroy ();
+			drawCommandReaderPool.put(data);
 
 			if (hasFill && context.isPointInPath (x, y, canvasGraphics.canvasWindingRule)) {
 				return true;
@@ -443,7 +454,7 @@ class CanvasGraphics {
 
 	}
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, matrix:Matrix = null):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0):Void {
 
 		#if (js && html5)
 
@@ -475,21 +486,9 @@ class CanvasGraphics {
 				} else {
 					var scaled_bounds:Rectangle = Rectangle.pool.get();
 
-					if (matrix != null) {
-
-						var scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
-						var scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
-
-						scaled_bounds.copyFrom(graphics.__bounds);
-						scaled_bounds.width *= scaleX;
-						scaled_bounds.height *= scaleY;
-
-					} else {
-
-						scaled_bounds = graphics.__bounds;
-						matrix = @:privateAccess Matrix.__identity;
-
-					}
+					scaled_bounds.copyFrom(graphics.__bounds);
+					scaled_bounds.width *= scaleX;
+					scaled_bounds.height *= scaleY;
 
 					if (graphics.__canvas == null) {
 
@@ -507,7 +506,7 @@ class CanvasGraphics {
 					graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2 * padding;
 					graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2 * padding;
 
-					context.setTransform (matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx + padding, matrix.ty + padding);
+					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 					Rectangle.pool.put(scaled_bounds);
 				}
@@ -515,7 +514,8 @@ class CanvasGraphics {
 				beginRenderStep();
 				resetFillStyle();
 
-				var data = new DrawCommandReader (graphics.__commands);
+				var data = drawCommandReaderPool.get();
+				data.reset(graphics.__commands);
 
 				for (type in graphics.__commands.types) {
 
@@ -827,8 +827,8 @@ class CanvasGraphics {
 
 				endRenderStep();
 
-				data.destroy ();
-				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas);
+				drawCommandReaderPool.put(data);
+				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
 
 			}
 
@@ -850,7 +850,8 @@ class CanvasGraphics {
 			context = cast renderSession.context;
 
 
-			var data = new DrawCommandReader (graphics.__commands);
+			var data = drawCommandReaderPool.get();
+			data.reset(graphics.__commands);
 			var context = context;
 
 			for (type in graphics.__commands.types) {
@@ -925,7 +926,7 @@ class CanvasGraphics {
 
 			}
 
-			data.destroy ();
+			drawCommandReaderPool.put(data);
 
 		}
 

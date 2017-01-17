@@ -66,15 +66,12 @@ class Video extends DisplayObject {
 	
 	private override function __getBounds (rect:Rectangle):Void {
 		
-		var bounds = Rectangle.__temp;
-		bounds.setTo (0, 0, __width, __height);
-		
-		rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+		rect.setTo (0, 0, __width, __height);
 		
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
@@ -134,7 +131,7 @@ class Video extends DisplayObject {
 				
 			}
 			
-			context.globalAlpha = __worldAlpha;
+			context.globalAlpha = __renderAlpha;
 			var transform = __worldTransform;
 			
 			if (renderSession.roundPixels) {

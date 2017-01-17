@@ -9,6 +9,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
+import openfl.utils.UnshrinkableArray;
 
 @:access(openfl.geom.Matrix)
 
@@ -58,7 +59,10 @@ class SimpleButton extends InteractiveObject {
 		
 		super.__getBounds (rect);
 		
-		__currentState.__getTransformedBounds (rect, __currentState.__worldTransform);
+		var tmpRect = Rectangle.pool.get ();
+		__currentState.__getTransformedBounds (tmpRect, __currentState.__worldTransform);
+		rect.__expand (tmpRect.x, tmpRect.y, tmpRect.width, tmpRect.height);
+		Rectangle.pool.put (tmpRect);
 		
 	}
 	
@@ -87,7 +91,7 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		var hitTest = false;
 		
@@ -332,11 +336,14 @@ class SimpleButton extends InteractiveObject {
 	
 	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 
-		if (parent != null) {
-			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
-		}
-		else {
-			__worldColorTransform.copyFrom(transform.colorTransform);
+		__updateColor();
+		
+		if(__currentState.mustResetRenderColorTransform()) {
+			__currentState.__renderAlpha = 1.0;
+			__currentState.__renderColorTransform.reset();
+		} else {
+			__currentState.__renderAlpha = __currentState.get_alpha() * __renderAlpha;
+			__currentState.__renderColorTransform.setFromCombination(__currentState.transform.colorTransform, __renderColorTransform);
 		}
 
 		__currentState.__worldColorTransform.setFromCombination(__currentState.transform.colorTransform, __worldColorTransform);

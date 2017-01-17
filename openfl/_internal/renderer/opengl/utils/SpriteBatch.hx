@@ -11,7 +11,7 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.PixelSnapping;
 import openfl.display.Shader in FlashShader;
-import openfl.display.Shader.GLShaderData;
+import openfl.display.GLShaderData;
 import openfl.display.Tilesheet;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -49,6 +49,7 @@ class SpriteBatch {
 	
 	var dirty:Bool = true;
 	public var drawing:Bool = false;
+	public var preventFlush:Bool = false;
 	
 	var clipRect:Rectangle;
 	var maskBitmap:BitmapData;
@@ -150,10 +151,6 @@ class SpriteBatch {
 	}
 
 	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
-		if (drawing) {
-			stop();
-		}
-
 		drawing = true;
 		dirty = true;
 
@@ -337,16 +334,16 @@ class SpriteBatch {
 				sinTheta = 0.0;
 				
 				if (useAlpha) {
-					alpha = tileData[iIndex + alphaIndex] * object.__worldAlpha;
+					alpha = tileData[iIndex + alphaIndex] * object.__renderAlpha;
 				} else {
-					alpha = object.__worldAlpha;
+					alpha = object.__renderAlpha;
 				}
 				
 				if (useRGB) {
 					tint = Std.int(tileData[iIndex + rgbIndex] * 255) << 16 | Std.int(tileData[iIndex + rgbIndex + 1] * 255) << 8 | Std.int(tileData[iIndex + rgbIndex + 2] * 255);
 				}
 				
-				var wct = object.__worldColorTransform;
+				var wct = object.__renderColorTransform;
 				colorTransform.redMultiplier   = wct.redMultiplier;
 				colorTransform.greenMultiplier = wct.greenMultiplier;
 				colorTransform.blueMultiplier  = wct.blueMultiplier;
@@ -436,13 +433,21 @@ class SpriteBatch {
 	
 	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
 		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
+				
+		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
+		var localMatrix = Matrix.pool.get ();
+
+		localMatrix.copyFrom (matrix);
+		localMatrix.concat (renderTargetBaseTransform);
+
+		var a = localMatrix.a;
+		var b = localMatrix.b;
+		var c = localMatrix.c;
+		var d = localMatrix.d;
+		var tx = localMatrix.tx;
+		var ty = localMatrix.ty;
 		
-		var a = matrix.a;
-		var b = matrix.b;
-		var c = matrix.c;
-		var d = matrix.d;
-		var tx = matrix.tx;
-		var ty = matrix.ty;
+		Matrix.pool.put (localMatrix);
 		
 		// POSITION
 		if (pixelSnapping == null || pixelSnapping == NEVER) {
@@ -497,6 +502,9 @@ class SpriteBatch {
 	}
 	
 	function flush() {
+		
+		if (preventFlush) throw "SpriteBatch flush forbidden";
+		
 		if (batchedSprites == 0) return;
 		
 		if (clipRect != null) {
@@ -646,7 +654,8 @@ class SpriteBatch {
 			state.maskTexture = maskBitmap.getTexture(gl);
 			var uvData = @:privateAccess maskBitmap.__uvData;
 			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
-			state.maskMatrix = maskMatrix;
+			state.maskMatrix = Matrix.pool.get ();
+			state.maskMatrix.copyFrom (maskMatrix);
 		} else {
 			state.maskTexture = null;
 		}
@@ -764,6 +773,10 @@ private class State {
 		texture = null;
 		colorTransform = null;
 		maskTexture = null;
-		maskMatrix = null;
+		
+		if (maskMatrix != null) {
+			Matrix.pool.put (maskMatrix);
+			maskMatrix = null;
+		}
 	}
 }

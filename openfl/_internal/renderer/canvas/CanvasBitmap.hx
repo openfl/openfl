@@ -28,7 +28,7 @@ class CanvasBitmap {
 			
 			bitmap.bitmapData.__sync ();
 			
-			context.globalAlpha = bitmap.__worldAlpha;
+			context.globalAlpha = bitmap.__renderAlpha;
 			var transform = bitmap.__renderTransform;
 			var scrollRect = bitmap.scrollRect;
 			

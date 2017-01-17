@@ -7,7 +7,7 @@ import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.display.Shader.GLShaderData;
+import openfl.display.GLShaderData;
 import openfl.display.Shader.GLShaderParameter;
 import openfl.display.Shader.RepeatMode;
 import openfl.gl.GLProgram;
@@ -21,7 +21,8 @@ import openfl.utils.UnsafeStringMap;
 class Shader {
 	
 	private static var UID:Int = 0;
-	
+	private static var currentVertexArray:VertexArray = null;
+ 	
 	public var gl:GLRenderContext;
 	
 	public var vertexSrc:Array<String>;
@@ -84,9 +85,15 @@ class Shader {
 		var u:GLUniformLocation;
 		var v:Float32Array;
 		var bd:BitmapData;
-		for (key in shaderData.keys()) {
+
+		for(i in 0...shaderData.keys.length)
+		{
+			var key = shaderData.keys[i];
+
 			u = getUniformLocation(key);
-			param = shaderData.get(key);
+
+			param = shaderData.values[i];
+
 			if (param == null) continue;
 			v = param.value;
 			bd = param.bitmap;
@@ -180,6 +187,10 @@ class Shader {
 	}
 	
 	public function bindVertexArray(va:VertexArray) {
+		if (va == currentVertexArray) {
+			return;
+		}
+
 		var offset = 0;
 		var stride = va.stride;
 		
@@ -191,12 +202,16 @@ class Shader {
 				disableVertexAttribute(attribute, true);
 			}
 		}
+		
+		currentVertexArray = va;
 	}
 	
 	public function unbindVertexArray(va:VertexArray) {
 		for (attribute in va.attributes) {
 			disableVertexAttribute(attribute, false);
 		}
+
+		currentVertexArray = null;
 	}
 	
 	

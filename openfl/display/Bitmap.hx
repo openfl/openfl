@@ -9,6 +9,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils.UnshrinkableArray;
 
 #if (js && html5)
 import js.html.ImageElement;
@@ -54,16 +55,14 @@ class Bitmap extends DisplayObject {
 		
 		if (bitmapData != null) {
 			
-			var bounds = Rectangle.__temp;
-			bounds.setTo (0, 0, bitmapData.width, bitmapData.height);
-			rect.__expand (bounds.x, bounds.y, bounds.width, bounds.height);
+			rect.setTo (0, 0, bitmapData.width, bitmapData.height);
 			
 		}
 		
 	}
 	
 	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask || bitmapData == null) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;

@@ -58,7 +58,8 @@ class GLRenderer extends AbstractRenderer {
 	public var preserveDrawingBuffer:Bool;
 	public var projection:Point;
 	public var shaderManager:ShaderManager;
-	public var spriteBatch:SpriteBatch;
+	public var mainSpriteBatch:SpriteBatch;
+	public var offscreenSpriteBatch:SpriteBatch;
 	public var stencilManager:StencilManager;
 	public var view:Dynamic;
 	public var projectionMatrix:Matrix;
@@ -113,7 +114,8 @@ class GLRenderer extends AbstractRenderer {
 		contextLost = false;
 		
 		shaderManager = new ShaderManager (gl);
-		spriteBatch = new SpriteBatch (gl);
+		mainSpriteBatch = new SpriteBatch (gl);
+		offscreenSpriteBatch = new SpriteBatch (gl);
 		filterManager = new FilterManager (gl, this.transparent);
 		stencilManager = new StencilManager (gl);
 		blendModeManager = new BlendModeManager (gl);
@@ -124,7 +126,7 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.shaderManager = this.shaderManager;
 		renderSession.filterManager = this.filterManager;
 		renderSession.blendModeManager = this.blendModeManager;
-		renderSession.spriteBatch = this.spriteBatch;
+		renderSession.spriteBatch = this.mainSpriteBatch;
 		renderSession.stencilManager = this.stencilManager;
 		renderSession.renderer = this;
 		renderSession.defaultFramebuffer = this.defaultFramebuffer;
@@ -155,12 +157,14 @@ class GLRenderer extends AbstractRenderer {
 		offset = null;
 		
 		shaderManager.destroy ();
-		spriteBatch.destroy ();
+		mainSpriteBatch.destroy ();
+		offscreenSpriteBatch.destroy ();
 		maskManager.destroy ();
 		filterManager.destroy ();
 		
 		shaderManager = null;
-		spriteBatch = null;
+		mainSpriteBatch = null;
+		offscreenSpriteBatch = null;
 		maskManager = null;
 		filterManager = null;
 		
@@ -251,7 +255,8 @@ class GLRenderer extends AbstractRenderer {
 		glContextId++;
 		
 		shaderManager.setContext (gl);
-		spriteBatch.setContext (gl);
+		mainSpriteBatch.setContext (gl);
+		offscreenSpriteBatch.setContext (gl);
 		maskManager.setContext (gl);
 		filterManager.setContext (gl);
 		
@@ -321,13 +326,12 @@ class GLRenderer extends AbstractRenderer {
 		
 		var bitmap = shape.__graphics.__bitmap;
 		var bounds:Rectangle = Rectangle.pool.get();
-		bounds.setEmpty();
 		shape.__getRenderBounds(bounds);
 		matrix.translate (bounds.x, bounds.y);
 		Rectangle.pool.put(bounds);
 		matrix.concat (shape.__renderTransform);
 
-		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__worldColorTransform, shape.__worldAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );
+		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );
 
 	}
 	
@@ -339,11 +343,14 @@ class GLRenderer extends AbstractRenderer {
 		renderSession.drawCount = 0;
 		renderSession.currentBlendMode = null;
 		
-		spriteBatch.begin (renderSession);
+		mainSpriteBatch.begin (renderSession);
+		mainSpriteBatch.preventFlush = true;
+
 		filterManager.begin (renderSession, buffer);
 		displayObject.__renderGL (renderSession);
 		
-		spriteBatch.finish();
+		mainSpriteBatch.preventFlush = false;
+		mainSpriteBatch.finish();
 		
 	}
 	
@@ -392,11 +399,9 @@ class GLRenderer extends AbstractRenderer {
 	
 	public function set_renderToTexture(renderToTexture:Bool):Bool {
 		
-		var mustReevaluateProjectionMatrix = this.renderToTexture != renderToTexture;
-
-		this.renderToTexture = renderToTexture;
-
-		if (mustReevaluateProjectionMatrix) {
+		if (this.renderToTexture != renderToTexture) {
+			this.renderToTexture = renderToTexture;
+			renderSession.spriteBatch = renderToTexture ? offscreenSpriteBatch : mainSpriteBatch;
 			setOrtho (vpX, vpY, vpWidth, vpHeight);
 		}
 

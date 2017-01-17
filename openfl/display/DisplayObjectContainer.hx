@@ -12,6 +12,8 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
+import openfl.utils.UnshrinkableArray;
+
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Rectangle)
@@ -42,6 +44,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	public function addChild (child:DisplayObject):DisplayObject {
 
 		if (child != null) {
+			if (!__useSeparateRenderScaleTransform) {
+				child.__useSeparateRenderScaleTransform = false;
+			}
 
 			if (child.parent == this) {
 				var childIndex = __children.indexOf(child);
@@ -65,6 +70,10 @@ class DisplayObjectContainer extends InteractiveObject {
 		if (index < 0 || index > __children.length) {
 			throw "Invalid index position " + index;
 
+		}
+
+		if (!__useSeparateRenderScaleTransform) {
+			child.__useSeparateRenderScaleTransform = false;
 		}
 
 		if (child.parent == this) {
@@ -180,9 +189,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	public function getObjectsUnderPoint (point:Point):Array<DisplayObject> {
+	public function getObjectsUnderPoint (point:Point):UnshrinkableArray<DisplayObject> {
 
-		var stack = new Array<DisplayObject> ();
+		var stack = new UnshrinkableArray<DisplayObject>(32);
 		__hitTest (point.x, point.y, false, stack, false, this);
 		stack.reverse ();
 		return stack;
@@ -416,9 +425,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			childRect.setEmpty ();
-			child.__getBounds (childRect);
-			childRect.__transform (childRect, child.__transform);
+			child.__getTransformedBounds (childRect, child.__transform);
 			rect.__expand (childRect.x, childRect.y, childRect.width, childRect.height);
 
 		}
@@ -444,7 +451,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (child == null ) continue;
 			if (child.scaleX == 0 || child.scaleY == 0 || child.__isMask) continue;
-			childRect.setEmpty ();
 			child.__getRenderBounds (childRect);
 
 			var temp_transform = null;
@@ -469,7 +475,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseChildren && !mouseEnabled)) return false;
 		if (mask != null && !mask.__hitTestMask (x, y)) return false;
@@ -745,7 +751,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 			} else {
 				var bounds = Rectangle.pool.get ();
-				bounds.setEmpty();
 				__getLocalBounds (bounds);
 
 				renderSession.context.rect (0, 0, bounds.width, bounds.height);
@@ -880,7 +885,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (this.stage != stage) {
 
-			var stack = __getDisplayStack( this );
+			#if compliant_stage_events
+				var stack = __getDisplayStack( this );
+			#end
 
 			if (this.stage != null) {
 

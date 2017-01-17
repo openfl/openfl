@@ -221,10 +221,10 @@ class DrawCommandReader {
 	public inline function readOverrideMatrix ():OverrideMatrixView { advance (); prev = OVERRIDE_MATRIX; return new OverrideMatrixView (this); }
 	
 	
-	public function reset ():Void {
-		
+	public function reset (?buffer:DrawCommandBuffer = null):Void {
+		this.buffer = buffer;
 		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
-		
+		prev = UNKNOWN;
 	}
 	
 	

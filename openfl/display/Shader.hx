@@ -135,7 +135,7 @@ class Shader {
 	
 	public function new(?precision:GLShaderPrecision = MEDIUM) {
 		this.precision = precision;
-		data = new Map();
+		data = new GLShaderData();
 		
 		data.set(Shader.uObjectSize, new GLShaderParameter("vec2"));
 		data.set(Shader.uTextureSize, new GLShaderParameter("vec2"));
@@ -339,8 +339,6 @@ class GLShaderParameter {
 	var REPEAT 	= GL.REPEAT;
 	var MIRROR 	= GL.MIRRORED_REPEAT;
 }
-
-typedef GLShaderData = Map<String, GLShaderParameter>;
 
 private typedef DefaultAttrib = openfl._internal.renderer.opengl.shaders2.DefaultShader.Attrib;
 private typedef DefaultUniform = openfl._internal.renderer.opengl.shaders2.DefaultShader.Uniform;

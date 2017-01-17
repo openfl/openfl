@@ -875,7 +875,7 @@ class GraphicsRenderer {
 				case _:
 			}
 			
-			var ct:ColorTransform = object.__worldColorTransform;
+			var ct:ColorTransform = object.__renderColorTransform;
 			for (line in bucket.lines) {
 				if (line != null && line.verts.length > 0) {
 					var shader = renderSession.shaderManager.primitiveShader;
@@ -1091,10 +1091,10 @@ class GraphicsRenderer {
 		var newShader = renderSession.shaderManager.setShader(shader);
 		
 		// common uniforms
-		gl.uniform1f (shader.getUniformLocation(DefUniform.Alpha), object.__worldAlpha);
+		gl.uniform1f (shader.getUniformLocation(DefUniform.Alpha), object.__renderAlpha);
 		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, @:privateAccess renderSession.projectionMatrix.toArray(true));
 		
-		var ct:ColorTransform = object.__worldColorTransform;
+		var ct:ColorTransform = object.__renderColorTransform;
 		gl.uniform4f (shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier);
 		gl.uniform4f (shader.getUniformLocation(FillUniform.ColorOffset), ct.redOffset / 255, ct.greenOffset / 255, ct.blueOffset / 255, ct.alphaOffset / 255);
 		
