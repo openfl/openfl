@@ -609,10 +609,13 @@ class SpriteBatch {
 		var shader:Shader = state.shader == null ?
 			( state.maskTexture != null ? renderSession.shaderManager.defaultMaskedShader : renderSession.shaderManager.defaultShader )
 			: state.shader;
-		renderSession.shaderManager.setShader(shader);
 
-		// TODO cache this somehow?, don't do each state change?
-		shader.bindVertexArray(vertexArray);
+		var updatedShader = false;
+		if ( renderSession.shaderManager.currentShader != shader ) {
+			renderSession.shaderManager.setShader(shader);
+			shader.bindVertexArray(vertexArray);
+			updatedShader = true;
+		}
 
 		renderSession.blendModeManager.setBlendMode(shader.blendMode != null ? shader.blendMode : state.blendMode);
 
@@ -644,9 +647,10 @@ class SpriteBatch {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		}
 
-		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
-		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
-
+		if ( updatedShader ) {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
+		}
 
 		if (state.maskTexture != null){
 			gl.activeTexture(gl.TEXTURE0 + 1);
