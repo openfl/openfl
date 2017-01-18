@@ -1011,10 +1011,10 @@ class TextEngine {
 						} else {
 							
 							layoutGroup.endIndex = spaceIndex;
+							layoutGroup.advances.push (spaceWidth);
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
 							layoutGroup.width += marginRight + widthValue;
 							
-							layoutGroup.advances.push (spaceWidth);
 							marginRight = spaceWidth;
 							
 						}

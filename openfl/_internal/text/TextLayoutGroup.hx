@@ -9,6 +9,9 @@ import openfl.text.TextFormat;
 #end
 
 
+// TODO: Need to measure all characters (including whitespace) but include a value for non-whitespace characters separately (for sake of alignment and wrapping)
+
+
 class TextLayoutGroup {
 	
 	
