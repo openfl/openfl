@@ -103,7 +103,7 @@ class CairoTextField {
 				
 			} else {
 				
-				options.hintStyle = CairoHintStyle.DEFAULT;
+				options.hintStyle = CairoHintStyle.SLIGHT;
 				options.hintMetrics = CairoHintMetrics.OFF;
 				options.antialias = CairoAntialias.GOOD;
 				
