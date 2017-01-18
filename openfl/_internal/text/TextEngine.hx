@@ -1005,7 +1005,6 @@ class TextEngine {
 							layoutGroup.height = heightValue;
 							layoutGroups.push (layoutGroup);
 							
-							layoutGroup.advances.push (spaceWidth);
 							marginRight = spaceWidth;
 							
 						} else {
