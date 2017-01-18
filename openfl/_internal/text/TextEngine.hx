@@ -984,11 +984,16 @@ class TextEngine {
 							
 							if (formatRange.format.align != JUSTIFY) {
 								
+								if (textIndex == previousSpaceIndex + 1) {
+									
+									layoutGroup.advances.push (spaceWidth);
+									
+								}
+								
 								layoutGroup.endIndex = spaceIndex;
 								
 							}
 							
-							layoutGroup.advances.push (spaceWidth);
 							marginRight += spaceWidth;
 							
 						} else if (layoutGroup == null || lineFormat.align == JUSTIFY) {
@@ -1009,8 +1014,13 @@ class TextEngine {
 							
 						} else {
 							
+							if (textIndex == previousSpaceIndex + 1) {
+								
+								layoutGroup.advances.push (spaceWidth);
+								
+							}
+							
 							layoutGroup.endIndex = spaceIndex;
-							layoutGroup.advances.push (spaceWidth);
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
 							layoutGroup.width += marginRight + widthValue;
 							
