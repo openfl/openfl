@@ -94,6 +94,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var quality:StageQuality;
 	public var scaleMode:StageScaleMode;
 	public var showDefaultContextMenu:Bool;
+	public var softKeyboardRect:Rectangle;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
@@ -187,6 +188,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		quality = StageQuality.HIGH;
 		scaleMode = StageScaleMode.NO_SCALE;
 		showDefaultContextMenu = true;
+		softKeyboardRect = new Rectangle ();
 		stageFocusRect = true;
 		
 		#if mac
