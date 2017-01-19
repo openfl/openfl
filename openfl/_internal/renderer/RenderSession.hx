@@ -16,6 +16,7 @@ import openfl.display.BlendMode;
 import openfl.display.IBitmapDrawable;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.utils.UnshrinkableArray;
 
 
 class RenderSession {
@@ -46,13 +47,13 @@ class RenderSession {
 	public var defaultFramebuffer:GLFramebuffer;
 	public var usesMainSpriteBatch(get, never):Bool;
 	
-	private var renderTargetBaseTransformStack:GenericStack<Matrix>;
+	private var renderTargetBaseTransformStack:UnshrinkableArray<Matrix>;
 	
 	
 	public function new () {
 		
 		//maskManager = new MaskManager (this);
-		renderTargetBaseTransformStack = new GenericStack<Matrix> ();
+		renderTargetBaseTransformStack = new UnshrinkableArray<Matrix> (64);
 		pushRenderTargetBaseTransform (null, null);
 	}
 	 
@@ -79,7 +80,7 @@ class RenderSession {
 			
 		}
 		
-		renderTargetBaseTransformStack.add (matrix);
+		renderTargetBaseTransformStack.push (matrix);
 		
 	}
 	
@@ -93,7 +94,7 @@ class RenderSession {
 
 	public function getRenderTargetBaseTransform ():Matrix {
 		
-		return renderTargetBaseTransformStack.first ();
+		return renderTargetBaseTransformStack.last ();
 		
 	}
 	
