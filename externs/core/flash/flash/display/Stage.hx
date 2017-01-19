@@ -86,13 +86,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
-	public var stageHeight:Int;
+	public var stageHeight (default, null):Int;
 	
 	#if flash
 	@:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
 	#end
 	
-	public var stageWidth:Int;
+	public var stageWidth (default, null):Int;
 	public var window (get, never):Window;
 	
 	private inline function get_window ():Window { return Lib.application.window; }
