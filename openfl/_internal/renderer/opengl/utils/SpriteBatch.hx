@@ -654,7 +654,6 @@ class SpriteBatch {
 			state.maskTexture = maskBitmap.getTexture(gl);
 			var uvData = @:privateAccess maskBitmap.__uvData;
 			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
-			state.maskMatrix = Matrix.pool.get ();
 			state.maskMatrix.copyFrom (maskMatrix);
 		} else {
 			state.maskTexture = null;
@@ -751,7 +750,7 @@ private class State {
 
 	public var maskTexture:GLTexture;
 	public var maskTextureUVScale:Vector2 = new Vector2();
-	public var maskMatrix:Matrix;
+	public var maskMatrix:Matrix = new Matrix();
 
 	public function new() { }
 	
@@ -775,7 +774,6 @@ private class State {
 		maskTexture = null;
 		
 		if (maskMatrix != null) {
-			Matrix.pool.put (maskMatrix);
 			maskMatrix = null;
 		}
 	}

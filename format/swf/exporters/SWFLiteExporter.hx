@@ -950,7 +950,7 @@ class SWFLiteExporter {
 					return false;
 
 				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-					isBitmap = true;
+					isBitmap = !repeat;
 
 				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
 					return false;

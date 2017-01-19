@@ -1,6 +1,6 @@
 package openfl.display3D;
 
-
+import lime.app.Application;
 import openfl.display.BitmapData;
 import openfl.display.OpenGLView;
 import openfl.display3D.textures.CubeTexture;
@@ -55,6 +55,12 @@ import openfl.Lib;
 	private var texturesCreated:Array<TextureBase>; // to keep track of stuff to dispose when calling dispose
 	private var vertexBuffersCreated:Array<VertexBuffer3D>; // to keep track of stuff to dispose when calling dispose
 	private var _yFlip:Float;
+	private var backBufferDepthAndStencil:Bool;
+	private var rttDepthAndStencil:Bool;
+	private var scissorRectangle:Rectangle;
+	private var renderToTexture:Bool;
+	private var rttWidth:Int;
+	private var rttHeight:Int;
 
 	public function new () {
 
@@ -77,7 +83,7 @@ import openfl.Lib;
 			samplerParameters[i] = new SamplerState ();
 			samplerParameters[i].wrap = Context3DWrapMode.CLAMP;
 			samplerParameters[i].filter = Context3DTextureFilter.LINEAR;
-			samplerParameters[i].mipfilter =Context3DMipFilter.MIPNONE;
+			samplerParameters[i].mipfilter = Context3DMipFilter.MIPNONE;
 
 		}
 
@@ -92,6 +98,11 @@ import openfl.Lib;
 		ogl.height = stage.stageHeight;
 
 		stage.addChildAt(ogl, 0);
+
+		#if (js || cpp)
+		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
+		GL.pixelStorei (GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+		#end
 	}
 
 
@@ -107,31 +118,80 @@ import openfl.Lib;
 		#if (cpp || neko || nodejs)
 		GL.depthMask (true);
 		#end
+		#if (js || cpp)
+		if (scissorRectangle != null) GL.disable(GL.SCISSOR_TEST);
+		#end
 		GL.clearColor (red, green, blue, alpha);
 		GL.clearDepth (depth);
 		GL.clearStencil (stencil);
 
 		GL.clear (mask);
 
+		#if (js || cpp)
+		if (scissorRectangle != null) GL.enable(GL.SCISSOR_TEST);
+		#end
+
 	}
 
 
 	public function configureBackBuffer (width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true):Void {
 
-		if (enableDepthAndStencil) {
+		backBufferDepthAndStencil = enableDepthAndStencil;
+		updateDepthAndStencilState();
 
-			// TODO check whether this is kept across frame
-			GL.enable (GL.DEPTH_TEST);
-			GL.enable (GL.STENCIL_TEST);
+		// TODO use antiAlias parameter
+		setBackBufferViewPort (null, null, width, height);
+		updateScissorRectangle ();
+
+	}
+
+	private function setBackBufferViewPort (?x:Int, ?y:Int, ?width:Int, ?height:Int) {
+
+		if (x == null) x = Std.int (scrollRect.x);
+		if (y == null) y = Std.int (scrollRect.y);
+		if (width == null) width = Std.int (scrollRect.width);
+		if (height == null) height = Std.int (scrollRect.height);
+
+		scrollRect.x = x;
+		scrollRect.y = y;
+		scrollRect.width = width;
+		scrollRect.height = height;
+		ogl.width = x + width;
+		ogl.height = y + height;
+
+		updateBackBufferViewPort ();
+
+	}
+
+	private function updateBackBufferViewPort () {
+
+		if (!renderToTexture) {
+
+			GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
 
 		}
 
-		// TODO use antiAlias parameter
-		ogl.scrollRect = new Rectangle (0, 0, width, height);
-		ogl.width = width;
-		ogl.height = height;
-		scrollRect = ogl.scrollRect;
-		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+	}
+
+	private function updateDepthAndStencilState() {
+
+		// used to enable masking
+		var depthAndStencil:Bool = renderToTexture ? rttDepthAndStencil : backBufferDepthAndStencil;
+
+		if (depthAndStencil) {
+
+			// TODO check whether this is kept across frame
+			if (Application.current.window.config.depthBuffer)
+				GL.enable (GL.DEPTH_TEST);
+			if (Application.current.window.config.stencilBuffer)
+				GL.enable (GL.STENCIL_TEST);
+
+		} else {
+
+			GL.disable (GL.DEPTH_TEST);
+			GL.disable (GL.STENCIL_TEST);
+
+		}
 
 	}
 
@@ -303,7 +363,7 @@ import openfl.Lib;
 
 	public function drawTriangles (indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void {
 
-		var location:GLUniformLocation = currentProgram.yFlipLoc ();
+		var location:GLUniformLocation = GL.getUniformLocation (currentProgram.glProgram, "yflip");
 		GL.uniform1f (location, this._yFlip);
 
 		if (!drawing) {
@@ -442,29 +502,32 @@ import openfl.Lib;
 	}
 
 
-	public function setGLSLProgramConstantsFromByteArray (location:GLUniformLocation, data:ByteArray, byteArrayOffset:Int = 0):Void {
+	public function setGLSLProgramConstantsFromByteArray (locationName:String, data:ByteArray, byteArrayOffset:Int = 0):Void {
 
+		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		data.position = byteArrayOffset;
 		GL.uniform4f (location, data.readFloat (), data.readFloat (), data.readFloat (), data.readFloat ());
 
 	}
 
 
-	public function setGLSLProgramConstantsFromMatrix (location:GLUniformLocation, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
+	public function setGLSLProgramConstantsFromMatrix (locationName:String, matrix:Matrix3D, transposedMatrix:Bool = false):Void {
 
+		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniformMatrix4fv (location, !transposedMatrix, new Float32Array (matrix.rawData));
 
 	}
 
 
-	public function setGLSLProgramConstantsFromVector4 (location:GLUniformLocation, data:Array<Float>, startIndex:Int = 0):Void {
+	public function setGLSLProgramConstantsFromVector4 (locationName:String, data:Array<Float>, startIndex:Int = 0):Void {
 
+		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 		GL.uniform4f (location, data[startIndex], data[startIndex + 1], data[startIndex + 2], data[startIndex + 3]);
 
 	}
 
 
-	public function setGLSLTextureAt (location:GLUniformLocation, texture:TextureBase, textureIndex:Int):Void {
+	public function setGLSLTextureAt (locationName:String, texture:TextureBase, textureIndex:Int):Void {
 
 		switch (textureIndex) {
 
@@ -488,6 +551,8 @@ import openfl.Lib;
 			return;
 
 		}
+
+		var location = GL.getUniformLocation (currentProgram.glProgram, locationName);
 
 		if (Std.is (texture, Texture)) {
 
@@ -524,14 +589,21 @@ import openfl.Lib;
 
 	}
 
-	
-	public function setGLSLVertexBufferAt (location:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
+
+	public function setGLSLVertexBufferAt (locationName:String, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
+
+		var location = (currentProgram != null && currentProgram.glProgram != null) ? GL.getAttribLocation (currentProgram.glProgram, locationName) : -1;
+		if (location == -1) return;
 
 		if (buffer == null) {
 
 			if (location > -1) {
 
 				GL.disableVertexAttribArray (location);
+
+				#if (cpp || neko || nodejs)
+				GL.bindBuffer (GL.ARRAY_BUFFER, null);
+				#end
 
 			}
 
@@ -611,8 +683,8 @@ import openfl.Lib;
 
 		for (i in 0...numRegisters) {
 
-			var location = currentProgram.constUniformLocationFromAgal (programType, firstRegister + i);
-			setGLSLProgramConstantsFromByteArray (location, data);
+			var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister + i);
+			setGLSLProgramConstantsFromByteArray (locationName, data);
 
 		}
 
@@ -645,8 +717,8 @@ import openfl.Lib;
 		for (i in 0...numRegisters) {
 
 			var currentIndex:Int = i * 4;
-			var location:GLUniformLocation = currentProgram.constUniformLocationFromAgal (programType, firstRegister + i);
-			setGLSLProgramConstantsFromVector4 (location, data, currentIndex);
+			var locationName = __getUniformLocationNameFromAgalRegisterIndex (programType, firstRegister + i);
+			setGLSLProgramConstantsFromVector4 (locationName, data, currentIndex);
 
 		}
 
@@ -667,6 +739,7 @@ import openfl.Lib;
 		GL.disable (GL.DEPTH_TEST);
 		GL.disable (GL.STENCIL_TEST);
 		GL.disable (GL.SCISSOR_TEST);
+		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
 
 		if (framebuffer != null) {
 
@@ -680,7 +753,10 @@ import openfl.Lib;
 
 		}
 
-		GL.viewport (Std.int (scrollRect.x), Std.int (scrollRect.y), Std.int (scrollRect.width), Std.int (scrollRect.height));
+		renderToTexture = false;
+		updateBackBufferViewPort ();
+		updateScissorRectangle();
+		updateDepthAndStencilState();
 
 	}
 
@@ -706,6 +782,8 @@ import openfl.Lib;
 		GL.bindRenderbuffer (GL.RENDERBUFFER, renderbuffer);
 		#if (ios || tvos)
 		GL.renderbufferStorage (GL.RENDERBUFFER, 0x88F0, texture.width, texture.height);
+		#elseif js
+		if (enableDepthAndStencil) GL.renderbufferStorage (GL.RENDERBUFFER, GL.DEPTH_STENCIL, texture.width, texture.height);
 		#else
 		GL.renderbufferStorage (GL.RENDERBUFFER, GL.RGBA, texture.width, texture.height);
 		#end
@@ -726,6 +804,13 @@ import openfl.Lib;
 		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR_MIPMAP_NEAREST);
 
 		GL.viewport (0, 0, texture.width, texture.height);
+
+		renderToTexture = true;
+		rttDepthAndStencil = enableDepthAndStencil;
+		rttWidth = texture.width;
+		rttHeight = texture.height;
+		//updateScissorRectangle();
+		//updateDepthAndStencilState();
 	}
 
 
@@ -751,6 +836,7 @@ import openfl.Lib;
 	public function setScissorRectangle (rectangle:Rectangle):Void {
 
 		// TODO test it
+		scissorRectangle = rectangle;
 
 		if (rectangle == null) {
 
@@ -760,7 +846,23 @@ import openfl.Lib;
 		}
 
 		GL.enable (GL.SCISSOR_TEST);
-		GL.scissor (Std.int (rectangle.x), Std.int (rectangle.y), Std.int (rectangle.width), Std.int (rectangle.height));
+		updateScissorRectangle();
+
+	}
+
+	private function updateScissorRectangle()
+	{
+
+		if (scissorRectangle == null)
+			return;
+
+		//var width:Int = renderToTexture ? rttWidth : scrollRect.width;
+		var height:Int = renderToTexture ? rttHeight : Std.int(scrollRect.height);
+		GL.scissor (Std.int (scissorRectangle.x),
+			Std.int (height - Std.int(scissorRectangle.y) - Std.int(scissorRectangle.height)),
+			Std.int (scissorRectangle.width),
+			Std.int (scissorRectangle.height)
+		);
 
 	}
 
@@ -787,8 +889,8 @@ import openfl.Lib;
 
 	public function setTextureAt (sampler:Int, texture:TextureBase):Void {
 
-		var location = currentProgram.fsampUniformLocationFromAgal (sampler);
-		setGLSLTextureAt (location, texture, sampler);
+		var locationName = "fs" + sampler;
+		setGLSLTextureAt (locationName, texture, sampler);
 
 	}
 
@@ -1032,9 +1134,18 @@ import openfl.Lib;
 
 	public function setVertexBufferAt (index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, ?format:Context3DVertexBufferFormat):Void {
 
-		var location = currentProgram.vaUniformLocationFromAgal (index);
-		setGLSLVertexBufferAt (location, buffer, bufferOffset, format);
+		var locationName = "va" + index;
+		setGLSLVertexBufferAt (locationName, buffer, bufferOffset, format);
 
+	}
+	
+	private function __getUniformLocationNameFromAgalRegisterIndex (programType:Context3DProgramType, firstRegister:Int):String {
+		if (programType == Context3DProgramType.VERTEX) {
+			return "vc" + firstRegister;
+		} else if (programType == Context3DProgramType.FRAGMENT) {
+			return "fc" + firstRegister;
+		}
+		throw "Program Type " + programType + " not supported";
 	}
 
 
