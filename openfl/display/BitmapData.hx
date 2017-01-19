@@ -1501,6 +1501,8 @@ class BitmapData implements IBitmapDrawable {
 class TextureUvs {
 	
 	
+	public static var pool: ObjectPool<TextureUvs>  = new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
+
 	public var x0:Float = 0;
 	public var x1:Float = 0;
 	public var x2:Float = 0;
