@@ -218,17 +218,17 @@ class TextEngine {
 			var font = it_takes_styles && format.italic ? "italic " : "normal ";
 			font += "normal ";
 			font += it_takes_styles && format.bold ? "bold " : "normal ";
-		font += format.size + "px";
-		font += "/" + (format.size + format.leading + 6) + "px ";
+			font += format.size + "px";
+			font += "/" + (format.size + format.leading + 6) + "px ";
 		
-		font += "" + switch (format.font) {
+			switch (format.font) {
 			
-			case "_sans": "sans-serif";
-			case "_serif": "serif";
-			case "_typewriter": "monospace";
-				default: "'" + font_name + "'";
+				case "_sans": font += "sans-serif";
+				case "_serif": font += "serif";
+				case "_typewriter": font += "monospace";
+				default: font += "'" + font_name + "'";
 			
-		}
+			}
 
 			return font;
 		}
