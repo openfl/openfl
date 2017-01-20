@@ -301,7 +301,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if !flash
 	private override function get_width ():Float {
 		
-		return __width * Math.abs (scaleX);
+		return __width * Math.abs (__scaleX);
 		
 	}
 	#end
@@ -311,7 +311,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	private override function set_width (value:Float):Float {
 		
 		__width = Std.int (value);
-		return __width * Math.abs (scaleX);
+		return __width * Math.abs (__scaleX);
 		
 	}
 	#else

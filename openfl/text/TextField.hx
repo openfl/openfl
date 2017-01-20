@@ -2102,7 +2102,7 @@ class TextField extends InteractiveObject {
 	override private function get_width ():Float {
 		
 		__updateLayout ();
-		return __textEngine.width * Math.abs (scaleX);
+		return __textEngine.width * Math.abs (__scaleX);
 		
 	}
 	
@@ -2119,7 +2119,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __textEngine.width * Math.abs (scaleX);
+		return __textEngine.width * Math.abs (__scaleX);
 		
 	}
 	

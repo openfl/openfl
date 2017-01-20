@@ -316,14 +316,14 @@ class Video extends DisplayObject {
 	
 	private override function get_width ():Float {
 		
-		return __width * scaleX;
+		return __width * __scaleX;
 		
 	}
 	
 	
 	private override function set_width (value:Float):Float {
 		
-		if (scaleX != 1 || __width != value) {
+		if (__scaleX != 1 || __width != value) {
 			
 			__setTransformDirty ();
 			__dirty = true;

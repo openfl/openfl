@@ -23,6 +23,8 @@ class Tile {
 	private var __rotation:Null<Float>;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
+	private var __scaleX:Null<Float>;
+	private var __scaleY:Null<Float>;
 	private var __sourceDirty:Bool;
 	private var __transform:Array<Float>;
 	private var __transformDirty:Bool;
@@ -86,6 +88,8 @@ class Tile {
 	private function set_matrix (value:Matrix):Matrix {
 		
 		__rotation = null;
+		__scaleX = null;
+		__scaleY = null;
 		__transformDirty = true;
 		return this.matrix = value;
 		
@@ -128,8 +132,8 @@ class Tile {
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
 			
-			var __scaleX = Math.abs (this.scaleX);
-			var __scaleY = Math.abs (this.scaleY);
+			var __scaleX = this.scaleX;
+			var __scaleY = this.scaleY;
 			
 			matrix.a = __rotationCosine * __scaleX;
 			matrix.b = __rotationSine * __scaleX;
@@ -147,46 +151,50 @@ class Tile {
 	
 	private function get_scaleX ():Float {
 		
-		if (matrix.b == 0) {
+		if (__scaleX == null) {
 			
-			return matrix.a;
-			
-		} else {
-			
-			if (matrix.b > 0) {
+			if (matrix.b == 0) {
 				
-				return Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+				__scaleX = matrix.a;
 				
 			} else {
 				
-				return -Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
+				__scaleX = Math.sqrt (matrix.a * matrix.a + matrix.b * matrix.b);
 				
 			}
 			
 		}
+		
+		return __scaleX;
 		
 	}
 	
 	
 	private function set_scaleX (value:Float):Float {
 		
-		if (matrix.b == 0) {
+		if (__scaleX != value) {
 			
-			matrix.a = value;
+			__scaleX = value;
 			
-		} else {
+			if (matrix.b == 0) {
+				
+				matrix.a = value;
+				
+			} else {
+				
+				var rotation = this.rotation;
+				
+				var a = __rotationCosine * value;
+				var b = __rotationSine * value;
+				
+				matrix.a = a;
+				matrix.b = b;
+				
+			}
 			
-			var rotation = this.rotation;
-			
-			var a = __rotationCosine * value;
-			var b = __rotationSine * value;
-			
-			matrix.a = a;
-			matrix.b = b;
+			__transformDirty = true;
 			
 		}
-		
-		__transformDirty = true;
 		
 		return value;
 		
@@ -195,46 +203,50 @@ class Tile {
 	
 	private function get_scaleY ():Float {
 		
-		if (matrix.c == 0) {
+		if (__scaleY == null) {
 			
-			return matrix.d;
-			
-		} else {
-			
-			if (matrix.c > 0) {
+			if (matrix.c == 0) {
 				
-				return Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+				__scaleY = matrix.d;
 				
 			} else {
 				
-				return -Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
+				__scaleY = Math.sqrt (matrix.c * matrix.c + matrix.d * matrix.d);
 				
 			}
 			
 		}
+		
+		return __scaleY;
 		
 	}
 	
 	
 	private function set_scaleY (value:Float):Float {
 		
-		if (matrix.c == 0) {
+		if (__scaleY != value) {
 			
-			matrix.d = value;
+			__scaleY = value;
 			
-		} else {
+			if (matrix.c == 0) {
+				
+				matrix.d = value;
+				
+			} else {
+				
+				var rotation = this.rotation;
+				
+				var c = -__rotationSine * value;
+				var d = __rotationCosine * value;
+				
+				matrix.c = c;
+				matrix.d = d;
+				
+			}
 			
-			var rotation = this.rotation;
-			
-			var c = -__rotationSine * value;
-			var d = __rotationCosine * value;
-			
-			matrix.c = c;
-			matrix.d = d;
+			__transformDirty = true;
 			
 		}
-		
-		__transformDirty = true;
 		
 		return value;
 		

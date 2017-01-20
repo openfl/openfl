@@ -105,6 +105,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __rotation:Float;
 	private var __rotationCosine:Float;
 	private var __rotationSine:Float;
+	private var __scaleX:Float;
+	private var __scaleY:Float;
 	private var __scrollRect:Rectangle;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
@@ -139,6 +141,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__rotation = 0;
 		__rotationSine = 0;
 		__rotationCosine = 1;
+		__scaleX = 1;
+		__scaleY = 1;
 		
 		__worldAlpha = 1;
 		__worldTransform = new Matrix ();
@@ -639,7 +643,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
+		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
 		__updateTransforms ();
 		
 		if (updateChildren && __transformDirty) {
@@ -732,7 +736,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	public function __updateChildren (transformOnly:Bool):Void {
 		
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
+		__renderable = (visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (parent == null || !parent.__isMask));
 		__worldAlpha = alpha;
 		
 		if (__transformDirty) {
@@ -1069,9 +1073,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
 			
-			var __scaleX = Math.abs (this.scaleX);
-			var __scaleY = Math.abs (this.scaleY);
-			
 			__transform.a = __rotationCosine * __scaleX;
 			__transform.b = __rotationSine * __scaleX;
 			__transform.c = -__rotationSine * __scaleY;
@@ -1088,47 +1089,37 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_scaleX ():Float {
 		
-		if (__transform.b == 0) {
-			
-			return __transform.a;
-			
-		} else {
-			
-			if (__transform.b > 0) {
-				
-				return Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
-				
-			} else {
-				
-				return -Math.sqrt (__transform.a * __transform.a + __transform.b * __transform.b);
-				
-			}
-			
-		}
+		return __scaleX;
 		
 	}
 	
 	
 	private function set_scaleX (value:Float):Float {
 		
-		if (__transform.b == 0) {
+		if (value != __scaleX) {
 			
-			if (value != __transform.a) __setTransformDirty ();
-			__transform.a = value;
+			__scaleX = value;
 			
-		} else {
-			
-			var a = __rotationCosine * value;
-			var b = __rotationSine * value;
-			
-			if (__transform.a != a || __transform.b != b) {
+			if (__transform.b == 0) {
 				
-				__setTransformDirty ();
+				if (value != __transform.a) __setTransformDirty ();
+				__transform.a = value;
+				
+			} else {
+				
+				var a = __rotationCosine * value;
+				var b = __rotationSine * value;
+				
+				if (__transform.a != a || __transform.b != b) {
+					
+					__setTransformDirty ();
+					
+				}
+				
+				__transform.a = a;
+				__transform.b = b;
 				
 			}
-			
-			__transform.a = a;
-			__transform.b = b;
 			
 		}
 		
@@ -1139,47 +1130,37 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_scaleY ():Float {
 		
-		if (__transform.c == 0) {
-			
-			return __transform.d;
-			
-		} else {
-			
-			if (__transform.c > 0) {
-				
-				return Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
-				
-			} else {
-				
-				return -Math.sqrt (__transform.c * __transform.c + __transform.d * __transform.d);
-				
-			}
-			
-		}
+		return __scaleY;
 		
 	}
 	
 	
 	private function set_scaleY (value:Float):Float {
 		
-		if (__transform.c == 0) {
+		if (value != __scaleY) {
 			
-			if (value != __transform.d) __setTransformDirty ();
-			__transform.d = value;
+			__scaleY = value;
 			
-		} else {
-			
-			var c = -__rotationSine * value;
-			var d = __rotationCosine * value;
-			
-			if (__transform.d != d || __transform.c != c) {
+			if (__transform.c == 0) {
 				
-				__setTransformDirty ();
+				if (value != __transform.d) __setTransformDirty ();
+				__transform.d = value;
+				
+			} else {
+				
+				var c = -__rotationSine * value;
+				var d = __rotationCosine * value;
+				
+				if (__transform.d != d || __transform.c != c) {
+					
+					__setTransformDirty ();
+					
+				}
+				
+				__transform.c = c;
+				__transform.d = d;
 				
 			}
-			
-			__transform.c = c;
-			__transform.d = d;
 			
 		}
 		
