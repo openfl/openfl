@@ -72,7 +72,6 @@ class SpriteBatch {
 	var lastEnableColor:Bool = true;
 	
 	var matrix:Matrix = new Matrix();
-	var uvs:TextureUvs = new TextureUvs();
 	var colorTransform:ColorTransform = new ColorTransform();
 	
 	public function new(gl:GLRenderContext, maxSprites:Int = 2000) {
