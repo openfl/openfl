@@ -128,8 +128,8 @@ class Tile {
 			__rotationSine = Math.sin (radians);
 			__rotationCosine = Math.cos (radians);
 			
-			var __scaleX = this.scaleX;
-			var __scaleY = this.scaleY;
+			var __scaleX = Math.abs (this.scaleX);
+			var __scaleY = Math.abs (this.scaleY);
 			
 			matrix.a = __rotationCosine * __scaleX;
 			matrix.b = __rotationSine * __scaleX;
