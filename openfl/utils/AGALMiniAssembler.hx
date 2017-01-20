@@ -1,28 +1,17 @@
-package openfl.utils;
-
-
-import openfl.Lib;
-
-
 /*
-Copyright (c) 2011, Adobe Systems Incorporated
+Copyright (c) 2015, Adobe Systems Incorporated
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are
 met:
-
 * Redistributions of source code must retain the above copyright notice, 
 this list of conditions and the following disclaimer.
-
 * Redistributions in binary form must reproduce the above copyright
 notice, this list of conditions and the following disclaimer in the 
 documentation and/or other materials provided with the distribution.
-
 * Neither the name of Adobe Systems Incorporated nor the names of its 
 contributors may be used to endorse or promote products derived from 
 this software without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -36,6 +25,13 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+package openfl.utils;
+
+
+import openfl.display3D.Context3D;
+import openfl.display3D.Program3D;
+import openfl.Lib;
+
 
 class AGALMiniAssembler {
 	
@@ -45,7 +41,7 @@ class AGALMiniAssembler {
 	private static var SAMPLEMAP = new Map<String, Sampler> ();
 	
 	private static inline var MAX_NESTING = 4;
-	private static inline var MAX_OPCODES = 256;
+	private static inline var MAX_OPCODES = 4096;
 	
 	private static inline var FRAGMENT = "fragment";
 	private static inline var VERTEX = "vertex";
@@ -66,13 +62,14 @@ class AGALMiniAssembler {
 	
 	// opmap flags
 	private static inline var OP_SCALAR = 0x1;
-	private static inline var OP_INC_NEST = 0x2;
-	private static inline var OP_DEC_NEST = 0x4;
 	private static inline var OP_SPECIAL_TEX = 0x8;
 	private static inline var OP_SPECIAL_MATRIX = 0x10;
 	private static inline var OP_FRAG_ONLY = 0x20;
-	//private static inline var OP_VERT_ONLY = 0x40;
+	private static inline var OP_VERT_ONLY = 0x40;
 	private static inline var OP_NO_DEST = 0x80;
+	private static inline var OP_VERSION2 = 0x100;
+	private static inline var OP_INCNEST = 0x200;
+	private static inline var OP_DECNEST = 0x400;
 	
 	// opcodes
 	private static inline var MOV = "mov";
@@ -101,8 +98,8 @@ class AGALMiniAssembler {
 	private static inline var M33 = "m33";
 	private static inline var M44 = "m44";
 	private static inline var M34 = "m34";
-	private static inline var IFZ = "ifz";
-	private static inline var INZ = "inz";
+	private static inline var DDX = "ddx";
+	private static inline var DDY = "ddy";
 	private static inline var IFE = "ife";
 	private static inline var INE = "ine";
 	private static inline var IFG = "ifg";
@@ -111,9 +108,7 @@ class AGALMiniAssembler {
 	private static inline var IEL = "iel";
 	private static inline var ELS = "els";
 	private static inline var EIF = "eif";
-	private static inline var REP = "rep";
-	private static inline var ERP = "erp";
-	private static inline var BRK = "brk";
+	private static inline var TED = "ted";
 	private static inline var KIL = "kil";
 	private static inline var TEX = "tex";
 	private static inline var SGE = "sge";
@@ -126,18 +121,14 @@ class AGALMiniAssembler {
 	private static inline var VA = "va";
 	private static inline var VC = "vc";
 	private static inline var VT = "vt";
-	//private static inline var VO = USE_NEW_SYNTAX ? "vo" : "op";
 	private static inline var VO = "vo";
-	private static inline var OP = "op";
-	//private static inline var I = USE_NEW_SYNTAX ? "i" : "v";
-	private static inline var I = "i";
-	private static inline var V = "v";
+	private static inline var VI = "vi";
 	private static inline var FC = "fc";
 	private static inline var FT = "ft";
 	private static inline var FS = "fs";
-	//private static inline var FO = USE_NEW_SYNTAX ? "fo" : "oc";
 	private static inline var FO = "fo";
-	private static inline var OC = "oc";
+	private static inline var FD = "fd";
+	private static inline var IID = "iid";
 	
 	// samplers
 	private static inline var D2 = "2d";
@@ -155,15 +146,18 @@ class AGALMiniAssembler {
 	private static inline var ANISOTROPIC16X = "anisotropic16x"; //Introduced by Flash 14
 	private static inline var CENTROID = "centroid";
 	private static inline var SINGLE = "single";
-	private static inline var DEPTH = "depth";
+	private static inline var IGNORESAMPLER = "ignoresampler";
 	private static inline var REPEAT = "repeat";
 	private static inline var WRAP = "wrap";
 	private static inline var CLAMP = "clamp";
 	private static inline var REPEAT_U_CLAMP_V:String = "repeat_u_clamp_v"; //Introduced by Flash 13
 	private static inline var CLAMP_U_REPEAT_V:String = "clamp_u_repeat_v"; //Introduced by Flash 13
 	private static inline var RGBA = "rgba";
+	private static inline var COMPRESSED = "compressed";
+	private static inline var COMPRESSEDALPHA = "compressedalpha";
 	private static inline var DXT1 = "dxt1";
 	private static inline var DXT5 = "dxt5";
+	private static inline var VIDEO = "video";
 	
 	private static var initialized = false;
 	
@@ -187,7 +181,18 @@ class AGALMiniAssembler {
 	}
 	
 	
-	public function assemble (mode:String, source:String):ByteArray {
+	public function assemble2 (context3D:Context3D, version:Int, vertexSource:String, fragmentSource:String):Program3D {
+		
+		var agalVertex = assemble (VERTEX, vertexSource, version);
+		var agalFragment = assemble (FRAGMENT, fragmentSource, version);
+		var program = context3D.createProgram ();
+		program.upload (agalVertex, agalFragment);
+		return program;
+		
+	}
+	
+	
+	public function assemble (mode:String, source:String, version:Int = 1, ignoreLimits:Bool = false):ByteArray {
 		
 		var start = Lib.getTimer ();
 		
@@ -208,11 +213,13 @@ class AGALMiniAssembler {
 		
 		agalcode.endian = Endian.LITTLE_ENDIAN;
 		agalcode.writeByte (0xa0); // tag version
-		agalcode.writeUnsignedInt (0x1); // AGAL version, big endian, bit pattern will be 0x01000000
+		agalcode.writeUnsignedInt (version); // AGAL version, big endian, bit pattern will be 0x01000000
 		agalcode.writeByte (0xa1); // tag program id
 		agalcode.writeByte (isFrag ? 1 : 0); // vertex or fragment
 		
-		var lines = (~/[\n\r]+/g).replace (source, "\n").split ("\n");
+		initregmap (version, ignoreLimits);
+		
+		var lines = StringTools.replace (source, "\r", "\n").split ("\n");
 		var nest = 0;
 		var nops = 0;
 		var lng = lines.length;
@@ -220,12 +227,12 @@ class AGALMiniAssembler {
 		var reg1 = ~/<.*>/g;
 		var reg2 = ~/([\w\.\-\+]+)/gi;
 		var reg3 = ~/^\w{3}/ig;
-		var reg4 = ~/vc\[([vof][actps]?)(\d*)?(\.[xyzw](\+\d{1,3})?)?\](\.[xyzw]{1,4})?|([vof][actps]?)(\d*)?(\.[xyzw]{1,4})?/gi;
+		var reg4 = ~/vc\[([vofi][acostdip]?[d]?)(\d*)?(\.[xyzw](\+\d{1,3})?)?\](\.[xyzw]{1,4})?|([vofi][acostdip]?[d]?)(\d*)?(\.[xyzw]{1,4})?/gi;
 		var reg5 = ~/\[.*\]/ig;
-		var reg6 = ~/^\b[A-Za-z]{1,2}/ig;
+		var reg6 = ~/^\b[A-Za-z]{1,3}/ig;
 		var reg7 = ~/\d+/;
 		var reg8 = ~/(\.[xyzw]{1,4})/;
-		var reg9 = ~/[A-Za-z]{1,2}/ig;
+		var reg9 = ~/[A-Za-z]{1,3}/ig;
 		var reg10 = ~/(\.[xyzw]{1,1})/;
 		var reg11 = ~/\+\d{1,3}/ig;
 		
@@ -249,7 +256,6 @@ class AGALMiniAssembler {
 			
 			if (optsi != -1) {
 				
-				opts = match (line.substr (optsi), reg2);
 				opts = match (line.substr (optsi), reg2);
 				line = line.substr (0, optsi);
 				
@@ -301,30 +307,17 @@ class AGALMiniAssembler {
 			
 			line = line.substr (line.indexOf (opFound.name) + opFound.name.length);
 			
-			// nesting check
-			if (opFound.flags & OP_DEC_NEST != 0) {
+			if ((opFound.flags & OP_VERSION2 != 0) && version < 2) {
 				
-				nest--;
-				
-				if (nest < 0) {
-					
-					error = "error: conditional closes without open.";
-					break;
-					
-				}
+				error = "error: opcode requires version 2.";
+				break;
 				
 			}
 			
-			if (opFound.flags & OP_INC_NEST != 0) {
+			if ((opFound.flags & OP_VERT_ONLY != 0) && isFrag) {
 				
-				nest++;
-				
-				if (nest > MAX_NESTING) {
-					
-					error = "error: nesting to deep, maximum allowed is " + MAX_NESTING + ".";
-					break;
-					
-				}
+				error = "error: opcode is only allowed in vertex programs.";
+				break;
 				
 			}
 			
@@ -376,7 +369,7 @@ class AGALMiniAssembler {
 					
 					if (verbose) {
 						
-						trace("IS REL");
+						trace ("IS REL");
 						
 					}
 					
@@ -404,7 +397,7 @@ class AGALMiniAssembler {
 				
 				if (regFound == null) {
 					
-					error = "error: could not parse operand " + j + " (" + regs[j] + ").";
+					error = "error: could not find register name for operand " + j + " (" + regs[j] + ").";
 					badreg = true;
 					break;
 					
@@ -483,7 +476,7 @@ class AGALMiniAssembler {
 					
 					for (k in 1...maskLength) {
 						
-						cv = maskmatch[0].charCodeAt (k) - "x".charCodeAt (0);
+						cv = maskmatch[0].charCodeAt (k) - "x".code;
 						
 						if (cv > 2) {
 							
@@ -546,7 +539,7 @@ class AGALMiniAssembler {
 						
 					}
 					
-					relsel = selmatch[0].charCodeAt (1) - "x".charCodeAt (0);
+					relsel = selmatch[0].charCodeAt (1) - "x".code;
 					
 					if (relsel > 2) {
 						
@@ -614,6 +607,7 @@ class AGALMiniAssembler {
 							}
 							
 							var optfound:Sampler = SAMPLEMAP [opts[k]];
+							
 							if (optfound == null) {
 								
 								// todo check that it's a number...
@@ -751,6 +745,31 @@ class AGALMiniAssembler {
 	}
 	
 	
+	private function initregmap (version:Int, ignorelimits:Bool):Void {
+		
+		REGMAP[VA] = new Register (VA, "vertex attribute", 0x0, ignorelimits ? 1024 : ((version == 1 || version == 2) ? 7 : 15), REG_VERT | REG_READ);
+		REGMAP[VC] = new Register (VC, "vertex constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 127 : 249), REG_VERT | REG_READ);
+		REGMAP[VT] = new Register (VT, "vertex temporary", 0x2, ignorelimits ? 1024 : (version == 1 ? 7 : 25), REG_VERT | REG_WRITE | REG_READ);
+		REGMAP[VO] = new Register (VO, "vertex output", 0x3, ignorelimits ? 1024 : 0, REG_VERT | REG_WRITE);
+		REGMAP[VI] = new Register (VI, "varying", 0x4, ignorelimits ? 1024 : (version == 1 ? 7 : 9), REG_VERT | REG_FRAG | REG_READ | REG_WRITE);
+		REGMAP[FC] = new Register (FC, "fragment constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 27 : ((version == 2) ? 63 : 199)), REG_FRAG | REG_READ);
+		REGMAP[FT] = new Register (FT, "fragment temporary", 0x2, ignorelimits ? 1024 : (version == 1 ? 7 : 25), REG_FRAG | REG_WRITE | REG_READ);
+		REGMAP[FS] = new Register (FS, "texture sampler", 0x5, ignorelimits ? 1024 : 7, REG_FRAG | REG_READ);
+		REGMAP[FO] = new Register (FO, "fragment output", 0x3, ignorelimits ? 1024 : (version == 1 ? 0 : 3), REG_FRAG | REG_WRITE);
+		REGMAP[FD] = new Register (FD, "fragment depth output", 0x6, ignorelimits ? 1024 : (version == 1 ? -1 : 0), REG_FRAG | REG_WRITE);
+		REGMAP[IID] = new Register (IID, "instance id", 0x7, ignorelimits ? 1024 : 0, REG_VERT | REG_READ);
+		
+		// aliases
+		REGMAP["op"] = REGMAP[VO];
+		REGMAP["i"] = REGMAP[VI];
+		REGMAP["v"] = REGMAP[VI];
+		REGMAP["oc"] = REGMAP[FO];
+		REGMAP["od"] = REGMAP[FD];
+		REGMAP["fi"] = REGMAP[VI];
+		
+	}
+	
+	
 	private static function init ():Void {
 		
 		initialized = true;
@@ -782,19 +801,16 @@ class AGALMiniAssembler {
 		OPMAP[M33] = new OpCode (M33, 3, 0x17, OP_SPECIAL_MATRIX);
 		OPMAP[M44] = new OpCode (M44, 3, 0x18, OP_SPECIAL_MATRIX);
 		OPMAP[M34] = new OpCode (M34, 3, 0x19, OP_SPECIAL_MATRIX);
-		OPMAP[IFZ] = new OpCode (IFZ, 1, 0x1a, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[INZ] = new OpCode (INZ, 1, 0x1b, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[IFE] = new OpCode (IFE, 2, 0x1c, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[INE] = new OpCode (INE, 2, 0x1d, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[IFG] = new OpCode (IFG, 2, 0x1e, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[IFL] = new OpCode (IFL, 2, 0x1f, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[IEG] = new OpCode (IEG, 2, 0x20, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[IEL] = new OpCode (IEL, 2, 0x21, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[ELS] = new OpCode (ELS, 0, 0x22, OP_NO_DEST | OP_INC_NEST | OP_DEC_NEST);
-		OPMAP[EIF] = new OpCode (EIF, 0, 0x23, OP_NO_DEST | OP_DEC_NEST);
-		OPMAP[REP] = new OpCode (REP, 1, 0x24, OP_NO_DEST | OP_INC_NEST | OP_SCALAR);
-		OPMAP[ERP] = new OpCode (ERP, 0, 0x25, OP_NO_DEST | OP_DEC_NEST);
-		OPMAP[BRK] = new OpCode (BRK, 0, 0x26, OP_NO_DEST);
+		OPMAP[DDX] = new OpCode (DDX, 2, 0x1a, OP_VERSION2 | OP_FRAG_ONLY);
+		OPMAP[DDY] = new OpCode (DDY, 2, 0x1b, OP_VERSION2 | OP_FRAG_ONLY);
+		OPMAP[IFE] = new OpCode (IFE, 2, 0x1c, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
+		OPMAP[INE] = new OpCode (INE, 2, 0x1d, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
+		OPMAP[IFG] = new OpCode (IFG, 2, 0x1e, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
+		OPMAP[IFL] = new OpCode (IFL, 2, 0x1f, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
+		OPMAP[ELS] = new OpCode (ELS, 0, 0x20, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_DECNEST | OP_SCALAR);
+		OPMAP[EIF] = new OpCode (EIF, 0, 0x21, OP_NO_DEST | OP_VERSION2 | OP_DECNEST | OP_SCALAR);
+		// space
+		//OPMAP[TED] = new OpCode (TED, 3, 0x26, OP_FRAG_ONLY | OP_SPECIAL_TEX | OP_VERSION2); //ted is not available in AGAL2
 		OPMAP[KIL] = new OpCode (KIL, 1, 0x27, OP_NO_DEST | OP_FRAG_ONLY);
 		OPMAP[TEX] = new OpCode (TEX, 3, 0x28, OP_FRAG_ONLY | OP_SPECIAL_TEX);
 		OPMAP[SGE] = new OpCode (SGE, 3, 0x29, 0);
@@ -803,23 +819,12 @@ class AGALMiniAssembler {
 		OPMAP[SEQ] = new OpCode (SEQ, 3, 0x2c, 0);
 		OPMAP[SNE] = new OpCode (SNE, 3, 0x2d, 0);
 		
-		REGMAP[VA] = new Register (VA, "vertex attribute", 0x0, 7, REG_VERT | REG_READ);
-		REGMAP[VC] = new Register (VC, "vertex inline varant", 0x1, 127, REG_VERT | REG_READ);
-		REGMAP[VT] = new Register (VT, "vertex temporary", 0x2, 7, REG_VERT | REG_WRITE | REG_READ);
-		REGMAP[VO] = new Register (VO, "vertex output", 0x3, 0, REG_VERT | REG_WRITE);
-		REGMAP[I] = new Register (I, "varying", 0x4, 7, REG_VERT | REG_FRAG | REG_READ | REG_WRITE);
-		REGMAP[FC] = new Register (FC, "fragment inline varant", 0x1, 27, REG_FRAG | REG_READ);
-		REGMAP[FT] = new Register (FT, "fragment temporary", 0x2, 7, REG_FRAG | REG_WRITE | REG_READ);
-		REGMAP[FS] = new Register (FS, "texture sampler", 0x5, 7, REG_FRAG | REG_READ);
-		REGMAP[FO] = new Register (FO, "fragment output", 0x3, 0, REG_FRAG | REG_WRITE);
-		
-		REGMAP[OP] = new Register (OP, "vertex output", 0x3, 0, REG_VERT | REG_WRITE);
-		REGMAP[V] = new Register (V, "varying", 0x4, 7, REG_VERT | REG_FRAG | REG_READ | REG_WRITE);
-		REGMAP[OC] = new Register (OC, "fragment output", 0x3, 0, REG_FRAG | REG_WRITE);
-		
 		SAMPLEMAP[RGBA] = new Sampler (RGBA, SAMPLER_TYPE_SHIFT, 0);
+		SAMPLEMAP[COMPRESSED] = new Sampler (COMPRESSED, SAMPLER_TYPE_SHIFT, 1);
+		SAMPLEMAP[COMPRESSEDALPHA] = new Sampler (COMPRESSEDALPHA, SAMPLER_TYPE_SHIFT, 2);
 		SAMPLEMAP[DXT1] = new Sampler (DXT1, SAMPLER_TYPE_SHIFT, 1);
 		SAMPLEMAP[DXT5] = new Sampler (DXT5, SAMPLER_TYPE_SHIFT, 2);
+		SAMPLEMAP[VIDEO] = new Sampler (VIDEO, SAMPLER_TYPE_SHIFT, 3);
 		SAMPLEMAP[D2] = new Sampler (D2, SAMPLER_DIM_SHIFT, 0);
 		SAMPLEMAP[D3] = new Sampler (D3, SAMPLER_DIM_SHIFT, 2);
 		SAMPLEMAP[CUBE] = new Sampler (CUBE, SAMPLER_DIM_SHIFT, 1);
@@ -835,7 +840,7 @@ class AGALMiniAssembler {
 		SAMPLEMAP[ANISOTROPIC16X] = new Sampler (ANISOTROPIC16X, SAMPLER_FILTER_SHIFT, 5);
 		SAMPLEMAP[CENTROID] = new Sampler (CENTROID, SAMPLER_SPECIAL_SHIFT, 1 << 0);
 		SAMPLEMAP[SINGLE] = new Sampler (SINGLE, SAMPLER_SPECIAL_SHIFT, 1 << 1);
-		SAMPLEMAP[DEPTH] = new Sampler (DEPTH, SAMPLER_SPECIAL_SHIFT, 1 << 2);
+		SAMPLEMAP[IGNORESAMPLER] = new Sampler (IGNORESAMPLER, SAMPLER_SPECIAL_SHIFT, 1 << 2);
 		SAMPLEMAP[REPEAT] = new Sampler (REPEAT, SAMPLER_REPEAT_SHIFT, 1);
 		SAMPLEMAP[WRAP] = new Sampler (WRAP, SAMPLER_REPEAT_SHIFT, 1);
 		SAMPLEMAP[CLAMP] = new Sampler (CLAMP, SAMPLER_REPEAT_SHIFT, 0);
