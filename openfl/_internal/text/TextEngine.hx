@@ -654,7 +654,7 @@ class TextEngine {
 		var layoutGroup = null, advances = null;
 		var widthValue, heightValue = 0.0;
 		
-		var previousSpaceIndex = 0;
+		var previousSpaceIndex = 0, previousBreakIndex = 0;
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = getLineBreakIndex ();
 		
@@ -872,10 +872,18 @@ class TextEngine {
 				}
 				
 				textIndex = breakIndex + 1;
+				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
+				
+				if (layoutGroup != null && previousSpaceIndex != previousBreakIndex && previousSpaceIndex == textIndex-1 && textIndex == formatRange.start && spaceIndex <= formatRange.end) {
+					// This ensures we render contiguous selection rectangles
+					// TODO: Fix the case where a block of whitespace needs its own TextLayoutGroup
+					layoutGroup.endIndex = textIndex;
+					layoutGroup.width += layoutGroup.advances[layoutGroup.advances.length - 1];
+				}
 				
 				layoutGroup = null;
 				wrap = false;
@@ -963,6 +971,17 @@ class TextEngine {
 						
 					} else {
 						
+						if (formatRange.start == previousSpaceIndex && textIndex - 1 == previousSpaceIndex) {
+							
+							// Grow this TextLayoutGroup to the left 1 space for contiguous selection rectangles
+							advances = getAdvances (text, previousSpaceIndex, textIndex).concat(advances);
+							widthValue += advances[0];
+							offsetX -= advances[0];
+							
+							textIndex = previousSpaceIndex;
+							
+						}
+						
 						if (layoutGroup != null && textIndex == spaceIndex) {
 							
 							if (formatRange.format.align != JUSTIFY) {
@@ -1028,10 +1047,6 @@ class TextEngine {
 					}
 					
 					if (formatRange.end <= previousSpaceIndex) {
-						
-						// This ensures we render continuous selection rectangles
-						layoutGroup.endIndex = textIndex;
-						layoutGroup.width += layoutGroup.advances[layoutGroup.advances.length - 1];
 						
 						layoutGroup = null;
 						nextFormatRange ();
