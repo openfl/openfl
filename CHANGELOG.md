@@ -1,3 +1,17 @@
+4.6.0 (01/20/2017)
+------------------
+
+* Added (initial) support for openfl.printing.PrintJob on HTML5
+* Added a stub for stage.softKeyboardRect to fix compilation
+* Made stageWidth and stageHeight read-only on Flash target
+* Updated AGALMiniAssembler to a newer release from the Gaming SDK
+* Improved rendering for multi-line text selections
+* Changed the default font hint style to something more subtle
+* Fixed some cases where textField.getCharIndex would work improperly
+* Fixed issues where tile.rotation resulted in flipped objects
+* Fixed problems with scaleX, scaleY and roation interacting improperly
+
+
 4.5.3 (01/16/2017)
 ------------------
 
