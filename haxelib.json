@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.5.3",
-	"releasenote": "Updated for Lime 3.6, better AGALMiniAssembler, improved preloading, fixes",
+	"version": "4.6.0",
+	"releasenote": "Added (initial) support for PrintJob on HTML5, updated AGALMiniAssembler, TextField improvement",
 	"contributors": [ "singmajesty" ]
 }
