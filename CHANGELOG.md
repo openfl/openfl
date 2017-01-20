@@ -9,7 +9,7 @@
 * Changed the default font hint style to something more subtle
 * Fixed some cases where textField.getCharIndex would work improperly
 * Fixed issues where tile.rotation resulted in flipped objects
-* Fixed problems with scaleX, scaleY and roation interacting improperly
+* Fixed problems with scaleX, scaleY and rotation interacting improperly
 
 
 4.5.3 (01/16/2017)
