@@ -60,17 +60,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	public var nativeWindow(default,null) : NativeWindow;
 	#end
 	
-	#if flash
 	public var fullScreenHeight (default, null):UInt;
-	#end
 	
 	#if flash
 	public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	#if flash
 	public var fullScreenWidth (default, null):UInt;
-	#end
 	
 	#if flash
 	@:require(flash11_2) public var mouseLock:Bool;

@@ -316,17 +316,13 @@ extern class Stage extends DisplayObjectContainer implements IModule {
 	 */
 	public var frameRate (get, set):Float;
 	
-	#if flash
-	@:noCompletion @:dox(hide) public var fullScreenHeight (default, null):UInt;
-	#end
+	public var fullScreenHeight (get, never):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
 	#end
 	
-	#if flash
-	@:noCompletion @:dox(hide) public var fullScreenWidth (default, null):UInt;
-	#end
+	public var fullScreenWidth (get, never):UInt;
 	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;

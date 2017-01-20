@@ -91,6 +91,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var displayState (get, set):StageDisplayState;
 	public var focus (get, set):InteractiveObject;
 	public var frameRate (get, set):Float;
+	public var fullscreenHeight (get, never):UInt;
+	public var fullscreenWidth (get, never):UInt;
 	public var quality:StageQuality;
 	public var scaleMode:StageScaleMode;
 	public var showDefaultContextMenu:Bool;
@@ -1904,6 +1906,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 		
 		return value;
+		
+	}
+	
+	
+	private function get_fullscreenHeight ():UInt {
+		
+		return window.display.currentMode.height;
+		
+	}
+	
+	
+	private function get_fullscreenWidth ():UInt {
+		
+		return window.display.currentMode.width;
 		
 	}
 	
