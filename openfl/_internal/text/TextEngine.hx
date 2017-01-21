@@ -845,6 +845,57 @@ class TextEngine {
 			
 		}
 		
+		inline function breakLongWords (endIndex:Int):Void {
+			
+			var tempWidth = getTextWidth(text.substring(textIndex, endIndex));
+			
+			while (offsetX + tempWidth > width - 2) {
+				
+				var i = 1;
+				
+				while (textIndex + i < endIndex + 1) {
+					
+					tempWidth = getTextWidth(text.substr(textIndex, i));
+					
+					if (offsetX + tempWidth > width - 2) {
+						
+						i--;
+						break;
+						
+					}
+					
+					i++;
+					
+				}
+				
+				if (i == 0) i = 1;
+				
+				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, textIndex + i);
+				layoutGroup.advances = getAdvances(text, textIndex, textIndex + i);
+				layoutGroup.offsetX = offsetX;
+				layoutGroup.ascent = ascent;
+				layoutGroup.descent = descent;
+				layoutGroup.leading = leading;
+				layoutGroup.lineIndex = lineIndex;
+				layoutGroup.offsetY = offsetY;
+				layoutGroup.width = getAdvancesWidth(layoutGroup.advances);
+				layoutGroup.height = heightValue;
+				layoutGroups.push (layoutGroup);
+				
+				lineIndex++;
+				textIndex += i;
+				
+				offsetX = 2;
+				offsetY += heightValue;
+				
+				advances = getAdvances(text, textIndex, endIndex);
+				widthValue = getAdvancesWidth(advances);
+				
+				tempWidth = widthValue;
+			}
+			
+		}
+		
 		nextFormatRange ();
 		
 		lineFormat = formatRange.format;
@@ -855,6 +906,10 @@ class TextEngine {
 		while (textIndex < maxLoops) {
 			
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex) && (formatRange.end >= breakIndex)) {
+				
+				if (wordWrap && previousSpaceIndex <= textIndex) {
+					breakLongWords(breakIndex);
+				}
 				
 				layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, breakIndex);
 				layoutGroup.advances = getAdvances (text, textIndex, breakIndex);
@@ -870,17 +925,6 @@ class TextEngine {
 				
 				offsetY += heightValue;
 				offsetX = 2;
-				
-				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 2)) {
-					
-					layoutGroup.offsetY = offsetY;
-					layoutGroup.offsetX = offsetX;
-					layoutGroup.lineIndex++;
-					
-					offsetY += heightValue;
-					lineIndex++;
-					
-				}
 				
 				if (formatRange.end == breakIndex) {
 					
@@ -918,8 +962,6 @@ class TextEngine {
 					
 					if (wrap) {
 						
-						offsetY += heightValue;
-						
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 						
@@ -941,7 +983,12 @@ class TextEngine {
 							
 						}
 						
-						lineIndex++;
+						if (textIndex == previousSpaceIndex + 1) {
+							
+							offsetY += heightValue;
+							lineIndex++;
+							
+						}
 						
 						offsetX = 2;
 						
@@ -961,6 +1008,8 @@ class TextEngine {
 							
 						}
 						
+						breakLongWords(spaceIndex);
+						
 						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, spaceIndex);
 						layoutGroup.advances = advances;
 						layoutGroup.offsetX = offsetX;
@@ -973,7 +1022,7 @@ class TextEngine {
 						layoutGroup.height = heightValue;
 						layoutGroups.push (layoutGroup);
 						
-						offsetX = widthValue + spaceWidth;
+						offsetX += widthValue + spaceWidth;
 						marginRight = spaceWidth;
 						
 						wrap = false;
@@ -1065,6 +1114,10 @@ class TextEngine {
 					break;
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
+					
+					if (wordWrap) {
+						breakLongWords(formatRange.end);
+					}
 					
 					layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
 					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
