@@ -574,28 +574,11 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (endIndex <= beginIndex) return;
+		if (endIndex < beginIndex) return;
 		
 		if (beginIndex == 0 && endIndex == max) {
 			
-			if (format.font != null) __textFormat.font = format.font;
-			if (format.size != null) __textFormat.size = format.size;
-			if (format.color != null) __textFormat.color = format.color;
-			if (format.bold != null) __textFormat.bold = format.bold;
-			if (format.italic != null) __textFormat.italic = format.italic;
-			if (format.underline != null) __textFormat.underline = format.underline;
-			if (format.url != null) __textFormat.url = format.url;
-			if (format.target != null) __textFormat.target = format.target;
-			if (format.align != null) __textFormat.align = format.align;
-			if (format.leftMargin != null) __textFormat.leftMargin = format.leftMargin;
-			if (format.rightMargin != null) __textFormat.rightMargin = format.rightMargin;
-			if (format.indent != null) __textFormat.indent = format.indent;
-			if (format.leading != null) __textFormat.leading = format.leading;
-			if (format.blockIndent != null) __textFormat.blockIndent = format.blockIndent;
-			if (format.bullet != null) __textFormat.bullet = format.bullet;
-			if (format.kerning != null) __textFormat.kerning = format.kerning;
-			if (format.letterSpacing != null) __textFormat.letterSpacing = format.letterSpacing;
-			if (format.tabStops != null) __textFormat.tabStops = format.tabStops;
+			__textFormat.__merge (format);
 			
 			if (__textEngine.textFormatRanges.length > 1) {
 				
