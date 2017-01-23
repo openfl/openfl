@@ -595,10 +595,11 @@ class Tools {
 					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
 					asset.id = "libraries/" + library.name + ".json";
 					asset.data = data.serialize ();
+					asset.embed = false;
 					
 					if (library.embed != null) {
 						
-						// asset.embed = library.embed;
+						 //asset.embed = library.embed;
 						
 					}
 					

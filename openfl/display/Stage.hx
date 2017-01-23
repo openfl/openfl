@@ -101,7 +101,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
-	
 	public var window (default, null):Window;
 	
 	private var __cacheFocus:InteractiveObject;
