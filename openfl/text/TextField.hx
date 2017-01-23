@@ -104,6 +104,7 @@ class TextField extends InteractiveObject {
 	private var __showCursor:Bool;
 	private var __symbol:DynamicTextSymbol;
 	private var __text:String;
+	private var __htmlText:String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
 	
@@ -1664,6 +1665,10 @@ class TextField extends InteractiveObject {
 		
 		__isHTML = true;
 		
+		#if (js && html5 && dom)
+		var rawHtmlText = value;
+		#end
+
 		if (#if (js && html5) __div == null #else true #end) {
 			
 			value = __regexBreakTag.replace (value, "\n");
@@ -1897,7 +1902,11 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		#if (js && html5 && dom)
+		__updateText (rawHtmlText);
+		#else
 		__updateText (value);
+		#end
 		
 		return value;
 		

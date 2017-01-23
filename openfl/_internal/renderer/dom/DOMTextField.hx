@@ -19,6 +19,11 @@ import js.Browser;
 
 class DOMTextField {
 	
+	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
+	private static var __regexFont = ~/<font ([^>]+)>/gi;
+	private static var __regexCloseFont = new EReg("</font>", "gi");
+	private static var __regexSize = ~/size=("([^"]+)"|'([^']+)')>/i;
 	
 	public static function measureText (textField:TextField):Void {
 		
@@ -140,14 +145,6 @@ class DOMTextField {
 					
 					//textField.__div.innerHTML = textEngine.text;
 					
-					var text = textEngine.text;
-					if (!textField.__isHTML) {
-						
-						text = StringTools.htmlEscape (text);
-						
-					}
-					textField.__div.innerHTML = new EReg ("\n", "g").replace (text, "<br>");
-					
 					if (textEngine.background) {
 						
 						style.setProperty ("background-color", "#" + StringTools.hex (textEngine.backgroundColor & 0xFFFFFF, 6), null);
@@ -160,11 +157,13 @@ class DOMTextField {
 					
 					var w = textEngine.width;
 					var h = textEngine.height;
+					var scale:Float = 1;
+					var unscaledSize = textField.__textFormat.size;
+					var scaledSize:Float = unscaledSize;
 					
 					var t = textField.__renderTransform;
 					if (t.a != 1.0 || t.d != 1.0) {
 						
-						var scale:Float;
 						if (t.a == t.d) {
 							scale = t.a;
 							t.a = t.d = 1.0;
@@ -177,8 +176,7 @@ class DOMTextField {
 							t.a /= t.d;
 							t.d = 1.0;
 						}
-						var realSize = textField.__textFormat.size;
-						var scaledFontSize  : Float = realSize * scale;
+						scaledSize *= scale;
 						
 					#if openfl_half_round_font_sizes
 						
@@ -196,26 +194,89 @@ class DOMTextField {
 							}
 							
 						}
-						untyped textField.__textFormat.size = roundedFontSize;
 						
-					#else
-						
-						untyped textField.__textFormat.size = scaledFontSize;
+						scaledSize = roundedFontSize;
 						
 					#end
 						
 						w = Math.ceil(w * scale);
 						h = Math.ceil(h * scale);
 						
-						style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
-						
-						textField.__textFormat.size = realSize;
+					}
 					
+					untyped textField.__textFormat.size = scaledSize;
+					
+					var text = textEngine.text;
+					var adjustment:Float = 0;
+					
+					if (!textField.__isHTML) {
+						
+						text = StringTools.htmlEscape (text);
+						
 					} else {
 						
-						style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+						var matchText = text;
+						while (__regexFont.match (matchText)) {
+							
+							var fontText = __regexFont.matched(0);
+							var style = "";
+							
+							if (__regexFace.match (fontText)) {
+								
+								style += "font-family:'" +  __getAttributeMatch (__regexFace) + "';";
+								
+							}
+							
+							if (__regexColor.match (fontText)) {
+								
+								style += "color:#" +  __getAttributeMatch (__regexColor) + ";";
+								
+							}
+							
+							if (__regexSize.match (fontText)) {
+								
+								var sizeAttr = __getAttributeMatch (__regexSize);
+								var firstChar = sizeAttr.charCodeAt (0);
+								var size:Float;
+								adjustment = Std.parseFloat (sizeAttr) * scale;
+								if (firstChar == "+".code || firstChar == "-".code) {
+									
+									size = scaledSize + adjustment;
+									
+								} else {
+									
+									size = adjustment;
+									
+								}
+								
+								style += "font-size:" + size + "px;";
+								
+							}
+							
+							text = StringTools.replace( text, fontText, "<span style='" + style + "'>" );
+							
+							matchText = __regexFont.matchedRight();
+						}
+						
+						text = __regexCloseFont.replace( text, "</span>" );
 						
 					}
+					
+					text = StringTools.replace( text, "<p ", "<p style='margin-top:0; margin-bottom:0;' " );
+					
+					var unscaledLeading = textField.__textFormat.leading;
+					textField.__textFormat.leading += Std.int( adjustment );
+					
+					textField.__div.innerHTML = new EReg ("\r\n", "g").replace (text, "<br>");
+					textField.__div.innerHTML = new EReg ("\n", "g").replace (textField.__div.innerHTML, "<br>");
+					textField.__div.innerHTML = new EReg ("\r", "g").replace (textField.__div.innerHTML, "<br>");
+					
+					style.setProperty ("font", TextEngine.getFont (textField.__textFormat), null);
+					
+					textField.__textFormat.size = unscaledSize;
+					textField.__textFormat.leading = unscaledLeading;
+					
+					style.setProperty ("top", "3px", null);
 					
 					if (textEngine.border) {
 						
@@ -290,5 +351,10 @@ class DOMTextField {
 		
 	}
 	
+	private static function __getAttributeMatch (regex:EReg):String {
+		
+		return regex.matched (2) != null ? regex.matched (2) : regex.matched (3);
+		
+	}
 	
 }
