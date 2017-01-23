@@ -23,13 +23,23 @@ import openfl.display.BlendMode;
 import lime.utils.*;
 import lime.math.Vector2;
 
+class VertexBufferContext
+{
+	public function new()
+	{
+	}
+
+	public var vertexArray:VertexArray;
+	public var positions:Float32Array;
+	public var colors:UInt32Array;
+}
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Tilesheet)
 @:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
-
 class SpriteBatch {
 
 	static inline var VERTS_PER_SPRITE:Int = 4;
@@ -72,10 +82,12 @@ class SpriteBatch {
 	var lastEnableColor:Bool = true;
 
 	var matrix:Matrix = new Matrix();
-	var uvs:TextureUvs = new TextureUvs();
 	var colorTransform:ColorTransform = new ColorTransform();
 
-	public function new(gl:GLRenderContext, maxSprites:Int = 2000) {
+	var vertexBufferContexts:Array<VertexBufferContext>;
+	var vertexBufferContextIndex:Int = 0;
+
+	public function new(gl:GLRenderContext, maxSprites:Int = 2000, vertexBufferContextCount:Int = 3) {
 		this.maxSprites = maxSprites;
 
 		attributes.push(new VertexAttribute(2, ElementType.FLOAT, false, DefAttrib.Position));
@@ -93,9 +105,20 @@ class SpriteBatch {
 		vertexArraySize = maxSprites * maxElementsPerVertex * VERTS_PER_SPRITE * 4;
 		indexArraySize = maxSprites * 6;
 
-		vertexArray = new VertexArray(attributes, vertexArraySize, false);
-		positions = new Float32Array(vertexArray.buffer);
-		colors = new UInt32Array(vertexArray.buffer);
+		vertexBufferContexts = new Array<VertexBufferContext>();
+
+		for(i in 0...vertexBufferContextCount)
+		{
+			vertexBufferContexts.push(new VertexBufferContext());
+			var vbc = vertexBufferContexts[i];
+			vbc.vertexArray = new VertexArray(attributes, vertexArraySize, false);
+			vbc.positions = new Float32Array(vbc.vertexArray.buffer);
+			vbc.colors = new UInt32Array(vbc.vertexArray.buffer);
+		}
+
+		vertexArray = vertexBufferContexts[0].vertexArray;
+		positions = vertexBufferContexts[0].positions;
+		colors = vertexBufferContexts[0].colors;
 
 		indices = new UInt16Array(indexArraySize);
 
@@ -121,8 +144,12 @@ class SpriteBatch {
 	}
 
 	public function destroy() {
-		vertexArray.destroy();
-		vertexArray = null;
+
+		for(vbc in vertexBufferContexts)
+		{
+			vbc.vertexArray.destroy();
+			vbc.vertexArray = null;
+		}
 
 		indices = null;
 		gl.deleteBuffer(indexBuffer);
@@ -522,6 +549,8 @@ class SpriteBatch {
 
 		vertexArray.upload(positions);
 
+		setNextVertexBufferContext();
+
 		var nextState:State;
 		var batchSize:Int = 0;
 		var start:Int = 0;
@@ -684,7 +713,11 @@ class SpriteBatch {
 	public function setContext(gl:GLRenderContext) {
 		this.gl = gl;
 
-		vertexArray.setContext(gl, positions);
+
+		for(vbc in vertexBufferContexts)
+		{
+			vbc.vertexArray.setContext(gl, positions);
+		}
 
 		indexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -729,6 +762,15 @@ class SpriteBatch {
 		}
 
 		return r;
+	}
+
+	inline private function setNextVertexBufferContext()
+	{
+		vertexBufferContextIndex = (vertexBufferContextIndex+1) %  vertexBufferContexts.length;
+
+		vertexArray = vertexBufferContexts[vertexBufferContextIndex].vertexArray;
+		positions = vertexBufferContexts[vertexBufferContextIndex].positions;
+		colors = vertexBufferContexts[vertexBufferContextIndex].colors;
 	}
 
 }

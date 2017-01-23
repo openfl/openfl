@@ -60,21 +60,21 @@ import js.Browser;
 
 
 class BitmapData implements IBitmapDrawable {
-	
-	
+
+
 	private static var __isGLES:Null<Bool> = null;
-	
+
 	public var height (get, never):Int;
 	public var image (default, null):Image;
 	public var rect (default, null):Rectangle;
 	public var transparent (default, null):Bool;
 	public var width (get, never):Int;
-	
+
 	public var __cacheAsBitmap:Bool;
 	public var __renderAlpha:Float;
 	public var __renderColorTransform:ColorTransform;
 	public var __worldTransform:Matrix;
-	
+
 	private var __blendMode:BlendMode;
 	private var __shader:Shader;
 	private var __buffer:GLBuffer;
@@ -1511,6 +1511,7 @@ class BitmapData implements IBitmapDrawable {
 
 class TextureUvs {
 
+	public static var pool: ObjectPool<TextureUvs>  = new ObjectPool<TextureUvs>( function() { return new TextureUvs(); } );
 
 	public var x0:Float = 0;
 	public var x1:Float = 0;
