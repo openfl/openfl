@@ -1,4 +1,4 @@
-package openfl.printing; #if (!display && flash)
+package flash.printing; #if (!display && flash)
 
 
 @:enum abstract PrintJobOrientation(String) from String to String {
