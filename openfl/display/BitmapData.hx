@@ -1,6 +1,8 @@
 package openfl.display;
 
 
+import lime.app.Future;
+import lime.app.Promise;
 import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
@@ -677,19 +679,19 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void = null):BitmapData {
+	public static function fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromBase64 (base64, type, onload);
+		bitmapData.__fromBase64 (base64, type #if (openfl < "5.0.0"), onload #end);
 		return bitmapData;
 		
 	}
 	
 	
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData {
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromBytes (bytes, rawAlpha, onload);
+		bitmapData.__fromBytes (bytes, rawAlpha #if (openfl < "5.0.0"), onload #end);
 		return bitmapData;
 		
 	}
@@ -709,10 +711,10 @@ class BitmapData implements IBitmapDrawable {
 	#end
 	
 	
-	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData {
+	public static function fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null, onerror:Void -> Void = null #end):BitmapData {
 		
 		var bitmapData = new BitmapData (0, 0, true, 0);
-		bitmapData.__fromFile (path, onload, onerror);
+		bitmapData.__fromFile (path #if (openfl < "5.0.0"), onload, onerror #end);
 		return bitmapData;
 		
 	}
@@ -1154,6 +1156,47 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
+	public static function loadFromBase64 (base64:String, type:String):Future<BitmapData> {
+		
+		return Image.loadFromBase64 (base64, type).then (function (image) {
+			
+			return Future.withValue (BitmapData.fromImage (image));
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData> {
+		
+		return Image.loadFromBytes (bytes).then (function (image) {
+			
+			var bitmapData = BitmapData.fromImage (image);
+			
+			if (rawAlpha != null) {
+				
+				bitmapData.__applyAlpha (rawAlpha);
+				
+			}
+			
+			return Future.withValue (bitmapData);
+			
+		});
+		
+	}
+	
+	
+	public static function loadFromFile (path:String):Future<BitmapData> {
+		
+		return Image.loadFromFile (path).then (function (image) {
+			
+			return Future.withValue (BitmapData.fromImage (image));
+			
+		});
+		
+	}
+	
+	
 	public function lock ():Void {
 		
 		
@@ -1332,24 +1375,46 @@ class BitmapData implements IBitmapDrawable {
 	}
 	
 	
-	private inline function __fromBase64 (base64:String, type:String, ?onload:BitmapData -> Void):Void {
+	private function __applyAlpha (alpha:ByteArray):Void {
+		
+		#if (js && html5)
+		ImageCanvasUtil.convertToCanvas (image);
+		ImageCanvasUtil.createImageData (image);
+		#end
+		
+		var data = image.buffer.data;
+		
+		for (i in 0...alpha.length) {
+			
+			data[i * 4 + 3] = alpha.readUnsignedByte ();
+			
+		}
+		
+		image.version++;
+		
+	}
+	
+	
+	private inline function __fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
 		
 		Image.fromBase64 (base64, type, function (image) {
 			
 			__fromImage (image);
 			
+			#if (openfl < "5.0.0")
 			if (onload != null) {
 				
 				onload (this);
 				
 			}
+			#end
 			
 		});
 		
 	}
 	
 	
-	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, ?onload:BitmapData -> Void):Void {
+	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
 		
 		Image.fromBytes (bytes, function (image) {
 			
@@ -1357,47 +1422,38 @@ class BitmapData implements IBitmapDrawable {
 			
 			if (rawAlpha != null) {
 				
-				#if (js && html5)
-				ImageCanvasUtil.convertToCanvas (image);
-				ImageCanvasUtil.createImageData (image);
-				#end
-				
-				var data = image.buffer.data;
-				
-				for (i in 0...rawAlpha.length) {
-					
-					data[i * 4 + 3] = rawAlpha.readUnsignedByte ();
-					
-				}
-				
-				image.version++;
+				__applyAlpha (rawAlpha);
 				
 			}
 			
+			#if (openfl < "5.0.0")
 			if (onload != null) {
 				
 				onload (this);
 				
 			}
+			#end
 			
 		});
 		
 	}
 	
 	
-	private function __fromFile (path:String, onload:BitmapData -> Void, onerror:Void -> Void):Void {
+	private function __fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void, onerror:Void -> Void #end):Void {
 		
 		Image.fromFile (path, function (image) {
 			
 			__fromImage (image);
 			
+			#if (openfl < "5.0.0")
 			if (onload != null) {
 				
 				onload (this);
 				
 			}
+			#end
 			
-		}, onerror);
+		} #if (openfl < "5.0.0"), onerror #end);
 		
 	}
 	

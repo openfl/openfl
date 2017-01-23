@@ -1,6 +1,7 @@
 package openfl.display; #if (display || !flash)
 
 
+import lime.app.Future;
 import lime.graphics.Image;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
@@ -436,14 +437,14 @@ extern class BitmapData implements IBitmapDrawable {
 	public function floodFill (x:Int, y:Int, color:UInt):Void;
 	
 	
-	public static function fromBase64 (base64:String, type:String, onload:BitmapData -> Void = null):BitmapData;
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null, onload:BitmapData -> Void = null):BitmapData;
+	public static function fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData;
+	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), onload:BitmapData -> Void = null #end):BitmapData;
 	
 	#if (js && html5)
 	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData;
 	#end
 	
-	public static function fromFile (path:String, onload:BitmapData -> Void = null, onerror:Void -> Void = null):BitmapData;
+	public static function fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void = null, onerror:Void -> Void = null #end):BitmapData;
 	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
 	
 	
@@ -593,6 +594,10 @@ extern class BitmapData implements IBitmapDrawable {
 	
 	
 	public function hitTest (firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:UInt = 1):Bool;
+	
+	public static function loadFromBase64 (base64:String, type:String):Future<BitmapData>;
+	public static function loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>;
+	public static function loadFromFile (path:String):Future<BitmapData>;
 	
 	
 	/**
