@@ -876,6 +876,46 @@ class TextField extends InteractiveObject {
 	}
 	
 	
+	private function __getCharIndexOnDifferentLine (charIndex:Int, lineIndex:Int):Int {
+		
+		if (charIndex < 0 || charIndex > __text.length - 1) return -1;
+		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		
+		var x:Null<Float> = null, y:Null<Float> = null;
+		
+		for (group in __textEngine.layoutGroups) {
+			
+			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
+				
+				x = group.offsetX;
+				
+				for (i in 0...(charIndex - group.startIndex)) {
+					
+					x += group.advances[i];
+					
+				}
+				
+				x += group.advances[charIndex - group.startIndex] / 2;
+				
+				if (y != null) break;
+				
+			}
+			
+			if (group.lineIndex == lineIndex) {
+				
+				y = group.offsetY + group.height / 2;
+				
+				if (x != null) break;
+				
+			}
+			
+		}
+		
+		return getCharIndexAtPoint (x, y);
+		
+	}
+	
+	
 	private override function __getCursor ():MouseCursor {
 		
 		return __textEngine.selectable ? TEXT : null;
@@ -958,46 +998,6 @@ class TextField extends InteractiveObject {
 		
 		return __text.length;
 		
-	}
-			
-			
-	private function __getCharIndexOnDifferentLine(charIndex:Int, lineIndex:Int):Int {
-
-		if (charIndex < 0 || charIndex > __text.length - 1) return -1;
-
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
-
-		var x = null, y = null;
-
-		for (group in __textEngine.layoutGroups) {
-
-			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
-
-				x = group.offsetX;
-
-				for (i in 0...(charIndex - group.startIndex)) {
-
-					x += group.advances[i];
-
-				}
-
-				x += group.advances[charIndex - group.startIndex] / 2;
-
-				if (y != null) break;
-			}
-
-			if (group.lineIndex == lineIndex) {
-
-				y = group.offsetY + group.height / 2;
-
-				if (x != null) break;
-
-			}
-
-		}
-
-		return getCharIndexAtPoint(x, y);
-
 	}
 	
 	
@@ -2391,89 +2391,88 @@ class TextField extends InteractiveObject {
 				__startCursorTimer ();
 				
 			case DOWN:
-
-				var lineIndex:Int = getLineIndexOfChar(__caretIndex);
-
+				
+				var lineIndex = getLineIndexOfChar (__caretIndex);
+				
 				if (modifier.shiftKey) {
-
+					
 					if (lineIndex < __textEngine.numLines - 1) {
-
-						__caretIndex = __getCharIndexOnDifferentLine(__caretIndex, lineIndex + 1);
-
+						
+						__caretIndex = __getCharIndexOnDifferentLine (__caretIndex, lineIndex + 1);
+						
 					} else {
-
+						
 						__caretIndex = __text.length - 1;
-
+						
 					}
-
+					
 				} else {
-
+					
 					if (__selectionIndex == __caretIndex) {
-
+						
 						if (lineIndex < __textEngine.numLines - 1) {
-
-							__caretIndex = __getCharIndexOnDifferentLine(__caretIndex, lineIndex + 1);
-
+							
+							__caretIndex = __getCharIndexOnDifferentLine (__caretIndex, lineIndex + 1);
+							
 						} else {
-
+							
 							__caretIndex = __text.length - 1;
-
+							
 						}
-
+						
 					} else {
-
+						
 						__caretIndex = Std.int (Math.max (__caretIndex, __selectionIndex));
-
+						
 					}
-
+					
 					__selectionIndex = __caretIndex;
-
+					
 				}
-
+				
 				__stopCursorTimer ();
 				__startCursorTimer ();
-
-
+			
 			case UP:
-
-				var lineIndex:Int = getLineIndexOfChar(__caretIndex);
-
+				
+				var lineIndex = getLineIndexOfChar (__caretIndex);
+				
 				if (modifier.shiftKey) {
-
+					
 					if (lineIndex > 0) {
-
-						__caretIndex = __getCharIndexOnDifferentLine(__caretIndex, lineIndex - 1);
-
+						
+						__caretIndex = __getCharIndexOnDifferentLine (__caretIndex, lineIndex - 1);
+						
 					} else {
-
+						
 						__caretIndex = 0;
-
+						
 					}
-
+					
 				} else {
-
+					
 					if (__selectionIndex == __caretIndex) {
-
+						
 						if (lineIndex > 0) {
-
-							__caretIndex = __getCharIndexOnDifferentLine(__caretIndex, lineIndex - 1);
-
+							
+							__caretIndex = __getCharIndexOnDifferentLine (__caretIndex, lineIndex - 1);
+							
 						} else {
-
+							
 							__caretIndex = 0;
-
+							
 						}
-
+						
 					} else {
-
+						
 						__caretIndex = Std.int (Math.max (__caretIndex, __selectionIndex));
-
+						
 					}
-
+					
 					__selectionIndex = __caretIndex;
-
+					
 				}
-
+				
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
