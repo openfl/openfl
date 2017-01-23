@@ -651,11 +651,10 @@ class TextEngine {
 		var ascent = 0.0;
 		var descent = 0.0;
 		
-		var layoutGroup, advances;
+		var layoutGroup = null, advances = null;
 		var widthValue, heightValue = 0.0;
 		
-		var spaceWidth = 0.0;
-		var previousSpaceIndex = 0;
+		var previousSpaceIndex = 0, previousBreakIndex = 0;
 		var spaceIndex = text.indexOf (" ");
 		var breakIndex = getLineBreakIndex ();
 		
@@ -835,12 +834,6 @@ class TextEngine {
 				
 				#end
 				
-				if (spaceIndex > -1) {
-					
-					spaceWidth = getTextWidth (" ");
-					
-				}
-				
 			}
 			
 		}
@@ -871,17 +864,6 @@ class TextEngine {
 				offsetY += heightValue;
 				offsetX = 2;
 				
-				if (wordWrap && (layoutGroup.offsetX + layoutGroup.width > width - 2)) {
-					
-					layoutGroup.offsetY = offsetY;
-					layoutGroup.offsetX = offsetX;
-					layoutGroup.lineIndex++;
-					
-					offsetY += heightValue;
-					lineIndex++;
-					
-				}
-				
 				if (formatRange.end == breakIndex) {
 					
 					nextFormatRange ();
@@ -890,10 +872,18 @@ class TextEngine {
 				}
 				
 				textIndex = breakIndex + 1;
+				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
+				
+				if (layoutGroup != null && previousSpaceIndex != previousBreakIndex && previousSpaceIndex == textIndex-1 && textIndex == formatRange.start && spaceIndex <= formatRange.end) {
+					// This ensures we render contiguous selection rectangles
+					// TODO: Fix the case where a block of whitespace needs its own TextLayoutGroup
+					layoutGroup.endIndex = textIndex;
+					layoutGroup.width += layoutGroup.advances[layoutGroup.advances.length - 1];
+				}
 				
 				layoutGroup = null;
 				wrap = false;
@@ -903,8 +893,9 @@ class TextEngine {
 					if (textIndex == formatRange.end) break;
 					if (spaceIndex == -1) spaceIndex = formatRange.end;
 					
-					advances = getAdvances (text, textIndex, spaceIndex);
-					widthValue = getAdvancesWidth (advances);
+					advances = getAdvances (text, textIndex, spaceIndex + 1);
+					var spaceWidth = advances[advances.length - 1];
+					widthValue = getAdvancesWidth (advances) - spaceWidth;
 					
 					if (wordWrap) {
 						
@@ -980,15 +971,20 @@ class TextEngine {
 						
 					} else {
 						
+						if (formatRange.start == previousSpaceIndex && textIndex - 1 == previousSpaceIndex) {
+							
+							// Grow this TextLayoutGroup to the left 1 space for contiguous selection rectangles
+							advances = getAdvances (text, previousSpaceIndex, textIndex).concat(advances);
+							widthValue += advances[0];
+							offsetX -= advances[0];
+							
+							textIndex = previousSpaceIndex;
+							
+						}
+						
 						if (layoutGroup != null && textIndex == spaceIndex) {
 							
 							if (formatRange.format.align != JUSTIFY) {
-								
-								if (textIndex == previousSpaceIndex + 1) {
-									
-									layoutGroup.advances.push (spaceWidth);
-									
-								}
 								
 								layoutGroup.endIndex = spaceIndex;
 								
@@ -1014,12 +1010,6 @@ class TextEngine {
 							
 						} else {
 							
-							if (textIndex == previousSpaceIndex + 1) {
-								
-								layoutGroup.advances.push (spaceWidth);
-								
-							}
-							
 							layoutGroup.endIndex = spaceIndex;
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
 							layoutGroup.width += marginRight + widthValue;
@@ -1035,7 +1025,26 @@ class TextEngine {
 					textIndex = spaceIndex + 1;
 					
 					previousSpaceIndex = spaceIndex;
-					spaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
+					var nextSpaceIndex = text.indexOf (" ", previousSpaceIndex + 1);
+					
+					// Check if we can continue wrapping this line until the next line-break or end-of-String.
+					// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
+					if (previousSpaceIndex != breakIndex && breakIndex > -1 && (nextSpaceIndex == -1 || nextSpaceIndex > breakIndex)) {
+						
+						spaceIndex = breakIndex;
+						
+					}
+					else {
+						
+						if (breakIndex == previousSpaceIndex) {
+							
+							textIndex = breakIndex;
+							
+						}
+						
+						spaceIndex = nextSpaceIndex;
+						
+					}
 					
 					if (formatRange.end <= previousSpaceIndex) {
 						
@@ -1045,12 +1054,6 @@ class TextEngine {
 					}
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
-						if (spaceIndex > formatRange.end) {
-							
-							textIndex--;
-							
-						}
 						
 						break;
 						
@@ -1066,19 +1069,33 @@ class TextEngine {
 					
 				} else if (textIndex < formatRange.end || textIndex == text.length) {
 					
-					layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
-					layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
-					layoutGroup.offsetX = offsetX;
-					layoutGroup.ascent = ascent;
-					layoutGroup.descent = descent;
-					layoutGroup.leading = leading;
-					layoutGroup.lineIndex = lineIndex;
-					layoutGroup.offsetY = offsetY;
-					layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
-					layoutGroup.height = heightValue;
-					layoutGroups.push (layoutGroup);
-					
-					offsetX += layoutGroup.width;
+					if (layoutGroup == null) {
+						
+						layoutGroup = new TextLayoutGroup (formatRange.format, textIndex, formatRange.end);
+						layoutGroup.advances = getAdvances (text, textIndex, formatRange.end);
+						layoutGroup.offsetX = offsetX;
+						layoutGroup.ascent = ascent;
+						layoutGroup.descent = descent;
+						layoutGroup.leading = leading;
+						layoutGroup.lineIndex = lineIndex;
+						layoutGroup.offsetY = offsetY;
+						layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+						layoutGroup.height = heightValue;
+						layoutGroups.push (layoutGroup);
+						
+						offsetX += layoutGroup.width;
+						
+					} else if (layoutGroup.startIndex != layoutGroup.endIndex) {
+						
+						advances = getAdvances (text, textIndex, formatRange.end);
+						widthValue = getAdvancesWidth (advances);
+						layoutGroup.advances = layoutGroup.advances.concat (advances);
+						layoutGroup.width += marginRight + widthValue;
+						layoutGroup.endIndex = formatRange.end;
+						
+						offsetX += widthValue;
+						
+					}
 					
 					textIndex = formatRange.end;
 					
