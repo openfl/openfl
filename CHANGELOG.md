@@ -1,3 +1,24 @@
+4.7.0 (01/24/2017)
+------------------
+
+* Added support for high-DPI HTML5 output
+* Added BitmapData.loadFromBase64/loadFromBytes/loadFromFile
+* Added handling for UP/DOWN/HOME/END keyboard shortcuts in TextField
+* Added stage.fullscreenWidth/fullscreenHeight
+* Added support for Lime 3.7 simulated preloader progress
+* Improved selection of multi-line text in TextField
+* Improved the behavior of bitmapData.paletteMap
+* Improved text measurement for HTML5 input TextField
+* Improved sharpness of HTML5 vector shape rendering
+* Deprecated async callbacks in BitmapData.fromBase64/fromBytes/fromFile
+* Fixed support for the "rect" argument in bitmapData.encode
+* Fixed use of textField.setTextFormat when text is empty
+* Fixed support for openfl.printing.PrintJob on Flash Player
+* Fixed support for SWF-based assets on iOS and Flash
+* Fixed use of deprecated NMEPreloader class
+* Fixed use of font names on HTML5 that may already be quoted
+
+
 4.6.0 (01/20/2017)
 ------------------
 
