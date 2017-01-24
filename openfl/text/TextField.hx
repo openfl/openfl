@@ -2102,6 +2102,7 @@ class TextField extends InteractiveObject {
 				addEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				this_onFocusIn (null);
+				__textEngine.__useIntAdvances = true;
 				
 			} else {
 				
@@ -2110,6 +2111,7 @@ class TextField extends InteractiveObject {
 				removeEventListener (Event.ADDED_TO_STAGE, this_onAddedToStage);
 				
 				__stopTextInput ();
+				__textEngine.__useIntAdvances = null;
 				
 			}
 			
