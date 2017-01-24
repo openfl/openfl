@@ -22,6 +22,16 @@ class DestOutCommand {
 
 private class DestOutShader extends Shader {
 
+	@vertex var vertex = [
+		'uniform vec2 openfl_uScaleVector;',
+
+		'void main(void)',
+		'{',
+			'${Shader.vTexCoord} = openfl_uScaleVector * ${Shader.aTexCoord};',
+			'gl_Position = vec4(${Shader.aPosition} * 2.0 - 1.0, 0.0, 1.0);',
+		'}',
+	];
+
 	@fragment var fragment = [
 		'uniform sampler2D uShadowSourceSampler;',
 		'uniform float outer;',
