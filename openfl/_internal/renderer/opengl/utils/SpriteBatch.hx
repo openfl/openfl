@@ -57,7 +57,6 @@ class SpriteBatch {
 	var indexBuffer:GLBuffer;
 	var indices:UInt16Array;
 
-	var dirty:Bool = true;
 	public var drawing:Bool = false;
 	public var preventFlush:Bool = false;
 
@@ -135,7 +134,6 @@ class SpriteBatch {
 		}
 
 		currentState = new State();
-		dirty = true;
 		drawing = false;
 		batchedSprites = 0;
 
@@ -179,7 +177,6 @@ class SpriteBatch {
 
 	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
 		drawing = true;
-		dirty = true;
 
 		this.maskBitmap = mask;
 		this.maskMatrix = maskMatrix;
