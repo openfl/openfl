@@ -717,7 +717,7 @@ class SpriteBatch {
 		
 		for(vbc in vertexBufferContexts)
 		{
-			vbc.vertexArray.setContext(gl, positions);
+			vbc.vertexArray.setContext(gl, vbc.positions);
 		}
 		
 		indexBuffer = gl.createBuffer();
