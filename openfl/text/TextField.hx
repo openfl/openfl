@@ -292,7 +292,7 @@ class TextField extends InteractiveObject {
 	
 	public function getLineIndexOfChar (charIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __text.length - 1) return -1;
+		if (charIndex < 0 || charIndex > __text.length) return -1;
 		
 		__updateLayout ();
 		
@@ -800,7 +800,7 @@ class TextField extends InteractiveObject {
 			
 		} else {
 			
-			__caretIndex = __text.length - 1;
+			__caretIndex = __text.length;
 			
 		}
 		
@@ -987,7 +987,7 @@ class TextField extends InteractiveObject {
 	
 	private function __getCharIndexOnDifferentLine (charIndex:Int, lineIndex:Int):Int {
 		
-		if (charIndex < 0 || charIndex > __text.length - 1) return -1;
+		if (charIndex < 0 || charIndex > __text.length) return -1;
 		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
 		
 		var x:Null<Float> = null, y:Null<Float> = null;
@@ -1004,9 +1004,7 @@ class TextField extends InteractiveObject {
 					
 				}
 				
-				x += group.advances[charIndex - group.startIndex] / 2;
-				
-				if (y != null) break;
+				if (y != null) return __getPosition (x, y);
 				
 			}
 			
@@ -1014,13 +1012,13 @@ class TextField extends InteractiveObject {
 				
 				y = group.offsetY + group.height / 2;
 				
-				if (x != null) break;
+				if (x != null) return __getPosition (x, y);
 				
 			}
 			
 		}
 		
-		return getCharIndexAtPoint (x, y);
+		return -1;
 		
 	}
 	
