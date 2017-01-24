@@ -727,11 +727,120 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+	private function __caretBeginningOfLine ():Void {
 		
-		super.__updateTransforms (overrideTransform);
+		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex) {
+			
+			__caretIndex = getLineOffset (getLineIndexOfChar (__caretIndex));
+			
+		} else {
+			
+			__selectionIndex = getLineOffset (getLineIndexOfChar (__selectionIndex));
+			
+		}
 		
-		__renderTransform.__translateTransformed (__offsetX, __offsetY);
+	}
+	
+	
+	private function __caretEndOfLine ():Void {
+		
+		var lineIndex;
+		
+		if (__selectionIndex == __caretIndex) {
+			
+			lineIndex = getLineIndexOfChar (__caretIndex);
+			
+		} else {
+			
+			lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
+			
+		}
+		
+		if (lineIndex < __textEngine.numLines - 1) {
+			
+			__caretIndex = getLineOffset (lineIndex + 1) - 1;
+			
+		} else {
+			
+			__caretIndex = __text.length;
+			
+		}
+		
+	}
+	
+	
+	private function __caretNextCharacter ():Void {
+		
+		if (__caretIndex < __text.length) {
+			
+			__caretIndex++;
+			
+		}
+		
+	}
+	
+	
+	private function __caretNextLine (lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void {
+		
+		if (lineIndex == null) {
+			
+			lineIndex = getLineIndexOfChar (__caretIndex);
+			
+		}
+		
+		if (lineIndex < __textEngine.numLines - 1) {
+			
+			if (caretIndex == null) {
+				
+				caretIndex = __caretIndex;
+				
+			}
+			
+			__caretIndex = __getCharIndexOnDifferentLine (caretIndex, lineIndex + 1);
+			
+		} else {
+			
+			__caretIndex = __text.length - 1;
+			
+		}
+		
+	}
+	
+	
+	private function __caretPreviousCharacter ():Void {
+		
+		if (__caretIndex > 0) {
+			
+			__caretIndex--;
+			
+		}
+		
+	}
+	
+	
+	private function __caretPreviousLine (lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void {
+		
+		if (lineIndex == null) {
+			
+			lineIndex = getLineIndexOfChar (__caretIndex);
+			
+		}
+		
+		if (lineIndex > 0) {
+			
+			if (caretIndex == null) {
+				
+				caretIndex = __caretIndex;
+				
+			}
+			
+			__caretIndex = __getCharIndexOnDifferentLine (caretIndex, lineIndex - 1);
+			
+		} else {
+			
+			__caretIndex = 0;
+			
+		}
 		
 	}
 	
@@ -1269,6 +1378,14 @@ class TextField extends InteractiveObject {
 			__textEngine.text = mask;
 			
 		}
+		
+	}
+	
+	
+	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
+		
+		super.__updateTransforms (overrideTransform);
+		__renderTransform.__translateTransformed (__offsetX, __offsetY);
 		
 	}
 	
@@ -2280,100 +2397,6 @@ class TextField extends InteractiveObject {
 	
 	
 	private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
-
-		inline function prevChar() {
-
-			if (__caretIndex > 0) {
-
-				__caretIndex--;
-
-			}
-
-		}
-
-		inline function nextChar() {
-
-			if (__caretIndex < __text.length) {
-
-				__caretIndex++;
-
-			}
-
-		}
-
-		inline function prevLine(?lineIndex:Int, ?caretIndex:Int) {
-
-			if (lineIndex == null) lineIndex = getLineIndexOfChar (__caretIndex);
-
-			if (lineIndex > 0) {
-
-				if (caretIndex == null) caretIndex = __caretIndex;
-				__caretIndex = __getCharIndexOnDifferentLine (caretIndex, lineIndex - 1);
-
-			} else {
-
-				__caretIndex = 0;
-
-			}
-
-		}
-
-		inline function nextLine(?lineIndex:Int, ?caretIndex:Int) {
-
-			if (lineIndex == null) lineIndex = getLineIndexOfChar (__caretIndex);
-
-			if (lineIndex < __textEngine.numLines - 1) {
-
-				if (caretIndex == null) caretIndex = __caretIndex;
-				__caretIndex = __getCharIndexOnDifferentLine (caretIndex, lineIndex + 1);
-
-			} else {
-
-				__caretIndex = __text.length - 1;
-
-			}
-
-		}
-
-		inline function beginningOfLine() {
-
-			if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex) {
-
-				__caretIndex = getLineOffset (getLineIndexOfChar (__caretIndex));
-
-			} else {
-
-				__selectionIndex = getLineOffset (getLineIndexOfChar (__selectionIndex));
-
-			}
-
-		}
-
-		inline function endOfLine() {
-
-			var lineIndex;
-
-			if (__selectionIndex == __caretIndex) {
-
-				lineIndex = getLineIndexOfChar (__caretIndex);
-
-			} else {
-
-				lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
-
-			}
-
-			if (lineIndex < __textEngine.numLines - 1) {
-
-				__caretIndex = getLineOffset (lineIndex + 1) - 1;
-
-			} else {
-
-				__caretIndex = __text.length;
-
-			}
-
-		}
 		
 		switch (key) {
 			
@@ -2423,19 +2446,24 @@ class TextField extends InteractiveObject {
 			case LEFT:
 				
 				if (modifier.metaKey) {
-
-					beginningOfLine ();
-					if (!modifier.shiftKey) __selectionIndex = __caretIndex;
-
+					
+					__caretBeginningOfLine ();
+					
+					if (!modifier.shiftKey) {
+						
+						__selectionIndex = __caretIndex;
+						
+					}
+					
 				} else if (modifier.shiftKey) {
-
-					prevChar ();
+					
+					__caretPreviousCharacter ();
 					
 				} else {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						prevChar ();
+						__caretPreviousCharacter ();
 						
 					} else {
 						
@@ -2453,19 +2481,24 @@ class TextField extends InteractiveObject {
 			case RIGHT:
 				
 				if (modifier.metaKey) {
-
-					endOfLine ();
-					if (!modifier.shiftKey) __selectionIndex = __caretIndex;
-
+					
+					__caretEndOfLine ();
+					
+					if (!modifier.shiftKey) {
+						
+						__selectionIndex = __caretIndex;
+						
+					}
+					
 				} else if (modifier.shiftKey) {
-
-					nextChar ();
-
+					
+					__caretNextCharacter ();
+					
 				} else {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						nextChar ();
+						__caretNextCharacter ();
 						
 					} else {
 						
@@ -2479,24 +2512,24 @@ class TextField extends InteractiveObject {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
-				
+			
 			case DOWN:
-
+				
 				if (modifier.shiftKey) {
-
-					nextLine ();
+					
+					__caretNextLine ();
 					
 				} else {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						nextLine ();
+						__caretNextLine ();
 						
 					} else {
-
+						
 						var lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
-						nextLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
-
+						__caretNextLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
+						
 					}
 					
 					__selectionIndex = __caretIndex;
@@ -2510,19 +2543,18 @@ class TextField extends InteractiveObject {
 				
 				if (modifier.shiftKey) {
 					
-					prevLine ();
+					__caretPreviousLine ();
 					
 				} else {
 					
 					if (__selectionIndex == __caretIndex) {
 						
-						prevLine ();
+						__caretPreviousLine ();
 						
 					} else {
-
+						
 						var lineIndex = getLineIndexOfChar (Std.int (Math.min (__caretIndex, __selectionIndex)));
-						prevLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
-
+						__caretPreviousLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
 						
 					}
 					
@@ -2532,16 +2564,16 @@ class TextField extends InteractiveObject {
 				
 				__stopCursorTimer ();
 				__startCursorTimer ();
-
+			
 			case HOME:
-
-				beginningOfLine();
+				
+				__caretBeginningOfLine ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
-
+			
 			case END:
-
-				endOfLine();
+				
+				__caretEndOfLine ();
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
