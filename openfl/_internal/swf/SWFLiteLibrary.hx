@@ -8,6 +8,7 @@ import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.math.Vector2;
 import lime.utils.AssetLibrary;
+import lime.utils.AssetManifest;
 import lime.utils.Assets in LimeAssets;
 import openfl._internal.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
@@ -27,6 +28,7 @@ import openfl.Assets;
 	private var alphaCheck:Map<String, Bool>;
 	private var id:String;
 	private var preloading:Bool;
+	private var rootPath:String;
 	private var swf:SWFLite;
 	
 	
@@ -37,6 +39,12 @@ import openfl.Assets;
 		this.id = id;
 		
 		alphaCheck = new Map ();
+		
+		#if (ios || tvos)
+		rootPath = "assets/";
+		#else
+		rootPath = "";
+		#end
 		
 		// Hack to include filter classes, macro.include is not working properly
 		
@@ -236,6 +244,23 @@ import openfl.Assets;
 		#if !sys
 		image.premultiplied = false;
 		#end
+		
+	}
+	
+	
+	private override function __fromManifest (manifest:AssetManifest):Void {
+		
+		super.__fromManifest (manifest);
+		
+		if (rootPath != "") {
+			
+			for (asset in manifest.assets) {
+				
+				paths.set (asset.id, rootPath + asset.path);
+				
+			}
+			
+		}
 		
 	}
 	
