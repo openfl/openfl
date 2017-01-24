@@ -848,8 +848,7 @@ import js.html.CanvasRenderingContext2D;
 				
 			}
 			
-		}
-		else {
+		} else {
 			
 			return;
 			
@@ -860,7 +859,7 @@ import js.html.CanvasRenderingContext2D;
 		if (scaleY > 1) scaleY = 1;
 		#end
 		
-		var width  = __bounds.width  * scaleX;
+		var width = __bounds.width * scaleX;
 		var height = __bounds.height * scaleY;
 		
 		if (width < 1 || height < 1) {
