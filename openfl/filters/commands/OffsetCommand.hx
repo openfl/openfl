@@ -26,14 +26,15 @@ class OffsetCommand {
 private class OffsetShader extends Shader {
 
 	@vertex var vertex = [
+		'uniform vec2 openfl_uScaleVector;',
 		'uniform vec2 uTexCoordOffset;',
 
 		'void main(void)',
 		'{',
 			'vec2 texcoord_offset = uTexCoordOffset / ${Shader.uTextureSize};',
-			'${Shader.vTexCoord} = ${Shader.aTexCoord} - texcoord_offset;',
+			'${Shader.vTexCoord} = openfl_uScaleVector * ${Shader.aTexCoord} - texcoord_offset;',
 			'${Shader.vColor} = ${Shader.aColor};',
-			'gl_Position = vec4((${Shader.uProjectionMatrix} * vec3(${Shader.aPosition}, 1.0)).xy, 0.0, 1.0);',
+			'gl_Position = vec4(${Shader.aPosition} * 2.0 - 1.0, 0.0, 1.0);',
 		'}',
 	];
 
