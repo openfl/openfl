@@ -37,6 +37,8 @@ class Preloader extends LimePreloader {
 	
 	private override function start ():Void {
 		
+		if (simulateProgress) return;
+		
 		ready = true;
 		
 		#if !flash
@@ -102,7 +104,7 @@ class Preloader extends LimePreloader {
 			
 		}
 		
-		if (ready) {
+		if (ready && !simulateProgress) {
 			
 			super.start ();
 			
