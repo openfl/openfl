@@ -248,23 +248,6 @@ import openfl.Assets;
 	}
 	
 	
-	private override function __fromManifest (manifest:AssetManifest):Void {
-		
-		super.__fromManifest (manifest);
-		
-		if (rootPath != "") {
-			
-			for (asset in manifest.assets) {
-				
-				paths.set (asset.id, rootPath + asset.path);
-				
-			}
-			
-		}
-		
-	}
-	
-	
 	private function __load ():Future<lime.utils.AssetLibrary> {
 		
 		return super.load ();
