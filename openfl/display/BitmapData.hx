@@ -411,6 +411,10 @@ class BitmapData implements IBitmapDrawable {
 			
 		}
 		
+		if ( __uvData != null ) {
+			TextureUvs.pool.put(__uvData);
+		}
+
 	}
 	
 	
@@ -1212,7 +1216,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __createUVs (	x0:Float = 0, y0:Float = 0, x1:Float = 1, y1:Float = 0, x2:Float = 1, y2:Float = 1, x3:Float = 0, y3:Float = 1):Void {
 		
-		if (__uvData == null) __uvData = new TextureUvs();
+		if (__uvData == null) __uvData = TextureUvs.pool.get();
 		
 		__uvData.x0 = x0;
 		__uvData.y0 = y0;
