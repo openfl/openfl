@@ -604,19 +604,31 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function encode (rect:Rectangle, compressor:Dynamic, byteArray:ByteArray = null):ByteArray {
 		
-		// TODO: Support rect
-		
 		if (!readable || rect == null) return byteArray = null;
 		if (byteArray == null) byteArray = new ByteArray();
 		
+		var image = this.image;
+		
+		if (!rect.equals (this.rect)) {
+			
+			var matrix = Matrix.__temp;
+			matrix.setTo (1, 0, 0, 1, Math.round (-rect.x), Math.round (-rect.y));
+			
+			var bitmapData = new BitmapData (Math.ceil (rect.width), Math.ceil (rect.height), true, 0);
+			bitmapData.draw (this, matrix);
+			
+			image = bitmapData.image;
+			
+		}
+		
 		if (Std.is (compressor, PNGEncoderOptions)) {
 			
-			byteArray.writeBytes(ByteArray.fromBytes (image.encode ("png")));
+			byteArray.writeBytes (ByteArray.fromBytes (image.encode ("png")));
 			return byteArray;
 			
 		} else if (Std.is (compressor, JPEGEncoderOptions)) {
 			
-			byteArray.writeBytes(ByteArray.fromBytes (image.encode ("jpg", cast (compressor, JPEGEncoderOptions).quality)));
+			byteArray.writeBytes (ByteArray.fromBytes (image.encode ("jpg", cast (compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
 			
 		}

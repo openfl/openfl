@@ -86,7 +86,8 @@ class Rectangle {
 	
 	public function equals (toCompare:Rectangle):Bool {
 		
-		return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
+		if (toCompare == this) return true;
+		else return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
 		
 	}
 	
