@@ -28,7 +28,7 @@ class DOMShape {
 			
 			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
 			
-			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas == null && graphics.__canvas != null)) {
+			if (graphics.__dirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas)) {
 				
 				if (graphics.__canvas != null) {
 					
