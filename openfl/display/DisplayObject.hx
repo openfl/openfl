@@ -580,7 +580,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			} else {
 
 				#if (js && html5)
-				CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY);
+				if (__graphics.__dirty) {
+					CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY);
+				}
 				#elseif lime_cairo
 				CairoGraphics.render (__graphics, renderSession);
 				#end
@@ -695,7 +697,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
 
 	}
-	
+
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
