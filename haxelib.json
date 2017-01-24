@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.6.0",
-	"releasenote": "Added (initial) support for PrintJob on HTML5, updated AGALMiniAssembler, TextField improvement",
+	"version": "4.7.0",
+	"releasenote": "Added support for high-DPI HTML5 output, TextField improvement, graphics improvement",
 	"contributors": [ "singmajesty" ]
 }
