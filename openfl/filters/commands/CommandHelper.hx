@@ -66,7 +66,6 @@ class CommandHelper {
 
 		var gl = renderSession.gl;
 
-		//target.__drawGL(renderSession, source, source.rect, true, false, true);
 		prepareShader (gl, shader, source);
 		var internalShader = shader.__shader;
 		renderSession.shaderManager.setShader(internalShader);
