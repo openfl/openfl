@@ -808,6 +808,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			__renderTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
 			__renderTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 			
+			if (parent == stage) {
+				__renderTransform.tx = local.tx;
+				__renderTransform.ty = local.ty;
+			}
+			
 		} else {
 			
 			__worldTransform.copyFrom (local);

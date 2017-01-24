@@ -506,7 +506,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			__onMouse (type, Std.int (x), Std.int (y), button);
 			
 		} catch (e:Dynamic) {
 			
@@ -523,7 +523,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
-			__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x * window.scale), Std.int (y * window.scale), 0);
+			__onMouse (MouseEvent.MOUSE_MOVE, Std.int (x), Std.int (y), 0);
 			
 		} catch (e:Dynamic) {
 			
@@ -555,7 +555,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				
 			}
 			
-			__onMouse (type, Std.int (x * window.scale), Std.int (y * window.scale), button);
+			__onMouse (type, Std.int (x), Std.int (y), button);
 			
 			if (!showDefaultContextMenu && button == 2) {
 				
@@ -578,7 +578,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
-			__onMouseWheel (Std.int (deltaX * window.scale), Std.int (deltaY * window.scale));
+			__onMouseWheel (Std.int (deltaX), Std.int (deltaY));
 			
 		} catch (e:Dynamic) {
 			
