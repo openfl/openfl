@@ -258,7 +258,7 @@ class TextEngine {
 			case "_sans": "sans-serif";
 			case "_serif": "serif";
 			case "_typewriter": "monospace";
-			default: "'" + format.font + "'";
+			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(format.font, '$1') + "'";
 			
 		}
 		
