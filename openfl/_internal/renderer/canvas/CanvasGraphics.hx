@@ -304,7 +304,7 @@ class CanvasGraphics {
 			resetFillStyle();
 
 			var data = drawCommandReaderPool.get();
-			data.reset(graphics.__commands);
+			data.reset(graphics.__commands, graphics.__snapCoordinates);
 
 			for (type in graphics.__commands.types) {
 
@@ -515,7 +515,7 @@ class CanvasGraphics {
 				resetFillStyle();
 
 				var data = drawCommandReaderPool.get();
-				data.reset(graphics.__commands);
+				data.reset(graphics.__commands, graphics.__snapCoordinates);
 
 				for (type in graphics.__commands.types) {
 
@@ -851,7 +851,7 @@ class CanvasGraphics {
 
 
 			var data = drawCommandReaderPool.get();
-			data.reset(graphics.__commands);
+			data.reset(graphics.__commands, graphics.__snapCoordinates);
 			var context = context;
 
 			for (type in graphics.__commands.types) {
