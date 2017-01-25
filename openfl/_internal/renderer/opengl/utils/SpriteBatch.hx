@@ -611,11 +611,9 @@ class SpriteBatch {
 			: state.shader;
 
 		var updatedShader = false;
-		if ( renderSession.shaderManager.currentShader != shader ) {
-			renderSession.shaderManager.setShader(shader);
-			shader.bindVertexArray(vertexArray);
-			updatedShader = true;
-		}
+		renderSession.shaderManager.setShader(shader);
+		shader.bindVertexArray(vertexArray);
+		updatedShader = true;
 
 		renderSession.blendModeManager.setBlendMode(shader.blendMode != null ? shader.blendMode : state.blendMode);
 
