@@ -724,15 +724,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		try {
-			
-			__broadcastEvent (new Event (Event.ACTIVATE));
-			
-		} catch (e:Dynamic) {
-			
-			__handleError (e);
-			
-		}
+		//try {
+			//
+			//__broadcastEvent (new Event (Event.ACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -742,6 +742,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (this.window == window) {
 			
 			this.window = null;
+			
+		}
+		
+		try {
+			
+			__primaryTouch = null;
+			__broadcastEvent (new Event (Event.DEACTIVATE));
+			
+		} catch (e:Dynamic) {
+			
+			__handleError (e);
 			
 		}
 		
@@ -803,16 +814,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		try {
-			
-			__primaryTouch = null;
-			__broadcastEvent (new Event (Event.DEACTIVATE));
-			
-		} catch (e:Dynamic) {
-			
-			__handleError (e);
-			
-		}
+		//try {
+			//
+			//__primaryTouch = null;
+			//__broadcastEvent (new Event (Event.DEACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -837,6 +848,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		try {
 			
+			__broadcastEvent (new Event (Event.ACTIVATE));
+			
 			focus = __cacheFocus;
 			
 		} catch (e:Dynamic) {
@@ -853,6 +866,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (this.window == null || this.window != window) return;
 		
 		try {
+			
+			__primaryTouch = null;
+			__broadcastEvent (new Event (Event.DEACTIVATE));
 			
 			var currentFocus = focus;
 			focus = null;
@@ -912,16 +928,16 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		try {
-			
-			__primaryTouch = null;
-			__broadcastEvent (new Event (Event.DEACTIVATE));
-			
-		} catch (e:Dynamic) {
-			
-			__handleError (e);
-			
-		}
+		//try {
+			//
+			//__primaryTouch = null;
+			//__broadcastEvent (new Event (Event.DEACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
@@ -961,15 +977,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 		
 		if (this.window == null || this.window != window) return;
 		
-		try {
-			
-			__broadcastEvent (new Event (Event.ACTIVATE));
-			
-		} catch (e:Dynamic) {
-			
-			__handleError (e);
-			
-		}
+		//try {
+			//
+			//__broadcastEvent (new Event (Event.ACTIVATE));
+			//
+		//} catch (e:Dynamic) {
+			//
+			//__handleError (e);
+			//
+		//}
 		
 	}
 	
