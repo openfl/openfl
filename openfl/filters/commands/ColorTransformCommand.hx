@@ -22,6 +22,16 @@ class ColorTransformCommand {
 
 private class ColorTransformShader extends Shader {
 
+	@vertex var vertex = [
+		'uniform vec2 openfl_uScaleVector;',
+
+		'void main(void)',
+		'{',
+			'${Shader.vTexCoord} = openfl_uScaleVector * ${Shader.aTexCoord};',
+			'gl_Position = vec4(${Shader.aPosition} * 2.0 - 1.0, 0.0, 1.0);',
+		'}',
+	];
+
 	@fragment var fragment = [
 		'uniform mat4 uMultipliers;',
 		'uniform vec4 uOffsets;',
