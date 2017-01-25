@@ -152,6 +152,19 @@ class Event {
 	}
 	
 	
+
+	private function __setTo(type:String, bubbles:Bool = false, cancelable:Bool = false) {
+		this.type = type;
+		this.bubbles = bubbles;
+		this.cancelable = cancelable;
+		eventPhase = EventPhase.AT_TARGET;
+
+		__isCanceled = null;
+		__isCanceledNow = null;
+		__preventDefault = null;
+	}
+
+
 }
 
 
