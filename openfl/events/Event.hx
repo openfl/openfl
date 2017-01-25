@@ -158,6 +158,10 @@ class Event {
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
 		eventPhase = EventPhase.AT_TARGET;
+
+		__isCanceled = null;
+		__isCanceledNow = null;
+		__preventDefault = null;
 	}
 
 
