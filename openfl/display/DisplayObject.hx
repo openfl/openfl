@@ -1087,14 +1087,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function get_scaleX ():Float {
+	@:keep private function get_scaleX ():Float {
 		
 		return __scaleX;
 		
 	}
 	
 	
-	private function set_scaleX (value:Float):Float {
+	@:keep private function set_scaleX (value:Float):Float {
 		
 		if (value != __scaleX) {
 			
@@ -1128,14 +1128,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function get_scaleY ():Float {
+	@:keep private function get_scaleY ():Float {
 		
 		return __scaleY;
 		
 	}
 	
 	
-	private function set_scaleY (value:Float):Float {
+	@:keep private function set_scaleY (value:Float):Float {
 		
 		if (value != __scaleY) {
 			
