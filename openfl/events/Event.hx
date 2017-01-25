@@ -159,9 +159,11 @@ class Event {
 		this.cancelable = cancelable;
 		eventPhase = EventPhase.AT_TARGET;
 
-		__isCanceled = null;
-		__isCanceledNow = null;
-		__preventDefault = null;
+		__isCanceled = false;
+		__isCanceledNow = false;
+		__preventDefault = false;
+		currentTarget = null;
+		target = null;
 	}
 
 
