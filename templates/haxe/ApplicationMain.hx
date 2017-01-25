@@ -269,53 +269,49 @@ import DefaultAssetLibrary;
 	macro public static function getPreloader () {
 		
 		::if (PRELOADER_NAME != "")::
-		try {
+		#if (openfl < "5.0.0")
+		Context.defineType ({ name: "NMEPreloader", pack: [], kind: TDClass ({ name: "Preloader", sub: "DefaultPreloader", pack: [ "openfl", "display" ], params: [] }, null, false), fields: [ { name: "new", access: [ APublic ], kind: FFun({ args: [], expr: macro { super (); }, params: [], ret: macro :Void }), pos: Context.currentPos () } ], meta: [ { name: ":deprecated", params: [], pos: Context.currentPos () } ], pos: Context.currentPos () });
+		#end
+		
+		var type = Context.getType ("::PRELOADER_NAME::");
+		
+		switch (type) {
 			
-			#if (openfl < "5.0.0")
-			Context.defineType ({ name: "NMEPreloader", pack: [], kind: TDClass ({ name: "Preloader", sub: "DefaultPreloader", pack: [ "openfl", "display" ], params: [] }, null, false), fields: [ { name: "new", access: [ APublic ], kind: FFun({ args: [], expr: macro { super (); }, params: [], ret: macro :Void }), pos: Context.currentPos () } ], meta: [ { name: ":deprecated", params: [], pos: Context.currentPos () } ], pos: Context.currentPos () });
-			#end
-			
-			var type = Context.getType ("::PRELOADER_NAME::");
-			
-			switch (type) {
+			case TInst (classType, _):
 				
-				case TInst (classType, _):
+				var searchTypes = classType.get ();
+				
+				while (searchTypes != null) {
 					
-					var searchTypes = classType.get ();
-					
-					while (searchTypes != null) {
+					if (searchTypes.pack.length == 2 && searchTypes.pack[0] == "openfl" && searchTypes.pack[1] == "display" && searchTypes.name == "Preloader") {
 						
-						if (searchTypes.pack.length == 2 && searchTypes.pack[0] == "openfl" && searchTypes.pack[1] == "display" && searchTypes.name == "Preloader") {
-							
-							return macro { new ::PRELOADER_NAME:: (); };
-							
-						}
-						#if (openfl < "5.0.0")
-						else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
-							
-							Sys.println ("Warning: Usage of NMEPreloader has been deprecated");
-							Sys.println ("Read more at http://community.openfl.org/t/workaround-for-deprecated-nmepreloader/8704");
-							
-						}
-						#end
-						
-						if (searchTypes.superClass != null) {
-							
-							searchTypes = searchTypes.superClass.t.get ();
-							
-						} else {
-							
-							searchTypes = null;
-							
-						}
+						return macro { new ::PRELOADER_NAME:: (); };
 						
 					}
-				
-				default:
-				
-			}
+					#if (openfl < "5.0.0")
+					else if (searchTypes.pack.length == 0 && searchTypes.name == "NMEPreloader") {
+						
+						Sys.println ("Warning: Usage of NMEPreloader has been deprecated");
+						Sys.println ("Read more at http://community.openfl.org/t/workaround-for-deprecated-nmepreloader/8704");
+						
+					}
+					#end
+					
+					if (searchTypes.superClass != null) {
+						
+						searchTypes = searchTypes.superClass.t.get ();
+						
+					} else {
+						
+						searchTypes = null;
+						
+					}
+					
+				}
 			
-		} catch (e:Dynamic) {}
+			default:
+			
+		}
 		
 		return macro { new openfl.display.Preloader (new ::PRELOADER_NAME:: ()); }
 		::else::
