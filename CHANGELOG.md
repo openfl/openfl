@@ -1,3 +1,15 @@
+4.7.1 (01/25/2017)
+------------------
+
+* Improved stage ACTIVATE/DEACTIVATE to be more consistent with Flash
+* Improved code completion on the Flash target when using FlashDevelop
+* Improved the code output size when targeting HTML5 
+* Fixed hiding of stack trace when errors occur in a custom preloader
+* Fixed possible cases where stage.x/y and other transforms could be changed
+* Fixed support for scale and letterboxing on native targets
+* Fixed use of scaleX/scaleY when dead-code elimination is enabled
+
+
 4.7.0 (01/24/2017)
 ------------------
 
