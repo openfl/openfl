@@ -48,6 +48,7 @@ import openfl.events.UncaughtErrorEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
@@ -1314,7 +1315,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		if (button > 2) return;
 		
 		var targetPoint = new Point (x, y);
-		__transform.__transformPoint (targetPoint);
 		__displayMatrix.__transformInversePoint (targetPoint);
 		
 		__mouseX = targetPoint.x;
@@ -1658,7 +1658,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			var offsetX = Math.round ((windowWidth - (stageWidth * targetScale)) / 2);
 			var offsetY = Math.round ((windowHeight - (stageHeight * targetScale)) / 2);
 			
-			__transform.a = __transform.d = targetScale;
+			__displayMatrix.scale (targetScale, targetScale);
 			__displayMatrix.translate (offsetX, offsetY);
 			
 		}
@@ -1940,6 +1940,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 	
 	
+	private override function set_height (value:Float):Float {
+		
+		return this.height;
+		
+	}
+	
+	
 	private override function get_mouseX ():Float {
 		
 		return __mouseX;
@@ -1950,6 +1957,55 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private override function get_mouseY ():Float {
 		
 		return __mouseY;
+		
+	}
+	
+	
+	private override function set_rotation (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_scaleX (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_scaleY (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_transform (value:Transform):Transform {
+		
+		return this.transform;
+		
+	}
+	
+	
+	private override function set_width (value:Float):Float {
+		
+		return this.width;
+		
+	}
+	
+	
+	private override function set_x (value:Float):Float {
+		
+		return 0;
+		
+	}
+	
+	
+	private override function set_y (value:Float):Float {
+		
+		return 0;
 		
 	}
 	
