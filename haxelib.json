@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.7.0",
-	"releasenote": "Added support for high-DPI HTML5 output, TextField improvement, graphics improvement",
+	"version": "4.7.1",
+	"releasenote": "Improved Event.ACTIVATE/DEACTIVATE behavior, stage and scale fixes",
 	"contributors": [ "singmajesty" ]
 }
