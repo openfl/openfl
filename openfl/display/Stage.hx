@@ -782,17 +782,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 					
 					case DOM (element):
 						
+						#if dom
 						__renderer = new DOMRenderer (this, element);
+						#end
 					
 					case CAIRO (cairo):
 						
-						#if !html5
+						#if lime_cairo
 						__renderer = new CairoRenderer (this, cairo);
 						#end
 					
 					case CONSOLE (ctx):
 						
-						#if !html5
+						#if lime_console
 						__renderer = new ConsoleRenderer (this, ctx);
 						#end
 					
@@ -1049,8 +1051,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 						
 						case CAIRO (cairo):
 							
+							#if lime_cairo
 							cast (__renderer, CairoRenderer).cairo = cairo;
 							@:privateAccess (__renderer.renderSession).cairo = cairo;
+							#end
 						
 						default:
 							

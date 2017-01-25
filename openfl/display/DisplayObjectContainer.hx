@@ -562,6 +562,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (!__renderable || __worldAlpha <= 0) return;
 		
 		super.__renderCairo (renderSession);
@@ -587,12 +588,14 @@ class DisplayObjectContainer extends InteractiveObject {
 		__removedChildren.length = 0;
 		
 		renderSession.maskManager.popObject (this);
+		#end
 		
 	}
 	
 	
 	private override function __renderCairoMask (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (__graphics != null) {
 			
 			CairoGraphics.renderMask (__graphics, renderSession);
@@ -604,6 +607,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__renderCairoMask (renderSession);
 			
 		}
+		#end
 		
 	}
 	
@@ -667,7 +671,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
-		#if !neko
+		#if dom
 		
 		super.__renderDOM (renderSession);
 		

@@ -555,18 +555,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		CairoDisplayObject.render (this, renderSession);
+		#end
 		
 	}
 	
 	
 	private function __renderCairoMask (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (__graphics != null) {
 			
 			CairoGraphics.renderMask (__graphics, renderSession);
 			
 		}
+		#end
 		
 	}
 	
@@ -591,7 +595,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if dom
 		DOMDisplayObject.render (this, renderSession);
+		#end
 		
 	}
 	

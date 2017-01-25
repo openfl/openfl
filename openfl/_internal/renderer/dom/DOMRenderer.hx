@@ -30,6 +30,7 @@ class DOMRenderer extends AbstractRenderer {
 		
 		super (stage);
 		
+		#if dom
 		this.element = element;
 		
 		renderSession = new RenderSession ();
@@ -61,6 +62,7 @@ class DOMRenderer extends AbstractRenderer {
 		renderSession.maskManager = new DOMMaskManager (renderSession);
 		
 		renderSession.renderer = this;
+		#end
 		
 	}
 	

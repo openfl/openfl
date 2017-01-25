@@ -1157,8 +1157,10 @@ class TextField extends InteractiveObject {
 	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		CairoTextField.render (this, renderSession, __worldTransform);
 		super.__renderCairo (renderSession);
+		#end
 		
 	}
 	
@@ -1202,7 +1204,9 @@ class TextField extends InteractiveObject {
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if dom
 		DOMTextField.render (this, renderSession);
+		#end
 		
 	}
 	

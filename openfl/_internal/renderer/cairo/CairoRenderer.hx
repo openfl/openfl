@@ -23,6 +23,7 @@ class CairoRenderer extends AbstractRenderer {
 		
 		super (stage);
 		
+		#if lime_cairo
 		this.cairo = cairo;
 		
 		renderSession = new RenderSession ();
@@ -31,6 +32,7 @@ class CairoRenderer extends AbstractRenderer {
 		renderSession.renderer = this;
 		renderSession.maskManager = new CairoMaskManager (renderSession);
 		renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
+		#end
 		
 	}
 	

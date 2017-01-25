@@ -118,7 +118,9 @@ class Bitmap extends DisplayObject {
 	
 	private override function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		CairoBitmap.render (this, renderSession);
+		#end
 		
 	}
 	
@@ -146,7 +148,9 @@ class Bitmap extends DisplayObject {
 	
 	private override function __renderDOM (renderSession:RenderSession):Void {
 		
+		#if dom
 		DOMBitmap.render (this, renderSession);
+		#end
 		
 	}
 	

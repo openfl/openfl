@@ -25,9 +25,6 @@ import lime.math.Vector2;
 import lime.utils.Float32Array;
 import lime.utils.UInt8Array;
 import openfl.Lib;
-import openfl._internal.renderer.cairo.CairoBlendModeManager;
-import openfl._internal.renderer.cairo.CairoRenderer;
-import openfl._internal.renderer.cairo.CairoMaskManager;
 import openfl._internal.renderer.canvas.CanvasMaskManager;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.renderer.opengl.GLRenderer;
@@ -50,6 +47,12 @@ import js.html.ImageData;
 import js.html.ImageElement;
 import js.html.Uint8ClampedArray;
 import js.Browser;
+#end
+
+#if lime_cairo
+import openfl._internal.renderer.cairo.CairoBlendModeManager;
+import openfl._internal.renderer.cairo.CairoRenderer;
+import openfl._internal.renderer.cairo.CairoMaskManager;
 #end
 
 @:access(lime.graphics.opengl.GL)
@@ -531,7 +534,7 @@ class BitmapData implements IBitmapDrawable {
 			image.dirty = true;
 			image.version++;
 			
-			#else
+			#elseif lime_cairo
 			
 			if (source == this) {
 				
@@ -1513,6 +1516,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __renderCairo (renderSession:RenderSession):Void {
 		
+		#if lime_cairo
 		if (!readable) return;
 		
 		var cairo = renderSession.cairo;
@@ -1554,6 +1558,7 @@ class BitmapData implements IBitmapDrawable {
 			cairo.paint ();
 			
 		}
+		#end
 		
 	}
 	
