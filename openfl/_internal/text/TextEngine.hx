@@ -1013,7 +1013,10 @@ class TextEngine {
 							
 							layoutGroup.endIndex = spaceIndex;
 							layoutGroup.advances = layoutGroup.advances.concat (advances);
-							layoutGroup.width += marginRight + widthValue;
+							
+							//layoutGroup.width += marginRight + widthValue + spaceWidth;
+							layoutGroup.width = getAdvancesWidth (layoutGroup.advances);
+							//layoutGroup.width += widthValue + spaceWidth;
 							
 							marginRight = spaceWidth;
 							
@@ -1034,8 +1037,7 @@ class TextEngine {
 						
 						spaceIndex = breakIndex;
 						
-					}
-					else {
+					} else {
 						
 						if (breakIndex == previousSpaceIndex) {
 							
