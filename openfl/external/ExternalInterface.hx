@@ -10,7 +10,7 @@ import openfl.Lib;
 @:final class ExternalInterface {
 	
 	
-	public static var available (default, null) = true;
+	public static var available (default, null) = #if (js && html5) true #else false #end;
 	public static var marshallExceptions = false;
 	public static var objectID (default, null):String;
 	
