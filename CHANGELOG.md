@@ -1,3 +1,9 @@
+4.7.2 (01/25/2017)
+------------------
+
+* Fixed incorrect casing (fullscreenWidth should be fullScreenWidth)
+
+
 4.7.1 (01/25/2017)
 ------------------
 
