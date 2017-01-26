@@ -239,6 +239,10 @@ class CanvasGraphics {
 		
 	}
 	
+	#if (js && html5)
+	static var hitTestCanvas : js.html.CanvasElement = cast Browser.document.createElement ("canvas");
+	static var hitTestContext = hitTestCanvas.getContext ("2d");
+	#end
 	
 	public static function hitTest (graphics:Graphics, x:Float, y:Float):Bool {
 		
@@ -266,24 +270,10 @@ class CanvasGraphics {
 			x -= transform.__transformX (bounds.x, bounds.y);
 			y -= transform.__transformY (bounds.x, bounds.y);
 			
-			//var width = graphics.__width;
-			//var height = graphics.__height;
-			//var canvas = graphics.__canvas;
-			
-			if (graphics.__canvas == null) {
-				
-				graphics.__canvas = cast Browser.document.createElement ("canvas");
-				graphics.__context = graphics.__canvas.getContext ("2d");
-				//canvas = graphics.__canvas;
-				
-			}
-			
-			//if (canvas.width != width || canvas.height != height) {
-				
-				//canvas.width = width;
-				//canvas.height = height;
-				
-			//}
+			var cacheCanvas = graphics.__canvas;
+			var cacheContext = graphics.__context;
+			graphics.__canvas = hitTestCanvas;
+			graphics.__context = hitTestContext;
 			
 			context = graphics.__context;
 			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
@@ -350,6 +340,8 @@ class CanvasGraphics {
 						if (hasFill && context.isPointInPath (x, y)) {
 							
 							data.destroy ();
+							graphics.__canvas = cacheCanvas;
+							graphics.__context = cacheContext;
 							return true;
 							
 						}
@@ -357,6 +349,8 @@ class CanvasGraphics {
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
 							data.destroy ();
+							graphics.__canvas = cacheCanvas;
+							graphics.__context = cacheContext;
 							return true;
 							
 						}
@@ -372,6 +366,8 @@ class CanvasGraphics {
 						if (hasFill && context.isPointInPath (x, y)) {
 							
 							data.destroy ();
+							graphics.__canvas = cacheCanvas;
+							graphics.__context = cacheContext;
 							return true;
 							
 						}
@@ -379,6 +375,8 @@ class CanvasGraphics {
 						if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 							
 							data.destroy ();
+							graphics.__canvas = cacheCanvas;
+							graphics.__context = cacheContext;
 							return true;
 							
 						}
@@ -451,15 +449,22 @@ class CanvasGraphics {
 			
 			if (hasFill && context.isPointInPath (x, y)) {
 				
+				graphics.__canvas = cacheCanvas;
+				graphics.__context = cacheContext;
 				return true;
 				
 			}
 			
 			if (hasStroke && (context:Dynamic).isPointInStroke (x, y)) {
 				
+				graphics.__canvas = cacheCanvas;
+				graphics.__context = cacheContext;
 				return true;
 				
 			}
+			
+			graphics.__canvas = cacheCanvas;
+			graphics.__context = cacheContext;
 			
 		}
 		
