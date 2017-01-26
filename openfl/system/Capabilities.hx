@@ -42,6 +42,8 @@ import lime.system.Locale;
 	public static var touchscreenType (default, null) = TouchscreenType.FINGER; // TODO
 	public static var version (get, never):String;
 	
+	private static var __standardDensities = [ 120, 160, 240, 320, 480, 640, 800, 960 ];
+	
 	
 	public static function hasMultiChannelAudio (type:String):Bool {
 		
@@ -181,6 +183,21 @@ import lime.system.Locale;
 	private static function get_screenDPI ():Float {
 		
 		var window = Lib.application.window;
+		var screenDPI:Float;
+		
+		#if (desktop || web)
+		
+		screenDPI = 72;
+		
+		if (window != null) {
+			
+			screenDPI *= window.scale;
+			
+		}
+		
+		#else
+		
+		screenDPI = __standardDensities[0];
 		
 		if (window != null) {
 			
@@ -188,13 +205,34 @@ import lime.system.Locale;
 			
 			if (display != null) {
 				
-				return display.dpi;
+				var actual = display.dpi;
+				
+				var closestValue = screenDPI;
+				var closestDifference = Math.abs (actual - screenDPI);
+				var difference:Float;
+				
+				for (density in __standardDensities) {
+					
+					difference = Math.abs (actual - density);
+					
+					if (difference < closestDifference) {
+						
+						closestDifference = difference;
+						closestValue = density;
+						
+					}
+					
+				}
+				
+				screenDPI = closestValue;
 				
 			}
 			
 		}
 		
-		return 0;
+		#end
+		
+		return screenDPI;
 		
 	}
 	
