@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.7.1",
-	"releasenote": "Improved Event.ACTIVATE/DEACTIVATE behavior, stage and scale fixes",
+	"version": "4.7.2",
+	"releasenote": "Fixed typo",
 	"contributors": [ "singmajesty" ]
 }
