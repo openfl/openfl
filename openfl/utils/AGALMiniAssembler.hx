@@ -457,7 +457,7 @@ class AGALMiniAssembler {
 				var isDest = (j == 0 && (opFound.flags & OP_NO_DEST == 0));
 				var isSampler = (j == 2 && (opFound.flags & OP_SPECIAL_TEX != 0));
 				var reltype = 0;
-				var relsel = 0;
+				var relsel:UInt = 0;
 				var reloffset = 0;
 				
 				if (isDest && isRelative) {
@@ -471,10 +471,11 @@ class AGALMiniAssembler {
 				if (maskmatch.length > 0) {
 					
 					regmask = 0;
-					var cv = 0; 
+					var cv:UInt = 0;
 					var maskLength = maskmatch[0].length;
+					var k = 1;
 					
-					for (k in 1...maskLength) {
+					while (k < maskLength) {
 						
 						cv = maskmatch[0].charCodeAt (k) - "x".code;
 						
@@ -494,11 +495,11 @@ class AGALMiniAssembler {
 							
 						}
 						
+						k++;
+						
 					}
 					
 					if (!isDest) {
-						
-						var k = maskLength - 1;
 						
 						while (k <= 4) {
 							
