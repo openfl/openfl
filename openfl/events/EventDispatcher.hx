@@ -192,7 +192,7 @@ class EventDispatcher implements IEventDispatcher {
 
 	}
 
-	private static function __dispatchEventStatic ( target: EventDispatcher, event:Event):Bool {
+	private static inline function __dispatchEventStatic ( target: EventDispatcher, event:Event):Bool {
 
 		if (target.__eventMap == null || event == null) return false;
 
@@ -203,92 +203,94 @@ class EventDispatcher implements IEventDispatcher {
 
 			list = target.__newEventMap.get (type);
 			if (list == null) list = target.__eventMap.get (type);
-			if (list == null) return false;
-			list = list.copy ();
+			if (list != null) list = list.copy ();
 
 		} else {
 
 			list = target.__eventMap.get (type);
-			if (list == null) return false;
-			target.__dispatching.set (type, true);
+			if (list != null) target.__dispatching.set (type, true);
 
 		}
 
-		if (event.target == null) {
+		if ( list != null ) {
+			if (event.target == null) {
 
-			if (target.__targetDispatcher != null) {
+				if (target.__targetDispatcher != null) {
 
-				event.target = target.__targetDispatcher;
+					event.target = target.__targetDispatcher;
 
-			} else {
+				} else {
 
-				event.target = target;
-
-			}
-
-		}
-
-		event.currentTarget = target;
-
-		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
-		var index = 0;
-		var listener;
-
-		while (index < list.length) {
-
-			listener = list[index];
-
-			if (listener.useCapture == capture) {
-
-				//listener.callback (event.clone ());
-				listener.callback (event);
-
-				if (event.__isCanceledNow) {
-
-					break;
+					event.target = target;
 
 				}
 
 			}
 
-			if (listener == list[index]) {
+			event.currentTarget = target;
 
-				index++;
+			var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
+			var index = 0;
+			var listener;
+
+			while (index < list.length) {
+
+				listener = list[index];
+
+				if (listener.useCapture == capture) {
+
+					//listener.callback (event.clone ());
+					listener.callback (event);
+
+					if (event.__isCanceledNow) {
+
+						break;
+
+					}
+
+				}
+
+				if (listener == list[index]) {
+
+					index++;
+
+				}
 
 			}
 
+			if (target.__newEventMap != null && target.__newEventMap.exists (type)) {
+
+				var list = target.__newEventMap.get (type);
+
+				if (list.length > 0) {
+
+					target.__eventMap.set (type, list);
+
+				} else {
+
+					target.__eventMap.remove (type);
+
+				}
+
+				if (!target.__eventMap.iterator ().hasNext ()) {
+
+					target.__eventMap = null;
+					target.__newEventMap = null;
+
+				} else {
+
+					target.__newEventMap.remove (type);
+
+				}
+
+			}
+
+			target.__dispatching.set (event.type, false);
+
+			return true;
+		} else {
+			return false;
 		}
-
-		if (target.__newEventMap != null && target.__newEventMap.exists (type)) {
-
-			var list = target.__newEventMap.get (type);
-
-			if (list.length > 0) {
-
-				target.__eventMap.set (type, list);
-
-			} else {
-
-				target.__eventMap.remove (type);
-
-			}
-
-			if (!target.__eventMap.iterator ().hasNext ()) {
-
-				target.__eventMap = null;
-				target.__newEventMap = null;
-
-			} else {
-
-				target.__newEventMap.remove (type);
-
-			}
-
-		}
-
-		target.__dispatching.set (event.type, false);
-
-		return true;
 
 	}
 
