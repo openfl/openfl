@@ -337,8 +337,7 @@ class GLRenderer extends AbstractRenderer {
 			round_pixels = PixelSnapping.ALWAYS;
 		} else if ( renderSession.roundPixels == false ) {
 			round_pixels = PixelSnapping.NEVER;
-		}
-		if ( round_pixels == PixelSnapping.AUTO ) {
+		} else {
 			if ( matrix.b == 0
 				&& matrix.c == 0
 				&& Math.abs(1.0 - matrix.a) < 0.001
