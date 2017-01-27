@@ -54,6 +54,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	public inline function each ():Iterator<V> {
+		
+		return this.iterator ();
+		
+	}
+	
+	
 	@:to static inline function toStringMap<K:String, V> (t:IMap<K, V>, weakKeys:Bool):StringMap<V> {
 		
 		return new StringMap<V> ();
@@ -82,6 +89,20 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	@:to static inline function toUtilsObjectMap<K:Object,V> (t:IMap<K, V>, weakKeys:Bool):UtilsObjectMap<K, V> {
+		
+		return new UtilsObjectMap<K, V> ();
+		
+	}
+	
+	
+	@:to static inline function toClassMap<K:Class<Dynamic>,V> (t:IMap<K, V>, weakKeys:Bool):ClassMap<K, V> {
+		
+		return new ClassMap<K, V> ();
+		
+	}
+	
+	
 	@:from static inline function fromStringMap<V> (map:StringMap<V>):Dictionary<String, V> {
 		
 		return cast map;
@@ -99,6 +120,156 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Dictionary<K, V> {
 		
 		return cast map;
+		
+	}
+	
+	
+	@:from static inline function fromUtilsObjectMap<K:Object, V> (map:UtilsObjectMap<K, V>):Dictionary<K, V> {
+		
+		return cast map;
+		
+	}
+	
+	
+	@:from static inline function fromClassMap<K:Class<Dynamic>, V> (map:ClassMap<K, V>):Dictionary<K, V> {
+		
+		return cast map;
+		
+	}
+	
+	
+}
+
+
+@:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
+	
+	
+	private var types:Map<String, K>;
+	private var values:Map<String, V>;
+	
+	
+	public function new ():Void {
+		
+		types = new Map ();
+		values = new Map ();
+		
+	}
+	
+	
+	public function exists (key:K):Bool {
+		
+		return types.exists (Type.getClassName (key));
+		
+	}
+	
+	
+	public function get (key:K):Null<V> {
+		
+		return values.get (Type.getClassName (key));
+		
+	}
+	
+	
+	public function keys ():Iterator<K> {
+		
+		return types.iterator ();
+		
+	}
+	
+	
+	public function iterator ():Iterator<V> {
+		
+		return values.iterator ();
+		
+	}
+	
+	
+	public function remove (key:K):Bool {
+		
+		var name = Type.getClassName (key);
+		return (types.remove (name) || values.remove (name));
+		
+	}
+	
+	
+	public function set (key:K, value:V):Void {
+		
+		var name = Type.getClassName (key);
+		
+		types.set (name, key);
+		values.set (name, value);
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return values.toString ();
+		
+	}
+	
+	
+}
+
+
+@:dox(hide) private class UtilsObjectMap<K:Object, V> implements Map.IMap<K, V> {
+	
+	
+	private var map:ObjectMap<{}, V>;
+	
+	
+	public function new ():Void {
+		
+		map = new ObjectMap<{}, V> ();
+		
+	}
+	
+	
+	public function exists (key:K):Bool {
+		
+		return map.exists (cast key);
+		
+	}
+	
+	
+	public function get (key:K):Null<V> {
+		
+		return map.get (cast key);
+		
+	}
+	
+	
+	public function keys ():Iterator<K> {
+		
+		return cast map.keys ();
+		
+	}
+	
+	
+	public function iterator ():Iterator<V> {
+		
+		return cast map.iterator ();
+		
+	}
+	
+	
+	public function remove (key:K):Bool {
+		
+		return map.remove (cast key);
+		
+	}
+	
+	
+	public function set (key:K, value:V):Void {
+		
+		map.set (cast key, value);
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return map.toString ();
 		
 	}
 	
@@ -152,6 +323,20 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	public inline function iterator ():Iterator<K> {
 		
 		return untyped __keys__ (this).iterator ();
+		
+	}
+	
+	
+	@:analyzer(ignore) public function each ():Iterator<V> {
+		
+		return untyped {
+			
+			ref: this,
+			it: iterator (),
+			hasNext: function () { return __this__.it.hasNext (); },
+			next: function () { return __this__.ref[__this__.it.next ()]; }
+			
+		}
 		
 	}
 	

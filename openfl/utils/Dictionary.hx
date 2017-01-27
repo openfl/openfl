@@ -141,69 +141,6 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 }
 
 
-#else
-
-
-abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary to flash.utils.Dictionary {
-	
-	
-	public function new (weakKeys:Bool = false) {
-		
-		this = new flash.utils.Dictionary (weakKeys);
-		
-	}
-	
-	
-	public inline function exists (key:K):Bool {
-		
-		return (untyped this[key] != untyped __global__["undefined"]);
-		
-	}
-	
-	
-	@:arrayAccess public inline function get (key:K):V {
-		
-		return untyped this[key];
-		
-	}
-	
-	
-	public inline function remove (key:K):Bool {
-		
-		var exists = (this:Dictionary<K, V>).exists (key);
-		untyped __delete__ (this, key);
-		return exists;
-		
-	}
-	
-	
-	@:arrayAccess public inline function set (key:K, value:V):V {
-		
-		return untyped this[key] = value;
-		
-	}
-	
-	
-	public inline function iterator ():Iterator<K> {
-		
-		return untyped __keys__ (this).iterator ();
-		
-	}
-	
-	
-	public inline function each ():Iterator<V> {
-		
-		return this.iterator ();
-		
-	}
-	
-	
-}
-
-
-#end
-
-
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
 	
 	
@@ -338,3 +275,73 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	
 	
 }
+
+
+#else
+
+
+abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary to flash.utils.Dictionary {
+	
+	
+	public function new (weakKeys:Bool = false) {
+		
+		this = new flash.utils.Dictionary (weakKeys);
+		
+	}
+	
+	
+	public inline function exists (key:K):Bool {
+		
+		return (untyped this[key] != untyped __global__["undefined"]);
+		
+	}
+	
+	
+	@:arrayAccess public inline function get (key:K):V {
+		
+		return untyped this[key];
+		
+	}
+	
+	
+	public inline function remove (key:K):Bool {
+		
+		var exists = (this:Dictionary<K, V>).exists (key);
+		untyped __delete__ (this, key);
+		return exists;
+		
+	}
+	
+	
+	@:arrayAccess public inline function set (key:K, value:V):V {
+		
+		return untyped this[key] = value;
+		
+	}
+	
+	
+	public inline function iterator ():Iterator<K> {
+		
+		return untyped __keys__ (this).iterator ();
+		
+	}
+	
+	
+	@:analyzer(ignore) public function each ():Iterator<V> {
+		
+		return untyped {
+			
+			ref: this,
+			it: iterator (),
+			hasNext: function () { return __this__.it.hasNext (); },
+			next: function () { return __this__.ref[__this__.it.next ()]; }
+			
+		}
+		
+	}
+	
+	
+}
+
+
+#end
