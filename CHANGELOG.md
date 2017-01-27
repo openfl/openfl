@@ -1,3 +1,13 @@
+4.7.3 (01/26/2017)
+------------------
+
+* Improved Capabilities to more closely approximate Flash's behavior
+* Improved the density of projects targeting HTML5 with high DPI
+* Fixed a regression in the calculation of textField.textWidth
+* Fixed ExternalInterface.available to return false on native 
+* Fixed the visibility of hit-testing on HTML5
+
+
 4.7.2 (01/25/2017)
 ------------------
 
