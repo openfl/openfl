@@ -436,7 +436,7 @@ class AGALMiniAssembler {
 				regs[j] = regs[j].substr (regs[j].indexOf (regFound.name) + regFound.name.length);
 				//trace ("REGNUM: " + regs[j]);
 				var idxmatch = isRelative ? match (relreg[0], reg7) : match (regs[j], reg7);
-				var regidx = 0;
+				var regidx:UInt = 0;
 				
 				if (idxmatch.length > 0) {
 					
@@ -905,14 +905,14 @@ private class OpCode {
 private class Register {
 	
 	
-	public var emitCode (default, null):Int;
+	public var emitCode (default, null):UInt;
 	public var name (default, null):String;
 	public var longName (default, null):String;
-	public var flags (default, null):Int;
-	public var range (default, null):Int;
+	public var flags (default, null):UInt;
+	public var range (default, null):UInt;
 	
 	
-	public function new (name:String, longName:String, emitCode:Int, range:Int, flags:Int) {
+	public function new (name:String, longName:String, emitCode:UInt, range:UInt, flags:UInt) {
 		
 		this.name = name;
 		this.longName = longName;
@@ -936,12 +936,12 @@ private class Register {
 private class Sampler {
 	
 	
-	public var flag (default, null):Int;
-	public var mask (default, null):Int;
+	public var flag (default, null):UInt;
+	public var mask (default, null):UInt;
 	public var name (default, null):String;
 	
 	
-	public function new (name:String, flag:Int, mask:Int) {
+	public function new (name:String, flag:UInt, mask:UInt) {
 		
 		this.name = name;
 		this.flag = flag;
