@@ -98,6 +98,11 @@ import haxe.Timer;
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;
 		
+		if (width == 0 && height == 0) return;
+		
+		if (width == 0) width = 1;
+		if (height == 0) height = 1;
+		
 		if (source.width != width || source.height != height) {
 			
 			var copy = new BitmapData (width, height, true, 0);
@@ -135,6 +140,11 @@ import haxe.Timer;
 		
 		var width = __width >> miplevel;
 		var height = __height >> miplevel;
+		
+		if (width == 0 && height == 0) return;
+		
+		if (width == 0) width = 1;
+		if (height == 0) height = 1;
 		
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
