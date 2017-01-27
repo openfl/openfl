@@ -23,6 +23,7 @@ import openfl.display.InteractiveObject;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
+import openfl.events.TextEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Lib;
@@ -41,6 +42,7 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
+	private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
 	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
@@ -144,6 +146,34 @@ class TextField extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		
 	}
+
+
+	override private function __dispatch (event:Event):Bool {
+
+		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP) {
+
+			var event : MouseEvent = cast event;
+			var group = __getGroup(mouseX, mouseY, true);
+
+			if (group != null) {
+
+				var url = group.format.url;
+				
+				if (StringTools.startsWith(url, "event:")) {
+					var e = new TextEvent(TextEvent.LINK, false, false, url.substr(6) /* event: */);
+					dispatchEvent(e);
+				}
+				else if (url != "") {
+					Lib.getURL(new openfl.net.URLRequest(url));
+				}
+
+			}
+
+		}
+
+		return super.__dispatch(event);
+	}
+
 	
 	
 	public function appendText (text:String):Void {
@@ -1026,12 +1056,13 @@ class TextField extends InteractiveObject {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		return __textEngine.selectable ? TEXT : null;
+		var group = __getGroup(mouseX, mouseY, true);
+		return (group != null && group.format.url != "")? POINTER : (__textEngine.selectable ? TEXT : null);
 		
 	}
 	
 	
-	private function __getPosition (x:Float, y:Float):Int {
+	private function __getGroup (x:Float, y:Float, ?precise = false) {
 		
 		__updateLayout ();
 		
@@ -1043,7 +1074,7 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
+		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
 		
 		var firstGroup = true;
 		var group, nextGroup;
@@ -1070,33 +1101,11 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			if ((y >= group.offsetY && y <= group.offsetY + group.height) || nextGroup == null) {
+			if ((y >= group.offsetY && y <= group.offsetY + group.height) || (!precise && nextGroup == null)) {
 				
-				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
+				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (!precise && (nextGroup == null || nextGroup.lineIndex != group.lineIndex))) {
 					
-					var advance = 0.0;
-					
-					for (i in 0...group.advances.length) {
-						
-						advance += group.advances[i];
-						
-						if (x <= group.offsetX + advance) {
-							
-							if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
-								
-								return group.startIndex + i;
-								
-							} else {
-								
-								return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
-								
-							}
-							
-						}
-						
-					}
-					
-					return group.endIndex;
+					return group;
 					
 				}
 				
@@ -1104,8 +1113,41 @@ class TextField extends InteractiveObject {
 			
 		}
 		
-		return __text.length;
+		return null;
 		
+	}
+
+
+	private function __getPosition (x:Float, y:Float):Int {
+
+		var group = __getGroup(x,y);
+
+		if (group == null)
+			return __text.length;
+
+		var advance = 0.0;
+		
+		for (i in 0...group.advances.length) {
+			
+			advance += group.advances[i];
+			
+			if (x <= group.offsetX + advance) {
+				
+				if (x <= group.offsetX + (advance - group.advances[i]) + (group.advances[i] / 2)) {
+					
+					return group.startIndex + i;
+					
+				} else {
+					
+					return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
+					
+				}
+				
+			}
+			
+		}
+		
+		return group.endIndex;
 	}
 	
 	
@@ -1761,6 +1803,15 @@ class TextField extends InteractiveObject {
 						if (tagEndIndex > -1) {
 							
 							switch (tagName.toLowerCase ()) {
+
+								case "a":
+									
+									if (__regexHref.match (segment)) {
+										
+										format.url = __getAttributeMatch (__regexHref).toLowerCase ();
+										
+									}
+
 								
 								case "p":
 									
