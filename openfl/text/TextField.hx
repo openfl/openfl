@@ -17,6 +17,7 @@ import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
+import openfl._internal.text.TextLayoutGroup;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -26,6 +27,7 @@ import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.net.URLRequest;
 import openfl.Lib;
 
 #if (js && html5)
@@ -42,13 +44,13 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
-	private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
 	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
 	private static var __regexBreakTag = ~/<br\s*\/?>/gi;
 	private static var __regexEntities = [ ~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g ];
 	private static var __regexFace = ~/face=("([^"]+)"|'([^']+)')/i;
+	private static var __regexHref = ~/href=("([^"]+)"|'([^']+)')/i;
 	private static var __regexHTMLTag = ~/<.*?>/g;
 	private static var __regexIndent = ~/ indent=("([^"]+)"|'([^']+)')/i;
 	private static var __regexLeading = ~/leading=("([^"]+)"|'([^']+)')/i;
@@ -146,34 +148,6 @@ class TextField extends InteractiveObject {
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		
 	}
-
-
-	override private function __dispatch (event:Event):Bool {
-
-		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP) {
-
-			var event : MouseEvent = cast event;
-			var group = __getGroup(mouseX, mouseY, true);
-
-			if (group != null) {
-
-				var url = group.format.url;
-				
-				if (StringTools.startsWith(url, "event:")) {
-					var e = new TextEvent(TextEvent.LINK, false, false, url.substr(6) /* event: */);
-					dispatchEvent(e);
-				}
-				else if (url != "") {
-					Lib.getURL(new openfl.net.URLRequest(url));
-				}
-
-			}
-
-		}
-
-		return super.__dispatch(event);
-	}
-
 	
 	
 	public function appendText (text:String):Void {
@@ -599,6 +573,12 @@ class TextField extends InteractiveObject {
 			
 		}
 		
+		if (endIndex == 0) {
+			
+			endIndex = beginIndex + 1;
+			
+		}
+		
 		if (endIndex > max) {
 			
 			endIndex = max;
@@ -634,7 +614,8 @@ class TextField extends InteractiveObject {
 				
 				if (range.start == beginIndex && range.end == endIndex) {
 					
-					range.format = format.clone ();
+					range.format = __defaultTextFormat.clone ();
+					range.format.__merge (format);
 					return;
 					
 				}
@@ -694,7 +675,7 @@ class TextField extends InteractiveObject {
 			
 			if (prevRange != null) {
 				
-				prevRange.end = beginIndex - 1;
+				prevRange.end = beginIndex;
 				
 				if (prevRange.end <= prevRange.start) {
 					
@@ -714,7 +695,7 @@ class TextField extends InteractiveObject {
 			
 			if (nextRange != null) {
 				
-				nextRange.start = endIndex + 1;
+				nextRange.start = endIndex;
 				
 				if (nextRange.start >= nextRange.end) {
 					
@@ -732,7 +713,10 @@ class TextField extends InteractiveObject {
 				
 			}
 			
-			__textEngine.textFormatRanges.push (new TextFormatRange (format.clone (), beginIndex, endIndex));
+			var textFormat = __defaultTextFormat.clone ();
+			textFormat.__merge (format);
+			
+			__textEngine.textFormatRanges.push (new TextFormatRange (textFormat, beginIndex, endIndex));
 			
 			__textEngine.textFormatRanges.sort (function (a:TextFormatRange, b:TextFormatRange):Int {
 				
@@ -872,6 +856,40 @@ class TextField extends InteractiveObject {
 			__caretIndex = 0;
 			
 		}
+		
+	}
+	
+	
+	private override function __dispatch (event:Event):Bool {
+		
+		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP) {
+			
+			var event:MouseEvent = cast event;
+			var group = __getGroup (mouseX, mouseY, true);
+			
+			if (group != null) {
+				
+				var url = group.format.url;
+				
+				if (url != "") {
+					
+					if (StringTools.startsWith (url, "event:")) {
+						
+						dispatchEvent (new TextEvent (TextEvent.LINK, false, false, url.substr (6)));
+						
+					} else {
+						
+						Lib.getURL (new URLRequest (url));
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		return super.__dispatch (event);
 		
 	}
 	
@@ -1056,13 +1074,24 @@ class TextField extends InteractiveObject {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		var group = __getGroup(mouseX, mouseY, true);
-		return (group != null && group.format.url != "")? POINTER : (__textEngine.selectable ? TEXT : null);
+		var group = __getGroup (mouseX, mouseY, true);
+		
+		if (group != null && group.format.url != "") {
+			
+			return POINTER;
+			
+		} else if (__textEngine.selectable) {
+			
+			return TEXT;
+			
+		}
+		
+		return null;
 		
 	}
 	
 	
-	private function __getGroup (x:Float, y:Float, ?precise = false) {
+	private function __getGroup (x:Float, y:Float, precise = false):TextLayoutGroup {
 		
 		__updateLayout ();
 		
@@ -1116,15 +1145,18 @@ class TextField extends InteractiveObject {
 		return null;
 		
 	}
-
-
+	
+	
 	private function __getPosition (x:Float, y:Float):Int {
-
-		var group = __getGroup(x,y);
-
-		if (group == null)
+		
+		var group = __getGroup (x, y);
+		
+		if (group == null) {
+			
 			return __text.length;
-
+			
+		}
+		
 		var advance = 0.0;
 		
 		for (i in 0...group.advances.length) {
@@ -1710,7 +1742,7 @@ class TextField extends InteractiveObject {
 		#if (js && html5 && dom)
 		var rawHtmlText = value;
 		#end
-
+		
 		if (#if (js && html5) __div == null #else true #end) {
 			
 			value = __regexBreakTag.replace (value, "\n");
@@ -1803,15 +1835,14 @@ class TextField extends InteractiveObject {
 						if (tagEndIndex > -1) {
 							
 							switch (tagName.toLowerCase ()) {
-
+								
 								case "a":
 									
 									if (__regexHref.match (segment)) {
 										
-										format.url = __getAttributeMatch (__regexHref).toLowerCase ();
+										format.url = __getAttributeMatch (__regexHref);
 										
 									}
-
 								
 								case "p":
 									
