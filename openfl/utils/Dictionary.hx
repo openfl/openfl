@@ -53,11 +53,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		
 	}
 	
-	public inline function values ():Iterator<V> {
+	
+	public inline function each ():Iterator<V> {
 		
 		return this.iterator ();
 		
 	}
+	
 	
 	@:to static inline function toStringMap<K:String, V> (t:IMap<K, V>, weakKeys:Bool):StringMap<V> {
 		
@@ -185,6 +187,13 @@ abstract Dictionary <K, V> (flash.utils.Dictionary) from flash.utils.Dictionary 
 	public inline function iterator ():Iterator<K> {
 		
 		return untyped __keys__ (this).iterator ();
+		
+	}
+	
+	
+	public inline function each ():Iterator<V> {
+		
+		return this.iterator ();
 		
 	}
 	
