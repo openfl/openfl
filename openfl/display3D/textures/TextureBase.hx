@@ -198,9 +198,9 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	private function __setSamplerState (state:SamplerState):Void {
+	private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false):Void {
 		
-		if (!state.equals (__samplerState)) {
+		if (forceUpdate || !state.equals (__samplerState)) {
 			
 			GL.bindTexture (__textureTarget, __textureID);
 			GLUtils.CheckGLError ();

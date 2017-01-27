@@ -967,7 +967,7 @@ import openfl.profiler.Telemetry;
 					GL.bindTexture (target, texture.__getTexture ());
 					GLUtils.CheckGLError ();
 					
-					texture.__setSamplerState (__samplerStates[sampler]);
+					texture.__setSamplerState (__samplerStates[sampler], true);
 					
 				} else {
 					
