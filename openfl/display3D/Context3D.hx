@@ -198,6 +198,7 @@ import openfl.profiler.Telemetry;
 			
 			clearMask |= GL.DEPTH_BUFFER_BIT;
 			
+			GL.depthMask (true);
 			GL.clearDepth (depth);
 			GLUtils.CheckGLError ();
 			

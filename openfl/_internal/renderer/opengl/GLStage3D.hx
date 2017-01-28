@@ -20,8 +20,6 @@ class GLStage3D {
 		
 		if (stage3D.context3D != null) {
 			
-			renderSession.gl.depthMask (true);
-			
 			renderSession.blendModeManager.setBlendMode (null);
 			
 			if (renderSession.shaderManager.currentShader != null) {
