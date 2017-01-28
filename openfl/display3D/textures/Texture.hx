@@ -123,7 +123,7 @@ import haxe.Timer;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, miplevel);
 			return;
 			
 		}
@@ -157,63 +157,6 @@ import haxe.Timer;
 		
 		var memUsage = (width * height) * 4;
 		__trackMemoryUsage (memUsage);
-		
-	}
-	
-	
-	private static function __getATFVersion (data:ByteArray):UInt {
-		
-		var signature = data.readUTFBytes (3);
-		
-		if (signature != "ATF") {
-			
-			throw new IllegalOperationError ("ATF signature not found");
-			
-		}
-		
-		var position = data.position;
-		var version = 0;
-		
-		if (data.bytesAvailable >= 5) {
-			
-			var sig = __readUInt32 (data);
-			
-			if (sig == 0xff) {
-				
-				version = data.readUnsignedByte ();
-				
-			} else {
-				
-				data.position = position;
-				
-			}
-			
-		}
-		
-		return version;
-		
-	}
-	
-	
-	private static function __readUInt24 (data:ByteArray):UInt {
-		
-		var value:UInt;
-		value = (data.readUnsignedByte () << 16);
-		value |= (data.readUnsignedByte () << 8);
-		value |= data.readUnsignedByte ();
-		return value;
-		
-	}
-	
-	
-	private static function __readUInt32 (data:ByteArray):UInt {
-		
-		var value:UInt;
-		value = (data.readUnsignedByte () << 24);
-		value |= (data.readUnsignedByte () << 16);
-		value |= (data.readUnsignedByte () << 8);
-		value |= data.readUnsignedByte ();
-		return value;
 		
 	}
 	
