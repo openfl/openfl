@@ -2,9 +2,11 @@ package openfl.display3D.textures;
 
 
 import lime.graphics.opengl.GL;
+import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;
 import openfl.events.TimerEvent;
@@ -12,6 +14,8 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import haxe.Timer;
+
+@:access(openfl._internal.stage3D.SamplerState)
 
 
 @:final class Texture extends TextureBase {
@@ -236,7 +240,25 @@ import haxe.Timer;
 		
 	}
 	
-	
+	override private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false) {
+		
+		if (forceUpdate || !state.equals (__samplerState) || state.__samplerDirty) {
+
+			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
+				GL.generateMipmap (GL.TEXTURE_2D);
+				GLUtils.CheckGLError ();
+				state.mipmapGenerated = true;
+			}
+
+			if (state.maxAniso != 0.0) {
+				GL.texParameterf (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GLUtils.CheckGLError ();
+			}
+			
+		}
+
+		super.__setSamplerState( state );
+	}
 }
 
 

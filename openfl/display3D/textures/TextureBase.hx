@@ -14,6 +14,7 @@ import openfl.utils.ByteArray;
 
 @:access(openfl.display.BitmapData)
 @:access(openfl.display3D.Context3D)
+@:access(openfl._internal.stage3D.SamplerState)
 
 
 class TextureBase extends EventDispatcher {
@@ -258,7 +259,7 @@ class TextureBase extends EventDispatcher {
 	
 	private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false):Void {
 		
-		if (forceUpdate || !state.equals (__samplerState)) {
+		if (forceUpdate || !state.equals (__samplerState) || state.__samplerDirty) {
 			
 			GL.bindTexture (__textureTarget, __textureID);
 			GLUtils.CheckGLError ();
@@ -270,7 +271,7 @@ class TextureBase extends EventDispatcher {
 			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_T, state.wrapModeT);
 			GLUtils.CheckGLError ();
-			
+
 			if (state.lodBias != 0.0) {
 				
 				// TODO
@@ -279,6 +280,9 @@ class TextureBase extends EventDispatcher {
 			}
 			
 			__samplerState = state;
+
+			__samplerState.__samplerDirty = false;
+
 			
 		}
 		

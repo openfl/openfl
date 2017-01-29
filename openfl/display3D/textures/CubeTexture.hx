@@ -3,21 +3,23 @@ package openfl.display3D.textures;
 
 import haxe.Timer;
 import lime.graphics.opengl.GL;
+import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
 
+@:access(openfl._internal.stage3D.SamplerState)
 
 @:final class CubeTexture extends TextureBase {
 	
 	
 	private var __size:Int;
 	private var __uploadedSides:Int;
-	
 	
 	private function new (context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
 		
@@ -98,24 +100,24 @@ import openfl.utils.ByteArray;
 		#if js
 		if (byteArrayOffset == 0) {
 			
-			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, side, miplevel);
+			uploadFromTypedArray (@:privateAccess (data:ByteArrayData).b, side);
 			return;
 			
 		}
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
-		
+
 	}
-	
-	
+
+
 	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-		
+			
 		var size = __size >> miplevel;
 		if (size == 0) return;
-		
+
 		var target = switch (side) {
 			
 			case 0: GL.TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -130,16 +132,16 @@ import openfl.utils.ByteArray;
 		
 		GL.bindTexture (GL.TEXTURE_CUBE_MAP, __textureID);
 		GLUtils.CheckGLError ();
-		
-		GL.texImage2D (target, miplevel, __internalFormat, size, size, 0, __format, GL.UNSIGNED_BYTE, data);
+
+		GL.texImage2D (target, miplevel, __internalFormat, __size, __size, 0, __format, GL.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
-		GL.bindTexture (GL.TEXTURE_CUBE_MAP, null);
+		GL.bindTexture (__textureTarget, null);
 		GLUtils.CheckGLError ();
 		
 		__uploadedSides |= 1 << side;
 		
-		var memUsage = (size * size) * 4;
+		var memUsage = (__size * __size) * 4;
 		__trackMemoryUsage (memUsage);
 		
 	}
@@ -219,6 +221,27 @@ import openfl.utils.ByteArray;
 		//}
 		
 	}
-	
+
+
+	override private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false) {
+		
+		if (!state.equals (__samplerState) || state.__samplerDirty) {
+			
+			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
+				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
+				GLUtils.CheckGLError ();
+
+				state.mipmapGenerated = true;
+			}
+
+			if (state.maxAniso != 0.0) {
+				GL.texParameterf (GL.TEXTURE_CUBE_MAP, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GLUtils.CheckGLError ();
+			}
+			
+		}
+
+		super.__setSamplerState( state );
+	}
 	
 }
