@@ -77,7 +77,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 
 	private var __bitmap(default, set):BitmapData;
-
+	private var __symbol:format.swf.lite.symbols.ShapeSymbol;
 
 	private function new () {
 
@@ -169,29 +169,32 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 
-	public function copyFrom (sourceGraphics:Graphics):Void {
+	public function copyFrom (sourceGraphics:Graphics, shallowCopy:Bool = false):Void {
 
-		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone () : null;
-		__commands = sourceGraphics.__commands.copy ();
+		if (shallowCopy) {
+
+			__bounds = sourceGraphics.__bounds;
+			__commands = sourceGraphics.__commands;
+
+		} else {
+
+			__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone () : null;
+			__commands = sourceGraphics.__commands.copy ();
+
+		}
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
 		__transformDirty = true;
 		__visible = sourceGraphics.__visible;
+		__symbol = sourceGraphics.__symbol;
 
 	}
 
-	public function shallowCopyFrom (sourceGraphics:Graphics):Void {
+	public inline function shallowCopyFrom (sourceGraphics:Graphics):Void {
 
-		__bounds = sourceGraphics.__bounds;
-		__commands = sourceGraphics.__commands;
-		__dirty = true;
-		__strokePadding = sourceGraphics.__strokePadding;
-		__positionX = sourceGraphics.__positionX;
-		__positionY = sourceGraphics.__positionY;
-		__transformDirty = true;
-		__visible = sourceGraphics.__visible;
+		copyFrom (sourceGraphics, true);
 
 	}
 
@@ -739,7 +742,7 @@ import js.html.CanvasRenderingContext2D;
 
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null) {
+		if (__bitmap != null && (__symbol == null || __symbol.cachedBitmapData != __bitmap)) {
 
 			__bitmap.dispose ();
 

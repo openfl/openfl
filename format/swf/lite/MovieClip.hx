@@ -369,6 +369,8 @@ class MovieClip extends flash.display.MovieClip {
 			return shape;
 		}
 
+		graphics.__symbol = symbol;
+
 		for (command in symbol.commands) {
 
 			switch (command) {
