@@ -84,7 +84,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __cairo:Cairo;
-	private var __children:Array<DisplayObject>;
+	private var __children:UnshrinkableArray<DisplayObject>;
 	private var __cachedParent:DisplayObjectContainer;
 	private var __filters:Array<BitmapFilter>;
 	private var __graphics:Graphics;
