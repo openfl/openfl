@@ -166,8 +166,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		this.stage = this;
 
-		onWindowResize(this.window, window.width, window.height);
-
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
