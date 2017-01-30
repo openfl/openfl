@@ -15,11 +15,13 @@ import openfl.utils.ByteArray;
 
 @:access(openfl._internal.stage3D.SamplerState)
 
+
 @:final class CubeTexture extends TextureBase {
 	
 	
 	private var __size:Int;
 	private var __uploadedSides:Int;
+	
 	
 	private function new (context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int) {
 		
@@ -107,17 +109,17 @@ import openfl.utils.ByteArray;
 		#end
 		
 		uploadFromTypedArray (new UInt8Array (data.toArrayBuffer (), byteArrayOffset), side, miplevel);
-
+		
 	}
-
-
+	
+	
 	public function uploadFromTypedArray (data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void {
 		
 		if (data == null) return;
-			
+		
 		var size = __size >> miplevel;
 		if (size == 0) return;
-
+		
 		var target = switch (side) {
 			
 			case 0: GL.TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -132,7 +134,7 @@ import openfl.utils.ByteArray;
 		
 		GL.bindTexture (GL.TEXTURE_CUBE_MAP, __textureID);
 		GLUtils.CheckGLError ();
-
+		
 		GL.texImage2D (target, miplevel, __internalFormat, __size, __size, 0, __format, GL.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
@@ -143,6 +145,33 @@ import openfl.utils.ByteArray;
 		
 		var memUsage = (__size * __size) * 4;
 		__trackMemoryUsage (memUsage);
+		
+	}
+	
+	
+	private override function __setSamplerState (state:SamplerState) {
+		
+		if (!state.equals (__samplerState)) {
+			
+			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
+				
+				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
+				GLUtils.CheckGLError ();
+				
+				state.mipmapGenerated = true;
+				
+			}
+			
+			if (state.maxAniso != 0.0) {
+				
+				GL.texParameterf (GL.TEXTURE_CUBE_MAP, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GLUtils.CheckGLError ();
+				
+			}
+			
+		}
+		
+		super.__setSamplerState (state);
 		
 	}
 	
@@ -221,27 +250,6 @@ import openfl.utils.ByteArray;
 		//}
 		
 	}
-
-
-	override private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false) {
-		
-		if (!state.equals (__samplerState) || state.__samplerDirty) {
-			
-			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
-				GL.generateMipmap (GL.TEXTURE_CUBE_MAP);
-				GLUtils.CheckGLError ();
-
-				state.mipmapGenerated = true;
-			}
-
-			if (state.maxAniso != 0.0) {
-				GL.texParameterf (GL.TEXTURE_CUBE_MAP, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				GLUtils.CheckGLError ();
-			}
-			
-		}
-
-		super.__setSamplerState( state );
-	}
+	
 	
 }

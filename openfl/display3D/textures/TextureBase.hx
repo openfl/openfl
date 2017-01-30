@@ -5,8 +5,8 @@ import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
-import openfl._internal.stage3D.SamplerState;
 import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
@@ -257,9 +257,9 @@ class TextureBase extends EventDispatcher {
 	}
 	
 	
-	private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false):Void {
+	private function __setSamplerState (state:SamplerState):Void {
 		
-		if (forceUpdate || !state.equals (__samplerState) || state.__samplerDirty) {
+		if (!state.equals (__samplerState)) {
 			
 			GL.bindTexture (__textureTarget, __textureID);
 			GLUtils.CheckGLError ();
@@ -271,7 +271,7 @@ class TextureBase extends EventDispatcher {
 			GLUtils.CheckGLError ();
 			GL.texParameteri (__textureTarget, GL.TEXTURE_WRAP_T, state.wrapModeT);
 			GLUtils.CheckGLError ();
-
+			
 			if (state.lodBias != 0.0) {
 				
 				// TODO
@@ -280,9 +280,7 @@ class TextureBase extends EventDispatcher {
 			}
 			
 			__samplerState = state;
-
 			__samplerState.__samplerDirty = false;
-
 			
 		}
 		

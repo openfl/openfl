@@ -1,8 +1,8 @@
 package openfl.display3D.textures;
 
 
-import lime.graphics.opengl.GL;
 import lime.graphics.opengl.ExtensionAnisotropicFiltering;
+import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
@@ -83,18 +83,23 @@ import openfl.utils.ByteArray;
 		
 	}
 	
-	override private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false) {
+	
+	private override function __setSamplerState (state:SamplerState) {
 		
-		if (forceUpdate || !state.equals (__samplerState) || state.__samplerDirty) {
+		if (!state.equals (__samplerState)) {
 			
 			if (state.maxAniso != 0.0) {
+				
 				GL.texParameterf (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
 				GLUtils.CheckGLError ();
+				
 			}
 			
 		}
-
-		super.__setSamplerState( state );
+		
+		super.__setSamplerState (state);
+		
 	}
+	
 	
 }

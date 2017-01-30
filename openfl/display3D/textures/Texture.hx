@@ -1,8 +1,8 @@
 package openfl.display3D.textures;
 
 
-import lime.graphics.opengl.GL;
 import lime.graphics.opengl.ExtensionAnisotropicFiltering;
+import lime.graphics.opengl.GL;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
@@ -165,6 +165,33 @@ import haxe.Timer;
 	}
 	
 	
+	private override function __setSamplerState (state:SamplerState) {
+		
+		if (!state.equals (__samplerState)) {
+			
+			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
+				
+				GL.generateMipmap (GL.TEXTURE_2D);
+				GLUtils.CheckGLError ();
+				
+				state.mipmapGenerated = true;
+				
+			}
+			
+			if (state.maxAniso != 0.0) {
+				
+				GL.texParameterf (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GLUtils.CheckGLError ();
+				
+			}
+			
+		}
+		
+		super.__setSamplerState (state);
+		
+	}
+	
+	
 	private function __uploadATFTextureFromByteArray (data:ByteArray, byteArrayOffset:UInt):Void {
 		
 		data.position = byteArrayOffset;
@@ -240,25 +267,7 @@ import haxe.Timer;
 		
 	}
 	
-	override private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false) {
-		
-		if (forceUpdate || !state.equals (__samplerState) || state.__samplerDirty) {
-
-			if ((state.minFilter == GL.LINEAR_MIPMAP_LINEAR || state.minFilter == GL.NEAREST_MIPMAP_NEAREST) && !state.mipmapGenerated) {
-				GL.generateMipmap (GL.TEXTURE_2D);
-				GLUtils.CheckGLError ();
-				state.mipmapGenerated = true;
-			}
-
-			if (state.maxAniso != 0.0) {
-				GL.texParameterf (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
-				GLUtils.CheckGLError ();
-			}
-			
-		}
-
-		super.__setSamplerState( state );
-	}
+	
 }
 
 
@@ -268,6 +277,7 @@ import haxe.Timer;
 	public var CUBE_MAP = 1;
 	
 }
+
 
 @:enum private abstract AtfFormat(Int) {
 	

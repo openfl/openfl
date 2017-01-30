@@ -70,8 +70,8 @@ import openfl.profiler.Telemetry;
 	private var __fragmentConstants:Float32Array;
 	private var __framebuffer:GLFramebuffer;
 	private var __frameCount:Int;
-	private var __maxAnisotropyTexture2D:Int;
 	private var __maxAnisotropyCubeTexture:Int;
+	private var __maxAnisotropyTexture2D:Int;
 	private var __positionScale:Float32Array;
 	private var __program:Program3D;
 	private var __renderSession:RenderSession;
@@ -807,34 +807,54 @@ import openfl.profiler.Telemetry;
 			case Context3DTextureFilter.LINEAR:
 				
 				state.magFilter = GL.LINEAR;
-				if (__supportsAnisotropicFiltering)
-					state.maxAniso = 1;		
+				
+				if (__supportsAnisotropicFiltering) {
+					
+					state.maxAniso = 1;
+					
+				}
 			
 			case Context3DTextureFilter.NEAREST:
 				
 				state.magFilter = GL.NEAREST;
-				if (__supportsAnisotropicFiltering)
+				
+				if (__supportsAnisotropicFiltering) {
+					
 					state.maxAniso = 1;
+					
+				}
 			
 			case Context3DTextureFilter.ANISOTROPIC2X:
 				
-				if (__supportsAnisotropicFiltering)
+				if (__supportsAnisotropicFiltering) {
+					
 					state.maxAniso = (__maxAnisotropyTexture2D < 2 ? __maxAnisotropyTexture2D : 2);
+					
+				}
 			
 			case Context3DTextureFilter.ANISOTROPIC4X:
 				
-				if (__supportsAnisotropicFiltering)
+				if (__supportsAnisotropicFiltering) {
+					
 					state.maxAniso = (__maxAnisotropyTexture2D < 4 ? __maxAnisotropyTexture2D : 4);
+					
+				}
 			
 			case Context3DTextureFilter.ANISOTROPIC8X:
 				
-				if (__supportsAnisotropicFiltering)
+				if (__supportsAnisotropicFiltering) {
+					
 					state.maxAniso = (__maxAnisotropyTexture2D < 8 ? __maxAnisotropyTexture2D : 8);
+					
+				}
 				
 			case Context3DTextureFilter.ANISOTROPIC16X:
 				
-				if (__supportsAnisotropicFiltering)
+				if (__supportsAnisotropicFiltering) {
+					
 					state.maxAniso = (__maxAnisotropyTexture2D < 16 ? __maxAnisotropyTexture2D : 16);
+					
+				}
 			
 			default:
 				
@@ -989,7 +1009,7 @@ import openfl.profiler.Telemetry;
 					GL.bindTexture (target, texture.__getTexture ());
 					GLUtils.CheckGLError ();
 					
-					texture.__setSamplerState (__samplerStates[sampler], true);
+					texture.__setSamplerState (__samplerStates[sampler]);
 					
 				} else {
 					
