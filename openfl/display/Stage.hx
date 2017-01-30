@@ -80,7 +80,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var focus (get, set):InteractiveObject;
 	public var frameRate (get, set):Float;
 	public var quality:StageQuality;
-	public var scaleMode:StageScaleMode;
+	public var scaleMode (get, set):StageScaleMode;
 	public var stage3Ds (default, null):Vector<Stage3D>;
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
@@ -120,6 +120,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __allChildrenLength: Int;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
+	private var __scaleMode:StageScaleMode = StageScaleMode.SHOW_ALL;
 
 	#if (js && html5)
 	//private var __div:DivElement;
@@ -160,16 +161,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseY = 0;
 		__lastClickTime = 0;
 
-		stageWidth = Std.int (window.width * window.scale);
-		stageHeight = Std.int (window.height * window.scale);
+		stageWidth = Std.int (window.displayWidth * window.scale);
+		stageHeight = Std.int (window.displayHeight * window.scale);
 
 		this.stage = this;
+
+		onWindowResize(this.window, window.width, window.height);
 
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = true;
 		allowsFullScreenInteractive = true;
 		quality = StageQuality.HIGH;
-		scaleMode = StageScaleMode.NO_SCALE;
 		stageFocusRect = true;
 
 		#if mac
@@ -652,6 +654,17 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var event = new Event (Event.RESIZE);
 		__broadcastFromStage (event, false);
 
+	}
+
+	public function get_scaleMode():StageScaleMode {
+		return __scaleMode;
+	}
+
+	public function set_scaleMode(scaleMode):StageScaleMode {
+		if ( scaleMode != __scaleMode ) {
+			onWindowResize(window, window.width, window.height);
+		}
+		return __scaleMode = scaleMode;
 	}
 
 	public function onWindowRestore (window:Window):Void {
