@@ -6,8 +6,10 @@ import openfl.geom.Point;
 
 
 class MouseEvent extends Event {
-	
-	
+
+	public static var pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>( function() { return new MouseEvent(); } );
+
+
 	public static inline var CLICK = "click";
 	public static inline var DOUBLE_CLICK = "doubleClick";
 	public static inline var MIDDLE_CLICK = "middleClick";
@@ -24,13 +26,13 @@ class MouseEvent extends Event {
 	public static inline var RIGHT_MOUSE_UP = "rightMouseUp";
 	public static inline var ROLL_OUT = "rollOut";
 	public static inline var ROLL_OVER = "rollOver";
-	
+
 	private static var __altKey:Bool;
 	private static var __buttonDown:Bool;
 	private static var __commandKey:Bool;
 	private static var __ctrlKey:Bool;
 	private static var __shiftKey:Bool;
-	
+
 	public var altKey:Bool;
 	public var buttonDown:Bool;
 	public var commandKey:Bool;
@@ -43,78 +45,83 @@ class MouseEvent extends Event {
 	public var shiftKey:Bool;
 	public var stageX:Float;
 	public var stageY:Float;
-	
-	
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
-		
+
+
+	public function new (type:String = "unset", bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
+
 		super (type, bubbles, cancelable);
-		
-		this.shiftKey = shiftKey;
-		this.altKey = altKey;
-		this.ctrlKey = ctrlKey;
-		this.bubbles = bubbles;
-		this.relatedObject = relatedObject;
-		this.delta = delta;
-		this.localX = localX;
-		this.localY = localY;
-		this.buttonDown = buttonDown;
-		this.commandKey = commandKey;
-		this.clickCount = clickCount;
-		
 	}
-	
-	
+
+
 	public static function __create (type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
-		
+
 		switch (type) {
-			
+
 			case MouseEvent.MOUSE_DOWN:
-				
+
 				__buttonDown = true;
-				
+
 			case MouseEvent.MOUSE_UP:
-				
+
 				__buttonDown = false;
-			
+
 			default:
-			
+
 		}
-		
-		var event = new MouseEvent (type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
+
+		var event = pool.get();
+
+		event.type = type;
+		event.bubbles = true;
+		event.cancelable = false;
+		event.altKey = __altKey;
+		event.ctrlKey = __ctrlKey;
+		event.shiftKey = __shiftKey;
+		event.relatedObject = null;
+		event.delta = delta;
+		event.localX = local.x;
+		event.localY = local.y;
+		event.buttonDown = __buttonDown;
+		event.commandKey = __commandKey;
+		event.clickCount = 0;
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;
-		
+
 		return event;
-		
+
 	}
-	
-	
+
+
 	public override function clone ():Event {
-		
+
 		var event = new MouseEvent (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
 		return event;
-		
+
 	}
-	
-	
+
+
 	public override function toString ():String {
-		
+
 		return __formatToString ("MouseEvent",  [ "type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta" ]);
-		
+
 	}
-	
-	
+
+
 	public function updateAfterEvent ():Void {
-		
-		
-		
+
+
+
 	}
-	
-	
+
+	override public function dispose()
+	{
+		pool.put(this);
+	}
+
 }
 
 

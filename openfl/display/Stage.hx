@@ -862,7 +862,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				stack[i].__broadcast (event, false);
 
 				if (event.__isCanceled) {
-
+					event.dispose();
 					return;
 
 				}
@@ -873,6 +873,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
+				event.dispose();
 				return;
 
 			}
@@ -887,6 +888,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
+						event.dispose();
 						return;
 
 					}
@@ -898,6 +900,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 
 		}
+
+		event.dispose();
 	}
 
 
@@ -1174,6 +1178,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
+				event.dispose();
 			}
 
 			inline function rollOut(target:DisplayObject) {
@@ -1183,6 +1188,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
+					event.dispose();
 				}
 			}
 
@@ -1193,6 +1199,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
+					event.dispose();
 				}
 			}
 
@@ -1202,6 +1209,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
+				event.dispose();
 			}
 
 			diffStacks();
