@@ -786,7 +786,7 @@ class MovieClip extends flash.display.MovieClip {
 		var rows = [0, rect.top * renderToBitmapYScale, rect.bottom * renderToBitmapYScale, __9SliceBitmap.height];
 		var us = [0, __scale9Rect.left / __9SliceBitmap.width, __scale9Rect.right / __9SliceBitmap.width, 1];
 		var vs = [0, __scale9Rect.top / __9SliceBitmap.height, __scale9Rect.bottom/ __9SliceBitmap.height, 1];
-		var uvs:TextureUvs = new TextureUvs();
+		var uvs:TextureUvs = TextureUvs.pool.get();
 
 		var bitmapDataUvs = @:privateAccess __9SliceBitmap.__uvData;
 		var u_scale = bitmapDataUvs.x1 - bitmapDataUvs.x0;
@@ -817,6 +817,7 @@ class MovieClip extends flash.display.MovieClip {
 			}
 		}
 
+		TextureUvs.pool.put (uvs);
 		Rectangle.pool.put (bounds);
 	}
 

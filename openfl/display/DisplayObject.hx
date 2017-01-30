@@ -667,7 +667,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		@:privateAccess __cachedBitmap.__scaleY = renderScaleY;
 
 	}
-	
+
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
 		if (__updateCachedBitmap || __updateFilters) {
@@ -830,18 +830,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	public inline function __updateColor()
+	public function __updateColor()
 	{
 		if (parent != null) {
 
-			__worldAlpha = alpha * parent.__worldAlpha;
 			__worldColorTransform.setFromCombination (transform.colorTransform, parent.__worldColorTransform);
 
 			if (mustResetRenderColorTransform()) {
 				__renderAlpha = 1.0;
+				__worldAlpha = alpha * parent.__renderAlpha;
 				__renderColorTransform.reset ();
 			} else {
 				__renderAlpha = alpha * parent.__renderAlpha;
+				__worldAlpha = alpha * parent.__worldAlpha;
 				__renderColorTransform.setFromCombination (transform.colorTransform, parent.__renderColorTransform);
 			}
 

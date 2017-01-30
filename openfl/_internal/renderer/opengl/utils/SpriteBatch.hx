@@ -22,33 +22,42 @@ import openfl.display.BlendMode;
 import lime.utils.*;
 import lime.math.Vector2;
 
+class VertexBufferContext
+{
+	public function new()
+	{
+	}
+
+	public var vertexArray:VertexArray;
+	public var positions:Float32Array;
+	public var colors:UInt32Array;
+}
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
-
 class SpriteBatch {
 
 	static inline var VERTS_PER_SPRITE:Int = 4;
-	
+
 	public var gl:GLRenderContext;
 	var renderSession:RenderSession;
-	
+
 	var states:Array<State> = [];
 	var currentState:State;
-	
+
 	var vertexArray:VertexArray;
 	var positions:Float32Array;
 	var colors:UInt32Array;
-	
+
 	var indexBuffer:GLBuffer;
 	var indices:UInt16Array;
-	
-	var dirty:Bool = true;
+
 	public var drawing:Bool = false;
 	public var preventFlush:Bool = false;
-	
+
 	var clipRect:Rectangle;
 	var maskBitmap:BitmapData;
 	var maskMatrix:Matrix;
@@ -59,44 +68,57 @@ class SpriteBatch {
 	var indexArraySize:Int;
 	var maxElementsPerVertex:Int;
 	var elementsPerVertex:Int;
-	
+
 	var writtenVertexBytes:Int = 0;
-	
+
 	var shader:Shader;
 	var attributes:Array<VertexAttribute> = [];
-	
+
 	var enableColor:Bool = true;
-	
+
 	var lastEnableColor:Bool = true;
-	
+
 	var matrix:Matrix = new Matrix();
-	var uvs:TextureUvs = new TextureUvs();
 	var colorTransform:ColorTransform = new ColorTransform();
-	
-	public function new(gl:GLRenderContext, maxSprites:Int = 2000) {
+
+	var vertexBufferContexts:Array<VertexBufferContext>;
+	var vertexBufferContextIndex:Int = 0;
+
+	public function new(gl:GLRenderContext, maxSprites:Int = 2000, vertexBufferContextCount:Int = 3) {
 		this.maxSprites = maxSprites;
-		
+
 		attributes.push(new VertexAttribute(2, ElementType.FLOAT, false, DefAttrib.Position));
 		attributes.push(new VertexAttribute(2, ElementType.FLOAT, false, DefAttrib.TexCoord));
 		attributes.push(new VertexAttribute(4, ElementType.UNSIGNED_BYTE, true, DefAttrib.Color));
-		
+
 		attributes[2].defaultValue = new Float32Array([1, 1, 1, 1]);
-		
+
 		maxElementsPerVertex = 0;
-		
+
 		for (a in attributes) {
 			maxElementsPerVertex += a.elements;
 		}
-		
+
 		vertexArraySize = maxSprites * maxElementsPerVertex * VERTS_PER_SPRITE * 4;
 		indexArraySize = maxSprites * 6;
-		
-		vertexArray = new VertexArray(attributes, vertexArraySize, false);
-		positions = new Float32Array(vertexArray.buffer);
-		colors = new UInt32Array(vertexArray.buffer);
-		
+
+		vertexBufferContexts = new Array<VertexBufferContext>();
+
+		for(i in 0...vertexBufferContextCount)
+		{
+			vertexBufferContexts.push(new VertexBufferContext());
+			var vbc = vertexBufferContexts[i];
+			vbc.vertexArray = new VertexArray(attributes, vertexArraySize, false);
+			vbc.positions = new Float32Array(vbc.vertexArray.buffer);
+			vbc.colors = new UInt32Array(vbc.vertexArray.buffer);
+		}
+
+		vertexArray = vertexBufferContexts[0].vertexArray;
+		positions = vertexBufferContexts[0].positions;
+		colors = vertexBufferContexts[0].colors;
+
 		indices = new UInt16Array(indexArraySize);
-		
+
 		var i = 0, j = 0;
 		while (i < indexArraySize) {
 			indices[i + 0] = j + 0;
@@ -108,41 +130,44 @@ class SpriteBatch {
 			i += 6;
 			j += 4;
 		}
-		
+
 		currentState = new State();
-		dirty = true;
 		drawing = false;
 		batchedSprites = 0;
-		
+
 		setContext(gl);
-		
+
 	}
-	
+
 	public function destroy() {
-		vertexArray.destroy();
-		vertexArray = null;
-		
+
+		for(vbc in vertexBufferContexts)
+		{
+			vbc.vertexArray.destroy();
+			vbc.vertexArray = null;
+		}
+
 		indices = null;
 		gl.deleteBuffer(indexBuffer);
-		
+
 		currentState.destroy();
 		for (state in states) {
 			state.destroy();
 		}
-		
+
 		colorTransform = null;
-		
+
 		gl = null;
 	}
-	
+
 	public function begin(renderSession:RenderSession, ?clipRect:Rectangle = null):Void {
-		
+
 		this.renderSession = renderSession;
 		shader = renderSession.shaderManager.defaultShader;
 		start(clipRect, null, null);
 
 	}
-	
+
 	public function finish() {
 		stop();
 		clipRect = null;
@@ -150,18 +175,17 @@ class SpriteBatch {
 
 	public function start(clipRect:Rectangle, mask: BitmapData = null, maskMatrix:Matrix = null) {
 		drawing = true;
-		dirty = true;
 
 		this.maskBitmap = mask;
 		this.maskMatrix = maskMatrix;
 		this.clipRect = clipRect;
 	}
-	
+
 	public function stop() {
 		drawing = false;
 		flush();
 	}
-	
+
 	public inline function renderBitmapData(bitmapData:BitmapData, smoothing:Bool, matrix:Matrix, ct:ColorTransform, ?alpha:Float = 1, ?blendMode:BlendMode, ?flashShader:FlashShader, ?pixelSnapping:PixelSnapping) {
 		if (bitmapData == null) return;
 
@@ -170,32 +194,32 @@ class SpriteBatch {
 
 	public function renderBitmapDataEx(bitmapData:BitmapData, width:Float, height:Float, uvs:TextureUvs, smoothing:Bool, matrix:Matrix, ct:ColorTransform, alpha:Float, blendMode:BlendMode, flashShader:FlashShader, pixelSnapping:PixelSnapping) {
 		var texture = bitmapData.getTexture(gl);
-		
+
 		if (batchedSprites >= maxSprites) {
 			flush();
 		}
-		
+
 		if (uvs == null) return;
-		
+
 		prepareShader(flashShader, bitmapData);
-		
+
 		var color:Int = ((Std.int(alpha * 255)) & 0xFF) << 24 | 0xFFFFFF;
-		
+
 		//enableAttributes(color);
 		enableAttributes(0);
-		
+
 		var index = batchedSprites * 4 * elementsPerVertex;
 		fillVertices(index, width, height, matrix, uvs, color, pixelSnapping);
-		
+
 		setState(batchedSprites, texture, smoothing, blendMode, ct, flashShader);
-		
+
 		batchedSprites++;
 	}
-	
-	
+
+
 	inline function fillVertices(index:Int, width:Float, height:Float, matrix:Matrix, uvs:TextureUvs,
 		color:Int = 0xFFFFFFFF, ?pixelSnapping:PixelSnapping) {
-				
+
 		var renderTargetBaseTransform = renderSession.getRenderTargetBaseTransform ();
 		var localMatrix = Matrix.pool.get ();
 
@@ -208,9 +232,9 @@ class SpriteBatch {
 		var d = localMatrix.d;
 		var tx = localMatrix.tx;
 		var ty = localMatrix.ty;
-		
+
 		Matrix.pool.put (localMatrix);
-		
+
 		// POSITION
 		if (pixelSnapping == null || pixelSnapping == NEVER) {
 			positions[index + 0] 	= (tx);
@@ -231,12 +255,12 @@ class SpriteBatch {
 			positions[index + 15] 	= Math.fround(tx) + c * height;
 			positions[index + 16] 	= Math.fround(ty) + d * height;
 		}
-		
+
 		// COLOR
 		if (enableColor) {
 			colors[index + 4] = colors[index + 9] = colors[index + 14] = colors[index + 19] = color;
 		}
-		
+
 		// UVS
 		positions[index + 2] = uvs.x0;
 		positions[index + 3] = uvs.y0;
@@ -246,52 +270,50 @@ class SpriteBatch {
 		positions[index + 13] = uvs.y2;
 		positions[index + 17] = uvs.x3;
 		positions[index + 18] = uvs.y3;
-		
+
 		writtenVertexBytes = index + 20;
 	}
-	
+
 	inline function enableAttributes(?color:Int = 0xFFFFFFFF) {
 		enableColor = color != 0xFFFFFFFF;
-		
+
 		if (enableColor != lastEnableColor) {
 			flush();
 			lastEnableColor = enableColor;
 		}
-		
+
 		attributes[2].enabled = lastEnableColor;
-		
+
 		elementsPerVertex = getElementsPerVertex();
 	}
-	
+
 	function flush() {
-		
+
 		if (preventFlush) throw "SpriteBatch flush forbidden";
-		
+
 		if (batchedSprites == 0) return;
-		
+
 		if (clipRect != null) {
 			gl.enable(gl.SCISSOR_TEST);
-			gl.scissor(Math.floor(clipRect.x), 
+			gl.scissor(Math.floor(clipRect.x),
 						Math.floor(clipRect.y),
 						Math.ceil(clipRect.width),
 						Math.ceil(clipRect.height)
 					);
 		}
-		
-		if (dirty) {
-			dirty = false;
-			
-			renderSession.activeTextures = 1;
-			vertexArray.bind();
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		}
-		
+
+		renderSession.activeTextures = 1;
+		vertexArray.bind();
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
 		vertexArray.upload(positions);
-		
+
+		setNextVertexBufferContext();
+
 		var nextState:State;
 		var batchSize:Int = 0;
 		var start:Int = 0;
-		
+
 		currentState.shader = null;
 		currentState.shaderData = null;
 		currentState.texture = null;
@@ -300,18 +322,18 @@ class SpriteBatch {
 		currentState.textureSmooth = false;
 		currentState.blendMode = renderSession.blendModeManager.currentBlendMode;
 		currentState.colorTransform = null;
-		
+
 		for (i in 0...batchedSprites) {
-			
+
 			nextState = states[i];
-			
+
 			if (!nextState.equals(currentState)) {
-				
+
 				renderBatch(currentState, batchSize, start);
-				
+
 				start = i;
 				batchSize = 0;
-				
+
 				currentState.shader = nextState.shader;
 				currentState.shaderData = nextState.shaderData;
 				currentState.texture = nextState.texture;
@@ -323,38 +345,39 @@ class SpriteBatch {
 				currentState.blendMode = nextState.blendMode;
 				currentState.skipColorTransform = nextState.skipColorTransform;
 				currentState.colorTransform = currentState.skipColorTransform ? null : nextState.colorTransform;
-				
+
 			}
-			
+
 			batchSize++;
 		}
-		
+
 		renderBatch (currentState, batchSize, start);
 		batchedSprites = 0;
 		writtenVertexBytes = 0;
-		
+
 		if (clipRect != null) {
 			gl.disable(gl.SCISSOR_TEST);
 		}
-		
+
 	}
-	
-	
+
+
 	function renderBatch(state:State, size:Int, start:Int) {
 		if (size == 0 || state.texture == null) return;
 
 		var shader:Shader = state.shader == null ?
 			( state.maskTexture != null ? renderSession.shaderManager.defaultMaskedShader : renderSession.shaderManager.defaultShader )
 			: state.shader;
+
+		var updatedShader = false;
 		renderSession.shaderManager.setShader(shader);
-		
-		// TODO cache this somehow?, don't do each state change?
 		shader.bindVertexArray(vertexArray);
-		
+		updatedShader = true;
+
 		renderSession.blendModeManager.setBlendMode(shader.blendMode != null ? shader.blendMode : state.blendMode);
-		
+
 		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
-		
+
 		if (state.colorTransform != null) {
 			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 1);
 			var ct = state.colorTransform;
@@ -380,10 +403,11 @@ class SpriteBatch {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 		}
-		
-		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
-		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
-		
+
+		if ( updatedShader ) {
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, shader.wrapS);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, shader.wrapT);
+		}
 
 		if (state.maskTexture != null){
 			gl.activeTexture(gl.TEXTURE0 + 1);
@@ -395,35 +419,34 @@ class SpriteBatch {
 		}
 
 		shader.applyData(state.shaderData, renderSession);
-		
+
 		gl.drawElements (gl.TRIANGLES, size * 6, gl.UNSIGNED_SHORT, start * 6 * 2);
-		
+
 		renderSession.drawCount++;
-		
+
 	}
-	
+
 	inline function setState(index:Int, texture:GLTexture, ?smooth:Bool = false, ?blendMode:BlendMode, ?colorTransform:ColorTransform, ?shader:FlashShader) {
-		
+
 		var state:State = states[index];
 		if (state == null) {
 			state = states[index] = new State();
 		}
 		state.texture = texture;
-		if (maskBitmap != null) {			
+		if (maskBitmap != null) {
 			state.maskTexture = maskBitmap.getTexture(gl);
 			var uvData = @:privateAccess maskBitmap.__uvData;
 			state.maskTextureUVScale.setTo( uvData.x1, uvData.y2 );
-			state.maskMatrix = Matrix.pool.get ();
 			state.maskMatrix.copyFrom (maskMatrix);
 		} else {
 			state.maskTexture = null;
 		}
 		state.textureSmooth = smooth;
 		state.blendMode = blendMode;
-		
+
 		// colorTransform is default, skipping it
 		state.skipColorTransform = (colorTransform != null && @:privateAccess colorTransform.__isDefault());
-		
+
 		if (!state.skipColorTransform) {
 			state.colorTransform.redMultiplier   = colorTransform.redMultiplier;
 			state.colorTransform.greenMultiplier = colorTransform.greenMultiplier;
@@ -434,7 +457,7 @@ class SpriteBatch {
 			state.colorTransform.blueOffset      = colorTransform.blueOffset;
 			state.colorTransform.alphaOffset     = colorTransform.alphaOffset;
 		}
-		
+
 		if (shader == null) {
 			state.shader = null;
 			state.shaderData = null;
@@ -443,18 +466,22 @@ class SpriteBatch {
 			state.shaderData = shader.data;
 		}
 	}
-	
+
 	public function setContext(gl:GLRenderContext) {
 		this.gl = gl;
-		
-		vertexArray.setContext(gl, positions);
-		
+
+
+		for(vbc in vertexBufferContexts)
+		{
+			vbc.vertexArray.setContext(gl, vbc.positions);
+		}
+
 		indexBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-		
+
 	}
-	
+
 	inline function prepareShader(flashShader:FlashShader, ?bd:BitmapData) {
 		if (flashShader != null) {
 			flashShader.__init(this.gl);
@@ -462,7 +489,7 @@ class SpriteBatch {
 			flashShader.__shader.wrapT = flashShader.repeatY;
 			flashShader.__shader.smooth = flashShader.smooth;
 			flashShader.__shader.blendMode = flashShader.blendMode;
-			
+
 			var objSize = flashShader.data.get(FlashShader.uObjectSize);
 			var texSize = flashShader.data.get(FlashShader.uTextureSize);
 			if (bd != null) {
@@ -483,17 +510,26 @@ class SpriteBatch {
 			}
 		}
 	}
-	
+
 	inline function getElementsPerVertex() {
 		var r = 0;
-		
+
 		for (a in attributes) {
 			if(a.enabled) r += a.elements;
 		}
-		
+
 		return r;
 	}
-	
+
+	inline private function setNextVertexBufferContext()
+	{
+		vertexBufferContextIndex = (vertexBufferContextIndex+1) %  vertexBufferContexts.length;
+
+		vertexArray = vertexBufferContexts[vertexBufferContextIndex].vertexArray;
+		positions = vertexBufferContexts[vertexBufferContextIndex].positions;
+		colors = vertexBufferContexts[vertexBufferContextIndex].colors;
+	}
+
 }
 
 @:access(openfl.geom.ColorTransform)
@@ -508,10 +544,10 @@ private class State {
 
 	public var maskTexture:GLTexture;
 	public var maskTextureUVScale:Vector2 = new Vector2();
-	public var maskMatrix:Matrix;
+	public var maskMatrix:Matrix = new Matrix();
 
 	public function new() { }
-	
+
 	public inline function equals(other:State) {
 		return (
 				// if both shaders are null we are using the DefaultShader, if not, check the id
@@ -522,17 +558,16 @@ private class State {
 				blendMode == other.blendMode &&
 				// colorTransform.alphaMultiplier == object.__worldAlpha so we can skip it
 				((skipColorTransform && other.skipColorTransform) || (!skipColorTransform && !other.skipColorTransform && colorTransform.__equals(other.colorTransform, true)))
-				
+
 		);
 	}
-	
+
 	public function destroy() {
 		texture = null;
 		colorTransform = null;
 		maskTexture = null;
-		
+
 		if (maskMatrix != null) {
-			Matrix.pool.put (maskMatrix);
 			maskMatrix = null;
 		}
 	}

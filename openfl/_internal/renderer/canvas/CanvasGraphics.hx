@@ -973,13 +973,19 @@ class CanvasGraphics {
 		if (c.matrix != null) {
 
 			pendingMatrix = c.matrix;
-			inversePendingMatrix = c.matrix.clone ();
+			if ( inversePendingMatrix == null ) {
+				inversePendingMatrix = Matrix.pool.get();
+			}
+			inversePendingMatrix.copyFrom(c.matrix);
 			inversePendingMatrix.invert ();
 
 		} else {
 
 			pendingMatrix = null;
+			if ( inversePendingMatrix != null ) {
+				Matrix.pool.put(inversePendingMatrix);
 			inversePendingMatrix = null;
+			}
 
 		}
 	}
