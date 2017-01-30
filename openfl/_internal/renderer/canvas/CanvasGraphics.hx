@@ -622,9 +622,9 @@ class CanvasGraphics {
 				case LINE_STYLE:
 					
 					var c = data.readLineStyle ();
-					if (stroke && hasStroke) {
+					if (stroke) {
 						
-						closePath (c.thickness == null);
+						closePath (hasStroke);
 						
 					}
 					
