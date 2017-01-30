@@ -13,6 +13,7 @@ import openfl.display.SpreadMethod;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
+import openfl.utils.UnshrinkableArray;
 
 @:allow(openfl._internal.renderer.DrawCommandReader)
 
@@ -21,26 +22,26 @@ class DrawCommandBuffer {
 	
 	
 	public var length (get, never):Int; 
-	public var types:Array<DrawCommandType>;
+	public var types:UnshrinkableArray<DrawCommandType>;
 	
-	private var b:Array<Bool>;
-	private var f:Array<Float>;
-	private var ff:Array<Array<Float>>;
-	private var i:Array<Int>;
-	private var ii:Array<Array<Int>>;
-	private var o:Array<Dynamic>;
+	private var b:UnshrinkableArray<Bool>;
+	private var f:UnshrinkableArray<Float>;
+	private var ff:UnshrinkableArray<Array<Float>>;
+	private var i:UnshrinkableArray<Int>;
+	private var ii:UnshrinkableArray<Array<Int>>;
+	private var o:UnshrinkableArray<Dynamic>;
 	
 	
 	public function new () {
 		
-		types = [];
+		types = new UnshrinkableArray(128);
 		
-		b = [];
-		i = [];
-		f = [];
-		o = [];
-		ff = [];
-		ii = [];
+		b = new UnshrinkableArray(128);
+		i = new UnshrinkableArray(128);
+		f = new UnshrinkableArray(128);
+		o = new UnshrinkableArray(128);
+		ff = new UnshrinkableArray(128);
+		ii = new UnshrinkableArray(128);
 		
 	}
 	
@@ -119,14 +120,14 @@ class DrawCommandBuffer {
 	
 	public function clear ():Void {
 		
-		types.splice (0, types.length);
+		types.clear();
 		
-		b.splice (0, b.length);
-		i.splice (0, i.length);
-		f.splice (0, f.length);
-		o.splice (0, o.length);
-		ff.splice (0, ff.length);
-		ii.splice (0, ii.length);
+		b.clear();
+		i.clear();
+		f.clear();
+		o.clear();
+		ff.clear();
+		ii.clear();
 		
 	}
 	
