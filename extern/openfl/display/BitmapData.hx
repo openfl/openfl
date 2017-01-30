@@ -63,9 +63,6 @@ import js.html.CanvasElement;
  * <p>You can use a BitmapData object to fill a Graphics object by using the
  * <code>Graphics.beginBitmapFill()</code> method.</p>
  * 
- * <p>You can also use a BitmapData object to perform batch tile rendering
- * using the <code>openfl.display.Tilesheet</code> class.</p>
- *
  * <p>In Flash Player 10, the maximum size for a BitmapData object
  * is 8,191 pixels in width or height, and the total number of pixels cannot
  * exceed 16,777,215 pixels.(So, if a BitmapData object is 8,191 pixels wide,

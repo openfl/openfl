@@ -11,7 +11,6 @@ import openfl._internal.renderer.opengl.utils.BlendModeManager;
 import openfl._internal.renderer.opengl.utils.FilterManager;
 import openfl._internal.renderer.opengl.utils.ShaderManager;
 import openfl._internal.renderer.opengl.utils.SpriteBatch;
-import openfl._internal.renderer.opengl.utils.StencilManager;
 import openfl.display.BlendMode;
 import openfl.display.IBitmapDrawable;
 import openfl.geom.Matrix;
@@ -43,7 +42,6 @@ class RenderSession {
 	public var filterManager:FilterManager;
 	public var blendModeManager:BlendModeManager;
 	public var spriteBatch:SpriteBatch;
-	public var stencilManager:StencilManager;
 	public var defaultFramebuffer:GLFramebuffer;
 	public var usesMainSpriteBatch(get, never):Bool;
 	

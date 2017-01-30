@@ -7,9 +7,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.cairo.CairoShape;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.canvas.CanvasShape;
-import openfl._internal.renderer.dom.DOMShape;
 import openfl._internal.renderer.opengl.GLRenderer;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.TypeError;
@@ -164,10 +162,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__renderColorTransform = new ColorTransform ();
 
 		__clipDepth = 0;
-
-		#if dom
-		__worldVisible = true;
-		#end
 
 		__cachedParent = null;
 	}
@@ -546,13 +540,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	public function __renderDOM (renderSession:RenderSession):Void {
-
-		throw ":TODO: remove me";
-
-	}
-
-
 	public function __renderGL (renderSession:RenderSession):Void {
 
 		if (!__renderable || __worldAlpha <= 0) return;
@@ -574,30 +561,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__graphics != null) {
 
-			if (
-				#if (js && html5)
-				false
-				#elseif !disable_cairo_graphics
-				__graphics.__hardware
-				#else
-				true
-				#end) {
+			#if (js && html5)
+			CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY);
+			#elseif lime_cairo
+			CairoGraphics.render (__graphics, renderSession);
+			#end
 
-				GraphicsRenderer.render (this, renderSession);
-
-			} else {
-
-				#if (js && html5)
-				if (__graphics.__dirty) {
-					CanvasGraphics.render (__graphics, renderSession, renderScaleX, renderScaleY);
-				}
-				#elseif lime_cairo
-				CairoGraphics.render (__graphics, renderSession);
-				#end
-
-				GLRenderer.renderBitmap (this, renderSession);
-
-			}
+			GLRenderer.renderBitmap (this, renderSession);
 
 		}
 
@@ -1434,7 +1404,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (value != __scrollRect) {
 
 			__setTransformDirty ();
-			#if dom __setRenderDirty (); #end
 
 		}
 

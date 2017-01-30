@@ -31,7 +31,6 @@ import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.console.ConsoleRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl.display.DisplayObjectContainer;
 import openfl.errors.Error;
@@ -502,10 +501,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				case CANVAS (context):
 
 					__renderer = new CanvasRenderer (stageWidth, stageHeight, context);
-
-				case DOM (element):
-
-					__renderer = new DOMRenderer (stageWidth, stageHeight, element);
 
 				case CAIRO (cairo):
 
@@ -1402,30 +1397,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 				if (updateChildren) {
 
-					#if dom
-					__wasDirty = true;
-					#end
-
 					DisplayObject.__worldTransformDirty = 0;
 					DisplayObject.__worldRenderDirty = 0;
 					__dirty = false;
 
 				}
 
-			} #if dom else if (__wasDirty) {
-
-				// If we were dirty last time, we need at least one more
-				// update in order to clear "changed" properties
-
-				super.__update (false, updateChildren, maskGrahpics);
-
-				if (updateChildren) {
-
-					__wasDirty = false;
-
-				}
-
-			} #end
+			}
 
 		}
 
