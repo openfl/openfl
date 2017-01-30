@@ -620,24 +620,32 @@ class Stage extends DisplayObjectContainer implements IModule {
 						var new_width = width / stageWidth;
 						this.scaleX = new_width;
 						this.scaleY = new_width;
+						height = Std.int(stageHeight * new_width);
 					} else {
 						var new_height = height / stageHeight;
 						this.scaleX = new_height;
 						this.scaleY = new_height;
+						width = Std.int(stageWidth * new_height);
 					}
 
 				case StageScaleMode.NO_SCALE:
-					stageWidth = width;
-					stageHeight = height;
+					var new_width = width;
+					var new_height = height;
+					width = stageWidth;
+					height = stageHeight;
+					stageWidth = new_width;
+					stageHeight = new_height;
 				case StageScaleMode.SHOW_ALL:
 					if ( aspect_ratio < new_aspect_ratio ) {
 						var new_height = height / stageHeight;
 						this.scaleX = new_height;
 						this.scaleY = new_height;
+						width = Std.int(stageWidth * new_height);
 					} else {
 						var new_width = width / stageWidth;
 						this.scaleX = new_width;
 						this.scaleY = new_width;
+						height = Std.int(stageHeight * new_width);
 					}
 			}
 		}
