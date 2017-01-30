@@ -2,13 +2,17 @@ package openfl.display3D.textures;
 
 
 import lime.graphics.opengl.GL;
+import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
 import openfl._internal.stage3D.GLUtils;
+import openfl._internal.stage3D.SamplerState;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
+
+@:access(openfl._internal.stage3D.SamplerState)
 
 
 @:final class RectangleTexture extends TextureBase {
@@ -79,5 +83,18 @@ import openfl.utils.ByteArray;
 		
 	}
 	
+	override private function __setSamplerState (state:SamplerState, forceUpdate:Bool = false) {
+		
+		if (forceUpdate || !state.equals (__samplerState) || state.__samplerDirty) {
+			
+			if (state.maxAniso != 0.0) {
+				GL.texParameterf (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT, state.maxAniso);
+				GLUtils.CheckGLError ();
+			}
+			
+		}
+
+		super.__setSamplerState( state );
+	}
 	
 }

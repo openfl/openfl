@@ -2,6 +2,7 @@ package openfl.display3D;
 
 
 import lime.graphics.opengl.ExtensionPackedDepthStencil;
+import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
@@ -69,6 +70,8 @@ import openfl.profiler.Telemetry;
 	private var __fragmentConstants:Float32Array;
 	private var __framebuffer:GLFramebuffer;
 	private var __frameCount:Int;
+	private var __maxAnisotropyTexture2D:Int;
+	private var __maxAnisotropyCubeTexture:Int;
 	private var __positionScale:Float32Array;
 	private var __program:Program3D;
 	private var __renderSession:RenderSession;
@@ -85,6 +88,7 @@ import openfl.profiler.Telemetry;
 	private var __stencilRef:Int;
 	private var __stencilReadMask:Int;
 	private var __stencilRenderBuffer:GLRenderbuffer;
+	private var __supportsAnisotropicFiltering:Bool;
 	private var __supportsPackedDepthStencil:Bool;
 	private var __vertexConstants:Float32Array;
 	
@@ -132,10 +136,23 @@ import openfl.profiler.Telemetry;
 		__stencilCompareMode = Context3DCompareMode.ALWAYS;
 		__stencilRef = 0;
 		__stencilReadMask = 0xFF;
+		
 		#if (js && html5)
 		__supportsPackedDepthStencil = true;
+		var anisotropicExt:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
+		if (anisotropicExt == null || Reflect.field( anisotropicExt, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) anisotropicExt = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+		if (anisotropicExt == null || Reflect.field( anisotropicExt, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) anisotropicExt = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+		__supportsAnisotropicFiltering = (anisotropicExt != null);
+		if (__supportsAnisotropicFiltering) {
+			__maxAnisotropyTexture2D = __maxAnisotropyCubeTexture = GL.getParameter (ExtensionAnisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+		}
 		#else
 		__supportsPackedDepthStencil = __hasGLExtension ("GL_OES_packed_depth_stencil") || __hasGLExtension ("GL_EXT_packed_depth_stencil");
+		__supportsAnisotropicFiltering = __hasGLExtension ("GL_EXT_texture_filter_anisotropic");
+		if (__supportsAnisotropicFiltering) {
+			__maxAnisotropyTexture2D = GL.getTexParameter (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT) != 0 ? 16 : 1;
+			__maxAnisotropyCubeTexture = GL.getTexParameter (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT) != 0 ? 16 : 1;
+		}
 		#end
 		
 		__stats = new Vector<Int> (Context3DTelemetry.length);
@@ -790,30 +807,34 @@ import openfl.profiler.Telemetry;
 			case Context3DTextureFilter.LINEAR:
 				
 				state.magFilter = GL.LINEAR;
+				if (__supportsAnisotropicFiltering)
+					state.maxAniso = 1;		
 			
 			case Context3DTextureFilter.NEAREST:
 				
 				state.magFilter = GL.NEAREST;
+				if (__supportsAnisotropicFiltering)
+					state.maxAniso = 1;
 			
 			case Context3DTextureFilter.ANISOTROPIC2X:
 				
-				// TODO
-				state.magFilter = GL.LINEAR;
+				if (__supportsAnisotropicFiltering)
+					state.maxAniso = (__maxAnisotropyTexture2D < 2 ? __maxAnisotropyTexture2D : 2);
 			
 			case Context3DTextureFilter.ANISOTROPIC4X:
 				
-				// TODO
-				state.magFilter = GL.LINEAR;
+				if (__supportsAnisotropicFiltering)
+					state.maxAniso = (__maxAnisotropyTexture2D < 4 ? __maxAnisotropyTexture2D : 4);
 			
 			case Context3DTextureFilter.ANISOTROPIC8X:
 				
-				// TODO
-				state.magFilter = GL.LINEAR;
+				if (__supportsAnisotropicFiltering)
+					state.maxAniso = (__maxAnisotropyTexture2D < 8 ? __maxAnisotropyTexture2D : 8);
 				
 			case Context3DTextureFilter.ANISOTROPIC16X:
 				
-				// TODO
-				state.magFilter = GL.LINEAR;
+				if (__supportsAnisotropicFiltering)
+					state.maxAniso = (__maxAnisotropyTexture2D < 16 ? __maxAnisotropyTexture2D : 16);
 			
 			default:
 				

@@ -4,17 +4,75 @@ package openfl._internal.stage3D;
 class SamplerState {
 	
 	
+	public var lodBias(default, set):Float;
+	public var magFilter(default, set):Int;
+	public var maxAniso(default, set):Float;
+	public var minFilter(default, set):Int;
+	public var wrapModeS(default, set):Int;
+	public var wrapModeT(default, set):Int;
+
 	public var centroid:Bool;
 	public var ignoreSampler:Bool;
-	public var lodBias:Float;
-	public var magFilter:Int;
-	public var maxAniso:Float;
-	public var minFilter:Int;
-	public var wrapModeS:Int;
-	public var wrapModeT:Int;
+	public var mipmapGenerated:Bool;
+
+	private var __samplerDirty:Bool;
 	
-	
-	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0, ignoreSampler:Bool = false, centroid:Bool = false) {
+	private function set_lodBias( value:Float ):Float {
+
+		if (lodBias != value)
+			__samplerDirty = true;
+
+		return lodBias = value;
+
+	}
+
+	private function set_magFilter( value:Int ):Int {
+
+		if (magFilter != value)
+			__samplerDirty = true;
+
+		return magFilter = value;
+
+	}
+
+	private function set_maxAniso( value:Float ):Float {
+
+		if (maxAniso != value)
+			__samplerDirty = true;
+
+		return maxAniso = value;
+
+	}
+
+	private function set_minFilter( value:Int ):Int {
+
+		if (minFilter != value)
+			__samplerDirty = true;
+
+		return minFilter = value;
+
+	}
+
+	private function set_wrapModeS( value:Int ):Int {
+
+		if (wrapModeS != value)
+			__samplerDirty = true;
+
+		return wrapModeS = value;
+
+	}
+
+	private function set_wrapModeT( value:Int ):Int {
+
+		if (wrapModeT != value)
+			__samplerDirty = true;
+
+		return wrapModeT = value;
+
+	}
+
+
+	public function new (minFilter:Int, magFilter:Int, wrapModeS:Int, wrapModeT:Int, lodBias:Float = 0.0, maxAniso:Float = 0.0, ignoreSampler:Bool = false, centroid:Bool = false, mipmapGenerated:Bool = false) {
 		
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
@@ -24,7 +82,9 @@ class SamplerState {
 		this.maxAniso = maxAniso;
 		this.ignoreSampler = ignoreSampler;
 		this.centroid = centroid;
+		this.mipmapGenerated = mipmapGenerated;
 		
+		__samplerDirty = true;
 	}
 	
 	
@@ -39,6 +99,7 @@ class SamplerState {
 		this.lodBias = other.lodBias;
 		this.maxAniso = other.maxAniso;
 		this.centroid = other.centroid;
+		this.mipmapGenerated = other.mipmapGenerated;
 		
 	}
 	
@@ -56,8 +117,8 @@ class SamplerState {
 			return false;
 			
 		}
-		
-		return (minFilter == other.minFilter && magFilter == other.magFilter && wrapModeS == other.wrapModeS && wrapModeT == other.wrapModeT && lodBias == other.lodBias && maxAniso == other.maxAniso);
+
+		return (minFilter == other.minFilter && magFilter == other.magFilter && wrapModeS == other.wrapModeS && wrapModeT == other.wrapModeT && lodBias == other.lodBias && maxAniso == other.maxAniso && mipmapGenerated == other.mipmapGenerated);
 		
 	}
 	

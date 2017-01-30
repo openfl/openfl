@@ -356,7 +356,7 @@ import openfl.Vector;
 		
 		if (infoLog != null && infoLog.length != 0) {
 			
-			trace ("program: ${infoLog}");
+			trace ('program: ${infoLog}');
 			
 		}
 		
