@@ -121,6 +121,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __scaleMode:StageScaleMode = StageScaleMode.SHOW_ALL;
+	private var __outElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
+	private var __inElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
 
 	#if (js && html5)
 	//private var __div:DivElement;
@@ -1155,19 +1157,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var event;
 
 		if ( __stack.length > 0 && ( __mouseOutStack.length == 0 || ( __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != __stack[__stack.length-1] ) ) ) {
-			var outElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
-			var inElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
+			__outElements.clear();
+			__inElements.clear();
 
 			inline function diffStacks() {
 				if ( __mouseOutStack.length == 0 ) {
-					inElements.copyFrom(__stack);
+					__inElements.copyFrom(__stack);
 				}
 
 				var smallestStackCount = Std.int(Math.min(__stack.length, __mouseOutStack.length));
 				for(i in 0...smallestStackCount) {
 					if ( __stack[i] != __mouseOutStack[i] ) {
-						outElements.copyFrom(__mouseOutStack, i);
-						inElements.copyFrom(__stack, i);
+						__outElements.copyFrom(__mouseOutStack, i);
+						__inElements.copyFrom(__stack, i);
 					}
 				}
 			}
@@ -1218,13 +1220,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 				mouseOut( __mouseOutStack[__mouseOutStack.length-1] );
 			}
 
-			var i = outElements.length - 1;
+			var i = __outElements.length - 1;
 			while(i >= 0) {
-				rollOut(outElements[i]);
+				rollOut(__outElements[i]);
 				--i;
 			}
 
-			for (target in inElements) {
+			for (target in __inElements) {
 				rollOver(target);
 			}
 
