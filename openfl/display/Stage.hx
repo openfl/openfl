@@ -196,23 +196,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 
 
-	public override function globalToLocal (pos:Point):Point {
-
-		return pos.clone ();
-
-	}
-
-
 	public function invalidate ():Void {
 
 		__invalidated = true;
-
-	}
-
-
-	public override function localToGlobal (pos:Point):Point {
-
-		return pos.clone ();
 
 	}
 
@@ -673,7 +659,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-
 	public function onWindowRestore (window:Window):Void {
 
 		//if (this.window == null || this.window != window) return;
@@ -1012,7 +997,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		var target:InteractiveObject = null;
 		var targetPoint = Point.pool.get();
-		targetPoint.setTo (x, y);
+		targetPoint.setTo (mouseX, mouseY);
 
 		__stack.clear();
 
@@ -1445,28 +1430,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 	}
-
-
-
-
-	// Get & Set Methods
-
-
-
-
-	private override function get_mouseX ():Float {
-
-		return __mouseX;
-
-	}
-
-
-	private override function get_mouseY ():Float {
-
-		return __mouseY;
-
-	}
-
 
 
 

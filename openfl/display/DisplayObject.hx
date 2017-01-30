@@ -215,11 +215,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	public function globalToLocal (pos:Point):Point {
+	public function globalToLocal (point:Point):Point {
 
-		pos = pos.clone ();
-		__getWorldTransform ().__transformInversePoint (pos);
-		return pos;
+		if ( this.stage != null ) {
+			point = this.stage.__getWorldTransform ().transformPoint (point);
+		} else {
+			point = point.clone();
+		}
+		__getWorldTransform ().__transformInversePoint (point);
+		return point;
+
+	}
+
+
+	public function localToGlobal (point:Point):Point {
+
+		point = __getWorldTransform ().transformPoint (point);
+		if ( this.stage != null ) {
+			this.stage.__getWorldTransform ().__transformInversePoint (point);
+		} else {
+			throw ":TODO:";
+		}
+		return point;
 
 	}
 
@@ -259,15 +276,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		return false;
 
 	}
-
-
-	public function localToGlobal (point:Point):Point {
-
-		return __getWorldTransform ().transformPoint (point);
-
-	}
-
-
 
 
 
@@ -1266,8 +1274,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_mouseX ():Float {
 
-		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
-		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
+		var mouseX = Lib.current.stage.__mouseX;
+		var mouseY = Lib.current.stage.__mouseY;
 
 		return __getWorldTransform ().__transformInverseX (mouseX, mouseY);
 
@@ -1276,8 +1284,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function get_mouseY ():Float {
 
-		var mouseX = (stage != null ? stage.__mouseX : Lib.current.stage.__mouseX);
-		var mouseY = (stage != null ? stage.__mouseY : Lib.current.stage.__mouseY);
+		var mouseX = Lib.current.stage.__mouseX;
+		var mouseY = Lib.current.stage.__mouseY;
 
 		return __getWorldTransform ().__transformInverseY (mouseX, mouseY);
 
