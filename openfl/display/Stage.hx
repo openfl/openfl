@@ -196,23 +196,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 
 
-	public override function globalToLocal (pos:Point):Point {
-
-		return pos.clone ();
-
-	}
-
-
 	public function invalidate ():Void {
 
 		__invalidated = true;
-
-	}
-
-
-	public override function localToGlobal (pos:Point):Point {
-
-		return pos.clone ();
 
 	}
 
@@ -621,12 +607,50 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		stageWidth = Std.int (width * window.scale);
-		stageHeight = Std.int (height * window.scale);
+		width = Std.int (width * window.scale);
+		height = Std.int( height * window.scale);
+
+		var aspect_ratio = stageWidth / stageHeight;
+		var new_aspect_ratio = width / height;
+		if ( aspect_ratio == new_aspect_ratio ) {
+			this.scaleX = width / stageWidth;
+			this.scaleY = height / stageHeight;
+		} else {
+			switch(scaleMode) {
+				case StageScaleMode.EXACT_FIT:
+					this.scaleX = width / stageWidth;
+					this.scaleY = height / stageHeight;
+				case StageScaleMode.NO_BORDER:
+					if ( aspect_ratio < new_aspect_ratio ) {
+						var new_width = width / stageWidth;
+						this.scaleX = new_width;
+						this.scaleY = new_width;
+					} else {
+						var new_height = height / stageHeight;
+						this.scaleX = new_height;
+						this.scaleY = new_height;
+					}
+
+				case StageScaleMode.NO_SCALE:
+					stageWidth = width;
+					stageHeight = height;
+				case StageScaleMode.SHOW_ALL:
+					if ( aspect_ratio < new_aspect_ratio ) {
+						var new_height = height / stageHeight;
+						this.scaleX = new_height;
+						this.scaleY = new_height;
+					} else {
+						var new_width = width / stageWidth;
+						this.scaleX = new_width;
+						this.scaleY = new_width;
+					}
+			}
+		}
+
 
 		if (__renderer != null) {
 
-			__renderer.resize (stageWidth, stageHeight);
+			__renderer.resize (width, height);
 
 		}
 
@@ -634,7 +658,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__broadcastFromStage (event, false);
 
 	}
-
 
 	public function onWindowRestore (window:Window):Void {
 
@@ -974,7 +997,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		var target:InteractiveObject = null;
 		var targetPoint = Point.pool.get();
-		targetPoint.setTo (x, y);
+		targetPoint.setTo (mouseX, mouseY);
 
 		__stack.clear();
 
@@ -1407,28 +1430,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 	}
-
-
-
-
-	// Get & Set Methods
-
-
-
-
-	private override function get_mouseX ():Float {
-
-		return __mouseX;
-
-	}
-
-
-	private override function get_mouseY ():Float {
-
-		return __mouseY;
-
-	}
-
 
 
 
