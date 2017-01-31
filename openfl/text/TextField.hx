@@ -146,6 +146,7 @@ class TextField extends InteractiveObject {
 		__textEngine.textFormatRanges.push (new TextFormatRange (__textFormat, 0, 0));
 		
 		addEventListener (MouseEvent.MOUSE_DOWN, this_onMouseDown);
+		addEventListener (MouseEvent.MOUSE_WHEEL, this_onMouseWheel);
 		
 	}
 	
@@ -201,11 +202,7 @@ class TextField extends InteractiveObject {
 		
 		x += scrollH;
 		
-		for (i in 0...scrollV - 1) {
-			
-			y += __textEngine.lineHeights[i];
-			
-		}
+		y += __scrollY ();
 		
 		for (group in __textEngine.layoutGroups) {
 			
@@ -274,11 +271,7 @@ class TextField extends InteractiveObject {
 		
 		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
 		
-		for (i in 0...scrollV - 1) {
-			
-			y += __textEngine.lineHeights[i];
-			
-		}
+		y += __scrollY ();
 		
 		for (group in __textEngine.layoutGroups) {
 			
@@ -767,7 +760,7 @@ class TextField extends InteractiveObject {
 			
 		} else {
 			
-			lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
+			lineIndex = getLineIndexOfChar (selectionEndIndex);
 			
 		}
 		
@@ -865,7 +858,7 @@ class TextField extends InteractiveObject {
 		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP) {
 			
 			var event:MouseEvent = cast event;
-			var group = __getGroup (mouseX, mouseY, true);
+			var group = __getGroup (__scrollMouseX(), __scrollMouseY(), true);
 			
 			if (group != null) {
 				
@@ -1074,7 +1067,7 @@ class TextField extends InteractiveObject {
 	
 	private override function __getCursor ():MouseCursor {
 		
-		var group = __getGroup (mouseX, mouseY, true);
+		var group = __getGroup (__scrollMouseX(), __scrollMouseY(), true);
 		
 		if (group != null && group.format.url != "") {
 			
@@ -1094,14 +1087,6 @@ class TextField extends InteractiveObject {
 	private function __getGroup (x:Float, y:Float, precise = false):TextLayoutGroup {
 		
 		__updateLayout ();
-		
-		x += scrollH;
-		
-		for (i in 0...scrollV - 1) {
-			
-			y += __textEngine.lineHeights[i];
-			
-		}
 		
 		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
 		
@@ -1181,8 +1166,37 @@ class TextField extends InteractiveObject {
 		
 		return group.endIndex;
 	}
-	
-	
+
+
+	private function __scrollMouseX():Float {
+
+		return scrollH + mouseX;
+
+	}
+
+
+	private function __scrollMouseY():Float {
+
+		return __scrollY () + mouseY;
+
+	}
+
+
+	private function __scrollY():Float {
+
+		var y:Float = 0;
+
+		for (i in 0...scrollV - 1) {
+
+			y += __textEngine.lineHeights[i];
+
+		}
+
+		return y;
+
+	}
+
+
 	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
 		
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
@@ -1382,6 +1396,36 @@ class TextField extends InteractiveObject {
 		
 		#end
 		
+	}
+
+
+	private function __scrollIntoView (lineIndex:Int):Void {
+
+		__updateLayout ();
+
+		var i:Int = 0;
+
+		if (scrollV - 1 < lineIndex) {
+
+			var y:Float = 0, maxY:Float = height;
+
+			while (y < maxY && i < __textEngine.lineHeights.length) {
+
+				y += __textEngine.lineHeights[i];
+				i++;
+
+			}
+
+			i -= 2;
+
+		}
+
+		if (lineIndex < scrollV - 1 || lineIndex >= scrollV + i) {
+
+			scrollV = lineIndex + 1 - i;
+
+		}
+
 	}
 	
 	
@@ -2395,7 +2439,7 @@ class TextField extends InteractiveObject {
 			
 			__updateLayout ();
 			
-			var position = __getPosition (mouseX, mouseY);
+			var position = __getPosition (__scrollMouseX(), __scrollMouseY());
 			
 			if (position != __caretIndex) {
 				
@@ -2426,7 +2470,7 @@ class TextField extends InteractiveObject {
 			var px = __worldTransform.__transformInverseX (x, y);
 			var py = __worldTransform.__transformInverseY (x, y);
 			
-			var upPos:Int = __getPosition (mouseX, mouseY);
+			var upPos:Int = __getPosition (__scrollMouseX(), __scrollMouseY());
 			var leftPos:Int;
 			var rightPos:Int;
 			
@@ -2481,7 +2525,7 @@ class TextField extends InteractiveObject {
 		
 		__updateLayout ();
 		
-		__caretIndex = __getPosition (mouseX, mouseY);
+		__caretIndex = __getPosition (__scrollMouseX(), __scrollMouseY());
 		__selectionIndex = __caretIndex;
 		#if !dom
 		__dirty = true;
@@ -2490,6 +2534,13 @@ class TextField extends InteractiveObject {
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		
+	}
+
+
+	private function this_onMouseWheel(event:MouseEvent):Void {
+
+		scrollV -= event.delta;
+
 	}
 	
 	
@@ -2502,6 +2553,8 @@ class TextField extends InteractiveObject {
 				if (__textEngine.multiline) {
 					
 					replaceSelectedText ("\n");
+
+					__scrollIntoView (getLineIndexOfChar (__caretIndex));
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				}
@@ -2518,7 +2571,8 @@ class TextField extends InteractiveObject {
 					
 					replaceSelectedText ("");
 					__selectionIndex = __caretIndex;
-					
+
+					__scrollIntoView (getLineIndexOfChar (__caretIndex));
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				}
@@ -2535,7 +2589,7 @@ class TextField extends InteractiveObject {
 					
 					replaceSelectedText ("");
 					__selectionIndex = __caretIndex;
-					
+
 					dispatchEvent (new Event (Event.CHANGE, true));
 					
 				}
@@ -2564,14 +2618,15 @@ class TextField extends InteractiveObject {
 						
 					} else {
 						
-						__caretIndex = Std.int (Math.min (__caretIndex, __selectionIndex));
+						__caretIndex = selectionBeginIndex;
 						
 					}
 					
 					__selectionIndex = __caretIndex;
 					
 				}
-				
+
+				__scrollIntoView (getLineIndexOfChar (selectionBeginIndex));
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
@@ -2599,14 +2654,15 @@ class TextField extends InteractiveObject {
 						
 					} else {
 						
-						__caretIndex = Std.int (Math.max (__caretIndex, __selectionIndex));
+						__caretIndex = selectionEndIndex;
 						
 					}
 					
 					__selectionIndex = __caretIndex;
 					
 				}
-				
+
+				__scrollIntoView (getLineIndexOfChar (selectionEndIndex));
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
@@ -2624,15 +2680,16 @@ class TextField extends InteractiveObject {
 						
 					} else {
 						
-						var lineIndex = getLineIndexOfChar (Std.int (Math.max (__caretIndex, __selectionIndex)));
-						__caretNextLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
+						var lineIndex = getLineIndexOfChar (selectionEndIndex);
+						__caretNextLine (lineIndex, selectionBeginIndex);
 						
 					}
 					
 					__selectionIndex = __caretIndex;
 					
 				}
-				
+
+				__scrollIntoView (getLineIndexOfChar (selectionEndIndex));
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			
@@ -2650,15 +2707,16 @@ class TextField extends InteractiveObject {
 						
 					} else {
 						
-						var lineIndex = getLineIndexOfChar (Std.int (Math.min (__caretIndex, __selectionIndex)));
-						__caretPreviousLine (lineIndex, Std.int (Math.min (__caretIndex, __selectionIndex)));
+						var lineIndex = getLineIndexOfChar (selectionBeginIndex);
+						__caretPreviousLine (lineIndex, selectionBeginIndex);
 						
 					}
 					
 					__selectionIndex = __caretIndex;
 					
 				}
-				
+
+				__scrollIntoView (getLineIndexOfChar (selectionBeginIndex));
 				__stopCursorTimer ();
 				__startCursorTimer ();
 			

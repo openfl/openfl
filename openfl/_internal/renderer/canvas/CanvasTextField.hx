@@ -272,11 +272,11 @@ class CanvasTextField {
 						context.fillText (text.substring (group.startIndex, group.endIndex), group.offsetX + scrollX, group.offsetY + offsetY + scrollY);
 						
 						if (textField.__caretIndex > -1 && textEngine.selectable) {
-							
+
 							if (textField.__selectionIndex == textField.__caretIndex) {
 								
 								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
-									
+
 									advance = 0.0;
 									
 									for (i in 0...(textField.__caretIndex - group.startIndex)) {
@@ -285,8 +285,8 @@ class CanvasTextField {
 										advance += group.advances[i];
 										
 									}
-									
-									context.fillRect (group.offsetX + advance, group.offsetY, 1, group.height);
+
+									context.fillRect (scrollX + group.offsetX + advance, scrollY + group.offsetY, 1, group.height);
 									
 								}
 								
@@ -325,7 +325,7 @@ class CanvasTextField {
 								if (start != null && end != null) {
 									
 									context.fillStyle = "#000000";
-									context.fillRect (start.x, start.y, end.x - start.x, group.height);
+									context.fillRect (scrollX + start.x, scrollY + start.y, end.x - start.x, group.height);
 									context.fillStyle = "#FFFFFF";
 									
 									// TODO: fill only once
