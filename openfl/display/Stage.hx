@@ -602,6 +602,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
+		#if duell_container
+			// :NOTE: Account for menu bar.
+			height -= 25;
+		#end
+
 		width = Std.int (width * window.scale);
 		height = Std.int( height * window.scale);
 
