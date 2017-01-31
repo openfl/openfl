@@ -135,7 +135,7 @@ import openfl.utils.ByteArray;
 		GL.bindTexture (GL.TEXTURE_CUBE_MAP, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (target, miplevel, __internalFormat, __size, __size, 0, __format, GL.UNSIGNED_BYTE, data);
+		GL.texImage2D (target, miplevel, __internalFormat, size, size, 0, __format, GL.UNSIGNED_BYTE, data);
 		GLUtils.CheckGLError ();
 		
 		GL.bindTexture (__textureTarget, null);
