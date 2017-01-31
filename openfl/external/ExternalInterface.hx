@@ -33,9 +33,11 @@ import openfl.Lib;
 		#if (js && html5)
 		var callResponse:Dynamic = null;
 		
-		var thisArg = functionName.split('.').slice(0, -1).join('.');
-		if (thisArg.length > 0) {
-			functionName += '.bind(${thisArg})';
+		if (!~/^\(.+\)$/.match(functionName)) {
+			var thisArg = functionName.split('.').slice(0, -1).join('.');
+			if (thisArg.length > 0) {
+				functionName += '.bind(${thisArg})';
+			}
 		}
 		
 		if (p1 == null) {
