@@ -13,9 +13,8 @@ class ShapeSymbol extends SWFSymbol {
 	public var bounds:Rectangle;
 	public var graphics:Graphics;
 
-	public var cachedBitmapData(default, null):BitmapData;
-	public var cachedScaleX(default, null):Float;
-	public var cachedScaleY(default, null):Float;
+	public var useBitmapCache(default, set):Bool = false;
+	private var cachedTable:Array<CacheEntry>;
 
 	public function new () {
 
@@ -23,24 +22,59 @@ class ShapeSymbol extends SWFSymbol {
 
 	}
 
-	public function hasCachedBitmapData (scaleX:Float, scaleY:Float):Bool {
+	public function set_useBitmapCache (useBitmapCache:Bool):Bool {
 
-		return cachedBitmapData != null && Math.abs(cachedScaleX - scaleX) < 0.001 && Math.abs(cachedScaleY - scaleY) < 0.001;
+		if (useBitmapCache && cachedTable == null) {
 
-	}
-
-
-	public function setCachedBitmapData (bitmapData:BitmapData, scaleX:Float, scaleY:Float) {
-
-		// only cache the first one for now... augment if required
-
-		if (cachedBitmapData == null) {
-
-			cachedBitmapData = bitmapData;
-			cachedScaleX = scaleX;
-			cachedScaleY = scaleY;
+			cachedTable = new Array<CacheEntry> ();
 
 		}
 
+		return this.useBitmapCache = useBitmapCache;
 	}
+
+	public function getCachedBitmapData (width:Int, height:Int):BitmapData {
+
+		if (useBitmapCache) {
+
+			for (entry in cachedTable) {
+
+				if (@:privateAccess entry.bitmapData.__width == width && @:privateAccess entry.bitmapData.__height == height) {
+
+					return entry.bitmapData;
+
+				}
+
+			}
+
+		}
+
+		return null;
+
+	}
+
+
+	public function setCachedBitmapData (bitmapData:BitmapData) {
+
+		if (!useBitmapCache) {
+
+			return ;
+
+		}
+
+		cachedTable.push (new CacheEntry (bitmapData));
+
+	}
+}
+
+private class CacheEntry {
+
+	public var bitmapData:BitmapData;
+
+	public function new (bitmapData:BitmapData) {
+
+		this.bitmapData = bitmapData;
+
+	}
+
 }

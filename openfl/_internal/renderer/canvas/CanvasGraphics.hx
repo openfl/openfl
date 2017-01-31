@@ -459,16 +459,6 @@ class CanvasGraphics {
 
 		if (graphics.__dirty) {
 
-			if (graphics.__symbol != null && graphics.__symbol.hasCachedBitmapData (scaleX, scaleY)) {
-
-
-				graphics.__bitmap = graphics.__symbol.cachedBitmapData;
-				graphics.__dirty = false;
-
-				return;
-
-			}
-
 			hitTesting = false;
 
 			var bounds = graphics.__bounds;
@@ -487,6 +477,27 @@ class CanvasGraphics {
 				scaled_bounds.width *= scaleX;
 				scaled_bounds.height *= scaleY;
 
+				var padding = graphics.__padding;
+				var width:Int = Math.ceil (scaled_bounds.width) + 2 * padding;
+				var height:Int = Math.ceil (scaled_bounds.height) + 2 * padding;
+
+				if (graphics.__symbol != null) {
+
+					var cachedBitmapData:BitmapData = graphics.__symbol.getCachedBitmapData (width, height);
+
+					if (cachedBitmapData != null) {
+
+						graphics.__bitmap = cachedBitmapData;
+						graphics.__dirty = false;
+
+						Rectangle.pool.put(scaled_bounds);
+
+						return;
+
+					}
+
+				}
+
 				if (graphics.__canvas == null) {
 
 					graphics.__canvas = cast Browser.document.createElement ("canvas");
@@ -497,11 +508,9 @@ class CanvasGraphics {
 				context = graphics.__context;
 
 				var context = context;
-				var padding = graphics.__padding;
 
-				// :NOTE: Grow the bounds of textures by 2 pixels to allow anti aliasing on the edges.
-				graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2 * padding;
-				graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2 * padding;
+				graphics.__canvas.width = width;
+				graphics.__canvas.height = height;
 
 				context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
 				context.translate (-scaled_bounds.x, -scaled_bounds.y);
@@ -699,7 +708,7 @@ class CanvasGraphics {
 
 				if (graphics.__symbol != null) {
 
-					graphics.__symbol.setCachedBitmapData (graphics.__bitmap, scaleX, scaleY);
+					graphics.__symbol.setCachedBitmapData (graphics.__bitmap);
 
 				}
 

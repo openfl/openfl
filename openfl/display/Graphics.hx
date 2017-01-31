@@ -742,7 +742,7 @@ import js.html.CanvasRenderingContext2D;
 
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null && (__symbol == null || __symbol.cachedBitmapData != __bitmap)) {
+		if (__bitmap != null && (__symbol == null || !__symbol.useBitmapCache)) {
 
 			__bitmap.dispose ();
 
