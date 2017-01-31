@@ -7,6 +7,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 #else
 import DefaultAssetLibrary;
+import haxe.io.Path;
 #end
 
 @:access(lime.app.Application)
@@ -84,6 +85,10 @@ import DefaultAssetLibrary;
 	
 	
 	public static function create ():Void {
+		#if cpp
+		var path = Sys.programPath ();
+		Sys.setCwd (Path.directory (path));
+		#end
 		
 		var app = new openfl.display.Application ();
 		app.create (config);
