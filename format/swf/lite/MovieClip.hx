@@ -72,6 +72,8 @@ class MovieClip extends flash.display.MovieClip {
 	private var __maskData:Map<DisplayObject, Int>;
 	private var __maskDataKeys:Array<DisplayObject>;
 
+	private var __childrenCache:Map<FrameObject, DisplayObject>;
+
 	public function new (swf:SWFLite, symbol:SpriteSymbol) {
 
 		super ();
@@ -131,6 +133,11 @@ class MovieClip extends flash.display.MovieClip {
 
 		__renderFrame (0);
 
+	}
+
+	public function enableChildrenCache()
+	{
+		__childrenCache = new Map();
 	}
 
 
@@ -283,6 +290,14 @@ class MovieClip extends flash.display.MovieClip {
 
 		var displayObject:DisplayObject = null;
 
+		if(__childrenCache != null)
+		{
+			if(__childrenCache.exists(object))
+			{
+				return __childrenCache.get(object);
+			}
+		}
+
 		if (__swf.symbols.exists (object.symbol)) {
 
 			var symbol = __swf.symbols.get (object.symbol);
@@ -354,8 +369,12 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		return displayObject;
+		if(__childrenCache != null)
+		{
+			__childrenCache[object] = displayObject;
+		}
 
+		return displayObject;
 	}
 
 
