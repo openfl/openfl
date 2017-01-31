@@ -24,7 +24,7 @@ class Matrix3D {
 		
 		if (v != null && v.length == 16) {
 			
-			rawData = v;
+			rawData = v.concat ();
 			
 		} else {
 			
