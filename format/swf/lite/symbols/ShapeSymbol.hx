@@ -8,7 +8,6 @@ import openfl.display.Graphics;
 
 class ShapeSymbol extends SWFSymbol {
 
-
 	public var commands:Array<ShapeCommand>;
 	public var bounds:Rectangle;
 	public var graphics:Graphics;
@@ -49,6 +48,19 @@ class ShapeSymbol extends SWFSymbol {
 
 		}
 
+		#if profile
+			var missedCount = missedCountMap[id];
+			missedCount = missedCount != null ? missedCount : 0;
+			++missedCount;
+			missedCountMap.set (id, missedCount);
+			
+			if (continuousLogEnabled) {
+				
+				trace ('Shape id:$id; Missed count: $missedCount');
+				
+			}
+		#end
+
 		return null;
 
 	}
@@ -65,7 +77,46 @@ class ShapeSymbol extends SWFSymbol {
 		cachedTable.push (new CacheEntry (bitmapData));
 
 	}
+
+	#if profile
+		private static var missedCountMap = new Map<Int, Int> ();
+		private static var continuousLogEnabled:Bool = false;
+
+		public static function __init__ () {
+			
+			#if js
+				untyped __js__ ("$global.ShapeInfo = []");
+				untyped __js__ ("$global.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
+				untyped __js__ ("$global.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
+				untyped __js__ ("$global.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
+			#end
+			
+		}
+
+		public static function resetStatistics () {
+			
+			missedCountMap = new Map<Int, Int> ();
+			
+		}
+
+		public static function logStatistics () {
+			
+			for( id in missedCountMap.keys () ) {
+				trace ('Shape id:$id; Missed count: ${missedCountMap[id]}');
+			}
+			
+		}
+
+		public static function enableContinuousLog (value:Bool) {
+			
+			continuousLogEnabled = value;
+			
+		}
+
+	#end
+
 }
+
 
 private class CacheEntry {
 
