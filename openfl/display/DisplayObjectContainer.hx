@@ -91,7 +91,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			initParent(child);
 		}
 
-		if(__children[index] == null ){
+		if( index < __children.length && __children[index] == null ){
 			__children[index] = child;
 		} else {
 			__children.insert(index,child);
