@@ -577,7 +577,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function __renderCanvas (renderSession:RenderSession):Void {
 		
-		CanvasDisplayObject.render (this, renderSession);
+		if (mask == null || (mask.width > 0 && mask.height > 0)) {
+			
+			CanvasDisplayObject.render (this, renderSession);
+			
+		}
 		
 	}
 	
