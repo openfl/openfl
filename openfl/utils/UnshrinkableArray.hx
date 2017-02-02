@@ -44,16 +44,7 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 
     public inline function remove(item:T)
     {
-        var found = -1;
-
-        for(i in 0...this._length)
-        {
-            if(this._items[i] == item)
-            {
-                found = i;
-                break;
-            }
-        }
+        var found = indexOf(item);
 
         if(found >= 0)
         {
@@ -70,12 +61,18 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 
     public inline function splice(from:Int, count:Int)
     {
-        for(i in from...this._length - count)
-        {
-            this._items[i] = this._items[i + count];
-        }
+        from = cast Math.max(from , 0);
+        count = cast Math.min(count, this._length - from);
 
-        this._length -= count;
+        if(count > 0)
+        {
+            for(i in from...this._length - count)
+            {
+                this._items[i] = this._items[i + count];
+            }
+
+            this._length -= count;
+        }
     }
 
     public inline function reverse()
