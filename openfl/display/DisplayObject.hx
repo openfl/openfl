@@ -234,8 +234,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	public inline function convertToLocal (pos:Point) {
-		__getWorldTransform ().__transformInversePoint (pos);
+	public inline function convertToLocal (point:Point) {
+		if ( this.stage != null ) {
+			point = this.stage.__getWorldTransform ().transformPoint (point);
+		}
+		__getWorldTransform ().__transformInversePoint (point);
 	}
 
 
