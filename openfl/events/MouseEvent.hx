@@ -9,7 +9,6 @@ class MouseEvent extends Event {
 
 	public static var pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>( function() { return new MouseEvent(); } );
 
-
 	public static inline var CLICK = "click";
 	public static inline var DOUBLE_CLICK = "doubleClick";
 	public static inline var MIDDLE_CLICK = "middleClick";
@@ -47,8 +46,7 @@ class MouseEvent extends Event {
 	public var stageY:Float;
 
 
-	public function new (type:String = "unset", bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false, clickCount:Int = 0) {
-
+	private function new (type:String = "unset", bubbles:Bool = true, cancelable:Bool = false) {
 		super (type, bubbles, cancelable);
 	}
 
@@ -88,17 +86,6 @@ class MouseEvent extends Event {
 		event.stageY = stageY;
 		event.target = target;
 
-		return event;
-
-	}
-
-
-	public override function clone ():Event {
-
-		var event = new MouseEvent (type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey, clickCount);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
 		return event;
 
 	}
