@@ -457,12 +457,7 @@ class CanvasGraphics {
 
 		#if (js && html5)
 
-		// TODO: Handle world transform if we want to use direct render
-
-		//var directRender = (graphics.__hardware && renderSession.context != null);
-		var directRender = false;
-
-		if (graphics.__dirty || directRender) {
+		if (graphics.__dirty) {
 
 			hitTesting = false;
 
@@ -476,39 +471,50 @@ class CanvasGraphics {
 
 			} else {
 
-				if (directRender) {
+				var scaled_bounds:Rectangle = Rectangle.pool.get();
 
-					context = cast renderSession.context;
-					var context = context;
-					bounds.setTo (0, 0, context.canvas.width, context.canvas.width);
+				scaled_bounds.copyFrom(graphics.__bounds);
+				scaled_bounds.width *= scaleX;
+				scaled_bounds.height *= scaleY;
 
-				} else {
-					var scaled_bounds:Rectangle = Rectangle.pool.get();
+				var padding = graphics.__padding;
+				var width:Int = Math.ceil (scaled_bounds.width) + 2 * padding;
+				var height:Int = Math.ceil (scaled_bounds.height) + 2 * padding;
 
-					scaled_bounds.copyFrom(graphics.__bounds);
-					scaled_bounds.width *= scaleX;
-					scaled_bounds.height *= scaleY;
+				if (graphics.__symbol != null) {
 
-					if (graphics.__canvas == null) {
+					var cachedBitmapData:BitmapData = graphics.__symbol.getCachedBitmapData (width, height);
 
-						graphics.__canvas = cast Browser.document.createElement ("canvas");
-						graphics.__context = graphics.__canvas.getContext ("2d");
+					if (cachedBitmapData != null) {
+
+						graphics.__bitmap = cachedBitmapData;
+						graphics.__dirty = false;
+
+						Rectangle.pool.put(scaled_bounds);
+
+						return;
 
 					}
 
-					context = graphics.__context;
-
-					var context = context;
-					var padding = graphics.__padding;
-					
-					// :NOTE: Grow the bounds of textures by 2 pixels to allow anti aliasing on the edges.
-					graphics.__canvas.width = Math.ceil (scaled_bounds.width) + 2 * padding;
-					graphics.__canvas.height = Math.ceil (scaled_bounds.height) + 2 * padding;
-
-					context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
-					context.translate (-scaled_bounds.x, -scaled_bounds.y);
-					Rectangle.pool.put(scaled_bounds);
 				}
+
+				if (graphics.__canvas == null) {
+
+					graphics.__canvas = cast Browser.document.createElement ("canvas");
+					graphics.__context = graphics.__canvas.getContext ("2d");
+
+				}
+
+				context = graphics.__context;
+
+				var context = context;
+
+				graphics.__canvas.width = width;
+				graphics.__canvas.height = height;
+
+				context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
+				context.translate (-scaled_bounds.x, -scaled_bounds.y);
+				Rectangle.pool.put(scaled_bounds);
 
 				beginRenderStep();
 				resetFillStyle();
@@ -699,6 +705,12 @@ class CanvasGraphics {
 
 				drawCommandReaderPool.put(data);
 				graphics.__bitmap = BitmapData.fromCanvas (graphics.__canvas, scaleX, scaleY);
+
+				if (graphics.__symbol != null) {
+
+					graphics.__symbol.setCachedBitmapData (graphics.__bitmap);
+
+				}
 
 			}
 
