@@ -121,6 +121,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
 	private var __scaleMode:StageScaleMode = StageScaleMode.SHOW_ALL;
+	private var __outElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
+	private var __inElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
 
 	#if (js && html5)
 	//private var __div:DivElement;
@@ -862,7 +864,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				stack[i].__broadcast (event, false);
 
 				if (event.__isCanceled) {
-
+					event.dispose();
 					return;
 
 				}
@@ -873,6 +875,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
+				event.dispose();
 				return;
 
 			}
@@ -887,6 +890,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
+						event.dispose();
 						return;
 
 					}
@@ -898,6 +902,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 
 		}
+
+		event.dispose();
 	}
 
 
@@ -1016,7 +1022,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		var target:InteractiveObject = null;
 		var targetPoint = Point.pool.get();
+		var targetPointLocal = Point.pool.get();
+
 		targetPoint.setTo (mouseX, mouseY);
+
+
 
 		__stack.clear();
 
@@ -1032,6 +1042,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 		if (target == null) target = this;
+
+		targetPointLocal.copyFrom (targetPoint);
+		target.convertToLocal (targetPointLocal);
 
 		var clickType = null;
 
@@ -1096,18 +1109,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 
-		fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), __stack);
+		fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
 
 		if (clickType != null) {
 
-			fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), __stack);
+			fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
 
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 
-					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target), __stack);
+					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
 					__lastClickTime = 0;
 
 				} else {
@@ -1141,56 +1154,64 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		var event, localPoint;
+		var event;
 
 		if ( __stack.length > 0 && ( __mouseOutStack.length == 0 || ( __mouseOutStack.length > 0 && __mouseOutStack[__mouseOutStack.length-1] != __stack[__stack.length-1] ) ) ) {
-			var outElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
-			var inElements:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
+			__outElements.clear();
+			__inElements.clear();
 
 			inline function diffStacks() {
 				if ( __mouseOutStack.length == 0 ) {
-					inElements.copyFrom(__stack);
+					__inElements.copyFrom(__stack);
 				}
 
 				var smallestStackCount = Std.int(Math.min(__stack.length, __mouseOutStack.length));
 				for(i in 0...smallestStackCount) {
 					if ( __stack[i] != __mouseOutStack[i] ) {
-						outElements.copyFrom(__mouseOutStack, i);
-						inElements.copyFrom(__stack, i);
+						__outElements.copyFrom(__mouseOutStack, i);
+						__inElements.copyFrom(__stack, i);
 					}
 				}
 			}
 
 			inline function mouseOut(target:DisplayObject) {
-				localPoint = target.globalToLocal (targetPoint);
-				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, localPoint, cast target);
+				targetPointLocal.copyFrom (targetPoint);
+				target.convertToLocal (targetPointLocal);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
+				event.dispose();
 			}
 
 			inline function rollOut(target:DisplayObject) {
 				if ( target.hasEventListener(MouseEvent.ROLL_OUT) ) {
-					localPoint = target.globalToLocal (targetPoint);
-					event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, localPoint, cast target);
+					targetPointLocal.copyFrom (targetPoint);
+					target.convertToLocal (targetPointLocal);
+					event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
+					event.dispose();
 				}
 			}
 
 			inline function rollOver(target:DisplayObject) {
 				if ( target.hasEventListener(MouseEvent.ROLL_OVER) ) {
-					localPoint = target.globalToLocal (targetPoint);
-					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+					targetPointLocal.copyFrom (targetPoint);
+					target.convertToLocal (targetPointLocal);
+					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
+					event.dispose();
 				}
 			}
 
 			inline function mouseOver(target:DisplayObject) {
-				localPoint = target.globalToLocal (targetPoint);
-				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, localPoint, cast target);
+				targetPointLocal.copyFrom (targetPoint);
+				target.convertToLocal (targetPointLocal);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
+				event.dispose();
 			}
 
 			diffStacks();
@@ -1199,13 +1220,13 @@ class Stage extends DisplayObjectContainer implements IModule {
 				mouseOut( __mouseOutStack[__mouseOutStack.length-1] );
 			}
 
-			var i = outElements.length - 1;
+			var i = __outElements.length - 1;
 			while(i >= 0) {
-				rollOut(outElements[i]);
+				rollOut(__outElements[i]);
 				--i;
 			}
 
-			for (target in inElements) {
+			for (target in __inElements) {
 				rollOver(target);
 			}
 
@@ -1221,6 +1242,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__mouseOutStack.copyFrom(__stack);
 		Point.pool.put(targetPoint);
+		Point.pool.put(targetPointLocal);
 
 	}
 

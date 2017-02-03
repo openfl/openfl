@@ -166,6 +166,9 @@ class Event {
 		target = null;
 	}
 
+	public function dispose()
+	{
+	}
 
 }
 

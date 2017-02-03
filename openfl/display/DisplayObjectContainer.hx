@@ -26,7 +26,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, null):Int;
 	public var tabChildren:Bool;
 
-	private var __removedChildren:Array<DisplayObject>;
+	private var __removedChildren:UnshrinkableArray<DisplayObject>;
 
 
 	private function new () {
@@ -35,8 +35,8 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		mouseChildren = true;
 
-		__children = new Array<DisplayObject> ();
-		__removedChildren = new Array<DisplayObject> ();
+		__children = new UnshrinkableArray<DisplayObject> (8);
+		__removedChildren = new UnshrinkableArray<DisplayObject> (8);
 
 	}
 
@@ -91,7 +91,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			initParent(child);
 		}
 
-		if(__children[index] == null ){
+		if( index < __children.length && __children[index] == null ){
 			__children[index] = child;
 		} else {
 			__children.insert(index,child);

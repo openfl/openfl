@@ -84,7 +84,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
 	private var __cairo:Cairo;
-	private var __children:Array<DisplayObject>;
+	private var __children:UnshrinkableArray<DisplayObject>;
 	private var __cachedParent:DisplayObjectContainer;
 	private var __filters:Array<BitmapFilter>;
 	private var __graphics:Graphics;
@@ -232,6 +232,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 		return point;
 
+	}
+
+	public inline function convertToLocal (point:Point) {
+		if ( this.stage != null ) {
+			this.stage.__getWorldTransform ().__transformPoint (point);
+		}
+		__getWorldTransform ().__transformInversePoint (point);
 	}
 
 
