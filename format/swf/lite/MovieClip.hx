@@ -365,7 +365,7 @@ class MovieClip extends flash.display.MovieClip {
 		var graphics = shape.graphics;
 
 		if ( symbol.graphics != null && symbol.graphics.readOnly == true ) {
-			graphics.shallowCopyFrom( symbol.graphics );
+			graphics.copyFrom( symbol.graphics, true );
 			return shape;
 		}
 

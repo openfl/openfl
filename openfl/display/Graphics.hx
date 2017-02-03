@@ -192,12 +192,6 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
-	public inline function shallowCopyFrom (sourceGraphics:Graphics):Void {
-
-		copyFrom (sourceGraphics, true);
-
-	}
-
 
 	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
 
