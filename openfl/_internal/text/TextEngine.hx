@@ -876,7 +876,7 @@ class TextEngine {
 				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex (textIndex);
 				lineIndex++;
-				maxHeightValue = 0.0;
+				maxHeightValue = heightValue;
 				layoutGroup = null;
 				
 			} else if (formatRange.end >= spaceIndex && spaceIndex > -1 && textIndex < formatRange.end) {
