@@ -10,31 +10,36 @@ import openfl.Lib;
 
 
 class Window extends LimeWindow {
-	
-	
+
+
 	public function new (config:WindowConfig = null) {
-		
+
 		super (config);
-		
+
 	}
-	
-	
+
+
 	public override function create (application:Application):Void {
-		
+
 		super.create (application);
-		
+
 		#if (!flash && !openfl_legacy)
-		
+
 		stage = new Stage (this, Reflect.hasField (config, "background") ? config.background : 0xFFFFFF);
 		application.addModule (stage);
-		
-		#else
-		
-		stage = Lib.current.stage;
-		
+
+		#if !neko
+			if ( resizable ) {
+				ApplicationMain.instance.resize({width: width, height: height});
+			}
 		#end
-		
+		#else
+
+		stage = Lib.current.stage;
+
+		#end
+
 	}
-	
-	
+
+
 }
