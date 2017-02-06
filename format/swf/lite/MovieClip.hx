@@ -824,7 +824,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
-		
+
 		if (!__updating9SliceBitmap) {
 			__update9SliceBitmap ();
 		}
@@ -1013,10 +1013,18 @@ class MovieClip extends flash.display.MovieClip {
 		}
 
 		#if (!flash && openfl && !openfl_legacy)
+		inline function labelLogic() {
+			var label = __symbol.frames[index].label;
+			__currentFrameLabel = label;
+			if ( label != null ) {
+				__currentLabel = label;
+			}
+		}
 		if (__frameScripts != null) {
 
 			if (__frameScripts.exists (index)) {
-				__currentLabel = __symbol.frames[index].label;
+				labelLogic();
+
 				__frameScripts.get (index) ();
 
 				if(index  + 1 != __currentFrame){
@@ -1028,7 +1036,8 @@ class MovieClip extends flash.display.MovieClip {
 		if (__staticFrameScripts != null) {
 
 			if (__staticFrameScripts.exists (index)) {
-				__currentLabel = __symbol.frames[index].label;
+				labelLogic();
+
 				__staticFrameScripts.get (index) (this);
 
 				if(index  + 1 != __currentFrame){
@@ -1209,9 +1218,9 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	private override function mustResetRenderColorTransform():Bool {
-		
+
 		return super.mustResetRenderColorTransform() || (__symbol != null && __symbol.scalingGridRect != null);
-		
+
 	}
 
 	// Get & Set Methods
