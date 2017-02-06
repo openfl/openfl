@@ -238,43 +238,6 @@ class SimpleButton extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		#if !neko
-		
-		//if (!__renderable) return;
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		// TODO: scrollRect
-		
-		__currentState.__renderDOM (renderSession);
-		
-		//for (orphan in __removedChildren) {
-			//
-			//if (orphan.stage == null) {
-				//
-				//orphan.__renderDOM (renderSession);
-				//
-			//}
-			//
-		//}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		#end
-		
-	}
-	
-	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (!__renderable || __worldAlpha <= 0) return;

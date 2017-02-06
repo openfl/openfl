@@ -53,7 +53,6 @@ import openfl.display.StageAlign;
 import openfl.display.StageDisplayState;
 import openfl.display.StageQuality;
 import openfl.display.StageScaleMode;
-import openfl.display.Tilesheet;
 import openfl.display.TriangleCulling;
 import openfl.display.Window;
 import openfl.display3D.textures.CubeTexture;

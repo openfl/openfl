@@ -374,9 +374,6 @@ import openfl.Vector;
 	public function drawRoundRectComplex (x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float, bottomRightRadius:Float):Void;
 	
 	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?shader:Shader, count:Int = -1):Void;
-	
-	
 	/**
 	 * Renders a set of triangles, typically to distort bitmaps and give them a
 	 * three-dimensional appearance. The <code>drawTriangles()</code> method maps

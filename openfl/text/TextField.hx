@@ -8,7 +8,6 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor;
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.opengl.GLRenderer;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
@@ -725,13 +724,6 @@ class TextField extends InteractiveObject {
 	}
 	
 	
-	public override function __renderDOM (renderSession:RenderSession):Void {
-		
-		DOMTextField.render (this, renderSession);
-		
-	}
-	
-	
 	public override function __renderGL (renderSession:RenderSession):Void {
 		
 		if (__cacheAsBitmap) {
@@ -786,9 +778,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		if (stage != null) {
-			
-			#if !dom
-			
+						
 			stage.window.enableTextEvents = true;
 			
 			if (!__inputEnabled) {
@@ -806,8 +796,6 @@ class TextField extends InteractiveObject {
 				__startCursorTimer ();
 				
 			}
-			
-			#end
 			
 		}
 		
@@ -835,8 +823,6 @@ class TextField extends InteractiveObject {
 	
 	private function __stopTextInput ():Void {
 		
-		#if !dom
-		
 		if (__inputEnabled && stage != null) {
 			
 			stage.window.enableTextEvents = false;
@@ -847,8 +833,6 @@ class TextField extends InteractiveObject {
 			__stopCursorTimer ();
 			
 		}
-		
-		#end
 		
 	}
 	
@@ -1244,7 +1228,7 @@ class TextField extends InteractiveObject {
 						
 		__isHTML = true;
 						
-		if (#if (js && html5) #if dom false && #end __div == null #else true #end) {
+		if (#if (js && html5) __div == null #else true #end) {
 						
 			value = new EReg ("<br>", "g").replace (value, "\n");
 			value = new EReg ("<br/>", "g").replace (value, "\n");

@@ -128,20 +128,7 @@ class GraphicsTest {
 		Assert.isNotNull (exists);
 		
 	}
-	
-	
-	@Test public function drawPath () {
 		
-		// TODO: Confirm functionality
-		
-		var shape = new Shape ();
-		var graphics = shape.graphics;
-		var exists = graphics.drawPath;
-		
-		Assert.isNotNull (exists);
-		
-	}
-	
 	
 	@Test public function drawRect () {
 		

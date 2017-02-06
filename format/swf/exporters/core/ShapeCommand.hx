@@ -21,7 +21,6 @@ enum ShapeCommand {
 	//DrawEllipse (x:Float, y:Float, width:Float, height:Float);
 	//DrawRect (x:Float, y:Float, width:Float, height:Float);
 	//DrawRoundRect (x:Float, y:Float, width:Float, height:Float, rx:Float, ry:Float);
-	//DrawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, count:Int);
 	//DrawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling);
 	EndFill;
 	LineStyle (thickness:Null<Float>, color:Null<Int>, alpha:Null<Float>, pixelHinting:Null<Bool>, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Null<Float>);

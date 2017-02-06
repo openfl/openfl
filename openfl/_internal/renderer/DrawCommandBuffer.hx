@@ -10,10 +10,10 @@ import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.Shader;
 import openfl.display.SpreadMethod;
-import openfl.display.Tilesheet;
 import openfl.display.TriangleCulling;
 import openfl.geom.Matrix;
 import openfl.Vector;
+import openfl.utils.UnshrinkableArray;
 
 @:allow(openfl._internal.renderer.DrawCommandReader)
 
@@ -22,28 +22,26 @@ class DrawCommandBuffer {
 	
 	
 	public var length (get, never):Int; 
-	public var types:Array<DrawCommandType>;
+	public var types:UnshrinkableArray<DrawCommandType>;
 	
-	private var b:Array<Bool>;
-	private var f:Array<Float>;
-	private var ff:Array<Array<Float>>;
-	private var i:Array<Int>;
-	private var ii:Array<Array<Int>>;
-	private var o:Array<Dynamic>;
-	private var ts:Array<Tilesheet>;
+	private var b:UnshrinkableArray<Bool>;
+	private var f:UnshrinkableArray<Float>;
+	private var ff:UnshrinkableArray<Array<Float>>;
+	private var i:UnshrinkableArray<Int>;
+	private var ii:UnshrinkableArray<Array<Int>>;
+	private var o:UnshrinkableArray<Dynamic>;
 	
 	
 	public function new () {
 		
-		types = [];
+		types = new UnshrinkableArray(128);
 		
-		b = [];
-		i = [];
-		f = [];
-		o = [];
-		ff = [];
-		ii = [];
-		ts = [];
+		b = new UnshrinkableArray(128);
+		i = new UnshrinkableArray(128);
+		f = new UnshrinkableArray(128);
+		o = new UnshrinkableArray(128);
+		ff = new UnshrinkableArray(128);
+		ii = new UnshrinkableArray(128);
 		
 	}
 	
@@ -66,7 +64,6 @@ class DrawCommandBuffer {
 				case DRAW_PATH: var c = data.readDrawPath (); drawPath (c.commands, c.data, c.winding);
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-				case DRAW_TILES: var c = data.readDrawTiles (); drawTiles (c.sheet, c.tileData, c.smooth, c.flags, c.shader, c.count);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
 				case END_FILL: var c = data.readEndFill (); endFill ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
@@ -123,15 +120,14 @@ class DrawCommandBuffer {
 	
 	public function clear ():Void {
 		
-		types.splice (0, types.length);
+		types.clear();
 		
-		b.splice (0, b.length);
-		i.splice (0, i.length);
-		f.splice (0, f.length);
-		o.splice (0, o.length);
-		ff.splice (0, ff.length);
-		ii.splice (0, ii.length);
-		ts.splice (0, ts.length);
+		b.clear();
+		i.clear();
+		f.clear();
+		o.clear();
+		ff.clear();
+		ii.clear();
 		
 	}
 	
@@ -180,7 +176,6 @@ class DrawCommandBuffer {
 		o = null;
 		ff = null;
 		ii = null;
-		ts = null;
 		
 	}
 	
@@ -235,19 +230,6 @@ class DrawCommandBuffer {
 		f.push (height);
 		f.push (ellipseWidth);
 		o.push (ellipseHeight);
-		
-	}
-	
-	
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool, flags:Int, ?shader:Shader, count:Int):Void {
-		
-		types.push (DRAW_TILES);
-		ts.push (sheet);
-		ff.push (tileData);
-		b.push (smooth);
-		i.push (flags);
-		o.push (shader);
-		i.push (count);
 		
 	}
 	

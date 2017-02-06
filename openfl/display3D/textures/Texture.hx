@@ -83,7 +83,7 @@ using openfl.display.BitmapData;
 		GL.bindTexture (GL.TEXTURE_2D, glTexture);
 		GL.pixelStorei (GL.UNPACK_FLIP_Y_WEBGL, 1);
 		var textureImage = image;
-		#if (!webgl || !js)
+		#if (!js)
 			if ((!textureImage.premultiplied && textureImage.transparent) ) {
 
 				textureImage = textureImage.clone ();

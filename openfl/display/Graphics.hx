@@ -9,8 +9,6 @@ import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.opengl.utils.RenderTexture;
 import openfl.display.Shader;
 import openfl.errors.ArgumentError;
-import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
-import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl.display.GraphicsPathCommand;
 import openfl.display.GraphicsBitmapFill;
 import openfl.display.GraphicsEndFill;
@@ -18,7 +16,6 @@ import openfl.display.GraphicsGradientFill;
 import openfl.display.GraphicsPath;
 import openfl.display.GraphicsSolidFill;
 import openfl.display.GraphicsStroke;
-import openfl.display.Tilesheet;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -62,8 +59,6 @@ import js.html.CanvasRenderingContext2D;
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
-	private var __glStack:Array<GLStack> = [];
-	private var __drawPaths:Array<DrawPath>;
 	private var __image:Image;
 	private var __padding:Int;
 	private var __positionX:Float;
@@ -82,7 +77,7 @@ import js.html.CanvasRenderingContext2D;
 	#end
 
 	private var __bitmap(default, set):BitmapData;
-
+	private var __symbol:format.swf.lite.symbols.ShapeSymbol;
 
 	private function new () {
 
@@ -174,29 +169,26 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 
-	public function copyFrom (sourceGraphics:Graphics):Void {
+	public function copyFrom (sourceGraphics:Graphics, shallowCopy:Bool = false):Void {
 
-		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone () : null;
-		__commands = sourceGraphics.__commands.copy ();
+		if (shallowCopy) {
+
+			__bounds = sourceGraphics.__bounds;
+			__commands = sourceGraphics.__commands;
+
+		} else {
+
+			__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone () : null;
+			__commands = sourceGraphics.__commands.copy ();
+
+		}
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
 		__transformDirty = true;
 		__visible = sourceGraphics.__visible;
-
-	}
-
-	public function shallowCopyFrom (sourceGraphics:Graphics):Void {
-
-		__bounds = sourceGraphics.__bounds;
-		__commands = sourceGraphics.__commands;
-		__dirty = true;
-		__strokePadding = sourceGraphics.__strokePadding;
-		__positionX = sourceGraphics.__positionX;
-		__positionY = sourceGraphics.__positionY;
-		__transformDirty = true;
-		__visible = sourceGraphics.__visible;
+		__symbol = sourceGraphics.__symbol;
 
 	}
 
@@ -500,223 +492,6 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 
-	public function drawTiles (sheet:Tilesheet, tileData:Array<Float>, smooth:Bool = false, flags:Int = 0, ?shader:Shader, count:Int = -1):Void {
-
-		var useScale = (flags & Tilesheet.TILE_SCALE) > 0;
-		var useRotation = (flags & Tilesheet.TILE_ROTATION) > 0;
-		var useRGB = (flags & Tilesheet.TILE_RGB) > 0;
-		var useAlpha = (flags & Tilesheet.TILE_ALPHA) > 0;
-		var useTransform = (flags & Tilesheet.TILE_TRANS_2x2) > 0;
-		var useColorTransform = (flags & Tilesheet.TILE_TRANS_COLOR) > 0;
-		var useRect = (flags & Tilesheet.TILE_RECT) > 0;
-		var useOrigin = (flags & Tilesheet.TILE_ORIGIN) > 0;
-
-		var rect = openfl.geom.Rectangle.__temp;
-		var matrix = Matrix.__temp;
-
-		var numValues = 3;
-		var totalCount = count;
-
-		if (count < 0) {
-
-			totalCount = tileData.length;
-
-		}
-
-		if (useTransform || useScale || useRotation || useRGB || useAlpha || useColorTransform) {
-
-			var scaleIndex = 0;
-			var rotationIndex = 0;
-			var transformIndex = 0;
-
-			if (useRect) { numValues = useOrigin ? 8 : 6; }
-			if (useScale) { scaleIndex = numValues; numValues++; }
-			if (useRotation) { rotationIndex = numValues; numValues++; }
-			if (useTransform) { transformIndex = numValues; numValues += 4; }
-			if (useRGB) { numValues += 3; }
-			if (useAlpha) { numValues++; }
-			if (useColorTransform) { numValues += 4; }
-
-			var itemCount = Std.int (totalCount / numValues);
-			var index = 0;
-			var cacheID = -1;
-
-			var x, y, id, scale, rotation, tileWidth, tileHeight, originX, originY;
-			var tile = null;
-			var tilePoint = null;
-
-			while (index < totalCount) {
-
-				x = tileData[index];
-				y = tileData[index + 1];
-				id = (!useRect #if neko && tileData[index + 2] != null #end) ? Std.int (tileData[index + 2]) : -1;
-				scale = 1.0;
-				rotation = 0.0;
-
-				if (useScale) {
-
-					scale = tileData[index + scaleIndex];
-
-				}
-
-				if (useRotation) {
-
-					rotation = tileData[index + rotationIndex];
-
-				}
-
-				if (id < 0) {
-
-					tile = null;
-
-				} else {
-
-					if (!useRect && cacheID != id) {
-
-						cacheID = id;
-						tile = sheet.__tileRects[id];
-						tilePoint = sheet.__centerPoints[id];
-
-					} else if (useRect) {
-
-						tile = sheet.__rectTile;
-						tile.setTo (tileData[index + 2], tileData[index + 3], tileData[index + 4], tileData[index + 5]);
-						tilePoint = sheet.__point;
-
-						if (useOrigin) {
-
-							tilePoint.setTo (tileData[index + 6] / tile.width, tileData[index + 7] / tile.height);
-
-						} else {
-
-							tilePoint.setTo (0, 0);
-
-						}
-
-					}
-
-				}
-
-				if (tile != null) {
-
-					if (useTransform) {
-
-						rect.setTo (0, 0, tile.width, tile.height);
-						matrix.setTo (tileData[index + transformIndex], tileData[index + transformIndex + 1], tileData[index + transformIndex + 2], tileData[index + transformIndex + 3], 0, 0);
-
-						originX = tilePoint.x * scale;
-						originY = tilePoint.y * scale;
-
-						matrix.translate (x - matrix.__transformX (originX, originY), y - matrix.__transformY (originX, originY));
-
-						rect.__transform (rect, matrix);
-
-						__inflateBounds (rect.x, rect.y);
-						__inflateBounds (rect.right, rect.bottom);
-
-					} else {
-
-						tileWidth = tile.width * scale;
-						tileHeight = tile.height * scale;
-
-						x -= tilePoint.x * tileWidth;
-						y -= tilePoint.y * tileHeight;
-
-						if (rotation != 0) {
-
-							rect.setTo (0, 0, tileWidth, tileHeight);
-
-							matrix.identity ();
-							matrix.rotate (rotation);
-							matrix.translate (x, y);
-
-							rect.__transform (rect, matrix);
-
-							__inflateBounds (rect.x, rect.y);
-							__inflateBounds (rect.right, rect.bottom);
-
-						} else {
-
-							__inflateBounds (x, y);
-							__inflateBounds (x + tileWidth, y + tileHeight);
-
-						}
-
-					}
-
-				}
-
-				index += numValues;
-
-			}
-
-		} else {
-
-			var x, y, id, tile, centerPoint, originX, originY;
-			var rect = openfl.geom.Rectangle.__temp;
-			var index = 0;
-
-			while (index < totalCount) {
-
-				x = tileData[index++];
-				y = tileData[index++];
-
-				#if neko
-				if (useRect) {
-					id = -1;
-				} else {
-					id = (tileData[index] != null) ? Std.int (tileData[index]) : 0;
-					index++;
-				}
-				#else
-				id = (!useRect) ? Std.int (tileData[index++]) : -1;
-				#end
-
-				originX = 0.0;
-				originY = 0.0;
-
-				if (useRect) {
-
-					rect.setTo (tileData[index++], tileData[index++], tileData[index++], tileData[index++]);
-
-					if (useOrigin) {
-
-						originX = tileData[index++];
-						originY = tileData[index++];
-
-					}
-
-					__inflateBounds (x - originX, y - originY);
-					__inflateBounds (x - originX + rect.width, y - originY + rect.height);
-
-				} else {
-
-					tile = sheet.__tileRects[id];
-
-					if (tile != null) {
-
-						centerPoint = sheet.__centerPoints[id];
-						originX = centerPoint.x * tile.width;
-						originY = centerPoint.y * tile.height;
-
-						__inflateBounds (x - originX, y - originY);
-						__inflateBounds (x - originX + tile.width, y - originY + tile.height);
-
-					}
-
-				}
-
-			}
-		}
-
-		__commands.drawTiles (sheet, tileData, smooth, flags, shader, count);
-
-		__dirty = true;
-		__visible = true;
-
-	}
-
-
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = TriangleCulling.NONE):Void {
 
 		var vlen = Std.int (vertices.length / 2);
@@ -937,13 +712,6 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 	public function dispose ():Void {
-		for( stack in __glStack ) {
-			if (stack != null) {
-				stack.dispose();
-			}
-		}
-
-		__glStack = [];
 		__bitmap = null;
 		__dirty = true;
 	}
@@ -968,7 +736,7 @@ import js.html.CanvasRenderingContext2D;
 
 	private function set___bitmap (value:BitmapData):BitmapData {
 
-		if (__bitmap != null) {
+		if (__bitmap != null && (__symbol == null || !__symbol.useBitmapCache)) {
 
 			__bitmap.dispose ();
 
