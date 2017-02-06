@@ -28,11 +28,6 @@ class Window extends LimeWindow {
 		stage = new Stage (this, Reflect.hasField (config, "background") ? config.background : 0xFFFFFF);
 		application.addModule (stage);
 
-		#if !neko
-			if ( resizable ) {
-				ApplicationMain.instance.resize({width: width, height: height});
-			}
-		#end
 		#else
 
 		stage = Lib.current.stage;
