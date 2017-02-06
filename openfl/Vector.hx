@@ -778,9 +778,10 @@ using cpp.NativeArray;
 	
 	
 	public inline function new (?length:Int, ?fixed:Bool):Void {
-		
-		this = untyped (new Array<T> ()).__SetSizeExact (length);
-		
+
+		this = new Array<T> ();
+		untyped( this ).__SetSizeExact (length);
+
 	}
 	
 	
