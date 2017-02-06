@@ -681,7 +681,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	public function set_scaleMode(scaleMode):StageScaleMode {
 		if ( scaleMode != __scaleMode ) {
-			onWindowResize(window, window.width, window.height);
+			#if duell_container
+				onWindowResize(window, window.width, window.height + 25);
+			#else
+				onWindowResize(window, window.width, window.height);
+			#end
 		}
 		return __scaleMode = scaleMode;
 	}
