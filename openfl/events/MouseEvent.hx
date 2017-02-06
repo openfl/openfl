@@ -51,7 +51,7 @@ class MouseEvent extends Event {
 	}
 
 
-	public static function __create (type:String, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent {
+	public static function __create (type:String, stageX:Float = 0, stageY:Float = 0, local:Point = null, target:InteractiveObject = null, delta:Int = 0):MouseEvent {
 
 		switch (type) {
 
@@ -77,8 +77,15 @@ class MouseEvent extends Event {
 		event.shiftKey = __shiftKey;
 		event.relatedObject = null;
 		event.delta = delta;
-		event.localX = local.x;
-		event.localY = local.y;
+
+		if ( local == null ) {
+			event.localX = 0;
+			event.localY = 0;
+		} else {
+			event.localX = local.x;
+			event.localY = local.y;
+		}
+
 		event.buttonDown = __buttonDown;
 		event.commandKey = __commandKey;
 		event.clickCount = 0;
