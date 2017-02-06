@@ -186,6 +186,7 @@ class CanvasTextField {
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
 
 						if (group.format.underline) {
+							context.beginPath();
 							context.strokeStyle = "#000000";
 							context.lineWidth = .5;
 							var x = group.offsetX + scrollX;
