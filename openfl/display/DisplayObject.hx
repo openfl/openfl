@@ -496,15 +496,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function __hitTestMask (x:Float, y:Float):Bool {
 
-		if (__graphics != null) {
+		if (!visible || __graphics == null) return false;
 
 			if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
 
 				return true;
 
 			}
-
-		}
 
 		return false;
 
