@@ -90,6 +90,7 @@ class Bitmap extends DisplayObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
+		if (!visible) return false;
 		if (bitmapData == null) return false;
 		
 		__getWorldTransform ();

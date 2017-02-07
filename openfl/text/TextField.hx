@@ -662,6 +662,8 @@ class TextField extends InteractiveObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
+		if (!visible) return false;
+
 		__getWorldTransform ();
 		__updateLayout ();
 		

@@ -132,6 +132,7 @@ class SimpleButton extends InteractiveObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
+		if (!visible) return false;
 		var hitTest = false;
 		
 		var cacheTransform = __updateTransform (__currentState);

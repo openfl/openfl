@@ -597,6 +597,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 
+		if (!visible) return false;
 		var i = __children.length;
 
 		while (--i >= 0) {
