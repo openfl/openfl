@@ -73,7 +73,14 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return new IntMap<V> ();
 		
 	}
+
 	
+	@:to static inline function toFloatMap<K:Float,V> (t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V> {
+		
+		return new FloatMap<K, V> ();
+		
+	}
+
 	
 	@:to static inline function toEnumValueMapMap<K:EnumValue, V> (t:IMap<K, V>, weakKeys:Bool):EnumValueMap<K, V> {
 		
@@ -116,6 +123,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		
 	}
 	
+
+	@:from static inline function fromFloatMap<K:Float, V> (map:FloatMap<K, V>):Dictionary<K, V> {
+		
+		return cast map;
+		
+	}
+
 	
 	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Dictionary<K, V> {
 		
@@ -208,6 +222,103 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		
 	}
 	
+	
+}
+
+
+@:dox(hide) private class FloatMap<K:Float, V> implements Map.IMap<K, V> {
+	
+	
+	private var types:Map<String, K>;
+	private var values:Map<String, V>;
+	
+	
+	public function new ():Void {
+		
+		types = new Map ();
+		values = new Map ();
+		
+	}
+	
+	
+	public function exists (key:K):Bool {
+		
+		return types.exists (toFixed(key));
+		
+	}
+	
+	
+	public function get (key:K):Null<V> {
+		
+		return values.get (toFixed(key));
+		
+	}
+	
+	
+	public function keys ():Iterator<K> {
+		
+		return types.iterator ();
+		
+	}
+	
+	
+	public function iterator ():Iterator<V> {
+		
+		return values.iterator ();
+		
+	}
+	
+	
+	public function remove (key:K):Bool {
+		
+		var name = toFixed(key);
+		return (types.remove (name) || values.remove (name));
+		
+	}
+	
+	
+	public function set (key:K, value:V):Void {
+		
+		var name = toFixed(key);
+		types.set (name, key);
+		values.set (name, value);
+		
+	}
+	
+	
+	public function toString ():String {
+		
+		return values.toString ();
+		
+	}
+
+
+	/**
+	 * 	The float point number is converted to a string with fractionDigits fraction digits. By default 5.
+	 *  If the floating point numnber has more then 5 digits, it is rounded to 5, if it has less it is padded by 0s to the 5th digit
+	 */
+	private static inline function toFixed(v:Float, fractionDigits:Int = 5):String {
+        #if (js)
+            return untyped v.toFixed(fractionDigits);
+        #else          
+            var b = Math.pow(5, fractionDigits);
+            var s = Std.string(v);
+            var dotIndex = s.indexOf('.');
+            if(dotIndex >= 0) {
+                var diff = fractionDigits - (s.length - (dotIndex + 1));
+                if(diff > 0) {
+                    s = StringTools.rpad(s, "0", s.length + diff);
+                } else {
+                    s = Std.string(Math.round(v * b) / b);
+                }
+            } else {
+                s += ".";
+                s = StringTools.rpad(s, "0", s.length + fractionDigits);
+            }
+            return s;
+        #end
+    }
+    
 	
 }
 
