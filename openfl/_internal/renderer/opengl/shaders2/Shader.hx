@@ -16,6 +16,8 @@ import openfl.gl.GLUniformLocation;
 import openfl.utils.Float32Array;
 import openfl.utils.UnsafeStringMap;
 
+import openfl._internal.renderer.opengl.shaders2.DefaultShader;
+
 @:allow(openfl.display.Shader)
 @:access(openfl._internal.renderer.opengl.utils.ShaderManager)
 class Shader {
@@ -227,8 +229,11 @@ class Shader {
 		if (vertexShader != null && fragmentShader != null) {
 			gl.attachShader(program, vertexShader);
 			gl.attachShader(program, fragmentShader);
+			gl.bindAttribLocation(program, 0, Attrib.Position);
+			gl.bindAttribLocation(program, 1, Attrib.TexCoord);
+			gl.bindAttribLocation(program, 2, Attrib.Color);
 			gl.linkProgram(program);
-			
+
 			gl.deleteShader(vertexShader);
 			gl.deleteShader(fragmentShader);
 			
