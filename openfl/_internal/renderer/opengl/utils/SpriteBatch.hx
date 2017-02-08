@@ -442,7 +442,7 @@ class SpriteBatch {
 			state.maskTexture = null;
 		}
 		state.textureSmooth = smooth;
-		state.blendMode = blendMode;
+		state.blendMode = blendMode != null ? blendMode : NORMAL;
 
 		// colorTransform is default, skipping it
 		state.skipColorTransform = (colorTransform != null && @:privateAccess colorTransform.__isDefault());
