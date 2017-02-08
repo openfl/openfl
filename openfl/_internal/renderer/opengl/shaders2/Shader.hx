@@ -23,7 +23,8 @@ import openfl._internal.renderer.opengl.shaders2.DefaultShader;
 class Shader {
 	
 	private static var UID:Int = 0;
- 	
+	private static var currentVertexArray:VertexArray = null;
+ 
 	public var gl:GLRenderContext;
 	
 	public var vertexSrc:Array<String>;
@@ -189,25 +190,40 @@ class Shader {
 	
 	public function bindVertexArray(va:VertexArray) {
 
-		var offset = 0;
+		if (va == currentVertexArray) return;
+		
+ 		var offset = 0;
 		var stride = va.stride;
 		
-		for (attribute in va.attributes) {
-			if (attribute.enabled) {
-				enableVertexAttribute(attribute, stride, offset);
-				offset += attribute.elements;
-			} else {
-				disableVertexAttribute(attribute, true);
+		if (currentVertexArray != null && va.attributes == currentVertexArray.attributes) {
+			for (attribute in va.attributes) {
+				if (attribute.enabled) {
+					var location = getAttribLocation(attribute.name);
+					if (location >= 0) {
+						gl.vertexAttribPointer(location, attribute.components, attribute.type, attribute.normalized, stride, offset * 4);
+					}
+					offset += attribute.elements;
+				}
 			}
-		}
-		
+ 		} else {
+			for (attribute in va.attributes) {
+				if (attribute.enabled) {
+					enableVertexAttribute(attribute, stride, offset);
+					offset += attribute.elements;
+				} else {
+					disableVertexAttribute(attribute, true);
+				}
+			}
+		} 
+
+		currentVertexArray = va;
 	}
 	
 	public function unbindVertexArray(va:VertexArray) {
 		for (attribute in va.attributes) {
 			disableVertexAttribute(attribute, false);
 		}
-
+		currentVertexArray = null;
 	}
 	
 	
@@ -264,4 +280,8 @@ class Shader {
 		return shader;
 	}
 	
+	public static function resetCache() {
+		currentVertexArray = null;
+	}
+
 }
