@@ -925,6 +925,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	#if profile
+	public function getAllChildrenCount():Int
+	{
+		var total = 0;
+
+		if(__children != null)
+		{
+			total += __children.length;
+
+			for (child in __children)
+			{
+				total += child.getAllChildrenCount();
+			}
+		}
+
+		return total;
+	}
+	#end
+
 
 	public function __updateChildren (transformOnly:Bool):Void {
 
