@@ -113,7 +113,7 @@ class Sound extends EventDispatcher {
 
 		} else {
 
-			dispatchEvent (new Event (Event.COMPLETE));
+			dispatchEvent (Event.__create (Event.COMPLETE));
 
 		}
 
@@ -260,7 +260,7 @@ class Sound extends EventDispatcher {
 		} else {
 
 			__buffer = buffer;
-			dispatchEvent (new Event (Event.COMPLETE));
+			dispatchEvent (Event.__create (Event.COMPLETE));
 
 		}
 
@@ -274,7 +274,7 @@ class Sound extends EventDispatcher {
 
 			SoundJS.removeEventListener ("fileload", SoundJS_onFileLoad);
 			SoundJS.removeEventListener ("fileerror", SoundJS_onFileError);
-			dispatchEvent (new Event (Event.COMPLETE));
+			dispatchEvent (Event.__create (Event.COMPLETE));
 
 		}
 

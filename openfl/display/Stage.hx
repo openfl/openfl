@@ -310,7 +310,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (window != null) {
 
-			var event = new Event (Event.DEACTIVATE);
+			var event = Event.__create (Event.DEACTIVATE);
 			__broadcastFromStage (event, true);
 
 		}
@@ -469,7 +469,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
-		var event = new Event (Event.ACTIVATE);
+		var event = Event.__create (Event.ACTIVATE);
 		__broadcastFromStage (event, true);
 
 	}
@@ -531,7 +531,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
-		var event = new Event (Event.DEACTIVATE);
+		var event = Event.__create (Event.DEACTIVATE);
 		__broadcastFromStage (event, true);
 
 	}
@@ -581,7 +581,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
-		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
+		__dispatchEvent (Event.__create (Event.MOUSE_LEAVE));
 
 	}
 
@@ -670,7 +670,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		var event = new Event (Event.RESIZE);
+		var event = Event.__create (Event.RESIZE);
 		__broadcastFromStage (event, false);
 
 	}
@@ -796,12 +796,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Telemetry.__advanceFrame ();
 		#end
 
-		__broadcastFromStage (new Event (Event.ENTER_FRAME), true);
+		__broadcastFromStage (Event.__create (Event.ENTER_FRAME), true);
 
 		if (__invalidated) {
 
 			__invalidated = false;
-			__broadcastFromStage (new Event (Event.RENDER), true);
+			__broadcastFromStage (Event.__create (Event.RENDER), true);
 
 		}
 
@@ -874,7 +874,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				stack[i].__broadcast (event, false);
 
 				if (event.__isCanceled) {
-					event.dispose();
 					return;
 
 				}
@@ -885,7 +884,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
-				event.dispose();
 				return;
 
 			}
@@ -900,7 +898,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
-						event.dispose();
 						return;
 
 					}
@@ -912,8 +909,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 
 		}
-
-		event.dispose();
 	}
 
 

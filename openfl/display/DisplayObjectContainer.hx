@@ -125,7 +125,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setRenderDirty ();
 			__setRenderDirty();
 
-			var event = new Event (Event.ADDED, true);
+			var event = Event.__create (Event.ADDED, true);
 			event.target = child;
 			child.__dispatchEvent (event);
 	}
@@ -203,7 +203,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (child != null && child.parent == this) {
 
-			child.__dispatchEvent (new Event (Event.REMOVED, true));
+			child.__dispatchEvent (Event.__create (Event.REMOVED, true));
 
 			if (stage != null) {
 
@@ -844,9 +844,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (this.stage != null) {
 
 				#if compliant_stage_events
-					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
+					Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
 				#else
-					__dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+					__dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
 				#end
 				__releaseResources();
 
@@ -857,9 +857,9 @@ class DisplayObjectContainer extends InteractiveObject {
 			if (stage != null) {
 
 				#if compliant_stage_events
-					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
+					Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
 				#else
-					__dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+					__dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
 				#end
 			}
 
