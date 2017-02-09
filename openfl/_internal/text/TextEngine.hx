@@ -84,12 +84,12 @@ class TextEngine {
 	public var maxScrollV (default, null):Int;
 	public var multiline:Bool;
 	public var numLines (default, null):Int;
-	public var restrict:String;
+	public var restrict (default, set):String;
 	public var scrollH:Int;
 	public var scrollV:Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
-	public var text:String;
+	public var text (default, set):String;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -109,6 +109,7 @@ class TextEngine {
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __restrictRegexp:EReg;
 	//@:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	//@:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	//@:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
@@ -1251,6 +1252,77 @@ class TextEngine {
 		getBounds ();
 		
 	}
-	
-	
+
+	private function set_restrict (value:String):String {
+		if (restrict == value) {
+
+			return restrict;
+
+		}
+
+		restrict = value;
+
+		if (restrict == null || restrict.length == 0) {
+
+			__restrictRegexp = null;
+
+		} else {
+
+			__restrictRegexp = createRestrictRegexp(value);
+
+		}
+
+		return restrict;
+
+	}
+
+	private function createRestrictRegexp (restrict:String):EReg {
+        var declinedRange = ~/\^(.-.|.)/gu;
+		var declined = '';
+
+		var accepted = declinedRange.map (restrict, function (ereg) {
+
+			declined += ereg.matched(1);
+			return '';
+
+		});
+
+		var testRegexpParts:Array<String> = [];
+
+		if (accepted.length > 0) {
+
+			testRegexpParts.push('[^$restrict]');
+
+		}
+
+		if (declined.length > 0) {
+
+			testRegexpParts.push('[$declined]');
+
+		}
+
+		return new EReg('(${testRegexpParts.join('|')})', 'g');
+	}
+
+	private function set_text (value:String):String {
+		if (value == null) return text = value;
+
+		return text = applyRestrictions (value);
+	}
+
+	private function applyRestrictions (text:String):String {
+		if (__restrictRegexp != null) {
+
+			text = __restrictRegexp.split(text).join('');
+
+		}
+
+		if (maxChars > 0 && text.length > 0) {
+
+			text = text.substr (0, maxChars);
+
+		}
+
+		return text;
+	}
 }
