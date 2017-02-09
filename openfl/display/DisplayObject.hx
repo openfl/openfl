@@ -897,6 +897,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (!transformOnly) {
 
+			#if profile
+				untyped __js__("++window.updateCalls;");
+			#end
+
 			__updateColor();
 
 			if(parent != null)
