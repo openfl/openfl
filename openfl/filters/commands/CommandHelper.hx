@@ -87,8 +87,6 @@ class CommandHelper {
 		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, source.getTexture (gl));
 
-		gl.uniform1i(internalShader.getUniformLocation(DefUniform.Sampler), 0); // DefUniform or MaskedUniform?
-
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
