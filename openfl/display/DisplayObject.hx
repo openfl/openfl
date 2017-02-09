@@ -43,6 +43,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private static var __worldRenderDirty = 0;
 	private static var __worldTransformDirty = 0;
+	#if compliant_stage_events
+	private static var __displayStack = new UnshrinkableArray<DisplayObject>(16);
+	#end
 
 	public var alpha (get, set):Float;
 	public var blendMode (default, set):BlendMode;
@@ -134,7 +137,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __context:CanvasRenderingContext2D;
 	private var __style:CSSStyleDeclaration;
 	#end
-
 
 	private function new () {
 
@@ -698,17 +700,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
-		var element : DisplayObject = object;
-		var result:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(32);
-		while(element != null) {
-			result.push(element);
-			element = element.parent;
+	#if compliant_stage_events
+		private function __getDisplayStack(object:DisplayObject):UnshrinkableArray<DisplayObject> {
+			__displayStack.clear();
+			var element : DisplayObject = object;
+			while(element != null) {
+				__displayStack.push(element);
+				element = element.parent;
+			}
+			__displayStack.reverse();
+			return __displayStack;
 		}
-		result.reverse();
-		return result;
-	}
-
+	#end
 	private function __setStageReference (stage:Stage):Void {
 
 		if (this.stage != stage) {
