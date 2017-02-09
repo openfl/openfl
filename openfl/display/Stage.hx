@@ -1428,41 +1428,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGrahpics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
-		if (transformOnly) {
-
-			if (DisplayObject.__worldTransformDirty > 0) {
-
-				super.__update (true, updateChildren, maskGrahpics);
+		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
+			super.__update (transformOnly, updateChildren);
 
 				if (updateChildren) {
-
 					DisplayObject.__worldTransformDirty = 0;
-					__dirty = true;
-
-				}
-
-			}
-
-		} else {
-
-			if (DisplayObject.__worldTransformDirty > 0 || __dirty || DisplayObject.__worldRenderDirty > 0) {
-
-				super.__update (false, updateChildren, maskGrahpics);
-
-				if (updateChildren) {
-
-					DisplayObject.__worldTransformDirty = 0;
+				if ( !transformOnly ) {
 					DisplayObject.__worldRenderDirty = 0;
-					__dirty = false;
-
 				}
-
+				__dirty = transformOnly;
 			}
-
 		}
-
 	}
 
 

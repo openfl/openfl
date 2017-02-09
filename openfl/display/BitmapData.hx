@@ -444,56 +444,6 @@ class BitmapData implements IBitmapDrawable {
 		}
 		#else
 
-		//var renderSession = @:privateAccess Lib.current.stage.__renderer.renderSession;
-		//__drawGL (renderSession, width, height, source, matrix, colorTransform, blendMode, clipRect, smoothing, !__usingPingPongTexture, false, true);
-
-		var surface = getSurface ();
-		var cairo = new Cairo (surface);
-
-		if (!smoothing) {
-
-			cairo.antialias = NONE;
-
-		}
-
-		var renderSession = new RenderSession ();
-		renderSession.cairo = cairo;
-		renderSession.roundPixels = true;
-		renderSession.maskManager = new CairoMaskManager (renderSession);
-
-		if (clipRect != null) {
-
-			var temp_matrix = Matrix.pool.get();
-			temp_matrix.identity();
-			renderSession.maskManager.pushRect (clipRect, temp_matrix);
-			Matrix.pool.put( temp_matrix );
-
-		}
-
-		var matrixCache = source.__worldTransform;
-
-		if ( matrix != null ) {
-			source.__updateTransforms(matrix);
-		} else {
-			var temp_matrix = Matrix.pool.get();
-			source.__updateTransforms(temp_matrix);
-			Matrix.pool.put( temp_matrix );
-		}
-		source.__updateChildren (false);
-		source.__renderCairo (renderSession);
-		source.__updateTransforms(matrixCache);
-		source.__updateChildren (true);
-
-		if (clipRect != null) {
-
-			renderSession.maskManager.popMask ();
-
-		}
-
-		surface.flush ();
-
-		image.dirty = true;
-
 		#end
 
 	}
@@ -1274,101 +1224,6 @@ class BitmapData implements IBitmapDrawable {
 
 	}
 
-
-	public function __renderCairo (renderSession:RenderSession):Void {
-
-		if (!__isValid) return;
-
-		var cairo = renderSession.cairo;
-
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-
-		//context.globalAlpha = 1;
-		var transform = __worldTransform;
-
-		if (renderSession.roundPixels) {
-
-			var matrix = transform.__toMatrix3 ();
-			matrix.tx = Math.round (matrix.tx);
-			matrix.ty = Math.round (matrix.ty);
-			cairo.matrix = matrix;
-			//context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-
-		} else {
-
-			cairo.matrix = transform.__toMatrix3 ();
-			//context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-
-		}
-
-		var surface = getSurface ();
-
-		if (surface != null) {
-
-			var pattern = CairoPattern.createForSurface (surface);
-
-			if (cairo.antialias == NONE) {
-
-				pattern.filter = CairoFilter.NEAREST;
-
-			} else {
-
-				pattern.filter = CairoFilter.GOOD;
-
-			}
-
-			cairo.source = pattern;
-			cairo.paint ();
-
-		}
-
-	}
-
-
-	public function __renderCairoMask (renderSession:RenderSession):Void {
-
-
-
-	}
-
-
-	public function __renderCanvas (renderSession:RenderSession):Void {
-
-		#if (js && html5)
-		if (!__isValid) return;
-
-		ImageCanvasUtil.sync (image, false);
-
-		var context = renderSession.context;
-
-		if (__worldTransform == null) __worldTransform = new Matrix ();
-
-		context.globalAlpha = 1;
-		var transform = __worldTransform;
-
-		if (renderSession.roundPixels) {
-
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, Std.int (transform.tx), Std.int (transform.ty));
-
-		} else {
-
-			context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-
-		}
-
-		context.drawImage (image.src, 0, 0);
-		#end
-
-	}
-
-
-	public function __renderCanvasMask (renderSession:RenderSession):Void {
-
-
-
-	}
-
-
 	public function __renderGL (renderSession:RenderSession):Void {
 
 		renderSession.spriteBatch.renderBitmapData (this, true, __worldTransform, __renderColorTransform, 1.0, __blendMode, __shader);
@@ -1412,18 +1267,8 @@ class BitmapData implements IBitmapDrawable {
 	}
 
 
-	public function __updateTransforms (overrideTransform:Matrix = null):Void {
-
-		if (overrideTransform == null) {
-
-			__worldTransform.identity ();
-
-		} else {
-
-			__worldTransform = overrideTransform;
-
-		}
-
+	public function __updateTransforms ():Void {
+		__worldTransform.identity ();
 	}
 
 	public function get_width ():Int {

@@ -91,7 +91,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __interactive:Bool;
 	private var __isMask:Bool;
 	private var __mask:DisplayObject;
-	private var __maskGraphics:Graphics;
 	private var __maskCached:Bool = false;
 	private var __name:String = "";
 	private var __objectTransform:Transform;
@@ -260,8 +259,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool {
 
-		if (parent != null) {
-
 			var bounds = openfl.geom.Rectangle.pool.get ();
 			__getTransformedBounds (bounds, __getWorldTransform ());
 
@@ -273,10 +270,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			return result;
 
 		}
-
-		return false;
-
-	}
 
 
 
@@ -589,20 +582,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__mask != null) {
 
 			if( !__mask.__maskCached ){
-				if (__mask.__maskGraphics == null) {
 
-					__mask.__maskGraphics = new Graphics ();
-
-				}
-
-				__mask.__maskGraphics.clear ();
 				if( __mask.__cachedBitmap != null ){
 					__mask.__cachedBitmap.dispose();
 				}
 				__mask.__cachedBitmap = null;
 
 				__mask.__isMask = true;
-				__mask.__update (true, true, __mask.__maskGraphics);
+				__mask.__update (true, true);
 
 				__mask.__maskCached = true;
 			}
@@ -760,11 +747,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			dirty = true;
 		}
 
-		if (__maskGraphics != null) {
-			__maskGraphics.dispose();
-			dirty = true;
-		}
-
 		if (__cachedBitmap != null) {
 			__cachedBitmap.dispose();
 			__cachedBitmap = null;
@@ -876,7 +858,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
-	public function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 
@@ -886,12 +868,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			__transformDirty = false;
 			__worldTransformDirty--;
-
-		}
-
-		if (maskGraphics != null) {
-
-			__updateMask (maskGraphics);
 
 		}
 
@@ -942,32 +918,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 
-	public function __updateMask (maskGraphics:Graphics):Void {
+	public function __updateTransforms ():Void {
 
-		if (__graphics != null) {
-
-			maskGraphics.__commands.overrideMatrix (this.__worldTransform);
-			maskGraphics.__commands.append (__graphics.__commands);
-			maskGraphics.__dirty = true;
-			maskGraphics.__visible = true;
-
-			if (maskGraphics.__bounds == null) {
-
-				maskGraphics.__bounds = new Rectangle();
-
-			}
-
-			__graphics.__getBounds (maskGraphics.__bounds);
-
-		}
-
-	}
-
-
-	public function __updateTransforms (overrideTransform:Matrix = null):Void {
-
-		var overrided = overrideTransform != null;
-		var local = overrided ? overrideTransform : __transform;
+		var local =__transform;
 
 		if (__worldTransform == null) {
 
@@ -975,34 +928,43 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		}
 
-		var old_world_transform_a = __worldTransform.a;
-		var old_world_transform_b = __worldTransform.b;
-		var old_world_transform_c = __worldTransform.c;
-		var old_world_transform_d = __worldTransform.d;
+		var wt = __worldTransform;
+		var old_world_transform_a = wt.a;
+		var old_world_transform_b = wt.b;
+		var old_world_transform_c = wt.c;
+		var old_world_transform_d = wt.d;
 
-		if (!overrided && parent != null) {
+		if (parent != null) {
 
 			var parentTransform = parent.__worldTransform;
 
-			__worldTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
-			__worldTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
-			__worldTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
-			__worldTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
-			__worldTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-			__worldTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
+			var a = parentTransform.a;
+			var b = parentTransform.b;
+			var c = parentTransform.c;
+			var d = parentTransform.d;
+
+			var la = local.a;
+			var lb = local.b;
+			var lc = local.c;
+			var ld = local.d;
+
+			wt.a = la * a + lb * c;
+			wt.b = la * b + lb * d;
+			wt.c = lc * a+ ld * c;
+			wt.d = lc * b + ld * d;
+			wt.tx = local.tx * a+ local.ty * c + parentTransform.tx;
+			wt.ty = local.tx * b + local.ty * d + parentTransform.ty;
 
 			__worldOffset.copyFrom (parent.__worldOffset);
 
 		} else {
-
-			__worldTransform.copyFrom (local);
+			wt.copyFrom (local);
 			__worldOffset.setTo (0, 0);
-
 		}
 
 		if (__scrollRect != null) {
 
-			__offset = __worldTransform.deltaTransformPoint (__scrollRect.topLeft);
+			__offset = wt.deltaTransformPoint (__scrollRect.topLeft);
 			__worldOffset.offset (__offset.x, __offset.y);
 
 		} else {
@@ -1012,26 +974,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		}
 
 		if (!__isCachingAsBitmap &&
-			(old_world_transform_a != __worldTransform.a ||
-			old_world_transform_d != __worldTransform.d ||
-			old_world_transform_b != __worldTransform.b ||
-			old_world_transform_c != __worldTransform.c)) {
+			(old_world_transform_a != wt.a ||
+			old_world_transform_d != wt.d ||
+			old_world_transform_b != wt.b ||
+			old_world_transform_c != wt.c)) {
 			_onWorldTransformScaleRotationChanged ();
 		}
 
 
 		if (__cacheAsBitmapMatrix != null) {
 
-			throw ":TODO: fill renderScaleX, renderScaleY and use __cacheAsBitmapMatrix where appropriate";
+			trace(":TODO: fill renderScaleX, renderScaleY and use __cacheAsBitmapMatrix where appropriate");
 
 		} else if (__useSeparateRenderScaleTransform) {
 
-			renderScaleX = Math.sqrt (__worldTransform.a * __worldTransform.a + __worldTransform.b * __worldTransform.b);
-			renderScaleY = Math.sqrt (__worldTransform.c * __worldTransform.c + __worldTransform.d * __worldTransform.d);
+			renderScaleX = Math.sqrt (wt.a * wt.a + wt.b * wt.b);
+			renderScaleY = Math.sqrt (wt.c * wt.c + wt.d * wt.d);
 
 		}
 
-		__renderTransform.copyFrom (__worldTransform);
+		__renderTransform.copyFrom (wt);
 		__renderTransform.translate ( -__worldOffset.x, -__worldOffset.y);
 	}
 
@@ -1235,8 +1197,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			__mask.__maskCached = false;
 			__mask.__setTransformDirty();
 			__mask.__setRenderDirty();
-			__maskGraphics.dispose();
-			__maskGraphics = null;
 		}
 
 		if (value != null) {
