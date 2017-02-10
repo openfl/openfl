@@ -141,7 +141,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function new (window:Window, color:Null<Int> = null) {
 		
-		#if (hxtelemetry && !macro)
+		#if hxtelemetry
 		Telemetry.__initialize ();
 		#end
 		
