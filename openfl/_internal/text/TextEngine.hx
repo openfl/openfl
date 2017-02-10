@@ -737,28 +737,24 @@ class TextEngine {
 			lineIndex++;
 			startLayoutGroup(formatRange.format, textIndex);
 		}
+
 		nextFormatRange();
 		startLayoutGroup(formatRange.format, formatRange.start);
 
 		while( textIndex < textLength ) {
 			var nextBreakIndex : Int = textLength;
-			var breakCandidateIndex : Int = text.indexOf(" ", textIndex);
 
-			if ( breakCandidateIndex >= 0 && breakCandidateIndex < nextBreakIndex) {
-				nextBreakIndex = breakCandidateIndex;
+			inline function updateNextBreakIndex (breakString:String) {
+				var breakCandidateIndex : Int = text.indexOf(breakString, textIndex);
+
+				if ( breakCandidateIndex >= 0 && breakCandidateIndex < nextBreakIndex) {
+					nextBreakIndex = breakCandidateIndex;
+				}
 			}
 
-			breakCandidateIndex = text.indexOf("-", textIndex);
-
-			if ( breakCandidateIndex >= 0 && breakCandidateIndex < nextBreakIndex) {
-				nextBreakIndex = breakCandidateIndex;
-			}
-
-			breakCandidateIndex = text.indexOf("\n", textIndex);
-
-			if ( breakCandidateIndex >= 0 && breakCandidateIndex < nextBreakIndex) {
-				nextBreakIndex = breakCandidateIndex;
-			}
+			updateNextBreakIndex (" ");
+			updateNextBreakIndex ("-");
+			updateNextBreakIndex ("\n");
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
 		
