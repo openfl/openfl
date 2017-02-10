@@ -20,7 +20,7 @@ class FlashRenderer {
 			
 			instances = new Dictionary (true);
 			
-			Lib.current.stage.addEventListener (Event.ENTER_FRAME, render);
+			Lib.current.stage.addEventListener (Event.ENTER_FRAME, render, false, -2147483648);
 			
 		}
 		
