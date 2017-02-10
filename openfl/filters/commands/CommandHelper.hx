@@ -94,7 +94,6 @@ class CommandHelper {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, internalShader.wrapT);
 
 		internalShader.applyData(shader.data, renderSession);
-		gl.uniform2f(internalShader.getUniformLocation("openfl_uScaleVector"), source.__uvData.x1, source.__uvData.y2); // :TODO: use property
 
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 
@@ -115,21 +114,30 @@ class CommandHelper {
 
 			var objSize = flashShader.data.get(Shader.uObjectSize);
 			var texSize = flashShader.data.get(Shader.uTextureSize);
+			var scaleVector = flashShader.data.get ("openfl_uScaleVector");
+
 			if (bd != null) {
 				objSize.value[0] = bd.width;
 				objSize.value[1] = bd.height;
 				if(bd.__pingPongTexture != null) {
-					texSize.value[0] = @:privateAccess bd.__pingPongTexture.renderTexture.__width;
-					texSize.value[1] = @:privateAccess bd.__pingPongTexture.renderTexture.__height;
+					var renderTexture = bd.__pingPongTexture.renderTexture;
+					texSize.value[0] = @:privateAccess renderTexture.__width;
+					texSize.value[1] = @:privateAccess renderTexture.__height;
+					scaleVector.value[0] = @:privateAccess renderTexture.__uvData.x1;
+					scaleVector.value[1] = @:privateAccess renderTexture.__uvData.y2;
 				} else {
 					texSize.value[0] = bd.width;
 					texSize.value[1] = bd.height;
+					scaleVector.value[0] = bd.__uvData.x1;
+					scaleVector.value[1] = bd.__uvData.y2;
 				}
 			} else {
 				objSize.value[0] = 0;
 				objSize.value[1] = 0;
 				texSize.value[0] = 0;
 				texSize.value[1] = 0;
+				scaleVector.value[0] = 0;
+				scaleVector.value[1] = 0;
 			}
 		}
 	}

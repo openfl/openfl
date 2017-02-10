@@ -412,7 +412,7 @@ class SpriteBatch {
 			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);
 
 			shader.uniformMatrix3fv(shader.getUniformLocation (MaskedUniform.MaskMatrix), false, state.maskMatrix);
-			gl.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
+			shader.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
 		}
 
 		shader.applyData(state.shaderData, renderSession);

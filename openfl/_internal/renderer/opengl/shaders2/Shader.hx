@@ -1,6 +1,7 @@
 package openfl._internal.renderer.opengl.shaders2;
 
 import haxe.crypto.Md5;
+import lime.math.Vector2;
 import lime.math.Vector4;
 import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader;
@@ -47,6 +48,7 @@ class Shader {
 	private var fragmentString:String;
 
 	private var uniform1iCache:Map<GLUniformLocation, Int> = new Map();
+	private var uniform2fCache:Map<GLUniformLocation, Vector2> = new Map();
 	private var uniform4fCache:Map<GLUniformLocation, Vector4> = new Map();
 	private var uniformMatrix3fCache:Map<GLUniformLocation, Matrix> = new Map();
 	
@@ -123,7 +125,7 @@ class Shader {
 				case FLOAT:
 					switch(param.size) {
 						case 1: gl.uniform1f(u, v[0]);
-						case 2: gl.uniform2f(u, v[0], v[1]);
+						case 2: uniform2f(u, v[0], v[1]);
 						case 3: gl.uniform3f(u, v[0], v[1], v[2]);
 						case 4: uniform4f(u, v[0], v[1], v[2], v[3]);
 					}
@@ -309,6 +311,30 @@ class Shader {
 
 	}
 	
+	public function uniform2f (uniform:GLUniformLocation, x:Float, y:Float):Void {
+
+		if (uniform == null) return;
+
+		var cached = uniform2fCache.get (uniform);
+
+		if (cached == null) {
+
+			cached = new Vector2 ();
+			uniform2fCache.set (uniform, cached);
+
+		} else if (cached.x == x && cached.y == y) {
+
+			return;
+
+		}
+
+		gl.uniform2f (uniform, x, y);
+
+		cached.x = x;
+		cached.y = y;
+
+	}
+
 	public function uniform4f (uniform:GLUniformLocation, x:Float, y:Float, z:Float, w:Float):Void {
 		
 		if (uniform == null) return;
