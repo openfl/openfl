@@ -741,16 +741,6 @@ class TextEngine {
 		startLayoutGroup(formatRange.format, formatRange.start);
 
 		while( textIndex < textLength ) {
-			if (textIndex >= formatRange.end) {
-				textIndex = formatRange.end;
-				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
-				endLayoutGroup(textIndex);
-				offsetX = layoutGroup.offsetX + widthValue;
-
-				nextFormatRange();
-				startLayoutGroup(formatRange.format, formatRange.start);
-			}
-
 			var nextBreakIndex : Int = textLength;
 			var breakCandidateIndex : Int = text.indexOf(" ", textIndex);
 
@@ -788,13 +778,16 @@ class TextEngine {
 
 			textIndex = nextBreakIndex + 1;
 
-		}
+			if (textIndex >= formatRange.end) {
+				textIndex = formatRange.end;
+				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
+				endLayoutGroup(textIndex);
+				offsetX = layoutGroup.offsetX + widthValue;
 
-		if (widthValue == 0) {
-			widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
+				nextFormatRange();
+				startLayoutGroup(formatRange.format, formatRange.start);
+			}
 		}
-
-		endLayoutGroup(textIndex);
 
 		if ( rangeIndex < textFormatRanges.length - 1 ) {
 			throw "not all text ranges were processed by the text engine.";
