@@ -170,8 +170,10 @@ class Shader {
 		}
 		var location = uniforms.get(uniform);
 		if (location == null) {
-			location = gl.getUniformLocation(program, uniform);
-			uniforms.set(uniform, location);
+			if (!uniforms.exists (uniform)) {
+				location = gl.getUniformLocation(program, uniform);
+				uniforms.set(uniform, location);
+			}
 		}
 		return location;
 	}
