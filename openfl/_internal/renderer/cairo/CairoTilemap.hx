@@ -82,7 +82,8 @@ class CairoTilemap {
 				
 			}
 			
-			tileTransform.copyFrom (tile.matrix);
+			tileTransform.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
+			tileTransform.concat (tile.matrix);
 			tileTransform.concat (transform);
 			
 			if (roundPixels) {

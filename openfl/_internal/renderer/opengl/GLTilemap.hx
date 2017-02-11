@@ -19,6 +19,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.Tileset)
 @:access(openfl.display.Tile)
 @:access(openfl.filters.BitmapFilter)
+@:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 
 
@@ -173,7 +174,9 @@ class GLTilemap {
 			
 			if (tile.__transformDirty) {
 				
-				tileMatrix = tile.matrix;
+				tileMatrix = Matrix.__temp;
+				tileMatrix.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
+				tileMatrix.concat (tile.matrix);
 				
 				x = tile.__transform[0] = tileMatrix.__transformX (0, 0);
 				y = tile.__transform[1] = tileMatrix.__transformY (0, 0);
