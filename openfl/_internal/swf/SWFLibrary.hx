@@ -1,22 +1,25 @@
 package openfl._internal.swf;
 
 
-import flash.display.BitmapData;
-import flash.display.Loader;
-import flash.display.MovieClip;
-import flash.events.Event;
-import flash.media.Sound;
-import flash.net.URLRequest;
-import flash.system.ApplicationDomain;
-import flash.system.LoaderContext;
-import flash.text.Font;
-import flash.utils.ByteArray;
 import haxe.Unserializer;
-import openfl.Assets;
-
 import lime.graphics.Image;
 import lime.app.Future;
 import lime.app.Promise;
+import openfl.display.BitmapData;
+import openfl.display.Loader;
+import openfl.display.MovieClip;
+import openfl.events.Event;
+import openfl.media.Sound;
+import openfl.net.URLRequest;
+import openfl.system.ApplicationDomain;
+import openfl.system.LoaderContext;
+import openfl.text.Font;
+import openfl.utils.ByteArray;
+import openfl.Assets;
+
+#if flash
+import flash.display.AVM1Movie;
+#end
 
 
 @:keep class SWFLibrary extends AssetLibrary {
@@ -65,6 +68,16 @@ import lime.app.Promise;
 	public override function getMovieClip (id:String):MovieClip {
 		
 		if (id == "") {
+			
+			#if flash
+			if (Std.is (loader.content, AVM1Movie)) {
+				
+				var clip = new MovieClip ();
+				clip.addChild (loader);
+				return clip;
+				
+			}
+			#end
 			
 			return cast loader.content;
 			
