@@ -35,7 +35,7 @@ class DOMRenderer extends AbstractRenderer {
 		
 		renderSession = new RenderSession ();
 		renderSession.element = element;
-		renderSession.roundPixels = true;
+		//renderSession.roundPixels = true;
 		
 		#if (js && html5)
 		var prefix = untyped __js__ ("(function () {
