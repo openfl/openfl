@@ -81,12 +81,12 @@ class Bitmap extends DisplayObject {
 		
 		if (px > 0 && py > 0 && px <= bitmapData.width && py <= bitmapData.height) {
 			
-			if (__scrollRect != null && !__scrollRect.contains(px, py)) {
-
+			if (__scrollRect != null && !__scrollRect.contains (px, py)) {
+				
 				return false;
-
+				
 			}
-
+			
 			if (stack != null && !interactiveOnly) {
 				
 				stack.push (hitObject);

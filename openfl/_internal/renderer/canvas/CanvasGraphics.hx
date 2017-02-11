@@ -898,48 +898,43 @@ class CanvasGraphics {
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 				
+				var devicePixelRatio = untyped window.devicePixelRatio || 1;
+				var scaledWidth = Std.int (width * devicePixelRatio);
+				var scaledHeight = Std.int (height * devicePixelRatio);
+				
 				#if dom
+				
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 					
-					var devicePixelRatio = untyped window.devicePixelRatio || 1;
-					var scaledWidth  = Std.int( width * devicePixelRatio);
-					var scaledHeight = Std.int(height * devicePixelRatio);
+					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
-						
-						context.clearRect(0, 0, scaledWidth, scaledHeight);
-						
-					} else {
+				} else {
+				
+					canvas.width = scaledWidth;
+					canvas.height = scaledHeight;
+					canvas.style.width = width + "px";
+					canvas.style.height = height + "px";
 					
-						canvas.width  = scaledWidth;
-						canvas.height = scaledHeight;
-						canvas.style.width  =  width + "px";
-						canvas.style.height = height + "px";
-						
-					}
-					
-					var transform = graphics.__renderTransform;
-					context.setTransform (transform.a  * devicePixelRatio,
-					                      transform.b  * devicePixelRatio,
-					                      transform.c  * devicePixelRatio,
-					                      transform.d  * devicePixelRatio,
-					                      transform.tx * devicePixelRatio,
-					                      transform.ty * devicePixelRatio);
-					
+				}
+				
+				var transform = graphics.__renderTransform;
+				context.setTransform (transform.a * devicePixelRatio, transform.b * devicePixelRatio, transform.c * devicePixelRatio, transform.d * devicePixelRatio, transform.tx * devicePixelRatio, transform.ty * devicePixelRatio);
+				
 				#else
+				
+				if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
 					
-					if (canvas.width == scaledWidth && canvas.height == scaledHeight) {
-						
-						context.clearRect(0, 0, scaledWidth, scaledHeight);
-						
-					} else {
-						
-						canvas.width  = width;
-						canvas.height = height;
-						
-					}
+					context.clearRect (0, 0, scaledWidth, scaledHeight);
 					
-					context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				} else {
 					
+					canvas.width  = width;
+					canvas.height = height;
+					
+				}
+				
+				context.setTransform (transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+				
 				#end
 				
 				fillCommands.clear ();
