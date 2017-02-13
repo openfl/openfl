@@ -68,8 +68,8 @@ class FlashTilemap {
 				
 				if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
 					
-					destPoint.x = tile.x;
-					destPoint.y = tile.y;
+					destPoint.x = tile.x - tile.originX;
+					destPoint.y = tile.y - tile.originY;
 					
 					bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
 					
