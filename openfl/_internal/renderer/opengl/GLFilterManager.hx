@@ -74,10 +74,21 @@ class GLFilterManager extends AbstractFilterManager {
 		
 		if (object.__filters != null && object.__filters.length > 0) {
 			
-			var filter =  object.__filters[0];
-			var currentTarget, shader;
+			var numPasses:Int = 0;
 			
-			if (object.__filters.length > 1 || filter.__numPasses > 0) {
+			if (object.__filters.length > 1 || object.__filters[0].__numPasses > 0) {
+				
+				numPasses = object.__filters.length;
+				
+				for (filter in object.__filters) {
+					
+					numPasses += (filter.__numPasses > 0) ? (filter.__numPasses - 1) : 0;
+					
+				}
+				
+			}
+			
+			if (numPasses > 0) {
 				
 				// if (filter.__cacheObject) {
 					
@@ -88,22 +99,39 @@ class GLFilterManager extends AbstractFilterManager {
 					
 				// }
 				
-				for (i in 0...filter.__numPasses) {
+				var currentTarget, shader;
+				
+				for (filter in object.__filters) {
 					
-					currentTarget = renderer.currentRenderTarget;
-					renderer.getRenderTarget (true);
-					shader = filter.__initShader (renderSession, i);
+					if (filter.__numPasses > 0) {
+						
+						for (i in 0...filter.__numPasses) {
+							
+							currentTarget = renderer.currentRenderTarget;
+							renderer.getRenderTarget(true);
+							shader = filter.__initShader(renderSession, i);
+							
+							renderPass(currentTarget, shader);
+							
+						}
+						
+					} else {
+						
+						currentTarget = renderer.currentRenderTarget;
+						renderer.getRenderTarget(true);
+						shader = filter.__initShader(renderSession, 0);
+						
+						renderPass(currentTarget, shader);
+					}
 					
-					renderPass (currentTarget, shader);
+					// TODO: Properly handle filter-within-filter rendering
+					
+					filterDepth--;
+					renderer.getRenderTarget(filterDepth > 0);
+					
+					renderPass(renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
 					
 				}
-				
-				// TODO: Properly handle filter-within-filter rendering
-				
-				filterDepth--;
-				renderer.getRenderTarget (filterDepth > 0);
-				
-				renderPass (renderer.currentRenderTarget, renderSession.shaderManager.defaultShader);
 				
 			} else {
 				
