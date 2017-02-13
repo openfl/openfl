@@ -1,6 +1,7 @@
 package openfl.text;
 
 
+import openfl.events.TouchEvent;
 import haxe.Timer;
 import lime.system.Clipboard;
 import lime.ui.KeyCode;
@@ -111,6 +112,7 @@ class TextField extends InteractiveObject {
 	private var __htmlText:String;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
+	private var __touchPoints:Map<Int, Dynamic>;
 	
 	#if (js && html5)
 	private var __div:DivElement;
@@ -1353,6 +1355,9 @@ class TextField extends InteractiveObject {
 				
 			}
 			
+			addEventListener (TouchEvent.TOUCH_BEGIN, this_onTouchBegin);
+			__touchPoints = new Map<Int, Dynamic>();
+			
 			#end
 			
 		}
@@ -1393,6 +1398,8 @@ class TextField extends InteractiveObject {
 			__stopCursorTimer ();
 			
 		}
+		
+		removeEventListener (TouchEvent.TOUCH_BEGIN, this_onTouchBegin);
 		
 		#end
 		
@@ -2492,6 +2499,29 @@ class TextField extends InteractiveObject {
 		}
 		
 	}
+						
+						
+	private function stage_onTouchMove(event:TouchEvent):Void {
+
+		if (__textEngine.lineHeights.length > 0 && Lambda.count(__touchPoints) == 1) {
+			var touchPoint:Dynamic = __touchPoints.get(event.touchPointID);
+			var deltaY:Float = touchPoint.reminderY + event.stageY - touchPoint.y;
+			scrollV -= Math.floor(deltaY / __textEngine.lineHeights[0]);
+			touchPoint.reminderY = deltaY % __textEngine.lineHeights[0];
+			touchPoint.y = event.stageY;
+		}
+
+	}
+
+
+	private function stage_onTouchEnd(event:TouchEvent):Void {
+
+		stage.removeEventListener (TouchEvent.TOUCH_MOVE, stage_onTouchMove);
+		stage.removeEventListener (TouchEvent.TOUCH_END, stage_onTouchEnd);
+
+		__touchPoints.remove(event.touchPointID);
+
+	}
 	
 	
 	private function this_onAddedToStage (event:Event):Void {
@@ -2521,7 +2551,7 @@ class TextField extends InteractiveObject {
 	
 	private function this_onMouseDown (event:MouseEvent):Void {
 		
-		if (!selectable) return;
+		if (!selectable || (__touchPoints != null && Lambda.count(__touchPoints) > 0)) return;
 		
 		__updateLayout ();
 		
@@ -2540,6 +2570,16 @@ class TextField extends InteractiveObject {
 	private function this_onMouseWheel(event:MouseEvent):Void {
 
 		scrollV -= event.delta;
+
+	}
+						
+
+	private function this_onTouchBegin(event:TouchEvent):Void {
+
+		__touchPoints.set(event.touchPointID, {y: event.stageY, reminderY: 0});
+
+		stage.addEventListener (TouchEvent.TOUCH_MOVE, stage_onTouchMove);
+		stage.addEventListener (TouchEvent.TOUCH_END, stage_onTouchEnd);
 
 	}
 	
