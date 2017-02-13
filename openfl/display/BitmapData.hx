@@ -705,8 +705,8 @@ class BitmapData implements IBitmapDrawable {
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 			image.dirty = true;
 
 		}
@@ -779,12 +779,11 @@ class BitmapData implements IBitmapDrawable {
 				if( glCompatibleBuffer == null ){
 					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, __width, __height, 0, format, gl.UNSIGNED_BYTE, textureImage.data);
 				} else {
-
-					gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
+					gl.texImage2DWeb (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, glCompatibleBuffer);
 				}
 
 			#end
-			gl.bindTexture (gl.TEXTURE_2D, null);
+
 			image.dirty = false;
 
 		}
