@@ -624,7 +624,7 @@ class CanvasGraphics {
 					var c = data.readLineStyle ();
 					if (stroke && hasStroke) {
 						
-						closePath (c.thickness == null);
+						closePath (true);
 						
 					}
 					
