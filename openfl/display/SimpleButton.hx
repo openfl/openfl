@@ -2,21 +2,17 @@ package openfl.display; #if !openfl_legacy
 
 
 import lime.ui.MouseCursor;
-import openfl._internal.renderer.RenderSession;
 import openfl.display.DisplayObject;
-import openfl.display.InteractiveObject;
-import openfl.geom.Matrix;
+import openfl.display.DisplayObjectContainer;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
 import openfl.utils.UnshrinkableArray;
 
-@:access(openfl.geom.Matrix)
+
+class SimpleButton extends DisplayObjectContainer {
 
 
-class SimpleButton extends InteractiveObject {
-	
-	
 	public var downState (default, set):DisplayObject;
 	public var enabled:Bool;
 	public var hitTestState (default, set):DisplayObject;
@@ -25,448 +21,224 @@ class SimpleButton extends InteractiveObject {
 	public var trackAsMenu:Bool;
 	public var upState (default, set):DisplayObject;
 	public var useHandCursor:Bool;
-	
+
 	private var __currentState (default, set):DisplayObject;
 	private var __ignoreEvent:Bool;
 	private var __soundTransform:SoundTransform;
 	private var __childRect = new Rectangle();
-	
-	
+
+
 	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null) {
-		
+
 		super ();
-		
+
 		enabled = true;
 		trackAsMenu = false;
 		useHandCursor = true;
-		
+
 		this.upState = (upState != null) ? upState : new DisplayObject ();
 		this.overState = overState;
 		this.downState = downState;
 		this.hitTestState = (hitTestState != null) ? hitTestState : new DisplayObject ();
-		
+
 		addEventListener (MouseEvent.MOUSE_DOWN, __this_onMouseDown);
 		addEventListener (MouseEvent.MOUSE_OUT, __this_onMouseOut);
 		addEventListener (MouseEvent.MOUSE_OVER, __this_onMouseOver);
 		addEventListener (MouseEvent.MOUSE_UP, __this_onMouseUp);
-		
+
 		__currentState = this.upState;
-		
+
 	}
-	
-	
-	private override function __getBounds (rect:Rectangle):Void {
-		
-		super.__getBounds (rect);
-		
-		var tmpRect = Rectangle.pool.get ();
-		__currentState.__getTransformedBounds (tmpRect, __currentState.__worldTransform);
-		rect.__expand (tmpRect.x, tmpRect.y, tmpRect.width, tmpRect.height);
-		Rectangle.pool.put (tmpRect);
-		
-	}
-	
-	
-	private override function __getRenderBounds (rect:Rectangle):Void {
-		
-		super.__getRenderBounds (rect);
-		
-		if (__scrollRect != null) {
-			
-			return;
-			
-		}
-		
-		__childRect.setEmpty ();
-		__currentState.__getRenderBounds (__childRect);
-		@:privateAccess __childRect.__transform (__childRect, @:privateAccess __currentState.__transform);
-		rect.__expand (__childRect.x, __childRect.y, __childRect.width, __childRect.height);
-	}
-	
-	
+
 	private override function __getCursor ():MouseCursor {
-		
+
 		return (useHandCursor && !__ignoreEvent) ? POINTER : null;
-		
-	}
-	
-	
-	private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
-		
-		var hitTest = false;
-		
-		if (hitTestState != null) {
-			
-			var cacheTransform = __updateTransform (hitTestState);
-			
-			if (hitTestState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
-				
-				stack[stack.length - 1] = hitObject;
-				hitTest = true;
-				
-			}
-			
-			__resetTransform (hitTestState, cacheTransform);
-			
-		} else if (__currentState != null) {
-			
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-			if (mask != null && !mask.__hitTestMask (x, y)) return false;
-			
-			var cacheTransform = __updateTransform (__currentState);
-			
-			if (__currentState.__hitTest (x, y, shapeFlag, stack, interactiveOnly, hitObject)) {
-				
-				hitTest = interactiveOnly;
-				
-			}
-			
-			__resetTransform (__currentState, cacheTransform);
-			
-		}
-		
-		return hitTest;
-		
-	}
-	
-	
-	private override function __hitTestMask (x:Float, y:Float):Bool {
-		
-		if (!visible) return false;
-		var hitTest = false;
-		
-		var cacheTransform = __updateTransform (__currentState);
-		
-		if (__currentState.__hitTestMask (x, y)) {
-			
-			hitTest = true;
-			
-		}
-		
-		__resetTransform (__currentState, cacheTransform);
-		
-		return hitTest;
-		
-	}
-	
-	
-	public override function __renderCairo (renderSession:RenderSession):Void {
-		
-		if (!__renderable || __worldAlpha <= 0) return;
-		
-		if (__scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (__scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		__currentState.__renderCairo (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (__scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
-		
-	}
-	
-	
-	public override function __renderCairoMask (renderSession:RenderSession):Void {
-		
-		__currentState.__renderCairoMask (renderSession);
-		
-	}
-	
-	
-	public override function __renderCanvas (renderSession:RenderSession):Void {
-		
-		if (!__renderable || __worldAlpha <= 0) return;
-		
-		#if !neko
-		
-		if (__scrollRect != null) {
-			
-			renderSession.maskManager.pushRect (__scrollRect, __worldTransform);
-			
-		}
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.pushMask (__mask);
-			
-		}
-		
-		__currentState.__renderCanvas (renderSession);
-		
-		if (__mask != null) {
-			
-			renderSession.maskManager.popMask ();
-			
-		}
-		
-		if (__scrollRect != null) {
-			
-			renderSession.maskManager.popRect ();
-			
-		}
-		
-		#end
-		
-	}
-	
-	
-	public override function __renderCanvasMask (renderSession:RenderSession):Void {
-		
-		var bounds = new Rectangle ();
-		__getLocalBounds (bounds);
-		
-		renderSession.context.rect (0, 0, bounds.width, bounds.height);
-		
-		__currentState.__renderCanvasMask (renderSession);
-		
-	}
-	
-	
-	public override function __renderGL (renderSession:RenderSession):Void {
-		
-		if (!__renderable || __worldAlpha <= 0) return;
-		
-		if (__cacheAsBitmap) {
-			__isCachingAsBitmap = true;
-			__cacheGL(renderSession);
-			__isCachingAsBitmap = false;
-			return;
-		}
-		
-		__preRenderGL (renderSession);
-		__drawGraphicsGL (renderSession);
-		
-		__currentState.__renderGL (renderSession);
-		
-		__postRenderGL (renderSession);
-		
-	}
-	
-	
-	private function __resetTransform (state:DisplayObject, cacheTransform:Matrix):Void {
-		
-		state.__updateTransforms (cacheTransform);
-		state.__updateChildren (false);
-	}
-	
-	
-	private function __updateTransform (state:DisplayObject, transformOnly:Bool = true):Matrix {
-		
-		var cacheTransform = state.__worldTransform;
-		
-		var local = state.__transform;
-		var parentTransform = __worldTransform;
-		var overrideTransform = Matrix.__temp;
-		
-		overrideTransform.a = local.a * parentTransform.a + local.b * parentTransform.c;
-		overrideTransform.b = local.a * parentTransform.b + local.b * parentTransform.d;
-		overrideTransform.c = local.c * parentTransform.a + local.d * parentTransform.c;
-		overrideTransform.d = local.c * parentTransform.b + local.d * parentTransform.d;
-		overrideTransform.tx = local.tx * parentTransform.a + local.ty * parentTransform.c + parentTransform.tx;
-		overrideTransform.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
-		
-		state.__updateTransforms (overrideTransform);
-		state.__updateChildren (transformOnly);
-		
-		return cacheTransform;
-		
-	}
-	
-	
-	public override function __updateTransforms (overrideTransform:Matrix = null):Void {
-		
-		super.__updateTransforms (overrideTransform);
-		
-		__updateTransform (__currentState, false);
-	}
-	
-	
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
 
-		__updateColor();
-		
-		if(__currentState.mustResetRenderColorTransform()) {
-			__currentState.__renderAlpha = 1.0;
-			__currentState.__renderColorTransform.reset();
-		} else {
-			__currentState.__renderAlpha = __currentState.get_alpha() * __renderAlpha;
-			__currentState.__renderColorTransform.setFromCombination(__currentState.transform.colorTransform, __renderColorTransform);
-		}
-
-		__currentState.__worldColorTransform.setFromCombination(__currentState.transform.colorTransform, __worldColorTransform);
-
-		super.__update(transformOnly, updateChildren, maskGraphics);
 	}
 
-	
-	
 	// Getters & Setters
-	
-	
-	
-	
+
+
 	private function set_downState (downState:DisplayObject):DisplayObject {
-		
-		if (this.downState != null && __currentState == this.downState) {
-			
-			__currentState = downState;
-			
+
+		addChild( downState );
+
+		downState.visible = false;
+
+		if (this.downState != null ) {
+
+			removeChild(this.downState);
+			if( __currentState == this.downState )
+			{
+				__currentState = downState;
+			}
+
 		}
-		
+
 		return this.downState = downState;
-		
+
 	}
-	
-	
+
+
 	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
-		
+
+		addChild( hitTestState );
+
+		hitTestState.visible = false;
+
+		if (this.hitTestState != null ) {
+
+			removeChild(this.hitTestState);
+			if( __currentState == this.hitTestState )
+			{
+				__currentState = hitTestState;
+			}
+
+		}
+
 		return this.hitTestState = hitTestState;
-		
+
 	}
-	
-	
+
+
 	private function set_overState (overState:DisplayObject):DisplayObject {
-		
-		if (this.overState != null && __currentState == this.overState) {
-			
-			__currentState = overState;
-			
+
+		addChild( overState );
+
+		overState.visible = false;
+
+		if (this.overState != null ) {
+
+			removeChild(this.overState);
+			if( __currentState == this.overState )
+			{
+				__currentState = overState;
+			}
+
 		}
-		
+
 		return this.overState = overState;
-		
 	}
-	
-	
+
+
 	private function get_soundTransform ():SoundTransform {
-		
+
 		if (__soundTransform == null) {
-			
+
 			__soundTransform = new SoundTransform ();
-			
+
 		}
-		
+
 		return new SoundTransform (__soundTransform.volume, __soundTransform.pan);
-		
+
 	}
-	
-	
+
+
 	private function set_soundTransform (value:SoundTransform):SoundTransform {
-		
+
 		__soundTransform = new SoundTransform (value.volume, value.pan);
 		return value;
-		
+
 	}
-	
-	
+
+
 	private function set_upState (upState:DisplayObject):DisplayObject {
-		
-		if (this.upState != null && __currentState == this.upState) {
-			
-			__currentState = upState;
-			
+
+		addChild( upState );
+
+		upState.visible = false;
+
+		if (this.upState != null ) {
+
+			removeChild(this.upState);
+			if( __currentState == this.upState )
+			{
+				__currentState = upState;
+			}
+
 		}
-		
+
 		return this.upState = upState;
-		
 	}
-	
-	
+
+
 	private function set___currentState (value:DisplayObject):DisplayObject {
-		
-		if (value.parent != null) {
-			
-			value.parent.removeChild (value);
-			
+
+		if( __currentState != null ){
+			__currentState.visible = false;
 		}
-		
+
+		value.visible = true;
 		return __currentState = value;
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	// Event Handlers
-	
-	
-	
-	
+
+
+
+
 	private function __this_onMouseDown (event:MouseEvent):Void {
-		
+
 		if (downState != null) {
-			
+
 			__currentState = downState;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function __this_onMouseOut (event:MouseEvent):Void {
-		
+
 		__ignoreEvent = false;
-		
+
 		if (upState != __currentState) {
-			
+
 			__currentState = upState;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function __this_onMouseOver (event:MouseEvent):Void {
-		
+
 		if (event.buttonDown) {
-			
+
 			__ignoreEvent = true;
-			
+
 		}
-		
+
 		if (overState != __currentState && overState != null && !__ignoreEvent) {
-			
+
 			__currentState = overState;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function __this_onMouseUp (event:MouseEvent):Void {
-		
+
 		__ignoreEvent = false;
-		
+
 		if (overState != null) {
-			
+
 			__currentState = overState;
-			
+
 		} else {
-			
+
 			__currentState = upState;
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 }
 
 

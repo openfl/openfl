@@ -147,7 +147,7 @@ class DynamicTextField extends TextField {
 
 	}
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 		if ( _variableName != null && _variableName.length > 0 ) {
 			var local_parent = this.parent;
 			while ( local_parent != null ) {
@@ -159,7 +159,7 @@ class DynamicTextField extends TextField {
 				local_parent = local_parent.parent;
 			}
 		}
-		super.__update(transformOnly, updateChildren, maskGraphics);
+		super.__update(transformOnly, updateChildren);
 	}
 
 }

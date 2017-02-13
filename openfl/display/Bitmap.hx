@@ -151,7 +151,8 @@ class Bitmap extends DisplayObject {
 		
 	}
 	
-	
+	// :TODO:
+	/*
 	public override function __updateMask (maskGraphics:Graphics):Void {
 		
 		maskGraphics.__commands.overrideMatrix (this.__worldTransform);
@@ -168,7 +169,7 @@ class Bitmap extends DisplayObject {
 		
 		super.__updateMask (maskGraphics);
 		
-	}
+	}*/
 	
 	
 	

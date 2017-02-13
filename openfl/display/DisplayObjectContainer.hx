@@ -792,20 +792,13 @@ class DisplayObjectContainer extends InteractiveObject {
 			if( child.__clipDepth != 0 ){
 
 				if( !child.__maskCached ){
-					if (child.__maskGraphics == null) {
-
-						child.__maskGraphics = new Graphics ();
-
-					}
-
-					child.__maskGraphics.clear ();
 					if( child.__cachedBitmap != null ){
 						child.__cachedBitmap.dispose();
 					}
 					child.__cachedBitmap = null;
 
 					child.__isMask = true;
-					child.__update (true, true, child.__maskGraphics);
+					child.__update (true, true);
 
 					child.__maskCached = true;
 				}
@@ -879,9 +872,9 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
-		super.__update (transformOnly, updateChildren, maskGraphics);
+		super.__update (transformOnly, updateChildren);
 
 		// nested objects into a mask are non renderables but are part of the mask
 		if (!__renderable && !__isMask) {
@@ -897,7 +890,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			for (child in __children) {
 
 				if (child == null ) continue;
-				child.__update (transformOnly, true, maskGraphics);
+				child.__update (transformOnly, true);
 
 			}
 

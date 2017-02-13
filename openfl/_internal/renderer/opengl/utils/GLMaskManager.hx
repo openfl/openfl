@@ -84,9 +84,9 @@ class GLMaskManager extends AbstractMaskManager {
 	public override function pushMask (mask:DisplayObject) {
 
 		if (!renderSession.usesMainSpriteBatch) {
-			
+
 			renderSession.spriteBatch.stop ();
-		
+
 		}
 
 		if( @:privateAccess mask.__cachedBitmap == null || @:privateAccess mask.__updateCachedBitmap ) {
@@ -101,7 +101,6 @@ class GLMaskManager extends AbstractMaskManager {
 			@:privateAccess mask.__isMask = true;
 			@:privateAccess mask.__renderable = false;
 		}
-
 		var bitmap = @:privateAccess mask.__cachedBitmap;
 
 		var maskMatrix = Matrix.pool.get ();
@@ -118,7 +117,7 @@ class GLMaskManager extends AbstractMaskManager {
 		maskMatrixTable.push(maskMatrix);
 
 		renderSession.spriteBatch.start (currentClip, bitmap, maskMatrix);
-		
+
 	}
 
 
