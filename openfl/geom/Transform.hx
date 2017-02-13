@@ -89,7 +89,7 @@ class Transform {
 
 	}
 
-	public function get_matrix_no_clone():Matrix {
+	public function getMatrixNoClone():Matrix {
 		return __hasMatrix ? __displayObject.__transform : null;
 	}
 
