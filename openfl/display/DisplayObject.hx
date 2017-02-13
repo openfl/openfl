@@ -716,9 +716,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 
 				#if compliant_stage_events
-					Stage.fireEvent(new Event (Event.REMOVED_FROM_STAGE, false, false), stack);
+					Stage.fireEvent( Event.__create (Event.REMOVED_FROM_STAGE, false, false), stack);
 				#else
-					dispatchEvent (new Event (Event.REMOVED_FROM_STAGE, false, false));
+					dispatchEvent ( Event.__create (Event.REMOVED_FROM_STAGE, false, false));
 				#end
 
 				__releaseResources();
@@ -730,9 +730,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			if (stage != null) {
 
 				#if compliant_stage_events
-					Stage.fireEvent(new Event (Event.ADDED_TO_STAGE, false, false), stack);
+					Stage.fireEvent( Event.__create (Event.ADDED_TO_STAGE, false, false), stack);
 				#else
-					dispatchEvent (new Event (Event.ADDED_TO_STAGE, false, false));
+					dispatchEvent ( Event.__create (Event.ADDED_TO_STAGE, false, false));
 				#end
 
 			}

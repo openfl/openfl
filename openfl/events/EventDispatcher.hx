@@ -287,8 +287,11 @@ class EventDispatcher implements IEventDispatcher {
 
 			target.__dispatching.set (event.type, false);
 
+			event.dispose();
+
 			return true;
 		} else {
+			event.dispose();
 			return false;
 		}
 

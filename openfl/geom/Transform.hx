@@ -89,6 +89,10 @@ class Transform {
 
 	}
 
+	public function getMatrixNoClone():Matrix {
+		return __hasMatrix ? __displayObject.__transform : null;
+	}
+
 
 	private function get_concatenatedMatrix ():Matrix {
 
