@@ -1,3 +1,31 @@
+4.8.0 (02/13/2017)
+------------------
+
+* Added Tile originX/originY
+* Added support for Stage3D CubeTexture
+* Added `dictionary.each()` to iterate through values
+* Added anisotropic filtering modes to Stage3D
+* Added initial support for links in TextField
+* Disabled pixel rounding by default (fixes flicker issues)
+* Improved the quality of the AGALMiniAssembler port
+* Improved support for TextField on HTML5 -Ddom
+* Improved ExternalInterface to support closures on HTML5
+* Improved Loader to better support URLRequest parameters
+* Fixed the behavior of bitmapData.hitTest alpha threshold values
+* Fixed issue where Matrix3D did not clone data in the constructor
+* Fixed Stage3D depth clear when depth mask is disabled
+* Fixed the behavior of Stage3D mipmapping
+* Fixed hit testing behavior when Bitmap has a scrollRect
+* Fixed regressions in Haxe Scout support
+* Fixed sync between Flash Tilemap rendering and other DisplayObjects
+* Fixed issue with incorrect GLSL version on AGAL converted shaders
+* Fixed support for AVM1Movie in SWF library on Flash target
+* Fixed culling on when using Stage3D render-to-texture
+* Fixed default filename in FileReference dialogs
+* Fixed support for multiple filters on the same object
+* Fixed shape.graphics line paths in some instances
+
+
 4.7.3 (01/26/2017)
 ------------------
 
