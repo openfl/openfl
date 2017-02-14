@@ -20,7 +20,7 @@ class Blur1DCommand {
 
 		inline function getPassSampleCount (passIndex:Int):Int return perPassFetchCount + passIndex * (perPassFetchCount - 1);
 
-		function computeWeightTable():Float32Array {
+		inline function computeWeightTable():Float32Array {
 
 			var sampleCount = getPassSampleCount (0);
 			var weightTable = new Float32Array (sampleCount);
@@ -28,7 +28,7 @@ class Blur1DCommand {
 
 			for (i in 0...perPassFetchCount) {
 
-				weightTable[i] = uniformDistribution;
+				weightTable[i] = uniformDistribution * strength;
 
 			}
 
@@ -69,12 +69,6 @@ class Blur1DCommand {
 		var weightTable:Float32Array;
 		weightTable = computeWeightTable();
 
-		for (i in 0...weightTable.length) {
-
-			weightTable[i] *= strength;
-
-		}
-
 		var totalFetchCount = weightTable.length;
 		if (totalFetchCount > MAXIMUM_FETCH_COUNT) {
 
@@ -86,11 +80,34 @@ class Blur1DCommand {
 
 		}
 
-		var pass_width = horizontal ? blur * quality - 1 : 0;
-		var pass_height = horizontal ? 0 : blur * quality - 1;
+		var pass_width:Float, pass_height:Float;
+
+		if (horizontal) {
+
+			pass_width = blur * quality - 1;
+			pass_height = 0;
+
+		} else {
+
+			pass_width = 0;
+			pass_height = blur * quality - 1;
+
+		}
+
 		__shader.uFetchCount = totalFetchCount;
-		__shader.uTexCoordDelta[0] = totalFetchCount > 1 ? pass_width / (totalFetchCount - 1) : 0;
-		__shader.uTexCoordDelta[1] = totalFetchCount > 1 ? pass_height / (totalFetchCount - 1) : 0;
+
+		if (totalFetchCount > 1) {
+
+			__shader.uTexCoordDelta[0] =  pass_width / ( totalFetchCount - 1);
+			__shader.uTexCoordDelta[1] =  pass_height / ( totalFetchCount - 1);
+
+		} else {
+
+			__shader.uTexCoordDelta[0] = 0;
+			__shader.uTexCoordDelta[1] = 0;
+
+		}
+
 		__shader.uTexCoordOffset[0] = 0.5 * pass_width + offset.x;
 		__shader.uTexCoordOffset[1] = 0.5 * pass_height + offset.y;
 
