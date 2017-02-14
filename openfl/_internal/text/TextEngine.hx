@@ -732,6 +732,15 @@ class TextEngine {
 			
 		inline function pushNewLine(textIndex:Int) {
 			endLayoutGroup(textIndex);
+
+			var char:String;
+
+			while ((char = text.charAt (textIndex)) == " ") {
+
+				++textIndex;
+
+			}
+
 			offsetY += heightValue;
 			offsetX = 2; // :NOTE: I have no idea why this is here.
 			lineIndex++;
