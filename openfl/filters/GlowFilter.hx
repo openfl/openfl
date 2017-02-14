@@ -57,9 +57,8 @@ import openfl.geom.Rectangle;
 
 	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
 		
-
-		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
-		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
+		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 
 		rect.x += -halfBlurX;
 		rect.y += -halfBlurY;

@@ -62,8 +62,8 @@ import openfl.utils.Float32ArrayContainer;
 
 		var offset = Point.pool.get ();
 		BitmapFilter._getTransformedOffset(offset, distance, angle, transform);
-		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
-		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
+		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 		rect.x -= Math.abs (offset.x) + halfBlurX;
 		rect.y -= Math.abs (offset.y) + halfBlurY;
 		rect.width += 2.0 * (Math.abs (offset.x) + halfBlurX);
