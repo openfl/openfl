@@ -518,7 +518,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			#if !neko
 				if ( window.resizable ) {
-					ApplicationMain.instance.resize({width: window.width, height: window.height});
+					ApplicationMain.resize({width: window.width, height: window.height});
 				}
 			#end
 
