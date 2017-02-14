@@ -35,6 +35,7 @@ class SimpleButton extends DisplayObjectContainer {
 		enabled = true;
 		trackAsMenu = false;
 		useHandCursor = true;
+		mouseChildren = false;
 
 		this.upState = (upState != null) ? upState : new DisplayObject ();
 		this.overState = overState;
@@ -61,18 +62,23 @@ class SimpleButton extends DisplayObjectContainer {
 
 	private function set_downState (downState:DisplayObject):DisplayObject {
 
-		addChild( downState );
+		if (downState != null) {
+			addChild( downState );
 
-		downState.visible = false;
+			downState.visible = false;
 
-		if (this.downState != null ) {
+			if (this.downState != null ) {
 
-			removeChild(this.downState);
-			if( __currentState == this.downState )
-			{
-				__currentState = downState;
+				removeChild(this.downState);
+				if( __currentState == this.downState )
+				{
+					__currentState = downState;
+				}
+
 			}
-
+		}
+		else if ( this.overState != null ) {
+			removeChild(this.overState);
 		}
 
 		return this.downState = downState;
@@ -82,18 +88,22 @@ class SimpleButton extends DisplayObjectContainer {
 
 	private function set_hitTestState (hitTestState:DisplayObject):DisplayObject {
 
-		addChild( hitTestState );
+		if (downState != null) {
+			addChild( hitTestState );
 
-		hitTestState.visible = false;
+			hitTestState.visible = false;
 
-		if (this.hitTestState != null ) {
+			if (this.hitTestState != null ) {
 
-			removeChild(this.hitTestState);
-			if( __currentState == this.hitTestState )
-			{
-				__currentState = hitTestState;
+				removeChild(this.hitTestState);
+				if( __currentState == this.hitTestState )
+				{
+					__currentState = hitTestState;
+				}
+
 			}
-
+		} else if ( this.downState != null ) {
+			removeChild(this.overState);
 		}
 
 		return this.hitTestState = hitTestState;
@@ -103,18 +113,22 @@ class SimpleButton extends DisplayObjectContainer {
 
 	private function set_overState (overState:DisplayObject):DisplayObject {
 
-		addChild( overState );
+		if ( overState != null ) {
+			addChild( overState );
 
-		overState.visible = false;
+			overState.visible = false;
 
-		if (this.overState != null ) {
+			if (this.overState != null ) {
 
-			removeChild(this.overState);
-			if( __currentState == this.overState )
-			{
-				__currentState = overState;
+				removeChild(this.overState);
+				if( __currentState == this.overState )
+				{
+					__currentState = overState;
+				}
+
 			}
-
+		} else if ( this.overState != null ) {
+			removeChild(this.overState);
 		}
 
 		return this.overState = overState;
@@ -144,18 +158,22 @@ class SimpleButton extends DisplayObjectContainer {
 
 	private function set_upState (upState:DisplayObject):DisplayObject {
 
-		addChild( upState );
+		if ( upState != null ) {
+			addChild( upState );
 
-		upState.visible = false;
+			upState.visible = false;
 
-		if (this.upState != null ) {
+			if (this.upState != null ) {
 
-			removeChild(this.upState);
-			if( __currentState == this.upState )
-			{
-				__currentState = upState;
+				removeChild(this.upState);
+				if( __currentState == this.upState )
+				{
+					__currentState = upState;
+				}
+
 			}
-
+		} else if ( this.upState != null ) {
+			removeChild(this.upState);
 		}
 
 		return this.upState = upState;
@@ -163,6 +181,8 @@ class SimpleButton extends DisplayObjectContainer {
 
 
 	private function set___currentState (value:DisplayObject):DisplayObject {
+
+		if ( value == __currentState ) return value;
 
 		if( __currentState != null ){
 			__currentState.visible = false;
