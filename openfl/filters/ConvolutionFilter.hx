@@ -20,7 +20,6 @@ class ConvolutionFilter extends BitmapFilter {
 		super ();
 		
 		__convolutionShader = new ConvolutionShader();
-		__passes = 1;
 		
 		this.matrixX = matrixX;
 		this.matrixY = matrixY;

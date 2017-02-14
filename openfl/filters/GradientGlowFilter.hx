@@ -163,8 +163,8 @@ import openfl.gl.GL;
 		
 		var offset = Point.pool.get ();
 		BitmapFilter._getTransformedOffset(offset, distance, angle, transform);
-		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
-		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
+		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 		rect.x -= Math.abs (offset.x) + halfBlurX;
 		rect.y -= Math.abs (offset.y) + halfBlurY;
 		rect.width += 2.0 * (Math.abs (offset.x) + halfBlurX);
@@ -190,18 +190,8 @@ import openfl.gl.GL;
 			
 		@:privateAccess __glowBitmapData.__resize(bitmap.width, bitmap.height);
 	
-		for( quality_index in 0...quality ) {
-			var first_pass = quality_index == 0;
-	
-			if (first_pass) {
-				commands.push (Blur1D (__glowBitmapData, bitmap, blurX, true, 1.0, distance, angle));
-			}
-			else {
-				commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-			}
-	
-			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-		}
+		commands.push (Blur1D (__glowBitmapData, bitmap, blurX, quality, true, 1.0, distance, angle));
+		commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 
 		commands.push (ColorLookup (__glowBitmapData, __glowBitmapData, __lookupTexture));
 
@@ -236,7 +226,6 @@ import openfl.gl.GL;
 	
 	private function set_quality (value:Int):Int {
 	
-		__passes = value * 2 + 1;
 		return quality = value;
 		
 	}

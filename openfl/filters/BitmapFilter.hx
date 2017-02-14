@@ -21,7 +21,6 @@ import js.html.ImageData;
 class BitmapFilter {
 
 	private var __dirty:Bool = true;
-	private var __passes:Int = 0;
 
 	public static var __inverseAlphaMultipliers = new Float32Array([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0]);
 	public static var __inverseAlphaOffsets = new Float32Array([0.0, 0.0, 0.0, 1.0]);
@@ -63,10 +62,10 @@ class BitmapFilter {
 
 			for (command in commands) {
 				switch (command) {
-					case Blur1D (target, source, blur, horizontal, strength, distance, angle) :
+					case Blur1D (target, source, blur, quality, horizontal, strength, distance, angle) :
 						var transformedOffset = Point.pool.get ();
 						_getTransformedOffset(transformedOffset, distance, angle, transform);
-						Blur1DCommand.apply (renderSession, target, source, blur, horizontal, strength, transformedOffset);
+						Blur1DCommand.apply (renderSession, target, source, blur, quality, horizontal, strength, transformedOffset);
 						Point.pool.put (transformedOffset);
 
 					case Offset (target, source, strength, distance, angle) :

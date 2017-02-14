@@ -57,9 +57,8 @@ import openfl.geom.Rectangle;
 
 	private override function __growBounds (rect:Rectangle, transform:Matrix):Void {
 		
-
-		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
-		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
+		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 
 		rect.x += -halfBlurX;
 		rect.y += -halfBlurY;
@@ -84,10 +83,8 @@ import openfl.geom.Rectangle;
 			src = __glowBitmapData;
 		}
 
-		for( quality_index in 0...quality ) {
-			commands.push (Blur1D (__glowBitmapData, quality_index == 0 ? src : __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-		}
+		commands.push (Blur1D (__glowBitmapData, src, blurX, quality, true, 1.0, 0.0, 0.0));
+		commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 
 		commands.push (Colorize (__glowBitmapData, __glowBitmapData, color, alpha));
 
@@ -129,7 +126,6 @@ import openfl.geom.Rectangle;
 	
 	private function set_quality (value:Int):Int {
 		
-		__passes = value * 2 + 1;
 		return quality = value;
 		
 	}

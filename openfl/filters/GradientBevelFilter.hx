@@ -165,8 +165,8 @@ class GradientBevelFilter extends BitmapFilter {
 
 		var offset = Point.pool.get ();
 		BitmapFilter._getTransformedOffset(offset, distance, angle, transform);
-		var halfBlurX = Math.ceil( blurX * 0.5 * quality );
-		var halfBlurY = Math.ceil( blurY * 0.5 * quality );
+		var halfBlurX = Math.ceil( (Math.ceil (blurX) - 1) / 2 * quality );
+		var halfBlurY = Math.ceil( (Math.ceil (blurY) - 1) / 2 * quality );
 		rect.x -= Math.abs (offset.x) + halfBlurX;
 		rect.y -= Math.abs (offset.y) + halfBlurY;
 		rect.width += 2.0 * (Math.abs (offset.x) + halfBlurX);
@@ -197,21 +197,11 @@ class GradientBevelFilter extends BitmapFilter {
 		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
 
 		if ( blurX > 1 || blurY > 1 ) {
-			for( quality_index in 0...quality ) {
-				var first_pass = quality_index == 0;
+			commands.push (Blur1D (__highlightBitmapData, src, blurX, quality, true, 1.0, distance, angle+180));
+			commands.push (Blur1D (__shadowBitmapData, src, blurX, quality, true, 1.0, distance, angle));
 
-				if (first_pass) {
-					commands.push (Blur1D (__highlightBitmapData, src, blurX, true, 1.0, distance, angle+180));
-					commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle));
-				}
-				else {
-					commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurX, true, 1.0, 0.0, 0.0));
-					commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-				}
-
-				commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-			}
+			commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurY, quality, false, strength, 0.0, 0.0));
+			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 		} else {
 			commands.push (Offset (__highlightBitmapData, src, 1.0, distance, angle+180));
 			commands.push (Offset (__shadowBitmapData, src, 1.0, distance, angle));
@@ -270,7 +260,6 @@ class GradientBevelFilter extends BitmapFilter {
 
 	private function set_quality (value:Int):Int {
 
-		__passes = value * 2 + 1;
 		return quality = value;
 
 	}
