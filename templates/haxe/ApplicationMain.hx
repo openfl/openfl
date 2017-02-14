@@ -77,6 +77,9 @@ import DefaultAssetLibrary;
 		embed (null, ::WIN_WIDTH::, ::WIN_HEIGHT::, "::WIN_FLASHBACKGROUND::");
 		#end
 		#else
+		#if flash
+		config.assetsPrefix = flash.Lib.current.loaderInfo.parameters.assetsPrefix;
+		#end
 		create ();
 		#end
 		
