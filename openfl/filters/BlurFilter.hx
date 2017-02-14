@@ -66,7 +66,6 @@ import openfl.geom.Rectangle;
 	
 	private function set_quality (value:Int):Int {
 		
-		__passes = value * 2;
 		return quality = value;
 		
 	}

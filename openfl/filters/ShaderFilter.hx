@@ -21,7 +21,6 @@ class ShaderFilter extends BitmapFilter {
 	public function new(shader:Shader) {
 		super();
 		this.shader = shader;
-		__passes = 1;
 	}
 	
 	override public function clone():BitmapFilter {
