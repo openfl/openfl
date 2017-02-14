@@ -88,18 +88,8 @@ import openfl.utils.Float32ArrayContainer;
 		}
 
 		if ( blurX > 1 || blurY > 1 ) {
-			for( quality_index in 0...quality ) {
-				var first_pass = quality_index == 0;
-
-				if (first_pass) {
-					commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle));
-				}
-				else {
-					commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-				}
-
-				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-			}
+			commands.push (Blur1D (__shadowBitmapData, src, blurX, quality, true, 1.0, distance, angle));
+			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 		} else {
 			commands.push (Offset (__shadowBitmapData, src, strength, distance, angle));
 		}

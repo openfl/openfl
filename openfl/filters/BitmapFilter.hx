@@ -63,10 +63,10 @@ class BitmapFilter {
 
 			for (command in commands) {
 				switch (command) {
-					case Blur1D (target, source, blur, horizontal, strength, distance, angle) :
+					case Blur1D (target, source, blur, quality, horizontal, strength, distance, angle) :
 						var transformedOffset = Point.pool.get ();
 						_getTransformedOffset(transformedOffset, distance, angle, transform);
-						Blur1DCommand.apply (renderSession, target, source, blur, horizontal, strength, transformedOffset);
+						Blur1DCommand.apply (renderSession, target, source, blur, quality, horizontal, strength, transformedOffset);
 						Point.pool.put (transformedOffset);
 
 					case Offset (target, source, strength, distance, angle) :

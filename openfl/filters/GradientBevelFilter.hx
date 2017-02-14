@@ -197,21 +197,11 @@ class GradientBevelFilter extends BitmapFilter {
 		@:privateAccess __shadowBitmapData.__resize(bitmap.width, bitmap.height);
 
 		if ( blurX > 1 || blurY > 1 ) {
-			for( quality_index in 0...quality ) {
-				var first_pass = quality_index == 0;
+			commands.push (Blur1D (__highlightBitmapData, src, blurX, quality, true, 1.0, distance, angle+180));
+			commands.push (Blur1D (__shadowBitmapData, src, blurX, quality, true, 1.0, distance, angle));
 
-				if (first_pass) {
-					commands.push (Blur1D (__highlightBitmapData, src, blurX, true, 1.0, distance, angle+180));
-					commands.push (Blur1D (__shadowBitmapData, src, blurX, true, 1.0, distance, angle));
-				}
-				else {
-					commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurX, true, 1.0, 0.0, 0.0));
-					commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-				}
-
-				commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-				commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-			}
+			commands.push (Blur1D (__highlightBitmapData, __highlightBitmapData, blurY, quality, false, strength, 0.0, 0.0));
+			commands.push (Blur1D (__shadowBitmapData, __shadowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 		} else {
 			commands.push (Offset (__highlightBitmapData, src, 1.0, distance, angle+180));
 			commands.push (Offset (__shadowBitmapData, src, 1.0, distance, angle));

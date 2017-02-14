@@ -53,7 +53,7 @@ class CommandHelper {
 
 	}
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, shader:Shader, drawSelf:Bool) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, shader:Shader, drawSelf:Bool, preDrawCallback:RenderSession->Void = null) {
 
 		if (target.__usingPingPongTexture) {
 			target.__pingPongTexture.swap();
@@ -94,6 +94,12 @@ class CommandHelper {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, internalShader.wrapT);
 
 		internalShader.applyData(shader.data, renderSession);
+
+		if (preDrawCallback != null) {
+
+			preDrawCallback (renderSession);
+
+		}
 
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 

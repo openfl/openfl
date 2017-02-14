@@ -84,10 +84,8 @@ import openfl.geom.Rectangle;
 			src = __glowBitmapData;
 		}
 
-		for( quality_index in 0...quality ) {
-			commands.push (Blur1D (__glowBitmapData, quality_index == 0 ? src : __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-		}
+		commands.push (Blur1D (__glowBitmapData, src, blurX, quality, true, 1.0, 0.0, 0.0));
+		commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 
 		commands.push (Colorize (__glowBitmapData, __glowBitmapData, color, alpha));
 

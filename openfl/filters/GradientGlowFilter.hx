@@ -190,18 +190,8 @@ import openfl.gl.GL;
 			
 		@:privateAccess __glowBitmapData.__resize(bitmap.width, bitmap.height);
 	
-		for( quality_index in 0...quality ) {
-			var first_pass = quality_index == 0;
-	
-			if (first_pass) {
-				commands.push (Blur1D (__glowBitmapData, bitmap, blurX, true, 1.0, distance, angle));
-			}
-			else {
-				commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurX, true, 1.0, 0.0, 0.0));
-			}
-	
-			commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, false, quality_index == quality - 1 ? strength : 1.0, 0.0, 0.0));
-		}
+		commands.push (Blur1D (__glowBitmapData, bitmap, blurX, quality, true, 1.0, distance, angle));
+		commands.push (Blur1D (__glowBitmapData, __glowBitmapData, blurY, quality, false, strength, 0.0, 0.0));
 
 		commands.push (ColorLookup (__glowBitmapData, __glowBitmapData, __lookupTexture));
 

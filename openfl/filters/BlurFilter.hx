@@ -49,14 +49,12 @@ import openfl.geom.Rectangle;
 		
 		var commands:Array<CommandType> = [];
 		
-		for( quality_index in 0...quality ) {
-			if(blurX>0) {
-			commands.push (Blur1D (bitmap, bitmap, blurX, true, 1.0, 0.0, 0.0));
-			}
-
-			if(blurY>0){
-			commands.push (Blur1D (bitmap, bitmap, blurY, false, 1.0, 0.0, 0.0));
+		if(blurX>0) {
+			commands.push (Blur1D (bitmap, bitmap, blurX, quality, true, 1.0, 0.0, 0.0));
 		}
+
+		if(blurY>0){
+			commands.push (Blur1D (bitmap, bitmap, blurY, quality, false, 1.0, 0.0, 0.0));
 		}
 		
 		return commands;
