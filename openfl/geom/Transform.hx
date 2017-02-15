@@ -78,6 +78,7 @@ class Transform {
 
 			}
 
+			__displayObject.__updateDirty = true;
 			__displayObject.__setRenderDirty ();
 
 		}
