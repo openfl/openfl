@@ -790,6 +790,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderDirty) {
 
 			__renderDirty = true;
+			__setUpdateDirty();
 			__worldRenderDirty++;
 
 			if (__cachedParent != null) {
@@ -806,13 +807,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__transformDirty) {
 
 			__transformDirty = true;
-			__updateDirty = true;
+			__setUpdateDirty();
 			__worldTransformDirty++;
 
 		}
 
 	}
 
+	private inline function __setUpdateDirty() :Void {
+		if ( !__updateDirty && stage != null && this != stage ) {
+			__updateDirty = true;
+			stage.__updateStack.push(this);
+		}
+
+	}
 	private function __updateCachedBitmapBounds (filterTransform:Matrix):Void {
 
 		if (__cachedBitmapBounds == null) {
@@ -896,8 +904,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				untyped __js__("++window.updateCalls;");
 			#end
 
-			__updateDirty = false;
-
 			__updateColor();
 
 			if(parent != null)
@@ -918,6 +924,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__renderDirty = false;
 
 			}
+
+			__updateDirty = false;
 		}
 	}
 
@@ -1062,7 +1070,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (value > 1.0) value = 1.0;
 		if (value != __alpha) {
-			__updateDirty = true;
 			__setRenderDirty ();
 		}
 		return __alpha = value;
@@ -1073,7 +1080,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_blendMode (value:BlendMode):BlendMode {
 
 		if ( __blendMode != value ) {
-			__updateDirty = true;
+			__setUpdateDirty();
 			__blendMode = value;
 		}
 		return blendMode = value;
@@ -1083,7 +1090,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_shader (value:Shader):Shader {
 
 		if ( __shader != value ) {
-			__updateDirty = true;
+			__setUpdateDirty();
 			__shader = value;
 		}
 		return shader = value;

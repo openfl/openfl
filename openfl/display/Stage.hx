@@ -1435,16 +1435,20 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
 
 			__inlineUpdate(transformOnly, updateChildren);
-			for (child in __updateStack) {
+			var i = 0;
+			var cached_length = __updateStack.length;
+			// :NOTE: Length can change here. don't cache it.
+			while (i < __updateStack.length ) {
+				var child = __updateStack[i];
 				if ( child.__updateDirty ) {
 					child.__update(transformOnly, updateChildren);
 				}
+				++i;
 			}
 			if (updateChildren) {
 				DisplayObject.__worldTransformDirty = 0;
