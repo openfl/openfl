@@ -878,7 +878,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
-		__updateDirty = false;
 
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 
@@ -896,6 +895,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			#if profile
 				untyped __js__("++window.updateCalls;");
 			#end
+
+			__updateDirty = false;
 
 			__updateColor();
 
