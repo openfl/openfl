@@ -555,7 +555,9 @@ class TextField extends InteractiveObject {
 	
 	
 	private function __getPosition (x:Float, y:Float):Int {
-		
+		return -1;
+		// :NOTE: Individual advances are not calculated for now.
+		/*
 		__updateLayout ();
 		
 		x += scrollH;
@@ -628,7 +630,7 @@ class TextField extends InteractiveObject {
 		}
 		
 		return __textEngine.text.length;
-		
+		*/
 	}
 	
 	
@@ -662,6 +664,8 @@ class TextField extends InteractiveObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
+		if (!visible) return false;
+
 		__getWorldTransform ();
 		__updateLayout ();
 		

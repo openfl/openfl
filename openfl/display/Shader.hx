@@ -221,7 +221,7 @@ class GLShaderParameter {
 	/**
 	 * Enables linear smoothing to the BitmapData
 	 */
-	public var smooth:Bool = false;
+	public var smooth:Bool = true;
 	/**
 	 * Controls repetition in the x axis for the BitmapData
 	 */

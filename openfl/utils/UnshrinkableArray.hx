@@ -113,7 +113,7 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
     @:arrayAccess
     public inline function get(index:Int):T
     {
-        if(index >= this._length) throw "Oops";
+        if(index >= this._length) return null;
 
         return this._items[index];
     }

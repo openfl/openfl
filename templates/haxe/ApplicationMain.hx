@@ -12,7 +12,6 @@ class ApplicationMain {
 	public static var config:lime.app.Config;
 	public static var preloader:openfl.display.Preloader;
 	
-	
 	public static function create ():Void {
 		
 		var app = new openfl.display.Application ();
@@ -199,6 +198,9 @@ class ApplicationMain {
 		
 	}
 	
+	public static function resize(object:Dynamic): Void {
+	}
+
 	
 	#if neko
 	@:noCompletion @:dox(hide) public static function __init__ () {

@@ -90,6 +90,7 @@ class Bitmap extends DisplayObject {
 	
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 		
+		if (!visible) return false;
 		if (bitmapData == null) return false;
 		
 		__getWorldTransform ();
@@ -150,7 +151,8 @@ class Bitmap extends DisplayObject {
 		
 	}
 	
-	
+	// :TODO:
+	/*
 	public override function __updateMask (maskGraphics:Graphics):Void {
 		
 		maskGraphics.__commands.overrideMatrix (this.__worldTransform);
@@ -167,7 +169,7 @@ class Bitmap extends DisplayObject {
 		
 		super.__updateMask (maskGraphics);
 		
-	}
+	}*/
 	
 	
 	

@@ -8,6 +8,7 @@ import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 
 import openfl.display.BitmapData;
+import openfl.display.BlendMode;
 import openfl.display.Shader;
 import lime.utils.Float32Array;
 
@@ -52,7 +53,7 @@ class CommandHelper {
 
 	}
 
-	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, shader:Shader, drawSelf:Bool) {
+	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, shader:Shader, drawSelf:Bool, preDrawCallback:RenderSession->Void = null) {
 
 		if (target.__usingPingPongTexture) {
 			target.__pingPongTexture.swap();
@@ -74,13 +75,17 @@ class CommandHelper {
 		// TODO cache this somehow?, don't do each state change?
 		internalShader.bindVertexArray(vertexArray);
 
-		renderSession.blendModeManager.setBlendMode(internalShader.blendMode);
+		var blendMode:BlendMode = internalShader.blendMode;
+		
+		if (blendMode == null) {
+			blendMode = NORMAL;
+		}
+		
+		renderSession.blendModeManager.setBlendMode(blendMode);
 
 
 		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, source.getTexture (gl));
-
-		gl.uniform1i(internalShader.getUniformLocation(DefUniform.Sampler), 0); // DefUniform or MaskedUniform?
 
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -89,7 +94,12 @@ class CommandHelper {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, internalShader.wrapT);
 
 		internalShader.applyData(shader.data, renderSession);
-		gl.uniform2f(internalShader.getUniformLocation("openfl_uScaleVector"), source.__uvData.x1, source.__uvData.y2); // :TODO: use property
+
+		if (preDrawCallback != null) {
+
+			preDrawCallback (renderSession);
+
+		}
 
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 
@@ -110,21 +120,30 @@ class CommandHelper {
 
 			var objSize = flashShader.data.get(Shader.uObjectSize);
 			var texSize = flashShader.data.get(Shader.uTextureSize);
+			var scaleVector = flashShader.data.get ("openfl_uScaleVector");
+
 			if (bd != null) {
 				objSize.value[0] = bd.width;
 				objSize.value[1] = bd.height;
 				if(bd.__pingPongTexture != null) {
-					texSize.value[0] = @:privateAccess bd.__pingPongTexture.renderTexture.__width;
-					texSize.value[1] = @:privateAccess bd.__pingPongTexture.renderTexture.__height;
+					var renderTexture = bd.__pingPongTexture.renderTexture;
+					texSize.value[0] = @:privateAccess renderTexture.__width;
+					texSize.value[1] = @:privateAccess renderTexture.__height;
+					scaleVector.value[0] = @:privateAccess renderTexture.__uvData.x1;
+					scaleVector.value[1] = @:privateAccess renderTexture.__uvData.y2;
 				} else {
 					texSize.value[0] = bd.width;
 					texSize.value[1] = bd.height;
+					scaleVector.value[0] = bd.__uvData.x1;
+					scaleVector.value[1] = bd.__uvData.y2;
 				}
 			} else {
 				objSize.value[0] = 0;
 				objSize.value[1] = 0;
 				texSize.value[0] = 0;
 				texSize.value[1] = 0;
+				scaleVector.value[0] = 0;
+				scaleVector.value[1] = 0;
 			}
 		}
 	}

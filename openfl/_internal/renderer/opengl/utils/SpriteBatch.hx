@@ -376,25 +376,23 @@ class SpriteBatch {
 
 		renderSession.blendModeManager.setBlendMode(shader.blendMode != null ? shader.blendMode : state.blendMode);
 
-		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix.toArray(true));
+		shader.uniformMatrix3fv(shader.getUniformLocation (DefUniform.ProjectionMatrix), false, renderSession.projectionMatrix);
 
 		if (state.colorTransform != null) {
-			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 1);
+			shader.uniform1i(shader.getUniformLocation (DefUniform.UseColorTransform), 1);
 			var ct = state.colorTransform;
-			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier),
+			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorMultiplier),
 						ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, 1);
-			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset),
+			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorOffset),
 						ct.redOffset / 255., ct.greenOffset / 255., ct.blueOffset / 255., ct.alphaOffset / 255.);
 		} else {
-			gl.uniform1i(shader.getUniformLocation(DefUniform.UseColorTransform), 0);
-			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorMultiplier), 1, 1, 1, 1);
-			gl.uniform4f(shader.getUniformLocation(DefUniform.ColorOffset), 0, 0, 0, 0);
+			shader.uniform1i(shader.getUniformLocation (DefUniform.UseColorTransform), 0);
+			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorMultiplier), 1, 1, 1, 1);
+			shader.uniform4f(shader.getUniformLocation (DefUniform.ColorOffset), 0, 0, 0, 0);
 		}
 
 		gl.activeTexture(gl.TEXTURE0 + 0);
 		gl.bindTexture(gl.TEXTURE_2D, state.texture);
-
-		gl.uniform1i(shader.getUniformLocation(DefUniform.Sampler), 0); // DefUniform or MaskedUniform?
 
 		if ((shader.smooth != null && shader.smooth) || state.textureSmooth) {
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -412,10 +410,9 @@ class SpriteBatch {
 		if (state.maskTexture != null){
 			gl.activeTexture(gl.TEXTURE0 + 1);
 			gl.bindTexture(gl.TEXTURE_2D, state.maskTexture);
-			gl.uniform1i(shader.getUniformLocation(MaskedUniform.MaskSampler), 1);
 
-			gl.uniformMatrix3fv(shader.getUniformLocation(MaskedUniform.MaskMatrix), false, state.maskMatrix.toArray(true));
-			gl.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
+			shader.uniformMatrix3fv(shader.getUniformLocation (MaskedUniform.MaskMatrix), false, state.maskMatrix);
+			shader.uniform2f( shader.getUniformLocation(MaskedUniform.MaskUVScale), state.maskTextureUVScale.x, state.maskTextureUVScale.y );
 		}
 
 		shader.applyData(state.shaderData, renderSession);
@@ -442,7 +439,7 @@ class SpriteBatch {
 			state.maskTexture = null;
 		}
 		state.textureSmooth = smooth;
-		state.blendMode = blendMode;
+		state.blendMode = blendMode != null ? blendMode : NORMAL;
 
 		// colorTransform is default, skipping it
 		state.skipColorTransform = (colorTransform != null && @:privateAccess colorTransform.__isDefault());

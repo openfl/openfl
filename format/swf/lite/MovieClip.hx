@@ -72,6 +72,8 @@ class MovieClip extends flash.display.MovieClip {
 	private var __maskData:Map<DisplayObject, Int>;
 	private var __maskDataKeys:Array<DisplayObject>;
 
+	private var __childrenCache:Map<FrameObject, DisplayObject>;
+
 	public function new (swf:SWFLite, symbol:SpriteSymbol) {
 
 		super ();
@@ -131,6 +133,11 @@ class MovieClip extends flash.display.MovieClip {
 
 		__renderFrame (0);
 
+	}
+
+	public function enableChildrenCache()
+	{
+		__childrenCache = new Map();
 	}
 
 
@@ -283,6 +290,14 @@ class MovieClip extends flash.display.MovieClip {
 
 		var displayObject:DisplayObject = null;
 
+		if(__childrenCache != null)
+		{
+			if(__childrenCache.exists(object))
+			{
+				return __childrenCache.get(object);
+			}
+		}
+
 		if (__swf.symbols.exists (object.symbol)) {
 
 			var symbol = __swf.symbols.get (object.symbol);
@@ -354,8 +369,12 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		return displayObject;
+		if(__childrenCache != null)
+		{
+			__childrenCache[object] = displayObject;
+		}
 
+		return displayObject;
 	}
 
 
@@ -824,7 +843,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	public override function __renderGL (renderSession:RenderSession):Void {
-		
+
 		if (!__updating9SliceBitmap) {
 			__update9SliceBitmap ();
 		}
@@ -934,7 +953,7 @@ class MovieClip extends flash.display.MovieClip {
 						displayObject = __createObject (frameObject);
 
 						displayObject.name = oldObject.name;
-						displayObject.transform.matrix = oldObject.transform.matrix;
+						displayObject.transform.matrix = oldObject.transform.getMatrixNoClone();
 						displayObject.transform.colorTransform = oldObject.transform.colorTransform;
 						if ( oldObject.__filters != null ) {
 							displayObject.filters = oldObject.__filters.map(function(bitmapFilter){ return bitmapFilter.clone(); });
@@ -1013,10 +1032,18 @@ class MovieClip extends flash.display.MovieClip {
 		}
 
 		#if (!flash && openfl && !openfl_legacy)
+		inline function labelLogic() {
+			var label = __symbol.frames[index].label;
+			__currentFrameLabel = label;
+			if ( label != null ) {
+				__currentLabel = label;
+			}
+		}
 		if (__frameScripts != null) {
 
 			if (__frameScripts.exists (index)) {
-				__currentLabel = __symbol.frames[index].label;
+				labelLogic();
+
 				__frameScripts.get (index) ();
 
 				if(index  + 1 != __currentFrame){
@@ -1028,7 +1055,8 @@ class MovieClip extends flash.display.MovieClip {
 		if (__staticFrameScripts != null) {
 
 			if (__staticFrameScripts.exists (index)) {
-				__currentLabel = __symbol.frames[index].label;
+				labelLogic();
+
 				__staticFrameScripts.get (index) (this);
 
 				if(index  + 1 != __currentFrame){
@@ -1209,9 +1237,9 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 	private override function mustResetRenderColorTransform():Bool {
-		
+
 		return super.mustResetRenderColorTransform() || (__symbol != null && __symbol.scalingGridRect != null);
-		
+
 	}
 
 	// Get & Set Methods

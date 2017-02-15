@@ -37,7 +37,7 @@ class MorphShape extends Shape {
 		return ratio = _ratio;
 	}
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGraphics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if(__renderDirty){
 			var swf_shape = __symbol.getShape(ratio);
@@ -112,7 +112,7 @@ class MorphShape extends Shape {
 			}
 		}
 
-		super.__update(transformOnly, updateChildren, maskGraphics);
+		super.__update(transformOnly, updateChildren);
 	}
 
 }

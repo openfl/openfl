@@ -310,7 +310,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (window != null) {
 
-			var event = new Event (Event.DEACTIVATE);
+			var event = Event.__create (Event.DEACTIVATE);
 			__broadcastFromStage (event, true);
 
 		}
@@ -469,7 +469,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
-		var event = new Event (Event.ACTIVATE);
+		var event = Event.__create (Event.ACTIVATE);
 		__broadcastFromStage (event, true);
 
 	}
@@ -516,6 +516,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			}
 
+			#if !neko
+				if ( window.resizable ) {
+					ApplicationMain.resize({width: window.width, height: window.height});
+				}
+			#end
+
 		}
 
 	}
@@ -525,7 +531,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
-		var event = new Event (Event.DEACTIVATE);
+		var event = Event.__create (Event.DEACTIVATE);
 		__broadcastFromStage (event, true);
 
 	}
@@ -575,7 +581,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (this.window == null || this.window != window) return;
 
-		__dispatchEvent (new Event (Event.MOUSE_LEAVE));
+		__dispatchEvent (Event.__create (Event.MOUSE_LEAVE));
 
 	}
 
@@ -664,7 +670,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		var event = new Event (Event.RESIZE);
+		var event = Event.__create (Event.RESIZE);
 		__broadcastFromStage (event, false);
 
 	}
@@ -790,12 +796,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Telemetry.__advanceFrame ();
 		#end
 
-		__broadcastFromStage (new Event (Event.ENTER_FRAME), true);
+		__broadcastFromStage (Event.__create (Event.ENTER_FRAME), true);
 
 		if (__invalidated) {
 
 			__invalidated = false;
-			__broadcastFromStage (new Event (Event.RENDER), true);
+			__broadcastFromStage (Event.__create (Event.RENDER), true);
 
 		}
 
@@ -868,7 +874,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				stack[i].__broadcast (event, false);
 
 				if (event.__isCanceled) {
-					event.dispose();
 					return;
 
 				}
@@ -879,7 +884,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
-				event.dispose();
 				return;
 
 			}
@@ -894,7 +898,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
-						event.dispose();
 						return;
 
 					}
@@ -906,8 +909,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 
 		}
-
-		event.dispose();
 	}
 
 
@@ -1113,18 +1114,18 @@ class Stage extends DisplayObjectContainer implements IModule {
 		}
 
 
-		fireEvent (MouseEvent.__create (type, button, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
+		fireEvent (MouseEvent.__create (type, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
 
 		if (clickType != null) {
 
-			fireEvent (MouseEvent.__create (clickType, button, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
+			fireEvent (MouseEvent.__create (clickType, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
 
 			if (type == MouseEvent.MOUSE_UP && cast (target, openfl.display.InteractiveObject).doubleClickEnabled) {
 
 				var currentTime = Lib.getTimer ();
 				if (currentTime - __lastClickTime < 500) {
 
-					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
+					fireEvent (MouseEvent.__create (MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, (target == this ? targetPoint : targetPointLocal), target), __stack);
 					__lastClickTime = 0;
 
 				} else {
@@ -1181,7 +1182,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			inline function mouseOut(target:DisplayObject) {
 				targetPointLocal.copyFrom (targetPoint);
 				target.convertToLocal (targetPointLocal);
-				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, targetPointLocal, cast target);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
 				event.dispose();
@@ -1191,7 +1192,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				if ( target.hasEventListener(MouseEvent.ROLL_OUT) ) {
 					targetPointLocal.copyFrom (targetPoint);
 					target.convertToLocal (targetPointLocal);
-					event = MouseEvent.__create (MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, targetPointLocal, cast target);
+					event = MouseEvent.__create (MouseEvent.ROLL_OUT, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
 					event.dispose();
@@ -1202,7 +1203,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 				if ( target.hasEventListener(MouseEvent.ROLL_OVER) ) {
 					targetPointLocal.copyFrom (targetPoint);
 					target.convertToLocal (targetPointLocal);
-					event = MouseEvent.__create (MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, targetPointLocal, cast target);
+					event = MouseEvent.__create (MouseEvent.ROLL_OVER, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
 					event.dispose();
@@ -1212,7 +1213,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			inline function mouseOver(target:DisplayObject) {
 				targetPointLocal.copyFrom (targetPoint);
 				target.convertToLocal (targetPointLocal);
-				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, targetPointLocal, cast target);
+				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
 				event.dispose();
@@ -1270,7 +1271,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 		targetPoint.setTo (x, y);
 		var delta = Std.int (deltaY);
 
-		fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), __stack);
+		fireEvent (MouseEvent.__create (MouseEvent.MOUSE_WHEEL, __mouseX, __mouseY, (target == this ? targetPoint : target.globalToLocal (targetPoint)), target, delta), __stack);
 
 		Point.pool.put(targetPoint);
 	}
@@ -1422,41 +1423,19 @@ class Stage extends DisplayObjectContainer implements IModule {
 	}
 
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool, ?maskGrahpics:Graphics = null):Void {
+	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
-		if (transformOnly) {
-
-			if (DisplayObject.__worldTransformDirty > 0) {
-
-				super.__update (true, updateChildren, maskGrahpics);
+		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
+			super.__update (transformOnly, updateChildren);
 
 				if (updateChildren) {
-
 					DisplayObject.__worldTransformDirty = 0;
-					__dirty = true;
-
-				}
-
-			}
-
-		} else {
-
-			if (DisplayObject.__worldTransformDirty > 0 || __dirty || DisplayObject.__worldRenderDirty > 0) {
-
-				super.__update (false, updateChildren, maskGrahpics);
-
-				if (updateChildren) {
-
-					DisplayObject.__worldTransformDirty = 0;
+				if ( !transformOnly ) {
 					DisplayObject.__worldRenderDirty = 0;
-					__dirty = false;
-
 				}
-
+				__dirty = transformOnly;
 			}
-
 		}
-
 	}
 
 

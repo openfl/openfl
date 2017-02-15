@@ -8,7 +8,7 @@ import haxe.Unserializer;
 
 enum CommandType {
 
-	Blur1D (target:BitmapData, source:BitmapData, blur:Float, horizontal:Bool, strength:Float, distance:Float, angle:Float);
+	Blur1D (target:BitmapData, source:BitmapData, blur:Float, quality:Int, horizontal:Bool, strength:Float, distance:Float, angle:Float);
 	Offset (target:BitmapData, source:BitmapData, strength:Float, distance:Float, angle:Float);
 	Colorize (target:BitmapData, source:BitmapData, color:Int, alpha:Float);
 	ColorLookup (target:BitmapData, source:BitmapData, colorLookup:BitmapData);

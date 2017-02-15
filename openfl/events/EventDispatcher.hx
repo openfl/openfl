@@ -213,27 +213,31 @@ class EventDispatcher implements IEventDispatcher {
 		}
 
 		if ( list != null ) {
+			var savedTarget = null;
 			if (event.target == null) {
 
 				if (target.__targetDispatcher != null) {
 
-					event.target = target.__targetDispatcher;
+					savedTarget = target.__targetDispatcher;
 
 				} else {
 
-					event.target = target;
+					savedTarget = target;
 
 				}
 
+			} else {
+				savedTarget = event.target;
 			}
-
-			event.currentTarget = target;
 
 			var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 			var index = 0;
 			var listener;
 
 			while (index < list.length) {
+
+				event.target = savedTarget;
+				event.currentTarget = target;
 
 				listener = list[index];
 
@@ -287,8 +291,11 @@ class EventDispatcher implements IEventDispatcher {
 
 			target.__dispatching.set (event.type, false);
 
+			event.dispose();
+
 			return true;
 		} else {
+			event.dispose();
 			return false;
 		}
 

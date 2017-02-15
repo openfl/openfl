@@ -63,6 +63,7 @@ import js.html.CanvasRenderingContext2D;
 	private var __padding:Int;
 	private var __positionX:Float;
 	private var __positionY:Float;
+	private var __snapCoordinates:Bool = false;
 	private var __strokePadding:Float;
 	private var __transformDirty:Bool;
 	private var __visible:Bool;

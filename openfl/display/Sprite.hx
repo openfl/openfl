@@ -108,6 +108,7 @@ class Sprite extends DisplayObjectContainer {
 
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 
+		if (!visible) return false;
 		if (super.__hitTestMask (x, y)) {
 
 			return true;
