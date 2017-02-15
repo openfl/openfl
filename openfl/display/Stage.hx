@@ -85,6 +85,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
+	public var fullScreenWidth (get, never):Int;
+	public var fullScreenHeight (get, never):Int;
 
 	public var window (default, null):Window;
 
@@ -163,8 +165,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseY = 0;
 		__lastClickTime = 0;
 
-		stageWidth = Std.int (window.displayWidth * window.scale);
-		stageHeight = Std.int (window.displayHeight * window.scale);
+		stageWidth = Std.int (window.originalWidth * window.scale);
+		stageHeight = Std.int (window.originalHeight * window.scale);
 
 		this.stage = this;
 
@@ -1597,6 +1599,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		return value;
 
+	}
+
+	private function get_fullScreenWidth():Int {
+		return window.screenWidth;
+	}
+
+	private function get_fullScreenHeight():Int {
+		return window.screenHeight;
 	}
 
 }
