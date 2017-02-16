@@ -704,7 +704,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var i = 0;
 		var base_child_count = 0;
 
-		while( base_child_count < __children.length ) {
+		var cached_length = __children.length;
+		while( base_child_count < cached_length ) {
 			__allChildrenStack.set(base_child_count, __children[base_child_count]);
 			base_child_count++;
 		}
