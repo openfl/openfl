@@ -17,7 +17,7 @@ class RenderTexture {
 	public var smoothing:Bool;
 	public var width:Int;
 	public var height:Int;
-	public var powerOfTwo:Bool = true;
+	public var powerOfTwo:Bool;
 	
 	private var __width:Int;
 	private var __height:Int;
