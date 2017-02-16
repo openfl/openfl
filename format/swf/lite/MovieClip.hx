@@ -1098,8 +1098,8 @@ class MovieClip extends flash.display.MovieClip {
 
 		var children_length = __children.length;
 
-		for( i in 0 ... children_length ){
-			__children[i].__clippedAt = null;
+		for( child in __children ){
+			child.__clippedAt = null;
 		}
 
 		for( mask in __maskDataKeys ){
