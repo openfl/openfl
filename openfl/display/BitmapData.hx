@@ -487,7 +487,7 @@ class BitmapData implements IBitmapDrawable {
 			var renderSession = new RenderSession ();
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			
 			if (!smoothing) {
@@ -563,7 +563,7 @@ class BitmapData implements IBitmapDrawable {
 			var renderSession = new RenderSession ();
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
 			

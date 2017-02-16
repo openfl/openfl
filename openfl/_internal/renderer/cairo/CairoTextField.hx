@@ -113,7 +113,7 @@ class CairoTextField {
 			
 		}
 		
-		if (renderSession.roundPixels) {
+		if (true || renderSession.roundPixels) {
 			
 			var matrix = graphics.__renderTransform.__toMatrix3 ();
 			matrix.tx = Math.round (matrix.tx);
