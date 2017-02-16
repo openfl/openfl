@@ -731,7 +731,22 @@ class TextEngine {
 				
 				for (i in startIndex...endIndex) {
 					
-					advances.push (__context.measureText (text.charAt (i)).width);
+					var advance;
+					
+					if (i < text.length-1) {
+						
+						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
+						var nextWidth = __context.measureText (text.charAt (i + 1)).width;
+						var twoWidths = __context.measureText (text.substr (i,  2)).width;
+						advance = twoWidths - nextWidth;
+						
+					} else {
+						
+						advance = __context.measureText (text.charAt (i)).width;
+						
+					}
+					
+					advances.push (advance);
 					
 				}
 				
