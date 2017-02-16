@@ -1441,7 +1441,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			__inlineUpdate(transformOnly, updateChildren);
 			var i = 0;
-			var cached_length = __updateStack.length;
 			// :NOTE: Length can change here. don't cache it.
 			while (i < __updateStack.length ) {
 				var child = __updateStack[i];
