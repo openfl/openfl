@@ -1111,11 +1111,13 @@ class MovieClip extends flash.display.MovieClip {
 
 			for( i in maskIndex ... children_length ){
 				var sibling = getChildAt(i);
-				if( __SWFDepthData.get(sibling) > depthValue){
-					result = i;
-					break;
-				} else {
-					sibling.__clippedAt = maskIndex;
+				if ( sibling != null ) {
+					if( __SWFDepthData.get(sibling) > depthValue){
+						result = i;
+						break;
+					} else {
+						sibling.__clippedAt = maskIndex;
+					}
 				}
 			}
 
