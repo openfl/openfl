@@ -1008,28 +1008,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		for( mask in __maskDataKeys ){
-			var maskIndex = getChildIndex( mask );
-
-			var depthValue = __maskData.get(mask);
-
-			var result = numChildren;
-			for( i in maskIndex ... numChildren ){
-				var sibling = getChildAt(i);
-				sibling.__clippedAt = null;
-			}
-			for( i in maskIndex ... numChildren ){
-				var sibling = getChildAt(i);
-				if( __SWFDepthData.get(sibling) > depthValue){
-					result = i;
-					break;
-				} else {
-					sibling.__clippedAt = maskIndex;
-				}
-			}
-
-			mask.__clipDepth = result - maskIndex - 1;
-		}
+		__updateSwfMaskData();
 
 		#if (!flash && openfl && !openfl_legacy)
 		inline function labelLogic() {
@@ -1115,6 +1094,35 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+	private function __updateSwfMaskData(){
+
+		var children_length = __children.length;
+
+		for( i in 0 ... children_length ){
+			__children[i].__clippedAt = null;
+		}
+
+		for( mask in __maskDataKeys ){
+			var maskIndex = getChildIndex( mask );
+
+			var depthValue = __maskData.get(mask);
+
+			var result = children_length;
+
+			for( i in maskIndex ... children_length ){
+				var sibling = getChildAt(i);
+				if( __SWFDepthData.get(sibling) > depthValue){
+					result = i;
+					break;
+				} else {
+					sibling.__clippedAt = maskIndex;
+				}
+			}
+
+			mask.__clipDepth = result - maskIndex - 1;
+		}
+	}
+
 #if as2_depth_accessors
 
 	public function getNextHighestDepthExternal() : Int {
@@ -1134,6 +1142,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	public function addChildAtSwfDepthExternal(displayObject:DisplayObject, targetDepth:Int):Void {
 		__addChildAtSwfDepth(displayObject, targetDepth + 0x3FFF);
+		__updateSwfMaskData();
 	}
 
 	public function swapDepths(target: Dynamic) {
@@ -1164,6 +1173,8 @@ class MovieClip extends flash.display.MovieClip {
 		}
         swf_parent.removeChild(this);
         swf_parent.__addChildAtSwfDepth(this, target_depth);
+        swf_parent.addChildAtSwfDepthExternal(this, target_depth);
+		__updateSwfMaskData();
     }
 #end
 
@@ -1181,6 +1192,14 @@ class MovieClip extends flash.display.MovieClip {
 		}
 
 		addChild (displayObject);
+	}
+
+	public override function removeChild (child:DisplayObject):DisplayObject {
+		var object = super.removeChild(child);
+		__SWFDepthData.remove(object);
+		__maskData.remove(object);
+		__updateSwfMaskData();
+		return object;
 	}
 
 	@:noCompletion override private function __releaseResources(){
