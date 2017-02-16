@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.8.0",
-	"releasenote": "Stage3D improvements, added Tile originX/originY, TextField improvements",
+	"version": "4.8.1",
+	"releasenote": "Improved support for loading Sound from bytes, minor fixes",
 	"contributors": [ "singmajesty" ]
 }
