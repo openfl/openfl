@@ -26,9 +26,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, null):Int;
 	public var tabChildren:Bool;
 
-	private var __removedChildren:UnshrinkableArray<DisplayObject>;
-
-
 	private function new () {
 
 		super ();
@@ -36,7 +33,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		mouseChildren = true;
 
 		__children = new UnshrinkableArray<DisplayObject> (8);
-		__removedChildren = new UnshrinkableArray<DisplayObject> (8);
 
 	}
 
@@ -216,7 +212,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				child.setCachedParent(null);
 			}
 			__children.remove (child);
-			__removedChildren.push (child);
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
 			__setRenderDirty();
@@ -642,12 +637,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		}
 
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
-
-		}
-
 		if (__mask != null) {
 
 			renderSession.maskManager.popMask ();
@@ -708,12 +697,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 			if (child == null ) continue;
 			child.__renderCanvas (renderSession);
-
-		}
-
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
 
 		}
 
@@ -816,12 +799,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 
 		__postRenderGL (renderSession);
-
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
-
-		}
 
 	}
 
