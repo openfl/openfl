@@ -174,13 +174,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	public function getChildIndex (child:DisplayObject):Int {
 
-		for (i in 0...__children.length) {
-
-			if (__children[i] == child) return i;
-
-		}
-
-		return -1;
+		return __children.indexOf(child);
 
 	}
 
