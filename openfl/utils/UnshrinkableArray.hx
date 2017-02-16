@@ -21,7 +21,9 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 
     public inline function pop():T
     {
-        return this._items[--this._length];
+        var popped = this._items[--this._length];
+        this._items[this._length] = null;
+        return popped;
     }
 
     public inline function insert(index:Int, item:T)
@@ -39,6 +41,9 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 
     public inline function clear()
     {
+        for ( i in 0...this._length) {
+            this._items[i] = null;
+        }
         this._length = 0;
     }
 
@@ -54,6 +59,7 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
             }
 
             --this._length;
+            this._items[this._length] = null;
         }
 
         return found >= 0;
@@ -70,7 +76,10 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
             {
                 this._items[i] = this._items[i + count];
             }
-
+            for(i in this._length - count...this._length)
+            {
+                this._items[i] = null;
+            }
             this._length -= count;
         }
     }
