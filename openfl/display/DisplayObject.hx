@@ -766,6 +766,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (dirty) {
 			__setRenderDirty();
 		}
+
+		if ( __objectTransform != null) {
+			Transform.pool.put(__objectTransform);
+			__objectTransform = null;
+		}
 	}
 
 
@@ -1407,7 +1412,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__objectTransform == null) {
 
-			__objectTransform = new Transform (this);
+			__objectTransform = Transform.pool.get();
+			__objectTransform.reset(this);
 
 		}
 
@@ -1426,7 +1432,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__objectTransform == null) {
 
-			__objectTransform = new Transform (this);
+			__objectTransform = Transform.pool.get();
+			__objectTransform.reset(this);
 
 		}
 

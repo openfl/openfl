@@ -20,8 +20,6 @@ import js.html.ImageData;
 
 class BitmapFilter {
 
-	private var __dirty:Bool = true;
-
 	public static var __inverseAlphaMultipliers = new Float32Array([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0]);
 	public static var __inverseAlphaOffsets = new Float32Array([0.0, 0.0, 0.0, 1.0]);
 

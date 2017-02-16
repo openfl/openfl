@@ -10,6 +10,8 @@ import openfl.display.DisplayObject;
 class Transform {
 
 
+	public static var pool: ObjectPool<Transform>  = new ObjectPool<Transform>( function() { return new Transform(null); } );
+
 	public var colorTransform (get, set):ColorTransform;
 	public var concatenatedColorTransform (default, null):ColorTransform;
 	public var concatenatedMatrix (get, never):Matrix;
@@ -32,6 +34,14 @@ class Transform {
 		__displayObject = displayObject;
 		__hasMatrix = true;
 
+	}
+
+	public function reset(displayObject:DisplayObject) {
+		__colorTransform.reset();
+		concatenatedColorTransform.reset();
+		pixelBounds.setEmpty();
+		__displayObject = displayObject;
+		__hasMatrix = true;
 	}
 
 	public function resetColorTransform() {
