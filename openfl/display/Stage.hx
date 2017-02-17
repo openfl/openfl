@@ -758,6 +758,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target = this;
 		}
 
+		event.acquire();
 		var result = broadcast (event, this);
 
 		if (!event.__isCanceled && notifyChilden) {
@@ -769,12 +770,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 				broadcast(event, stack_id);
 
 				if (event.__isCanceled) {
+					event.release();
 					return true;
 				}
 				++i;
 			}
 		}
 
+		event.release();
 		return result;
 	}
 
