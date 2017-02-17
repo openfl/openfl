@@ -73,14 +73,14 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return new IntMap<V> ();
 		
 	}
-
+	
 	
 	@:to static inline function toFloatMap<K:Float,V> (t:IMap<K, V>, weakKeys:Bool):FloatMap<K, V> {
 		
 		return new FloatMap<K, V> ();
 		
 	}
-
+	
 	
 	@:to static inline function toEnumValueMapMap<K:EnumValue, V> (t:IMap<K, V>, weakKeys:Bool):EnumValueMap<K, V> {
 		
@@ -123,13 +123,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		
 	}
 	
-
+	
 	@:from static inline function fromFloatMap<K:Float, V> (map:FloatMap<K, V>):Dictionary<K, V> {
 		
 		return cast map;
 		
 	}
-
+	
 	
 	@:from static inline function fromObjectMap<K:{}, V> (map:ObjectMap<K, V>):Dictionary<K, V> {
 		
@@ -243,13 +243,14 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	public function exists (key:K):Bool {
 		
-		return indexOf(key) > -1;
+		return indexOf (key) > -1;
 		
 	}
 	
 	
 	public function get (key:K):Null<V> {
-		var ind: Int = indexOf(key);
+		
+		var ind = indexOf(key);
 		return ind > -1 ? values[ind] : null;
 		
 	}
@@ -271,12 +272,16 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	public function remove (key:K):Bool {
 		
-		var ind: Int = indexOf(key);
+		var ind = indexOf (key);
+		
 		if (ind > -1) {
-			floatKeys.splice(ind, 1);
-			values.splice(ind, 1);
+			
+			floatKeys.splice (ind, 1);
+			values.splice (ind, 1);
 			return true;
+			
 		}
+		
 		return false;
 		
 	}
@@ -284,13 +289,128 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	public function set (key:K, value:V):Void {
 		
-		var ind: Int = indexOf(key);
-        if (ind > -1){
-            values[ind] = value;
-        } else {
-			ind = insertSorted(key);	
-			values.insert(ind, value);
-        }		
+		var ind = indexOf (key);
+		
+		if (ind > -1) {
+			
+			values[ind] = value;
+			
+		} else {
+			
+			ind = insertSorted (key);
+			values.insert (ind, value);
+			
+		}
+		
+	}
+	
+	
+	/**
+	* Binary search through floatKeys array, which is sorted, to find an index of a given key. If the array
+	* doesn't contain such key -1 is returned.
+	*/
+	private function indexOf (key:K):Int {
+		
+		var len:Int = floatKeys.length;
+		var startIndex:Int = 0;
+		var endIndex:Int = len - 1;
+		
+		if (len == 0) {
+			
+			return -1;
+			
+		}
+		
+		var midIndex:Int  = 0;
+		
+		while (startIndex < endIndex) {
+			
+			midIndex = Math.floor ((startIndex + endIndex) / 2);
+			
+			if (floatKeys[midIndex] == key) {
+				
+				return midIndex;
+				
+			} else if (floatKeys[midIndex] > key) {
+				
+				endIndex = midIndex - 1;
+				
+			} else {
+				
+				startIndex = midIndex + 1;
+				
+			}
+			
+		}
+		
+		if (floatKeys[startIndex] == key) {
+			
+			return startIndex;
+			
+		} else {
+			
+			return -1;
+			
+		}
+		
+	}
+	
+
+	/**
+	*	Insert the key at a proper index in the array and return the index. The array must will remain sorted. 
+	*   The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
+	*/
+	private function insertSorted(key:K):Int {
+		
+		var len:Int = floatKeys.length;
+		var startIndex:Int = 0;
+		var endIndex:Int = len - 1;
+		
+		if (len == 0) {
+			
+			floatKeys.push (key);
+			return 0;
+			
+		}
+		
+		var midIndex:Int = 0;
+		
+		while (startIndex < endIndex) {
+			
+			midIndex = Math.floor ((startIndex + endIndex) / 2);
+			
+			if (floatKeys[midIndex] == key) {
+				
+				return midIndex;
+				
+			} else if (floatKeys[midIndex] > key) {
+				
+				endIndex = midIndex - 1;
+				
+			} else {
+				
+				startIndex = midIndex + 1;
+				
+			}
+			
+		}
+		
+		if (floatKeys[startIndex] > key) {
+			
+			floatKeys.insert (startIndex, key);
+			return startIndex;
+			
+		} else if (floatKeys[startIndex] < key) {
+			
+			floatKeys.insert (startIndex + 1, key);
+			return startIndex + 1;
+			
+		} else {
+			
+			return startIndex;
+			
+		}
+		
 	}
 	
 	
@@ -299,74 +419,8 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return values.toString ();
 		
 	}
-
-	/**
-	*	Insert the key at a proper index in the array and return the index. The array must will remain sorted. 
-	*   The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
-	*/
-	private function insertSorted(key: K): Int  {
-		var len: Int = floatKeys.length;
-		var startIndex: Int = 0;
-		var endIndex: Int = len - 1;
-		if (len == 0) {
-			floatKeys.push(key);
-			return 0;
-		}
-
-		var midIndex: Int  = 0;
-		while(startIndex < endIndex) {	  
-			midIndex = Math.floor((startIndex + endIndex) / 2);
-			if (floatKeys[midIndex] == key) {
-				return midIndex;
-			} else if (floatKeys[midIndex] > key) {
-				endIndex = midIndex - 1;
-			} else {
-				startIndex = midIndex + 1;
-			}			
-		}
-		
-		if (floatKeys[startIndex] > key) {
-			floatKeys.insert(startIndex, key);
-			return startIndex;
-		} else if (floatKeys[startIndex] < key) {
-			floatKeys.insert(startIndex + 1, key);
-			return startIndex + 1;
-		} else {
-			return startIndex;
-		}
-
-	}
-
-	/**
-	* Binary search through floatKeys array, which is sorted, to find an index of a given key. If the array
-	* doesn't contain such key -1 is returned.
-	*/
-	private function indexOf(key: K): Int  {
-		var len: Int = floatKeys.length;
-		var startIndex: Int = 0;
-		var endIndex: Int = len - 1;
-		if (len == 0) {
-			return -1;
-		}
-
-		var midIndex: Int  = 0;
-		while(startIndex < endIndex) {			
-			midIndex = Math.floor((startIndex + endIndex) / 2);
-			if (floatKeys[midIndex] == key) {
-				return midIndex;
-			} else if (floatKeys[midIndex] > key) {
-				endIndex = midIndex - 1;
-			} else {
-				startIndex = midIndex + 1;
-			}			
-		}
-
-		if (floatKeys[startIndex] == key) {		
-			return startIndex;
-		} else {
-			return -1;
-		}
-	}	
+	
+	
 }
 
 
