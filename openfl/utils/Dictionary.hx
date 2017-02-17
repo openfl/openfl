@@ -229,35 +229,35 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 @:dox(hide) private class FloatMap<K:Float, V> implements Map.IMap<K, V> {
 	
 	
-	private var types:Map<String, K>;
-	private var values:Map<String, V>;
+	private var floatKeys:Array<K>;
+	private var values:Array<V>;
 	
 	
 	public function new ():Void {
 		
-		types = new Map ();
-		values = new Map ();
+		floatKeys = new Array<K> ();
+		values = new Array<V> ();
 		
 	}
 	
 	
 	public function exists (key:K):Bool {
 		
-		return types.exists (toFixed(key));
+		return indexOf(key) > -1;
 		
 	}
 	
 	
 	public function get (key:K):Null<V> {
-		
-		return values.get (toFixed(key));
+		var ind: Int = indexOf(key);
+		return ind > -1 ? values[ind] : null;
 		
 	}
 	
 	
 	public function keys ():Iterator<K> {
 		
-		return types.iterator ();
+		return floatKeys.iterator ();
 		
 	}
 	
@@ -271,18 +271,26 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	public function remove (key:K):Bool {
 		
-		var name = toFixed(key);
-		return (types.remove (name) || values.remove (name));
+		var ind: Int = indexOf(key);
+		if (ind > -1) {
+			floatKeys.splice(ind, 1);
+			values.splice(ind, 1);
+			return true;
+		}
+		return false;
 		
 	}
 	
 	
 	public function set (key:K, value:V):Void {
 		
-		var name = toFixed(key);
-		types.set (name, key);
-		values.set (name, value);
-		
+		var ind: Int = indexOf(key);
+        if (ind > -1){
+            values[ind] = value;
+        } else {
+			ind = insertSorted(key);	
+			values.insert(ind, value);
+        }		
 	}
 	
 	
@@ -292,34 +300,73 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		
 	}
 
+	/**
+	*	Insert the key at a proper index in the array and return the index. The array must will remain sorted. 
+	*   The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
+	*/
+	private function insertSorted(key: K): Int  {
+		var len: Int = floatKeys.length;
+		var startIndex: Int = 0;
+		var endIndex: Int = len - 1;
+		if (len == 0) {
+			floatKeys.push(key);
+			return 0;
+		}
+
+		var midIndex: Int  = 0;
+		while(startIndex < endIndex) {	  
+			midIndex = Math.floor((startIndex + endIndex) / 2);
+			if (floatKeys[midIndex] == key) {
+				return midIndex;
+			} else if (floatKeys[midIndex] > key) {
+				endIndex = midIndex - 1;
+			} else {
+				startIndex = midIndex + 1;
+			}			
+		}
+		
+		if (floatKeys[startIndex] > key) {
+			floatKeys.insert(startIndex, key);
+			return startIndex;
+		} else if (floatKeys[startIndex] < key) {
+			floatKeys.insert(startIndex + 1, key);
+			return startIndex + 1;
+		} else {
+			return startIndex;
+		}
+
+	}
 
 	/**
-	 * 	The float point number is converted to a string with fractionDigits fraction digits. By default 5.
-	 *  If the floating point numnber has more then 5 digits, it is rounded to 5, if it has less it is padded by 0s to the 5th digit
-	 */
-	private static inline function toFixed(v:Float, fractionDigits:Int = 5):String {
-        #if (js)
-            return untyped v.toFixed(fractionDigits);
-        #else          
-            var b = Math.pow(5, fractionDigits);
-            var s = Std.string(v);
-            var dotIndex = s.indexOf('.');
-            if(dotIndex >= 0) {
-                var diff = fractionDigits - (s.length - (dotIndex + 1));
-                if(diff > 0) {
-                    s = StringTools.rpad(s, "0", s.length + diff);
-                } else {
-                    s = Std.string(Math.round(v * b) / b);
-                }
-            } else {
-                s += ".";
-                s = StringTools.rpad(s, "0", s.length + fractionDigits);
-            }
-            return s;
-        #end
-    }
-    
-	
+	* Binary search through floatKeys array, which is sorted, to find an index of a given key. If the array
+	* doesn't contain such key -1 is returned.
+	*/
+	private function indexOf(key: K): Int  {
+		var len: Int = floatKeys.length;
+		var startIndex: Int = 0;
+		var endIndex: Int = len - 1;
+		if (len == 0) {
+			return -1;
+		}
+
+		var midIndex: Int  = 0;
+		while(startIndex < endIndex) {			
+			midIndex = Math.floor((startIndex + endIndex) / 2);
+			if (floatKeys[midIndex] == key) {
+				return midIndex;
+			} else if (floatKeys[midIndex] > key) {
+				endIndex = midIndex - 1;
+			} else {
+				startIndex = midIndex + 1;
+			}			
+		}
+
+		if (floatKeys[startIndex] == key) {		
+			return startIndex;
+		} else {
+			return -1;
+		}
+	}	
 }
 
 
