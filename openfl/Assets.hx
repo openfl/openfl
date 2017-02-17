@@ -220,19 +220,19 @@ class Assets {
 					
 				} else {
 					
-					Log.info ("MovieClip asset \"" + id + "\" exists, but only asynchronously");
+					Log.error ("MovieClip asset \"" + id + "\" exists, but only asynchronously");
 					
 				}
 				
 			} else {
 				
-				Log.info ("There is no MovieClip asset with an ID of \"" + id + "\"");
+				Log.error ("There is no MovieClip asset with an ID of \"" + id + "\"");
 				
 			}
 			
 		} else {
 			
-			Log.info ("There is no asset library named \"" + libraryName + "\"");
+			Log.error ("There is no asset library named \"" + libraryName + "\"");
 			
 		}
 		
