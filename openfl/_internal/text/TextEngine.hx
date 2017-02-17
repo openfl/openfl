@@ -1318,19 +1318,23 @@ class TextEngine {
 	
 	private function set_text (value:String):String {
 		
-		if (value == null) return text = value;
+		if (value == null) {
+			return text = value;
+		}
 		
 		if (__restrictRegexp != null) {
 			
-			text = __restrictRegexp.split (text).join ('');
+			value = __restrictRegexp.split (value).join ('');
 			
 		}
 		
-		if (maxChars > 0 && text.length > maxChars) {
+		if (maxChars > 0 && value.length > maxChars) {
 			
-			text = text.substr (0, maxChars);
+			value = value.substr (0, maxChars);
 			
 		}
+		
+		text = value;
 		
 		return text;
 		
