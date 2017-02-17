@@ -121,9 +121,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setRenderDirty ();
 			__setRenderDirty();
 
-			var event = Event.__create (Event.ADDED, true);
-			event.target = child;
-			child.__dispatchEvent (event);
+			child.dispatchEvent (Event.__create (Event.ADDED, true));
 	}
 
 	public function areInaccessibleObjectsUnderPoint (point:Point):Bool {
@@ -193,7 +191,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (child != null && child.parent == this) {
 
-			child.__dispatchEvent (Event.__create (Event.REMOVED, true));
+			child.dispatchEvent (Event.__create (Event.REMOVED, true));
 
 			if (stage != null) {
 
@@ -771,8 +769,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				if( !child.__maskCached ){
 					if( child.__cachedBitmap != null ){
 						child.__cachedBitmap.dispose();
+						child.__cachedBitmap = null;
 					}
-					child.__cachedBitmap = null;
 
 					child.__isMask = true;
 					child.__update (true, true);

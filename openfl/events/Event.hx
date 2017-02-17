@@ -45,6 +45,8 @@ class Event {
 	private var __isCanceled:Bool;
 	private var __isCanceledNow:Bool;
 	private var __preventDefault:Bool;
+	private var __fromPool:Bool;
+	private var __refcount:Int;
 
 	public static var pool:ObjectPool<Event> = new ObjectPool<Event>( function() { return new Event(""); } );
 
@@ -54,6 +56,8 @@ class Event {
 		this.type = type;
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
+		__fromPool = false;
+		__refcount = 0;
 		eventPhase = EventPhase.AT_TARGET;
 
 	}
@@ -80,6 +84,8 @@ class Event {
 		event.__isCanceled = false;
 		event.__isCanceledNow = false;
 		event.__preventDefault = false;
+		event.__fromPool = true;
+		event.__refcount = 0;
 
 		event.eventPhase = EventPhase.AT_TARGET;
 		return event;
@@ -184,9 +190,23 @@ class Event {
 		target = null;
 	}
 
-	public function dispose()
+	public function acquire()
 	{
-		pool.put(this);
+		#if dev
+			if( __refcount == -1 ){
+				throw "Do not reuse a pool event after disposal";
+			}
+		#end
+		++__refcount;
+	}
+
+	public function release()
+	{
+		if( ( --__refcount == 0 ) && __fromPool ){
+			__refcount = -1;
+			__fromPool = false;
+			pool.put(this);
+		}
 	}
 
 }
