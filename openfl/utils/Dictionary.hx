@@ -258,14 +258,14 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	public function keys ():Iterator<K> {
 		
-		return floatKeys.iterator ();
+		return floatKeys.copy().iterator ();
 		
 	}
 	
 	
 	public function iterator ():Iterator<V> {
 		
-		return values.iterator ();
+		return values.copy().iterator ();
 		
 	}
 	
@@ -287,21 +287,10 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
-	public function set (key:K, value:V):Void {
-		
-		var ind = indexOf (key);
-		
-		if (ind > -1) {
-			
-			values[ind] = value;
-			
-		} else {
-			
-			ind = insertSorted (key);
-			values.insert (ind, value);
-			
-		}
-		
+	public function set (key:K, value:V): Void {
+
+		insertSorted (key, value);
+
 	}
 	
 	
@@ -360,28 +349,29 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	*	Insert the key at a proper index in the array and return the index. The array must will remain sorted. 
 	*   The keys are unique so if the key already existis in the array it isn't added but it's index is returned.
 	*/
-	private function insertSorted(key:K):Int {
+	private function insertSorted(key:K, value: V): Void {
 		
 		var len:Int = floatKeys.length;
 		var startIndex:Int = 0;
 		var endIndex:Int = len - 1;
 		
 		if (len == 0) {
-			
+
 			floatKeys.push (key);
-			return 0;
-			
+			values.push(value);
+			return;
+
 		}
 		
 		var midIndex:Int = 0;
-		
 		while (startIndex < endIndex) {
 			
 			midIndex = Math.floor ((startIndex + endIndex) / 2);
 			
 			if (floatKeys[midIndex] == key) {
 				
-				return midIndex;
+				values[midIndex] = value;
+				return;
 				
 			} else if (floatKeys[midIndex] > key) {
 				
@@ -396,19 +386,19 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		}
 		
 		if (floatKeys[startIndex] > key) {
-			
+
 			floatKeys.insert (startIndex, key);
-			return startIndex;
-			
+			values.insert (startIndex, value);
+
 		} else if (floatKeys[startIndex] < key) {
 			
 			floatKeys.insert (startIndex + 1, key);
-			return startIndex + 1;
-			
+			values.insert (startIndex + 1, value);
+
 		} else {
-			
-			return startIndex;
-			
+
+			values[startIndex] = value;
+
 		}
 		
 	}
