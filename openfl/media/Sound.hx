@@ -5,6 +5,7 @@ import haxe.io.Path;
 import lime.app.Preloader;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
+import lime.utils.UInt8Array;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
@@ -102,20 +103,56 @@ class Sound extends EventDispatcher {
 	}
 	
 	
-	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int, forcePlayAsMusic:Bool = false):Void {
+	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int #if (openfl < "5.0.0"), forcePlayAsMusic:Bool = false #end):Void {
 		
-		// TODO: handle byte length
+		if (bytes == null || bytesLength <= 0) {
+			
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
+			return;
+			
+		}
+		
+		if (bytes.length > bytesLength) {
+			
+			var copy = new ByteArray (bytesLength);
+			copy.writeBytes (bytes, 0, bytesLength);
+			bytes = copy;
+			
+		}
 		
 		__buffer = AudioBuffer.fromBytes (bytes);
+		
+		if (__buffer == null) {
+			
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
+			
+		} else {
+			
+			dispatchEvent (new Event (Event.COMPLETE));
+			
+		}
 		
 	}
 	
 	
-	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void {
+	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void {
 		
-		// TODO: handle pre-decoded data
+		if (bytes == null) {
+			
+			dispatchEvent (new IOErrorEvent (IOErrorEvent.IO_ERROR));
+			return;
+			
+		}
 		
-		__buffer = AudioBuffer.fromBytes (bytes);
+		var audioBuffer = new AudioBuffer ();
+		audioBuffer.bitsPerSample = format == "float" ? 16 : 8;
+		audioBuffer.channels = stereo ? 2 : 1;
+		audioBuffer.data = new UInt8Array (bytes);
+		audioBuffer.sampleRate = Std.int (sampleRate);
+		
+		__buffer = audioBuffer;
+		
+		dispatchEvent (new Event (Event.COMPLETE));
 		
 	}
 	

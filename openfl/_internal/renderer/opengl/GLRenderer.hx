@@ -55,7 +55,7 @@ class GLRenderer extends AbstractRenderer {
 		
 		renderSession = new RenderSession ();
 		renderSession.gl = gl;
-		renderSession.roundPixels = true;
+		//renderSession.roundPixels = true;
 		renderSession.renderer = this;
 		renderSession.blendModeManager = new GLBlendModeManager (gl);
 		renderSession.filterManager = new GLFilterManager (this, renderSession);

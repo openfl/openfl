@@ -524,7 +524,8 @@ class TextField extends InteractiveObject {
 				} else {
 					
 					range.start = 0;
-					range.end = 0;
+					range.end = beginIndex + newText.length;
+					i++;
 					
 				}
 				
@@ -562,26 +563,20 @@ class TextField extends InteractiveObject {
 		var max = text.length;
 		var range;
 		
-		if (beginIndex < 0) {
-			
-			beginIndex = 0;
-			endIndex = max;
-			
-		} else if (endIndex < 0) {
-			
-			endIndex = beginIndex + 1;
-			
-		}
+		if (beginIndex < 0) beginIndex = 0;
+		if (endIndex < 0) endIndex = 0;
 		
 		if (endIndex == 0) {
 			
-			endIndex = beginIndex + 1;
-			
-		}
-		
-		if (endIndex > max) {
-			
-			endIndex = max;
+			if (beginIndex == 0) {
+				
+				endIndex = max;
+				
+			} else {
+				
+				endIndex = beginIndex + 1;
+				
+			}
 			
 		}
 		

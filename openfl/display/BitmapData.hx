@@ -487,7 +487,7 @@ class BitmapData implements IBitmapDrawable {
 			var renderSession = new RenderSession ();
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			
 			if (!smoothing) {
@@ -563,7 +563,7 @@ class BitmapData implements IBitmapDrawable {
 			var renderSession = new RenderSession ();
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
 			
@@ -1082,7 +1082,7 @@ class BitmapData implements IBitmapDrawable {
 				
 				var pixel = getPixel32 (x, y);
 				
-				if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+				if ((pixel >> 24) & 0xFF > firstAlphaThreshold) {
 					
 					return true;
 					
@@ -1125,7 +1125,7 @@ class BitmapData implements IBitmapDrawable {
 					pixel = pixels.readUnsignedInt ();
 					testPixel = testPixels.readUnsignedInt ();
 					
-					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold && (testPixel >> 24) & 0xFF >= secondAlphaThreshold) {
+					if ((pixel >> 24) & 0xFF > firstAlphaThreshold && (testPixel >> 24) & 0xFF > secondAlphaThreshold) {
 						
 						return true;
 						
@@ -1154,7 +1154,7 @@ class BitmapData implements IBitmapDrawable {
 					
 					pixel = pixels.readUnsignedInt ();
 					
-					if ((pixel >> 24) & 0xFF >= firstAlphaThreshold) {
+					if ((pixel >> 24) & 0xFF > firstAlphaThreshold) {
 						
 						return true;
 						

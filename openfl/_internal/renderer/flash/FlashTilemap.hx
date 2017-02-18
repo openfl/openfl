@@ -17,6 +17,12 @@ import openfl.geom.Rectangle;
 class FlashTilemap {
 	
 	
+	private static var colorTransform = new ColorTransform ();
+	private static var destPoint = new Point ();
+	private static var sourceRect = new Rectangle ();
+	private static var tileMatrix = new Matrix ();
+	
+	
 	public static inline function render (tilemap:Tilemap):Void {
 		
 		#if flash
@@ -29,11 +35,7 @@ class FlashTilemap {
 		
 		var smoothing = tilemap.smoothing;
 		
-		var tiles, count, tile, alpha, visible, tileset, tileData, sourceBitmapData, matrix;
-		var sourceRect = new Rectangle ();
-		var destPoint = new Point ();
-		
-		var colorTransform = new ColorTransform ();
+		var tiles, count, tile, alpha, visible, tileset, tileData, sourceBitmapData;
 		
 		if (tilemap.__tiles.length > 0) {
 			
@@ -58,14 +60,16 @@ class FlashTilemap {
 				if (tileData == null) continue;
 				
 				sourceBitmapData = tileData.__bitmapData;
-				matrix = tile.matrix;
+				
+				tileMatrix.setTo (1, 0, 0, 1, -tile.originX, -tile.originY);
+				tileMatrix.concat (tile.matrix);
 				
 				if (sourceBitmapData == null || alpha == 0) continue;
 				
-				if (alpha == 1 && matrix.a == 1 && matrix.b == 0 && matrix.c == 0 && matrix.d == 1) {
+				if (alpha == 1 && tileMatrix.a == 1 && tileMatrix.b == 0 && tileMatrix.c == 0 && tileMatrix.d == 1) {
 					
-					destPoint.x = tile.x;
-					destPoint.y = tile.y;
+					destPoint.x = tile.x - tile.originX;
+					destPoint.y = tile.y - tile.originY;
 					
 					bitmapData.copyPixels (sourceBitmapData, sourceBitmapData.rect, destPoint, null, null, true);
 					
@@ -73,7 +77,7 @@ class FlashTilemap {
 					
 					colorTransform.alphaMultiplier = alpha;
 					
-					bitmapData.draw (sourceBitmapData, matrix, colorTransform, null, null, smoothing);
+					bitmapData.draw (sourceBitmapData, tileMatrix, colorTransform, null, null, smoothing);
 					
 				}
 				

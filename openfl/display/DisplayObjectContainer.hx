@@ -614,7 +614,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	
 	private override function __renderCanvas (renderSession:RenderSession):Void {
 		
-		if (!__renderable || __worldAlpha <= 0) return;
+		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
 		
 		#if !neko
 		

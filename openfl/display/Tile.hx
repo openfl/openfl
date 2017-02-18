@@ -11,6 +11,8 @@ class Tile {
 	public var data:Dynamic;
 	public var id (default, set):Int;
 	public var matrix (default, set):Matrix;
+	public var originX (default, set):Float;
+	public var originY (default, set):Float;
 	public var rotation (get, set):Float;
 	public var scaleX (get, set):Float;
 	public var scaleY (get, set):Float;
@@ -30,7 +32,7 @@ class Tile {
 	private var __transformDirty:Bool;
 	
 	
-	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0) {
+	public function new (id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0) {
 		
 		this.id = id;
 		
@@ -40,6 +42,8 @@ class Tile {
 		if (scaleX != 1) this.scaleX = scaleX;
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
+		this.originX = originX;
+		this.originY = originY;
 		
 		alpha = 1;
 		visible = true;
@@ -92,6 +96,22 @@ class Tile {
 		__scaleY = null;
 		__transformDirty = true;
 		return this.matrix = value;
+		
+	}
+	
+	
+	private function set_originX (value:Float):Float {
+		
+		__transformDirty = true;
+		return this.originX = value;
+		
+	}
+	
+	
+	private function set_originY (value:Float):Float {
+		
+		__transformDirty = true;
+		return this.originY = value;
 		
 	}
 	

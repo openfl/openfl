@@ -10,6 +10,7 @@ import openfl.events.ProgressEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
+import openfl.net.URLRequestMethod;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 import openfl.Assets;
@@ -48,7 +49,6 @@ class Loader extends DisplayObjectContainer {
 	
 	public function load (request:URLRequest, context:LoaderContext = null):Void {
 		
-		var loader = new URLLoader ();
 		contentLoaderInfo.url = request.url;
 		
 		if (request.contentType == null || request.contentType == "") {
@@ -88,6 +88,16 @@ class Loader extends DisplayObjectContainer {
 			
 		}
 		
+		#if (js && html5)
+		if (contentLoaderInfo.contentType.indexOf ("image/") > -1 && request.method == URLRequestMethod.GET && (request.requestHeaders == null || request.requestHeaders.length == 0) && request.userAgent == null) {
+			
+			BitmapData.loadFromFile (request.url).onComplete (BitmapData_onLoad).onError (BitmapData_onError).onProgress (BitmapData_onProgress);
+			return;
+			
+		}
+		#end
+		
+		var loader = new URLLoader ();
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 		
 		if (contentLoaderInfo.contentType.indexOf ("/json") > -1 || contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
@@ -196,6 +206,16 @@ class Loader extends DisplayObjectContainer {
 		addChild (content);
 		
 		contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+		
+	}
+	
+	
+	private function BitmapData_onProgress (bytesLoaded:Int, bytesTotal:Int):Void {
+		
+		var event = new ProgressEvent (ProgressEvent.PROGRESS);
+		event.bytesLoaded = bytesLoaded;
+		event.bytesTotal = bytesTotal;
+		contentLoaderInfo.dispatchEvent (event);
 		
 	}
 	

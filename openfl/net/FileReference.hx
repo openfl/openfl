@@ -102,7 +102,7 @@ class FileReference extends EventDispatcher {
 		var saveFileDialog = new FileDialog ();
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
-		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null);
+		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null, defaultFileName);
 		
 	}
 	
@@ -146,7 +146,7 @@ class FileReference extends EventDispatcher {
 		var saveFileDialog = new FileDialog ();
 		saveFileDialog.onCancel.add (saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add (saveFileDialog_onSelect);
-		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null);
+		saveFileDialog.browse (SAVE, defaultFileName != null ? Path.extension (defaultFileName) : null, defaultFileName);
 		
 		#end
 		

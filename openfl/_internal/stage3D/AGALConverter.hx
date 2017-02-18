@@ -447,18 +447,20 @@ class AGALConverter {
 			
 		}
 		
-		var glslVersion = 100;
-		
 		// combine parts into final progam
 		var glsl = new StringBuf ();
 		glsl.add ("// AGAL " + ((programType == ProgramType.VERTEX) ? "vertex" : "fragment") + " shader\n");
 		
 		if (limitedProfile) {
 			
-			glsl.add ("#version " + glslVersion + "\n");
+			glsl.add ("#version 100\n");
 			
 			// Required to set the default precision of vectors
 			glsl.add ("precision highp float;\n");
+			
+		} else {
+			
+			glsl.add ("#version 120\n");
 			
 		}
 		

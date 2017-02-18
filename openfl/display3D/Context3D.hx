@@ -424,11 +424,11 @@ import openfl.profiler.Telemetry;
 			
 			if (depthTestEnabled) {
 				
-				GL.enable(GL.DEPTH_TEST);
+				GL.enable (GL.DEPTH_TEST);
 				
 			} else {
 				
-				GL.disable(GL.DEPTH_TEST);
+				GL.disable (GL.DEPTH_TEST);
 				
 			}
 			
@@ -625,6 +625,9 @@ import openfl.profiler.Telemetry;
 		GL.bindFramebuffer (GL.FRAMEBUFFER, null);
 		GLUtils.CheckGLError ();
 		
+		GL.frontFace (GL.CCW);
+		GLUtils.CheckGLError ();
+		
 		__renderToTexture = null;
 		__scissorRectangle = null;
 		__updateBackbufferViewport ();
@@ -754,6 +757,9 @@ import openfl.profiler.Telemetry;
 			__program.__setPositionScale (__positionScale);
 			
 		}
+		
+		GL.frontFace (GL.CW);
+		GLUtils.CheckGLError ();
 		
 		__renderToTexture = texture;
 		__scissorRectangle = null;
@@ -1075,6 +1081,8 @@ import openfl.profiler.Telemetry;
 	
 	
 	private function __setViewport (originX:Int, originY:Int, width:Int, height:Int):Void {
+		
+		if (__renderToTexture != null) originY *= -1;
 		
 		if (__stateCache.updateViewport (originX, originY, width, height)) {
 			

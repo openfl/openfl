@@ -64,7 +64,7 @@ import DefaultAssetLibrary;
 			
 		};
 		
-		#if hxtelemetry
+		#if (hxtelemetry && !macro)
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();
 		telemetry.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
 		telemetry.host = ::if (config.hxtelemetry != null)::"::config.hxtelemetry.host::"::else::"localhost"::end::;
