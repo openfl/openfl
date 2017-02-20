@@ -665,9 +665,15 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 		}
 
+		// :NOTE: if the stage is dirty, don't update other elements.
+		__updateStack.clear();
+		__updateDirty = false;
+
+		__setUpdateDirty();
 
 		if (__renderer != null) {
 
+			trace('Resizing renderer to $width, $height');
 			__renderer.resize (width, height);
 
 		}
@@ -703,8 +709,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var stack_id;
 		var i = 0;
 		var base_child_count = 0;
-
-		__updateStack.clear();
 
 		while( base_child_count < __children.length ) {
 			__allChildrenStack.set(base_child_count, __children[base_child_count]);
@@ -790,15 +794,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (renderer.window == null || renderer.window != window) return;
 
-		// TODO: Fix multiple stages more gracefully
-
-		if (application != null && application.windows.length > 0) {
-
-			__setTransformDirty ();
-			__setRenderDirty ();
-
-		}
-
 		if (__rendering) return;
 		__rendering = true;
 
@@ -824,7 +819,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__enterFrame (__deltaTime);
 		__deltaTime = 0;
-		__update (false, true);
+		__updateDirtyElements (false, true);
 
 		if (__renderer != null) {
 
@@ -1435,11 +1430,10 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	public function __updateDirtyElements (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
 
-			__inlineUpdate(transformOnly, updateChildren);
 			var i = 0;
 			// :NOTE: Length can change here. don't cache it.
 			while (i < __updateStack.length ) {
@@ -1456,6 +1450,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				__dirty = transformOnly;
 			}
+
+			__updateStack.clear();
+
 		}
 	}
 
