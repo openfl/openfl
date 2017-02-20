@@ -303,10 +303,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private override function __dispatchEvent (event:Event):Bool {
 
+		event.acquire();
 		var result = super.__dispatchEvent (event);
 
 		if (event.__isCanceled) {
-
+			event.release();
 			return true;
 
 		}
@@ -324,6 +325,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			parent.__dispatchEvent (event);
 
 		}
+
+		event.release();
 
 		return result;
 
@@ -587,8 +590,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 				if( __mask.__cachedBitmap != null ){
 					__mask.__cachedBitmap.dispose();
+					__mask.__cachedBitmap = null;
 				}
-				__mask.__cachedBitmap = null;
 
 				__mask.__isMask = true;
 				__mask.__update (true, true);

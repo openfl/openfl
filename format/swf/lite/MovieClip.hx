@@ -1098,8 +1098,8 @@ class MovieClip extends flash.display.MovieClip {
 
 		var children_length = __children.length;
 
-		for( i in 0 ... children_length ){
-			__children[i].__clippedAt = null;
+		for( child in __children ){
+			child.__clippedAt = null;
 		}
 
 		for( mask in __maskDataKeys ){
@@ -1199,6 +1199,7 @@ class MovieClip extends flash.display.MovieClip {
 	public override function removeChild (child:DisplayObject):DisplayObject {
 		var object = super.removeChild(child);
 		__SWFDepthData.remove(object);
+		__maskDataKeys.remove(object);
 		__maskData.remove(object);
 		__updateSwfMaskData();
 		return object;

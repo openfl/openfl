@@ -193,13 +193,17 @@ class EventDispatcher implements IEventDispatcher {
 	}
 
 	private static inline function __dispatchEventStatic ( target: EventDispatcher, event:Event):Bool {
+		event.acquire();
 
-		if (target.__eventMap == null || event == null) return false;
+		if (target.__eventMap == null || event == null){
+			event.release();
+			return false;
+		}
 
 		var type = event.type;
 		var list;
 
-		if (target.__dispatching.get (type) == true) {
+		if (target.__dispatching.get (type)) {
 
 			list = target.__newEventMap.get (type);
 			if (list == null) list = target.__eventMap.get (type);
@@ -291,11 +295,11 @@ class EventDispatcher implements IEventDispatcher {
 
 			target.__dispatching.set (event.type, false);
 
-			event.dispose();
+			event.release();
 
 			return true;
 		} else {
-			event.dispose();
+			event.release();
 			return false;
 		}
 

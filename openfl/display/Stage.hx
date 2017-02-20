@@ -312,8 +312,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (window != null) {
 
-			var event = Event.__create (Event.DEACTIVATE);
-			__broadcastFromStage (event, true);
+			__broadcastFromStage (Event.__create (Event.DEACTIVATE), true);
 
 		}
 
@@ -704,7 +703,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var i = 0;
 		var base_child_count = 0;
 
-		while( base_child_count < __children.length ) {
+		var cached_length = __children.length;
+		while( base_child_count < cached_length ) {
 			__allChildrenStack.set(base_child_count, __children[base_child_count]);
 			base_child_count++;
 		}
@@ -758,6 +758,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target = this;
 		}
 
+		event.acquire();
 		var result = broadcast (event, this);
 
 		if (!event.__isCanceled && notifyChilden) {
@@ -769,12 +770,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 				broadcast(event, stack_id);
 
 				if (event.__isCanceled) {
+					event.release();
 					return true;
 				}
 				++i;
 			}
 		}
 
+		event.release();
 		return result;
 	}
 
@@ -870,12 +873,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			event.eventPhase = EventPhase.CAPTURING_PHASE;
 			event.target = stack[stack.length - 1];
+			event.acquire();
 
 			for (i in 0...length - 1) {
 
 				stack[i].__broadcast (event, false);
 
 				if (event.__isCanceled) {
+					event.release();
 					return;
 
 				}
@@ -886,6 +891,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
+
+				event.release();
 				return;
 
 			}
@@ -900,6 +907,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
+						event.release();
 						return;
 
 					}
@@ -909,6 +917,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 
 			}
+
+			event.release();
 
 		}
 	}
@@ -1187,7 +1197,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
-				event.dispose();
 			}
 
 			inline function rollOut(target:DisplayObject) {
@@ -1197,7 +1206,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					event = MouseEvent.__create (MouseEvent.ROLL_OUT, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
-					event.dispose();
 				}
 			}
 
@@ -1208,7 +1216,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					event = MouseEvent.__create (MouseEvent.ROLL_OVER, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
-					event.dispose();
 				}
 			}
 
@@ -1218,7 +1225,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
-				event.dispose();
 			}
 
 			diffStacks();
