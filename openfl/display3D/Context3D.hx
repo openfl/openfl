@@ -662,6 +662,12 @@ import openfl.profiler.Telemetry;
 			width = rectTexture.__width;
 			height = rectTexture.__height;
 			
+		} else if (Std.is (texture, CubeTexture)) {
+			
+			var cubeTexture:CubeTexture = cast texture;
+			width = cubeTexture.__size;
+			height = cubeTexture.__size;
+			
 		} else {
 			
 			throw new Error ("Invalid texture");
