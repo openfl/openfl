@@ -816,6 +816,8 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			this.stage = stage;
 
+			__setUpdateDirty();
+
 			if (stage != null) {
 
 				#if compliant_stage_events
