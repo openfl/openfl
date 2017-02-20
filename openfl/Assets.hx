@@ -208,27 +208,32 @@ class Assets {
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library:AssetLibrary = cast getLibrary (libraryName);
+		var limeLibrary = getLibrary (libraryName);
 		
-		if (library != null) {
+		if (limeLibrary != null) {
 			
-			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+			if (Std.is (limeLibrary, AssetLibrary)) {
 				
-				if (library.isLocal (symbolName, cast AssetType.MOVIE_CLIP)) {
+				var library:AssetLibrary = cast limeLibrary;
+				
+				if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
 					
-					return library.getMovieClip (symbolName);
-					
-				} else {
-					
-					Log.error ("MovieClip asset \"" + id + "\" exists, but only asynchronously");
+					if (library.isLocal (symbolName, cast AssetType.MOVIE_CLIP)) {
+						
+						return library.getMovieClip (symbolName);
+						
+					} else {
+						
+						Log.error ("MovieClip asset \"" + id + "\" exists, but only asynchronously");
+						return null;
+						
+					}
 					
 				}
 				
-			} else {
-				
-				Log.error ("There is no MovieClip asset with an ID of \"" + id + "\"");
-				
 			}
+			
+			Log.error ("There is no MovieClip asset with an ID of \"" + id + "\"");
 			
 		} else {
 			
@@ -700,19 +705,24 @@ class Assets {
 		
 		var libraryName = id.substring (0, id.indexOf (":"));
 		var symbolName = id.substr (id.indexOf (":") + 1);
-		var library:AssetLibrary = cast getLibrary (libraryName);
+		var limeLibrary = getLibrary (libraryName);
 		
-		if (library != null) {
+		if (limeLibrary != null) {
 			
-			if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+			if (Std.is (limeLibrary, AssetLibrary)) {
 				
-				promise.completeWith (library.loadMovieClip (symbolName));
+				var library:AssetLibrary = cast limeLibrary;
 				
-			} else {
-				
-				promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
+				if (library.exists (symbolName, cast AssetType.MOVIE_CLIP)) {
+					
+					promise.completeWith (library.loadMovieClip (symbolName));
+					return promise.future;
+					
+				}
 				
 			}
+			
+			promise.error ("[Assets] There is no MovieClip asset with an ID of \"" + id + "\"");
 			
 		} else {
 			
