@@ -119,6 +119,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
 	private var __allChildrenStack:HaxeVector<DisplayObject> = new HaxeVector<DisplayObject>(4096);
+	private var __updateStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __allChildrenLength: Int;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
@@ -703,8 +704,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var i = 0;
 		var base_child_count = 0;
 
-		var cached_length = __children.length;
-		while( base_child_count < cached_length ) {
+		__updateStack.clear();
+
+		while( base_child_count < __children.length ) {
 			__allChildrenStack.set(base_child_count, __children[base_child_count]);
 			base_child_count++;
 		}
@@ -715,6 +717,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack_id = __allChildrenStack[i];
 			if (stack_id.__children != null && stack_id.__children.length > 0) {
 				for(child in stack_id.__children) {
+					if ( child.__updateDirty ) {
+						__updateStack.push(child);
+					}
 					__allChildrenStack.set(__allChildrenLength,child);
 					__allChildrenLength++;
 				}
@@ -1430,14 +1435,22 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
-			super.__update (transformOnly, updateChildren);
 
-				if (updateChildren) {
-					DisplayObject.__worldTransformDirty = 0;
+			__inlineUpdate(transformOnly, updateChildren);
+			var i = 0;
+			// :NOTE: Length can change here. don't cache it.
+			while (i < __updateStack.length ) {
+				var child = __updateStack[i];
+				if ( child.__updateDirty ) {
+					child.__update(transformOnly, updateChildren);
+				}
+				++i;
+			}
+			if (updateChildren) {
+				DisplayObject.__worldTransformDirty = 0;
 				if ( !transformOnly ) {
 					DisplayObject.__worldRenderDirty = 0;
 				}

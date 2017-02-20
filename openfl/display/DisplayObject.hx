@@ -107,6 +107,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __shader:Shader;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
+	private var __updateDirty:Bool;
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
@@ -789,6 +790,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderDirty) {
 
 			__renderDirty = true;
+			__setUpdateDirty();
 			__worldRenderDirty++;
 
 			if (__cachedParent != null) {
@@ -805,12 +807,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__transformDirty) {
 
 			__transformDirty = true;
+			__setUpdateDirty();
 			__worldTransformDirty++;
 
 		}
 
 	}
 
+	private inline function __setUpdateDirty() :Void {
+		if ( !__updateDirty && stage != null && this != stage ) {
+			__updateDirty = true;
+			stage.__updateStack.push(this);
+		}
+
+	}
 	private function __updateCachedBitmapBounds (filterTransform:Matrix):Void {
 
 		if (__cachedBitmapBounds == null) {
@@ -871,6 +881,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
+		__inlineUpdate(transformOnly, updateChildren);
+
+	}
+
+	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
+
 		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
 
 		__updateTransforms ();
@@ -908,8 +924,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				__renderDirty = false;
 
 			}
-		}
 
+			__updateDirty = false;
+		}
 	}
 
 	#if profile
@@ -1052,7 +1069,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_alpha (value:Float):Float {
 
 		if (value > 1.0) value = 1.0;
-		if (value != __alpha) __setRenderDirty ();
+		if (value != __alpha) {
+			__setRenderDirty ();
+		}
 		return __alpha = value;
 
 	}
@@ -1060,14 +1079,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function set_blendMode (value:BlendMode):BlendMode {
 
-		__blendMode = value;
+		if ( __blendMode != value ) {
+			__setUpdateDirty();
+			__blendMode = value;
+		}
 		return blendMode = value;
 
 	}
 
 	private function set_shader (value:Shader):Shader {
 
-		__shader = value;
+		if ( __shader != value ) {
+			__setUpdateDirty();
+			__shader = value;
+		}
 		return shader = value;
 
 	}
