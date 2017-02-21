@@ -1,7 +1,6 @@
 package openfl._internal.text;
 
 
-import haxe.Log;
 import haxe.Timer;
 import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
@@ -1160,9 +1159,7 @@ class TextEngine {
 			}
 			
 		}
-		
-		Log.trace("@getLayoutGroups layoutGroups.length=" + layoutGroups.length);
-		
+				
 	}
 	
 	
