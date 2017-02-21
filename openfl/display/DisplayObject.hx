@@ -471,6 +471,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 					list.push (current);
 					current = current.parent;
 					
+					if (current == null) break;
+					
 					if (current != stage && current.__transformDirty) {
 						
 						transformDirty = true;
