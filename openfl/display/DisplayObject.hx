@@ -815,7 +815,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	private inline function __setUpdateDirty() :Void {
-		if ( !__updateDirty && stage != null && this != stage ) {
+		if ( !__updateDirty && stage != null && this != this.stage ) {
 			__updateDirty = true;
 			stage.__updateStack.push(this);
 		}
@@ -880,14 +880,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	public function __update (transformOnly:Bool, updateChildren:Bool):Void {
-
 		__inlineUpdate(transformOnly, updateChildren);
-
 	}
 
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
 
-		__renderable = (visible && !hasZeroScale() && !__isMask);
+    __renderable = (visible && !hasZeroScale() && !__isMask);
 
 		__updateTransforms ();
 

@@ -65,7 +65,6 @@ import js.html.CanvasRenderingContext2D;
 	private var __positionY:Float;
 	private var __snapCoordinates:Bool = false;
 	private var __strokePadding:Float;
-	private var __transformDirty:Bool;
 	private var __visible:Bool;
 	private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
@@ -155,7 +154,6 @@ import js.html.CanvasRenderingContext2D;
 		if (__bounds != null) {
 
 			__dirty = true;
-			__transformDirty = true;
 			__bounds = null;
 
 		}
@@ -187,7 +185,6 @@ import js.html.CanvasRenderingContext2D;
 		__strokePadding = sourceGraphics.__strokePadding;
 		__positionX = sourceGraphics.__positionX;
 		__positionY = sourceGraphics.__positionY;
-		__transformDirty = true;
 		__visible = sourceGraphics.__visible;
 		__symbol = sourceGraphics.__symbol;
 
@@ -677,7 +674,6 @@ import js.html.CanvasRenderingContext2D;
 		if (__bounds == null) {
 
 			__bounds = new Rectangle (x, y, 0, 0);
-			__transformDirty = true;
 			return;
 
 		}
@@ -686,7 +682,6 @@ import js.html.CanvasRenderingContext2D;
 
 			__bounds.width += __bounds.x - x;
 			__bounds.x = x;
-			__transformDirty = true;
 
 		}
 
@@ -694,7 +689,6 @@ import js.html.CanvasRenderingContext2D;
 
 			__bounds.height += __bounds.y - y;
 			__bounds.y = y;
-			__transformDirty = true;
 
 		}
 
