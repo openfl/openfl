@@ -884,7 +884,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
+
+    __renderable = (visible && !hasZeroScale() && !__isMask);
 
 		__updateTransforms ();
 
@@ -916,11 +917,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 			}
 
-			if (updateChildren && __renderDirty) {
-
-				__renderDirty = false;
-
-			}
+			__renderDirty = __renderDirty && !updateChildren;
+		}
 
 			__updateDirty = false;
 		}
@@ -948,7 +946,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __updateChildren (transformOnly:Bool):Void {
 
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
+		__renderable = (visible && !hasZeroScale() && !__isMask);
 		if (!__renderable && !__isMask) return;
 		__worldAlpha = alpha;
 
@@ -1342,6 +1340,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	public inline function hasZeroScale ():Bool {
+		return (__transform.a == 0
+				&& __transform.b == 0 )
+			|| (__transform.c == 0
+			&& __transform.d == 0 );
+	}
 
 	private function get_scaleX ():Float {
 
@@ -1376,7 +1380,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		return value;
 
 	}
-
 
 	private function get_scaleY ():Float {
 
