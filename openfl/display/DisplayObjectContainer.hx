@@ -738,6 +738,8 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	public override function __renderGL (renderSession:RenderSession):Void {
 
+		if (!__renderable || __worldAlpha <= 0) return;
+
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
 			__cacheGL(renderSession);
@@ -779,7 +781,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				renderSession.maskManager.pushMask (child);
 				maskEndDepth =  child.__clipDepth;
 			}
-			else if ( child.__renderable && child.__worldAlpha > 0 ){
+			else {
 				child.__renderGL (renderSession);
 			}
 		}

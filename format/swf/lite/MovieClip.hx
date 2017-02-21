@@ -849,9 +849,7 @@ class MovieClip extends flash.display.MovieClip {
 		}
 
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
-			#if dev
-				if (!__renderable || __worldAlpha <= 0) throw "Callee should check these conditions!";
-			#end
+			if (!__renderable || __worldAlpha <= 0) return;
 
 			drawScale9Bitmap(renderSession);
 		}

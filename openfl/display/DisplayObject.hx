@@ -546,9 +546,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __renderGL (renderSession:RenderSession):Void {
 
-		#if dev
-			if (!__renderable || __worldAlpha <= 0) throw "Callee should check these conditions!!";
-		#end
+		if (!__renderable || __worldAlpha <= 0) return;
 
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
@@ -887,7 +885,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
 
-		__renderable = (visible && !hasZeroScale() && !__isMask);
+    __renderable = (visible && !hasZeroScale() && !__isMask);
 
 		__updateTransforms ();
 
