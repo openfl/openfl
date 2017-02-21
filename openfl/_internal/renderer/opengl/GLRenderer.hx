@@ -346,7 +346,9 @@ class GLRenderer extends AbstractRenderer {
 		mainSpriteBatch.preventFlush = true;
 
 		filterManager.begin (renderSession, buffer);
-		displayObject.__renderGL (renderSession);
+		if (displayObject.__renderable && displayObject.__worldAlpha > 0) {
+			displayObject.__renderGL (renderSession);
+		}
 
 		mainSpriteBatch.preventFlush = false;
 		mainSpriteBatch.finish();
