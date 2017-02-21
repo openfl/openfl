@@ -1,6 +1,7 @@
 package openfl._internal.text;
 
 
+import haxe.Log;
 import haxe.Timer;
 import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
@@ -1084,15 +1085,19 @@ class TextEngine {
 						
 					}
 					
+					var break_space:Bool = false;
 					if (formatRange.end <= previousSpaceIndex) {
 						
 						layoutGroup = null;
 						nextFormatRange ();
+						break_space=true;
 						
 					}
 					
 					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
-						
+						if(break_space){
+							offsetX += letterSpacing;
+						}
 						break;
 						
 					}
@@ -1155,6 +1160,8 @@ class TextEngine {
 			}
 			
 		}
+		
+		Log.trace("@getLayoutGroups layoutGroups.length=" + layoutGroups.length);
 		
 	}
 	
