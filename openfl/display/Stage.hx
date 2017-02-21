@@ -665,9 +665,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 			}
 		}
 
+		__update(false, true);
 
 		if (__renderer != null) {
 
+			trace('Resizing renderer to $width, $height');
 			__renderer.resize (width, height);
 
 		}
@@ -703,8 +705,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 		var stack_id;
 		var i = 0;
 		var base_child_count = 0;
-
-		__updateStack.clear();
 
 		while( base_child_count < __children.length ) {
 			__allChildrenStack.set(base_child_count, __children[base_child_count]);
@@ -824,7 +824,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__enterFrame (__deltaTime);
 		__deltaTime = 0;
-		__update (false, true);
+		__updateDirtyElements (false, true);
 
 		if (__renderer != null) {
 
@@ -1435,10 +1435,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	public function __updateDirtyElements (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
-
 			__inlineUpdate(transformOnly, updateChildren);
 			var i = 0;
 			// :NOTE: Length can change here. don't cache it.
@@ -1456,6 +1455,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 				__dirty = transformOnly;
 			}
+
+			__updateStack.clear();
+
 		}
 	}
 
