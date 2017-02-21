@@ -93,6 +93,7 @@ class CommandHelper {
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, internalShader.wrapS);
 		gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, internalShader.wrapT);
 
+		renderSession.activeTextures = 1;
 		internalShader.applyData(shader.data, renderSession);
 
 		if (preDrawCallback != null) {
