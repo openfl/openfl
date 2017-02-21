@@ -918,8 +918,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			}
 
 			__renderDirty = __renderDirty && !updateChildren;
-		}
-
 			__updateDirty = false;
 		}
 	}
