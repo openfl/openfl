@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.io.Path;
 import lime.utils.AssetLibrary in LimeAssetLibrary;
 import lime.utils.AssetManifest;
 import openfl._internal.swf.SWFLiteLibrary;
@@ -30,6 +31,8 @@ class Loader extends DisplayObjectContainer {
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
 	
+	private var __path:String;
+	
 	
 	public function new () {
 		
@@ -54,19 +57,41 @@ class Loader extends DisplayObjectContainer {
 		if (request.contentType == null || request.contentType == "") {
 			
 			var extension = "";
-			var path = request.url;
+			__path = request.url;
 			
-			var queryIndex = path.indexOf ('?');
+			var queryIndex = __path.indexOf ('?');
 			if (queryIndex > -1) {
 				
-				path = path.substring (0, queryIndex);
+				__path = __path.substring (0, queryIndex);
 				
 			}
 			
-			var extIndex = path.lastIndexOf('.');
+			while (StringTools.endsWith (__path, "/")) {
+				
+				__path = __path.substring (0, __path.length - 1);
+				
+			}
+			
+			if (StringTools.endsWith (__path, ".bundle")) {
+				
+				__path += "/library.json";
+				
+				if (queryIndex > -1) {
+					
+					request.url = __path + request.url.substring (queryIndex);
+					
+				} else {
+					
+					request.url = __path;
+					
+				}
+				
+			}
+			
+			var extIndex = __path.lastIndexOf ('.');
 			if (extIndex > -1) {
 				
-				extension = path.substring(extIndex + 1);
+				extension = __path.substring (extIndex + 1);
 				
 			}
 			
@@ -180,7 +205,7 @@ class Loader extends DisplayObjectContainer {
 		
 		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
 		event.text = text;
-		dispatchEvent (event);
+		contentLoaderInfo.dispatchEvent (event);
 		
 	}
 	
@@ -235,6 +260,7 @@ class Loader extends DisplayObjectContainer {
 				
 			}
 			
+			manifest.basePath = Path.directory (__path) + "/";
 			var library = LimeAssetLibrary.fromManifest (manifest);
 			
 			if (library == null) {
@@ -246,10 +272,18 @@ class Loader extends DisplayObjectContainer {
 			
 			if (Std.is (library, AssetLibrary)) {
 				
-				contentLoaderInfo.content = cast (library, AssetLibrary).getMovieClip ("");
-				addChild (contentLoaderInfo.content);
-				
-				contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+				library.load ().onComplete (function (_) {
+					
+					contentLoaderInfo.content = cast (library, AssetLibrary).getMovieClip ("");
+					addChild (contentLoaderInfo.content);
+					
+					contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+					
+				}).onError (function (e) {
+					
+					__dispatchError (e);
+					
+				});
 				
 			}
 			
