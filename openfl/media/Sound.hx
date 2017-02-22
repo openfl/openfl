@@ -166,7 +166,7 @@ class Sound extends EventDispatcher {
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
 		if (sndTransform != null) source.gain = sndTransform.volume;
-		return new SoundChannel (source);
+		return SoundChannel.__create (source);
 
 		#else
 
@@ -188,7 +188,7 @@ class Sound extends EventDispatcher {
 		else
 			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), 0, sndTransform.volume, pan);
 
-		return new SoundChannel (instance);
+		return SoundChannel.__create (instance);
 
 		#end
 
