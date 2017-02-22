@@ -177,10 +177,12 @@ import openfl.Assets;
 				
 			}
 			
+			var path = rootPath != "" ? rootPath + "/" + id : id;
+			
 			var loader = new URLLoader ();
 			loader.addEventListener (Event.COMPLETE, function (_) onComplete (loader.data));
 			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) promise.error (e));
-			loader.load (new URLRequest (rootPath + "/" + id));
+			loader.load (new URLRequest (path));
 			
 		}
 		

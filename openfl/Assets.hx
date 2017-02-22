@@ -7,6 +7,7 @@ import lime.app.Future;
 import lime.app.Promise;
 import lime.text.Font in LimeFont;
 import lime.utils.AssetLibrary in LimeAssetLibrary;
+import lime.utils.AssetManifest;
 import lime.utils.Assets in LimeAssets;
 import lime.utils.Log;
 import openfl.display.Bitmap;
@@ -880,6 +881,23 @@ class Assets {
 	public function new () {
 		
 		super ();
+		
+	}
+	
+	
+	public static function fromManifest (manifest:AssetManifest):AssetLibrary {
+		
+		var library = LimeAssetLibrary.fromManifest (manifest);
+		
+		if (library != null && Std.is (library, AssetLibrary)) {
+			
+			return cast library;
+			
+		} else {
+			
+			return null;
+			
+		}
 		
 	}
 	
