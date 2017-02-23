@@ -251,7 +251,7 @@ class Loader extends DisplayObjectContainer {
 		
 		if (contentLoaderInfo.contentType.indexOf ("/json") > -1) {
 			
-			var manifest = AssetManifest.parse (loader.data);
+			var manifest = AssetManifest.parse (loader.data, Path.directory (__path));
 			
 			if (manifest == null) {
 				
@@ -260,7 +260,6 @@ class Loader extends DisplayObjectContainer {
 				
 			}
 			
-			manifest.basePath = Path.directory (__path) + "/";
 			var library = LimeAssetLibrary.fromManifest (manifest);
 			
 			if (library == null) {

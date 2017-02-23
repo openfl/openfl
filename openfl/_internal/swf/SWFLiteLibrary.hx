@@ -274,7 +274,7 @@ import openfl.Assets;
 	
 	private override function __fromManifest (manifest:AssetManifest):Void {
 		
-		rootPath = manifest.basePath;
+		rootPath = manifest.rootPath;
 		super.__fromManifest (manifest);
 		
 	}
