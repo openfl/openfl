@@ -719,6 +719,8 @@ class TextEngine {
 		}
 					
 		inline function endLayoutGroup(endIndex:Int) {
+			if ( layoutGroup.startIndex == endIndex ) return;
+
 			layoutGroup.endIndex = endIndex;
 			layoutGroup.width = widthValue;
 			layoutGroups.push (layoutGroup);
@@ -766,31 +768,40 @@ class TextEngine {
 			updateNextBreakIndex ("\n");
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
-		
+			// :NOTE: For justify, we have to account for a minimum space width here.
 			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 ) {
 				pushNewLine(textIndex);
-			} else if ( formatRange.format.align == JUSTIFY ) {
-				offsetX = layoutGroup.offsetX + layoutGroup.width;
-				endLayoutGroup(textIndex);
-				startLayoutGroup(formatRange.format, textIndex);
-			} else {
-				widthValue = groupWidth;
 			}
 
+			textIndex = nextBreakIndex;
+
+			widthValue = groupWidth;
 			if (text.charAt (nextBreakIndex) == "\n") {
 				pushNewLine(nextBreakIndex + 1);
 			}
 
-			textIndex = nextBreakIndex + 1;
+			var char:String;
+			while ((char = text.charAt (textIndex)) == " ") {
+
+				++textIndex;
+
+			}
 
 			if (textIndex >= formatRange.end) {
 				textIndex = formatRange.end;
+				// :TODO: Check if still needed
 				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
 				endLayoutGroup(textIndex);
 				offsetX = layoutGroup.offsetX + widthValue;
 
 				nextFormatRange();
 				startLayoutGroup(formatRange.format, formatRange.start);
+			} else if ( formatRange.format.align == JUSTIFY ) {
+				// :TODO: Support multiple spaces
+				var endIndex = nextBreakIndex;
+				endLayoutGroup(endIndex);
+				offsetX = layoutGroup.offsetX + layoutGroup.width;
+				startLayoutGroup(formatRange.format, textIndex);
 			}
 		}
 
@@ -856,12 +867,16 @@ class TextEngine {
 										
 										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
 										
-										for (j in 0...groups.length ) {
 											
-											groups[j].offsetX += (offsetX * j);
 											
+									} else {
+										offsetX = __context.measureText (" ").width;
 										}
 										
+									for (j in 0...groups.length ) {
+
+										groups[j].offsetX += (offsetX * j);
+
 									}
 								}
 							}
