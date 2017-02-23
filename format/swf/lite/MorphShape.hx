@@ -22,6 +22,9 @@ class MorphShape extends Shape {
 		__symbol = symbol;
 		__swf = swf;
 
+		if ( __symbol.cachedHandlers == null ) {
+			__symbol.cachedHandlers = new Map<Int, ShapeCommandExporter>();
+		}
 		ratio = 0;
 
 	}
@@ -40,10 +43,16 @@ class MorphShape extends Shape {
 	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if(__renderDirty){
-			var swf_shape = __symbol.getShape(ratio);
 
-			var handler = new ShapeCommandExporter ();
-			swf_shape.export (handler);
+			var twips_ratio = Math.floor(ratio*65535);
+			var handler = __symbol.cachedHandlers.get(twips_ratio);
+			if ( handler == null ) {
+				var swf_shape = __symbol.getShape(ratio);
+
+				handler = new ShapeCommandExporter ();
+				swf_shape.export (handler);
+				__symbol.cachedHandlers.set(twips_ratio, handler);
+			}
 
 			var graphics = this.graphics;
 			graphics.clear();

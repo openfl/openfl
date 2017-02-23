@@ -10,6 +10,7 @@ import format.swf.data.SWFShapeRecordStyleChange;
 import format.swf.data.SWFMorphFillStyle;
 import format.swf.data.SWFMorphLineStyle;
 import format.swf.exporters.core.IShapeExporter;
+import format.swf.exporters.ShapeCommandExporter;
 
 class MorphShapeSymbol extends SWFSymbol {
 
@@ -17,6 +18,8 @@ class MorphShapeSymbol extends SWFSymbol {
 	public var endEdges : SWFShape;
 	public var morphFillStyles :Array<SWFMorphFillStyle>;
 	public var morphLineStyles :Array<SWFMorphLineStyle>;
+
+	public var cachedHandlers: Map<Int,ShapeCommandExporter>;
 
 	public function new () {
 
