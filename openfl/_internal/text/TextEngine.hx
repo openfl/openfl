@@ -771,20 +771,26 @@ class TextEngine {
 			// :NOTE: For justify, we have to account for a minimum space width here.
 			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 ) {
 				pushNewLine(textIndex);
+				continue;
 			}
 
-			textIndex = nextBreakIndex;
+			textIndex = nextBreakIndex + 1;
 
 			widthValue = groupWidth;
-			if (text.charAt (nextBreakIndex) == "\n") {
-				pushNewLine(nextBreakIndex + 1);
+
+			var breakChar = text.charAt (nextBreakIndex);
+			if (breakChar == "\n") {
+				pushNewLine(textIndex);
 			}
-
-			var char:String;
-			while ((char = text.charAt (textIndex)) == " ") {
-
-				++textIndex;
-
+			else {
+				var counter = 0;
+				while (breakChar == " ") {
+					counter++;
+					breakChar = text.charAt (nextBreakIndex + counter);
+				}
+				if ( counter > 0 ) {
+					textIndex += counter - 1;
+				}
 			}
 
 			if (textIndex >= formatRange.end) {
