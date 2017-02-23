@@ -22,6 +22,8 @@ import openfl.media.Sound;
 	private var __soundInstance:SoundJSInstance;
 	#end
 
+	private static var pool : ObjectPool<SoundChannel> = new ObjectPool<SoundChannel>(function() { return new SoundChannel();});
+
 
 	private function new (#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end = null):Void {
 
@@ -30,15 +32,19 @@ import openfl.media.Sound;
 		leftPeak = 1;
 		rightPeak = 1;
 
+	}
+
+	public static function __create(#if !html5 source:AudioSource #else soundInstance:SoundJSInstance #end) {
+		var channel = pool.get();
 		#if !html5
 
 			if (source != null) {
 
-				__source = source;
-				__source.onComplete.add (source_onComplete);
-				__isValid = true;
+				channel.__source = source;
+				channel.__source.onComplete.add (channel.source_onComplete);
+				channel.__isValid = true;
 
-				__source.play ();
+				channel.__source.play ();
 
 			}
 
@@ -46,14 +52,15 @@ import openfl.media.Sound;
 
 			if (soundInstance != null) {
 
-				__soundInstance = soundInstance;
-				__soundInstance.addEventListener ("complete", source_onComplete);
-				__isValid = true;
+				channel.__soundInstance = soundInstance;
+				channel.__soundInstance.addEventListener ("complete", channel.source_onComplete);
+				channel.__isValid = true;
 
 			}
 
 		#end
 
+		return channel;
 	}
 
 
@@ -81,6 +88,8 @@ import openfl.media.Sound;
 		__soundInstance.stop ();
 		__soundInstance = null;
 		#end
+
+		pool.put(this);
 
 		__isValid = false;
 
