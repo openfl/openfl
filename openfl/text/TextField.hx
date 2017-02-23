@@ -44,6 +44,7 @@ class TextField extends InteractiveObject {
 	
 	
 	private static var __defaultTextFormat:TextFormat;
+	private static var __missingFontWarning = new Map<String, Bool> ();
 	private static var __regexAlign = ~/align=("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor = ~/color=("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexBlockIndent = ~/blockindent=("([^"]+)"|'([^']+)')/i;
@@ -965,8 +966,9 @@ class TextField extends InteractiveObject {
 			
 			embedFonts = true;
 			
-		} else {
+		} else if (!__missingFontWarning.exists (format.font)) {
 			
+			__missingFontWarning[format.font] = true;
 			Log.warn ("Could not find required font \"" + format.font + "\", it has not been embedded");
 			
 		}
