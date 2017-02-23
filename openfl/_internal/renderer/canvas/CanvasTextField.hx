@@ -9,6 +9,7 @@ import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.Graphics;
 import openfl.events.Event;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
@@ -113,6 +114,7 @@ class CanvasTextField {
 		
 		var textEngine = textField.__textEngine;
 		var bounds = textEngine.bounds;
+		var colorTransform = textField.__worldColorTransform.__isDefault() ? null : textField.__worldColorTransform;
 		var graphics = textField.__graphics;
 		
 		if (textField.__dirty) {
@@ -220,7 +222,7 @@ class CanvasTextField {
 						
 						if (textEngine.background) {
 							
-							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor & 0xFFFFFF, 6);
+							context.fillStyle = CanvasUtils.rgbaStyle(colorTransform, textEngine.backgroundColor, 1);
 							context.fill ();
 							
 						}
@@ -228,7 +230,7 @@ class CanvasTextField {
 						if (textEngine.border) {
 							
 							context.lineWidth = 1;
-							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6);
+							context.strokeStyle = CanvasUtils.rgbaStyle(colorTransform, textEngine.borderColor, 1);
 							context.stroke ();
 							
 						}
@@ -261,7 +263,7 @@ class CanvasTextField {
 						if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
 						
 						context.font = TextEngine.getFont (group.format);
-						context.fillStyle = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
+						context.fillStyle = CanvasUtils.rgbaStyle(colorTransform, group.format.color, 1);
 						
 						if (applyHack) {
 							
@@ -356,7 +358,7 @@ class CanvasTextField {
 						
 						if (textEngine.background) {
 							
-							context.fillStyle = "#" + StringTools.hex (textEngine.backgroundColor & 0xFFFFFF, 6);
+							context.fillStyle = CanvasUtils.rgbaStyle(colorTransform, textEngine.backgroundColor, 1);
 							context.fill ();
 							
 						}
@@ -365,7 +367,7 @@ class CanvasTextField {
 							
 							context.lineWidth = 1;
 							context.lineCap = "square";
-							context.strokeStyle = "#" + StringTools.hex (textEngine.borderColor & 0xFFFFFF, 6);
+							context.strokeStyle = CanvasUtils.rgbaStyle(colorTransform, textEngine.borderColor, 1);
 							context.stroke ();
 							
 						}

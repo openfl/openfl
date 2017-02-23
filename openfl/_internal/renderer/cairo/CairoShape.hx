@@ -20,7 +20,7 @@ class CairoShape {
 		
 		if (graphics != null) {
 			
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CairoGraphics.render (graphics, renderSession, shape.__renderTransform, shape.__worldColorTransform);
 			
 			var bounds = graphics.__bounds;
 			

@@ -32,9 +32,9 @@ class GLShape {
 		if (graphics != null) {
 			
 			#if (js && html5)
-			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CanvasGraphics.render (graphics, renderSession, shape.__renderTransform, shape.__worldColorTransform.__isDefault() ? null : shape.__worldColorTransform);
 			#elseif lime_cairo
-			CairoGraphics.render (graphics, renderSession, shape.__renderTransform);
+			CairoGraphics.render (graphics, renderSession, shape.__renderTransform, shape.__worldColorTransform.__isDefault() ? null : shape.__worldColorTransform);
 			#end
 			
 			var bounds = graphics.__bounds;

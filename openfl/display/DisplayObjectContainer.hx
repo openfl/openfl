@@ -793,6 +793,19 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
+	public override function __setGraphicsDirty ():Void {
+		
+		super.__setGraphicsDirty ();
+		
+		for (child in __children) {
+			
+			child.__setGraphicsDirty ();
+			
+		}
+		
+	}
+	
+	
 	
 	
 	// Get & Set Methods

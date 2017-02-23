@@ -625,6 +625,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 	}
+
+
+	private function __setGraphicsDirty ():Void {
+
+		// implemented in subclasses that have Graphics or renderable Text
+		
+	}
 	
 	
 	private function __setStageReference (stage:Stage):Void {
@@ -697,11 +704,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			if (__parent != null) {
 				
+				__worldColorTransform.__combine (__parent.__worldColorTransform);
+				
 				#if !dom
 				
 				__worldAlpha = alpha * __parent.__worldAlpha;
-				__worldColorTransform.__combine (__parent.__worldColorTransform);
-				
 				if ((blendMode == null || blendMode == NORMAL)) {
 					
 					__blendMode = __parent.__blendMode;

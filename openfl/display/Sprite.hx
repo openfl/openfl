@@ -62,6 +62,14 @@ class Sprite extends DisplayObjectContainer {
 	}
 	
 	
+	public override function __setGraphicsDirty ():Void {
+
+		graphics.__dirty = true;
+		
+		super.__setGraphicsDirty();
+
+	}
+
 	private override function __getCursor ():MouseCursor {
 		
 		return (buttonMode && useHandCursor) ? POINTER : null;
