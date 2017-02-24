@@ -177,7 +177,7 @@ import openfl.Assets;
 				
 			}
 			
-			var path = rootPath != "" ? rootPath + "/" + id : id;
+			var path = (rootPath != null && rootPath != "") ? rootPath + "/" + id : id;
 			
 			var loader = new URLLoader ();
 			loader.addEventListener (Event.COMPLETE, function (_) onComplete (loader.data));

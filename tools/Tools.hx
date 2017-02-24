@@ -987,8 +987,17 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (merge);
+					
+					// TODO: Need to handle a better way to manage copying library files
+					for (asset in data.assets) {
+						
+						var path:String = cast asset.path;
+						asset.path = path.substr (4); // "lib/"
+						
+					}
+					
 					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+					data.libraryArgs = [ library.name + "/" + library.name + ".dat" ];
 					data.name = library.name;
 					
 					output.merge (merge);
