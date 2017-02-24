@@ -721,7 +721,7 @@ class Tools {
 					output.assets.push (swf);
 					
 					var data = new AssetManifest ();
-					data.assets = [ { id: swf.id, path: swf.resourceName, type: Std.string (AssetType.BINARY) } ];
+					data.assets = [ { id: swf.id, path: library.name + "/" + library.name + ".swf", type: Std.string (AssetType.BINARY) } ];
 					data.libraryType = "openfl._internal.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					
