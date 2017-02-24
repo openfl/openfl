@@ -710,7 +710,7 @@ class Tools {
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-					swf.embed = false;
+					//swf.embed = false;
 					
 					// if (library.embed != null) {
 						
