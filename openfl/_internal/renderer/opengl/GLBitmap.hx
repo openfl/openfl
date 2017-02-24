@@ -100,9 +100,9 @@ class GLBitmap {
 		if (gl == null) return null;
 
 		if (!renderSession.usesMainSpriteBatch) {
-			
+
 			renderSession.spriteBatch.stop ();
-		
+
 		}
 
 		var renderer = renderSession.renderer;
@@ -165,7 +165,6 @@ class GLBitmap {
 		if (gl == null) return;
 
 		var viewPort = data.viewPort;
-		var renderer = renderSession.renderer;
 		var spritebatch = renderSession.spriteBatch;
 		var drawTarget = target != null;
 
@@ -192,7 +191,7 @@ class GLBitmap {
 
 		var cached = source.__cacheAsBitmap;
 		var blendMode = source.__blendMode;
-		
+
 		renderSession.pushRenderTargetBaseTransform (source, matrix);
 
 		source.__cacheAsBitmap = false;

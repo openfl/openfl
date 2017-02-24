@@ -5,21 +5,21 @@ import format.swf.data.SWFShape;
 import format.swf.exporters.core.IShapeExporter;
 import format.swf.utils.StringUtils;
 import flash.errors.Error;
-	
+
 class TagDefineFont implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 10;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-	
+
 	public var characterId:Int;
-	
+
 	public var glyphShapeTable (default, null):Array<SWFShape>;
 	private static var unitDivisor:Int = 1;
-	
+
 	public function new() {
 		type = TYPE;
 		name = "DefineFont";
@@ -27,7 +27,7 @@ class TagDefineFont implements IDefinitionTag
 		level = 1;
 		glyphShapeTable = new Array<SWFShape>();
 	}
-	
+
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
 		characterId = data.readUI16();
 		// Because the glyph shape table immediately follows the offset table,
@@ -41,11 +41,9 @@ class TagDefineFont implements IDefinitionTag
 			glyphShapeTable.push(data.readSHAPE(unitDivisor));
 		}
 	}
-	
+
 	public function publish(data:SWFData, version:Int):Void {
 		var body:SWFData = new SWFData();
-		var i:Int;
-		var prevPtr:Int = 0;
 		var len:Int = glyphShapeTable.length;
 		var shapeTable:SWFData = new SWFData();
 		body.writeUI16(characterId);
@@ -65,24 +63,24 @@ class TagDefineFont implements IDefinitionTag
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
+
 	public function clone():IDefinitionTag {
-		var tag:TagDefineFont = new TagDefineFont();
 		throw(new Error("Not implemented yet."));
+		var tag:TagDefineFont = new TagDefineFont();
 		return tag;
 	}
-	
+
 	public function export(handler:IShapeExporter, glyphIndex:Int):Void {
 		glyphShapeTable[glyphIndex].export(handler);
 	}
-	
+
 	public function toString(indent:Int = 0):String {
 		var str:String = Tag.toStringCommon(type, name, indent) +
 			"ID: " + characterId + ", " +
 			"Glyphs: " + glyphShapeTable.length;
 		return str + toStringCommon(indent);
 	}
-	
+
 	private function toStringCommon(indent:Int):String {
 		var str:String = "";
 		for (i in 0...glyphShapeTable.length) {

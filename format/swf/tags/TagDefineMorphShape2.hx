@@ -8,23 +8,23 @@ import format.swf.utils.StringUtils;
 class TagDefineMorphShape2 extends TagDefineMorphShape implements ITag
 {
 	public static inline var TYPE:Int = 84;
-	
+
 	public var startEdgeBounds:SWFRectangle;
 	public var endEdgeBounds:SWFRectangle;
 	public var usesNonScalingStrokes:Bool;
 	public var usesScalingStrokes:Bool;
-	
+
 	public function new() {
-		
+
 		super ();
-		
+
 		type = TYPE;
 		name = "DefineMorphShape2";
 		version = 8;
 		level = 2;
-		
+
 	}
-	
+
 	override public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
 		characterId = data.readUI16();
 		startBounds = data.readRECT();
@@ -34,8 +34,7 @@ class TagDefineMorphShape2 extends TagDefineMorphShape implements ITag
 		var flags:Int = data.readUI8();
 		usesNonScalingStrokes = ((flags & 0x02) != 0);
 		usesScalingStrokes = ((flags & 0x01) != 0);
-		var offset:Int = data.readUI32();
-		var i:Int;
+		/*var offset:Int = */data.readUI32();
 		// MorphFillStyleArray
 		var fillStyleCount:Int = data.readUI8();
 		if (fillStyleCount == 0xff) {
@@ -55,7 +54,7 @@ class TagDefineMorphShape2 extends TagDefineMorphShape implements ITag
 		startEdges = data.readSHAPE();
 		endEdges = data.readSHAPE();
 	}
-	
+
 	override public function publish(data:SWFData, version:Int):Void {
 		var body:SWFData = new SWFData();
 		body.writeUI16(characterId);
@@ -68,7 +67,6 @@ class TagDefineMorphShape2 extends TagDefineMorphShape implements ITag
 		if(usesScalingStrokes) { flags |= 0x01; }
 		body.writeUI8(flags);
 		var startBytes:SWFData = new SWFData();
-		var i:Int;
 		// MorphFillStyleArray
 		var fillStyleCount:Int = morphFillStyles.length;
 		if (fillStyleCount > 0xfe) {
@@ -98,9 +96,8 @@ class TagDefineMorphShape2 extends TagDefineMorphShape implements ITag
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
+
 	override public function toString(indent:Int = 0):String {
-		var i:Int;
 		var indent2:String = StringUtils.repeat(indent + 2);
 		var indent4:String = StringUtils.repeat(indent + 4);
 		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId;

@@ -95,12 +95,16 @@ class BitmapData implements IBitmapDrawable {
 		this.transparent = transparent;
 
 		#if (neko || (js && html5))
-		width = width == null ? 0 : width;
-		height = height == null ? 0 : height;
-		#end
-
+		if( width == null || width < 0 ) {
+			width = 0;
+		}
+		if( height == null || height < 0 ) {
+			height = 0;
+		}
+		#else
 		width = width < 0 ? 0 : width;
 		height = height < 0 ? 0 : height;
+		#end
 
 		__width = width;
 		__height = height;
@@ -919,7 +923,6 @@ class BitmapData implements IBitmapDrawable {
 
 		//Range of values to value to.
 		var range:Int = high - low;
-		var data:ByteArray = new ByteArray();
 
 		var redChannel:Bool = ((channelOptions & ( 1 << 0 )) >> 0) == 1;
 		var greenChannel:Bool = ((channelOptions & ( 1 << 1 )) >> 1) == 1;

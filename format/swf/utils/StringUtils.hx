@@ -44,7 +44,7 @@ class StringUtils
 		//input = input.split("\b").join("\\b");
 		return input;
 	}
-	
+
 	public static function strictEscape(input:String, trim:Bool = true):String {
 		if (input != null && input.length > 0) {
 			if (trim) {
@@ -69,7 +69,7 @@ class StringUtils
 		}
 		return "";
 	}
-	
+
 	public static function repeat(n:Int, str:String = " "):String {
 		var ret = "";
 		for (i in 0...n) {
@@ -77,14 +77,14 @@ class StringUtils
 		}
 		return ret;
 	}
-	
-	
+
+
 	private static var i:Int = 0;
-	
+
 	private static inline var SIGN_UNDEF:Int = 0;
 	private static inline var SIGN_POS:Int = -1;
 	private static inline var SIGN_NEG:Int = 1;
-	
+
 	public static function printf(format:String, args:Array<Dynamic>):String {
 		var result:String = "";
 		var indexValue:Int = 0;
@@ -101,15 +101,13 @@ class StringUtils
 					} else {
 						var flagSign:Bool = false;
 						var flagLeftAlign:Bool = false;
-						var flagAlternate:Bool = false;
 						var flagLeftPad:Bool = false;
 						var flagZeroPad:Bool = false;
 						var width:Int = -1;
 						var precision:Int = -1;
 						var type:String = "";
 						var value:Dynamic;
-						var j:Int;
-						
+
 						///////////////////////////
 						// parse parameter
 						///////////////////////////
@@ -126,7 +124,7 @@ class StringUtils
 							if(isIndexed == -1) { isIndexed = 1; }
 							indexValue = idx;
 						}
-						
+
 						///////////////////////////
 						// parse flags
 						///////////////////////////
@@ -135,7 +133,6 @@ class StringUtils
 							switch(c) {
 								case "+": flagSign = true;
 								case "-": flagLeftAlign = true;
-								case "#": flagAlternate = true;
 								case " ": flagLeftPad = true;
 								case "0": flagZeroPad = true;
 							}
@@ -143,7 +140,7 @@ class StringUtils
 							c = format.charAt(i);
 						}
 						if(i == format.length) { break; }
-						
+
 						///////////////////////////
 						// parse width
 						///////////////////////////
@@ -177,7 +174,6 @@ class StringUtils
 							}
 							c = format.charAt(i);
 						} else {
-							var hasWidth:Bool = false;
 							while(c >= "0" && c <= "9") {
 								if(width == -1) { width = 0; }
 								width = (width * 10) + Std.parseInt(c);
@@ -189,7 +185,7 @@ class StringUtils
 								break;
 							}
 						}
-						
+
 						///////////////////////////
 						// parse precision
 						///////////////////////////
@@ -238,7 +234,7 @@ class StringUtils
 								}
 							}
 						}
-						
+
 						///////////////////////////
 						// parse length (ignored)
 						///////////////////////////
@@ -262,7 +258,7 @@ class StringUtils
 								c = format.charAt(i);
 								break;
 						}
-						
+
 						///////////////////////////
 						// parse type
 						///////////////////////////
@@ -272,14 +268,14 @@ class StringUtils
 							trace("ERR unknown type: " + c);
 							break;
 						}
-						
+
 						if(args.length >= indexValue && indexValue > 0) {
 							value = args[indexValue - 1];
 						} else {
 							trace("ERR value index out of bounds (" + indexValue + ")");
 							break;
 						}
-						
+
 						var valueStr:String = "";
 						var valueFloat:Float;
 						var valueInt:Int;
@@ -321,9 +317,7 @@ class StringUtils
 									} else {
 										numZerosToAppend = precision - (valueStr.length - dotPos - 1);
 									}
-									for(j in 0...numZerosToAppend) {
-										valueStr += "0";
-									}
+									valueStr += repeat(numZerosToAppend, "0");
 								}
 								sign = (valueFloat < 0) ? SIGN_NEG : SIGN_POS;
 								break;
@@ -337,22 +331,17 @@ class StringUtils
 								valueStr = BaseCode.encode (Std.string (((Std.is (value, Float)) ? Std.int(value) : Std.int(value))), "01234567");
 								break;
 						}
-						
+
 						var hasSign:Bool = ((sign == SIGN_NEG) || flagSign || flagLeftPad);
 						if(width > -1) {
 							var numFill:Int = width - valueStr.length;
 							if(hasSign) { numFill--; }
 							if(numFill > 0) {
 								var fillChar:String = (flagZeroPad && !flagLeftAlign) ? "0" : " ";
-								if(flagLeftAlign) {
-									for(j in 0...numFill) {
-										valueStr += fillChar;
-									}
-								} else {
-									for(j in 0...numFill) {
-										valueStr = fillChar + valueStr;
-									}
+								if(!flagLeftAlign) {
+									fillChar += valueStr;
 								}
+								valueStr += repeat(numFill, fillChar);
 							}
 						}
 						if(hasSign) {
@@ -362,9 +351,9 @@ class StringUtils
 								valueStr = "-" + valueStr;
 							}
 						}
-						
+
 						result += valueStr;
-						
+
 						///////////////////////////
 						// debug
 						///////////////////////////
@@ -377,7 +366,6 @@ class StringUtils
 						var da:Array = [];
 						if(flagSign) { da.push("sign"); }
 						if(flagLeftAlign) { da.push("leftalign"); }
-						if(flagAlternate) { da.push("alternate"); }
 						if(flagLeftPad) { da.push("leftpad"); }
 						if(flagZeroPad) { da.push("zeropad"); }
 						d += ((da.length == 0) ? "-" : da.toString()) + " ";
@@ -386,7 +374,7 @@ class StringUtils
 						d += "result:" + valueStr;
 						trace(d);
 						*/
-						
+
 					}
 				} else {
 					result += c;
@@ -398,7 +386,7 @@ class StringUtils
 		}
 		return result;
 	}
-	
+
 	private static function getIndex(format:String):Int {
 		var result:Int = 0;
 		var isIndexed:Bool = false;

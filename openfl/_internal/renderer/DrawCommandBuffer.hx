@@ -19,41 +19,41 @@ import openfl.utils.UnshrinkableArray;
 
 
 class DrawCommandBuffer {
-	
-	
-	public var length (get, never):Int; 
+
+
+	public var length (get, never):Int;
 	public var types:UnshrinkableArray<DrawCommandType>;
-	
+
 	private var b:UnshrinkableArray<Bool>;
 	private var f:UnshrinkableArray<Float>;
 	private var ff:UnshrinkableArray<Array<Float>>;
 	private var i:UnshrinkableArray<Int>;
 	private var ii:UnshrinkableArray<Array<Int>>;
 	private var o:UnshrinkableArray<Dynamic>;
-	
-	
+
+
 	public function new () {
-		
+
 		types = new UnshrinkableArray(128);
-		
+
 		b = new UnshrinkableArray(128);
 		i = new UnshrinkableArray(128);
 		f = new UnshrinkableArray(128);
 		o = new UnshrinkableArray(128);
 		ff = new UnshrinkableArray(128);
 		ii = new UnshrinkableArray(128);
-		
+
 	}
-	
-	
+
+
 	public function append (other:DrawCommandBuffer):DrawCommandBuffer {
-		
+
 		var data = new DrawCommandReader (other);
-		
+
 		for (type in other.types) {
-			
+
 			switch (type) {
-				
+
 				case BEGIN_BITMAP_FILL: var c = data.readBeginBitmapFill (); beginBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
 				case BEGIN_FILL: var c = data.readBeginFill (); beginFill (c.color, c.alpha);
 				case BEGIN_GRADIENT_FILL: var c = data.readBeginGradientFill (); beginGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
@@ -65,7 +65,7 @@ class DrawCommandBuffer {
 				case DRAW_RECT: var c = data.readDrawRect (); drawRect (c.x, c.y, c.width, c.height);
 				case DRAW_ROUND_RECT: var c = data.readDrawRoundRect (); drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
 				case DRAW_TRIANGLES: var c = data.readDrawTriangles (); drawTriangles (c.vertices, c.indices, c.uvtData, c.culling);
-				case END_FILL: var c = data.readEndFill (); endFill ();
+				case END_FILL: data.readEndFill (); endFill ();
 				case LINE_BITMAP_STYLE: var c = data.readLineBitmapStyle (); lineBitmapStyle (c.bitmap, c.matrix, c.repeat, c.smooth);
 				case LINE_GRADIENT_STYLE: var c = data.readLineGradientStyle (); lineGradientStyle (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 				case LINE_STYLE: var c = data.readLineStyle (); lineStyle (c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
@@ -73,38 +73,38 @@ class DrawCommandBuffer {
 				case MOVE_TO: var c = data.readMoveTo (); moveTo (c.x, c.y);
 				case OVERRIDE_MATRIX: var c = data.readOverrideMatrix (); overrideMatrix (c.matrix);
 				default:
-				
+
 			}
-			
+
 		}
-		
+
 		data.destroy ();
 		return other;
-		
+
 	}
-	
-	
+
+
 	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
-		
+
 		types.push (BEGIN_BITMAP_FILL);
 		o.push (bitmap);
 		o.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
-		
+
 	}
-	
+
 	public function beginFill (color:Int, alpha:Float):Void {
-		
+
 		types.push (BEGIN_FILL);
 		i.push (color);
 		f.push (alpha);
-		
+
 	}
-	
-	
+
+
 	public function beginGradientFill (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
-		
+
 		types.push (BEGIN_GRADIENT_FILL);
 		o.push (type);
 		ii.push (colors);
@@ -114,35 +114,35 @@ class DrawCommandBuffer {
 		o.push (spreadMethod);
 		o.push (interpolationMethod);
 		f.push (focalPointRatio);
-		
+
 	}
-	
-	
+
+
 	public function clear ():Void {
-		
+
 		types.clear();
-		
+
 		b.clear();
 		i.clear();
 		f.clear();
 		o.clear();
 		ff.clear();
 		ii.clear();
-		
+
 	}
-	
-	
+
+
 	public function copy ():DrawCommandBuffer {
-		
+
 		var copy = new DrawCommandBuffer ();
 		copy.append (this);
 		return copy;
-		
+
 	}
-	
-	
+
+
 	public function cubicCurveTo (controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void {
-		
+
 		types.push (CUBIC_CURVE_TO);
 		f.push (controlX1);
 		f.push (controlY1);
@@ -150,79 +150,79 @@ class DrawCommandBuffer {
 		f.push (controlY2);
 		f.push (anchorX);
 		f.push (anchorY);
-		
+
 	}
-	
+
 	public function curveTo (controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void {
-		
+
 		types.push (CURVE_TO);
 		f.push (controlX);
 		f.push (controlY);
 		f.push (anchorX);
 		f.push (anchorY);
-		
+
 	}
-	
-	
+
+
 	public function destroy ():Void {
-		
+
 		clear ();
-		
+
 		types = null;
-		
+
 		b = null;
 		i = null;
 		f = null;
 		o = null;
 		ff = null;
 		ii = null;
-		
+
 	}
-	
-	
+
+
 	public function drawCircle (x:Float, y:Float, radius:Float):Void {
-		
+
 		types.push (DRAW_CIRCLE);
 		f.push (x);
 		f.push (y);
 		f.push (radius);
-		
+
 	}
-	
-	
+
+
 	public function drawEllipse (x:Float, y:Float, width:Float, height:Float):Void {
-		
+
 		types.push (DRAW_ELLIPSE);
 		f.push (x);
 		f.push (y);
 		f.push (width);
 		f.push (height);
-		
+
 	}
-	
-	
+
+
 	public function drawPath (commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding):Void {
-		
+
 		types.push (DRAW_PATH);
 		o.push (commands);
 		o.push (data);
 		o.push (winding);
-		
+
 	}
-	
-	
+
+
 	public function drawRect (x:Float, y:Float, width:Float, height:Float):Void {
-		
+
 		types.push (DRAW_RECT);
 		f.push (x);
 		f.push (y);
 		f.push (width);
 		f.push (height);
-		
+
 	}
-	
+
 	public function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
-		
+
 		types.push (DRAW_ROUND_RECT);
 		f.push (x);
 		f.push (y);
@@ -230,41 +230,41 @@ class DrawCommandBuffer {
 		f.push (height);
 		f.push (ellipseWidth);
 		o.push (ellipseHeight);
-		
+
 	}
-	
-	
+
+
 	public function drawTriangles (vertices:Vector<Float>, indices:Vector<Int>, uvtData:Vector<Float>, culling:TriangleCulling):Void {
-		
+
 		types.push (DRAW_TRIANGLES);
 		o.push (vertices);
 		o.push (indices);
 		o.push (uvtData);
 		o.push (culling);
-		
+
 	}
-	
-	
+
+
 	public function endFill ():Void {
-		
+
 		types.push (END_FILL);
-		
+
 	}
-	
-	
+
+
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
-		
+
 		types.push (LINE_BITMAP_STYLE);
 		o.push (bitmap);
 		o.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
-		
+
 	}
-	
-	
+
+
 	public function lineGradientStyle (type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix, spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):Void {
-		
+
 		types.push (LINE_GRADIENT_STYLE);
 		o.push (type);
 		ii.push (colors);
@@ -274,12 +274,12 @@ class DrawCommandBuffer {
 		o.push (spreadMethod);
 		o.push (interpolationMethod);
 		f.push (focalPointRatio);
-		
+
 	}
-	
-	
+
+
 	public function lineStyle (thickness:Null<Float>, color:Int, alpha:Float, pixelHinting:Bool, scaleMode:LineScaleMode, caps:CapsStyle, joints:JointStyle, miterLimit:Float):Void {
-		
+
 		types.push (LINE_STYLE);
 		o.push (thickness);
 		i.push (color);
@@ -289,48 +289,48 @@ class DrawCommandBuffer {
 		o.push (caps);
 		o.push (joints);
 		f.push (miterLimit);
-		
+
 	}
-	
-	
+
+
 	public function lineTo (x:Float, y:Float):Void {
-		
+
 		types.push (LINE_TO);
 		f.push (x);
 		f.push (y);
-		
+
 	}
-	
-	
+
+
 	public function moveTo (x:Float, y:Float):Void {
-		
+
 		types.push (MOVE_TO);
 		f.push (x);
 		f.push (y);
-		
+
 	}
-	
-	
+
+
 	public function overrideMatrix (matrix:Matrix):Void {
-		
+
 		types.push (OVERRIDE_MATRIX);
 		o.push (matrix);
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	// Get & Set Methods
-	
-	
-	
-	
+
+
+
+
 	private function get_length ():Int {
-		
+
 		return types.length;
-		
+
 	}
-	
-	
+
+
 }

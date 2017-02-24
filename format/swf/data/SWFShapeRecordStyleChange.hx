@@ -10,13 +10,13 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 	public var stateFillStyle1:Bool;
 	public var stateFillStyle0:Bool;
 	public var stateMoveTo:Bool;
-	
+
 	public var moveDeltaX:Int;
 	public var moveDeltaY:Int;
 	public var fillStyle0:Int;
 	public var fillStyle1:Int;
 	public var lineStyle:Int;
-	
+
 	public var numFillBits:Int = 0;
 	public var numLineBits:Int = 0;
 
@@ -35,9 +35,9 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		numLineBits = lineBits;
 		super(data, level);
 	}
-	
+
 	override private function get_type():Int { return SWFShapeRecord.TYPE_STYLECHANGE; }
-	
+
 	override public function parse(data:SWFData = null, level:Int = 1):Void {
 		if (stateMoveTo) {
 			var moveBits:Int = data.readUB(5);
@@ -49,7 +49,6 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		lineStyle = stateLineStyle ? data.readUB(numLineBits) : 0;
 		if (stateNewStyles) {
 			data.resetBitsPending();
-			var i:Int;
 			var fillStylesLen:Int = readStyleArrayLength(data, level);
 			for (i in 0...fillStylesLen) {
 				fillStyles.push(data.readFILLSTYLE(level));
@@ -76,7 +75,6 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		if(stateLineStyle) { data.writeUB(numLineBits, lineStyle); }
 		if (stateNewStyles) {
 			data.resetBitsPending();
-			var i:Int;
 			var fillStylesLen:Int = fillStyles.length;
 			writeStyleArrayLength(data, fillStylesLen, level);
 			for (i in 0...fillStylesLen) {
@@ -102,7 +100,7 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		}
 		return len;
 	}
-	
+
 	private function writeStyleArrayLength(data:SWFData, length:Int, level:Int = 1):Void {
 		if (level >= 2 && length > 0xfe) {
 			data.writeUI8(0xff);
@@ -111,7 +109,7 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 			data.writeUI8(length);
 		}
 	}
-	
+
 	override public function clone():SWFShapeRecord {
 		var record:SWFShapeRecordStyleChange = new SWFShapeRecordStyleChange();
 		record.stateNewStyles = stateNewStyles;
@@ -126,7 +124,6 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		record.lineStyle = lineStyle;
 		record.numFillBits = numFillBits;
 		record.numLineBits = numLineBits;
-		var i:Int;
 		for(i in 0...fillStyles.length) {
 			record.fillStyles.push(fillStyles[i].clone());
 		}
@@ -135,7 +132,7 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		}
 		return record;
 	}
-	
+
 	override public function toString(indent:Int = 0):String {
 		var str:String = "[SWFShapeRecordStyleChange] ";
 		var cmds:Array<String> = [];
@@ -145,7 +142,6 @@ class SWFShapeRecordStyleChange extends SWFShapeRecord
 		if (stateLineStyle) { cmds.push("LineStyle: " + lineStyle); }
 		if (cmds.length > 0) { str += cmds.join(", "); }
 		if (stateNewStyles) {
-			var i:Int;
 			if (fillStyles.length > 0) {
 				str += "\n" + StringUtils.repeat(indent + 2) + "New FillStyles:";
 				for (i in 0...fillStyles.length) {
