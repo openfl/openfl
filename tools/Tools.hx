@@ -188,6 +188,7 @@ class Tools {
 		
 		for (className in swf.symbols.keys ()) {
 			
+			if (className == null) continue;
 			var lastIndexOfPeriod = className.lastIndexOf (".");
 			
 			var packageName = "";
@@ -688,6 +689,8 @@ class Tools {
 		
 		for (library in project.libraries) {
 			
+			if (library.sourcePath == null) continue;
+			
 			var type = library.type;
 			
 			if (type == null) {
@@ -710,29 +713,29 @@ class Tools {
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-					//swf.embed = false;
+					swf.library = library.name;
 					
-					// if (library.embed != null) {
+					if (library.embed != null) {
 						
-					// 	swf.embed = library.embed;
+						swf.embed = library.embed;
 						
-					// }
+					}
 					
 					output.assets.push (swf);
 					
 					var data = new AssetManifest ();
-					data.assets = [ { id: swf.id, path: library.name + "/" + library.name + ".swf", type: Std.string (AssetType.BINARY) } ];
+					data.assets = [ { id: swf.id, path: swf.id, type: Std.string (AssetType.BINARY) } ];
 					data.libraryType = "openfl._internal.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					
-					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
+					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
+					asset.library = library.name;
 					asset.data = data.serialize ();
-					asset.embed = false;
 					
 					if (library.embed != null) {
 						
-						 //asset.embed = library.embed;
+						asset.embed = library.embed;
 						
 					}
 					
@@ -799,11 +802,10 @@ class Tools {
 							if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
 								
 								var asset = new Asset (cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
-								asset.embed = false;
 								
 								if (library.embed != null) {
 									
-									// asset.embed = library.embed;
+									asset.embed = library.embed;
 									
 								}
 								
@@ -817,7 +819,7 @@ class Tools {
 						
 						if (library.embed != null) {
 							
-							// swfLiteAsset.embed = library.embed;
+							swfLiteAsset.embed = library.embed;
 							
 						}
 						
@@ -890,13 +892,11 @@ class Tools {
 								
 							}
 							
-							asset.embed = false;
-							
-							// if (library.embed != null) {
+							if (library.embed != null) {
 								
-							// 	asset.embed = library.embed;
+								asset.embed = library.embed;
 								
-							// }
+							}
 							
 							merge.assets.push (asset);
 							
@@ -923,11 +923,11 @@ class Tools {
 								
 								asset.embed = false;
 								
-								// if (library.embed != null) {
+								if (library.embed != null) {
 									
-								// 	asset.embed = library.embed;
+									asset.embed = library.embed;
 									
-								// }
+								}
 								
 								merge.assets.push (asset);
 								
@@ -958,7 +958,7 @@ class Tools {
 						
 						if (library.embed != null) {
 							
-							// swfLiteAsset.embed = library.embed;
+							swfLiteAsset.embed = library.embed;
 							
 						}
 						
@@ -987,28 +987,26 @@ class Tools {
 					}
 					
 					var data = AssetHelper.createManifest (merge);
+					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
+					data.name = library.name;
 					
-					// TODO: Need to handle a better way to manage copying library files
-					for (asset in data.assets) {
+					for (asset in merge.assets) {
 						
-						var path:String = cast asset.path;
-						asset.path = path.substr (4); // "lib/"
+						asset.library = library.name;
 						
 					}
 					
-					data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
-					data.libraryArgs = [ library.name + "/" + library.name + ".dat" ];
-					data.name = library.name;
-					
 					output.merge (merge);
 					
-					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
+					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
+					asset.library = library.name;
 					asset.data = data.serialize ();
 					
 					if (library.embed != null) {
 						
-						// asset.embed = library.embed;
+						asset.embed = library.embed;
 						
 					}
 					
