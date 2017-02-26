@@ -5,12 +5,9 @@ package;
 import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr;
-#else
-import DefaultAssetLibrary;
 #end
 
 @:access(lime.app.Application)
-@:access(lime.Assets)
 @:access(openfl.display.Stage)
 
 
@@ -88,16 +85,25 @@ import DefaultAssetLibrary;
 		var app = new openfl.display.Application ();
 		app.create (config);
 		
-		var library = new DefaultAssetLibrary ();
-		lime.utils.Assets.registerLibrary ("default", library);
+		ManifestResources.init ();
 		
 		preloader = getPreloader ();
 		app.setPreloader (preloader);
 		preloader.create (config);
 		preloader.onComplete.add (start);
-		preloader.addLibrary (library);
-		::if (libraries != null)::::foreach libraries::::if (preload)::preloader.addLibraryName ("::name::");
-		::end::::end::::end::
+		
+		for (library in ManifestResources.preloadLibraries) {
+			
+			preloader.addLibrary (library);
+			
+		}
+		
+		for (name in ManifestResources.preloadLibraryNames) {
+			
+			preloader.addLibraryName (name);
+			
+		}
+		
 		preloader.load ();
 		
 		var result = app.exec ();

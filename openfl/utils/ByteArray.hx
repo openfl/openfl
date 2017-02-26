@@ -580,7 +580,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 			__setData (bytes);
 			
 			length = __length;
-			position = __length;
+			position = 0;
 			
 		}
 		
