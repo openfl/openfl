@@ -20,9 +20,9 @@
 		<haxelib name="lime" unless="create" />
 		<haxelib name="lime" if="display || rebuild" />
 		
-		<template path="templates" />
-		
 	</section>
+	
+	<template path="templates" />
 	
 	<section if="lime">
 		
