@@ -286,7 +286,33 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+	#if profile
+		private static var __childrenCreateCount:Map<Int, Int> = new Map<Int, Int>();
 
+		public static function __init__ () {
+
+			#if js
+				untyped __js__ ("$global.Profile = $global.Profile || {}");
+				untyped __js__ ("$global.Profile.CacheInfo = {}");
+				untyped __js__ ("$global.Profile.CacheInfo.resetStatistics = format_swf_lite_MovieClip.resetStatistics" );
+				untyped __js__ ("$global.Profile.CacheInfo.logStatistics = format_swf_lite_MovieClip.logStatistics" );
+			#end
+
+		}
+
+		public static function resetStatistics () {
+
+			__childrenCreateCount = new Map<Int, Int> ();
+
+		}
+
+		public static function logStatistics () {
+
+			for( id in __childrenCreateCount.keys () ) {
+				trace ('Symbol id:$id; Created count: ${__childrenCreateCount[id]}');
+			}
+		}
+	#end
 	@:noCompletion private function __createObject (object:FrameObject):DisplayObject {
 
 		var displayObject:DisplayObject = null;
@@ -298,6 +324,10 @@ class MovieClip extends flash.display.MovieClip {
 				return __childrenCache.get(object);
 			}
 		}
+
+		#if profile
+		__childrenCreateCount.set(this.__symbol.id, (__childrenCreateCount.exists(this.__symbol.id) ? __childrenCreateCount.get(this.__symbol.id) + 1 : 1));
+		#end
 
 		if (__swf.symbols.exists (object.symbol)) {
 
