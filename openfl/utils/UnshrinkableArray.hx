@@ -36,6 +36,7 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         }
 
         this._items[index] = item;
+        this._length = index > this._length ? index : this._length;
         ++this._length;
     }
 
