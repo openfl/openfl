@@ -1227,6 +1227,7 @@ class TextEngine {
 		
 		var lineIndex = -1;
 		var offsetX = 0.0;
+		var totalWidth = this.width - 4;
 		var group, lineLength;
 		
 		for (i in 0...layoutGroups.length) {
@@ -1241,9 +1242,9 @@ class TextEngine {
 					
 					case CENTER:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < totalWidth) {
 							
-							offsetX = Math.round ((width - 4 - lineWidths[lineIndex]) / 2);
+							offsetX = Math.round ((totalWidth - lineWidths[lineIndex]) / 2);
 							
 						} else {
 							
@@ -1253,9 +1254,9 @@ class TextEngine {
 					
 					case RIGHT:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < totalWidth) {
 							
-							offsetX = Math.round (width - 4 - lineWidths[lineIndex]);
+							offsetX = Math.round (totalWidth - lineWidths[lineIndex]);
 							
 						} else {
 							
@@ -1265,7 +1266,7 @@ class TextEngine {
 					
 					case JUSTIFY:
 						
-						if (lineWidths[lineIndex] < width - 4) {
+						if (lineWidths[lineIndex] < totalWidth) {
 							
 							lineLength = 1;
 							
@@ -1273,7 +1274,11 @@ class TextEngine {
 								
 								if (layoutGroups[j].lineIndex == lineIndex) {
 									
-									lineLength++;
+									if (j == 0 || text.charCodeAt (layoutGroups[j].startIndex - 1) == " ".code){
+										
+										lineLength++;
+										
+									}
 									
 								} else {
 									
@@ -1287,16 +1292,24 @@ class TextEngine {
 								
 								group = layoutGroups[i + lineLength - 1];
 								
-								var endChar = text.charAt (group.endIndex);
-								if (group.endIndex < text.length && endChar != "\n" && endChar != "\r") {
+								var endChar = text.charCodeAt (group.endIndex);
+								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code) {
 									
-									offsetX = (width - 4 - lineWidths[lineIndex]) / (lineLength - 1);
+									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
 									
-									for (j in 1...lineLength) {
+									var j = 0;
+									do {
+										
+										if (j > 1 && text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+											
+											layoutGroups[i + j].offsetX += (offsetX * (j-1));
+											j++;
+											
+										}
 										
 										layoutGroups[i + j].offsetX += (offsetX * j);
 										
-									}
+									} while (++j < lineLength);
 									
 								}
 								
