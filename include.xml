@@ -41,12 +41,12 @@
 	
 	<section unless="lime || custom-backend">
 		
-		<haxelib name="lime" unless="create || native lime-legacy" />
-		<haxelib name="lime" if="display || rebuild" />
-		
-		<template path="templates" />
+		<haxelib name="lime" version="2.6.1" unless="create || native lime-legacy" />
+		<haxelib name="lime" version="2.6.1" if="display || rebuild" />
 		
 	</section>
+	
+	<template path="templates" unless="custom-backend" />
 	
 	<source path="extern" if="display || flash" />
 	
