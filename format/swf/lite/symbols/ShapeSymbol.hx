@@ -53,11 +53,11 @@ class ShapeSymbol extends SWFSymbol {
 			missedCount = missedCount != null ? missedCount : 0;
 			++missedCount;
 			missedCountMap.set (id, missedCount);
-			
+
 			if (continuousLogEnabled) {
-				
+
 				trace ('Shape id:$id; Missed count: $missedCount');
-				
+
 			}
 		#end
 
@@ -83,34 +83,35 @@ class ShapeSymbol extends SWFSymbol {
 		private static var continuousLogEnabled:Bool = false;
 
 		public static function __init__ () {
-			
+
 			#if js
-				untyped __js__ ("$global.ShapeInfo = []");
-				untyped __js__ ("$global.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
-				untyped __js__ ("$global.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
-				untyped __js__ ("$global.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
+				untyped __js__ ("$global.Profile = $global.Profile || {}");
+				untyped __js__ ("$global.Profile.ShapeInfo = []");
+				untyped __js__ ("$global.Profile.ShapeInfo.resetStatistics = format_swf_lite_symbols_ShapeSymbol.resetStatistics" );
+				untyped __js__ ("$global.Profile.ShapeInfo.logStatistics = format_swf_lite_symbols_ShapeSymbol.logStatistics" );
+				untyped __js__ ("$global.Profile.ShapeInfo.enableContinuousLog = format_swf_lite_symbols_ShapeSymbol.enableContinuousLog" );
 			#end
-			
+
 		}
 
 		public static function resetStatistics () {
-			
+
 			missedCountMap = new Map<Int, Int> ();
-			
+
 		}
 
 		public static function logStatistics () {
-			
+
 			for( id in missedCountMap.keys () ) {
 				trace ('Shape id:$id; Missed count: ${missedCountMap[id]}');
 			}
-			
+
 		}
 
 		public static function enableContinuousLog (value:Bool) {
-			
+
 			continuousLogEnabled = value;
-			
+
 		}
 
 	#end
