@@ -612,11 +612,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		#if duell_container
-			// :NOTE: Account for menu bar.
-			height -= 25;
-		#end
-
 		width = Std.int (width * window.scale);
 		height = Std.int( height * window.scale);
 
@@ -685,11 +680,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	public function set_scaleMode(scaleMode):StageScaleMode {
 		if ( scaleMode != __scaleMode ) {
-			#if duell_container
-				onWindowResize(window, window.width, window.height + 25);
-			#else
-				onWindowResize(window, window.width, window.height);
-			#end
+			onWindowResize(window, window.width, window.height);
 		}
 		return __scaleMode = scaleMode;
 	}
