@@ -259,6 +259,8 @@ class Stage3D extends EventDispatcher {
 	
 	private function set_x (value:Float):Float {
 		
+		if (this.x == value) return value;
+		
 		this.x = value;
 		
 		if (context3D != null) {
@@ -273,6 +275,8 @@ class Stage3D extends EventDispatcher {
 	
 	
 	private function set_y (value:Float):Float {
+		
+		if (this.y == value) return value;
 		
 		this.y = value;
 		
