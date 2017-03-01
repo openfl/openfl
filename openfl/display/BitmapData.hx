@@ -487,7 +487,7 @@ class BitmapData implements IBitmapDrawable {
 			var renderSession = new RenderSession ();
 			renderSession.context = cast buffer.__srcContext;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CanvasMaskManager (renderSession);
 			
 			if (!smoothing) {
@@ -563,7 +563,7 @@ class BitmapData implements IBitmapDrawable {
 			var renderSession = new RenderSession ();
 			renderSession.cairo = cairo;
 			renderSession.allowSmoothing = smoothing;
-			renderSession.roundPixels = true;
+			//renderSession.roundPixels = true;
 			renderSession.maskManager = new CairoMaskManager (renderSession);
 			renderSession.blendModeManager = new CairoBlendModeManager (renderSession);
 			
@@ -1412,7 +1412,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private inline function __fromBase64 (base64:String, type:String #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
 		
-		Image.fromBase64 (base64, type, function (image) {
+		Image.loadFromBase64 (base64, type).onComplete (function (image) {
 			
 			__fromImage (image);
 			
@@ -1431,7 +1431,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private inline function __fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null #if (openfl < "5.0.0"), ?onload:BitmapData -> Void #end):Void {
 		
-		Image.fromBytes (bytes, function (image) {
+		Image.loadFromBytes (bytes).onComplete (function (image) {
 			
 			__fromImage (image);
 			
@@ -1456,7 +1456,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __fromFile (path:String #if (openfl < "5.0.0"), onload:BitmapData -> Void, onerror:Void -> Void #end):Void {
 		
-		Image.fromFile (path, function (image) {
+		Image.loadFromFile (path).onComplete (function (image) {
 			
 			__fromImage (image);
 			
@@ -1468,7 +1468,7 @@ class BitmapData implements IBitmapDrawable {
 			}
 			#end
 			
-		} #if (openfl < "5.0.0"), onerror #end);
+		}) #if (openfl < "5.0.0") .onError (function (_) onerror ()) #end;
 		
 	}
 	

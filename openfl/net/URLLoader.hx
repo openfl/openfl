@@ -167,11 +167,13 @@ class URLLoader extends EventDispatcher {
 		if (error == 403) {
 			
 			var event = new SecurityErrorEvent (SecurityErrorEvent.SECURITY_ERROR);
+			event.text = Std.string (error);
 			dispatchEvent (event);
 			
 		} else {
 			
 			var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
+			event.text = Std.string (error);
 			dispatchEvent (event);
 			
 		}

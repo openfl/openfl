@@ -1,3 +1,13 @@
+4.8.1 (02/15/2017)
+------------------
+
+* Implemented sound.loadPCMFromByteArray
+* Improved behavior of sound.loadCompressedDataFromByteArray
+* Fixed version check when running `openfl upgrade`
+* Fixed loading cross-domain images on HTML5 without using CORS
+* Fixed regressions caused by non-rounded Cairo TextField rendering
+
+
 4.8.0 (02/13/2017)
 ------------------
 

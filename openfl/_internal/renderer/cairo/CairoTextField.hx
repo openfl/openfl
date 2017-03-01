@@ -12,6 +12,7 @@ import lime.graphics.cairo.CairoImageSurface;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.filters.GlowFilter;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
@@ -113,7 +114,7 @@ class CairoTextField {
 			
 		}
 		
-		if (renderSession.roundPixels) {
+		if (true || renderSession.roundPixels) {
 			
 			var matrix = graphics.__renderTransform.__toMatrix3 ();
 			matrix.tx = Math.round (matrix.tx);
@@ -244,7 +245,38 @@ class CairoTextField {
 					//
 					//cairo.showGlyphs (glyphs);
 					
-					cairo.showText (text.substring (group.startIndex, group.endIndex));
+					//cairo.showText (text.substring (group.startIndex, group.endIndex));
+					cairo.textPath (text.substring (group.startIndex, group.endIndex));
+					
+					if (textField.__filters != null && textField.__filters.length > 0) {
+						
+						// Hack, force outline
+						
+						if (Std.is (textField.__filters[0], GlowFilter)) {
+							
+							var glowFilter:GlowFilter = cast textField.__filters[0];
+							
+							color = glowFilter.color;
+							r = ((color & 0xFF0000) >>> 16) / 0xFF;
+							g = ((color & 0x00FF00) >>> 8) / 0xFF;
+							b = (color & 0x0000FF) / 0xFF;
+							
+							cairo.setSourceRGBA (r, g, b, glowFilter.alpha);
+							cairo.lineWidth = Math.max (glowFilter.blurX, glowFilter.blurY);
+							cairo.strokePreserve ();
+							
+							color = group.format.color;
+							r = ((color & 0xFF0000) >>> 16) / 0xFF;
+							g = ((color & 0x00FF00) >>> 8) / 0xFF;
+							b = (color & 0x0000FF) / 0xFF;
+							
+							cairo.setSourceRGB (r, g, b);
+							
+						}
+						
+					}
+					
+					cairo.fillPreserve ();
 					
 					if (textField.__caretIndex > -1 && textEngine.selectable) {
 						

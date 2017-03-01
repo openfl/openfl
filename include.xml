@@ -20,13 +20,13 @@
 		<haxelib name="lime" unless="create" />
 		<haxelib name="lime" if="display || rebuild" />
 		
-		<template path="templates" />
-		
 	</section>
+	
+	<template path="templates" />
 	
 	<section if="lime">
 		
-		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 3.7.* is required)" if="${lime < 3.7.0} || ${lime >= 3.8.0}" />
+		<log error="OpenFL ${openfl} is not compatible with Lime ${lime} (version 4.0.* is required)" if="${lime < 4.0.0} || ${lime >= 4.1.0}" unless="setup" />
 		
 	</section>
 	

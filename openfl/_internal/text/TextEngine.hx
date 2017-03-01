@@ -84,12 +84,12 @@ class TextEngine {
 	public var maxScrollV (default, null):Int;
 	public var multiline:Bool;
 	public var numLines (default, null):Int;
-	public var restrict:String;
+	public var restrict (default, set):String;
 	public var scrollH:Int;
 	public var scrollV:Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
-	public var text:String;
+	public var text (default, set):String;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
 	public var textWidth:Float;
@@ -104,6 +104,7 @@ class TextEngine {
 	@:noCompletion private var __isKeyDown:Bool;
 	@:noCompletion private var __measuredHeight:Int;
 	@:noCompletion private var __measuredWidth:Int;
+	@:noCompletion private var __restrictRegexp:EReg;
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
@@ -161,6 +162,37 @@ class TextEngine {
 		__canvas = cast Browser.document.createElement ("canvas");
 		__context = __canvas.getContext ("2d");
 		#end
+		
+	}
+	
+	
+	private function createRestrictRegexp (restrict:String):EReg {
+		
+		var declinedRange = ~/\^(.-.|.)/gu;
+		var declined = '';
+		
+		var accepted = declinedRange.map (restrict, function (ereg) {
+			
+			declined += ereg.matched (1);
+			return '';
+			
+		});
+		
+		var testRegexpParts:Array<String> = [];
+		
+		if (accepted.length > 0) {
+			
+			testRegexpParts.push ('[^$restrict]');
+			
+		}
+		
+		if (declined.length > 0) {
+			
+			testRegexpParts.push ('[$declined]');
+			
+		}
+		
+		return new EReg ('(${testRegexpParts.join('|')})', 'g');
 		
 	}
 	
@@ -317,7 +349,7 @@ class TextEngine {
 						
 					}
 					#elseif (mac || ios || tvos)
-					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf", systemFontDirectory + "/Cache/Arial Black.ttf", systemFontDirectory + "/Cache/Arial.ttf", systemFontDirectory + "/Cache/Helvetica.ttf", systemFontDirectory + "/Core/Arial Black.ttf", systemFontDirectory + "/Core/Arial.ttf", systemFontDirectory + "/Core/Helvetica.ttf", systemFontDirectory + "/CoreAddition/Arial Black.ttf", systemFontDirectory + "/CoreAddition/Arial.ttf", systemFontDirectory + "/CoreAddition/Helvetica.ttf" ];
+					fontList = [ systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf", systemFontDirectory + "/Cache/Arial.ttf", systemFontDirectory + "/Cache/Helvetica.ttf", systemFontDirectory + "/Core/Arial.ttf", systemFontDirectory + "/Core/Helvetica.ttf", systemFontDirectory + "/CoreAddition/Arial.ttf", systemFontDirectory + "/CoreAddition/Helvetica.ttf" ];
 					#elseif linux
 					fontList = [ new sys.io.Process('fc-match', ['sans', '-f%{file}']).stdout.readLine() ];
 					#elseif android
@@ -1249,6 +1281,62 @@ class TextEngine {
 		}
 		
 		getBounds ();
+		
+	}
+	
+	
+	
+	// Get & Set Methods
+	
+	
+	
+	
+	private function set_restrict (value:String):String {
+		
+		if (restrict == value) {
+			
+			return restrict;
+			
+		}
+		
+		restrict = value;
+		
+		if (restrict == null || restrict.length == 0) {
+			
+			__restrictRegexp = null;
+			
+		} else {
+			
+			__restrictRegexp = createRestrictRegexp (value);
+			
+		}
+		
+		return restrict;
+		
+	}
+	
+	
+	private function set_text (value:String):String {
+		
+		if (value == null) {
+			return text = value;
+		}
+		
+		if (__restrictRegexp != null) {
+			
+			value = __restrictRegexp.split (value).join ('');
+			
+		}
+		
+		if (maxChars > 0 && value.length > maxChars) {
+			
+			value = value.substr (0, maxChars);
+			
+		}
+		
+		text = value;
+		
+		return text;
 		
 	}
 	

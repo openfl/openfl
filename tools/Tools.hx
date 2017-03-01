@@ -50,7 +50,9 @@ import sys.FileSystem;
 class Tools {
 	
 	
+	private static var filePrefix:String;
 	private static var targetDirectory:String;
+	private static var targetFlags:Map<String, String>;
 	
 	
 	#if neko
@@ -186,6 +188,7 @@ class Tools {
 		
 		for (className in swf.symbols.keys ()) {
 			
+			if (className == null) continue;
 			var lastIndexOfPeriod = className.lastIndexOf (".");
 			
 			var packageName = "";
@@ -478,70 +481,201 @@ class Tools {
 		}
 		
 		var words = new Array<String> ();
+		targetFlags = new Map();
 		
-		for (arg in arguments) {
+		for (argument in arguments) {
 			
-			if (arg == "-verbose") {
+			if (argument.substr (0, 1) == "-") {
 				
-				LogHelper.verbose = true;
-				
-			} else if (arg.substr (0, 2) == "--") {
-				
-				var equals = arg.indexOf ("=");
-				
-				if (equals > -1) {
+				if (argument.substr (1, 1) == "-") {
 					
-					var field = arg.substr (2, equals - 2);
-					var argValue = arg.substr (equals + 1);
+					var equals = argument.indexOf ("=");
 					
-					switch (field) {
+					if (equals > -1) {
 						
-						case "targetDirectory":
+						var field = argument.substr (2, equals - 2);
+						var argValue = argument.substr (equals + 1);
+						
+						switch (field) {
 							
-							targetDirectory = argValue;
+							case "prefix":
+								
+								filePrefix = argValue;
 							
-						default:
+							case "targetDirectory":
+								
+								targetDirectory = argValue;
+							
+							default:
+							
+						}
 						
 					}
+					
+				} else {
+					
+					if (argument == "-v" || argument == "-verbose") {
+						
+						argument = "-verbose";
+						LogHelper.verbose = true;
+						
+					}
+					
+					targetFlags.set (argument.substr (1), "");
 					
 				}
 				
 			} else {
 				
-				words.push (arg);
+				words.push (argument);
 				
 			}
 			
 		}
 		
-		if (words.length > 2 && words[0] == "process") {
+		if (words[0] == "process") {
 			
-			try {
+			if (words.length == 1) {
 				
-				var inputPath = words[1];
-				var outputPath = words[2];
+				LogHelper.error ("Incorrect number of arguments for command 'process'");
+				return;
 				
-				var projectData = File.getContent (inputPath);
+			}
+			
+			var inputPath = words[1];
+			var outputPath = words.length > 2 ? words[2] : null;
+			
+			if (words.length == 1 || Path.extension (inputPath) == "swf") {
 				
-				var unserializer = new Unserializer (projectData);
-				unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass });
-				var project:HXProject = unserializer.unserialize ();
-				
-				var output = processLibraries (project);
-				
-				if (output != null) {
+				if (words.length > 3) {
 					
-					File.saveContent (outputPath, Serializer.run (output));
+					LogHelper.error ("Incorrect number of arguments for command 'process'");
+					return;
 					
 				}
 				
-			} catch (e:Dynamic) {
+				LogHelper.info ("", LogHelper.accentColor + "Running command: PROCESS" + LogHelper.resetColor);
+				processFile (inputPath, outputPath, filePrefix);
 				
-				LogHelper.error (e);
+			} else if (words.length > 2) {
+				
+				try {
+					
+					var projectData = File.getContent (inputPath);
+					
+					var unserializer = new Unserializer (projectData);
+					unserializer.setResolver (cast { resolveEnum: Type.resolveEnum, resolveClass: resolveClass });
+					var project:HXProject = unserializer.unserialize ();
+					
+					var output = processLibraries (project);
+					
+					if (output != null) {
+						
+						File.saveContent (outputPath, Serializer.run (output));
+						
+					}
+					
+				} catch (e:Dynamic) {
+					
+					LogHelper.error (e);
+					
+				}
 				
 			}
 			
 		}
+		
+	}
+	
+	
+	private static function processFile (sourcePath:String, targetPath:String, prefix:String = null):Bool {
+		
+		var bytes:ByteArray = File.getBytes (sourcePath);
+		var swf = new SWF (bytes);
+		var exporter = new SWFLiteExporter (swf.data);
+		var swfLite = exporter.swfLite;
+		
+		if (prefix != null && prefix != "") {
+			
+			for (symbol in swfLite.symbols) {
+				
+				if (symbol.className != null) {
+					
+					symbol.className = formatClassName (symbol.className, prefix);
+					
+				}
+				
+			}
+			
+		}
+		
+		if (targetPath == null) {
+			
+			targetPath = Path.withoutExtension (sourcePath) + ".bundle";
+			
+		}
+		
+		try {
+			
+			PathHelper.removeDirectory (targetPath);
+			
+		} catch (e:Dynamic) {}
+		
+		PathHelper.mkdir (targetPath);
+		
+		var project = new HXProject ();
+		var createdDirectory = false;
+		
+		for (id in exporter.bitmaps.keys ()) {
+			
+			if (!createdDirectory) {
+				
+				PathHelper.mkdir (PathHelper.combine (targetPath, "symbols"));
+				createdDirectory = true;
+				
+			}
+			
+			var type = exporter.bitmapTypes.get (id) == BitmapType.PNG ? "png" : "jpg";
+			var symbol:BitmapSymbol = cast swfLite.symbols.get (id);
+			symbol.path = "symbols/" + id + "." + type;
+			swfLite.symbols.set (id, symbol);
+			
+			var asset = new Asset ("", symbol.path, AssetType.IMAGE);
+			var assetData = exporter.bitmaps.get (id);
+			project.assets.push (asset);
+			
+			File.saveBytes (PathHelper.combine (targetPath, symbol.path), assetData);
+			
+			if (exporter.bitmapTypes.get (id) == BitmapType.JPEG_ALPHA) {
+				
+				symbol.alpha = "symbols/" + id + "a.png";
+				
+				var asset = new Asset ("", symbol.path, AssetType.IMAGE);
+				var assetData = exporter.bitmapAlpha.get (id);
+				project.assets.push (asset);
+				
+				File.saveBytes (PathHelper.combine (targetPath, symbol.alpha), assetData);
+				
+			}
+			
+		}
+		
+		var swfLiteAsset = new Asset ("", "swflite.dat", AssetType.TEXT);
+		var swfLiteAssetData = swfLite.serialize ();
+		project.assets.push (swfLiteAsset);
+		
+		File.saveContent (PathHelper.combine (targetPath, swfLiteAsset.targetPath), swfLiteAssetData);
+		
+		// TODO: Generate
+		
+		var data = AssetHelper.createManifest (project);
+		data.libraryType = "openfl._internal.swf.SWFLiteLibrary";
+		data.libraryArgs = [ "swflite.dat" ];
+		data.name = Path.withoutDirectory (Path.withoutExtension (sourcePath));
+		
+		File.saveContent (PathHelper.combine (targetPath, "library.json"), data.serialize ());
+		
+		return true;
 		
 	}
 	
@@ -554,6 +688,8 @@ class Tools {
 		//var filterClasses = [];
 		
 		for (library in project.libraries) {
+			
+			if (library.sourcePath == null) continue;
 			
 			var type = library.type;
 			
@@ -577,29 +713,29 @@ class Tools {
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-					swf.embed = false;
+					swf.library = library.name;
 					
-					// if (library.embed != null) {
+					if (library.embed != null) {
 						
-					// 	swf.embed = library.embed;
+						swf.embed = library.embed;
 						
-					// }
+					}
 					
 					output.assets.push (swf);
 					
 					var data = new AssetManifest ();
-					data.assets = [ { id: swf.id, path: swf.resourceName, type: Std.string (AssetType.BINARY) } ];
+					data.assets = [ { id: swf.id, path: swf.id, type: Std.string (AssetType.BINARY) } ];
 					data.libraryType = "openfl._internal.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
 					
-					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
+					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
+					asset.library = library.name;
 					asset.data = data.serialize ();
-					asset.embed = false;
 					
 					if (library.embed != null) {
 						
-						 //asset.embed = library.embed;
+						asset.embed = library.embed;
 						
 					}
 					
@@ -666,11 +802,10 @@ class Tools {
 							if (Path.extension (file) == "png" || Path.extension (file) == "jpg") {
 								
 								var asset = new Asset (cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
-								asset.embed = false;
 								
 								if (library.embed != null) {
 									
-									// asset.embed = library.embed;
+									asset.embed = library.embed;
 									
 								}
 								
@@ -684,7 +819,7 @@ class Tools {
 						
 						if (library.embed != null) {
 							
-							// swfLiteAsset.embed = library.embed;
+							swfLiteAsset.embed = library.embed;
 							
 						}
 						
@@ -757,13 +892,11 @@ class Tools {
 								
 							}
 							
-							asset.embed = false;
-							
-							// if (library.embed != null) {
+							if (library.embed != null) {
 								
-							// 	asset.embed = library.embed;
+								asset.embed = library.embed;
 								
-							// }
+							}
 							
 							merge.assets.push (asset);
 							
@@ -790,11 +923,11 @@ class Tools {
 								
 								asset.embed = false;
 								
-								// if (library.embed != null) {
+								if (library.embed != null) {
 									
-								// 	asset.embed = library.embed;
+									asset.embed = library.embed;
 									
-								// }
+								}
 								
 								merge.assets.push (asset);
 								
@@ -825,7 +958,7 @@ class Tools {
 						
 						if (library.embed != null) {
 							
-							// swfLiteAsset.embed = library.embed;
+							swfLiteAsset.embed = library.embed;
 							
 						}
 						
@@ -858,15 +991,22 @@ class Tools {
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".dat" ];
 					data.name = library.name;
 					
+					for (asset in merge.assets) {
+						
+						asset.library = library.name;
+						
+					}
+					
 					output.merge (merge);
 					
-					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.TEXT);
+					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
+					asset.library = library.name;
 					asset.data = data.serialize ();
 					
 					if (library.embed != null) {
 						
-						// asset.embed = library.embed;
+						asset.embed = library.embed;
 						
 					}
 					

@@ -36,6 +36,8 @@ class GLStage3D {
 			
 		}
 		
+		renderSession.gl.getError ();
+		
 	}
 	
 	

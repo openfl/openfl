@@ -675,15 +675,37 @@ class RegisterMap {
 		
 		mEntries.sort (function (a:RegisterMapEntry, b:RegisterMapEntry):Int {
 			
-			if (a.type != b.type) {
+			return a.number - b.number;
+			
+		});
+		
+		var arrayCount = new Map<RegisterMapEntry, Int> ();
+		var entry:RegisterMapEntry;
+		
+		for (i in 0...mEntries.length) {
+			
+			entry = mEntries[i];
+			
+			if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
 				
-				return cast (a.type, Int) - cast (b.type, Int);
-				
-			} else {
-				
-				return a.number - b.number;
+				// find how many registers based on the next entry.
+				if (i < mEntries.length - 1) {
+					
+					arrayCount[entry] = mEntries[i + 1].number - entry.number;
+					
+				} else {
+					
+					arrayCount[entry] = 128;
+					
+				}
 				
 			}
+			
+		}
+		
+		mEntries.sort (function (a:RegisterMapEntry, b:RegisterMapEntry):Int {
+			
+			return cast (a.type, Int) - cast (b.type, Int);
 			
 		});
 		
@@ -691,7 +713,7 @@ class RegisterMap {
 		
 		for (i in 0...mEntries.length) {
 			
-			var entry = mEntries [i];
+			entry = mEntries [i];
 			
 			// only emit temporary registers based on Boolean passed in
 			// this is so temp registers can be grouped in the main() block
@@ -785,16 +807,7 @@ class RegisterMap {
 				
 			} else if (entry.usage == RegisterUsage.VECTOR_4_ARRAY) {
 				
-				var count = 128;
-				
-				// find how many registers based on the next entry.
-				if (i < mEntries.length - 1) {
-					
-					count = mEntries [i + 1].number - entry.number;
-					
-				}
-				
-				sb.add (entry.name + "[" + count + "]"); // this is an array of "count" elements.
+				sb.add (entry.name + "[" + arrayCount[entry] + "]"); // this is an array of "count" elements.
 				sb.add (";\n");
 				
 			} else {

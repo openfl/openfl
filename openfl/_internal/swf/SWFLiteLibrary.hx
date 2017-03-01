@@ -16,7 +16,10 @@ import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
 import openfl.events.Event;
+import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
+import openfl.net.URLLoader;
+import openfl.net.URLRequest;
 import openfl.text.Font;
 import openfl.utils.ByteArray;
 import openfl.Assets;
@@ -135,18 +138,10 @@ import openfl.Assets;
 			
 		}
 		
-		#if (js && html5)
-		for (id in paths.keys ()) {
-			
-			preload.set (id, true);
-			
-		}
-		#end
-		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
 		preloading = true;
 		
-		loadText (id).onError (promise.error).onComplete (function (data) {
+		var onComplete = function (data) {
 			
 			swf = SWFLite.unserialize (data);
 			swf.library = this;
@@ -160,7 +155,36 @@ import openfl.Assets;
 				
 			});
 			
-		});
+		}
+		
+		if (Assets.exists (id)) {
+			
+			#if (js && html5)
+			for (id in paths.keys ()) {
+				
+				preload.set (id, true);
+				
+			}
+			#end
+			
+			loadText (id).onError (promise.error).onComplete (onComplete);
+			
+		} else {
+			
+			for (id in paths.keys ()) {
+				
+				preload.set (id, true);
+				
+			}
+			
+			var path = (rootPath != null && rootPath != "") ? rootPath + "/" + id : id;
+			
+			var loader = new URLLoader ();
+			loader.addEventListener (Event.COMPLETE, function (_) onComplete (loader.data));
+			loader.addEventListener (IOErrorEvent.IO_ERROR, function (e) promise.error (e));
+			loader.load (new URLRequest (path));
+			
+		}
 		
 		return promise.future;
 		
@@ -244,6 +268,14 @@ import openfl.Assets;
 		#if !sys
 		image.premultiplied = false;
 		#end
+		
+	}
+	
+	
+	private override function __fromManifest (manifest:AssetManifest):Void {
+		
+		rootPath = manifest.rootPath;
+		super.__fromManifest (manifest);
 		
 	}
 	

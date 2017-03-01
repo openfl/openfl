@@ -650,24 +650,6 @@ import openfl.profiler.Telemetry;
 		var width = 0;
 		var height = 0;
 		
-		if (Std.is (texture, Texture)) {
-			
-			var texture2D:Texture = cast texture;
-			width = texture2D.__width;
-			height = texture2D.__height;
-			
-		} else if (Std.is (texture, RectangleTexture)) {
-			
-			var rectTexture:RectangleTexture = cast texture;
-			width = rectTexture.__width;
-			height = rectTexture.__height;
-			
-		} else {
-			
-			throw new Error ("Invalid texture");
-			
-		}
-		
 		if (__framebuffer == null) {
 			
 			__framebuffer = GL.createFramebuffer ();
@@ -677,8 +659,43 @@ import openfl.profiler.Telemetry;
 		
 		GL.bindFramebuffer (GL.FRAMEBUFFER, __framebuffer);
 		GLUtils.CheckGLError ();
-		GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
-		GLUtils.CheckGLError ();
+		
+		if (Std.is (texture, Texture)) {
+			
+			var texture2D:Texture = cast texture;
+			width = texture2D.__width;
+			height = texture2D.__height;
+			
+			GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
+			GLUtils.CheckGLError ();
+			
+		} else if (Std.is (texture, RectangleTexture)) {
+			
+			var rectTexture:RectangleTexture = cast texture;
+			width = rectTexture.__width;
+			height = rectTexture.__height;
+			
+			GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, texture.__textureID, 0);
+			GLUtils.CheckGLError ();
+			
+		} else if (Std.is (texture, CubeTexture)) {
+			
+			var cubeTexture:CubeTexture = cast texture;
+			width = cubeTexture.__size;
+			height = cubeTexture.__size;
+			
+			for (i in 0...6) {
+				
+				GL.framebufferTexture2D (GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_CUBE_MAP_POSITIVE_X + i, texture.__textureID, 0);
+				GLUtils.CheckGLError ();
+				
+			}
+			
+		} else {
+			
+			throw new Error ("Invalid texture");
+			
+		}
 		
 		if (enableDepthAndStencil) {
 			
@@ -1297,7 +1314,7 @@ import openfl.profiler.Telemetry;
 	
 	private function __updateBackbufferViewport ():Void {
 		
-		if (__renderToTexture == null) {
+		if (__renderToTexture == null && backBufferWidth > 0 && backBufferHeight > 0) {
 			
 			__setViewport (Std.int (__stage3D.x), Std.int (__stage3D.y), backBufferWidth, backBufferHeight);
 			

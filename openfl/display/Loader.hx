@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.io.Path;
 import lime.utils.AssetLibrary in LimeAssetLibrary;
 import lime.utils.AssetManifest;
 import openfl._internal.swf.SWFLiteLibrary;
@@ -10,6 +11,7 @@ import openfl.events.ProgressEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
+import openfl.net.URLRequestMethod;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 import openfl.Assets;
@@ -28,6 +30,8 @@ class Loader extends DisplayObjectContainer {
 	
 	public var content (default, null):DisplayObject;
 	public var contentLoaderInfo (default, null):LoaderInfo;
+	
+	private var __path:String;
 	
 	
 	public function new () {
@@ -48,25 +52,46 @@ class Loader extends DisplayObjectContainer {
 	
 	public function load (request:URLRequest, context:LoaderContext = null):Void {
 		
-		var loader = new URLLoader ();
 		contentLoaderInfo.url = request.url;
 		
 		if (request.contentType == null || request.contentType == "") {
 			
 			var extension = "";
-			var path = request.url;
+			__path = request.url;
 			
-			var queryIndex = path.indexOf ('?');
+			var queryIndex = __path.indexOf ('?');
 			if (queryIndex > -1) {
 				
-				path = path.substring (0, queryIndex);
+				__path = __path.substring (0, queryIndex);
 				
 			}
 			
-			var extIndex = path.lastIndexOf('.');
+			while (StringTools.endsWith (__path, "/")) {
+				
+				__path = __path.substring (0, __path.length - 1);
+				
+			}
+			
+			if (StringTools.endsWith (__path, ".bundle")) {
+				
+				__path += "/library.json";
+				
+				if (queryIndex > -1) {
+					
+					request.url = __path + request.url.substring (queryIndex);
+					
+				} else {
+					
+					request.url = __path;
+					
+				}
+				
+			}
+			
+			var extIndex = __path.lastIndexOf ('.');
 			if (extIndex > -1) {
 				
-				extension = path.substring(extIndex + 1);
+				extension = __path.substring (extIndex + 1);
 				
 			}
 			
@@ -88,6 +113,16 @@ class Loader extends DisplayObjectContainer {
 			
 		}
 		
+		#if (js && html5)
+		if (contentLoaderInfo.contentType.indexOf ("image/") > -1 && request.method == URLRequestMethod.GET && (request.requestHeaders == null || request.requestHeaders.length == 0) && request.userAgent == null) {
+			
+			BitmapData.loadFromFile (request.url).onComplete (BitmapData_onLoad).onError (BitmapData_onError).onProgress (BitmapData_onProgress);
+			return;
+			
+		}
+		#end
+		
+		var loader = new URLLoader ();
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 		
 		if (contentLoaderInfo.contentType.indexOf ("/json") > -1 || contentLoaderInfo.contentType.indexOf ("/javascript") > -1 || contentLoaderInfo.contentType.indexOf ("/ecmascript") > -1) {
@@ -170,7 +205,7 @@ class Loader extends DisplayObjectContainer {
 		
 		var event = new IOErrorEvent (IOErrorEvent.IO_ERROR);
 		event.text = text;
-		dispatchEvent (event);
+		contentLoaderInfo.dispatchEvent (event);
 		
 	}
 	
@@ -200,13 +235,23 @@ class Loader extends DisplayObjectContainer {
 	}
 	
 	
+	private function BitmapData_onProgress (bytesLoaded:Int, bytesTotal:Int):Void {
+		
+		var event = new ProgressEvent (ProgressEvent.PROGRESS);
+		event.bytesLoaded = bytesLoaded;
+		event.bytesTotal = bytesTotal;
+		contentLoaderInfo.dispatchEvent (event);
+		
+	}
+	
+	
 	private function loader_onComplete (event:Event):Void {
 		
 		var loader:URLLoader = cast event.target;
 		
 		if (contentLoaderInfo.contentType.indexOf ("/json") > -1) {
 			
-			var manifest = AssetManifest.parse (loader.data);
+			var manifest = AssetManifest.parse (loader.data, Path.directory (__path));
 			
 			if (manifest == null) {
 				
@@ -226,10 +271,18 @@ class Loader extends DisplayObjectContainer {
 			
 			if (Std.is (library, AssetLibrary)) {
 				
-				contentLoaderInfo.content = cast (library, AssetLibrary).getMovieClip ("");
-				addChild (contentLoaderInfo.content);
-				
-				contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+				library.load ().onComplete (function (_) {
+					
+					contentLoaderInfo.content = cast (library, AssetLibrary).getMovieClip ("");
+					addChild (contentLoaderInfo.content);
+					
+					contentLoaderInfo.dispatchEvent (new Event (Event.COMPLETE));
+					
+				}).onError (function (e) {
+					
+					__dispatchError (e);
+					
+				});
 				
 			}
 			
