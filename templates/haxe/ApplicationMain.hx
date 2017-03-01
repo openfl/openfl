@@ -197,9 +197,9 @@ import haxe.macro.Expr;
 					
 					return macro {
 						
-						var current:openfl.display.DisplayObjectContainer = cast stage.getChildAt (0);
+						var current = stage.getChildAt (0);
 						
-						if (current == null) {
+						if (current == null || !Std.is (current, openfl.display.DisplayObjectContainer)) {
 							
 							current = new openfl.display.MovieClip ();
 							stage.addChild (current);
