@@ -30,6 +30,7 @@ class Video extends DisplayObject {
 	private var __active:Bool;
 	private var __buffer:GLBuffer;
 	private var __bufferAlpha:Float;
+	private var __bufferContext:GLRenderContext;
 	private var __bufferData:Float32Array;
 	private var __dirty:Bool;
 	private var __height:Float;
@@ -88,7 +89,7 @@ class Video extends DisplayObject {
 		
 		if (width == 0 || height == 0) return null;
 		
-		if (__buffer == null) {
+		if (__buffer == null || __bufferContext != gl) {
 			
 			#if openfl_power_of_two
 			
@@ -127,6 +128,7 @@ class Video extends DisplayObject {
 			]);
 			
 			__bufferAlpha = alpha;
+			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);

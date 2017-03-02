@@ -606,14 +606,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 	
 	public function onRenderContextLost (renderer:Renderer):Void {
 		
-		
+		__renderer = null;
 		
 	}
 	
 	
 	public function onRenderContextRestored (renderer:Renderer, context:RenderContext):Void {
 		
-		
+		__createRenderer ();
 		
 	}
 	
@@ -768,39 +768,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			
 			if (window.renderer != null) {
 				
-				switch (window.renderer.context) {
-					
-					case OPENGL (gl):
-						
-						#if (!disable_cffi && (!html5 || !canvas))
-						__renderer = new GLRenderer (this, gl);
-						#end
-					
-					case CANVAS (context):
-						
-						__renderer = new CanvasRenderer (this, context);
-					
-					case DOM (element):
-						
-						#if dom
-						__renderer = new DOMRenderer (this, element);
-						#end
-					
-					case CAIRO (cairo):
-						
-						#if lime_cairo
-						__renderer = new CairoRenderer (this, cairo);
-						#end
-					
-					case CONSOLE (ctx):
-						
-						#if lime_console
-						__renderer = new ConsoleRenderer (this, ctx);
-						#end
-					
-					default:
-					
-				}
+				__createRenderer ();
 				
 			}
 			
@@ -1100,6 +1068,45 @@ class Stage extends DisplayObjectContainer implements IModule {
 				dispatcher.__dispatch (event);
 				
 			}
+			
+		}
+		
+	}
+	
+	
+	private function __createRenderer ():Void {
+		
+		switch (window.renderer.context) {
+			
+			case OPENGL (gl):
+				
+				#if (!disable_cffi && (!html5 || !canvas))
+				__renderer = new GLRenderer (this, gl);
+				#end
+			
+			case CANVAS (context):
+				
+				__renderer = new CanvasRenderer (this, context);
+			
+			case DOM (element):
+				
+				#if dom
+				__renderer = new DOMRenderer (this, element);
+				#end
+			
+			case CAIRO (cairo):
+				
+				#if lime_cairo
+				__renderer = new CairoRenderer (this, cairo);
+				#end
+			
+			case CONSOLE (ctx):
+				
+				#if lime_console
+				__renderer = new ConsoleRenderer (this, ctx);
+				#end
+			
+			default:
 			
 		}
 		

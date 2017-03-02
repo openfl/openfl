@@ -91,12 +91,15 @@ class BitmapData implements IBitmapDrawable {
 	
 	private var __blendMode:BlendMode;
 	private var __buffer:GLBuffer;
+	private var __bufferContext:GLRenderContext;
 	private var __bufferAlpha:Float;
 	private var __bufferData:Float32Array;
 	private var __framebuffer:GLFramebuffer;
+	private var __framebufferContext:GLRenderContext;
 	private var __isValid:Bool;
 	private var __surface:CairoSurface;
 	private var __texture:GLTexture;
+	private var __textureContext:GLRenderContext;
 	private var __textureVersion:Int;
 	private var __transform:Matrix;
 	private var __worldColorTransform:ColorTransform;
@@ -769,7 +772,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function getBuffer (gl:GLRenderContext, alpha:Float):GLBuffer {
 		
-		if (__buffer == null) {
+		if (__buffer == null || __bufferContext != gl) {
 			
 			#if openfl_power_of_two
 			
@@ -808,6 +811,7 @@ class BitmapData implements IBitmapDrawable {
 			]);
 			
 			__bufferAlpha = alpha;
+			__bufferContext = gl;
 			__buffer = gl.createBuffer ();
 			
 			gl.bindBuffer (gl.ARRAY_BUFFER, __buffer);
@@ -880,6 +884,7 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (__surface == null) {
 			
+			
 			__surface = CairoImageSurface.fromImage (image);
 			
 		}
@@ -893,8 +898,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		if (!__isValid) return null;
 		
-		if (__texture == null) {
+		if (__texture == null || __textureContext != gl) {
 			
+			__textureContext = gl;
 			__texture = gl.createTexture ();
 			gl.bindTexture (gl.TEXTURE_2D, __texture);
 			gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -1498,10 +1504,11 @@ class BitmapData implements IBitmapDrawable {
 	
 	private function __getFramebuffer (gl:GLRenderContext):GLFramebuffer {
 		
-		if (__framebuffer == null) {
+		if (__framebuffer == null || __framebufferContext != gl) {
 			
 			getTexture (gl);
 			
+			__framebufferContext = gl;
 			__framebuffer = gl.createFramebuffer ();
 			
 			gl.bindFramebuffer (gl.FRAMEBUFFER, __framebuffer);

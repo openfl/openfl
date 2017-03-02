@@ -111,8 +111,9 @@ class GLTilemap {
 			
 		}
 		
-		if (tilemap.__buffer == null) {
+		if (tilemap.__buffer == null || tilemap.__bufferContext != gl) {
 			
+			tilemap.__bufferContext = gl;
 			tilemap.__buffer = gl.createBuffer ();
 			
 		}

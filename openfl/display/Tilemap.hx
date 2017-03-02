@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import lime.graphics.GLRenderContext;
 import lime.graphics.opengl.GLBuffer;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.flash.FlashRenderer;
@@ -35,6 +36,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 	
 	private var __buffer:GLBuffer;
+	private var __bufferContext:GLRenderContext;
 	private var __bufferData:Float32Array;
 	private var __cacheAlpha:Float;
 	private var __dirty:Bool;
