@@ -540,6 +540,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 							if (interactive) {
 
+								if ( !hitTest ) {
+									return true;
+								}
 								break;
 
 							}
