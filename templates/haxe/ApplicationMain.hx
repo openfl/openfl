@@ -206,7 +206,7 @@ import haxe.macro.Expr;
 							
 						}
 						
-						new DocumentClass (current);
+						new DocumentClass (cast current);
 						
 					};
 					
