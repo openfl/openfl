@@ -72,7 +72,7 @@ class VertexBuffer3D {
 		GL.bindBuffer (GL.ARRAY_BUFFER, __id);
 		GLUtils.CheckGLError ();
 		
-		GL.bufferData (GL.ARRAY_BUFFER, data, __usage);
+		GL.bufferData (GL.ARRAY_BUFFER, data.byteLength, data, __usage);
 		GLUtils.CheckGLError ();
 		
 		if (data.byteLength != __memoryUsage) {
