@@ -80,7 +80,9 @@ import openfl._internal.renderer.cairo.CairoMaskManager;
 class BitmapData implements IBitmapDrawable {
 	
 	
-	private static var __isGLES:Null<Bool> = null;
+	private static var __supportsBGRA:Null<Bool> = null;
+	private static var __textureFormat:Int;
+	private static var __textureInternalFormat:Int;
 	
 	public var height (default, null):Int;
 	public var image (default, null):Image;
@@ -932,29 +934,41 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else {
 				
-				#if !sys
-				
-				internalFormat = gl.RGBA;
-				format = gl.RGBA;
-				
-				#elseif (ios || tvos)
-				
-				internalFormat = gl.RGBA;
-				format = gl.BGRA_EXT;
-				
-				#else
-				
-				if (__isGLES == null) {
+				if (__supportsBGRA == null) {
 					
-					var version:String = gl.getParameter (gl.VERSION);
-					__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+					__textureInternalFormat = gl.RGBA;
+					
+					var bgraExtension = null;
+					#if (!js || !html5)
+					bgraExtension = gl.getExtension ("EXT_texture_format_BGRA8888");
+					if (bgraExtension == null)
+						bgraExtension = gl.getExtension ("APPLE_texture_format_BGRA8888");
+					#end
+					
+					if (bgraExtension != null) {
+						
+						__supportsBGRA = true;
+						__textureFormat = bgraExtension.BGRA_EXT;
+						
+						#if (!ios && !tvos)
+						if (gl.type == GLES) {
+							
+							__textureInternalFormat = bgraExtension.BGRA_EXT;
+							
+						}
+						#end
+						
+					} else {
+						
+						__supportsBGRA = false;
+						__textureFormat = gl.RGBA;
+						
+					}
 					
 				}
 				
-				internalFormat = (__isGLES ? gl.BGRA_EXT : gl.RGBA);
-				format = gl.BGRA_EXT;
-				
-				#end
+				internalFormat = __textureInternalFormat;
+				format = __textureFormat;
 				
 			}
 			
@@ -979,7 +993,7 @@ class BitmapData implements IBitmapDrawable {
 			
 			// TODO: Some way to support BGRA on WebGL?
 			
-			if (textureImage.format != RGBA32) {
+			if (!__supportsBGRA && textureImage.format != RGBA32) {
 				
 				textureImage = textureImage.clone ();
 				textureImage.format = RGBA32;

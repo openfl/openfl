@@ -1,8 +1,6 @@
 package openfl.display3D;
 
 
-import lime.graphics.opengl.ExtensionPackedDepthStencil;
-import lime.graphics.opengl.ExtensionAnisotropicFiltering;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
@@ -50,6 +48,9 @@ import openfl.profiler.Telemetry;
 	private static inline var MAX_SAMPLERS = 8;
 	private static inline var MAX_ATTRIBUTES = 16;
 	private static inline var MAX_PROGRAM_REGISTERS = 128;
+	
+	private static var TEXTURE_MAX_ANISOTROPY_EXT:Int = 0;
+	private static var DEPTH_STENCIL:Int = 0;
 	
 	private static var __stateCache:Context3DStateCache = new Context3DStateCache ();
 	
@@ -137,23 +138,44 @@ import openfl.profiler.Telemetry;
 		__stencilRef = 0;
 		__stencilReadMask = 0xFF;
 		
+		var anisoExtension:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
+		
 		#if (js && html5)
+		
+		if (anisoExtension == null || !Reflect.hasField (anisoExtension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT"))
+			anisoExtension = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
+		if (anisoExtension == null || !Reflect.hasField (anisoExtension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT"))
+			anisoExtension = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
+		
 		__supportsPackedDepthStencil = true;
-		var anisotropicExt:Dynamic = GL.getExtension ("EXT_texture_filter_anisotropic");
-		if (anisotropicExt == null || Reflect.field( anisotropicExt, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) anisotropicExt = GL.getExtension ("MOZ_EXT_texture_filter_anisotropic");
-		if (anisotropicExt == null || Reflect.field( anisotropicExt, "MAX_TEXTURE_MAX_ANISOTROPY_EXT" ) == null) anisotropicExt = GL.getExtension ("WEBKIT_EXT_texture_filter_anisotropic");
-		__supportsAnisotropicFiltering = (anisotropicExt != null);
-		if (__supportsAnisotropicFiltering) {
-			__maxAnisotropyTexture2D = __maxAnisotropyCubeTexture = GL.getParameter (ExtensionAnisotropicFiltering.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-		}
+		DEPTH_STENCIL = GL.DEPTH_STENCIL;
+		
 		#else
-		__supportsPackedDepthStencil = __hasGLExtension ("GL_OES_packed_depth_stencil") || __hasGLExtension ("GL_EXT_packed_depth_stencil");
-		__supportsAnisotropicFiltering = __hasGLExtension ("GL_EXT_texture_filter_anisotropic");
-		if (__supportsAnisotropicFiltering) {
-			__maxAnisotropyTexture2D = GL.getTexParameter (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT) != 0 ? 16 : 1;
-			__maxAnisotropyCubeTexture = GL.getTexParameter (GL.TEXTURE_2D, ExtensionAnisotropicFiltering.TEXTURE_MAX_ANISOTROPY_EXT) != 0 ? 16 : 1;
+		
+		var stencilExtension = GL.getExtension ("OES_packed_depth_stencil");
+		if (stencilExtension == null)
+			stencilExtension = GL.getExtension ("EXT_packed_depth_stencil");
+		
+		if (stencilExtension != null) {
+			
+			__supportsPackedDepthStencil = true;
+			DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_EXT;
+			
 		}
+		
 		#end
+		
+		__supportsAnisotropicFiltering = (anisoExtension != null);
+		
+		if (__supportsAnisotropicFiltering) {
+			
+			TEXTURE_MAX_ANISOTROPY_EXT = anisoExtension.TEXTURE_MAX_ANISOTROPY_EXT;
+			
+			var maxAnisotropy:Int = GL.getParameter (anisoExtension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+			__maxAnisotropyTexture2D = maxAnisotropy;
+			__maxAnisotropyTexture2D = maxAnisotropy;
+			
+		}
 		
 		__stats = new Vector<Int> (Context3DTelemetry.length);
 		__statsCache = new Vector<Int> (Context3DTelemetry.length);
@@ -710,7 +732,7 @@ import openfl.profiler.Telemetry;
 				
 				GL.bindRenderbuffer (GL.RENDERBUFFER, __depthStencilRenderBuffer);
 				GLUtils.CheckGLError ();
-				GL.renderbufferStorage (GL.RENDERBUFFER, #if (js && html5) GL.DEPTH_STENCIL #else ExtensionPackedDepthStencil.DEPTH24_STENCIL8_EXT #end, width, height);
+				GL.renderbufferStorage (GL.RENDERBUFFER, DEPTH_STENCIL, width, height);
 				GLUtils.CheckGLError ();
 				
 				GL.framebufferRenderbuffer (GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, __depthStencilRenderBuffer);

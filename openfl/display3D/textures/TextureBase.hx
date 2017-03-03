@@ -20,7 +20,9 @@ import openfl.utils.ByteArray;
 class TextureBase extends EventDispatcher {
 	
 	
-	private static var __isGLES:Null<Bool>;
+	private static var __supportsBGRA:Null<Bool> = null;
+	private static var __textureFormat:Int;
+	private static var __textureInternalFormat:Int;
 	
 	private var __alphaTexture:Texture;
 	private var __compressedMemoryUsage:Int;
@@ -47,38 +49,41 @@ class TextureBase extends EventDispatcher {
 		
 		__textureID = GL.createTexture ();
 		
-		#if !sys
-		
-		__internalFormat = GL.RGBA;
-		__format = GL.RGBA;
-		
-		#elseif (ios || tvos)
-		
-		__internalFormat = GL.RGBA;
-		__format = GL.BGRA_EXT;
-		
-		#else
-		
-		if (__isGLES == null) {
+		if (__supportsBGRA == null) {
 			
-			var version:String = GL.getParameter (GL.VERSION);
+			__textureInternalFormat = GL.RGBA;
 			
-			if (version == null) {
+			var bgraExtension = null;
+			#if (!js || !html5)
+			bgraExtension = GL.getExtension ("EXT_texture_format_BGRA8888");
+			if (bgraExtension == null)
+				bgraExtension = GL.getExtension ("APPLE_texture_format_BGRA8888");
+			#end
+			
+			if (bgraExtension != null) {
 				
-				__isGLES = false;
+				__supportsBGRA = true;
+				__textureFormat = bgraExtension.BGRA_EXT;
+				
+				#if (!ios && !tvos)
+				if (GL.type == GLES) {
+					
+					__textureInternalFormat = bgraExtension.BGRA_EXT;
+					
+				}
+				#end
 				
 			} else {
 				
-				__isGLES = (version.indexOf ("OpenGL ES") > -1 && version.indexOf ("WebGL") == -1);
+				__supportsBGRA = false;
+				__textureFormat = GL.RGBA;
 				
 			}
 			
 		}
 		
-		__internalFormat = (__isGLES ? GL.BGRA_EXT : GL.RGBA);
-		__format = GL.BGRA_EXT;
-		
-		#end
+		__internalFormat = __textureInternalFormat;
+		__format = __textureFormat;
 		
 		__memoryUsage = 0;
 		__compressedMemoryUsage = 0;
