@@ -223,7 +223,7 @@ class GLTilemap {
 			
 		}
 		
-		gl.bufferData (gl.ARRAY_BUFFER, bufferData, gl.DYNAMIC_DRAW);
+		gl.bufferData (gl.ARRAY_BUFFER, bufferData.byteLength, bufferData, gl.DYNAMIC_DRAW);
 		
 		gl.vertexAttribPointer (shader.data.aPosition.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
 		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
