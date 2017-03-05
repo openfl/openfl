@@ -566,8 +566,16 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	private function socket_onMessage (msg:Dynamic):Void {
 		
 		#if (js && html5)
-		var newData:ByteArray = (msg.data:ArrayBuffer);
-		newData.readBytes (__inputBuffer, __inputBuffer.length);
+		if (Std.is (msg.data, String)) {
+			
+			__inputBuffer.writeUTF (msg.data);
+			
+		} else {
+			
+			var newData:ByteArray = (msg.data:ArrayBuffer);
+			newData.readBytes (__inputBuffer, __inputBuffer.length);
+			
+		}
 		#end
 		
 	}
