@@ -924,11 +924,11 @@ class TextField extends InteractiveObject {
 
 	private function set_antiAliasType (value:AntiAliasType):AntiAliasType {
 
-		if (value != __textEngine.antiAliasType) {
+		/*if (value != __textEngine.antiAliasType) {
 
-			//__dirty = true;
+			__dirty = true;
 
-		}
+		}*/
 
 		return __textEngine.antiAliasType = value;
 
@@ -1661,9 +1661,6 @@ class TextField extends InteractiveObject {
 
 			__getWorldTransform ();
 			__updateLayout ();
-
-			var px = __worldTransform.__transformInverseX (x, y);
-			var py = __worldTransform.__transformInverseY (x, y);
 
 			var upPos:Int = __getPosition (mouseX, mouseY);
 			var leftPos:Int;

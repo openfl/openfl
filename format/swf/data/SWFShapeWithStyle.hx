@@ -9,16 +9,15 @@ class SWFShapeWithStyle extends SWFShape
 {
 	public var initialFillStyles:Array<SWFFillStyle>;
 	public var initialLineStyles:Array<SWFLineStyle>;
-	
+
 	public function new(data:SWFData = null, level:Int = 1, unitDivisor:Float = 20) {
 		initialFillStyles = new Array<SWFFillStyle>();
 		initialLineStyles = new Array<SWFLineStyle>();
 		super(data, level, unitDivisor);
 	}
-	
+
 	override public function parse(data:SWFData, level:Int = 1):Void {
 		data.resetBitsPending();
-		var i:Int;
 		var fillStylesLen:Int = readStyleArrayLength(data, level);
 		for (i in 0...fillStylesLen) {
 			initialFillStyles.push(data.readFILLSTYLE(level));
@@ -32,10 +31,9 @@ class SWFShapeWithStyle extends SWFShape
 		var numLineBits:Int = data.readUB(4);
 		readShapeRecords(data, numFillBits, numLineBits, level);
 	}
-	
+
 	override public function publish(data:SWFData, level:Int = 1):Void {
 		data.resetBitsPending();
-		var i:Int;
 		var fillStylesLen:Int = initialFillStyles.length;
 		writeStyleArrayLength(data, fillStylesLen, level);
 		for (i in 0...fillStylesLen) {
@@ -53,7 +51,7 @@ class SWFShapeWithStyle extends SWFShape
 		data.writeUB(4, lineBits);
 		writeShapeRecords(data, fillBits, lineBits, level);
 	}
-	
+
 	override public function export(handler:IShapeExporter = null):Void {
 		fillStyles = initialFillStyles.copy();
 		lineStyles = initialLineStyles.copy();
@@ -61,7 +59,6 @@ class SWFShapeWithStyle extends SWFShape
 	}
 
 	override public function toString(indent:Int = 0):String {
-		var i:Int;
 		var str:String = "";
 		if (initialFillStyles.length > 0) {
 			str += "\n" + StringUtils.repeat(indent) + "FillStyles:";
@@ -77,7 +74,7 @@ class SWFShapeWithStyle extends SWFShape
 		}
 		return str + super.toString(indent);
 	}
-	
+
 	private function readStyleArrayLength(data:SWFData, level:Int = 1):Int {
 		var len:Int = data.readUI8();
 		if (level >= 2 && len == 0xff) {
@@ -85,7 +82,7 @@ class SWFShapeWithStyle extends SWFShape
 		}
 		return len;
 	}
-	
+
 	private function writeStyleArrayLength(data:SWFData, length:Int, level:Int = 1):Void {
 		if (level >= 2 && length > 0xfe) {
 			data.writeUI8(0xff);

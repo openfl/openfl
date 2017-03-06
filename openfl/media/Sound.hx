@@ -224,20 +224,22 @@ class Sound extends EventDispatcher {
 
 	private function get_length ():Int {
 
-		if (__buffer != null) {
+		#if flash || !html5
+			if (__buffer != null) {
 
-			#if flash
+				#if flash
 
-			return Std.int (__buffer.src.length);
+				return Std.int (__buffer.src.length);
 
-			#elseif !html5
+				#elseif !html5
 
-			var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
-			return Std.int (samples / __buffer.sampleRate * 1000);
+				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+				return Std.int (samples / __buffer.sampleRate * 1000);
 
-			#end
+				#end
 
-		}
+			}
+		#end
 
 		return 0;
 

@@ -28,7 +28,6 @@ class MorphShapeSymbol extends SWFSymbol {
 	}
 
 	public function getShape(ratio:Float):SWFShape {
-		var i:Int;
 		var j:Int = 0;
 		var exportShape:SWFShape = new SWFShape();
 

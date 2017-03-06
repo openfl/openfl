@@ -8,21 +8,21 @@ import format.swf.utils.StringUtils;
 class TagDefineButton2 implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 34;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-	
+
 	public var trackAsMenu:Bool;
-	
+
 	public var characterId:Int;
 
 	public var characters (default, null):Array<SWFButtonRecord>;
 	public var condActions (default, null):Array<SWFButtonCondAction>;
-	
+
 	private var frames:Map<String, Array<SWFButtonRecord>>;
-	
+
 	public function new() {
 		type = TYPE;
 		name = "DefineButton2";
@@ -32,7 +32,7 @@ class TagDefineButton2 implements IDefinitionTag
 		condActions = new Array<SWFButtonCondAction>();
 		frames = new Map<String, Array<SWFButtonRecord>>();
 	}
-	
+
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
 		characterId = data.readUI16();
 		trackAsMenu = ((data.readUI8() & 0x01) != 0);
@@ -50,13 +50,12 @@ class TagDefineButton2 implements IDefinitionTag
 		}
 		processRecords();
 	}
-	
+
 	public function publish(data:SWFData, version:Int):Void {
-		var i:Int;
 		var body:SWFData = new SWFData();
 		body.writeUI16(characterId);
 		body.writeUI8(trackAsMenu ? 0x01 : 0);
-		var hasCondActions:Bool = (condActions.length > 0); 
+		var hasCondActions:Bool = (condActions.length > 0);
 		var buttonRecordsBytes:SWFData = new SWFData();
 		for(i in 0...characters.length) {
 			buttonRecordsBytes.writeBUTTONRECORD(characters[i], 2);
@@ -75,9 +74,8 @@ class TagDefineButton2 implements IDefinitionTag
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
+
 	public function clone():IDefinitionTag {
-		var i:Int;
 		var tag:TagDefineButton2 = new TagDefineButton2();
 		tag.characterId = characterId;
 		tag.trackAsMenu = trackAsMenu;
@@ -89,7 +87,7 @@ class TagDefineButton2 implements IDefinitionTag
 		}
 		return tag;
 	}
-	
+
 	public function getRecordsByState(state:String):Array<SWFButtonRecord> {
 		return frames.get (state);
 	}
@@ -115,7 +113,7 @@ class TagDefineButton2 implements IDefinitionTag
 		frames.set (TagDefineButton.STATE_DOWN, downState);
 		frames.set (TagDefineButton.STATE_HIT, hitState);
 	}
-	
+
 	private function sortByDepthCompareFunction(a:SWFButtonRecord, b:SWFButtonRecord):Int {
 		if(a.placeDepth < b.placeDepth) {
 			return -1;
@@ -125,11 +123,10 @@ class TagDefineButton2 implements IDefinitionTag
 			return 0;
 		}
 	}
-	
+
 	public function toString(indent:Int = 0):String {
 		var str:String = Tag.toStringCommon(type, name, indent) +
 			"ID: " + characterId + ", TrackAsMenu: " + trackAsMenu;
-		var i:Int;
 		if (characters.length > 0) {
 			str += "\n" + StringUtils.repeat(indent + 2) + "Characters:";
 			for (i in 0...characters.length) {

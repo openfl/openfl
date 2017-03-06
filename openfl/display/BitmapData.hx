@@ -95,12 +95,16 @@ class BitmapData implements IBitmapDrawable {
 		this.transparent = transparent;
 
 		#if (neko || (js && html5))
-		width = width == null ? 0 : width;
-		height = height == null ? 0 : height;
-		#end
-
+		if( width == null || width < 0 ) {
+			width = 0;
+		}
+		if( height == null || height < 0 ) {
+			height = 0;
+		}
+		#else
 		width = width < 0 ? 0 : width;
 		height = height < 0 ? 0 : height;
+		#end
 
 		__width = width;
 		__height = height;
@@ -919,7 +923,6 @@ class BitmapData implements IBitmapDrawable {
 
 		//Range of values to value to.
 		var range:Int = high - low;
-		var data:ByteArray = new ByteArray();
 
 		var redChannel:Bool = ((channelOptions & ( 1 << 0 )) >> 0) == 1;
 		var greenChannel:Bool = ((channelOptions & ( 1 << 1 )) >> 1) == 1;
@@ -980,16 +983,16 @@ class BitmapData implements IBitmapDrawable {
 			c4 = (blueArray == null) ? pixelValue & 0x000000FF : blueArray[(pixelValue) & 0xFF];
 
 			a = ((c1 >> 24) & 0xFF) + ((c2 >> 24) & 0xFF) + ((c3 >> 24) & 0xFF) + ((c4 >> 24) & 0xFF);
-			if (a > 0xFF) a == 0xFF;
+			if (a > 0xFF) a = 0xFF;
 
 			r = ((c1 >> 16) & 0xFF) + ((c2 >> 16) & 0xFF) + ((c3 >> 16) & 0xFF) + ((c4 >> 16) & 0xFF);
-			if (r > 0xFF) r == 0xFF;
+			if (r > 0xFF) r = 0xFF;
 
 			g = ((c1 >> 8) & 0xFF) + ((c2 >> 8) & 0xFF) + ((c3 >> 8) & 0xFF) + ((c4 >> 8) & 0xFF);
-			if (g > 0xFF) g == 0xFF;
+			if (g > 0xFF) g = 0xFF;
 
 			b = ((c1) & 0xFF) + ((c2) & 0xFF) + ((c3) & 0xFF) + ((c4) & 0xFF);
-			if (b > 0xFF) b == 0xFF;
+			if (b > 0xFF) b = 0xFF;
 
 			color = a << 24 | r << 16 | g << 8 | b;
 

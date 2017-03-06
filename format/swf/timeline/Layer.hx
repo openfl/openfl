@@ -6,10 +6,10 @@ class Layer
 {
 	public var depth:Int = 0;
 	public var frameCount:Int = 0;
-	
+
 	public var frameStripMap:Array<Int>;
 	public var strips:Array<LayerStrip>;
-	
+
 	public function new(depth:Int, frameCount:Int)
 	{
 		this.depth = depth;
@@ -17,10 +17,9 @@ class Layer
 		frameStripMap = [];
 		strips = [];
 	}
-	
+
 	public function appendStrip(type:Int, start:Int, end:Int):Void {
 		if(type != LayerStrip.TYPE_EMPTY) {
-			var i:Int;
 			var stripIndex:Int = strips.length;
 			if(stripIndex == 0 && start > 0) {
 				for(i in 0...start) {
@@ -42,7 +41,7 @@ class Layer
 			strips[stripIndex] = new LayerStrip(type, start, end);
 		}
 	}
-	
+
 	public function getStripsForFrameRegion(start:Int, end:Int):Array<LayerStrip> {
 		if(start >= frameStripMap.length || end < start) {
 			return [];
@@ -51,7 +50,7 @@ class Layer
 		var endStripIndex:Int = (end >= frameStripMap.length) ? strips.length - 1 : frameStripMap[end];
 		return strips.slice(startStripIndex, endStripIndex + 1);
 	}
-	
+
 	public function toString(indent:Int = 0):String {
 		var str:String = "Depth: " + depth + ", Frames: " + frameCount;
 		if(strips.length > 0) {

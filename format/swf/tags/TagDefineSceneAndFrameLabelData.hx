@@ -8,33 +8,32 @@ import format.swf.utils.StringUtils;
 class TagDefineSceneAndFrameLabelData implements ITag
 {
 	public static inline var TYPE:Int = 86;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-	
+
 	public var scenes (default, null):Array<SWFScene>;
 	public var frameLabels (default, null):Array<SWFFrameLabel>;
-	
+
 	public function new() {
 		type = TYPE;
 		name = "DefineSceneAndFrameLabelData";
 		version = 9;
 		level = 1;
-		scenes = new Array<SWFScene>(); 
+		scenes = new Array<SWFScene>();
 		frameLabels = new Array<SWFFrameLabel>();
 	}
-	
+
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
-		var i:Int;
 		var sceneCount:Int = data.readEncodedU32();
 		for (i in 0...sceneCount) {
 			var sceneOffset:Int = data.readEncodedU32();
 			var sceneName:String = data.readSTRING();
 			scenes.push(new SWFScene(sceneOffset, sceneName));
 		}
-		
+
 		var frameLabelCount:Int = data.readEncodedU32();
 		for (i in 0...frameLabelCount) {
 			var frameNumber:Int = data.readEncodedU32();
@@ -44,7 +43,6 @@ class TagDefineSceneAndFrameLabelData implements ITag
 	}
 
 	public function publish(data:SWFData, version:Int):Void {
-		var i:Int;
 		var body:SWFData = new SWFData();
 		body.writeEncodedU32(this.scenes.length);
 		for (i in 0...this.scenes.length) {
@@ -64,7 +62,6 @@ class TagDefineSceneAndFrameLabelData implements ITag
 
 	public function toString(indent:Int = 0):String {
 		var str:String = Tag.toStringCommon(type, name, indent);
-		var i:Int;
 		if (scenes.length > 0) {
 			str += "\n" + StringUtils.repeat(indent + 2) + "Scenes:";
 			for (i in 0...scenes.length) {

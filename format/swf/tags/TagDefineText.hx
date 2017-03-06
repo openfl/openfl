@@ -10,19 +10,19 @@ import format.swf.utils.StringUtils;
 class TagDefineText implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 11;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-	
+
 	public var textBounds:SWFRectangle;
 	public var textMatrix:SWFMatrix;
-	
+
 	public var characterId:Int;
-	
+
 	public var records (default, null):Array<SWFTextRecord>;
-	
+
 	public function new() {
 		type = TYPE;
 		name = "DefineText";
@@ -30,7 +30,7 @@ class TagDefineText implements IDefinitionTag
 		level = 1;
 		records = new Array<SWFTextRecord>();
 	}
-	
+
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
 		characterId = data.readUI16();
 		textBounds = data.readRECT();
@@ -42,11 +42,9 @@ class TagDefineText implements IDefinitionTag
 			records.push(record);
 		}
 	}
-	
+
 	public function publish(data:SWFData, version:Int):Void {
 		var body:SWFData = new SWFData();
-		var i:Int;
-		var j:Int;
 		var record:SWFTextRecord;
 		body.writeUI16(characterId);
 		body.writeRECT(textBounds);
@@ -78,7 +76,7 @@ class TagDefineText implements IDefinitionTag
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
+
 	public function clone():IDefinitionTag {
 		var tag:TagDefineText = new TagDefineText();
 		tag.characterId = characterId;

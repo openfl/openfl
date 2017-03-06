@@ -906,7 +906,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 			} else {
 				for(child in __children){
-					setCachedParent (null);
+					child.setCachedParent (null);
 				}
 			}
 		}

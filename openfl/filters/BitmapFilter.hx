@@ -54,7 +54,6 @@ class BitmapFilter {
 		}
 
 		for (filter in filters) {
-			var useLastFilter = false;
 
 			var commands = filter.__getCommands (bitmap);
 
@@ -136,19 +135,19 @@ class BitmapFilter {
 	}
 
 	private static inline function _getTransformedOffset(transformedOffset:Point, distance:Float, angleInDegrees:Float, transform:Matrix) {
-		
+
 		var offset = Point.pool.get ();
 		offset.x = distance * Math.cos (angleInDegrees * Math.PI / 180);
 		offset.y = distance * Math.sin (angleInDegrees * Math.PI / 180);
-		
+
 		if (transform.a != 1.0  || transform.d != 1.0 || transform.b != 0.0 || transform.c != 0.0) {
-			
+
 			transformedOffset.copyFrom (transform.deltaTransformPoint (offset));
-			
+
 		} else {
 			transformedOffset.copyFrom (offset);
 		}
-		
+
 		Point.pool.put (offset);
 	}
 }

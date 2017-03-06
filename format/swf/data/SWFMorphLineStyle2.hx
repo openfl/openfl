@@ -10,7 +10,7 @@ class SWFMorphLineStyle2 extends SWFMorphLineStyle
 	public function new(data:SWFData = null, level:Int = 1) {
 		super(data, level);
 	}
-	
+
 	override public function parse(data:SWFData, level:Int = 1):Void {
 		startWidth = data.readUI16();
 		endWidth = data.readUI16();
@@ -20,7 +20,7 @@ class SWFMorphLineStyle2 extends SWFMorphLineStyle
 		noHScaleFlag = (data.readUB(1) == 1);
 		noVScaleFlag = (data.readUB(1) == 1);
 		pixelHintingFlag = (data.readUB(1) == 1);
-		var reserved:Int = data.readUB(5);
+		/*var reserved:Int = */data.readUB(5);
 		noClose = (data.readUB(1) == 1);
 		endCapsStyle = data.readUB(2);
 		if (jointStyle == LineJointStyle.MITER) {
@@ -33,21 +33,21 @@ class SWFMorphLineStyle2 extends SWFMorphLineStyle
 			endColor = data.readRGBA();
 		}
 	}
-	
+
 	override public function publish(data:SWFData, level:Int = 1):Void {
 		data.writeUI16(startWidth);
 		data.writeUI16(endWidth);
-		data.writeUB(2, startCapsStyle); 
-		data.writeUB(2, jointStyle); 
-		data.writeUB(1, hasFillFlag ? 1 : 0); 
-		data.writeUB(1, noHScaleFlag ? 1 : 0); 
-		data.writeUB(1, noVScaleFlag ? 1 : 0); 
-		data.writeUB(1, pixelHintingFlag ? 1 : 0); 
+		data.writeUB(2, startCapsStyle);
+		data.writeUB(2, jointStyle);
+		data.writeUB(1, hasFillFlag ? 1 : 0);
+		data.writeUB(1, noHScaleFlag ? 1 : 0);
+		data.writeUB(1, noVScaleFlag ? 1 : 0);
+		data.writeUB(1, pixelHintingFlag ? 1 : 0);
 		data.writeUB(5, 0); // Reserved
-		data.writeUB(1, noClose ? 1 : 0); 
-		data.writeUB(2, endCapsStyle); 
+		data.writeUB(1, noClose ? 1 : 0);
+		data.writeUB(2, endCapsStyle);
 		if (jointStyle == LineJointStyle.MITER) {
-			data.writeFIXED8(miterLimitFactor); 
+			data.writeFIXED8(miterLimitFactor);
 		}
 		if (hasFillFlag) {
 			data.writeMORPHFILLSTYLE(fillType, level);
@@ -56,7 +56,7 @@ class SWFMorphLineStyle2 extends SWFMorphLineStyle
 			data.writeRGBA(endColor);
 		}
 	}
-	
+
 	override public function toString():String {
 		var str:String = "[SWFMorphLineStyle2] " +
 			"StartWidth: " + startWidth + ", " +

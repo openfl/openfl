@@ -64,7 +64,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 
 	public var frameLabels(default, null):Map<Int, String>;
 	public var frameIndexes(default, null):Map<String, Int>;
-	
+
 	public var scalingGrids(get, null):Map<Int, Int>;
 	private var _scalingGrids:Map<Int, Int>;
 
@@ -240,10 +240,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 				);
 			}
 			var event:SWFWarningEvent = new SWFWarningEvent(eventType, index, eventData, false, true);
-			var cancelled:Bool = !dispatchEvent(event);
-			if (cancelled) {
-				//tag = null;
-			}
+			!dispatchEvent(event);
 			data.position = pos + tagHeader.tagLength;
 		}
 		return tag;
@@ -385,7 +382,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			case TagDefineSceneAndFrameLabelData.TYPE:
 				// This seems to be unnecessary (at least for frame labels) because frameLabels appear again as TagFrameLabel, and TagDefineSceneAndFrameLabelData does not appear on every MC
 				var tagSceneAndFrameLabelData:TagDefineSceneAndFrameLabelData = cast tag;
-				var i:Int;
 				for(i in 0...tagSceneAndFrameLabelData.frameLabels.length) {
 					var frameLabel:SWFFrameLabel = tagSceneAndFrameLabelData.frameLabels[i];
 					frameLabels.set (frameLabel.frameNumber, frameLabel.name);
@@ -429,7 +425,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 							// TODO
 						case SoundCompression.MP3: // MP3
 							var numSamples:Int = soundData.readUnsignedShort();
-							var seekSamples:Int = soundData.readShort();
+							/*var seekSamples:Int = */soundData.readShort();
 							if(numSamples > 0) {
 								soundStream.numSamples += numSamples;
 								soundStream.data.writeBytes(soundData, 4);
@@ -453,8 +449,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	}
 
 	public function buildLayers():Void {
-		var i:Int;
-		var depth:String;
 		var depthInt:Int;
 		var depths = new Map <Int, Array <Int>>();
 		var depthsAvailable:Array<Int> = [];
@@ -537,7 +531,6 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	}
 
 	public function toString(indent:Int = 0):String {
-		var i:Int;
 		var str:String = "";
 		if (tags.length > 0) {
 			str += "\n" + StringUtils.repeat(indent + 2) + "Tags:";

@@ -954,7 +954,7 @@ class MovieClip extends flash.display.MovieClip {
 			frame0ChildrenUpdate();
 		}
 
-		var frame, displayObject, depth;
+		var frame, displayObject;
 
 		frame = __symbol.frames[index];
 
@@ -1274,10 +1274,7 @@ class MovieClip extends flash.display.MovieClip {
 				if(objectName.length < maxNameLength){
 
 					var spaceNumber = maxNameLength - objectName.length;
-
-					for (i in 0...spaceNumber){
-						objectName += " ";
-					}
+					objectName += format.swf.utils.StringUtils.repeat(spaceNumber, " ");
 				}
 
 				switch (isMask) {
