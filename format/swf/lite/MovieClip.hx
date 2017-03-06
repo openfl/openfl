@@ -67,6 +67,7 @@ class MovieClip extends flash.display.MovieClip {
 	private var __9SliceBitmap:BitmapData;
 	private var __scale9Rect:Rectangle;
 	private var __updating9SliceBitmap:Bool = false;
+	private var __maskDataDirty:Bool = false;
 
 	private var __SWFDepthData:Map<DisplayObject, Int>;
 	private var __maskData:Map<DisplayObject, Int>;
@@ -285,7 +286,33 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
+	#if profile
+		private static var __childrenCreateCount:Map<Int, Int> = new Map<Int, Int>();
 
+		public static function __init__ () {
+
+			#if js
+				untyped __js__ ("$global.Profile = $global.Profile || {}");
+				untyped __js__ ("$global.Profile.CacheInfo = {}");
+				untyped __js__ ("$global.Profile.CacheInfo.resetStatistics = format_swf_lite_MovieClip.resetStatistics" );
+				untyped __js__ ("$global.Profile.CacheInfo.logStatistics = format_swf_lite_MovieClip.logStatistics" );
+			#end
+
+		}
+
+		public static function resetStatistics () {
+
+			__childrenCreateCount = new Map<Int, Int> ();
+
+		}
+
+		public static function logStatistics () {
+
+			for( id in __childrenCreateCount.keys () ) {
+				trace ('Symbol id:$id; Created count: ${__childrenCreateCount[id]}');
+			}
+		}
+	#end
 	@:noCompletion private function __createObject (object:FrameObject):DisplayObject {
 
 		var displayObject:DisplayObject = null;
@@ -297,6 +324,10 @@ class MovieClip extends flash.display.MovieClip {
 				return __childrenCache.get(object);
 			}
 		}
+
+		#if profile
+		__childrenCreateCount.set(this.__symbol.id, (__childrenCreateCount.exists(this.__symbol.id) ? __childrenCreateCount.get(this.__symbol.id) + 1 : 1));
+		#end
 
 		if (__swf.symbols.exists (object.symbol)) {
 
@@ -753,6 +784,12 @@ class MovieClip extends flash.display.MovieClip {
 					__scale9Rect.y -= bounds.y;
 				}
 
+				if ( !__scale9Rect.intersects(bounds) ) {
+					__9SliceBitmap = null;
+					__updating9SliceBitmap = false;
+					return;
+				}
+
 				var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
@@ -848,8 +885,14 @@ class MovieClip extends flash.display.MovieClip {
 			__update9SliceBitmap ();
 		}
 
+		if (!__renderable || __worldAlpha <= 0) return;
+
+		if ( __maskDataDirty ) {
+			__updateSwfMaskData();
+			__maskDataDirty = false;
+		}
+
 		if (__symbol != null && __symbol.scalingGridRect != null && __9SliceBitmap != null) {
-			if (!__renderable || __worldAlpha <= 0) return;
 
 			drawScale9Bitmap(renderSession);
 		}
@@ -890,9 +933,6 @@ class MovieClip extends flash.display.MovieClip {
 					if(displayObject != null){
 
 							removeChild(displayObject);
-							__maskDataKeys.remove(displayObject);
-							__maskData.remove(displayObject);
-							__SWFDepthData.remove(displayObject);
 					}
 
 				__objects.remove (object_id);
@@ -945,9 +985,6 @@ class MovieClip extends flash.display.MovieClip {
 						var oldObject : DisplayObject = displayObject;
 
 						var clipDepth = __maskData.get(displayObject);
-						__maskDataKeys.remove(displayObject);
-						__maskData.remove(displayObject);
-						__SWFDepthData.remove(displayObject);
 						removeChild(displayObject);
 
 						displayObject = __createObject (frameObject);
@@ -994,9 +1031,6 @@ class MovieClip extends flash.display.MovieClip {
 					if (displayObject != null && displayObject.parent == this) {
 
 						removeChild (displayObject);
-						__SWFDepthData.remove(displayObject);
-						__maskData.remove(displayObject);
-						__maskDataKeys.remove(displayObject);
 
 					}
 
@@ -1008,7 +1042,7 @@ class MovieClip extends flash.display.MovieClip {
 
 		}
 
-		__updateSwfMaskData();
+		__maskDataDirty = true;
 
 		#if (!flash && openfl && !openfl_legacy)
 		inline function labelLogic() {
@@ -1144,7 +1178,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	public function addChildAtSwfDepthExternal(displayObject:DisplayObject, targetDepth:Int):Void {
 		__addChildAtSwfDepth(displayObject, targetDepth + 0x3FFF);
-		__updateSwfMaskData();
+		__maskDataDirty = true;
 	}
 
 	public function swapDepths(target: Dynamic) {
@@ -1175,8 +1209,7 @@ class MovieClip extends flash.display.MovieClip {
 		}
         swf_parent.removeChild(this);
         swf_parent.__addChildAtSwfDepth(this, target_depth);
-        swf_parent.addChildAtSwfDepthExternal(this, target_depth);
-		__updateSwfMaskData();
+		__maskDataDirty = true;
     }
 #end
 
@@ -1202,7 +1235,7 @@ class MovieClip extends flash.display.MovieClip {
 			__SWFDepthData.remove(object);
 			__maskDataKeys.remove(object);
 			__maskData.remove(object);
-			__updateSwfMaskData();
+			__maskDataDirty = true;
 		}
 		return object;
 	}

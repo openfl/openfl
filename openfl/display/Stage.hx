@@ -612,11 +612,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		#if duell_container
-			// :NOTE: Account for menu bar.
-			height -= 25;
-		#end
-
 		width = Std.int (width * window.scale);
 		height = Std.int( height * window.scale);
 
@@ -635,12 +630,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 						var new_width = width / stageWidth;
 						this.scaleX = new_width;
 						this.scaleY = new_width;
-						height = Std.int(stageHeight * new_width);
+						height = Math.ceil(stageHeight * new_width);
 					} else {
 						var new_height = height / stageHeight;
 						this.scaleX = new_height;
 						this.scaleY = new_height;
-						width = Std.int(stageWidth * new_height);
+						width = Math.ceil(stageWidth * new_height);
 					}
 
 				case StageScaleMode.NO_SCALE:
@@ -655,12 +650,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 						var new_height = height / stageHeight;
 						this.scaleX = new_height;
 						this.scaleY = new_height;
-						width = Std.int(stageWidth * new_height);
+						width = Math.ceil(stageWidth * new_height);
 					} else {
 						var new_width = width / stageWidth;
 						this.scaleX = new_width;
 						this.scaleY = new_width;
-						height = Std.int(stageHeight * new_width);
+						height = Math.ceil(stageHeight * new_width);
 					}
 			}
 		}
@@ -685,11 +680,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	public function set_scaleMode(scaleMode):StageScaleMode {
 		if ( scaleMode != __scaleMode ) {
-			#if duell_container
-				onWindowResize(window, window.width, window.height + 25);
-			#else
-				onWindowResize(window, window.width, window.height);
-			#end
+			onWindowResize(window, window.width, window.height);
 		}
 		return __scaleMode = scaleMode;
 	}
@@ -1331,63 +1322,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 
 	private function __resize ():Void {
-
-		/*
-		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
-
-			if (__fullscreen) {
-
-				stageWidth = __element.clientWidth;
-				stageHeight = __element.clientHeight;
-
-				if (__canvas != null) {
-
-					if (__element != cast __canvas) {
-
-						__canvas.width = stageWidth;
-						__canvas.height = stageHeight;
-
-					}
-
-				} else {
-
-					__div.style.width = stageWidth + "px";
-					__div.style.height = stageHeight + "px";
-
-				}
-
-			} else {
-
-				var scaleX = __element.clientWidth / __originalWidth;
-				var scaleY = __element.clientHeight / __originalHeight;
-
-				var currentRatio = scaleX / scaleY;
-				var targetRatio = Math.min (scaleX, scaleY);
-
-				if (__canvas != null) {
-
-					if (__element != cast __canvas) {
-
-						__canvas.style.width = __originalWidth * targetRatio + "px";
-						__canvas.style.height = __originalHeight * targetRatio + "px";
-						__canvas.style.marginLeft = ((__element.clientWidth - (__originalWidth * targetRatio)) / 2) + "px";
-						__canvas.style.marginTop = ((__element.clientHeight - (__originalHeight * targetRatio)) / 2) + "px";
-
-					}
-
-				} else {
-
-					__div.style.width = __originalWidth * targetRatio + "px";
-					__div.style.height = __originalHeight * targetRatio + "px";
-					__div.style.marginLeft = ((__element.clientWidth - (__originalWidth * targetRatio)) / 2) + "px";
-					__div.style.marginTop = ((__element.clientHeight - (__originalHeight * targetRatio)) / 2) + "px";
-
-				}
-
-			}
-
-		}*/
-
 	}
 
 

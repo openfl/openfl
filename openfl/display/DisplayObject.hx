@@ -899,7 +899,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!transformOnly) {
 
 			#if profile
-				untyped __js__("++window.updateCalls;");
+				lime._backend.html5.HTML5Application.__updateCalls++;
 			#end
 
 			__updateColor();
