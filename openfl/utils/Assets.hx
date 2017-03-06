@@ -454,7 +454,7 @@ class Assets {
 	
 	/**
 	 * Loads an included bitmap asset asynchronously
-	 * @usage		Asset.loadBitmapData ("image.png").onComplete (handleImage);
+	 * @usage	Assets.loadBitmapData ("image.png").onComplete (handleImage);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
@@ -523,7 +523,7 @@ class Assets {
 	
 	/**
 	 * Loads an included byte asset asynchronously
-	 * @usage		Asset.loadBytes ("file.zip").onComplete (handleBytes);
+	 * @usage	Assets.loadBytes ("file.zip").onComplete (handleBytes);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
@@ -552,7 +552,7 @@ class Assets {
 	
 	/**
 	 * Loads an included font asset asynchronously
-	 * @usage		Asset.loadFont ("font.ttf").onComplete (handleFont);
+	 * @usage	Assets.loadFont ("font.ttf").onComplete (handleFont);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
@@ -629,7 +629,7 @@ class Assets {
 	
 	/**
 	 * Loads an included music asset asynchronously
-	 * @usage		Asset.loadMusic ("music.ogg").onComplete (handleMusic);
+	 * @usage	Assets.loadMusic ("music.ogg").onComplete (handleMusic);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
@@ -681,7 +681,7 @@ class Assets {
 	
 	/**
 	 * Loads an included MovieClip asset asynchronously
-	 * @usage		Asset.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
+	 * @usage	Assets.loadMovieClip ("library:BouncingBall").onComplete (handleMovieClip);
 	 * @param	id 		The ID for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
@@ -736,7 +736,7 @@ class Assets {
 	
 	/**
 	 * Loads an included sound asset asynchronously
-	 * @usage		Asset.loadSound ("sound.wav").onComplete (handleSound);
+	 * @usage	Assets.loadSound ("sound.wav").onComplete (handleSound);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
@@ -780,7 +780,7 @@ class Assets {
 	
 	/**
 	 * Loads an included text asset asynchronously
-	 * @usage		Asset.loadText ("text.txt").onComplete (handleString);
+	 * @usage	Assets.loadText ("text.txt").onComplete (handleString);
 	 * @param	id 		The ID or asset path for the asset
 	 * @param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 	 * @param	handler		(Deprecated) A callback function when the load is completed
