@@ -271,7 +271,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	public override function resolve (fieldName:String):DisplayObject {
 
-		var result = Reflect.getProperty(this, fieldName);
+		var result = Reflect.field(this, fieldName);
 		if( result != null ) {
 			return result;
 		}
