@@ -784,6 +784,12 @@ class MovieClip extends flash.display.MovieClip {
 					__scale9Rect.y -= bounds.y;
 				}
 
+				if ( !__scale9Rect.intersects(bounds) ) {
+					__9SliceBitmap = null;
+					__updating9SliceBitmap = false;
+					return;
+				}
+
 				var renderSession = @:privateAccess openfl.Lib.current.stage.__renderer.renderSession;
 
 				var bitmap = @:privateAccess BitmapData.__asRenderTexture ();
