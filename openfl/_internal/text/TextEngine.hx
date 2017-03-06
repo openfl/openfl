@@ -876,7 +876,9 @@ class TextEngine {
 											
 											
 									} else {
+										#if (js && html5)
 										offsetX = __context.measureText (" ").width;
+										#end
 										}
 										
 									for (j in 0...groups.length ) {
