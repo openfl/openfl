@@ -72,10 +72,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__useSeparateRenderScaleTransform = false;
 		}
 
-		if (child.parent == this) {
+		var childIndexToRemove:Int = -1;
 
-			var index: Int = __children.indexOf (child);
-			__children[index] = null;
+		if (child.parent == this) {
+			childIndexToRemove = __children.indexOf (child);
+			__children[childIndexToRemove] = null;
 		} else {
 
 			if (child.parent != null) {
@@ -87,10 +88,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			initParent(child);
 		}
 
-		if( index < __children.length && __children[index] == null ){
-			__children[index] = child;
-		} else {
-			__children.insert(index,child);
+		__children.insert(index,child);
+
+		if(childIndexToRemove > -1) {
+			removeChildAt(childIndexToRemove < index ? childIndexToRemove : childIndexToRemove + 1);
 		}
 
 		return child;
