@@ -20,6 +20,7 @@ import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Stage;
+import openfl.display.PixelSnapping;
 import openfl.errors.Error;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -330,7 +331,29 @@ class GLRenderer extends AbstractRenderer {
 		Rectangle.pool.put(bounds);
 		matrix.concat (shape.__renderTransform);
 
-		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, renderSession.roundPixels ? ALWAYS : NEVER );
+		var round_pixels = PixelSnapping.AUTO;
+		if ( renderSession.roundPixels == true ) {
+			round_pixels = PixelSnapping.ALWAYS;
+		} else if ( renderSession.roundPixels == false ) {
+			round_pixels = PixelSnapping.NEVER;
+		} else {
+			if ( matrix.b == 0
+				&& matrix.c == 0
+				&& Math.abs(1.0 - matrix.a) < 0.001
+				&& Math.abs(1.0 - matrix.d) < 0.001
+				) {
+
+				matrix.a = 1.0;
+				matrix.d = 1.0;
+				round_pixels = ALWAYS;
+
+			} else {
+
+				round_pixels = NEVER;
+
+			}
+		}
+		renderSession.spriteBatch.renderBitmapData (bitmap, smooth, matrix, shape.__renderColorTransform, shape.__renderAlpha, shape.__blendMode, null, round_pixels );
 
 	}
 
