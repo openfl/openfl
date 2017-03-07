@@ -55,7 +55,9 @@ class TextureBase extends EventDispatcher {
 			
 			var bgraExtension = null;
 			#if (!js || !html5)
-			bgraExtension = GL.getExtension ("EXT_texture_format_BGRA8888");
+			bgraExtension = GL.getExtension ("EXT_bgra");
+			if (bgraExtension == null)
+				bgraExtension = GL.getExtension ("EXT_texture_format_BGRA8888");
 			if (bgraExtension == null)
 				bgraExtension = GL.getExtension ("APPLE_texture_format_BGRA8888");
 			#end

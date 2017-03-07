@@ -940,7 +940,9 @@ class BitmapData implements IBitmapDrawable {
 					
 					var bgraExtension = null;
 					#if (!js || !html5)
-					bgraExtension = gl.getExtension ("EXT_texture_format_BGRA8888");
+					bgraExtension = gl.getExtension ("EXT_bgra");
+					if (bgraExtension == null)
+						bgraExtension = gl.getExtension ("EXT_texture_format_BGRA8888");
 					if (bgraExtension == null)
 						bgraExtension = gl.getExtension ("APPLE_texture_format_BGRA8888");
 					#end
