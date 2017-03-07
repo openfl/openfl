@@ -1,6 +1,7 @@
 package openfl.display3D.textures;
 
 
+import lime.graphics.GLRenderContext;
 import lime.graphics.utils.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.opengl.GL;
@@ -35,6 +36,7 @@ class TextureBase extends EventDispatcher {
 	private var __outputTextureMemoryUsage:Bool = false;
 	private var __samplerState:SamplerState;
 	private var __streamingLevels:Int;
+	private var __textureContext:GLRenderContext;
 	private var __textureID:GLTexture;
 	private var __textureTarget:Int;
 	private var __width:Int;
@@ -48,6 +50,7 @@ class TextureBase extends EventDispatcher {
 		__textureTarget = target;
 		
 		__textureID = GL.createTexture ();
+		__textureContext = GL.context;
 		
 		if (__supportsBGRA == null) {
 			

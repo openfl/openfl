@@ -195,7 +195,9 @@ class BitmapData implements IBitmapDrawable {
 			bitmapData.rect.copyFrom (rect);
 			
 			bitmapData.__framebuffer = __framebuffer;
+			bitmapData.__framebufferContext = __framebufferContext;
 			bitmapData.__texture = __texture;
+			bitmapData.__textureContext = __textureContext;
 			bitmapData.__isValid = true;
 			
 			return bitmapData;
@@ -397,7 +399,9 @@ class BitmapData implements IBitmapDrawable {
 		
 		__buffer = null;
 		__framebuffer = null;
+		__framebufferContext = null;
 		__texture = null;
+		__textureContext = null;
 		
 		//if (__texture != null) {
 			//
@@ -759,6 +763,7 @@ class BitmapData implements IBitmapDrawable {
 		var bitmapData = new BitmapData (texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
 		bitmapData.__texture = texture.__textureID;
+		bitmapData.__textureContext = texture.__textureContext;
 		bitmapData.image = null;
 		return bitmapData;
 		
