@@ -568,7 +568,9 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		#if (js && html5)
 		if (Std.is (msg.data, String)) {
 			
+			var cachePosition = __inputBuffer.position;
 			__inputBuffer.writeUTF (msg.data);
+			__inputBuffer.position = cachePosition;
 			
 		} else {
 			
