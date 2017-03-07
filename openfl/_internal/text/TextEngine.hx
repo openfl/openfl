@@ -603,6 +603,7 @@ class TextEngine {
 
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
+		var font = null;
 
 		var currentFormat = this.textField.defaultTextFormat;
 
