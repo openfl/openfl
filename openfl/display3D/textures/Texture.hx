@@ -37,7 +37,7 @@ import haxe.Timer;
 		GL.bindTexture (__textureTarget, __textureID);
 		GLUtils.CheckGLError ();
 		
-		GL.texImage2D (__textureTarget, 0, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, null);
+		GL.texImage2D (__textureTarget, 0, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, 0);
 		GLUtils.CheckGLError ();
 		
 		GL.bindTexture (__textureTarget, null);
