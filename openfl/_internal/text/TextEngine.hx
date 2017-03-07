@@ -964,7 +964,7 @@ class TextEngine {
 					
 					if (textIndex == formatRange.end) break;
 					
-					var endIndex = (spaceIndex == -1 || spaceIndex + 1 > formatRange.end)? formatRange.end : spaceIndex + 1;
+					var endIndex = spaceIndex == -1? (breakIndex == -1? formatRange.end : breakIndex) : (spaceIndex + 1) > formatRange.end? formatRange.end : spaceIndex + 1;
 					
 					advances = getAdvances (text, textIndex, endIndex);
 					widthValue = getAdvancesWidth (advances);
@@ -1155,7 +1155,7 @@ class TextEngine {
 						
 					}
 					
-					if ((spaceIndex > breakIndex && breakIndex > -1) || textIndex > text.length || spaceIndex > formatRange.end || (spaceIndex == -1 && breakIndex > -1)) {
+					if ((breakIndex > -1 && (spaceIndex > breakIndex || spaceIndex == -1 && breakIndex <= textIndex)) || textIndex > text.length || spaceIndex > formatRange.end) {
 						
 						break;
 						
