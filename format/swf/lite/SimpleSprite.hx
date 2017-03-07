@@ -1,9 +1,11 @@
 package format.swf.lite;
 
 import openfl.display.Bitmap;
+import openfl.display.DisplayObject;
 import openfl.Assets;
 import format.swf.lite.SWFLite;
 import format.swf.lite.symbols.SimpleSpriteSymbol;
+import openfl.utils.UnshrinkableArray;
 
 class SimpleSprite extends flash.display.MovieClip
 {
@@ -15,5 +17,12 @@ class SimpleSprite extends flash.display.MovieClip
         addChild(bitmap);
         bitmap.smoothing = true;
         bitmap.__transform.copyFrom(symbol.matrix);
+    }
+
+    private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
+        if ( !parent.mouseEnabled ) {
+            return false;
+        }
+        return super.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject);
     }
 }
