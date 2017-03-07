@@ -569,7 +569,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		if (Std.is (msg.data, String)) {
 			
 			var cachePosition = __inputBuffer.position;
-			__inputBuffer.writeUTF (msg.data);
+			__inputBuffer.writeUTFBytes (msg.data);
 			__inputBuffer.position = cachePosition;
 			
 		} else {
