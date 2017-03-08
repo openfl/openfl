@@ -46,20 +46,20 @@ typedef FontData = {
 
 
 class TextEngine {
-	
-	
+
+
 	private static inline var UTF8_TAB = 9;
 	private static inline var UTF8_ENDLINE = 10;
 	private static inline var UTF8_SPACE = 32;
 	private static inline var UTF8_HYPHEN = 0x2D;
-	
+
 	private static var __defaultFonts = new Map<String, Font> ();
-	
+
 	#if (js && html5)
 	private static var __canvas:CanvasElement;
 	private static var __context:CanvasRenderingContext2D;
 	#end
-	
+
 	public var antiAliasType:AntiAliasType;
 	public var autoSize:TextFieldAutoSize;
 	public var background:Bool;
@@ -98,9 +98,9 @@ class TextEngine {
 	public var type:TextFieldType;
 	public var width:Float;
 	public var wordWrap:Bool;
-	
+
 	private var textField:TextField;
-	
+
 	@:noCompletion private var __cursorPosition:Int;
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __hasFocus:Bool;
@@ -112,25 +112,25 @@ class TextEngine {
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
-	
+
 	@:noCompletion @:dox(hide) public var __cairoFont:CairoFontFace;
 	@:noCompletion @:dox(hide) public var __font:Font;
-	
+
 	#if (js && html5)
 	private var __hiddenInput:InputElement;
 	#end
-	
-	
+
+
 	public function new (textField:TextField) {
-		
+
 		this.textField = textField;
-		
+
 		width = 100;
 		height = 100;
 		text = "";
-		
+
 		bounds = new Rectangle (0, 0, 0, 0);
-		
+
 		type = TextFieldType.DYNAMIC;
 		autoSize = TextFieldAutoSize.NONE;
 		displayAsPassword = false;
@@ -147,7 +147,7 @@ class TextEngine {
 		scrollH = 0;
 		scrollV = 1;
 		wordWrap = false;
-		
+
 		lineAscents = new Array ();
 		lineBreaks = new Array ();
 		lineDescents = new Array ();
@@ -157,12 +157,12 @@ class TextEngine {
 		layoutGroups = new Array ();
 		lineLayoutGroups = new Array();
 		textFormatRanges = new Array ();
-		
+
 		#if (js && html5)
 		__canvas = cast Browser.document.createElement ("canvas");
 		__context = __canvas.getContext ("2d");
 		#end
-		
+
 	}
 
 	#if (cpp || neko || nodejs)
@@ -170,40 +170,40 @@ class TextEngine {
 
 
 		for (registeredFont in Font.__registeredFonts) {
-			
+
 			if (registeredFont == null) continue;
-			
+
 			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name))) {
-				
+
 				return registeredFont;
-				
+
 			}
-			
+
 		}
-		
+
 		var font = Font.fromFile (name);
-		
+
 		if (font != null) {
-			
+
 			Font.__registeredFonts.push (font);
 			return font;
-			
+
 		}
 
 		return null;
-		
+
 	}
 
 	#end
 
 
 	private function getBounds ():Void {
-		
+
 		var padding = border ? 1 : 0;
-		
+
 		bounds.width = width + padding;
 		bounds.height = height + padding;
-		
+
 	}
 
 
@@ -216,14 +216,14 @@ class TextEngine {
 			font += it_takes_styles && format.bold ? "bold " : "normal ";
 			font += format.size + "px";
 			font += "/" + (format.size + format.leading + 6) + "px ";
-		
+
 			switch (format.font) {
-			
+
 				case "_sans": font += "sans-serif";
 				case "_serif": font += "serif";
 				case "_typewriter": font += "monospace";
 				default: font += "'" + font_name + "'";
-			
+
 			}
 
 			return font;
@@ -252,57 +252,57 @@ class TextEngine {
 		return {name:font, ascent:fontData.ascent, descent:fontData.descent };
 
 	}
-	
-	
+
+
 	public static function getFontInstance (format:TextFormat):Font {
-		
+
 		#if (cpp || neko || nodejs)
-		
+
 		var instance = null;
 		var fontList = null;
-		
+
 		if (format != null && format.font != null) {
-			
+
 			if (__defaultFonts.exists (format.font)) {
-				
+
 				return __defaultFonts.get (format.font);
-				
+
 			}
-			
+
 			instance = findFont (format.font);
 			if (instance != null) return instance;
-			
+
 			var systemFontDirectory = System.fontsDirectory;
-			
+
 			switch (format.font) {
-				
+
 				case "_sans":
-					
+
 					#if windows
 					if (format.bold) {
-						
+
 						if (format.italic) {
-							
+
 							fontList = [ systemFontDirectory + "/arialbi.ttf" ];
-							
+
 						} else {
-							
+
 							fontList = [ systemFontDirectory + "/arialbd.ttf" ];
-							
+
 						}
-						
+
 					} else {
-						
+
 						if (format.italic) {
-							
+
 							fontList = [ systemFontDirectory + "/ariali.ttf" ];
-							
+
 						} else {
-							
+
 							fontList = [ systemFontDirectory + "/arial.ttf" ];
-							
+
 						}
-						
+
 					}
 					#elseif (mac || ios || tvos)
 					fontList = [ systemFontDirectory + "/Arial Black.ttf", systemFontDirectory + "/Arial.ttf", systemFontDirectory + "/Helvetica.ttf", systemFontDirectory + "/Cache/Arial Black.ttf", systemFontDirectory + "/Cache/Arial.ttf", systemFontDirectory + "/Cache/Helvetica.ttf", systemFontDirectory + "/Core/Arial Black.ttf", systemFontDirectory + "/Core/Arial.ttf", systemFontDirectory + "/Core/Helvetica.ttf", systemFontDirectory + "/CoreAddition/Arial Black.ttf", systemFontDirectory + "/CoreAddition/Arial.ttf", systemFontDirectory + "/CoreAddition/Helvetica.ttf" ];
@@ -313,38 +313,38 @@ class TextEngine {
 					#elseif blackberry
 					fontList = [ systemFontDirectory + "/arial.ttf" ];
 					#end
-				
+
 				case "_serif":
-					
+
 					// pass through
-				
+
 				case "_typewriter":
-					
+
 					#if windows
 					if (format.bold) {
-						
+
 						if (format.italic) {
-							
+
 							fontList = [ systemFontDirectory + "/courbi.ttf" ];
-							
+
 						} else {
-							
+
 							fontList = [ systemFontDirectory + "/courbd.ttf" ];
-							
+
 						}
-						
+
 					} else {
-						
+
 						if (format.italic) {
-							
+
 							fontList = [ systemFontDirectory + "/couri.ttf" ];
-							
+
 						} else {
-							
+
 							fontList = [ systemFontDirectory + "/cour.ttf" ];
-							
+
 						}
-						
+
 					}
 					#elseif (mac || ios || tvos)
 					fontList = [ systemFontDirectory + "/Courier New.ttf", systemFontDirectory + "/Courier.ttf", systemFontDirectory + "/Cache/Courier New.ttf", systemFontDirectory + "/Cache/Courier.ttf", systemFontDirectory + "/Core/Courier New.ttf", systemFontDirectory + "/Core/Courier.ttf", systemFontDirectory + "/CoreAddition/Courier New.ttf", systemFontDirectory + "/CoreAddition/Courier.ttf" ];
@@ -355,15 +355,15 @@ class TextEngine {
 					#elseif blackberry
 					fontList = [ systemFontDirectory + "/cour.ttf" ];
 					#end
-				
+
 				default:
-					
+
 					fontList = [ systemFontDirectory + "/" + format.font ];
-				
+
 			}
-			
+
 			#if lime_console
-				
+
 				// TODO(james4k): until we figure out our story for the above switch
 				// statement, always load arial unless a file is specified.
 				if (format == null
@@ -372,58 +372,58 @@ class TextEngine {
 				) {
 					fontList = [ "arial.ttf" ];
 				}
-				
+
 			#end
-			
+
 			if (fontList != null) {
-				
+
 				for (font in fontList) {
-					
+
 					instance = findFont (font);
-					
+
 					if (instance != null) {
-						
+
 						__defaultFonts.set (format.font, instance);
 						return instance;
-						
+
 					}
-					
+
 				}
-				
+
 			}
-			
+
 			instance = findFont ("_serif");
 			if (instance != null) return instance;
-			
+
 		}
-		
+
 		var systemFontDirectory = System.fontsDirectory;
-		
+
 		#if windows
 		if (format.bold) {
-			
+
 			if (format.italic) {
-				
+
 				fontList = [ systemFontDirectory + "/timesbi.ttf" ];
-				
+
 			} else {
-				
+
 				fontList = [ systemFontDirectory + "/timesb.ttf" ];
-				
+
 			}
-			
+
 		} else {
-			
+
 			if (format.italic) {
-				
+
 				fontList = [ systemFontDirectory + "/timesi.ttf" ];
-				
+
 			} else {
-				
+
 				fontList = [ systemFontDirectory + "/times.ttf" ];
-				
+
 			}
-			
+
 		}
 		#elseif (mac || ios || tvos)
 		fontList = [ systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf", systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf", systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf", systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf", systemFontDirectory + "/CoreAddition/Times New Roman.ttf" ];
@@ -436,109 +436,109 @@ class TextEngine {
 		#else
 		fontList = [];
 		#end
-		
+
 		for (font in fontList) {
-			
+
 			instance = findFont (font);
-			
+
 			if (instance != null) {
-				
+
 				__defaultFonts.set (format.font, instance);
 				return instance;
-				
+
 			}
-			
+
 		}
-		
+
 		__defaultFonts.set (format.font, null);
-		
+
 		#end
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+
 	public function getLine (index:Int):String {
-		
+
 		if (index < 0 || index > lineBreaks.length + 1) {
-			
+
 			return null;
-			
+
 		}
-		
+
 		if (lineBreaks.length == 0) {
-			
+
 			return text;
-			
+
 		} else {
-			
+
 			return text.substring (index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
-			
+
 		}
-		
+
 	}
-	
-	
+
+
 	private function getLineMeasurements ():Void {
-		
+
 		lineAscents.splice (0, lineAscents.length);
 		lineDescents.splice (0, lineDescents.length);
 		lineLeadings.splice (0, lineLeadings.length);
 		lineHeights.splice (0, lineHeights.length);
 		lineWidths.splice (0, lineWidths.length);
-		
+
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
 		var currentLineLeading:Null<Float> = null;
 		var currentLineHeight = 0.0;
 		var currentLineWidth = 0.0;
-		
+
 		textWidth = 0;
 		textHeight = 0;
 		numLines = 1;
 		bottomScrollV = 0;
 		maxScrollH = 0;
-		
+
 		for (groups in lineLayoutGroups) {
 			if ( groups.length > 0 ) {
 				var group = groups[0];
 				while (group.lineIndex > numLines - 1) {
-					
+
 					lineAscents.push (currentLineAscent);
 					lineDescents.push (currentLineDescent);
 					lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
 					lineHeights.push (currentLineHeight);
 					lineWidths.push (currentLineWidth);
-					
+
 					currentLineAscent = 0;
 					currentLineDescent = 0;
 					currentLineLeading = null;
 					currentLineHeight = 0;
 					currentLineWidth = 0;
-					
+
 					numLines++;
-					
+
 					if (textHeight <= height - 2) {
-						
+
 						bottomScrollV++;
-						
+
 					}
 				}
-				
+
 				currentLineAscent = Math.max (currentLineAscent, group.ascent);
 				currentLineDescent = Math.max (currentLineDescent, group.descent);
-				
+
 				if (currentLineLeading == null) {
-					
+
 					currentLineLeading = group.leading;
-					
+
 				} else {
-					
+
 					currentLineLeading = Std.int (Math.max (currentLineLeading, group.leading));
-					
+
 				}
-				
+
 				currentLineHeight = Math.max (currentLineHeight, group.height);
 
 				textHeight = group.offsetY - 2 + group.ascent + group.descent;
@@ -548,78 +548,78 @@ class TextEngine {
 				for(group in groups) {
 
 					currentLineWidth += group.width;
-			
+
 					if (currentLineWidth > textWidth) {
-						
+
 						textWidth = currentLineWidth;
-						
+
 					}
-			
+
 				}
 			}
 		}
-		
+
 		lineAscents.push (currentLineAscent);
 		lineDescents.push (currentLineDescent);
 		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
 		lineHeights.push (currentLineHeight);
 		lineWidths.push (currentLineWidth);
-		
+
 		if (numLines == 1) {
-			
+
 			bottomScrollV = 1;
-			
+
 			if (currentLineLeading > 0) {
-				
+
 				textHeight += currentLineLeading;
-				
+
 			}
-			
+
 		} else if (textHeight <= height - 2) {
-			
+
 			bottomScrollV++;
-			
+
 		}
-		
+
 		if (textWidth > width - 4) {
-			
+
 			maxScrollH = Std.int (textWidth - width + 4);
-			
+
 		} else {
-			
+
 			maxScrollH = 0;
-			
+
 		}
-		
+
 		maxScrollV = numLines - bottomScrollV + 1;
-		
+
 	}
-	
-	
+
+
 	private function getLayoutGroups ():Void {
-		
+
 		layoutGroups.splice (0, layoutGroups.length);
 		lineLayoutGroups.splice (0, lineLayoutGroups.length);
-		
+
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
 		var font = null;
-		
+
 		var currentFormat = this.textField.defaultTextFormat;
 
 		var leading = 0.0;
 		var ascent = 0.0;
 		var descent = 0.0;
-		
+
 		var layoutGroup;
 		var widthValue = 0.0;
 		var heightValue = 0.0;
-		
+
 		var offsetX = 2.0;
 		var offsetY = 2.0;
 		var textIndex = 0;
 		var lineIndex = 0;
-		
+
 		var textLength = text.length;
 
 		inline function startLayoutGroup (format:TextFormat, startIndex:Int):Void {
@@ -633,53 +633,53 @@ class TextEngine {
 			layoutGroup.height = heightValue;
 			widthValue = 0;
 		}
-			
+
 		inline function getAdvance (text:String, startIndex:Int, endIndex:Int):Float {
-			
+
 			var width:Float = 0;
 			#if (js && html5)
-			
+
 			width = __context.measureText (text.substring(startIndex, endIndex)).width;
 
 			#else
-			
+
 			if (__textLayout == null) {
-				
+
 				__textLayout = new TextLayout ();
-				
+
 			}
-			
+
 			__textLayout.text = null;
 			__textLayout.font = font;
-			
+
 			if (formatRange.format.size != null) {
-				
+
 				__textLayout.size = formatRange.format.size;
-				
+
 			}
-			
+
 			__textLayout.text = text.charAt(startIndex);
-			
+
 			for (position in __textLayout.positions) {
-				
+
 				width = position.advance.x;
-				
+
 			}
-			
+
 			#end
-			
+
 			return width;
-			
+
 		}
-		
+
 		inline function nextFormatRange ():Void {
-			
+
 			if (rangeIndex < textFormatRanges.length - 1) {
-				
+
 				rangeIndex++;
 				formatRange = textFormatRanges[rangeIndex];
 				currentFormat.__merge (formatRange.format);
-				
+
 				#if (js && html5)
 
 				var fontData = getFont (currentFormat);
@@ -690,46 +690,48 @@ class TextEngine {
 				leading = currentFormat.leading / 20;
 
 				heightValue = ascent + descent + leading;
-				
+
 				#elseif (cpp || neko || nodejs)
-				
+
 				font = getFontInstance (currentFormat);
-				
+
 				if (font != null) {
-					
+
 					ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 					descent = Math.abs ((font.descender / font.unitsPerEM) * currentFormat.size);
 					leading = currentFormat.leading;
-					
+
 					heightValue = ascent + descent + leading;
-					
+
 				} else {
-					
+
 					ascent = currentFormat.size;
 					descent = currentFormat.size * 0.185;
 					leading = currentFormat.leading;
-					
+
 					heightValue = ascent + descent + leading;
-					
+
 				}
-				
+
 				#end
 			}
 
 		}
-					
+
 		inline function endLayoutGroup(endIndex:Int) {
+			if ( layoutGroup.startIndex == endIndex ) return;
+
 			layoutGroup.endIndex = endIndex;
 			layoutGroup.width = widthValue;
 			layoutGroups.push (layoutGroup);
-					
+
 			if ( lineLayoutGroups.length == lineIndex ) {
 				lineLayoutGroups.push([]);
 			}
-				
+
 			lineLayoutGroups[lineIndex].push(layoutGroup);
 		}
-			
+
 		inline function pushNewLine(textIndex:Int) {
 			endLayoutGroup(textIndex);
 
@@ -766,133 +768,152 @@ class TextEngine {
 			updateNextBreakIndex ("\n");
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
-		
+
+			// :NOTE: For justify, we have to account for a minimum space width here.
 			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 ) {
 				pushNewLine(textIndex);
-			} else if ( formatRange.format.align == JUSTIFY ) {
-				offsetX = layoutGroup.offsetX + layoutGroup.width;
-				endLayoutGroup(textIndex);
-				startLayoutGroup(formatRange.format, textIndex);
-			} else {
-				widthValue = groupWidth;
-			}
-
-			if (text.charAt (nextBreakIndex) == "\n") {
-				pushNewLine(nextBreakIndex + 1);
+				continue;
 			}
 
 			textIndex = nextBreakIndex + 1;
 
+			widthValue = groupWidth;
+
+			var breakChar = text.charAt (nextBreakIndex);
+			if (breakChar == "\n") {
+				pushNewLine(textIndex);
+			}
+			else {
+				var counter = 0;
+				while (breakChar == " ") {
+					counter++;
+					breakChar = text.charAt (nextBreakIndex + counter);
+				}
+				if ( counter > 0 ) {
+					textIndex += counter - 1;
+				}
+			}
+
 			if (textIndex >= formatRange.end) {
 				textIndex = formatRange.end;
+				// :TODO: Check if still needed
 				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
 				endLayoutGroup(textIndex);
 				offsetX = layoutGroup.offsetX + widthValue;
 
 				nextFormatRange();
 				startLayoutGroup(formatRange.format, formatRange.start);
+			} else if ( formatRange.format.align == JUSTIFY ) {
+				// :TODO: Support multiple spaces
+				var endIndex = nextBreakIndex;
+				endLayoutGroup(endIndex);
+				offsetX = layoutGroup.offsetX + layoutGroup.width;
+				startLayoutGroup(formatRange.format, textIndex);
 			}
 		}
 
 		if ( rangeIndex < textFormatRanges.length - 1 ) {
 			throw "not all text ranges were processed by the text engine.";
 		}
-		
+
 	}
-	
-	
+
+
 	private function setTextAlignment ():Void {
-		
+
 		var lineIndex = -1;
 		var offsetX = 0.0;
-		var group, groups, lineLength;
+		var group, groups;
 
 		var realWidth:Float = width;
 		if (autoSize != TextFieldAutoSize.NONE && !multiline)
 		{
 			realWidth = textWidth;
 		}
-		
+
 		if( lineLayoutGroups.length > 0 ) {
 			for (i in 0...lineLayoutGroups.length) {
 				groups = lineLayoutGroups[i];
 				if ( groups.length > 0 ) {
 					group = groups[0];
-				
+
 					lineIndex = group.lineIndex;
-					
+
 					switch (group.format.align) {
-						
+
 						case CENTER:
-							
+
 							if (lineWidths[lineIndex] < realWidth - 4) {
-								
+
 								offsetX = Math.round ((realWidth - 4 - lineWidths[lineIndex]) / 2);
-								
+
 							} else {
-								
+
 								offsetX = 0;
-								
+
 							}
-						
+
 						case RIGHT:
-							
+
 							if (lineWidths[lineIndex] < realWidth - 4) {
-								
+
 								offsetX = Math.round (realWidth - 4 - lineWidths[lineIndex]);
-								
+
 							} else {
-								
+
 								offsetX = 0;
-								
+
 							}
-						
+
 						case JUSTIFY:
-							
+
 							if (lineWidths[lineIndex] < realWidth - 4) {
 								if ( groups.length > 1 ) {
 									group = groups[groups.length-1];
 									if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
-										
-										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
-										
-										for (j in 0...groups.length ) {
-											
-											groups[j].offsetX += (offsetX * j);
-											
+
+										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);											
+									} else {
+										#if (js && html5)
+										offsetX = __context.measureText (" ").width;
+										#end
 										}
 										
+									for (j in 0...groups.length ) {
+
+										groups[j].offsetX += (offsetX * j);
+
 									}
 								}
 							}
 							offsetX = 0;
-						
+
 						default:
-							
+
 							offsetX = 0;
-						
+
 					}
 				}
-				
+
 				if (offsetX > 0) {
-					
+
 					for ( group in groups ) {
 						group.offsetX += offsetX;
-						
+
 					}
-				
+
 				}
-			
+
 			}
 		}
 
 	}
-	
-	
+
+
 	private function update ():Void {
-		
+
 		if (text == null || StringTools.trim (text) == "" || textFormatRanges.length == 0) {
-			
+
 			lineAscents.splice (0, lineAscents.length);
 			lineBreaks.splice (0, lineBreaks.length);
 			lineDescents.splice (0, lineDescents.length);
@@ -901,25 +922,25 @@ class TextEngine {
 			lineWidths.splice (0, lineWidths.length);
 			layoutGroups.splice (0, layoutGroups.length);
 			lineLayoutGroups.splice (0, lineLayoutGroups.length);
-			
+
 			textWidth = 0;
 			textHeight = 0;
 			numLines = 1;
 			maxScrollH = 0;
 			maxScrollV = 1;
 			bottomScrollV = 1;
-			
+
 		} else {
-			
+
 			getLayoutGroups ();
 			getLineMeasurements ();
 			setTextAlignment ();
-			
+
 		}
-		
+
 		getBounds ();
-		
+
 	}
-	
-	
+
+
 }

@@ -111,9 +111,13 @@ class MouseEvent extends Event {
 
 	}
 
-	override public function dispose()
+	public override function release()
 	{
-		pool.put(this);
+		if( ( --__refcount == 0 ) && __fromPool ){
+			__refcount = -1;
+			__fromPool = false;
+			pool.put(this);
+		}
 	}
 
 }

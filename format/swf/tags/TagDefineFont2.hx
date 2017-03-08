@@ -10,7 +10,7 @@ import flash.utils.ByteArray;
 class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 48;
-	
+
 	public var hasLayout:Bool;
 	public var shiftJIS:Bool;
 	public var smallText:Bool;
@@ -24,12 +24,12 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 	public var ascent:Int;
 	public var descent:Int;
 	public var leading:Int;
-	
+
 	public var codeTable (default, null):Array<Int>;
 	public var fontAdvanceTable (default, null):Array<Int>;
 	public var fontBoundsTable (default, null):Array<SWFRectangle>;
 	public var fontKerningTable (default, null):Array<SWFKerningRecord>;
-	
+
 	public function new() {
 		super ();
 		type = TYPE;
@@ -41,7 +41,7 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 		fontBoundsTable = new Array<SWFRectangle>();
 		fontKerningTable = new Array<SWFKerningRecord>();
 	}
-	
+
 	override public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
 		characterId = data.readUI16();
 		var flags:Int = data.readUI8();
@@ -62,13 +62,12 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 		#else
 		fontName = fontNameRaw.readUTFBytes(fontNameLen);
 		#end
-		var i:Int;
 		var numGlyphs:Int = data.readUI16();
 		if(numGlyphs > 0) {
 			// Skip offsets. We don't need them.
 			data.skipBytes(numGlyphs << (wideOffsets ? 2 : 1));
 			// Not used
-			var codeTableOffset:Int = (wideOffsets ? data.readUI32() : data.readUI16());
+			/*var codeTableOffset:Int = */(wideOffsets ? data.readUI32() : data.readUI16());
 			for (i in 0...numGlyphs) {
 				glyphShapeTable.push(data.readSHAPE());
 			}
@@ -92,11 +91,10 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 			}
 		}
 	}
-	
+
 	override public function publish(data:SWFData, version:Int):Void {
 		var body:SWFData = new SWFData();
 		var numGlyphs:Int = glyphShapeTable.length;
-		var i:Int;
 		body.writeUI16(characterId);
 		var flags:Int = 0;
 		if(hasLayout) { flags |= 0x80; }
@@ -170,7 +168,7 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
+
 	override public function toString(indent:Int = 0):String {
 		var str:String = Tag.toStringCommon(type, name, indent) +
 			"ID: " + characterId + ", " +
@@ -180,9 +178,8 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 			"Glyphs: " + glyphShapeTable.length;
 		return str + toStringCommon(indent);
 	}
-	
+
 	override private function toStringCommon(indent:Int):String {
-		var i:Int;
 		var str:String = super.toStringCommon(indent);
 		if (hasLayout) {
 			str += "\n" + StringUtils.repeat(indent + 2) + "Ascent: " + ascent;

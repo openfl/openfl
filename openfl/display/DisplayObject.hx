@@ -107,6 +107,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __shader:Shader;
 	private var __transform:Matrix;
 	private var __transformDirty:Bool;
+	private var __updateDirty:Bool;
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
@@ -303,10 +304,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private override function __dispatchEvent (event:Event):Bool {
 
+		event.acquire();
 		var result = super.__dispatchEvent (event);
 
 		if (event.__isCanceled) {
-
+			event.release();
 			return true;
 
 		}
@@ -324,6 +326,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 			parent.__dispatchEvent (event);
 
 		}
+
+		event.release();
 
 		return result;
 
@@ -491,13 +495,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function __hitTestMask (x:Float, y:Float):Bool {
 
-		if (!visible || __graphics == null) return false;
+		if (__graphics == null) return false;
 
-			if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
+		if (__graphics.__hitTest (x, y, true, __getWorldTransform ())) {
 
-				return true;
+			return true;
 
-			}
+		}
 
 		return false;
 
@@ -587,8 +591,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 				if( __mask.__cachedBitmap != null ){
 					__mask.__cachedBitmap.dispose();
+					__mask.__cachedBitmap = null;
 				}
-				__mask.__cachedBitmap = null;
 
 				__mask.__isMask = true;
 				__mask.__update (true, true);
@@ -766,6 +770,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (dirty) {
 			__setRenderDirty();
 		}
+
+		if ( __objectTransform != null) {
+			Transform.pool.put(__objectTransform);
+			__objectTransform = null;
+		}
 	}
 
 
@@ -781,6 +790,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__renderDirty) {
 
 			__renderDirty = true;
+			__setUpdateDirty();
 			__worldRenderDirty++;
 
 			if (__cachedParent != null) {
@@ -797,12 +807,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!__transformDirty) {
 
 			__transformDirty = true;
+			__setUpdateDirty();
 			__worldTransformDirty++;
 
 		}
 
 	}
 
+	private inline function __setUpdateDirty() :Void {
+		if ( !__updateDirty && stage != null && this != this.stage ) {
+			__updateDirty = true;
+			stage.__updateStack.push(this);
+		}
+
+	}
 	private function __updateCachedBitmapBounds (filterTransform:Matrix):Void {
 
 		if (__cachedBitmapBounds == null) {
@@ -862,8 +880,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	}
 
 	public function __update (transformOnly:Bool, updateChildren:Bool):Void {
+		__inlineUpdate(transformOnly, updateChildren);
+	}
 
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
+	public inline function __inlineUpdate(transformOnly:Bool, updateChildren:Bool):Void {
+
+    __renderable = (visible && !hasZeroScale() && !__isMask);
 
 		__updateTransforms ();
 
@@ -877,7 +899,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (!transformOnly) {
 
 			#if profile
-				untyped __js__("++window.updateCalls;");
+				lime._backend.html5.HTML5Application.__updateCalls++;
 			#end
 
 			__updateColor();
@@ -895,13 +917,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 				}
 			}
 
-			if (updateChildren && __renderDirty) {
-
-				__renderDirty = false;
-
-			}
+			__renderDirty = __renderDirty && !updateChildren;
+			__updateDirty = false;
 		}
-
 	}
 
 	#if profile
@@ -926,7 +944,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public function __updateChildren (transformOnly:Bool):Void {
 
-		__renderable = (visible && scaleX != 0 && scaleY != 0 && !__isMask);
+		__renderable = (visible && !hasZeroScale() && !__isMask);
 		if (!__renderable && !__isMask) return;
 		__worldAlpha = alpha;
 
@@ -1044,7 +1062,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private function set_alpha (value:Float):Float {
 
 		if (value > 1.0) value = 1.0;
-		if (value != __alpha) __setRenderDirty ();
+		if (value != __alpha) {
+			__setRenderDirty ();
+		}
 		return __alpha = value;
 
 	}
@@ -1052,14 +1072,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	private function set_blendMode (value:BlendMode):BlendMode {
 
-		__blendMode = value;
+		if ( __blendMode != value ) {
+			__setUpdateDirty();
+			__blendMode = value;
+		}
 		return blendMode = value;
 
 	}
 
 	private function set_shader (value:Shader):Shader {
 
-		__shader = value;
+		if ( __shader != value ) {
+			__setUpdateDirty();
+			__shader = value;
+		}
 		return shader = value;
 
 	}
@@ -1312,6 +1338,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	public inline function hasZeroScale ():Bool {
+		return (__transform.a == 0
+				&& __transform.b == 0 )
+			|| (__transform.c == 0
+			&& __transform.d == 0 );
+	}
 
 	private function get_scaleX ():Float {
 
@@ -1346,7 +1378,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		return value;
 
 	}
-
 
 	private function get_scaleY ():Float {
 
@@ -1407,7 +1438,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__objectTransform == null) {
 
-			__objectTransform = new Transform (this);
+			__objectTransform = Transform.pool.get();
+			__objectTransform.reset(this);
 
 		}
 
@@ -1426,7 +1458,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 		if (__objectTransform == null) {
 
-			__objectTransform = new Transform (this);
+			__objectTransform = Transform.pool.get();
+			__objectTransform.reset(this);
 
 		}
 

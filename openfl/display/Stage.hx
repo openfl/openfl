@@ -85,6 +85,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 	public var stageFocusRect:Bool;
 	public var stageHeight (default, null):Int;
 	public var stageWidth (default, null):Int;
+	public var fullScreenWidth (get, never):Int;
+	public var fullScreenHeight (get, never):Int;
 
 	public var window (default, null):Window;
 
@@ -117,6 +119,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 	private var __stack:UnshrinkableArray<DisplayObject>;
 	private var __focusStack:UnshrinkableArray<DisplayObject>;
 	private var __allChildrenStack:HaxeVector<DisplayObject> = new HaxeVector<DisplayObject>(4096);
+	private var __updateStack:UnshrinkableArray<DisplayObject> = new UnshrinkableArray<DisplayObject>(256);
 	private var __allChildrenLength: Int;
 	private var __transparent:Bool;
 	private var __wasDirty:Bool;
@@ -163,8 +166,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 		__mouseY = 0;
 		__lastClickTime = 0;
 
-		stageWidth = Std.int (window.displayWidth * window.scale);
-		stageHeight = Std.int (window.displayHeight * window.scale);
+		stageWidth = Std.int (window.originalWidth * window.scale);
+		stageHeight = Std.int (window.originalHeight * window.scale);
 
 		this.stage = this;
 
@@ -310,8 +313,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		if (window != null) {
 
-			var event = Event.__create (Event.DEACTIVATE);
-			__broadcastFromStage (event, true);
+			__broadcastFromStage (Event.__create (Event.DEACTIVATE), true);
 
 		}
 
@@ -518,7 +520,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			#if !neko
 				if ( window.resizable ) {
-					ApplicationMain.resize({width: window.width, height: window.height});
+					ApplicationMain.resizeStatic({width: window.width, height: window.height});
 				}
 			#end
 
@@ -610,11 +612,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		}
 
-		#if duell_container
-			// :NOTE: Account for menu bar.
-			height -= 25;
-		#end
-
 		width = Std.int (width * window.scale);
 		height = Std.int( height * window.scale);
 
@@ -633,12 +630,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 						var new_width = width / stageWidth;
 						this.scaleX = new_width;
 						this.scaleY = new_width;
-						height = Std.int(stageHeight * new_width);
+						height = Math.ceil(stageHeight * new_width);
 					} else {
 						var new_height = height / stageHeight;
 						this.scaleX = new_height;
 						this.scaleY = new_height;
-						width = Std.int(stageWidth * new_height);
+						width = Math.ceil(stageWidth * new_height);
 					}
 
 				case StageScaleMode.NO_SCALE:
@@ -653,19 +650,21 @@ class Stage extends DisplayObjectContainer implements IModule {
 						var new_height = height / stageHeight;
 						this.scaleX = new_height;
 						this.scaleY = new_height;
-						width = Std.int(stageWidth * new_height);
+						width = Math.ceil(stageWidth * new_height);
 					} else {
 						var new_width = width / stageWidth;
 						this.scaleX = new_width;
 						this.scaleY = new_width;
-						height = Std.int(stageHeight * new_width);
+						height = Math.ceil(stageHeight * new_width);
 					}
 			}
 		}
 
+		__update(false, true);
 
 		if (__renderer != null) {
 
+			trace('Resizing renderer to $width, $height');
 			__renderer.resize (width, height);
 
 		}
@@ -681,11 +680,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	public function set_scaleMode(scaleMode):StageScaleMode {
 		if ( scaleMode != __scaleMode ) {
-			#if duell_container
-				onWindowResize(window, window.width, window.height + 25);
-			#else
-				onWindowResize(window, window.width, window.height);
-			#end
+			onWindowResize(window, window.width, window.height);
 		}
 		return __scaleMode = scaleMode;
 	}
@@ -713,6 +708,9 @@ class Stage extends DisplayObjectContainer implements IModule {
 			stack_id = __allChildrenStack[i];
 			if (stack_id.__children != null && stack_id.__children.length > 0) {
 				for(child in stack_id.__children) {
+					if ( child.__updateDirty ) {
+						__updateStack.push(child);
+					}
 					__allChildrenStack.set(__allChildrenLength,child);
 					__allChildrenLength++;
 				}
@@ -756,6 +754,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target = this;
 		}
 
+		event.acquire();
 		var result = broadcast (event, this);
 
 		if (!event.__isCanceled && notifyChilden) {
@@ -767,12 +766,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 				broadcast(event, stack_id);
 
 				if (event.__isCanceled) {
+					event.release();
 					return true;
 				}
 				++i;
 			}
 		}
 
+		event.release();
 		return result;
 	}
 
@@ -814,7 +815,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		__enterFrame (__deltaTime);
 		__deltaTime = 0;
-		__update (false, true);
+		__updateDirtyElements (false, true);
 
 		if (__renderer != null) {
 
@@ -868,12 +869,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			event.eventPhase = EventPhase.CAPTURING_PHASE;
 			event.target = stack[stack.length - 1];
+			event.acquire();
 
 			for (i in 0...length - 1) {
 
 				stack[i].__broadcast (event, false);
 
 				if (event.__isCanceled) {
+					event.release();
 					return;
 
 				}
@@ -884,6 +887,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 			event.target.__broadcast (event, false);
 
 			if (event.__isCanceled) {
+
+				event.release();
 				return;
 
 			}
@@ -898,6 +903,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 					stack[i].__broadcast (event, false);
 
 					if (event.__isCanceled) {
+						event.release();
 						return;
 
 					}
@@ -907,6 +913,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 				}
 
 			}
+
+			event.release();
 
 		}
 	}
@@ -1185,7 +1193,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				event = MouseEvent.__create (MouseEvent.MOUSE_OUT, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
-				event.dispose();
 			}
 
 			inline function rollOut(target:DisplayObject) {
@@ -1195,7 +1202,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					event = MouseEvent.__create (MouseEvent.ROLL_OUT, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
-					event.dispose();
 				}
 			}
 
@@ -1206,7 +1212,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 					event = MouseEvent.__create (MouseEvent.ROLL_OVER, __mouseX, __mouseY, targetPointLocal, cast target);
 					event.bubbles = false;
 					target.__dispatchEvent (event);
-					event.dispose();
 				}
 			}
 
@@ -1216,7 +1221,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 				event = MouseEvent.__create (MouseEvent.MOUSE_OVER, __mouseX, __mouseY, targetPointLocal, cast target);
 				event.bubbles = true;
 				target.__dispatchEvent (event);
-				event.dispose();
 			}
 
 			diffStacks();
@@ -1318,63 +1322,6 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 
 	private function __resize ():Void {
-
-		/*
-		if (__element != null && (__div == null || (__div != null && __fullscreen))) {
-
-			if (__fullscreen) {
-
-				stageWidth = __element.clientWidth;
-				stageHeight = __element.clientHeight;
-
-				if (__canvas != null) {
-
-					if (__element != cast __canvas) {
-
-						__canvas.width = stageWidth;
-						__canvas.height = stageHeight;
-
-					}
-
-				} else {
-
-					__div.style.width = stageWidth + "px";
-					__div.style.height = stageHeight + "px";
-
-				}
-
-			} else {
-
-				var scaleX = __element.clientWidth / __originalWidth;
-				var scaleY = __element.clientHeight / __originalHeight;
-
-				var currentRatio = scaleX / scaleY;
-				var targetRatio = Math.min (scaleX, scaleY);
-
-				if (__canvas != null) {
-
-					if (__element != cast __canvas) {
-
-						__canvas.style.width = __originalWidth * targetRatio + "px";
-						__canvas.style.height = __originalHeight * targetRatio + "px";
-						__canvas.style.marginLeft = ((__element.clientWidth - (__originalWidth * targetRatio)) / 2) + "px";
-						__canvas.style.marginTop = ((__element.clientHeight - (__originalHeight * targetRatio)) / 2) + "px";
-
-					}
-
-				} else {
-
-					__div.style.width = __originalWidth * targetRatio + "px";
-					__div.style.height = __originalHeight * targetRatio + "px";
-					__div.style.marginLeft = ((__element.clientWidth - (__originalWidth * targetRatio)) / 2) + "px";
-					__div.style.marginTop = ((__element.clientHeight - (__originalHeight * targetRatio)) / 2) + "px";
-
-				}
-
-			}
-
-		}*/
-
 	}
 
 
@@ -1422,19 +1369,29 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	}
 
-
-	public override function __update (transformOnly:Bool, updateChildren:Bool):Void {
+	public function __updateDirtyElements (transformOnly:Bool, updateChildren:Bool):Void {
 
 		if (DisplayObject.__worldTransformDirty > 0 && ( transformOnly || ( __dirty || DisplayObject.__worldRenderDirty > 0 ) ) ) {
-			super.__update (transformOnly, updateChildren);
-
-				if (updateChildren) {
-					DisplayObject.__worldTransformDirty = 0;
+			__inlineUpdate(transformOnly, updateChildren);
+			var i = 0;
+			// :NOTE: Length can change here. don't cache it.
+			while (i < __updateStack.length ) {
+				var child = __updateStack[i];
+				if ( child.__updateDirty ) {
+					child.__update(transformOnly, updateChildren);
+				}
+				++i;
+			}
+			if (updateChildren) {
+				DisplayObject.__worldTransformDirty = 0;
 				if ( !transformOnly ) {
 					DisplayObject.__worldRenderDirty = 0;
 				}
 				__dirty = transformOnly;
 			}
+
+			__updateStack.clear();
+
 		}
 	}
 
@@ -1597,6 +1554,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		return value;
 
+	}
+
+	private function get_fullScreenWidth():Int {
+		return window.screenWidth;
+	}
+
+	private function get_fullScreenHeight():Int {
+		return window.screenHeight;
 	}
 
 }

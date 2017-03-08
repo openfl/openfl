@@ -26,9 +26,6 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var numChildren (get, null):Int;
 	public var tabChildren:Bool;
 
-	private var __removedChildren:UnshrinkableArray<DisplayObject>;
-
-
 	private function new () {
 
 		super ();
@@ -36,7 +33,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		mouseChildren = true;
 
 		__children = new UnshrinkableArray<DisplayObject> (8);
-		__removedChildren = new UnshrinkableArray<DisplayObject> (8);
 
 	}
 
@@ -76,10 +72,11 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__useSeparateRenderScaleTransform = false;
 		}
 
-		if (child.parent == this) {
+		var childIndexToRemove:Int = -1;
 
-			var index: Int = __children.indexOf (child);
-			__children[index] = null;
+		if (child.parent == this) {
+			childIndexToRemove = __children.indexOf (child);
+			__children[childIndexToRemove] = null;
 		} else {
 
 			if (child.parent != null) {
@@ -91,10 +88,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			initParent(child);
 		}
 
-		if( index < __children.length && __children[index] == null ){
-			__children[index] = child;
-		} else {
-			__children.insert(index,child);
+		__children.insert(index,child);
+
+		if(childIndexToRemove > -1) {
+			removeChildAt(childIndexToRemove < index ? childIndexToRemove : childIndexToRemove + 1);
 		}
 
 		return child;
@@ -125,9 +122,7 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__setRenderDirty ();
 			__setRenderDirty();
 
-			var event = Event.__create (Event.ADDED, true);
-			event.target = child;
-			child.__dispatchEvent (event);
+			child.dispatchEvent (Event.__create (Event.ADDED, true));
 	}
 
 	public function areInaccessibleObjectsUnderPoint (point:Point):Bool {
@@ -178,13 +173,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	public function getChildIndex (child:DisplayObject):Int {
 
-		for (i in 0...__children.length) {
-
-			if (__children[i] == child) return i;
-
-		}
-
-		return -1;
+		return __children.indexOf(child);
 
 	}
 
@@ -203,7 +192,7 @@ class DisplayObjectContainer extends InteractiveObject {
 
 		if (child != null && child.parent == this) {
 
-			child.__dispatchEvent (Event.__create (Event.REMOVED, true));
+			child.dispatchEvent (Event.__create (Event.REMOVED, true));
 
 			if (stage != null) {
 
@@ -216,7 +205,6 @@ class DisplayObjectContainer extends InteractiveObject {
 				child.setCachedParent(null);
 			}
 			__children.remove (child);
-			__removedChildren.push (child);
 			child.__setTransformDirty ();
 			child.__setRenderDirty ();
 			__setRenderDirty();
@@ -553,6 +541,9 @@ class DisplayObjectContainer extends InteractiveObject {
 
 							if (interactive) {
 
+								if ( !hitTest ) {
+									return true;
+								}
 								break;
 
 							}
@@ -597,7 +588,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 	private override function __hitTestMask (x:Float, y:Float):Bool {
 
-		if (!visible) return false;
 		var i = __children.length;
 
 		while (--i >= 0) {
@@ -639,12 +629,6 @@ class DisplayObjectContainer extends InteractiveObject {
 
 			if (child == null ) continue;
 			child.__renderCairo (renderSession);
-
-		}
-
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
 
 		}
 
@@ -708,12 +692,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		for (child in __children) {
 			if (child == null ) continue;
 			child.__renderCanvas (renderSession);
-
-		}
-
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
 
 		}
 
@@ -794,8 +772,8 @@ class DisplayObjectContainer extends InteractiveObject {
 				if( !child.__maskCached ){
 					if( child.__cachedBitmap != null ){
 						child.__cachedBitmap.dispose();
+						child.__cachedBitmap = null;
 					}
-					child.__cachedBitmap = null;
 
 					child.__isMask = true;
 					child.__update (true, true);
@@ -816,12 +794,6 @@ class DisplayObjectContainer extends InteractiveObject {
 		}
 
 		__postRenderGL (renderSession);
-
-		if (__removedChildren.length > 0) {
-
-			__removedChildren.splice (0, __removedChildren.length);
-
-		}
 
 	}
 
@@ -846,6 +818,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			}
 
 			this.stage = stage;
+
+			__setUpdateDirty();
 
 			if (stage != null) {
 
@@ -935,7 +909,7 @@ class DisplayObjectContainer extends InteractiveObject {
 				}
 			} else {
 				for(child in __children){
-					setCachedParent (null);
+					child.setCachedParent (null);
 				}
 			}
 		}

@@ -166,7 +166,7 @@ class Sound extends EventDispatcher {
 		source.offset = Std.int (startTime * 1000);
 		if (loops > 1) source.loops = loops - 1;
 		if (sndTransform != null) source.gain = sndTransform.volume;
-		return new SoundChannel (source);
+		return SoundChannel.__create (source);
 
 		#else
 
@@ -188,7 +188,7 @@ class Sound extends EventDispatcher {
 		else
 			SoundJS.play (__soundID, SoundJS.INTERRUPT_ANY, 0, Std.int (startTime), 0, sndTransform.volume, pan);
 
-		return new SoundChannel (instance);
+		return SoundChannel.__create (instance);
 
 		#end
 
@@ -224,20 +224,22 @@ class Sound extends EventDispatcher {
 
 	private function get_length ():Int {
 
-		if (__buffer != null) {
+		#if flash || !html5
+			if (__buffer != null) {
 
-			#if flash
+				#if flash
 
-			return Std.int (__buffer.src.length);
+				return Std.int (__buffer.src.length);
 
-			#elseif !html5
+				#elseif !html5
 
-			var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
-			return Std.int (samples / __buffer.sampleRate * 1000);
+				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+				return Std.int (samples / __buffer.sampleRate * 1000);
 
-			#end
+				#end
 
-		}
+			}
+		#end
 
 		return 0;
 

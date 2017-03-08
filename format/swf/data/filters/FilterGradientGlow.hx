@@ -97,7 +97,6 @@ class FilterGradientGlow extends Filter implements IFilter
 
 	override public function parse(data:SWFData):Void {
 		numColors = data.readUI8();
-		var i:Int;
 		for (i in 0...numColors) {
 			gradientColors.push(data.readRGBA());
 		}
@@ -119,7 +118,6 @@ class FilterGradientGlow extends Filter implements IFilter
 
 	override public function publish(data:SWFData):Void {
 		data.writeUI8(numColors);
-		var i:Int;
 		for (i in 0...numColors) {
 			data.writeRGBA(gradientColors[i]);
 		}
@@ -142,7 +140,6 @@ class FilterGradientGlow extends Filter implements IFilter
 	override public function clone():IFilter {
 		var filter:FilterGradientGlow = new FilterGradientGlow(id);
 		filter.numColors = numColors;
-		var i:Int;
 		for (i in 0...numColors) {
 			filter.gradientColors.push(gradientColors[i]);
 		}
@@ -163,7 +160,6 @@ class FilterGradientGlow extends Filter implements IFilter
 	}
 
 	override public function toString(indent:Int = 0):String {
-		var i:Int;
 		var str:String = "[GradientGlowFilter] " +
 			"BlurX: " + blurX + ", " +
 			"BlurY: " + blurY + ", " +

@@ -18,45 +18,44 @@ import flash.errors.Error;
 class TagDefineMorphShape implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 46;
-	
+
 	public var startBounds:SWFRectangle;
 	public var endBounds:SWFRectangle;
 	public var startEdges:SWFShape;
 	public var endEdges:SWFShape;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-	
+
 	public var characterId:Int;
-	
+
 	public var morphFillStyles (default, null):Array<SWFMorphFillStyle>;
 	public var morphLineStyles (default, null):Array<SWFMorphLineStyle>;
-	
+
 	public var exportHandler:IShapeExporter;
-	
+
 	private var exportShape:SWFShape;
-	
+
 	public function new() {
-		
+
 		type = TYPE;
 		name = "DefineMorphShape";
 		version = 3;
 		level = 1;
-		
+
 		morphFillStyles = new Array<SWFMorphFillStyle>();
 		morphLineStyles = new Array<SWFMorphLineStyle>();
-		
+
 		exportShape = new SWFShape();
 	}
-	
+
 	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
 		characterId = data.readUI16();
 		startBounds = data.readRECT();
 		endBounds = data.readRECT();
-		var offset:Int = data.readUI32();
-		var i:Int;
+		/*var offset:Int = */data.readUI32();
 		// MorphFillStyleArray
 		var fillStyleCount:Int = data.readUI8();
 		if (fillStyleCount == 0xff) {
@@ -76,14 +75,13 @@ class TagDefineMorphShape implements IDefinitionTag
 		startEdges = data.readSHAPE();
 		endEdges = data.readSHAPE();
 	}
-	
+
 	public function publish(data:SWFData, version:Int):Void {
 		var body:SWFData = new SWFData();
 		body.writeUI16(characterId);
 		body.writeRECT(startBounds);
 		body.writeRECT(endBounds);
 		var startBytes:SWFData = new SWFData();
-		var i:Int;
 		// MorphFillStyleArray
 		var fillStyleCount:Int = morphFillStyles.length;
 		if (fillStyleCount > 0xfe) {
@@ -113,22 +111,21 @@ class TagDefineMorphShape implements IDefinitionTag
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
+
 	public function clone():IDefinitionTag {
-		var tag:TagDefineMorphShape = new TagDefineMorphShape();
 		throw(new Error("Not implemented yet."));
+		var tag:TagDefineMorphShape = new TagDefineMorphShape();
 		return tag;
 	}
-	
+
 	public function export(ratio:Float = 0):Void {
-		var i:Int;
 		var j:Int = 0;
 		//var exportShape:SWFShape = new SWFShape();
-		
+
 		exportShape.records.splice(0, exportShape.records.length);
 		exportShape.fillStyles.splice(0, exportShape.fillStyles.length);
 		exportShape.lineStyles.splice(0, exportShape.lineStyles.length);
-		
+
 		var numEdges:Int = startEdges.records.length;
 		for(i in 0...numEdges) {
 			var startRecord:SWFShapeRecord = startEdges.records[i];
@@ -141,11 +138,11 @@ class TagDefineMorphShape implements IDefinitionTag
 				j++;*/
 				//continue;
 			//}
-			
+
 			var endRecord:SWFShapeRecord = endEdges.records[j++];
-			
+
 			var exportRecord:SWFShapeRecord = null;
-			// It is possible for an edge to change type over the course of a morph sequence. 
+			// It is possible for an edge to change type over the course of a morph sequence.
 			// A straight edge can become a curved edge and vice versa
 			// Convert straight edge to curved edge, if needed:
 			if(startRecord.type == SWFShapeRecord.TYPE_CURVEDEDGE && endRecord.type == SWFShapeRecord.TYPE_STRAIGHTEDGE) {
@@ -153,7 +150,7 @@ class TagDefineMorphShape implements IDefinitionTag
 			} else if(startRecord.type == SWFShapeRecord.TYPE_STRAIGHTEDGE && endRecord.type == SWFShapeRecord.TYPE_CURVEDEDGE) {
 				startRecord = convertToCurvedEdge(cast (startRecord, SWFShapeRecordStraightEdge));
 			}
-			
+
 			switch(startRecord.type) {
 				case SWFShapeRecord.TYPE_STYLECHANGE:
 					var startStyleChange:SWFShapeRecordStyleChange = cast startRecord.clone();
@@ -171,10 +168,10 @@ class TagDefineMorphShape implements IDefinitionTag
 				case SWFShapeRecord.TYPE_STRAIGHTEDGE:
 					var startStraightEdge:SWFShapeRecordStraightEdge = cast startRecord.clone();
 					var endStraightEdge:SWFShapeRecordStraightEdge = cast endRecord;
-					
+
 					startStraightEdge.deltaX += Std.int ((endStraightEdge.deltaX - startStraightEdge.deltaX) * ratio);
 					startStraightEdge.deltaY += Std.int ((endStraightEdge.deltaY - startStraightEdge.deltaY) * ratio);
-					
+
 					if(startStraightEdge.deltaX != 0 && startStraightEdge.deltaY != 0) {
 						startStraightEdge.generalLineFlag = true;
 						startStraightEdge.vertLineFlag = false;
@@ -182,7 +179,7 @@ class TagDefineMorphShape implements IDefinitionTag
 						startStraightEdge.generalLineFlag = false;
 						startStraightEdge.vertLineFlag = (startStraightEdge.deltaX == 0);
 					}
-					
+
 					exportRecord = startStraightEdge;
 				case SWFShapeRecord.TYPE_CURVEDEDGE:
 					var startCurvedEdge:SWFShapeRecordCurvedEdge = cast startRecord.clone();
@@ -205,7 +202,7 @@ class TagDefineMorphShape implements IDefinitionTag
 		}
 		exportShape.export(exportHandler);
 	}
-	
+
 	private function convertToCurvedEdge(straightEdge:SWFShapeRecordStraightEdge):SWFShapeRecordCurvedEdge {
 		var curvedEdge:SWFShapeRecordCurvedEdge = new SWFShapeRecordCurvedEdge();
 		curvedEdge.controlDeltaX = Std.int (straightEdge.deltaX / 2);
@@ -216,9 +213,8 @@ class TagDefineMorphShape implements IDefinitionTag
 		curvedEdge.anchorDeltaY = Std.int (straightEdge.deltaY / 2);
 		return curvedEdge;
 	}
-	
+
 	public function toString(indent:Int = 0):String {
-		var i:Int;
 		var indent2:String = StringUtils.repeat(indent + 2);
 		var indent4:String = StringUtils.repeat(indent + 4);
 		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId;

@@ -38,9 +38,6 @@ class CanvasGraphics {
 	private static var SIN45 = 0.70710678118654752440084436210485;
 	private static var TAN22 = 0.4142135623730950488016887242097;
 
-	private static var bitmapFill:BitmapData;
-	private static var bitmapStroke:BitmapData;
-	private static var bitmapRepeat:Bool;
 	private static var hasFill:Bool;
 	private static var hasStroke:Bool;
 	private static var hitTesting:Bool;
@@ -225,8 +222,6 @@ class CanvasGraphics {
 	{
 		hasFill = false;
 		hasStroke = false;
-		bitmapFill = null;
-		bitmapRepeat = false;
 	}
 
 	private static function endRenderStep()
@@ -247,7 +242,7 @@ class CanvasGraphics {
 
 			}
 
-			if (canvasGraphics.hasFill || canvasGraphics.bitmapFill != null) {
+			if (canvasGraphics.hasFill) {
 				context.save();
 
 				var pending_matrix = canvasGraphics.pendingMatrix;
@@ -362,7 +357,6 @@ class CanvasGraphics {
 							var c = data.readBeginFill ();
 						}
 
-						bitmapFill = null;
 						hasFill = true;
 
 					case DRAW_CIRCLE:
@@ -1025,7 +1019,6 @@ class CanvasGraphics {
 
 			}
 
-			bitmapFill = null;
 			hasFill = true;
 
 		}
@@ -1037,7 +1030,6 @@ class CanvasGraphics {
 
 		context.fillStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 		pendingMatrix = c.matrix;
-		bitmapFill = null;
 		hasFill = true;
 	}
 
@@ -1045,55 +1037,6 @@ class CanvasGraphics {
 	{
 		var c = data.readDrawRect ();
 		var optimizationUsed = false;
-
-		if (bitmapFill != null) {
-
-			var st:Float = 0;
-			var sr:Float = 0;
-			var sb:Float = 0;
-			var sl:Float = 0;
-
-			var canOptimizeMatrix = true;
-
-			if (pendingMatrix != null) {
-
-				if (pendingMatrix.b != 0 || pendingMatrix.c != 0) {
-
-					canOptimizeMatrix = false;
-
-				} else {
-					var point1 = Point.pool.get();
-					point1.setTo(c.x, c.y);
-					var point2 = Point.pool.get();
-					point2.setTo(c.x + c.width, c.y + c.height);
-					var stl = inversePendingMatrix.transformPoint (point1);
-					Point.pool.put(point1);
-					var sbr = inversePendingMatrix.transformPoint (point2);
-					Point.pool.put(point2);
-
-					st = stl.y;
-					sl = stl.x;
-					sb = sbr.y;
-					sr = sbr.x;
-
-				}
-
-			} else {
-
-				st = c.y;
-				sl = c.x;
-				sb = c.y + c.height;
-				sr = c.x + c.width;
-
-			}
-
-			if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height) {
-
-				optimizationUsed = true;
-				if (!hitTesting) context.drawImage (bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x, c.y, c.width, c.height);
-
-			}
-		}
 
 		if (!optimizationUsed) {
 

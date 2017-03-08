@@ -198,7 +198,7 @@ class ApplicationMain {
 		
 	}
 	
-	public static function resize(object:Dynamic): Void {
+	public static function resizeStatic(object:Dynamic): Void {
 	}
 
 	

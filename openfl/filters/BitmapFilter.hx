@@ -20,8 +20,6 @@ import js.html.ImageData;
 
 class BitmapFilter {
 
-	private var __dirty:Bool = true;
-
 	public static var __inverseAlphaMultipliers = new Float32Array([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -1.0]);
 	public static var __inverseAlphaOffsets = new Float32Array([0.0, 0.0, 0.0, 1.0]);
 
@@ -56,7 +54,6 @@ class BitmapFilter {
 		}
 
 		for (filter in filters) {
-			var useLastFilter = false;
 
 			var commands = filter.__getCommands (bitmap);
 
@@ -138,19 +135,19 @@ class BitmapFilter {
 	}
 
 	private static inline function _getTransformedOffset(transformedOffset:Point, distance:Float, angleInDegrees:Float, transform:Matrix) {
-		
+
 		var offset = Point.pool.get ();
 		offset.x = distance * Math.cos (angleInDegrees * Math.PI / 180);
 		offset.y = distance * Math.sin (angleInDegrees * Math.PI / 180);
-		
+
 		if (transform.a != 1.0  || transform.d != 1.0 || transform.b != 0.0 || transform.c != 0.0) {
-			
+
 			transformedOffset.copyFrom (transform.deltaTransformPoint (offset));
-			
+
 		} else {
 			transformedOffset.copyFrom (offset);
 		}
-		
+
 		Point.pool.put (offset);
 	}
 }
