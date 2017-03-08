@@ -408,6 +408,8 @@ class SWFLiteExporter {
 		var handler = new ShapeCommandExporter (data);
 		tag.export (handler);
 		
+		// TODO: Remove need for this optimization
+		
 		#if !disable_bitmap_optimization
 		var bitmaps = ShapeBitmapExporter.process (handler);
 		#else
@@ -425,6 +427,24 @@ class SWFLiteExporter {
 				bitmap = bitmaps[i];
 				
 				processTag (cast data.getCharacter (bitmap.id));
+				
+				var bitmapSymbol:BitmapSymbol = cast swfLite.symbols.get (bitmap.id);
+				
+				if (bitmapSymbol != null) {
+					
+					// Use smoothing if a shape requests it
+					
+					if (bitmapSymbol.smooth == null && !bitmap.smooth) {
+						
+						bitmapSymbol.smooth = false;
+						
+					} else if (bitmapSymbol.smooth == false && bitmap.smooth) {
+						
+						bitmapSymbol.smooth = true;
+						
+					}
+					
+				}
 				
 				frameObject = new FrameObject ();
 				frameObject.symbol = bitmap.id;

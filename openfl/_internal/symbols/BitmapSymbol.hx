@@ -16,6 +16,7 @@ class BitmapSymbol extends SWFSymbol {
 	
 	public var alpha:String;
 	public var path:String;
+	public var smooth:Null<Bool>;
 	
 	
 	public function new () {
@@ -27,7 +28,7 @@ class BitmapSymbol extends SWFSymbol {
 	
 	private override function __createObject (swf:SWFLite):Bitmap {
 		
-		return new Bitmap (BitmapData.fromImage (swf.library.getImage (path)), PixelSnapping.AUTO, true);
+		return new Bitmap (BitmapData.fromImage (swf.library.getImage (path)), PixelSnapping.AUTO, smooth != false);
 		
 	}
 	
