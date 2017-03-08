@@ -106,25 +106,15 @@ class ShaderMacro {
 							default: null;
 							
 						}
+
+						if (!isBaseClass && shaderDataFields.length > 0)
+						{
+							var localClassPath = localClass.pack.join(".");
+							block.unshift ({ expr: EBinop(OpAssign, macro __data, Context.parse ('new $localClassPath.$dataClassName (null)', pos)), pos: pos });
+						}
 						
 						if (glVertexSource != null) block.unshift (macro if (__glVertexSource == null) __glVertexSource = $v{glVertexSource});
 						if (glFragmentSource != null) block.unshift (macro if (__glFragmentSource == null) __glFragmentSource = $v{glFragmentSource});
-					
-					case "__data":
-						
-						field.kind = FVar (TPath ({ name: dataClassName, pack: localClass.pack, params: [] }), Context.parse ("new " + dataClassName + " (null)", pos));
-					
-					case "get_data":
-						
-						switch (field.kind) {
-							
-							case FFun (f):
-								
-								f.ret = TPath ({ name: dataClassName, pack: localClass.pack, params: [] });
-							
-							default:
-							
-						}
 					
 					default:
 					
