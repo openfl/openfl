@@ -73,9 +73,16 @@ class Blur1DCommand {
 		if (totalFetchCount > MAXIMUM_FETCH_COUNT) {
 
 			var trimCount = totalFetchCount - MAXIMUM_FETCH_COUNT;
-			var halfTrimCount = (trimCount + 1) >> 2;
+			var halfTrimCount = (trimCount + 1) >> 1;
 
 			weightTable = weightTable.subarray (halfTrimCount, totalFetchCount - halfTrimCount);
+			var sum = 0.0;
+			for(i in 0...weightTable.length) {
+				sum += weightTable[i];
+			}
+			for(i in 0...weightTable.length) {
+				weightTable[i] /= sum;
+			}
 			totalFetchCount = weightTable.length;
 
 		}
