@@ -72,6 +72,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 
 	public var align:StageAlign;
+	public var frameTime(default, null):Int;
 	public var allowsFullScreen (default, null):Bool;
 	public var allowsFullScreenInteractive (default, null):Bool;
 	public var application (default, null):Application;
@@ -721,12 +722,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	public override function __enterFrame(deltaTime:Int):Void {
 
-		var stack_id;
+		var child;
 		var i = 0;
 
 		while (i < __allChildrenLength) {
-			stack_id = __allChildrenStack[i];
-			stack_id.__enterFrame(deltaTime);
+			child = __allChildrenStack[i];
+			if(child.stage != null) {
+				child.__enterFrame(deltaTime);
+			}
 			++i;
 		}
 	}
@@ -1545,6 +1548,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 
 	private function set_frameRate (value:Float):Float {
+
+		frameTime = Std.int(1000 / value);
 
 		if (application != null) {
 

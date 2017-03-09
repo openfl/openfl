@@ -47,7 +47,6 @@ import lime.Assets in LimeAssets;
 class MovieClip extends flash.display.MovieClip {
 
 
-	@:noCompletion private var __frameTime:Int;
 	@:noCompletion private var __lastUpdate:Int;
 	@:noCompletion private var __objects:Map<Int, DisplayObject>;
 	@:noCompletion private var __playing:Bool;
@@ -219,7 +218,6 @@ class MovieClip extends flash.display.MovieClip {
 			__playing = true;
 
 			#if !swflite_parent_fps
-			__frameTime = Std.int (1000 / __swf.frameRate);
 			__timeElapsed = 0;
 			#end
 
@@ -504,8 +502,10 @@ class MovieClip extends flash.display.MovieClip {
 
 			#if !swflite_parent_fps
 			__timeElapsed += deltaTime;
-			var advanceFrames = Math.floor (__timeElapsed / __frameTime);
-			__timeElapsed = (__timeElapsed % __frameTime);
+
+			var frameTime = stage.frameTime;
+			var advanceFrames = Math.floor (__timeElapsed / frameTime);
+			__timeElapsed = (__timeElapsed % frameTime);
 			#else
 			var advanceFrames = (__lastUpdate == __currentFrame) ? 1 : 0;
 			#end
