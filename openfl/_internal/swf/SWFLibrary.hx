@@ -9,6 +9,8 @@ import openfl.display.BitmapData;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
 import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.events.ProgressEvent;
 import openfl.media.Sound;
 import openfl.net.URLRequest;
 import openfl.system.ApplicationDomain;
@@ -25,6 +27,7 @@ import flash.display.AVM1Movie;
 @:keep class SWFLibrary extends AssetLibrary {
 	
 	
+	private var applicationDomain:ApplicationDomain;
 	private var context:LoaderContext;
 	private var id:String;
 	private var loader:Loader;
@@ -49,7 +52,7 @@ import flash.display.AVM1Movie;
 		
 		if (type == (cast AssetType.IMAGE) || type == (cast AssetType.MOVIE_CLIP)) {
 			
-			return loader.contentLoaderInfo.applicationDomain.hasDefinition (id);
+			return applicationDomain.hasDefinition (id);
 			
 		}
 		
@@ -60,7 +63,7 @@ import flash.display.AVM1Movie;
 	
 	public override function getImage (id:String):Image {
 		
-		return Image.fromBitmapData (Type.createEmptyInstance(cast loader.contentLoaderInfo.applicationDomain.getDefinition (id)));
+		return Image.fromBitmapData (Type.createEmptyInstance(cast applicationDomain.getDefinition (id)));
 		
 	}
 	
@@ -83,7 +86,7 @@ import flash.display.AVM1Movie;
 			
 		} else {
 			
-			return cast Type.createInstance (loader.contentLoaderInfo.applicationDomain.getDefinition (id), []);
+			return cast Type.createInstance (applicationDomain.getDefinition (id), []);
 			
 		}
 		
@@ -101,16 +104,48 @@ import flash.display.AVM1Movie;
 		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
 		
-		context = new LoaderContext (false, ApplicationDomain.currentDomain, null);
-		context.allowCodeImport = true;
-		
-		loader = new Loader ();
-		loader.contentLoaderInfo.addEventListener (Event.COMPLETE, function (_) {
+		if (paths.exists (id)) {
 			
+			context = new LoaderContext (false, ApplicationDomain.currentDomain, null);
+			context.allowCodeImport = true;
+			
+			loader = new Loader ();
+			loader.contentLoaderInfo.addEventListener (IOErrorEvent.IO_ERROR, function (event) {
+				
+				promise.error (event.text);
+				
+			});
+			loader.contentLoaderInfo.addEventListener (ProgressEvent.PROGRESS, function (event) {
+				
+				promise.progress (event.bytesLoaded, event.bytesTotal);
+				
+			});
+			loader.contentLoaderInfo.addEventListener (Event.COMPLETE, function (_) {
+				
+				applicationDomain = loader.contentLoaderInfo.applicationDomain;
+				promise.complete (this);
+				
+			});
+			
+			if (classTypes.exists (id)) {
+				
+				var bytes = cast (Type.createInstance (classTypes.get (id), []), ByteArray);
+				loader.loadBytes (bytes, context);
+				
+			} else {
+				
+				loader.load (new URLRequest (paths.get (id)), context);
+				
+			}
+			
+		} else {
+			
+			// Assume it's been included using -swf-lib, binary embeds don't appear to work
+			
+			applicationDomain = ApplicationDomain.currentDomain;
 			promise.complete (this);
 			
-		});
-		loader.load (new URLRequest (paths.get (id)), context);
+		}
 		
 		return promise.future;
 		

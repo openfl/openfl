@@ -682,6 +682,14 @@ class Tools {
 	
 	private static function processLibraries (project:HXProject):HXProject {
 		
+		//HXProject._command = project.command;
+		HXProject._debug = project.debug;
+		HXProject._environment = project.environment;
+		HXProject._target = project.target;
+		HXProject._targetFlags = project.targetFlags;
+		HXProject._templatePaths = project.templatePaths;
+		HXProject._userDefines = project.defines;
+		
 		var output = new HXProject ();
 		var embeddedSWF = false;
 		var embeddedSWFLite = false;
@@ -713,20 +721,26 @@ class Tools {
 					LogHelper.info ("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 					
 					var swf = new Asset (library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
+					swf.id = "lib/" + library.name + "/" + library.name + ".swf";
 					swf.library = library.name;
 					
-					if (library.embed != null) {
+					var embed = (library.embed != false);
+					
+					if (embed) {
 						
-						swf.embed = library.embed;
+						output.haxeflags.push ("-swf-lib " + swf.sourcePath);
+						
+					} else {
+						
+						swf.embed = false;
+						output.assets.push (swf);
 						
 					}
 					
-					output.assets.push (swf);
-					
-					var data = new AssetManifest ();
-					data.assets = [ { id: swf.id, path: swf.id, type: Std.string (AssetType.BINARY) } ];
+					var data = AssetHelper.createManifest (output, library.name);
 					data.libraryType = "openfl._internal.swf.SWFLibrary";
 					data.libraryArgs = [ "lib/" + library.name + "/" + library.name + ".swf" ];
+					data.name = library.name;
 					
 					var asset = new Asset ("", "lib/" + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
