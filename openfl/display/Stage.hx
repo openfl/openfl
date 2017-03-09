@@ -722,12 +722,14 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 	public override function __enterFrame(deltaTime:Int):Void {
 
-		var stack_id;
+		var child;
 		var i = 0;
 
 		while (i < __allChildrenLength) {
-			stack_id = __allChildrenStack[i];
-			stack_id.__enterFrame(deltaTime);
+			child = __allChildrenStack[i];
+			if(child.stage != null) {
+				child.__enterFrame(deltaTime);
+			}
 			++i;
 		}
 	}
