@@ -900,6 +900,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 			#if profile
 				lime._backend.html5.HTML5Application.__updateCalls++;
+				var key :String = null;
+				if ( Reflect.field(this, "__symbol")) {
+					key = Std.string(Reflect.field(this, "__symbol").id);
+				} else if ( name != "" ) {
+					key = name;
+				}
+				if ( key != null ) {
+					var val = lime._backend.html5.HTML5Application.__updateMap.get(key);
+					val = val != null ? val : 0;
+					lime._backend.html5.HTML5Application.__updateMap.set(key, val + 1);
+				}
 			#end
 
 			__updateColor();
