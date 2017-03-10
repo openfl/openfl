@@ -83,6 +83,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private var __alpha:Float;
 	private var __blendMode:BlendMode;
+	private var __inheritedBlendMode:BlendMode;
 	private var __cacheAsBitmap:Bool;
 	private var __cacheAsBitmapMatrix:Matrix;
 	private var __cairo:Cairo;
@@ -134,6 +135,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		__alpha = 1;
 		__blendMode = NORMAL;
+		__inheritedBlendMode = NORMAL;
 		__cacheAsBitmap = false;
 		__transform = new Matrix ();
 		__visible = true;
@@ -701,12 +703,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				
 				__worldAlpha = alpha * __parent.__worldAlpha;
 				__worldColorTransform.__combine (__parent.__worldColorTransform);
-				
-				if ((blendMode == null || blendMode == NORMAL)) {
-					
-					__blendMode = __parent.__blendMode;
-					
-				}
+				__inheritedBlendMode = __parent.blendMode;
 				
 				#else
 				
@@ -861,7 +858,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	
 	private function get_blendMode ():BlendMode {
 		
-		return __blendMode;
+		if (__inheritedBlendMode != NORMAL) {
+			
+			return __inheritedBlendMode;
+			
+		} else {
+			
+			return __blendMode;
+			
+		}
 		
 	}
 	
