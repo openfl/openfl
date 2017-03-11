@@ -254,7 +254,7 @@ import openfl.Vector;
 		
 		if (__positionScale != null) {
 			
-			GL.uniform4fv (__positionScale.location, /*1,*/ positionScale);
+			GL.uniform4fv (__positionScale.location, 1, positionScale);
 			GLUtils.CheckGLError ();
 			
 		}
@@ -275,8 +275,8 @@ import openfl.Vector;
 		
 		if (verbose) {
 			
-			trace (vertexShaderSource);
-			trace (fragmentShaderSource);
+			Log.info (vertexShaderSource);
+			Log.info (fragmentShaderSource);
 			
 		}
 		
@@ -455,13 +455,13 @@ private class Uniform {
 		var index:Int = regIndex * 4;
 		switch (type) {
 			
-			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, false, __getRegisters (index, size * 2 * 2));
-			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, false, __getRegisters (index, size * 3 * 3));
-			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, false, __getRegisters (index, size * 4 * 4));
-			case GL.FLOAT_VEC2: GL.uniform2fv (location, __getRegisters (index, regCount * 2));
-			case GL.FLOAT_VEC3: GL.uniform3fv (location, __getRegisters (index, regCount * 3));
-			case GL.FLOAT_VEC4: GL.uniform4fv (location, __getRegisters (index, regCount * 4));
-			default: GL.uniform4fv (location, __getRegisters (index, regCount * 4));
+			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, 1, false, __getRegisters (index, size * 2 * 2));
+			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, 1, false, __getRegisters (index, size * 3 * 3));
+			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, 1, false, __getRegisters (index, size * 4 * 4));
+			case GL.FLOAT_VEC2: GL.uniform2fv (location, 1, __getRegisters (index, regCount * 2));
+			case GL.FLOAT_VEC3: GL.uniform3fv (location, 1, __getRegisters (index, regCount * 3));
+			case GL.FLOAT_VEC4: GL.uniform4fv (location, 1, __getRegisters (index, regCount * 4));
+			default: GL.uniform4fv (location, 1, __getRegisters (index, regCount * 4));
 			
 		}
 		

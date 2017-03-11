@@ -506,7 +506,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix2fv (index, false, __uniformMatrix2);
+						gl.uniformMatrix2fv (index, 1, false, __uniformMatrix2);
 					
 					//case MATRIX2X3:
 					//case MATRIX2X4:
@@ -520,7 +520,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix3fv (index, false, __uniformMatrix3);
+						gl.uniformMatrix3fv (index, 1, false, __uniformMatrix3);
 					
 					//case MATRIX3X4:
 					//case MATRIX4X2:
@@ -534,7 +534,7 @@ class Shader {
 							
 						}
 						
-						gl.uniformMatrix4fv (index, false, __uniformMatrix4);
+						gl.uniformMatrix4fv (index, 1, false, __uniformMatrix4);
 					
 					default:
 					
