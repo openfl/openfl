@@ -417,6 +417,7 @@ class BitmapData implements IBitmapDrawable {
 
 		if ( __uvData != null ) {
 			TextureUvs.pool.put(__uvData);
+			__uvData = null;
 		}
 	}
 
