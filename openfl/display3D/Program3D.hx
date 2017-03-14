@@ -5,6 +5,7 @@ import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLUniformLocation;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
+import lime.utils.BytePointer;
 import lime.utils.Float32Array;
 import lime.utils.Log;
 import openfl._internal.stage3D.AGALConverter;
@@ -442,10 +443,13 @@ private class Uniform {
 	public var regCount:Int;
 	public var isDirty:Bool;
 	
+	private var regDataPointer:BytePointer;
+	
 	
 	public function new () {
 		
 		isDirty = true;
+		regDataPointer = new BytePointer ();
 		
 	}
 	
@@ -455,13 +459,13 @@ private class Uniform {
 		var index:Int = regIndex * 4;
 		switch (type) {
 			
-			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, 1, false, __getRegisters (index, size * 2 * 2));
-			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, 1, false, __getRegisters (index, size * 3 * 3));
-			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, 1, false, __getRegisters (index, size * 4 * 4));
-			case GL.FLOAT_VEC2: GL.uniform2fv (location, 1, __getRegisters (index, regCount * 2));
-			case GL.FLOAT_VEC3: GL.uniform3fv (location, 1, __getRegisters (index, regCount * 3));
-			case GL.FLOAT_VEC4: GL.uniform4fv (location, 1, __getRegisters (index, regCount * 4));
-			default: GL.uniform4fv (location, 1, __getRegisters (index, regCount * 4));
+			case GL.FLOAT_MAT2: GL.uniformMatrix2fv (location, size, false, __getRegisters (index, size * 2 * 2));
+			case GL.FLOAT_MAT3: GL.uniformMatrix3fv (location, size, false, __getRegisters (index, size * 3 * 3));
+			case GL.FLOAT_MAT4: GL.uniformMatrix4fv (location, size, false, __getRegisters (index, size * 4 * 4));
+			case GL.FLOAT_VEC2: GL.uniform2fv (location, regCount, __getRegisters (index, regCount * 2));
+			case GL.FLOAT_VEC3: GL.uniform3fv (location, regCount, __getRegisters (index, regCount * 3));
+			case GL.FLOAT_VEC4: GL.uniform4fv (location, regCount, __getRegisters (index, regCount * 4));
+			default: GL.uniform4fv (location, regCount, __getRegisters (index, regCount * 4));
 			
 		}
 		
@@ -470,32 +474,20 @@ private class Uniform {
 	}
 	
 	
+	#if (js && html5)
 	private function __getRegisters (index:Int, size:Int):Float32Array {
 		
-		// TODO
-		// HACK: on Neko, CPP, subarray returns a view into the RegData
-		// array. When uploading that data as a uniform, it will upload
-		// the underlying array, which is far too long, causing it to
-		// throw an exception. Workaround here is just to create a new
-		// array and copy it directly so we know that it will be the
-		// right size. Significant downside is that we're introducing
-		// an extra copy.
-		
-		#if (js && html5)
 		return this.regData.subarray (index, index + size);
-		#else
-		var result = new Float32Array (size);
-		
-		for (i in 0...size) {
-			
-			result[i] = this.regData[index + i];
-			
-		}
-		
-		return result;
-		#end
 		
 	}
+	#else
+	private function __getRegisters (index:Int, size:Int):BytePointer {
+		
+		regDataPointer.set (this.regData, index * 4);
+		return regDataPointer;
+		
+	}
+	#end
 	
 	
 }
