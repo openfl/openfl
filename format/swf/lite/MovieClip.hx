@@ -47,20 +47,20 @@ import lime.Assets in LimeAssets;
 class MovieClip extends flash.display.MovieClip {
 
 
-	@:noCompletion private var __lastUpdate:Int;
-	@:noCompletion private var __objects:Map<Int, DisplayObject>;
-	@:noCompletion private var __playing:Bool;
-	@:noCompletion private var __swf:SWFLite;
-	@:noCompletion private var __symbol:SpriteSymbol;
-	@:noCompletion private var __timeElapsed:Int;
-	@:noCompletion private var __zeroSymbol:Int;
-	@:noCompletion private var __targetFrame:Null<Int>;
+	private var __lastUpdate:Int;
+	private var __objects:Map<Int, DisplayObject>;
+	private var __playing:Bool;
+	private var __swf:SWFLite;
+	private var __symbol:SpriteSymbol;
+	private var __timeElapsed:Int;
+	private var __zeroSymbol:Int;
+	private var __targetFrame:Null<Int>;
 
 	#if flash
-	@:noCompletion private var __currentFrame:Int;
-	@:noCompletion private var __previousTime:Int;
-	@:noCompletion private var __totalFrames:Int;
-	@:noCompletion private var __currentLabels:Array<FrameLabel>;
+	private var __currentFrame:Int;
+	private var __previousTime:Int;
+	private var __totalFrames:Int;
+	private var __currentLabels:Array<FrameLabel>;
 	#end
 
 	private var __9SliceBitmap:BitmapData;
@@ -278,7 +278,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 
-	@:noCompletion private inline function __applyTween (start:Float, end:Float, ratio:Float):Float {
+	private inline function __applyTween (start:Float, end:Float, ratio:Float):Float {
 
 		return start + ((end - start) * ratio);
 
@@ -311,7 +311,7 @@ class MovieClip extends flash.display.MovieClip {
 			}
 		}
 	#end
-	@:noCompletion private function __createObject (object:FrameObject):DisplayObject {
+	private function __createObject (object:FrameObject):DisplayObject {
 
 		var displayObject:DisplayObject = null;
 
@@ -407,7 +407,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 
-	@:noCompletion private function __createShape (symbol:ShapeSymbol):Shape {
+	private function __createShape (symbol:ShapeSymbol):Shape {
 
 		var shape = new Shape ();
 		var graphics = shape.graphics;
@@ -490,13 +490,13 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
-	@:noCompletion private function __createMorphShape (symbol:MorphShapeSymbol): MorphShape {
+	private function __createMorphShape (symbol:MorphShapeSymbol): MorphShape {
 
 		return new MorphShape( __swf, symbol);
 
 	}
 
-	@:noCompletion @:dox(hide) public #if (!flash && openfl && !openfl_legacy) override #end function __enterFrame (deltaTime:Int):Void {
+	@:dox(hide) public #if (!flash && openfl && !openfl_legacy) override #end function __enterFrame (deltaTime:Int):Void {
 
 		if (__playing) {
 
@@ -529,7 +529,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 
-	@:noCompletion private static function __getBitmap (symbol:BitmapSymbol):BitmapData {
+	private static function __getBitmap (symbol:BitmapSymbol):BitmapData {
 
 		#if openfl
 
@@ -608,7 +608,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 
-	@:noCompletion private function __getFrame (frame:Dynamic):Int {
+	private function __getFrame (frame:Dynamic):Int {
 
 		var index:Int = 0;
 
@@ -642,7 +642,7 @@ class MovieClip extends flash.display.MovieClip {
 		return index;
 	}
 
-	@:noCompletion private function __goto (frame:#if flash flash.utils.Object #else Dynamic #end, scene:String = null):Bool	{
+	private function __goto (frame:#if flash flash.utils.Object #else Dynamic #end, scene:String = null):Bool	{
 
 		if(__targetFrame == null) {
 
@@ -672,7 +672,7 @@ class MovieClip extends flash.display.MovieClip {
 
 	}
 
-	@:noCompletion private function __placeObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
+	private function __placeObject (displayObject:DisplayObject, frameObject:FrameObject):Void {
 
 		if (frameObject.matrix != null) {
 
@@ -807,7 +807,7 @@ class MovieClip extends flash.display.MovieClip {
 		}
 	}
 
-	@:noCompletion private function drawScale9Bitmap (renderSession:RenderSession):Void {
+	private function drawScale9Bitmap (renderSession:RenderSession):Void {
 
 		if (__cacheAsBitmap) {
 			__isCachingAsBitmap = true;
@@ -944,7 +944,7 @@ class MovieClip extends flash.display.MovieClip {
 		}
 	}
 
-	@:noCompletion private function __renderFrame (index:Int):Bool {
+	private function __renderFrame (index:Int):Bool {
 
 		if (__symbol == null || __symbol.frames.length == 0) {
 			return false;
@@ -1085,7 +1085,7 @@ class MovieClip extends flash.display.MovieClip {
 	}
 
 
-	@:noCompletion private function __updateFrame ():Void {
+	private function __updateFrame ():Void {
 
 		if (__currentFrame != __lastUpdate) {
 
@@ -1213,7 +1213,7 @@ class MovieClip extends flash.display.MovieClip {
     }
 #end
 
-	@:noCompletion private function __addChildAtSwfDepth(displayObject: DisplayObject, targetDepth:Int):Void{
+	private function __addChildAtSwfDepth(displayObject: DisplayObject, targetDepth:Int):Void{
 
 		__SWFDepthData.set(displayObject, targetDepth);
 
@@ -1240,7 +1240,7 @@ class MovieClip extends flash.display.MovieClip {
 		return object;
 	}
 
-	@:noCompletion override private function __releaseResources(){
+	override private function __releaseResources(){
 
 		super.__releaseResources();
 
@@ -1250,7 +1250,7 @@ class MovieClip extends flash.display.MovieClip {
 		}
 	}
 
-	@:noCompletion private function __debugPrintChildren( parentSymbolID: Int = -1 ):Void {
+	private function __debugPrintChildren( parentSymbolID: Int = -1 ):Void {
 
 		if ( __symbol == null ) {
 			return;
@@ -1302,14 +1302,14 @@ class MovieClip extends flash.display.MovieClip {
 
 
 	#if flash
-	@:noCompletion @:getter public function get_currentFrame():Int {
+	@:getter public function get_currentFrame():Int {
 
 		return __currentFrame;
 
 	}
 
 
-	@:noCompletion @:getter public function get___totalFrames():Int {
+	@:getter public function get___totalFrames():Int {
 
 		return __totalFrames;
 
@@ -1325,7 +1325,7 @@ class MovieClip extends flash.display.MovieClip {
 
 
 	#if flash
-	@:noCompletion private function stage_onEnterFrame (event:Event):Void {
+	private function stage_onEnterFrame (event:Event):Void {
 
 		var currentTime = Lib.getTimer ();
 		var deltaTime = currentTime - __previousTime;

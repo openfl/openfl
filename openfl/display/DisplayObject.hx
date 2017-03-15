@@ -131,6 +131,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 	private var __clipDepth : Int;
 	private var __clippedAt : Null<Int>;
 	private var __useSeparateRenderScaleTransform = true;
+	private var __forbidCachedBitmapUpdate = false;
 
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -636,7 +637,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		__updateCachedBitmapBounds (filterTransform);
 
 		if (__cachedBitmapBounds.width <= 0 && __cachedBitmapBounds.height <= 0) {
-			trace('Error creating a cached bitmap. The texture size is ${__cachedBitmapBounds.width}x${__cachedBitmapBounds.height}');
 			return;
 		}
 
@@ -676,7 +676,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	public inline function __cacheGL (renderSession:RenderSession):Void {
 
-		if (__updateCachedBitmap || __updateFilters) {
+		if ( ( __updateCachedBitmap && ( !__forbidCachedBitmapUpdate || __cachedBitmap == null ) ) || __updateFilters) {
 
  			__updateCachedBitmapFn (renderSession);
 
