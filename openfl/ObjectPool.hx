@@ -87,7 +87,19 @@ class ObjectPool<T>
 	**/
 	public inline function get():T
 	{
-		return size > 0 ? mPool.get(--size) : mFactory();
+		#if dev
+			var obj = size > 0 ? mPool.get(--size) : mFactory();
+			if( Reflect.hasField(obj, "__objectPoolUsed") && Reflect.field(obj, "__objectPoolUsed") == true ) {
+					throw 'WOOOOW! Reusing a pooled object multiple times!!';
+			} else {
+				Reflect.setField(obj, "__objectPoolUsed", true);
+				//Reflect.setField(obj, "__objectPoolUsedStack", haxe.CallStack.callStack());
+			}
+			return obj;
+
+		#else
+			return size > 0 ? mPool.get(--size) : mFactory();
+		#end
 	}
 
 	/**
@@ -97,6 +109,13 @@ class ObjectPool<T>
 	**/
 	inline public function put(obj:T)
 	{
+		#if dev
+			if( Reflect.hasField(obj, "__objectPoolUsed") && Reflect.field(obj, "__objectPoolUsed") == false ) {
+					throw 'WOOOOW! Discarding a pooled object multiple times!!';
+			} else {
+				Reflect.setField(obj, "__objectPoolUsed", false);
+			}
+		#end
 		if (size == maxSize)
 			mDispose(obj);
 		else
