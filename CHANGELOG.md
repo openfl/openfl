@@ -1,3 +1,33 @@
+4.9.0 (03/15/2017)
+------------------
+
+* Updated for Lime 4
+* Added initial support for `openfl process` for SWF-based assets
+* Added support for loading generated SWFLite bundles in Loader
+* Added support for multiple HTML5 embeds on the same page
+* Added support for loaderInfo.parameters through the HTML5 embed
+* Added support for TextField restrict and maxChars
+* Added support for Float-based keys in Dictionary
+* Added a hack to add stroke support for TextField
+* Improved support for Lime asset manifests in SWF library
+* Improved template behavior to work if Lime is included before OpenFL
+* Improved the behavior of TextField setTextFormat/replaceText
+* Improved support for String-based messages in HTML5 Socket
+* Improved support for non-smoothed bitmapData in SWF libraries
+* Improved "missing font" warning to only occur once per font name
+* Improved "asset not found" warnings to throw errors
+* Improved animated mask support in MovieClip
+* Fixed support for embedded SWF libraries on Flash
+* Fixed the array count calculation in AGAL to GLSL conversion
+* Fixed support for CubeTexture in Stage3D renderToTexture
+* Fixed the reset position after using byteArray.uncompress
+* Fixed a type-cast error when retrieving a missing MovieClip asset
+* Fixed a possible bug when rendering an object with no parent
+* Fixed wrongful error on Stage3D viewport on OS X
+* Fixed cases where stage3D x/y is set before a backbuffer is created
+* Fixed support for GL context loss
+
+
 4.8.1 (02/15/2017)
 ------------------
 
