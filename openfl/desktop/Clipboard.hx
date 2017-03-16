@@ -4,6 +4,11 @@ package openfl.desktop;
 import lime.system.Clipboard in LimeClipboard;
 import openfl.utils.Object;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Clipboard {
 	

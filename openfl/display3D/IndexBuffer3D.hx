@@ -10,6 +10,11 @@ import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:final class IndexBuffer3D {
 	

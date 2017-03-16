@@ -8,6 +8,11 @@ import openfl._internal.stage3D.GLUtils;
 import openfl.events.Event;
 import openfl.net.NetStream;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.net.NetStream)
 

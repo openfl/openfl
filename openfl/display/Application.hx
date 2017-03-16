@@ -5,6 +5,11 @@ import lime.app.Application in LimeApplication;
 import lime.app.Config;
 import openfl.Lib;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 

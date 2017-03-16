@@ -5,6 +5,11 @@ import openfl._internal.swf.SWFLite;
 import openfl._internal.timeline.Frame;
 import openfl.display.MovieClip;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.MovieClip)
 
 

@@ -16,6 +16,11 @@ import openfl.events.Event;
 import openfl.filters.*;
 import openfl.text.TextField;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.symbols.SWFSymbol)
 
 
@@ -718,6 +723,12 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class TimelineObject {

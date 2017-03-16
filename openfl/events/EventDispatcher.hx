@@ -248,6 +248,12 @@ class EventDispatcher implements IEventDispatcher {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class DispatchIterator {
 	
 	
@@ -344,6 +350,12 @@ class EventDispatcher implements IEventDispatcher {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class Listener {

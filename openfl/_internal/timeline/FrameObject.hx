@@ -5,6 +5,11 @@ import openfl._internal.swf.FilterType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class FrameObject {
 	

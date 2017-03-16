@@ -10,6 +10,11 @@ import openfl.display.BitmapData;
 import openfl.display.PixelSnapping;
 import openfl.Assets;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class BitmapSymbol extends SWFSymbol {
 	

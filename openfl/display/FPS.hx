@@ -6,6 +6,11 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class FPS extends TextField {
 	

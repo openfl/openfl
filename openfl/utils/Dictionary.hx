@@ -155,6 +155,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements Map.IMap<K, V> {
 	
 	
@@ -226,6 +232,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 @:dox(hide) private class FloatMap<K:Float, V> implements Map.IMap<K, V> {
 	
 	
@@ -288,9 +300,9 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 	public function set (key:K, value:V): Void {
-
+		
 		insertSorted (key, value);
-
+		
 	}
 	
 	
@@ -356,11 +368,11 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		var endIndex:Int = len - 1;
 		
 		if (len == 0) {
-
+			
 			floatKeys.push (key);
 			values.push(value);
 			return;
-
+			
 		}
 		
 		var midIndex:Int = 0;
@@ -386,19 +398,19 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		}
 		
 		if (floatKeys[startIndex] > key) {
-
+			
 			floatKeys.insert (startIndex, key);
 			values.insert (startIndex, value);
-
+			
 		} else if (floatKeys[startIndex] < key) {
 			
 			floatKeys.insert (startIndex + 1, key);
 			values.insert (startIndex + 1, value);
-
+			
 		} else {
-
+			
 			values[startIndex] = value;
-
+			
 		}
 		
 	}
@@ -412,6 +424,12 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements Map.IMap<K, V> {

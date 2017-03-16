@@ -3,6 +3,11 @@ package openfl._internal.renderer.cairo;
 
 import openfl.display.DisplayObject;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)

@@ -16,6 +16,11 @@ import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display3D.Context3D)
 
 
@@ -431,6 +436,12 @@ import openfl.Vector;
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 private class Uniform {
 	
 	
@@ -491,6 +502,12 @@ private class Uniform {
 	
 	
 }
+
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 
 
 private class UniformMap {

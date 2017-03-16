@@ -1,6 +1,11 @@
 package openfl.display;
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 #if !js @:generic #end
 
 

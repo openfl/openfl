@@ -7,6 +7,11 @@ import lime.utils.Float32Array;
 import lime.utils.GLUtils;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 

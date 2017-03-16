@@ -34,6 +34,11 @@ import openfl.Lib;
 import js.html.DivElement;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Rectangle)
 @:access(openfl._internal.text.TextEngine)

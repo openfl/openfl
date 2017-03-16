@@ -22,6 +22,11 @@ import js.html.CSSStyleDeclaration;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(lime.graphics.opengl.GL)
 @:access(openfl.display3D.Context3D)
 

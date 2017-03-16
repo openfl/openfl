@@ -5,6 +5,11 @@ import openfl._internal.swf.SWFLite;
 import openfl.display.Shape;
 import openfl.geom.Matrix;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class StaticTextSymbol extends SWFSymbol {
 	

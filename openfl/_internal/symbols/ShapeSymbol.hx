@@ -6,6 +6,11 @@ import openfl._internal.swf.SWFLite;
 import openfl.display.BitmapData;
 import openfl.display.Shape;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.symbols.BitmapSymbol)
 
 

@@ -3,6 +3,11 @@ package openfl.display;
 
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 #if (!cs || display) @:final #end
 
 

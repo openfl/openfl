@@ -13,6 +13,11 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.Assets;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.symbols.SWFSymbol)
 
 

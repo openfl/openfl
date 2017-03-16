@@ -14,6 +14,11 @@ import openfl.errors.RangeError;
 import openfl.utils.ByteArray;
 import haxe.Timer;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl._internal.stage3D.SamplerState)
 @:access(openfl.display3D.Context3D)
 

@@ -24,6 +24,11 @@ import openfl.text.Font;
 import openfl.utils.ByteArray;
 import openfl.Assets;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 @:keep class SWFLiteLibrary extends AssetLibrary {
 	

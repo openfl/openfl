@@ -3,6 +3,11 @@ package openfl.errors;
 
 import haxe.CallStack;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 
 class Error #if openfl_dynamic implements Dynamic #end {
 	

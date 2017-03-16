@@ -108,6 +108,12 @@ import openfl.geom.Rectangle;
 }
 
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
+
 private class GlowShader extends Shader {
 	
 	

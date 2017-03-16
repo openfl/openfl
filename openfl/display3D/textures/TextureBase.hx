@@ -13,6 +13,11 @@ import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.display3D.Context3D)
 @:access(openfl._internal.stage3D.SamplerState)

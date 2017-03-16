@@ -21,6 +21,11 @@ import js.html.ScriptElement;
 import js.Browser;
 #end
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.events.Event)
 

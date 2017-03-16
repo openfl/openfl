@@ -4,6 +4,11 @@ package openfl._internal.renderer.cairo;
 import lime.math.color.ARGB;
 import openfl.display.DisplayObject;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
 
