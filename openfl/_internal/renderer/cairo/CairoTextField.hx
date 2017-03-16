@@ -18,6 +18,11 @@ import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
@@ -245,14 +250,15 @@ class CairoTextField {
 					//
 					//cairo.showGlyphs (glyphs);
 					
-					//cairo.showText (text.substring (group.startIndex, group.endIndex));
-					cairo.textPath (text.substring (group.startIndex, group.endIndex));
+					var usedHack = false;
 					
 					if (textField.__filters != null && textField.__filters.length > 0) {
 						
 						// Hack, force outline
 						
 						if (Std.is (textField.__filters[0], GlowFilter)) {
+							
+							cairo.textPath (text.substring (group.startIndex, group.endIndex));
 							
 							var glowFilter:GlowFilter = cast textField.__filters[0];
 							
@@ -272,11 +278,18 @@ class CairoTextField {
 							
 							cairo.setSourceRGB (r, g, b);
 							
+							cairo.fillPreserve ();
+							usedHack = true;
+							
 						}
 						
 					}
 					
-					cairo.fillPreserve ();
+					if (!usedHack) {
+						
+						cairo.showText (text.substring (group.startIndex, group.endIndex));
+						
+					}
 					
 					if (textField.__caretIndex > -1 && textEngine.selectable) {
 						
