@@ -148,6 +148,8 @@ import openfl.Assets;
 		
 		var onComplete = function (data) {
 			
+			cachedText.set (id, data);
+			
 			swf = SWFLite.unserialize (data);
 			swf.library = this;
 			
