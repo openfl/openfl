@@ -51,7 +51,7 @@ class Shape extends DisplayObject {
 	}
 
     private override function __hitTest (x:Float, y:Float, shapeFlag:Bool, stack:UnshrinkableArray<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool {
-        if ( !parent.mouseEnabled ) {
+        if ( !parent.mouseEnabled && interactiveOnly ) {
             return false;
         }
         return super.__hitTest(x,y,shapeFlag,stack,interactiveOnly,hitObject);
