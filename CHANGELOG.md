@@ -1,3 +1,12 @@
+4.9.1 (03/17/2017)
+------------------
+
+* Updated additional classes to build for release
+* Fixed a performance regression in Cairo TextField rendering
+* Fixed VertexBuffer3D uploadFromVector to generate less GC activity
+* Fixed double loading of SWFLite data
+
+
 4.9.0 (03/15/2017)
 ------------------
 
