@@ -828,7 +828,9 @@ class CanvasGraphics {
 			context.miterLimit = c.miterLimit;
 
 			if (isMask) {
+
 				context.strokeStyle = "white";
+
 			} else if (c.alpha == 1) {
 
 				context.strokeStyle = "#" + StringTools.hex (c.color & 0x00FFFFFF, 6);
@@ -843,7 +845,7 @@ class CanvasGraphics {
 
 			}
 
-			hasStroke = true;
+			hasStroke = c.alpha > 0;
 
 		}
 	}
