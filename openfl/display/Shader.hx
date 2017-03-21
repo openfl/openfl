@@ -145,9 +145,11 @@ class Shader {
 		gl.bindBuffer (gl.ARRAY_BUFFER, null);
 		gl.bindTexture (gl.TEXTURE_2D, null);
 		
-		#if desktop
-		gl.disable (gl.TEXTURE_2D);
-		#end
+		if (gl.type == OPENGL) {
+			
+			gl.disable (gl.TEXTURE_2D);
+			
+		}
 		
 	}
 	
@@ -176,13 +178,11 @@ class Shader {
 			
 		}
 		
-		#if desktop
-		if (textureCount > 0) {
+		if (gl.type == OPENGL && textureCount > 0) {
 			
 			gl.enable (gl.TEXTURE_2D);
 			
 		}
-		#end
 		
 	}
 	
