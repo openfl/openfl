@@ -120,26 +120,11 @@ class DynamicTextField extends TextField {
 
 		if (symbol.text != null) {
 
-			#if !flash
-
-			var plain = new EReg ("</p>", "g").replace (symbol.text, "\n");
-			plain = new EReg ("<br>", "g").replace (plain, "\n");
-			plain = new EReg ("<.*?>", "g").replace (plain, "");
-			text = StringTools.htmlUnescape (plain);
-
-			#else
-
 			if (symbol.html) {
-
 				htmlText = symbol.text;
-
 			} else {
-
 				text = symbol.text;
-
 			}
-
-			#end
 
 		}
 
