@@ -77,7 +77,7 @@ class DefaultMaskedShader extends Shader {
 			'   vec4 mask = texture2D(${MaskedUniform.MaskSampler}, ${MaskedVarying.MaskTexCoord} * ${MaskedUniform.MaskUVScale});',
 			'   float inside = step( 0.0, ${MaskedVarying.MaskTexCoord}.x ) * step( -1.0, -${MaskedVarying.MaskTexCoord}.x );',
 			'   inside *= step( 0.0, ${MaskedVarying.MaskTexCoord}.y ) * step( -1.0, -${MaskedVarying.MaskTexCoord}.y );',
-			'	float maskAlpha = inside * step( 0.1, mask.a);',
+			'	float maskAlpha = inside * mask.a;',
 			//'   gl_FragColor = vec4(maskAlpha, maskAlpha, maskAlpha, 1.0 );',
 			'   gl_FragColor = colorTransform(tc, ${DefVarying.Color}, ${DefUniform.ColorMultiplier}, ${DefUniform.ColorOffset})* maskAlpha;',
 			'}'

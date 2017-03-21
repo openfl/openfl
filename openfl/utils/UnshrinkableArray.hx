@@ -109,6 +109,18 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
         }
     }
 
+    public inline function pushFromArray(other:UnshrinkableArray<T>)
+    {
+        var startIndex = this._length;
+
+        for(i in 0...other.length)
+        {
+            this._items[startIndex + i] = other[i];
+        }
+
+        this._length += other.length;
+    }
+
     public inline function indexOf(item:T):Int
     {
         var found = this._items.indexOf(item);

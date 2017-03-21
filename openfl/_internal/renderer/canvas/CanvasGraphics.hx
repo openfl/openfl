@@ -327,11 +327,11 @@ class CanvasGraphics {
 						resetFillStyle();
 						beginRenderStep();
 					case LINE_STYLE:
-						lineStyle(data);
+						lineStyle(data, true);
 					case LINE_GRADIENT_STYLE:
-						lineGradientStyle(data);
+						lineGradientStyle(data, true);
 					case LINE_BITMAP_STYLE:
-						lineBitmapStyle(data);
+						lineBitmapStyle(data, true);
 
 					case BEGIN_BITMAP_FILL, BEGIN_FILL, BEGIN_GRADIENT_FILL:
 
@@ -447,7 +447,7 @@ class CanvasGraphics {
 
 	}
 
-	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0):Void {
+	public static function render (graphics:Graphics, renderSession:RenderSession, scaleX:Float = 1.0, scaleY:Float = 1.0, isMask : Bool = false):Void {
 
 		#if (js && html5)
 
@@ -541,28 +541,28 @@ class CanvasGraphics {
 							beginRenderStep();
 
 						case LINE_STYLE:
-							lineStyle(data);
+							lineStyle(data, isMask);
 
 						case LINE_GRADIENT_STYLE:
-							lineGradientStyle(data);
+							lineGradientStyle(data, isMask);
 
 						case LINE_BITMAP_STYLE:
-							lineBitmapStyle(data);
+							lineBitmapStyle(data, isMask);
 
 						case BEGIN_BITMAP_FILL:
 							endRenderStep();
 							beginRenderStep();
-							beginBitmapFill(data);
+							beginBitmapFill(data, isMask);
 
 						case BEGIN_FILL:
 							endRenderStep();
 							beginRenderStep();
-							beginFill(data);
+							beginFill(data, isMask);
 
 						case BEGIN_GRADIENT_FILL:
 							endRenderStep();
 							beginRenderStep();
-							beginGradientFill(data);
+							beginGradientFill(data, isMask);
 
 						case DRAW_CIRCLE:
 							drawCircle(data);
@@ -716,100 +716,6 @@ class CanvasGraphics {
 
 	}
 
-
-	public static function renderMask (graphics:Graphics, renderSession:RenderSession) {
-
-		#if (js && html5)
-
-		if (graphics.__commands.length != 0) {
-
-			context = cast renderSession.context;
-
-
-			var data = drawCommandReaderPool.get();
-			data.reset(graphics.__commands, graphics.__snapCoordinates);
-			var context = context;
-
-			for (type in graphics.__commands.types) {
-
-				switch (type) {
-
-					case CUBIC_CURVE_TO:
-
-						var c = data.readCubicCurveTo ();
-
-						context.bezierCurveTo (c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-					case CURVE_TO:
-
-						var c = data.readCurveTo ();
-
-						context.quadraticCurveTo (c.controlX, c.controlY, c.anchorX, c.anchorY);
-					case DRAW_CIRCLE:
-
-						var c = data.readDrawCircle ();
-
-						context.arc (c.x, c.y, c.radius, 0, Math.PI * 2, true);
-					case DRAW_ELLIPSE:
-
-						var c = data.readDrawEllipse ();
-						var x = c.x;
-						var y = c.y;
-						var width = c.width;
-						var height = c.height;
-
-						var kappa = .5522848,
-							ox = (width / 2) * kappa, // control point offset horizontal
-							oy = (height / 2) * kappa, // control point offset vertical
-							xe = x + width,           // x-end
-							ye = y + height,          // y-end
-							xm = x + width / 2,       // x-middle
-							ym = y + height / 2;      // y-middle
-
-						//closePath (false);
-						//beginPath ();
-						context.moveTo (x, ym);
-						context.bezierCurveTo (x, ym - oy, xm - ox, y, xm, y);
-						context.bezierCurveTo (xm + ox, y, xe, ym - oy, xe, ym);
-						context.bezierCurveTo (xe, ym + oy, xm + ox, ye, xm, ye);
-						context.bezierCurveTo (xm - ox, ye, x, ym + oy, x, ym);
-						//closePath (false);
-
-					case DRAW_RECT:
-
-						var c = data.readDrawRect ();
-
-						context.rect (c.x, c.y, c.width, c.height);
-					case DRAW_ROUND_RECT:
-
-						var c = data.readDrawRoundRect ();
-						drawRoundRect (c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-
-					case LINE_TO:
-
-						var c = data.readLineTo ();
-
-						context.lineTo (c.x, c.y);
-					case MOVE_TO:
-
-						var c = data.readMoveTo ();
-
-						context.moveTo (c.x, c.y);
-					default:
-
-						data.skip (type);
-
-				}
-
-			}
-
-			drawCommandReaderPool.put(data);
-
-		}
-
-		#end
-
-	}
-
 	#if (js && html5)
 	private inline static function cubicCurveTo(data:DrawCommandReader)
 	{
@@ -880,7 +786,7 @@ class CanvasGraphics {
 		startY = c.y;
 	}
 
-	private inline static function lineStyle(data:DrawCommandReader)
+	private inline static function lineStyle(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readLineStyle ();
 		if (hasStroke || hasFill) {
@@ -921,7 +827,11 @@ class CanvasGraphics {
 
 			context.miterLimit = c.miterLimit;
 
-			if (c.alpha == 1) {
+			if (isMask) {
+
+				context.strokeStyle = "white";
+
+			} else if (c.alpha == 1) {
 
 				context.strokeStyle = "#" + StringTools.hex (c.color & 0x00FFFFFF, 6);
 
@@ -935,12 +845,12 @@ class CanvasGraphics {
 
 			}
 
-			hasStroke = true;
+			hasStroke = c.alpha > 0;
 
 		}
 	}
 
-	private inline static function lineGradientStyle(data:DrawCommandReader)
+	private inline static function lineGradientStyle(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readLineGradientStyle ();
 		if (hasStroke) {
@@ -950,12 +860,16 @@ class CanvasGraphics {
 		}
 
 		context.moveTo (positionX, positionY);
-		context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+		if (isMask) {
+			context.strokeStyle = "white";
+		} else {
+			context.strokeStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+		}
 
 		hasStroke = true;
 	}
 
-	private inline static function lineBitmapStyle(data:DrawCommandReader)
+	private inline static function lineBitmapStyle(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readLineBitmapStyle ();
 		if (hasStroke) {
@@ -965,38 +879,48 @@ class CanvasGraphics {
 		}
 
 		context.moveTo (positionX, positionY);
-		context.strokeStyle = createBitmapFill (c.bitmap, c.repeat);
+		if (isMask) {
+			context.strokeStyle = "white";
+		} else {
+			context.strokeStyle = createBitmapFill (c.bitmap, c.repeat);
+		}
 
 		hasStroke = true;
 	}
 
-	private inline static function beginBitmapFill(data:DrawCommandReader)
+	private inline static function beginBitmapFill(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readBeginBitmapFill ();
-		context.fillStyle = createBitmapFill (c.bitmap, c.repeat);
-		hasFill = true;
 
-		if (c.matrix != null) {
-
-			pendingMatrix = c.matrix;
-			if ( inversePendingMatrix == null ) {
-				inversePendingMatrix = Matrix.pool.get();
-			}
-			inversePendingMatrix.copyFrom(c.matrix);
-			inversePendingMatrix.invert ();
-
+		if (isMask) {
+			context.fillStyle = "white";
 		} else {
 
-			pendingMatrix = null;
-			if ( inversePendingMatrix != null ) {
-				Matrix.pool.put(inversePendingMatrix);
-			inversePendingMatrix = null;
-			}
+			context.fillStyle = createBitmapFill (c.bitmap, c.repeat);
+			hasFill = true;
 
+			if (c.matrix != null) {
+
+				pendingMatrix = c.matrix;
+				if ( inversePendingMatrix == null ) {
+					inversePendingMatrix = Matrix.pool.get();
+				}
+				inversePendingMatrix.copyFrom(c.matrix);
+				inversePendingMatrix.invert ();
+
+			} else {
+
+				pendingMatrix = null;
+				if ( inversePendingMatrix != null ) {
+					Matrix.pool.put(inversePendingMatrix);
+					inversePendingMatrix = null;
+				}
+
+			}
 		}
 	}
 
-	private inline static function beginFill(data:DrawCommandReader)
+	private inline static function beginFill(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readBeginFill ();
 		if (c.alpha < 0.005) {
@@ -1005,7 +929,11 @@ class CanvasGraphics {
 
 		} else {
 
-			if (c.alpha == 1) {
+			if (isMask) {
+
+				context.fillStyle = "white";
+
+			} else if (c.alpha == 1) {
 
 				context.fillStyle = "#" + StringTools.hex (c.color, 6);
 
@@ -1024,11 +952,16 @@ class CanvasGraphics {
 		}
 	}
 
-	private inline static function beginGradientFill(data:DrawCommandReader)
+	private inline static function beginGradientFill(data:DrawCommandReader, isMask:Bool)
 	{
 		var c = data.readBeginGradientFill ();
 
-		context.fillStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+		if (isMask) {
+			context.fillStyle = "white";
+		} else {
+			context.fillStyle = createGradientPattern (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
+		}
+
 		pendingMatrix = c.matrix;
 		hasFill = true;
 	}
