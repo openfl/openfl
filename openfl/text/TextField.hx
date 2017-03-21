@@ -555,9 +555,10 @@ class TextField extends InteractiveObject {
 
 
 	private function __getPosition (x:Float, y:Float):Int {
-		return -1;
-		// :NOTE: Individual advances are not calculated for now.
-		/*
+		if(!__textEngine.selectable) {
+			return -1;
+		}
+
 		__updateLayout ();
 
 		x += scrollH;
@@ -630,7 +631,6 @@ class TextField extends InteractiveObject {
 		}
 
 		return __textEngine.text.length;
-		*/
 	}
 
 
