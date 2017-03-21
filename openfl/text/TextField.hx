@@ -1191,13 +1191,13 @@ class TextField extends InteractiveObject {
 								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
 								case "size": copied_format.size = Std.parseInt(element.get(attribute));
 								default:
-								#if debug
+								#if dev
 									trace ("encountered unsupported attribute when parsing html font.");
 								#end
 							}
 						}
 					default:
-						#if debug
+						#if dev
 							trace ("trying to parse unsupported tag ( $tag ) from html text");
 						#end
 					}
@@ -1250,6 +1250,9 @@ class TextField extends InteractiveObject {
 
 			value = result_data.text;
 			__textEngine.textFormatRanges = result_data.format_ranges;
+			if ( result_data.format_ranges.length > 0 ) {
+				this.__textFormat = result_data.format_ranges[0].format;
+			}
 
 			return __textEngine.text = value;
 		}
