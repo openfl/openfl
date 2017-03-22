@@ -134,13 +134,13 @@ class TextField extends InteractiveObject {
 
 	public function getCharBoundaries (charIndex:Int):Rectangle {
 
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+		if (charIndex < 0 || charIndex > __textEngine.text.length) return null;
 
 		__updateLayout ();
 
 		for (group in __textEngine.layoutGroups) {
 
-			if (charIndex >= group.startIndex && charIndex < group.endIndex) {
+			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
 
 				var x = group.offsetX;
 
@@ -285,7 +285,7 @@ class TextField extends InteractiveObject {
 
 	public function getLineIndexOfChar (charIndex:Int):Int {
 
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return -1;
+		if (charIndex < 0 || charIndex > __textEngine.text.length) return -1;
 
 		__updateLayout ();
 
@@ -593,7 +593,14 @@ class TextField extends InteractiveObject {
 
 		}
 
-		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
+		if (y < 0) {
+			y = 0;
+			x = 0;
+		}
+		if (y > __textEngine.textHeight) {
+			y = __textEngine.textHeight;
+			x = __textEngine.textWidth;
+		}
 
 		var firstGroup = true;
 		var group, nextGroup;
@@ -1923,12 +1930,9 @@ class TextField extends InteractiveObject {
 
 			case UP:
 
-				var index = getLineIndexOfChar(__caretIndex);
-				if(index > 0) {
-					var pos = getCharBoundaries(__caretIndex);
-					pos.y -= pos.height;
-					__caretIndex = __getPosition(pos.x, pos.y);
-				}
+				var pos = getCharBoundaries(__caretIndex);
+				pos.y -= pos.height;
+				__caretIndex = __getPosition(pos.x, pos.y);
 				if (!modifier.shiftKey) {
 
 					__selectionIndex = __caretIndex;
