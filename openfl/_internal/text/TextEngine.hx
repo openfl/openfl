@@ -623,18 +623,6 @@ class TextEngine {
 
 		var textLength = text.length;
 
-		inline function startLayoutGroup (format:TextFormat, startIndex:Int):Void {
-			layoutGroup = new TextLayoutGroup (format, startIndex, -1);
-			layoutGroup.offsetX = offsetX;
-			layoutGroup.ascent = ascent;
-			layoutGroup.descent = descent;
-			layoutGroup.leading = leading;
-			layoutGroup.lineIndex = lineIndex;
-			layoutGroup.offsetY = offsetY;
-			layoutGroup.height = heightValue;
-			widthValue = 0;
-		}
-
 		inline function getAdvance (text:String, startIndex:Int, endIndex:Int):Float {
 
 			var width:Float = 0;
@@ -756,6 +744,18 @@ class TextEngine {
 
 		}
 
+		inline function startLayoutGroup (format:TextFormat, startIndex:Int):Void {
+			layoutGroup = new TextLayoutGroup (format, startIndex, -1);
+			layoutGroup.offsetX = offsetX;
+			layoutGroup.ascent = ascent;
+			layoutGroup.descent = descent;
+			layoutGroup.leading = leading;
+			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.offsetY = offsetY;
+			layoutGroup.height = heightValue;
+			widthValue = 0;
+		}
+
 		inline function endLayoutGroup(endIndex:Int) {
 			if ( layoutGroup.startIndex == endIndex ) return;
 
@@ -815,21 +815,24 @@ class TextEngine {
 			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 ) {
 				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
 				if ( nextBreakIndex == textLength ) {
-					// compute the actual breakindex
-					if ( !selectable ) {
-						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
-					}
-					var subWordWidth:Float = 0.0;
-					for(i in 0...advances.length) {
-						var value = advances[i];
-						subWordWidth += value;
-						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 ) {
-							textIndex = layoutGroup.startIndex + i;
-							advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
-							break;
+					var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
+					if ( Math.floor( layoutGroup.offsetX + wordWidth ) > width - 2 ) {
+						// compute the actual breakindex
+						if ( !selectable ) {
+							advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 						}
+						var subWordWidth:Float = 0.0;
+						for(i in 0...advances.length) {
+							var value = advances[i];
+							subWordWidth += value;
+							if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 ) {
+								textIndex = layoutGroup.startIndex + i;
+								advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
+								break;
+							}
+						}
+						widthValue = width - 2;
 					}
-					widthValue = width - 2;
 				}
 				pushNewLine(textIndex);
 				continue;
