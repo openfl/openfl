@@ -232,7 +232,7 @@ class CanvasTextField {
 
 							if (textField.__selectionIndex == textField.__caretIndex) {
 
-								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && ( group.endIndex > textField.__caretIndex || textEngine.text.length == textField.__caretIndex)) {
 
 									advance = 0.0;
 
