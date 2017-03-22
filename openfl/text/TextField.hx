@@ -627,9 +627,9 @@ class TextField extends InteractiveObject {
 
 			}
 
-			if ((y >= group.offsetY && y <= group.offsetY + group.height) || nextGroup == null) {
+			if ((y >= group.offsetY && y < group.offsetY + group.height) || nextGroup == null) {
 
-				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
+				if ((x >= group.offsetX && x < group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
 
 					var advance = 0.0;
 
@@ -1956,6 +1956,37 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 
+			case HOME:
+
+				var pos = getCharBoundaries(__caretIndex);
+				pos.x = 0;
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
+
+			case END:
+
+				var line = getLineIndexOfChar(__caretIndex);
+				var pos = getCharBoundaries(__caretIndex);
+				pos.x += __textEngine.textWidth;
+				if ( this.__textEngine.lineLayoutGroups[line][0].endIndex == __caretIndex) {
+					pos.y += pos.height + 1;
+				}
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
 			case C:
 
 
