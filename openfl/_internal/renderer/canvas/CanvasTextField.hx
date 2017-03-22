@@ -267,16 +267,16 @@ class CanvasTextField {
 
 								var start, end;
 
-								start = textField.getCharBoundaries (selectionStart);
+								start = textField.getCharBoundariesInGroup (selectionStart, group);
 
 								if (selectionEnd >= textEngine.text.length) {
 
-									end = textField.getCharBoundaries (textEngine.text.length - 1);
+									end = textField.getCharBoundariesInGroup (textEngine.text.length - 1, group);
 									end.x += end.width + 2;
 
 								} else {
 
-									end = textField.getCharBoundaries (selectionEnd);
+									end = textField.getCharBoundariesInGroup (selectionEnd, group);
 
 								}
 

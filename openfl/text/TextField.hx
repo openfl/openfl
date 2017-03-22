@@ -136,7 +136,7 @@ class TextField extends InteractiveObject {
 
 		for (group in __textEngine.layoutGroups) {
 
-			if (charIndex >= group.startIndex && charIndex <= group.endIndex) {
+			if (charIndex >= group.startIndex && charIndex < group.endIndex) {
 
 				var x = group.offsetX;
 
@@ -153,6 +153,26 @@ class TextField extends InteractiveObject {
 		}
 
 		return null;
+
+	}
+
+	public function getCharBoundariesInGroup (charIndex:Int, group:openfl._internal.text.TextLayoutGroup):Rectangle {
+
+		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+
+		__updateLayout ();
+
+		 if (charIndex < group.startIndex || charIndex > group.endIndex) return null;
+
+		var x = group.offsetX;
+
+		for (i in 0...(charIndex - group.startIndex)) {
+
+			x += group.advances[i];
+
+		}
+
+		return new Rectangle (x, group.offsetY, group.advances[charIndex - group.startIndex], group.ascent + group.descent);
 
 	}
 
