@@ -19,6 +19,7 @@ import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 import Xml;
@@ -83,6 +84,9 @@ class TextField extends InteractiveObject {
 	private var __showCursor:Bool;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
+	private var __clicks:Int = 0;
+	private var __clickTimer:haxe.Timer;
+	private var __firstDownPos:Point;
 
 	#if (js && html5)
 	private var __div:DivElement;
@@ -1680,32 +1684,47 @@ class TextField extends InteractiveObject {
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 
+		if(__clickTimer != null) {
+			__clickTimer.stop();
+		}
+		__clickTimer = haxe.Timer.delay(function(){
+			__clicks = 0;
+			__clickTimer = null;
+		}, 400);
+
 		if (stage.focus == this) {
 
-			__getWorldTransform ();
 			__updateLayout ();
 
-			var upPos:Int = __getPosition (mouseX, mouseY);
-			var leftPos:Int;
-			var rightPos:Int;
+			if(__clicks >= 3 && __clicks % 3 == 0) {
+				__selectAll();
+			} else if(__clicks >= 2 && __clicks % 2 == 0) {
+				__selectWord();
+			} else {
 
-			leftPos = Std.int (Math.min (__selectionIndex, upPos));
-			rightPos = Std.int (Math.max (__selectionIndex, upPos));
+				__getWorldTransform ();
 
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
+				var upPos:Int = __getPosition (mouseX, mouseY);
+				var leftPos:Int;
+				var rightPos:Int;
 
-			if (__inputEnabled) {
+				leftPos = Std.int (Math.min (__selectionIndex, upPos));
+				rightPos = Std.int (Math.max (__selectionIndex, upPos));
 
-				this_onFocusIn (null);
+				__selectionIndex = leftPos;
+				__caretIndex = rightPos;
 
-				__stopCursorTimer ();
-				__startCursorTimer ();
+				if (__inputEnabled) {
+
+					this_onFocusIn (null);
+
+					__stopCursorTimer ();
+					__startCursorTimer ();
+
+				}
 
 			}
-
 		}
-
 	}
 
 
@@ -1744,11 +1763,59 @@ class TextField extends InteractiveObject {
 		__selectionIndex = __caretIndex;
 		__dirty = true;
 
+		// mouse moved to much. don't check for doubleclick
+		if( __firstDownPos != null && (Math.abs(__firstDownPos.x - mouseX) > 10 || Math.abs(__firstDownPos.y - mouseY) > 10)) {
+			if(__clickTimer != null) {
+				__clickTimer.stop();
+			}
+			__clicks = 0;
+			Point.pool.put(__firstDownPos);
+			__firstDownPos = null;
+		}
+
+		__clicks++;
+
+		if(__clicks == 1) {
+			if ( __firstDownPos != null ) {
+				Point.pool.put(__firstDownPos);
+			}
+			__firstDownPos = Point.pool.get();
+			__firstDownPos.x = mouseX;
+			__firstDownPos.y = mouseY;
+		}
+
+
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 
 	}
 
+	private function __selectWord() {
+		__caretIndex = __getPosition(mouseX, mouseY);
+		__selectionIndex = __caretIndex;
+		__dirty = true;
+
+		var char = this.text.charAt(__caretIndex);
+		while(__caretIndex > 0 && char != " " && char != "-" ) {
+			--__caretIndex;
+			char = this.text.charAt(__caretIndex);
+		}
+		if ( char == " " || char == "-" ) {
+			++__caretIndex;
+		}
+		var length = this.text.length;
+		char = this.text.charAt(__selectionIndex);
+		while(__selectionIndex < length && char != " " && char != "-" ) {
+			++__selectionIndex;
+			char = this.text.charAt(__selectionIndex);
+		}
+	}
+
+	private function __selectAll() {
+		__caretIndex = 0;
+		__selectionIndex = this.text.length;
+		__dirty = true;
+	}
 
 	private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 
