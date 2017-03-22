@@ -761,7 +761,7 @@ class TextEngine {
 
 			layoutGroup.endIndex = endIndex;
 			layoutGroup.width = widthValue;
-			layoutGroup.advances = advances;
+			layoutGroup.advances = advances.splice(0, advances.length);
 			layoutGroups.push (layoutGroup);
 
 			if ( lineLayoutGroups.length == lineIndex ) {
@@ -808,7 +808,7 @@ class TextEngine {
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
 			if ( selectable ) {
-				advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, textLength);
+				advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 			}
 
 			// :NOTE: For justify, we have to account for a minimum space width here.
@@ -817,7 +817,7 @@ class TextEngine {
 				if ( nextBreakIndex == textLength ) {
 					// compute the actual breakindex
 					if ( !selectable ) {
-						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, textLength);
+						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
 					}
 					var subWordWidth:Float = 0.0;
 					for(i in 0...advances.length) {
@@ -825,6 +825,7 @@ class TextEngine {
 						subWordWidth += value;
 						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 ) {
 							textIndex = layoutGroup.startIndex + i;
+							advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
 							break;
 						}
 					}
