@@ -1856,7 +1856,12 @@ class TextField extends InteractiveObject {
 
 			case C:
 
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				 #if mac
+				if (modifier == KeyModifier.LEFT_META || modifier == KeyModifier.RIGHT_META || modifier == KeyModifier.META)
+				 #else
+				if (modifier == KeyModifier.LEFT_CTRL || modifier == KeyModifier.RIGHT_CTRL || modifier == KeyModifier.CTRL)
+				 #end
+				{
 
 					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
 
@@ -1864,7 +1869,12 @@ class TextField extends InteractiveObject {
 
 			case X:
 
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				#if mac
+				if (modifier == KeyModifier.LEFT_META || modifier == KeyModifier.RIGHT_META || modifier == KeyModifier.META)
+				#else
+				if (modifier == KeyModifier.LEFT_CTRL || modifier == KeyModifier.RIGHT_CTRL || modifier == KeyModifier.CTRL)
+				#end
+				{
 
 					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
 
@@ -1879,7 +1889,12 @@ class TextField extends InteractiveObject {
 
 			case V:
 
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				#if mac
+				if (modifier == KeyModifier.LEFT_META || modifier == KeyModifier.RIGHT_META || modifier == KeyModifier.META)
+				#else
+				if (modifier == KeyModifier.LEFT_CTRL || modifier == KeyModifier.RIGHT_CTRL || modifier == KeyModifier.CTRL)
+				#end
+				{
 
 					var text = Clipboard.text;
 
