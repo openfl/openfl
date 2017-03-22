@@ -1997,6 +1997,16 @@ class TextField extends InteractiveObject {
 
 				}
 
+			case A:
+
+
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
+				{
+
+					__selectAll();
+
+				}
+
 			case X:
 
 				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
