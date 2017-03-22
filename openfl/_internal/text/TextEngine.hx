@@ -829,6 +829,7 @@ class TextEngine {
 							break;
 						}
 					}
+					widthValue = width - 2;
 				}
 				pushNewLine(textIndex);
 				continue;
