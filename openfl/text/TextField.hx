@@ -1921,6 +1921,37 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 
+			case UP:
+
+				var index = getLineIndexOfChar(__caretIndex);
+				if(index > 0) {
+					var pos = getCharBoundaries(__caretIndex);
+					pos.y -= pos.height;
+					__caretIndex = __getPosition(pos.x, pos.y);
+				}
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
+
+			case DOWN:
+
+				var pos = getCharBoundaries(__caretIndex);
+				pos.y += pos.height + 1;
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
+
 			case C:
 
 
