@@ -25,6 +25,13 @@ class OffsetCommand {
 
 private class OffsetShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 		'uniform vec2 uTexCoordOffset;',
@@ -48,11 +55,5 @@ private class OffsetShader extends Shader {
 		'gl_FragColor = clamp(result * uStrength, 0.0, 1.0);',
 	'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
 
 }

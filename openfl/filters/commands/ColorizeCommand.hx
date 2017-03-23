@@ -25,6 +25,13 @@ class ColorizeCommand {
 
 private class ColorizeShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 
@@ -46,11 +53,5 @@ private class ColorizeShader extends Shader {
 			'gl_FragColor = vec4(uColor.rgb * a, a);',
 		'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
 
 }

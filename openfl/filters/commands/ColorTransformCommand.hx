@@ -22,6 +22,13 @@ class ColorTransformCommand {
 
 private class ColorTransformShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 
@@ -43,12 +50,5 @@ private class ColorTransformShader extends Shader {
 		'	gl_FragColor = color;',
 		'}',
 	];
-
-
-	public function new () {
-
-		super ();
-
-	}
 
 }
