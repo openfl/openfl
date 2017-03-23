@@ -247,8 +247,8 @@ class CanvasTextField {
 
 								}
 
-							} else if (!((group.startIndex < textField.__caretIndex && group.startIndex < textField.__selectionIndex && group.endIndex < textField.__caretIndex && group.endIndex < textField.__selectionIndex)
-									|| (group.startIndex > textField.__caretIndex && group.startIndex > textField.__selectionIndex && group.endIndex > textField.__caretIndex && group.endIndex > textField.__selectionIndex))) {
+							} else if (!((group.endIndex < Math.min(textField.__caretIndex, textField.__selectionIndex))
+									|| (group.startIndex > Math.max(textField.__caretIndex, textField.__selectionIndex)))) {
 
 								var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
 								var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
