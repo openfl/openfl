@@ -131,6 +131,13 @@ class Blur1DCommand {
 
 private class BlurShader extends Shader {
 
+	public function new()
+	{
+		super();
+		
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 		'uniform vec2 uTexCoordOffset;',
@@ -162,11 +169,5 @@ private class BlurShader extends Shader {
 		'	gl_FragColor = clamp(result, 0.0, 1.0);',
 		'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
 
 }

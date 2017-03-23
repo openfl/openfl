@@ -21,6 +21,13 @@ class CombineCommand {
 
 private class CombineShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 
@@ -41,11 +48,4 @@ private class CombineShader extends Shader {
 			'gl_FragColor = src2 + src1 * (1.0 - src2.a);',
 		'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
-
 }

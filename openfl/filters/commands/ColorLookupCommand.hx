@@ -22,6 +22,13 @@ class ColorLookupCommand {
 
 private class ColorLookupShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 
@@ -41,11 +48,5 @@ private class ColorLookupShader extends Shader {
 			'gl_FragColor = texture2D(uColorLookupSampler, vec2(a, 0.5));',
 		'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
 
 }

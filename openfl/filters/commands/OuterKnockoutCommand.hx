@@ -23,6 +23,13 @@ class OuterKnockoutCommand {
 
 private class OuterKnockoutShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 
@@ -45,11 +52,5 @@ private class OuterKnockoutShader extends Shader {
 			'gl_FragColor = src2;',
 		'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
 
 }
