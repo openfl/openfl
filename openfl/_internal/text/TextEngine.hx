@@ -21,6 +21,8 @@ import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 
+import format.swf.utils.StringUtils;
+
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -663,7 +665,7 @@ class TextEngine {
 				for(pos in startIndex...endIndex) {
 					var char = text.charAt(pos);
 					var text = StringUtils.repeat(64, char);
-					var width = __context.measureText(text).width / 64
+					var width = __context.measureText(text).width / 64;
 					advances.push(width);
 				}
 			#else

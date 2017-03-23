@@ -88,6 +88,8 @@ class TextField extends InteractiveObject {
 	private var __clickTimer:haxe.Timer;
 	private var __firstDownPos:Point;
 
+	private static var __moveDelta:Int = 10;
+
 	#if (js && html5)
 	private var __div:DivElement;
 	#end
@@ -1221,15 +1223,18 @@ class TextField extends InteractiveObject {
 								case "face": copied_format.font = element.get(attribute);
 								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
 								case "size": copied_format.size = Std.parseInt(element.get(attribute));
+								// :TODO: Support letterspacing and kerning
 								default:
 								#if dev
-									trace ("encountered unsupported attribute when parsing html font.");
+									trace ('encountered unsupported attribute ( $attribute ) when parsing html font.');
 								#end
 							}
 						}
+					case "p":
+						// :TODO: support alignment
 					default:
 						#if dev
-							trace ("trying to parse unsupported tag ( $tag ) from html text");
+							trace ('trying to parse unsupported tag ( $tag ) from html text');
 						#end
 					}
 				var result_data = parseTags(element, copied_format, startIndex, formatRanges);
@@ -1770,8 +1775,8 @@ class TextField extends InteractiveObject {
 		__selectionIndex = __caretIndex;
 		__dirty = true;
 
-		// mouse moved to much. don't check for doubleclick
-		if( __firstDownPos != null && (Math.abs(__firstDownPos.x - mouseX) > 10 || Math.abs(__firstDownPos.y - mouseY) > 10)) {
+		// mouse moved too much. don't check for doubleclick
+		if( __firstDownPos != null && (Math.abs(__firstDownPos.x - mouseX) > __moveDelta || Math.abs(__firstDownPos.y - mouseY) > __moveDelta)) {
 			if(__clickTimer != null) {
 				__clickTimer.stop();
 			}
