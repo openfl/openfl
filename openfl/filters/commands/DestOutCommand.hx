@@ -22,6 +22,13 @@ class DestOutCommand {
 
 private class DestOutShader extends Shader {
 
+	public function new()
+	{
+		super();
+
+		CommandHelper.addShader( this );
+	}
+
 	@vertex var vertex = [
 		'uniform vec2 openfl_uScaleVector;',
 
@@ -45,11 +52,5 @@ private class DestOutShader extends Shader {
 			'gl_FragColor = vec4(0.5 * ( 1. + high - low ));',
 		'}',
 	];
-
-	public function new () {
-
-		super ();
-
-	}
 
 }

@@ -8,6 +8,7 @@ import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
 
 import openfl.display.BitmapData;
+import openfl.display.Shader;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
 import lime.utils.Float32Array;
@@ -20,6 +21,17 @@ import openfl._internal.renderer.RenderSession;
 class CommandHelper {
 
 	private static var vertexArray : openfl._internal.renderer.opengl.utils.VertexArray;
+	private static var shaderTable : Array<Shader>;
+
+	public static function addShader( shader : Shader ){
+
+		 if( shaderTable == null )
+		 {
+		 	shaderTable = new Array();
+		 }
+
+		 shaderTable.push( shader );
+	}
 
 	public static function initialize(renderSession:RenderSession)
 	{
@@ -51,6 +63,12 @@ class CommandHelper {
 
 		vertexArray.setContext(renderSession.gl, positions);
 
+		if( shaderTable != null ){
+			for( shader in shaderTable ){
+				shader.__init( renderSession.gl );
+			}
+		}
+
 	}
 
 	public static function apply (renderSession:RenderSession, target:BitmapData, source:BitmapData, shader:Shader, drawSelf:Bool, preDrawCallback:RenderSession->Void = null) {
@@ -76,11 +94,11 @@ class CommandHelper {
 		internalShader.bindVertexArray(vertexArray);
 
 		var blendMode:BlendMode = internalShader.blendMode;
-		
+
 		if (blendMode == null) {
 			blendMode = NORMAL;
 		}
-		
+
 		renderSession.blendModeManager.setBlendMode(blendMode);
 
 
