@@ -507,7 +507,14 @@ class CanvasGraphics {
 				graphics.__canvas.height = height;
 
 				context.setTransform (scaleX, 0, 0, scaleY, padding, padding);
-				context.translate (-scaled_bounds.x, -scaled_bounds.y);
+
+				if(graphics.__snapCoordinates) {
+					context.translate (Math.ceil(-scaled_bounds.x), Math.fround(-scaled_bounds.y));
+				}
+				else {
+					context.translate (-scaled_bounds.x, -scaled_bounds.y);
+				}
+				
 				Rectangle.pool.put(scaled_bounds);
 
 				beginRenderStep();
