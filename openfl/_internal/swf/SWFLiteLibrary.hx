@@ -35,6 +35,7 @@ import openfl.Assets;
 	
 	private var alphaCheck:Map<String, Bool>;
 	private var id:String;
+	private var imageClassNames:Map<String, String>;
 	private var preloading:Bool;
 	private var rootPath:String;
 	private var swf:SWFLite;
@@ -47,6 +48,7 @@ import openfl.Assets;
 		this.id = id;
 		
 		alphaCheck = new Map ();
+		imageClassNames = new Map ();
 		
 		#if (ios || tvos)
 		rootPath = "assets/";
@@ -85,6 +87,12 @@ import openfl.Assets;
 	
 	
 	public override function getImage (id:String):Image {
+		
+		if (imageClassNames.exists (id)) {
+			
+			id = imageClassNames.get (id);
+			
+		}
 		
 		// TODO: Better system?
 		
@@ -153,6 +161,24 @@ import openfl.Assets;
 			swf = SWFLite.unserialize (data);
 			swf.library = this;
 			
+			var bitmapSymbol:BitmapSymbol;
+			
+			for (symbol in swf.symbols) {
+				
+				if (Std.is (symbol, BitmapSymbol)) {
+					
+					bitmapSymbol = cast symbol;
+					
+					if (bitmapSymbol.className != null) {
+						
+						imageClassNames.set (bitmapSymbol.className, bitmapSymbol.path);
+						
+					}
+					
+				}
+				
+			}
+			
 			SWFLite.instances.set (id, swf);
 			
 			__load ().onProgress (promise.progress).onError (promise.error).onComplete (function (_) {
@@ -199,6 +225,12 @@ import openfl.Assets;
 	
 	
 	public override function loadImage (id:String):Future<Image> {
+		
+		if (imageClassNames.exists (id)) {
+			
+			id = imageClassNames.get (id);
+			
+		}
 		
 		// TODO: Better system?
 		
