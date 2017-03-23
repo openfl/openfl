@@ -662,14 +662,10 @@ class TextEngine {
 			#if (js && html5)
 				for(pos in startIndex...endIndex) {
 					var char = text.charAt(pos);
-					width = 0;
-					for(i in 0...64) {
-						width += __context.measureText (char).width;
-					}
-					width /= 64;
+					var text = StringUtils.repeat(64, char);
+					var width = __context.measureText(text).width / 64
 					advances.push(width);
 				}
-
 			#else
 
 			if (__textLayout == null) {
