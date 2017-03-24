@@ -145,7 +145,7 @@ class Sound extends EventDispatcher {
 		}
 		
 		var audioBuffer = new AudioBuffer ();
-		audioBuffer.bitsPerSample = format == "float" ? 16 : 8;
+		audioBuffer.bitsPerSample = format == "float" ? 32 : 16; // "short"
 		audioBuffer.channels = stereo ? 2 : 1;
 		audioBuffer.data = new UInt8Array (bytes);
 		audioBuffer.sampleRate = Std.int (sampleRate);
