@@ -1223,7 +1223,8 @@ class TextField extends InteractiveObject {
 								case "face": copied_format.font = element.get(attribute);
 								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
 								case "size": copied_format.size = Std.parseInt(element.get(attribute));
-								// :TODO: Support letterspacing and kerning
+								case "letterSpacing": copied_format.letterSpacing = Std.parseFloat(element.get(attribute));
+								case "kerning": copied_format.kerning = Std.parseInt(element.get(attribute)) != 0;
 								default:
 								#if dev
 									trace ('encountered unsupported attribute ( $attribute ) when parsing html font.');
@@ -1231,6 +1232,27 @@ class TextField extends InteractiveObject {
 							}
 						}
 					case "p":
+						for( attribute in element.attributes() ) {
+							switch(attribute){
+								case "align":
+									var value:String = element.get(attribute);
+									switch(value) {
+										case "left": copied_format.align = TextFormatAlign.LEFT;
+										case "right": copied_format.align = TextFormatAlign.RIGHT;
+										case "center": copied_format.align = TextFormatAlign.CENTER;
+										case "justify": copied_format.align = TextFormatAlign.JUSTIFY;
+										default:
+											#if dev
+												trace ('encountered unsupported value ( $value ) when parsing alignment.');
+											#end
+									}
+								default:
+									#if dev
+										trace ('encountered unsupported attribute ( $attribute ) when parsing p tag.');
+									#end
+							}
+
+						}
 						// :TODO: support alignment
 					default:
 						#if dev
