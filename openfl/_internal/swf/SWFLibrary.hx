@@ -1,6 +1,7 @@
 package openfl._internal.swf;
 
 
+import haxe.Resource;
 import haxe.Unserializer;
 import lime.graphics.Image;
 import lime.app.Future;
@@ -104,7 +105,15 @@ import flash.display.AVM1Movie;
 		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
 		
-		if (paths.exists (id) || classTypes.exists (id)) {
+		var bytes:ByteArray = Resource.getBytes ("swf:" + id);
+		
+		if (bytes == null && classTypes.exists (id)) {
+			
+			bytes = cast (Type.createInstance (classTypes.get (id), []), ByteArray);
+			
+		}
+		
+		if (bytes != null || paths.exists (id)) {
 			
 			context = new LoaderContext (false, ApplicationDomain.currentDomain, null);
 			context.allowCodeImport = true;
@@ -127,9 +136,8 @@ import flash.display.AVM1Movie;
 				
 			});
 			
-			if (classTypes.exists (id)) {
+			if (bytes != null) {
 				
-				var bytes = cast (Type.createInstance (classTypes.get (id), []), ByteArray);
 				loader.loadBytes (bytes, context);
 				
 			} else {

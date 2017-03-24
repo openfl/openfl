@@ -724,14 +724,15 @@ class Tools {
 					swf.id = "lib/" + library.name + "/" + library.name + ".swf";
 					swf.library = library.name;
 					
-					//var embed = (library.embed != false);
-					var embed = (library.embed == true); // default to non-embedded
+					var embed = (library.embed != false);
+					//var embed = (library.embed == true); // default to non-embedded
 					
 					if (embed) {
 						
 						//swf.embed = true;
 						//output.assets.push (swf);
-						output.haxeflags.push ("-swf-lib " + swf.sourcePath);
+						//output.haxeflags.push ("-swf-lib " + swf.sourcePath);
+						output.haxeflags.push ("-resource " + swf.sourcePath + "@swf:" + swf.id);
 						
 					} else {
 						
