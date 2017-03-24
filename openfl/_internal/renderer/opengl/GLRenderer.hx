@@ -135,7 +135,7 @@ class GLRenderer extends AbstractRenderer {
 
 		openfl.filters.commands.CommandHelper.initialize (renderSession);
 
-		shaderManager.setShader(shaderManager.defaultShader);
+		shaderManager.setShader(shaderManager.defaultShader, true);
 
 		gl.disable (gl.DEPTH_TEST);
 		gl.disable (gl.CULL_FACE);
