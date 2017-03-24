@@ -104,7 +104,7 @@ import flash.display.AVM1Movie;
 		
 		var promise = new Promise<lime.utils.AssetLibrary> ();
 		
-		if (paths.exists (id)) {
+		if (paths.exists (id) || classTypes.exists (id)) {
 			
 			context = new LoaderContext (false, ApplicationDomain.currentDomain, null);
 			context.allowCodeImport = true;
