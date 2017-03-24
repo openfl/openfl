@@ -759,7 +759,8 @@ class TextEngine {
 
 			layoutGroup.endIndex = endIndex;
 			layoutGroup.width = widthValue;
-			layoutGroup.advances = advances.splice(0, advances.length);
+			layoutGroup.advances = advances;
+			advances = null;
 			layoutGroups.push (layoutGroup);
 
 			if ( lineLayoutGroups.length == lineIndex ) {
