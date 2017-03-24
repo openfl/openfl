@@ -894,7 +894,7 @@ class SWFLiteExporter {
 
 		if (tag == null) return null;
 
-		if (excludes != null && excludes.indexOf(tag.characterId) != -1
+		if (excludes.indexOf(tag.characterId) != -1
 			|| excludes.indexOf(tag.name) != -1) {
 			swfLite.symbols.set(tag.characterId, new SWFSymbol());
 		}
