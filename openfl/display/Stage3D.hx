@@ -40,6 +40,7 @@ class Stage3D extends EventDispatcher {
 	public var y (default, set):Float;
 	
 	private var __contextRequested:Bool;
+	private var __stage:Stage;
 	
 	#if (js && html5)
 	private var __canvas:CanvasElement;
@@ -81,6 +82,8 @@ class Stage3D extends EventDispatcher {
 	
 	
 	private function __createContext (stage:Stage, renderSession:RenderSession):Void {
+		
+		__stage = stage;
 		
 		if (renderSession.gl != null) {
 			

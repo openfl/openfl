@@ -4,6 +4,7 @@ package openfl.display3D;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
+import lime.math.Vector2;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.stage3D.Context3DStateCache;
@@ -34,6 +35,7 @@ import openfl.profiler.Telemetry;
 @:noDebug
 #end
 
+@:access(openfl.display.Stage3D)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.Texture)
@@ -340,6 +342,17 @@ import openfl.profiler.Telemetry;
 	
 	
 	public function drawToBitmapData (destination:BitmapData):Void {
+		
+		if (destination == null) return;
+		
+		var window = __stage3D.__stage.window;
+		
+		if (window != null) {
+			
+			var image = window.renderer.readPixels ();
+			destination.image.copyPixels (image, image.rect, new Vector2 ());
+			
+		}
 		
 		// TODO
 		
