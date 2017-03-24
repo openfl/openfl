@@ -385,6 +385,9 @@ class MovieClip extends flash.display.MovieClip {
 				} else if (Std.is (symbol, SimpleSpriteSymbol)) {
 
 					displayObject = new SimpleSprite (__swf, cast symbol);
+				} else {
+
+					displayObject = new DisplayObject();
 				}
 			}
 

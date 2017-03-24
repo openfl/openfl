@@ -468,7 +468,7 @@ class Tools {
 					var swf = new SWF (bytes);
 
 					var mergeAlphaChannel = project.defines.exists('swf.mergeAlphaChannel') ;
-					var exporter = new SWFLiteExporter (swf.data, mergeAlphaChannel);
+					var exporter = new SWFLiteExporter (swf.data, mergeAlphaChannel, library.excludes);
 					var swfLite = exporter.swfLite;
 
 					for (id in exporter.bitmaps.keys ()) {

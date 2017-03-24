@@ -69,12 +69,17 @@ class SWFLiteExporter {
 	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
 	private var mergeAlphaChannel:Bool;
+	private var excludes:Array<Dynamic>;
 
 
-	public function new (data:SWFRoot, mergeAlphaChannel:Bool) {
+	public function new (data:SWFRoot, mergeAlphaChannel:Bool, excludes:Array<Dynamic> = null) {
 
 		this.data = data;
 		this.mergeAlphaChannel = mergeAlphaChannel;
+		if ( excludes == null ) {
+			excludes = new Array<Dynamic>();
+		}
+		this.excludes = excludes;
 
 		bitmapAlpha = new Map <Int, ByteArray> ();
 		bitmaps = new Map <Int, ByteArray> ();
@@ -888,6 +893,11 @@ class SWFLiteExporter {
 	private function processTag (tag:IDefinitionTag):SWFSymbol {
 
 		if (tag == null) return null;
+
+		if (excludes != null && excludes.indexOf(tag.characterId) != -1
+			|| excludes.indexOf(tag.name) != -1) {
+			swfLite.symbols.set(tag.characterId, new SWFSymbol());
+		}
 
 		if (!swfLite.symbols.exists (tag.characterId)) {
 
