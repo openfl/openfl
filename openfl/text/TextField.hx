@@ -125,11 +125,13 @@ class TextField extends InteractiveObject {
 
 	public function appendText (text:String):Void {
 
-		__textEngine.text += text;
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+		if ( maxChars == 0 || __textEngine.text.length < maxChars ) {
+			__textEngine.text += text;
+			__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
 
-		__dirty = true;
-		__layoutDirty = true;
+			__dirty = true;
+			__layoutDirty = true;
+		}
 
 	}
 
@@ -477,7 +479,7 @@ class TextField extends InteractiveObject {
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 
-		replaceText (startIndex, endIndex, value);
+		value = replaceText (startIndex, endIndex, value);
 
 		__caretIndex = startIndex + value.length;
 		__selectionIndex = __caretIndex;
@@ -485,9 +487,18 @@ class TextField extends InteractiveObject {
 	}
 
 
-	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
+	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):String {
 
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return "";
+
+		if (maxChars > 0 && __textEngine.text.length - (endIndex - beginIndex) + newText.length > maxChars) {
+			var lengthOfTextToReplace = maxChars - (__textEngine.text.length - (endIndex - beginIndex));
+			if (lengthOfTextToReplace <= 0) {
+				return "";
+			} else {
+				newText = newText.substring(0, lengthOfTextToReplace);
+			}
+		}
 
 		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
 
@@ -525,6 +536,8 @@ class TextField extends InteractiveObject {
 
 		__dirty = true;
 		__layoutDirty = true;
+
+		return newText;
 
 	}
 

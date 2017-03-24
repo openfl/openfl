@@ -27,6 +27,7 @@ class DynamicTextSymbol extends SWFSymbol {
 	public var wordWrap:Bool;
 	public var x:Float;
 	public var y:Float;
+	public var maxLength:Int;
 
 
 	public function new () {

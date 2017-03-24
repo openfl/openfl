@@ -759,6 +759,10 @@ class SWFLiteExporter {
 
 		}
 
+		if (tag.hasMaxLength) {
+			symbol.maxLength = tag.maxLength;
+		}
+
 		symbol.wordWrap = tag.wordWrap;
 
 		if (tag.hasFont) {
