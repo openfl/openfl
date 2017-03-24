@@ -28,7 +28,7 @@ class Blur1DCommand {
 
 			for (i in 0...perPassFetchCount) {
 
-				weightTable[i] = uniformDistribution * strength;
+				weightTable[i] = uniformDistribution;
 
 			}
 
@@ -66,27 +66,6 @@ class Blur1DCommand {
 
 		}
 
-		var weightTable:Float32Array;
-		weightTable = computeWeightTable();
-
-		var totalFetchCount = weightTable.length;
-		if (totalFetchCount > MAXIMUM_FETCH_COUNT) {
-
-			var trimCount = totalFetchCount - MAXIMUM_FETCH_COUNT;
-			var halfTrimCount = (trimCount + 1) >> 1;
-
-			weightTable = weightTable.subarray (halfTrimCount, totalFetchCount - halfTrimCount);
-			var sum = 0.0;
-			for(i in 0...weightTable.length) {
-				sum += weightTable[i];
-			}
-			for(i in 0...weightTable.length) {
-				weightTable[i] /= sum;
-			}
-			totalFetchCount = weightTable.length;
-
-		}
-
 		var pass_width:Float, pass_height:Float;
 
 		if (horizontal) {
@@ -101,12 +80,38 @@ class Blur1DCommand {
 
 		}
 
+		var weightTable:Float32Array;
+		weightTable = computeWeightTable();
+
+		var totalFetchCount = weightTable.length;
+		var initialTotalFetchCount = totalFetchCount;
+		if (totalFetchCount > MAXIMUM_FETCH_COUNT) {
+
+			var trimCount = totalFetchCount - MAXIMUM_FETCH_COUNT;
+			var halfTrimCount = (trimCount + 1) >> 1;
+
+			weightTable = weightTable.subarray (halfTrimCount, totalFetchCount - halfTrimCount);
+			var sum = 0.0;
+			for(i in 0...weightTable.length) {
+				sum += weightTable[i];
+			}
+			var factor = strength / sum;
+			for(i in 0...weightTable.length) {
+				weightTable[i] *= factor;
+			}
+			totalFetchCount = weightTable.length;
+		} else {
+			for(i in 0...weightTable.length) {
+				weightTable[i] *= strength;
+			}
+		}
+
 		__shader.uFetchCount = totalFetchCount;
 
 		if (totalFetchCount > 1) {
 
-			__shader.uTexCoordDelta[0] =  pass_width / ( totalFetchCount - 1);
-			__shader.uTexCoordDelta[1] =  pass_height / ( totalFetchCount - 1);
+			__shader.uTexCoordDelta[0] =  pass_width / ( initialTotalFetchCount - 1);
+			__shader.uTexCoordDelta[1] =  pass_height / ( initialTotalFetchCount - 1);
 
 		} else {
 
@@ -115,8 +120,8 @@ class Blur1DCommand {
 
 		}
 
-		__shader.uTexCoordOffset[0] = 0.5 * pass_width + offset.x;
-		__shader.uTexCoordOffset[1] = 0.5 * pass_height + offset.y;
+		__shader.uTexCoordOffset[0] = ( 0.5 * totalFetchCount / initialTotalFetchCount ) * pass_width + offset.x;
+		__shader.uTexCoordOffset[1] = ( 0.5 * totalFetchCount / initialTotalFetchCount ) * pass_height + offset.y;
 
 		CommandHelper.apply (renderSession, target, source, __shader, source == target, function (renderSession:RenderSession) { preDrawCallback(renderSession, weightTable); } );
 
@@ -134,7 +139,7 @@ private class BlurShader extends Shader {
 	public function new()
 	{
 		super();
-		
+
 		CommandHelper.addShader( this );
 	}
 
