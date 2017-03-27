@@ -128,7 +128,7 @@ class TextField extends InteractiveObject {
 		if ( maxChars == 0 ) {
 			__textEngine.text += text;
 		} else if( __textEngine.text.length < maxChars ) {
-			var availableChars = maxChars - __textEngine.text.length + text.length;
+			var availableChars = maxChars - (__textEngine.text.length + text.length);
 			__textEngine.text += text.substr(0, availableChars);
 		} else {
 			return;
