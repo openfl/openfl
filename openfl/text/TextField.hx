@@ -125,13 +125,18 @@ class TextField extends InteractiveObject {
 
 	public function appendText (text:String):Void {
 
-		if ( maxChars == 0 || __textEngine.text.length < maxChars ) {
+		if ( maxChars == 0 ) {
 			__textEngine.text += text;
-			__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
-
-			__dirty = true;
-			__layoutDirty = true;
+		} else if( __textEngine.text.length < maxChars ) {
+			var availableChars = maxChars - __textEngine.text.length + text.length;
+			__textEngine.text += text.substr(0, availableChars);
+		} else {
+			return;
 		}
+
+		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+		__dirty = true;
+		__layoutDirty = true;
 
 	}
 
@@ -496,7 +501,7 @@ class TextField extends InteractiveObject {
 			if (lengthOfTextToReplace <= 0) {
 				return "";
 			} else {
-				newText = newText.substring(0, lengthOfTextToReplace);
+				newText = newText.substr(0, lengthOfTextToReplace);
 			}
 		}
 
@@ -1266,7 +1271,6 @@ class TextField extends InteractiveObject {
 							}
 
 						}
-						// :TODO: support alignment
 					default:
 						#if dev
 							trace ('trying to parse unsupported tag ( $tag ) from html text');
