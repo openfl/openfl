@@ -5,9 +5,9 @@ import openfl.text.TextFormat;
 
 
 class TextLayoutGroup {
-	
-	
-	public var advances:Array<Float>; // :TODO: fill with individual character advances when required
+
+
+	public var advances:Array<Float>;
 	public var ascent:Float;
 	public var descent:Float;
 	public var endIndex:Int;
@@ -19,15 +19,15 @@ class TextLayoutGroup {
 	public var offsetY:Float;
 	public var startIndex:Int;
 	public var width:Float;
-	
-	
+
+
 	public function new (format:TextFormat, startIndex:Int, endIndex:Int) {
-		
+
 		this.format = format;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
-		
+
 	}
-	
-	
+
+
 }

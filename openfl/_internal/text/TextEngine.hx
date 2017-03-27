@@ -21,6 +21,8 @@ import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 
+import format.swf.utils.StringUtils;
+
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -613,6 +615,7 @@ class TextEngine {
 
 		var layoutGroup;
 		var widthValue = 0.0;
+		var advances = new Array<Float>();
 		var heightValue = 0.0;
 
 		var offsetX = 2.0;
@@ -621,18 +624,6 @@ class TextEngine {
 		var lineIndex = 0;
 
 		var textLength = text.length;
-
-		inline function startLayoutGroup (format:TextFormat, startIndex:Int):Void {
-			layoutGroup = new TextLayoutGroup (format, startIndex, -1);
-			layoutGroup.offsetX = offsetX;
-			layoutGroup.ascent = ascent;
-			layoutGroup.descent = descent;
-			layoutGroup.leading = leading;
-			layoutGroup.lineIndex = lineIndex;
-			layoutGroup.offsetY = offsetY;
-			layoutGroup.height = heightValue;
-			widthValue = 0;
-		}
 
 		inline function getAdvance (text:String, startIndex:Int, endIndex:Int):Float {
 
@@ -644,31 +635,64 @@ class TextEngine {
 			#else
 
 			if (__textLayout == null) {
-
 				__textLayout = new TextLayout ();
-
 			}
 
 			__textLayout.text = null;
 			__textLayout.font = font;
 
 			if (formatRange.format.size != null) {
-
 				__textLayout.size = formatRange.format.size;
-
 			}
 
-			__textLayout.text = text.charAt(startIndex);
+			__textLayout.text = text;
 
 			for (position in __textLayout.positions) {
-
-				width = position.advance.x;
-
+				width += position.advance.x;
 			}
 
 			#end
 
 			return width;
+
+		}
+
+		inline function getIndividualCharacterAdvances (text:String, startIndex:Int, endIndex:Int):Array<Float> {
+
+			var advances:Array<Float> = new Array<Float>();
+			var width:Float = 0;
+			#if (js && html5)
+				for(pos in startIndex...endIndex) {
+					var char = text.charAt(pos);
+					var text = StringUtils.repeat(64, char);
+					var width = __context.measureText(text).width / 64;
+					advances.push(width);
+				}
+			#else
+
+			if (__textLayout == null) {
+				__textLayout = new TextLayout ();
+			}
+
+			__textLayout.text = null;
+			__textLayout.font = font;
+
+			if (formatRange.format.size != null) {
+				__textLayout.size = formatRange.format.size;
+			}
+
+			for(pos in startIndex...endIndex) {
+				__textLayout.text = text.charAt(pos);
+				width = 0;
+				for (position in __textLayout.positions) {
+					width += position.advance.x;
+				}
+				advances.push(width);
+			}
+
+			#end
+
+			return advances;
 
 		}
 
@@ -718,11 +742,25 @@ class TextEngine {
 
 		}
 
+		inline function startLayoutGroup (format:TextFormat, startIndex:Int):Void {
+			layoutGroup = new TextLayoutGroup (format, startIndex, -1);
+			layoutGroup.offsetX = offsetX;
+			layoutGroup.ascent = ascent;
+			layoutGroup.descent = descent;
+			layoutGroup.leading = leading;
+			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.offsetY = offsetY;
+			layoutGroup.height = heightValue;
+			widthValue = 0;
+		}
+
 		inline function endLayoutGroup(endIndex:Int) {
 			if ( layoutGroup.startIndex == endIndex ) return;
 
 			layoutGroup.endIndex = endIndex;
 			layoutGroup.width = widthValue;
+			layoutGroup.advances = advances;
+			advances = null;
 			layoutGroups.push (layoutGroup);
 
 			if ( lineLayoutGroups.length == lineIndex ) {
@@ -768,9 +806,31 @@ class TextEngine {
 			updateNextBreakIndex ("\n");
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
+			if ( selectable ) {
+				advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
+			}
 
 			// :NOTE: For justify, we have to account for a minimum space width here.
 			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 ) {
+				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
+				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
+				if ( Math.floor( layoutGroup.offsetX + wordWidth ) > width - 2 ) {
+					// compute the actual breakindex
+					if ( !selectable ) {
+						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
+					}
+					var subWordWidth:Float = 0.0;
+					for(i in 0...advances.length) {
+						var value = advances[i];
+						subWordWidth += value;
+						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 ) {
+							textIndex = layoutGroup.startIndex + i;
+							advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
+							break;
+						}
+					}
+					widthValue = width - 2;
+				}
 				pushNewLine(textIndex);
 				continue;
 			}
@@ -798,6 +858,9 @@ class TextEngine {
 				textIndex = formatRange.end;
 				// :TODO: Check if still needed
 				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
+				if ( selectable ) {
+					advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, textIndex);
+				}
 				endLayoutGroup(textIndex);
 				offsetX = layoutGroup.offsetX + widthValue;
 
@@ -872,13 +935,13 @@ class TextEngine {
 									group = groups[groups.length-1];
 									if (group.endIndex < text.length && text.charAt (group.endIndex) != "\n") {
 
-										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);											
+										offsetX = (realWidth - 4 - lineWidths[lineIndex]) / (groups.length - 1);
 									} else {
 										#if (js && html5)
 										offsetX = __context.measureText (" ").width;
 										#end
 										}
-										
+
 									for (j in 0...groups.length ) {
 
 										groups[j].offsetX += (offsetX * j);
