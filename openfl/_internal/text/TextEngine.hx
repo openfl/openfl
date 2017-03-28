@@ -54,6 +54,7 @@ class TextEngine {
 	private static inline var UTF8_ENDLINE = 10;
 	private static inline var UTF8_SPACE = 32;
 	private static inline var UTF8_HYPHEN = 0x2D;
+	private static inline var OFFSET_START:Float = 2.0;
 
 	private static var __defaultFonts = new Map<String, Font> ();
 
@@ -521,7 +522,7 @@ class TextEngine {
 
 					numLines++;
 
-					if (textHeight <= height - 2) {
+					if (textHeight <= height - OFFSET_START) {
 
 						bottomScrollV++;
 
@@ -543,7 +544,7 @@ class TextEngine {
 
 				currentLineHeight = Math.max (currentLineHeight, group.height);
 
-				textHeight = group.offsetY - 2 + group.ascent + group.descent;
+				textHeight = group.offsetY - OFFSET_START + group.ascent + group.descent;
 
 				currentLineWidth = 0;
 
@@ -577,7 +578,7 @@ class TextEngine {
 
 			}
 
-		} else if (textHeight <= height - 2) {
+		} else if (textHeight <= height - OFFSET_START) {
 
 			bottomScrollV++;
 
@@ -618,8 +619,8 @@ class TextEngine {
 		var advances = new Array<Float>();
 		var heightValue = 0.0;
 
-		var offsetX = 2.0;
-		var offsetY = 2.0;
+		var offsetX = OFFSET_START;
+		var offsetY = OFFSET_START;
 		var textIndex = 0;
 		var lineIndex = 0;
 
@@ -782,7 +783,7 @@ class TextEngine {
 			}
 
 			offsetY += heightValue;
-			offsetX = 2; // :NOTE: I have no idea why this is here.
+			offsetX = OFFSET_START; // :NOTE: I have no idea why this is here.
 			lineIndex++;
 			startLayoutGroup(formatRange.format, textIndex);
 		}
@@ -811,10 +812,10 @@ class TextEngine {
 			}
 
 			// :NOTE: For justify, we have to account for a minimum space width here.
-			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - 2 ) {
+			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - OFFSET_START ) {
 				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
 				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
-				if ( Math.floor( layoutGroup.offsetX + wordWidth ) > width - 2 ) {
+				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - OFFSET_START ) {
 					// compute the actual breakindex
 					if ( !selectable ) {
 						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
@@ -823,13 +824,13 @@ class TextEngine {
 					for(i in 0...advances.length) {
 						var value = advances[i];
 						subWordWidth += value;
-						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - 2 ) {
+						if ( Math.floor( layoutGroup.offsetX + subWordWidth ) > width - OFFSET_START ) {
 							textIndex = layoutGroup.startIndex + i;
 							advances.splice(textIndex - layoutGroup.startIndex, nextBreakIndex - textIndex);
 							break;
 						}
 					}
-					widthValue = width - 2;
+					widthValue = width - OFFSET_START;
 				}
 				pushNewLine(textIndex);
 				continue;
