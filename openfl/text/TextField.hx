@@ -25,6 +25,8 @@ import openfl.Lib;
 import Xml;
 import openfl.utils.UnshrinkableArray;
 
+import format.swf.lite.SWFLite;
+
 #if (js && html5)
 import js.html.DivElement;
 #end
@@ -1238,7 +1240,12 @@ class TextField extends InteractiveObject {
 					case "font":
 						for( attribute in element.attributes() ) {
 							switch(attribute){
-								case "face": copied_format.font = element.get(attribute);
+								case "face":
+									var font_name = element.get(attribute);
+									copied_format.font = SWFLite.fontAliases.get (font_name);
+									if (copied_format.font == null) {
+										copied_format.font = font_name;
+									}
 								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
 								case "size": copied_format.size = Std.parseInt(element.get(attribute));
 								case "letterSpacing": copied_format.letterSpacing = Std.parseFloat(element.get(attribute));
