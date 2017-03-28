@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "4.9.1",
-	"releasenote": "Fixed performance regression, minor fixes",
+	"version": "4.9.2",
+	"releasenote": "SWF Library and Context3D fixes",
 	"contributors": [ "singmajesty" ]
 }
