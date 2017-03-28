@@ -160,13 +160,22 @@ import openfl.profiler.Telemetry;
 		#else
 		
 		var stencilExtension = GL.getExtension ("OES_packed_depth_stencil");
-		if (stencilExtension == null)
-			stencilExtension = GL.getExtension ("EXT_packed_depth_stencil");
 		
 		if (stencilExtension != null) {
 			
 			__supportsPackedDepthStencil = true;
-			DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_EXT;
+			DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_OES;
+			
+		} else {
+			
+			stencilExtension = GL.getExtension ("EXT_packed_depth_stencil");
+			
+			if (stencilExtension != null) {
+				
+				__supportsPackedDepthStencil = true;
+				DEPTH_STENCIL = stencilExtension.DEPTH24_STENCIL8_EXT;
+				
+			}
 			
 		}
 		
