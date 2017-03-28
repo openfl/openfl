@@ -36,6 +36,12 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+import format.swf.lite.symbols.BitmapSymbol;
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.graphics.ImageChannel;
+import lime.math.Vector2;
+import lime.Assets in LimeAssets;
 
 #if (js && html5)
 import js.html.CanvasElement;
@@ -1283,6 +1289,38 @@ class BitmapData implements IBitmapDrawable {
 	public function get_height ():Int {
 
 		return Math.round (__height / __scaleY);
+
+	}
+
+
+	public static function getFromSymbol (symbol:BitmapSymbol):BitmapData {
+
+		if (Assets.cache.hasBitmapData (symbol.path)) {
+
+			return Assets.cache.getBitmapData (symbol.path);
+
+		} else {
+
+			var source = LimeAssets.getImage (symbol.path, false);
+
+			if (source != null && symbol.alpha != null && symbol.alpha != "") {
+
+				var alpha = LimeAssets.getImage (symbol.alpha, false);
+				source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
+
+				source.buffer.premultiplied = true;
+
+				#if !sys
+				source.premultiplied = false;
+				#end
+
+			}
+
+			var bitmapData = BitmapData.fromImage (source);
+
+			Assets.cache.setBitmapData (symbol.path, bitmapData);
+			return bitmapData;
+		}
 
 	}
 }

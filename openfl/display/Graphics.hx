@@ -104,6 +104,12 @@ import js.html.CanvasRenderingContext2D;
 
 	}
 
+	public function beginBitmapFillWithId (bitmapID:Int, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
+
+		__commands.beginBitmapFillWithId (bitmapID, matrix, repeat, smooth);
+		__visible = true;
+	}
+
 
 	public function beginFill (color:Int = 0, alpha:Float = 1):Void {
 
@@ -123,7 +129,6 @@ import js.html.CanvasRenderingContext2D;
 			throw "don't fill readonly!";
 		}
 		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-		__hardware = false;
 
 		for (alpha in alphas) {
 
@@ -157,7 +162,6 @@ import js.html.CanvasRenderingContext2D;
 		}
 
 		__visible = false;
-		__hardware = true;
 
 		#if (js && html5)
 		moveTo (0, 0);
@@ -258,7 +262,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -301,7 +304,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.curveTo (controlX, controlY, anchorX, anchorY);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -316,7 +318,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawCircle (x, y, radius);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -331,7 +332,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawEllipse (x, y, width, height);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -475,7 +475,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -600,7 +599,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.lineTo (x, y);
 
-		__hardware = false;
 		__dirty = true;
 
 	}

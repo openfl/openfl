@@ -194,6 +194,15 @@ import openfl.Assets;
 		}
 
 	}
+
+	private function prepareShapeBitmaps () {
+
+		for (symbol in symbols) {
+			if(Std.is(symbol, format.swf.lite.symbols.ShapeSymbol)) {
+				@:privateAccess cast(symbol, format.swf.lite.symbols.ShapeSymbol).graphics.__commands.resolveBitmapDatas(this);
+			}
+		}
+	}
 	
 	
 	public static function unserialize (data:String):SWFLite {
@@ -212,6 +221,8 @@ import openfl.Assets;
 		swf_lite.classes = new Map ();
 		swf_lite.classes_id = new Map ();
 
+		swf_lite.prepareShapeBitmaps();
+		
 		return swf_lite;
 	}
 	

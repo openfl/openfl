@@ -526,7 +526,7 @@ class SWFLiteExporter {
 
 		var symbol = new ShapeSymbol ();
 		symbol.id = tag.characterId;
-		symbol.commands = handler.commands;
+		symbol.fillDrawCommandBuffer(handler.commands);
 		symbol.bounds = tag.shapeBounds.rect;
 
 		swfLite.symbols.set (symbol.id, symbol);
