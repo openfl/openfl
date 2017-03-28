@@ -815,7 +815,7 @@ class TextEngine {
 			if ( wordWrap && Math.floor( layoutGroup.offsetX + groupWidth ) > width - OFFSET_START ) {
 				// :NOTE: Special case. words that should be broken without ' ', '-' or '\n'
 				var wordWidth:Float = getAdvance (text, textIndex, nextBreakIndex);
-				if ( Math.floor( layoutGroup.offsetX + wordWidth ) > width - 2 ) {
+				if ( layoutGroup.offsetX == OFFSET_START && Math.floor( layoutGroup.offsetX + wordWidth ) > width - OFFSET_START ) {
 					// compute the actual breakindex
 					if ( !selectable ) {
 						advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
