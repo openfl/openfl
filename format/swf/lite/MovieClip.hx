@@ -422,6 +422,8 @@ class MovieClip extends flash.display.MovieClip {
 
 		graphics.__symbol = symbol;
 
+		__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
+
 		for (command in symbol.commands) {
 
 			switch (command) {
