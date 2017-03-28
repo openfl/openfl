@@ -19,10 +19,13 @@ import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.MouseEvent;
 import openfl.geom.Matrix;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 import Xml;
 import openfl.utils.UnshrinkableArray;
+
+import format.swf.lite.SWFLite;
 
 #if (js && html5)
 import js.html.DivElement;
@@ -83,6 +86,11 @@ class TextField extends InteractiveObject {
 	private var __showCursor:Bool;
 	private var __textEngine:TextEngine;
 	private var __textFormat:TextFormat;
+	private var __clicks:Int = 0;
+	private var __clickTimer:haxe.Timer;
+	private var __firstDownPos:Point;
+
+	private static var __moveDelta:Int = 10;
 
 	#if (js && html5)
 	private var __div:DivElement;
@@ -119,9 +127,16 @@ class TextField extends InteractiveObject {
 
 	public function appendText (text:String):Void {
 
-		__textEngine.text += text;
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
+		if ( maxChars == 0 ) {
+			__textEngine.text += text;
+		} else if( __textEngine.text.length < maxChars ) {
+			var availableChars = maxChars - (__textEngine.text.length + text.length);
+			__textEngine.text += text.substr(0, availableChars);
+		} else {
+			return;
+		}
 
+		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __textEngine.text.length;
 		__dirty = true;
 		__layoutDirty = true;
 
@@ -130,7 +145,7 @@ class TextField extends InteractiveObject {
 
 	public function getCharBoundaries (charIndex:Int):Rectangle {
 
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+		if (charIndex < 0 || charIndex > __textEngine.text.length) return null;
 
 		__updateLayout ();
 
@@ -153,6 +168,26 @@ class TextField extends InteractiveObject {
 		}
 
 		return null;
+
+	}
+
+	public function getCharBoundariesInGroup (charIndex:Int, group:openfl._internal.text.TextLayoutGroup):Rectangle {
+
+		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return null;
+
+		__updateLayout ();
+
+		 if (charIndex < group.startIndex || charIndex > group.endIndex) return null;
+
+		var x = group.offsetX;
+
+		for (i in 0...(charIndex - group.startIndex)) {
+
+			x += group.advances[i];
+
+		}
+
+		return new Rectangle (x, group.offsetY, group.advances[charIndex - group.startIndex], group.ascent + group.descent);
 
 	}
 
@@ -261,7 +296,7 @@ class TextField extends InteractiveObject {
 
 	public function getLineIndexOfChar (charIndex:Int):Int {
 
-		if (charIndex < 0 || charIndex > __textEngine.text.length - 1) return -1;
+		if (charIndex < 0 || charIndex > __textEngine.text.length) return -1;
 
 		__updateLayout ();
 
@@ -451,7 +486,7 @@ class TextField extends InteractiveObject {
 		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
 		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
 
-		replaceText (startIndex, endIndex, value);
+		value = replaceText (startIndex, endIndex, value);
 
 		__caretIndex = startIndex + value.length;
 		__selectionIndex = __caretIndex;
@@ -459,9 +494,18 @@ class TextField extends InteractiveObject {
 	}
 
 
-	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void {
+	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):String {
 
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __textEngine.text.length || newText == null) return "";
+
+		if (maxChars > 0 && __textEngine.text.length - (endIndex - beginIndex) + newText.length > maxChars) {
+			var lengthOfTextToReplace = maxChars - (__textEngine.text.length - (endIndex - beginIndex));
+			if (lengthOfTextToReplace <= 0) {
+				return "";
+			} else {
+				newText = newText.substr(0, lengthOfTextToReplace);
+			}
+		}
 
 		__textEngine.text = __textEngine.text.substring (0, beginIndex) + newText + __textEngine.text.substring (endIndex);
 
@@ -499,6 +543,8 @@ class TextField extends InteractiveObject {
 
 		__dirty = true;
 		__layoutDirty = true;
+
+		return newText;
 
 	}
 
@@ -555,9 +601,10 @@ class TextField extends InteractiveObject {
 
 
 	private function __getPosition (x:Float, y:Float):Int {
-		return -1;
-		// :NOTE: Individual advances are not calculated for now.
-		/*
+		if(!__textEngine.selectable) {
+			return -1;
+		}
+
 		__updateLayout ();
 
 		x += scrollH;
@@ -568,7 +615,14 @@ class TextField extends InteractiveObject {
 
 		}
 
-		if (y > __textEngine.textHeight) y = __textEngine.textHeight;
+		if (y < 0) {
+			y = 0;
+			x = 0;
+		}
+		if (y > __textEngine.textHeight) {
+			y = __textEngine.textHeight;
+			x = __textEngine.textWidth;
+		}
 
 		var firstGroup = true;
 		var group, nextGroup;
@@ -595,9 +649,9 @@ class TextField extends InteractiveObject {
 
 			}
 
-			if ((y >= group.offsetY && y <= group.offsetY + group.height) || nextGroup == null) {
+			if ((y >= group.offsetY && y < group.offsetY + group.height) || nextGroup == null) {
 
-				if ((x >= group.offsetX && x <= group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
+				if ((x >= group.offsetX && x < group.offsetX + group.width) || (nextGroup == null || nextGroup.lineIndex != group.lineIndex)) {
 
 					var advance = 0.0;
 
@@ -630,7 +684,6 @@ class TextField extends InteractiveObject {
 		}
 
 		return __textEngine.text.length;
-		*/
 	}
 
 
@@ -1187,18 +1240,47 @@ class TextField extends InteractiveObject {
 					case "font":
 						for( attribute in element.attributes() ) {
 							switch(attribute){
-								case "face": copied_format.font = element.get(attribute);
+								case "face":
+									var font_name = element.get(attribute);
+									copied_format.font = SWFLite.fontAliases.get (font_name);
+									if (copied_format.font == null) {
+										copied_format.font = font_name;
+									}
 								case "color": copied_format.color = Std.parseInt("0x" + stripHexPrefix(element.get(attribute)));
 								case "size": copied_format.size = Std.parseInt(element.get(attribute));
+								case "letterSpacing": copied_format.letterSpacing = Std.parseFloat(element.get(attribute));
+								case "kerning": copied_format.kerning = Std.parseInt(element.get(attribute)) != 0;
 								default:
-								#if debug
-									trace ("encountered unsupported attribute when parsing html font.");
+								#if dev
+									trace ('encountered unsupported attribute ( $attribute ) when parsing html font.');
 								#end
 							}
 						}
+					case "p":
+						for( attribute in element.attributes() ) {
+							switch(attribute){
+								case "align":
+									var value:String = element.get(attribute);
+									switch(value) {
+										case "left": copied_format.align = TextFormatAlign.LEFT;
+										case "right": copied_format.align = TextFormatAlign.RIGHT;
+										case "center": copied_format.align = TextFormatAlign.CENTER;
+										case "justify": copied_format.align = TextFormatAlign.JUSTIFY;
+										default:
+											#if dev
+												trace ('encountered unsupported value ( $value ) when parsing alignment.');
+											#end
+									}
+								default:
+									#if dev
+										trace ('encountered unsupported attribute ( $attribute ) when parsing p tag.');
+									#end
+							}
+
+						}
 					default:
-						#if debug
-							trace ("trying to parse unsupported tag ( $tag ) from html text");
+						#if dev
+							trace ('trying to parse unsupported tag ( $tag ) from html text');
 						#end
 					}
 				var result_data = parseTags(element, copied_format, startIndex, formatRanges);
@@ -1250,6 +1332,9 @@ class TextField extends InteractiveObject {
 
 			value = result_data.text;
 			__textEngine.textFormatRanges = result_data.format_ranges;
+			if ( result_data.format_ranges.length > 0 ) {
+				this.__textFormat = result_data.format_ranges[0].format;
+			}
 
 			return __textEngine.text = value;
 		}
@@ -1657,32 +1742,47 @@ class TextField extends InteractiveObject {
 		stage.removeEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 
+		if(__clickTimer != null) {
+			__clickTimer.stop();
+		}
+		__clickTimer = haxe.Timer.delay(function(){
+			__clicks = 0;
+			__clickTimer = null;
+		}, 400);
+
 		if (stage.focus == this) {
 
-			__getWorldTransform ();
 			__updateLayout ();
 
-			var upPos:Int = __getPosition (mouseX, mouseY);
-			var leftPos:Int;
-			var rightPos:Int;
+			if(__clicks >= 3 && __clicks % 3 == 0) {
+				__selectAll();
+			} else if(__clicks >= 2 && __clicks % 2 == 0) {
+				__selectWord();
+			} else {
 
-			leftPos = Std.int (Math.min (__selectionIndex, upPos));
-			rightPos = Std.int (Math.max (__selectionIndex, upPos));
+				__getWorldTransform ();
 
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
+				var upPos:Int = __getPosition (mouseX, mouseY);
+				var leftPos:Int;
+				var rightPos:Int;
 
-			if (__inputEnabled) {
+				leftPos = Std.int (Math.min (__selectionIndex, upPos));
+				rightPos = Std.int (Math.max (__selectionIndex, upPos));
 
-				this_onFocusIn (null);
+				__selectionIndex = leftPos;
+				__caretIndex = rightPos;
 
-				__stopCursorTimer ();
-				__startCursorTimer ();
+				if (__inputEnabled) {
+
+					this_onFocusIn (null);
+
+					__stopCursorTimer ();
+					__startCursorTimer ();
+
+				}
 
 			}
-
 		}
-
 	}
 
 
@@ -1721,11 +1821,59 @@ class TextField extends InteractiveObject {
 		__selectionIndex = __caretIndex;
 		__dirty = true;
 
+		// mouse moved too much. don't check for doubleclick
+		if( __firstDownPos != null && (Math.abs(__firstDownPos.x - mouseX) > __moveDelta || Math.abs(__firstDownPos.y - mouseY) > __moveDelta)) {
+			if(__clickTimer != null) {
+				__clickTimer.stop();
+			}
+			__clicks = 0;
+			Point.pool.put(__firstDownPos);
+			__firstDownPos = null;
+		}
+
+		__clicks++;
+
+		if(__clicks == 1) {
+			if ( __firstDownPos != null ) {
+				Point.pool.put(__firstDownPos);
+			}
+			__firstDownPos = Point.pool.get();
+			__firstDownPos.x = mouseX;
+			__firstDownPos.y = mouseY;
+		}
+
+
 		stage.addEventListener (MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 
 	}
 
+	private function __selectWord() {
+		__caretIndex = __getPosition(mouseX, mouseY);
+		__selectionIndex = __caretIndex;
+		__dirty = true;
+
+		var char = this.text.charAt(__caretIndex);
+		while(__caretIndex > 0 && char != " " && char != "-" ) {
+			--__caretIndex;
+			char = this.text.charAt(__caretIndex);
+		}
+		if ( char == " " || char == "-" ) {
+			++__caretIndex;
+		}
+		var length = this.text.length;
+		char = this.text.charAt(__selectionIndex);
+		while(__selectionIndex < length && char != " " && char != "-" ) {
+			++__selectionIndex;
+			char = this.text.charAt(__selectionIndex);
+		}
+	}
+
+	private function __selectAll() {
+		__caretIndex = 0;
+		__selectionIndex = this.text.length;
+		__dirty = true;
+	}
 
 	private function window_onKeyDown (key:KeyCode, modifier:KeyModifier):Void {
 
@@ -1831,17 +1979,89 @@ class TextField extends InteractiveObject {
 				__stopCursorTimer ();
 				__startCursorTimer ();
 
+			case UP:
+
+				var pos = getCharBoundaries(__caretIndex);
+				pos.y -= pos.height;
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
+
+			case DOWN:
+
+				var pos = getCharBoundaries(__caretIndex);
+				pos.y += pos.height + 1;
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
+
+			case HOME:
+
+				var pos = getCharBoundaries(__caretIndex);
+				pos.x = 0;
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
+
+			case END:
+
+				var line = getLineIndexOfChar(__caretIndex);
+				var pos = getCharBoundaries(__caretIndex);
+				pos.x += __textEngine.textWidth;
+				if ( this.__textEngine.lineLayoutGroups[line][0].endIndex == __caretIndex) {
+					pos.y += pos.height + 1;
+				}
+				__caretIndex = __getPosition(pos.x, pos.y);
+				if (!modifier.shiftKey) {
+
+					__selectionIndex = __caretIndex;
+
+				}
+
+				__stopCursorTimer ();
+				__startCursorTimer ();
 			case C:
 
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
+				{
 
 					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
 
 				}
 
+			case A:
+
+
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
+				{
+
+					__selectAll();
+
+				}
+
 			case X:
 
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
+				{
 
 					Clipboard.text = __textEngine.text.substring (__caretIndex, __selectionIndex);
 
@@ -1856,7 +2076,8 @@ class TextField extends InteractiveObject {
 
 			case V:
 
-				if (modifier == #if mac KeyModifier.LEFT_META #else KeyModifier.LEFT_CTRL #end || modifier == #if mac KeyModifier.RIGHT_META #else KeyModifier.RIGHT_CTRL #end) {
+				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
+				{
 
 					var text = Clipboard.text;
 

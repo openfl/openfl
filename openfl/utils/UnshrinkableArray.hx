@@ -101,11 +101,16 @@ abstract UnshrinkableArray<T>(UnshrinkableArrayData<T>)
 
     public inline function copyFrom(other:UnshrinkableArray<T>, ?startIndex = 0)
     {
+        var cached_length = this._length;
         this._length = other.length - startIndex;
 
         for(i in 0...this._length)
         {
             this._items[i] = other[startIndex + i];
+        }
+        for(i in this._length...cached_length)
+        {
+            this._items[i] = null;
         }
     }
 

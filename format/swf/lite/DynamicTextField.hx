@@ -46,24 +46,10 @@ class DynamicTextField extends TextField {
 		if (symbol.color != null) format.color = (symbol.color & 0x00FFFFFF);
 		format.size = Math.round (symbol.fontHeight / 20);
 
-		// TODO: Bold and italic are handled in the font already
-		/*var font:FontSymbol = cast swf.symbols.get (symbol.fontID);
-
-		if (font != null) {
-
-			// Setting this can cause "extra" bold in HTML5
-
-			//format.bold = font.bold;
-			//format.italic = font.italic;
-			//format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
-			//embedFonts = true;
-
-		}*/
 		format.font = SWFLite.fontAliases.get (symbol.fontName);
 		if (format.font == null) {
 			format.font = SWFLite.fontAliasesId.get (symbol.fontID);
 		}
-
 		if (format.font == null) {
 			format.font = symbol.fontName;
 		}
@@ -120,27 +106,16 @@ class DynamicTextField extends TextField {
 
 		if (symbol.text != null) {
 
-			#if !flash
-
-			var plain = new EReg ("</p>", "g").replace (symbol.text, "\n");
-			plain = new EReg ("<br>", "g").replace (plain, "\n");
-			plain = new EReg ("<.*?>", "g").replace (plain, "");
-			text = StringTools.htmlUnescape (plain);
-
-			#else
-
 			if (symbol.html) {
-
 				htmlText = symbol.text;
-
 			} else {
-
 				text = symbol.text;
-
 			}
 
-			#end
+		}
 
+		if (symbol.maxLength != null) {
+			maxChars = symbol.maxLength;
 		}
 
 		//autoSize = (tag.autoSize) ? TextFieldAutoSize.LEFT : TextFieldAutoSize.NONE;

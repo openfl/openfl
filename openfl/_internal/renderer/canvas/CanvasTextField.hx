@@ -232,7 +232,7 @@ class CanvasTextField {
 
 							if (textField.__selectionIndex == textField.__caretIndex) {
 
-								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) {
+								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && ( group.endIndex > textField.__caretIndex || ( group.endIndex == textEngine.text.length && textEngine.text.length == textField.__caretIndex))) {
 
 									advance = 0.0;
 
@@ -247,7 +247,8 @@ class CanvasTextField {
 
 								}
 
-							} else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) || (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)) {
+							} else if (!((group.endIndex < Math.min(textField.__caretIndex, textField.__selectionIndex))
+									|| (group.startIndex > Math.max(textField.__caretIndex, textField.__selectionIndex)))) {
 
 								var selectionStart = Std.int (Math.min (textField.__selectionIndex, textField.__caretIndex));
 								var selectionEnd = Std.int (Math.max (textField.__selectionIndex, textField.__caretIndex));
@@ -266,16 +267,16 @@ class CanvasTextField {
 
 								var start, end;
 
-								start = textField.getCharBoundaries (selectionStart);
+								start = textField.getCharBoundariesInGroup (selectionStart, group);
 
 								if (selectionEnd >= textEngine.text.length) {
 
-									end = textField.getCharBoundaries (textEngine.text.length - 1);
+									end = textField.getCharBoundariesInGroup (textEngine.text.length - 1, group);
 									end.x += end.width + 2;
 
 								} else {
 
-									end = textField.getCharBoundaries (selectionEnd);
+									end = textField.getCharBoundariesInGroup (selectionEnd, group);
 
 								}
 
