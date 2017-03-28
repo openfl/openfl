@@ -1,3 +1,14 @@
+4.9.2 (03/28/2017)
+------------------
+
+* Implemented Context3D.drawToBitmapData
+* Improved support for embedded SWF libraries on Flash
+* Fixed a regression in render-to-texture support with Context3D
+* Fixed a minor issue when using OpenFL with Raspberry Pi
+* Fixed support for Assets.getBitmapData from a SWF library
+* Fixed support for Sound.loadPCMFromByteArray
+
+
 4.9.1 (03/17/2017)
 ------------------
 
