@@ -1181,11 +1181,12 @@ class Stage extends DisplayObjectContainer implements IModule {
 					__inElements.copyFrom(__stack);
 				}
 
-				var smallestStackCount = Std.int(Math.min(__stack.length, __mouseOutStack.length));
-				for(i in 0...smallestStackCount) {
+				var biggestStackCount = Std.int(Math.max(__stack.length, __mouseOutStack.length));
+				for(i in 0...biggestStackCount) {
 					if ( __stack[i] != __mouseOutStack[i] ) {
 						__outElements.copyFrom(__mouseOutStack, i);
 						__inElements.copyFrom(__stack, i);
+						break;
 					}
 				}
 			}
