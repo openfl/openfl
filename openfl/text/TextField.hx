@@ -102,7 +102,7 @@ class TextField extends InteractiveObject {
 		super ();
 
 		__caretIndex = -1;
-		__graphics = new Graphics ();
+		__graphics = new Graphics (false);
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		__tabEnabled = true;

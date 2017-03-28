@@ -53,20 +53,17 @@ import js.html.CanvasRenderingContext2D;
 	public static inline var TILE_BLEND_DIFFERENCE = 0x01000000;
 	public static inline var TILE_BLEND_INVERT = 0x02000000;
 
-	public var __hardware:Bool;
 	public var readOnly:Bool;
 
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
-	private var __image:Image;
 	private var __padding:Int;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __snapCoordinates:Bool = false;
 	private var __strokePadding:Float;
 	private var __visible:Bool;
-	private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
 
 	#if (js && html5)
@@ -79,17 +76,18 @@ import js.html.CanvasRenderingContext2D;
 	private var __bitmap(default, set):BitmapData;
 	private var __symbol:format.swf.lite.symbols.ShapeSymbol;
 
-	private function new () {
+	private function new (?initCommands = true) {
 
-		__commands = new DrawCommandBuffer ();
+		__commands = initCommands ? new DrawCommandBuffer () : null;
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
 		__padding = 1;
-		__hardware = true;
 
 		#if (js && html5)
-		moveTo (0, 0);
+		if(__commands != null) {
+			moveTo (0, 0);
+		}
 		#end
 
 	}
