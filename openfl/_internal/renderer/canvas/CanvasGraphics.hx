@@ -143,33 +143,6 @@ class CanvasGraphics {
 
 	}
 
-
-	private static function createTempPatternCanvas (bitmap:BitmapData, repeat:Bool, width:Int, height:Int) {
-
-		// TODO: Don't create extra canvas elements like this
-
-		#if (js && html5)
-		var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
-		var context = canvas.getContext ("2d");
-
-		canvas.width = width;
-		canvas.height = height;
-
-		context.fillStyle = context.createPattern (bitmap.image.src, repeat ? "repeat" : "no-repeat");
-		context.beginPath ();
-		context.moveTo (0, 0);
-		context.lineTo (0, height);
-		context.lineTo (width, height);
-		context.lineTo (width, 0);
-		context.lineTo (0, 0);
-		context.closePath ();
-		if (!hitTesting) context.fill (canvasWindingRule);
-		return canvas;
-		#end
-
-	}
-
-
 	private static function drawRoundRect (x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void {
 
 		#if (js && html5)
@@ -514,7 +487,7 @@ class CanvasGraphics {
 				else {
 					context.translate (-scaled_bounds.x, -scaled_bounds.y);
 				}
-				
+
 				Rectangle.pool.put(scaled_bounds);
 
 				beginRenderStep();
