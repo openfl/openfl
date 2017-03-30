@@ -419,7 +419,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private inline function __getLocalBounds (rect:Rectangle):Void {
+	private function __getLocalBounds (rect:Rectangle):Void {
 		
 		var cacheX = __transform.tx;
 		var cacheY = __transform.ty;
