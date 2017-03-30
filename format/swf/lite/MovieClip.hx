@@ -405,7 +405,7 @@ class MovieClip extends flash.display.MovieClip {
 		__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 
 
-		shape.graphics = symbol.graphics;
+		@:privateAccess shape.__graphics = symbol.graphics;
 		shape.graphics.__symbol = symbol;
 
 		return shape;

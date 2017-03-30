@@ -10,7 +10,7 @@ import openfl.utils.UnshrinkableArray;
 class Shape extends DisplayObject {
 
 
-	public var graphics (get, set):Graphics;
+	public var graphics (get, null):Graphics;
 
 
 	public function new () {
@@ -25,8 +25,6 @@ class Shape extends DisplayObject {
 	// Get & Set Methods
 
 
-
-
 	private function get_graphics ():Graphics {
 
 		if (__graphics == null) {
@@ -37,12 +35,6 @@ class Shape extends DisplayObject {
 		}
 
 		return __graphics;
-
-	}
-
-	private function set_graphics (graphics:Graphics):Graphics {
-
-		return __graphics = graphics;
 
 	}
 
