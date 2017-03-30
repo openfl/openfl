@@ -351,7 +351,42 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	}
 	
 	
-	private function __dispatchChildren (event:Event):Bool {
+	private function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
+		
+		event.target = this;
+		
+		if (parent != null) {
+			
+			event.eventPhase = CAPTURING_PHASE;
+			
+			if (parent == stage) {
+				
+				parent.__dispatchEvent (event);
+				
+			} else {
+				
+				var parent = parent;
+				var i = 0;
+				
+				while (parent != null) {
+					
+					stack[i] = parent;
+					parent = parent.parent;
+					i++;
+					
+				}
+				
+				for (j in 0...i) {
+					
+					stack[i - j - 1].__dispatchEvent (event);
+					
+				}
+				
+			}
+			
+		}
+		
+		event.eventPhase = AT_TARGET;
 		
 		return __dispatchEvent (event);
 		
@@ -383,6 +418,70 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		}
 		
 		return result;
+		
+	}
+	
+	
+	private function __dispatchStack (event:Event, stack:Array<DisplayObject>):Void {
+		
+		var target:DisplayObject;
+		var length = stack.length;
+		
+		if (length == 0) {
+			
+			event.eventPhase = EventPhase.AT_TARGET;
+			target = cast event.target;
+			target.__dispatch (event);
+			
+		} else {
+			
+			event.eventPhase = EventPhase.CAPTURING_PHASE;
+			event.target = stack[stack.length - 1];
+			
+			for (i in 0...length - 1) {
+				
+				stack[i].__dispatch (event);
+				
+				if (event.__isCanceled) {
+					
+					return;
+					
+				}
+				
+			}
+			
+			event.eventPhase = EventPhase.AT_TARGET;
+			target = cast event.target;
+			target.__dispatch (event);
+			
+			if (event.__isCanceled) {
+				
+				return;
+				
+			}
+			
+			if (event.bubbles) {
+				
+				event.eventPhase = EventPhase.BUBBLING_PHASE;
+				var i = length - 2;
+				
+				while (i >= 0) {
+					
+					stack[i].__dispatch (event);
+					
+					if (event.__isCanceled) {
+						
+						return;
+						
+					}
+					
+					i--;
+					
+				}
+				
+			}
+			
+		}
 		
 	}
 	

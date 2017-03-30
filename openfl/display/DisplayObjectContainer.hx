@@ -32,6 +32,7 @@ class DisplayObjectContainer extends InteractiveObject {
 	public var tabChildren:Bool;
 	
 	private var __removedChildren:Vector<DisplayObject>;
+	private var __tempStack:Vector<DisplayObject>;
 	
 	
 	private function new () {
@@ -42,6 +43,7 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 		__children = new Array<DisplayObject> ();
 		__removedChildren = new Vector<DisplayObject> ();
+		__tempStack = new Vector<DisplayObject> ();
 		
 	}
 	
@@ -99,7 +101,8 @@ class DisplayObjectContainer extends InteractiveObject {
 			
 			if (addedToStage) {
 				
-				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false));
+				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false), __tempStack);
+				__tempStack.length = 0;
 				
 			}
 			
@@ -198,7 +201,9 @@ class DisplayObjectContainer extends InteractiveObject {
 					
 				}
 				
-				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false), __tempStack);
+				__tempStack.length = 0;
+				
 				child.__setStageReference (null);
 				
 			}
@@ -326,17 +331,15 @@ class DisplayObjectContainer extends InteractiveObject {
 	}
 	
 	
-	private override function __dispatchChildren (event:Event):Bool {
+	private override function __dispatchChildren (event:Event, stack:Vector<DisplayObject>):Bool {
 		
-		var success = __dispatchEvent (event);
+		var success = super.__dispatchChildren (event, stack);
 		
 		if (success && __children != null) {
 			
 			for (child in __children) {
 				
-				event.target = child;
-				
-				if (!child.__dispatchChildren (event)) {
+				if (!child.__dispatchChildren (event, stack)) {
 					
 					return false;
 					
