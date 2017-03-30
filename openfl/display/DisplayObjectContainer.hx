@@ -8,6 +8,7 @@ import openfl._internal.renderer.RenderSession;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
+import openfl.events.EventPhase;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -98,8 +99,10 @@ class DisplayObjectContainer extends InteractiveObject {
 			child.__dispatchEvent (event);
 			
 			if (addedToStage) {
-				
-				child.__dispatchChildren (new Event (Event.ADDED_TO_STAGE, false, false));
+				event = new Event (Event.ADDED_TO_STAGE, false, false);
+				event.target = child;			
+				__dispatchInCapturePhase(event);
+				child.__dispatchChildren (event);
 				
 			}
 			
@@ -197,8 +200,10 @@ class DisplayObjectContainer extends InteractiveObject {
 					stage.focus = null;
 					
 				}
-				
-				child.__dispatchChildren (new Event (Event.REMOVED_FROM_STAGE, false, false));
+				var event = new Event (Event.REMOVED_FROM_STAGE, false, false);
+				event.target = child;
+				__dispatchInCapturePhase(event);
+				child.__dispatchChildren (event);
 				child.__setStageReference (null);
 				
 			}
@@ -325,17 +330,54 @@ class DisplayObjectContainer extends InteractiveObject {
 		
 	}
 	
-	
+	/**
+	*  Normally, to have the same behaviour as Flash handles capture phase of the events, this method should be called once for evey ADDED_TO_STAGE event of each child of the display object being added. 
+	*  See, the commented calls in __dispatchChildren. This could have big impact on the performnce. Since we didn't have a capture phase for ADDED_TO(REMOVED_FROM)_STAGE
+	*  at all, it would be enough at the moment if we run it only once, only when the actual display object is added, not for its children. 
+	*  If we see that we need to do it exactly the same as flash, that is an easy change. The commented calls in __dispatchChildren should be 
+	*  uncommented, and the calls from the addChildAt and removeChild should be removed.
+	*/
+	private function __dispatchInCapturePhase(event:Event): Void {
+			if (event.bubbles) return;
+
+			event.eventPhase = EventPhase.CAPTURING_PHASE;
+			var parentsStack:Array<DisplayObjectContainer> = [];
+			var target: DisplayObject = cast event.target;
+			var currentParent: DisplayObjectContainer = target.parent;
+
+			while (currentParent != null) {
+
+				parentsStack.push(currentParent);
+				currentParent = currentParent.parent;
+
+			}
+
+			if (parentsStack.length == 0) return;
+
+			currentParent = parentsStack.pop();
+
+			while (currentParent != null) {
+
+				currentParent.__dispatchEvent(event);
+				currentParent = parentsStack.pop();
+
+			}
+
+			event.eventPhase = EventPhase.AT_TARGET;
+	}
+
 	private override function __dispatchChildren (event:Event):Bool {
-		
+
+		// __dispatchInCapturePhase(event);
 		var success = __dispatchEvent (event);
 		
 		if (success && __children != null) {
 			
 			for (child in __children) {
-				
+
 				event.target = child;
-				
+				// __dispatchInCapturePhase(event);
+
 				if (!child.__dispatchChildren (event)) {
 					
 					return false;
