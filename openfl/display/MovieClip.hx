@@ -36,6 +36,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	public var currentLabels (get, never):Array<FrameLabel>;
 	public var enabled:Bool;
 	public var framesLoaded (get, never):Int;
+	public var isPlaying (get, never):Bool;
 	public var totalFrames (get, never):Int;
 	
 	private var __currentFrame:Int;
@@ -719,6 +720,7 @@ class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<DisplayObje
 	private function get_currentLabel ():String { return __currentLabel; }
 	private function get_currentLabels ():Array<FrameLabel> { return __currentLabels; }
 	private function get_framesLoaded ():Int { return __totalFrames; }
+	private function get_isPlaying ():Bool { return __playing; }
 	private function get_totalFrames ():Int { return __totalFrames; }
 	
 	

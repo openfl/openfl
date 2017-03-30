@@ -100,9 +100,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic<Disp
 	 */
 	public var framesLoaded (get, never):Int;
 	
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public var isPlaying (default, null):Bool;
-	#end
+	public var isPlaying (get, never):Bool;
 	
 	#if flash
 	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
