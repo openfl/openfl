@@ -62,6 +62,13 @@ import haxe.macro.Expr;
 		
 		lime.system.System.__registerEntryPoint (projectName, create, config);
 		
+		#if sys
+		try {
+			var path = #if (haxe_ver >= 3.3) Sys.programPath () #else Sys.executablePath () #end;
+			Sys.setCwd (haxe.io.Path.directory (path));
+		} catch (e:Dynamic) {}
+		#end
+		
 		#if (hxtelemetry && !macro)
 		var telemetry = new hxtelemetry.HxTelemetry.Config ();
 		telemetry.allocations = ::if (config.hxtelemetry != null)::("::config.hxtelemetry.allocations::" == "true")::else::true::end::;
