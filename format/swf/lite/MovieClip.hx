@@ -404,12 +404,13 @@ class MovieClip extends flash.display.MovieClip {
 		var shape = new Shape ();
 		__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 
-		if ( symbol.graphics != null && symbol.graphics.readOnly == true ) {
+		if ( @:privateAccess symbol.graphics.__owner != null ) {
 			@:privateAccess shape.__graphics = new Graphics();
 			shape.graphics.copyFrom( symbol.graphics, true );
 			return shape;
 		}
 
+		@:privateAccess symbol.graphics.__owner = this;
 		@:privateAccess shape.__graphics = symbol.graphics;
 		shape.graphics.__symbol = symbol;
 
