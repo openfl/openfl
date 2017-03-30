@@ -856,7 +856,10 @@ class TextEngine {
 			}
 
 			if (textIndex >= formatRange.end) {
-				textIndex = formatRange.end;
+				// :NOTE: This break index will be evaluated twice if this code is removed.
+				if(nextBreakIndex != formatRange.end) {
+					textIndex = formatRange.end;
+				}
 				// :TODO: Check if still needed
 				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
 				if ( selectable ) {
@@ -867,6 +870,8 @@ class TextEngine {
 
 				nextFormatRange();
 				startLayoutGroup(formatRange.format, formatRange.start);
+
+
 			} else if ( formatRange.format.align == JUSTIFY ) {
 				// :TODO: Support multiple spaces
 				var endIndex = nextBreakIndex;
