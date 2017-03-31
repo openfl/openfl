@@ -806,6 +806,11 @@ class TextEngine {
 			updateNextBreakIndex ("-");
 			updateNextBreakIndex ("\n");
 
+
+			if ( formatRange.end - 1 < nextBreakIndex) {
+				nextBreakIndex = formatRange.end - 1;
+			}
+
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
 			if ( selectable ) {
 				advances = getIndividualCharacterAdvances(text, layoutGroup.startIndex, nextBreakIndex);
@@ -856,10 +861,7 @@ class TextEngine {
 			}
 
 			if (textIndex >= formatRange.end) {
-				// :NOTE: This break index will be evaluated twice if this code is removed.
-				if(nextBreakIndex != formatRange.end) {
-					textIndex = formatRange.end;
-				}
+				textIndex = formatRange.end;
 				// :TODO: Check if still needed
 				widthValue = getAdvance (text, layoutGroup.startIndex, textIndex);
 				if ( selectable ) {
