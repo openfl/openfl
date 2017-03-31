@@ -7,7 +7,6 @@ import openfl.utils.UnshrinkableArray;
 
 @:access(openfl.display.Graphics)
 
-
 class Shape extends DisplayObject {
 
 
@@ -24,8 +23,6 @@ class Shape extends DisplayObject {
 
 
 	// Get & Set Methods
-
-
 
 
 	private function get_graphics ():Graphics {

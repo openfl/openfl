@@ -104,7 +104,6 @@ class CanvasTextField {
 	public static inline function render (textField:TextField, renderSession:RenderSession):Void {
 
 		#if (js && html5)
-
 		if (textField.__dirty || textField.__graphics == null || textField.__graphics.__bitmap == null) {
 
 			var textEngine = textField.__textEngine;
@@ -134,7 +133,7 @@ class CanvasTextField {
 
 					if (textField.__graphics == null) {
 
-						textField.__graphics = new Graphics ();
+						textField.__graphics = new Graphics (false);
 
 					}
 

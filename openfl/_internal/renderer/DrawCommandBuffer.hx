@@ -16,8 +16,6 @@ import openfl.Vector;
 import openfl.utils.UnshrinkableArray;
 
 @:allow(openfl._internal.renderer.DrawCommandReader)
-
-
 class DrawCommandBuffer {
 
 
@@ -30,6 +28,7 @@ class DrawCommandBuffer {
 	private var i:UnshrinkableArray<Int>;
 	private var ii:UnshrinkableArray<Array<Int>>;
 	private var o:UnshrinkableArray<Dynamic>;
+	private var bd:UnshrinkableArray<Dynamic>;
 
 
 	public function new () {
@@ -42,6 +41,7 @@ class DrawCommandBuffer {
 		o = new UnshrinkableArray(128);
 		ff = new UnshrinkableArray(128);
 		ii = new UnshrinkableArray(128);
+		bd = new UnshrinkableArray(128);
 
 	}
 
@@ -87,7 +87,17 @@ class DrawCommandBuffer {
 	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 
 		types.push (BEGIN_BITMAP_FILL);
-		o.push (bitmap);
+		bd.push (bitmap);
+		o.push (matrix);
+		b.push (repeat);
+		b.push (smooth);
+
+	}
+
+	public function beginBitmapFillWithId(bitmapId:Int, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
+
+		types.push (BEGIN_BITMAP_FILL);
+		bd.push (bitmapId);
 		o.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
@@ -128,6 +138,7 @@ class DrawCommandBuffer {
 		o.clear();
 		ff.clear();
 		ii.clear();
+		bd.clear();
 
 	}
 
@@ -255,7 +266,7 @@ class DrawCommandBuffer {
 	public function lineBitmapStyle (bitmap:BitmapData, matrix:Matrix, repeat:Bool, smooth:Bool):Void {
 
 		types.push (LINE_BITMAP_STYLE);
-		o.push (bitmap);
+		bd.push (bitmap);
 		o.push (matrix);
 		b.push (repeat);
 		b.push (smooth);
@@ -319,11 +330,7 @@ class DrawCommandBuffer {
 	}
 
 
-
-
 	// Get & Set Methods
-
-
 
 
 	private function get_length ():Int {
@@ -332,5 +339,11 @@ class DrawCommandBuffer {
 
 	}
 
+	public function resolveBitmapDatas(swflite:format.swf.lite.SWFLite) {
+		for(i in 0...bd.length) {
+			var symbol:format.swf.lite.symbols.BitmapSymbol = cast swflite.symbols.get (bd[i]);
+			bd[i] = BitmapData.getFromSymbol(symbol);
+		}
+	}
 
 }

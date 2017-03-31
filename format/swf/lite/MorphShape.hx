@@ -63,17 +63,17 @@ class MorphShape extends Shape {
 
 					case BeginFill (color, alpha):
 
+
 						graphics.beginFill (color, alpha);
 
 					case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
 
 						#if openfl
-
 						var bitmap:BitmapSymbol = cast __swf.symbols.get (bitmapID);
 
 						if (bitmap != null && bitmap.path != "") {
 
-							graphics.beginBitmapFill (@:privateAccess MovieClip.__getBitmap (bitmap), matrix, repeat, smooth);
+							graphics.beginBitmapFill (openfl.display.BitmapData.getFromSymbol(bitmap), matrix, repeat, smooth);
 
 						}
 

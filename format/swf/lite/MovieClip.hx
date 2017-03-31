@@ -30,17 +30,6 @@ import openfl.geom.Rectangle;
 import openfl.geom.ColorTransform;
 import openfl._internal.renderer.RenderSession;
 
-#if openfl
-import openfl.Assets;
-#end
-
-#if (lime && !openfl_legacy)
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
-import lime.graphics.ImageChannel;
-import lime.math.Vector2;
-import lime.Assets in LimeAssets;
-#end
 
 @:access(openfl.display.Graphics)
 
@@ -368,7 +357,7 @@ class MovieClip extends flash.display.MovieClip {
 
 				} else if (Std.is (symbol, BitmapSymbol)) {
 
-					displayObject = new Bitmap (__getBitmap (cast symbol), PixelSnapping.AUTO, true);
+					displayObject = new Bitmap (BitmapData.getFromSymbol(cast symbol), PixelSnapping.AUTO, true);
 
 				} else if (Std.is (symbol, DynamicTextSymbol)) {
 
@@ -413,83 +402,17 @@ class MovieClip extends flash.display.MovieClip {
 	private function __createShape (symbol:ShapeSymbol):Shape {
 
 		var shape = new Shape ();
-		var graphics = shape.graphics;
+		__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
 
-		if ( symbol.graphics != null && symbol.graphics.readOnly == true ) {
-			graphics.copyFrom( symbol.graphics, true );
+		if ( @:privateAccess symbol.graphics.__owner != null ) {
+			@:privateAccess shape.__graphics = new Graphics();
+			shape.graphics.copyFrom( symbol.graphics, true );
 			return shape;
 		}
 
-		graphics.__symbol = symbol;
-
-		__forbidCachedBitmapUpdate = symbol.forbidCachedBitmapUpdate;
-
-		for (command in symbol.commands) {
-
-			switch (command) {
-
-				case BeginFill (color, alpha):
-
-					graphics.beginFill (color, alpha);
-
-				case BeginBitmapFill (bitmapID, matrix, repeat, smooth):
-
-					#if openfl
-
-					var bitmap:BitmapSymbol = cast __swf.symbols.get (bitmapID);
-
-					if (bitmap != null && bitmap.path != "") {
-
-						graphics.beginBitmapFill (__getBitmap (bitmap), matrix, repeat, smooth);
-
-					}
-
-					#end
-
-				case BeginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
-
-					#if (cpp || neko)
-					shape.cacheAsBitmap = true;
-					#end
-					graphics.beginGradientFill (fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-
-				case CurveTo (controlX, controlY, anchorX, anchorY):
-
-					#if (cpp || neko)
-					shape.cacheAsBitmap = true;
-					#end
-					graphics.curveTo (controlX, controlY, anchorX, anchorY);
-
-				case EndFill:
-
-					graphics.endFill ();
-
-				case LineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit):
-
-					if (thickness != null) {
-
-						graphics.lineStyle (thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);
-
-					} else {
-
-						graphics.lineStyle ();
-
-					}
-
-				case LineTo (x, y):
-
-					graphics.lineTo (x, y);
-
-				case MoveTo (x, y):
-
-					graphics.moveTo (x, y);
-
-			}
-
-		}
-
-		graphics.readOnly = true;
-		symbol.graphics = shape.graphics;
+		@:privateAccess symbol.graphics.__owner = this;
+		@:privateAccess shape.__graphics = symbol.graphics;
+		shape.graphics.__symbol = symbol;
 
 		return shape;
 
@@ -532,86 +455,6 @@ class MovieClip extends flash.display.MovieClip {
 		#end
 
 	}
-
-
-	private static function __getBitmap (symbol:BitmapSymbol):BitmapData {
-
-		#if openfl
-
-		if (Assets.cache.hasBitmapData (symbol.path)) {
-
-			return Assets.cache.getBitmapData (symbol.path);
-
-		} else {
-
-			#if !openfl_legacy
-
-			var source = LimeAssets.getImage (symbol.path, false);
-
-			if (source != null && symbol.alpha != null && symbol.alpha != "") {
-
-				#if flash
-				var cache = source;
-				var buffer = new ImageBuffer (null, source.width, source.height);
-				buffer.src = new BitmapData (source.width, source.height, true, 0);
-				source = new Image (buffer);
-				source.copyPixels (cache, cache.rect, new Vector2 (), null, null, false);
-				#end
-
-				var alpha = LimeAssets.getImage (symbol.alpha, false);
-				source.copyChannel (alpha, alpha.rect, new Vector2 (), ImageChannel.RED, ImageChannel.ALPHA);
-
-				//symbol.alpha = null;
-				source.buffer.premultiplied = true;
-
-				#if !sys
-				source.premultiplied = false;
-				#end
-
-			}
-
-			#if !flash
-			var bitmapData = BitmapData.fromImage (source);
-			#else
-			var bitmapData = source.src;
-			#end
-
-			Assets.cache.setBitmapData (symbol.path, bitmapData);
-			return bitmapData;
-
-			#else
-
-			var bitmapData = Assets.getBitmapData (symbol.path, false);
-
-			if (bitmapData != null && symbol.alpha != null && symbol.alpha != "") {
-
-				var cache = bitmapData;
-				bitmapData = new BitmapData (cache.width, cache.height, true, 0);
-				bitmapData.copyPixels (cache, cache.rect, new Point (), null, null, false);
-
-				var alpha = Assets.getBitmapData (symbol.alpha, false);
-				bitmapData.copyChannel (alpha, alpha.rect, new Point (), BitmapDataChannel.RED, BitmapDataChannel.ALPHA);
-				//symbol.alpha = null;
-
-				bitmapData.unmultiplyAlpha ();
-
-			}
-
-			Assets.cache.setBitmapData (symbol.path, bitmapData);
-			return bitmapData;
-
-			#end
-
-		}
-
-		#else
-
-		return null;
-
-		#end
-
-	}
-
 
 	private function __getFrame (frame:Dynamic):Int {
 

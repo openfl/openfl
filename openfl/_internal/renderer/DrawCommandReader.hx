@@ -30,13 +30,14 @@ class DrawCommandReader {
 	private var oPos:Int;
 	private var prev:DrawCommandType;
 	private var tsPos:Int;
+	private var bdPos:Int;
 	private var snapCoordinates:Bool;
 	
 	public function new (buffer:DrawCommandBuffer) {
 		
 		this.buffer = buffer;
 		
-		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
+		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = bdPos = 0;
 		prev = UNKNOWN;
 		
 		snapCoordinates = false;
@@ -49,7 +50,8 @@ class DrawCommandReader {
 			
 			case BEGIN_BITMAP_FILL:
 				
-				oPos += 2; //bitmap, matrix
+				bdPos += 1; //bitmap
+				oPos += 1; // matrix
 				bPos += 2; //repeat, smooth
 			
 			case BEGIN_FILL:
@@ -111,7 +113,8 @@ class DrawCommandReader {
 			
 			case LINE_BITMAP_STYLE:
 				
-				oPos += 2; //bitmap, matrix
+				bdPos += 1; //bitmap
+				oPos += 1; //matrix
 				bPos += 2; //repeat, smooth
 			
 			case LINE_GRADIENT_STYLE:
@@ -205,6 +208,12 @@ class DrawCommandReader {
 		return buffer.o[oPos + index];
 		
 	}
+
+	private inline function bitmapData (index:Int):BitmapData {
+		
+		return buffer.bd[bdPos + index];
+		
+	}
 	
 	
 	public inline function readBeginBitmapFill ():BeginBitmapFillView { advance (); prev = BEGIN_BITMAP_FILL; return new BeginBitmapFillView (this); }
@@ -229,7 +238,7 @@ class DrawCommandReader {
 	
 	public function reset (?buffer:DrawCommandBuffer = null, snapCoordinates:Bool = false):Void {
 		this.buffer = buffer;
-		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
+		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = bdPos = 0;
 		prev = UNKNOWN;
 		this.snapCoordinates = snapCoordinates;
 	}
@@ -249,8 +258,8 @@ class DrawCommandReader {
 abstract BeginBitmapFillView (DrawCommandReader) {
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.obj (0); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
 	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return this.bool (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return this.bool (1); }
 	
@@ -381,8 +390,8 @@ abstract EndFillView (DrawCommandReader) {
 abstract LineBitmapStyleView (DrawCommandReader) { 
 	
 	public inline function new (d:DrawCommandReader) { this = d; }
-	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.obj (0); }
-	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (1); }
+	public var bitmap (get, never):BitmapData; private inline function get_bitmap ():BitmapData { return cast this.bitmapData (0); }
+	public var matrix (get, never):Matrix; private inline function get_matrix ():Matrix { return cast this.obj (0); }
 	public var repeat (get, never):Bool; private inline function get_repeat ():Bool { return cast this.bool (0); }
 	public var smooth (get, never):Bool; private inline function get_smooth ():Bool { return cast this.bool (1); }
 	
