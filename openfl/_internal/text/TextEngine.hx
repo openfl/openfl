@@ -805,10 +805,11 @@ class TextEngine {
 			updateNextBreakIndex (" ");
 			updateNextBreakIndex ("-");
 			updateNextBreakIndex ("\n");
+			var breakChar = text.charAt (nextBreakIndex);
 
-
-			if ( formatRange.end - 1 < nextBreakIndex) {
+			if ( formatRange.end - 1 < nextBreakIndex && breakChar == "\n" ) {
 				nextBreakIndex = formatRange.end - 1;
+				breakChar = text.charAt (nextBreakIndex);
 			}
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
@@ -845,7 +846,6 @@ class TextEngine {
 
 			widthValue = groupWidth;
 
-			var breakChar = text.charAt (nextBreakIndex);
 			if (breakChar == "\n") {
 				pushNewLine(textIndex);
 			}
