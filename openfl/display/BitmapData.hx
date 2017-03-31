@@ -609,7 +609,7 @@ class BitmapData implements IBitmapDrawable {
 	
 	public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null, clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null):Void {
 		
-		draw (source, matrix, colorTransform, blendMode, clipRect, smoothing);
+		draw (source, matrix, colorTransform, blendMode, clipRect, quality != LOW ? smoothing : false);
 		
 	}
 	
