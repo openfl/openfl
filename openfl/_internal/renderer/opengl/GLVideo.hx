@@ -28,7 +28,7 @@ class GLVideo {
 			var renderer:GLRenderer = cast renderSession.renderer;
 			var gl = renderSession.gl;
 			
-			renderSession.blendModeManager.setBlendMode (video.blendMode);
+			renderSession.blendModeManager.setBlendMode (video.__worldBlendMode);
 			renderSession.maskManager.pushObject (video);
 			
 			var shader = renderSession.filterManager.pushObject (video);

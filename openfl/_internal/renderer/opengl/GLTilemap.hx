@@ -36,7 +36,7 @@ class GLTilemap {
 		var renderer:GLRenderer = cast renderSession.renderer;
 		var gl = renderSession.gl;
 		
-		renderSession.blendModeManager.setBlendMode (tilemap.blendMode);
+		renderSession.blendModeManager.setBlendMode (tilemap.__worldBlendMode);
 		renderSession.maskManager.pushObject (tilemap);
 		
 		var shader = renderSession.filterManager.pushObject (tilemap);

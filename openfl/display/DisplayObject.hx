@@ -113,6 +113,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 	private var __visible:Bool;
 	private var __worldAlpha:Float;
 	private var __worldAlphaChanged:Bool;
+	private var __worldBlendMode:BlendMode;
 	private var __worldClip:Rectangle;
 	private var __worldClipChanged:Bool;
 	private var __worldColorTransform:ColorTransform;
@@ -145,6 +146,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		__scaleY = 1;
 		
 		__worldAlpha = 1;
+		__worldBlendMode = NORMAL;
 		__worldTransform = new Matrix ();
 		__worldColorTransform = new ColorTransform ();
 		__renderTransform = new Matrix ();
@@ -808,9 +810,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 				__worldAlpha = alpha * __parent.__worldAlpha;
 				__worldColorTransform.__combine (__parent.__worldColorTransform);
 				
-				if ((blendMode == null || blendMode == NORMAL)) {
+				if (__blendMode == null || __blendMode == NORMAL) {
 					
-					__blendMode = __parent.__blendMode;
+					// TODO: Handle multiple blend modes better
+					__worldBlendMode = __parent.__blendMode;
+					
+				} else {
+					
+					__worldBlendMode = __blendMode;
 					
 				}
 				
