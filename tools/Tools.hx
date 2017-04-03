@@ -650,7 +650,7 @@ class Tools {
 				
 				symbol.alpha = "symbols/" + id + "a.png";
 				
-				var asset = new Asset ("", symbol.path, AssetType.IMAGE);
+				var asset = new Asset ("", symbol.alpha, AssetType.IMAGE);
 				var assetData = exporter.bitmapAlpha.get (id);
 				project.assets.push (asset);
 				
