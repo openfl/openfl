@@ -299,10 +299,14 @@ class SWFLiteExporter {
 					
 				}
 				
+				#if sys
 				var tempFile = lime.tools.helpers.PathHelper.getTemporaryFile ("jpg");
 				sys.io.File.saveBytes (tempFile, data.bitmapData);
 				var image = lime.graphics.format.JPEG.decodeFile (tempFile, false);
 				try { sys.FileSystem.deleteFile (tempFile); } catch (e:Dynamic) {}
+				#else
+				var image = lime.graphics.format.JPEG.decodeBytes (data.bitmapData);
+				#end
 				
 				var values = Bytes.alloc ((image.width + 1) * image.height);
 				var index = 0;
