@@ -56,7 +56,7 @@ class AssetsMacro {
 				
 				if (preload != null) {
 					
-					__fromImage(preload);
+					__fromImage (preload);
 					
 				} else {
 					
@@ -80,7 +80,7 @@ class AssetsMacro {
 				
 				#else
 				
-				super (width, height, transparent, fillRGBA);
+				super (0, 0, transparent, fillRGBA);
 				
 				#if lime_console
 				__fromFile (filePath, null, null);
