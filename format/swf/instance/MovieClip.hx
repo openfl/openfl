@@ -638,7 +638,7 @@ class MovieClip extends flash.display.MovieClip {
 			
 			var frameIndex = __currentFrame - 1;
 			
-			if (frameIndex > -1) {
+			if (frameIndex > -1 && data.frames.length > frameIndex) {
 				
 				__currentFrameLabel = data.frames[frameIndex].label;
 				

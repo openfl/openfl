@@ -59,7 +59,7 @@ class MPEGFrame
 		init();
 	}
 	
-	private function get_crc():Int { _crc.position = 0; return _crc.readUnsignedShort(); _crc.position = 0; }
+	private function get_crc():Int { _crc.position = 0; var value = _crc.readUnsignedShort(); _crc.position = 0; return value; }
 
 	private function get_size():Int {
 		var ret:Int = 0;
