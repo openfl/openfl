@@ -197,6 +197,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData {
 	
 	@:noCompletion private function get_length ():Int {
 		
+		if (this == null) return 0;
+		
 		#if display
 		return 0;
 		#else
