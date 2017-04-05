@@ -72,7 +72,11 @@ class Shader {
 		}"
 		#else
 		"varying float vAlpha;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
+		
+		uniform bool uColorTransform;
 		uniform sampler2D uImage0;
 		
 		void main(void) {
@@ -82,6 +86,13 @@ class Shader {
 			if (color.a == 0.0) {
 				
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
+				
+			} else if (uColorTransform) {
+				
+				color = vec4 (color.rgb / color.a, color.a);
+				color = vColorOffsets + (color * vColorMultipliers);
+				
+				gl_FragColor = vec4 (color.rgb * color.a * vAlpha, color.a * vAlpha);
 				
 			} else {
 				
@@ -98,17 +109,30 @@ class Shader {
 	@:glVertexSource(
 		
 		"attribute float aAlpha;
+		attribute mat4 aColorMultipliers;
+		attribute vec4 aColorOffsets;
 		attribute vec4 aPosition;
 		attribute vec2 aTexCoord;
 		varying float vAlpha;
+		varying mat4 vColorMultipliers;
+		varying vec4 vColorOffsets;
 		varying vec2 vTexCoord;
 		
 		uniform mat4 uMatrix;
+		uniform bool uColorTransform;
 		
 		void main(void) {
 			
 			vAlpha = aAlpha;
 			vTexCoord = aTexCoord;
+			
+			if (uColorTransform) {
+				
+				vColorMultipliers = aColorMultipliers;
+				vColorOffsets = aColorOffsets;
+				
+			}
+			
 			gl_Position = uMatrix * aPosition;
 			
 		}"
@@ -572,6 +596,27 @@ class Shader {
 			} else if (!__isUniform.get (parameter.name)) {
 				
 				gl.enableVertexAttribArray (parameter.index);
+				
+				switch (parameter.type) {
+					
+					case MATRIX2X2:
+						
+						gl.enableVertexAttribArray (parameter.index + 1);
+					
+					case MATRIX3X3:
+						
+						gl.enableVertexAttribArray (parameter.index + 1);
+						gl.enableVertexAttribArray (parameter.index + 2);
+					
+					case MATRIX4X4:
+						
+						gl.enableVertexAttribArray (parameter.index + 1);
+						gl.enableVertexAttribArray (parameter.index + 2);
+						gl.enableVertexAttribArray (parameter.index + 3);
+					
+					default:
+					
+				}
 				
 			}
 			

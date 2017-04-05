@@ -168,12 +168,16 @@ class GLFilterManager extends AbstractFilterManager {
 		shader.data.uImage0.smoothing = renderSession.allowSmoothing && (renderSession.upscaled);
 		shader.data.uMatrix.value = renderer.getMatrix (matrix);
 		
+		if (shader.data.uColorTransform.value == null) shader.data.uColorTransform.value = [];
+		shader.data.uColorTransform.value[0] = false;
+		
 		renderSession.shaderManager.setShader (shader);
 		
-		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1));
-		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+		gl.bindBuffer (gl.ARRAY_BUFFER, target.getBuffer (gl, 1, null));
+		
+		gl.vertexAttribPointer (shader.data.aPosition.index, 3, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 0);
+		gl.vertexAttribPointer (shader.data.aTexCoord.index, 2, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+		gl.vertexAttribPointer (shader.data.aAlpha.index, 1, gl.FLOAT, false, 26 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
 		
 		gl.drawArrays (gl.TRIANGLE_STRIP, 0, 4);
 		
