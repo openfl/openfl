@@ -618,7 +618,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 		var aspect_ratio = stageWidth / stageHeight;
 		var new_aspect_ratio = width / height;
-		if ( aspect_ratio == new_aspect_ratio ) {
+		if ( aspect_ratio == new_aspect_ratio && scaleMode != StageScaleMode.NO_SCALE ) {
 			this.scaleX = width / stageWidth;
 			this.scaleY = height / stageHeight;
 		} else {
@@ -640,12 +640,8 @@ class Stage extends DisplayObjectContainer implements IModule {
 					}
 
 				case StageScaleMode.NO_SCALE:
-					var new_width = width;
-					var new_height = height;
 					width = stageWidth;
 					height = stageHeight;
-					stageWidth = new_width;
-					stageHeight = new_height;
 				case StageScaleMode.SHOW_ALL:
 					if ( aspect_ratio < new_aspect_ratio ) {
 						var new_height = height / stageHeight;
