@@ -13,6 +13,7 @@ import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.opengl.GL;
+import lime.graphics.opengl.WebGLContext;
 import lime.graphics.GLRenderContext;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
@@ -1018,7 +1019,7 @@ class BitmapData implements IBitmapDrawable {
 				
 			} else {
 				
-				gl.texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
+				(gl:WebGLContext).texImage2D (gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, textureImage.src);
 				
 			}
 			

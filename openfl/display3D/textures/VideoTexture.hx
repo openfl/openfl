@@ -4,6 +4,7 @@ package openfl.display3D.textures;
 import haxe.Timer;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
+import lime.graphics.opengl.WebGLContext;
 import openfl._internal.stage3D.GLUtils;
 import openfl.events.Event;
 import openfl.net.NetStream;
@@ -74,7 +75,7 @@ import openfl.net.NetStream;
 			GL.bindTexture (__textureTarget, __textureID);
 			GLUtils.CheckGLError ();
 			
-			GL.context.texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, __netStream.__video);
+			(GL:WebGLContext).texImage2D (GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, __netStream.__video);
 			GLUtils.CheckGLError ();
 			
 		}
