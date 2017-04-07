@@ -663,6 +663,7 @@ class Stage extends DisplayObjectContainer implements IModule {
 
 			trace('Resizing renderer to $width, $height');
 			__renderer.resize (width, height);
+			window.resizeViewport(width, height);
 
 		}
 
