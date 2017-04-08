@@ -439,11 +439,11 @@ class Shader {
 			
 		}
 		
-		var index:Dynamic = 0;
+		var value, index;
 		
 		for (parameter in __paramBool) {
 			
-			var value = parameter.value;
+			value = parameter.value;
 			index = parameter.index;
 			
 			if (value != null) {
@@ -478,9 +478,11 @@ class Shader {
 			
 		}
 		
+		var value, index;
+		
 		for (parameter in __paramFloat) {
 			
-			var value = parameter.value;
+			value = parameter.value;
 			index = parameter.index;
 			
 			if (value != null) {
@@ -553,9 +555,12 @@ class Shader {
 			
 		}
 		
+		var value, index;
+		
 		for (parameter in __paramInt) {
 			
-			var value = parameter.value;
+			value = parameter.value;
+			index = parameter.index;
 			
 			if (value != null) {
 				
