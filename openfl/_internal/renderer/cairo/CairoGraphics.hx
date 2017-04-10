@@ -38,7 +38,6 @@ class CairoGraphics {
 	private static var TAN22 = 0.4142135623730950488016887242097;
 
 	private static var bitmapFill:BitmapData;
-	private static var bitmapRepeat:Bool;
 	private static var bounds:Rectangle;
 	private static var cairo:Cairo;
 	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
@@ -674,8 +673,6 @@ class CairoGraphics {
 					fillPattern = createImagePattern (c.bitmap, c.matrix, c.repeat);
 
 					bitmapFill = c.bitmap;
-					bitmapRepeat = c.repeat;
-
 					hasFill = true;
 
 				case BEGIN_FILL:

@@ -872,7 +872,7 @@ class CanvasGraphics {
 	{
 		var c = data.readBeginBitmapFill ();
 
-		if (isMask) {
+		if (isMask || c.bitmap == null) {
 			context.fillStyle = "white";
 		} else {
 

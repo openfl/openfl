@@ -53,20 +53,17 @@ import js.html.CanvasRenderingContext2D;
 	public static inline var TILE_BLEND_DIFFERENCE = 0x01000000;
 	public static inline var TILE_BLEND_INVERT = 0x02000000;
 
-	public var __hardware:Bool;
 	public var readOnly:Bool;
 
 	private var __bounds:Rectangle;
 	private var __commands:DrawCommandBuffer;
 	private var __dirty (default, set):Bool = true;
-	private var __image:Image;
 	private var __padding:Int;
 	private var __positionX:Float;
 	private var __positionY:Float;
 	private var __snapCoordinates:Bool = false;
 	private var __strokePadding:Float;
 	private var __visible:Bool;
-	private var __cachedTexture:RenderTexture;
 	private var __owner:DisplayObject;
 
 	#if (js && html5)
@@ -79,17 +76,18 @@ import js.html.CanvasRenderingContext2D;
 	private var __bitmap(default, set):BitmapData;
 	private var __symbol:format.swf.lite.symbols.ShapeSymbol;
 
-	private function new () {
+	private function new (?initCommands = true) {
 
-		__commands = new DrawCommandBuffer ();
+		__commands = initCommands ? new DrawCommandBuffer () : null;
 		__strokePadding = 0;
 		__positionX = 0;
 		__positionY = 0;
 		__padding = 1;
-		__hardware = true;
 
 		#if (js && html5)
-		moveTo (0, 0);
+		if(__commands != null) {
+			moveTo (0, 0);
+		}
 		#end
 
 	}
@@ -104,6 +102,12 @@ import js.html.CanvasRenderingContext2D;
 
 		__visible = true;
 
+	}
+
+	public function beginBitmapFillWithId (bitmapID:Int, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false) {
+
+		__commands.beginBitmapFillWithId (bitmapID, matrix, repeat, smooth);
+		__visible = true;
 	}
 
 
@@ -125,7 +129,6 @@ import js.html.CanvasRenderingContext2D;
 			throw "don't fill readonly!";
 		}
 		__commands.beginGradientFill (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-		__hardware = false;
 
 		for (alpha in alphas) {
 
@@ -159,7 +162,6 @@ import js.html.CanvasRenderingContext2D;
 		}
 
 		__visible = false;
-		__hardware = true;
 
 		#if (js && html5)
 		moveTo (0, 0);
@@ -260,7 +262,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.cubicCurveTo (controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -303,7 +304,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.curveTo (controlX, controlY, anchorX, anchorY);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -318,7 +318,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawCircle (x, y, radius);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -333,7 +332,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawEllipse (x, y, width, height);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -477,7 +475,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.drawRoundRect (x, y, width, height, ellipseWidth, ellipseHeight);
 
-		__hardware = false;
 		__dirty = true;
 
 	}
@@ -602,7 +599,6 @@ import js.html.CanvasRenderingContext2D;
 
 		__commands.lineTo (x, y);
 
-		__hardware = false;
 		__dirty = true;
 
 	}

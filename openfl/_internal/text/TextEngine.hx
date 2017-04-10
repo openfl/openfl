@@ -805,6 +805,12 @@ class TextEngine {
 			updateNextBreakIndex (" ");
 			updateNextBreakIndex ("-");
 			updateNextBreakIndex ("\n");
+			var breakChar = text.charAt (nextBreakIndex);
+
+			if ( formatRange.end - 1 < nextBreakIndex && breakChar == "\n" ) {
+				nextBreakIndex = formatRange.end - 1;
+				breakChar = text.charAt (nextBreakIndex);
+			}
 
 			var groupWidth:Float = getAdvance (text, layoutGroup.startIndex, nextBreakIndex);
 			if ( selectable ) {
@@ -840,7 +846,6 @@ class TextEngine {
 
 			widthValue = groupWidth;
 
-			var breakChar = text.charAt (nextBreakIndex);
 			if (breakChar == "\n") {
 				pushNewLine(textIndex);
 			}
@@ -867,6 +872,8 @@ class TextEngine {
 
 				nextFormatRange();
 				startLayoutGroup(formatRange.format, formatRange.start);
+
+
 			} else if ( formatRange.format.align == JUSTIFY ) {
 				// :TODO: Support multiple spaces
 				var endIndex = nextBreakIndex;

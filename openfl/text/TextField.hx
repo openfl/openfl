@@ -102,7 +102,7 @@ class TextField extends InteractiveObject {
 		super ();
 
 		__caretIndex = -1;
-		__graphics = new Graphics ();
+		__graphics = new Graphics (false);
 		__textEngine = new TextEngine (this);
 		__layoutDirty = true;
 		__tabEnabled = true;
@@ -1328,6 +1328,11 @@ class TextField extends InteractiveObject {
 			}
 
 			__textEngine.textFormatRanges.splice (0, __textEngine.textFormatRanges.length);
+
+			// :NOTE: needs to be reset because in html we can only check if it should bold, not unbold
+			__textFormat.bold = false;
+			__textFormat.italic = false;
+
 			var result_data = parseTags(data, __textFormat.clone(), 0);
 
 			value = result_data.text;
@@ -1342,7 +1347,6 @@ class TextField extends InteractiveObject {
 		return __textEngine.text = value;
 
 	}
-
 
 	private function get_length ():Int {
 
