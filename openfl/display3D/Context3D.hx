@@ -938,11 +938,11 @@ import openfl.profiler.Telemetry;
 			
 			case Context3DMipFilter.MIPLINEAR:
 				
-				state.minFilter = GL.LINEAR_MIPMAP_LINEAR;
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST_MIPMAP_LINEAR : GL.LINEAR_MIPMAP_LINEAR;
 			
 			case Context3DMipFilter.MIPNEAREST:
 				
-				state.minFilter = GL.NEAREST_MIPMAP_NEAREST;
+				state.minFilter = filter == Context3DTextureFilter.NEAREST ? GL.NEAREST_MIPMAP_NEAREST : GL.LINEAR_MIPMAP_NEAREST;
 			
 			case Context3DMipFilter.MIPNONE:
 				
