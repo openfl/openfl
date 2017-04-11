@@ -6,6 +6,7 @@ node_modules
 .idea
 .svn
 NME.iml
+*.iml
 out
 target
 tests/build
