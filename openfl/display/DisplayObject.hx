@@ -623,6 +623,33 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 
 	}
 
+	#if profile
+		private static var __applyFiltersCountMap:Map<Int, Int> = new Map<Int, Int>();
+
+		public static function __init__ () {
+
+			#if js
+				untyped $global.Profile = $global.Profile || {};
+				untyped $global.Profile.Filters = {};
+				untyped $global.Profile.Filters.resetStatistics = resetStatistics;
+				untyped $global.Profile.Filters.logStatistics= logStatistics;
+			#end
+
+		}
+
+		public static function resetStatistics () {
+
+			__applyFiltersCountMap = new Map<Int, Int> ();
+
+		}
+
+		public static function logStatistics () {
+
+			for(id in __applyFiltersCountMap.keys()) {
+				trace ('Symbol id:$id; applyFilters count: ${__applyFiltersCountMap[id]}');
+			}
+		}
+	#end
 
 	public inline function __updateCachedBitmapFn (renderSession:RenderSession):Void {
 
@@ -665,6 +692,14 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable implement
 		if (__updateFilters) {
 			@:privateAccess BitmapFilter.__applyFilters (__filters, renderSession, __cachedBitmap, filterTransform);
 			__updateFilters = false;
+
+			#if(profile && js)
+				if(untyped __js__("this.__symbol"))
+				{
+					var symbolId:Int = untyped __js__("this.__symbol.id");
+					__applyFiltersCountMap.set(symbolId, (__applyFiltersCountMap.exists(symbolId) ? __applyFiltersCountMap.get(symbolId) + 1 : 1));
+				}
+			#end
 		}
 
 		Matrix.pool.put (filterTransform);

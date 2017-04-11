@@ -300,6 +300,7 @@ class MovieClip extends flash.display.MovieClip {
 			}
 		}
 	#end
+
 	private function __createObject (object:FrameObject):DisplayObject {
 
 		var displayObject:DisplayObject = null;
