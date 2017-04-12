@@ -1,6 +1,7 @@
 package openfl.display;
 
 
+import haxe.CallStack;
 import haxe.EnumFlags;
 import lime.app.Application;
 import lime.app.IModule;
@@ -17,7 +18,6 @@ import lime.graphics.Renderer;
 import lime.math.Matrix4;
 import lime.system.System;
 import lime.ui.Touch;
-import lime.utils.GLUtils;
 import lime.ui.Gamepad;
 import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
@@ -27,6 +27,8 @@ import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
 import lime.ui.Mouse in LimeMouse;
 import lime.ui.Window;
+import lime.utils.GLUtils;
+import lime.utils.Log;
 import openfl._internal.renderer.AbstractRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
 import openfl._internal.renderer.canvas.CanvasRenderer;
@@ -1174,6 +1176,11 @@ class Stage extends DisplayObjectContainer implements IModule {
 		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent (event);
 		
 		if (!event.__preventDefault) {
+			
+			#if mobile
+			Log.println (CallStack.toString (CallStack.exceptionStack ()));
+			Log.println (Std.string (e));
+			#end
 			
 			#if cpp
 			untyped __cpp__ ("throw e");
