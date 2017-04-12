@@ -8,3 +8,4 @@
 -D optional-cffi
 -D openfl
 --remap flash:openfl
+--no-inline
