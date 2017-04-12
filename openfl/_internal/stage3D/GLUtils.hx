@@ -1,8 +1,8 @@
 package openfl._internal.stage3D;
 
 
+import lime.graphics.opengl.GL;
 import openfl.errors.IllegalOperationError;
-import openfl.gl.GL;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
